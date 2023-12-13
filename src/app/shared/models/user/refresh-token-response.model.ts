@@ -1,3 +1,3 @@
 export interface RefreshTokenResponse {
-  jwt: string
+  jwt: string;
 }

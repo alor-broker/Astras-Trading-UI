@@ -39,11 +39,11 @@ export class CsvFormatter {
     return res;
   }
 
-  private static generateHeaderRow<T>(meta: ExportColumnMeta<T>[], config: CsvFormatterConfig) {
+  private static generateHeaderRow<T>(meta: ExportColumnMeta<T>[], config: CsvFormatterConfig): string {
     return meta.map(m => m.title).join(config.fieldSeparator);
   }
 
-  private static generateItemRow<T>(meta: ExportColumnMeta<T>[], data: T, config: CsvFormatterConfig) {
+  private static generateItemRow<T>(meta: ExportColumnMeta<T>[], data: T, config: CsvFormatterConfig): string {
     return meta.map(m => this.sanitizeValue(m.readFn(data), config))
       .join(config.fieldSeparator);
   }

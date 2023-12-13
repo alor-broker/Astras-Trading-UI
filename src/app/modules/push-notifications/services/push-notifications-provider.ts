@@ -1,15 +1,15 @@
-﻿import {DestroyRef, Injectable} from '@angular/core';
-import {NotificationsProvider} from '../../notifications/services/notifications-provider';
-import {combineLatest, Observable, shareReplay} from 'rxjs';
-import {NotificationMeta} from '../../notifications/models/notification.model';
-import {PushNotificationsService} from "./push-notifications.service";
-import {filter, map} from "rxjs/operators";
-import {isPortfoliosEqual} from "../../../shared/utils/portfolios";
-import {LocalStorageService} from "../../../shared/services/local-storage.service";
-import {TimezoneConverterService} from "../../../shared/services/timezone-converter.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {UserPortfoliosService} from "../../../shared/services/user-portfolios.service";
-import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
+﻿import {DestroyRef, Injectable } from '@angular/core';
+import { NotificationsProvider } from '../../notifications/services/notifications-provider';
+import { combineLatest, Observable, shareReplay } from 'rxjs';
+import { NotificationMeta } from '../../notifications/models/notification.model';
+import { PushNotificationsService } from "./push-notifications.service";
+import { filter, map } from "rxjs/operators";
+import { isPortfoliosEqual } from "../../../shared/utils/portfolios";
+import { LocalStorageService } from "../../../shared/services/local-storage.service";
+import { TimezoneConverterService } from "../../../shared/services/timezone-converter.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { UserPortfoliosService } from "../../../shared/services/user-portfolios.service";
+import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
 
 interface SavedPushNotification {
   id: string;
@@ -70,7 +70,7 @@ export class PushNotificationsProvider implements NotificationsProvider {
     );
   }
 
-  private initRequiredSubscriptions() {
+  private initRequiredSubscriptions(): void {
     combineLatest([
       this.userPortfoliosService.getPortfolios(),
       this.terminalSettingsService.getSettings()
@@ -86,12 +86,12 @@ export class PushNotificationsProvider implements NotificationsProvider {
     });
   }
 
-  private initNotificationsSync() {
+  private initNotificationsSync(): void {
     this.pushNotificationsService.getMessages().pipe(
-      filter(payload => !!payload?.data?.body),
+      filter(payload => payload.data?.body != null),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(payload => {
-      const messageData = JSON.parse(payload!.data!.body!).notification;
+      const messageData = JSON.parse(payload!.data!.body!).notification as { title: string, body: string } | undefined;
       if (!messageData) {
         return;
       }
@@ -118,7 +118,7 @@ export class PushNotificationsProvider implements NotificationsProvider {
     return this.localStorageService.getItem<SavedPushNotification[]>(this.pushNotificationsStorageKey) ?? [];
   }
 
-  private setIsRead(notification: SavedPushNotification) {
+  private setIsRead(notification: SavedPushNotification): void {
     const currentNotifications = this.getSavedNotifications();
     const updated = [
       ...currentNotifications.filter(n => n.id !== notification.id),

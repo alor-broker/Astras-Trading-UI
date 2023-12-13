@@ -31,14 +31,14 @@ describe('LimitOrderFormComponent', () => {
 
   let orderServiceSpy: any;
 
-  const getFormInputs = () => {
+  const getFormInputs = (): { [fieldName: string]: HTMLInputElement } => {
     return {
       quantity: fixture.nativeElement.querySelector('[formcontrolname="quantity"]').querySelector('input') as HTMLInputElement,
       price: fixture.nativeElement.querySelector('[formcontrolname="price"]').querySelector('input') as HTMLInputElement,
     };
   };
 
-  const getValidationErrorElement = (element: HTMLElement) => {
+  const getValidationErrorElement = (element: HTMLElement): Element | null => {
     const inputContainer = element.parentElement?.parentElement?.parentElement?.parentElement?.parentElement;
     if (!inputContainer) {
       return null;
@@ -189,7 +189,7 @@ describe('LimitOrderFormComponent', () => {
 
         expect(errorElement).not.toBeNull();
 
-        if (testCase.expectedError) {
+        if (testCase.expectedError ?? '') {
           expect(errorElement?.textContent).toEqual(testCase.expectedError);
         }
       });

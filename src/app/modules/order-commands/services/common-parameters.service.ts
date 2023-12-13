@@ -12,7 +12,7 @@ export class CommonParametersService {
 
   readonly parameters$ = this.parametersChange$.asObservable();
 
-  setParameters(params: Partial<CommonParameters>) {
+  setParameters(params: Partial<CommonParameters>): void {
     this.parametersChange$.next(params);
   }
 }

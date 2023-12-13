@@ -7,7 +7,7 @@
 >
   <ng-container *transloco="let t">
   <div *ngIf="form">
-    <form [formGroup]="form" [nzLayout]="'vertical'" nz-form>
+    <form *ngIf="form" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
       <nz-form-item>
         <nz-form-label nzFor="instrument" nzRequired>{{t('form.ticker.label')}}</nz-form-label>
         <nz-form-control [nzErrorTip]="t('form.ticker.commonError')">

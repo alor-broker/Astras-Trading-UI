@@ -51,7 +51,7 @@ import {
   OrdersBasketSettings
 } from '../../models/orders-basket-settings.model';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {NewLimitOrder} from "../../../../shared/models/orders/new-order.model";
+import { NewLimitOrder, SubmitOrderResult } from "../../../../shared/models/orders/new-order.model";
 
 @Component({
   selector: 'ats-orders-basket',
@@ -125,16 +125,16 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     return control as UntypedFormControl;
   }
 
-  addItemDraft(target: FormArray) {
+  addItemDraft(target: FormArray): void {
     target.push(this.createItemDraftControl({}));
   }
 
-  submitOrders() {
+  submitOrders(): void {
     this.submitResult$.next(null);
 
     this.settings$.pipe(
       take(1),
-      filter(() => !!this.form?.valid),
+      filter(() => this.form?.valid ?? false),
       tap(() => this.processing$.next(true)),
       switchMap(settings => {
         const orders: NewLimitOrder[] = [];
@@ -143,8 +143,8 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
           orders.push({
             side: Side.Buy,
             instrument: item.instrumentKey as InstrumentKey,
-            quantity: item.quantity,
-            price: item.price
+            quantity: item.quantity as number,
+            price: item.price as number
           });
         });
 
@@ -160,17 +160,17 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       finalize(() => this.processing$.next(false)),
       take(1)
     ).subscribe(results => {
-      this.submitResult$.next(results.every(x => !!x && x.isSuccess) ? 'success' : 'failed');
+      this.submitResult$.next(results.every((x: SubmitOrderResult | null) => !!x && x.isSuccess) ? 'success' : 'failed');
     });
   }
 
-  itemsContainerWidthChanged(entries: ResizeObserverEntry[]) {
+  itemsContainerWidthChanged(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       this.itemsContainerWidth$.next(Math.floor(x.contentRect.width));
     });
   }
 
-  savePreset(title: string) {
+  savePreset(title: string): void {
     this.getWidgetSettings().pipe(
       take(1)
     ).subscribe(s => {
@@ -201,7 +201,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     });
   }
 
-  removePreset(presetId: string) {
+  removePreset(presetId: string): void {
     this.getWidgetSettings().pipe(
       take(1)
     ).subscribe(s => {
@@ -214,11 +214,11 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     });
   }
 
-  applyPreset(preset: DataPreset) {
+  applyPreset(preset: DataPreset): void {
     this.restoreFormValue(preset);
   }
 
-  private getWidgetSettings(){
+  private getWidgetSettings(): Observable<OrdersBasketSettings> {
     return this.widgetSettingsService.getSettings<OrdersBasketSettings>(this.guid);
   }
 
@@ -231,7 +231,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       && settings1.exchange === settings2.exchange;
   }
 
-  private saveBasket(settings: OrdersBasketSettings | null) {
+  private saveBasket(settings: OrdersBasketSettings | null): void {
     if (!settings) {
       return;
     }
@@ -253,15 +253,15 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       return null;
     }
 
-    const formValue = this.form.value;
+    const formValue = this.form.value as OrdersBasket;
     return  {
       ...formValue,
       budget: Number(formValue.budget),
       items: formValue.items
-    } as OrdersBasket;
+    };
   }
 
-  private restoreFormValue(savedBasket: OrdersBasket) {
+  private restoreFormValue(savedBasket: OrdersBasket): void {
 
     this.form?.controls.budget.setValue(savedBasket.budget);
 
@@ -280,7 +280,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     return `${settings.portfolio}_${settings.exchange}`;
   }
 
-  private initForm(settings: OrdersBasketSettings) {
+  private initForm(settings: OrdersBasketSettings): void {
     this.formSubscriptions?.unsubscribe();
 
     this.form = new UntypedFormGroup({
@@ -318,15 +318,15 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     this.formSubscriptions.add(this.initQuantityCalculation(settings));
   }
 
-  private initQuantityCalculation(settings: OrdersBasketSettings) {
+  private initQuantityCalculation(settings: OrdersBasketSettings): Subscription {
     return this.form!.valueChanges.pipe(
       debounceTime(500),
 
       map(formValue => {
         const items = formValue.items as Partial<OrdersBasketItem>[];
         const totalBudget = Number(formValue.budget);
-        const hasEvaluationParams = (item: Partial<OrdersBasketItem>) => {
-          return !!item.instrumentKey && !!item.quota && !!item.price;
+        const hasEvaluationParams = (item: Partial<OrdersBasketItem>): boolean => {
+          return !!item.instrumentKey && !!(item.quota ?? 0) && !!(item.price ?? 0);
         };
 
         const allItems = items.map(item => ({
@@ -350,7 +350,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
         (items, evaluation) => ({ items, evaluation: evaluation ?? [] })
       )
     ).subscribe(({ items, evaluation }) => {
-      const setQuantity = (id: string, quantity: number) => {
+      const setQuantity = (id: string, quantity: number): void => {
         const itemsControl = this.asFormArray(this.form!.controls.items);
         const targetControl = itemsControl.controls.find(c => c.value.id === id);
         if (targetControl && targetControl.value.quantity !== quantity) {

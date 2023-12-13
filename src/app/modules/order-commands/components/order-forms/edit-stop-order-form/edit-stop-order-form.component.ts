@@ -20,6 +20,7 @@ import { AtsValidators } from "../../../../../shared/utils/form-validators";
 import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
 import { StopLimitOrderEdit, StopMarketOrderEdit } from "../../../../../shared/models/orders/edit-order.model";
 import { getConditionTypeByString } from "../../../../../shared/utils/order-conditions-helper";
+import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 
 @Component({
   selector: 'ats-edit-stop-order-form',
@@ -98,7 +99,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       orderId: this.orderId$,
       portfolioKey: this.portfolioKey$
     }).pipe(
-      filter(x => !!x.orderId && !!x.portfolioKey),
+      filter(x => x.orderId != null && !!x.orderId.length && !!x.portfolioKey),
       switchMap(x => this.orderDetailsService.getStopOrderDetails(x.orderId!, x.portfolioKey!)),
       filter((o): o is StopOrder => !!o),
       shareReplay(1)
@@ -112,18 +113,18 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     this.initFormStateChangeNotification();
   }
 
-  disabledDate = (date: Date) => {
+  disabledDate = (date: Date): boolean => {
     const today = startOfDay(new Date());
     return toUnixTime(date) < toUnixTime(today);
   };
 
-  private initOrderChange() {
+  private initOrderChange(): void {
     combineLatest({
       currentOrder: this.currentOrder$,
       currentInstrument: this.formInstrument$
     }).pipe(
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(x => {
+    ).subscribe((x: { currentOrder: StopOrder, currentInstrument: Instrument }) => {
       this.form.reset(undefined, {emitEvent: true});
 
       this.setPriceValidators(this.form.controls.triggerPrice, x.currentInstrument);
@@ -140,12 +141,12 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
 
       if (!!x.currentOrder.iceberg) {
         this.form.controls.isIceberg.setValue(true);
-        if (x.currentOrder.iceberg.creationFixedQuantity) {
-          this.form.controls.icebergFixed.setValue(x.currentOrder.iceberg.creationFixedQuantity);
+        if (x.currentOrder.iceberg.creationFixedQuantity ?? 0) {
+          this.form.controls.icebergFixed.setValue(x.currentOrder.iceberg.creationFixedQuantity!);
         }
 
-        if (x.currentOrder.iceberg.creationVarianceQuantity) {
-          this.form.controls.icebergVariance.setValue(x.currentOrder.iceberg.creationVarianceQuantity);
+        if (x.currentOrder.iceberg.creationVarianceQuantity ?? 0) {
+          this.form.controls.icebergVariance.setValue(x.currentOrder.iceberg.creationVarianceQuantity!);
         }
       }
 
@@ -157,7 +158,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       this.timezoneConverterService.getConverter().pipe(
         take(1)
       ).subscribe(tc => {
-        if(x.currentOrder.endTime) {
+        if (x.currentOrder.endTime != null) {
           this.form.controls.stopEndUnixTime.setValue(tc.toTerminalDate(x.currentOrder.endTime));
         }
 
@@ -168,7 +169,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     });
   }
 
-  private initCommonParametersUpdate() {
+  private initCommonParametersUpdate(): void {
     this.commonParametersService.parameters$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(p => {
@@ -199,7 +200,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     });
   }
 
-  private initPriceDiffCalculation() {
+  private initPriceDiffCalculation(): void {
     this.currentPriceDiffPercent$ = PriceDiffHelper.getPriceDiffCalculation(
       this.form.controls.price,
       this.getInstrumentWithPortfolio(),
@@ -207,14 +208,14 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     );
   }
 
-  private initFormFieldsCheck() {
+  private initFormFieldsCheck(): void {
     this.form.valueChanges.pipe(
       distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => this.checkFieldsAvailability());
   }
 
-  private checkFieldsAvailability() {
+  private checkFieldsAvailability(): void {
     if (this.form.value.withLimit === true) {
       this.enableControl(this.form.controls.price);
       this.enableControl(this.form.controls.timeInForce);
@@ -236,7 +237,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     this.form.updateValueAndValidity();
   }
 
-  private getCurrentPrice() {
+  private getCurrentPrice(): Observable<number | null> {
     return this.getInstrumentWithPortfolio()
       .pipe(
         take(1),
@@ -244,7 +245,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       );
   }
 
-  private checkNowTimeSelection(timezoneConverter: TimezoneConverter) {
+  private checkNowTimeSelection(timezoneConverter: TimezoneConverter): void {
     // nz-date-picker does not support timezones changing
     // now selection will be available only if time displayed in current timezone
     const now = new Date();
@@ -252,7 +253,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     this.canSelectNow = convertedNow.toUTCString() === now.toUTCString();
   }
 
-  private initFormStateChangeNotification() {
+  private initFormStateChangeNotification(): void {
     this.form.valueChanges.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
@@ -275,7 +276,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       portfolioKey: this.portfolioKey$,
       tc: this.timezoneConverterService.getConverter()
     }).pipe(
-      filter(x => !!x.currentOrder && !!x.portfolioKey),
+      filter(x => !!x.portfolioKey),
       filter(() => this.form.valid),
       switchMap(x => {
         const formValue = this.form.value;
@@ -295,7 +296,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
           side: x.currentOrder.side
         } as StopMarketOrderEdit;
 
-        if (formValue.withLimit) {
+        if (formValue.withLimit ?? false) {
           const limitOrder = {
             ...updatedOrder,
             price: Number(formValue.price)
@@ -305,11 +306,11 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
             limitOrder.timeInForce = formValue.timeInForce;
           }
 
-          if (formValue.icebergFixed) {
+          if (formValue.icebergFixed ?? 0) {
             limitOrder.icebergFixed = Number(formValue.icebergFixed);
           }
 
-          if (formValue.icebergVariance) {
+          if (formValue.icebergVariance ?? 0) {
             limitOrder.icebergVariance = Number(formValue.icebergVariance);
           }
 

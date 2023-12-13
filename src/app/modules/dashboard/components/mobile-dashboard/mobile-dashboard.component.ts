@@ -25,7 +25,7 @@ export class MobileDashboardComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     const widgets$ = this.dashboardContextService.selectedDashboard$.pipe(
       distinctUntilChanged((previous, current) => arraysEqual(previous.items.map(x => x.guid), current.items.map(x => x.guid)))
     );
@@ -39,7 +39,7 @@ export class MobileDashboardComponent implements OnInit {
           instance: x,
           widgetMeta: meta.find(m => m.typeId === x.widgetType)
         } as WidgetInstance))
-          .filter(x => !!x.widgetMeta && x.widgetMeta.mobileMeta && x.widgetMeta.mobileMeta.enabled);
+          .filter(x => (x.widgetMeta.mobileMeta?.enabled ?? false));
       }),
       shareReplay(1)
     );

@@ -7,8 +7,8 @@
 >
   <ng-container *transloco="let t">
   <ng-container *transloco="let tSettings; scope: 'all-trades/all-trades-settings'">
-    <div >
-      <form nz-form [nzLayout]="'vertical'" [formGroup]="form">
+    <div>
+      <form *ngIf="form" nz-form [nzLayout]="'vertical'" [formGroup]="form">
         <nz-form-item class="compact">
           <nz-form-control [nzErrorTip]="tSettings('allTradesAllTradesSettings.selectColumnsError')">
             <nz-form-label nzRequired nzFor="allTradesColumns">{{tSettings('allTradesAllTradesSettings.selectColumnLabel')}}</nz-form-label>

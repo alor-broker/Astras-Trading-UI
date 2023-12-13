@@ -15,15 +15,15 @@ export interface InstrumentsCorrelationRequest {
 export interface CorrelationMatrix {
   correlation: {
     [key: string]: {
-      [key: string]: number
+      [key: string]: number;
     };
   };
 
   cointegration: {
     [key: string]: {
-      [key: string]: number
+      [key: string]: number;
     };
-  }
+  };
 }
 
 export interface InstrumentsCorrelationResponse {

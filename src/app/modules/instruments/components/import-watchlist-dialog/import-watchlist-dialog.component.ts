@@ -75,12 +75,12 @@ export class ImportWatchlistDialogComponent implements OnInit, OnDestroy {
     });
   }
 
-  closeDialog() {
+  closeDialog(): void {
     this.dialogParams = null;
   }
 
-  parseInput() {
-    if (!this.inputString?.length) {
+  parseInput(): void {
+    if (!this.inputString.length) {
       return;
     }
 
@@ -95,7 +95,7 @@ export class ImportWatchlistDialogComponent implements OnInit, OnDestroy {
 
     this.marketService.getDefaultExchange().pipe(
       take(1),
-      filter(x => !!x)
+      filter(x => x != null)
     ).subscribe(defaultExchange => {
 
       const itemsToResolve = tickers.map(t => {
@@ -137,7 +137,7 @@ export class ImportWatchlistDialogComponent implements OnInit, OnDestroy {
     return parsedResults?.filter(x => !!x.instrumentKey) ?? [];
   }
 
-  import() {
+  import(): void {
     if (!this.parsedResults$) {
       this.closeDialog();
       return;
@@ -166,12 +166,12 @@ export class ImportWatchlistDialogComponent implements OnInit, OnDestroy {
     });
   }
 
-  downloadFile = (file: NzUploadFile) => {
+  downloadFile = (file: NzUploadFile): boolean => {
     const reader = new FileReader();
     fromEvent(reader, 'load').pipe(
       take(1)
     ).subscribe(() => {
-      this.inputString = (<string>reader.result) ?? '';
+      this.inputString = (reader.result as string | null) ?? '';
       this.parseInput();
       // ngModel doesn't work properly without explicit call of markForCheck
       this.cdr.markForCheck();

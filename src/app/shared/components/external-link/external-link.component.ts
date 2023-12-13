@@ -15,11 +15,8 @@ export class ExternalLinkComponent {
   target: '_self' | '_blank' = '_blank';
 
   @Input()
-  rel: string = 'noopener noreferrer';
+  rel = 'noopener noreferrer';
 
   @Input()
   href?: string;
-
-  constructor() {
-  }
 }

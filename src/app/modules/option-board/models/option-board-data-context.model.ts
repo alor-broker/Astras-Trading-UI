@@ -3,8 +3,8 @@ import {Option, OptionKey, OptionParameters, OptionSide, UnderlyingAsset} from "
 import {OptionBoardSettings} from "./option-board-settings.model";
 
 export interface OptionsSelection {
-  instrument: UnderlyingAsset,
-  selectedOptions: OptionKey[]
+  instrument: UnderlyingAsset;
+  selectedOptions: OptionKey[];
 }
 
 export interface OptionBoardDataContext {

@@ -22,7 +22,7 @@ import { InstrumentKey } from "../../../../shared/models/instruments/instrument-
   styleUrls: ['./tech-chart-widget.component.less']
 })
 export class TechChartWidgetComponent implements OnInit {
-  shouldShowSettings: boolean = false;
+  shouldShowSettings = false;
 
   @Input({required: true})
   widgetInstance!: WidgetInstance;
@@ -45,7 +45,7 @@ export class TechChartWidgetComponent implements OnInit {
     return this.widgetInstance.instance.guid;
   }
 
-  onSettingsChange() {
+  onSettingsChange(): void {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 

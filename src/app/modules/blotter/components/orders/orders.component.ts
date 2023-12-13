@@ -30,7 +30,6 @@ import { TableSettingHelper } from '../../../../shared/utils/table-setting.helpe
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
-import { NzTableFilterList } from "ng-zorro-antd/table/src/table.types";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 import { DomHelper } from "../../../../shared/utils/dom-helper";
@@ -40,8 +39,8 @@ import {OrdersDialogService} from "../../../../shared/services/orders/orders-dia
 import {OrderType} from "../../../../shared/models/orders/orders-dialog.model";
 
 interface DisplayOrder extends Order {
-  residue: string,
-  volume: number | null
+  residue: string;
+  volume: number | null;
 }
 
 @Component({
@@ -59,7 +58,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
       id: 'id',
       displayName: 'Id',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => Number(a.id) - Number(b.id),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => Number(a.id) - Number(b.id),
       filterData: {
         filterName: 'id',
         isDefaultFilter: false
@@ -70,7 +69,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
       id: 'symbol',
       displayName: 'Тикер',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => a.symbol.localeCompare(b.symbol),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.symbol.localeCompare(b.symbol),
       filterData: {
         filterName: 'symbol',
         isDefaultFilter: false
@@ -82,7 +81,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
       id: 'side',
       displayName: 'Сторона',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => a.side.toString().localeCompare(b.side.toString()),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.side.toString().localeCompare(b.side.toString()),
       filterData: {
         filterName: 'side',
         isDefaultFilter: true,
@@ -98,7 +97,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
       id: 'residue',
       displayName: 'Остаток',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.filled - a.filled,
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => (b.filled ?? 0) - (a.filled ?? 0),
       tooltip: 'Отношение невыполненных заявок к общему количеству',
       minWidth: 70
     },
@@ -106,7 +105,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
       id: 'volume',
       displayName: 'Объем',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => (b.volume ?? 0) - (a.volume ?? 0),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => (b.volume ?? 0) - (a.volume ?? 0),
       tooltip: 'Объем',
       minWidth: 60
     },
@@ -114,7 +113,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
       id: 'qty',
       displayName: 'Кол-во',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.qty - a.qty,
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.qty - a.qty,
       tooltip: 'Количество заявок',
       minWidth: 65
     },
@@ -122,7 +121,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
       id: 'price',
       displayName: 'Цена',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.price - a.price,
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.price - a.price,
       tooltip: 'Цена заявки',
       minWidth: 55
     },
@@ -130,7 +129,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
       id: 'status',
       displayName: 'Статус',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => a.status.localeCompare(b.status),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.status.localeCompare(b.status),
       filterData: {
         filterName: 'status',
         isDefaultFilter: true,
@@ -148,7 +147,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
       id: 'transTime',
       displayName: 'Время',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => Number(b.transTime) - Number(a.transTime),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => Number(b.transTime) - Number(a.transTime),
       tooltip: 'Время совершения заявки',
       minWidth: 60
     },
@@ -156,7 +155,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
       id: 'exchange',
       displayName: 'Биржа',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.exchange.localeCompare(a.exchange),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.exchange.localeCompare(a.exchange),
       filterData: {
         filterName: 'exchange',
         isDefaultFilter: true,
@@ -172,7 +171,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
       id: 'type',
       displayName: 'Тип',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => b.type.localeCompare(a.type),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.type.localeCompare(a.type),
       filterData: {
         filterName: 'type',
         isDefaultFilter: true,
@@ -188,14 +187,14 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
       id: 'endTime',
       displayName: 'Действ. до.',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder) => Number(b.endTime) - Number(a.endTime),
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => Number(b.endTime) - Number(a.endTime),
       tooltip: 'Срок действия заявки',
       minWidth: 65
     },
   ];
 
-  private cancelCommands = new Subject<CancelCommand>();
-  private cancels$ = this.cancelCommands.asObservable();
+  private readonly cancelCommands = new Subject<CancelCommand>();
+  private readonly cancels$ = this.cancelCommands.asObservable();
   private orders: Order[] = [];
   private orders$: Observable<Order[]> = of([]);
 
@@ -222,7 +221,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
 
     this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
-        TableSettingHelper.isTableSettingsEqual(previous?.ordersTable, current.ordersTable)
+        TableSettingHelper.isTableSettingsEqual(previous.ordersTable, current.ordersTable)
         && previous.badgeColor === current.badgeColor
       ),
       mapWith(
@@ -248,8 +247,8 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
               ? {
                 ...column.column.filterData,
                 filterName: tOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-                filters: (<NzTableFilterList>column.column.filterData?.filters ?? []).map(f => ({
-                  value: f.value,
+                filters: (column.column.filterData.filters ?? []).map(f => ({
+                  value: f.value as unknown,
                   text: tCommon([column.column.id + 'Filters', f.value], {fallback: f.text})
                 }))
               }
@@ -292,16 +291,16 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
 
     this.cancels$.pipe(
       mergeMap((command) => this.canceller.cancelOrder(command)),
-      catchError((_, caught) => caught),
+      catchError((e, caught) => caught),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
 
-  cancelOrder(orderId: string) {
+  cancelOrder(orderId: string): void {
     this.settings$.pipe(
       take(1)
     ).subscribe(settings => {
-      this.cancelCommands?.next({
+      this.cancelCommands.next({
         portfolio: settings.portfolio,
         exchange: settings.exchange,
         orderid: orderId,
@@ -310,11 +309,11 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
     });
   }
 
-  editOrder(order: Order, event: MouseEvent) {
+  editOrder(order: Order, event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
 
-    if(order.type !== OrderType.Limit) {
+    if(order.type as OrderType !== OrderType.Limit) {
       return;
     }
 
@@ -340,12 +339,12 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
     });
   }
 
-  cancelAllOrders() {
+  cancelAllOrders(): void {
     const working = this.orders.filter(o => o.status == 'working').map(o => o.id);
     working.forEach(order => this.cancelOrder(order));
   }
 
-  formatDate(date: Date) {
+  formatDate(date: Date): string{
     return new Date(date).toLocaleTimeString();
   }
 
@@ -353,23 +352,23 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
     return order.type === 'market';
   }
 
-  openOrdersGroup(groupId: string, event: MouseEvent) {
+  openOrdersGroup(groupId: string, event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
     this.service.openOrderGroupModal(groupId);
   }
 
-  private sortOrders(a: DisplayOrder, b: DisplayOrder) {
+  private sortOrders(a: DisplayOrder, b: DisplayOrder): number {
     if (a.status == 'working' && b.status != 'working') {
       return -1;
     }
     else if (b.status == 'working' && a.status != 'working') {
       return 1;
     }
-    if (a.endTime < b.endTime) {
+    if ((a.endTime ?? 0) < (b.endTime ?? 0)) {
       return -1;
     }
-    else if (a.endTime > b.endTime) {
+    else if ((a.endTime ?? 0) > (b.endTime ?? 0)) {
       return 1;
     }
     return 0;

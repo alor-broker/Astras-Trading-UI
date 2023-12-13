@@ -9,28 +9,26 @@ export class ActivityTrackerService implements EventListenerObject {
   private readonly lastActivityTimeSub = new BehaviorSubject<number | null>(new Date().getTime());
   public readonly lastActivityUnixTime$ = this.lastActivityTimeSub.asObservable();
 
-  constructor() {}
-
   handleEvent(): void {
     this.lastActivityTimeSub.next(new Date().getTime());
   }
 
-  startTracking() {
+  startTracking(): void {
     this.clearEventListeners();
     this.setupEventListeners();
   }
 
-  stopTracking() {
+  stopTracking(): void {
     this.clearEventListeners();
   }
 
-  private setupEventListeners() {
+  private setupEventListeners(): void {
     this.eventsToTrack.forEach(event => {
       window.addEventListener(event, this);
     });
   }
 
-  private clearEventListeners() {
+  private clearEventListeners(): void {
     this.eventsToTrack.forEach(event => {
       window.removeEventListener(event, this);
     });

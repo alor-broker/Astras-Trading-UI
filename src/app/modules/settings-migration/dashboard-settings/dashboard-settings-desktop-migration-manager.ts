@@ -14,7 +14,7 @@ export class DashboardSettingsDesktopMigrationManager extends DesktopMigrationMa
     inject(UpdateBadgesDesktopDashboardMigration)
   ];
 
-  constructor(migrationsMetaService: MigrationsMetaService) {
+  constructor(protected readonly migrationsMetaService: MigrationsMetaService) {
     super(migrationsMetaService);
   }
 }

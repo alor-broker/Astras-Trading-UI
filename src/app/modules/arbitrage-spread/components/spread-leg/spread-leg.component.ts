@@ -6,7 +6,7 @@ import {
   FormControl,
   FormGroup,
   NG_VALIDATORS,
-  NG_VALUE_ACCESSOR,
+  NG_VALUE_ACCESSOR, ValidationErrors,
   Validator,
   Validators
 } from "@angular/forms";
@@ -65,7 +65,7 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
     super();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (!this.isSideNeeded) {
       this.form.controls.side.disable();
     }
@@ -76,7 +76,7 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
   }
 
   getAvailablePortfolios(): PortfolioKey[] {
-    const selectedInstrument = this.form?.get('instrument')?.value;
+    const selectedInstrument = this.form.get('instrument')?.value;
 
     if (!selectedInstrument) {
       return [];
@@ -85,23 +85,27 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
     return this.portfolios.filter(p => p.exchange === selectedInstrument.exchange);
   }
 
-  instrumentChange() {
+  instrumentChange(): void {
     this.form.controls.portfolio.reset();
   }
 
   protected needMarkTouched(): boolean {
-    return !!this.form?.touched;
+    return this.form.touched;
   }
 
-  writeValue(obj: any) {
+  writeValue(obj: any): void {
     this.form.patchValue(obj);
   }
 
-  setDisabledState(isDisabled: boolean) {
-    isDisabled ? this.form.disable() : this.form.enable();
+  setDisabledState(isDisabled: boolean): void {
+    if (isDisabled) {
+      this.form.disable();
+    } else {
+      this.form.enable();
+    }
   }
 
-  validate() {
+  validate(): ValidationErrors | null {
     return (this.form.disabled || this.form.valid) ? null : { required: true };
   }
 }

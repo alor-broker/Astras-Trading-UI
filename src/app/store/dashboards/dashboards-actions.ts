@@ -18,26 +18,26 @@ export const DashboardsManageActions = createActionGroup({
   source: 'Dashboard/Manage',
   events: {
     "Add": props<{
-      guid: string,
-      title: string,
-      isSelected: boolean,
-      existedItems: Widget[],
-      instrumentsSelection?: InstrumentGroups,
-      sourceGuid?: string
+      guid: string;
+      title: string;
+      isSelected: boolean;
+      existedItems: Widget[];
+      instrumentsSelection?: InstrumentGroups;
+      sourceGuid?: string;
     }>(),
     "Reset": props<{
-      dashboardGuid: string
+      dashboardGuid: string;
     }>(),
     "Rename": props<{
-      dashboardGuid: string,
-      title: string
+      dashboardGuid: string;
+      title: string;
     }>(),
     "Remove": props<{
-      dashboardGuid: string
+      dashboardGuid: string;
     }>(),
     "Remove All": emptyProps(),
     "Copy": props<{
-      dashboardGuid: string
+      dashboardGuid: string;
     }>()
   }
 });
@@ -46,19 +46,19 @@ export const DashboardItemsActions = createActionGroup({
   source: 'Dashboard/Items',
   events: {
     "Add Widgets": props<{
-      dashboardGuid: string,
-      widgets: Omit<Widget, 'guid'>[]
+      dashboardGuid: string;
+      widgets: Omit<Widget, 'guid'>[];
     }>(),
     "Remove Widgets": props<{
-      dashboardGuid: string,
-      widgetIds: string[]
+      dashboardGuid: string;
+      widgetIds: string[];
     }>(),
     "Update Widgets Positions": props<{
-      dashboardGuid: string,
+      dashboardGuid: string;
       updates: {
-        widgetGuid: string,
-        position: DashboardItemPosition
-      } []
+        widgetGuid: string;
+        position: DashboardItemPosition;
+      } [];
     }>()
   }
 });
@@ -68,12 +68,12 @@ export const DashboardsCurrentSelectionActions = createActionGroup({
   events: {
     "Select": props<{ dashboardGuid: string }>(),
     "Select Portfolio": props<{
-      dashboardGuid: string,
-      portfolioKey: PortfolioKey | null
+      dashboardGuid: string;
+      portfolioKey: PortfolioKey | null;
     }>(),
     "Select Instruments": props<{
-      dashboardGuid: string,
-      selection: { groupKey: string, instrumentKey: InstrumentKey }[]
+      dashboardGuid: string;
+      selection: { groupKey: string, instrumentKey: InstrumentKey }[];
     }>()
   }
 });
@@ -100,7 +100,7 @@ export const DashboardsInternalActions = createActionGroup({
     "Init": props<{ dashboards: Dashboard[] }>(),
     "Init Success": emptyProps(),
     "Drop": props<{
-      dashboardGuid: string
+      dashboardGuid: string;
     }>()
   }
 });

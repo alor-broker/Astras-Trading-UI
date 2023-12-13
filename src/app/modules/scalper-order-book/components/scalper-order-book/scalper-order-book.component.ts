@@ -22,7 +22,7 @@ export class ScalperOrderBookComponent implements OnInit {
   guid!: string;
 
   @Input()
-  isActive: boolean = false;
+  isActive = false;
 
   settings$!: Observable<ScalperOrderBookWidgetSettings>;
 
@@ -35,7 +35,7 @@ export class ScalperOrderBookComponent implements OnInit {
     this.settings$ = ScalperSettingsHelper.getSettingsStream(this.guid, this.widgetSettingsService);
   }
 
-  switchEnableAutoAlign() {
+  switchEnableAutoAlign(): void {
     this.settings$.pipe(
       take(1)
     ).subscribe(s => {

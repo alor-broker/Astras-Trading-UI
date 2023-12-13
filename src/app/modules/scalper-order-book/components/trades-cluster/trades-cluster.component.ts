@@ -34,7 +34,7 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
   xAxisStep!: number;
   @Input({required: true})
   dataContext!: ScalperOrderBookDataContext;
-  displayItems$!: Observable<({ volume: number; isMaxVolume: boolean } | null)[]>;
+  displayItems$!: Observable<({ volume: number, isMaxVolume: boolean } | null)[]>;
   settings$!: Observable<ScalperOrderBookExtendedSettings>;
   private readonly currentCluster$ = new BehaviorSubject<TradesCluster | null>(null);
 
@@ -59,7 +59,7 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
       map(([body, displayRange, currentCluster]) => {
         const displayRows = body.slice(displayRange!.start, Math.min(displayRange!.end + 1, body.length));
 
-        const getVolume = (item: ClusterItem) => {
+        const getVolume = (item: ClusterItem): number => {
           return Math.round(item.buyQty + item.sellQty);
         };
 

@@ -17,7 +17,7 @@ import { EnvironmentService } from "./environment.service";
   providedIn: 'root'
 })
 export class OrderCancellerService {
-  private url = this.environmentService.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders';
+  private readonly url = this.environmentService.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders';
 
   constructor(
     private readonly environmentService: EnvironmentService,
@@ -35,7 +35,7 @@ export class OrderCancellerService {
     }).pipe(
       catchHttpError<CommandResponse | null>(null, this.errorHandlerService),
       tap(resp => {
-        if (resp?.orderNumber) {
+        if (resp?.orderNumber != null) {
           this.instantNotificationsService.showNotification(
             OrdersInstantNotificationType.OrderCancelled,
             'success',

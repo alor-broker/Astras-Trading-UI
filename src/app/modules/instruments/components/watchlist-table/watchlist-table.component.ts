@@ -85,7 +85,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     { id: 'closePrice', displayName: "Закр.", tooltip: 'Цена на конец предыдущего дня' },
   ];
   displayedColumns: BaseColumnSettings<WatchedInstrument>[] = [];
-  badgeColor: string = '';
+  badgeColor = '';
 
   sortFns: { [keyName: string]: (a: InstrumentKey, b: InstrumentKey) => number } = {
     symbol: this.getSortFn('instrument.symbol'),
@@ -100,9 +100,9 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   };
 
   menuWidgets$!: Observable<{
-    typeId: string,
-    name: string,
-    icon: string
+    typeId: string;
+    name: string;
+    icon: string;
   }[]>;
 
   settings$!: Observable<InstrumentSelectSettings>;
@@ -123,7 +123,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   ) {
   }
 
-  sortFavorites = (a: WatchedInstrument, b: WatchedInstrument) => {
+  sortFavorites = (a: WatchedInstrument, b: WatchedInstrument): number => {
     const res = (a.favoriteOrder ?? -1) - (b.favoriteOrder ?? -1);
     if (res === 0 && this.defaultSortFn) {
       return this.defaultSortFn(b, a);
@@ -142,7 +142,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     );
 
     this.currentWatchlist$ = this.settings$.pipe(
-      filter(s => !!s.activeListId),
+      filter(s => s.activeListId != null && s.activeListId.length > 0),
       tap(settings => {
         this.displayedColumns = this.allColumns.filter(c => settings.instrumentColumns.includes(c.id));
         this.badgeColor = settings.badgeColor!;
@@ -155,9 +155,9 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
       distinctUntilChanged((prev, curr) => prev.id === curr.id),
       tap(list => {
         if (list.type === WatchlistType.HistoryList) {
-          this.defaultSortFn = (a, b) => b.addTime - a.addTime;
+          this.defaultSortFn = (a, b): number => b.addTime - a.addTime;
         } else {
-          this.defaultSortFn = (a, b) => a.instrument.symbol.localeCompare(b.instrument.symbol);
+          this.defaultSortFn = (a, b): number => a.instrument.symbol.localeCompare(b.instrument.symbol);
         }
       }),
       shareReplay({ bufferSize: 1, refCount: true })
@@ -190,7 +190,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
         )
         .map(x => ({
           typeId: x.typeId,
-          name: WidgetsHelper.getWidgetName(x.widgetName, lang) ?? x.typeId,
+          name: WidgetsHelper.getWidgetName(x.widgetName, lang),
           icon: x.desktopMeta?.galleryIcon ?? 'appstore'
         }))
       ),
@@ -200,7 +200,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
 
   ngAfterViewInit(): void {
     const container$ = this.tableContainer.changes.pipe(
-      map(x => x.first),
+      map(x => x.first as ElementRef<HTMLElement> | undefined),
       startWith(this.tableContainer.first),
       filter((x): x is ElementRef<HTMLElement> => !!x),
       shareReplay(1)
@@ -219,14 +219,14 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     this.scrollHeight$.complete();
   }
 
-  makeActive(item: InstrumentKey) {
+  makeActive(item: InstrumentKey): void {
     this.currentDashboardService.selectDashboardInstrument(item, this.badgeColor);
   }
 
-  remove(itemId: string) {
+  remove(itemId: string): void {
     this.settings$.pipe(
       map(s => s.activeListId),
-      filter((id): id is string => !!id),
+      filter((id): id is string => id != null && id.length > 0),
       take(1)
     ).subscribe(activeListId => {
       this.watchlistCollectionService.removeItemsFromList(activeListId, [itemId]);
@@ -256,11 +256,11 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     );
   }
 
-  updateFavorites(item: WatchedInstrument) {
+  updateFavorites(item: WatchedInstrument): void {
     this.settings$.pipe(
       take(1)
     ).subscribe(s => {
-      if (!s.activeListId) {
+      if (s.activeListId == null) {
         return;
       }
 
@@ -287,7 +287,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
       : null;
   }
 
-  copyItem(targetList: Watchlist) {
+  copyItem(targetList: Watchlist): void {
     if (!this.selectedItem) {
       return;
     }
@@ -295,7 +295,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     this.watchlistCollectionService.addItemsToList(targetList.id, [this.selectedItem.instrument], false);
   }
 
-  moveItem(fromList: Watchlist, toList: Watchlist) {
+  moveItem(fromList: Watchlist, toList: Watchlist): void {
     if (!this.selectedItem) {
       return;
     }

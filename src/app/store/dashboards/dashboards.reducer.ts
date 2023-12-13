@@ -1,7 +1,7 @@
 import {
   createFeature,
   createReducer,
-  createSelector,
+  createSelector, MemoizedSelector,
   on
 } from '@ngrx/store';
 import {
@@ -26,7 +26,7 @@ import {
 import { toInstrumentKey } from '../../shared/utils/instruments';
 
 export interface State extends EntityState<Dashboard> {
-  status: EntityStatus
+  status: EntityStatus;
 }
 
 export const adapter: EntityAdapter<Dashboard> = createEntityAdapter<Dashboard>({
@@ -106,7 +106,7 @@ const reducer = createReducer(
 
   on(DashboardFavoritesActions.remove, (state, props) => {
     const cahnges = Object.values(state.entities)
-      .filter(d => d!.isFavorite && d!.guid !== props.dashboardGuid)
+      .filter(d => (d!.isFavorite ?? false) && d!.guid !== props.dashboardGuid)
       .sort((a, b) => a!.favoritesOrder! - b!.favoritesOrder!)
       .map((d, i) => ({ id: d!.guid, order: i }));
 
@@ -139,7 +139,7 @@ const reducer = createReducer(
 
     const oldIndex = dashboards.findIndex(d => d.id === props.dashboardGuid);
 
-    if (oldIndex == null) {
+    if (oldIndex === -1) {
       return state;
     }
 
@@ -254,7 +254,7 @@ const reducer = createReducer(
       return updatedState;
     }
 
-    if (targetDashboard.isSelected) {
+    if (targetDashboard.isSelected ?? false) {
       const otherDashboardGuids = (state.ids as string[]).filter(x => x !== targetDashboard.guid);
       if (otherDashboardGuids.length === 0) {
         return updatedState;
@@ -320,7 +320,7 @@ export const DashboardsFeature = createFeature({
   name: 'Dashboards',
   reducer,
   extraSelectors: ({ selectDashboardsState }) => ({
-    getDashboardItems: (dashboardGuid: string) => createSelector(
+    getDashboardItems: (dashboardGuid: string): MemoizedSelector<Record<string, any>, Widget[] | undefined> => createSelector(
       selectDashboardsState,
       state => state.entities[dashboardGuid]?.items
     )

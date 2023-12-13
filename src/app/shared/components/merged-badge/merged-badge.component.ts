@@ -12,7 +12,7 @@ export class MergedBadgeComponent {
   @Input()
   colors: string[] = [];
   @Input()
-  width: number = 10;
+  width = 10;
 
   getBackgroundStyle(): string {
     if (this.colors.length === 1) {

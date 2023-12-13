@@ -41,7 +41,7 @@ export class WidgetSettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.isMobile$ = this.deviceService.deviceInfo$.pipe(
-      map(x => x.isMobile),
+      map(x => x.isMobile as boolean),
       shareReplay(1)
     );
   }

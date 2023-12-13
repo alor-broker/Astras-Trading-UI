@@ -17,11 +17,11 @@ export enum PriceUnits {
 export interface TradesClusterPanelSettings {
   timeframe: ClusterTimeframe;
   displayIntervalsCount: number;
-  volumeDisplayFormat?: NumberDisplayFormat
+  volumeDisplayFormat?: NumberDisplayFormat;
 }
 
 export interface OrderBookLayoutSettings {
-  widths: {[K:string]: number}
+  widths: {[K:string]: number};
 }
 
 export interface RulerSettings {
@@ -72,6 +72,6 @@ export interface ScalperOrderBookWidgetSettings extends WidgetSettings, Instrume
   rulerSettings?: RulerSettings;
   useBrackets?: boolean;
   instrumentLinkedSettings?: {
-    [key: string]: InstrumentLinkedSettings
-  }
+    [key: string]: InstrumentLinkedSettings;
+  };
 }

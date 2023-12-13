@@ -21,7 +21,7 @@ export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> {
   guid!: string;
 
   @Output()
-  settingsChange: EventEmitter<void> = new EventEmitter();
+  settingsChange = new EventEmitter<void>();
 
   protected abstract settings$: Observable<T>;
 
@@ -39,7 +39,7 @@ export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> {
     return this.canSave;
   }
 
-  updateSettings() {
+  updateSettings(): void {
     this.settings$.pipe(
       take(1)
     ).subscribe(initialSettings => {
@@ -48,7 +48,7 @@ export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> {
     });
   }
 
-  createWidgetCopy() {
+  createWidgetCopy(): void {
     this.settings$.pipe(
       take(1)
     ).subscribe(initialSettings => {
@@ -65,7 +65,7 @@ export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> {
     };
   }
 
-  protected initSettingsStream(){
+  protected initSettingsStream(): void {
     this.settings$ = this.settingsService.getSettings<T>(this.guid).pipe(
       shareReplay(1)
     );

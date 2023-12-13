@@ -37,7 +37,7 @@ export class DashboardWidgetComponent implements OnInit {
 
   }
 
-  private initDashboard() {
+  private initDashboard(): void {
     this.desktopSettingsBrokerService.initSettingsBrokers();
     this.store.dispatch(PortfoliosInternalActions.init());
     this.store.dispatch(WidgetsLocalStateInternalActions.init());

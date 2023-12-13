@@ -22,7 +22,7 @@ export class NotificationsService {
 
   constructor(
     @Inject(NOTIFICATIONS_PROVIDER)
-    private readonly providers: NotificationsProvider[]
+    private readonly providers?: NotificationsProvider[]
   ) {
     const allNotifications: Observable<NotificationMeta[]>[] = [];
 

@@ -37,7 +37,7 @@ interface Size {
 
 interface SpreadDiffData {
   diffPercents: number;
-  diff: number
+  diff: number;
   colorRatio: number;
 }
 
@@ -62,8 +62,8 @@ export class OrderBookComponent implements OnInit {
     width: '100%',
     height: '100%',
   });
-  private minSpreadDiffPercentForColorChange = 0.3;
-  private maxSpreadDiffPercentForColorChange = 1;
+  private readonly minSpreadDiffPercentForColorChange = 0.3;
+  private readonly maxSpreadDiffPercentForColorChange = 1;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -99,13 +99,13 @@ export class OrderBookComponent implements OnInit {
         const bestBid = ob?.rows[0]?.bid;
         const bestAsk = ob?.rows[0]?.ask;
 
-        if (!bestBid || !bestAsk) {
+        if (bestBid == null || bestAsk == null) {
           return null;
         }
 
-        const decimalsCount = Math.max(MathHelper.getPrecision(bestAsk), MathHelper.getPrecision(bestBid));
-        const diff = MathHelper.round(bestAsk - bestBid, decimalsCount);
-        const diffPercents = MathHelper.round((diff / bestBid) * 100, 3);
+        const decimalsCount = Math.max(MathHelper.getPrecision(bestAsk!), MathHelper.getPrecision(bestBid!));
+        const diff = MathHelper.round(bestAsk! - bestBid!, decimalsCount);
+        const diffPercents = MathHelper.round((diff / bestBid!) * 100, 3);
 
         let colorRatio = MathHelper.round(
           (

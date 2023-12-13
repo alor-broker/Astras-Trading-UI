@@ -22,7 +22,7 @@ export class WidgetHeaderComponent implements OnInit {
   guid!: string;
 
   @Input()
-  showBadgesMenu: boolean = false;
+  showBadgesMenu = false;
 
   @Input()
   selectedBadgeColor?: string | null = null;
@@ -40,10 +40,10 @@ export class WidgetHeaderComponent implements OnInit {
   linkToActive?: boolean;
 
   @Input()
-  hasSettings: boolean = false;
+  hasSettings = false;
 
   @Input()
-  hasHelp: boolean = false;
+  hasHelp = false;
 
   @Input()
   titleTemplate: TemplateRef<any> | null = null;
@@ -56,8 +56,8 @@ export class WidgetHeaderComponent implements OnInit {
   helpUrl = this.environmentService.externalLinks.help + '/';
 
   badgeOptions$!: Observable<{
-    color: string,
-    assignedInstrument: InstrumentKey | null
+    color: string;
+    assignedInstrument: InstrumentKey | null;
   }[]>;
 
   constructor(
@@ -75,21 +75,21 @@ export class WidgetHeaderComponent implements OnInit {
         const symbolGroups = Object.values(currentSelection)
           .reduce(
             (prev, cur) => {
-              prev[cur.symbol] = (prev[cur.symbol] ?? 0) + 1;
+              prev[cur!.symbol] = (prev[cur!.symbol] ?? 0) + 1;
               return prev;
             }
-            , {} as { [key: string]: number }
+            , {} as { [key: string]: number | undefined }
           );
 
         return instrumentsBadges.map(b => {
-            const assignedInstrument = currentSelection[b];
+            const assignedInstrument = currentSelection[b] as InstrumentKey | undefined;
 
             return {
               color: b,
               assignedInstrument: !!assignedInstrument
                 ? {
-                  ...currentSelection[b],
-                  instrumentGroup: symbolGroups[assignedInstrument.symbol] > 1
+                  ...currentSelection[b]!,
+                  instrumentGroup: symbolGroups[assignedInstrument.symbol]! > 1
                     ? assignedInstrument.instrumentGroup
                     : null
                 }
@@ -106,7 +106,7 @@ export class WidgetHeaderComponent implements OnInit {
       : '';
   }
 
-  switchBadgeColor(badgeColor: string) {
+  switchBadgeColor(badgeColor: string): void {
     this.settingsService.updateSettings(this.guid, {badgeColor});
   }
 
@@ -120,12 +120,12 @@ export class WidgetHeaderComponent implements OnInit {
     this.manageDashboardService.removeWidget(this.guid);
   }
 
-  onSwitchSettings(event: MouseEvent | TouchEvent) {
+  onSwitchSettings(event: MouseEvent | TouchEvent): void {
     this.preventMouseEvents(event);
     this.switchSettings.emit();
   }
 
-  preventMouseEvents(event: MouseEvent | TouchEvent) {
+  preventMouseEvents(event: MouseEvent | TouchEvent): void {
     event.preventDefault();
     event.stopPropagation();
   }
@@ -135,8 +135,8 @@ export class WidgetHeaderComponent implements OnInit {
   }
 
   get title(): string {
-    return !!this.customTitle
-      ? this.customTitle
+    return this.customTitle != null && !!this.customTitle.length
+      ? this.customTitle as string
       : this.titleText;
   }
 }

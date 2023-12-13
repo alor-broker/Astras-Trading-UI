@@ -2,7 +2,7 @@ import { PriceFormatHelper } from './price-format-helper';
 
 describe('PriceFormatHelper', () => {
   it('getPriceFormat', () => {
-    const caseCheck = (minStep: number, expectedMinMove: number, expectedPrecision: number) => {
+    const caseCheck = (minStep: number, expectedMinMove: number, expectedPrecision: number): void => {
       const value = PriceFormatHelper.getPriceFormat(minStep);
 
       expect(value.minMove)

@@ -26,7 +26,7 @@ export class LocalStorageService implements OnDestroy {
 
   public getItem<T>(key: string): T | undefined {
     const json = localStorage.getItem(key);
-    if (!json) {
+    if (json == null) {
       return undefined;
     }
 
@@ -45,7 +45,7 @@ export class LocalStorageService implements OnDestroy {
     );
   }
 
-  public removeItem(key: string) {
+  public removeItem(key: string): void {
     localStorage.removeItem(key);
   }
 }

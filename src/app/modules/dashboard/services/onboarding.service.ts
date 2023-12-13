@@ -1,26 +1,27 @@
-import {Injectable} from '@angular/core';
-import {JoyrideService} from 'ngx-joyride';
-import {LocalStorageService} from "../../../shared/services/local-storage.service";
+import { Injectable } from '@angular/core';
+import { JoyrideService } from 'ngx-joyride';
+import { LocalStorageService } from "../../../shared/services/local-storage.service";
 import { LocalStorageDesktopConstants } from "../../../shared/constants/local-storage.constants";
+
+interface Profile {
+  isCompleted: boolean;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class OnboardingService {
-  private isCompleted = false;
 
   constructor(
     private readonly joyride: JoyrideService,
     private readonly localStorage: LocalStorageService
-  ) {
-    this.isCompleted = this.getIsCompleted();
-  }
+  ) {}
 
-  start() {
-    if (!this.isCompleted) {
+  start(): void {
+    if (!this.getIsCompleted()) {
       const interval = setInterval(() => {
         this.joyride.startTour({
-          steps: Array(7).fill(1).map((_, i) => `step${i + 1}`),
+          steps: Array(7).fill(1).map((n, i) => `step${i + 1}`),
           themeColor: 'rgba(0, 155, 99, 1)'
         });
         this.setIsCompleted(true);
@@ -30,8 +31,8 @@ export class OnboardingService {
     }
   }
 
-  private getProfile() {
-    return this.localStorage.getItem<any>(LocalStorageDesktopConstants.ProfileStorageKey);
+  private getProfile(): Profile | undefined {
+    return this.localStorage.getItem<Profile>(LocalStorageDesktopConstants.ProfileStorageKey);
   }
 
   private getIsCompleted(): boolean {
@@ -42,7 +43,7 @@ export class OnboardingService {
     return false;
   }
 
-  private setIsCompleted(isCompleted: boolean) {
+  private setIsCompleted(isCompleted: boolean): void {
     const profile = {
       ...this.getProfile(),
       isCompleted

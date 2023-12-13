@@ -122,7 +122,7 @@ export class NavbarComponent implements OnInit {
       });
 
     this.activeInstrument$ = this.dashboardContextService.instrumentsSelection$.pipe(
-      map(selection => selection[defaultBadgeColor])
+      map(selection => selection[defaultBadgeColor]!)
     );
 
     this.themeColors$ = this.themeService.getThemeSettings().pipe(
@@ -132,21 +132,21 @@ export class NavbarComponent implements OnInit {
     this.initWidgetsGallery();
   }
 
-  isFindedPortfolio(portfolio: PortfolioExtended) {
+  isFindedPortfolio(portfolio: PortfolioExtended): boolean {
     const { value } = this.searchControl;
-    return !value || (`${portfolio.market} ${portfolio.portfolio}`).toUpperCase().includes(value.toUpperCase());
+    return value == null || (`${portfolio.market} ${portfolio.portfolio}`).toUpperCase().includes((value).toUpperCase());
   }
 
-  resetDashboard() {
+  resetDashboard(): void {
     this.manageDashboardsService.resetCurrentDashboard();
     this.closeSideMenu();
   }
 
-  logout() {
+  logout(): void {
     this.auth.logout();
   }
 
-  changePortfolio(key: PortfolioExtended) {
+  changePortfolio(key: PortfolioExtended): void {
     this.dashboardContextService.selectDashboardPortfolio({
       portfolio: key.portfolio,
       exchange: key.exchange,
@@ -159,7 +159,7 @@ export class NavbarComponent implements OnInit {
     this.closeSideMenu();
   }
 
-  newOrder() {
+  newOrder(): void {
     this.activeInstrument$.pipe(
       take(1)
     ).subscribe(activeInstrument => {
@@ -177,12 +177,12 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  openTerminalSettings() {
+  openTerminalSettings(): void {
     this.modal.openTerminalSettingsModal();
     this.closeSideMenu();
   }
 
-  openThirdPartyLink(link: string) {
+  openThirdPartyLink(link: string): void {
     window.open(link, "_blank", 'noopener,noreferrer');
   }
 
@@ -190,7 +190,7 @@ export class NavbarComponent implements OnInit {
     return item.key;
   }
 
-  portfoliosTrackByFn(index: number, item: PortfolioExtended) {
+  portfoliosTrackByFn(index: number, item: PortfolioExtended): string {
     return item.market + item.portfolio;
   }
 
@@ -231,7 +231,7 @@ export class NavbarComponent implements OnInit {
 
             groupWidgets.push(({
               typeId: widgetMeta.typeId,
-              name: WidgetsHelper.getWidgetName(widgetMeta.widgetName, lang) ?? widgetMeta.typeId,
+              name: WidgetsHelper.getWidgetName(widgetMeta.widgetName, lang),
               icon: widgetMeta.desktopMeta?.galleryIcon ?? 'appstore'
             }));
           });

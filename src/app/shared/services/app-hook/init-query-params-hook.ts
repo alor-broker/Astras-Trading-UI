@@ -31,12 +31,12 @@ export class InitQueryParamsHook implements AppHook {
   onInit(): void {
     this.route.queryParams
       .pipe(
-        filter((params: RouterQueryParams) => !!params.ticker),
+        filter((params: RouterQueryParams) => params.ticker != null && !!params.ticker.length),
         switchMap((params: RouterQueryParams) => {
           const filter: SearchFilter = { limit: 1, query: '' };
 
-          if (params.ticker?.includes(':')) {
-            const parts = params.ticker.split(':');
+          if (params.ticker?.includes(':') ?? false) {
+            const parts = (params.ticker as string).split(':');
             filter.exchange = parts[0].toUpperCase();
             filter.query = parts[1];
             filter.instrumentGroup = parts[2]?.toUpperCase() ?? '';
@@ -46,7 +46,7 @@ export class InitQueryParamsHook implements AppHook {
 
           return this.instrumentsService.getInstruments(filter);
         }),
-        filter(i => !!i.length),
+        filter(i => i.length > 0),
         map(instruments => instruments[0]),
         takeUntil(this.destroy$)
       )

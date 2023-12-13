@@ -44,7 +44,7 @@ export class OrdersGroupModalComponent implements AfterViewInit {
   ) {
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     const allOrders$ = this.widgetSettingsService.getSettings<BlotterSettings>(this.guid)
       .pipe(
         switchMap((s) => combineLatest([
@@ -99,7 +99,7 @@ export class OrdersGroupModalComponent implements AfterViewInit {
 
                 },
                 key: group.id,
-                expanded: !!(this.groupId && (group.id === this.groupId)),
+                expanded: this.groupId != null && (group.id === this.groupId),
                 selectable: false,
                 status: group.status,
                 children: groupOrders
@@ -118,7 +118,7 @@ export class OrdersGroupModalComponent implements AfterViewInit {
       );
 
     this.ordersGroupTree.changes.pipe(
-      map(q => q.first),
+      map(q => q.first as ElementRef<HTMLElement> | undefined),
       startWith(this.ordersGroupTree.first),
       filter((el): el is ElementRef<HTMLElement> => !!el),
       takeUntilDestroyed(this.destroyRef)
@@ -131,7 +131,7 @@ export class OrdersGroupModalComponent implements AfterViewInit {
       });
   }
 
-  getOrderConditionSign(condition: string) {
+  getOrderConditionSign(condition: string): string | null {
     return getConditionSign(getConditionTypeByString(condition)!);
   }
 }

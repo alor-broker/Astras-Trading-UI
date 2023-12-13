@@ -47,7 +47,7 @@ describe('WatchListCollectionService', () => {
     ]
   } as WatchlistCollection;
 
-  const setupGetItemMock = (returnValue: WatchlistCollection | null = null) => {
+  const setupGetItemMock = (returnValue: WatchlistCollection | null = null): void => {
     watchlistCollectionBrokerServiceSpy.getCollection.and.returnValue(new BehaviorSubject(JSON.parse(JSON.stringify(returnValue?.collection))));
   };
 
@@ -143,7 +143,7 @@ describe('WatchListCollectionService', () => {
     setupGetItemMock(testCollection);
     watchlistCollectionBrokerServiceSpy.addOrUpdateLists.and.returnValue(new Subject());
 
-    service.removeItemsFromList(testCollection.collection[0].id, testCollection.collection[0].items.map(x => x.recordId));
+    service.removeItemsFromList(testCollection.collection[0].id, testCollection.collection[0].items.map(x => x.recordId!));
 
     expect(watchlistCollectionBrokerServiceSpy.addOrUpdateLists).toHaveBeenCalled();
   });

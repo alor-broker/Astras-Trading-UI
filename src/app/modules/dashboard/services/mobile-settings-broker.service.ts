@@ -17,7 +17,6 @@ import {
   of,
   take
 } from "rxjs";
-import { filter } from "rxjs/operators";
 import { TerminalSettings } from "../../../shared/models/terminal-settings/terminal-settings.model";
 import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
 import {
@@ -54,14 +53,14 @@ export class MobileSettingsBrokerService {
   ) {
   }
 
-  initSettingsBrokers() {
+  initSettingsBrokers(): void {
     this.initTerminalSettingsBroker();
     this.initWidgetSettingsBroker();
     this.initDashboardSettingsBroker();
   }
 
-  private initWidgetSettingsBroker() {
-    const saveSettings = (settings: WidgetSettings[]) => {
+  private initWidgetSettingsBroker(): void {
+    const saveSettings = (settings: WidgetSettings[]): void => {
       this.localStorageService.setItem(LocalStorageMobileConstants.WidgetsSettingsStorageKey, settings.map(s => [s.guid, s]));
     };
 
@@ -86,8 +85,8 @@ export class MobileSettingsBrokerService {
     ).subscribe(x => this.store.dispatch(WidgetSettingsInternalActions.init({ settings: x.updatedData })));
   }
 
-  private initDashboardSettingsBroker() {
-    const saveDashboard = (settings: Dashboard) => this.localStorageService.setItem(LocalStorageMobileConstants.DashboardsSettingsStorageKey, settings);
+  private initDashboardSettingsBroker(): void {
+    const saveDashboard = (settings: Dashboard): void => this.localStorageService.setItem(LocalStorageMobileConstants.DashboardsSettingsStorageKey, settings);
 
     this.addActionSubscription(
       MobileDashboardEventsActions.updated,
@@ -131,15 +130,14 @@ export class MobileSettingsBrokerService {
     });
   }
 
-  private initTerminalSettingsBroker() {
-    const saveSettings = (settings: TerminalSettings) => this.localStorageService.setItem(LocalStorageMobileConstants.TerminalSettingsStorageKey, settings);
+  private initTerminalSettingsBroker(): void {
+    const saveSettings = (settings: TerminalSettings): void => this.localStorageService.setItem(LocalStorageMobileConstants.TerminalSettingsStorageKey, settings);
 
     this.addActionSubscription(
       TerminalSettingsServicesActions.update,
       () => {
         this.terminalSettingsService.getSettings(true).pipe(
           take(1),
-          filter((x): x is TerminalSettings => !!x)
         ).subscribe(settings => {
           saveSettings(settings);
           this.store.dispatch(TerminalSettingsEventsActions.saveSuccess());
@@ -163,7 +161,7 @@ export class MobileSettingsBrokerService {
     const terminalSettings = this.localStorageService.getItem<TerminalSettings>(LocalStorageMobileConstants.TerminalSettingsStorageKey) ?? null;
 
     if (!terminalSettings) {
-      this.store.dispatch(TerminalSettingsInternalActions.init({ settings: terminalSettings ?? null }));
+      this.store.dispatch(TerminalSettingsInternalActions.init({ settings: null }));
       return;
     }
 
@@ -178,7 +176,7 @@ export class MobileSettingsBrokerService {
     ).subscribe(x => this.store.dispatch(TerminalSettingsInternalActions.init({ settings: x.updatedData })));
   }
 
-  private addActionSubscription<AC extends ActionCreator, U = ReturnType<AC>>(actionCreator: AC, callback: (action: U) => void) {
+  private addActionSubscription<AC extends ActionCreator, U = ReturnType<AC>>(actionCreator: AC, callback: (action: U) => void): void {
     this.actions$.pipe(
       ofType(actionCreator),
       takeUntilDestroyed(this.destroyRef)

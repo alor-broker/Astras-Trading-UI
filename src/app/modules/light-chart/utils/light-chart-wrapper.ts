@@ -27,8 +27,8 @@ import {
 import { debounceTime } from 'rxjs/operators';
 
 interface ChartSeries {
-  candlestickSeries: ISeriesApi<"Candlestick">,
-  volumeSeries: ISeriesApi<"Histogram">
+  candlestickSeries: ISeriesApi<"Candlestick">;
+  volumeSeries: ISeriesApi<"Histogram">;
 }
 
 type CandleDisplay = Candle & { time: Time };
@@ -38,7 +38,7 @@ export class LightChartWrapper {
   private chartSeries!: ChartSeries | null;
   private loadedHistoryPoints: Candle[] = [];
   private isHistoryEnded = false;
-  private subscriptions = new Subscription();
+  private readonly subscriptions = new Subscription();
 
   private constructor(private readonly config: LightChartConfig) {
   }
@@ -50,7 +50,7 @@ export class LightChartWrapper {
     return chart;
   }
 
-  clear() {
+  clear(): void {
     this.config.dataFeed.unsubscribe();
     this.subscriptions.unsubscribe();
     this.chart?.remove();
@@ -62,7 +62,7 @@ export class LightChartWrapper {
     this.chart?.resize(width, height);
   }
 
-  private init() {
+  private init(): void {
     this.chart = createChart(this.config.containerId, this.getChartOptions());
     this.chartSeries = this.initChartSeries(this.chart);
     this.loadInitialData();
@@ -145,11 +145,11 @@ export class LightChartWrapper {
     };
   }
 
-  private loadInitialData() {
+  private loadInitialData(): void {
     this.chartSeries?.candlestickSeries.setData([]);
     this.chartSeries?.volumeSeries.setData([]);
 
-    const finishInitialLoading = () => {
+    const finishInitialLoading = (): void => {
       this.fillVisibleTimeScale(() => {
         this.initRealtimeDataSubscription();
         this.initTimeScaleMoveHandling();
@@ -161,9 +161,9 @@ export class LightChartWrapper {
       this.getHistoryEndTime() / 1000,
       true,
       (meta) => {
-        if (this.loadedHistoryPoints.length === 0 && meta.prevTime) {
+        if (this.loadedHistoryPoints.length === 0 && meta.prevTime != null) {
           this.loadHistoryPeriod(
-            meta.prevTime,
+            meta.prevTime!,
             this.getHistoryEndTime() / 1000,
             true,
             () => finishInitialLoading()
@@ -175,7 +175,7 @@ export class LightChartWrapper {
       });
   }
 
-  private initTimeScaleMoveHandling() {
+  private initTimeScaleMoveHandling(): void {
     const sub = new Subject<LogicalRange>();
 
     this.chart?.timeScale().subscribeVisibleLogicalRangeChange(logicalRange => {
@@ -193,7 +193,7 @@ export class LightChartWrapper {
     }));
   }
 
-  private initRealtimeDataSubscription() {
+  private initRealtimeDataSubscription(): void {
     this.config.dataFeed.subscribeBars(
       this.config.timeFrame,
       candle => {
@@ -208,7 +208,7 @@ export class LightChartWrapper {
     );
   }
 
-  private fillVisibleTimeScale(complete?: () => void, prevHistoryTime?: number) {
+  private fillVisibleTimeScale(complete?: () => void, prevHistoryTime?: number): void {
     const visibleRange = this.chart?.timeScale().getVisibleLogicalRange();
     if (!visibleRange || visibleRange.from > 0 || this.loadedHistoryPoints.length === 0) {
       complete?.();
@@ -219,7 +219,7 @@ export class LightChartWrapper {
     const from = Math.min(prevHistoryTime ?? Number.MAX_VALUE, this.getTimeFrameHistoryPointMove(new Date(historyStart * 1000)) / 1000);
 
     this.loadHistoryPeriod(from, historyStart, false, (meta) => {
-      if (meta.noData || !meta.prevTime) {
+      if ((meta.noData ?? false) || meta.prevTime == null) {
         complete?.();
         return;
       }
@@ -228,7 +228,7 @@ export class LightChartWrapper {
     });
   }
 
-  private loadHistoryPeriod(from: number, to: number, isFirst: boolean, complete: (meta: HistoryMetadata) => void) {
+  private loadHistoryPeriod(from: number, to: number, isFirst: boolean, complete: (meta: HistoryMetadata) => void): void {
     this.config.dataFeed.getHistory(
       {
         from,
@@ -239,14 +239,14 @@ export class LightChartWrapper {
         this.loadedHistoryPoints = TimeframesHelper.aggregateBars(this.loadedHistoryPoints, bars, this.config.timeFrame);
         this.updateHistoryData();
 
-        this.isHistoryEnded = !meta.prevTime;
+        this.isHistoryEnded = meta.prevTime == null;
 
         complete(meta);
       }
     );
   }
 
-  private updateHistoryData() {
+  private updateHistoryData(): void {
     if (!this.chart) {
       return;
     }
@@ -273,7 +273,7 @@ export class LightChartWrapper {
 
   private toDisplayCandle(candle: Candle): CandleDisplay {
     const candleDate = !!this.config.timeConvertor
-      ? this.config.timeConvertor?.toDisplayTime(candle.time)
+      ? this.config.timeConvertor.toDisplayTime(candle.time)
       : candle.time * 1000;
 
     let displayTime: Time = candleDate as UTCTimestamp;

@@ -98,7 +98,7 @@ export class RibbonComponent implements OnInit {
     );
   }
 
-  private getNextFuturesContract(prefix: string) {
+  private getNextFuturesContract(prefix: string): string {
     const currentMonth = new Date().getMonth() + 1;
     const currentYear = new Date().getFullYear();
     let nextMonth;

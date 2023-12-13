@@ -14,7 +14,7 @@ export class NewsModalWidgetComponent implements OnInit {
   newsInfo$: Observable<NewsListItem | null> = of(null);
 
   constructor(
-    private modalService: ModalService,
+    private readonly modalService: ModalService,
   ) {
   }
 
@@ -23,7 +23,7 @@ export class NewsModalWidgetComponent implements OnInit {
     this.newsInfo$ = this.modalService.newsItem$;
   }
 
-  handleCancel() {
+  handleCancel(): void {
     this.modalService.closeNewsModal();
   }
 }

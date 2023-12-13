@@ -20,11 +20,11 @@ export class TranslatorService {
     return this.translocoService.getActiveLang();
   }
 
-  setActiveLang(lang: string) {
+  setActiveLang(lang: string): void {
     this.translocoService.setActiveLang(lang);
   }
 
-  getLangChanges() {
+  getLangChanges(): Observable<string> {
     return this.translocoService.langChanges$;
   }
 

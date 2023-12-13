@@ -48,7 +48,7 @@ export class InstrumentsCorrelationService {
           i.symbol
         ];
 
-        if (i.instrumentGroup) {
+        if (i.instrumentGroup != null && i.instrumentGroup.length > 0) {
           parts.push(i.instrumentGroup);
         }
 
@@ -73,11 +73,11 @@ export class InstrumentsCorrelationService {
     );
   }
 
-  private getError(error: HttpErrorResponse): { errorCode: InstrumentsCorrelationErrorCodes; errorMessage?: string } {
+  private getError(error: HttpErrorResponse): { errorCode: InstrumentsCorrelationErrorCodes, errorMessage?: string } {
     if (/^(\[.+\])/.test(error.error ?? '')) {
       return {
         errorCode: InstrumentsCorrelationErrorCodes.NotTradingInstruments,
-        errorMessage: error.error.error
+        errorMessage: error.error.error as string
       };
     }
 

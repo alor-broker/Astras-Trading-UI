@@ -5,6 +5,6 @@
 }
 
 export interface TradesCluster {
-  timestamp: number,
-  tradeClusters: ClusterItem[]
+  timestamp: number;
+  tradeClusters: ClusterItem[];
 }

@@ -22,11 +22,11 @@ export class WatchlistUpdatesState {
     shareReplay(1)
   );
 
-  addItem(item: WatchedInstrument) {
+  addItem(item: WatchedInstrument): void {
     this.updateState(state => this.adapter.addOne(item, state));
   }
 
-  updateItem(recordId: string, update: Partial<Omit<WatchedInstrument, 'recordId' | 'instrument' | 'addTime'>>) {
+  updateItem(recordId: string, update: Partial<Omit<WatchedInstrument, 'recordId' | 'instrument' | 'addTime'>>): void {
     this.updateState(state => {
       return this.adapter.updateOne(
         {
@@ -38,11 +38,11 @@ export class WatchlistUpdatesState {
     });
   }
 
-  removeItem(recordId: string) {
+  removeItem(recordId: string): void {
     this.updateState(state => this.adapter.removeOne(recordId, state));
   }
 
-  removeAll() {
+  removeAll(): void {
     this.updateState(state => this.adapter.removeAll(state));
   }
 
@@ -50,7 +50,7 @@ export class WatchlistUpdatesState {
     this.state$.complete();
   }
 
-  private updateState(update: (state: EntityState<WatchedInstrument>) => EntityState<WatchedInstrument>) {
+  private updateState(update: (state: EntityState<WatchedInstrument>) => EntityState<WatchedInstrument>): void {
     this.state$.pipe(
       take(1)
     ).subscribe(state => {

@@ -57,7 +57,7 @@ enum LoadingStatus {
 }
 
 interface LoadingError {
-  errorCode: InstrumentsCorrelationErrorCodes,
+  errorCode: InstrumentsCorrelationErrorCodes;
   errorMessage?: string;
 }
 
@@ -114,7 +114,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
     return `f_${this.guid.replace(/-/g, '')}`;
   }
 
-  sizeChanged(entries: ResizeObserverEntry[]) {
+  sizeChanged(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       this.contentSize$.next({
         width: Math.floor(x.contentRect.width),
@@ -236,8 +236,8 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
       zoomBehavior.extent([[positions.matrixArea.xLeft, positions.matrixArea.yTop], [positions.matrixArea.xRight, positions.matrixArea.yBottom]]);
 
       zoomBehavior.on('zoom end', (event) => {
-        xScale.range([positions.matrixArea.xLeft, positions.matrixArea.xRight].map(r => event.transform.applyX(r)));
-        yScale.range([positions.matrixArea.yTop, positions.matrixArea.yBottom].map(r => event.transform.applyY(r)));
+        xScale.range([positions.matrixArea.xLeft, positions.matrixArea.xRight].map(r => event.transform.applyX(r) as number));
+        yScale.range([positions.matrixArea.yTop, positions.matrixArea.yBottom].map(r => event.transform.applyY(r) as number));
 
         matrixAreaArtifacts.onZoom();
         xAxisArtifacts.onZoom();
@@ -359,7 +359,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
       });
 
     return {
-      onZoom: () => {
+      onZoom: (): void => {
         matrixRows.selectAll(".cell-rect")
           .attr("x", (d: any) => xScale(d.colInstrument)!)
           .attr("y", (d: any) => yScale(d.rowInstrument)!)
@@ -397,7 +397,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
       .style('display', 'none')
       .style('user-select', 'none');
 
-    const draw = () => {
+    const draw = (): void => {
       xAxis
         .call(axisBottom(xScale))
         .call(g => {
@@ -426,7 +426,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
 
           g.selectAll('.tick')
             .append('title')
-            .text((d: any) => d);
+            .text(d => d as string);
         });
 
       xAxis.style('display', () => xScale.bandwidth() > 30 ? 'block' : 'none');
@@ -463,7 +463,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
       .style('display', 'none')
       .style('user-select', 'none');
 
-    const draw = () => {
+    const draw = (): void => {
       yAxis.call(axisRight(yScale))
         .call(g => {
           g.select(".domain").remove();
@@ -480,7 +480,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
 
           g.selectAll('.tick')
             .append('title')
-            .text((d: any) => d);
+            .text(d => d as string);
         });
 
       yAxis.style('display', () => yScale.bandwidth() > 8 ? 'block' : 'none');
@@ -591,7 +591,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
     const pointerPaddingLeft = 2;
     const pointerPaddingRight = 12;
 
-    const handleMouseover = (datum: Datum) => {
+    const handleMouseover = (datum: Datum): void => {
       tooltipContainer.selectAll("*").remove();
       onShow(datum, tooltipContainer);
 
@@ -601,7 +601,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
         .style('display', 'block');
     };
 
-    const handleMousemove = (position: [number, number]) => {
+    const handleMousemove = (position: [number, number]): void => {
       const mouseX = position[0];
       const mouseY = position[1];
 
@@ -628,7 +628,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
         );
     };
 
-    const handleMouseleave = () => {
+    const handleMouseleave = (): void => {
       tooltipContainer
         .transition()
         .style('display', 'none');
@@ -727,4 +727,3 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
       : symbolWithExchange;
   }
 }
-

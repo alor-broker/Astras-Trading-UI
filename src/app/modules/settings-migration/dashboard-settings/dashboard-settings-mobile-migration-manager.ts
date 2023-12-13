@@ -14,7 +14,7 @@ export class DashboardSettingsMobileMigrationManager extends MobileMigrationMana
     inject(UpdateBadgesMobileDashboardMigration)
   ];
 
-  constructor(localStorageService: LocalStorageService) {
+  constructor(protected readonly localStorageService: LocalStorageService) {
     super(localStorageService);
   }
 }

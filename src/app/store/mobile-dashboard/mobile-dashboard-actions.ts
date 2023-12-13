@@ -15,15 +15,15 @@ export const MobileDashboardInternalActions = createActionGroup({
   source: 'Mobile Dashboard/Internal',
   events: {
     "Init": props<{
-      mobileDashboard: Dashboard | null,
-      instrumentsHistory: InstrumentKey[]
+      mobileDashboard: Dashboard | null;
+      instrumentsHistory: InstrumentKey[];
     }>(),
     "Init Success": emptyProps(),
     "Add": props<{
-      guid: string,
-      title: string,
-      items: Widget[],
-      instrumentsSelection?: InstrumentGroups
+      guid: string;
+      title: string;
+      items: Widget[];
+      instrumentsSelection?: InstrumentGroups;
     }>()
   }
 });

@@ -98,7 +98,7 @@ describe('UpdateBadgesDesktopDashboardMigration', () => {
 
         const newInstrumentKey = value[expectedNewBadge];
 
-        expect(newInstrumentKey.symbol).toBe(oldInstrumentKey.symbol);
+        expect(newInstrumentKey!.symbol).toBe(oldInstrumentKey!.symbol);
       }
     });
   });
@@ -146,7 +146,7 @@ describe('UpdateBadgesDesktopDashboardMigration', () => {
         expect(instrumentsBadges.includes(newKey)).toBeTrue();
 
         const newInstrumentKey = value[newKey];
-        expect(newInstrumentKey.symbol).toBe(newSelection[newKey].symbol);
+        expect(newInstrumentKey!.symbol).toBe(newSelection[newKey]!.symbol);
       }
     });
   });

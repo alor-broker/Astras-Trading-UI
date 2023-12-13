@@ -86,7 +86,7 @@ export class OrderbookService {
     );
   }
 
-  cancelOrder(order: CurrentOrder) {
+  cancelOrder(order: CurrentOrder): void {
     this.canceller.cancelOrder({
       exchange: order.exchange,
       portfolio: order.portfolio,
@@ -123,8 +123,8 @@ export class OrderbookService {
   private toOrderBook(orderBookData: OrderbookData): OrderBook {
     const rows = this.toOrderBookRows(orderBookData);
     const volumes = [
-      ...rows.map((p) => p?.askVolume ?? 0),
-      ...rows.map((p) => p?.bidVolume ?? 0),
+      ...rows.map((p) => p.askVolume ?? 0),
+      ...rows.map((p) => p.bidVolume ?? 0),
     ];
 
     return {
@@ -141,16 +141,16 @@ export class OrderbookService {
     const bids = new Array<ChartPoint>(rows.length);
     let j = 0;
     for (let k = rows.length - 1; k >= 0; k--) {
-      const row = rows[k];
+      const row = rows[k] as OrderBookViewRow | undefined;
       j++;
       for (let i = 0; i < j; i++) {
         asks[i] = {
           y: (asks[i]?.y ?? 0) + (row?.askVolume ?? 0),
-          x: asks[i]?.x ?? row?.ask ?? 0,
+          x: (asks[i] as ChartPoint | undefined)?.x ?? row?.ask ?? 0,
         };
         bids[i] = {
           y: (bids[i]?.y ?? 0) + (row?.bidVolume ?? 0),
-          x: bids[i]?.x ?? row?.bid ?? 0,
+          x: (bids[i] as ChartPoint | undefined)?.x ?? row?.bid ?? 0,
         };
       }
     }

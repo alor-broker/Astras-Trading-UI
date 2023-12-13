@@ -19,7 +19,7 @@ export class InstrumentsToWatchState {
 
   private state = this.adapter.getInitialState();
 
-  addItem(watchItem: WatchlistItem, onItemRemove?: () => void) {
+  addItem(watchItem: WatchlistItem, onItemRemove?: () => void): void {
     this.updateState(state => {
       return this.adapter.addOne(
         {
@@ -40,7 +40,7 @@ export class InstrumentsToWatchState {
     return this.adapter.getSelectors().selectIds(this.state) as string[];
   }
 
-  setUpdatesSubscription(recordId: string, subscription: Subscription) {
+  setUpdatesSubscription(recordId: string, subscription: Subscription): void {
     const item = this.getItemById(recordId);
     if (!!item) {
       item.updatesSubscription?.unsubscribe();
@@ -58,7 +58,7 @@ export class InstrumentsToWatchState {
     }
   }
 
-  removeItem(recordId: string) {
+  removeItem(recordId: string): void {
     const item = this.getItemById(recordId);
     if (!!item) {
       this.onItemRemove(item);
@@ -67,7 +67,7 @@ export class InstrumentsToWatchState {
     }
   }
 
-  removeAll() {
+  removeAll(): void {
     this.adapter.getSelectors().selectAll(this.state).forEach(item => {
       this.onItemRemove(item);
     });
@@ -75,7 +75,7 @@ export class InstrumentsToWatchState {
     this.updateState(state => this.adapter.removeAll(state));
   }
 
-  private onItemRemove(item: InstrumentToWatch) {
+  private onItemRemove(item: InstrumentToWatch): void {
     item.updatesSubscription?.unsubscribe();
     item.onItemRemove?.();
   }
@@ -84,7 +84,7 @@ export class InstrumentsToWatchState {
     return this.adapter.getSelectors().selectEntities(this.state)[recordId] ?? null;
   }
 
-  private updateState(update: (state: EntityState<InstrumentToWatch>) => EntityState<InstrumentToWatch>) {
+  private updateState(update: (state: EntityState<InstrumentToWatch>) => EntityState<InstrumentToWatch>): void {
     this.state = update(this.state);
   }
 }

@@ -1,14 +1,14 @@
 export interface NewsListItem {
-  id: number,
-  sourceId: string,
-  header: string,
-  publishDate: string,
-  newsType: number,
-  content:  string,
-  countryCodes: Array<string>,
-  rubricCodes: Array<string>,
-  symbols: Array<string>,
-  mt: null
+  id: number;
+  sourceId: string;
+  header: string;
+  publishDate: string;
+  newsType: number;
+  content:  string;
+  countryCodes: string[];
+  rubricCodes: string[];
+  symbols: string[];
+  mt: null;
 }
 
 export interface NewsItemInfo {

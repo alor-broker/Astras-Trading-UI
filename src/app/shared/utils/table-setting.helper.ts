@@ -54,7 +54,6 @@ export class TableSettingHelper {
   /**
    * Generates default column order
    * @param columnIndex column index in columns array
-   * @param target target table settings
    * @returns default column order
    */
   static getDefaultColumnOrder(columnIndex: number): number {
@@ -68,7 +67,7 @@ export class TableSettingHelper {
    * @param settings2 second settings
    * @returns true is equal, false if not
    */
-  static isTableSettingsEqual(settings1?: TableDisplaySettings | null, settings2?: TableDisplaySettings | null) {
+  static isTableSettingsEqual(settings1?: TableDisplaySettings | null, settings2?: TableDisplaySettings | null): boolean {
     return JSON.stringify(settings1) === JSON.stringify(settings2);
   }
 }

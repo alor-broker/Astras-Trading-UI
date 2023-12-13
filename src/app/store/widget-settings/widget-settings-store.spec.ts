@@ -25,7 +25,7 @@ describe('Widget Settings Store', () => {
   let store: Store;
   let instrumentsServiceSpy: any;
 
-  const getTestSettings = (length: number) => {
+  const getTestSettings = (length: number): WidgetSettings[] => {
     const settings: WidgetSettings[] = [];
 
     for (let i = 0; i < length; i++) {
@@ -41,7 +41,7 @@ describe('Widget Settings Store', () => {
     return settings;
   };
 
-  const initSettings = (settings: WidgetSettings[]) => {
+  const initSettings = (settings: WidgetSettings[]): void => {
     store.dispatch(WidgetSettingsInternalActions.init({settings}));
   };
 

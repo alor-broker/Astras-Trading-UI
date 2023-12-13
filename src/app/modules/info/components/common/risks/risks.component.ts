@@ -32,7 +32,7 @@ export class RisksComponent implements OnInit, OnDestroy {
   risksInfo$!: Observable<RisksInfo | null>;
   currentPortfolio$!: Observable<PortfolioKey>;
   isLoading$ = new BehaviorSubject<boolean>(true);
-  private isActivated$ = new BehaviorSubject<boolean>(false);
+  private readonly isActivated$ = new BehaviorSubject<boolean>(false);
 
   constructor(
     private readonly service: InfoService,
@@ -46,7 +46,7 @@ export class RisksComponent implements OnInit, OnDestroy {
     this.isActivated$.next(value);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.currentPortfolio$ = this.dashboardContextService.selectedPortfolio$;
 
     const riskInfoStream$ = this.currentPortfolio$.pipe(
@@ -69,7 +69,7 @@ export class RisksComponent implements OnInit, OnDestroy {
       );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.isActivated$.complete();
     this.isLoading$.complete();
   }

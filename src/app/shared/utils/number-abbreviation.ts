@@ -2,7 +2,7 @@ import { MathHelper } from "./math-helper";
 
 export interface NumberAbbreviation {
   value: number;
-  suffixName: string | null
+  suffixName: string | null;
 }
 
 const numberBases = [
@@ -23,6 +23,31 @@ const numberBases = [
     name: 'thousands'
   }
 ];
+
+
+function tryFormatToBase(value: number, base: number, baseName: string, allowRounding: boolean, roundPrecision: number): NumberAbbreviation | null {
+  if (allowRounding) {
+    if (value! >= base) {
+      const formattedValue = MathHelper.round(value! / base, roundPrecision);
+      return {
+        value: formattedValue,
+        suffixName: baseName
+      };
+    }
+
+    return null;
+  }
+  else {
+    if (value! % base === 0) {
+      return {
+        value: value! / base,
+        suffixName: baseName
+      };
+    }
+
+    return null;
+  }
+}
 
 export function getNumberAbbreviation(value: number | null | undefined, allowRounding = false, roundPrecision = 2): NumberAbbreviation | null {
   if (value == null) {
@@ -54,28 +79,4 @@ export function getNumberAbbreviation(value: number | null | undefined, allowRou
     value: value,
     suffixName: null
   };
-}
-
-function tryFormatToBase(value: number, base: number, baseName: string, allowRounding: boolean, roundPrecision: number): NumberAbbreviation | null {
-  if (allowRounding) {
-    if (value! >= base) {
-      const formattedValue = MathHelper.round(value! / base, roundPrecision);
-      return {
-        value: formattedValue,
-        suffixName: baseName
-      };
-    }
-
-    return null;
-  }
-  else {
-    if (value! % base === 0) {
-      return {
-        value: value! / base,
-        suffixName: baseName
-      };
-    }
-
-    return null;
-  }
 }

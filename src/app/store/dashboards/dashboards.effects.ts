@@ -1,8 +1,8 @@
-import {Injectable} from '@angular/core';
-import {Actions, createEffect, ofType} from '@ngrx/effects';
+import { Injectable } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import {filter, map, switchMap} from 'rxjs/operators';
-import {GuidGenerator} from '../../shared/utils/guid';
+import { filter, map, switchMap } from 'rxjs/operators';
+import { GuidGenerator } from '../../shared/utils/guid';
 import {
   distinctUntilChanged,
   EMPTY,
@@ -11,25 +11,22 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs';
-import {
-  Dashboard,
-  DefaultDesktopDashboardConfig
-} from '../../shared/models/dashboard/dashboard.model';
-import {ManageDashboardsService} from '../../shared/services/manage-dashboards.service';
-import {mapWith} from '../../shared/utils/observable-helper';
-import {MarketService} from '../../shared/services/market.service';
-import {getDefaultPortfolio, isPortfoliosEqual} from '../../shared/utils/portfolios';
+import { DefaultDesktopDashboardConfig } from '../../shared/models/dashboard/dashboard.model';
+import { ManageDashboardsService } from '../../shared/services/manage-dashboards.service';
+import { mapWith } from '../../shared/utils/observable-helper';
+import { MarketService } from '../../shared/services/market.service';
+import { getDefaultPortfolio, isPortfoliosEqual } from '../../shared/utils/portfolios';
 import {
   DashboardFavoritesActions,
   DashboardItemsActions,
   DashboardsCurrentSelectionActions,
   DashboardsEventsActions,
   DashboardsInternalActions,
-  DashboardsManageActions,
+  DashboardsManageActions
 } from './dashboards-actions';
-import {instrumentsBadges} from '../../shared/utils/instruments';
-import {UserPortfoliosService} from "../../shared/services/user-portfolios.service";
-import {DashboardsStreams} from "./dashboards.streams";
+import { instrumentsBadges } from '../../shared/utils/instruments';
+import { UserPortfoliosService } from "../../shared/services/user-portfolios.service";
+import { DashboardsStreams } from "./dashboards.streams";
 import { WatchlistCollectionService } from "../../modules/instruments/services/watchlist-collection.service";
 import { DashboardsFeature } from "./dashboards.reducer";
 
@@ -171,7 +168,6 @@ export class DashboardsEffects {
 
   setDefaultPortfolioForCurrentDashboard$ = createEffect(() => {
     return DashboardsStreams.getSelectedDashboard(this.store).pipe(
-      filter(d => !!d),
       distinctUntilChanged((previous, current) => previous.guid === current.guid),
       mapWith(
         () => this.userPortfoliosService.getPortfolios(),
@@ -194,7 +190,6 @@ export class DashboardsEffects {
 
   setDefaultInstrumentsSelectionForCurrentDashboard$ = createEffect(() => {
     return DashboardsStreams.getSelectedDashboard(this.store).pipe(
-      filter((d): d is Dashboard => !!d),
       filter(d => instrumentsBadges.some(badge => d.instrumentsSelection?.[badge] == null)),
       distinctUntilChanged((previous, current) => previous.guid === current.guid),
       mapWith(
@@ -207,7 +202,7 @@ export class DashboardsEffects {
             exchangeSettings = marketSettings.find(x => x.exchange === dashboard.selectedPortfolio!.exchange) ?? exchangeSettings;
           }
 
-          if (!exchangeSettings || !exchangeSettings.settings.defaultInstrument) {
+          if (!exchangeSettings?.settings.defaultInstrument) {
             return EMPTY;
           }
 
@@ -216,7 +211,7 @@ export class DashboardsEffects {
               selection: instrumentsBadges.map(badge => ({
                 groupKey: badge,
                 instrumentKey: dashboard.instrumentsSelection?.[badge] ?? {
-                  ...exchangeSettings!.settings.defaultInstrument,
+                  ...exchangeSettings!.settings.defaultInstrument!,
                   exchange: exchangeSettings!.exchange
                 }
               }))

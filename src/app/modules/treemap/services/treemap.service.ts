@@ -10,7 +10,7 @@ import { EnvironmentService } from "../../../shared/services/environment.service
   providedIn: 'root'
 })
 export class TreemapService {
-  private baseUrl = this.environmentService.apiUrl + '/instruments/v1/TreeMap';
+  private readonly baseUrl = this.environmentService.apiUrl + '/instruments/v1/TreeMap';
 
   constructor(
     private readonly environmentService: EnvironmentService,

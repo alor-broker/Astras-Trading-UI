@@ -8,7 +8,7 @@ import { Injectable } from "@angular/core";
 export class TerminalSettingsMobileMigrationManager extends MobileMigrationManagerBase {
   protected migrations = [];
 
-  constructor(localStorageService: LocalStorageService) {
+  constructor(protected readonly localStorageService: LocalStorageService) {
     super(localStorageService);
   }
 }

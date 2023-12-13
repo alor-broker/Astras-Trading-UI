@@ -9,7 +9,7 @@ export interface FileMeta {
 }
 
 export class FileSaver {
-  public static save(fileMeta: FileMeta, content: string) {
+  public static save(fileMeta: FileMeta, content: string): void {
     const blob = new Blob([content], { "type": "text/" + fileMeta.fileType + ";charset=utf8;" });
     let link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -22,7 +22,7 @@ export class FileSaver {
     document.body.removeChild(link);
   }
 
-  private static getExtension(fileType: FileType) {
+  private static getExtension(fileType: FileType): string {
     switch (fileType) {
       case FileType.Csv:
         return 'csv';

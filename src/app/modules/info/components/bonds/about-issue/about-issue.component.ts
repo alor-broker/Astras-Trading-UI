@@ -15,9 +15,9 @@ export class AboutIssueComponent implements OnInit, OnDestroy {
   issue$?: Observable<Issue | null>;
   isLoading$ = new BehaviorSubject<boolean>(true);
   columns = 1;
-  private isActivated$ = new Subject<boolean>();
+  private readonly isActivated$ = new Subject<boolean>();
 
-  constructor(private service: InfoService) {
+  constructor(private readonly service: InfoService) {
   }
 
   @Input()

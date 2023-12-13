@@ -42,15 +42,19 @@ class InstrumentSearchMockComponent implements ControlValueAccessor {
   @Input() placeholder: any;
 
   registerOnChange(fn: any): void {
+    return;
   }
 
   registerOnTouched(fn: any): void {
+    return;
   }
 
   setDisabledState(isDisabled: boolean): void {
+    return;
   }
 
   writeValue(obj: any): void {
+    return;
   }
 }
 

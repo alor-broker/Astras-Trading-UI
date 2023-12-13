@@ -88,7 +88,7 @@ export class TimezoneConverter {
   }
 
 
-  private toUtcCorrectedDate(date: Date) {
+  private toUtcCorrectedDate(date: Date): Date {
     const convertedDate = new Date(date);
     convertedDate.setMinutes(convertedDate.getMinutes() - convertedDate.getTimezoneOffset());
     return convertedDate;

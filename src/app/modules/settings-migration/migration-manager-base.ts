@@ -84,7 +84,7 @@ export abstract class MigrationManagerBase {
             return x.current;
           }
 
-          const updated = apply(JSON.parse(JSON.stringify(x.current.updatedData)), x.patches);
+          const updated = apply(JSON.parse(JSON.stringify(x.current.updatedData)), x.patches) as R;
 
           const newResult: MigrationResult<R> = {
             updatedData: updated,

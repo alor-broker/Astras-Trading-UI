@@ -5,7 +5,7 @@ import { MigrationsMetaService } from "./services/migrations-meta.service";
 
 export abstract class DesktopMigrationManagerBase extends MigrationManagerBase {
   protected constructor(
-    private readonly migrationsMetaService: MigrationsMetaService
+    protected readonly migrationsMetaService: MigrationsMetaService
   ) {
     super();
   }

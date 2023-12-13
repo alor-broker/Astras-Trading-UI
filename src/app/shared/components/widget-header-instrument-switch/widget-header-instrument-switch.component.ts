@@ -44,8 +44,8 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
     this.instrumentTitle$ = this.settings$.pipe(
       debounceTime(300), // to prevent error when settings changed but customTitle not yet
       switchMap(s => {
-        if (this.customTitle) {
-          return of(this.customTitle);
+        if (this.customTitle != null && !!this.customTitle.length) {
+          return of(this.customTitle!);
         }
 
         return this.instrumentService.getInstrument(s).pipe(
@@ -55,7 +55,7 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
     );
   }
 
-  triggerMenu(event: MouseEvent) {
+  triggerMenu(event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
     event.target!.dispatchEvent(new Event('click'));
@@ -66,22 +66,22 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
       return '';
     }
 
-    return `${instrument.symbol}${instrument.instrumentGroup ? ' (' + instrument.instrumentGroup + ') ' : ' '}${instrument.shortName}`;
+    return `${instrument.symbol}${(instrument.instrumentGroup ?? '') ? ' (' + (instrument.instrumentGroup!) + ') ' : ' '}${instrument.shortName}`;
   }
 
-  searchVisibilityChanged(isVisible: boolean) {
+  searchVisibilityChanged(isVisible: boolean): void {
     this.searchInput?.writeValue(null);
     if (isVisible) {
       this.searchInput?.setFocus();
     }
   }
 
-  close() {
+  close(): void {
     this.searchVisible = false;
     this.searchVisibilityChanged(false);
   }
 
-  instrumentSelected(instrument: InstrumentKey | null) {
+  instrumentSelected(instrument: InstrumentKey | null): void {
     this.close();
 
     if (!instrument) {
@@ -91,7 +91,7 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
     this.settings$.pipe(
       take(1)
     ).subscribe(settings => {
-      if (settings.linkToActive) {
+      if (settings.linkToActive ?? false) {
         this.dashboardContextService.selectDashboardInstrument(instrument, settings.badgeColor ?? defaultBadgeColor);
         return;
       }

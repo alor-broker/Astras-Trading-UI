@@ -5,6 +5,6 @@ export interface ContextMenu {
 }
 
 export interface Filter {
-  name: string,
+  name: string;
   displayName: string;
 }

@@ -146,14 +146,14 @@ export class ChartFiltersComponent implements OnInit {
         if (!!historyList) {
           currentListId = historyList.id;
         } else {
-          const defaultList = x.allLists.find(l => l.isDefault || l.type === WatchlistType.DefaultList);
+          const defaultList = x.allLists.find(l => (l.isDefault ?? false) || l.type === WatchlistType.DefaultList);
           if (!!defaultList) {
             currentListId = defaultList.id;
           }
         }
       }
 
-      if (!!currentListId) {
+      if (currentListId != null) {
         this.parametersForm.controls.targetListId.setValue(currentListId);
       }
 

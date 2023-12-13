@@ -23,7 +23,7 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
   styleUrls: ['./option-board-settings.component.less']
 })
 export class OptionBoardSettingsComponent extends WidgetSettingsBaseComponent<OptionBoardSettings> implements OnInit {
-  form!: UntypedFormGroup;
+  form?: UntypedFormGroup;
   protected settings$!: Observable<OptionBoardSettings>;
 
   constructor(
@@ -60,23 +60,23 @@ export class OptionBoardSettingsComponent extends WidgetSettingsBaseComponent<Op
     });
   }
 
-  instrumentSelected(instrument: InstrumentKey | null) {
-    this.form.controls.exchange.setValue(instrument?.exchange ?? null);
-    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+  instrumentSelected(instrument: InstrumentKey | null): void {
+    this.form!.controls.exchange.setValue(instrument?.exchange ?? null);
+    this.form!.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
   protected getUpdatedSettings(initialSettings: OptionBoardSettings): Partial<OptionBoardSettings> {
-    const formValue = this.form.value;
+    const formValue = this.form!.value as Partial<InstrumentKey & { instrument: InstrumentKey }>;
 
-    const newSettings = {
+    const newSettings: any = {
       ...formValue,
-      symbol: formValue.instrument.symbol,
-      exchange: formValue.instrument.exchange,
+      symbol: formValue.instrument?.symbol,
+      exchange: formValue.instrument?.exchange,
     };
 
     delete newSettings.instrument;
-    newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings, newSettings);
+    newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings, newSettings);
 
-    return newSettings;
+    return newSettings as Partial<OptionBoardSettings>;
   }
 }

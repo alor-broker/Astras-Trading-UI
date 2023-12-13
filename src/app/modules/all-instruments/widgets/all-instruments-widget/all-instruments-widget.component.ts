@@ -22,7 +22,7 @@ import { getValueOrDefault } from "../../../../shared/utils/object-helper";
   styleUrls: ['./all-instruments-widget.component.less']
 })
 export class AllInstrumentsWidgetComponent implements OnInit {
-  shouldShowSettings: boolean = false;
+  shouldShowSettings = false;
 
   @Input({required: true})
   widgetInstance!: WidgetInstance;
@@ -42,7 +42,7 @@ export class AllInstrumentsWidgetComponent implements OnInit {
     return this.widgetInstance.instance.guid;
   }
 
-  onSettingsChange() {
+  onSettingsChange(): void {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 

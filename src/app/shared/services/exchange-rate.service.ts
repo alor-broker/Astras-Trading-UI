@@ -8,7 +8,7 @@ import { EnvironmentService } from "./environment.service";
   providedIn: 'root'
 })
 export class ExchangeRateService {
-  private baseUrl = this.environmentService.apiUrl + '/md/v2/Securities';
+  private readonly baseUrl = this.environmentService.apiUrl + '/md/v2/Securities';
 
   constructor(
     private readonly environmentService: EnvironmentService,

@@ -249,7 +249,7 @@ describe('ArbitrageSpreadService', () => {
   }));
 
   it('should buy spread', fakeAsync(() => {
-    orderServiceSpy.submitMarketOrder = jasmine.createSpy('submitMarketOrder').and.returnValue(of({}));
+    orderServiceSpy.submitMarketOrder = jasmine.createSpy('submitMarketOrder').and.returnValue(of({ isSuccess: true }));
 
     service.buySpread(spreadItem).subscribe();
     tick();

@@ -33,20 +33,20 @@ export class OptionBoardDataContextFactory {
       optionsSelection$,
       currentSelection$: currentSelection$,
 
-      destroy() {
+      destroy(): void {
         this.selectedSide$.complete();
         this.selectedParameter$.complete();
       },
 
-      updateOptionSelection(option: Option, underlyingAsset: UnderlyingAsset) {
+      updateOptionSelection(option: Option, underlyingAsset: UnderlyingAsset): void {
         factory.updateOptionSelection(option, underlyingAsset, this);
       },
 
-      removeItemFromSelection(symbol: string) {
+      removeItemFromSelection(symbol: string): void {
         factory.removeItemFromSelection(symbol, this);
       },
 
-      clearCurrentSelection() {
+      clearCurrentSelection(): void {
         factory.clearCurrentSelection(this);
       }
     };
@@ -74,7 +74,7 @@ export class OptionBoardDataContextFactory {
     );
   }
 
-  private updateOptionSelection(option: Option, underlyingAsset: UnderlyingAsset, context: OptionBoardDataContext) {
+  private updateOptionSelection(option: Option, underlyingAsset: UnderlyingAsset, context: OptionBoardDataContext): void {
     combineLatest([
       context.settings$,
       context.optionsSelection$
@@ -109,7 +109,7 @@ export class OptionBoardDataContextFactory {
     });
   }
 
-  private removeItemFromSelection(symbol: string, context: OptionBoardDataContext) {
+  private removeItemFromSelection(symbol: string, context: OptionBoardDataContext): void {
     combineLatest([
       context.settings$,
       context.optionsSelection$
@@ -128,7 +128,7 @@ export class OptionBoardDataContextFactory {
     });
   }
 
-  private clearCurrentSelection(context: OptionBoardDataContext) {
+  private clearCurrentSelection(context: OptionBoardDataContext): void {
     combineLatest([
       context.settings$,
       context.optionsSelection$

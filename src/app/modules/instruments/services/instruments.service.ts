@@ -15,7 +15,7 @@ import { EnvironmentService } from "../../../shared/services/environment.service
   providedIn: 'root'
 })
 export class InstrumentsService {
-  private url = this.environmentService.apiUrl + '/md/v2/Securities';
+  private readonly url = this.environmentService.apiUrl + '/md/v2/Securities';
 
   constructor(
     private readonly environmentService: EnvironmentService,
@@ -27,7 +27,7 @@ export class InstrumentsService {
 
   getInstrument(instrument: InstrumentKey): Observable<Instrument | null> {
     const params: { [param: string]: string } = {};
-    if(instrument.instrumentGroup) {
+    if (instrument.instrumentGroup != null && instrument.instrumentGroup.length > 0) {
       params.instrumentGroup = instrument.instrumentGroup;
     }
 
@@ -68,6 +68,7 @@ export class InstrumentsService {
         IncludeUnknownBoards: false
       },
     }).pipe(
+      catchHttpError<InstrumentSearchResponse[]>([], this.errorHandlerService),
       map(resp => {
         const selects: Instrument[] = resp.map(r => ({
           symbol: r.symbol,

@@ -24,7 +24,7 @@ import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.he
   styleUrls: ['./tech-chart-settings.component.less']
 })
 export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<TechChartSettings> implements OnInit {
-  form!: UntypedFormGroup;
+  form?: UntypedFormGroup;
   isSyntheticInstrument = SyntheticInstrumentsHelper.isSyntheticInstrument;
 
   protected settings$!: Observable<TechChartSettings>;
@@ -45,7 +45,7 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
     return this.form?.valid ?? false;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.initSettingsStream();
 
     this.settings$.pipe(
@@ -64,22 +64,22 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
     });
   }
 
-  instrumentSelected(instrument: InstrumentKey | null) {
-    this.form.controls.exchange.setValue(instrument?.exchange ?? null);
-    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+  instrumentSelected(instrument: InstrumentKey | null): void {
+    this.form!.controls.exchange.setValue(instrument?.exchange ?? null);
+    this.form!.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
   protected getUpdatedSettings(initialSettings: TechChartSettings): Partial<TechChartSettings> {
-    const formValue = this.form.value;
+    const formValue = this.form!.value as Partial<TechChartSettings & { instrument: InstrumentKey }>;
     const newSettings = {
-      ...this.form.value,
-      symbol: formValue.instrument.symbol,
-      exchange: formValue.instrument.exchange,
-    };
+      ...this.form!.value,
+      symbol: formValue.instrument?.symbol,
+      exchange: formValue.instrument?.exchange,
+    } as TechChartSettings;
 
     delete newSettings.instrument;
 
-    newSettings.linkToActive = initialSettings.linkToActive && isInstrumentEqual(initialSettings as InstrumentKey, newSettings);
+    newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings as InstrumentKey, newSettings as InstrumentKey);
 
     return newSettings;
   }

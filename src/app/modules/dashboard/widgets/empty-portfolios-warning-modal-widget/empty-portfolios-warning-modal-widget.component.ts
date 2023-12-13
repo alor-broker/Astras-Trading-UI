@@ -20,11 +20,11 @@ export class EmptyPortfoliosWarningModalWidgetComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.isVisible$ = this.modalService.shouldShowEmptyPortfoliosWarningModal$;
   }
 
-  handleClose() {
+  handleClose(): void {
     this.modalService.closeEmptyPortfoliosWarningModal();
   }
 }

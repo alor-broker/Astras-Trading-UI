@@ -1,21 +1,27 @@
-import {defer} from 'rxjs';
-import {Instrument} from '../models/instruments/instrument.model';
-import {Component, Directive, EventEmitter, ModuleWithProviders, Type} from '@angular/core';
-import {SharedModule} from '../shared.module';
-import {StoreModule} from '@ngrx/store';
-import {EffectsModule} from '@ngrx/effects';
-import {HttpClientModule} from '@angular/common/http';
-import {TranslocoTestingModule, TranslocoTestingOptions} from "@ngneat/transloco";
+import { defer, Observable } from 'rxjs';
+import { Instrument } from '../models/instruments/instrument.model';
+import {
+  Component,
+  Directive,
+  EventEmitter,
+  ModuleWithProviders,
+  Type
+} from '@angular/core';
+import { SharedModule } from '../shared.module';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { HttpClientModule } from '@angular/common/http';
+import { TranslocoTestingModule, TranslocoTestingOptions } from "@ngneat/transloco";
 import ru from '../../../assets/i18n/ru.json';
-import {ErrorHandlerService} from '../services/handle-error/error-handler.service';
-import {LOGGER} from '../services/logging/logger-base';
+import { ErrorHandlerService } from '../services/handle-error/error-handler.service';
+import { LOGGER } from '../services/logging/logger-base';
 
 /**
  * Create async observable that emits-once and completes  after a JS engine turn
  * @param data any data
  * @returns Observable with completed promise
  */
-export function asyncData<T>(data: T) {
+export function asyncData<T>(data: T): Observable<T> {
   return defer(() => Promise.resolve(data));
 }
 
@@ -67,6 +73,34 @@ export class TestData {
       }
     ];
   }
+}
+
+
+/**
+ *  function for adding event emitters in mock component outputs
+ */
+function classWithOutputEmittersFactory(klass: any, outputs: string[]): { prototype: any, new: () => any} {
+  outputs.forEach(output => {
+    klass[output] = new EventEmitter();
+  });
+
+  return klass as { prototype: any, new: () => any};
+}
+
+/**
+ *  function helper for mock components create
+ */
+export function mockComponent(options: Component, klass = (class {
+})): unknown {
+  let metadata: Component = {template: '<ng-content></ng-content>', ...options};
+  const classWithOutputs = classWithOutputEmittersFactory(klass, options.outputs ?? []);
+
+  return Component(metadata)(classWithOutputs);
+}
+
+export function mockDirective(options: Directive, klass = (class {
+})): any {
+  return Directive(options)(klass);
 }
 
 /**
@@ -143,7 +177,8 @@ export const ngZorroMockComponents = [
     selector: 'nz-calendar',
     inputs: ['nzDateFullCell', 'nzFullscreen', 'nzDisabledDate']
   }, class NzCalendarComponent {
-    onMonthSelect() {
+    onMonthSelect(): void {
+      return;
     }
   }),
   mockComponent({selector: 'nz-tag', inputs: ['nzColor', 'nz-tooltip', 'nzTooltipMouseEnterDelay']}),
@@ -188,7 +223,7 @@ export const widgetSkeletonMock = mockComponent({
 /**
  *  SharedModule requires store module registered for root
  */
-export const sharedModuleImportForTests: Array<Type<any> | ModuleWithProviders<{}> | any[]> = [
+export const sharedModuleImportForTests: (Type<any> | ModuleWithProviders<object> | any[])[] = [
   StoreModule.forRoot({}),
   EffectsModule.forRoot(),
   SharedModule,
@@ -212,33 +247,6 @@ export const commonTestProviders: any[] = [
 ];
 
 /**
- *  function helper for mock components create
- */
-export function mockComponent(options: Component, klass = (class {
-})) {
-  let metadata: Component = {template: '<ng-content></ng-content>', ...options};
-  const classWithOutputs = classWithOutputEmittersFactory(klass, options.outputs || []);
-
-  return Component(metadata)(classWithOutputs);
-}
-
-export function mockDirective(options: Directive, klass = (class {
-})) {
-  return Directive(options)(klass);
-}
-
-/**
- *  function for adding event emitters in mock component outputs
- */
-function classWithOutputEmittersFactory(klass: any, outputs: string[]) {
-  outputs.forEach(output => {
-    klass[output] = new EventEmitter();
-  });
-
-  return klass;
-}
-
-/**
  * Create random string
  * @param length target string length
  * @returns random string
@@ -260,7 +268,7 @@ export function generateRandomString(length: number): string {
  * @param max maximum value
  * @returns the value is no lower than min (or the next integer greater than min if min isn't an integer), and is less than (but not equal to) max
  */
-export function getRandomInt(min: number, max: number) {
+export function getRandomInt(min: number, max: number): number {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
@@ -271,7 +279,7 @@ export function getRandomInt(min: number, max: number) {
  * @param options transoloco options
  * @returns the value is no lower than min (or the next integer greater than min if min isn't an integer), and is less than (but not equal to) max
  */
-export function getTranslocoModule(options: TranslocoTestingOptions = {}) {
+export function getTranslocoModule(options: TranslocoTestingOptions = {}): ModuleWithProviders<TranslocoTestingModule> {
   const {langs} = options;
 
   return TranslocoTestingModule.forRoot({

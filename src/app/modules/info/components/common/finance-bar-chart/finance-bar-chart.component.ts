@@ -1,21 +1,13 @@
-import {
-  Component, DestroyRef,
-  Input,
-  OnInit
-} from '@angular/core';
-import {
-  ChartConfiguration,
-  ChartData,
-  ChartType
-} from 'chart.js';
-import { Finance } from '../../../models/finance.model';
+import { Component, DestroyRef, Input, OnInit } from '@angular/core';
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { DataOverTime, Finance } from '../../../models/finance.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { ThemeService } from '../../../../../shared/services/theme.service';
 import { ThemeSettings } from '../../../../../shared/models/settings/theme-settings.model';
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../../shared/services/translator.service";
 import { HashMap } from "@ngneat/transloco/lib/types";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-finance-bar-chart',
@@ -41,13 +33,13 @@ export class FinanceBarChartComponent implements OnInit {
           callback: (value) => {
             if (typeof value === 'number') {
               if (value >= Math.pow(10, 9)) {
-                return MathHelper.round(value / Math.pow(10, 9), 1) + 'B';
+                return MathHelper.round(value / Math.pow(10, 9), 1).toString() + 'B';
               }
               else if (value >= Math.pow(10, 6)) {
-                return MathHelper.round(value / Math.pow(10, 6), 1) + 'M';
+                return MathHelper.round(value / Math.pow(10, 6), 1).toString() + 'M';
               }
               else if (value >= Math.pow(10, 3)) {
-                return MathHelper.round(value / Math.pow(10, 3), 1) + 'k';
+                return MathHelper.round(value / Math.pow(10, 3), 1).toString() + 'k';
               }
               else {
                 return value;
@@ -101,30 +93,34 @@ export class FinanceBarChartComponent implements OnInit {
       ),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(({ theme, translate }) => {
-      this.yearChartData = this.getPlotData(this.finance, 'year', theme, translate);
-      this.quorterChartData = this.getPlotData(this.finance, 'quorter', theme, translate);
+      this.yearChartData = this.getPlotData('year', theme, translate);
+      this.quorterChartData = this.getPlotData('quorter', theme, translate);
     });
   }
 
-  private getPlotData(finance: Finance, period: 'year' | 'quorter', theme: ThemeSettings, t: (key: string[], params?: HashMap) => string) {
+  private getPlotData(period: 'year' | 'quorter', theme: ThemeSettings, t: (key: string[], params?: HashMap) => string): ChartData<'bar'> {
     let labels: string[] = [];
-    if (finance.sales) {
+    if (this.finance.sales as DataOverTime | undefined) {
       labels = period == 'quorter' ?
-        finance.sales.quorter.map(q => `${q.year} q${q.quorterNumber}`) :
-        finance.sales[period].map(y => y.year.toString());
+        this.finance.sales.quorter.map(q => `${q.year} q${q.quorterNumber}`) as string[] :
+        this.finance.sales[period].map(y => y.year.toString()) as string[];
     }
     const datasets = [
-      { data: finance?.sales?.[period].map(y => y.value), label: t(['salesLabel']), ...this.getSalesColors(theme) ?? [] },
       {
-        data: finance?.netIncome?.[period].map(y => y.value),
-        label: t(['incomeLabel']), ...this.getIncomeColors(theme) ?? []
+        data: this.finance.sales[period].map(y => y.value) as number[],
+        label: t(['salesLabel']),
+        ...this.getSalesColors(theme)
+      },
+      {
+        data: this.finance.netIncome[period].map(y => y.value) as number[],
+        label: t(['incomeLabel']),
+        ...this.getIncomeColors(theme)
       }
     ];
-    const chartData = {
+    return {
       labels,
       datasets
     };
-    return chartData;
   }
 
   private getSalesColors(theme: ThemeSettings): { backgroundColor: string, hoverBackgroundColor: string, borderColor: string } {

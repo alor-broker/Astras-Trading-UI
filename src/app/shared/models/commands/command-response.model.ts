@@ -1,7 +1,7 @@
 export interface CommandResponse {
-  message: string,
+  message: string;
   // # of succesfully places order
-  orderNumber?: string,
+  orderNumber?: string;
   // Error code if something went wrong
-  code?: string
+  code?: string;
 }

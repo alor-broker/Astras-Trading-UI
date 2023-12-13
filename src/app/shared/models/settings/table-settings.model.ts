@@ -21,7 +21,7 @@ export interface BaseColumnSettings<T> extends Omit<BaseColumnId, 'isDefault'> {
   classFn?: (data: T) => string | null;
   width?: number | null;
   filterData?: FilterData;
-  showBadges?: boolean
+  showBadges?: boolean;
   sortOrder?: NzTableSortOrder | null;
   sortFn?: NzTableSortFn<T> | null;
   sortChangeFn?: (direction: string | null) => any;

@@ -31,11 +31,11 @@ export class SyntheticInstrumentsService {
       syntheticInstruments.map(p => p.isSpreadOperator
         ? of(p)
         : this.instrumentsService.getInstrument(p.value)
-          .pipe(map(value => ({ isSpreadOperator: false, value} as InstrumentDataPart<Instrument>)))
+          .pipe(map(value => ({ isSpreadOperator: false, value} as InstrumentDataPart<Instrument | null>)))
       )
     )
       .pipe(
-        map(instruments => instruments.some(i => i.value == null) ? null : instruments),
+        map(instruments => instruments.some(i => i.value == null) ? null : instruments as (OperatorPart | InstrumentDataPart<Instrument>)[]),
         map(instruments => {
           if (!instruments) {
             return null;
@@ -82,11 +82,11 @@ export class SyntheticInstrumentsService {
 
           // Собираются свечи таким образом, чтоб если по одному из инструментов свечка есть, а по другому - нет,
           // будет браться предыдущая свечка
-          let instrumentsHistories: HistoryResponse[] = JSON.parse(JSON.stringify(histories
+          let instrumentsHistories = JSON.parse(JSON.stringify(histories
             .filter(h => !h.isSpreadOperator)
-            .map(h => h.value)));
+            .map(h => h.value))) as HistoryResponse[];
           instrumentsHistories = instrumentsHistories.map((history, i) => {
-            let historyCopy: Candle[] = JSON.parse(JSON.stringify(history.history));
+            let historyCopy = JSON.parse(JSON.stringify(history.history)) as Candle[];
 
             // Перебираются свечи по каждому инструменту, кроме текущего
             for (let j = 0; j < instrumentsHistories.length; j++) {
@@ -139,17 +139,16 @@ export class SyntheticInstrumentsService {
 
           const defaultHistory = (<HistoryResponse>histories.find(h => !h.isSpreadOperator)!.value).history;
 
-          const history: any = {
-            history: new Array(defaultHistory.length).fill(null),
+          const history: HistoryResponse = {
+            history: new Array(defaultHistory.length).fill(null)
+              .map((item: any, i: number) => SyntheticInstrumentsHelper.assembleCandle(
+                histories.map(h => h.isSpreadOperator ? h : {isSpreadOperator: false, value: h.value!.history[i]}))
+              ),
             prev: defaultHistory[0]?.time - 60,
             next: defaultHistory[defaultHistory.length - 1]?.time + 60
           };
 
-          history.history = history.history.map((item: any, i: number) => SyntheticInstrumentsHelper.assembleCandle(
-            histories.map(h => h.isSpreadOperator ? h : { isSpreadOperator: false, value: h.value!.history[i] }))
-          );
-
-          return history as HistoryResponse;
+          return history;
         })
       );
   }

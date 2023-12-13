@@ -16,10 +16,10 @@ import {
 } from "./widgets-local-state.actions";
 
 export interface State extends EntityState<WidgetStateRecord> {
-  status: EntityStatus
+  status: EntityStatus;
 }
 
-export const getRecordId = (record: { widgetGuid: string; recordKey: string; }) => {
+export const getRecordId = (record: { widgetGuid: string, recordKey: string }): string => {
   return `${record.widgetGuid}_${record.recordKey}`;
 };
 

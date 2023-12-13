@@ -24,7 +24,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { OrderbookSettings } from '../../models/orderbook-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-orderbook-chart',
@@ -68,10 +68,10 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
           callback: (value) => {
             if (typeof value === 'number') {
               if (value >= 1000000) {
-                return MathHelper.round(value / 1000000, 1) + 'M';
+                return MathHelper.round(value / 1000000, 1).toString() + 'M';
               }
               else if (value >= 1000) {
-                return MathHelper.round(value / 1000, 1) + 'k';
+                return MathHelper.round(value / 1000, 1).toString() + 'k';
               }
               else {
                 return value;
@@ -85,7 +85,7 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
       },
     },
   };
-  private initialData: ChartDataset[] = [
+  private readonly initialData: ChartDataset[] = [
     {
       fill: {
         target: 'origin'
@@ -116,7 +116,7 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
     ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.shouldShowChart$ = this.widgetSettings.getSettings<OrderbookSettings>(this.guid).pipe(
       map((s) => s.showChart)
     );
@@ -143,20 +143,20 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(t => {
-        this.chartOptions.plugins!.tooltip!.callbacks!.label = (context: any) => {
+        this.chartOptions.plugins!.tooltip!.callbacks!.label = (context: any): string => {
           return `${t(['volume'])}: ${context.parsed.y}; ${t(['price'])}: ${context.parsed.x}`;
         };
       });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.initialData[0].data = changes.chartData.currentValue.bids;
-    this.initialData[1].data = changes.chartData.currentValue.asks;
-    this.chartData$?.next(this.initialData);
+    this.initialData[0].data = changes.chartData.currentValue.bids as any[];
+    this.initialData[1].data = changes.chartData.currentValue.asks as any[];
+    this.chartData$.next(this.initialData);
     const x = this.chartOptions.scales?.x;
     if (x) {
-      x.max = changes.chartData.currentValue.maxPrice;
-      x.min = changes.chartData.currentValue.minPrice;
+      x.max = changes.chartData.currentValue.maxPrice as number;
+      x.min = changes.chartData.currentValue.minPrice as number;
     }
     this.chart?.render();
   }

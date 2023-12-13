@@ -14,7 +14,7 @@ export class WidgetSettingsMobileMigrationManager extends MobileMigrationManager
     inject(UpdateBadgesWidgetsSettingsMigration)
   ];
 
-  constructor(localStorageService: LocalStorageService) {
+  constructor(protected readonly localStorageService: LocalStorageService) {
     super(localStorageService);
   }
 }

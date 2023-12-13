@@ -93,19 +93,19 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
     this.contextMenuService.create($event, menu, {scrollStrategy: 'noop'});
   }
 
-  setTimeframe(value: number) {
+  setTimeframe(value: number): void {
     this.updateTradesClusterPanelSettings({
       timeframe: value
     });
   }
 
-  setIntervalsCount(value: number) {
+  setIntervalsCount(value: number): void {
     this.updateTradesClusterPanelSettings({
       displayIntervalsCount: value
     });
   }
 
-  startScrolling($event: MouseEvent) {
+  startScrolling($event: MouseEvent): void {
     $event.preventDefault();
 
     this.contextMenuService.close(true);
@@ -137,7 +137,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
         });
       })
     ).subscribe(([x1, x2]) => {
-      if (!this.scrollContainer) {
+      if (!(this.scrollContainer as QueryList<CdkScrollable> | undefined)) {
         return;
       }
 
@@ -162,7 +162,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   }
 
   ngAfterViewInit(): void {
-    const initScrollWatching = () => {
+    const initScrollWatching = (): void => {
       this.getScrollContainer().elementScrolled().pipe(
         takeUntilDestroyed(this.destroyRef)
       ).subscribe(() => this.updateScrollOffsets());
@@ -177,7 +177,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
     }
   }
 
-  private initSettings() {
+  private initSettings(): void {
     this.settings$ = this.dataContext.extendedSettings$.pipe(
       map(x => {
         const settings = x.widgetSettings;
@@ -199,7 +199,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
     );
   }
 
-  private initClustersStream() {
+  private initClustersStream(): void {
     this.clusters$ = this.settings$.pipe(
       distinctUntilChanged((prev, curr) => {
         return isInstrumentEqual(prev, curr)
@@ -288,8 +288,8 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
     return displayClusters;
   }
 
-  private updateScrollOffsets() {
-    const container = this.getScrollContainer();
+  private updateScrollOffsets(): void {
+    const container = this.getScrollContainer() as CdkScrollable | undefined;
     if (!container) {
       return;
     }
@@ -316,7 +316,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
     return Math.floor(Math.floor(unixTime / timeframe) * timeframe);
   }
 
-  private updateTradesClusterPanelSettings(updates: Partial<TradesClusterPanelSettings>) {
+  private updateTradesClusterPanelSettings(updates: Partial<TradesClusterPanelSettings>): void {
     this.settings$.pipe(
       take(1)
     ).subscribe(s => {

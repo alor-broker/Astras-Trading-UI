@@ -81,7 +81,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     {
       id: 'dailyGrowth',
       displayName: 'Рост за сегодня',
-      classFn: data => data.dailyGrowth < 0 ? 'sell' : 'buy',
+      classFn: (data): 'sell' | 'buy' => data.dailyGrowth < 0 ? 'sell' : 'buy',
       width: 100,
       sortChangeFn: this.getSortFn('dailyGrowth'),
       filterData: {
@@ -94,7 +94,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     {
       id: 'dailyGrowthPercent',
       displayName: 'Рост за сегодня, %',
-      classFn: data => data.dailyGrowth < 0 ? 'sell' : 'buy',
+      classFn: (data): 'sell' | 'buy' => data.dailyGrowth < 0 ? 'sell' : 'buy',
       width: 100,
       sortChangeFn: this.getSortFn('dailyGrowthPercent')
     },
@@ -165,11 +165,11 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   public tableConfig$!: Observable<TableConfig<AllInstruments>>;
   public contextMenu: ContextMenu[] = [];
   public instrumentsDisplay$!: Observable<AllInstruments[]>;
-  private instrumentsList$ = new BehaviorSubject<AllInstruments[]>([]);
+  private readonly instrumentsList$ = new BehaviorSubject<AllInstruments[]>([]);
   private readonly loadingChunkSize = 50;
 
   private updatesSub?: Subscription;
-  private filters$ = new BehaviorSubject<AllInstrumentsFilters>({ limit: this.loadingChunkSize, offset: 0 });
+  private readonly filters$ = new BehaviorSubject<AllInstrumentsFilters>({ limit: this.loadingChunkSize, offset: 0 });
   private settings$!: Observable<AllInstrumentsSettings>;
 
   constructor(
@@ -231,7 +231,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       });
   }
 
-  scrolled() {
+  scrolled(): void {
     this.instrumentsList$.pipe(
       take(1),
       withLatestFrom(this.isLoading$, this.filters$),
@@ -250,24 +250,24 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     });
   }
 
-  applyFilter(filters: any) {
+  applyFilter(filters: any): void {
     this.updateFilters(curr => {
       const allFilters = {
         ...curr,
         ...filters
-      };
+      } as { [filterKey: string]: string | string[] | null};
 
       const cleanedFilters = Object.keys(allFilters)
-        .filter(key => !!allFilters[key])
+        .filter(key => allFilters[key] != null && !!allFilters[key]!.length)
         .reduce((acc, curr) => {
           if (Array.isArray(allFilters[curr])) {
-            acc[curr] = allFilters[curr].join(';');
+            acc[curr] = (allFilters[curr] as string[]).join(';');
           }
           else {
-            acc[curr] = allFilters[curr];
+            acc[curr] = allFilters[curr]!;
           }
           return acc;
-        }, {} as any);
+        }, {} as { [filterName: string]: string | string[] });
 
       return {
         ...cleanedFilters,
@@ -276,7 +276,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     });
   }
 
-  selectInstrument(row: AllInstruments) {
+  selectInstrument(row: AllInstruments): void {
     const instrument = {
       symbol: row.name,
       exchange: row.exchange,
@@ -289,13 +289,13 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     });
   }
 
-  initContextMenu(collection: WatchlistCollection) {
+  initContextMenu(collection: WatchlistCollection): void {
     const avalableWatchlists = collection.collection.filter(c => c.type != WatchlistType.HistoryList);
 
     this.contextMenu = [
       {
         title: 'Добавить в список',
-        clickFn: (row: AllInstruments) => {
+        clickFn: (row: AllInstruments) : void => {
           if (avalableWatchlists.length > 1) {
             return;
           }
@@ -313,7 +313,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       this.contextMenu[0].subMenu = avalableWatchlists
         .map(list => ({
           title: list.title,
-          clickFn: (row: AllInstruments) => {
+          clickFn: (row: AllInstruments): void => {
             this.watchlistCollectionService.addItemsToList(list.id, [
               { symbol: row.name, exchange: row.exchange }
             ]);
@@ -322,7 +322,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.updatesSub?.unsubscribe();
 
     this.filters$.complete();
@@ -331,7 +331,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     this.contentSize$.complete();
   }
 
-  containerSizeChanged(entries: ResizeObserverEntry[]) {
+  containerSizeChanged(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       this.contentSize$.next({
         width: Math.floor(x.contentRect.width),
@@ -340,7 +340,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     });
   }
 
-  private updateFilters(update: (curr: AllInstrumentsFilters) => AllInstrumentsFilters) {
+  private updateFilters(update: (curr: AllInstrumentsFilters) => AllInstrumentsFilters): void {
     this.filters$.pipe(
       take(1)
     ).subscribe(curr => {
@@ -348,7 +348,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     });
   }
 
-  private initInstruments() {
+  private initInstruments(): void {
     this.filters$.pipe(
       tap(() => this.isLoading$.next(true)),
       mapWith(
@@ -370,18 +370,18 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     ? { [defaultBadgeColor]: badges[defaultBadgeColor] }
       : {};
 
-    const availableBadges = terminalSettings.badgesBind
+    const availableBadges = (terminalSettings.badgesBind ?? false)
       ? badges
       : defaultBadges;
 
     return instruments.map(instr => ({
       ...instr,
       badges: Object.keys(availableBadges)
-        .filter(key => instr.name === availableBadges[key].symbol && instr.exchange === availableBadges[key].exchange)
+        .filter(key => instr.name === availableBadges[key]!.symbol && instr.exchange === availableBadges[key]!.exchange)
     }));
   }
 
-  private subscribeToUpdates() {
+  private subscribeToUpdates(): void {
     this.updatesSub?.unsubscribe();
 
     this.updatesSub = interval(10_000)
@@ -411,7 +411,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
         delete filter.descending;
         delete filter.orderBy;
 
-        if (dir) {
+        if (dir != null && dir.length > 0) {
           filter.descending = dir === 'descend';
           filter.orderBy = orderBy;
         }

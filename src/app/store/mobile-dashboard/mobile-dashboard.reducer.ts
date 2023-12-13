@@ -80,12 +80,14 @@ const reducer = createReducer(
       ...toInstrumentKey(props.selection.instrumentKey)
     };
 
-    const isInstrumentInHistory = !!state.instrumentsHistory?.find(i =>
+    const isInstrumentInHistory = !!(state.instrumentsHistory as InstrumentKey[] | undefined ?? []).find(i =>
       i.symbol === props.selection.instrumentKey.symbol && i.instrumentGroup === props.selection.instrumentKey.instrumentGroup);
 
+    const maxHistoryLength = 3;
+
     const instrumentsHistory = isInstrumentInHistory
-      ? state.instrumentsHistory ?? []
-      : [toInstrumentKey(props.selection.instrumentKey), ...(state.instrumentsHistory) ?? []].slice(0, 3);
+      ? state.instrumentsHistory
+      : [toInstrumentKey(props.selection.instrumentKey), ...(state.instrumentsHistory as InstrumentKey[] | undefined ?? [])].slice(0, maxHistoryLength);
 
     return {
       ...state,

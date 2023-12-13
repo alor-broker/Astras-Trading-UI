@@ -15,15 +15,15 @@ import {
 import { EnvironmentService } from "../../../shared/services/environment.service";
 
 interface HistoryResponse {
-  clusters: TradesCluster[]
+  clusters: TradesCluster[];
 }
 
 interface ClustersSubscriptionRequest extends SubscriptionRequest {
-  code: string,
-  exchange: string,
-  tf: ClusterTimeframe,
-  format: string,
-  from: number
+  code: string;
+  exchange: string;
+  tf: ClusterTimeframe;
+  format: string;
+  from: number;
 }
 
 @Injectable({

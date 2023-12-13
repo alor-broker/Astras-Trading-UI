@@ -12,9 +12,9 @@ export interface OrderbookSettings extends WidgetSettings, InstrumentKey {
   showChart: boolean;
   showTable: boolean;
   showYieldForBonds: boolean;
-  useOrderWidget: boolean;
-  showVolume: boolean;
-  columnsOrder: ColumnsOrder;
+  useOrderWidget?: boolean;
+  showVolume?: boolean;
+  columnsOrder?: ColumnsOrder;
 
   volumeDisplayFormat?: NumberDisplayFormat;
   showPriceWithZeroPadding?: boolean;

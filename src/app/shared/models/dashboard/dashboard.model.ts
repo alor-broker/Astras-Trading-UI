@@ -22,16 +22,16 @@ export interface Dashboard {
 }
 
 export interface InstrumentGroups {
-  [groupKey: string]: InstrumentKey
+  [groupKey: string]: InstrumentKey;
 }
 
 export interface DefaultDashboardItem {
   widgetTypeId: string;
-  initialSettings?: any;
+  initialSettings?: { [propName: string]: any};
 }
 
 export interface DefaultDesktopDashboardItem extends DefaultDashboardItem{
-  position: DashboardItemPosition
+  position: DashboardItemPosition;
 }
 
 export interface DefaultDashboardConfig {

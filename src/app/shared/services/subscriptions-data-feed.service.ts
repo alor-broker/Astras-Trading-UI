@@ -1,6 +1,6 @@
-import {Inject, Injectable, InjectionToken, OnDestroy} from '@angular/core';
-import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
-import {AuthService} from './auth.service';
+import { Inject, Injectable, InjectionToken, OnDestroy } from '@angular/core';
+import { webSocket, WebSocketSubject, WebSocketSubjectConfig } from 'rxjs/webSocket';
+import { AuthService } from './auth.service';
 import {
   BehaviorSubject,
   filter,
@@ -41,10 +41,10 @@ interface WsRequestMessage extends SubscriptionRequest {
 }
 
 interface SubscriptionState {
-  messageSource: Subject<WsResponseMessage>,
-  sharedStream$: Observable<any>,
-  request: WsRequestMessage,
-  subscription: Subscription
+  messageSource: Subject<WsResponseMessage>;
+  sharedStream$: Observable<any>;
+  request: WsRequestMessage;
+  subscription: Subscription;
 }
 
 interface SocketState {
@@ -62,7 +62,7 @@ export const RXJS_WEBSOCKET_CTOR = new InjectionToken<typeof webSocket>(
   'rxjs/webSocket',
   {
     providedIn: 'root',
-    factory: () => webSocket,
+    factory: (): (urlConfigOrSource: string | WebSocketSubjectConfig<any>) => WebSocketSubject<any> => webSocket,
   }
 );
 
@@ -72,7 +72,7 @@ export const RXJS_WEBSOCKET_CTOR = new InjectionToken<typeof webSocket>(
 export class SubscriptionsDataFeedService implements OnDestroy {
   private socketState: SocketState | null = null;
 
-  private isConnected$ = new BehaviorSubject<boolean>(false);
+  private readonly isConnected$ = new BehaviorSubject<boolean>(false);
 
   private readonly options = {
     reconnectTimeout: 2000,
@@ -83,9 +83,9 @@ export class SubscriptionsDataFeedService implements OnDestroy {
 
   constructor(
     private readonly environmentService: EnvironmentService,
-    private accountService: AuthService,
-    private logger: LoggerService,
-    @Inject(RXJS_WEBSOCKET_CTOR) private webSocketFactory: typeof webSocket
+    private readonly accountService: AuthService,
+    private readonly logger: LoggerService,
+    @Inject(RXJS_WEBSOCKET_CTOR) private readonly webSocketFactory: typeof webSocket
   ) {
   }
 
@@ -107,7 +107,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
 
     const existingSubscription = socketState.subscriptionsMap.get(subscriptionId);
     if (!!existingSubscription) {
-      return existingSubscription.sharedStream$;
+      return existingSubscription.sharedStream$ as Observable<R>;
     }
 
     const requestMessage: WsRequestMessage = {
@@ -115,7 +115,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
       guid: GuidGenerator.newGuid()
     };
 
-    const subject = new Subject<any>();
+    const subject = new Subject<WsResponseMessage>();
     const messageSubscription = this.subscribeToMessages(this.createSubscription(requestMessage, socketState), subject, subscriptionId);
 
     const subscriptionState: SubscriptionState = {
@@ -133,7 +133,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
 
     socketState.subscriptionsMap.set(subscriptionId, subscriptionState);
 
-    return subscriptionState.sharedStream$;
+    return subscriptionState.sharedStream$ as Observable<R>;
   }
 
   private subscribeToMessages(source: Observable<WsResponseMessage>, target: Subject<any>, subscriptionId: string): Subscription {
@@ -144,7 +144,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
     });
   }
 
-  private dropSubscription(socketState: SocketState, subscriptionId: string) {
+  private dropSubscription(socketState: SocketState, subscriptionId: string): void {
     const state = socketState.subscriptionsMap.get(subscriptionId);
 
     if (state) {
@@ -273,7 +273,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
     return !!state.webSocketSubject && !state.webSocketSubject.closed && !state.isClosing;
   }
 
-  private initReconnectOnDisconnection(state: SocketState) {
+  private initReconnectOnDisconnection(state: SocketState): void {
     if (!!state.offlineSub) {
       return;
     }
@@ -287,10 +287,10 @@ export class SubscriptionsDataFeedService implements OnDestroy {
       });
   }
 
-  private initPingPong(state: SocketState) {
+  private initPingPong(state: SocketState): void {
     state.pingPongSub?.unsubscribe();
 
-    const sendPing = () => {
+    const sendPing = (): Observable<WsResponseMessage | null> => {
       if(!this.isStateValid(state)) {
         return of(null);
       }
@@ -306,7 +306,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
       );
     };
 
-    const readPong = () => race([
+    const readPong = (): Observable<WsResponseMessage | null> => race([
       sendPing(),
       timer(this.options.pingLatency).pipe(map(() => null)),
     ]).pipe(
@@ -321,7 +321,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
     });
   }
 
-  private clean(state: SocketState) {
+  private clean(state: SocketState): void {
     state.reconnectSub?.unsubscribe();
     state.offlineSub?.unsubscribe();
     state.pingPongSub?.unsubscribe();
@@ -334,7 +334,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
       );
   }
 
-  private reconnect(socketState: SocketState) {
+  private reconnect(socketState: SocketState): void {
     if (socketState.reconnectSub) {
       return;
     }
@@ -346,7 +346,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
           socketState.reconnectSub?.unsubscribe();
           socketState.reconnectSub = null;
         }),
-        tap(attempt => this.logger.warn(this.toLoggerMessage('Reconnection attempt #' + (attempt + 1))))
+        tap(attempt => this.logger.warn(this.toLoggerMessage(`Reconnection attempt #${attempt + 1}`)))
       );
 
     socketState.reconnectSub = reconnection$.subscribe(() => {

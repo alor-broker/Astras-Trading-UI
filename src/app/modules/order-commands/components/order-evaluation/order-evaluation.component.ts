@@ -17,7 +17,7 @@ export class OrderEvaluationComponent implements OnInit {
   @Output() quantitySelect = new EventEmitter<number>();
   private readonly evaluationRequest$: BehaviorSubject<EvaluationBaseProperties | null> = new BehaviorSubject<EvaluationBaseProperties | null>(null);
 
-  constructor(private evaluationService: EvaluationService) {
+  constructor(private readonly evaluationService: EvaluationService) {
   }
 
   @Input({required: true})
@@ -26,7 +26,7 @@ export class OrderEvaluationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const getEvaluationDisplay = (request: EvaluationBaseProperties) => this.evaluationService.evaluateOrder(request).pipe(
+    const getEvaluationDisplay = (request: EvaluationBaseProperties): Observable<EvaluationDisplay> => this.evaluationService.evaluateOrder(request).pipe(
       map(evaluation => ({
         ...evaluation,
         currency: request.instrumentCurrency ?? 'RUB'

@@ -70,20 +70,20 @@ export class MobileNavbarComponent implements OnInit {
       );
 
     this.activeInstrument$ = this.dashboardContextService.instrumentsSelection$.pipe(
-      map(selection => selection[defaultBadgeColor])
+      map(selection => selection[defaultBadgeColor]!)
     );
   }
 
-  isFindedPortfolio(portfolio: PortfolioExtended) {
+  isFindedPortfolio(portfolio: PortfolioExtended): boolean {
     const { value } = this.searchControl;
-    return !value || (`${portfolio.market} ${portfolio.portfolio}`).toUpperCase().includes(value.toUpperCase());
+    return value == null || (`${portfolio.market} ${portfolio.portfolio}`).toUpperCase().includes((value).toUpperCase());
   }
 
-  logout() {
+  logout(): void {
     this.auth.logout();
   }
 
-  changePortfolio(key: PortfolioExtended) {
+  changePortfolio(key: PortfolioExtended): void {
     this.dashboardContextService.selectDashboardPortfolio({
       portfolio: key.portfolio,
       exchange: key.exchange,
@@ -91,19 +91,19 @@ export class MobileNavbarComponent implements OnInit {
     });
   }
 
-  changeInstrument(instrument: InstrumentKey | null) {
+  changeInstrument(instrument: InstrumentKey | null): void {
     if (instrument) {
       this.dashboardContextService.selectDashboardInstrument(instrument, defaultBadgeColor);
       this.instrumentControl.setValue(null);
     }
   }
 
-  openTerminalSettings() {
+  openTerminalSettings(): void {
     this.modal.openTerminalSettingsModal();
     this.closeSideMenu();
   }
 
-  openThirdPartyLink(link: string) {
+  openThirdPartyLink(link: string): void {
     window.open(link, "_blank", 'noopener,noreferrer');
   }
 
@@ -111,7 +111,7 @@ export class MobileNavbarComponent implements OnInit {
     return item.key;
   }
 
-  portfoliosTrackByFn(index: number, item: PortfolioExtended) {
+  portfoliosTrackByFn(index: number, item: PortfolioExtended): string {
     return item.market + item.portfolio;
   }
 

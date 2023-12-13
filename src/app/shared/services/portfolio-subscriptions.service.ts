@@ -29,7 +29,7 @@ interface PortfolioRequestBase {
   providedIn: 'root'
 })
 export class PortfolioSubscriptionsService {
-  private subscriptions = new Map<string, Observable<any>>;
+  private readonly subscriptions = new Map<string, Observable<any>>;
 
   constructor(private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService) {
   }
@@ -103,7 +103,7 @@ export class PortfolioSubscriptionsService {
   getInstrumentPositionSubscription(portfolioKey: PortfolioKey, instrumentKey: InstrumentKey): Observable<Position | null> {
     return this.getAllPositionsSubscription(portfolioKey.portfolio, portfolioKey.exchange).pipe(
       map(p => p.find(p => p.symbol === instrumentKey.symbol && p.exchange === instrumentKey.exchange)),
-      map(p => (!p || !p.avgPrice ? null as any : p)),
+      map(p => (!p || !p.avgPrice ? null : p)),
     );
   }
 
@@ -120,7 +120,9 @@ export class PortfolioSubscriptionsService {
           (allOrders, order) => ({ allOrders, order })),
         map(({ allOrders, order }) => {
           order.transTime = new Date(order.transTime);
-          order.endTime = new Date(order.endTime);
+          if (order.endTime) {
+            order.endTime = new Date(order.endTime);
+          }
 
           const lastOrder = order;
           const existingOrder = allOrders.get(order.id);
@@ -154,7 +156,7 @@ export class PortfolioSubscriptionsService {
           (allOrders, order) => ({ allOrders, order })),
         map(({ allOrders, order }) => {
           order.transTime = new Date(order.transTime);
-          order.endTime = new Date(order.endTime);
+          order.endTime = new Date(order.endTime!);
 
           const lastOrder = {
             ...order,
@@ -191,7 +193,7 @@ export class PortfolioSubscriptionsService {
 
     const existedSubscription$ = this.subscriptions.get(subscriptionKey);
     if (!!existedSubscription$) {
-      return existedSubscription$;
+      return existedSubscription$ as Observable<R>;
     }
 
     const newSubscription$ = createSubscription(request).pipe(
@@ -205,7 +207,7 @@ export class PortfolioSubscriptionsService {
     return newSubscription$;
   }
 
-  private isEmptyPosition(position: Position) {
+  private isEmptyPosition(position: Position): boolean {
     return position.qtyT0 === 0 && position.qtyT1 === 0 && position.qtyT2 === 0 && position.qtyTFuture === 0;
   }
 }

@@ -49,7 +49,7 @@ export class OrderDetailsService {
         return {
           ...order,
           transTime: new Date(order.transTime),
-          endTime: new Date(order.endTime),
+          endTime: new Date(order.endTime!),
           triggerPrice: order.stopPrice,
           conditionType: order.condition
         };

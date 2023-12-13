@@ -39,7 +39,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   instrumentSelected = new EventEmitter<InstrumentKey | null>();
   isMobile$!: Observable<boolean>;
   searchControl = new FormControl<string | null>(null);
-  private filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
+  private readonly filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
   private touched = false;
 
   constructor(
@@ -52,7 +52,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   ngOnInit(): void {
     this.isMobile$ = this.deviceService.deviceInfo$
       .pipe(
-        map(d => d.isMobile)
+        map(d => d.isMobile as boolean)
       );
 
     this.filteredInstruments$ = this.filter$.pipe(
@@ -80,7 +80,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
       const parts = value.split(':');
 
       let nextPartIndex = 0;
-      if (!this.exchange) {
+      if (this.exchange == null || !this.exchange.length) {
         filter.exchange = parts[nextPartIndex].toUpperCase();
         nextPartIndex++;
       }
@@ -95,7 +95,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     this.filter$.next(filter);
   }
 
-  onSelect(event: NzOptionSelectionChange, val: InstrumentKey) {
+  onSelect(event: NzOptionSelectionChange, val: InstrumentKey): void {
     if (event.isUserInput) {
       this.emitValue(val);
     }
@@ -109,7 +109,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     this.onValueChanged = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: (...args: any[]) => any): void {
     this.onTouched = fn;
   }
 
@@ -123,17 +123,17 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     }
   }
 
-  checkInstrumentSelection() {
+  checkInstrumentSelection(): void {
     if (this.touched && !this.selectedValue) {
       this.emitValue(null);
     }
   }
 
-  setFocus(){
+  setFocus(): void {
     setTimeout(() => this.searchInput?.nativeElement.focus());
   }
 
-  private emitValue(value: InstrumentKey | null) {
+  private emitValue(value: InstrumentKey | null): void {
     this.selectedValue = value;
     this.onValueChanged(value);
     this.instrumentSelected.emit(value);
@@ -142,10 +142,10 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   private onValueChanged: (value: InstrumentKey | null) => void = () => {
   };
 
-  private onTouched = () => {
+  private onTouched = (): void => {
   };
 
-  private markAsTouched() {
+  private markAsTouched(): void {
     if (!this.touched) {
       this.onTouched();
       this.touched = true;

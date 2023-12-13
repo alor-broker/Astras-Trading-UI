@@ -50,15 +50,11 @@ export class RemoteStorageService {
         if (!!r && !!r.UserSettings) {
           try {
             return {
-              meta: <RecordMeta>JSON.parse(r.UserSettings.Description),
-              value: JSON.parse(r.UserSettings.Content)
+              meta: JSON.parse(r.UserSettings.Description) as RecordMeta,
+              value: JSON.parse(r.UserSettings.Content) as unknown
             };
           } catch (e: any) {
-            this.errorHandlerService.handleError({
-              name: e.name,
-              message: e.message,
-              stack: e.stack
-            });
+            this.errorHandlerService.handleError(e);
 
             return null;
           }
@@ -87,15 +83,11 @@ export class RemoteStorageService {
 
         try {
           return r.map(i => ({
-            meta: <RecordMeta>JSON.parse(i.Description),
-            value: JSON.parse(i.Content)
+            meta: JSON.parse(i.Description) as RecordMeta,
+            value: JSON.parse(i.Content) as unknown
           }));
         } catch (e: any) {
-          this.errorHandlerService.handleError({
-            name: e.name,
-            message: e.message,
-            stack: e.stack
-          });
+          this.errorHandlerService.handleError(e);
 
           return null;
         }

@@ -43,7 +43,7 @@ export class TimeframesPanelComponent implements OnDestroy, OnInit, OnChanges {
   constructor(private readonly destroyRef: DestroyRef) {
   }
 
-  containerSizeChanged(entries: ResizeObserverEntry[]) {
+  containerSizeChanged(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       this.contentSize$.next({
         width: Math.floor(x.contentRect.width),
@@ -70,7 +70,7 @@ export class TimeframesPanelComponent implements OnDestroy, OnInit, OnChanges {
     this.checkDisplayMode();
   }
 
-  private checkDisplayMode() {
+  private checkDisplayMode(): void {
     this.actualDisplayMode$.next(this.displayMode);
 
     if (this.displayMode !== TimeFrameDisplayMode.Buttons) {

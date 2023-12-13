@@ -6,15 +6,15 @@ import {
 } from "./csv-formatter";
 
 interface TestData {
-  a: string,
-  b: string
+  a: string;
+  b: string;
 }
 
 interface TestCase {
-  meta: ExportColumnMeta<TestData>[],
-  data: TestData[],
-  config: CsvFormatterConfig,
-  expectedResult: (meta: ExportColumnMeta<TestData>[], data: TestData[], config: CsvFormatterConfig) => string
+  meta: ExportColumnMeta<TestData>[];
+  data: TestData[];
+  config: CsvFormatterConfig;
+  expectedResult: (meta: ExportColumnMeta<TestData>[], data: TestData[], config: CsvFormatterConfig) => string;
 }
 
 describe('CsvFormatter', () => {
@@ -30,7 +30,7 @@ describe('CsvFormatter', () => {
           ...csvFormatterConfigDefaults,
           addBOM: false
         },
-        expectedResult: (meta: ExportColumnMeta<TestData>[], data: TestData[], config: CsvFormatterConfig) => {
+        expectedResult: (meta: ExportColumnMeta<TestData>[], data: TestData[], config: CsvFormatterConfig): string => {
           const expectedHeader = `${meta[0].title}${config.fieldSeparator}${meta[1].title}`;
           const expectedBody = `${data[0].a}${config.fieldSeparator}${data[0].b}`;
 
@@ -46,7 +46,7 @@ describe('CsvFormatter', () => {
           ...csvFormatterConfigDefaults,
           addBOM: false
         },
-        expectedResult: (meta: ExportColumnMeta<TestData>[], data: TestData[], config: CsvFormatterConfig) => {
+        expectedResult: (meta: ExportColumnMeta<TestData>[], data: TestData[], config: CsvFormatterConfig): string => {
           const expectedHeader = `${meta[0].title}${config.fieldSeparator}${meta[1].title}`;
           const expectedBody = `${data[0].a}${config.fieldSeparator}"${data[0].b}"`;
 
@@ -62,7 +62,7 @@ describe('CsvFormatter', () => {
           ...csvFormatterConfigDefaults,
           addBOM: false
         },
-        expectedResult: (meta: ExportColumnMeta<TestData>[], data: TestData[], config: CsvFormatterConfig) => {
+        expectedResult: (meta: ExportColumnMeta<TestData>[], data: TestData[], config: CsvFormatterConfig): string => {
           const expectedHeader = `${meta[0].title}${config.fieldSeparator}${meta[1].title}`;
           const expectedBody = `${data[0].a}${config.fieldSeparator}"${data[0].b}""`;
 

@@ -13,7 +13,7 @@ export class HttpErrorHandler implements ApplicationErrorHandler {
   constructor(private readonly logger: LoggerService, private readonly notification: NzNotificationService) {
   }
 
-  handleError(error: Error | HttpErrorResponse) {
+  handleError(error: Error | HttpErrorResponse): void {
     if (!(error instanceof HttpErrorResponse)) {
       return;
     }
@@ -23,10 +23,10 @@ export class HttpErrorHandler implements ApplicationErrorHandler {
     }
     else {
       let errorMessage: string;
-      let errorTitle: string = 'Ошибка';
+      let errorTitle = 'Ошибка';
       if (error.error instanceof ErrorEvent) {
         // Other errors go here
-        errorMessage = `Произошла ошибка: ${error?.message}`;
+        errorMessage = `Произошла ошибка: ${error.message}`;
       }
       else {
         // Backend error goes here

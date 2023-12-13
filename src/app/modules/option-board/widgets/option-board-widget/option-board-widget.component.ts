@@ -14,7 +14,7 @@ import {TerminalSettingsService} from "../../../../shared/services/terminal-sett
   styleUrls: ['./option-board-widget.component.less']
 })
 export class OptionBoardWidgetComponent implements OnInit {
-  shouldShowSettings: boolean = false;
+  shouldShowSettings = false;
 
   @Input({required: true})
   widgetInstance!: WidgetInstance;
@@ -34,7 +34,7 @@ export class OptionBoardWidgetComponent implements OnInit {
     return this.widgetInstance.instance.guid;
   }
 
-  onSettingsChange() {
+  onSettingsChange(): void {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 

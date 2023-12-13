@@ -22,7 +22,7 @@ import { EnvironmentService } from "./environment.service";
   providedIn: 'root',
 })
 export class AccountService {
-  private accountUrl = this.environmentService.clientDataUrl + '/client/v1.0';
+  private readonly accountUrl = this.environmentService.clientDataUrl + '/client/v1.0';
 
   constructor(
     private readonly environmentService: EnvironmentService,
@@ -32,7 +32,7 @@ export class AccountService {
   ) {
   }
 
-  getFullName() {
+  getFullName(): Observable<FullName> {
     return this.auth.currentUser$.pipe(
       switchMap((u) =>
         this.http.get<FullName>(`${this.accountUrl}/users/${u.login}/full-name`)

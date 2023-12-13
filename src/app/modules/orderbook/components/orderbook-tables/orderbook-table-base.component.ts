@@ -51,13 +51,13 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
       mapWith(
         settings => this.instrumentsService.getInstrument(settings),
         (widgetSettings, instrument) => ({ widgetSettings, instrument } as ExtendedOrderbookSettings)
       ),
-      filter(x => !!x.instrument),
+      filter(x => !!(x.instrument as Instrument | null)),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
@@ -73,12 +73,12 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
     ).subscribe(s => this.themeSettings = s);
   }
 
-  newLimitOrder(event: MouseEvent, price: number, quantity?: number) {
+  newLimitOrder(event: MouseEvent, price: number, quantity?: number): void {
     event.stopPropagation();
     this.settings$.pipe(
       take(1)
     ).subscribe(settings => {
-      if (settings.widgetSettings.useOrderWidget) {
+      if (settings.widgetSettings.useOrderWidget ?? false) {
         this.widgetsSharedDataService.setDataProviderValue<SelectedPriceData>('selectedPrice', {
           price,
           badgeColor: settings.widgetSettings.badgeColor!
@@ -97,7 +97,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
     });
   }
 
-  updateOrderPrice(order: CurrentOrder, price: number) {
+  updateOrderPrice(order: CurrentOrder, price: number): void {
     if(order.type !== 'limit' && order.type !== 'stop' &&  order.type !== 'stoplimit') {
       return;
     }
@@ -120,14 +120,14 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
     });
   }
 
-  cancelOrder(event: MouseEvent, orders: CurrentOrder[]) {
+  cancelOrder(event: MouseEvent, orders: CurrentOrder[]): void {
     event.stopPropagation();
     for (const order of orders) {
       this.service.cancelOrder(order);
     }
   }
 
-  getBidStyle(value: number) {
+  getBidStyle(value: number): { [styleProp: string]: string } | null {
     if (!this.themeSettings || !this.ob) {
       return null;
     }
@@ -138,7 +138,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
     };
   }
 
-  getAskStyle(value: number) {
+  getAskStyle(value: number): { [styleProp: string]: string } | null {
     if (!this.themeSettings || !this.ob) {
       return null;
     }

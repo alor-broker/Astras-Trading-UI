@@ -13,7 +13,7 @@ import { EntityStatus } from '../../shared/models/enums/entity-status';
 import { PortfoliosInternalActions } from "./portfolios.actions";
 
 export interface PortfoliosState extends EntityState<PortfolioExtended> {
-  status: EntityStatus
+  status: EntityStatus;
 }
 
 const adapter: EntityAdapter<PortfolioExtended> = createEntityAdapter<PortfolioExtended>({

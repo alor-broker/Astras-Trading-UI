@@ -31,7 +31,7 @@ export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
   constructor(private readonly dataContextService: ScalperOrderBookDataContextService) {
   }
 
-  changeLossOrProfitDisplayType() {
+  changeLossOrProfitDisplayType(): void {
     this.lossOrProfitDisplayType$.pipe(
       take(1)
     ).subscribe(currentType => {

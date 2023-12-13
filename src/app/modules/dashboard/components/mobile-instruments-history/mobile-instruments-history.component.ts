@@ -28,10 +28,10 @@ export class MobileInstrumentsHistoryComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.instruments$ = this.mobileDashboardService.getInstrumentsHistory()
       .pipe(
-        filter(instruments => !!instruments?.length),
+        filter(instruments => (instruments ?? []).length > 0),
         switchMap(instruments => {
           return forkJoin(
             instruments!.map(instrument =>
@@ -54,11 +54,11 @@ export class MobileInstrumentsHistoryComponent implements OnInit {
       );
   }
 
-  selectInstrument(instrument: InstrumentKey) {
+  selectInstrument(instrument: InstrumentKey): void {
     this.dashboardContextService.selectDashboardInstrument(instrument, defaultBadgeColor);
   }
 
-  isInstrumentEqual(i1: InstrumentKey, i2: InstrumentKey) {
+  isInstrumentEqual(i1: InstrumentKey, i2: InstrumentKey): boolean {
     return isInstrumentEqual(i1, i2);
   }
 }

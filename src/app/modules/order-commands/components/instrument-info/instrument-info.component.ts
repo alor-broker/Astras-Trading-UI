@@ -14,19 +14,19 @@ import {PortfolioSubscriptionsService} from "../../../../shared/services/portfol
 })
 export class InstrumentInfoComponent implements OnInit, OnDestroy {
   viewData$!: Observable<{
-    instrumentKey: InstrumentKey,
-    position: { abs: number, quantity: number },
+    instrumentKey: InstrumentKey;
+    position: { abs: number, quantity: number };
     priceData: {
-      dayOpen: number,
-      prevClose: number
-      dayChange: number,
-      dayChangePerPrice: number
-      lastPrice: number,
-      ask: number,
-      bid: number,
-      high: number,
-      low: number
-    }
+      dayOpen: number;
+      prevClose: number;
+      dayChange: number;
+      dayChangePerPrice: number;
+      lastPrice: number;
+      ask: number;
+      bid: number;
+      high: number;
+      low: number;
+    };
   }>;
 
   @Output()
@@ -103,8 +103,8 @@ export class InstrumentInfoComponent implements OnInit, OnDestroy {
         lastPrice: quote.last_price,
         ask: quote.ask,
         bid: quote.bid,
-        dayOpen: quote.open_price ?? 0,
-        prevClose: quote.prev_close_price ?? 0
+        dayOpen: (quote.open_price as number | undefined) ?? 0,
+        prevClose: (quote.prev_close_price as number | undefined) ?? 0
       }))
     );
 

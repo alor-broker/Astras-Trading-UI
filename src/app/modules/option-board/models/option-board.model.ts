@@ -39,7 +39,7 @@ export interface Option extends OptionKey {
     vega: number;
     theta: number;
     rho: number;
-  }
+  };
 }
 
 export interface UnderlyingAsset {

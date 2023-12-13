@@ -42,7 +42,7 @@ import {UserPortfoliosService} from "../../../../shared/services/user-portfolios
   ]
 })
 export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseComponent<PortfolioCurrency[]> implements OnInit, OnDestroy {
-  form!: UntypedFormArray;
+  form?: UntypedFormArray;
   currencies$!: Observable<ExchangeRate[]>;
 
   private formSubscriptions?: Subscription;
@@ -96,7 +96,7 @@ export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseCom
     return this.form.touched;
   }
 
-  private initForm(currentValue: PortfolioCurrency[] | null) {
+  private initForm(currentValue: PortfolioCurrency[] | null): void {
     this.getPortfolioCurrencies(currentValue ?? []).pipe(
       take(1)
     ).subscribe(portfolios => {
@@ -109,10 +109,10 @@ export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseCom
         }))
       );
 
-      const emit = () => {
+      const emit = (): void => {
         this.emitValue(
-          this.form.valid
-            ? (this.form.value ?? []) as PortfolioCurrency[]
+          this.form!.valid
+            ? (this.form!.value ?? []) as PortfolioCurrency[]
             : null
         );
       };
@@ -143,7 +143,7 @@ export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseCom
                     pc => pc.portfolio.portfolio === portfolio.portfolio && pc.portfolio.exchange === portfolio.exchange
                   );
 
-                  return existingSettings || { portfolio, currency: p.currencyInstrument };
+                  return existingSettings ?? { portfolio, currency: p.currencyInstrument };
                 }))
             )
           );

@@ -7,7 +7,7 @@
 >
   <ng-container *transloco="let t; scope: 'blotter/settings'">
   <div *ngIf="deviceInfo$ | async as deviceInfo">
-    <form nz-form [nzLayout]="'horizontal'" [formGroup]="form">
+    <form *ngIf="form" nz-form [nzLayout]="'horizontal'" [formGroup]="form">
       <nz-form-item *ngIf="!deviceInfo.isMobile">
         <nz-form-control [nzErrorTip]="t('blotterSettings.portfolioError')">
           <nz-form-label nzRequired nzFor="portfolio">{{t('blotterSettings.portfolioLabel')}}</nz-form-label>
@@ -83,7 +83,7 @@
             [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
             formControlName="stopOrdersColumns"
             atsRemoveSelectTitles
-            [valueChanges]="form.get('stopOrdersColumns')?.valueChanges"
+            [valueChanges]="form!.get('stopOrdersColumns')?.valueChanges"
           >
             <nz-option
               *ngFor="let item of allStopOrdersColumns"

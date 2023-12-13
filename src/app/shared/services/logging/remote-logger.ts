@@ -13,19 +13,19 @@ import {
 import { LocalStorageLoggingConstants } from "../../constants/local-storage.constants";
 
 interface LogEntry {
-  timestamp: string,
-  logLevel: LogLevel,
-  message: string,
-  stack?: string,
-  sessionId: string,
-  login: string,
-  device: string,
-  browser: string,
-  version: string,
-  environment: 'local' | 'dev' | 'prod'
+  timestamp: string;
+  logLevel: LogLevel;
+  message: string;
+  stack?: string;
+  sessionId: string;
+  login: string;
+  device: string;
+  browser: string;
+  version: string;
+  environment: 'local' | 'dev' | 'prod';
 }
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class RemoteLogger extends LoggerBase {
   private readonly buffer: LogEntry[] = [];
@@ -50,10 +50,10 @@ export class RemoteLogger extends LoggerBase {
       );
   }
 
-  public isLoggerRequest(url: string) {
+  public isLoggerRequest(url: string): boolean {
     const loggerUrl = this.getConfig()?.loggingServerUrl;
 
-    if (!loggerUrl) {
+    if (loggerUrl == null) {
       return false;
     }
 
@@ -99,7 +99,7 @@ export class RemoteLogger extends LoggerBase {
     };
   }
 
-  private flushBuffer() {
+  private flushBuffer(): void {
     try {
       const config = this.getConfig()!;
 
@@ -119,13 +119,13 @@ export class RemoteLogger extends LoggerBase {
               currentValue
             ];
           },
-          [] as any[]
+          [] as (LogEntry | { index: { _index: string} })[]
         );
 
 
         this.httpClient.post(
           `${config.loggingServerUrl}/_bulk`,
-          bulkData.map(x => JSON.stringify(x)).join('\n') + '\n',
+          bulkData.map(x => JSON.stringify(x)).join('\n') as string + '\n',
           {
             headers: {
               'Content-Type': 'application/json',

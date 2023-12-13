@@ -72,14 +72,14 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
   };
   readonly layoutSizes$ = new BehaviorSubject<LayoutSizes>(this.defaultLayoutSizes);
   private readonly optionDisplayParameterMap = new Map<OptionParameters, (option: Option) => string>([
-    [OptionParameters.Price, (option: Option) => option.calculations.price.toString()],
-    [OptionParameters.Delta, (option: Option) => MathHelper.round(option.calculations.delta, 2).toString()],
-    [OptionParameters.Gamma, (option: Option) => MathHelper.round(option.calculations.gamma, 2).toString()],
-    [OptionParameters.Vega, (option: Option) => MathHelper.round(option.calculations.vega, 2).toString()],
-    [OptionParameters.Theta, (option: Option) => MathHelper.round(option.calculations.theta, 2).toString()],
-    [OptionParameters.Rho, (option: Option) => MathHelper.round(option.calculations.rho, 2).toString()],
-    [OptionParameters.Ask, (option: Option) => option.ask.toString()],
-    [OptionParameters.Bid, (option: Option) => option.bid.toString()]
+    [OptionParameters.Price, (option: Option): string => option.calculations.price.toString()],
+    [OptionParameters.Delta, (option: Option): string => MathHelper.round(option.calculations.delta, 2).toString()],
+    [OptionParameters.Gamma, (option: Option): string => MathHelper.round(option.calculations.gamma, 2).toString()],
+    [OptionParameters.Vega, (option: Option): string => MathHelper.round(option.calculations.vega, 2).toString()],
+    [OptionParameters.Theta, (option: Option): string => MathHelper.round(option.calculations.theta, 2).toString()],
+    [OptionParameters.Rho, (option: Option): string => MathHelper.round(option.calculations.rho, 2).toString()],
+    [OptionParameters.Ask, (option: Option): string => option.ask.toString()],
+    [OptionParameters.Bid, (option: Option): string => option.bid.toString()]
   ]);
 
   constructor(
@@ -105,7 +105,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
     return dateDiffInDays(new Date(), expirationDate);
   }
 
-  updateContainerSize(entries: ResizeObserverEntry[]) {
+  updateContainerSize(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       this.contentSize$.next({
         width: Math.floor(x.contentRect.width),
@@ -127,7 +127,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
     return item.getTime();
   }
 
-  updateOptionSelection(option: OptionDisplay, underlyingAsset: UnderlyingAsset) {
+  updateOptionSelection(option: OptionDisplay, underlyingAsset: UnderlyingAsset): void {
     this.dataContext.updateOptionSelection(option, underlyingAsset);
   }
 
@@ -139,7 +139,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
     return !!selectedOptions.selectedOptions.find(x => option.symbol === x.symbol);
   }
 
-  private initMatrixStream() {
+  private initMatrixStream(): void {
     const afterRefreshActions: ((matrix: OptionsMatrix) => void)[] = [];
 
     const refreshTimer$ = timer(0, 60000).pipe(
@@ -179,7 +179,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  private initLayoutRecalculation() {
+  private initLayoutRecalculation(): void {
     combineLatest([
       this.optionsMatrix$,
       this.contentSize$
@@ -203,18 +203,18 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  private setBodyScrollContainer() {
+  private setBodyScrollContainer(): void {
     this.bodyScroll$ = this.bodyScrollContainerQuery.changes.pipe(
-      map(x => x.first),
+      map(x => x.first as CdkVirtualScrollViewport | undefined),
       startWith(this.bodyScrollContainerQuery.first),
       filter((x): x is CdkVirtualScrollViewport => !!x),
       shareReplay(1)
     );
   }
 
-  private initHorizontalScrollSync() {
+  private initHorizontalScrollSync(): void {
     const header$ = this.headerContainerQuery.changes.pipe(
-      map(x => x.first),
+      map(x => x.first as ElementRef<HTMLElement> | undefined),
       startWith(this.bodyScrollContainerQuery.first),
       filter((x): x is ElementRef<HTMLElement> => !!x),
       map(x => x.nativeElement),
@@ -235,7 +235,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  private initCurrentPriceYPosition() {
+  private initCurrentPriceYPosition(): void {
     const displayRange$ = this.bodyScroll$.pipe(
       switchMap(x => x.renderedRangeStream)
     );
@@ -271,17 +271,17 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
 
-        if (!prevPriceIndex || !nextPriceIndex || !positionIndex) {
+        if (!(prevPriceIndex ?? 0) || !(nextPriceIndex ?? 0) || !(positionIndex ?? 0)) {
           return null;
         }
 
-        const priceDiff = nextPriceIndex - prevPriceIndex;
+        const priceDiff = nextPriceIndex! - prevPriceIndex!;
         const pricePerPixel = priceDiff > 0
           ? this.rowHeight / priceDiff
           : 1;
 
-        const topOffset = (currentPrice - prevPriceIndex) * pricePerPixel;
-        return Math.floor((positionIndex * this.rowHeight) + (this.rowHeight / 2) + topOffset);
+        const topOffset = (currentPrice - prevPriceIndex!) * pricePerPixel;
+        return Math.floor((positionIndex! * this.rowHeight) + (this.rowHeight / 2) + topOffset);
       }),
       shareReplay(1)
     );
@@ -299,10 +299,10 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
     const dates = new Set<number>();
     const prices = new Set<number>();
     const optionsMap = new Map<string, Option>;
-    let maxPriceIndexLength: number = 0;
-    let maxDisplayParameterLength: number = 0;
+    let maxPriceIndexLength = 0;
+    let maxDisplayParameterLength = 0;
 
-    const getMapKey = (price: number, date: number) => `${price}:${date}`;
+    const getMapKey = (price: number, date: number): string => `${price}:${date}`;
 
     for (let option of options.options) {
       prices.add(option.strikePrice);
@@ -367,7 +367,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
     return optionDisplay;
   }
 
-  private scrollToPrice(matrix: OptionsMatrix) {
+  private scrollToPrice(matrix: OptionsMatrix): void {
     setTimeout(() => {
       this.bodyScroll$.pipe(
         take(1)
@@ -391,12 +391,12 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         setTimeout(() => {
-          if (!!strikeIndex) {
+          if (!!(strikeIndex ?? 0)) {
             const viewPortSize = bodyScroll.measureViewportSize('vertical');
             const visibleItemsCount = viewPortSize / this.rowHeight;
             const centerCorrection = Math.floor(visibleItemsCount / 2) - 1;
 
-            bodyScroll.scrollToIndex(strikeIndex - centerCorrection);
+            bodyScroll.scrollToIndex(strikeIndex! - centerCorrection);
           }
         });
       });

@@ -24,7 +24,7 @@ export interface PriceSparkSubscription extends SubscriptionBase {
   exchange: string;
   board?: string;
   price: number;
-  priceCondition: LessMore
+  priceCondition: LessMore;
 }
 
 export interface OrderExecuteSubscription extends SubscriptionBase {

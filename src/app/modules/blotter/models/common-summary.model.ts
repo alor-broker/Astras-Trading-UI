@@ -3,21 +3,21 @@
  */
 export interface CommonSummaryModel {
   /** покупательная способности на утро **/
-  buyingPowerAtMorning: number,
+  buyingPowerAtMorning: number;
   /** покупательная способность **/
-  buyingPower: number,
+  buyingPower: number;
   /** прибыль **/
-  profit: number,
+  profit: number;
   /** % прибыли **/
-  profitRate: number,
+  profitRate: number;
   /** оценка ликвидного портфеля **/
-  portfolioEvaluation: number,
+  portfolioEvaluation: number;
   /**  оценка ликвидационной стоймости портфеля **/
-  portfolioLiquidationValue: number,
+  portfolioLiquidationValue: number;
   /** начальная маржа **/
-  initialMargin: number,
+  initialMargin: number;
   /** НПР2 **/
-  riskBeforeForcePositionClosing: number,
+  riskBeforeForcePositionClosing: number;
   /** Комиссия **/
-  commission: number
+  commission: number;
 }

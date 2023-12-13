@@ -62,7 +62,7 @@ export class CompactHeaderComponent implements OnInit, OnDestroy {
       switchMap(([instrument, portfolio]) => this.portfolioSubscriptionsService.getInstrumentPositionSubscription(portfolio!, instrument!)),
       map(p => {
           if (!p) {
-            return null as any;
+            return null;
           }
 
           return {
@@ -71,7 +71,7 @@ export class CompactHeaderComponent implements OnInit, OnDestroy {
           };
         }
       ),
-      startWith(null)
+      startWith(null as ({ abs: number, quantity: number } | null))
     );
   }
 }

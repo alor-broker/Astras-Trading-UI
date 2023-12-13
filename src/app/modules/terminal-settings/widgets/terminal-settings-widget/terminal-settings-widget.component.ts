@@ -21,7 +21,7 @@ export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
   private initialSettingsFormValue!: TerminalSettings;
 
   constructor(
-    private modal: ModalService,
+    private readonly modal: ModalService,
     private readonly terminalSettingsService: TerminalSettingsService,
   ) {
   }
@@ -39,11 +39,11 @@ export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
     this.isVisible$ = this.modal.shouldShowTerminalSettingsModal$;
   }
 
-  closeModal() {
+  closeModal(): void {
     this.modal.closeTerminalSettingsModal();
   }
 
-  handleClose() {
+  handleClose(): void {
     if (this.isSaveAvailable && this.isSettingsHasChanges) {
       this.saveSettingsChanges();
       return;
@@ -52,14 +52,14 @@ export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
     this.closeModal();
   }
 
-  formChange(event: { value: TerminalSettings | null, isInitial: boolean }) {
+  formChange(event: { value: TerminalSettings | null, isInitial: boolean }): void {
     this.settingsFormValue = event.value;
     if (event.isInitial && !!event.value) {
       this.initialSettingsFormValue = event.value;
     }
   }
 
-  saveSettingsChanges() {
+  saveSettingsChanges(): void {
     if (this.settingsFormValue) {
       this.isLoading$.next(true);
 

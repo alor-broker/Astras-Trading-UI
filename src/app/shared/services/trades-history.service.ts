@@ -20,10 +20,10 @@ export class TradesHistoryService {
   }
 
   getTradesHistoryForPortfolio(exchange: string, portfolio: string, options?: Partial<{
-    from: string | null,
-    limit: number | null
+    from: string | null;
+    limit: number | null;
   }>): Observable<Trade[] | null> {
-    let params: any = {
+    let params: { [propName: string]: any } = {
       descending: true
     };
 
@@ -32,7 +32,7 @@ export class TradesHistoryService {
         params.limit = options.limit;
       }
 
-      if (options.from) {
+      if (options.from != null) {
         params.from = options.from;
       }
     }
@@ -57,10 +57,10 @@ export class TradesHistoryService {
   }
 
   getTradesHistoryForSymbol(exchange: string, portfolio: string, symbol: string, options?: Partial<{
-    from: string | null,
-    limit: number | null
+    from: string | null;
+    limit: number | null;
   }>): Observable<Trade[] | null> {
-    let params: any = {
+    let params: { [propName: string]: any } = {
       descending: true
     };
 
@@ -69,7 +69,7 @@ export class TradesHistoryService {
         params.limit = options.limit;
       }
 
-      if (options.from) {
+      if (options.from != null) {
         params.from = options.from;
       }
     }

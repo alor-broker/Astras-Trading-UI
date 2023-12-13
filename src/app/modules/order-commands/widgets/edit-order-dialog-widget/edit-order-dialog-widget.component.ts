@@ -28,7 +28,7 @@ export class EditOrderDialogWidgetComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  cancelEditing() {
+  cancelEditing(): void {
     this.dialogParams$.pipe(
       take(1)
     ).subscribe(p => {
@@ -37,11 +37,11 @@ export class EditOrderDialogWidgetComponent implements OnInit, OnDestroy {
     });
   }
 
-  closeDialog() {
+  closeDialog(): void {
     this.ordersDialogService.closeEditOrderDialog();
   }
 
-  setCommonParameters(params: Partial<CommonParameters>) {
+  setCommonParameters(params: Partial<CommonParameters>): void {
     this.commonParametersService.setParameters(params);
   }
 
@@ -59,7 +59,7 @@ export class EditOrderDialogWidgetComponent implements OnInit, OnDestroy {
     );
   }
 
-  submit() {
+  submit(): void {
     this.formState$.pipe(
       filter(s => !!s?.submit),
       take(1)

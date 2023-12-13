@@ -6,7 +6,7 @@ import { WatchlistCollectionService } from "../services/watchlist-collection.ser
 
 export class WatchListTitleHelper {
   static getTitleTranslationKey(list: Watchlist): string {
-    if ((list.isDefault || list.type === WatchlistType.DefaultList) && list.title === WatchlistCollectionService.DefaultListName) {
+    if (((list.isDefault ?? false) || list.type === WatchlistType.DefaultList) && list.title === WatchlistCollectionService.DefaultListName) {
       return 'defaultWatchlistTypeTitle';
     }
 

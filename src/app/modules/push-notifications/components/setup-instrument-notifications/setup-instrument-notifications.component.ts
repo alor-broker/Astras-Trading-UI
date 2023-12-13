@@ -2,7 +2,10 @@ import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
 import { BehaviorSubject, fromEvent, NEVER, Observable, of, shareReplay, switchMap, take } from "rxjs";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {PushNotificationsService} from "../../services/push-notifications.service";
-import {PriceSparkSubscription, PushSubscriptionType} from "../../models/push-notifications.model";
+import {
+  PriceSparkSubscription,
+  PushSubscriptionType
+} from "../../models/push-notifications.model";
 import {mapWith} from "../../../../shared/utils/observable-helper";
 import {LessMore} from "../../../../shared/models/enums/less-more.model";
 import {FormControl, UntypedFormGroup, Validators} from "@angular/forms";
@@ -20,7 +23,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy {
   isNotificationsAllowed$!: Observable<boolean>;
   currentInstrumentSubscriptions$!: Observable<PriceSparkSubscription[]>;
-  newPriceChangeSubscriptionForm!: UntypedFormGroup;
+  newPriceChangeSubscriptionForm?: UntypedFormGroup;
   readonly isLoading$ = new BehaviorSubject(false);
   readonly availablePriceConditions = Object.values(LessMore);
   instrument$!: Observable<Instrument>;
@@ -84,7 +87,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
       .subscribe(() => this.refresh$.next(null));
   }
 
-  cancelSubscription(id: string) {
+  cancelSubscription(id: string): void {
     this.isLoading$.next(true);
     this.pushNotificationsService.cancelSubscription(id).pipe(
       take(1)
@@ -96,12 +99,12 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
     this.instrumentKey$.pipe(
       take(1),
       filter((x): x is InstrumentKey => !!x),
-      switchMap(instrumentKey => {
-        if (!this.newPriceChangeSubscriptionForm.valid) {
+      switchMap((instrumentKey: InstrumentKey) => {
+        if (!(this.newPriceChangeSubscriptionForm?.valid ?? false)) {
           return NEVER;
         }
 
-        const subscriptionParams = this.newPriceChangeSubscriptionForm.value;
+        const subscriptionParams = this.newPriceChangeSubscriptionForm!.value as { price: string, priceCondition: LessMore };
 
         this.isLoading$.next(true);
         return this.pushNotificationsService.subscribeToPriceChange({
@@ -119,14 +122,14 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
     });
   }
 
-  private initNotificationStatusCheck() {
+  private initNotificationStatusCheck(): void {
     this.isNotificationsAllowed$ = this.pushNotificationsService.getBrowserNotificationsStatus().pipe(
       map(s => s === "granted"),
       shareReplay(1)
     );
   }
 
-  private initCurrentInstrumentSubscriptions() {
+  private initCurrentInstrumentSubscriptions(): void {
     this.currentInstrumentSubscriptions$ =
       this.isNotificationsAllowed$.pipe(
         filter(x => x),
@@ -148,14 +151,14 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
               .map(x => x as PriceSparkSubscription)
               .filter(x => x.instrument === instrumentKey?.symbol
                 && x.exchange === instrumentKey.exchange
-                && (!instrumentKey.instrumentGroup || instrumentKey.instrumentGroup === x.board))
+                && (!(instrumentKey.instrumentGroup ?? '') || instrumentKey.instrumentGroup === x.board))
               .sort((a, b) => this.sortSubscriptions(a, b));
           }
         )
       );
   }
 
-  private initInstrument() {
+  private initInstrument(): void {
     this.instrument$ = this.instrumentKey$.pipe(
       filter((i): i is InstrumentKey => !!i),
       switchMap(instrumentKey => this.instrumentService.getInstrument(instrumentKey)),
@@ -176,7 +179,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
     return priceCompare;
   }
 
-  private initNewPriceChangeSubscriptionForm() {
+  private initNewPriceChangeSubscriptionForm(): void {
     this.newPriceChangeSubscriptionForm = new UntypedFormGroup({
       price: new FormControl(
         null,
@@ -192,7 +195,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
     });
   }
 
-  private initNotificationsUpdateSubscription() {
+  private initNotificationsUpdateSubscription(): void {
     fromEvent(document, 'visibilitychange')
       .pipe(
         filter(() => document.visibilityState === 'visible'),

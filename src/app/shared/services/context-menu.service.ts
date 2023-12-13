@@ -19,7 +19,7 @@ const listOfPositions = [
 ];
 
 export interface ContextMenuServiceConfig {
-  scrollStrategy: 'close' | 'noop' | 'block'
+  scrollStrategy: 'close' | 'noop' | 'block';
 }
 
 export const ContextMenuServiceDefaultConfig: ContextMenuServiceConfig = {
@@ -35,10 +35,10 @@ export class ContextMenuService {
   private overlayRef: OverlayRef | null = null;
   private closeSubscription = Subscription.EMPTY;
 
-  constructor(private ngZone: NgZone, private overlay: Overlay) {}
+  constructor(private readonly ngZone: NgZone, private readonly overlay: Overlay) {}
 
   create(
-    $event: MouseEvent | { x: number; y: number },
+    $event: MouseEvent | { x: number, y: number },
     nzDropdownMenuComponent: NzDropdownMenuComponent,
     config: ContextMenuServiceConfig = ContextMenuServiceDefaultConfig): void {
 
@@ -83,7 +83,7 @@ export class ContextMenuService {
     );
   }
 
-  close(clear: boolean = false): void {
+  close(clear = false): void {
     if (this.overlayRef) {
       this.overlayRef.detach();
       if (clear) {

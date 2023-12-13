@@ -25,7 +25,7 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
   styleUrls: ['./all-instruments-settings.component.less']
 })
 export class AllInstrumentsSettingsComponent extends WidgetSettingsBaseComponent<AllInstrumentsSettings> implements OnInit {
-  form!: UntypedFormGroup;
+  form?: UntypedFormGroup;
   allInstrumentsColumns: BaseColumnId[] = allInstrumentsColumns;
 
   protected settings$!: Observable<AllInstrumentsSettings>;
@@ -52,17 +52,15 @@ export class AllInstrumentsSettingsComponent extends WidgetSettingsBaseComponent
     this.settings$.pipe(
       takeUntilDestroyed(this.destroyRef),
     ).subscribe(settings => {
-      if (settings) {
-        this.form = new UntypedFormGroup({
-          allInstrumentsColumns: new UntypedFormControl(settings.allInstrumentsColumns, Validators.required),
-        });
-      }
+      this.form = new UntypedFormGroup({
+        allInstrumentsColumns: new UntypedFormControl(settings.allInstrumentsColumns, Validators.required),
+      });
     });
   }
 
   protected getUpdatedSettings(): Partial<AllInstrumentsSettings> {
     return {
-      ...this.form.value,
-    };
+      ...this.form!.value,
+    } as Partial<AllInstrumentsSettings>;
   }
 }

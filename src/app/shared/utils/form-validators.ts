@@ -60,11 +60,11 @@ export class AtsValidators {
       return priceStep$.pipe(
         take(1),
         map(step => {
-          if (!step) {
+          if (step == null || !step) {
             return null;
           }
 
-          return AtsValidators.priceStepMultiplicity(step)(control);
+          return AtsValidators.priceStepMultiplicity(step as number)(control);
         })
       );
     };
@@ -114,10 +114,10 @@ export class AtsValidators {
    */
   static requiredIfTrue(dependencyField: string, dependentField: string): ValidatorFn {
     return (form: AbstractControl): ValidationErrors | null => {
-      const dependencyFieldValue = dependencyField.split('.')
-        .reduce((acc, curr) => acc[curr], form.value);
-      const dependentFieldValue = dependentField.split('.')
-        .reduce((acc, curr) => acc[curr], form.value);
+      const dependencyFieldValue: unknown = dependencyField.split('.')
+        .reduce((acc, curr) => acc[curr] as string, form.value);
+      const dependentFieldValue: unknown = dependentField.split('.')
+        .reduce((acc, curr) => acc[curr] as string, form.value);
 
       if (!dependencyFieldValue || dependentFieldValue) {
         return null;

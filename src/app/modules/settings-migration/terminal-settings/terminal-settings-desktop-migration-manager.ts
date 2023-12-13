@@ -8,7 +8,7 @@ import { MigrationsMetaService } from "../services/migrations-meta.service";
 export class TerminalSettingsDesktopMigrationManager extends DesktopMigrationManagerBase {
   protected migrations = [];
 
-  constructor(migrationsMetaService: MigrationsMetaService) {
+  constructor(protected readonly migrationsMetaService: MigrationsMetaService) {
     super(migrationsMetaService);
   }
 }

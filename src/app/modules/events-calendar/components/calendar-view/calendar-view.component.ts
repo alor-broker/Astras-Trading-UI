@@ -13,15 +13,15 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   styleUrls: ['./calendar-view.component.less']
 })
 export class CalendarViewComponent implements AfterViewInit, OnDestroy {
-  private symbols$ = new BehaviorSubject<string[]>([]);
+  private readonly symbols$ = new BehaviorSubject<string[]>([]);
 
   @Input()
   set symbols(value: string[]) {
     this.symbols$.next(value);
   }
 
-  @ViewChild('startPeriodCalendar') startPeriodCalendarComp!: NzCalendarComponent;
-  @ViewChild('endPeriodCalendar') endPeriodCalendarComp!: NzCalendarComponent;
+  @ViewChild('startPeriodCalendar') startPeriodCalendarComp?: NzCalendarComponent;
+  @ViewChild('endPeriodCalendar') endPeriodCalendarComp?: NzCalendarComponent;
 
   events$ = new BehaviorSubject<CalendarEvents>({});
   selectedDate$ = new BehaviorSubject<Date>(new Date());
@@ -35,17 +35,17 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
 
   formatCurrencyFn = formatCurrency;
 
-  disable = () => true;
+  disable = (): boolean => true;
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.selectedDate$
       .pipe(
         distinctUntilChanged((prev, curr) => prev.toString() === curr.toString()),
         tap(date => this.changeCalendarsDate(date)),
         switchMap(() => this.symbols$),
         switchMap(symbols => this.service.getEvents({
-            dateFrom: getISOStringDate(startOfMonth(this.startPeriodCalendarComp.activeDate.nativeDate)),
-            dateTo: getISOStringDate(endOfMonth(this.endPeriodCalendarComp.activeDate.nativeDate)),
+            dateFrom: getISOStringDate(startOfMonth(this.startPeriodCalendarComp!.activeDate.nativeDate)),
+            dateTo: getISOStringDate(endOfMonth(this.endPeriodCalendarComp!.activeDate.nativeDate)),
             symbols
           })
         ),
@@ -56,17 +56,17 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
       });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.symbols$.complete();
     this.events$.complete();
     this.selectedDateEvents$.complete();
   }
 
-  onDateChange(e: Date) {
+  onDateChange(e: Date): void {
     this.selectedDate$.next(e);
   }
 
-  changeCalendarsDate(date: Date) {
+  changeCalendarsDate(date: Date): void {
     this.startPeriodCalendarComp?.writeValue(date);
     this.endPeriodCalendarComp?.writeValue(addMonths(date, 1));
   }
@@ -74,7 +74,7 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
   getDateEvents(date: Date, events: CalendarEvents): CalendarEvent | null {
     return Object
       .values(events)
-      .find(event => startOfDay(event.date)?.toString() === startOfDay(date)?.toString()) ?? null;
+      .find(event => startOfDay(event.date).toString() === startOfDay(date).toString()) ?? null;
   }
 
   isShowDate(date: Date, isLeftCalendar = true): boolean {
@@ -85,7 +85,7 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
     return date.getMonth() === this.endPeriodCalendarComp?.activeDate.getMonth();
   }
 
-  selectEvent(date: Date, events: CalendarEvents) {
+  selectEvent(date: Date, events: CalendarEvents): void {
     const selectedDateEvents = this.getDateEvents(date, events);
 
     if (selectedDateEvents) {

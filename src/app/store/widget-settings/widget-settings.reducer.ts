@@ -18,7 +18,7 @@ import {
 } from "./widget-settings.actions";
 
 export interface State extends EntityState<WidgetSettings> {
-  status: EntityStatus
+  status: EntityStatus;
 }
 
 export const adapter: EntityAdapter<WidgetSettings> = createEntityAdapter<WidgetSettings>({

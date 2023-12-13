@@ -34,7 +34,7 @@ export class InstrumentBoardSelectComponent implements OnInit, OnDestroy, Contro
   availableBoards$!: Observable<string[]>;
   @Input()
   placeholder?: string;
-  private instrument$ = new BehaviorSubject<{ symbol: string, exchange: string } | null>(null);
+  private readonly instrument$ = new BehaviorSubject<{ symbol: string, exchange: string } | null>(null);
 
   constructor(private readonly instrumentsService: InstrumentsService) {
   }
@@ -64,7 +64,7 @@ export class InstrumentBoardSelectComponent implements OnInit, OnDestroy, Contro
     this.onValueChanged = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: (...args: any[]) => any): void {
     this.onTouched = fn;
   }
 
@@ -72,7 +72,7 @@ export class InstrumentBoardSelectComponent implements OnInit, OnDestroy, Contro
     this.currentValue = board;
   }
 
-  selectBoard(value: string) {
+  selectBoard(value: string): void {
     this.onTouched();
     this.onValueChanged(value);
   }
@@ -80,6 +80,6 @@ export class InstrumentBoardSelectComponent implements OnInit, OnDestroy, Contro
   private onValueChanged: (value: string | null) => void = () => {
   };
 
-  private onTouched = () => {
+  private onTouched = (): void => {
   };
 }

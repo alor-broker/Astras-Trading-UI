@@ -17,7 +17,7 @@ export class TimezoneConverterService {
     return this.terminalSettingsService.getSettings()
       .pipe(
         map(x => x.timezoneDisplayOption ?? TimezoneDisplayOption.MskTime),
-        distinctUntilChanged((previous, current) => !previous || previous === current),
+        distinctUntilChanged((previous, current) => previous === current),
         map(x => new TimezoneConverter(x))
       );
   }

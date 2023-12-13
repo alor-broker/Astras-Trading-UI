@@ -1,5 +1,5 @@
 export interface CalendarEvents {
-  [date: string]: CalendarEvent
+  [date: string]: CalendarEvent;
 }
 
 export interface CalendarEvent {

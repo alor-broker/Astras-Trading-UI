@@ -12,12 +12,12 @@ import { distinct, map } from 'rxjs/operators';
 export class DescriptionComponent implements OnInit, OnDestroy {
   @Input({required: true})
   guid!: string;
-  columns: number = 1;
+  columns = 1;
   description$?: Observable<Description | null>;
   isLoading$ = new BehaviorSubject<boolean>(true);
-  private isActivated$ = new Subject<boolean>();
+  private readonly isActivated$ = new Subject<boolean>();
 
-  constructor(private service: InfoService) {
+  constructor(private readonly service: InfoService) {
   }
 
   @Input()

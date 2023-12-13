@@ -1,5 +1,5 @@
 export interface ConfirmResponse {
-  requestGuid: string
-  httpCode: number,
-  message: string,
+  requestGuid: string;
+  httpCode: number;
+  message: string;
 }

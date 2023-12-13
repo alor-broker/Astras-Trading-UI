@@ -3,38 +3,38 @@ import { MarketType } from '../../../shared/models/portfolio-key.model';
 import { BaseColumnId, TableDisplaySettings } from '../../../shared/models/settings/table-settings.model';
 
 export interface BlotterSettings extends WidgetSettings {
-  activeTabIndex: number,
-  exchange: string,
-  portfolio: string,
-  marketType?: MarketType,
-  ordersTable?: TableDisplaySettings,
-  stopOrdersTable?: TableDisplaySettings,
-  tradesTable?: TableDisplaySettings,
-  tradesHistoryTable?: TableDisplaySettings,
-  repoTradesTable?: TableDisplaySettings,
-  positionsTable?: TableDisplaySettings,
-  notificationsTable?: TableDisplaySettings,
-  isSoldPositionsHidden: boolean,
-  cancelOrdersWithoutConfirmation?: boolean,
-  showRepoTrades?: boolean,
-  showPositionActions?: boolean,
+  activeTabIndex: number;
+  exchange: string;
+  portfolio: string;
+  marketType?: MarketType;
+  ordersTable?: TableDisplaySettings;
+  stopOrdersTable?: TableDisplaySettings;
+  tradesTable?: TableDisplaySettings;
+  tradesHistoryTable?: TableDisplaySettings;
+  repoTradesTable?: TableDisplaySettings;
+  positionsTable?: TableDisplaySettings;
+  notificationsTable?: TableDisplaySettings;
+  isSoldPositionsHidden: boolean;
+  cancelOrdersWithoutConfirmation?: boolean;
+  showRepoTrades?: boolean;
+  showPositionActions?: boolean;
 
   /**
    * @deprecated use ordersTable
    */
-  ordersColumns?: string[],
+  ordersColumns?: string[];
   /**
    * @deprecated use stopOrdersTable
    */
-  stopOrdersColumns?: string[],
+  stopOrdersColumns?: string[];
   /**
    * @deprecated use positionsTable
    */
-  positionsColumns?: string[],
+  positionsColumns?: string[];
   /**
    * @deprecated use tradesTable
    */
-  tradesColumns?: string[]
+  tradesColumns?: string[];
 }
 
 export const allOrdersColumns: BaseColumnId[] = [

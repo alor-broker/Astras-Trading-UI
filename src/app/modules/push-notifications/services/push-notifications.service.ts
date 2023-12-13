@@ -19,9 +19,9 @@ import { EnvironmentService } from "../../../shared/services/environment.service
 
 interface MessagePayload extends firebase.messaging.MessagePayload {
   data?: {
-    body?: string
-  },
-  messageId: string
+    body?: string;
+  };
+  messageId: string;
 }
 
 @Injectable({
@@ -47,8 +47,8 @@ export class PushNotificationsService implements OnDestroy {
   }
 
   subscribeToOrdersExecute(portfolios: {
-    portfolio: string,
-    exchange: string
+    portfolio: string;
+    exchange: string;
   }[]): Observable<BaseCommandResponse | null> {
     return this.cancelOrderExecuteSubscriptions(portfolios)
       .pipe(
@@ -63,7 +63,7 @@ export class PushNotificationsService implements OnDestroy {
         }),
         catchError(err => {
           if (err.error?.code === 'SubscriptionAlreadyExists') {
-            return of({message: 'success', code: err.error.code});
+            return of({message: 'success', code: err.error.code as string});
           }
           return throwError(err);
         }),
@@ -79,14 +79,14 @@ export class PushNotificationsService implements OnDestroy {
   subscribeToOrderExecute(portfolio: PortfolioKey): Observable<BaseCommandResponse | null> {
     return this.getToken()
       .pipe(
-        filter(t => !!t),
+        filter(t => t != null && t.length > 0),
         switchMap(() => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addOrderExecute', {
           exchange: portfolio.exchange,
           portfolio: portfolio.portfolio
         })),
         catchError(err => {
           if (err.error?.code === 'SubscriptionAlreadyExists') {
-            return of({message: 'success', code: err.error.code});
+            return of({message: 'success', code: err.error.code as string});
           }
           return throwError(err);
         }),
@@ -102,7 +102,7 @@ export class PushNotificationsService implements OnDestroy {
         switchMap(() => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addPriceSpark', request)),
         catchError(err => {
           if (err.error?.code === 'SubscriptionAlreadyExists') {
-            return of({message: 'success', code: err.error.code});
+            return of({message: 'success', code: err.error.code as string});
           }
           return throwError(err);
         }),
@@ -130,7 +130,7 @@ export class PushNotificationsService implements OnDestroy {
 
   getCurrentSubscriptions(): Observable<SubscriptionBase[] | null> {
     return this.getToken().pipe(
-      filter(x => !!x),
+      filter(x => x != null && x.length > 0),
       switchMap(() => this.http.get<SubscriptionBase[]>(this.baseUrl)),
       catchHttpError<SubscriptionBase[] | null>(null, this.errorHandlerService),
       map(s => {
@@ -176,20 +176,20 @@ export class PushNotificationsService implements OnDestroy {
 
     this.token$ = this.angularFireMessaging.requestToken
       .pipe(
-        filter(token => !!token),
+        filter(token => token != null && !!token.length),
         mapWith(
           token => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addToken', {token})
             .pipe(
               catchError(err => {
                 if (err.error?.code === 'TokenAlreadyExists') {
-                  return of({message: 'success', code: err.error.code});
+                  return of({message: 'success', code: err.error.code as string});
                 }
                 return throwError(err);
               }),
               catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService)
             ),
           (token, res) => res ? token : null),
-        filter(token => !!token),
+        filter(token => token != null && !!token.length),
         shareReplay(1)
       );
 

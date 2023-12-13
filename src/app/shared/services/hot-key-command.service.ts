@@ -56,41 +56,44 @@ export class HotKeyCommandService {
     }
   }
 
-  private getCommandsStream() {
+  private getCommandsStream(): Observable<TerminalCommand> {
     return this.terminalSettingsService.getSettings().pipe(
       map(x => x.hotKeysSettings),
       filter((x): x is HotKeysSettings => !!x),
-      switchMap((hotKeysSettings: { [key: string]: any | undefined | null }) => {
+      switchMap((hotKeysSettings: HotKeysSettings) => {
         const hotKeyMap = new Map<string | HotKeyMeta, { commandType: string, index?: number }>();
         Object.keys(hotKeysSettings).forEach(command => {
-          const key = hotKeysSettings[command] as any | undefined | null;
-          if (!!key && (typeof key === 'string' || key instanceof String)) {
-            hotKeyMap.set(
-              key.toString(),
-              { commandType: HotKeyCommandService.mapToCommandType(command) }
-            );
+          const key = hotKeysSettings[command as keyof HotKeysSettings] as HotKeyMeta | string | string[] | undefined | null;
 
-            return;
-          }
-
-          if (!!key && key.code && key.key) {
-            hotKeyMap.set(
-              key,
-              { commandType: HotKeyCommandService.mapToCommandType(command) }
-            );
-          }
-
-          if (!!key && Array.isArray(key)) {
-            [...key].forEach((value, index) => {
+          if (key != null) {
+            if (typeof key === 'string' || key instanceof String) {
               hotKeyMap.set(
-                value.toString(),
-                {
-                  commandType: HotKeyCommandService.mapToCommandType(command),
-                  index
-                }
+                key.toString(),
+                { commandType: HotKeyCommandService.mapToCommandType(command) }
               );
-            });
-            return;
+
+              return;
+            }
+
+            if ((key as HotKeyMeta).code && (key as HotKeyMeta).key) {
+              hotKeyMap.set(
+                key as HotKeyMeta,
+                { commandType: HotKeyCommandService.mapToCommandType(command) }
+              );
+            }
+
+            if (Array.isArray(key)) {
+              [...key].forEach((value, index) => {
+                hotKeyMap.set(
+                  value.toString(),
+                  {
+                    commandType: HotKeyCommandService.mapToCommandType(command),
+                    index
+                  }
+                );
+              });
+              return;
+            }
           }
         });
 
@@ -101,7 +104,7 @@ export class HotKeyCommandService {
               x.preventDefault();
             }
 
-            let mappedCommand: { commandType: string, index?: number } | null | undefined = null;
+            let mappedCommand = null as { commandType: string, index?: number } | null | undefined;
 
             hotKeyMap.forEach((value, key) => {
               if (typeof key === 'string' && key === x.key) {
@@ -112,7 +115,7 @@ export class HotKeyCommandService {
               const keyMeta = key as HotKeyMeta;
 
               if (keyMeta.key && keyMeta.code) {
-                if (hotKeysSettings.extraHotKeys) {
+                if (hotKeysSettings.extraHotKeys ?? false) {
                   if (x.code === keyMeta.code && this.checkPressedModifierKeys(x, keyMeta)) {
 
                     mappedCommand = value;
@@ -145,11 +148,11 @@ export class HotKeyCommandService {
     );
   }
 
-  private isUserInputTarget(target: HTMLElement): boolean {
+  private isUserInputTarget(target?: HTMLElement): boolean {
     return this.inputs.find(x => x === target?.tagName) != null;
   }
 
-  private getModifierKeysStream() {
+  private getModifierKeysStream(): Observable<{ shiftKey: boolean, ctrlKey: boolean, altKey: boolean }> {
     const keyDownStream$ = fromEvent<KeyboardEvent>(this.document.body, 'keydown').pipe(
       filter(e => !this.isUserInputTarget(e.target as HTMLElement)),
       filter((e: KeyboardEvent) => e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt' || e.key === 'Meta'),
@@ -191,17 +194,16 @@ export class HotKeyCommandService {
   private checkPressedModifierKeys(pressedKey: KeyboardEvent, keyMeta: HotKeyMeta): boolean {
     let result = true;
 
-    if (keyMeta.altKey) {
-      result = result && pressedKey.altKey;
+    if (keyMeta.altKey ?? false) {
+      result = pressedKey.altKey;
     }
 
-    if (keyMeta.shiftKey) {
+    if (keyMeta.shiftKey ?? false) {
       result = result && pressedKey.shiftKey;
     }
 
-    if (keyMeta.ctrlKey) {
+    if (keyMeta.ctrlKey ?? false) {
       result = result && (pressedKey.ctrlKey || pressedKey.metaKey);
-
     }
 
     return result;

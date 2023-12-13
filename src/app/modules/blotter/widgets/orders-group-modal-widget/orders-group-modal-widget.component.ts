@@ -15,7 +15,7 @@ export class OrdersGroupModalWidgetComponent implements OnInit {
   groupId$: Observable<string | null> = of(null);
 
   constructor(
-    private service: BlotterService
+    private readonly service: BlotterService
   ) {
   }
 
@@ -24,7 +24,7 @@ export class OrdersGroupModalWidgetComponent implements OnInit {
     this.groupId$ = this.service.orderGroupParams$;
   }
 
-  handleCancel() {
+  handleCancel(): void {
     this.service.closeOrderGroupModal();
   }
 }

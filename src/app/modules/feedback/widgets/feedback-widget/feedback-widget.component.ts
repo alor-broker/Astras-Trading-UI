@@ -8,20 +8,20 @@ import {
   of,
   shareReplay
 } from 'rxjs';
-import {ModalService} from '../../../../shared/services/modal.service';
+import { ModalService } from '../../../../shared/services/modal.service';
 import {
   UntypedFormControl,
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
-import {FeedbackService} from '../../services/feedback.service';
+import { FeedbackService } from '../../services/feedback.service';
 import {
   filter,
   finalize
 } from 'rxjs/operators';
-import {NewFeedback} from '../../models/feedback.model';
-import {NzNotificationService} from 'ng-zorro-antd/notification';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { NewFeedback } from '../../models/feedback.model';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-feedback-widget',
@@ -60,11 +60,11 @@ export class FeedbackWidgetComponent implements OnInit {
     });
   }
 
-  handleClose() {
+  handleClose(): void {
     this.modalService.closeVoteModal();
   }
 
-  initForm(params: NewFeedback) {
+  initForm(params: NewFeedback): void {
     this.askComment = false;
     this.form = new UntypedFormGroup({
       rating: new UntypedFormControl(null, Validators.required),
@@ -73,8 +73,8 @@ export class FeedbackWidgetComponent implements OnInit {
     });
   }
 
-  submitFeedback() {
-    if (!this.form?.valid) {
+  submitFeedback(): void {
+    if (!(this.form?.valid ?? false)) {
       return;
     }
 
@@ -85,7 +85,7 @@ export class FeedbackWidgetComponent implements OnInit {
       }
     }
 
-    this.feedbackService.submitFeedback(this.form.value).pipe(
+    this.feedbackService.submitFeedback(this.form!.value!).pipe(
       finalize(() => {
         this.modalService.closeVoteModal();
       })
@@ -95,7 +95,7 @@ export class FeedbackWidgetComponent implements OnInit {
     });
   }
 
-  checkAskComment() {
+  checkAskComment(): void {
     this.askComment = this.form?.value.rating < this.maxStarsCount && (this.form?.value.comment ?? '').length === 0;
   }
 }

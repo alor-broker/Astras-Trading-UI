@@ -1,4 +1,14 @@
 /**
+ * Converts date to unixtime in seconds
+ *
+ * @param {Date} date date
+ * @return {number} unixtime in seconds
+ */
+export function toUnixTime(date: Date) : number {
+  return Math.floor(date.getTime() / 1000);
+}
+
+/**
  * Adding months to provided date
  *
  * @param {Date} date date
@@ -90,7 +100,7 @@ export function addSeconds(date: Date, seconds: number) : Date {
  * @param {number} days number of days, negative if you need to substract
  * @return {number} unix time (seconds) with updated date
  */
-export function addDaysUnix(date: Date, days: number) {
+export function addDaysUnix(date: Date, days: number): number {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
   return toUnixTime(result);
@@ -159,16 +169,6 @@ export function endOfMonth(date: Date): Date {
 }
 
 /**
- * Converts date to unixtime in seconds
- *
- * @param {Date} date date
- * @return {number} unixtime in seconds
- */
-export function toUnixTime(date: Date) : number {
-  return Math.floor(date.getTime() / 1000);
-}
-
-/**
  * Converts unixtime to Date
  *
  * @param {number} date date in unixtime
@@ -185,7 +185,7 @@ export function fromUnixTime(date: number) : Date {
  */
 export function getUtcNow(): Date {
   const now = new Date();
-  return new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+  return new Date(now.getTime() + now.getTimezoneOffset() * 60 * 1000);
 }
 
 /**
@@ -204,7 +204,7 @@ export function getISOStringDate(date: Date): string {
  * @param {Date} b second date
  * @return {number} difference in days
  */
-export function dateDiffInDays(a: Date, b: Date) {
+export function dateDiffInDays(a: Date, b: Date): number {
   const dayMilliseconds = 1000 * 60 * 60 * 24;
 
   const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());

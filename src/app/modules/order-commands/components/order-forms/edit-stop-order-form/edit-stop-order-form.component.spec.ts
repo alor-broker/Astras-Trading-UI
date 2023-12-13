@@ -41,7 +41,7 @@ describe('EditStopOrderFormComponent', () => {
   let timezoneConverterServiceSpy: any;
   let testTearDown: Subscription;
 
-  const getFormInputs = () => {
+  const getFormInputs = (): { [fieldName: string]: HTMLInputElement | HTMLSelectElement } => {
     return {
       quantity: fixture.nativeElement.querySelector('[formcontrolname="quantity"]').querySelector('input') as HTMLInputElement,
       triggerPrice: fixture.nativeElement.querySelector('[formcontrolname="triggerPrice"]').querySelector('input') as HTMLInputElement,
@@ -50,7 +50,7 @@ describe('EditStopOrderFormComponent', () => {
     };
   };
 
-  const getValidationErrorElement = (element: HTMLElement) => {
+  const getValidationErrorElement = (element: HTMLElement): Element | null => {
     const inputContainer = element.parentElement?.parentElement?.parentElement?.parentElement?.parentElement;
     if (!inputContainer) {
       return null;
@@ -223,7 +223,7 @@ describe('EditStopOrderFormComponent', () => {
 
         expect(errorElement).not.toBeNull();
 
-        if (testCase.expectedError) {
+        if (testCase.expectedError ?? '') {
           expect(errorElement?.textContent).toEqual(testCase.expectedError);
         }
       });

@@ -58,7 +58,7 @@ describe('MigrationManagerBase', () => {
             strategy: ApplyStrategyType.ApplyOnce,
             expirationDate: null
           },
-          getPatches: current => {
+          getPatches: (): Observable<AddPatch[]> => {
             return of([{
               op: 'add',
               path: '/test',
@@ -73,7 +73,7 @@ describe('MigrationManagerBase', () => {
             strategy: ApplyStrategyType.ApplyOnce,
             expirationDate: notExpiredDate
           },
-          getPatches: current => {
+          getPatches: (): Observable<AddPatch[]> => {
             return of([{
               op: 'add',
               path: '/test',
@@ -104,7 +104,7 @@ describe('MigrationManagerBase', () => {
             strategy: ApplyStrategyType.ApplyOnce,
             expirationDate: null
           },
-          getPatches: current => {
+          getPatches: (): Observable<AddPatch[]> => {
             return of([{
               op: 'add',
               path: '/test',
@@ -119,7 +119,7 @@ describe('MigrationManagerBase', () => {
             strategy: ApplyStrategyType.ApplyOnce,
             expirationDate: notExpiredDate
           },
-          getPatches: current => {
+          getPatches: (): Observable<AddPatch[]> => {
             return of([{
               op: 'add',
               path: '/test',
@@ -152,7 +152,7 @@ describe('MigrationManagerBase', () => {
             strategy: ApplyStrategyType.ApplyOnce,
             expirationDate: null
           },
-          getPatches: current => {
+          getPatches: (): Observable<AddPatch[]> => {
             return of([{
               op: 'add',
               path: '/test',
@@ -167,7 +167,7 @@ describe('MigrationManagerBase', () => {
             strategy: ApplyStrategyType.ApplyOnce,
             expirationDate: notExpiredDate
           },
-          getPatches: current => {
+          getPatches: (): Observable<AddPatch[]> => {
             return of([{
               op: 'add',
               path: '/test',

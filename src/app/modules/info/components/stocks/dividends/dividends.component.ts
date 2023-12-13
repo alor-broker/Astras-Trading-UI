@@ -15,9 +15,9 @@ export class DividendsComponent implements OnInit, OnDestroy {
   dividends$?: Observable<Dividend[]>;
   isLoading$ = new BehaviorSubject<boolean>(true);
 
-  private isActivated$ = new Subject<boolean>();
+  private readonly isActivated$ = new Subject<boolean>();
 
-  constructor(private service: InfoService) {
+  constructor(private readonly service: InfoService) {
   }
 
   @Input()

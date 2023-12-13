@@ -94,7 +94,7 @@ export class ThemeService {
     return this.themeSettings$;
   }
 
-  private getColorsMap(theme: ThemeType) {
+  private getColorsMap(theme: ThemeType): Observable<{ [key: string]: string }> {
     return this.httpClient.get<{ [key: string]: string }>(
       `../../../assets/${theme}-shared-colors.json`,
       {
@@ -110,7 +110,7 @@ export class ThemeService {
 
   private setTheme(theme: ThemeType): void {
     this.loadCss(theme).pipe(
-      filter(x => !!x)
+      filter(x => x ?? false)
     ).subscribe(() => {
       this.removeUnusedTheme(this.currentTheme);
       this.currentTheme = theme;
@@ -118,7 +118,7 @@ export class ThemeService {
     });
   }
 
-  private removeUnusedTheme(theme?: ThemeType | null) {
+  private removeUnusedTheme(theme?: ThemeType | null): void {
     if (!theme) {
       return;
     }
@@ -138,12 +138,12 @@ export class ThemeService {
     style.href = `${theme}.css`;
     style.id = theme;
 
-    style.onload = () => {
+    style.onload = (): void => {
       subj.next(true);
       subj.complete();
     };
 
-    style.onerror = () => {
+    style.onerror = (): void => {
       subj.error({});
     };
 

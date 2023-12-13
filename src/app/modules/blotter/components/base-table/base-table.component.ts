@@ -28,7 +28,7 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 @Component({
   template: ''
 })
-export abstract class BaseTableComponent<T extends { id: string }, F extends {}> implements OnInit, AfterViewInit, OnDestroy {
+export abstract class BaseTableComponent<T extends { id: string }, F extends object> implements OnInit, AfterViewInit, OnDestroy {
   @Input({required: true})
   guid!: string;
 
@@ -49,8 +49,8 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
   tableContainer!: QueryList<ElementRef<HTMLElement>>;
 
   protected tableRef$!: Observable<NzTableComponent<T>>;
-  protected tableInnerWidth: number = 1000;
-  protected isFilterDisabled = () => Object.keys(this.filter$.getValue()).length === 0;
+  protected tableInnerWidth = 1000;
+  protected isFilterDisabled = (): boolean => Object.keys(this.filter$.getValue()).length === 0;
 
   protected fileSuffix!: string;
   protected badgeColor = defaultBadgeColor;
@@ -63,7 +63,7 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid)
       .pipe(
         shareReplay(1)
@@ -72,7 +72,7 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
 
   ngAfterViewInit(): void {
     const container$ =  this.tableContainer.changes.pipe(
-      map(x => x.first),
+      map(x => x.first as ElementRef<HTMLElement> | undefined),
       startWith(this.tableContainer.first),
       filter((x): x is ElementRef<HTMLElement> => !!x),
       shareReplay(1)
@@ -86,9 +86,9 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
     });
 
     this.tableRef$ = this.dataTableQuery.changes.pipe(
-      map(x => x.first),
+      map(x => x.first as ElementRef<NzTableComponent<T>> | undefined),
       startWith(this.dataTableQuery.first),
-      filter((x): x is NzTableComponent<any> => !!x),
+      filter((x): x is NzTableComponent<T> => !!x),
       shareReplay(1)
     );
   }
@@ -102,38 +102,40 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
     this.filter$.next(<F>{});
   }
 
-  protected filterChange(newFilter: F) {
+  protected filterChange(newFilter: F): void {
     this.filter$.next({
       ...this.filter$.getValue(),
       ...newFilter
     });
   }
 
-  protected defaultFilterChange(key: string, value: string[]) {
+  protected defaultFilterChange(key: string, value: string[]): void {
     this.filterChange(<F>{ [key]: value });
   }
 
-  formatDate(date: Date) {
+  formatDate(date: Date): string {
     if (date.toDateString() == new Date().toDateString()) {
       return date.toLocaleTimeString();
     }
     else return date.toLocaleDateString();
   }
 
-  protected selectInstrument(symbol: string, exchange: string) {
+  protected selectInstrument(symbol: string, exchange: string): void {
     this.service.selectNewInstrument(symbol, exchange, this.badgeColor);
   }
 
-  protected isFilterApplied(column: BaseColumnSettings<T>) {
-    const filter = this.filter$.getValue();
-    return column.id in filter && !!filter[<keyof F>column.id];
+  protected isFilterApplied(column: BaseColumnSettings<T>): boolean {
+    const filter = this.filter$.getValue() as { [filterName: string]: string | string[] | null | undefined };
+    return column.id in filter
+      && filter[column.id] != null
+      && filter[column.id]!.length > 0;
   }
 
   canExport(data: readonly T[] | undefined | null): boolean {
     return !!data && data.length > 0;
   }
 
-  protected exportToFile(data: readonly T[]) {
+  protected exportToFile(data?: readonly T[]): void {
     combineLatest({
       tBlotterCommon: this.translatorService.getTranslator('blotter/blotter-common'),
       tBlotter: this.translatorService.getTranslator('blotter'),
@@ -144,23 +146,23 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
       )
       .subscribe(({tBlotter, tBlotterCommon, settings}) => {
         const valueTranslators = new Map<string, (value: any) => string>([
-          ['status', value => tBlotterCommon(['orderStatus', value])],
-          ['transTime', value => this.formatDate(value)],
-          ['endTime', value => this.formatDate(value)],
-          ['date', value => this.formatDate(value)]
+          ['status', (value): string => tBlotterCommon(['orderStatus', value])],
+          ['transTime', (value): string => this.formatDate(value)],
+          ['endTime', (value): string => this.formatDate(value)],
+          ['date', (value): string => this.formatDate(value)]
         ]);
 
         ExportHelper.exportToCsv(
           tBlotter([this.fileSuffix + 'Tab']),
           settings,
-          [...data ?? []],
+          [...(data ?? [])],
           this.listOfColumns,
           valueTranslators
         );
       });
   }
 
-  protected saveColumnWidth(id: string, width: number) {
+  protected saveColumnWidth(id: string, width: number): void {
     this.settings$.pipe(
       take(1)
     ).subscribe(settings => {
@@ -182,12 +184,12 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
     });
   }
 
-  protected recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }) {
+  protected recalculateTableWidth(widthChange: { columnWidth: number, delta: number | null }): void {
     const delta = widthChange.delta ?? widthChange.columnWidth - this.columnDefaultWidth;
     this.tableInnerWidth += delta;
   }
 
-  protected changeColumnOrder(event: CdkDragDrop<any>) {
+  protected changeColumnOrder(event: CdkDragDrop<any>): void {
     this.settings$.pipe(
       take(1)
     ).subscribe(settings => {
@@ -211,11 +213,11 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
   protected justifyFilter(item: T, filter: F): boolean {
     let isFiltered = true;
     for (const key of Object.keys(filter)) {
-      if (filter[<keyof F>key]) {
+      if ((filter[key as keyof F] as string | undefined) != null && !!(filter[key as keyof F] as string).length) {
         const column = this.listOfColumns.find(o => o.id == key);
         if (
-          !column!.filterData!.isDefaultFilter && !this.searchInItem(item, <keyof T>key, <string>filter[<keyof F>key]) ||
-          column!.filterData!.isDefaultFilter && (<string>filter[<keyof F>key])?.length  && !(<string>filter[<keyof F>key])?.includes(item[<keyof T>key]!.toString())
+          !(column!.filterData!.isDefaultFilter ?? false) && !this.searchInItem(item, <keyof T>key, <string>filter[<keyof F>key]) ||
+          (column!.filterData!.isDefaultFilter ?? false) && ((<string | undefined>filter[<keyof F>key])?.length ?? 0) && !(<string>filter[<keyof F>key])!.includes(item[<keyof T>key]!.toString())
         ) {
           isFiltered = false;
         }
@@ -225,9 +227,9 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends {}>
   }
 
   protected searchInItem(item: T, key: keyof T, value?: string): boolean {
-    if (!value) {
+    if (value == null || !value.length) {
       return true;
     }
-    return item[key]!.toString().toLowerCase().includes(value.toLowerCase());
+    return item[key]!.toString().toLowerCase().includes((value as string).toLowerCase());
   }
 }

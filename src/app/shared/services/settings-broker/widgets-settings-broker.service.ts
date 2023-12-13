@@ -23,8 +23,8 @@ import { WidgetSettingsDesktopMigrationManager } from "../../../modules/settings
 })
 export class WidgetsSettingsBrokerService {
   private readonly saveRequests = new Map<string, {
-    source: BehaviorSubject<WidgetSettings>,
-    stream$: Observable<boolean>
+    source: BehaviorSubject<WidgetSettings>;
+    stream$: Observable<boolean>;
   }>();
 
   constructor(
@@ -59,7 +59,7 @@ export class WidgetsSettingsBrokerService {
 
         if (!!settings && settings.length > 0) {
           return this.widgetSettingsDesktopMigrationManager.applyMigrations<WidgetSettings[]>(
-            settings.map(x => x.value),
+            settings.map(x => x.value as WidgetSettings[]),
             migrated => this.saveSettings(migrated)
           ).pipe(
             map(x => x.updatedData)

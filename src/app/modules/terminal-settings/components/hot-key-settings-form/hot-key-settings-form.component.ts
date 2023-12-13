@@ -33,14 +33,14 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   ]
 })
 export class HotKeySettingsFormComponent extends ControlValueAccessorBaseComponent<HotKeysSettings> implements OnInit {
-  form!: UntypedFormGroup;
+  form?: UntypedFormGroup;
 
   constructor(private readonly destroyRef: DestroyRef) {
     super();
   }
 
   get workingVolumes(): UntypedFormArray {
-    return this.form?.get('workingVolumes') as UntypedFormArray;
+    return this.form!.get('workingVolumes') as UntypedFormArray;
   }
 
   writeValue(value: HotKeysSettings | null): void {
@@ -49,7 +49,7 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
     }
 
     for (const property in value) {
-      const control = this.form.controls[property];
+      const control = this.form.controls[property] as AbstractControl | undefined;
 
       if (!control) {
         continue;
@@ -59,7 +59,7 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
         const workingVolumesControl = control as FormArray;
         workingVolumesControl.clear();
 
-        const values = value[property] as string[] ?? [];
+        const values = value[property] as string[] | undefined ?? [];
         values.forEach(x => workingVolumesControl.push(this.createWorkingVolumeControl(x)));
 
         continue;
@@ -87,7 +87,7 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
       extraHotKeys: new UntypedFormControl(false)
     });
 
-    this.form.get('extraHotKeys')?.valueChanges
+    this.form!.get('extraHotKeys')!.valueChanges
       .pipe(
         distinctUntilChanged(),
         takeUntilDestroyed(this.destroyRef)
@@ -95,7 +95,7 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
       .subscribe(() => {
         const defaultHotKeys: HotKeysSettings = TerminalSettingsHelper.getDefaultHotkeys();
 
-        Object.entries(this.form.controls).forEach(([key, control]) => {
+        Object.entries(this.form!.controls).forEach(([key, control]) => {
           if (typeof control.value === 'string') {
             control.setValue(defaultHotKeys[<keyof HotKeysSettings>key]);
           }
@@ -108,14 +108,14 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
     ).subscribe(() => {
       this.checkIfTouched();
       this.emitValue(
-        this.form.valid
-          ? this.form.value as HotKeysSettings
+        this.form!.valid
+          ? this.form!.value as HotKeysSettings
           : null
       );
     });
   }
 
-  hotkeyChange(e: KeyboardEvent, control: AbstractControl | null) {
+  hotkeyChange(e: KeyboardEvent, control: AbstractControl | null): void {
     e.stopPropagation();
     if (e.key === 'Backspace') {
       control?.reset();
@@ -128,14 +128,14 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
     control?.updateValueAndValidity();
   }
 
-  addWorkingVolume(e: MouseEvent) {
+  addWorkingVolume(e: MouseEvent): void {
     e.preventDefault();
     e.stopPropagation();
 
     this.workingVolumes.push(this.createWorkingVolumeControl(null));
   }
 
-  removeWorkingVolume(e: MouseEvent, index: number) {
+  removeWorkingVolume(e: MouseEvent, index: number): void {
     e.preventDefault();
     e.stopPropagation();
 
@@ -152,7 +152,7 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
         return null;
       }
 
-      const existedKeys = this.getAllKeys(this.form.getRawValue());
+      const existedKeys = this.getAllKeys(this.form!.getRawValue());
       if (existedKeys.filter(x => x === control.value).length > 1) {
         return {
           notUnique: true
@@ -175,8 +175,8 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
     return this.form.touched;
   }
 
-  private getAllKeys(formValue: any): string[] {
-    const keys = [];
+  private getAllKeys(formValue: { [keyName: string]: string | string[] | null }): string[] {
+    const keys: string[] = [];
     for (const property in formValue) {
       const value = formValue[property];
       if (value == null) {

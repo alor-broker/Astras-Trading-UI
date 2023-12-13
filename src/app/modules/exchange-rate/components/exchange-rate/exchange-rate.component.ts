@@ -25,7 +25,7 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.exchangeRateData$ = this.exchangeRateService.getCurrencies()
       .pipe(
         mapWith(
@@ -35,20 +35,23 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
             data: rates.reduce((acc, curr) => {
               acc[`${curr.firstCode}_${curr.secondCode}`] = curr.last_price;
               return acc;
-            }, {} as any)
+            }, {} as { [p: string]: number })
           })
         ),
       );
   }
 
   getRateValue(firstCode: string, secondCode: string, data: { [key: string]: number }): string {
-    if (firstCode === secondCode || (!data[`${firstCode}_${secondCode}`] && !data[`${secondCode}_${firstCode}`])) {
+    const exchangeRatePropertyDirectOrder = `${firstCode}_${secondCode}`;
+    const exchangeRatePropertyReverseOrder = `${secondCode}_${firstCode}`;
+
+    if (firstCode === secondCode || (!data[exchangeRatePropertyDirectOrder] && !data[exchangeRatePropertyReverseOrder])) {
       return '-';
     }
-    return (data[`${firstCode}_${secondCode}`] || 1 / data[`${secondCode}_${firstCode}`])?.toFixed(4);
+    return (data[exchangeRatePropertyDirectOrder] || 1 / data[exchangeRatePropertyReverseOrder]).toFixed(4);
   }
 
-  updateContainerSize(entries: ResizeObserverEntry[]) {
+  updateContainerSize(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       const width = Math.floor(x.contentRect.width);
       const height = Math.floor(x.contentRect.height);
@@ -67,10 +70,10 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
     this.tableScroll$.complete();
   }
 
-  private getExchangeRates = (exchangeRates: ExchangeRate[]): Observable<{
-    firstCode: string,
-    secondCode: string,
-    last_price: number
+  private readonly getExchangeRates = (exchangeRates: ExchangeRate[]): Observable<{
+    firstCode: string;
+    secondCode: string;
+    last_price: number;
   }[]> => {
     return combineLatest(
       exchangeRates.map(item => this.quotesService.getQuotes(

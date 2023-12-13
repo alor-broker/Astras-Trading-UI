@@ -17,7 +17,7 @@ export class TestNotificationsProvider implements NotificationsProvider {
         description: 'Description Description Description Description Description Description',
         isRead: false,
         showDate: true,
-        open: () => {
+        open: (): void => {
         }
       },
       {

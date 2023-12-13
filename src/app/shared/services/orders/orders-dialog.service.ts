@@ -9,9 +9,6 @@ export class OrdersDialogService {
   private readonly newOrderParams$ = new BehaviorSubject<OrderDialogParams | null>(null);
   private readonly editOrderDialogParams$ = new BehaviorSubject<EditOrderDialogParams | null>(null);
 
-  constructor() {
-  }
-
   get newOrderDialogParameters$(): Observable<OrderDialogParams | null> {
     return this.newOrderParams$.asObservable();
   }
@@ -20,19 +17,19 @@ export class OrdersDialogService {
     return this.editOrderDialogParams$.asObservable();
   }
 
-  openNewOrderDialog(params: OrderDialogParams) {
+  openNewOrderDialog(params: OrderDialogParams): void {
     this.newOrderParams$.next(params);
   }
 
-  closeNewOrderDialog() {
+  closeNewOrderDialog(): void {
     this.newOrderParams$.next(null);
   }
 
-  openEditOrderDialog(params: EditOrderDialogParams) {
+  openEditOrderDialog(params: EditOrderDialogParams): void {
     this.editOrderDialogParams$.next(params);
   }
 
-  closeEditOrderDialog() {
+  closeEditOrderDialog(): void {
     this.editOrderDialogParams$.next(null);
   }
 }

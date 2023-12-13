@@ -8,7 +8,7 @@ import { LocalStorageService } from "../../shared/services/local-storage.service
 import { LocalStorageMobileConstants } from "../../shared/constants/local-storage.constants";
 
 export abstract class MobileMigrationManagerBase extends MigrationManagerBase {
-  protected constructor(private readonly localStorageService: LocalStorageService) {
+  protected constructor(protected readonly localStorageService: LocalStorageService) {
     super();
   }
 

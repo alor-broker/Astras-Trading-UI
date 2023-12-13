@@ -15,7 +15,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   styleUrls: ['./list-view.component.less']
 })
 export class ListViewComponent implements OnInit {
-  private symbols$ = new BehaviorSubject<string[]>([]);
+  private readonly symbols$ = new BehaviorSubject<string[]>([]);
   @Input()
   set symbols(value: string[]) {
     this.symbols$.next(value);
@@ -34,7 +34,7 @@ export class ListViewComponent implements OnInit {
 ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.symbols$.pipe(
       switchMap(symbols => this.service.getEvents({
         dateFrom: getISOStringDate(new Date()),
@@ -50,11 +50,11 @@ export class ListViewComponent implements OnInit {
     this.activeLang$ = this.translatorService.getLangChanges();
   }
 
-  selectInstrument(symbol: string) {
+  selectInstrument(symbol: string): void {
     this.dashboardContextService.selectDashboardInstrument({ symbol, exchange: 'MOEX' }, defaultBadgeColor);
   }
 
-  isEventsEmpty(events: CalendarEvents) {
+  isEventsEmpty(events: CalendarEvents): boolean {
     return JSON.stringify(events) === '{}';
   }
 }

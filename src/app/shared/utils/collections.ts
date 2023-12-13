@@ -4,9 +4,9 @@
  * @param selector a function with gets an element of array and returns same or diffrent object, constructed from this element
  * @returns array of unique objects
  */
-export function findUnique<T, P>(array: Array<T>, selector: (element: T) => P): P[] {
+export function findUnique<T, P>(array: T[], selector: (element: T) => P): P[] {
   const selected = array.map(element => JSON.stringify(selector(element)));
-  return [...new Set(selected)].map(j => JSON.parse(j));
+  return [...new Set(selected)].map(j => JSON.parse(j) as P);
 }
 
 /**
@@ -17,7 +17,7 @@ export function findUnique<T, P>(array: Array<T>, selector: (element: T) => P): 
  * @returns array of unique and sorted elements
  * */
 export function findUniqueElements<T>(
-    array: Array<T>,
+    array: T[],
     sorter: (e1: T, e2: T) => number,
     comparer: (first: T, second: T) => boolean) : T[]
 {
@@ -35,7 +35,7 @@ export function findUniqueElements<T>(
   return array;
 }
 
-type sortArg<T> = keyof T | `-${string & keyof T}`;
+type SortArg<T> = keyof T | `-${string & keyof T}`;
 
 /**
  * Returns a comparator for objects of type T that can be used by sort
@@ -44,8 +44,8 @@ type sortArg<T> = keyof T | `-${string & keyof T}`;
  * @param sortBy - the names of the properties to sort by, in precedence order.
  *                 Prefix any name with `-` to sort it in descending order.
  */
-export function byPropertiesOf<T extends object>(sortBy: Array<sortArg<T>>) {
-  function compareByProperty(arg: sortArg<T>) {
+export function byPropertiesOf<T extends object>(sortBy: SortArg<T>[]): (obj1: T, obj2: T) => number {
+  function compareByProperty(arg: SortArg<T>): (a: T, b: T) => number {
     let key: keyof T;
     let sortOrder = 1;
     if (typeof arg === 'string' && arg.startsWith('-')) {
@@ -56,17 +56,17 @@ export function byPropertiesOf<T extends object>(sortBy: Array<sortArg<T>>) {
       // Likewise it is not yet smart enough to infer that arg is not keyof T
       key = arg as keyof T;
     }
-    return function (a: T, b: T) {
+    return function (a: T, b: T): number {
       const result = a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0;
 
       return result * sortOrder;
     };
   }
 
-  return function (obj1: T, obj2: T) {
+  return function (obj1: T, obj2: T): number {
     let i = 0;
     let result = 0;
-    const numberOfProperties = sortBy?.length;
+    const numberOfProperties = sortBy.length;
     while (result === 0 && i < numberOfProperties) {
       result = compareByProperty(sortBy[i])(obj1, obj2);
       i++;

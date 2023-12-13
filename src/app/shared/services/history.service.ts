@@ -18,7 +18,7 @@ import { EnvironmentService } from "./environment.service";
   providedIn: 'root'
 })
 export class HistoryService {
-  private url = this.environmentService.apiUrl + '/md/v2/history';
+  private readonly url = this.environmentService.apiUrl + '/md/v2/history';
 
   constructor(
     private readonly environmentService: EnvironmentService,

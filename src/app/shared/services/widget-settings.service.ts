@@ -32,11 +32,11 @@ export class WidgetSettingsService {
     return WidgetSettingsStreams.getAllSettings(this.store);
   }
 
-  addSettings(settings: WidgetSettings[]) {
+  addSettings(settings: WidgetSettings[]): void {
     this.store.dispatch(WidgetSettingsServiceActions.add({settings}));
   }
 
-  updateSettings<T extends WidgetSettings>(guid: string, changes: Partial<T>) {
+  updateSettings<T extends WidgetSettings>(guid: string, changes: Partial<T>): void {
     if (!guid) {
       this.logger.warn('WidgetSettingsService', 'updateSettings', 'GUID is empty');
       return;
@@ -45,7 +45,7 @@ export class WidgetSettingsService {
     this.store.dispatch(WidgetSettingsServiceActions.updateContent({settingGuid: guid, changes}));
   }
 
-  updateIsLinked(guid: string, isLinked: boolean) {
+  updateIsLinked(guid: string, isLinked: boolean): void {
     if (!guid) {
       this.logger.warn('WidgetSettingsService', 'updateIsLinked', 'GUID is empty');
       return;

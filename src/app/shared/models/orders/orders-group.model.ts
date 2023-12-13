@@ -16,15 +16,15 @@ export interface CreateOrderGroupReq {
     exchange: string;
     portfolio: string;
     type: 'Limit' | 'StopLimit' | 'Stop';
-  }[],
+  }[];
   executionPolicy: ExecutionPolicy;
 }
 
 export interface OrdersGroup {
-  id: string,
-  orders: OrdersGroupItem[],
-  executionPolicy: ExecutionPolicy,
-  status: 'Active' | 'Canceled' | 'Filled'
+  id: string;
+  orders: OrdersGroupItem[];
+  executionPolicy: ExecutionPolicy;
+  status: 'Active' | 'Canceled' | 'Filled';
 }
 
 export interface OrdersGroupItem {
@@ -41,7 +41,7 @@ export interface OrdersGroupTreeNode extends NzTreeNodeOptions {
     qtys: string;
   };
   status?: 'Active' | 'Canceled' | 'Filled';
-  children?: OrdersGroupTreeNode[]
+  children?: OrdersGroupTreeNode[];
 }
 
 export interface SubmitGroupResult {

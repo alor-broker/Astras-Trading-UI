@@ -32,6 +32,6 @@ export class CurrencyCode {
   }
 
   static isCurrency(symbol: string): boolean {
-    return !!Object.keys(CurrencyCode).find(k => k == symbol);
+    return Object.keys(CurrencyCode).find(k => k == symbol) != null;
   }
 }

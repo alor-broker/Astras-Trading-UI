@@ -8,7 +8,7 @@ import { ApplicationErrorHandler, ERROR_HANDLER } from "./error-handler";
 export class ErrorHandlerService extends ErrorHandler {
   constructor(
     @Inject(ERROR_HANDLER)
-    private readonly handlers: ApplicationErrorHandler[]
+    private readonly handlers: ApplicationErrorHandler[] | undefined
   ) {
     super();
   }

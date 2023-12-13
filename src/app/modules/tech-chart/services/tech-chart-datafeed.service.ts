@@ -41,11 +41,11 @@ import { EnvironmentService } from "../../../shared/services/environment.service
 
 @Injectable()
 export class TechChartDatafeedService implements IBasicDataFeed {
-  private lastBarPoint = new Map<string, number>();
+  private readonly lastBarPoint = new Map<string, number>();
   private readonly barsSubscriptions = new Map<string, Subscription>();
 
-  private onSymbolChange$ = new BehaviorSubject<InstrumentKey | null>(null);
-  get onSymbolChange() {
+  private readonly onSymbolChange$ = new BehaviorSubject<InstrumentKey | null>(null);
+  get onSymbolChange(): Observable<InstrumentKey | null> {
     return this.onSymbolChange$.asObservable();
   }
 
@@ -91,10 +91,6 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     } as SearchFilter).pipe(
       take(1)
     ).subscribe(results => {
-      if (!results) {
-        return [];
-      }
-
       return onResult(results.map(x => ({
         symbol: x.symbol,
         exchange: x.exchange,
@@ -119,7 +115,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
           map(i => !!i
             ? {
               ...i,
-              symbol: `[${i.exchange}:${i.symbol}${i.instrumentGroup ? ':' + i.instrumentGroup : ''}]`
+              symbol: `[${i.exchange}:${i.symbol}${(i.instrumentGroup != null && i.instrumentGroup.length > 0) ? ':' + i.instrumentGroup : ''}]`
             }
             : i)
         );
@@ -294,7 +290,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
         const lastBarPointKey = this.getLastBarPointKey(symbolInfo.ticker!, resolution);
         const lastBarPoint = this.lastBarPoint.get(lastBarPointKey);
 
-        if (!lastBarPoint || res.time < lastBarPoint) {
+        if (lastBarPoint == null || res.time < lastBarPoint) {
           return;
         }
 
@@ -306,7 +302,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     this.barsSubscriptions.set(listenerGuid, sub);
   }
 
-  getBarsStream(instrument: InstrumentKey, resolution: ResolutionString, ticker: string) {
+  getBarsStream(instrument: InstrumentKey, resolution: ResolutionString, ticker: string): Observable<Candle> {
     const request: BarsRequest = {
       opcode: 'BarsGetAndSubscribe',
       code: instrument.symbol,
@@ -330,7 +326,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     }
   }
 
-  clear() {
+  clear(): void {
     this.barsSubscriptions.forEach((sub) => {
         sub.unsubscribe();
       }
@@ -365,7 +361,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     }
 
     if (code === 'H') {
-      return (count * 3600).toString();
+      return (count * 60 * 60).toString();
     }
 
     // resolution contains minutes

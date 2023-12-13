@@ -19,8 +19,6 @@ import { Store } from "@ngrx/store";
 import { ManageDashboardsService } from "../../../shared/services/manage-dashboards.service";
 import { mergeArrays } from "../../../shared/utils/collections";
 import { TerminalSettingsBrokerService } from "../../../shared/services/settings-broker/terminal-settings-broker.service";
-import { filter } from "rxjs/operators";
-import { TerminalSettings } from "../../../shared/models/terminal-settings/terminal-settings.model";
 import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
 import {
   WidgetSettingsInternalActions,
@@ -54,7 +52,7 @@ export class DesktopSettingsBrokerService {
   ) {
   }
 
-  initSettingsBrokers() {
+  initSettingsBrokers(): void {
     this.initTerminalSettingsBroker();
     this.initWidgetSettingsBroker();
     this.initDashboardSettingsBroker();
@@ -62,7 +60,7 @@ export class DesktopSettingsBrokerService {
     this.checkDirtyWidgetSettings();
   }
 
-  private initDashboardSettingsBroker() {
+  private initDashboardSettingsBroker(): void {
     this.addActionSubscription(
       DashboardsEventsActions.updated,
       action => {
@@ -77,7 +75,7 @@ export class DesktopSettingsBrokerService {
     });
   }
 
-  private initWidgetSettingsBroker() {
+  private initWidgetSettingsBroker(): void {
     this.addActionSubscription(
       WidgetSettingsServiceActions.remove,
       action => this.widgetsSettingsBrokerService.removeSettings(action.settingGuids).subscribe()
@@ -115,13 +113,12 @@ export class DesktopSettingsBrokerService {
     });
   }
 
-  private initTerminalSettingsBroker() {
+  private initTerminalSettingsBroker(): void {
     this.addActionSubscription(
       TerminalSettingsServicesActions.update,
       () => {
         this.terminalSettingsService.getSettings(true).pipe(
           take(1),
-          filter((x): x is TerminalSettings => !!x)
         ).subscribe(settings => {
           this.terminalSettingsBrokerService.saveSettings(settings).pipe(
             take(1)
@@ -148,7 +145,7 @@ export class DesktopSettingsBrokerService {
     });
   }
 
-  private checkDirtyWidgetSettings() {
+  private checkDirtyWidgetSettings(): void {
     combineLatest([
       this.manageDashboardsService.allDashboards$,
       this.widgetSettingsService.getAllSettings()
@@ -174,7 +171,7 @@ export class DesktopSettingsBrokerService {
     });
   }
 
-  private addActionSubscription<AC extends ActionCreator, U = ReturnType<AC>>(actionCreator: AC, callback: (action: U) => void) {
+  private addActionSubscription<AC extends ActionCreator, U = ReturnType<AC>>(actionCreator: AC, callback: (action: U) => void): void {
     this.actions$.pipe(
       ofType(actionCreator),
       takeUntilDestroyed(this.destroyRef)
@@ -183,7 +180,7 @@ export class DesktopSettingsBrokerService {
     });
   }
 
-  private saveWidgetSettings(widgetGuids: string[]) {
+  private saveWidgetSettings(widgetGuids: string[]): void {
     this.widgetSettingsService.getAllSettings().pipe(
       take(1)
     ).subscribe(allSettings => {

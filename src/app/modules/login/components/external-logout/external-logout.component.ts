@@ -18,10 +18,10 @@ export class ExternalLogoutComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() {
-    const eventListener = (e: any) => {
+  ngOnInit(): void {
+    const eventListener = (e: any): void => {
       try {
-        const json = JSON.parse(e.data);
+        const json = JSON.parse(e.data) as { source: string} | undefined;
         const origins = [
           'localhost:8001',
           'login.dev.alor.ru',

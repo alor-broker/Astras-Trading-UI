@@ -36,7 +36,7 @@ export class SelectDashboardMenuComponent implements OnInit {
     }
   };
 
-  newDashboardForm!: UntypedFormGroup;
+  newDashboardForm?: UntypedFormGroup;
 
   allDashboards$!: Observable<Dashboard[]>;
 
@@ -47,8 +47,8 @@ export class SelectDashboardMenuComponent implements OnInit {
   isNewDashboardFocused = new EventEmitter<boolean>();
 
   constructor(
-    private dashboardService: ManageDashboardsService,
-    private modal: NzModalService,
+    private readonly dashboardService: ManageDashboardsService,
+    private readonly modal: NzModalService,
     private readonly translatorService: TranslatorService
   ) {
   }
@@ -58,7 +58,7 @@ export class SelectDashboardMenuComponent implements OnInit {
     this.newDashboardForm?.reset();
   }
 
-  checkInputComplete(event: KeyboardEvent) {
+  checkInputComplete(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       this.addDashboard();
     }
@@ -78,20 +78,20 @@ export class SelectDashboardMenuComponent implements OnInit {
     );
   }
 
-  addDashboard() {
-    if (this.newDashboardForm.valid) {
-      this.dashboardService.addDashboard(this.newDashboardForm.value.title);
+  addDashboard(): void {
+    if (this.newDashboardForm!.valid) {
+      this.dashboardService.addDashboard(this.newDashboardForm!.value.title);
       this.hideMenu.emit();
-      this.newDashboardForm.reset();
+      this.newDashboardForm!.reset();
     }
   }
 
-  selectDashboard(guid: string) {
+  selectDashboard(guid: string): void {
     this.dashboardService.selectDashboard(guid);
     this.hideMenu.emit();
   }
 
-  removeDashboard(dashboard: Dashboard) {
+  removeDashboard(dashboard: Dashboard): void {
     this.translatorService.getTranslator('dashboard/select-dashboard-menu').pipe(
       take(1)
     ).subscribe(t => {
@@ -107,7 +107,7 @@ export class SelectDashboardMenuComponent implements OnInit {
     });
   }
 
-  copyDashboard(dashboard: Dashboard) {
+  copyDashboard(dashboard: Dashboard): void {
     this.translatorService.getTranslator('dashboard/select-dashboard-menu').pipe(
       take(1)
     ).subscribe(t => {
@@ -123,17 +123,19 @@ export class SelectDashboardMenuComponent implements OnInit {
     });
   }
 
-  renameDashboard(guid: string, newTitle: string) {
+  renameDashboard(guid: string, newTitle: string): void {
     this.dashboardService.renameDashboard(guid, newTitle);
   }
 
-  changeFavoriteDashboard(dashboard: Dashboard) {
-    dashboard.isFavorite
-      ? this.dashboardService.removeDashboardFromFavorites(dashboard.guid)
-      : this.dashboardService.addDashboardToFavorites(dashboard.guid);
+  changeFavoriteDashboard(dashboard: Dashboard): void {
+    if (dashboard.isFavorite ?? false) {
+      this.dashboardService.removeDashboardFromFavorites(dashboard.guid);
+    } else {
+      this.dashboardService.addDashboardToFavorites(dashboard.guid);
+    }
   }
 
-  private buildNewDashboardForm() {
+  private buildNewDashboardForm(): void {
     this.newDashboardForm = new FormGroup({
       title: new FormControl(
         '',
@@ -145,5 +147,4 @@ export class SelectDashboardMenuComponent implements OnInit {
       )
     });
   }
-
 }

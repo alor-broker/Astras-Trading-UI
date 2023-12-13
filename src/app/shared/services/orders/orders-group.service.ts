@@ -15,7 +15,7 @@ import { EnvironmentService } from "../environment.service";
 export class OrdersGroupService {
   private readonly orderGroupsUrl = this.environmentService.apiUrl + '/commandapi/api/orderGroups';
 
-  private refresh$ = new BehaviorSubject(null);
+  private readonly refresh$ = new BehaviorSubject(null);
   private orderGroups$?: Observable<OrdersGroup[]>;
 
   constructor(

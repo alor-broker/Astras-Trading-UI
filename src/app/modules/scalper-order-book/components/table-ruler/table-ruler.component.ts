@@ -29,6 +29,7 @@ import {
   ScalperOrderBookBodyRef
 } from '../scalper-order-book-body/scalper-order-book-body.component';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { OrderbookDataRow } from "../../../orderbook/models/orderbook-data.model";
 
 interface MarkerDisplay {
   index: number;
@@ -74,7 +75,7 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe(x => {
       const containerBounds = this.bodyRef.getElement().nativeElement.getBoundingClientRect();
       const elementBounds = this.elementRef.nativeElement.getBoundingClientRect();
-      const markerBounds = x.first?.nativeElement?.getBoundingClientRect();
+      const markerBounds = x.first?.nativeElement?.getBoundingClientRect() as DOMRect | undefined;
 
       if (!markerBounds) {
         return;
@@ -98,7 +99,7 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.initMarkerData();
   }
 
-  private initMarkerData() {
+  private initMarkerData(): void {
     this.settings$ = this.dataContext.extendedSettings$.pipe(
       map(x => {
         if (!!x.widgetSettings.rulerSettings) {
@@ -144,8 +145,8 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         const markerPrice = displayRows[markerRowIndex].price;
-        const bestAsk = orderBookData.a[0];
-        const bestBid = orderBookData.b[0];
+        const bestAsk = orderBookData.a[0] as OrderbookDataRow | undefined;
+        const bestBid = orderBookData.b[0] as OrderbookDataRow | undefined;
 
         let bestPrice: number | null = null;
         if (bestAsk != null && markerPrice >= bestAsk.p) {

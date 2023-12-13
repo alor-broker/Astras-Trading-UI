@@ -25,7 +25,7 @@ import { getValueOrDefault } from "../../../../shared/utils/object-helper";
   providers: [OrderbookService]
 })
 export class OrderbookWidgetComponent implements OnInit {
-  shouldShowSettings: boolean = false;
+  shouldShowSettings = false;
 
   @Input({required: true})
   widgetInstance!: WidgetInstance;
@@ -42,7 +42,7 @@ export class OrderbookWidgetComponent implements OnInit {
   ) {
   }
 
-  onSettingsChange() {
+  onSettingsChange(): void {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 

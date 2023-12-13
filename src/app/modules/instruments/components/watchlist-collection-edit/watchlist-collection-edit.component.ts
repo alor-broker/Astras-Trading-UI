@@ -17,7 +17,7 @@ import {
 } from '@angular/forms';
 import {
   PresetWatchlist,
-  PresetWatchlistCollection,
+  PresetWatchlistCollection, PresetWatchlistItem,
   Watchlist,
   WatchlistType
 } from '../../models/watchlist.model';
@@ -52,23 +52,23 @@ export class WatchlistCollectionEditComponent implements OnInit {
 
     this.presetCollection$ = this.watchlistCollectionService.getPresetCollection()
       .pipe(
-        filter((x): x is  PresetWatchlistCollection => !!x),
-        filter(x => x.list?.length > 0),
+        filter((x): x is PresetWatchlistCollection => !!x),
+        filter(x => x.list.length > 0),
         map(x => x.list),
-        map(x => x.filter(list => list.papers?.length > 0)),
+        map(x => x.filter(list => (list.papers as PresetWatchlistItem[] | undefined ?? []).length > 0)),
         shareReplay()
       );
 
     this.buildNewListForm();
   }
 
-  changeListTitle(newTitle: string, targetList: Watchlist) {
-    if (newTitle?.length > 0) {
+  changeListTitle(newTitle: string, targetList: Watchlist): void {
+    if (newTitle.length > 0) {
       this.watchlistCollectionService.updateListMeta(targetList.id, { title: newTitle });
     }
   }
 
-  addNewList() {
+  addNewList(): void {
     if (!this.newListForm.valid) {
       return;
     }
@@ -77,7 +77,7 @@ export class WatchlistCollectionEditComponent implements OnInit {
     this.newListForm.reset();
   }
 
-  addPresetList() {
+  addPresetList(): void {
     if (this.selectedPresetWatchlist != null) {
       this.watchlistCollectionService.createNewList(
         this.selectedPresetWatchlist.name,
@@ -92,12 +92,12 @@ export class WatchlistCollectionEditComponent implements OnInit {
     }
   }
 
-  removeList(listId: string) {
+  removeList(listId: string): void {
     this.watchlistCollectionService.removeList(listId);
   }
 
   isRemovable(list: Watchlist): boolean {
-    return !(list.isDefault || list.type === WatchlistType.DefaultList || list.type === WatchlistType.HistoryList);
+    return !((list.isDefault ?? false) || list.type === WatchlistType.DefaultList || list.type === WatchlistType.HistoryList);
   }
 
   hasEditableTitle(list: Watchlist): boolean {
@@ -108,7 +108,7 @@ export class WatchlistCollectionEditComponent implements OnInit {
     return list.type !== WatchlistType.HistoryList;
   }
 
-  private buildNewListForm() {
+  private buildNewListForm(): void {
     this.newListForm = new UntypedFormGroup({
       title: new UntypedFormControl(null, [Validators.required, Validators.maxLength(100)])
     });

@@ -34,7 +34,7 @@ export class FeedbackService {
   ) {
   }
 
-  setLastFeedbackCheck() {
+  setLastFeedbackCheck(): void {
     const meta = this.getSavedFeedbackMeta() ?? {};
     this.saveFeedbackMeta({
       ...meta,
@@ -42,7 +42,7 @@ export class FeedbackService {
     });
   }
 
-  setUnansweredFeedback(unansweredFeedback: UnansweredFeedback | null) {
+  setUnansweredFeedback(unansweredFeedback: UnansweredFeedback | null): void {
     const meta = this.getSavedFeedbackMeta() ?? {};
     this.saveFeedbackMeta({
       ...meta,
@@ -50,7 +50,7 @@ export class FeedbackService {
     });
   }
 
-  removeUnansweredFeedback() {
+  removeUnansweredFeedback(): void {
     const meta = this.getSavedFeedbackMeta() ?? {};
     this.saveFeedbackMeta({
       ...meta,
@@ -92,7 +92,7 @@ export class FeedbackService {
     return this.localStorage.getItem<FeedbackMeta>(LocalStorageCommonConstants.FeedbackStorageKey) ?? null;
   }
 
-  private saveFeedbackMeta(meta: FeedbackMeta) {
+  private saveFeedbackMeta(meta: FeedbackMeta): void {
     this.localStorage.setItem(LocalStorageCommonConstants.FeedbackStorageKey, meta);
   }
 }

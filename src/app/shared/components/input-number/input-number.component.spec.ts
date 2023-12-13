@@ -9,7 +9,7 @@ describe('InputNumberComponent', () => {
   let component: InputNumberComponent;
   let fixture: ComponentFixture<InputNumberComponent>;
 
-  const inputValueSymbolBySymbol = (value: string) => {
+  const inputValueSymbolBySymbol = (value: string): void => {
     component.writeValue(null);
     for (const symbol of value) {
       component.inputElement.nativeElement.value += symbol;
@@ -17,7 +17,7 @@ describe('InputNumberComponent', () => {
     }
   };
 
-  const inputValue = (value: string) => {
+  const inputValue = (value: string): void => {
     component.writeValue(null);
     for (const symbol of value) {
       component.inputElement.nativeElement.value = value;

@@ -62,7 +62,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
   exchange!: string;
 
   @Input()
-  enableDelete: boolean = true;
+  enableDelete = true;
   @Output()
   delete = new EventEmitter();
   readonly validationOptions = {
@@ -86,7 +86,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
   showLabels$?: Observable<boolean>;
   itemIndex$ = new BehaviorSubject<number>(0);
   private readonly onChangeSubs: Subscription[] = [];
-  private totalBudget$ = new BehaviorSubject<number | null>(null);
+  private readonly totalBudget$ = new BehaviorSubject<number | null>(null);
 
   constructor(
     private readonly instrumentsService: InstrumentsService,
@@ -115,7 +115,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
       return null;
     }
 
-    let errors: any = {};
+    let errors: { [controlName: string]: ValidationErrors } = {};
 
     errors = this.addControlErrors(errors, "instrumentKey");
     errors = this.addControlErrors(errors, "quota");
@@ -125,7 +125,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     return errors;
   }
 
-  addControlErrors(allErrors: any, controlName: string) {
+  addControlErrors(allErrors: { [controlName: string]: ValidationErrors }, controlName: string): { [controlName: string]: ValidationErrors } {
 
     const errors = { ...allErrors };
 
@@ -168,26 +168,26 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     this.onChangeSubs.push(sub);
   }
 
-  registerOnTouched(onTouched: any): void {
+  registerOnTouched(onTouched: (...args: any[]) => any): void {
     this.onTouched = onTouched;
   }
 
   writeValue(formValue: Partial<OrdersBasketItem>): void {
     Object.keys(formValue).forEach(key => {
-      const newValue = (formValue as any)[key];
-      const oldValue = this.form.controls[key]?.value;
+      const newValue = formValue[key as keyof OrdersBasketItem];
+      const oldValue: unknown = this.form.controls[key].value;
       if (newValue !== oldValue) {
         this.form.controls[key].setValue(newValue);
       }
     });
   }
 
-  onTouched: Function = () => {
+  onTouched: () => void = () => {
   };
 
-  private initSizeDependedState() {
+  private initSizeDependedState(): void {
     this.displayMode$ = this.itemsContainerWidth$.pipe(
-      filter(w => !!w),
+      filter(w => !!(w ?? 0)),
       map(w => {
         if (w! < 250) {
           return 'ultra-compact';
@@ -210,7 +210,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     );
   }
 
-  private initInstrumentUpdate() {
+  private initInstrumentUpdate(): void {
     this.instrument$ = this.form.controls.instrumentKey.valueChanges.pipe(
       distinctUntilChanged((previous, current) => isInstrumentEqual(previous, current)),
       switchMap(instrument => {
@@ -224,7 +224,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     );
   }
 
-  private initPriceUpdate() {
+  private initPriceUpdate(): void {
     this.instrument$.pipe(
       filter((x, index) => {
         if(!x) {
@@ -241,7 +241,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
       switchMap(instrument => this.quotesService.getLastPrice(instrument!)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(lastPrice => {
-      if (lastPrice) {
+      if (lastPrice == null || !lastPrice) {
         this.form.controls.price.setValue(lastPrice);
       }
     });
@@ -249,7 +249,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     this.form.controls.price.addAsyncValidators(AtsValidators.priceStepMultiplicityAsync(this.instrument$.pipe(map(x => x?.minstep ?? null))));
   }
 
-  private initForm() {
+  private initForm(): void {
     this.form = new FormGroup({
       instrumentKey: new FormControl<InstrumentKey | null>(null, Validators.required),
       quota: new FormControl(

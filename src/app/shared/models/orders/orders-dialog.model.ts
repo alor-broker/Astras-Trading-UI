@@ -22,18 +22,18 @@ export interface OrderDialogParams {
       bottomOrderSide?: Side | null;
     };
     stopOrder?: {
-      condition?: LessMore,
-      limit?: boolean
-    }
-  }
+      condition?: LessMore;
+      limit?: boolean;
+    };
+  };
 }
 
 export interface EditOrderDialogParams {
   orderId: string;
   orderType: OrderType;
   instrumentKey: {
-    symbol: string,
-    exchange: string
+    symbol: string;
+    exchange: string;
   };
   portfolioKey: PortfolioKey;
   initialValues: {

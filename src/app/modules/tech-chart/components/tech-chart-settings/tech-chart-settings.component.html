@@ -6,14 +6,14 @@
   (copyClick)="createWidgetCopy()"
 >
   <ng-container *transloco="let t; scope: 'tech-chart/settings'">
-    <form [formGroup]="form" [nzLayout]="'horizontal'" nz-form>
+    <form *ngIf="form" [formGroup]="form" [nzLayout]="'horizontal'" nz-form>
       <nz-form-item>
         <nz-form-control [nzErrorTip]="t('techChartSettings.tickerError')">
           <nz-form-label nzRequired nzFor="instrument">{{t('techChartSettings.tickerLabel')}}</nz-form-label>
           <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item *ngIf="!isSyntheticInstrument(form?.value?.instrument?.symbol ?? '')">
+      <nz-form-item *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '')">
         <nz-form-control>
           <nz-form-label nzFor="exchange" nzRequired>{{t('techChartSettings.exchangeLabel')}}</nz-form-label>
           <input formControlName='exchange' nz-input>

@@ -34,7 +34,7 @@ export class SessionTrackService {
   ) {
   }
 
-  startTracking() {
+  startTracking(): void {
     this.stopTracking();
     this.activityTrackerService.startTracking();
 
@@ -47,7 +47,7 @@ export class SessionTrackService {
     this.trackingSubscription.add(this.setupWarningCheck(userIdleDuration$));
   }
 
-  stopTracking() {
+  stopTracking(): void {
     this.trackingSubscription?.unsubscribe();
     this.activityTrackerService.stopTracking();
   }
@@ -124,7 +124,7 @@ export class SessionTrackService {
     );
   }
 
-  private getNextCheckPeriod(period: number, lastActivityTime: number | null) {
+  private getNextCheckPeriod(period: number, lastActivityTime: number | null): number {
     if (lastActivityTime == null) {
       return period;
     } else {
@@ -142,13 +142,13 @@ export class SessionTrackService {
     return (new Date().getTime() - lastActivityTime) > userIdleDuration;
   }
 
-  private getWarningPeriod(userIdleDuration: number) {
+  private getWarningPeriod(userIdleDuration: number): number {
     return userIdleDuration <= (60 * 1000)
       ? Math.min(30 * 1000, userIdleDuration)
       : 60 * 1000;
   }
 
-  private showWarningMessage() {
+  private showWarningMessage(): void {
     this.removeWarningMessage();
     this.lastWarningId = this.notificationService.warning(
       'Завершение сеанса',
@@ -159,8 +159,8 @@ export class SessionTrackService {
     ).messageId;
   }
 
-  private removeWarningMessage() {
-    if (!!this.lastWarningId) {
+  private removeWarningMessage(): void {
+    if (this.lastWarningId != null) {
       this.notificationService.remove(this.lastWarningId);
       this.lastWarningId = undefined;
     }

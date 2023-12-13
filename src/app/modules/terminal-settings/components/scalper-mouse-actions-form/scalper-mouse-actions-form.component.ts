@@ -28,7 +28,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   ]
 })
 export class ScalperMouseActionsFormComponent extends ControlValueAccessorBaseComponent<ScalperOrderBookMouseActionsMap> implements OnInit {
-  form!: UntypedFormGroup;
+  form?: UntypedFormGroup;
   availableDefaultSchemes = [
     'scheme1',
     'scheme2'
@@ -55,12 +55,12 @@ export class ScalperMouseActionsFormComponent extends ControlValueAccessorBaseCo
     ).subscribe(() => {
       this.checkIfTouched();
 
-      if (!this.form.valid) {
+      if (!this.form!.valid) {
         this.emitValue(null);
         return;
       }
 
-      this.emitValue(this.getActionsFormScheme(this.form.value.mapName));
+      this.emitValue(this.getActionsFormScheme(this.form!.value.mapName));
     });
   }
 
@@ -73,6 +73,6 @@ export class ScalperMouseActionsFormComponent extends ControlValueAccessorBaseCo
   }
 
   protected needMarkTouched(): boolean {
-    return this.form.touched ?? false;
+    return this.form?.touched ?? false;
   }
 }

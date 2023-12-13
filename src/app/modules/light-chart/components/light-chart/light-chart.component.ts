@@ -99,17 +99,17 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
     this.chart?.clear();
   }
 
-  changeTimeframe(timeframe: TimeframeValue) {
+  changeTimeframe(timeframe: TimeframeValue): void {
     this.settingsService.updateSettings<LightChartSettings>(this.guid, { timeFrame: timeframe });
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     if (this.guid) {
       this.initChart();
     }
   }
 
-  containerSizeChanged(entries: ResizeObserverEntry[]) {
+  containerSizeChanged(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
       this.chartResize({
         width: Math.floor(x.contentRect.width),
@@ -118,7 +118,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private initChart() {
+  private initChart(): void {
     combineLatest([
       this.settings$,
       this.timezoneConverterService.getConverter(),
@@ -132,15 +132,11 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
           theme: t,
           locale: l
         })),
-        filter(x => !!x.converter && !!x.widgetSettings),
         distinctUntilChanged((previous, current) =>
-            !previous
-            || (
-              this.isEqualLightChartSettings(previous.widgetSettings, current.widgetSettings)
-              && previous.converter === current.converter
-              && previous.theme?.theme === current.theme?.theme
-              && previous.locale === current.locale
-            )
+          this.isEqualLightChartSettings(previous.widgetSettings, current.widgetSettings)
+          && previous.converter === current.converter
+          && previous.theme.theme === current.theme.theme
+          && previous.locale === current.locale
         ),
         takeUntilDestroyed(this.destroyRef)
       )
@@ -168,7 +164,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private isEqualLightChartSettings(
     settings1?: LightChartSettings,
     settings2?: LightChartSettings
-  ) {
+  ): boolean {
     if (settings1 && settings2) {
       return (
         settings1.symbol == settings2.symbol &&
@@ -185,7 +181,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
     } else return false;
   }
 
-  private chartResize(contentSize: ContentSize) {
-    this.chart?.resize(Math.floor(contentSize.width ?? 0), Math.floor(contentSize.height ?? 0));
+  private chartResize(contentSize: ContentSize): void {
+    this.chart?.resize(Math.floor((contentSize.width as number | undefined) ?? 0), Math.floor((contentSize.height as number | undefined) ?? 0));
   }
 }

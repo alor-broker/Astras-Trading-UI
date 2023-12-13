@@ -30,12 +30,12 @@ export class WidgetLocalStateService {
     recordKey: string
   ): Observable<T | null> {
     return this.getState().pipe(
-      map(s => (s.entities[getRecordId({ widgetGuid, recordKey })]?.content as T) ?? null),
+      map(s => (s.entities[getRecordId({ widgetGuid, recordKey })]?.content as (T | undefined)) ?? null),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
-  setStateRecord<T extends RecordContent>(widgetGuid: string, recordKey: string, content: T, restorable = true) {
+  setStateRecord<T extends RecordContent>(widgetGuid: string, recordKey: string, content: T, restorable = true): void {
     this.store.dispatch(WidgetsLocalStateServicesActions.setRecord({
       record: {
         widgetGuid,

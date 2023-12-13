@@ -25,17 +25,17 @@ export class WidgetsSharedDataService implements OnDestroy {
 
     return this.dataProviders$.pipe(
       map(p => p[name]),
-      filter(p => !!p),
+      filter(p => !!(p as Subject<any> | undefined)),
       switchMap(p => p)
-    );
+    ) as Observable<T>;
   }
 
-  setDataProviderValue<T>(name: string, value: T) {
+  setDataProviderValue<T>(name: string, value: T): void {
     this.addNewDataProvider(name);
 
     this.dataProviders$.pipe(
       map(p => p[name]),
-      filter(p => !!p),
+      filter((p: any) => !!p),
       take(1)
     ).subscribe(p => {
       p.next(value);
@@ -46,11 +46,11 @@ export class WidgetsSharedDataService implements OnDestroy {
     this.dataProviders$.complete();
   }
 
-  private addNewDataProvider<T>(name: string) {
+  private addNewDataProvider<T>(name: string): void {
     this.dataProviders$.pipe(
       take(1)
     ).subscribe(p => {
-      if (p[name]) {
+      if (p[name] as (Subject<T> | undefined)) {
         return;
       }
 
