@@ -12,6 +12,7 @@ import {
   SearchSymbolsCallback,
   ServerTimeCallback,
   SubscribeBarsCallback,
+  Timezone,
 } from "../../../../assets/charting_library";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { InstrumentsService } from "../../instruments/services/instruments.service";
@@ -38,11 +39,14 @@ import { Instrument } from "../../../shared/models/instruments/instrument.model"
 import { HistoryResponse } from "../../../shared/models/history/history-response.model";
 import { SyntheticInstrumentsHelper } from "../utils/synthetic-instruments.helper";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { ExchangeSettings } from "../../../shared/models/market-settings.model";
+import { AllExchanges } from "../../../shared/services/market.service";
 
 @Injectable()
 export class TechChartDatafeedService implements IBasicDataFeed {
   private readonly lastBarPoint = new Map<string, number>();
   private readonly barsSubscriptions = new Map<string, Subscription>();
+  private exchangeSettings: AllExchanges | null = null;
 
   private readonly onSymbolChange$ = new BehaviorSubject<InstrumentKey | null>(null);
   get onSymbolChange(): Observable<InstrumentKey | null> {
@@ -60,24 +64,23 @@ export class TechChartDatafeedService implements IBasicDataFeed {
   ) {
   }
 
+  setExchangeSettings(settings: { exchange: string, settings: ExchangeSettings }[]): void {
+    this.exchangeSettings = settings;
+  }
+
   onReady(callback: OnReadyCallback): void {
-    this.translatorService.getTranslator('tech-chart/tech-chart')
-      .subscribe(t => {
+    this.translatorService.getTranslator('tech-chart/tech-chart').pipe(
+      take(1)
+    ).subscribe(t => {
         const config: DatafeedConfiguration = {
           supports_time: true,
           supported_resolutions: this.getSupportedResolutions(),
-          exchanges: [
-            {
-              value: 'MOEX',
-              name: t(['MOEX']),
-              desc: t(['MOEX'])
-            },
-            {
-              value: 'SPBX',
-              name: 'SPBX',
-              desc: 'SPBX'
-            }
-          ]
+          exchanges: (this.exchangeSettings ?? [])
+            .map(x => ({
+              value: x.exchange,
+              name: t([x.exchange], { fallback: x.exchange }),
+              desc: t([x.exchange], { fallback: x.exchange })
+            }))
         };
 
         setTimeout(() => callback(config), 0);
@@ -132,6 +135,8 @@ export class TechChartDatafeedService implements IBasicDataFeed {
       const precision = MathHelper.getPrecision(instrumentDetails.minstep);
       const priceScale = Number((10 ** precision).toFixed(precision));
 
+      const instrumentExchange = (this.exchangeSettings ?? []).find(x => x.exchange === instrumentDetails.exchange);
+
       const resolve: LibrarySymbolInfo = {
         name: instrumentDetails.shortName,
         ticker: instrumentDetails.symbol,
@@ -147,9 +152,9 @@ export class TechChartDatafeedService implements IBasicDataFeed {
         has_empty_bars: false,
         has_intraday: true,
         has_seconds: true,
-        timezone: 'Europe/Moscow',
+        timezone:  instrumentExchange?.settings.timezone as Timezone ?? 'Europe/Moscow',
+        session: instrumentExchange?.settings.defaultTradingSession ?? '0700-0000,0000-0200',
         supported_resolutions: this.getSupportedResolutions(),
-        session: '24x7'
       };
 
       onResolve(resolve);
@@ -383,8 +388,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
       '15' as ResolutionString,
       '30' as ResolutionString,
       '1H' as ResolutionString,
-      // disabled until https://github.com/tradingview/charting_library/issues/8310 will be resolved
-      //'4h' as ResolutionString,
+      '4h' as ResolutionString,
       '1D' as ResolutionString,
       '1W' as ResolutionString,
       '2W' as ResolutionString,

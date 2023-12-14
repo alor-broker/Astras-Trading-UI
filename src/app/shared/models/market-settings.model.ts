@@ -13,6 +13,8 @@ export interface ExchangeSettings {
     symbol: string;
     instrumentGroup?: string;
   };
+  timezone: string;
+  defaultTradingSession: string;
 }
 
 export interface MarketSettings {}
