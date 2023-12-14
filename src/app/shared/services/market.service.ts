@@ -4,6 +4,8 @@ import {HttpClient} from "@angular/common/http";
 import {Observable, shareReplay} from "rxjs";
 import {filter, map} from "rxjs/operators";
 
+export type AllExchanges = { exchange: string, settings: ExchangeSettings }[];
+
 @Injectable({
   providedIn: 'root'
 })
@@ -34,7 +36,7 @@ export class MarketService {
     );
   }
 
-  private getSettings(): Observable<{ exchange: string, settings: ExchangeSettings }[]> {
+  private getSettings(): Observable<AllExchanges> {
     if (!this.settings$) {
       this.settings$ = this.http.get<{
         exchange: string;

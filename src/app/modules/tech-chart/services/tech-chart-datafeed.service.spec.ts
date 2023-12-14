@@ -31,6 +31,7 @@ import { SyntheticInstrumentsService } from "./synthetic-instruments.service";
 import { getRandomInt } from "../../../shared/utils/testing";
 import { BarsRequest } from "../../light-chart/models/bars-request.model";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { ExchangeSettings } from "../../../shared/models/market-settings.model";
 
 describe('TechChartDatafeedService', () => {
   let service: TechChartDatafeedService;
@@ -95,6 +96,13 @@ describe('TechChartDatafeedService', () => {
   });
 
   it('#onReady should provide config', fakeAsync(() => {
+    service.setExchangeSettings([
+      {
+        exchange: "MOEX",
+        settings: {} as ExchangeSettings
+      }
+    ]);
+
       const expectedConfig: DatafeedConfiguration = {
         supports_time: true,
         supported_resolutions: [
@@ -106,6 +114,7 @@ describe('TechChartDatafeedService', () => {
           '15' as ResolutionString,
           '30' as ResolutionString,
           '1H' as ResolutionString,
+          '4h' as ResolutionString,
           '1D' as ResolutionString,
           '1W' as ResolutionString,
           '2W' as ResolutionString,
@@ -117,11 +126,6 @@ describe('TechChartDatafeedService', () => {
             value: 'MOEX',
             name: 'Московская Биржа',
             desc: 'Московская Биржа'
-          },
-          {
-            value: 'SPBX',
-            name: 'SPBX',
-            desc: 'SPBX'
           }
         ]
       };
@@ -146,6 +150,16 @@ describe('TechChartDatafeedService', () => {
   });
 
   it('#resolveSymbol should pass value to onResolve callback', fakeAsync(() => {
+    service.setExchangeSettings([
+      {
+        exchange: "MOEX",
+        settings: {
+          timezone: 'Europe/Moscow',
+          defaultTradingSession: '24x7'
+        } as ExchangeSettings
+      }
+    ]);
+
     const instrumentDetails = {
       symbol: 'SBER',
       exchange: 'MOEX',
@@ -183,6 +197,7 @@ describe('TechChartDatafeedService', () => {
         '15' as ResolutionString,
         '30' as ResolutionString,
         '1H' as ResolutionString,
+        '4h' as ResolutionString,
         '1D' as ResolutionString,
         '1W' as ResolutionString,
         '2W' as ResolutionString,

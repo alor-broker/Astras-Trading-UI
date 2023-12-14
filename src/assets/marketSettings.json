@@ -16,7 +16,9 @@
       "defaultInstrument": {
         "symbol": "SBER",
         "instrumentGroup": "TQBR"
-      }
+      },
+      "timezone": "Europe/Moscow",
+      "defaultTradingSession": "0700-0000,0000-0200"
     }
   },
   {
@@ -32,7 +34,9 @@
       "defaultInstrument": {
         "symbol": "GAZP",
         "instrumentGroup": "SPBX"
-      }
+      },
+      "timezone": "Europe/Moscow",
+      "defaultTradingSession": "0700-0000,0000-0200"
     }
   }
 ]

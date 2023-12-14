@@ -32,6 +32,7 @@ import {TimezoneDisplayOption} from "../../../../shared/models/enums/timezone-di
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
+import { MarketService } from "../../../../shared/services/market.service";
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -143,6 +144,12 @@ describe('TechChartComponent', () => {
           provide: TradesHistoryService,
           useValue: {
             getTradesHistoryForSymbol: jasmine.createSpy('getTradesHistoryForSymbol').and.returnValue(new Subject()),
+          }
+        },
+        {
+          provide: MarketService,
+          useValue: {
+            getAllExchanges: jasmine.createSpy('getAllExchanges').and.returnValue(new Subject())
           }
         },
         ...commonTestProviders
