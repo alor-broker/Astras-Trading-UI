@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   Component,
+  DestroyRef,
   ElementRef,
   Input,
   OnDestroy,
@@ -20,6 +21,7 @@ import {
 import { TreemapService } from "../../services/treemap.service";
 import {
   debounceTime,
+  filter,
   map,
   switchMap
 } from "rxjs/operators";
@@ -45,6 +47,7 @@ import { DashboardContextService } from "../../../../shared/services/dashboard-c
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { getNumberAbbreviation } from "../../../../shared/utils/number-abbreviation";
 import { color } from "d3";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface TooltipModelRaw {
   _data: {
@@ -58,13 +61,18 @@ interface TooltipModelRaw {
   };
 }
 
+interface TooltipData {
+  title: string;
+  body: string[];
+}
+
 @Component({
   selector: 'ats-treemap',
   templateUrl: './treemap.component.html',
   styleUrls: ['./treemap.component.less']
 })
 export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
-  @ViewChild('treemapWrapper') treemapWrapperEl?: ElementRef;
+  @ViewChild('treemapWrapper') treemapWrapperEl?: ElementRef<HTMLDivElement>;
   @Input({ required: true })
   guid!: string;
   isCursorOnSector$ = new BehaviorSubject(false);
@@ -76,6 +84,9 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   private readonly maxDayChange = 5;
   private readonly averageTileSize = 4000;
 
+  private readonly newTooltip$ = new BehaviorSubject<TooltipModel<'treemap'> | null>(null);
+  private tooltipData$?: Observable<TooltipData>;
+
   constructor(
     private readonly treemapService: TreemapService,
     private readonly themeService: ThemeService,
@@ -83,7 +94,8 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
     private readonly translatorService: TranslatorService,
     private readonly instrumentsService: InstrumentsService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly settingsService: WidgetSettingsService
+    private readonly settingsService: WidgetSettingsService,
+    private readonly destroy: DestroyRef
   ) {
   }
 
@@ -127,8 +139,6 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
 
         this.chart?.clear();
         this.chart?.destroy();
-
-        let tooltipDataSub: Subscription | undefined;
 
         this.chart = new Chart(ctx, {
           type: 'treemap',
@@ -186,54 +196,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
               },
               tooltip: {
                 enabled: false,
-                external: (context): void => {
-                  // Tooltip Element
-                  let tooltipEl = document.querySelector('.treemap-tooltip') as HTMLDivElement | null | undefined;
-
-                  // Create element on first render
-                  if (!tooltipEl) {
-                    tooltipEl = document.createElement('div');
-                    tooltipEl.classList.add('treemap-tooltip', 'center');
-                    document.body.appendChild(tooltipEl);
-                  }
-
-                  // Hide if no tooltip
-                  const tooltipModel = context.tooltip;
-                  if (tooltipModel.opacity === 0) {
-
-                    tooltipEl.style.opacity = '0';
-                    return;
-                  }
-
-
-                  if (tooltipDataSub && !tooltipDataSub.closed) {
-                    tooltipDataSub.unsubscribe();
-                  }
-
-                  tooltipDataSub = this.getTooltipData(tooltipModel)
-                    .pipe(
-                      take(1)
-                    )
-                    .subscribe(tooltipData => {
-                      // Set Text
-                      let innerHtml = '';
-
-                      innerHtml += '<p class="title">' + tooltipData.title + '</p>';
-
-                      tooltipData.body.forEach((body) => {
-                        innerHtml += '<p class="description">' + body + '</p>';
-                      });
-
-                      tooltipEl!.innerHTML = innerHtml;
-
-                      const position = context.chart.canvas.getBoundingClientRect();
-
-                      // Display, position, and set styles for font
-                      tooltipEl!.style.left = (position.left + window.pageXOffset + tooltipModel.caretX).toString() + 'px';
-                      tooltipEl!.style.top = (position.top + window.pageYOffset + tooltipModel.caretY).toString() + 'px';
-                      tooltipEl!.style.opacity = '1';
-                    });
-                }
+                external: this.getExternalTooltipFn()
               },
             },
             onClick: (event: ChartEvent, elements: ActiveElement[]): void => {
@@ -263,40 +226,102 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.selectedSector$.complete();
     this.isCursorOnSector$.complete();
+    this.newTooltip$.complete();
   }
 
-  private getTooltipData(tooltipModel: TooltipModel<'treemap'>): Observable<{ body: string[], title: string }> {
-    const instrumentDataPoint = tooltipModel.dataPoints.find((dp: any) => dp.raw._data.label != dp.raw._data.sector);
-    if (!instrumentDataPoint) {
-      return of({ body: [], title: (tooltipModel.dataPoints[0].raw as TooltipModelRaw)._data.label });
+  private getExternalTooltipFn(): (this: TooltipModel<'treemap'>, args: { chart: Chart, tooltip: TooltipModel<'treemap'> }) => void {
+    let tooltipDataSub: Subscription | undefined;
+
+    return (context): void => {
+      let tooltipEl = this.treemapWrapperEl?.nativeElement.querySelector('.treemap-tooltip') as HTMLDivElement | null | undefined;
+
+      if (!tooltipEl) {
+        return;
+      }
+
+      const tooltipModel = context.tooltip;
+      tooltipDataSub?.unsubscribe();
+
+      // Hide if no tooltip
+      if (tooltipModel.opacity === 0) {
+
+        tooltipEl.style.opacity = '0';
+        return;
+      }
+
+      tooltipDataSub = this.getTooltipData(tooltipModel)
+        .pipe(
+          take(1)
+        )
+        .subscribe(tooltipData => {
+          // Set Text
+          let innerHtml = '';
+
+          innerHtml += '<p class="title">' + tooltipData.title + '</p>';
+
+          tooltipData.body.forEach(body => {
+            innerHtml += '<p class="description">' + body + '</p>';
+          });
+
+          tooltipEl!.innerHTML = innerHtml;
+
+          // Max left and top position for tooltip (to avoid borders to crawl behind widget)
+          const tooltipMaxLeftPosition = (this.treemapWrapperEl?.nativeElement.clientWidth ?? Infinity) - tooltipEl!.clientWidth;
+          const tooltipMaxTopPosition = (this.treemapWrapperEl?.nativeElement.clientHeight ?? Infinity) - tooltipEl!.clientHeight;
+
+          // Display and positioning
+          tooltipEl!.style.left = Math.min(tooltipModel.caretX, tooltipMaxLeftPosition).toString() + 'px';
+          tooltipEl!.style.top = Math.min(tooltipModel.caretY, tooltipMaxTopPosition).toString() + 'px';
+          tooltipEl!.style.opacity = '1';
+        });
+    };
+  }
+
+  private getTooltipData(tooltipModel: TooltipModel<'treemap'>): Observable<TooltipData> {
+    if (!this.tooltipData$) {
+      this.tooltipData$ = this.newTooltip$
+        .pipe(
+          takeUntilDestroyed(this.destroy),
+          filter((t): t is TooltipModel<'treemap'>  => t != null),
+          debounceTime(100),
+          switchMap(tm => {
+            const instrumentDataPoint = tm.dataPoints.find((dp: any) => dp.raw._data.label != dp.raw._data.sector);
+
+            if (!instrumentDataPoint) {
+              return of({ body: [], title: (tm.dataPoints[0].raw as TooltipModelRaw)._data.label });
+            }
+
+            const treemapNode = (instrumentDataPoint.raw as TooltipModelRaw)._data.children[0];
+
+            return this.quotesService.getLastQuoteInfo(treemapNode.symbol, this.defaultExchange)
+              .pipe(
+                withLatestFrom(
+                  this.translatorService.getTranslator('treemap'),
+                  this.translatorService.getTranslator('shared/short-number'),
+                  this.instrumentsService.getInstrument({ exchange: this.defaultExchange, symbol: treemapNode.symbol })
+                ),
+                map(([quote, tTreemap, tShortNumber, instrument]) => {
+                  const marketCapBase = getNumberAbbreviation(treemapNode.marketCap, true);
+                  return {
+                    title: treemapNode.symbol,
+                    body: [
+                      `${tTreemap(['company'])}: ${quote?.description}`,
+                      `${tTreemap(['dayChange'])}: ${treemapNode.dayChange}%`,
+                      `${tTreemap(['marketCap'])}: ${marketCapBase!.value}${tShortNumber([
+                        marketCapBase!.suffixName!,
+                        'long'
+                      ])} ${getCurrencySign(instrument!.currency)}`,
+                      `${tTreemap(['lastPrice'])}: ${formatCurrency(quote!.last_price, instrument!.currency)}`
+                    ]
+                  };
+                })
+              );
+          })
+        );
     }
 
-    const treemapNode = (instrumentDataPoint.raw as TooltipModelRaw)._data.children[0];
-
-    return this.quotesService.getLastQuoteInfo(treemapNode.symbol, this.defaultExchange)
-      .pipe(
-        withLatestFrom(
-          this.translatorService.getTranslator('treemap'),
-          this.translatorService.getTranslator('shared/short-number'),
-          this.instrumentsService.getInstrument({ exchange: this.defaultExchange, symbol: treemapNode.symbol })
-        ),
-        map(([quote, tTreemap, tShortNumber, instrument]) => {
-          const marketCapBase = getNumberAbbreviation(treemapNode.marketCap, true);
-
-          return {
-            title: treemapNode.symbol,
-            body: [
-              `${tTreemap(['company'])}: ${quote?.description}`,
-              `${tTreemap(['dayChange'])}: ${treemapNode.dayChange}%`,
-              `${tTreemap(['marketCap'])}: ${marketCapBase!.value}${tShortNumber([
-                marketCapBase!.suffixName!,
-                'long'
-              ])} ${getCurrencySign(instrument!.currency)}`,
-              `${tTreemap(['lastPrice'])}: ${formatCurrency(quote!.last_price, instrument!.currency)}`
-            ]
-          };
-        })
-      );
+    this.newTooltip$.next(tooltipModel);
+    return this.tooltipData$;
   }
 
   private selectInstrument(symbol: string): void {
