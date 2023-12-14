@@ -1,3 +1,31 @@
+@import "theme-mixin";
+::ng-deep {
+.themeMixin({
+    .treemap-tooltip {
+      background-color: @body-background;
+      overflow: hidden;
+      transition: .1s;
+      z-index: 100;
+      position: absolute;
+      padding: 5px;
+      border-radius: @tooltip-border-radius;
+      display: flex;
+      flex-direction: column;
+      pointer-events: none;
+
+      p {
+        margin: 0;
+        color: @text-color;
+
+        &.title {
+          margin-bottom: 5px;
+          font-weight: 600;
+        }
+      }
+    }
+});
+}
+
 .treemap-wrapper {
   height: 100%;
   width: 100%;
