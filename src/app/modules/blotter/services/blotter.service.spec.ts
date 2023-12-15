@@ -9,6 +9,7 @@ import {
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { Subject } from 'rxjs';
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { MarketService } from "../../../shared/services/market.service";
 
 describe('BlotterService', () => {
   let service: BlotterService;
@@ -45,6 +46,12 @@ describe('BlotterService', () => {
           provide: EnvironmentService,
           useValue: {
             apiUrl: ''
+          }
+        },
+        {
+          provide: MarketService,
+          useValue: {
+            getMarketSettings: jasmine.createSpy('getMarketSettings').and.returnValue(new Subject())
           }
         },
         BlotterService,

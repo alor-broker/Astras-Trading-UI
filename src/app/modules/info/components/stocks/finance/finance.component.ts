@@ -1,6 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, filter, Observable, Subject, switchMap, tap } from 'rxjs';
-import { formatCurrency } from 'src/app/shared/utils/formatters';
 import { Finance } from '../../../models/finance.model';
 import { InfoService } from '../../../services/info.service';
 import { distinct, map } from 'rxjs/operators';
@@ -41,10 +40,6 @@ export class FinanceComponent implements OnInit, OnDestroy {
       tap(() => this.isLoading$.next(false)),
       tap(f => this.currency = f?.currency ?? 'RUB')
     );
-  }
-
-  format(number: number): string {
-    return formatCurrency(number, this.currency, 0);
   }
 
   ngOnDestroy(): void {

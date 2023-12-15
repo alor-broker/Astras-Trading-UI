@@ -2,8 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CalendarViewComponent } from './calendar-view.component';
 import { EventsCalendarService } from "../../services/events-calendar.service";
-import { of } from "rxjs";
+import {
+  of,
+  Subject
+} from "rxjs";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { MarketService } from "../../../../shared/services/market.service";
+import { LetDirective } from "@ngrx/component";
 
 describe('CalendarViewComponent', () => {
   let component: CalendarViewComponent;
@@ -11,11 +16,18 @@ describe('CalendarViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [LetDirective],
       declarations: [
         CalendarViewComponent,
         ...ngZorroMockComponents
       ],
       providers: [
+        {
+          provide: MarketService,
+          useValue: {
+            getMarketSettings: jasmine.createSpy('getMarketSettings').and.returnValue(new Subject())
+          }
+        },
         {
           provide: EventsCalendarService,
           useValue: {

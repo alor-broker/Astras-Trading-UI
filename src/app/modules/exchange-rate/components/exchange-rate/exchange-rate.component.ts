@@ -1,11 +1,19 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ExchangeRateService} from "../../../../shared/services/exchange-rate.service";
-import {BehaviorSubject, combineLatest, map, Observable} from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  map,
+  Observable,
+  shareReplay,
+  switchMap
+} from "rxjs";
 import {ExchangeRate} from "../../models/exchange-rate.model";
 import {startWith} from "rxjs/operators";
 import {mapWith} from "../../../../shared/utils/observable-helper";
 import {QuotesService} from '../../../../shared/services/quotes.service';
 import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
+import { MarketService } from "../../../../shared/services/market.service";
 
 @Component({
   selector: 'ats-exchange-rate',
@@ -21,7 +29,8 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly exchangeRateService: ExchangeRateService,
-    private readonly quotesService: QuotesService
+    private readonly quotesService: QuotesService,
+    private readonly marketService: MarketService,
   ) {
   }
 
@@ -75,24 +84,29 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
     secondCode: string;
     last_price: number;
   }[]> => {
-    return combineLatest(
-      exchangeRates.map(item => this.quotesService.getQuotes(
-          item.symbolTom,
-          'MOEX'
-        )
-          .pipe(
-            map(quote => ({
-              firstCode: item.firstCode,
-              secondCode: item.secondCode,
-              last_price: quote.last_price
-            })),
-            startWith({
-              firstCode: item.firstCode,
-              secondCode: item.secondCode,
-              last_price: 0
-            })
+    return this.marketService.getMarketSettings().pipe(
+      switchMap(marketSettings => {
+        return combineLatest(
+          exchangeRates.map(item => this.quotesService.getQuotes(
+              item.symbolTom,
+            marketSettings.currencies.defaultCurrencyExchange
+            )
+              .pipe(
+                map(quote => ({
+                  firstCode: item.firstCode,
+                  secondCode: item.secondCode,
+                  last_price: quote.last_price
+                })),
+                startWith({
+                  firstCode: item.firstCode,
+                  secondCode: item.secondCode,
+                  last_price: 0
+                })
+              )
           )
-      )
+        );
+      }),
+      shareReplay({bufferSize: 1, refCount: true})
     );
   };
 }

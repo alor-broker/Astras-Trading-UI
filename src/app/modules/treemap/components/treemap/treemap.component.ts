@@ -38,12 +38,14 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import {
   formatCurrency,
+  getCurrencyFormat,
   getCurrencySign
 } from "../../../../shared/utils/formatters";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { getNumberAbbreviation } from "../../../../shared/utils/number-abbreviation";
 import { color } from "d3";
+import { MarketService } from "../../../../shared/services/market.service";
 
 @Component({
   selector: 'ats-treemap',
@@ -70,7 +72,8 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
     private readonly translatorService: TranslatorService,
     private readonly instrumentsService: InstrumentsService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly settingsService: WidgetSettingsService
+    private readonly settingsService: WidgetSettingsService,
+    private readonly marketService: MarketService,
   ) {
   }
 
@@ -246,18 +249,21 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
         withLatestFrom(
           this.translatorService.getTranslator('treemap'),
           this.translatorService.getTranslator('shared/short-number'),
-          this.instrumentsService.getInstrument({ exchange: this.defaultExchange, symbol: treemapNode.symbol })
+          this.instrumentsService.getInstrument({ exchange: this.defaultExchange, symbol: treemapNode.symbol }),
+          this.marketService.getMarketSettings()
         ),
-        map(([quote, tTreemap, tShortNumber, instrument]) => {
+        map(([quote, tTreemap, tShortNumber, instrument, marketSettings]) => {
           const marketCapBase = getNumberAbbreviation(treemapNode.marketCap, true);
+          const currentFormat = getCurrencyFormat(instrument!.currency, marketSettings.currencies);
+
           return [
             `${tTreemap(['company'])}: ${quote?.description}`,
             `${tTreemap(['dayChange'])}: ${treemapNode.dayChange}%`,
             `${tTreemap(['marketCap'])}: ${marketCapBase!.value}${tShortNumber([
               marketCapBase!.suffixName!,
               'long'
-            ])} ${getCurrencySign(instrument!.currency)}`,
-            `${tTreemap(['lastPrice'])}: ${formatCurrency(quote!.last_price, instrument!.currency)}`
+            ])} ${getCurrencySign(currentFormat)}`,
+            `${tTreemap(['lastPrice'])}: ${formatCurrency(quote!.last_price, currentFormat)}`
           ];
         })
       );
