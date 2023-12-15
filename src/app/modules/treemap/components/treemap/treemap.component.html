@@ -1,4 +1,19 @@
 <div class="treemap-wrapper" #treemapWrapper>
+  <ng-container *ngIf="tooltipData$ | async as tooltipData">
+    <div
+      #treemapTooltip
+      class="treemap-tooltip"
+      [class.visible]="isTooltipVisible$ | async"
+      [ngStyle]="{
+        top: getMinValue(treemapWrapper.clientHeight - treemapTooltip.clientHeight, tooltipData.position.top) + 'px',
+        left: getMinValue(treemapWrapper.clientWidth - treemapTooltip.clientWidth, tooltipData.position.left) + 'px',
+      }"
+    >
+      <p class="title">{{tooltipData.title}}</p>
+      <p *ngFor="let bodyLine of tooltipData.body">{{bodyLine}}</p>
+    </div>
+  </ng-container>
+
   <canvas [class.clickable]="isCursorOnSector$ | async" class="treemap" [id]="guid"></canvas>
-  <div class="treemap-tooltip"></div>
+
 </div>

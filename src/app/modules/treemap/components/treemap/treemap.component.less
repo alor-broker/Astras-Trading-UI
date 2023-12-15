@@ -1,10 +1,11 @@
 @import "theme-mixin";
-::ng-deep {
+
 .themeMixin({
+  :host {
     .treemap-tooltip {
       background-color: @body-background;
       overflow: hidden;
-      transition: .1s;
+      transition: .05s;
       z-index: 100;
       position: absolute;
       padding: 5px;
@@ -24,8 +25,8 @@
         }
       }
     }
+  }
 });
-}
 
 .treemap-wrapper {
   height: 100%;
@@ -35,4 +36,8 @@
 
 .clickable {
   cursor: pointer;
+}
+
+.visible {
+  opacity: 1 !important;
 }
