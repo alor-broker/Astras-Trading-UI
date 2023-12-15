@@ -88,7 +88,7 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
       switchMap(marketSettings => {
         return combineLatest(
           exchangeRates.map(item => this.quotesService.getQuotes(
-              item.symbolTom,
+            item.symbolTom,
             marketSettings.currencies.defaultCurrencyExchange
             )
               .pipe(

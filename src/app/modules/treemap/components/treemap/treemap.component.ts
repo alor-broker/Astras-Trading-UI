@@ -254,7 +254,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
         ),
         map(([quote, tTreemap, tShortNumber, instrument, marketSettings]) => {
           const marketCapBase = getNumberAbbreviation(treemapNode.marketCap, true);
-          const currentFormat = getCurrencyFormat(instrument!.currency, marketSettings.currencies);
+          const curencyFormat = getCurrencyFormat(instrument!.currency, marketSettings.currencies);
 
           return [
             `${tTreemap(['company'])}: ${quote?.description}`,
@@ -262,8 +262,8 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
             `${tTreemap(['marketCap'])}: ${marketCapBase!.value}${tShortNumber([
               marketCapBase!.suffixName!,
               'long'
-            ])} ${getCurrencySign(currentFormat)}`,
-            `${tTreemap(['lastPrice'])}: ${formatCurrency(quote!.last_price, currentFormat)}`
+            ])} ${getCurrencySign(curencyFormat)}`,
+            `${tTreemap(['lastPrice'])}: ${formatCurrency(quote!.last_price, curencyFormat)}`
           ];
         })
       );
