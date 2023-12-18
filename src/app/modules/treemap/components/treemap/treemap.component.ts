@@ -33,7 +33,7 @@ import {
   Observable,
   of,
   take,
-  withLatestFrom
+  zip
 } from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
@@ -267,13 +267,13 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
 
             const treemapNode = ((<any>activeElements[1].element).$context.raw as TooltipModelRaw)._data.children[0];
 
-            return this.quotesService.getLastQuoteInfo(treemapNode.symbol, this.defaultExchange)
+            return zip(
+              this.quotesService.getLastQuoteInfo(treemapNode.symbol, this.defaultExchange),
+              this.translatorService.getTranslator('treemap'),
+              this.translatorService.getTranslator('shared/short-number'),
+              this.instrumentsService.getInstrument({exchange: this.defaultExchange, symbol: treemapNode.symbol})
+            )
               .pipe(
-                withLatestFrom(
-                  this.translatorService.getTranslator('treemap'),
-                  this.translatorService.getTranslator('shared/short-number'),
-                  this.instrumentsService.getInstrument({ exchange: this.defaultExchange, symbol: treemapNode.symbol })
-                ),
                 map(([quote, tTreemap, tShortNumber, instrument]) => {
                   const marketCapBase = getNumberAbbreviation(treemapNode.marketCap, true);
                   return {
