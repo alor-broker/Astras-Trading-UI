@@ -1,22 +1,39 @@
-<div (nzResizeObserve)="updateContainerSize($event)"
-     *ngIf="exchangeRateData$ | async as exchangeRateData" class="h-100 w-100" nzResizeObserver>
+<div
+  (nzResizeObserve)="updateContainerSize($event)"
+  *ngIf="currencyMatrix$ | async as currencyMatrix"
+  class="h-100 w-100"
+  nzResizeObserver
+>
   <ng-container *ngIf="tableScroll$ | async as tableScroll">
     <nz-table
-      [nzData]="exchangeRateData.currencies"
+      [nzData]="currencyMatrix.currencies"
       [nzFrontPagination]="false"
       [nzShowPagination]="false"
       [nzScroll]="{ x: tableScroll.width + 'px', y: tableScroll.height + 'px' }"
-      nzSize="small">
+      nzSize="small"
+      class="user-select-none"
+    >
       <thead>
       <tr>
         <th nzLeft nzWidth="50px"></th>
-        <th nzWidth="65px" *ngFor="let cur of exchangeRateData.currencies">{{cur}}</th>
+        <th nzWidth="65px" *ngFor="let cur of currencyMatrix.currencies">{{cur}}</th>
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let cur1 of exchangeRateData.currencies">
-        <td nzLeft class="bold">{{cur1}}</td>
-        <td *ngFor="let cur2 of exchangeRateData.currencies">{{getRateValue(cur1, cur2, exchangeRateData.data)}}</td>
+      <tr *ngFor="let cur1 of currencyMatrix.currencies">
+        <td nzLeft class="fw-bold">{{cur1}}</td>
+        <ng-container *ngFor="let cur2 of currencyMatrix.currencies">
+          <ng-container *ngIf="currencyMatrix.rates[getCurrencyKey(cur1, cur2)] as rate; else empty">
+            <td
+              (click)="selectInstrument(rate)"
+              [class.selectable]="rate.symbol"
+            >
+              {{rate.rate | number:'0.0-4'}}
+            </td>
+          </ng-container>
+
+          <ng-template #empty><td>-</td></ng-template>
+        </ng-container>
       </tr>
       </tbody>
     </nz-table>

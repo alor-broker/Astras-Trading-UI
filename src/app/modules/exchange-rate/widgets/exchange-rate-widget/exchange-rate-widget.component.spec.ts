@@ -12,6 +12,7 @@ import { WidgetSettingsService } from '../../../../shared/services/widget-settin
 import { of } from 'rxjs';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 
 describe('ExchangeRateWidgetComponent', () => {
   let component: ExchangeRateWidgetComponent;
@@ -35,7 +36,13 @@ describe('ExchangeRateWidgetComponent', () => {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
             addSettings: jasmine.createSpy('addSettings').and.callThrough()
           }
-        }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            terminalSettingsService: of({})
+          }
+        },
       ]
     })
       .compileComponents();

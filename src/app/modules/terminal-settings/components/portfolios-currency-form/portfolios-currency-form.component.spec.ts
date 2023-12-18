@@ -40,7 +40,7 @@ describe('PortfoliosCurrencyFormComponent', () => {
         {
           provide: ExchangeRateService,
           useValue: {
-            getCurrencies: jasmine.createSpy('getCurrencies').and.returnValue(new Subject())
+            getCurrencyPairs: jasmine.createSpy('getCurrencyPairs').and.returnValue(new Subject())
           }
         },
         {

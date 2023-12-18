@@ -1,4 +1,14 @@
-.bold {
-  font-weight: bold;
-}
+@import "theme-mixin";
 
+.themeMixin({
+  :host {
+    td {
+      &.selectable {
+        &:hover {
+          cursor: pointer;
+          color: @primary-color;
+        }
+      }
+    }
+  }
+});

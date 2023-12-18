@@ -11,6 +11,8 @@ import {
 } from "rxjs";
 import { QuotesService } from '../../../../shared/services/quotes.service';
 import { MarketService } from "../../../../shared/services/market.service";
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 
 describe('ExchangeRateComponent', () => {
   let component: ExchangeRateComponent;
@@ -21,9 +23,15 @@ describe('ExchangeRateComponent', () => {
       declarations: [ExchangeRateComponent],
       providers: [
         {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
+          }
+        },
+        {
           provide: ExchangeRateService,
           useValue: {
-            getCurrencies: jasmine.createSpy('getCurrencies').and.returnValue(of([]))
+            getCurrencyPairs: jasmine.createSpy('getCurrencyPairs').and.returnValue(of([]))
           }
         },
         {
@@ -36,6 +44,12 @@ describe('ExchangeRateComponent', () => {
           provide: MarketService,
           useValue: {
             getMarketSettings: jasmine.createSpy('getMarketSettings').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            selectDashboardInstrument: jasmine.createSpy('selectDashboardInstrument').and.callThrough()
           }
         }
       ]
