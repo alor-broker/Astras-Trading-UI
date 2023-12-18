@@ -39,6 +39,7 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import {
   formatCurrency,
+  getCurrencyFormat,
   getCurrencySign
 } from "../../../../shared/utils/formatters";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
@@ -46,6 +47,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { getNumberAbbreviation } from "../../../../shared/utils/number-abbreviation";
 import { color } from "d3";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { MarketService } from "../../../../shared/services/market.service";
 
 interface TooltipModelRaw {
   _data: {
@@ -98,6 +100,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
     private readonly instrumentsService: InstrumentsService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly settingsService: WidgetSettingsService,
+    private readonly marketService: MarketService,
     private readonly destroy: DestroyRef
   ) {
   }
@@ -271,11 +274,12 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
               this.quotesService.getLastQuoteInfo(treemapNode.symbol, this.defaultExchange),
               this.translatorService.getTranslator('treemap'),
               this.translatorService.getTranslator('shared/short-number'),
-              this.instrumentsService.getInstrument({exchange: this.defaultExchange, symbol: treemapNode.symbol})
+              this.instrumentsService.getInstrument({exchange: this.defaultExchange, symbol: treemapNode.symbol}),
+              this.marketService.getMarketSettings()
             )
               .pipe(
-                map(([quote, tTreemap, tShortNumber, instrument]) => {
-                  const marketCapBase = getNumberAbbreviation(treemapNode.marketCap, true);
+                map(([quote, tTreemap, tShortNumber, instrument, marketSettings]) => {
+                  const marketCapBase = getNumberAbbreviation(treemapNode.marketCap, true);const curencyFormat = getCurrencyFormat(instrument!.currency, marketSettings.currencies);
                   return {
                     title: treemapNode.symbol,
                     body: [
@@ -284,8 +288,8 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                       `${tTreemap(['marketCap'])}: ${marketCapBase!.value}${tShortNumber([
                         marketCapBase!.suffixName!,
                         'long'
-                      ])} ${getCurrencySign(instrument!.currency)}`,
-                      `${tTreemap(['lastPrice'])}: ${formatCurrency(quote!.last_price, instrument!.currency)}`
+                      ])} ${getCurrencySign(curencyFormat)}`,
+                      `${tTreemap(['lastPrice'])}: ${formatCurrency(quote!.last_price, curencyFormat)}`
                     ],
                     position
                   };
@@ -294,7 +298,6 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
           })
         );
     }
-
   }
 
   getMinValue(...args: number[]): number {

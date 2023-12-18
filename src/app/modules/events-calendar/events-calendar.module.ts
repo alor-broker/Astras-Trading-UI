@@ -6,6 +6,7 @@ import { SharedModule } from "../../shared/shared.module";
 import { NzCalendarModule } from "ng-zorro-antd/calendar";
 import { CalendarViewComponent } from './components/calendar-view/calendar-view.component';
 import { ListViewComponent } from './components/list-view/list-view.component';
+import { LetDirective } from "@ngrx/component";
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { ListViewComponent } from './components/list-view/list-view.component';
   imports: [
     CommonModule,
     SharedModule,
-    NzCalendarModule
+    NzCalendarModule,
+    LetDirective
   ]
 })
 export class EventsCalendarModule {

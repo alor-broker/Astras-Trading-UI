@@ -10,6 +10,7 @@ import {
   Subject
 } from "rxjs";
 import { QuotesService } from '../../../../shared/services/quotes.service';
+import { MarketService } from "../../../../shared/services/market.service";
 
 describe('ExchangeRateComponent', () => {
   let component: ExchangeRateComponent;
@@ -29,6 +30,12 @@ describe('ExchangeRateComponent', () => {
           provide: QuotesService,
           useValue: {
             getQuotes: jasmine.createSpy('getQuotes').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: MarketService,
+          useValue: {
+            getMarketSettings: jasmine.createSpy('getMarketSettings').and.returnValue(new Subject())
           }
         }
       ]

@@ -33,7 +33,8 @@ describe('PortfoliosCurrencyFormComponent', () => {
         {
           provide: MarketService,
           useValue: {
-            getExchangeSettings: jasmine.createSpy('getExchangeSettings').and.returnValue(new Subject())
+            getExchangeSettings: jasmine.createSpy('getExchangeSettings').and.returnValue(new Subject()),
+            getMarketSettings: jasmine.createSpy('getMarketSettings').and.returnValue(new Subject())
           }
         },
         {

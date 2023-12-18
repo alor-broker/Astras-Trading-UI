@@ -1,66 +1,34 @@
-import { CurrencyInstrument } from "../models/enums/currencies.model";
-
-
-function getLocaleDataByCurrency(currency: string): { formatCode: string, locale: string } {
-  let formatCode = 'RUB';
-  let locale = 'ru';
-  switch (currency) {
-    case CurrencyInstrument.USD:
-      formatCode = 'USD';
-      locale = 'en';
-      break;
-    case CurrencyInstrument.EUR:
-      formatCode = 'EUR';
-      locale = 'de';
-      break;
-    case CurrencyInstrument.CHF:
-      formatCode = 'CHF';
-      locale = 'ch';
-      break;
-    case CurrencyInstrument.CNY:
-      formatCode = 'CNY';
-      locale = 'zh';
-      break;
-    case CurrencyInstrument.TRY:
-      formatCode = 'TRY';
-      locale = 'tr';
-      break;
-    case CurrencyInstrument.HKD:
-      formatCode = 'HKD';
-      locale = 'zh-hk';
-      break;
-  }
-
-  return {
-    formatCode,
-    locale
-  };
-}
+import {
+  CurrencyFormat,
+  CurrencySettings
+} from "../models/market-settings.model";
+import { MathHelper } from "./math-helper";
 
 /**
  *  Currency pipe and angular's formatCurrency throws error, while formating rubles without fraction part. =(
  * @param number A number with amount
- * @param currency a currency code (look at CurrencyInstrument)
+ * @param formatSettings a currency format settings
  * @param maxFractionDigits number of digits
  * @returns formated number
  */
-export function formatCurrency(number: number, currency: string, maxFractionDigits = 2): string {
-  const localeData = getLocaleDataByCurrency(currency);
-
-  if (localeData.locale === 'ch') {
-    return Intl.NumberFormat(localeData.locale).format(number) + ' ₣';
+export function formatCurrency(number: number, formatSettings: CurrencyFormat | null, maxFractionDigits = 2): string {
+  if(formatSettings == null) {
+    return MathHelper.round(number, maxFractionDigits).toString();
   }
 
-  return Intl.NumberFormat(localeData.locale, { style: 'currency', currency: localeData.formatCode, maximumFractionDigits: maxFractionDigits }).format(number);
+  if (formatSettings.locale === 'ch') {
+    return Intl.NumberFormat(formatSettings.locale).format(number) + ' ₣';
+  }
+
+  return Intl.NumberFormat(formatSettings.locale, { style: 'currency', currency: formatSettings.formatCode, maximumFractionDigits: maxFractionDigits }).format(number);
 }
 
-export function getCurrencySign(currency: string): string {
-  const localeData = getLocaleDataByCurrency(currency);
+export function getCurrencySign(formatSettings: CurrencyFormat): string {
   let symbol = '';
 
-  Intl.NumberFormat(localeData.locale, {
+  Intl.NumberFormat(formatSettings.locale, {
     style: 'currency',
-    currency,
+    currency: formatSettings.formatCode,
   })
     .formatToParts(0).forEach(({ type, value }) => {
     if (type === 'currency') {
@@ -69,4 +37,14 @@ export function getCurrencySign(currency: string): string {
   });
 
   return symbol;
+}
+
+export function getCurrencyFormat(currency: string, currencySettings: CurrencySettings): CurrencyFormat {
+  const foundCurrency = currencySettings.portfolioCurrencies.find(c => c.positionSymbol === currency);
+
+  if(foundCurrency != null && foundCurrency.format != null) {
+    return foundCurrency.format;
+  }
+
+  return currencySettings.portfolioCurrencies.find(c => c.positionSymbol === currencySettings.baseCurrency)!.format!;
 }

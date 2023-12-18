@@ -1,13 +1,24 @@
 import {Component, DestroyRef, Input, OnInit} from '@angular/core';
-import { formatCurrency } from "../../../../shared/utils/formatters";
+import {
+  formatCurrency,
+  getCurrencyFormat
+} from "../../../../shared/utils/formatters";
 import { CalendarEvents } from "../../models/events-calendar.model";
-import { BehaviorSubject, Observable, switchMap } from "rxjs";
+import {
+  BehaviorSubject,
+  Observable,
+  shareReplay,
+  switchMap
+} from "rxjs";
 import { EventsCalendarService } from "../../services/events-calendar.service";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { addYears, getISOStringDate } from "../../../../shared/utils/datetime";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { MarketService } from "../../../../shared/services/market.service";
+import { CurrencySettings } from "../../../../shared/models/market-settings.model";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: 'ats-list-view',
@@ -23,13 +34,13 @@ export class ListViewComponent implements OnInit {
 
   events$ = new BehaviorSubject<CalendarEvents>({});
   activeLang$!: Observable<string>;
-
-  formatCurrencyFn = formatCurrency;
+  currencySettings$!: Observable<CurrencySettings>;
 
   constructor(
     private readonly service: EventsCalendarService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly translatorService: TranslatorService,
+    private readonly marketService: MarketService,
     private readonly destroyRef: DestroyRef
 ) {
   }
@@ -48,6 +59,11 @@ export class ListViewComponent implements OnInit {
       });
 
     this.activeLang$ = this.translatorService.getLangChanges();
+
+    this.currencySettings$ = this.marketService.getMarketSettings().pipe(
+      map(s => s.currencies),
+      shareReplay({bufferSize: 1, refCount: true})
+    );
   }
 
   selectInstrument(symbol: string): void {
@@ -56,5 +72,9 @@ export class ListViewComponent implements OnInit {
 
   isEventsEmpty(events: CalendarEvents): boolean {
     return JSON.stringify(events) === '{}';
+  }
+
+  formatCurrencyFn(value: number, currency: string, settings: CurrencySettings): string {
+    return formatCurrency(value, getCurrencyFormat(currency, settings));
   }
 }

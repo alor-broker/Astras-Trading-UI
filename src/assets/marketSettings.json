@@ -1,42 +1,145 @@
-[
-  {
-    "exchange": "MOEX",
-    "settings": {
-      "hasIssue": true,
-      "hasPayments": true,
-      "hasFinance": true,
-      "hasDividends": true,
-      "currencyInstrument": "RUB",
-      "isDefault": true,
-      "market": {
-        "CURR": {},
-        "FOND": {},
-        "FORTS": {}
-      },
-      "defaultInstrument": {
-        "symbol": "SBER",
-        "instrumentGroup": "TQBR"
-      },
-      "timezone": "Europe/Moscow",
-      "defaultTradingSession": "0700-0000,0000-0200"
+{
+  "exchanges": [
+    {
+      "exchange": "MOEX",
+      "settings": {
+        "hasIssue": true,
+        "hasPayments": true,
+        "hasFinance": true,
+        "hasDividends": true,
+        "defaultPortfolioCurrencyInstrument": "RUB",
+        "isDefault": true,
+        "defaultInstrument": {
+          "symbol": "SBER",
+          "instrumentGroup": "TQBR"
+        },
+        "timezone": "Europe/Moscow",
+        "defaultTradingSession": "0700-0000,0000-0200"
+      }
+    },
+    {
+      "exchange": "SPBX",
+      "settings": {
+        "isInternational": true,
+        "hasFinance": true,
+        "hasDividends": true,
+        "defaultPortfolioCurrencyInstrument": "USD000UTSTOM",
+        "defaultInstrument": {
+          "symbol": "GAZP",
+          "instrumentGroup": "SPBX"
+        },
+        "timezone": "Europe/Moscow",
+        "defaultTradingSession": "0700-0000,0000-0200"
+      }
     }
-  },
-  {
-    "exchange": "SPBX",
-    "settings": {
-      "isInternational": true,
-      "hasFinance": true,
-      "hasDividends": true,
-      "currencyInstrument": "USD000UTSTOM",
-      "market": {
-        "SPBX": {}
+  ],
+
+  "currencies": {
+    "defaultCurrencyExchange": "MOEX",
+    "baseCurrency": "RUB",
+    "portfolioCurrencies": [
+      {
+        "positionSymbol": "RUB",
+        "exchangeInstrument": null,
+        "format": {
+          "formatCode": "RUB",
+          "locale": "ru"
+        }
       },
-      "defaultInstrument": {
-        "symbol": "GAZP",
-        "instrumentGroup": "SPBX"
+      {
+        "positionSymbol": "EUR",
+        "exchangeInstrument": {
+          "symbol": "EUR_RUB__TOM"
+        },
+        "format": {
+          "formatCode": "EUR",
+          "locale": "de"
+        }
       },
-      "timezone": "Europe/Moscow",
-      "defaultTradingSession": "0700-0000,0000-0200"
-    }
+      {
+        "positionSymbol": "USD",
+        "exchangeInstrument": {
+          "symbol": "USD000UTSTOM"
+        },
+        "format": {
+          "formatCode": "USD",
+          "locale": "en"
+        }
+      },
+      {
+        "positionSymbol": "CHF",
+        "exchangeInstrument": {
+          "symbol": "CHFRUB_TOM"
+        },
+        "format": {
+          "formatCode": "CHF",
+          "locale": "ch"
+        }
+      },
+      {
+        "positionSymbol": "CNY",
+        "exchangeInstrument": {
+          "symbol": "CNYRUB_TOM"
+        },
+        "format": {
+          "formatCode": "CNY",
+          "locale": "zh"
+        }
+      },
+      {
+        "positionSymbol": "TRY",
+        "exchangeInstrument": {
+          "symbol": "TRYRUB_TOM"
+        },
+        "format": {
+          "formatCode": "TRY",
+          "locale": "tr"
+        }
+      },
+      {
+        "positionSymbol": "HKD",
+        "exchangeInstrument": {
+          "symbol": "HKDRUB_TOM"
+        },
+        "format": {
+          "formatCode": "HKD",
+          "locale": "zh-hk"
+        }
+      },
+      {
+        "positionSymbol": "AMD",
+        "exchangeInstrument": {
+          "symbol": "AMDRUB_TOM"
+        },
+        "format": {
+          "formatCode": "AMD",
+          "locale": "hy_AM"
+        }
+      },
+      {
+        "positionSymbol": "GLD",
+        "exchangeInstrument": {
+          "symbol": "GLDRUB_TOM"
+        },
+        "format": null
+      },
+      {
+        "positionSymbol": "SLV",
+        "exchangeInstrument": {
+          "symbol": "SLVRUB_TOM"
+        },
+        "format": null
+      },
+      {
+        "positionSymbol": "KZT",
+        "exchangeInstrument": {
+          "symbol": "KZT"
+        },
+        "format": {
+          "formatCode": "KZT",
+          "locale": "kk_KZ"
+        }
+      }
+    ]
   }
-]
+}
