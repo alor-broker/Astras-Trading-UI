@@ -10,6 +10,10 @@ import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-se
 import { Observable } from 'rxjs';
 import { ExchangeRateSettings } from '../../models/exchange-rate-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import { SettingsHelper } from "../../../../shared/utils/settings-helper";
+import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
+import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 
 @Component({
@@ -25,8 +29,11 @@ export class ExchangeRateWidgetComponent implements OnInit {
 
   @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
   settings$!: Observable<ExchangeRateSettings>;
+  showBadge$!: Observable<boolean>;
+
   constructor(
-    private readonly widgetSettingsService: WidgetSettingsService
+    private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly terminalSettingsService: TerminalSettingsService
   ) {
   }
 
@@ -40,10 +47,13 @@ export class ExchangeRateWidgetComponent implements OnInit {
       'ExchangeRateSettings',
       settings => ({
         ...settings,
+        badgeColor: getValueOrDefault(settings.badgeColor, defaultBadgeColor),
       }),
       this.widgetSettingsService
     );
 
     this.settings$ = this.widgetSettingsService.getSettings<ExchangeRateSettings>(this.guid);
+
+    this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
   }
 }

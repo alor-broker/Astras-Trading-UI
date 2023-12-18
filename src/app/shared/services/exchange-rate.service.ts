@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { ExchangeRate } from "../../modules/exchange-rate/models/exchange-rate.model";
 import { EnvironmentService } from "./environment.service";
+
+export interface CurrencyPair {
+  firstCode: string;
+  secondCode: string;
+  symbolTom: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +21,7 @@ export class ExchangeRateService {
   ) {
   }
 
-  getCurrencies(): Observable<ExchangeRate[]> {
-    return this.http.get<ExchangeRate[]>(`${this.baseUrl}/currencyPairs`);
+  getCurrencyPairs(): Observable<CurrencyPair[]> {
+    return this.http.get<CurrencyPair[]>(`${this.baseUrl}/currencyPairs`);
   }
 }

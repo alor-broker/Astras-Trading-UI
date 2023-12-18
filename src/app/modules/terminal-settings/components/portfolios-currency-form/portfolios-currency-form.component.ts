@@ -26,8 +26,10 @@ import {
   map
 } from 'rxjs/operators';
 import { MarketService } from '../../../../shared/services/market.service';
-import { ExchangeRate } from '../../../exchange-rate/models/exchange-rate.model';
-import { ExchangeRateService } from '../../../../shared/services/exchange-rate.service';
+import {
+  CurrencyPair,
+  ExchangeRateService
+} from '../../../../shared/services/exchange-rate.service';
 import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
 
 @Component({
@@ -44,7 +46,7 @@ import {UserPortfoliosService} from "../../../../shared/services/user-portfolios
 })
 export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseComponent<PortfolioCurrencySettings[]> implements OnInit, OnDestroy {
   form?: UntypedFormArray;
-  currencies$!: Observable<ExchangeRate[]>;
+  currencies$!: Observable<CurrencyPair[]>;
 
   private formSubscriptions?: Subscription;
 
@@ -63,7 +65,7 @@ export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseCom
   ngOnInit(): void {
     this.currencies$ = combineLatest(
       {
-        allCurrencies: this.exchangeRateService.getCurrencies(),
+        allCurrencies: this.exchangeRateService.getCurrencyPairs(),
         marketSettings: this.marketService.getMarketSettings()
       }
     ).pipe(

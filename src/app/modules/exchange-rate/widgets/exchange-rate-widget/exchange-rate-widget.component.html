@@ -12,7 +12,9 @@
         [guid]="guid"
         [hasHelp]="true"
         [hasSettings]="false"
-        [showBadgesMenu]="false"
+        [showBadgesMenu]="(showBadge$ | async) ?? false"
+        [selectedBadgeColor]="settings.badgeColor"
+        [badgeShape]="'square'"
         [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
     </ng-template>
