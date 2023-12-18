@@ -2,13 +2,17 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TreemapComponent } from './treemap.component';
 import { TreemapService } from "../../services/treemap.service";
-import { of } from "rxjs";
+import {
+  of,
+  Subject
+} from "rxjs";
 import { ThemeService } from "../../../../shared/services/theme.service";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { MarketService } from "../../../../shared/services/market.service";
 
 describe('TreemapComponent', () => {
   let component: TreemapComponent;
@@ -59,7 +63,13 @@ describe('TreemapComponent', () => {
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({}))
           }
-        }
+        },
+        {
+          provide: MarketService,
+          useValue: {
+            getMarketSettings: jasmine.createSpy('getMarketSettings').and.returnValue(new Subject())
+          }
+        },
       ]
     })
     .compileComponents();

@@ -1,18 +1,41 @@
-import {AfterViewInit, Component, DestroyRef, Input, OnDestroy, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {NzCalendarComponent} from "ng-zorro-antd/calendar";
-import {BehaviorSubject, distinctUntilChanged, switchMap, tap} from "rxjs";
+import {
+  BehaviorSubject,
+  distinctUntilChanged,
+  Observable,
+  shareReplay,
+  switchMap,
+  tap
+} from "rxjs";
 import {CalendarEvent, CalendarEvents} from "../../models/events-calendar.model";
 import {EventsCalendarService} from "../../services/events-calendar.service";
-import {formatCurrency} from "../../../../shared/utils/formatters";
 import {addMonths, endOfMonth, getISOStringDate, startOfDay, startOfMonth} from "../../../../shared/utils/datetime";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { MarketService } from "../../../../shared/services/market.service";
+import {
+  CurrencySettings
+} from "../../../../shared/models/market-settings.model";
+import { map } from "rxjs/operators";
+import {
+  formatCurrency,
+  getCurrencyFormat
+} from "../../../../shared/utils/formatters";
 
 @Component({
   selector: 'ats-calendar-view',
   templateUrl: './calendar-view.component.html',
   styleUrls: ['./calendar-view.component.less']
 })
-export class CalendarViewComponent implements AfterViewInit, OnDestroy {
+export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly symbols$ = new BehaviorSubject<string[]>([]);
 
   @Input()
@@ -27,13 +50,21 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
   selectedDate$ = new BehaviorSubject<Date>(new Date());
   selectedDateEvents$ = new BehaviorSubject<CalendarEvent | null>(null);
 
+  currencySettings$!: Observable<CurrencySettings>;
+
   constructor(
     private readonly service: EventsCalendarService,
+    private readonly marketService: MarketService,
     private readonly destroyRef: DestroyRef
   ) {
   }
 
-  formatCurrencyFn = formatCurrency;
+  ngOnInit(): void {
+    this.currencySettings$ = this.marketService.getMarketSettings().pipe(
+      map(s => s.currencies),
+      shareReplay({bufferSize: 1, refCount: true})
+    );
+  }
 
   disable = (): boolean => true;
 
@@ -91,5 +122,9 @@ export class CalendarViewComponent implements AfterViewInit, OnDestroy {
     if (selectedDateEvents) {
       this.selectedDateEvents$.next(selectedDateEvents);
     }
+  }
+
+  formatCurrencyFn(value: number, currency: string, settings: CurrencySettings): string {
+    return formatCurrency(value, getCurrencyFormat(currency, settings));
   }
 }

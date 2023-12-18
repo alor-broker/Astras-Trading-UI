@@ -39,14 +39,16 @@ import { Instrument } from "../../../shared/models/instruments/instrument.model"
 import { HistoryResponse } from "../../../shared/models/history/history-response.model";
 import { SyntheticInstrumentsHelper } from "../utils/synthetic-instruments.helper";
 import { EnvironmentService } from "../../../shared/services/environment.service";
-import { ExchangeSettings } from "../../../shared/models/market-settings.model";
-import { AllExchanges } from "../../../shared/services/market.service";
+import {
+  ExchangeSettings,
+  MarketExchange
+} from "../../../shared/models/market-settings.model";
 
 @Injectable()
 export class TechChartDatafeedService implements IBasicDataFeed {
   private readonly lastBarPoint = new Map<string, number>();
   private readonly barsSubscriptions = new Map<string, Subscription>();
-  private exchangeSettings: AllExchanges | null = null;
+  private exchangeSettings: MarketExchange[] | null = null;
 
   private readonly onSymbolChange$ = new BehaviorSubject<InstrumentKey | null>(null);
   get onSymbolChange(): Observable<InstrumentKey | null> {

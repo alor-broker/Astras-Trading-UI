@@ -68,10 +68,8 @@ import { getConditionSign, getConditionTypeByString } from "../../../../shared/u
 import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
 import { RegularInstrumentKey, SyntheticInstrumentKey } from "../../models/synthetic-instruments.model";
 import { SyntheticInstrumentsService } from "../../services/synthetic-instruments.service";
-import {
-  AllExchanges,
-  MarketService
-} from "../../../../shared/services/market.service";
+import { MarketService } from "../../../../shared/services/market.service";
+import { MarketExchange } from "../../../../shared/models/market-settings.model";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -363,7 +361,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     settings: TechChartSettings,
     theme: ThemeSettings,
     timezoneConverter: TimezoneConverter,
-    exchanges: AllExchanges,
+    exchanges: MarketExchange[],
     forceRecreate = false): void {
     if (this.chartState) {
       if (forceRecreate) {
@@ -678,7 +676,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     ));
   }
 
-  private initTimezoneChangeStream(settings: TechChartSettings, themeColors: ThemeColors, exchanges: AllExchanges): void {
+  private initTimezoneChangeStream(settings: TechChartSettings, themeColors: ThemeColors, exchanges: MarketExchange[]): void {
     this.timezoneChangeSub?.unsubscribe();
     this.timezoneChangeSub = new Subscription();
 
@@ -687,7 +685,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     this.timezoneChangeSub.add(() => this.chartState?.widget.activeChart().getTimezoneApi().onTimezoneChanged().unsubscribe(null, timezoneChangeCallback));
   }
 
-  private initTradesDisplay(settings: TechChartSettings, themeColors: ThemeColors, exchanges: AllExchanges): void {
+  private initTradesDisplay(settings: TechChartSettings, themeColors: ThemeColors, exchanges: MarketExchange[]): void {
     if(!(settings.showTrades ?? false)) {
       return;
     }
@@ -737,7 +735,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     this.fillTradesHistoryCurrentRange(settings as InstrumentKey, currentPortfolio$, themeColors, exchanges);
   }
 
-  private drawTrade(trade: Trade, themeColors: ThemeColors, exchanges: AllExchanges): void {
+  private drawTrade(trade: Trade, themeColors: ThemeColors, exchanges: MarketExchange[]): void {
     if(!this.chartState?.tradesState) {
       return;
     }
@@ -823,7 +821,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     instrument: InstrumentKey,
     portfolioKey$: Observable<PortfolioKey>,
     themeColors: ThemeColors,
-    exchanges: AllExchanges
+    exchanges: MarketExchange[]
   ): void {
     const visibleRange = this.chartState?.widget.activeChart().getVisibleRange();
     if(!visibleRange) {

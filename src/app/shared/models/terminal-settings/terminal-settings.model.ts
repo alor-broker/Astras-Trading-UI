@@ -62,7 +62,7 @@ export interface DesignSettings {
   gridType?: GridType;
 }
 
-export interface PortfolioCurrency {
+export interface PortfolioCurrencySettings {
   portfolio: PortfolioKey;
   currency: string;
 }
@@ -98,6 +98,6 @@ export interface TerminalSettings {
   hotKeysSettings?: HotKeysSettings;
   scalperOrderBookMouseActions?: ScalperOrderBookMouseActionsMap;
   designSettings?: DesignSettings;
-  portfoliosCurrency?: PortfolioCurrency[];
+  portfoliosCurrency?: PortfolioCurrencySettings[];
   instantNotificationsSettings?: InstantNotificationsSettings;
 }

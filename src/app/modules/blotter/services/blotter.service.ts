@@ -4,13 +4,10 @@ import {
   interval,
   Observable,
   switchMap,
+  take,
   tap,
 } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import {
-  CurrencyCode,
-} from 'src/app/shared/models/enums/currencies.model';
-import { Exchanges } from 'src/app/shared/models/enums/exchanges';
 import { OrdersNotificationsService } from 'src/app/shared/services/orders-notifications.service';
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
@@ -23,6 +20,7 @@ import { ErrorHandlerService } from "../../../shared/services/handle-error/error
 import { Order, StopOrder } from "../../../shared/models/orders/order.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { MarketService } from "../../../shared/services/market.service";
 
 @Injectable()
 export class BlotterService {
@@ -38,20 +36,39 @@ export class BlotterService {
     private readonly dashboardContextService: DashboardContextService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly http: HttpClient,
-    private readonly errorHandler: ErrorHandlerService
+    private readonly errorHandler: ErrorHandlerService,
+    private readonly marketService: MarketService
   ) {
   }
 
   selectNewInstrument(symbol: string, exchange: string, badgeColor: string): void {
-    if (symbol == CurrencyCode.RUB) {
-      return;
-    }
-    if (CurrencyCode.isCurrency(symbol)) {
-      symbol = CurrencyCode.toInstrument(symbol);
-      exchange = Exchanges.MOEX;
-    }
-    const instrument: InstrumentKey = { symbol, exchange };
-    this.dashboardContextService.selectDashboardInstrument(instrument, badgeColor);
+    this.marketService.getMarketSettings().pipe(
+      take(1)
+    ).subscribe(marketSettings => {
+      if(symbol === marketSettings.currencies.baseCurrency) {
+        return;
+      }
+
+      const mappedCurrency = marketSettings.currencies.portfolioCurrencies.find(c => c.positionSymbol === symbol);
+      if(mappedCurrency != null) {
+        if (mappedCurrency.exchangeInstrument == null) {
+          return;
+        }
+
+        this.dashboardContextService.selectDashboardInstrument(
+          {
+            symbol: mappedCurrency.exchangeInstrument.symbol,
+            exchange: mappedCurrency.exchangeInstrument.exchange ?? marketSettings.currencies.defaultCurrencyExchange
+          },
+          badgeColor
+        );
+
+        return;
+      }
+
+      const instrument: InstrumentKey = { symbol, exchange };
+      this.dashboardContextService.selectDashboardInstrument(instrument, badgeColor);
+    });
   }
 
   getPositions(settings: BlotterSettings): Observable<Position[]> {
