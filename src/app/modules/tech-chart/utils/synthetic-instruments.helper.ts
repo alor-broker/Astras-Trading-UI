@@ -65,7 +65,11 @@ export class SyntheticInstrumentsHelper {
   }
 
   static isSyntheticInstrument(symbolName: string): boolean {
-    return SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(symbolName).isSynthetic;
+    if (symbolName.includes('[') && symbolName.includes(']')) {
+      return SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(symbolName).isSynthetic;
+    }
+
+    return false;
   }
 
   static assembleInstrument(instruments: SyntheticInstrumentPart<Instrument>[]): Instrument {
