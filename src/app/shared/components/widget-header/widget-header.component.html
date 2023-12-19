@@ -50,10 +50,14 @@
   </div>
 
   <div class="buttons-group" *transloco="let t">
-    <button *ngIf='linkToActive !== undefined' nz-button nzSize="small"
-            (mousedown)="changeLinkToActive($event, !linkToActive)"
-            (touchstart)="changeLinkToActive($event, !linkToActive)"
-            class="link-to-active-btn">
+    <button
+      *ngIf='linkToActive !== undefined'
+      nz-button
+      nzSize="small"
+      (mousedown)="changeLinkToActive($event, !linkToActive)"
+      (touchstart)="changeLinkToActive($event, !linkToActive)"
+      class="link-to-active-btn"
+    >
       <i nz-icon
          [nzType]="'link'"
          [nzTheme]="'outline'"
@@ -62,9 +66,13 @@
          [text]="t('joyride.step6.text')"
          [class.active]="linkToActive"></i>
     </button>
-    <button *ngIf="hasSettings" nz-button nzSize="small"
-            (mousedown)="onSwitchSettings($event)"
-            (touchstart)="onSwitchSettings($event)"
+    <button
+      *ngIf="hasSettings"
+      nz-button
+      class="settings-btn"
+      nzSize="small"
+      (mousedown)="onSwitchSettings($event)"
+      (touchstart)="onSwitchSettings($event)"
     >
       <i nz-icon
          nzType="setting"
@@ -75,10 +83,10 @@
     </button>
     <button
       *ngIf="hasHelp"
+      class="help-btn"
       nz-button
       nzSize="small"
       (mousedown)="preventMouseEvents($event)"
-      (touchstart)="preventMouseEvents($event)"
     >
       <a
         [href]="helpUrl + (widgetMeta?.typeId ?? '')"
