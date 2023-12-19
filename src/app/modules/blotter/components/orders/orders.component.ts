@@ -344,10 +344,6 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
     working.forEach(order => this.cancelOrder(order));
   }
 
-  formatDate(date: Date): string{
-    return new Date(date).toLocaleTimeString();
-  }
-
   isMarketOrder(order: DisplayOrder): boolean {
     return order.type === 'market';
   }
