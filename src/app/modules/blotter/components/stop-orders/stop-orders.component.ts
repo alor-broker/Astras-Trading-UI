@@ -163,7 +163,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       displayName: 'Время',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder): number => Number(b.transTime) - Number(a.transTime),
-      tooltip: 'Время совершения заявки',
+      tooltip: 'Время выставления заявки',
       minWidth: 60
     },
     {

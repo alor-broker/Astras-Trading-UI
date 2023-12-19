@@ -148,7 +148,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
       displayName: 'Время',
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder): number => Number(b.transTime) - Number(a.transTime),
-      tooltip: 'Время совершения заявки',
+      tooltip: 'Время выставления заявки',
       minWidth: 60
     },
     {
