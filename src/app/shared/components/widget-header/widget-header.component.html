@@ -55,7 +55,6 @@
       nz-button
       nzSize="small"
       (mousedown)="changeLinkToActive($event, !linkToActive)"
-      (touchstart)="changeLinkToActive($event, !linkToActive)"
       class="link-to-active-btn"
     >
       <i nz-icon
@@ -69,10 +68,8 @@
     <button
       *ngIf="hasSettings"
       nz-button
-      class="settings-btn"
       nzSize="small"
       (mousedown)="onSwitchSettings($event)"
-      (touchstart)="onSwitchSettings($event)"
     >
       <i nz-icon
          nzType="setting"
@@ -83,7 +80,6 @@
     </button>
     <button
       *ngIf="hasHelp"
-      class="help-btn"
       nz-button
       nzSize="small"
       (mousedown)="preventMouseEvents($event)"
@@ -102,7 +98,6 @@
             nzSize="small"
             class="close-btn"
             (mousedown)="removeItem($event)"
-            (touchstart)="removeItem($event)"
             joyrideStep="step4"
             [title]="t('joyride.step4.title')"
             [text]="t('joyride.step4.text')">
