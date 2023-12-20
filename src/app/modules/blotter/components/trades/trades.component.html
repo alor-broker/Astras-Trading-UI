@@ -58,7 +58,7 @@
       </thead>
       <tbody>
         <ng-template let-trd nz-virtual-scroll>
-        <tr>
+        <tr (click)="selectInstrument(trd.symbol, trd.exchange)">
           <td>
             <span [class]='trd.side.toString() === "sell" ? "bg-sell" : "bg-buy"'>&nbsp;</span>
           </td>

@@ -120,7 +120,7 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends obj
     else return date.toLocaleDateString();
   }
 
-  protected selectInstrument(symbol: string, exchange: string): void {
+  selectInstrument(symbol: string, exchange: string): void {
     this.service.selectNewInstrument(symbol, exchange, this.badgeColor);
   }
 

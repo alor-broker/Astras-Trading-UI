@@ -103,7 +103,7 @@ export class MobileDashboardEffects {
 
   setDefaultInstrumentsSelectionForMobileDashboard$ = createEffect(() => {
     return MobileDashboardStreams.getMobileDashboard(this.store).pipe(
-      filter(d => d.instrumentsSelection != null),
+      filter(d => d.instrumentsSelection == null),
       distinctUntilChanged((previous, current) => previous.guid === current.guid),
       mapWith(
         () => this.marketService.getAllExchanges().pipe(take(1)),

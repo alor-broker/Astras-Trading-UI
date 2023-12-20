@@ -1,4 +1,10 @@
-import {Component, DestroyRef, Input, OnInit} from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  Inject,
+  Input,
+  OnInit
+} from '@angular/core';
 import {
   formatCurrency,
   getCurrencyFormat
@@ -11,7 +17,6 @@ import {
   switchMap
 } from "rxjs";
 import { EventsCalendarService } from "../../services/events-calendar.service";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { addYears, getISOStringDate } from "../../../../shared/utils/datetime";
 import { TranslatorService } from "../../../../shared/services/translator.service";
@@ -19,6 +24,10 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { MarketService } from "../../../../shared/services/market.service";
 import { CurrencySettings } from "../../../../shared/models/market-settings.model";
 import { map } from "rxjs/operators";
+import {
+  ACTIONS_CONTEXT,
+  ActionsContext
+} from "../../../../shared/services/actions-context";
 
 @Component({
   selector: 'ats-list-view',
@@ -38,7 +47,8 @@ export class ListViewComponent implements OnInit {
 
   constructor(
     private readonly service: EventsCalendarService,
-    private readonly dashboardContextService: DashboardContextService,
+    @Inject(ACTIONS_CONTEXT)
+    private readonly actionsContext: ActionsContext,
     private readonly translatorService: TranslatorService,
     private readonly marketService: MarketService,
     private readonly destroyRef: DestroyRef
@@ -67,7 +77,7 @@ export class ListViewComponent implements OnInit {
   }
 
   selectInstrument(symbol: string): void {
-    this.dashboardContextService.selectDashboardInstrument({ symbol, exchange: 'MOEX' }, defaultBadgeColor);
+    this.actionsContext.instrumentSelected({ symbol, exchange: 'MOEX' }, defaultBadgeColor);
   }
 
   isEventsEmpty(events: CalendarEvents): boolean {

@@ -12,6 +12,7 @@ import { WatchlistCollectionService } from "../../../instruments/services/watchl
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { TranslatorService } from '../../../../shared/services/translator.service';
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 
 describe('AllInstrumentsComponent', () => {
   let component: AllInstrumentsComponent;
@@ -50,7 +51,12 @@ describe('AllInstrumentsComponent', () => {
           provide: DashboardContextService,
           useValue: {
             instrumentsSelection$: jasmine.createSpy('instrumentsSelection$').and.returnValue(new Subject()),
-            selectDashboardInstrument: jasmine.createSpy('selectDashboardInstrument').and.callThrough()
+          }
+        },
+        {
+          provide: ACTIONS_CONTEXT,
+          useValue: {
+            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
           }
         },
         {

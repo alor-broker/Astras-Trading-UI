@@ -35,7 +35,6 @@ import { WidgetMeta } from "../../../../shared/models/widget-meta.model";
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import { GridType as TerminalGridType } from "../../../../shared/models/terminal-settings/terminal-settings.model";
-
 interface Safe extends GridsterConfig {
   draggable: Draggable;
   resizable: Resizable;
@@ -47,7 +46,7 @@ type WidgetItem = { instance: WidgetInstance, gridsterItem: GridsterItem };
 @Component({
   selector: 'ats-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.less'],
+  styleUrls: ['./dashboard.component.less']
 })
 export class DashboardComponent implements OnInit {
   @ViewChild(GridsterComponent)
