@@ -6,7 +6,7 @@ import {
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import { OrdersBasketSettings } from '../../models/orders-basket-settings.model';
@@ -55,7 +55,9 @@ export class OrdersBasketWidgetComponent implements OnInit {
       this.widgetSettingsService
     );
 
-    this.settings$ = this.widgetSettingsService.getSettings<OrdersBasketSettings>(this.guid);
+    this.settings$ = this.dashboardContextService.selectedPortfolio$.pipe(
+      switchMap(() => this.widgetSettingsService.getSettings<OrdersBasketSettings>(this.guid))
+    );
 
     this.title$ = this.settings$.pipe(
       map(s => `${s.portfolio} (${s.exchange})`)

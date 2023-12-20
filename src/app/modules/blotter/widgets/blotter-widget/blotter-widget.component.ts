@@ -9,6 +9,7 @@ import {
   BehaviorSubject,
   Observable,
   of,
+  switchMap,
   take
 } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -113,7 +114,9 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
       this.widgetSettingsService
     );
 
-    this.settings$ = this.widgetSettingsService.getSettings<BlotterSettings>(this.guid);
+    this.settings$ = this.dashboardContextService.selectedPortfolio$.pipe(
+      switchMap(() => this.widgetSettingsService.getSettings<BlotterSettings>(this.guid))
+    );
 
     this.title$ = this.settings$.pipe(
       map(s => `${s.portfolio} (${s.exchange})`)

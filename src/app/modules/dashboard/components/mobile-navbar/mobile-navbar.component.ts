@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit } from '@angular/core';
 import { Observable, shareReplay } from "rxjs";
 import { PortfolioExtended } from "../../../../shared/models/user/portfolio-extended.model";
 import { Dashboard } from "../../../../shared/models/dashboard/dashboard.model";
@@ -15,6 +15,7 @@ import { groupPortfoliosByAgreement } from "../../../../shared/utils/portfolios"
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
 import { NewYearHelper } from "../../utils/new-year.helper";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-mobile-navbar',
@@ -37,7 +38,8 @@ export class MobileNavbarComponent implements OnInit {
     private readonly dashboardContextService: DashboardContextService,
     private readonly store: Store,
     private readonly auth: AuthService,
-    private readonly modal: ModalService
+    private readonly modal: ModalService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -72,6 +74,18 @@ export class MobileNavbarComponent implements OnInit {
     this.activeInstrument$ = this.dashboardContextService.instrumentsSelection$.pipe(
       map(selection => selection[defaultBadgeColor]!)
     );
+
+    this.portfolios$
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(portfolios => {
+        const hasActivePortfolios = Array.from(portfolios.values()).some(p => p.length > 0);
+
+        if (!hasActivePortfolios) {
+          this.modal.openEmptyPortfoliosWarningModal();
+        }
+      });
   }
 
   isFindedPortfolio(portfolio: PortfolioExtended): boolean {

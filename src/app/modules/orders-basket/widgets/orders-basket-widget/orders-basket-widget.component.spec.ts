@@ -44,7 +44,8 @@ describe('OrdersBasketWidgetComponent', () => {
         {
           provide: DashboardContextService,
           useValue: {
-            instrumentsSelection$: of({})
+            instrumentsSelection$: of({}),
+            selectedPortfolio$: of({})
           }
         }
       ]
