@@ -28,25 +28,19 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { ExchangeRateSettings } from "../../models/exchange-rate-settings.model";
 import {
+  Rate,
+  RateValue
+} from "../../models/exchange-rate.model";
+import { DefaultRateProvider } from "../../utils/rate-provider";
+import { ConversionMatrix } from "../../utils/conversion-matrix";
+import {
   ACTIONS_CONTEXT,
   ActionsContext
 } from "../../../../shared/services/actions-context";
 
-interface RateMatrixValue {
-  rate: number;
-  symbol: string | null;
-}
-
 interface CurrencyMatrix {
   currencies: string[];
-  rates: { [key: string]: RateMatrixValue | null };
-}
-
-interface Rate {
-  fromCurrency: string;
-  toCurrency: string;
-  symbolTom: string;
-  lastPrice: number;
+  rates: { [key: string]: RateValue | null };
 }
 
 @Component({
@@ -75,16 +69,24 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.currencyMatrix$ = this.exchangeRateService.getCurrencyPairs().pipe(
+      map(pairs => {
+        const rateProvider = new DefaultRateProvider();
+        return {
+          currencyPairs: pairs,
+          rateProvider,
+          conversionMatrix: ConversionMatrix.build(pairs, rateProvider)
+        };
+      }),
       mapWith(
-        currencies => this.getExchangeRates(currencies),
-        (currencies, rates) => this.toCurrencyMatrix(currencies, rates)
+        x => this.getExchangeRates(x.currencyPairs),
+        (x, rates) => this.toCurrencyMatrix(x.conversionMatrix, x.rateProvider, rates)
       ),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
-  selectInstrument(item: RateMatrixValue): void {
-    if (item.symbol == null) {
+  selectInstrument(item: RateValue): void {
+    if (item.sourceSymbol == null) {
       return;
     }
 
@@ -95,7 +97,7 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
         take(1)
       ).subscribe(s => {
         this.actionsContext.instrumentSelected({
-            symbol: item.symbol!,
+            symbol: item.sourceSymbol!,
             exchange: marketSettings.currencies.defaultCurrencyExchange
           },
           s.badgeColor ?? defaultBadgeColor);
@@ -105,7 +107,7 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
 
   updateContainerSize(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
-      const virtualPadding = 5;
+      const virtualPadding = 7;
       const width = Math.floor(x.contentRect.width) - virtualPadding;
       const height = Math.floor(x.contentRect.height) - virtualPadding;
 
@@ -127,55 +129,19 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
     return `${fromCurrency}_${toCurrency}`;
   }
 
-  private toCurrencyMatrix(currencies: CurrencyPair[], rateValues: Rate[]): CurrencyMatrix {
-    const allCurrencies = Array.from(new Set([
-        ...currencies.map(item => item.firstCode),
-        ...currencies.map(item => item.secondCode)]
-      )
-    ).sort((a, b) => a.localeCompare(b));
+  private toCurrencyMatrix(conversionMatrix: ConversionMatrix, rateProvider: DefaultRateProvider, rateValues: Rate[]): CurrencyMatrix {
+    rateProvider.updateRates(rateValues);
+    const currencies = conversionMatrix.getCurrencies();
 
-    const values = new Map<string, Rate>();
-    rateValues.forEach(x => {
-      values.set(this.getCurrencyKey(x.fromCurrency, x.toCurrency), x);
-    });
-
-    const rates: { [key: string]: RateMatrixValue | null } = {};
-
-    for (const firstCurrency of allCurrencies) {
-      for (const secondCurrency of allCurrencies) {
-        const pairKey = this.getCurrencyKey(firstCurrency, secondCurrency);
-
-        if (firstCurrency === secondCurrency) {
-          rates[pairKey] = null;
-          continue;
-        }
-
-        const directRate = values.get(this.getCurrencyKey(firstCurrency, secondCurrency));
-        if (directRate != null) {
-          rates[pairKey] = {
-            rate: directRate.lastPrice,
-            symbol: directRate.symbolTom
-          };
-
-          continue;
-        }
-
-        const reverseRate = values.get(this.getCurrencyKey(secondCurrency, firstCurrency));
-        if (reverseRate != null && reverseRate.lastPrice > 0) {
-          rates[pairKey] = {
-            rate: 1 / reverseRate.lastPrice,
-            symbol: null
-          };
-
-          continue;
-        }
-
-        rates[pairKey] = null;
+    const rates: { [key: string]: RateValue | null } = {};
+    for (const firstCurrency of currencies) {
+      for (const secondCurrency of currencies) {
+        rates[this.getCurrencyKey(firstCurrency, secondCurrency)] = conversionMatrix.getRate(firstCurrency, secondCurrency);
       }
     }
 
     return {
-      currencies: allCurrencies,
+      currencies,
       rates
     };
   }
