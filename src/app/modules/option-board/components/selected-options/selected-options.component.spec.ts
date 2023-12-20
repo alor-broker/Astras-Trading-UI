@@ -7,7 +7,7 @@ import {OptionBoardDataContext, OptionsSelection} from "../../models/option-boar
 import {getTranslocoModule} from "../../../../shared/utils/testing";
 import {OptionBoardService} from "../../services/option-board.service";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
-import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
+import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 
 describe('SelectedOptionsComponent', () => {
   let component: SelectedOptionsComponent;
@@ -31,11 +31,11 @@ describe('SelectedOptionsComponent', () => {
           }
         },
         {
-          provide: DashboardContextService,
+          provide: ACTIONS_CONTEXT,
           useValue: {
-            selectDashboardInstrument: jasmine.createSpy('selectDashboardInstrument').and.callThrough()
+            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
           }
-        }
+        },
       ]
     })
     .compileComponents();

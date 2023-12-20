@@ -20,6 +20,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 import { LetDirective } from "@ngrx/component";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 
 describe('WatchlistTableComponent', () => {
   let component: WatchlistTableComponent;
@@ -61,6 +62,12 @@ describe('WatchlistTableComponent', () => {
           provide: TranslatorService,
           useValue: {
             getLangChanges: jasmine.createSpy('getLangChanges').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: ACTIONS_CONTEXT,
+          useValue: {
+            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
           }
         },
         ...commonTestProviders

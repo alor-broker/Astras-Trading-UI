@@ -12,7 +12,7 @@ import {
 import { QuotesService } from '../../../../shared/services/quotes.service';
 import { MarketService } from "../../../../shared/services/market.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 
 describe('ExchangeRateComponent', () => {
   let component: ExchangeRateComponent;
@@ -47,11 +47,11 @@ describe('ExchangeRateComponent', () => {
           }
         },
         {
-          provide: DashboardContextService,
+          provide: ACTIONS_CONTEXT,
           useValue: {
-            selectDashboardInstrument: jasmine.createSpy('selectDashboardInstrument').and.callThrough()
+            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
           }
-        }
+        },
       ]
     })
       .compileComponents();

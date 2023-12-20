@@ -35,11 +35,15 @@ import {
   WatchlistType
 } from '../../models/watchlist.model';
 import { DOCUMENT } from '@angular/common';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 import { DomHelper } from "../../../../shared/utils/dom-helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { WatchListTitleHelper } from "../../utils/watch-list-title.helper";
+import {
+  ACTIONS_CONTEXT,
+  ActionsContext
+} from 'src/app/shared/services/actions-context';
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 @Component({
   selector: 'ats-instrument-select',
@@ -64,9 +68,10 @@ export class InstrumentSelectComponent implements OnInit {
 
   constructor(
     private readonly service: InstrumentsService,
-    private readonly dashboardContextService: DashboardContextService,
     private readonly settingsService: WidgetSettingsService,
     private readonly watchlistCollectionService: WatchlistCollectionService,
+    @Inject(ACTIONS_CONTEXT)
+    private readonly actionsContext: ActionsContext,
     @Inject(DOCUMENT) private readonly document: Document,
     private readonly destroyRef: DestroyRef) {
 
@@ -161,10 +166,9 @@ export class InstrumentSelectComponent implements OnInit {
       take(1)
     ).subscribe(x => {
       this.watchlistCollectionService.addItemsToList(x.watchlist.id, [instrument]);
-      this.dashboardContextService.selectDashboardInstrument(instrument, x.settings.badgeColor!);
+      this.actionsContext.instrumentSelected(instrument, x.settings.badgeColor ?? defaultBadgeColor);
     });
   }
-
 
   selectCollection(listId: string): void {
     this.settingsService.updateSettings(this.guid, { activeListId: listId });

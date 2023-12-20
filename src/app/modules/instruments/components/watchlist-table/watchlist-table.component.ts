@@ -3,6 +3,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  Inject,
   Input,
   OnDestroy,
   OnInit,
@@ -38,7 +39,6 @@ import {
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { toInstrumentKey } from "../../../../shared/utils/instruments";
 import { TableAutoHeightBehavior } from '../../../blotter/utils/table-auto-height.behavior';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.service";
@@ -52,6 +52,10 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import { WatchListTitleHelper } from "../../utils/watch-list-title.helper";
 import { WidgetsHelper } from "../../../../shared/utils/widgets";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import {
+  ACTIONS_CONTEXT,
+  ActionsContext
+} from "../../../../shared/services/actions-context";
 
 @Component({
   selector: 'ats-watchlist-table',
@@ -111,7 +115,6 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   private defaultSortFn?: (a: WatchedInstrument, b: WatchedInstrument) => number;
 
   constructor(
-    private readonly currentDashboardService: DashboardContextService,
     private readonly settingsService: WidgetSettingsService,
     private readonly watchInstrumentsService: WatchInstrumentsService,
     private readonly watchlistCollectionService: WatchlistCollectionService,
@@ -119,6 +122,8 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     private readonly dashboardService: ManageDashboardsService,
     private readonly widgetsMetaService: WidgetsMetaService,
     private readonly translatorService: TranslatorService,
+    @Inject(ACTIONS_CONTEXT)
+    private readonly actionsContext: ActionsContext,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -220,7 +225,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   makeActive(item: InstrumentKey): void {
-    this.currentDashboardService.selectDashboardInstrument(item, this.badgeColor);
+    this.actionsContext.instrumentSelected(item, this.badgeColor);
   }
 
   remove(itemId: string): void {

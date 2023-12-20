@@ -5,6 +5,7 @@
     nzSize="large"
     class="mobile-dashboard-menu"
     [nzAnimated]="false"
+    #tabs
   >
     <nz-tab
       #tab
@@ -13,7 +14,7 @@
       [nzTitle]="titleTemplate"
     >
       <ng-template #titleTemplate>
-        <div class="d-flex flex-column" [class.new-order]="widget.instance.widgetType === 'order-submit'">
+        <div class="d-flex flex-column" [class.new-order]="widget.instance.widgetType === newOrderWidgetId">
           <i nz-icon [nzType]="widget.widgetMeta.mobileMeta!.ribbonIcon" class="widget-icon" nzTheme="outline"></i>
 
           <div class="widget-label">
