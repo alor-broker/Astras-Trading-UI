@@ -3,6 +3,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  Inject,
   Input,
   OnDestroy,
   OnInit,
@@ -42,12 +43,15 @@ import {
   getCurrencyFormat,
   getCurrencySign
 } from "../../../../shared/utils/formatters";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { getNumberAbbreviation } from "../../../../shared/utils/number-abbreviation";
 import { color } from "d3";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MarketService } from "../../../../shared/services/market.service";
+import {
+  ACTIONS_CONTEXT,
+  ActionsContext
+} from 'src/app/shared/services/actions-context';
 
 interface TooltipModelRaw {
   _data: {
@@ -98,7 +102,8 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
     private readonly quotesService: QuotesService,
     private readonly translatorService: TranslatorService,
     private readonly instrumentsService: InstrumentsService,
-    private readonly dashboardContextService: DashboardContextService,
+    @Inject(ACTIONS_CONTEXT)
+    private readonly actionsContext: ActionsContext,
     private readonly settingsService: WidgetSettingsService,
     private readonly marketService: MarketService,
     private readonly destroy: DestroyRef
@@ -310,7 +315,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
         take(1),
       )
       .subscribe(s => {
-        this.dashboardContextService.selectDashboardInstrument({
+        this.actionsContext.instrumentSelected({
             exchange: this.defaultExchange,
             symbol
           },

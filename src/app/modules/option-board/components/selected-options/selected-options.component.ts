@@ -3,6 +3,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  Inject,
   Input,
   OnDestroy,
   OnInit,
@@ -20,9 +21,10 @@ import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.mo
 import {mapWith} from "../../../../shared/utils/observable-helper";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
-import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {defaultBadgeColor} from "../../../../shared/utils/instruments";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { ActionsContext } from 'src/app/shared/services/actions-context';
+import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 
 interface DetailsDisplay extends OptionKey {
   underlyingAssetSymbol: string;
@@ -141,7 +143,8 @@ export class SelectedOptionsComponent implements OnInit, AfterViewInit, OnDestro
     private readonly optionBoardService: OptionBoardService,
     private readonly translatorService: TranslatorService,
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
+    @Inject(ACTIONS_CONTEXT)
+    private readonly actionsContext: ActionsContext,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -216,12 +219,12 @@ export class SelectedOptionsComponent implements OnInit, AfterViewInit, OnDestro
         this.widgetSettingsService.updateSettings(settings.guid, {linkToActive: false});
       }
 
-      this.dashboardContextService.selectDashboardInstrument(
+      this.actionsContext.instrumentSelected(
         {
           symbol: optionKey.symbol,
           exchange: optionKey.exchange
         },
-        defaultBadgeColor
+        settings.badgeColor ?? defaultBadgeColor
       );
     });
   }

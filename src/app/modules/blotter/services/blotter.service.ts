@@ -1,4 +1,7 @@
-import { Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable
+} from '@angular/core';
 import {
   BehaviorSubject,
   interval,
@@ -10,7 +13,6 @@ import {
 import { map, startWith } from 'rxjs/operators';
 import { OrdersNotificationsService } from 'src/app/shared/services/orders-notifications.service';
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
-import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
 import { BlotterSettings } from '../models/blotter-settings.model';
 import {Position} from "../../../shared/models/positions/position.model";
 import { HttpClient } from "@angular/common/http";
@@ -21,6 +23,10 @@ import { Order, StopOrder } from "../../../shared/models/orders/order.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { EnvironmentService } from "../../../shared/services/environment.service";
 import { MarketService } from "../../../shared/services/market.service";
+import {
+  ACTIONS_CONTEXT,
+  ActionsContext
+} from "../../../shared/services/actions-context";
 
 @Injectable()
 export class BlotterService {
@@ -33,11 +39,12 @@ export class BlotterService {
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly notification: OrdersNotificationsService,
-    private readonly dashboardContextService: DashboardContextService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly http: HttpClient,
     private readonly errorHandler: ErrorHandlerService,
-    private readonly marketService: MarketService
+    private readonly marketService: MarketService,
+    @Inject(ACTIONS_CONTEXT)
+    private readonly actionsContext: ActionsContext
   ) {
   }
 
@@ -55,7 +62,7 @@ export class BlotterService {
           return;
         }
 
-        this.dashboardContextService.selectDashboardInstrument(
+        this.actionsContext.instrumentSelected(
           {
             symbol: mappedCurrency.exchangeInstrument.symbol,
             exchange: mappedCurrency.exchangeInstrument.exchange ?? marketSettings.currencies.defaultCurrencyExchange
@@ -67,7 +74,8 @@ export class BlotterService {
       }
 
       const instrument: InstrumentKey = { symbol, exchange };
-      this.dashboardContextService.selectDashboardInstrument(instrument, badgeColor);
+
+      this.actionsContext.instrumentSelected(instrument, badgeColor);
     });
   }
 

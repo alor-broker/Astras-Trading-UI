@@ -10,6 +10,7 @@ import { DashboardContextService } from "../../../../shared/services/dashboard-c
 import { getTranslocoModule } from "../../../../shared/utils/testing";
 import { MarketService } from "../../../../shared/services/market.service";
 import { LetDirective } from "@ngrx/component";
+import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 
 describe('ListViewComponent', () => {
   let component: ListViewComponent;
@@ -30,9 +31,9 @@ describe('ListViewComponent', () => {
           }
         },
         {
-          provide: DashboardContextService,
+          provide: ACTIONS_CONTEXT,
           useValue: {
-            selectDashboardInstrument: jasmine.createSpy('selectDashboardInstrument').and.callThrough()
+            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
           }
         },
         {

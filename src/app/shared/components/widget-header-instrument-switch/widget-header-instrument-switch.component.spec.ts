@@ -1,10 +1,13 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { WidgetHeaderInstrumentSwitchComponent } from './widget-header-instrument-switch.component';
-import {WidgetSettingsService} from "../../services/widget-settings.service";
-import {Subject} from "rxjs";
-import {InstrumentsService} from "../../../modules/instruments/services/instruments.service";
-import {DashboardContextService} from "../../services/dashboard-context.service";
+import { WidgetSettingsService } from "../../services/widget-settings.service";
+import { Subject } from "rxjs";
+import { InstrumentsService } from "../../../modules/instruments/services/instruments.service";
+import { ACTIONS_CONTEXT } from "../../services/actions-context";
 
 describe('WidgetHeaderInstrumentSwitchComponent', () => {
   let component: WidgetHeaderInstrumentSwitchComponent;
@@ -13,7 +16,7 @@ describe('WidgetHeaderInstrumentSwitchComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [WidgetHeaderInstrumentSwitchComponent],
-      providers:[
+      providers: [
         {
           provide: WidgetSettingsService,
           useValue: {
@@ -28,9 +31,9 @@ describe('WidgetHeaderInstrumentSwitchComponent', () => {
           }
         },
         {
-          provide: DashboardContextService,
+          provide: ACTIONS_CONTEXT,
           useValue: {
-            selectDashboardInstrument: jasmine.createSpy('selectDashboardInstrument').and.callThrough()
+            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
           }
         },
       ]

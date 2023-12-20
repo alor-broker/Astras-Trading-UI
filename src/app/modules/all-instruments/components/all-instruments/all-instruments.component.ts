@@ -1,6 +1,7 @@
 import {
   Component,
   DestroyRef,
+  Inject,
   Input,
   OnDestroy,
   OnInit
@@ -44,6 +45,7 @@ import {
   WatchlistCollection,
   WatchlistType
 } from "../../../instruments/models/watchlist.model";
+import { ACTIONS_CONTEXT, ActionsContext } from 'src/app/shared/services/actions-context';
 
 @Component({
   selector: 'ats-all-instruments',
@@ -176,6 +178,8 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     private readonly settingsService: WidgetSettingsService,
     private readonly service: AllInstrumentsService,
     private readonly dashboardContextService: DashboardContextService,
+    @Inject(ACTIONS_CONTEXT)
+    private readonly actionsContext: ActionsContext,
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly translatorService: TranslatorService,
@@ -285,7 +289,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     this.settings$.pipe(
       take(1)
     ).subscribe(s => {
-      this.dashboardContextService.selectDashboardInstrument(instrument, s.badgeColor ?? defaultBadgeColor);
+      this.actionsContext.instrumentSelected(instrument, s.badgeColor ?? defaultBadgeColor);
     });
   }
 

@@ -1,5 +1,6 @@
 import {
   Component,
+  Inject,
   Input,
   OnDestroy,
   OnInit
@@ -23,10 +24,13 @@ import { QuotesService } from '../../../../shared/services/quotes.service';
 import { ContentSize } from "../../../../shared/models/dashboard/dashboard-item.model";
 import { MarketService } from "../../../../shared/services/market.service";
 import { MathHelper } from "../../../../shared/utils/math-helper";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { ExchangeRateSettings } from "../../models/exchange-rate-settings.model";
+import {
+  ACTIONS_CONTEXT,
+  ActionsContext
+} from "../../../../shared/services/actions-context";
 
 interface RateMatrixValue {
   rate: number;
@@ -64,7 +68,8 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
     private readonly exchangeRateService: ExchangeRateService,
     private readonly quotesService: QuotesService,
     private readonly marketService: MarketService,
-    private readonly dashboardContextService: DashboardContextService,
+    @Inject(ACTIONS_CONTEXT)
+    private readonly actionsContext: ActionsContext
   ) {
   }
 
@@ -89,7 +94,7 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
       this.settingsService.getSettings<ExchangeRateSettings>(this.guid).pipe(
         take(1)
       ).subscribe(s => {
-        this.dashboardContextService.selectDashboardInstrument({
+        this.actionsContext.instrumentSelected({
             symbol: item.symbol!,
             exchange: marketSettings.currencies.defaultCurrencyExchange
           },

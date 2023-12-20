@@ -6,6 +6,7 @@ import {
   mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
+import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 
 describe('MobileDashboardWidgetComponent', () => {
   let component: MobileDashboardWidgetComponent;
@@ -27,6 +28,12 @@ describe('MobileDashboardWidgetComponent', () => {
         mockComponent({ selector: 'ats-edit-order-dialog-widget' }),
       ],
       providers: [
+        {
+          provide: ACTIONS_CONTEXT,
+          useValue: {
+            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
+          }
+        },
         ...commonTestProviders
       ]
     })
