@@ -26,7 +26,7 @@
           <ng-container *ngIf="currencyMatrix.rates[getCurrencyKey(cur1, cur2)] as rate; else empty">
             <td
               (click)="selectInstrument(rate)"
-              [class.selectable]="rate.symbol"
+              [class.selectable]="rate.sourceSymbol"
             >
               {{rate.rate | number:'0.0-4'}}
             </td>
