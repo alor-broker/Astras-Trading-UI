@@ -1,5 +1,5 @@
-import { Component, DestroyRef, OnInit } from '@angular/core';
-import { Observable, shareReplay } from "rxjs";
+import { Component, OnInit } from '@angular/core';
+import { Observable, shareReplay, take } from "rxjs";
 import { PortfolioExtended } from "../../../../shared/models/user/portfolio-extended.model";
 import { Dashboard } from "../../../../shared/models/dashboard/dashboard.model";
 import { FormControl, UntypedFormControl } from "@angular/forms";
@@ -15,7 +15,6 @@ import { groupPortfoliosByAgreement } from "../../../../shared/utils/portfolios"
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
 import { NewYearHelper } from "../../utils/new-year.helper";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-mobile-navbar',
@@ -38,8 +37,7 @@ export class MobileNavbarComponent implements OnInit {
     private readonly dashboardContextService: DashboardContextService,
     private readonly store: Store,
     private readonly auth: AuthService,
-    private readonly modal: ModalService,
-    private readonly destroyRef: DestroyRef
+    private readonly modal: ModalService
   ) {
   }
 
@@ -77,7 +75,7 @@ export class MobileNavbarComponent implements OnInit {
 
     this.portfolios$
       .pipe(
-        takeUntilDestroyed(this.destroyRef),
+        take(1),
       )
       .subscribe(portfolios => {
         const hasActivePortfolios = Array.from(portfolios.values()).some(p => p.length > 0);
