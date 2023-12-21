@@ -37,6 +37,7 @@ export interface ExternalLinksConfig {
   personalAccount: string;
   bankroll: string;
   services: string;
+  videoTutorial: string;
 }
 
 @Injectable({

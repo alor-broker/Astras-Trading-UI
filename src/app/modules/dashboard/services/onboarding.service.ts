@@ -21,7 +21,7 @@ export class OnboardingService {
     if (!this.getIsCompleted()) {
       const interval = setInterval(() => {
         this.joyride.startTour({
-          steps: Array(7).fill(1).map((n, i) => `step${i + 1}`),
+          steps: Array(8).fill(1).map((n, i) => `step${i + 1}`),
           themeColor: 'rgba(0, 155, 99, 1)'
         });
         this.setIsCompleted(true);
