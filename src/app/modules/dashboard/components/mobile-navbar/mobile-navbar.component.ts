@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, shareReplay } from "rxjs";
+import { Observable, shareReplay, take } from "rxjs";
 import { PortfolioExtended } from "../../../../shared/models/user/portfolio-extended.model";
 import { Dashboard } from "../../../../shared/models/dashboard/dashboard.model";
 import { FormControl, UntypedFormControl } from "@angular/forms";
@@ -72,6 +72,18 @@ export class MobileNavbarComponent implements OnInit {
     this.activeInstrument$ = this.dashboardContextService.instrumentsSelection$.pipe(
       map(selection => selection[defaultBadgeColor]!)
     );
+
+    this.portfolios$
+      .pipe(
+        take(1),
+      )
+      .subscribe(portfolios => {
+        const hasActivePortfolios = Array.from(portfolios.values()).some(p => p.length > 0);
+
+        if (!hasActivePortfolios) {
+          this.modal.openEmptyPortfoliosWarningModal();
+        }
+      });
   }
 
   isFindedPortfolio(portfolio: PortfolioExtended): boolean {

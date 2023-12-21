@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { distinctUntilChanged, Observable } from 'rxjs';
 import { Dashboard } from '../../shared/models/dashboard/dashboard.model';
 import { Store } from '@ngrx/store';
 import {
@@ -15,7 +15,8 @@ export class MobileDashboardStreams {
   static getMobileDashboard(store: Store): Observable<Dashboard> {
     return this.getState(store).pipe(
       map(x => x.dashboard),
-      filter((x): x is Dashboard => !!x)
+      filter((x): x is Dashboard => !!x),
+      distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))
     );
   }
 
