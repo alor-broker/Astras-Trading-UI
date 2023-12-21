@@ -50,11 +50,6 @@
             </span>
             </th>
           </ng-container>
-          <th [nzWidth]="'40px'">
-          <span [nzTooltipTitle]="t('instrumentsSelect.columns.delete.tooltip')" nz-tooltip>
-            {{t('instrumentsSelect.columns.delete.name')}}
-          </span>
-          </th>
         </tr>
         </thead>
         <tbody>
@@ -103,7 +98,7 @@
           </td>
           <td *ngIf="isVisibleColumn('openPrice')">{{ inst.openPrice }}</td>
           <td *ngIf="isVisibleColumn('closePrice')">{{ inst.closePrice }}</td>
-          <td>
+          <td *ngIf="isVisibleColumn('remove')">
             <a (click)="remove(inst.recordId); $event.preventDefault(); $event.stopPropagation();">
               <i nz-icon nzTheme="outline" nzType="close"></i>
             </a>
@@ -171,6 +166,16 @@
                 <span><i [nzType]="widget.icon" nz-icon nzTheme="outline"></i>{{widget.name}}</span>
               </li>
             </ul>
+          </li>
+
+          <li
+            nz-menu-item
+            (click)="remove(selectedItem!.recordId)"
+          >
+            <span nz-typography nzType="danger">
+              <i nz-icon nzTheme="outline" nzType="close"></i>
+              {{t('instrumentsSelect.contextMenu.remove')}}
+            </span>
           </li>
         </ul>
       </nz-dropdown-menu>

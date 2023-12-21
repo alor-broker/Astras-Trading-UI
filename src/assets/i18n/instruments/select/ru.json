@@ -45,7 +45,7 @@
       "name": "Закр.",
       "tooltip": "Цена на конец предыдущего дня"
     },
-    "delete": {
+    "remove": {
       "name": "Удл.",
       "tooltip": "Убрать из наблюдения"
     }
@@ -56,6 +56,7 @@
   "contextMenu": {
     "copyToItemLabel": "Копировать в список",
     "moveToItemLabel": "Перенести в список",
-    "addWidgetItemLabel": "Добавить виджет"
+    "addWidgetItemLabel": "Добавить виджет",
+    "remove": "Удалить"
   }
 }
