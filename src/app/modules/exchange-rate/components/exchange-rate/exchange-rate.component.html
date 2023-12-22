@@ -28,7 +28,8 @@
               (click)="selectInstrument(rate)"
               [class.selectable]="rate.sourceSymbol"
             >
-              {{rate.rate | number:'0.0-4'}}
+              <ats-price-diff [basePrice]="rate.prevRate" [currentPrice]="rate.rate" format="0.0-4">
+              </ats-price-diff>
             </td>
           </ng-container>
 

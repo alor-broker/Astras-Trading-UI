@@ -17,7 +17,6 @@ import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
-import { PriceTickComponent } from './components/price-tick/price-tick.component';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzImageModule } from 'ng-zorro-antd/image';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -71,10 +70,10 @@ import {
 import { RemoveSelectTitlesDirective } from './directives/remove-select-titles.directive';
 import { WidgetSettingsComponent } from './components/widget-settings/widget-settings.component';
 import { NzColorPickerModule } from "ng-zorro-antd/color-picker";
+import { PriceDiffComponent } from './components/price-diff/price-diff.component';
 
 @NgModule({
   declarations: [
-    PriceTickComponent,
     LoadingIndicatorComponent,
     InfiniteScrollTableComponent,
     InstrumentSearchComponent,
@@ -94,6 +93,7 @@ import { NzColorPickerModule } from "ng-zorro-antd/color-picker";
     WidgetHeaderInstrumentSwitchComponent,
     RemoveSelectTitlesDirective,
     WidgetSettingsComponent,
+    PriceDiffComponent,
   ],
   imports: [
     CommonModule,
@@ -183,7 +183,6 @@ import { NzColorPickerModule } from "ng-zorro-antd/color-picker";
     NgChartsModule,
     TranslocoModule,
     // components
-    PriceTickComponent,
     LoadingIndicatorComponent,
     InfiniteScrollTableComponent,
     InstrumentSearchComponent,
@@ -203,7 +202,8 @@ import { NzColorPickerModule } from "ng-zorro-antd/color-picker";
     ResizableDirective,
     RemoveSelectTitlesDirective,
     // pipes
-    AtsPricePipe
+    AtsPricePipe,
+    PriceDiffComponent
   ],
   providers: [
     {provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true},

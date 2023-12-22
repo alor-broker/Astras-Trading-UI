@@ -4,8 +4,8 @@ export interface WatchedInstrument {
   recordId: string;
   addTime: number;
   instrument: Instrument;
-  price: number;
-  prevTickPrice: number;
+  price?: number;
+  prevTickPrice?: number;
   dayChange: number;
   dayChangePerPrice: number;
   closePrice: number;

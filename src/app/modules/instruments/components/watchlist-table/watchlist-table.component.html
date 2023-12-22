@@ -86,8 +86,13 @@
             {{inst.instrument.shortName}}
           </td>
           <td *ngIf="isVisibleColumn('price')">
-            <ats-price-tick [prevPrice]='inst.prevTickPrice' [price]='inst.price'>
-            </ats-price-tick>
+            <ats-price-diff
+              *ngIf="(inst.price ?? null) !== null && (inst.prevTickPrice ?? null) !== null"
+              [currentPrice]="inst.price!"
+              [basePrice]="inst.prevTickPrice!"
+              [showChangeForce]="false"
+            >
+            </ats-price-diff>
           </td>
           <td *ngIf="isVisibleColumn('dayChange')" [ngClass]="inst.dayChange < 0 ? 'sellCell' : 'buyCell'">
             {{ inst.dayChange }}
