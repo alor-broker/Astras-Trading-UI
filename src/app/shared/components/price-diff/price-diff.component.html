@@ -1,0 +1,3 @@
+<span *ngIf="priceDiff">
+  {{ priceDiff.fixedPart }}<span [ngStyle]="{ color:priceDiff.changeColor }" class="changed">{{ priceDiff.updatedPart }}</span>
+</span>

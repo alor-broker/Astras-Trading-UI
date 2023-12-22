@@ -133,7 +133,7 @@ export class WatchInstrumentsService {
   private setupInstrumentUpdatesSubscription(wi: WatchedInstrument): void {
     const sub = this.quotesService.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup).subscribe(q => {
       const update = <WatchedInstrument>{
-        prevTickPrice: wi.price,
+        prevTickPrice: q.last_price - q.change,
         closePrice: q.prev_close_price,
         openPrice: q.open_price,
         price: q.last_price,

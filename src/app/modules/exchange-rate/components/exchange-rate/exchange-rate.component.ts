@@ -157,13 +157,15 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
             fromCurrency: pair.firstCode,
             toCurrency: pair.secondCode,
             symbolTom: pair.symbolTom,
-            lastPrice: quote.last_price
+            lastPrice: quote.last_price,
+            change: quote.change
           })),
           startWith({
             fromCurrency: pair.firstCode,
             toCurrency: pair.secondCode,
             symbolTom: pair.symbolTom,
-            lastPrice: 0
+            lastPrice: 0,
+            change: 0
           })
         );
     };

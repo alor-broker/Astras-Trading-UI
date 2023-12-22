@@ -16,6 +16,7 @@ export class DefaultRateProvider implements RateProvider {
 
     return {
       rate: rate.lastPrice,
+      prevRate: rate.lastPrice - rate.change,
       sourceSymbol: rate.symbolTom
     };
   }

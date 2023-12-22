@@ -1,5 +1,6 @@
 ﻿export interface RateValue {
   rate: number;
+  prevRate: number;
   sourceSymbol: string | null;
 }
 
@@ -8,4 +9,5 @@ export interface Rate {
   toCurrency: string;
   symbolTom: string;
   lastPrice: number;
+  change: number;
 }

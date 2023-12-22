@@ -9,6 +9,12 @@
         &:hover {
           cursor: pointer;
           color: @primary-color;
+
+          ::ng-deep {
+            .changed {
+              color: @primary-color !important;
+            }
+          }
         }
       }
     }
