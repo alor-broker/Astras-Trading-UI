@@ -12,7 +12,6 @@
 @import 'cursor-utils';
 @import 'font-utils';
 @import 'interactions-utils';
-@import 'buy-sell-button-mixin';
 
 html {
   height: 100%;
@@ -80,9 +79,9 @@ html.mobile {
       margin-right: 3px;
     }
 
-    joyride-step .joyride-step__button {
-      .joyride-btn {
-        .buySellButton(@buy-color, @buy-sell-btn-text-color, @buy-color-disabled, @buy-color-background-disabled);
+    joyride-step {
+      .joyride-step__body {
+        max-width: 300px;
       }
     }
   }

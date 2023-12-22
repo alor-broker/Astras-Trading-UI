@@ -46,9 +46,6 @@
         joyrideStep="step1"
         [title]="t('joyride.step1.title')"
         [text]="t('joyride.step1.text')"
-        [prevTemplate]="prevBtn"
-        [nextTemplate]="nextBtn"
-        [doneTemplate]="doneBtn"
       >
         <span>
           {{selectedPortfolio.market}} {{selectedPortfolio.portfolio}}
@@ -169,26 +166,6 @@
       <ng-template #externalLink let-name='name'>
         <span class="link-label">&nbsp;{{name}}&nbsp;<span nz-icon nzType="ats-external-link" nzTheme="outline"></span></span>
       </ng-template>
-    </ng-template>
-
-    <ng-template #prevBtn>
-      <ng-container *ngTemplateOutlet="baseBtn; context: { $implicit: t('joyride.prev')}"></ng-container>
-    </ng-template>
-    <ng-template #nextBtn>
-      <ng-container *ngTemplateOutlet="baseBtn; context: { $implicit: t('joyride.next')}"></ng-container>
-    </ng-template>
-    <ng-template #doneBtn>
-      <ng-container *ngTemplateOutlet="baseBtn; context: { $implicit: t('joyride.done')}"></ng-container>
-    </ng-template>
-
-    <ng-template #baseBtn let-text>
-      <button
-        nz-button
-        nzSize="large"
-        class="joyride-btn"
-      >
-        {{text}}
-      </button>
     </ng-template>
 
     <ng-template #joyrideStep8Content>
