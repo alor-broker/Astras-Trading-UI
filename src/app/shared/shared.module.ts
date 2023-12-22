@@ -196,14 +196,14 @@ import { PriceDiffComponent } from './components/price-diff/price-diff.component
     InstrumentBadgeDisplayComponent,
     WidgetHeaderInstrumentSwitchComponent,
     WidgetSettingsComponent,
+    PriceDiffComponent,
     // directives
     ResizeColumnDirective,
     ScrollableItemDirective,
     ResizableDirective,
     RemoveSelectTitlesDirective,
     // pipes
-    AtsPricePipe,
-    PriceDiffComponent
+    AtsPricePipe
   ],
   providers: [
     {provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true},
