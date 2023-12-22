@@ -35,6 +35,7 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import { OrderbookData } from "../../../orderbook/models/orderbook-data.model";
+import { color } from "d3";
 
 interface VolumeHighlightArguments {
   rowType: ScalperOrderBookRowType;
@@ -240,16 +241,20 @@ export class ScalperOrderBookTableComponent implements OnInit {
   private createBiggestVolumeHighlightStrategy(themeSettings: ThemeSettings): VolumeHighlightStrategy {
     return (args: VolumeHighlightArguments) => {
       if (args.rowType !== ScalperOrderBookRowType.Ask && args.rowType !== ScalperOrderBookRowType.Bid || !args.volume) {
-        return null;
+        return {
+          width: 0
+        };
       }
 
       const size = 100 * (args.volume / args.maxVolume);
-      const color = args.rowType === ScalperOrderBookRowType.Bid
-        ? themeSettings.themeColors.buyColorBackground
-        : themeSettings.themeColors.sellColorBackground;
+      const backgroundColor = args.rowType === ScalperOrderBookRowType.Bid
+        ?  color(themeSettings.themeColors.buyColor)
+        : color(themeSettings.themeColors.sellColor);
 
+      backgroundColor!.opacity = 0.6;
       return {
-        background: `linear-gradient(90deg, ${color} ${size}% , rgba(0,0,0,0) ${size}%)`,
+        'background-color': backgroundColor?.formatRgb(),
+        'width': `${Math.ceil(size)}%`,
       };
     };
   }
@@ -274,7 +279,8 @@ export class ScalperOrderBookTableComponent implements OnInit {
       }
 
       return {
-        background: `linear-gradient(90deg, ${volumeHighlightOption.color}BF ${size}% , rgba(0,0,0,0) ${size}%)`
+        'background-color': volumeHighlightOption.color,
+        'width': `${Math.ceil(size)}%`,
       };
     };
   }
