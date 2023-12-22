@@ -45,7 +45,7 @@
       "name": "Close price",
       "tooltip": "Price at the end of the previous day"
     },
-    "delete": {
+    "remove": {
       "name": "Del.",
       "tooltip": "Delete from watchlist"
     }
@@ -56,6 +56,7 @@
   "contextMenu": {
     "copyToItemLabel": "Copy to list",
     "moveToItemLabel": "Move to list",
-    "addWidgetItemLabel": "Add widget"
+    "addWidgetItemLabel": "Add widget",
+    "remove": "Delete"
   }
 }

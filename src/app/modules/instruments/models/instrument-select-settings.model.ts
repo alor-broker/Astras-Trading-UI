@@ -18,4 +18,5 @@ export const allInstrumentsColumns: BaseColumnId[] = [
   { id: 'volume', displayName: "Объём", isDefault: false },
   { id: 'openPrice', displayName: "Откр.", isDefault: false },
   { id: 'closePrice', displayName: "Закр.", isDefault: false },
+  { id: 'remove', displayName: "Удл.", isDefault: true }
 ];

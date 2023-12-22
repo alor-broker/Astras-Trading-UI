@@ -87,6 +87,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     { id: 'volume', displayName: "Объём", tooltip: 'Объём' },
     { id: 'openPrice', displayName: "Откр.", tooltip: 'Цена на начало дня' },
     { id: 'closePrice', displayName: "Закр.", tooltip: 'Цена на конец предыдущего дня' },
+    { id: 'remove', displayName: "Удл.", tooltip: 'Убрать из наблюдения', width: 40 },
   ];
   displayedColumns: BaseColumnSettings<WatchedInstrument>[] = [];
   badgeColor = '';
@@ -111,7 +112,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
 
   settings$!: Observable<InstrumentSelectSettings>;
   getListTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
-  private selectedItem: WatchedInstrument | null = null;
+  selectedItem: WatchedInstrument | null = null;
   private defaultSortFn?: (a: WatchedInstrument, b: WatchedInstrument) => number;
 
   constructor(
