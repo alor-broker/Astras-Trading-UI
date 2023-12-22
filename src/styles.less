@@ -80,9 +80,16 @@ html.mobile {
       margin-right: 3px;
     }
 
-    joyride-step .joyride-step__button {
-      .joyride-btn {
-        .buySellButton(@buy-color, @buy-sell-btn-text-color, @buy-color-disabled, @buy-color-background-disabled);
+    joyride-step {
+      .joyride-step__body {
+        max-width: 300px;
+      }
+
+      .joyride-step__button {
+        .joyride-btn {
+          .buySellButton(@buy-color, @buy-sell-btn-text-color, @buy-color-disabled, @buy-color-background-disabled);
+          border-radius: 0;
+        }
       }
     }
   }
