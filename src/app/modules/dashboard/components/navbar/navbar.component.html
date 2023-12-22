@@ -1,5 +1,11 @@
 <ng-container *transloco="let t; scope: 'dashboard/navbar/common'">
-  <nz-header *transloco="let tDesktop; scope: 'dashboard/navbar/desktop'">
+  <nz-header
+    *transloco="let tDesktop; scope: 'dashboard/navbar/desktop'"
+    joyrideStep="step8"
+    [title]="t('joyride.step8.title')"
+    stepPosition="center"
+    [stepContent]="joyrideStep8Content"
+  >
     <div class="logo" [class.new-year]="showNewYearIcon()">
       <a [routerLink]="['/']"></a>
     </div>
@@ -40,6 +46,9 @@
         joyrideStep="step1"
         [title]="t('joyride.step1.title')"
         [text]="t('joyride.step1.text')"
+        [prevTemplate]="prevBtn"
+        [nextTemplate]="nextBtn"
+        [doneTemplate]="doneBtn"
       >
         <span>
           {{selectedPortfolio.market}} {{selectedPortfolio.portfolio}}
@@ -141,6 +150,12 @@
             <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.support')}"></ng-container>
           </span>
         </li>
+        <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink(externalLinks.videoTutorial)">
+          <span>
+            <i nz-icon nzType="play-circle" nzTheme="outline"></i>
+            <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.videoTutorial')}"></ng-container>
+          </span>
+        </li>
         <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink(externalLinks.help)">
           <span>
             <i nz-icon nzType="question-circle" nzTheme="outline"></i>
@@ -156,6 +171,32 @@
       </ng-template>
     </ng-template>
 
+    <ng-template #prevBtn>
+      <ng-container *ngTemplateOutlet="baseBtn; context: { $implicit: t('joyride.prev')}"></ng-container>
+    </ng-template>
+    <ng-template #nextBtn>
+      <ng-container *ngTemplateOutlet="baseBtn; context: { $implicit: t('joyride.next')}"></ng-container>
+    </ng-template>
+    <ng-template #doneBtn>
+      <ng-container *ngTemplateOutlet="baseBtn; context: { $implicit: t('joyride.done')}"></ng-container>
+    </ng-template>
+
+    <ng-template #baseBtn let-text>
+      <button
+        nz-button
+        nzSize="large"
+        class="joyride-btn"
+      >
+        {{text}}
+      </button>
+    </ng-template>
+
+    <ng-template #joyrideStep8Content>
+      {{t('joyride.step8.text')}}
+      <ats-external-link [href]="externalLinks.videoTutorial">
+        {{t('joyride.step8.tutorialVideoText')}}
+      </ats-external-link>
+    </ng-template>
   </nz-header>
   <ats-widgets-gallery
     [gallery]="widgetsGallery$ | async"

@@ -41,7 +41,8 @@ export const environment = {
     riskRate: 'https://www.alorbroker.ru/trading/leverage',
     personalAccount: 'https://lk.alor.ru/main',
     bankroll: 'https://lk.alor.ru/operations/money',
-    services: 'https://lk.alor.ru/products/services'
+    services: 'https://lk.alor.ru/products/services',
+    videoTutorial: 'https://www.youtube.com/watch?v=Jn0rLQlcAE0&list=PLMmnmN5fr5OQdclMyRVqIzL6RG7-LlqG3'
   }
 };
 

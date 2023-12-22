@@ -45,7 +45,15 @@
     "step7": {
       "title": "Settings",
       "text": "Here you can change the settings of a widget"
-    }
+    },
+    "step8": {
+      "title": "Any questions?",
+      "text": "You can watch",
+      "tutorialVideoText": "video tutorial"
+    },
+    "prev": "Back",
+    "next": "Next",
+    "done": "Done"
   },
 
   "form": {
