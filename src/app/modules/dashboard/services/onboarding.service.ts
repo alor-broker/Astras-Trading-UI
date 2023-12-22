@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { JoyrideService } from 'ngx-joyride';
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
 import { LocalStorageDesktopConstants } from "../../../shared/constants/local-storage.constants";
+import { TranslatorService } from "../../../shared/services/translator.service";
+import { take } from "rxjs";
 
 interface Profile {
   isCompleted: boolean;
@@ -14,20 +16,29 @@ export class OnboardingService {
 
   constructor(
     private readonly joyride: JoyrideService,
-    private readonly localStorage: LocalStorageService
+    private readonly localStorage: LocalStorageService,
+    private readonly translatorService: TranslatorService
   ) {}
 
   start(): void {
     if (!this.getIsCompleted()) {
-      const interval = setInterval(() => {
-        this.joyride.startTour({
-          steps: Array(8).fill(1).map((n, i) => `step${i + 1}`),
-          themeColor: 'rgba(0, 155, 99, 1)'
-        });
-        this.setIsCompleted(true);
-
-        clearInterval(interval);
-      }, 5000);
+      this.translatorService.getTranslator('')
+        .pipe(
+          take(1)
+        )
+        .subscribe(t => setTimeout(() => {
+            this.joyride.startTour({
+              steps: Array(8).fill(1).map((n, i) => `step${i + 1}`),
+              themeColor: 'rgba(0, 155, 99, 1)',
+              customTexts: {
+                prev: t(['joyride', 'prev']),
+                next: t(['joyride', 'next']),
+                done: t(['joyride', 'done'])
+              }
+            });
+            this.setIsCompleted(true);
+          }, 5000)
+        );
     }
   }
 
