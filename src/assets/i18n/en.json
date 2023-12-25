@@ -31,22 +31,30 @@
       "text": "Create a new order. You can also create an order by clicking on the line in the orderbook"
     },
     "step4": {
+      "title": "Dashboards",
+      "text": "Here you can select a dashboard, create a new one, or add/remove to favorites"
+    },
+    "step5": {
+      "title": "User menu",
+      "text": "Here you can change the terminal settings and see external links"
+    },
+    "step6": {
       "title": "Remove",
       "text": "Removes the widget from the dashboard. You can add it again via the panel above"
     },
-    "step5": {
+    "step7": {
       "title": "Help",
       "text": "Shows help for the widget"
     },
-    "step6": {
+    "step8": {
       "title": "Link to active",
       "text": "If the lock is closed, then the widget monitors the active instrument and/or portfolio and changes when it changes"
     },
-    "step7": {
+    "step9": {
       "title": "Settings",
       "text": "Here you can change the settings of a widget"
     },
-    "step8": {
+    "step10": {
       "title": "Any questions?",
       "text": "You can watch",
       "tutorialVideoText": "video tutorial"

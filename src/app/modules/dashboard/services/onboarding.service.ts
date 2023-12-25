@@ -28,7 +28,7 @@ export class OnboardingService {
         )
         .subscribe(t => setTimeout(() => {
             this.joyride.startTour({
-              steps: Array(8).fill(1).map((n, i) => `step${i + 1}`),
+              steps: Array(10).fill(1).map((n, i) => `step${i + 1}`),
               themeColor: 'rgba(0, 155, 99, 1)',
               customTexts: {
                 prev: t(['joyride', 'prev']),

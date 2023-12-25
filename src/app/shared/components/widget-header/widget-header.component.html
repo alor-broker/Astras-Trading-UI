@@ -60,9 +60,9 @@
       <i nz-icon
          [nzType]="'link'"
          [nzTheme]="'outline'"
-         joyrideStep="step6"
-         [title]="t('joyride.step6.title')"
-         [text]="t('joyride.step6.text')"
+         joyrideStep="step8"
+         [title]="t('joyride.step8.title')"
+         [text]="t('joyride.step8.text')"
          [class.active]="linkToActive"></i>
     </button>
     <button
@@ -74,9 +74,9 @@
       <i nz-icon
          nzType="setting"
          [nzTheme]="'outline'"
-         joyrideStep="step7"
-         [title]="t('joyride.step7.title')"
-         [text]="t('joyride.step7.text')"></i>
+         joyrideStep="step9"
+         [title]="t('joyride.step9.title')"
+         [text]="t('joyride.step9.text')"></i>
     </button>
     <button
       *ngIf="hasHelp"
@@ -89,18 +89,18 @@
         target="_blank"
       >
         <i nz-icon nzType="question-circle" [nzTheme]="'outline'"
-           joyrideStep="step5"
-           [title]="t('joyride.step5.title')"
-           [text]="t('joyride.step5.text')"></i>
+           joyrideStep="step7"
+           [title]="t('joyride.step7.title')"
+           [text]="t('joyride.step7.text')"></i>
       </a>
     </button>
     <button nz-button
             nzSize="small"
             class="close-btn"
             (mousedown)="removeItem($event)"
-            joyrideStep="step4"
-            [title]="t('joyride.step4.title')"
-            [text]="t('joyride.step4.text')">
+            joyrideStep="step6"
+            [title]="t('joyride.step6.title')"
+            [text]="t('joyride.step6.text')">
       <i nz-icon nzType="close-circle" [nzTheme]="'outline'"></i>
     </button>
   </div>

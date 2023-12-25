@@ -1,10 +1,10 @@
 <ng-container *transloco="let t; scope: 'dashboard/navbar/common'">
   <nz-header
     *transloco="let tDesktop; scope: 'dashboard/navbar/desktop'"
-    joyrideStep="step8"
-    [title]="t('joyride.step8.title')"
+    joyrideStep="step10"
+    [title]="t('joyride.step10.title')"
     stepPosition="center"
-    [stepContent]="joyrideStep8Content"
+    [stepContent]="joyrideStep10Content"
   >
     <div class="logo" [class.new-year]="showNewYearIcon()">
       <a [routerLink]="['/']"></a>
@@ -102,6 +102,9 @@
 
     <div
       class="menu-item dashboards-panel-wrapper"
+      joyrideStep="step4"
+      [title]="t('joyride.step4.title')"
+      [text]="t('joyride.step4.text')"
     >
       <ats-dashboards-panel [selectedDashboard]="selectedDashboard$ | async"></ats-dashboards-panel>
     </div>
@@ -113,7 +116,11 @@
       <div class="notifications">
         <ats-notification-button></ats-notification-button>
       </div>
-      <div>
+      <div
+        joyrideStep="step5"
+        [title]="t('joyride.step5.title')"
+        [text]="t('joyride.step5.text')"
+      >
         <button nz-button nz-dropdown [nzDropdownMenu]="rightMenu" nzPlacement="bottomRight" [nzType]="'text'">
           <i nz-icon nzType="ats-user"></i>
         </button>
@@ -168,10 +175,10 @@
       </ng-template>
     </ng-template>
 
-    <ng-template #joyrideStep8Content>
-      {{t('joyride.step8.text')}}
+    <ng-template #joyrideStep10Content>
+      {{t('joyride.step10.text')}}
       <ats-external-link [href]="externalLinks.videoTutorial">
-        {{t('joyride.step8.tutorialVideoText')}}
+        {{t('joyride.step10.tutorialVideoText')}}
       </ats-external-link>
     </ng-template>
   </nz-header>
