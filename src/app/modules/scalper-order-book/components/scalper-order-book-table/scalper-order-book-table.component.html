@@ -25,16 +25,21 @@
            [atsHoverItemData]="{price: row.price}"
       >
         <div [ngClass]="getVolumeCellClasses(row)"
-             [ngStyle]="row.getVolumeStyle()"
              class="table-cell"
         >
-          <ats-short-number
-            *ngIf="settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
-            [value]="row.volume"
-            [allowRounding]="true" ></ats-short-number>
-          <ng-template #defaultVolumeFormat>
-            <span>{{row.volume}}</span>
-          </ng-template>
+          <ng-container *ngIf="(row.volume ?? 0) > 0">
+            <span class="highlighter" [ngStyle]="row.getVolumeStyle()">&nbsp;</span>
+            <span class="volume">
+              <ats-short-number
+                *ngIf="settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
+                [value]="row.volume"
+                [allowRounding]="true"
+              ></ats-short-number>
+
+              <ng-template #defaultVolumeFormat>
+                <span>{{row.volume}}</span>
+              </ng-template></span>
+          </ng-container>
         </div>
       </div>
     </div>

@@ -103,6 +103,21 @@
   #volume-panel {
     .table-cell {
       text-align: right;
+      position: relative;
+
+      .highlighter {
+        display: inline-block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 0;
+        z-index: 1;
+      }
+
+      .volume {
+        position: relative;
+        z-index: 2;
+      }
     }
   }
 
