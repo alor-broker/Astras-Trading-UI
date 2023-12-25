@@ -12,6 +12,7 @@
          [atsHoverItemsGroup]="settings.widgetSettings.showRuler"
          (hoveredItemChanged)="updateHoveredItem($event?.item?.atsHoverItemData ?? null)"
          id="table-body-container"
+         class="user-select-none"
     >
     <div class="table-col" id="volume-panel">
       <div (click)="leftMouseClick($event, row)"

@@ -99,6 +99,7 @@ export class HotKeyCommandService {
 
         return fromEvent<KeyboardEvent>(this.document.body, 'keydown').pipe(
           filter(x => !this.isUserInputTarget(x.target as HTMLElement)),
+          filter(x => !x.repeat),
           map(x => {
             if (x.code === 'Space') {
               x.preventDefault();
