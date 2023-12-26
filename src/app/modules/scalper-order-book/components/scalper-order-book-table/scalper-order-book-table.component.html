@@ -15,7 +15,7 @@
          class="user-select-none"
     >
     <div class="table-col" id="volume-panel">
-      <div (click)="leftMouseClick($event, row)"
+      <div (mousedown)="leftMouseClick($event, row)"
            (contextmenu)="rightMouseClick($event, row)"
            *ngFor="let row of displayItems; trackBy: getTrackKey"
            [style.height]="rowHeight + 'px'"
@@ -45,7 +45,7 @@
       </div>
     </div>
     <div class="table-col" id="price-panel">
-      <div (click)="leftMouseClick($event, row)"
+      <div (mousedown)="leftMouseClick($event, row)"
            (contextmenu)="rightMouseClick($event, row)"
            (dblclick)="$event.stopPropagation()"
            *ngFor="let row of displayItems; trackBy: getTrackKey"
@@ -64,7 +64,7 @@
       </div>
     </div>
     <div class="table-col orders-drag-boundary" id="orders-panel" cdkDropListGroup>
-      <div (click)="leftMouseClick($event, row)"
+      <div (mousedown)="leftMouseClick($event, row)"
            (contextmenu)="rightMouseClick($event, row)"
            (dblclick)="$event.stopPropagation()"
            *ngFor="let row of displayItems; trackBy: getTrackKey"
@@ -111,6 +111,7 @@
           <ng-template #ordersDisplay let-orderSymbol="orderSymbol" let-orders="orders" let-tooltipKey="tooltipKey" let-enableDrag="enableDrag">
             <ng-container *ngIf="orders.volume > 0">
               <span (click)="cancelOrders($event, orders.orders)"
+                    (mousedown)="$event.stopPropagation()"
                     [ngClass]="{
                     'orders-indicator': true,
                     'bid': isAllOrdersHaveSide(orders.orders, ordersSides.Buy),
