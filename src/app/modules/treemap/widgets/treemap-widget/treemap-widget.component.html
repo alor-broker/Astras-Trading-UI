@@ -3,6 +3,8 @@
     *ngIf="settings$ | async as settings"
     [content]="contentRef"
     [header]="headerRef"
+    [settings]="settingsRef"
+    [showSettings]="shouldShowSettings"
     [isBlockWidget]="isBlockWidget"
     [showContentScroll]="false"
   >
@@ -10,16 +12,21 @@
       <ats-widget-header
         [guid]="guid"
         [hasHelp]="true"
-        [hasSettings]="false"
+        [hasSettings]="true"
         [selectedBadgeColor]="settings.badgeColor"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
         badgeShape="square"
         [widgetMeta]="widgetInstance.widgetMeta"
+        (switchSettings)="onSettingsChange()"
       ></ats-widget-header>
     </ng-template>
 
     <ng-template #contentRef>
       <ats-treemap [guid]="guid"></ats-treemap>
+    </ng-template>
+
+    <ng-template #settingsRef>
+      <ats-treemap-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-treemap-settings>
     </ng-template>
   </ats-widget-skeleton>
 

@@ -9,4 +9,5 @@ export interface TreemapNode {
 }
 
 export interface TreemapSettings extends WidgetSettings {
+  refreshIntervalSec?: number;
 }

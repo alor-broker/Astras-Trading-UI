@@ -4,9 +4,10 @@ import { WidgetSettingsCreationHelper } from "../../../../shared/utils/widget-se
 import { TreemapSettings } from "../../models/treemap.model";
 import { SettingsHelper } from "../../../../shared/utils/settings-helper";
 import { Observable } from "rxjs";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 @Component({
   selector: 'ats-treemap-widget',
@@ -14,6 +15,8 @@ import {TerminalSettingsService} from "../../../../shared/services/terminal-sett
   styleUrls: ['./treemap-widget.component.less']
 })
 export class TreemapWidgetComponent implements OnInit {
+  shouldShowSettings = false;
+
   @Input({required: true})
   widgetInstance!: WidgetInstance;
   @Input({required: true})
@@ -31,13 +34,18 @@ export class TreemapWidgetComponent implements OnInit {
     return this.widgetInstance.instance.guid;
   }
 
+  onSettingsChange(): void {
+    this.shouldShowSettings = !this.shouldShowSettings;
+  }
+
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<TreemapSettings>(
       this.widgetInstance,
       'TreemapSettings',
       settings => ({
         ...settings,
-        badgeColor: defaultBadgeColor
+        badgeColor: getValueOrDefault(settings.badgeColor, defaultBadgeColor),
+        refreshIntervalSec: getValueOrDefault(settings.refreshIntervalSec, 60)
       }),
       this.widgetSettingsService
     );

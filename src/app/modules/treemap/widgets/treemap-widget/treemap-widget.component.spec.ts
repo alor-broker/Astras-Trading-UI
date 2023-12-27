@@ -20,6 +20,7 @@ describe('TreemapWidgetComponent', () => {
       declarations: [
         TreemapWidgetComponent,
         mockComponent({ selector: 'ats-treemap', inputs: ['guid'] }),
+        mockComponent({ selector: 'ats-treemap-settings', inputs: ['guid'] }),
         widgetSkeletonMock
       ],
       providers: [
