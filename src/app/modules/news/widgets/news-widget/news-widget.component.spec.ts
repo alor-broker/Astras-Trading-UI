@@ -29,6 +29,10 @@ describe('NewsWidgetComponent', () => {
           selector: 'ats-news',
           inputs: ['guid']
         }),
+        mockComponent({
+          selector: 'ats-news-settings',
+          inputs: ['guid']
+        }),
         widgetSkeletonMock
       ],
       providers: [

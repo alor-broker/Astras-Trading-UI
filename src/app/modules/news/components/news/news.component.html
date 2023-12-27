@@ -7,13 +7,14 @@
     </nz-tabset>
   </div>
   <div class="table-container"
+       *ngrxLet="{ isLoading: isLoading$, newsListItems: newsListItems$, contentSize: contentSize$} as vm"
     nzResizeObserver
     (nzResizeObserve)="containerSizeChanged($event)">
     <ats-infinite-scroll-table
-      [tableContainerHeight]="tableContainerHeight"
-      [tableContainerWidth]="tableContainerWidth"
-      [data]="newsList"
-      [isLoading]="isLoading"
+      [tableContainerHeight]="vm.contentSize.height"
+      [tableContainerWidth]="vm.contentSize.width"
+      [data]="vm.newsListItems"
+      [isLoading]="vm.isLoading"
       [tableConfig]="tableConfig$ | async"
       (scrolled)="scrolled()"
       (rowClick)="openNewsModal($event)"

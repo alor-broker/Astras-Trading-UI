@@ -3,6 +3,8 @@
     *ngIf="settings$ | async as settings"
     [content]="contentRef"
     [header]="headerRef"
+    [settings]="settingsRef"
+    [showSettings]="shouldShowSettings"
     [isBlockWidget]="isBlockWidget"
     [showContentScroll]="false"
   >
@@ -10,12 +12,13 @@
       <ats-widget-header
         [guid]="guid"
         [hasHelp]="true"
-        [hasSettings]="false"
+        [hasSettings]="true"
         [selectedBadgeColor]="settings.badgeColor"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
         [linkToActive]="settings.linkToActive"
         [customTitle]="titleText + ' ' + (widgetTitle$ | async)"
         [widgetMeta]="widgetInstance.widgetMeta"
+        (switchSettings)="onSettingsChange()"
       ></ats-widget-header>
     </ng-template>
 
@@ -24,6 +27,10 @@
         [guid]="guid"
         (sectionChange)="sectionChange($event)"
       ></ats-news>
+    </ng-template>
+
+    <ng-template #settingsRef>
+      <ats-news-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-news-settings>
     </ng-template>
   </ats-widget-skeleton>
 
