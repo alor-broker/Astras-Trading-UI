@@ -23,6 +23,7 @@ import {
   debounceTime,
   filter,
   map,
+  startWith,
   switchMap
 } from "rxjs/operators";
 import { ThemeService } from "../../../../shared/services/theme.service";
@@ -32,7 +33,9 @@ import {
   distinctUntilChanged,
   Observable,
   of,
+  shareReplay,
   take,
+  timer,
   zip
 } from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
@@ -52,6 +55,10 @@ import {
   ACTIONS_CONTEXT,
   ActionsContext
 } from 'src/app/shared/services/actions-context';
+import {
+  TreemapNode,
+  TreemapSettings
+} from "../../models/treemap.model";
 
 interface TooltipModelRaw {
   _data: {
@@ -96,6 +103,8 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   tooltipData$?: Observable<TooltipData>;
   isTooltipVisible$ = new BehaviorSubject(true);
 
+  private settings$!: Observable<TreemapSettings>;
+
   constructor(
     private readonly treemapService: TreemapService,
     private readonly themeService: ThemeService,
@@ -111,6 +120,11 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.settings$ = this.settingsService.getSettings<TreemapSettings>(this.guid).pipe(
+      shareReplay({bufferSize: 1, refCount: true})
+    );
+
+
     Chart.register(TreemapController, TreemapElement);
     this.initTooltipDataStream();
   }
@@ -120,10 +134,19 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
       Math.floor(this.treemapWrapperEl!.nativeElement.clientWidth * this.treemapWrapperEl!.nativeElement.clientHeight / this.averageTileSize)
     );
 
+    const getDataStream = (limit: number): Observable<TreemapNode[]> => {
+      return this.settings$.pipe(
+        map(s => s.refreshIntervalSec ?? 60),
+        switchMap(refreshIntervalSec => timer(0, refreshIntervalSec * 1000)),
+        switchMap(() => this.treemapService.getTreemap(limit))
+      );
+    };
+
     const treemap$ = this.tilesCount$.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(limit => this.treemapService.getTreemap(limit))
+      switchMap(limit => getDataStream(limit)),
+      startWith([])
     );
 
     combineLatest([
@@ -141,6 +164,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
             })),
           themeColors: theme.themeColors
         })),
+        takeUntilDestroyed(this.destroy)
       )
       .subscribe(({ treemap, themeColors }) => {
         const ctx = (<HTMLCanvasElement>document.getElementById(this.guid)).getContext('2d');
@@ -310,8 +334,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   private selectInstrument(symbol: string): void {
-    this.settingsService.getSettings(this.guid)
-      .pipe(
+    this.settings$.pipe(
         take(1),
       )
       .subscribe(s => {
