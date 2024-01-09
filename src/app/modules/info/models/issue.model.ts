@@ -15,7 +15,7 @@ export interface Issue {
   putDate: Date; // 2022-10-10T00:00:00,
   yieldToMaturity: number; // 0.14,
   nearestOfferDate: Date; // 2022-10-13T00:00:00,
-  nearestAmortization: {
+  nearestAmortization?: {
       parFraction: number; // 0.047,
       amount: number; // 50,
       currency: string; // RUB,
