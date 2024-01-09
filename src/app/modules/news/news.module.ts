@@ -6,24 +6,30 @@ import { SharedModule } from "../../shared/shared.module";
 import { NzSpinModule } from "ng-zorro-antd/spin";
 import { NewsModalWidgetComponent } from './widgets/news-modal-widget/news-modal-widget.component';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
+import { LetDirective } from "@ngrx/component";
+import { NewsSettingsComponent } from "./components/news-settings/news-settings.component";
+import { NzSliderModule } from "ng-zorro-antd/slider";
 
 
 @NgModule({
   declarations: [
     NewsComponent,
     NewsWidgetComponent,
-    NewsModalWidgetComponent
+    NewsModalWidgetComponent,
+    NewsSettingsComponent
   ],
   exports: [
     NewsWidgetComponent,
     NewsModalWidgetComponent
   ],
-    imports: [
-        CommonModule,
-        SharedModule,
-        NzSpinModule,
-        NzResizeObserverModule,
-    ]
+  imports: [
+    CommonModule,
+    SharedModule,
+    NzSpinModule,
+    NzResizeObserverModule,
+    LetDirective,
+    NzSliderModule,
+  ]
 })
 export class NewsModule {
 }

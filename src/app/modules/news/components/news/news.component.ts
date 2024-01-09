@@ -1,6 +1,5 @@
 import {
-  ChangeDetectorRef,
-  Component, DestroyRef,
+  Component,
   EventEmitter,
   Input,
   OnDestroy,
@@ -9,22 +8,48 @@ import {
 } from '@angular/core';
 import { NewsService } from "../../services/news.service";
 import { ModalService } from "../../../../shared/services/modal.service";
-import { NewsListItem, NewsSection } from "../../models/news.model";
+import {
+  NewsListItem,
+  NewsSection
+} from "../../models/news.model";
 import {
   BehaviorSubject,
   distinctUntilChanged,
+  interval,
   map,
+  merge,
   Observable,
-  Subscription,
+  of,
+  shareReplay,
+  Subject,
   switchMap,
+  take,
+  tap,
+  withLatestFrom,
 } from "rxjs";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
 import { TableConfig } from '../../../../shared/models/table-config.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { NewsSettings } from "../../models/news-settings.model";
-import { filter } from "rxjs/operators";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import { PositionsService } from "../../../../shared/services/positions.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
+import {
+  filter,
+  startWith
+} from "rxjs/operators";
+
+interface NewsFilter {
+  symbols: string[];
+}
+
+interface NewsListState {
+  filter: NewsFilter | null;
+  loadedHistoryItemsCount: number;
+  isEndOfList: boolean;
+  loadedItems: NewsListItem[];
+}
 
 @Component({
   selector: 'ats-news',
@@ -32,44 +57,38 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   styleUrls: ['./news.component.less']
 })
 export class NewsComponent implements OnInit, OnDestroy {
-  @Input({required: true})
+  @Input({ required: true })
   guid!: string;
   @Output() sectionChange = new EventEmitter<NewsSection>();
-
+  newsListItems$!: Observable<NewsListItem[]>;
   readonly contentSize$ = new BehaviorSubject<ContentSize>({ height: 0, width: 0 });
-  public tableContainerHeight = 0;
-  public tableContainerWidth = 0;
-  public newsList: NewsListItem[] = [];
-  public isLoading = false;
-  public tableConfig$?: Observable<TableConfig<NewsListItem>>;
-  public newsSectionEnum = NewsSection;
-
-  private selectedSection = NewsSection.All;
-  private newsSubscription?: Subscription;
-  private newNewsSubscription?: Subscription;
-  private readonly limit = 50;
-  private isEndOfList = false;
-  private pageNumber = 1;
+  tableConfig$?: Observable<TableConfig<NewsListItem>>;
+  readonly newsSectionEnum = NewsSection;
+  readonly isLoading$ = new BehaviorSubject(false);
+  private readonly selectedSection$ = new BehaviorSubject<NewsSection>(NewsSection.All);
+  private readonly scrolled$ = new Subject<void>();
+  private readonly itemsCountPerRequest = 50;
+  private settings$!: Observable<NewsSettings>;
+  private newsFilter$!: Observable<NewsFilter | null>;
 
   constructor(
     private readonly newsService: NewsService,
     private readonly modalService: ModalService,
     private readonly translatorService: TranslatorService,
-    private readonly cdr: ChangeDetectorRef,
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly destroyRef: DestroyRef
+    private readonly dashboardContextService: DashboardContextService,
+    private readonly positionsService: PositionsService
   ) {
   }
 
-  public ngOnInit(): void {
-    this.loadNews(true);
-    this.contentSize$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(data => {
-        this.tableContainerHeight = (data.height as number | undefined) ?? 0;
-        this.tableContainerWidth = (data.width as number | undefined) ?? 0;
-        this.cdr.markForCheck();
-      });
+  ngOnInit(): void {
+    this.settings$ = this.widgetSettingsService.getSettings<NewsSettings>(this.guid).pipe(
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+    this.newsFilter$ = this.createFiltersStream();
+
+    this.newsListItems$ = this.createNewsListItemsStream();
 
     this.tableConfig$ = this.translatorService.getTranslator('news').pipe(
       map((translate) => ({
@@ -84,7 +103,7 @@ export class NewsComponent implements OnInit, OnDestroy {
                   ? date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
                   : `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
 
-                  return `[${displayDate}] ${data.header}`;
+                return `[${displayDate}] ${data.header}`;
               }
             }
           ]
@@ -93,17 +112,19 @@ export class NewsComponent implements OnInit, OnDestroy {
     );
   }
 
-  public openNewsModal(newsItem: NewsListItem): void {
+  openNewsModal(newsItem: NewsListItem): void {
     this.modalService.openNewsModal(newsItem);
   }
 
-  public scrolled(): void {
-    this.pageNumber++;
-    this.loadNews();
+  scrolled(): void {
+    this.scrolled$.next();
   }
 
-  public ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.contentSize$.complete();
+    this.selectedSection$.complete();
+    this.scrolled$.complete();
+    this.isLoading$.complete();
   }
 
   containerSizeChanged(entries: ResizeObserverEntry[]): void {
@@ -115,104 +136,164 @@ export class NewsComponent implements OnInit, OnDestroy {
     });
   }
 
-  private loadNews(isNewList = false): void {
-    if (this.isEndOfList && !isNewList) return;
-
-    this.isLoading = true;
-    this.cdr.markForCheck();
-
-    this.newsSubscription?.unsubscribe();
-    this.newsSubscription = this.getNewsRequest()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(res => {
-        if (isNewList) {
-          this.newsList = res;
-        }
-
-        if (res.length > 0) {
-          this.newsList = this.newsList.concat(res);
-        }
-        else {
-          this.isEndOfList = true;
-        }
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      });
-
-    if (!isNewList) {
-      return;
-    }
-
-    this.newNewsSubscription?.unsubscribe();
-    this.newNewsSubscription = this.getNewNewsStream()
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        map((data: NewsListItem[]) => {
-          const existingNewsItemIndex = data.findIndex(item => item.id === this.newsList[0]?.id);
-          return existingNewsItemIndex === -1 ? data : data.slice(0, existingNewsItemIndex);
-        })
-      )
-      .subscribe(res => {
-        this.newsList = [...res, ...this.newsList];
-        this.cdr.markForCheck();
-      });
-  }
-
   newsSectionChange(section: NewsSection): void {
-    this.selectedSection = section;
+    this.selectedSection$.next(section);
     this.sectionChange.emit(section);
-    this.resetPosition();
-    this.loadNews(true);
   }
 
-  private resetPosition(): void {
-    this.isEndOfList = false;
-    this.pageNumber = 1;
-    this.newsList = [];
-    this.cdr.markForCheck();
-  }
+  private createNewsListItemsStream(): Observable<NewsListItem[]> {
+    const createLoadMoreStream = (state: NewsListState): Observable<NewsListState> => {
+      return this.scrolled$.pipe(
+        filter(() => state.loadedItems.length > 0 && !state.isEndOfList),
+        withLatestFrom(this.isLoading$),
+        filter(([, isLoading]) => !isLoading),
+        tap(() => this.isLoading$.next(true)),
+        switchMap(() => this.loadNews(state)),
+        map(items => {
+          if (items.length === 0) {
+            state.isEndOfList = true;
+          }
 
-  private getNewsRequest(): Observable<NewsListItem[]> {
-    const baseParams = {
-      limit: this.limit,
-      offset: (this.pageNumber - 1) * this.limit
+          let newItems: NewsListItem[] = items;
+          if (state.loadedItems.length > 0) {
+            const existingItemIndex = items.findIndex(i => i.id === state.loadedItems[state.loadedItems.length - 1].id);
+            if (existingItemIndex >= 0) {
+              const nextIndex = existingItemIndex + 1;
+              if (nextIndex < items.length) {
+                newItems = items.slice(nextIndex);
+              } else {
+                newItems = [];
+              }
+            }
+          }
+
+          state.loadedHistoryItemsCount += newItems.length;
+          state.loadedItems = [
+            ...state.loadedItems,
+            ...newItems
+          ];
+
+          return state;
+        }),
+        tap(() => this.isLoading$.next(false)),
+        startWith(state)
+      );
     };
 
-    switch (this.selectedSection) {
-      case NewsSection.All:
-        return this.newsService.getNews(baseParams);
-      case NewsSection.Portfolio:
-        return this.newsService.getNewsByPortfolio(baseParams);
-      case NewsSection.Symbol:
-        return this.widgetSettingsService.getSettings<NewsSettings>(this.guid)
-          .pipe(
-            filter(s => !!s.symbol),
-            distinctUntilChanged((prev, curr) => prev.symbol === curr.symbol),
-            switchMap(s => this.newsService.getNews({
-              ...baseParams,
-              symbols: [s.symbol]
-            }))
-          );
-      default:
-        return this.newsService.getNews(baseParams);
-    }
+    const createLoadUpdatesStream = (state: NewsListState): Observable<NewsListState> => {
+      return this.settings$.pipe(
+        take(1),
+        map(s => s.refreshIntervalSec ?? 60),
+        switchMap(refreshIntervalSec => interval(refreshIntervalSec * 1000)),
+        switchMap(() => this.loadUpdates(state)),
+        map(items => {
+          state.loadedItems = [
+            ...items,
+            ...state.loadedItems,
+          ];
+
+          return state;
+        }),
+        startWith(state)
+      );
+    };
+
+    return this.newsFilter$.pipe(
+      tap(() => this.isLoading$.next(true)),
+      map(filter => ({
+        filter,
+        loadedHistoryItemsCount: 0,
+        isEndOfList: false,
+        loadedItems: [] as NewsListItem[]
+      } as NewsListState)),
+      mapWith(
+        state => this.loadNews(state),
+        (state, items) => {
+          state.loadedItems = items;
+          state.loadedHistoryItemsCount = state.loadedItems.length;
+
+          return state;
+        }
+      ),
+      tap(() => this.isLoading$.next(false)),
+      switchMap(state => {
+        return merge(
+          createLoadMoreStream(state),
+          createLoadUpdatesStream(state)
+        );
+      }),
+      map(state => state.loadedItems)
+    );
   }
 
-  private getNewNewsStream(): Observable<NewsListItem[]> {
-    switch (this.selectedSection) {
-      case NewsSection.All:
-        return this.newsService.getNewNews();
-      case NewsSection.Portfolio:
-        return this.newsService.getNewNewsByPortfolio();
-      case NewsSection.Symbol:
-        return this.widgetSettingsService.getSettings<NewsSettings>(this.guid)
-          .pipe(
-            filter(s => !!s.symbol),
-            distinctUntilChanged((prev, curr) => prev.symbol === curr.symbol),
-            switchMap(s => this.newsService.getNewNews([s.symbol]))
-          );
-      default:
-        return this.newsService.getNewNews();
+  private loadNews(state: NewsListState): Observable<NewsListItem[]> {
+    if (state.isEndOfList) {
+      return of([]);
     }
+
+    return this.newsService.getNews({
+      symbols: state.filter?.symbols ?? null,
+      limit: this.itemsCountPerRequest,
+      offset: state.loadedHistoryItemsCount,
+    }).pipe(
+      take(1)
+    );
+  }
+
+  private loadUpdates(state: NewsListState, limit = this.itemsCountPerRequest): Observable<NewsListItem[]> {
+    return this.newsService.getNews({
+      symbols: state.filter?.symbols ?? null,
+      limit: limit,
+      offset: 0,
+    }).pipe(
+      take(1),
+      switchMap(items => {
+        if (state.loadedItems.length === 0 || items.length === 0) {
+          return of(items);
+        }
+
+        const existingItemIndex = items.findIndex(i => i.id === state.loadedItems[0].id);
+
+        if (existingItemIndex < 0) {
+          const newLimit = limit * 2;
+          if (newLimit < 500) {
+            return this.loadUpdates(state, newLimit);
+          } else {
+            return of(items);
+          }
+        }
+
+        return of(items.slice(0, existingItemIndex));
+      })
+    );
+  }
+
+  private createFiltersStream(): Observable<NewsFilter | null> {
+    return this.selectedSection$.pipe(
+      switchMap(section => {
+        if (section === NewsSection.Symbol) {
+          return this.settings$.pipe(
+            map(s => s.symbol),
+            distinctUntilChanged((previous, current) => previous === current),
+            map(s => ({
+              symbols: [s]
+            } as NewsFilter))
+          );
+        }
+
+        if (section === NewsSection.Portfolio) {
+          return this.dashboardContextService.selectedPortfolio$
+            .pipe(
+              switchMap(p => this.positionsService.getAllByPortfolio(p.portfolio, p.exchange)),
+              map(p => ({
+                symbols: (p ?? []).map(i => i.symbol)
+              } as NewsFilter))
+            );
+        }
+
+        return of(null);
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
   }
 }

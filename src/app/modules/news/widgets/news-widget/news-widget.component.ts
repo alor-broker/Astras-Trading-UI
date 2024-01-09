@@ -16,6 +16,7 @@ import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item
 import {TranslatorService} from "../../../../shared/services/translator.service";
 import {WidgetsHelper} from "../../../../shared/utils/widgets";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
   selector: 'ats-news-widget',
@@ -23,6 +24,8 @@ import {TerminalSettingsService} from "../../../../shared/services/terminal-sett
   styleUrls: ['./news-widget.component.less']
 })
 export class NewsWidgetComponent implements OnInit {
+  shouldShowSettings = false;
+
   @Input({required: true})
   widgetInstance!: WidgetInstance;
   @Input({required: true})
@@ -46,12 +49,17 @@ export class NewsWidgetComponent implements OnInit {
     return this.widgetInstance.instance.guid;
   }
 
+  onSettingsChange(): void {
+    this.shouldShowSettings = !this.shouldShowSettings;
+  }
+
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<NewsSettings>(
       this.widgetInstance,
       'NewsSettings',
       settings => ({
-        ...settings
+        ...settings,
+        refreshIntervalSec: getValueOrDefault(settings.refreshIntervalSec, 60)
       }),
       this.dashboardService,
       this.widgetSettingsService

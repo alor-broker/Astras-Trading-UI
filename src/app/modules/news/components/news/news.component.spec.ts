@@ -5,13 +5,19 @@ import {
 
 import { NewsComponent } from './news.component';
 import { NewsService } from "../../services/news.service";
-import { of } from "rxjs";
+import {
+  of,
+  Subject
+} from "rxjs";
 import { ModalService } from "../../../../shared/services/modal.service";
 import {
   getTranslocoModule,
   mockComponent, ngZorroMockComponents
 } from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import { PositionsService } from "../../../../shared/services/positions.service";
+import { LetDirective } from "@ngrx/component";
 
 describe('NewsComponent', () => {
   const testNewsItem = {
@@ -34,13 +40,13 @@ describe('NewsComponent', () => {
         })
       ],
       imports: [
-        getTranslocoModule()
+        getTranslocoModule(),
+        LetDirective
       ],
       providers: [
         {
           provide: NewsService,
           useValue: {
-            getNewNews: jasmine.createSpy('getNewsSub').and.returnValue(of([testNewsItem])),
             getNews: jasmine.createSpy('getNews').and.returnValue(of([testNewsItem]))
           }
         },
@@ -54,6 +60,18 @@ describe('NewsComponent', () => {
           provide: WidgetSettingsService,
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({}))
+          }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            selectedPortfolio$: new Subject()
+          }
+        },
+        {
+          provide: PositionsService,
+          useValue: {
+            getAllByPortfolio: jasmine.createSpy('getAllByPortfolio').and.returnValue(new Subject())
           }
         }
       ]
