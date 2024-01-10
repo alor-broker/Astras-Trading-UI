@@ -58,6 +58,7 @@ export class InstrumentSelectComponent implements OnInit {
   @Input({ required: true })
   guid!: string;
 
+  autocompleteMinWidth = 250;
   filteredInstruments$: Observable<Instrument[]> = of([]);
   inputValue?: string;
   collection$!: Observable<WatchlistCollection>;
@@ -172,6 +173,18 @@ export class InstrumentSelectComponent implements OnInit {
 
   selectCollection(listId: string): void {
     this.settingsService.updateSettings(this.guid, { activeListId: listId });
+  }
+
+  getAutocompleteLeftPosition(): string {
+    const autocompleteEl = document.querySelector('.instrument-select-autocomplete')?.parentElement;
+
+    if (!autocompleteEl) {
+      return '0px';
+    }
+
+    const autocompleteRect = autocompleteEl.getBoundingClientRect();
+
+    return `${Math.min(window.innerWidth - autocompleteRect.right, 0)}px`;
   }
 
   private setDefaultWatchList(): void {

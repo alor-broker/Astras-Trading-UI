@@ -12,17 +12,25 @@
              [placeholder]="t('instrumentsSelect.searchPlaceHolder')"
              [disabled]="(currentWatchlist$ | async)?.type === watchlistTypes.HistoryList"
       />
-      <nz-autocomplete #auto>
+      <nz-autocomplete
+        #auto
+        [nzWidth]="autocompleteMinWidth"
+        [nzOverlayStyle]="{
+          left: getAutocompleteLeftPosition()
+        }"
+        nzOverlayClassName="instrument-select-autocomplete"
+      >
         <nz-auto-option
           (selectionChange)='onSelect($event, option)' *ngFor="let option of filteredInstruments$ | async"
           [nzLabel]="option.symbol"
-          [nzValue]="option.description">
-      <span class='search-row'>
-        <nz-tag>{{ option.symbol }}</nz-tag>
-        <span class='row-center'>{{ option.shortName }}</span>
-        <nz-tag *ngIf='option.instrumentGroup'>{{ option.instrumentGroup }}</nz-tag>
-        <nz-tag>{{ option.exchange }}</nz-tag>
-      </span>
+          [nzValue]="option.description"
+        >
+          <span class='search-row'>
+            <nz-tag>{{ option.symbol }}</nz-tag>
+            <span class='row-center'>{{ option.shortName }}</span>
+            <nz-tag *ngIf='option.instrumentGroup'>{{ option.instrumentGroup }}</nz-tag>
+            <nz-tag>{{ option.exchange }}</nz-tag>
+          </span>
         </nz-auto-option>
       </nz-autocomplete>
     </div>
