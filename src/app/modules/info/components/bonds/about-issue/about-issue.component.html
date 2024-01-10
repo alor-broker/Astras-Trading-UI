@@ -21,23 +21,30 @@
         <nz-descriptions-item
           [nzTitle]="t('infoIssue.yieldToMaturity')">{{issue.yieldToMaturity | percent:'1.0-2'}}</nz-descriptions-item>
 
-        <nz-descriptions-item [nzTitle]="nearestAmortization" nzSpan="2"></nz-descriptions-item>
-        <nz-descriptions-item
-          [nzTitle]="t('infoIssue.nearestAmortizationParFraction')">{{issue.nearestAmortization.parFraction  | percent:'1.0-2'}}</nz-descriptions-item>
-        <nz-descriptions-item
-          [nzTitle]="t('infoIssue.nearestAmortizationAmount')">{{issue.nearestAmortization.amount  | currency: issue.nearestAmortization.currency:'symbol-narrow'}}</nz-descriptions-item>
-        <nz-descriptions-item
-          [nzTitle]="t('infoIssue.date')">{{issue.nearestAmortization.date | date}}</nz-descriptions-item>
+        <ng-container *ngIf="issue.nearestAmortization">
+          <nz-descriptions-item [nzTitle]="nearestAmortization" nzSpan="2"></nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="t('infoIssue.nearestAmortizationParFraction')">
+            {{issue.nearestAmortization.parFraction  | percent:'1.0-2'}}
+          </nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="t('infoIssue.nearestAmortizationAmount')">
+            {{issue.nearestAmortization.amount  | currency: issue.nearestAmortization.currency:'symbol-narrow'}}
+          </nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="t('infoIssue.date')">
+            {{issue.nearestAmortization.date | date}}
+          </nz-descriptions-item>
 
-        <nz-descriptions-item [nzTitle]="nearestCall" nzSpan="2"></nz-descriptions-item>
-        <nz-descriptions-item [nzTitle]="t('infoIssue.yieldToOffer')">{{0.05 | percent:'1.0-2'}}</nz-descriptions-item>
-        <nz-descriptions-item
-          [nzTitle]="t('infoIssue.date')">{{issue.nearestAmortization.date | date}}</nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="nearestCall" nzSpan="2"></nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="t('infoIssue.yieldToOffer')">{{0.05 | percent:'1.0-2'}}</nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="t('infoIssue.date')">
+            {{issue.nearestAmortization.date | date}}
+          </nz-descriptions-item>
 
-        <nz-descriptions-item [nzTitle]="nearestPut" nzSpan="2"></nz-descriptions-item>
-        <nz-descriptions-item [nzTitle]="t('infoIssue.yieldToOffer')">{{0.07 | percent:'1.0-2'}}</nz-descriptions-item>
-        <nz-descriptions-item
-          [nzTitle]="t('infoIssue.date')">{{issue.nearestAmortization.date | date}}</nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="nearestPut" nzSpan="2"></nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="t('infoIssue.yieldToOffer')">{{0.07 | percent:'1.0-2'}}</nz-descriptions-item>
+          <nz-descriptions-item [nzTitle]="t('infoIssue.date')">
+            {{issue.nearestAmortization.date | date}}
+          </nz-descriptions-item>
+        </ng-container>
 
         <nz-descriptions-item [nzTitle]="nearestCoupon" nzSpan="2"></nz-descriptions-item>
         <nz-descriptions-item
@@ -47,7 +54,9 @@
         <nz-descriptions-item
           [nzTitle]="t('infoIssue.couponType')">{{issue.nearestCoupon.couponType }}</nz-descriptions-item>
         <nz-descriptions-item
-          [nzTitle]="t('infoIssue.couponAmount')">{{issue.nearestCoupon.amount  | currency: issue.nearestAmortization.currency:'symbol-narrow'}}</nz-descriptions-item>
+          [nzTitle]="t('infoIssue.couponAmount')">
+          {{issue.nearestCoupon.amount  | currency: issue.nearestCoupon.currency:'symbol-narrow'}}
+        </nz-descriptions-item>
         <nz-descriptions-item [nzTitle]="t('infoIssue.date')">{{issue.nearestCoupon.date | date}}</nz-descriptions-item>
       </nz-descriptions>
     </ng-container>
