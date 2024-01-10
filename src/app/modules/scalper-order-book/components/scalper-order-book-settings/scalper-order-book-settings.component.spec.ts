@@ -7,10 +7,13 @@ import { ScalperOrderBookSettingsComponent } from './scalper-order-book-settings
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import {
+  commonTestProviders,
   getTranslocoModule,
-  mockComponent
+  mockComponent,
+  sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 
 describe('ScalperOrderBookSettingsComponent', () => {
   let component: ScalperOrderBookSettingsComponent;
@@ -19,15 +22,12 @@ describe('ScalperOrderBookSettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
-        ScalperOrderBookSettingsComponent,
-        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['instrument', 'placeholder'] }),
-        mockComponent({
-          selector: 'ats-widget-settings',
-          inputs: ['canSave', 'canCopy', 'showCopy']
-        })
+        ScalperOrderBookSettingsComponent
       ],
       imports: [
-        getTranslocoModule()
+        getTranslocoModule(),
+        NoopAnimationsModule,
+        ...sharedModuleImportForTests
       ],
       providers: [
         {
@@ -45,7 +45,8 @@ describe('ScalperOrderBookSettingsComponent', () => {
           useValue: {
             copyWidget: jasmine.createSpy('copyWidget').and.callThrough(),
           }
-        }
+        },
+        ...commonTestProviders
       ]
     })
       .compileComponents();

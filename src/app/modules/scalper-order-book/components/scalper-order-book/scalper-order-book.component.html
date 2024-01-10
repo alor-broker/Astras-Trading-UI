@@ -1,4 +1,4 @@
-<ng-container *transloco="let t; scope: 'scalper-order-book/scalper-order-book'">
+<ng-container>
   <ng-container *ngIf="settings$ | async as settings">
     <div [class.active]="isActive" class="container">
       <div class="header flex-gap-2">
@@ -13,19 +13,6 @@
           <div class="mt-1">
             <ats-modifiers-indicator></ats-modifiers-indicator>
           </div>
-        </div>
-        <div
-          (click)="switchEnableAutoAlign()"
-          [class.active]="(settings.enableAutoAlign ?? true) === true"
-          id="auto-align-button"
-        >
-          <span
-            [nz-tooltip]="t('scalperOrderBookScalperOrderBook.autoAlignTooltip')"
-            [nzTooltipMouseEnterDelay]="1"
-            nz-icon
-            nzTheme="outline"
-            nzType="vertical-align-middle"
-          ></span>
         </div>
       </div>
       <div class="order-book-body">

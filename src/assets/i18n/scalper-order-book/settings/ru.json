@@ -21,7 +21,9 @@
   "workingVolumeLabel": "Рабочий объём",
   "volumeLabel": "Объём",
   "colorLabel": "Цвет выделения",
-  "autoAlignIntervalLabel": "Интервал автоматического выравнивания стакана, сек.",
+  "enableAutoAlignLabel": "Автопрокрутка",
+  "autoAlignSettingsLabel": "Настройки автопрокрутки",
+  "autoAlignIntervalLabel": "Интервал автопрокрутки, сек.",
   "volumeFormatDisplayLabel": "Формат отображения объема",
   "instrumentGroupLabel": "Режим торгов",
   "volumeHighlightFullnessLabel": "Заполненность полосы объема",
@@ -39,8 +41,6 @@
   "tickerError": "Выберите тикер",
   "intervalError": "Значение должно быть от {{min}} до {{max}}",
   "colorError": "Выберите цвет",
-  "workingVolumeMinError": "Значение должно быть больше нуля",
-  "workingVolumeRequiredError": "Введите значение",
   "instrumentGroupError": "Выберите режим торгов",
   "priceRatioPercentsMultiplicityError": "Значение должно быть кратно шагу",
   "priceRatioPointsMultiplicityError": "Значение должно быть целочисленным",
@@ -50,8 +50,6 @@
   "biggestVolumeHint": "Ячейка объема будет выделена стандартными цветами покупки/продажи. Процент заполнения ячейки цветом определяется отношением объема ячейки к максимальному объему в стакане.",
   "volumeBoundsWithFixedValueHint": "Цвет ячейки определяется настройками ниже. Для выделения будет выбрана опция с наибольшим объемом, для которой выполняется условие: объем ячейки >= объема опции. Процент заполнения ячейки цветом определяется отношением объема ячейки к значению настройки \"Заполненность полосы объема\".",
   "workingVolumesHint": "Используются для быстрого выставления заявок с нужным объёмом",
-  "autoAlignIntervalHint": "Введите '0' или оставьте поле пустым, чтобы отключить авто-выравнивание",
-
 
   "highlightHighVolumeOptions": {
     "off": "Отключено",

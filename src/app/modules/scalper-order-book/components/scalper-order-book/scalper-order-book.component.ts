@@ -5,8 +5,7 @@ import {
 } from '@angular/core';
 import {
   BehaviorSubject,
-  Observable,
-  take
+  Observable
 } from 'rxjs';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { ScalperOrderBookWidgetSettings } from '../../models/scalper-order-book-settings.model';
@@ -33,17 +32,5 @@ export class ScalperOrderBookComponent implements OnInit {
 
   ngOnInit(): void {
     this.settings$ = ScalperSettingsHelper.getSettingsStream(this.guid, this.widgetSettingsService);
-  }
-
-  switchEnableAutoAlign(): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(s => {
-      this.widgetSettingsService.updateSettings<ScalperOrderBookWidgetSettings>(
-        s.guid,
-        {
-          enableAutoAlign: !(s.enableAutoAlign ?? true)
-        });
-    });
   }
 }
