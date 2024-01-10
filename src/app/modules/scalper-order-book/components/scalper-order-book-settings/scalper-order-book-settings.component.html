@@ -20,16 +20,14 @@
             <nz-form-item>
               <nz-form-label nzFor="exchange" nzRequired>{{t('scalperOrderBookSettings.exchangeLabel')}}</nz-form-label>
               <nz-form-control>
-                <nz-select formControlName='exchange'>
-                  <nz-option *ngFor='let exchange of exchanges' [nzLabel]="exchange" [nzValue]="exchange"></nz-option>
-                </nz-select>
+                <input nz-input type="text" [value]="form.value.instrument?.exchange" readonly/>
               </nz-form-control>
             </nz-form-item>
             <nz-form-item>
               <nz-form-label nzFor="instrumentGroup">{{t('scalperOrderBookSettings.instrumentGroupLabel')}}</nz-form-label>
               <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.instrumentGroupError')">
                 <ats-instrument-board-select
-                  [instrument]="form.value?.instrument ?? null"
+                  [instrument]="form.value.instrument ?? null"
                   [placeholder]="t('scalperOrderBookSettings.instrumentGroupLabel')"
                   formControlName="instrumentGroup">
                 </ats-instrument-board-select>
@@ -79,7 +77,7 @@
                 <nz-collapse-panel
                   [nzActive]="true"
                   [nzHeader]="t('scalperOrderBookSettings.rulerSettingsLabel')"
-                  [formGroup]="asFormGroup(form.controls.rulerSettings)"
+                  [formGroup]="form.controls.rulerSettings"
                 >
                   <nz-form-item>
                     <nz-form-label nzFor="markerDisplayFormat">{{t('scalperOrderBookSettings.markerDisplayFormatLabel')}}</nz-form-label>
@@ -97,23 +95,35 @@
                 </nz-collapse-panel>
               </nz-collapse>
             </nz-form-item>
-            <nz-form-item>
-              <nz-form-label nzFor="autoAlignIntervalSec" class="auto-align-label">
-                {{t('scalperOrderBookSettings.autoAlignIntervalLabel')}}
-              </nz-form-label>
-              <nz-form-control
-                [nzErrorTip]="t(
-                'scalperOrderBookSettings.intervalError',
-                {
-                min: validationOptions.autoAlignIntervalSec.min,
-                max: validationOptions.autoAlignIntervalSec.max
-                })"
-              >
-                <ats-input-number formControlName="autoAlignIntervalSec"></ats-input-number>
-                <span nz-typography nzType="secondary">
-                  {{t('scalperOrderBookSettings.autoAlignIntervalHint')}}
-                </span>
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="enableAutoAlign">{{t('scalperOrderBookSettings.enableAutoAlignLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='enableAutoAlign'></nz-switch>
               </nz-form-control>
+            </nz-form-item>
+            <nz-form-item *ngIf="form.controls.enableAutoAlign.value">
+              <nz-collapse [nzBordered]="false" nzGhost>
+                <nz-collapse-panel
+                  [nzActive]="true"
+                  [nzHeader]="t('scalperOrderBookSettings.autoAlignSettingsLabel')"
+                >
+                  <nz-form-item>
+                    <nz-form-label nzFor="autoAlignIntervalSec" class="auto-align-label">
+                      {{t('scalperOrderBookSettings.autoAlignIntervalLabel')}}
+                    </nz-form-label>
+                    <nz-form-control
+                      [nzErrorTip]="t(
+                      'scalperOrderBookSettings.intervalError',
+                      {
+                      min: validationOptions.autoAlignIntervalSec.min,
+                      max: validationOptions.autoAlignIntervalSec.max
+                      })"
+                    >
+                      <ats-input-number formControlName="autoAlignIntervalSec"></ats-input-number>
+                    </nz-form-control>
+                  </nz-form-item>
+                </nz-collapse-panel>
+              </nz-collapse>
             </nz-form-item>
             <nz-form-item class="one-row">
               <nz-form-label nzFor="showPriceWithZeroPadding">{{t('scalperOrderBookSettings.showPriceWithZeroPaddingLabel')}}</nz-form-label>
@@ -153,25 +163,21 @@
           <nz-collapse-panel class="working-volumes" [nzDisabled]="!form.controls.workingVolumes.valid" [nzHeader]="t('scalperOrderBookSettings.workingVolumesHeader')">
             <div class="hint">{{t('scalperOrderBookSettings.workingVolumesHint')}}</div>
             <nz-form-item>
-              <div *ngFor="let ctrl of workingVolumes.controls; let i = index" class="working-volume-option">
+              <div *ngFor="let ctrl of form.controls.workingVolumes.controls; let i = index" class="working-volume-option">
                 <nz-form-label nzFor="workingVolume1" nzRequired>{{t('scalperOrderBookSettings.workingVolumeLabel')}} {{i + 1}}</nz-form-label>
-                <nz-form-control [nzErrorTip]="workingVolumeError">
-                  <ats-input-number [formControl]="workingVolumeCtrl(i)" placeholder="1"></ats-input-number>
+                <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.intervalError', { min: validationOptions.workingVolume.min, max: validationOptions.workingVolume.max })">
+                  <ats-input-number [formControl]="ctrl" placeholder="1"></ats-input-number>
                 </nz-form-control>
                 <button
                   (click)="removeWorkingVolume($event, i)"
-                  [disabled]="workingVolumes.controls.length < 2"
+                  [disabled]="form.controls.workingVolumes.controls.length < 2"
                   nz-button
                   nzType="dashed">
                   <i nz-icon nzType="minus"></i>
                 </button>
-                <ng-template #workingVolumeError>
-                  <span *ngIf="ctrl.errors?.required">{{t('scalperOrderBookSettings.workingVolumeRequiredError')}}</span>
-                  <span *ngIf="ctrl.errors?.min">{{t('scalperOrderBookSettings.workingVolumeMinError')}}</span>
-                </ng-template>
               </div>
               <button (click)="addWorkingVolume($event)"
-                      [disabled]="!asFormArray(form.controls.workingVolumes).valid"
+                      [disabled]="!form.controls.workingVolumes.valid"
                       class="add-volume-btn"
                       nz-button
                       nzType="dashed">
@@ -183,7 +189,7 @@
             <nz-form-item>
               <nz-form-label nzFor="highlightHighVolume">{{t('scalperOrderBookSettings.highlightHighVolumeLabel')}}</nz-form-label>
               <nz-form-control>
-                <nz-select [nzDisabled]="hasVolumeHighlightOptionsErrors()" formControlName='volumeHighlightMode'>
+                <nz-select formControlName='volumeHighlightMode'>
                   <nz-option
                     *ngFor='let option of availableVolumeHighlightModes'
                     [nzLabel]="t('scalperOrderBookSettings.highlightHighVolumeOptions.' + option, { fallback: option })"
@@ -218,8 +224,8 @@
                     </nz-form-control>
                   </nz-form-item>
                   <nz-form-item>
-                    <ng-container *ngFor="let optionForm of volumeHighlightOptions.controls; index as i">
-                      <div [formGroup]="asFormGroup(optionForm)" class="volume-highlight-options">
+                    <ng-container *ngFor="let optionForm of form.controls.volumeHighlightOptions.controls; index as i">
+                      <div [formGroup]="optionForm" class="volume-highlight-options">
                         <nz-form-control
                           [nzErrorTip]="t(
                     'scalperOrderBookSettings.intervalError',
@@ -236,7 +242,7 @@
                             nz-tooltip
                             [nzTooltipTitle]="t('scalperOrderBookSettings.colorLabel')"
                             class="color-picker"
-                            [formControl]="getColorControl(i)"
+                            formControlName="color"
                           ></nz-color-picker>
                         </nz-form-control>
                         <button (click)="removeVolumeHighlightOption($event, i)"
@@ -248,7 +254,7 @@
                         </button>
                       </div>
                     </ng-container>
-                    <button (click)="addVolumeHighlightOption($event)" [disabled]="!volumeHighlightOptions.valid" class="add-volume-highlight-option-btn" nz-button nzType="dashed">
+                    <button (click)="addVolumeHighlightOption($event)" [disabled]="!form.controls.volumeHighlightOptions.valid" class="add-volume-highlight-option-btn" nz-button nzType="dashed">
                       <i nz-icon nzType="plus"></i>
                     </button>
                   </nz-form-item>
@@ -265,12 +271,12 @@
               </nz-form-control>
             </nz-form-item>
 
-            <nz-form-item *ngIf="form.get('useBrackets')?.value">
+            <nz-form-item *ngIf="form.value.useBrackets">
               <nz-collapse [nzBordered]="false" nzGhost>
                 <nz-collapse-panel
                   [nzActive]="true"
                   [nzHeader]="t('scalperOrderBookSettings.bracketsSettingsLabel')"
-                  [formGroup]="asFormGroup(form.controls.bracketsSettings)"
+                  [formGroup]="form.controls.bracketsSettings"
                 >
                   <nz-form-item>
                     <nz-form-label
@@ -288,34 +294,34 @@
                   </nz-form-item>
 
                   <nz-form-item>
-                    <nz-form-label
-                      nzFor="topOrderPriceRatio">{{t('scalperOrderBookSettings.topOrderPriceRatioLabel')}}</nz-form-label>
+                    <nz-form-label nzFor="topOrderPriceRatio">
+                      {{t('scalperOrderBookSettings.topOrderPriceRatioLabel')}}
+                    </nz-form-label>
                     <nz-form-control [nzErrorTip]="topOrderPriceRatioError">
                       <ats-input-number
                         formControlName="topOrderPriceRatio"
-                        placeholder="1"
-                        [step]="form.get('bracketsSettings')?.get('orderPriceUnits')!.value === orderPriceUnits.Points
+                        [step]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
                           ? validationOptions.bracket.price.stepsStep
                           : validationOptions.bracket.price.percentsStep"
                       ></ats-input-number>
                     </nz-form-control>
                     <ng-template #topOrderPriceRatioError>
                       <span
-                        *ngIf="form.get('bracketsSettings')?.get('topOrderPriceRatio')?.errors?.min ||
-                         form.get('bracketsSettings')?.get('topOrderPriceRatio')?.errors?.max"
+                        *ngIf="form.controls.bracketsSettings.controls.topOrderPriceRatio.errors?.min ||
+                         form.controls.bracketsSettings.controls.topOrderPriceRatio.errors?.max"
                       >
                         {{t('scalperOrderBookSettings.intervalError', {
                         min: validationOptions.bracket.price.min,
                         max: validationOptions.bracket.price.max
                       })}}
                       </span>
-                      <span *ngIf="form.get('bracketsSettings')?.get('topOrderPriceRatio')?.errors?.priceStepMultiplicity">
-                        <ng-container *ngIf="form.get('bracketsSettings')?.get('orderPriceUnits')!.value === orderPriceUnits.Points; else percentsError">
+                      <span *ngIf="form.controls.bracketsSettings.controls.topOrderPriceRatio.errors?.priceStepMultiplicity">
+                        <ng-container *ngIf="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points; else percentsError">
                           {{t('scalperOrderBookSettings.priceRatioPointsMultiplicityError')}}
                         </ng-container>
                         <ng-template #percentsError>
                           {{t('scalperOrderBookSettings.priceRatioPercentsMultiplicityError')}}
-                          ({{form.get('bracketsSettings')?.get('orderPriceUnits')!.value === orderPriceUnits.Points
+                          ({{form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
                             ? validationOptions.bracket.price.stepsStep
                             : validationOptions.bracket.price.percentsStep}})
                           </ng-template>
@@ -329,24 +335,23 @@
                     <nz-form-control [nzErrorTip]="bottomOrderPriceRatioError">
                       <ats-input-number
                         formControlName="bottomOrderPriceRatio"
-                        placeholder="1"
-                        [step]="form.get('bracketsSettings')?.get('orderPriceUnits')!.value === orderPriceUnits.Points
+                        [step]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
                           ? validationOptions.bracket.price.stepsStep
                           : validationOptions.bracket.price.percentsStep"
                       ></ats-input-number>
                     </nz-form-control>
                     <ng-template #bottomOrderPriceRatioError>
                       <span
-                        *ngIf="form.get('bracketsSettings')?.get('bottomOrderPriceRatio')?.errors?.min ||
-                         form.get('bracketsSettings')?.get('bottomOrderPriceRatio')?.errors?.max"
+                        *ngIf="form.controls.bracketsSettings.controls.bottomOrderPriceRatio.errors?.min ||
+                         form.controls.bracketsSettings.controls.bottomOrderPriceRatio.errors?.max"
                       >
                       {{t('scalperOrderBookSettings.intervalError', {
                         min: validationOptions.bracket.price.min,
                         max: validationOptions.bracket.price.max
                       })}}
                     </span>
-                    <span *ngIf="form.get('bracketsSettings')?.get('bottomOrderPriceRatio')?.errors?.priceStepMultiplicity">
-                      <ng-container *ngIf="form.get('bracketsSettings')?.get('orderPriceUnits')!.value === orderPriceUnits.Points; else percentsError">
+                    <span *ngIf="form.controls.bracketsSettings.controls.bottomOrderPriceRatio.errors?.priceStepMultiplicity">
+                      <ng-container *ngIf="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points; else percentsError">
                         {{t('scalperOrderBookSettings.priceRatioPointsMultiplicityError')}}
                       </ng-container>
                       <ng-template #percentsError>

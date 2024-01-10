@@ -51,7 +51,6 @@ export class InstrumentSelectWidgetComponent implements OnInit {
       'InstrumentSelectSettings',
       settings => ({
         ...settings,
-        title: `Выбор инструмента`,
         titleIcon: 'eye',
         instrumentColumns: getValueOrDefault(settings.instrumentColumns, allInstrumentsColumns.filter(c => c.isDefault).map(c => c.id)),
         badgeColor: defaultBadgeColor,

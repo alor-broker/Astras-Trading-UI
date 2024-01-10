@@ -168,10 +168,11 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
       map(x => x.widgetSettings),
       map(x => ({
           enabled: (x.enableAutoAlign ?? true) && (x.autoAlignIntervalSec ?? 0) > 0,
-          interval: x.autoAlignIntervalSec!
+          interval: x.autoAlignIntervalSec ?? 0
         })
       ),
       switchMap(s => s.enabled ? interval(s.interval * 1000) : NEVER),
+      filter(() => !this.isActive),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.alignTable();

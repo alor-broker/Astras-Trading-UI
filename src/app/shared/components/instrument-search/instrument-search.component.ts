@@ -8,6 +8,7 @@ import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR} from '@angular/for
 import {InstrumentKey} from '../../models/instruments/instrument-key.model';
 import {Instrument} from '../../models/instruments/instrument.model';
 import {DeviceService} from "../../services/device.service";
+import { toInstrumentKey } from "../../utils/instruments";
 
 @Component({
   selector: 'ats-instrument-search',
@@ -134,9 +135,13 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   }
 
   private emitValue(value: InstrumentKey | null): void {
-    this.selectedValue = value;
-    this.onValueChanged(value);
-    this.instrumentSelected.emit(value);
+    const instrumentKey = value != null
+      ? toInstrumentKey(value)
+      : null;
+
+    this.selectedValue = instrumentKey;
+    this.onValueChanged(instrumentKey);
+    this.instrumentSelected.emit(instrumentKey);
   }
 
   private onValueChanged: (value: InstrumentKey | null) => void = () => {

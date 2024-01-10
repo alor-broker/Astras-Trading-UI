@@ -60,7 +60,6 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
       'ScalperOrderBookSettings',
       settings => ({
         ...settings,
-        title: `Скальперский стакан`,
         depth: getValueOrDefault(settings.depth, 10),
         showZeroVolumeItems: getValueOrDefault(settings.showZeroVolumeItems, true),
         showSpreadItems: getValueOrDefault(settings.showSpreadItems, true),
@@ -77,8 +76,8 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
         workingVolumes: getValueOrDefault(settings.workingVolumes, [1, 10, 100, 1000]),
         disableHotkeys: getValueOrDefault(settings.disableHotkeys, true),
         enableMouseClickSilentOrders: getValueOrDefault(settings.enableMouseClickSilentOrders, false),
-        autoAlignIntervalSec: getValueOrDefault(settings.autoAlignIntervalSec, 15),
         enableAutoAlign: getValueOrDefault(settings.enableAutoAlign, true),
+        autoAlignIntervalSec: getValueOrDefault(settings.autoAlignIntervalSec, 15),
         showTradesPanel: getValueOrDefault(settings.showTradesPanel, true),
         showTradesClustersPanel: getValueOrDefault(settings.showTradesClustersPanel, true),
         tradesClusterPanelSettings: getValueOrDefault(

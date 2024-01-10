@@ -11,10 +11,12 @@ import {
 } from '@angular/forms';
 import {
   BehaviorSubject,
+  distinctUntilChanged,
   Observable,
   of,
   switchMap
 } from 'rxjs';
+import { isInstrumentEqual } from "../../utils/settings-helper";
 
 
 @Component({
@@ -50,6 +52,7 @@ export class InstrumentBoardSelectComponent implements OnInit, OnDestroy, Contro
 
   ngOnInit(): void {
     this.availableBoards$ = this.instrument$.pipe(
+      distinctUntilChanged((previous, current) => isInstrumentEqual(previous, current)),
       switchMap(instrument => {
         if (!instrument) {
           return of([]);
