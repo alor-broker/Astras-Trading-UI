@@ -30,7 +30,7 @@
         >
           <ng-container *ngIf="(row.volume ?? 0) > 0">
             <span class="highlighter" [ngStyle]="row.getVolumeStyle()">&nbsp;</span>
-            <span class="volume">
+            <span class="volume ml-3">
               <ats-short-number
                 *ngIf="settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
                 [value]="row.volume"
