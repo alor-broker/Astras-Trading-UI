@@ -94,9 +94,9 @@ describe('WatchInstrumentsService', () => {
 
     historyServiceSpy.getHistory.and.returnValue(of({
       history: [
-        { time: 3, close: 5 },
+        { time: 1, close: 1 },
         { time: 2, close: 2 },
-        { time: 1, close: 1 }
+        { time: 3, close: 5 },
       ]
     }));
 

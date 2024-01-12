@@ -1,5 +1,5 @@
 import { DestroyRef, Injectable } from '@angular/core';
-import { combineLatest, distinctUntilChanged, Observable, pairwise, Subscription, switchMap, take } from 'rxjs';
+import { combineLatest, Observable, pairwise, Subscription, switchMap, take } from 'rxjs';
 import { filter, map, startWith } from 'rxjs/operators';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
@@ -137,14 +137,14 @@ export class WatchInstrumentsService {
         switchMap(h => this.instrumentsService.getInstrumentLastCandle(wi.instrument, timeframe)
           .pipe(
             startWith(
-              h?.history[0] ?? { time: 0 } as Candle,
-              h?.history[0] ?? { time: 0 } as Candle // Needs for pairwise emits first value
+              h?.history[h?.history.length - 1] ?? { time: 0 } as Candle,
+              h?.history[h?.history.length - 1] ?? { time: 0 } as Candle // Needs for pairwise emits first value
             ),
             pairwise(), // Needs to get last value of previous candle
-            distinctUntilChanged((prev, curr) => {
-              return curr[0].time === curr[1].time;
-            }),
-            map(candlePair => candlePair[0])
+            filter((c, i) => c[0].time !== c[1].time || i === 0),
+            map(candlePair => {
+              return candlePair[0];
+            })
           ),
         )
       );
