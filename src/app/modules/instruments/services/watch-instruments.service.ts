@@ -1,5 +1,5 @@
 import { DestroyRef, Injectable } from '@angular/core';
-import { distinctUntilChanged, Observable, pairwise, Subscription, switchMap, take, zip } from 'rxjs';
+import { combineLatest, distinctUntilChanged, Observable, pairwise, Subscription, switchMap, take } from 'rxjs';
 import { filter, map, startWith } from 'rxjs/operators';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
@@ -13,6 +13,7 @@ import { InstrumentsToWatchState } from "../utils/instruments-to-watch-state";
 import { GuidGenerator } from "../../../shared/utils/guid";
 import { TimeframeValue } from "../../light-chart/models/light-chart.models";
 import { MathHelper } from "../../../shared/utils/math-helper";
+import { Candle } from "../../../shared/models/history/candle.model";
 
 @Injectable()
 export class WatchInstrumentsService {
@@ -136,8 +137,8 @@ export class WatchInstrumentsService {
         switchMap(h => this.instrumentsService.getInstrumentLastCandle(wi.instrument, timeframe)
           .pipe(
             startWith(
-              h?.history[0] ?? { close: 0, time: 0 },
-              h?.history[0] ?? { close: 0, time: 0 } // Needs for pairwise emits first value
+              h?.history[0] ?? { time: 0 } as Candle,
+              h?.history[0] ?? { time: 0 } as Candle // Needs for pairwise emits first value
             ),
             pairwise(), // Needs to get last value of previous candle
             distinctUntilChanged((prev, curr) => {
@@ -148,7 +149,7 @@ export class WatchInstrumentsService {
         )
       );
 
-    const sub = zip([
+    const sub = combineLatest([
       this.quotesService.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup),
       lastCandleStream
     ])
@@ -158,8 +159,8 @@ export class WatchInstrumentsService {
           closePrice: quote.prev_close_price,
           openPrice: quote.open_price,
           price: quote.last_price,
-          priceChange: MathHelper.round(quote.last_price - lastCandle.close, 4),
-          priceChangeRatio: lastCandle.close ? MathHelper.round((1 - (lastCandle.close/quote.last_price)) * 100, 2) : 0,
+          priceChange: lastCandle.close != null ? MathHelper.round(quote.last_price - lastCandle.close, 4) : 0,
+          priceChangeRatio: lastCandle.close != null ? MathHelper.round(((quote.last_price/lastCandle.close) - 1) * 100, 2) : 0,
           minPrice: quote.low_price,
           maxPrice: quote.high_price,
           volume: quote.volume

@@ -1,11 +1,11 @@
 import { HttpClientTestingModule, } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { WatchInstrumentsService } from './watch-instruments.service';
 import { TestData } from '../../../shared/utils/testing';
 import { WatchlistCollectionService } from './watchlist-collection.service';
 import { HistoryService } from '../../../shared/services/history.service';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, of, skip, Subject, take } from 'rxjs';
 import { Candle } from '../../../shared/models/history/candle.model';
 import { WatchlistCollection } from '../models/watchlist.model';
 import { InstrumentsService } from './instruments.service';
@@ -34,14 +34,16 @@ describe('WatchInstrumentsService', () => {
   );
 
   beforeEach(() => {
-    historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getLastTwoCandles']);
+    historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getLastTwoCandles', 'getHistory']);
     watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['getWatchlistCollection', 'collectionChanged$', 'getListItems',]);
 
     watchlistCollectionServiceSpy.collectionChanged$ = collectionChangedMock.asObservable();
     historyServiceSpy.getLastTwoCandles.and.returnValue(daysOpenMock.asObservable());
+    historyServiceSpy.getHistory.and.returnValue(of(null));
 
-    instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
+    instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument', 'getInstrumentLastCandle']);
     instrumentsServiceSpy.getInstrument.and.returnValue(new Subject());
+    instrumentsServiceSpy.getInstrumentLastCandle.and.returnValue(new Subject());
 
     quotesServiceSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
     quotesServiceSpy.getQuotes.and.returnValue(new Subject());
@@ -84,4 +86,89 @@ describe('WatchInstrumentsService', () => {
 
     expect(watchlistCollectionServiceSpy.getWatchlistCollection).toHaveBeenCalledTimes(1);
   });
+
+  it('#setupInstrumentUpdatesSubscription should emit right values of price change', fakeAsync(() => {
+    instrumentsServiceSpy.getInstrument.and.returnValue(of({
+      ...TestData.instruments[0]
+    }));
+
+    historyServiceSpy.getHistory.and.returnValue(of({
+      history: [
+        { time: 3, close: 5 },
+        { time: 2, close: 2 },
+        { time: 1, close: 1 }
+      ]
+    }));
+
+    const newCandle$ = new Subject();
+    instrumentsServiceSpy.getInstrumentLastCandle.and.returnValue(newCandle$);
+
+    const newQuote$ = new BehaviorSubject({
+      change: 1,
+      prev_close_price: 1,
+      open_price: 1,
+      last_price: 10,
+      low_price: 1,
+      high_price: 1,
+      volume: 1,
+    });
+
+    quotesServiceSpy.getQuotes.and.returnValue(newQuote$);
+
+    watchlistCollectionServiceSpy.getWatchlistCollection.and.callFake(() => {
+      return new BehaviorSubject({
+        collection: [{
+          id: '123',
+          title: 'Test List',
+          isDefault: false,
+          items: [{
+            ...TestData.instruments[0],
+            recordId: GuidGenerator.newGuid()
+          }]
+        }]
+      } as WatchlistCollection);
+    });
+
+    service.getWatched('123', TimeframeValue.Day)
+      .pipe(take(1))
+      .subscribe((wi) => {
+        expect(wi.length).toBe(1);
+        expect(wi[0].priceChange).toBe(5);
+        expect(wi[0].priceChangeRatio).toBe(100);
+      });
+
+    tick();
+
+    service.getWatched('123', TimeframeValue.Day)
+      .pipe(
+        skip(2),
+        take(1)
+      )
+      .subscribe((wi) => {
+        expect(wi.length).toBe(1);
+        expect(wi[0].priceChange).toBe(6);
+        expect(wi[0].priceChangeRatio).toBe(150);
+      });
+
+    tick();
+    newCandle$.next({ time: 4, close: 4 });
+    tick();
+    newCandle$.next({ time: 5, close: 5 });
+    tick();
+
+
+    historyServiceSpy.getHistory.and.returnValue(of({
+      history: []
+    }));
+
+    service.getWatched('123', TimeframeValue.Day)
+      .pipe(take(1))
+      .subscribe((wi) => {
+        expect(wi.length).toBe(1);
+        expect(wi[0].priceChange).toBe(0);
+        expect(wi[0].priceChangeRatio).toBe(0);
+      });
+
+    tick();
+  }));
 });
