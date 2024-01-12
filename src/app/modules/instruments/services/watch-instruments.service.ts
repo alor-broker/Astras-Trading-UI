@@ -137,8 +137,8 @@ export class WatchInstrumentsService {
         switchMap(h => this.instrumentsService.getInstrumentLastCandle(wi.instrument, timeframe)
           .pipe(
             startWith(
-              h?.history[h?.history.length - 1] ?? { time: 0 } as Candle,
-              h?.history[h?.history.length - 1] ?? { time: 0 } as Candle // Needs for pairwise emits first value
+              h?.history[h?.history.length - 2] ?? { time: 0 } as Candle,
+              h?.history[h?.history.length - 2] ?? { time: 0 } as Candle // Needs for pairwise emits first value
             ),
             pairwise(), // Needs to get last value of previous candle
             filter((c, i) => c[0].time !== c[1].time || i === 0),
