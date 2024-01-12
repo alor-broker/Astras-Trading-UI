@@ -1,16 +1,17 @@
-import {HttpClientTestingModule,} from '@angular/common/http/testing';
-import {TestBed} from '@angular/core/testing';
+import { HttpClientTestingModule, } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 
-import {WatchInstrumentsService} from './watch-instruments.service';
-import {TestData} from '../../../shared/utils/testing';
-import {WatchlistCollectionService} from './watchlist-collection.service';
-import {HistoryService} from '../../../shared/services/history.service';
-import {BehaviorSubject, Subject} from 'rxjs';
-import {Candle} from '../../../shared/models/history/candle.model';
-import {WatchlistCollection} from '../models/watchlist.model';
-import {InstrumentsService} from './instruments.service';
-import {QuotesService} from '../../../shared/services/quotes.service';
-import {GuidGenerator} from "../../../shared/utils/guid";
+import { WatchInstrumentsService } from './watch-instruments.service';
+import { TestData } from '../../../shared/utils/testing';
+import { WatchlistCollectionService } from './watchlist-collection.service';
+import { HistoryService } from '../../../shared/services/history.service';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { Candle } from '../../../shared/models/history/candle.model';
+import { WatchlistCollection } from '../models/watchlist.model';
+import { InstrumentsService } from './instruments.service';
+import { QuotesService } from '../../../shared/services/quotes.service';
+import { GuidGenerator } from "../../../shared/utils/guid";
+import { TimeframeValue } from "../../light-chart/models/light-chart.models";
 
 describe('WatchInstrumentsService', () => {
   let service: WatchInstrumentsService;
@@ -79,7 +80,7 @@ describe('WatchInstrumentsService', () => {
       } as WatchlistCollection);
     });
 
-    service.getWatched('123');
+    service.getWatched('123', TimeframeValue.Day);
 
     expect(watchlistCollectionServiceSpy.getWatchlistCollection).toHaveBeenCalledTimes(1);
   });

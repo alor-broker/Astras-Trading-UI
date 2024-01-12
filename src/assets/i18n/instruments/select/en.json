@@ -17,11 +17,11 @@
       "name": "Price",
       "tooltip": "Last order price"
     },
-    "dayChange": {
-      "name": "Day change",
-      "tooltip": "Change per day"
+    "priceChange": {
+      "name": "Price change",
+      "tooltip": "Price change per selected timeframe"
     },
-    "dayChangePerPrice": {
+    "priceChangeRatio": {
       "name": "Day change,%",
       "tooltip": "Change per day in %"
     },

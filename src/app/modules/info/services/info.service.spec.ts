@@ -10,6 +10,7 @@ import { sharedModuleImportForTests } from '../../../shared/utils/testing';
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { InstrumentsService } from "../../instruments/services/instruments.service";
 
 describe('InfoService', () => {
   let service: InfoService;
@@ -36,7 +37,13 @@ describe('InfoService', () => {
             apiUrl: ''
           }
         },
-        InfoService
+        InfoService,
+        {
+          provide: InstrumentsService,
+          useValue: {
+            getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of(null))
+          }
+        }
       ]
     });
     service = TestBed.inject(InfoService);

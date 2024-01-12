@@ -6,8 +6,8 @@ export interface WatchedInstrument {
   instrument: Instrument;
   price?: number;
   prevTickPrice?: number;
-  dayChange: number;
-  dayChangePerPrice: number;
+  priceChange: number;
+  priceChangeRatio: number;
   closePrice: number;
   maxPrice: number;
   minPrice: number;

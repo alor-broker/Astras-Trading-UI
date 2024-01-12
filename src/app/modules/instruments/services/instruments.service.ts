@@ -10,6 +10,10 @@ import { ErrorHandlerService } from '../../../shared/services/handle-error/error
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
 import { CacheService } from '../../../shared/services/cache.service';
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { BarsRequest } from "../../light-chart/models/bars-request.model";
+import { TimeframeValue } from "../../light-chart/models/light-chart.models";
+import { SubscriptionsDataFeedService } from "../../../shared/services/subscriptions-data-feed.service";
+import { Candle } from "../../../shared/models/history/candle.model";
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +25,8 @@ export class InstrumentsService {
     private readonly environmentService: EnvironmentService,
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,
-    private readonly cacheService: CacheService
+    private readonly cacheService: CacheService,
+    private readonly subscriptionDatafeedService: SubscriptionsDataFeedService
   ) {
   }
 
@@ -88,6 +93,23 @@ export class InstrumentsService {
   getInstrumentBoards(instrument: { symbol: string, exchange: string }): Observable<string[]> {
     return this.http.get<string[]>(`${this.url}/${instrument.exchange}/${instrument.symbol}/availableBoards`).pipe(
       catchHttpError<string[]>([], this.errorHandlerService),
+    );
+  }
+
+  getInstrumentLastCandle(instrument: InstrumentKey, timeFrame: TimeframeValue): Observable<Candle> {
+    const request: BarsRequest = {
+      opcode: 'BarsGetAndSubscribe',
+      code: instrument.symbol,
+      exchange: instrument.exchange,
+      instrumentGroup: instrument.instrumentGroup,
+      format: 'simple',
+      tf: timeFrame,
+      from: (new Date()).getTime() / 1000
+    };
+
+    return this.subscriptionDatafeedService.subscribe<BarsRequest, Candle>(
+      request,
+      () => `getInstrumentLastCandle_${instrument.exchange}_${instrument.symbol}_${instrument.instrumentGroup}`
     );
   }
 }

@@ -17,13 +17,13 @@
       "name": "Цена",
       "tooltip": "Цена последней сделки"
     },
-    "dayChange": {
-      "name": "Д.изм.",
-      "tooltip": "Изменение за день"
+    "priceChange": {
+      "name": "Изм. цены",
+      "tooltip": "Изменение за указанный промежуток"
     },
-    "dayChangePerPrice": {
-      "name": "Д.изм.,%",
-      "tooltip": "Изменение за день в %"
+    "priceChangeRatio": {
+      "name": "Изм. цены, %",
+      "tooltip": "Изменение за указанный промежуток в %"
     },
     "maxPrice": {
       "name": "Д.макс.",
