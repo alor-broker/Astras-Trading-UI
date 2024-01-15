@@ -96,11 +96,8 @@
   flex-direction: row;
   flex-wrap: nowrap;
 
-  & > div {
-    flex: 1;
-  }
-
   #volume-panel {
+    flex-grow: 1;
     .table-cell {
       position: relative;
 
@@ -128,6 +125,7 @@
   }
 
   #orders-panel {
+    min-width: 20px;
     .table-row {
       .table-cell {
         display: flex;

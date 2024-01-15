@@ -47,6 +47,7 @@ export interface ScalperOrderBookBodyRef {
 
 export const SCALPER_ORDERBOOK_BODY_REF = new InjectionToken<ScalperOrderBookBodyRef>('ScalperOrderBookBodyRef');
 
+
 @Component({
   selector: 'ats-scalper-order-book-body',
   templateUrl: './scalper-order-book-body.component.html',
@@ -58,6 +59,7 @@ export const SCALPER_ORDERBOOK_BODY_REF = new InjectionToken<ScalperOrderBookBod
 })
 export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnDestroy, ScalperOrderBookBodyRef {
   readonly panelIds = {
+    ordersTable: 'orders-table',
     currentTrades: 'current-trades',
     tradeClusters: 'trade-clusters'
   };
@@ -74,7 +76,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   dataContext!: ScalperOrderBookDataContext;
   hiddenOrdersIndicators$!: Observable<{ up: boolean, down: boolean }>;
 
-  initialWidths$!: Observable<{ [K: string]: number }>;
+  panelWidths$!: Observable<{ [K: string]: number }>;
   private readonly renderItemsRange$ = new BehaviorSubject<ListRange | null>(null);
   private readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   private readonly workingVolume$ = new BehaviorSubject<number | null>(null);
@@ -134,7 +136,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     this.workingVolume$.complete();
   }
 
-  updatePanelWidth(panel: string, width: number): void {
+  updatePanelWidths(widths:{ [key: string]: number }): void {
     ScalperSettingsHelper.getSettingsStream(this.guid,this.widgetSettingsService).pipe(
       take(1)
     ).subscribe(settings => {
@@ -143,10 +145,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
         {
           layout: {
             ...settings.layout,
-            widths: {
-              ...settings.layout?.widths,
-              [panel]: width
-            }
+            widths
           }
         }
       );
@@ -209,9 +208,15 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   }
 
   private initLayout(): void {
-    this.initialWidths$ = this.dataContext.extendedSettings$.pipe(
+    this.panelWidths$ = this.dataContext.extendedSettings$.pipe(
       take(1),
-      map(x => x.widgetSettings.layout?.widths ?? {}),
+      map(x => x.widgetSettings.layout?.widths
+        ?? {
+          [this.panelIds.ordersTable]: 50,
+          [this.panelIds.currentTrades]: 25,
+          [this.panelIds.tradeClusters]: 25,
+        }
+      ),
       shareReplay(1)
     );
   }
