@@ -130,7 +130,7 @@ export class WatchInstrumentsService {
       symbol: wi.instrument.symbol,
       exchange: wi.instrument.exchange,
       tf: timeframe,
-      from: Math.round(new Date().getTime() / 1000) - 3600 * 24 * 30,
+      from: Math.round(new Date().getTime() / 1000) - 3600 * 24 * 31,
       to: Math.round(new Date().getTime() / 1000),
     })
       .pipe(

@@ -132,9 +132,13 @@ describe('WatchInstrumentsService', () => {
     service.getWatched('123', TimeframeValue.Day)
       .pipe(take(1))
       .subscribe((wi) => {
+        const expectedInstrument = {
+          priceChange: 5,
+          priceChangeRatio: 100
+        };
+
         expect(wi.length).toBe(1);
-        expect(wi[0].priceChange).toBe(5);
-        expect(wi[0].priceChangeRatio).toBe(100);
+        expect(wi[0]).toEqual(jasmine.objectContaining(expectedInstrument));
       });
 
     tick();
@@ -145,9 +149,13 @@ describe('WatchInstrumentsService', () => {
         take(1)
       )
       .subscribe((wi) => {
+        const expectedInstrument = {
+          priceChange: 6,
+          priceChangeRatio: 150
+        };
+
         expect(wi.length).toBe(1);
-        expect(wi[0].priceChange).toBe(6);
-        expect(wi[0].priceChangeRatio).toBe(150);
+        expect(wi[0]).toEqual(jasmine.objectContaining(expectedInstrument));
       });
 
     tick();
@@ -155,18 +163,56 @@ describe('WatchInstrumentsService', () => {
     tick();
     newCandle$.next({ time: 5, close: 5 });
     tick();
+  }));
 
+  it('#setupInstrumentUpdatesSubscription should emit zero values when no history', fakeAsync(() => {
+    instrumentsServiceSpy.getInstrument.and.returnValue(of({
+      ...TestData.instruments[0]
+    }));
 
     historyServiceSpy.getHistory.and.returnValue(of({
       history: []
     }));
 
+    const newCandle$ = new Subject();
+    instrumentsServiceSpy.getInstrumentLastCandle.and.returnValue(newCandle$);
+
+    const newQuote$ = new BehaviorSubject({
+      change: 1,
+      prev_close_price: 1,
+      open_price: 1,
+      last_price: 10,
+      low_price: 1,
+      high_price: 1,
+      volume: 1,
+    });
+
+    quotesServiceSpy.getQuotes.and.returnValue(newQuote$);
+
+    watchlistCollectionServiceSpy.getWatchlistCollection.and.callFake(() => {
+      return new BehaviorSubject({
+        collection: [{
+          id: '123',
+          title: 'Test List',
+          isDefault: false,
+          items: [{
+            ...TestData.instruments[0],
+            recordId: GuidGenerator.newGuid()
+          }]
+        }]
+      } as WatchlistCollection);
+    });
+
     service.getWatched('123', TimeframeValue.Day)
       .pipe(take(1))
       .subscribe((wi) => {
+        const expectedInstrument = {
+          priceChange: 0,
+          priceChangeRatio: 0
+        };
+
         expect(wi.length).toBe(1);
-        expect(wi[0].priceChange).toBe(0);
-        expect(wi[0].priceChangeRatio).toBe(0);
+        expect(wi[0]).toEqual(jasmine.objectContaining(expectedInstrument));
       });
 
     tick();
