@@ -22,8 +22,8 @@
       "tooltip": "Price change per selected timeframe"
     },
     "priceChangeRatio": {
-      "name": "Day change,%",
-      "tooltip": "Change per day in %"
+      "name": "Price change,%",
+      "tooltip": "Price change ratio per selected timeframe"
     },
     "maxPrice": {
       "name": "Max price",
