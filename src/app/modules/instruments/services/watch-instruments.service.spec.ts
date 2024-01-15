@@ -13,6 +13,7 @@ import { QuotesService } from '../../../shared/services/quotes.service';
 import { GuidGenerator } from "../../../shared/utils/guid";
 import { TimeframeValue } from "../../light-chart/models/light-chart.models";
 import { MathHelper } from "../../../shared/utils/math-helper";
+import { CandlesService } from "./candles.service";
 
 describe('WatchInstrumentsService', () => {
   let service: WatchInstrumentsService;
@@ -21,6 +22,7 @@ describe('WatchInstrumentsService', () => {
   let watchlistCollectionServiceSpy: any;
   let instrumentsServiceSpy: any;
   let quotesServiceSpy: any;
+  let candlesServiceSpy: any;
 
   const collectionChangedMock = new Subject();
   const daysOpenMock = new BehaviorSubject<{ cur: Candle, prev: Candle } | null>(
@@ -42,9 +44,11 @@ describe('WatchInstrumentsService', () => {
     historyServiceSpy.getLastTwoCandles.and.returnValue(daysOpenMock.asObservable());
     historyServiceSpy.getHistory.and.returnValue(of(null));
 
-    instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument', 'getInstrumentLastCandle']);
+    instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
     instrumentsServiceSpy.getInstrument.and.returnValue(new Subject());
-    instrumentsServiceSpy.getInstrumentLastCandle.and.returnValue(new Subject());
+
+    candlesServiceSpy = jasmine.createSpyObj('CandlesService', ['getInstrumentLastCandle']);
+    candlesServiceSpy.getInstrumentLastCandle.and.returnValue(new Subject());
 
     quotesServiceSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
     quotesServiceSpy.getQuotes.and.returnValue(new Subject());
@@ -61,7 +65,8 @@ describe('WatchInstrumentsService', () => {
         {provide: HistoryService, useValue: historyServiceSpy},
         {provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy},
         {provide: InstrumentsService, useValue: instrumentsServiceSpy},
-        {provide: QuotesService, useValue: quotesServiceSpy}
+        {provide: QuotesService, useValue: quotesServiceSpy},
+        {provide: CandlesService, useValue: candlesServiceSpy}
       ]
     });
     service = TestBed.inject(WatchInstrumentsService);
@@ -105,7 +110,7 @@ describe('WatchInstrumentsService', () => {
 
     let newCandle;
     const newCandle$ = new Subject();
-    instrumentsServiceSpy.getInstrumentLastCandle.and.returnValue(newCandle$);
+    candlesServiceSpy.getInstrumentLastCandle.and.returnValue(newCandle$);
 
     const newQuote = {
       change: 1,
@@ -182,7 +187,7 @@ describe('WatchInstrumentsService', () => {
     }));
 
     const newCandle$ = new Subject();
-    instrumentsServiceSpy.getInstrumentLastCandle.and.returnValue(newCandle$);
+    candlesServiceSpy.getInstrumentLastCandle.and.returnValue(newCandle$);
 
     const newQuote$ = new BehaviorSubject({
       change: 1,

@@ -13,7 +13,7 @@ import { InstrumentsToWatchState } from "../utils/instruments-to-watch-state";
 import { GuidGenerator } from "../../../shared/utils/guid";
 import { TimeframeValue } from "../../light-chart/models/light-chart.models";
 import { MathHelper } from "../../../shared/utils/math-helper";
-import { Candle } from "../../../shared/models/history/candle.model";
+import { CandlesService } from "./candles.service";
 
 @Injectable()
 export class WatchInstrumentsService {
@@ -22,12 +22,12 @@ export class WatchInstrumentsService {
 
   private collectionChangeSubscription?: Subscription;
 
-
   constructor(
     private readonly history: HistoryService,
     private readonly quotesService: QuotesService,
     private readonly instrumentsService: InstrumentsService,
     private readonly watchlistCollectionService: WatchlistCollectionService,
+    private readonly candlesService: CandlesService,
     destroyRef: DestroyRef) {
     destroyRef.onDestroy(() => this.clear());
     destroyRef.onDestroy(() => this.watchlistUpdatesState.destroy());
@@ -134,17 +134,18 @@ export class WatchInstrumentsService {
       to: this.getHistoryToTime(timeframe),
     })
       .pipe(
-        switchMap(h => this.instrumentsService.getInstrumentLastCandle(wi.instrument, timeframe)
+        switchMap(h => this.candlesService.getInstrumentLastCandle(wi.instrument, timeframe)
           .pipe(
             startWith(
-              h?.history[h?.history.length - 1] ?? { time: 0 } as Candle,
-              h?.history[h?.history.length - 1] ?? { time: 0 } as Candle // Needs for pairwise emits first value
+              h?.history[h?.history.length - 1] ?? null,
+              h?.history[h?.history.length - 1] ?? null // Needs for pairwise emits first value
             ),
             pairwise(), // Needs to get last value of previous candle
-            filter((c, i) => c[0].time !== c[1].time || i === 0),
+            filter((c, i) => c[0]?.time !== c[1]?.time || i === 0),
             map(candlePair => {
               return candlePair[0];
-            })
+            }),
+            filter(c => c != null)
           ),
         )
       );
@@ -159,8 +160,8 @@ export class WatchInstrumentsService {
           closePrice: quote.prev_close_price,
           openPrice: quote.open_price,
           price: quote.last_price,
-          priceChange: (quote.last_price != null && lastCandle.close != null) ? MathHelper.round(quote.last_price - lastCandle.close, 4) : 0,
-          priceChangeRatio: (quote.last_price != null && lastCandle.close != null) ? MathHelper.round(((quote.last_price/lastCandle.close) - 1) * 100, 2) : 0,
+          priceChange: (quote.last_price != null && lastCandle != null) ? MathHelper.round(quote.last_price - lastCandle.close, 4) : 0,
+          priceChangeRatio: (quote.last_price != null && lastCandle != null) ? MathHelper.round(((quote.last_price/lastCandle.close) - 1) * 100, 2) : 0,
           minPrice: quote.low_price,
           maxPrice: quote.high_price,
           volume: quote.volume
@@ -176,13 +177,13 @@ export class WatchInstrumentsService {
     const nowDate = Math.round(new Date().getTime() / 1000);
     switch(timeframe) {
       case TimeframeValue.Day:
-        return nowDate - 3600 * 24 * 90;
+        return nowDate - 3600 * 24 * 3;
       case TimeframeValue.W:
-        return nowDate - 3600 * 24 * 30 * 6;
+        return nowDate - 3600 * 24 * 21;
       case TimeframeValue.Month:
-        return nowDate - 3600 * 24 * 30 * 12;
+        return nowDate - 3600 * 24 * 31 * 3;
       default:
-        return nowDate - 3600 * 24 * 30;
+        return nowDate - 3600 * 24;
     }
   }
 
