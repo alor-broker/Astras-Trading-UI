@@ -12,6 +12,7 @@ import { InstrumentsService } from './instruments.service';
 import { QuotesService } from '../../../shared/services/quotes.service';
 import { GuidGenerator } from "../../../shared/utils/guid";
 import { TimeframeValue } from "../../light-chart/models/light-chart.models";
+import { MathHelper } from "../../../shared/utils/math-helper";
 
 describe('WatchInstrumentsService', () => {
   let service: WatchInstrumentsService;
@@ -92,18 +93,21 @@ describe('WatchInstrumentsService', () => {
       ...TestData.instruments[0]
     }));
 
+    const historyRes = [
+      { time: 1, close: 1 },
+      { time: 2, close: 3 },
+      { time: 3, close: 5 },
+    ];
+
     historyServiceSpy.getHistory.and.returnValue(of({
-      history: [
-        { time: 1, close: 1 },
-        { time: 2, close: 3 },
-        { time: 3, close: 5 },
-      ]
+      history: historyRes
     }));
 
+    let newCandle;
     const newCandle$ = new Subject();
     instrumentsServiceSpy.getInstrumentLastCandle.and.returnValue(newCandle$);
 
-    const newQuote$ = new BehaviorSubject({
+    const newQuote = {
       change: 1,
       prev_close_price: 1,
       open_price: 1,
@@ -111,7 +115,9 @@ describe('WatchInstrumentsService', () => {
       low_price: 1,
       high_price: 1,
       volume: 1,
-    });
+    };
+
+    const newQuote$ = new BehaviorSubject(newQuote);
 
     quotesServiceSpy.getQuotes.and.returnValue(newQuote$);
 
@@ -133,8 +139,8 @@ describe('WatchInstrumentsService', () => {
       .pipe(take(1))
       .subscribe((wi) => {
         const expectedInstrument = {
-          priceChange: 5,
-          priceChangeRatio: 100
+          priceChange: MathHelper.round(wi[0]!.price! - historyRes[historyRes.length - 1].close, 4),
+          priceChangeRatio: MathHelper.round(((wi[0]!.price! / historyRes[historyRes.length - 1].close) - 1) * 100, 2)
         };
 
         expect(wi.length).toBe(1);
@@ -150,8 +156,8 @@ describe('WatchInstrumentsService', () => {
       )
       .subscribe((wi) => {
         const expectedInstrument = {
-          priceChange: 6,
-          priceChangeRatio: 150
+          priceChange: MathHelper.round(wi[0]!.price! - newCandle!.close, 4),
+          priceChangeRatio: MathHelper.round(((wi[0]!.price! / newCandle!.close) - 1) * 100, 2)
         };
 
         expect(wi.length).toBe(1);
@@ -159,7 +165,8 @@ describe('WatchInstrumentsService', () => {
       });
 
     tick();
-    newCandle$.next({ time: 4, close: 4 });
+    newCandle = { time: 4, close: 4 };
+    newCandle$.next(newCandle);
     tick();
     newCandle$.next({ time: 5, close: 5 });
     tick();
