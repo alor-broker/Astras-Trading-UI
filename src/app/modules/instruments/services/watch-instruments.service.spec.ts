@@ -93,7 +93,7 @@ describe('WatchInstrumentsService', () => {
     expect(watchlistCollectionServiceSpy.getWatchlistCollection).toHaveBeenCalledTimes(1);
   });
 
-  fit('#setupInstrumentUpdatesSubscription should emit right values of price change', fakeAsync(() => {
+  it('#setupInstrumentUpdatesSubscription should emit right values of price change', fakeAsync(() => {
     instrumentsServiceSpy.getInstrument.and.returnValue(of({
       ...TestData.instruments[0]
     }));
@@ -164,7 +164,7 @@ describe('WatchInstrumentsService', () => {
     const historyRes = [
       { time: nowDate - 3600 * 24 * 3, close: 1 },
       { time: nowDate - 3600 * 24 * 2, close: 3 },
-      { time: nowDate - 3600 * 24, close: 5 },
+      { time: nowDate - 3600 * 24 - 2, close: 5 },
     ];
 
     historyServiceSpy.getHistory.and.returnValue(of({
@@ -219,10 +219,11 @@ describe('WatchInstrumentsService', () => {
       });
 
     tick();
-    newCandle = { time: nowDate - 3600 * 24, close: 4 };
+
+    newCandle = { time: nowDate - 3600 * 24 - 1, close: 4 };
     newCandle$.next(newCandle);
     tick();
-    newCandle$.next({ time: nowDate - 3600 * 24, close: 5 });
+    newCandle$.next({ time: nowDate - 3600 * 24, close: 45 });
     tick();
   }));
 
