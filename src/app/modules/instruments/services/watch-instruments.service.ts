@@ -1,17 +1,6 @@
-import {
-  DestroyRef,
-  Injectable
-} from '@angular/core';
-import {
-  Observable,
-  Subscription,
-  switchMap,
-  take
-} from 'rxjs';
-import {
-  filter,
-  map
-} from 'rxjs/operators';
+import { DestroyRef, Injectable } from '@angular/core';
+import { combineLatest, Observable, pairwise, Subscription, switchMap, take } from 'rxjs';
+import { filter, map, startWith } from 'rxjs/operators';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
 import { WatchedInstrument } from '../models/watched-instrument.model';
@@ -22,6 +11,9 @@ import { WatchlistItem } from "../models/watchlist.model";
 import { WatchlistUpdatesState } from "../utils/watchlist-updates-state";
 import { InstrumentsToWatchState } from "../utils/instruments-to-watch-state";
 import { GuidGenerator } from "../../../shared/utils/guid";
+import { TimeframeValue } from "../../light-chart/models/light-chart.models";
+import { MathHelper } from "../../../shared/utils/math-helper";
+import { CandlesService } from "./candles.service";
 
 @Injectable()
 export class WatchInstrumentsService {
@@ -30,12 +22,12 @@ export class WatchInstrumentsService {
 
   private collectionChangeSubscription?: Subscription;
 
-
   constructor(
     private readonly history: HistoryService,
     private readonly quotesService: QuotesService,
     private readonly instrumentsService: InstrumentsService,
     private readonly watchlistCollectionService: WatchlistCollectionService,
+    private readonly candlesService: CandlesService,
     destroyRef: DestroyRef) {
     destroyRef.onDestroy(() => this.clear());
     destroyRef.onDestroy(() => this.watchlistUpdatesState.destroy());
@@ -48,18 +40,21 @@ export class WatchInstrumentsService {
     this.collectionChangeSubscription?.unsubscribe();
   }
 
-  getWatched(listId: string): Observable<WatchedInstrument[]> {
+  getWatched(listId: string, timeframe: TimeframeValue): Observable<WatchedInstrument[]> {
     this.clear();
 
     this.collectionChangeSubscription = this.watchlistCollectionService.getWatchlistCollection().pipe(
       map(currentCollection => currentCollection.collection.find(x => x.id === listId)),
       filter(x => !!x)
     ).subscribe(currentList => {
-      this.refreshWatchItems(currentList!.items.map(item => ({
-          ...item,
-          recordId: item.recordId ?? GuidGenerator.newGuid(),
-        })
-      ));
+      this.refreshWatchItems(
+        currentList!.items.map(item => ({
+            ...item,
+            recordId: item.recordId ?? GuidGenerator.newGuid(),
+          })
+        ),
+        timeframe
+      );
     });
 
     return this.watchlistUpdatesState.updates$.pipe(
@@ -67,7 +62,7 @@ export class WatchInstrumentsService {
     );
   }
 
-  private refreshWatchItems(items: WatchlistItem[]): void {
+  private refreshWatchItems(items: WatchlistItem[], timeframe: TimeframeValue): void {
     const previousIds = new Set(this.instrumentsToWatchState.getCurrentItemIds());
     const currentIds = new Set<string>();
 
@@ -80,7 +75,7 @@ export class WatchInstrumentsService {
           () => this.watchlistUpdatesState.removeItem(currentRecordId)
         );
 
-        this.initInstrumentWatch(item);
+        this.initInstrumentWatch(item, timeframe);
       } else {
         this.watchlistUpdatesState.updateItem(
           currentRecordId,
@@ -99,7 +94,7 @@ export class WatchInstrumentsService {
 
   }
 
-  private initInstrumentWatch(instrument: WatchlistItem): void {
+  private initInstrumentWatch(instrument: WatchlistItem, timeframe: TimeframeValue): void {
     this.instrumentsService.getInstrument(instrument).pipe(
       take(1),
       filter((x): x is Instrument => !!x),
@@ -114,39 +109,108 @@ export class WatchInstrumentsService {
               closePrice: candles?.prev.close ?? 0,
               openPrice: candles?.cur.open ?? 0,
               prevTickPrice: 0,
-              dayChange: 0,
+              priceChange: 0,
               price: 0,
               minPrice: candles?.cur.low,
               maxPrice: candles?.cur.high,
               volume: candles?.cur.volume,
-              dayChangePerPrice: 0,
+              priceChangeRatio: 0,
             }),
             take(1)
           );
       })
     ).subscribe(wi => {
       this.watchlistUpdatesState.addItem(wi);
-      this.setupInstrumentUpdatesSubscription(wi);
+      this.setupInstrumentUpdatesSubscription(wi, timeframe);
     });
   }
 
-  private setupInstrumentUpdatesSubscription(wi: WatchedInstrument): void {
-    const sub = this.quotesService.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup).subscribe(q => {
-      const update = <WatchedInstrument>{
-        prevTickPrice: q.last_price - q.change,
-        closePrice: q.prev_close_price,
-        openPrice: q.open_price,
-        price: q.last_price,
-        dayChange: q.change,
-        dayChangePerPrice: q.change_percent,
-        minPrice: q.low_price,
-        maxPrice: q.high_price,
-        volume: q.volume
-      };
+  private setupInstrumentUpdatesSubscription(wi: WatchedInstrument, timeframe: TimeframeValue): void {
+    const lastCandleStream = this.history.getHistory({
+      symbol: wi.instrument.symbol,
+      exchange: wi.instrument.exchange,
+      tf: timeframe,
+      from: this.getHistoryFromTime(timeframe),
+      to: this.getHistoryToTime(timeframe),
+    })
+      .pipe(
+        switchMap(h => this.candlesService.getInstrumentLastCandle(wi.instrument, timeframe)
+          .pipe(
+            startWith(
+              h?.history[h?.history.length - 1] ?? null,
+              h?.history[h?.history.length - 1] ?? null // Needs for pairwise emits first value
+            ),
+            pairwise(), // Needs to get last value of previous candle
+            filter((c, i) => c[0]?.time !== c[1]?.time || i === 0),
+            map(candlePair => {
+              return candlePair[0];
+            }),
+            filter(c => c != null)
+          ),
+        )
+      );
 
-      this.watchlistUpdatesState.updateItem(wi.recordId, update);
-    });
+    const sub = combineLatest([
+      this.quotesService.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup),
+      lastCandleStream
+    ])
+      .subscribe(([quote, lastCandle]) => {
+        const update = <WatchedInstrument>{
+          prevTickPrice: quote.last_price - quote.change,
+          closePrice: quote.prev_close_price,
+          openPrice: quote.open_price,
+          price: quote.last_price,
+          priceChange: (quote.last_price != null && lastCandle != null) ? MathHelper.round(quote.last_price - lastCandle.close, 4) : 0,
+          priceChangeRatio: (quote.last_price != null && lastCandle != null) ? MathHelper.round(((quote.last_price/lastCandle.close) - 1) * 100, 2) : 0,
+          minPrice: quote.low_price,
+          maxPrice: quote.high_price,
+          volume: quote.volume
+        };
+
+        this.watchlistUpdatesState.updateItem(wi.recordId, update);
+      });
 
     this.instrumentsToWatchState.setUpdatesSubscription(wi.recordId, sub);
+  }
+
+  getHistoryFromTime(timeframe: TimeframeValue): number {
+    const nowDate = Math.round(new Date().getTime() / 1000);
+    switch(timeframe) {
+      case TimeframeValue.Day:
+        return nowDate - 3600 * 24 * 3;
+      case TimeframeValue.W:
+        return nowDate - 3600 * 24 * 21;
+      case TimeframeValue.Month:
+        return nowDate - 3600 * 24 * 31 * 3;
+      default:
+        return nowDate - 3600 * 24;
+    }
+  }
+
+  getHistoryToTime(timeframe: TimeframeValue): number {
+    switch(timeframe) {
+      case TimeframeValue.Day:
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1, 0, 0, 0, -1).getTime() / 1000);
+      case TimeframeValue.W:
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - ((new Date().getDay() + 6) % 7), 0, 0, 0, -1).getTime() / 1000);
+      case TimeframeValue.Month:
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), 1, 0, 0, 0, -1).getTime() / 1000);
+      case TimeframeValue.H4:
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours() - 3, 0, 0, -1).getTime() / 1000);
+      case TimeframeValue.H:
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), 0, 0, -1).getTime() / 1000);
+      case TimeframeValue.M15:
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes() - 14, 0, -1).getTime() / 1000);
+      case TimeframeValue.M5:
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes() - 4, 0, -1).getTime() / 1000);
+      case TimeframeValue.M1:
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes(), 0, -1).getTime() / 1000);
+      case TimeframeValue.S10:
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes(), new Date().getSeconds() - 9, -1).getTime() / 1000);
+      case TimeframeValue.S5:
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes(), new Date().getSeconds() - 4, -1).getTime() / 1000);
+      case TimeframeValue.S1:
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes(), new Date().getSeconds(), -1).getTime() / 1000);
+    }
   }
 }

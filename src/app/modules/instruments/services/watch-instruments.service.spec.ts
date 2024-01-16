@@ -1,16 +1,19 @@
-import {HttpClientTestingModule,} from '@angular/common/http/testing';
-import {TestBed} from '@angular/core/testing';
+import { HttpClientTestingModule, } from '@angular/common/http/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
-import {WatchInstrumentsService} from './watch-instruments.service';
-import {TestData} from '../../../shared/utils/testing';
-import {WatchlistCollectionService} from './watchlist-collection.service';
-import {HistoryService} from '../../../shared/services/history.service';
-import {BehaviorSubject, Subject} from 'rxjs';
-import {Candle} from '../../../shared/models/history/candle.model';
-import {WatchlistCollection} from '../models/watchlist.model';
-import {InstrumentsService} from './instruments.service';
-import {QuotesService} from '../../../shared/services/quotes.service';
-import {GuidGenerator} from "../../../shared/utils/guid";
+import { WatchInstrumentsService } from './watch-instruments.service';
+import { TestData } from '../../../shared/utils/testing';
+import { WatchlistCollectionService } from './watchlist-collection.service';
+import { HistoryService } from '../../../shared/services/history.service';
+import { BehaviorSubject, of, skip, Subject, take } from 'rxjs';
+import { Candle } from '../../../shared/models/history/candle.model';
+import { WatchlistCollection } from '../models/watchlist.model';
+import { InstrumentsService } from './instruments.service';
+import { QuotesService } from '../../../shared/services/quotes.service';
+import { GuidGenerator } from "../../../shared/utils/guid";
+import { TimeframeValue } from "../../light-chart/models/light-chart.models";
+import { MathHelper } from "../../../shared/utils/math-helper";
+import { CandlesService } from "./candles.service";
 
 describe('WatchInstrumentsService', () => {
   let service: WatchInstrumentsService;
@@ -19,6 +22,7 @@ describe('WatchInstrumentsService', () => {
   let watchlistCollectionServiceSpy: any;
   let instrumentsServiceSpy: any;
   let quotesServiceSpy: any;
+  let candlesServiceSpy: any;
 
   const collectionChangedMock = new Subject();
   const daysOpenMock = new BehaviorSubject<{ cur: Candle, prev: Candle } | null>(
@@ -33,14 +37,18 @@ describe('WatchInstrumentsService', () => {
   );
 
   beforeEach(() => {
-    historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getLastTwoCandles']);
+    historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getLastTwoCandles', 'getHistory']);
     watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['getWatchlistCollection', 'collectionChanged$', 'getListItems',]);
 
     watchlistCollectionServiceSpy.collectionChanged$ = collectionChangedMock.asObservable();
     historyServiceSpy.getLastTwoCandles.and.returnValue(daysOpenMock.asObservable());
+    historyServiceSpy.getHistory.and.returnValue(of(null));
 
     instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
     instrumentsServiceSpy.getInstrument.and.returnValue(new Subject());
+
+    candlesServiceSpy = jasmine.createSpyObj('CandlesService', ['getInstrumentLastCandle']);
+    candlesServiceSpy.getInstrumentLastCandle.and.returnValue(new Subject());
 
     quotesServiceSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
     quotesServiceSpy.getQuotes.and.returnValue(new Subject());
@@ -57,7 +65,8 @@ describe('WatchInstrumentsService', () => {
         {provide: HistoryService, useValue: historyServiceSpy},
         {provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy},
         {provide: InstrumentsService, useValue: instrumentsServiceSpy},
-        {provide: QuotesService, useValue: quotesServiceSpy}
+        {provide: QuotesService, useValue: quotesServiceSpy},
+        {provide: CandlesService, useValue: candlesServiceSpy}
       ]
     });
     service = TestBed.inject(WatchInstrumentsService);
@@ -79,8 +88,145 @@ describe('WatchInstrumentsService', () => {
       } as WatchlistCollection);
     });
 
-    service.getWatched('123');
+    service.getWatched('123', TimeframeValue.Day);
 
     expect(watchlistCollectionServiceSpy.getWatchlistCollection).toHaveBeenCalledTimes(1);
   });
+
+  it('#setupInstrumentUpdatesSubscription should emit right values of price change', fakeAsync(() => {
+    instrumentsServiceSpy.getInstrument.and.returnValue(of({
+      ...TestData.instruments[0]
+    }));
+
+    const historyRes = [
+      { time: 1, close: 1 },
+      { time: 2, close: 3 },
+      { time: 3, close: 5 },
+    ];
+
+    historyServiceSpy.getHistory.and.returnValue(of({
+      history: historyRes
+    }));
+
+    let newCandle;
+    const newCandle$ = new Subject();
+    candlesServiceSpy.getInstrumentLastCandle.and.returnValue(newCandle$);
+
+    const newQuote = {
+      change: 1,
+      prev_close_price: 1,
+      open_price: 1,
+      last_price: 10,
+      low_price: 1,
+      high_price: 1,
+      volume: 1,
+    };
+
+    const newQuote$ = new BehaviorSubject(newQuote);
+
+    quotesServiceSpy.getQuotes.and.returnValue(newQuote$);
+
+    watchlistCollectionServiceSpy.getWatchlistCollection.and.callFake(() => {
+      return new BehaviorSubject({
+        collection: [{
+          id: '123',
+          title: 'Test List',
+          isDefault: false,
+          items: [{
+            ...TestData.instruments[0],
+            recordId: GuidGenerator.newGuid()
+          }]
+        }]
+      } as WatchlistCollection);
+    });
+
+    service.getWatched('123', TimeframeValue.Day)
+      .pipe(take(1))
+      .subscribe((wi) => {
+        const expectedInstrument = {
+          priceChange: MathHelper.round(wi[0]!.price! - historyRes[historyRes.length - 1].close, 4),
+          priceChangeRatio: MathHelper.round(((wi[0]!.price! / historyRes[historyRes.length - 1].close) - 1) * 100, 2)
+        };
+
+        expect(wi.length).toBe(1);
+        expect(wi[0]).toEqual(jasmine.objectContaining(expectedInstrument));
+      });
+
+    tick();
+
+    service.getWatched('123', TimeframeValue.Day)
+      .pipe(
+        skip(2),
+        take(1)
+      )
+      .subscribe((wi) => {
+        const expectedInstrument = {
+          priceChange: MathHelper.round(wi[0]!.price! - newCandle!.close, 4),
+          priceChangeRatio: MathHelper.round(((wi[0]!.price! / newCandle!.close) - 1) * 100, 2)
+        };
+
+        expect(wi.length).toBe(1);
+        expect(wi[0]).toEqual(jasmine.objectContaining(expectedInstrument));
+      });
+
+    tick();
+    newCandle = { time: 4, close: 4 };
+    newCandle$.next(newCandle);
+    tick();
+    newCandle$.next({ time: 5, close: 5 });
+    tick();
+  }));
+
+  it('#setupInstrumentUpdatesSubscription should emit zero values when no history', fakeAsync(() => {
+    instrumentsServiceSpy.getInstrument.and.returnValue(of({
+      ...TestData.instruments[0]
+    }));
+
+    historyServiceSpy.getHistory.and.returnValue(of({
+      history: []
+    }));
+
+    const newCandle$ = new Subject();
+    candlesServiceSpy.getInstrumentLastCandle.and.returnValue(newCandle$);
+
+    const newQuote$ = new BehaviorSubject({
+      change: 1,
+      prev_close_price: 1,
+      open_price: 1,
+      last_price: 10,
+      low_price: 1,
+      high_price: 1,
+      volume: 1,
+    });
+
+    quotesServiceSpy.getQuotes.and.returnValue(newQuote$);
+
+    watchlistCollectionServiceSpy.getWatchlistCollection.and.callFake(() => {
+      return new BehaviorSubject({
+        collection: [{
+          id: '123',
+          title: 'Test List',
+          isDefault: false,
+          items: [{
+            ...TestData.instruments[0],
+            recordId: GuidGenerator.newGuid()
+          }]
+        }]
+      } as WatchlistCollection);
+    });
+
+    service.getWatched('123', TimeframeValue.Day)
+      .pipe(take(1))
+      .subscribe((wi) => {
+        const expectedInstrument = {
+          priceChange: 0,
+          priceChangeRatio: 0
+        };
+
+        expect(wi.length).toBe(1);
+        expect(wi[0]).toEqual(jasmine.objectContaining(expectedInstrument));
+      });
+
+    tick();
+  }));
 });

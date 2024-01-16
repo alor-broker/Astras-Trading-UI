@@ -12,11 +12,12 @@ import { TranslocoTestingModule } from "@ngneat/transloco";
 import { GuidGenerator } from "../../../shared/utils/guid";
 import { WatchlistCollectionBrokerService } from "./watchlist-collection-broker.service";
 import {
-  BehaviorSubject,
+  BehaviorSubject, of,
   Subject,
   take
 } from "rxjs";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { InstrumentsService } from "./instruments.service";
 
 describe('WatchListCollectionService', () => {
   const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
@@ -68,6 +69,12 @@ describe('WatchListCollectionService', () => {
           provide: EnvironmentService,
           useValue: {
             apiUrl: ''
+          }
+        },
+        {
+          provide: InstrumentsService,
+          useValue: {
+            getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of(null))
           }
         }
       ]

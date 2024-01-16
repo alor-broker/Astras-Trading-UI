@@ -10,8 +10,9 @@ import {
   CacheOptions,
   CacheService
 } from '../../../shared/services/cache.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { SubscriptionsDataFeedService } from "../../../shared/services/subscriptions-data-feed.service";
 
 describe('InstrumentsService', () => {
   let service: InstrumentsService;
@@ -38,6 +39,12 @@ describe('InstrumentsService', () => {
           provide: EnvironmentService,
           useValue: {
             apiUrl: ''
+          }
+        },
+        {
+          provide: SubscriptionsDataFeedService,
+          useValue: {
+            subscribe: jasmine.createSpy('subscribe').and.returnValue(of({}))
           }
         }
       ]

@@ -17,13 +17,13 @@
       "name": "Price",
       "tooltip": "Last order price"
     },
-    "dayChange": {
-      "name": "Day change",
-      "tooltip": "Change per day"
+    "priceChange": {
+      "name": "Price change",
+      "tooltip": "Price change per selected timeframe"
     },
-    "dayChangePerPrice": {
-      "name": "Day change,%",
-      "tooltip": "Change per day in %"
+    "priceChangeRatio": {
+      "name": "Price change,%",
+      "tooltip": "Price change ratio per selected timeframe"
     },
     "maxPrice": {
       "name": "Max price",

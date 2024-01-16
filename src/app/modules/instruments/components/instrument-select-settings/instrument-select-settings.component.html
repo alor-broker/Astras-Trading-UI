@@ -41,6 +41,22 @@
                   </nz-select>
                 </nz-form-control>
               </nz-form-item>
+
+              <nz-form-item class="compact">
+                <nz-form-control>
+                  <nz-form-label nzFor="priceChangeTimeframe">
+                    {{t('instrumentsSettings.priceChangeTimeframeLabel')}}
+                  </nz-form-label>
+                  <nz-select formControlName="priceChangeTimeframe">
+                    <nz-option
+                      *ngFor="let timeframe of priceChangeTimeFrames"
+                      [nzLabel]="t('instrumentsSettings.timeframes.' + timeframe.name)"
+                      [nzValue]="timeframe.value"
+                    ></nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+
               <nz-form-item class="compact">
                 <nz-form-label nzFor="showFavorites">
                   {{t('instrumentsSettings.showFavoritesLabel')}}
