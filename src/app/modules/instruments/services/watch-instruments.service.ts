@@ -126,6 +126,7 @@ export class WatchInstrumentsService {
   }
 
   private setupInstrumentUpdatesSubscription(wi: WatchedInstrument, timeframe: TimeframeValue): void {
+    console.log(this.getHistoryToTime(timeframe));
     const lastCandleStream = this.history.getHistory({
       symbol: wi.instrument.symbol,
       exchange: wi.instrument.exchange,
@@ -194,21 +195,21 @@ export class WatchInstrumentsService {
   getHistoryToTime(timeframe: TimeframeValue): number {
     switch(timeframe) {
       case TimeframeValue.Day:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1, 0, 0, 0, -1).getTime() / 1000);
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, -1).getTime() / 1000);
       case TimeframeValue.W:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - ((new Date().getDay() + 6) % 7), 0, 0, 0, -1).getTime() / 1000);
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - ((new Date().getDay() + 6) % 7), 0, 0, -1).getTime() / 1000);
       case TimeframeValue.Month:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), 1, 0, 0, 0, -1).getTime() / 1000);
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), 1, 0, 0, -1).getTime() / 1000);
       case TimeframeValue.H4:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours() - 3, 0, 0, -1).getTime() / 1000);
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours() - 3, 0, -1).getTime() / 1000);
       case TimeframeValue.H:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), 0, 0, -1).getTime() / 1000);
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), 0, -1).getTime() / 1000);
       case TimeframeValue.M15:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes() - 14, 0, -1).getTime() / 1000);
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes() - 14, -1).getTime() / 1000);
       case TimeframeValue.M5:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes() - 4, 0, -1).getTime() / 1000);
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes() - 4, -1).getTime() / 1000);
       case TimeframeValue.M1:
-        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes(), 0, -1).getTime() / 1000);
+        return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes(),-1).getTime() / 1000);
       case TimeframeValue.S10:
         return Math.round(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), new Date().getHours(), new Date().getMinutes(), new Date().getSeconds() - 9, -1).getTime() / 1000);
       case TimeframeValue.S5:
