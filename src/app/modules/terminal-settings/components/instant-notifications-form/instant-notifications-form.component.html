@@ -19,7 +19,15 @@
 
     <h3>{{t('terminalSettingsInstantNotificationsForm.pushNotificationsTitle')}}</h3>
     <nz-form-item *ngIf="portfolios$ | async as portfolios">
-      <nz-form-label>{{t('terminalSettingsInstantNotificationsForm.hiddenPortfoliosForNotificationsLabel')}}</nz-form-label>
+      <nz-form-label>
+        {{t('terminalSettingsInstantNotificationsForm.hiddenPortfoliosForNotificationsLabel')}}&nbsp;
+        <span
+          [nzTooltipTitle]="t('terminalSettingsInstantNotificationsForm.hiddenPortfoliosForNotificationsTooltip')"
+          nz-icon
+          nz-tooltip=""
+          nzType="question-circle"
+        ></span>
+      </nz-form-label>
       <nz-form-control class="w-100">
         <nz-select
           nzMode="multiple"
