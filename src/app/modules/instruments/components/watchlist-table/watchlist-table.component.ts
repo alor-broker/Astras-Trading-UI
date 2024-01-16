@@ -56,6 +56,7 @@ import {
   ACTIONS_CONTEXT,
   ActionsContext
 } from "../../../../shared/services/actions-context";
+import { TimeframeValue } from "../../../light-chart/models/light-chart.models";
 
 @Component({
   selector: 'ats-watchlist-table',
@@ -80,8 +81,8 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     { id: 'symbol', displayName: "Тикер", tooltip: 'Биржевой идентификатор ценной бумаги', minWidth: 55 },
     { id: 'shortName', displayName: "Назв.", tooltip: 'Название тикера', minWidth: 60 },
     { id: 'price', displayName: "Цена", tooltip: 'Цена последней сделки' },
-    { id: 'dayChange', displayName: "Д.изм.", tooltip: 'Изменение за день' },
-    { id: 'dayChangePerPrice', displayName: "Д.изм.,%", tooltip: 'Изменение за день в %' },
+    { id: 'priceChange', displayName: "Изм. цены", tooltip: 'Изменение за указанный промежуток' },
+    { id: 'priceChangeRatio', displayName: "Изм. цены, %", tooltip: 'Изменение указанный промежуток в %' },
     { id: 'maxPrice', displayName: "Д.макс.", tooltip: 'Максимальная цена за день' },
     { id: 'minPrice', displayName: "Д.мин.", tooltip: 'Минимальная цена за день' },
     { id: 'volume', displayName: "Объём", tooltip: 'Объём' },
@@ -95,8 +96,8 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   sortFns: { [keyName: string]: (a: InstrumentKey, b: InstrumentKey) => number } = {
     symbol: this.getSortFn('instrument.symbol'),
     price: this.getSortFn('price'),
-    dayChange: this.getSortFn('dayChange'),
-    dayChangePerPrice: this.getSortFn('dayChangePerPrice'),
+    priceChange: this.getSortFn('priceChange'),
+    priceChangeRatio: this.getSortFn('priceChangeRatio'),
     maxPrice: this.getSortFn('maxPrice'),
     minPrice: this.getSortFn('minPrice'),
     volume: this.getSortFn('volume'),
@@ -171,7 +172,11 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
 
 
     this.watchedInstruments$ = this.currentWatchlist$.pipe(
-      switchMap(watchlist => this.watchInstrumentsService.getWatched(watchlist.id)),
+      mapWith(
+        () => this.settings$,
+        (watchlist, settings) => ({ watchlist, settings })
+      ),
+      switchMap(({ watchlist, settings }) => this.watchInstrumentsService.getWatched(watchlist.id, settings.priceChangeTimeframe ?? TimeframeValue.Day)),
       map(updates => {
         if (this.defaultSortFn) {
           return updates.sort(this.defaultSortFn);

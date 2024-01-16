@@ -89,12 +89,12 @@
             >
             </ats-price-diff>
           </td>
-          <td *ngIf="isVisibleColumn('dayChange')" [ngClass]="inst.dayChange < 0 ? 'sellCell' : 'buyCell'">
-            {{ inst.dayChange }}
+          <td *ngIf="isVisibleColumn('priceChange')" [ngClass]="inst.priceChange < 0 ? 'sellCell' : 'buyCell'">
+            {{ inst.priceChange }}
           </td>
-          <td *ngIf="isVisibleColumn('dayChangePerPrice')"
-              [ngClass]="inst.dayChangePerPrice < 0 ? 'sellCell' : 'buyCell'">
-            {{ inst.dayChangePerPrice }}
+          <td *ngIf="isVisibleColumn('priceChangeRatio')"
+              [ngClass]="inst.priceChangeRatio < 0 ? 'sellCell' : 'buyCell'">
+            {{ inst.priceChangeRatio }}
           </td>
           <td *ngIf="isVisibleColumn('maxPrice')">{{ inst.maxPrice }}</td>
           <td *ngIf="isVisibleColumn('minPrice')">{{ inst.minPrice }}</td>
