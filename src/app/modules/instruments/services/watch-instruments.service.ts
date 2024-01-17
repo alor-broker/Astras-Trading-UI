@@ -141,11 +141,7 @@ export class WatchInstrumentsService {
               h?.history[h?.history.length - 1] ?? null // Needs for pairwise emits first value
             ),
             pairwise(), // Needs to get last value of previous candle
-            filter((c, i) => c[0]?.time !== c[1]?.time || i === 0),
-            map(candlePair => {
-              return candlePair[0];
-            }),
-            filter(c => c != null)
+            filter((c, i) => c[0]?.time !== c[1]?.time || i === 0)
           ),
         )
       );
@@ -154,7 +150,15 @@ export class WatchInstrumentsService {
       this.quotesService.getQuotes(wi.instrument.symbol, wi.instrument.exchange, wi.instrument.instrumentGroup),
       lastCandleStream
     ])
-      .subscribe(([quote, lastCandle]) => {
+      .pipe(
+        map(([quote, candlePair]) => {
+            if (candlePair[1] != null && candlePair[1].time < this.getHistoryToTime(timeframe)) {
+              return { quote, lastCandle: candlePair[1] };
+            }
+            return { quote, lastCandle: candlePair[0] };
+        }),
+      )
+      .subscribe(({ quote, lastCandle }) => {
         const update = <WatchedInstrument>{
           prevTickPrice: quote.last_price - quote.change,
           closePrice: quote.prev_close_price,
