@@ -32,6 +32,8 @@ describe('ScalperOrderBookBodyComponent', () => {
         mockComponent({ selector: 'ats-scalper-order-book-table' }),
         mockComponent({ selector: 'ats-orders-indicator', inputs: ['visible'] }),
         mockComponent({ selector: 'ats-possible-actions-panel' }),
+        mockComponent({ selector: 'ats-panels-container', inputs: ['initialWidths'] }),
+        mockComponent({ selector: 'ats-panel', inputs: ['canResize', 'minWidthPx', 'defaultWidthPercent', 'expandable']}),
         ...ngZorroMockComponents
       ],
       providers: [

@@ -26,6 +26,9 @@ import { HoverItemDirective } from './directives/hover-item.directive';
 import { HoverItemsGroupDirective } from './directives/hover-items-group.directive';
 import { TableRulerComponent } from './components/table-ruler/table-ruler.component';
 import { LetDirective } from "@ngrx/component";
+import { PanelsContainerComponent } from "./components/panels/panels-container/panels-container.component";
+import { PanelComponent } from "./components/panels/panel/panel.component";
+import { PanelResizeHandlerComponent } from "./components/panels/panel-resize-handler/panel-resize-handler.component";
 
 @NgModule({
   declarations: [
@@ -44,7 +47,10 @@ import { LetDirective } from "@ngrx/component";
     PossibleActionsPanelComponent,
     HoverItemDirective,
     HoverItemsGroupDirective,
-    TableRulerComponent
+    TableRulerComponent,
+    PanelsContainerComponent,
+    PanelComponent,
+    PanelResizeHandlerComponent
   ],
     imports: [
         CommonModule,
