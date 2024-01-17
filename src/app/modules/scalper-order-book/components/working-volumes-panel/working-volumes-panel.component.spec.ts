@@ -5,6 +5,8 @@ import { WidgetSettingsService } from '../../../../shared/services/widget-settin
 import { Subject } from 'rxjs';
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
+import { SCALPER_ORDERBOOK_SHARED_CONTEXT } from "../scalper-order-book/scalper-order-book.component";
+import { LetDirective } from "@ngrx/component";
 
 describe('WorkingVolumesPanelComponent', () => {
   let component: WorkingVolumesPanelComponent;
@@ -12,6 +14,7 @@ describe('WorkingVolumesPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports:[LetDirective],
       declarations: [ WorkingVolumesPanelComponent ],
       providers: [
         {
@@ -31,6 +34,12 @@ describe('WorkingVolumesPanelComponent', () => {
           useValue: {
             getStateRecord: jasmine.createSpy('getStateRecord').and.returnValue(new Subject()),
             setStateRecord: jasmine.createSpy('setStateRecord').and.callThrough()
+          }
+        },
+        {
+          provide: SCALPER_ORDERBOOK_SHARED_CONTEXT,
+          useValue: {
+            setWorkingVolume: jasmine.createSpy('setWorkingVolume').and.callThrough()
           }
         }
       ]

@@ -1,4 +1,4 @@
-<ng-container *ngrxLet="{ isLoading: isLoading$ } as vm">
+<div class="container" *ngrxLet="{ isLoading: isLoading$ } as vm">
   <nz-spin [nzSpinning]="vm.isLoading">
     <cdk-virtual-scroll-viewport
       (nzResizeObserve)="updateContentSize($event)"
@@ -80,6 +80,16 @@
       <ats-possible-actions-panel></ats-possible-actions-panel>
     </div>
     <div
+      class="position-absolute bottom-0 p-3 z-3"
+      cdkDrag
+      cdkDragBoundary=".container"
+      [cdkDragFreeDragPosition]="(bottomFloatingPanelPosition$ | async) ?? {x: 0, y: 0}"
+      (cdkDragEnded)="saveBottomFloatingPanelPosition($event)"
+      #floatingPanelContainer
+    >
+      <ats-bottom-floating-panel [guid]="guid" [isActive]="isActive"></ats-bottom-floating-panel>
+    </div>
+    <div
       *ngIf="(dataContext.orderBookBody$  | async)?.length === 0 && !vm.isLoading"
       class="position-absolute top-0 w-100"
     >
@@ -89,4 +99,4 @@
       ></nz-empty>
     </div>
 </nz-spin>
-</ng-container>
+</div>

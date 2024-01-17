@@ -29,6 +29,7 @@ import { LetDirective } from "@ngrx/component";
 import { PanelsContainerComponent } from "./components/panels/panels-container/panels-container.component";
 import { PanelComponent } from "./components/panels/panel/panel.component";
 import { PanelResizeHandlerComponent } from "./components/panels/panel-resize-handler/panel-resize-handler.component";
+import { BottomFloatingPanelComponent } from './components/bottom-floating-panel/bottom-floating-panel.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { PanelResizeHandlerComponent } from "./components/panels/panel-resize-ha
     TableRulerComponent,
     PanelsContainerComponent,
     PanelComponent,
-    PanelResizeHandlerComponent
+    PanelResizeHandlerComponent,
+    BottomFloatingPanelComponent
   ],
     imports: [
         CommonModule,

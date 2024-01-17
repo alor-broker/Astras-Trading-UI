@@ -38,8 +38,15 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   @Input()
   suffix: TemplateRef<any> | null = null;
 
+  @Input()
+  focused = false;
+
   @Output()
   atsBlur = new EventEmitter();
+
+  @Output()
+  atsEnter = new EventEmitter();
+
   @ViewChild('inputElement', {static: true})
   inputElement!: ElementRef<HTMLInputElement>;
   value?: number | null;
@@ -63,6 +70,13 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
     this.setValue(value);
 
     this.setDisplayValue(value);
+    if(this.focused) {
+      setTimeout(() => {
+        this.inputElement?.nativeElement.select();
+      });
+
+    }
+
     this.cdr.markForCheck();
   }
 

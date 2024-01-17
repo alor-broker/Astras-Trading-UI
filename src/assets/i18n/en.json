@@ -82,7 +82,8 @@
     "emptyFieldError": "Enter value",
     "selectValueError": "Select value",
     "tooLittle": "Too little",
-    "tooMuch": "Too much"
+    "tooMuch": "Too much",
+    "intervalError": "Value should be from {{min}} to {{max}}"
   },
 
   "lessMoreOptions": {

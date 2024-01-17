@@ -1,11 +1,11 @@
 import {
   Component,
   DestroyRef,
-  EventEmitter,
+  Inject,
   Input,
   OnDestroy,
   OnInit,
-  Output
+  SkipSelf
 } from '@angular/core';
 import {
   BehaviorSubject,
@@ -26,7 +26,15 @@ import { WidgetLocalStateService } from "../../../../shared/services/widget-loca
 import { RecordContent } from "../../../../store/widgets-local-state/widgets-local-state.model";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { ScalperOrderBookWidgetSettings } from "../../models/scalper-order-book-settings.model";
-import { FormControl, Validators } from "@angular/forms";
+import {
+  FormControl,
+  Validators
+} from "@angular/forms";
+import {
+  SCALPER_ORDERBOOK_SHARED_CONTEXT,
+  ScalperOrderBookSharedContext
+} from "../scalper-order-book/scalper-order-book.component";
+import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 
 interface SelectedWorkingVolumeState extends RecordContent {
   lastSelectedVolume?: {
@@ -40,24 +48,39 @@ interface SelectedWorkingVolumeState extends RecordContent {
   styleUrls: ['./working-volumes-panel.component.less']
 })
 export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
+  readonly validation = {
+    volume: {
+      min: 1,
+      max: inputNumberValidation.max
+    }
+  };
   @Input()
   isActive = false;
   @Input({ required: true })
   guid!: string;
+
   workingVolumes$!: Observable<number[]>;
   readonly selectedVolume$ = new BehaviorSubject<{ index: number, value: number } | null>(null);
-  @Output()
-  selectedVolumeChanged = new EventEmitter<number>();
+  changeVolumeConfirmVisibleIndex: null | number = null;
+  changeVolumeControl = new FormControl(
+    1,
+    [
+      Validators.required,
+      Validators.min(this.validation.volume.min),
+      Validators.max(this.validation.volume.max)
+    ]
+  );
+
   private readonly lastSelectedVolumeStateKey = 'last-selected-volume';
   private lastSelectedVolumeState$!: Observable<SelectedWorkingVolumeState | null>;
   private settings$!: Observable<ScalperOrderBookWidgetSettings>;
 
-  changeVolumeConfirmVisibleIndex: null | number = null;
-  changeVolumeControl = new FormControl(1, [Validators.required, Validators.min(1)]);
-
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly hotKeyCommandService: HotKeyCommandService,
+    @Inject(SCALPER_ORDERBOOK_SHARED_CONTEXT)
+    @SkipSelf()
+    private readonly scalperOrderBookSharedContext: ScalperOrderBookSharedContext,
     private readonly widgetLocalStateService: WidgetLocalStateService,
     private readonly destroyRef: DestroyRef
   ) {
@@ -102,7 +125,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
       filter(x => !!x),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
-      this.selectedVolumeChanged.emit(x!.value);
+      this.scalperOrderBookSharedContext.setWorkingVolume(x!.value);
       this.updateLastSelectedVolumeState(x!.value);
     });
 
@@ -122,13 +145,20 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
     });
   }
 
-  changeVolume(index: number): void {
+  applyVolumeChanges(index: number): void {
     this.settings$
-      .pipe(take(1))
+      .pipe(
+        take(1)
+      )
       .subscribe(s => {
+        if (!this.changeVolumeControl.valid) {
+          this.closeVolumeChange();
+          return;
+        }
+
         const instrumentKey = ScalperSettingsHelper.getInstrumentKey(s);
         const newWorkingVolumes = (s.instrumentLinkedSettings?.[instrumentKey] ?? s).workingVolumes
-          .map((v, i) => i === index ? this.changeVolumeControl.value : v);
+          .map((v, i) => i === index ? Number(this.changeVolumeControl.value) : v);
 
         this.widgetSettingsService.updateSettings(
           this.guid,
@@ -142,18 +172,26 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
             }
           }
         );
-        this.selectedVolume$.next({ index, value: this.changeVolumeControl.value!});
-        this.closeChangeVolumeConfirm();
+        this.selectedVolume$.next({ index, value: this.changeVolumeControl.value! });
+        this.closeVolumeChange();
       });
   }
 
-  openChangeVolumeConfirm(i: number, currentVolume: number): void {
+  openVolumeChange(i: number, currentVolume: number): void {
+    this.changeVolumeControl.reset();
     this.changeVolumeControl.setValue(currentVolume);
     this.changeVolumeConfirmVisibleIndex = i;
   }
 
-  closeChangeVolumeConfirm(): void {
+  closeVolumeChange(): void {
     this.changeVolumeConfirmVisibleIndex = null;
+  }
+
+  volumeChangeVisibilityChanged(isOpened: boolean): void {
+    if(!isOpened) {
+      // when Esc button is pressed closeVolumeChange is not called and confirm for the same volume item cannot be opened again
+      this.closeVolumeChange();
+    }
   }
 
   private updateLastSelectedVolumeState(currentVolume: number): void {

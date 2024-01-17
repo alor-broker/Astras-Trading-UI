@@ -82,7 +82,8 @@
     "emptyFieldError": "Введите значение",
     "selectValueError": "Выберите значение",
     "tooLittle": "Слишком мало",
-    "tooMuch": "Слишком много"
+    "tooMuch": "Слишком много",
+    "intervalError": "Значение должно быть от {{min}} до {{max}}"
   },
 
   "lessMoreOptions": {
