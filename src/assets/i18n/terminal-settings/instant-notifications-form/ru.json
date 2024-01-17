@@ -12,5 +12,6 @@
   "ordersGroupCreatedLabel": "Группа заявок создана",
 
   "hiddenPortfoliosForNotificationsLabel": "Скрыть уведомления для портфелей",
+  "hiddenPortfoliosForNotificationsTooltip": "Касается только исполненных заявок в рамках выбранного портфеля",
   "hiddenPortfoliosForNotificationsPlaceholder": "Выберите портфели"
 }
