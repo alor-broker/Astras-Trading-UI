@@ -98,17 +98,17 @@ describe('WatchInstrumentsService', () => {
       ...TestData.instruments[0]
     }));
 
+    const nowDate = Math.round(new Date().getTime() / 1000);
     const historyRes = [
-      { time: 1, close: 1 },
-      { time: 2, close: 3 },
-      { time: 3, close: 5 },
+      { time: nowDate - 3600 * 24 * 3, close: 1 },
+      { time: nowDate - 3600 * 24 * 2, close: 3 },
+      { time: nowDate - 3600 * 24, close: 5 },
     ];
 
     historyServiceSpy.getHistory.and.returnValue(of({
       history: historyRes
     }));
 
-    let newCandle;
     const newCandle$ = new Subject();
     candlesServiceSpy.getInstrumentLastCandle.and.returnValue(newCandle$);
 
@@ -153,6 +153,55 @@ describe('WatchInstrumentsService', () => {
       });
 
     tick();
+  }));
+
+  it('#setupInstrumentUpdatesSubscription should emit right values when new candles come', fakeAsync(() => {
+    instrumentsServiceSpy.getInstrument.and.returnValue(of({
+      ...TestData.instruments[0]
+    }));
+
+    const nowDate = Math.round(new Date().getTime() / 1000);
+    const historyRes = [
+      { time: nowDate - 3600 * 24 * 3, close: 1 },
+      { time: nowDate - 3600 * 24 * 2, close: 3 },
+      { time: nowDate - 3600 * 24 - 2, close: 5 },
+    ];
+
+    historyServiceSpy.getHistory.and.returnValue(of({
+      history: historyRes
+    }));
+
+    let newCandle;
+    const newCandle$ = new Subject();
+    candlesServiceSpy.getInstrumentLastCandle.and.returnValue(newCandle$);
+
+    const newQuote = {
+      change: 1,
+      prev_close_price: 1,
+      open_price: 1,
+      last_price: 10,
+      low_price: 1,
+      high_price: 1,
+      volume: 1,
+    };
+
+    const newQuote$ = new BehaviorSubject(newQuote);
+
+    quotesServiceSpy.getQuotes.and.returnValue(newQuote$);
+
+    watchlistCollectionServiceSpy.getWatchlistCollection.and.callFake(() => {
+      return new BehaviorSubject({
+        collection: [{
+          id: '123',
+          title: 'Test List',
+          isDefault: false,
+          items: [{
+            ...TestData.instruments[0],
+            recordId: GuidGenerator.newGuid()
+          }]
+        }]
+      } as WatchlistCollection);
+    });
 
     service.getWatched('123', TimeframeValue.Day)
       .pipe(
@@ -170,10 +219,11 @@ describe('WatchInstrumentsService', () => {
       });
 
     tick();
-    newCandle = { time: 4, close: 4 };
+
+    newCandle = { time: nowDate - 3600 * 24 - 1, close: 4 };
     newCandle$.next(newCandle);
     tick();
-    newCandle$.next({ time: 5, close: 5 });
+    newCandle$.next({ time: nowDate - 3600 * 24, close: 45 });
     tick();
   }));
 

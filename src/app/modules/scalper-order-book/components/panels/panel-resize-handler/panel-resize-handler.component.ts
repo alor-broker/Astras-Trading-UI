@@ -15,7 +15,6 @@ import {
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
   finalize,
-  map,
   tap
 } from "rxjs/operators";
 import { DOCUMENT } from "@angular/common";
@@ -62,7 +61,6 @@ export class PanelResizeHandlerComponent implements OnInit {
               e.preventDefault();
               e.stopPropagation();
             }),
-            map(e => e),
             takeUntil(fromEvent(this.documentRef, 'mouseup')),
             finalize(() => {
               this.panelResizeContext.resizeEndOutsideAngular$.next();

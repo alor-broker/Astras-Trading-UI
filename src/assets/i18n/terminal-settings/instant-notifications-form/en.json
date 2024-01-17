@@ -12,5 +12,6 @@
   "ordersGroupCreatedLabel": "Orders group created",
 
   "hiddenPortfoliosForNotificationsLabel": "Hide notifications for portfolios",
+  "hiddenPortfoliosForNotificationsTooltip": "Applies only to completed orders of the selected portfolio",
   "hiddenPortfoliosForNotificationsPlaceholder": "Select portfolios"
 }
