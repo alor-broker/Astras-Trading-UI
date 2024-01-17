@@ -126,7 +126,6 @@ export class WatchInstrumentsService {
   }
 
   private setupInstrumentUpdatesSubscription(wi: WatchedInstrument, timeframe: TimeframeValue): void {
-    console.log(this.getHistoryToTime(timeframe));
     const lastCandleStream = this.history.getHistory({
       symbol: wi.instrument.symbol,
       exchange: wi.instrument.exchange,
