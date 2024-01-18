@@ -78,8 +78,11 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   readonly rowHeight = 18;
   @ViewChild(CdkVirtualScrollViewport)
   scrollContainer!: CdkVirtualScrollViewport;
-  @ViewChild('floatingPanelContainer', { static: false })
-  floatingPanelContainer?: ElementRef<HTMLDivElement>;
+
+  @ViewChild('topFloatingPanelContainer', { static: false })
+  topFloatingPanelContainer?: ElementRef<HTMLDivElement>;
+  @ViewChild('bottomFloatingPanelContainer', { static: false })
+  bottomFloatingPanelContainer?: ElementRef<HTMLDivElement>;
 
   @Input({ required: true })
   guid!: string;
@@ -89,8 +92,10 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   dataContext!: ScalperOrderBookDataContext;
   hiddenOrdersIndicators$!: Observable<{ up: boolean, down: boolean }>;
   panelWidths$!: Observable<{ [K: string]: number }>;
+  topFloatingPanelPosition$!: Observable<Point>;
   bottomFloatingPanelPosition$!: Observable<Point>;
-  private readonly bottomFloatingPanelPositionStateKey = 'bottom-floating-panel-position';
+  readonly topFloatingPanelPositionStateKey = 'top-floating-panel-position';
+  readonly bottomFloatingPanelPositionStateKey = 'bottom-floating-panel-position';
   private readonly renderItemsRange$ = new BehaviorSubject<ListRange | null>(null);
   private readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   private lastContainerHeight = 0;
@@ -129,7 +134,16 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     this.subscribeToHotkeys();
     this.initHiddenOrdersIndicators();
     this.initLayout();
-    this.initBottomFloatingPanelPosition();
+
+    this.topFloatingPanelPosition$ = this.initFloatingPanelPosition(
+      this.topFloatingPanelPositionStateKey,
+      () => this.topFloatingPanelContainer?.nativeElement.getBoundingClientRect() ?? null
+    );
+
+    this.bottomFloatingPanelPosition$ = this.initFloatingPanelPosition(
+      this.bottomFloatingPanelPositionStateKey,
+      () => this.bottomFloatingPanelContainer?.nativeElement.getBoundingClientRect() ?? null
+    );
   }
 
   ngAfterViewInit(): void {
@@ -166,11 +180,11 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     });
   }
 
-  saveBottomFloatingPanelPosition(event: CdkDragEnd): void {
+  saveFloatingPanelPosition(event: CdkDragEnd, stateKey: string): void {
     const position = event.source.getFreeDragPosition();
     this.widgetLocalStateService.setStateRecord<Point>(
       this.guid,
-      this.bottomFloatingPanelPositionStateKey,
+      stateKey,
       position
     );
   }
@@ -370,12 +384,12 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     });
   }
 
-  private initBottomFloatingPanelPosition(): void {
-    const savedPosition$ = this.widgetLocalStateService.getStateRecord<Point>(this.guid, this.bottomFloatingPanelPositionStateKey).pipe(
+  private initFloatingPanelPosition(stateKey: string, geContainerBounds: () => DOMRect | null): Observable<Point> {
+    const savedPosition$ = this.widgetLocalStateService.getStateRecord<Point>(this.guid, stateKey).pipe(
       map(p => p ?? { x: 0, y: 0 })
     );
 
-    this.bottomFloatingPanelPosition$ = combineLatest({
+    return combineLatest({
       contentSize: this.contentSize$,
       savedPosition: savedPosition$
     }).pipe(
@@ -383,15 +397,16 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
         let x = s.savedPosition.x;
         let y = s.savedPosition.y;
 
-        const containerBounds = this.floatingPanelContainer?.nativeElement.getBoundingClientRect();
+        const containerBounds = geContainerBounds();
+        const paddingCorrection = 4;
         const maxXOffset = Math.max(0, (s.contentSize?.width ?? 0) - (containerBounds?.width ?? 0));
         const maxYOffset = Math.max(0, (s.contentSize?.height ?? 0) - (containerBounds?.height ?? 0));
 
-        if (x > maxXOffset) {
+        if ((Math.floor(x) - paddingCorrection) > maxXOffset) {
           x = 0;
         }
 
-        if (y < 0 && Math.abs(y) > maxYOffset) {
+        if (Math.floor(Math.abs(y)) > maxYOffset) {
           y = 0;
         }
 

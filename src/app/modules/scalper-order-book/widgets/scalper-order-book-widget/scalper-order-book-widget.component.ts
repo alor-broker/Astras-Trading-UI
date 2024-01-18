@@ -97,6 +97,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
           }
         ),
         showPriceWithZeroPadding: getValueOrDefault(settings.showPriceWithZeroPadding, true),
+        showInstrumentPriceDayChange: getValueOrDefault(settings.showInstrumentPriceDayChange, true),
       }),
       this.dashboardContextService,
       this.widgetSettingsService,

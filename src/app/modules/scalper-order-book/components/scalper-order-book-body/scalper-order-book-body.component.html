@@ -80,12 +80,22 @@
       <ats-possible-actions-panel></ats-possible-actions-panel>
     </div>
     <div
+      class="position-absolute top-0 p-3 z-3"
+      cdkDrag
+      cdkDragBoundary=".container"
+      [cdkDragFreeDragPosition]="(topFloatingPanelPosition$ | async) ?? {x: 0, y: 0}"
+      (cdkDragEnded)="saveFloatingPanelPosition($event, topFloatingPanelPositionStateKey)"
+       #topFloatingPanelContainer
+    >
+      <ats-top-floating-panel [guid]="guid"></ats-top-floating-panel>
+    </div>
+    <div
       class="position-absolute bottom-0 p-3 z-3"
       cdkDrag
       cdkDragBoundary=".container"
       [cdkDragFreeDragPosition]="(bottomFloatingPanelPosition$ | async) ?? {x: 0, y: 0}"
-      (cdkDragEnded)="saveBottomFloatingPanelPosition($event)"
-      #floatingPanelContainer
+      (cdkDragEnded)="saveFloatingPanelPosition($event, bottomFloatingPanelPositionStateKey)"
+      #bottomFloatingPanelContainer
     >
       <ats-bottom-floating-panel [guid]="guid" [isActive]="isActive"></ats-bottom-floating-panel>
     </div>
