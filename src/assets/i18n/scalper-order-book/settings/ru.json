@@ -25,6 +25,7 @@
   "autoAlignSettingsLabel": "Настройки автопрокрутки",
   "autoAlignIntervalLabel": "Интервал автопрокрутки, сек.",
   "volumeFormatDisplayLabel": "Формат отображения объема",
+  "showInstrumentPriceDayChangeLabel": "Показывать изменение цены за день",
   "instrumentGroupLabel": "Режим торгов",
   "volumeHighlightFullnessLabel": "Заполненность полосы объема",
   "showRulerLabel": "Показывать линейку",

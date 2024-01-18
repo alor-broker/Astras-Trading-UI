@@ -37,6 +37,7 @@ describe('ScalperOrderBookBodyComponent', () => {
         mockComponent({ selector: 'ats-possible-actions-panel' }),
         mockComponent({ selector: 'ats-panels-container', inputs: ['initialWidths'] }),
         mockComponent({ selector: 'ats-panel', inputs: ['canResize', 'minWidthPx', 'defaultWidthPercent', 'expandable']}),
+        mockComponent({ selector: 'ats-top-floating-panel', inputs: ['guid', 'isActive']}),
         mockComponent({ selector: 'ats-bottom-floating-panel', inputs: ['guid', 'isActive']}),
         mockDirective({selector: '[cdkDrag]', inputs: ['cdkDragBoundary', 'cdkDragFreeDragPosition']}),
         ...ngZorroMockComponents

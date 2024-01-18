@@ -5,7 +5,7 @@
   <ng-container *ngIf="vm.selectedVolume">
       <span
         *ngFor="let vol of vm.allVolumes; let i = index"
-        class="working-volume-item d-inline-block text-end user-select-none cursor-pointer pl-2 pr-2"
+        class="working-volume-item d-inline-block text-end cursor-pointer pl-2 pr-2"
         [class.active]="vm.selectedVolume.index === i && vm.selectedVolume.value === vol"
         (click)="selectVolume(i)"
         (dblclick)="openVolumeChange(i, vol)"

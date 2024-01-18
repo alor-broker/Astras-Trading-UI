@@ -25,6 +25,7 @@
   "autoAlignSettingsLabel": "Autoscroll settings",
   "autoAlignIntervalLabel": "Autoscroll interval, sec.",
   "volumeFormatDisplayLabel": "Volume display format",
+  "showInstrumentPriceDayChangeLabel": "Show price change per day",
   "instrumentGroupLabel": "Trading mode",
   "volumeHighlightFullnessLabel": "Volume bar fullness",
   "showRulerLabel": "Show ruler",

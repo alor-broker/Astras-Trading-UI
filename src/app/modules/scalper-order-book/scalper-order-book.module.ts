@@ -30,6 +30,7 @@ import { PanelsContainerComponent } from "./components/panels/panels-container/p
 import { PanelComponent } from "./components/panels/panel/panel.component";
 import { PanelResizeHandlerComponent } from "./components/panels/panel-resize-handler/panel-resize-handler.component";
 import { BottomFloatingPanelComponent } from './components/bottom-floating-panel/bottom-floating-panel.component';
+import { TopFloatingPanelComponent } from './components/top-floating-panel/top-floating-panel.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import { BottomFloatingPanelComponent } from './components/bottom-floating-panel
     PanelsContainerComponent,
     PanelComponent,
     PanelResizeHandlerComponent,
-    BottomFloatingPanelComponent
+    BottomFloatingPanelComponent,
+    TopFloatingPanelComponent
   ],
     imports: [
         CommonModule,

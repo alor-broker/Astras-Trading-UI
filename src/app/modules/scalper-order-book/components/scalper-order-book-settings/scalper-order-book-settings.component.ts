@@ -93,6 +93,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     ),
     showZeroVolumeItems: this.formBuilder.nonNullable.control(true),
     showSpreadItems: this.formBuilder.nonNullable.control(true),
+    showInstrumentPriceDayChange: this.formBuilder.nonNullable.control(true),
     volumeDisplayFormat: this.formBuilder.nonNullable.control(NumberDisplayFormat.Default),
     showRuler: this.formBuilder.nonNullable.control(true),
     rulerSettings: this.formBuilder.nonNullable.group(
@@ -326,6 +327,8 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     this.form.controls.depth.setValue(settings.depth ?? 10);
     this.form.controls.showZeroVolumeItems.setValue(settings.showZeroVolumeItems);
     this.form.controls.showSpreadItems.setValue(settings.showSpreadItems);
+    this.form.controls.showInstrumentPriceDayChange.setValue(settings.showInstrumentPriceDayChange ?? false);
+
     this.form.controls.volumeDisplayFormat.setValue(settings.volumeDisplayFormat ?? NumberDisplayFormat.Default);
 
     this.form.controls.showRuler.setValue(settings.showRuler ?? false);
