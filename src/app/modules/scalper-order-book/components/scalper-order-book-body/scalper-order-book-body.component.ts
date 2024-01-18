@@ -1,11 +1,14 @@
 import {
   AfterViewInit,
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   ElementRef,
+  Inject,
   InjectionToken,
   Input,
   OnDestroy,
   OnInit,
+  SkipSelf,
   ViewChild
 } from '@angular/core';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
@@ -38,8 +41,17 @@ import {
 import { ScalperOrderBookTableHelper } from '../../utils/scalper-order-book-table.helper';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { ScalperOrderBookWidgetSettings } from '../../models/scalper-order-book-settings.model';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
+import {
+  SCALPER_ORDERBOOK_SHARED_CONTEXT,
+  ScalperOrderBookSharedContext
+} from "../scalper-order-book/scalper-order-book.component";
+import {
+  CdkDragEnd,
+  Point
+} from "@angular/cdk/drag-drop";
+import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
 
 export interface ScalperOrderBookBodyRef {
   getElement(): ElementRef<HTMLElement>;
@@ -63,37 +75,38 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     currentTrades: 'current-trades',
     tradeClusters: 'trade-clusters'
   };
-
   readonly rowHeight = 18;
-
   @ViewChild(CdkVirtualScrollViewport)
   scrollContainer!: CdkVirtualScrollViewport;
-  @Input({required: true})
+  @ViewChild('floatingPanelContainer', { static: false })
+  floatingPanelContainer?: ElementRef<HTMLDivElement>;
+
+  @Input({ required: true })
   guid!: string;
   @Input()
   isActive = false;
   readonly isLoading$ = new BehaviorSubject(false);
   dataContext!: ScalperOrderBookDataContext;
   hiddenOrdersIndicators$!: Observable<{ up: boolean, down: boolean }>;
-
   panelWidths$!: Observable<{ [K: string]: number }>;
+  bottomFloatingPanelPosition$!: Observable<Point>;
+  private readonly bottomFloatingPanelPositionStateKey = 'bottom-floating-panel-position';
   private readonly renderItemsRange$ = new BehaviorSubject<ListRange | null>(null);
   private readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
-  private readonly workingVolume$ = new BehaviorSubject<number | null>(null);
   private lastContainerHeight = 0;
+  private widgetSettings$!: Observable<ScalperOrderBookWidgetSettings>;
 
   constructor(
+    @Inject(SCALPER_ORDERBOOK_SHARED_CONTEXT)
+    @SkipSelf()
+    private readonly scalperOrderBookSharedContext: ScalperOrderBookSharedContext,
     private readonly scalperOrderBookDataContextService: ScalperOrderBookDataContextService,
     private readonly priceRowsStore: PriceRowsStore,
     private readonly hotkeysService: HotKeyCommandService,
     private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly widgetLocalStateService: WidgetLocalStateService,
     private readonly ref: ElementRef<HTMLElement>,
     private readonly destroyRef: DestroyRef) {
-  }
-
-  @Input({required: true})
-  set workingVolume(value: number) {
-    this.workingVolume$.next(value);
   }
 
   getElement(): ElementRef<HTMLElement> {
@@ -110,11 +123,13 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnInit(): void {
+    this.initWidgetSettings();
     this.initContext();
     this.initAutoAlign();
     this.subscribeToHotkeys();
     this.initHiddenOrdersIndicators();
     this.initLayout();
+    this.initBottomFloatingPanelPosition();
   }
 
   ngAfterViewInit(): void {
@@ -133,11 +148,10 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     this.contentSize$.complete();
     this.isLoading$.complete();
     this.renderItemsRange$.complete();
-    this.workingVolume$.complete();
   }
 
-  updatePanelWidths(widths:{ [key: string]: number }): void {
-    ScalperSettingsHelper.getSettingsStream(this.guid,this.widgetSettingsService).pipe(
+  updatePanelWidths(widths: { [key: string]: number }): void {
+    this.widgetSettings$.pipe(
       take(1)
     ).subscribe(settings => {
       this.widgetSettingsService.updateSettings<ScalperOrderBookWidgetSettings>(
@@ -152,6 +166,15 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     });
   }
 
+  saveBottomFloatingPanelPosition(event: CdkDragEnd): void {
+    const position = event.source.getFreeDragPosition();
+    this.widgetLocalStateService.setStateRecord<Point>(
+      this.guid,
+      this.bottomFloatingPanelPositionStateKey,
+      position
+    );
+  }
+
   private subscribeToHotkeys(): void {
     this.hotkeysService.commands$.pipe(
       takeUntilDestroyed(this.destroyRef)
@@ -160,6 +183,12 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
         this.alignTable();
       }
     });
+  }
+
+  private initWidgetSettings(): void {
+    this.widgetSettings$ = ScalperSettingsHelper.getSettingsStream(this.guid, this.widgetSettingsService).pipe(
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
   }
 
   private initAutoAlign(): void {
@@ -243,9 +272,9 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     this.dataContext = {
       ...context,
       displayRange$: this.renderItemsRange$.asObservable(),
-      workingVolume$: this.workingVolume$.asObservable()
+      workingVolume$: this.scalperOrderBookSharedContext.workingVolume$
         .pipe(
-          filter(x => x != null && !!x),
+          filter(x => x != null && x > 0),
           map(x => x!)
         )
     };
@@ -277,13 +306,11 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
         const spreadRows = orderBookBody.filter(r => r.rowType === ScalperOrderBookRowType.Spread);
         if (spreadRows.length > 0) {
           targetIndex = orderBookBody.indexOf(spreadRows[0]) + Math.round(spreadRows.length / 2);
-        }
-        else {
+        } else {
           const bestSellRowIndex = orderBookBody.findIndex(r => r.rowType === ScalperOrderBookRowType.Ask && r.isBest);
           if (bestSellRowIndex >= 0) {
             targetIndex = bestSellRowIndex;
-          }
-          else {
+          } else {
             const startRowIndex = orderBookBody.findIndex(r => r.isStartRow);
             if (startRowIndex >= 0) {
               targetIndex = startRowIndex;
@@ -341,5 +368,36 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
         });
       }
     });
+  }
+
+  private initBottomFloatingPanelPosition(): void {
+    const savedPosition$ = this.widgetLocalStateService.getStateRecord<Point>(this.guid, this.bottomFloatingPanelPositionStateKey).pipe(
+      map(p => p ?? { x: 0, y: 0 })
+    );
+
+    this.bottomFloatingPanelPosition$ = combineLatest({
+      contentSize: this.contentSize$,
+      savedPosition: savedPosition$
+    }).pipe(
+      map(s => {
+        let x = s.savedPosition.x;
+        let y = s.savedPosition.y;
+
+        const containerBounds = this.floatingPanelContainer?.nativeElement.getBoundingClientRect();
+        const maxXOffset = Math.max(0, (s.contentSize?.width ?? 0) - (containerBounds?.width ?? 0));
+        const maxYOffset = Math.max(0, (s.contentSize?.height ?? 0) - (containerBounds?.height ?? 0));
+
+        if (x > maxXOffset) {
+          x = 0;
+        }
+
+        if (y < 0 && Math.abs(y) > maxYOffset) {
+          y = 0;
+        }
+
+        return { x, y };
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
   }
 }

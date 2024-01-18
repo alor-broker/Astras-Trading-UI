@@ -11,6 +11,7 @@
     [ngModel]="displayValue"
     (ngModelChange)="onModelChange($event)"
     (keydown)="processKeydown($event)"
+    (keydown.enter)="atsEnter.emit()"
     (wheel)="processWheel($event)"
   />
 </nz-input-group>

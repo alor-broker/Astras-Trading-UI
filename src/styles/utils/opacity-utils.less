@@ -1,0 +1,7 @@
+﻿.opacity- {
+  each(range(0, 100, 25), {
+    &@{value} {
+      opacity: (@value / 100);
+    }
+  })
+}
