@@ -49,7 +49,7 @@ describe('TradeClustersPanelComponent', () => {
 
     component.dataContext = {
       extendedSettings$: new Subject(),
-      orderBookData$: new Subject(),
+      orderBook$: new Subject(),
       position$: new Subject(),
       currentOrders$: new Subject(),
       currentPortfolio$: new Subject(),

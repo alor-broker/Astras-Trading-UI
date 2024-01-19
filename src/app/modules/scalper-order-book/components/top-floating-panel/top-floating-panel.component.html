@@ -1,7 +1,7 @@
 <div class="container d-flex flex-column p-1 user-select-none" *transloco="let t; scope: 'scalper-order-book/top-floating-panel'">
   <ng-container *ngrxLet="{ settings: settings$ } as vm">
     <ng-container *ngIf="vm.settings.showInstrumentPriceDayChange">
-      <div *ngrxLet="priceDayChangePercent$ as priceDayChangePercent">
+      <div *ngrxLet="priceDayChangePercent$ as priceDayChangePercent" class="price-day-change-indicator">
         <span
           [ngClass]="{
           'positive-color': priceDayChangePercent > 0,

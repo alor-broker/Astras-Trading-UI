@@ -52,18 +52,18 @@ export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
 
     return combineLatest([
       settings$,
-      this.dataContextService.getOrderBookDataStream(settings$),
+      this.dataContextService.getOrderBookStream(settings$),
       this.dataContextService.getOrderBookPositionStream(settings$, this.dataContextService.getOrderBookPortfolio())
     ]).pipe(
       map(([settings, orderBook, position]) => {
-        if (!position || position.qtyTFuture === 0 || orderBook.data.a.length === 0 || orderBook.data.b.length === 0) {
+        if (!position || position.qtyTFuture === 0 || orderBook.rows.a.length === 0 || orderBook.rows.b.length === 0) {
           return null;
         }
 
         const sign = position!.qtyTFuture > 0 ? 1 : -1;
         const bestPrice = sign > 0
-          ? orderBook.data.b[0].p
-          : orderBook.data.a[0].p;
+          ? orderBook.rows.b[0].p
+          : orderBook.rows.a[0].p;
 
         const rowsDifference = Math.round((bestPrice - position!.avgPrice) / settings.instrument.minstep) * sign;
         const rowsDifferencePercent = MathHelper.round(((bestPrice - position!.avgPrice) / position!.avgPrice) * 100 * sign, 3);

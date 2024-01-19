@@ -22,13 +22,15 @@ import {
   CurrentOrderDisplay,
   ScalperOrderBookRowType
 } from '../models/scalper-order-book.model';
-import { ScalperOrderBookExtendedSettings } from '../models/scalper-order-book-data-context.model';
+import {
+  OrderBook,
+  ScalperOrderBookExtendedSettings
+} from '../models/scalper-order-book-data-context.model';
 import { ScalperOrderBookCommands } from '../models/scalper-order-book-commands';
 import { TerminalCommand } from '../../../shared/models/terminal-command';
 import { Side } from '../../../shared/models/enums/side.model';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { PortfolioKey } from '../../../shared/models/portfolio-key.model';
-import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { Position } from '../../../shared/models/positions/position.model';
 import { TerminalSettings } from '../../../shared/models/terminal-settings/terminal-settings.model';
 import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
@@ -96,7 +98,7 @@ describe('ScalperCommandProcessorService', () => {
         portfolio: 'D1234',
         exchange: orderBookDefaultSettings.ex
       } as PortfolioKey),
-      orderBookData$: new BehaviorSubject<OrderbookData>({ a: [], b: [] } as OrderbookData),
+      orderBook$: new BehaviorSubject<OrderBook>( { instrumentKey: defaultInstrumentInfo, rows: { a: [], b: [] }} ),
       position$: new BehaviorSubject<Position | null>(null),
       currentOrders$: new BehaviorSubject<CurrentOrderDisplay[]>([]),
       workingVolume$: new BehaviorSubject<number>(1)
@@ -242,13 +244,16 @@ describe('ScalperCommandProcessorService', () => {
     it('should process sellBestOrder command', ((done) => {
         const workingVolume = getRandomInt(1, 100);
 
-        dataContextMock.orderBookData$.next({
-          a: [{
-            p: getRandomInt(1, 1000),
-            v: getRandomInt(1, 100),
-            y: 0
-          }],
-          b: [],
+        dataContextMock.orderBook$.next({
+          instrumentKey: defaultInstrumentInfo,
+          rows: {
+            a: [{
+              p: getRandomInt(1, 1000),
+              v: getRandomInt(1, 100),
+              y: 0
+            }],
+            b: [],
+          }
         });
 
         dataContextMock.workingVolume$.next(workingVolume);
@@ -276,13 +281,16 @@ describe('ScalperCommandProcessorService', () => {
     it('should process buyBestOrder command', ((done) => {
         const workingVolume = getRandomInt(1, 100);
 
-        dataContextMock.orderBookData$.next({
-          a: [{
-            p: getRandomInt(1, 1000),
-            v: getRandomInt(1, 100),
-            y: 0
-          }],
-          b: [],
+        dataContextMock.orderBook$.next({
+          instrumentKey: defaultInstrumentInfo,
+          rows: {
+            a: [{
+              p: getRandomInt(1, 1000),
+              v: getRandomInt(1, 100),
+              y: 0
+            }],
+            b: [],
+          }
         });
 
         dataContextMock.workingVolume$.next(workingVolume);
@@ -309,17 +317,20 @@ describe('ScalperCommandProcessorService', () => {
     it('should process sellBestBid command', ((done) => {
         const workingVolume = getRandomInt(1, 100);
 
-        dataContextMock.orderBookData$.next({
-          a: [{
-            p: getRandomInt(1, 1000),
-            v: getRandomInt(1, 100),
-            y: 0
-          }],
-          b: [{
-            p: getRandomInt(1, 1000),
-            v: getRandomInt(1, 100),
-            y: 0
-          }],
+        dataContextMock.orderBook$.next({
+          instrumentKey: defaultInstrumentInfo,
+          rows: {
+            a: [{
+              p: getRandomInt(1, 1000),
+              v: getRandomInt(1, 100),
+              y: 0
+            }],
+            b: [{
+              p: getRandomInt(1, 1000),
+              v: getRandomInt(1, 100),
+              y: 0
+            }],
+          }
         });
 
         dataContextMock.workingVolume$.next(workingVolume);
@@ -345,13 +356,16 @@ describe('ScalperCommandProcessorService', () => {
     it('should process buyBestAsk command', ((done) => {
         const workingVolume = getRandomInt(1, 100);
 
-        dataContextMock.orderBookData$.next({
-          a: [{
-            p: getRandomInt(1, 1000),
-            v: getRandomInt(1, 100),
-            y: 0
-          }],
-          b: [],
+        dataContextMock.orderBook$.next({
+          instrumentKey: defaultInstrumentInfo,
+          rows: {
+            a: [{
+              p: getRandomInt(1, 1000),
+              v: getRandomInt(1, 100),
+              y: 0
+            }],
+            b: [],
+          }
         });
 
 

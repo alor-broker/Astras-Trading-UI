@@ -38,7 +38,7 @@ describe('ScalperOrderBookBodyComponent', () => {
         mockComponent({ selector: 'ats-panels-container', inputs: ['initialWidths'] }),
         mockComponent({ selector: 'ats-panel', inputs: ['canResize', 'minWidthPx', 'defaultWidthPercent', 'expandable']}),
         mockComponent({ selector: 'ats-top-floating-panel', inputs: ['guid', 'isActive']}),
-        mockComponent({ selector: 'ats-bottom-floating-panel', inputs: ['guid', 'isActive']}),
+        mockComponent({ selector: 'ats-bottom-floating-panel', inputs: ['guid', 'isActive', 'dataContext']}),
         mockDirective({selector: '[cdkDrag]', inputs: ['cdkDragBoundary', 'cdkDragFreeDragPosition']}),
         ...ngZorroMockComponents
       ],
@@ -48,7 +48,7 @@ describe('ScalperOrderBookBodyComponent', () => {
           useValue: {
             createContext: jasmine.createSpy('createContext').and.returnValue({
               extendedSettings$: new Subject(),
-              orderBookData$: new Subject(),
+              orderBook$: new Subject(),
               position$: new Subject(),
               currentOrders$: new Subject(),
               currentPortfolio$: new Subject(),

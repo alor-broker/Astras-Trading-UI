@@ -31,6 +31,8 @@ import { PanelComponent } from "./components/panels/panel/panel.component";
 import { PanelResizeHandlerComponent } from "./components/panels/panel-resize-handler/panel-resize-handler.component";
 import { BottomFloatingPanelComponent } from './components/bottom-floating-panel/bottom-floating-panel.component';
 import { TopFloatingPanelComponent } from './components/top-floating-panel/top-floating-panel.component';
+import { ShortLongIndicatorComponent } from './components/short-long-indicator/short-long-indicator.component';
+import { NzSliderModule } from "ng-zorro-antd/slider";
 
 @NgModule({
   declarations: [
@@ -54,19 +56,21 @@ import { TopFloatingPanelComponent } from './components/top-floating-panel/top-f
     PanelComponent,
     PanelResizeHandlerComponent,
     BottomFloatingPanelComponent,
-    TopFloatingPanelComponent
+    TopFloatingPanelComponent,
+    ShortLongIndicatorComponent
   ],
-    imports: [
-        CommonModule,
-        SharedModule,
-        NzResizeObserverModule,
-        NzInputModule,
-        NzSpinModule,
-        CdkDropListGroup,
-        CdkDropList,
-        CdkDrag,
-        LetDirective
-    ],
+  imports: [
+    CommonModule,
+    SharedModule,
+    NzResizeObserverModule,
+    NzInputModule,
+    NzSpinModule,
+    CdkDropListGroup,
+    CdkDropList,
+    CdkDrag,
+    LetDirective,
+    NzSliderModule
+  ],
   exports: [
     ScalperOrderBookWidgetComponent
   ]

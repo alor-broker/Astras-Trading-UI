@@ -98,6 +98,8 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
         ),
         showPriceWithZeroPadding: getValueOrDefault(settings.showPriceWithZeroPadding, true),
         showInstrumentPriceDayChange: getValueOrDefault(settings.showInstrumentPriceDayChange, true),
+        showShortLongIndicators: getValueOrDefault(settings.showShortLongIndicators, true),
+        shortLongIndicatorsUpdateIntervalSec: getValueOrDefault(settings.shortLongIndicatorsUpdateIntervalSec, 60),
       }),
       this.dashboardContextService,
       this.widgetSettingsService,
