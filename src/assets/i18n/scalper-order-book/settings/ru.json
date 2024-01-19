@@ -26,6 +26,8 @@
   "autoAlignIntervalLabel": "Интервал автопрокрутки, сек.",
   "volumeFormatDisplayLabel": "Формат отображения объема",
   "showInstrumentPriceDayChangeLabel": "Показывать изменение цены за день",
+  "showShortLongIndicatorsLabel": "Показывать количество лотов доступных в Short/Long",
+  "shortLongIndicatorsUpdateIntervalSecLabel": "Интервал обновления Short/Long, сек.",
   "instrumentGroupLabel": "Режим торгов",
   "volumeHighlightFullnessLabel": "Заполненность полосы объема",
   "showRulerLabel": "Показывать линейку",

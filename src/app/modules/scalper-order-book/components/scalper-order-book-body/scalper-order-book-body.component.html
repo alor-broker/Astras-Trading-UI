@@ -97,7 +97,7 @@
       (cdkDragEnded)="saveFloatingPanelPosition($event, bottomFloatingPanelPositionStateKey)"
       #bottomFloatingPanelContainer
     >
-      <ats-bottom-floating-panel [guid]="guid" [isActive]="isActive"></ats-bottom-floating-panel>
+      <ats-bottom-floating-panel [guid]="guid" [isActive]="isActive" [dataContext]="dataContext"></ats-bottom-floating-panel>
     </div>
     <div
       *ngIf="(dataContext.orderBookBody$  | async)?.length === 0 && !vm.isLoading"

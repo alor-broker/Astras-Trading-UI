@@ -21,7 +21,7 @@ describe('CurrentPositionPanelComponent', () => {
           useValue: {
             getSettingsStream: jasmine.createSpy('getSettingsStream').and.returnValue(new Subject()),
             getOrderBookPortfolio: jasmine.createSpy('getOrderBookPortfolio').and.returnValue(new Subject()),
-            getOrderBookDataStream: jasmine.createSpy('getOrderBookDataStream').and.returnValue(new Subject()),
+            getOrderBookStream: jasmine.createSpy('getOrderBookStream').and.returnValue(new Subject()),
             getOrderBookPositionStream: jasmine.createSpy('getOrderBookPositionStream').and.returnValue(new Subject()),
           }
         }

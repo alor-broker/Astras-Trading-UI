@@ -60,6 +60,26 @@
                 <nz-switch formControlName='showInstrumentPriceDayChange'></nz-switch>
               </nz-form-control>
             </nz-form-item>
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="showShortLongIndicators">{{t('scalperOrderBookSettings.showShortLongIndicatorsLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='showShortLongIndicators'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item *ngIf="form.value.showShortLongIndicators">
+              <nz-form-control>
+                <nz-form-label nzFor="shortLongIndicatorsUpdateIntervalSec" nzRequired>{{ t('scalperOrderBookSettings.shortLongIndicatorsUpdateIntervalSecLabel') }}
+                </nz-form-label>
+                <nz-slider
+                  [nzMin]="validationOptions.shortLongIndicators.min"
+                  [nzMax]="validationOptions.shortLongIndicators.max"
+                  [nzStep]="1"
+                  [nzMarks]="getSliderMarks(validationOptions.shortLongIndicators.min, validationOptions.shortLongIndicators.max)"
+                  formControlName="shortLongIndicatorsUpdateIntervalSec"
+                >
+                </nz-slider>
+              </nz-form-control>
+            </nz-form-item>
             <nz-form-item>
               <nz-form-label nzFor="volumeDisplayFormat">{{t('scalperOrderBookSettings.volumeFormatDisplayLabel')}}</nz-form-label>
               <nz-form-control>

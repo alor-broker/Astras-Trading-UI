@@ -121,7 +121,7 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.displayMarker$ = combineLatest([
       this.dataContext.orderBookBody$,
       this.dataContext.displayRange$,
-      this.dataContext.orderBookData$,
+      this.dataContext.orderBook$,
       this.activeRow$,
       this.settings$
     ]).pipe(
@@ -129,7 +129,7 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
       map(([
              body,
              displayRange,
-             orderBookData,
+             orderBook,
              activeRow,
              settings
            ]) => {
@@ -145,8 +145,8 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         const markerPrice = displayRows[markerRowIndex].price;
-        const bestAsk = orderBookData.a[0] as OrderbookDataRow | undefined;
-        const bestBid = orderBookData.b[0] as OrderbookDataRow | undefined;
+        const bestAsk = orderBook.rows.a[0] as OrderbookDataRow | undefined;
+        const bestBid = orderBook.rows.b[0] as OrderbookDataRow | undefined;
 
         let bestPrice: number | null = null;
         if (bestAsk != null && markerPrice >= bestAsk.p) {

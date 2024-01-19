@@ -31,6 +31,7 @@ import { WidgetSettingsBaseComponent } from "../../../../shared/components/widge
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
+import { NzMarks } from "ng-zorro-antd/slider";
 
 @Component({
   selector: 'ats-scalper-order-book-settings',
@@ -61,6 +62,10 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     autoAlignIntervalSec: {
       min: 1,
       max: 600
+    },
+    shortLongIndicators: {
+      min: 5,
+      max: 60
     },
     bracket: {
       price: {
@@ -94,6 +99,15 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     showZeroVolumeItems: this.formBuilder.nonNullable.control(true),
     showSpreadItems: this.formBuilder.nonNullable.control(true),
     showInstrumentPriceDayChange: this.formBuilder.nonNullable.control(true),
+    showShortLongIndicators: this.formBuilder.nonNullable.control(true),
+    shortLongIndicatorsUpdateIntervalSec: this.formBuilder.nonNullable.control(
+      60,
+      [
+        Validators.required,
+        Validators.min(this.validationOptions.shortLongIndicators.min),
+        Validators.max(this.validationOptions.shortLongIndicators.max)
+      ]
+    ),
     volumeDisplayFormat: this.formBuilder.nonNullable.control(NumberDisplayFormat.Default),
     showRuler: this.formBuilder.nonNullable.control(true),
     rulerSettings: this.formBuilder.nonNullable.group(
@@ -280,6 +294,10 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       newSettings.volumeHighlightFullness = Number(formValue.volumeHighlightFullness);
     }
 
+    if (formValue.showShortLongIndicators ?? false) {
+      newSettings.shortLongIndicatorsUpdateIntervalSec = Number(formValue.shortLongIndicatorsUpdateIntervalSec);
+    }
+
     if (formValue.enableAutoAlign ?? false) {
       newSettings.autoAlignIntervalSec = Number(formValue.autoAlignIntervalSec);
     }
@@ -314,6 +332,13 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     return newSettings;
   }
 
+  getSliderMarks(minValue: number, maxValue: number): NzMarks {
+    return {
+      [minValue]: minValue.toString(),
+      [maxValue]: maxValue.toString(),
+    };
+  }
+
   private setCurrentFormValues(settings: ScalperOrderBookWidgetSettings): void {
     this.form.reset();
 
@@ -328,6 +353,8 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     this.form.controls.showZeroVolumeItems.setValue(settings.showZeroVolumeItems);
     this.form.controls.showSpreadItems.setValue(settings.showSpreadItems);
     this.form.controls.showInstrumentPriceDayChange.setValue(settings.showInstrumentPriceDayChange ?? false);
+    this.form.controls.showShortLongIndicators.setValue(settings.showShortLongIndicators ?? false);
+    this.form.controls.shortLongIndicatorsUpdateIntervalSec.setValue(settings.shortLongIndicatorsUpdateIntervalSec ?? 60);
 
     this.form.controls.volumeDisplayFormat.setValue(settings.volumeDisplayFormat ?? NumberDisplayFormat.Default);
 
@@ -389,6 +416,12 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
 
   private checkFieldsAvailability(): void {
     const formValue = this.form.value;
+    if ((formValue?.showShortLongIndicators) ?? false) {
+      this.form.controls.shortLongIndicatorsUpdateIntervalSec.enable();
+    } else {
+      this.form.controls.shortLongIndicatorsUpdateIntervalSec.disable();
+    }
+
     if ((formValue?.showRuler) ?? false) {
       this.form.controls.rulerSettings.enable();
     } else {

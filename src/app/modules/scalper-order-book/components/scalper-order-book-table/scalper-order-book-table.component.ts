@@ -15,6 +15,7 @@ import {
   Subject
 } from 'rxjs';
 import {
+  OrderBook,
   ScalperOrderBookDataContext,
   ScalperOrderBookExtendedSettings
 } from '../../models/scalper-order-book-data-context.model';
@@ -34,7 +35,6 @@ import {
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MathHelper } from "../../../../shared/utils/math-helper";
-import { OrderbookData } from "../../../orderbook/models/orderbook-data.model";
 import { color } from "d3";
 
 interface VolumeHighlightArguments {
@@ -173,19 +173,19 @@ export class ScalperOrderBookTableComponent implements OnInit {
     this.displayItems$ = combineLatest([
       this.dataContext.extendedSettings$,
       this.dataContext.orderBookBody$,
-      this.dataContext.orderBookData$,
+      this.dataContext.orderBook$,
       this.dataContext.displayRange$,
       this.dataContext.currentOrders$,
       this.themeService.getThemeSettings()
     ]).pipe(
-      filter(([, , orderBookData, , ,]) => !!(orderBookData as OrderbookData | null)),
-      map(([settings, body, orderBookData, displayRange, currentOrders, themeSettings]) => {
+      filter(([, , orderBookData, , ,]) => !!(orderBookData as OrderBook | null)),
+      map(([settings, body, orderBook, displayRange, currentOrders, themeSettings]) => {
         const displayRows = body.slice(displayRange!.start, Math.min(displayRange!.end + 1, body.length));
         const minOrderPrice = Math.min(...currentOrders.map(x => x.linkedPrice));
         const maxOrderPrice = Math.max(...currentOrders.map(x => x.linkedPrice));
         const volumeHighlightStrategy = this.getVolumeHighlightStrategy(settings.widgetSettings, themeSettings);
         const maxOrderBookVolume = settings.widgetSettings.volumeHighlightMode === VolumeHighlightMode.BiggestVolume
-          ? Math.max(...[...orderBookData.a, ...orderBookData.b].map(x => x.v))
+          ? Math.max(...[...orderBook.rows.a, ...orderBook.rows.b].map(x => x.v))
           : 0;
 
         return displayRows.map(row => {
