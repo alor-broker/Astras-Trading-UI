@@ -69,5 +69,6 @@ export interface WidgetMeta {
     enabled: boolean;
     widgetName?: WidgetName;
     galleryOrder: number;
+    galleryIcon: string;
   };
 }

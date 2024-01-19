@@ -28,6 +28,18 @@ export const MobileDashboardInternalActions = createActionGroup({
   }
 });
 
+export const MobileDashboardItemsActions = createActionGroup({
+  source: 'Mobile Dashboard/Items',
+  events: {
+    "Add Widgets": props<{
+      widgets: Omit<Widget, 'guid'>[];
+    }>(),
+    "Remove Widgets": props<{
+      widgetIds: string[];
+    }>(),
+  }
+});
+
 export const MobileDashboardCurrentSelectionActions = createActionGroup({
   source: 'Mobile Dashboard/Current Selection',
   events: {

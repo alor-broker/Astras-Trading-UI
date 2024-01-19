@@ -60,6 +60,7 @@
       "enabled": true
     },
     "mobileMeta": {
+      "galleryIcon": "ordered-list",
       "ribbonIcon": "ordered-list",
       "enabled": true,
       "galleryOrder": 2
@@ -126,6 +127,7 @@
       "enabled": true
     },
     "mobileMeta": {
+      "galleryIcon": "sliders",
       "ribbonIcon": "sliders",
       "enabled": true,
       "galleryOrder": 4
@@ -192,6 +194,7 @@
       "enabled": true
     },
     "mobileMeta": {
+      "galleryIcon": "table",
       "ribbonIcon": "table",
       "enabled": true,
       "galleryOrder": 6
@@ -228,6 +231,7 @@
       "enabled": true
     },
     "mobileMeta": {
+      "galleryIcon": "info",
       "ribbonIcon": "info",
       "enabled": true,
       "galleryOrder": 7
@@ -263,6 +267,7 @@
       "enabled": true
     },
     "mobileMeta": {
+      "galleryIcon": "read",
       "ribbonIcon": "read",
       "enabled": true,
       "galleryOrder": 8
@@ -299,6 +304,7 @@
       "enabled": true
     },
     "mobileMeta": {
+      "galleryIcon": "unordered-list",
       "ribbonIcon": "unordered-list",
       "enabled": true,
       "galleryOrder": 9
@@ -334,6 +340,7 @@
       "enabled": true
     },
     "mobileMeta": {
+      "galleryIcon": "line-chart",
       "ribbonIcon": "line-chart",
       "enabled": true,
       "galleryOrder": 10
@@ -369,6 +376,7 @@
       "enabled": true
     },
     "mobileMeta": {
+      "galleryIcon": "profile",
       "ribbonIcon": "profile",
       "enabled": true,
       "galleryOrder": 11
@@ -405,6 +413,7 @@
       "enabled": true
     },
     "mobileMeta": {
+      "galleryIcon": "send",
       "ribbonIcon": "plus-circle",
       "enabled": true,
       "widgetName": {
@@ -447,6 +456,7 @@
       "enabled": true
     },
     "mobileMeta": {
+      "galleryIcon": "calculator",
       "ribbonIcon": "calculator",
       "enabled": true,
       "galleryOrder": 13
@@ -482,6 +492,7 @@
       "enabled": true
     },
     "mobileMeta": {
+      "galleryIcon": "layout",
       "ribbonIcon": "layout",
       "enabled": true,
       "galleryOrder": 14

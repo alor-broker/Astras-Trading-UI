@@ -1,28 +1,51 @@
-<div class="d-flex mobile-dashboard" *transloco="let t">
-  <nz-tabset
-    *ngIf="widgets$ | async as widgets"
-    nzTabPosition="bottom"
-    nzSize="large"
-    class="mobile-dashboard-menu"
-    [nzAnimated]="false"
-    #tabs
+<div class="d-flex mobile-dashboard" *transloco="let t; scope: 'dashboard/mobile-dashboard'">
+  <div
+    *ngrxLet="{ widgets: widgets$, selectedWidget: selectedWidget$ } as vm"
+    class="d-flex flex-column w-100 h-100"
   >
-    <nz-tab
-      #tab
-      *ngFor="let widget of widgets"
-      nzForceRender
-      [nzTitle]="titleTemplate"
-    >
-      <ng-template #titleTemplate>
-        <div class="d-flex flex-column" [class.new-order]="widget.instance.widgetType === newOrderWidgetId">
-          <i nz-icon [nzType]="widget.widgetMeta.mobileMeta!.ribbonIcon" class="widget-icon" nzTheme="outline"></i>
+    <div class="d-flex w-100 h-100 overflow-hidden">
+      <div class="overflow-auto w-100">
+        <ats-parent-widget
+          *ngIf="vm.selectedWidget"
+          [widgetInstance]="vm.selectedWidget"
+          [isBlockWidget]="false"
+        ></ats-parent-widget>
+      </div>
+    </div>
 
+    <div class="tabs d-flex justify-content-between p-10 flex-gap-10 overflow-auto">
+      <div
+        *ngFor="let widget of vm.widgets"
+      >
+        <div
+          class="d-flex flex-column"
+          [class.new-order]="widget.instance.widgetType === newOrderWidgetId"
+          [class.active-tab]="widget.instance.guid === vm.selectedWidget?.instance?.guid"
+          (click)="selectWidget(widget)"
+        >
+          <i nz-icon [nzType]="widget.widgetMeta.mobileMeta!.ribbonIcon" class="widget-icon" nzTheme="outline"></i>
           <div class="widget-label">
             <span>{{getWidgetName(widget.widgetMeta)}}</span>
           </div>
         </div>
-      </ng-template>
-      <ats-parent-widget [widgetInstance]="widget" [isBlockWidget]="false" [isVisible]="tab.isActive"></ats-parent-widget>
-    </nz-tab>
-  </nz-tabset>
+      </div>
+
+      <div
+        class="d-flex flex-column"
+        (click)="galleryVisible = true"
+      >
+        <i nz-icon nzType="more" nzTheme="outline"></i>
+        <div class="widget-label">
+          <span>{{t('dashboardMobileDashboard.more')}}</span>
+        </div>
+      </div>
+    </div>
+
+    <ats-widgets-gallery
+      [gallery]="widgetsGallery$ | async"
+      [isMobile]="true"
+      [(atsVisible)]="galleryVisible"
+      (selected)="selectOuterWidget($event)"
+    ></ats-widgets-gallery>
+  </div>
 </div>

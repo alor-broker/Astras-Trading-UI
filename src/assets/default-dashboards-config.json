@@ -139,9 +139,6 @@
         "widgetTypeId": "order-submit"
       },
       {
-        "widgetTypeId": "instrument-info"
-      },
-      {
         "widgetTypeId": "blotter"
       },
       {
@@ -149,24 +146,6 @@
       },
       {
         "widgetTypeId": "light-chart"
-      },
-      {
-        "widgetTypeId": "news"
-      },
-      {
-        "widgetTypeId": "all-instruments"
-      },
-      {
-        "widgetTypeId": "all-trades"
-      },
-      {
-        "widgetTypeId": "exchange-rate"
-      },
-      {
-        "widgetTypeId": "orders-basket"
-      },
-      {
-        "widgetTypeId": "treemap"
       }
     ]
   }

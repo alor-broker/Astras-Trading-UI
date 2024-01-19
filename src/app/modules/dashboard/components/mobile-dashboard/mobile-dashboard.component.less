@@ -1,9 +1,23 @@
 @import "theme-mixin";
+@import "scrollable-mixin";
 
 .themeMixin({
   :host {
     .new-order {
       border-right: 1px solid @border-color-base;
+    }
+
+    .tabs {
+      border-top: 1px solid @border-color-base;
+      .scrollable(rgba(0, 0, 0, 0));
+
+      .active-tab {
+        color: @primary-color;
+      }
+
+      i {
+        font-size: 14px;
+      }
     }
   }
 });
@@ -23,7 +37,7 @@
   height: 100%;
 
   .new-order {
-    padding: 0 10px;
+    padding-right: 10px;
   }
 
   .widget-label {
