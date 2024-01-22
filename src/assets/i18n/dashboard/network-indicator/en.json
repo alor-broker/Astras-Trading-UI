@@ -1,4 +1,5 @@
 {
   "onlineDescription": "Connected",
-  "offlineDescription": "Disconnected. Data may be deprecated"
+  "offlineDescription": "Disconnected. Data may be deprecated",
+  "requestDelayDescription": "Last order submitting delay, sec."
 }

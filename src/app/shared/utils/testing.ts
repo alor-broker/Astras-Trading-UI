@@ -208,6 +208,10 @@ export const ngZorroMockComponents = [
   mockDirective({
     selector: 'th',
     inputs: ['nzWidth']
+  }),
+  mockDirective({
+    selector: '[nz-typography]',
+    inputs: ['nzType']
   })
 ];
 
