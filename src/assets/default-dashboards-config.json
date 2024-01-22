@@ -146,6 +146,27 @@
       },
       {
         "widgetTypeId": "light-chart"
+      },
+      {
+        "widgetTypeId": "instrument-info"
+      },
+      {
+        "widgetTypeId": "news"
+      },
+      {
+        "widgetTypeId": "all-instruments"
+      },
+      {
+        "widgetTypeId": "all-trades"
+      },
+      {
+        "widgetTypeId": "exchange-rate"
+      },
+      {
+        "widgetTypeId": "orders-basket"
+      },
+      {
+        "widgetTypeId": "treemap"
       }
     ]
   }

@@ -13,10 +13,8 @@ import {
 import { InstrumentKey } from "../../shared/models/instruments/instrument-key.model";
 import {
   MobileDashboardCurrentSelectionActions,
-  MobileDashboardInternalActions,
-  MobileDashboardItemsActions
+  MobileDashboardInternalActions
 } from "./mobile-dashboard-actions";
-import { GuidGenerator } from "../../shared/utils/guid";
 
 export interface State {
   dashboard: Dashboard | null;
@@ -52,27 +50,6 @@ const reducer = createReducer(
     dashboard: {
       ...dashboard,
       version: CurrentDashboardVersion
-    }
-  })),
-
-  on(MobileDashboardItemsActions.addWidgets, (state, props) => ({
-      ...state,
-      dashboard: {
-        ...state.dashboard!,
-        items: [
-          ...state.dashboard!.items,
-          ...props.widgets.map(w => ({ ...w, guid: GuidGenerator.newGuid()}))
-        ]
-      }
-  })),
-
-  on(MobileDashboardItemsActions.removeWidgets, (state, props) => ({
-    ...state,
-    dashboard: {
-      ...state.dashboard!,
-      items: [
-        ...state.dashboard!.items.filter(w => !props.widgetIds.includes(w.guid)),
-      ]
     }
   })),
 

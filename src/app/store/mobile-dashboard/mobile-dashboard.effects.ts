@@ -36,7 +36,7 @@ export class MobileDashboardEffects {
   createDefaultMobileDashboard$ = createEffect(() =>
     this.actions$.pipe(
       ofType(MobileDashboardInternalActions.init),
-      filter(action => !action.mobileDashboard || action.mobileDashboard.items?.length > 4),
+      filter(action => !action.mobileDashboard),
       mapWith(
         () => this.dashboardService.getDefaultDashboardConfig(),
         (source, defaultConfig) => defaultConfig
