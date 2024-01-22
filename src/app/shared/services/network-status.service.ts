@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   combineLatest,
+  merge,
   Observable,
   shareReplay
 } from 'rxjs';
@@ -8,6 +9,8 @@ import { NetworkStatus } from '../models/enums/network-status.model';
 import { isOnline$ } from '../utils/network';
 import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service';
 import { map } from 'rxjs/operators';
+import { OrderService } from "./orders/order.service";
+import { OrderCancellerService } from "./order-canceller.service";
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +18,11 @@ import { map } from 'rxjs/operators';
 export class NetworkStatusService {
   private networkStatus$?: Observable<NetworkStatus>;
 
-  constructor(private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService) {
+  constructor(
+    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
+    private readonly orderService: OrderService,
+    private readonly orderCancellerService: OrderCancellerService
+  ) {
   }
 
   get status$(): Observable<NetworkStatus> {
@@ -36,5 +43,12 @@ export class NetworkStatusService {
     }
 
     return this.networkStatus$;
+  }
+
+  get lastOrderDelayMSec$(): Observable<number> {
+    return merge(
+      this.orderService.lastOrderDelayMSec$,
+      this.orderCancellerService.lastRequestDelayMSec$
+    );
   }
 }
