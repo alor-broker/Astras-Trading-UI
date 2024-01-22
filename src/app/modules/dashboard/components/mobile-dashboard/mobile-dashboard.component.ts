@@ -8,8 +8,8 @@ import {
   BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
-  Observable,
-  shareReplay,
+  Observable, of,
+  shareReplay, switchMap,
   take
 } from "rxjs";
 import {
@@ -25,6 +25,7 @@ import { arraysEqual } from "ng-zorro-antd/core/util";
 import { MobileActionsContextService } from "../../services/mobile-actions-context.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { GalleryDisplay, WidgetDisplay, WidgetGroup } from "../widgets-gallery/widgets-gallery.component";
+import { MobileDashboardService } from "../../services/mobile-dashboard.service";
 
 
 @Component({
@@ -52,7 +53,8 @@ export class MobileDashboardComponent implements OnInit {
     private readonly widgetsMetaService: WidgetsMetaService,
     private readonly translatorService: TranslatorService,
     private readonly mobileActionsContextService: MobileActionsContextService,
-    private readonly destroyRef: DestroyRef
+    private readonly destroyRef: DestroyRef,
+    private readonly mobileDashboardService: MobileDashboardService
   ) {
   }
 
@@ -104,7 +106,20 @@ export class MobileDashboardComponent implements OnInit {
     this.widgets$
       .pipe(
         take(1),
-        map((widgets) => widgets.find(w => w.instance.widgetType === widgetName)!),
+        switchMap((widgets) => {
+          const selectedWidget = widgets.find(w => w.instance.widgetType === widgetName);
+
+          if (selectedWidget == null) {
+            this.mobileDashboardService.addWidget(widgetName);
+            return this.widgets$
+              .pipe(
+                take(1),
+                map(newWidgets => newWidgets.find(w => w.instance.widgetType === widgetName)!)
+              );
+          } else {
+            return of(selectedWidget);
+          }
+        })
       )
       .subscribe(newWidget => this.selectedWidget$.next(newWidget));
   }

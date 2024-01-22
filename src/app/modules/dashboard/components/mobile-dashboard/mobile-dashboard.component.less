@@ -3,10 +3,6 @@
 
 .themeMixin({
   :host {
-    .new-order {
-      border-right: 1px solid @border-color-base;
-    }
-
     .tabs {
       border-top: 1px solid @border-color-base;
       .scrollable(rgba(0, 0, 0, 0));
@@ -36,10 +32,6 @@
   width: 100%;
   height: 100%;
 
-  .new-order {
-    padding-right: 10px;
-  }
-
   .widget-label {
     display: flex;
     align-items: center;
@@ -50,5 +42,10 @@
 
   .widget-icon {
     margin-right: 0;
+  }
+
+  .vertical-divider {
+    height: 100%;
+    margin: 0;
   }
 }

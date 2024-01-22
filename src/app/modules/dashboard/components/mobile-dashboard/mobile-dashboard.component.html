@@ -13,24 +13,29 @@
       </div>
     </div>
 
-    <div class="tabs d-flex justify-content-between p-10 flex-gap-10 overflow-auto">
+    <div class="tabs d-flex justify-content-around p-10 flex-gap-10 overflow-auto">
       <div
         class="d-flex flex-column"
         [class.active-tab]="!defaultWidgetNames.includes(vm.selectedWidget?.instance?.widgetType ?? '')"
         (click)="galleryVisible = true"
       >
-        <i nz-icon nzType="menu" nzTheme="outline"></i>
+        <i nz-icon nzType="ellipsis" nzTheme="outline"></i>
         <div class="widget-label">
           <span>{{t('dashboardMobileDashboard.more')}}</span>
         </div>
       </div>
 
-      <div
+      <ng-container
         *ngFor="let widget of vm.defaultWidgets"
       >
+        <nz-divider
+          class="vertical-divider"
+          nzType="vertical"
+          *ngIf="widget.instance.widgetType === newOrderWidgetId"
+        ></nz-divider>
+
         <div
           class="d-flex flex-column"
-          [class.new-order]="widget.instance.widgetType === newOrderWidgetId"
           [class.active-tab]="widget.instance.widgetType === vm.selectedWidget?.instance?.widgetType"
           (click)="selectWidget(widget.instance.widgetType)"
         >
@@ -39,7 +44,13 @@
             <span>{{getWidgetName(widget.widgetMeta)}}</span>
           </div>
         </div>
-      </div>
+
+        <nz-divider
+          class="vertical-divider"
+          nzType="vertical"
+          *ngIf="widget.instance.widgetType === newOrderWidgetId"
+        ></nz-divider>
+      </ng-container>
     </div>
 
     <ats-widgets-gallery

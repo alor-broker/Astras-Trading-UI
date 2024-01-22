@@ -162,6 +162,12 @@
       },
       "galleryOrder": 5,
       "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "fund",
+      "ribbonIcon": "fund",
+      "enabled": true,
+      "galleryOrder": 5
     }
   },
   {
@@ -555,6 +561,12 @@
       },
       "galleryOrder": 16,
       "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "calendar",
+      "ribbonIcon": "calendar",
+      "enabled": true,
+      "galleryOrder": 16
     }
   },
   {
@@ -585,6 +597,12 @@
       },
       "galleryOrder": 17,
       "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "table",
+      "ribbonIcon": "table",
+      "enabled": true,
+      "galleryOrder": 17
     }
   },
   {
@@ -615,6 +633,12 @@
       },
       "galleryOrder": 18,
       "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "fork",
+      "ribbonIcon": "fork",
+      "enabled": true,
+      "galleryOrder": 18
     }
   },
   {
@@ -674,6 +698,12 @@
       },
       "galleryOrder": 20,
       "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "node-index",
+      "ribbonIcon": "node-index",
+      "enabled": true,
+      "galleryOrder": 20
     }
   }
 ]

@@ -146,6 +146,9 @@
       },
       {
         "widgetTypeId": "light-chart"
+      },,
+      {
+        "widgetTypeId": "tech-chart"
       },
       {
         "widgetTypeId": "instrument-info"
@@ -167,6 +170,18 @@
       },
       {
         "widgetTypeId": "treemap"
+      },
+      {
+        "widgetTypeId": "events-calendar"
+      },
+      {
+        "widgetTypeId": "option-board"
+      },
+      {
+        "widgetTypeId": "arbitrage-spread"
+      },
+      {
+        "widgetTypeId": "instruments-correlation"
       }
     ]
   }

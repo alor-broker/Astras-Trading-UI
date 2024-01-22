@@ -6,6 +6,7 @@ import {of, Subject} from "rxjs";
 import { getTranslocoModule } from "../../../../shared/utils/testing";
 import {WidgetsMetaService} from "../../../../shared/services/widgets-meta.service";
 import { MobileActionsContextService } from "../../services/mobile-actions-context.service";
+import { MobileDashboardService } from "../../services/mobile-dashboard.service";
 
 describe('MobileDashboardComponent', () => {
   let component: MobileDashboardComponent;
@@ -32,6 +33,12 @@ describe('MobileDashboardComponent', () => {
           provide: MobileActionsContextService,
           useValue: {
             actionEvents$: new Subject()
+          }
+        },
+        {
+          provide: MobileDashboardService,
+          useValue: {
+            addWidget: jasmine.createSpy('addWidget').and.callThrough()
           }
         }
       ]

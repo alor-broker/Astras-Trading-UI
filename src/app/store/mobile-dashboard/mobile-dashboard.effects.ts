@@ -15,7 +15,7 @@ import { MobileDashboardStreams } from "./mobile-dashboard.streams";
 import {
   MobileDashboardCurrentSelectionActions,
   MobileDashboardEventsActions,
-  MobileDashboardInternalActions
+  MobileDashboardInternalActions, MobileDashboardItemsActions
 } from "./mobile-dashboard-actions";
 import { MobileDashboardFeature } from "./mobile-dashboard.reducer";
 import { InitialSettingsMap } from "../../../assets/charting_library";
@@ -64,7 +64,8 @@ export class MobileDashboardEffects {
       ofType(
         MobileDashboardInternalActions.add,
         MobileDashboardCurrentSelectionActions.selectPortfolio,
-        MobileDashboardCurrentSelectionActions.selectInstrument
+        MobileDashboardCurrentSelectionActions.selectInstrument,
+        MobileDashboardItemsActions.addWidget
       ),
       withLatestFrom(MobileDashboardStreams.getMobileDashboard(this.store)),
       map(([, dashboard]) => MobileDashboardEventsActions.updated({dashboard}))

@@ -48,6 +48,7 @@ import { EmptyPortfoliosWarningModalWidgetComponent } from './widgets/empty-port
 import { InstrumentsCorrelationModule } from "../instruments-correlation/instruments-correlation.module";
 import { LetDirective } from "@ngrx/component";
 import { WidgetsGalleryComponent } from './components/widgets-gallery/widgets-gallery.component';
+import { NzDividerModule } from "ng-zorro-antd/divider";
 
 @NgModule({
   declarations: [
@@ -98,7 +99,8 @@ import { WidgetsGalleryComponent } from './components/widgets-gallery/widgets-ga
         DragDropModule,
         OrderCommandsModule,
         InstrumentsCorrelationModule,
-        LetDirective
+        LetDirective,
+        NzDividerModule
         // components
     ],
   providers: [
