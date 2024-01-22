@@ -37,7 +37,7 @@
         <div
           class="d-flex flex-column"
           [class.active-tab]="widget.instance.widgetType === vm.selectedWidget?.instance?.widgetType"
-          (click)="selectWidget(widget.instance.widgetType)"
+          (click)="selectedWidget$.next(widget)"
         >
           <i nz-icon [nzType]="widget.widgetMeta.mobileMeta!.ribbonIcon" class="widget-icon" nzTheme="outline"></i>
           <div class="widget-label">
