@@ -12,8 +12,26 @@
   &.bottom-0 {
     bottom: 0;
   }
+
+  &.start-50 {
+    left: 50%;
+  }
 }
 
 .position-relative {
   position: relative;
+}
+
+.translate {
+  &-middle {
+    transform: translate(-50%, -50%);
+
+    &-x {
+      transform: translateX(-50%);
+    }
+
+    &-y {
+      transform: translateY(-50%);
+    }
+  }
 }

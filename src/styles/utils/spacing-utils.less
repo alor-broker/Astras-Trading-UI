@@ -38,4 +38,14 @@ each(range(0, 25, 1), {
   .pr-@{value} {
     padding-right: @value * 1px;
   }
+
+  .px-@{value} {
+    padding-right: @value * 1px;
+    padding-left: @value * 1px;
+  }
+
+  .py-@{value} {
+    padding-top: @value * 1px;
+    padding-bottom: @value * 1px;
+  }
 });

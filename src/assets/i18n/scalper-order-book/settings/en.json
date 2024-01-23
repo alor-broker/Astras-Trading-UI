@@ -28,6 +28,7 @@
   "showInstrumentPriceDayChangeLabel": "Show price change per day",
   "showShortLongIndicatorsLabel": "Show the number of lots available in Short/Long",
   "shortLongIndicatorsUpdateIntervalSecLabel": "Short/Long refresh interval, sec.",
+  "showLimitOrdersVolumeIndicatorsLabel": "Show volumes of active limit orders",
   "instrumentGroupLabel": "Trading mode",
   "volumeHighlightFullnessLabel": "Volume bar fullness",
   "showRulerLabel": "Show ruler",

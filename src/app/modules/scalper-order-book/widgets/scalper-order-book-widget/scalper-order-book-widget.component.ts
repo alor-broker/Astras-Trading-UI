@@ -100,6 +100,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
         showInstrumentPriceDayChange: getValueOrDefault(settings.showInstrumentPriceDayChange, true),
         showShortLongIndicators: getValueOrDefault(settings.showShortLongIndicators, true),
         shortLongIndicatorsUpdateIntervalSec: getValueOrDefault(settings.shortLongIndicatorsUpdateIntervalSec, 60),
+        showLimitOrdersVolumeIndicators: getValueOrDefault(settings.showLimitOrdersVolumeIndicators, true)
       }),
       this.dashboardContextService,
       this.widgetSettingsService,
