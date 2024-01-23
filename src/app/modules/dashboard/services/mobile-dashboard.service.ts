@@ -19,12 +19,11 @@ export class MobileDashboardService {
     return this.store.select(MobileDashboardFeature.instrumentsHistory);
   }
 
-  addWidget(widgetType: string, initialSettings?: { [propName: string]: any }): void {
+  addWidget(widgetType: string): void {
     this.store.dispatch(MobileDashboardItemsActions.addWidget(
       {
         widget: {
-          widgetType: widgetType,
-          initialSettings: initialSettings
+          widgetType: widgetType
         }
       }));
   }

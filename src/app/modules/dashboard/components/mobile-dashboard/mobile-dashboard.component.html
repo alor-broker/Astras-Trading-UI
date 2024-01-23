@@ -1,7 +1,10 @@
-<div class="d-flex mobile-dashboard" *transloco="let t; scope: 'dashboard/mobile-dashboard'">
-  <div
-    *ngrxLet="{ defaultWidgets: defaultWidgets$, selectedWidget: selectedWidget$ } as vm"
-    class="d-flex flex-column w-100 h-100"
+<div class="d-flex flex-column w-100 h-100" *transloco="let t; scope: 'dashboard/mobile-dashboard'">
+  <ng-container
+    *ngrxLet="{
+      defaultWidgets: defaultWidgets$,
+      selectedWidget: selectedWidget$,
+      widgetsGallery: widgetsGallery$
+    } as vm"
   >
     <div class="d-flex w-100 h-100 overflow-hidden">
       <div class="overflow-auto w-100">
@@ -13,10 +16,10 @@
       </div>
     </div>
 
-    <div class="tabs d-flex justify-content-around p-10 flex-gap-10 overflow-auto">
+    <div class="widgets-menu d-flex justify-content-around p-10 flex-gap-10 overflow-auto">
       <div
         class="d-flex flex-column"
-        [class.active-tab]="!defaultWidgetNames.includes(vm.selectedWidget?.instance?.widgetType ?? '')"
+        [class.active-widget]="!defaultWidgetNames.includes(vm.selectedWidget?.instance?.widgetType ?? '')"
         (click)="galleryVisible = true"
       >
         <i nz-icon nzType="ellipsis" nzTheme="outline"></i>
@@ -36,7 +39,7 @@
 
         <div
           class="d-flex flex-column"
-          [class.active-tab]="widget.instance.widgetType === vm.selectedWidget?.instance?.widgetType"
+          [class.active-widget]="widget.instance.widgetType === vm.selectedWidget?.instance?.widgetType"
           (click)="selectedWidget$.next(widget)"
         >
           <i nz-icon [nzType]="widget.widgetMeta.mobileMeta!.ribbonIcon" class="widget-icon" nzTheme="outline"></i>
@@ -54,10 +57,10 @@
     </div>
 
     <ats-widgets-gallery
-      [gallery]="widgetsGallery$ | async"
+      [gallery]="vm.widgetsGallery"
       [isMobile]="true"
       [(atsVisible)]="galleryVisible"
       (selected)="selectWidget($event)"
     ></ats-widgets-gallery>
-  </div>
+  </ng-container>
 </div>
