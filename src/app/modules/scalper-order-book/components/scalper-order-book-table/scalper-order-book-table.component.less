@@ -1,5 +1,7 @@
 @import "theme-mixin";
 
+@border-width: 1px;
+
 .themeMixin({
   :host {
     .table-col {
@@ -11,7 +13,7 @@
 
       .table-row {
         box-sizing: border-box;
-        border: @table-border-color 1px solid;
+        border: @table-border-color @border-width solid;
 
         &.hovered {
           background-color: fade(@primary-color, 15%);
@@ -22,8 +24,6 @@
         }
 
         .table-cell {
-          padding-right: 3px;
-
           &.trade-item {
             &.ask-side-item {
               background-color: fade(@sell-color, 15%);
@@ -45,20 +45,27 @@
           &.spread-item {
             background-color: fade(@disabled-color, 7%);
           }
+
+          &.current-position-range-item {
+            border-right: (@border-width * 3) solid @border-color-base;
+
+            &.positive {
+              border-right-color: @buy-color;
+            }
+
+            &.negative {
+              border-right-color: @sell-color;
+            }
+          }
         }
       }
     }
 
-    .table-cell {
-      &.current-position-range-item {
-        border-right: @border-color-base 3px solid;
-
-        &.positive {
-          border-right-color: @buy-color;
-        }
-
-        &.negative {
-          border-right-color: @sell-color;
+    #price-panel {
+      .table-cell {
+        .highlighter {
+          border-top:  @border-width solid red;
+          border-bottom:  @border-width solid red;
         }
       }
     }
@@ -75,6 +82,18 @@
 
           &.ask {
             color: @sell-color-accent;
+          }
+
+          &.limit-order {
+            color: @text-color;
+
+            &.bid {
+              background-color: fade(@buy-color, 60%);;
+            }
+
+            &.ask{
+              background-color: fade(@sell-color, 60%);;
+            }
           }
 
           &.multiple::after {
@@ -119,8 +138,18 @@
 
   #price-panel {
     .table-cell {
-      padding-left: 3px;
       text-align: right;
+      position: relative;
+
+      .highlighter {
+        display: inline-block;
+        position: absolute;
+        left: 0;
+        top: (-1 * @border-width);
+        width: 100%;
+        height: calc(100% + @border-width);
+        z-index: 1;
+      }
     }
   }
 
@@ -128,15 +157,8 @@
     min-width: 20px;
     .table-row {
       .table-cell {
-        display: flex;
-        justify-content: flex-end;
-
         .orders-indicator {
-          padding-left: 3px;
           cursor: pointer;
-          -webkit-user-select: none;
-          -ms-user-select: none;
-          user-select: none;
         }
 
         &:not(.best-row) {
