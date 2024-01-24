@@ -71,6 +71,7 @@ import { RemoveSelectTitlesDirective } from './directives/remove-select-titles.d
 import { WidgetSettingsComponent } from './components/widget-settings/widget-settings.component';
 import { NzColorPickerModule } from "ng-zorro-antd/color-picker";
 import { PriceDiffComponent } from './components/price-diff/price-diff.component';
+import { TableRowHeightDirective } from './directives/table-row-height.directive';
 
 @NgModule({
   declarations: [
@@ -94,6 +95,7 @@ import { PriceDiffComponent } from './components/price-diff/price-diff.component
     RemoveSelectTitlesDirective,
     WidgetSettingsComponent,
     PriceDiffComponent,
+    TableRowHeightDirective,
   ],
   imports: [
     CommonModule,
@@ -202,6 +204,7 @@ import { PriceDiffComponent } from './components/price-diff/price-diff.component
     ScrollableItemDirective,
     ResizableDirective,
     RemoveSelectTitlesDirective,
+    TableRowHeightDirective,
     // pipes
     AtsPricePipe
   ],

@@ -13,7 +13,7 @@
         [nzScroll]="{ y: ((scrollHeight$ | async) ?? 0) - 5 + 'px'}"
         [nzShowPagination]="false"
         [nzVirtualItemSize]="20"
-        nzSize="small"
+        atsTableRowHeight
         nzTableLayout="fixed">
         <thead *transloco="let t; scope: 'instruments/select'">
         <tr>
