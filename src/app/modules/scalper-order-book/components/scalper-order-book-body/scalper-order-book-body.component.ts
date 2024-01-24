@@ -52,6 +52,7 @@ import {
   Point
 } from "@angular/cdk/drag-drop";
 import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
+import { Side } from "../../../../shared/models/enums/side.model";
 
 export interface ScalperOrderBookBodyRef {
   getElement(): ElementRef<HTMLElement>;
@@ -70,6 +71,7 @@ export const SCALPER_ORDERBOOK_BODY_REF = new InjectionToken<ScalperOrderBookBod
   ]
 })
 export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnDestroy, ScalperOrderBookBodyRef {
+  readonly sides = Side;
   readonly panelIds = {
     ordersTable: 'orders-table',
     currentTrades: 'current-trades',

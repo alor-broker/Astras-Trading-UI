@@ -108,6 +108,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
         Validators.max(this.validationOptions.shortLongIndicators.max)
       ]
     ),
+    showLimitOrdersVolumeIndicators: this.formBuilder.nonNullable.control(true),
     volumeDisplayFormat: this.formBuilder.nonNullable.control(NumberDisplayFormat.Default),
     showRuler: this.formBuilder.nonNullable.control(true),
     rulerSettings: this.formBuilder.nonNullable.group(
@@ -355,6 +356,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     this.form.controls.showInstrumentPriceDayChange.setValue(settings.showInstrumentPriceDayChange ?? false);
     this.form.controls.showShortLongIndicators.setValue(settings.showShortLongIndicators ?? false);
     this.form.controls.shortLongIndicatorsUpdateIntervalSec.setValue(settings.shortLongIndicatorsUpdateIntervalSec ?? 60);
+    this.form.controls.showLimitOrdersVolumeIndicators.setValue(settings.showLimitOrdersVolumeIndicators ?? false);
 
     this.form.controls.volumeDisplayFormat.setValue(settings.volumeDisplayFormat ?? NumberDisplayFormat.Default);
 

@@ -39,6 +39,7 @@ describe('ScalperOrderBookBodyComponent', () => {
         mockComponent({ selector: 'ats-panel', inputs: ['canResize', 'minWidthPx', 'defaultWidthPercent', 'expandable']}),
         mockComponent({ selector: 'ats-top-floating-panel', inputs: ['guid', 'isActive']}),
         mockComponent({ selector: 'ats-bottom-floating-panel', inputs: ['guid', 'isActive', 'dataContext']}),
+        mockComponent({ selector: 'ats-limit-orders-volume-indicator', inputs: ['dataContext', 'side']}),
         mockDirective({selector: '[cdkDrag]', inputs: ['cdkDragBoundary', 'cdkDragFreeDragPosition']}),
         ...ngZorroMockComponents
       ],
