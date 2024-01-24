@@ -8,7 +8,7 @@ import {
   UntypedFormGroup,
   Validators
 } from "@angular/forms";
-import { Observable } from "rxjs";
+import { Observable, take } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
@@ -17,6 +17,8 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
+import { DeviceService } from "../../../../shared/services/device.service";
+import { DeviceInfo } from "../../../../shared/models/device-info.model";
 
 @Component({
   selector: 'ats-tech-chart-settings',
@@ -28,10 +30,12 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
   isSyntheticInstrument = SyntheticInstrumentsHelper.isSyntheticInstrument;
 
   protected settings$!: Observable<TechChartSettings>;
+  deviceInfo$!: Observable<DeviceInfo>;
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     protected readonly manageDashboardsService: ManageDashboardsService,
+    private readonly deviceService: DeviceService,
     private readonly destroyRef: DestroyRef
   ) {
     super(settingsService, manageDashboardsService);
@@ -47,6 +51,11 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
 
   ngOnInit(): void {
     this.initSettingsStream();
+
+    this.deviceInfo$ = this.deviceService.deviceInfo$
+      .pipe(
+        take(1)
+      );
 
     this.settings$.pipe(
       takeUntilDestroyed(this.destroyRef)

@@ -6,41 +6,43 @@
   (copyClick)="createWidgetCopy()"
 >
   <ng-container *transloco="let t; scope: 'tech-chart/settings'">
-    <form *ngIf="form" [formGroup]="form" [nzLayout]="'horizontal'" nz-form>
-      <nz-form-item>
-        <nz-form-control [nzErrorTip]="t('techChartSettings.tickerError')">
-          <nz-form-label nzRequired nzFor="instrument">{{t('techChartSettings.tickerLabel')}}</nz-form-label>
-          <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '')">
-        <nz-form-control>
-          <nz-form-label nzFor="exchange" nzRequired>{{t('techChartSettings.exchangeLabel')}}</nz-form-label>
-          <input formControlName='exchange' nz-input>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '')">
-        <nz-form-label nzFor="showTrades">
-          {{t('techChartSettings.showTradesLabel')}}
-        </nz-form-label>
-        <nz-form-control>
-          <nz-switch formControlName='showTrades'></nz-switch>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '')">
-        <nz-collapse [nzBordered]="false" nzGhost>
-          <nz-collapse-panel [nzHeader]="t('techChartSettings.advanced')">
-            <nz-form-control [nzErrorTip]="t('techChartSettings.instrumentGroupError')">
-              <nz-form-label nzFor="instrumentGroup" nzRequired>{{t('techChartSettings.instrumentGroupLabel')}}</nz-form-label>
-              <ats-instrument-board-select
-                [instrument]="form.value?.instrument ?? null"
-                [placeholder]="t('techChartSettings.instrumentGroupLabel')"
-                formControlName="instrumentGroup">
-              </ats-instrument-board-select>
-            </nz-form-control>
-          </nz-collapse-panel>
-        </nz-collapse>
-      </nz-form-item>
-    </form>
+    <ng-container *ngIf="deviceInfo$ | async as deviceInfo">
+      <form *ngIf="form" [formGroup]="form" [nzLayout]="'horizontal'" nz-form>
+        <nz-form-item *ngIf="!deviceInfo.isMobile">
+          <nz-form-control [nzErrorTip]="t('techChartSettings.tickerError')">
+            <nz-form-label nzRequired nzFor="instrument">{{t('techChartSettings.tickerLabel')}}</nz-form-label>
+            <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '') && !deviceInfo.isMobile">
+          <nz-form-control>
+            <nz-form-label nzFor="exchange" nzRequired>{{t('techChartSettings.exchangeLabel')}}</nz-form-label>
+            <input formControlName='exchange' nz-input>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '')">
+          <nz-form-label nzFor="showTrades">
+            {{t('techChartSettings.showTradesLabel')}}
+          </nz-form-label>
+          <nz-form-control>
+            <nz-switch formControlName='showTrades'></nz-switch>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '') && !deviceInfo.isMobile">
+          <nz-collapse [nzBordered]="false" nzGhost>
+            <nz-collapse-panel [nzHeader]="t('techChartSettings.advanced')">
+              <nz-form-control [nzErrorTip]="t('techChartSettings.instrumentGroupError')">
+                <nz-form-label nzFor="instrumentGroup" nzRequired>{{t('techChartSettings.instrumentGroupLabel')}}</nz-form-label>
+                <ats-instrument-board-select
+                  [instrument]="form.value?.instrument ?? null"
+                  [placeholder]="t('techChartSettings.instrumentGroupLabel')"
+                  formControlName="instrumentGroup">
+                </ats-instrument-board-select>
+              </nz-form-control>
+            </nz-collapse-panel>
+          </nz-collapse>
+        </nz-form-item>
+      </form>
+    </ng-container>
   </ng-container>
 </ats-widget-settings>

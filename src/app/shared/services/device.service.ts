@@ -1,11 +1,7 @@
 import { Injectable } from '@angular/core';
 import { from, shareReplay, map, Observable } from "rxjs";
 import { NgxDeviceInfoService } from "ngx-device-info";
-
-interface DeviceInfo {
-  isMobile: boolean;
-  userAgent?: string;
-}
+import { DeviceInfo } from "../models/device-info.model";
 
 interface NgxDeviceInfo extends DeviceInfo {
   isTablet: boolean;

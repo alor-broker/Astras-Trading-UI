@@ -633,12 +633,6 @@
       },
       "galleryOrder": 18,
       "enabled": true
-    },
-    "mobileMeta": {
-      "galleryIcon": "fork",
-      "ribbonIcon": "fork",
-      "enabled": true,
-      "galleryOrder": 18
     }
   },
   {
@@ -698,12 +692,6 @@
       },
       "galleryOrder": 20,
       "enabled": true
-    },
-    "mobileMeta": {
-      "galleryIcon": "node-index",
-      "ribbonIcon": "node-index",
-      "enabled": true,
-      "galleryOrder": 20
     }
   }
 ]
