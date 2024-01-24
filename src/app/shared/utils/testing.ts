@@ -124,7 +124,8 @@ export const ngZorroMockComponents = [
       'nzVirtualMinBufferPx',
       'nzVirtualForTrackBy',
       'nzVirtualItemSize',
-      'nzFooter'
+      'nzFooter',
+      'atsTableRowHeight'
     ]
   }),
   mockComponent({

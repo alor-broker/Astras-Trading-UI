@@ -1,6 +1,7 @@
 ﻿import { TimezoneDisplayOption } from '../enums/timezone-display-option';
 import { ThemeType } from '../settings/theme-settings.model';
 import { PortfolioKey } from "../portfolio-key.model";
+import { TableRowHeight } from "../enums/table-row-height";
 
 export interface HotKeyMeta {
   key: string;
@@ -94,6 +95,7 @@ export interface TerminalSettings {
   timezoneDisplayOption?: TimezoneDisplayOption;
   userIdleDurationMin?: number;
   language?: 'en' | 'ru' | null;
+  tableRowHeight?: TableRowHeight;
   badgesBind?: boolean;
   hotKeysSettings?: HotKeysSettings;
   scalperOrderBookMouseActions?: ScalperOrderBookMouseActionsMap;

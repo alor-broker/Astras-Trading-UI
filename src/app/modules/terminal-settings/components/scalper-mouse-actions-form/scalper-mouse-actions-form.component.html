@@ -14,7 +14,11 @@
     </nz-form-item>
     <ng-container
       *ngIf="form.getRawValue().mapName && getActionsFormScheme(form.getRawValue().mapName) as schemeActions">
-      <nz-table nzSize="small" nzTemplateMode nzBordered>
+      <nz-table
+        atsTableRowHeight
+        nzTemplateMode
+        nzBordered
+      >
         <thead>
         <tr>
           <th>{{t('terminalSettingsScalperMouseActionsForm.schemeDescription.buttonLabel')}}</th>

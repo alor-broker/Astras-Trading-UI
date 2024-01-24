@@ -149,7 +149,8 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
             language: currentSettings.language,
             timezoneDisplayOption: currentSettings.timezoneDisplayOption,
             userIdleDurationMin: currentSettings.userIdleDurationMin,
-            badgesBind: currentSettings.badgesBind
+            badgesBind: currentSettings.badgesBind,
+            tableRowHeight: currentSettings.tableRowHeight
           } as GeneralSettings,
           Validators.required),
         portfoliosCurrency: new UntypedFormControl(currentSettings.portfoliosCurrency ?? [], AtsValidators.notNull),
