@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Observable} from "rxjs";
+import { Observable, take } from "rxjs";
 import {OptionBoardSettings} from "../../models/option-board-settings.model";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
@@ -7,6 +7,8 @@ import {WidgetSettingsCreationHelper} from "../../../../shared/utils/widget-sett
 import {SettingsHelper} from "../../../../shared/utils/settings-helper";
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { DeviceInfo } from "../../../../shared/models/device-info.model";
+import { DeviceService } from "../../../../shared/services/device.service";
 
 @Component({
   selector: 'ats-option-board-widget',
@@ -15,6 +17,7 @@ import {TerminalSettingsService} from "../../../../shared/services/terminal-sett
 })
 export class OptionBoardWidgetComponent implements OnInit {
   shouldShowSettings = false;
+  deviceInfo$!: Observable<DeviceInfo>;
 
   @Input({required: true})
   widgetInstance!: WidgetInstance;
@@ -26,7 +29,8 @@ export class OptionBoardWidgetComponent implements OnInit {
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly deviceService: DeviceService
   ) {
   }
 
@@ -51,5 +55,9 @@ export class OptionBoardWidgetComponent implements OnInit {
 
     this.settings$ = this.widgetSettingsService.getSettings<OptionBoardSettings>(this.guid);
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
+    this.deviceInfo$ = this.deviceService.deviceInfo$
+      .pipe(
+        take(1)
+      );
   }
 }

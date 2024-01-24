@@ -11,10 +11,11 @@
 
     <ng-template #headerRef>
       <ats-widget-header
+        *ngIf="deviceInfo$ | async as deviceInfo"
         (switchSettings)="onSettingsChange()"
         [guid]="guid"
         [hasHelp]="true"
-        [hasSettings]="true"
+        [hasSettings]="!deviceInfo.isMobile"
         [linkToActive]="settings.linkToActive!"
         [selectedBadgeColor]="settings.badgeColor!"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
