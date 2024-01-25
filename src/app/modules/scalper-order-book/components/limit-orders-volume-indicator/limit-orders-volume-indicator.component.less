@@ -1,0 +1,13 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .volume-item {
+      &:hover {
+        box-shadow: 0 0 2px 1px @border-color-base;
+        border-radius: @border-radius-base;
+        background-color: @component-background;
+      }
+    }
+  }
+});

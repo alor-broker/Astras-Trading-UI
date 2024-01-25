@@ -10,16 +10,22 @@ import {
 import { ScalperOrderBookWidgetSettings } from './scalper-order-book-settings.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { AllTradesItem } from '../../../shared/models/all-trades.model';
+import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 
 export interface ScalperOrderBookExtendedSettings {
   widgetSettings: ScalperOrderBookWidgetSettings;
   instrument: Instrument;
 }
 
+export interface OrderBook {
+  instrumentKey: InstrumentKey;
+  rows: OrderbookData;
+}
+
 export interface ScalperOrderBookDataContext {
   readonly extendedSettings$: Observable<ScalperOrderBookExtendedSettings>;
   readonly currentPortfolio$: Observable<PortfolioKey>;
-  readonly orderBookData$: Observable<OrderbookData>;
+  readonly orderBook$: Observable<OrderBook>;
   readonly position$: Observable<Position | null>;
   readonly orderBookBody$: Observable<BodyRow[]>;
   readonly currentOrders$: Observable<CurrentOrderDisplay[]>;

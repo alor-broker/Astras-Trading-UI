@@ -11,8 +11,9 @@
 @import 'overflow-utils';
 @import 'z-index-utils';
 @import 'cursor-utils';
-@import 'font-utils';
 @import 'interactions-utils';
+@import 'display-utils';
+@import 'opacity-utils';
 
 html {
   height: 100%;
@@ -144,3 +145,22 @@ html.mobile {
   z-index: 10;
 }
 
+.ant-table-wrapper {
+  &.high {
+    .ant-table-cell {
+      padding: 12px 8px;
+    }
+  }
+
+  &.medium {
+    .ant-table-cell {
+      padding: 4px;
+    }
+  }
+
+  &.low {
+    .ant-table-cell {
+      padding: 2px 4px;
+    }
+  }
+}

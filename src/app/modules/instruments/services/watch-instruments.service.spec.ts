@@ -205,7 +205,7 @@ describe('WatchInstrumentsService', () => {
 
     service.getWatched('123', TimeframeValue.Day)
       .pipe(
-        skip(2),
+        skip(1),
         take(1)
       )
       .subscribe((wi) => {

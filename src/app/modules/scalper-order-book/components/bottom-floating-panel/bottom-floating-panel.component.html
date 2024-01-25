@@ -1,0 +1,15 @@
+<div class="container d-flex flex-column p-1 user-select-none flex-gap-2">
+  <div class="d-flex justify-content-center">
+    <ats-modifiers-indicator></ats-modifiers-indicator>
+  </div>
+  <div class="d-flex">
+    <ats-short-long-indicator [dataContext]="dataContext"></ats-short-long-indicator>
+  </div>
+  <div class="d-flex">
+    <ats-working-volumes-panel
+      [guid]="guid"
+      [isActive]="isActive"
+    ></ats-working-volumes-panel>
+  </div>
+</div>
+

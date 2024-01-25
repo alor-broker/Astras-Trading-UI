@@ -29,6 +29,11 @@ import { LetDirective } from "@ngrx/component";
 import { PanelsContainerComponent } from "./components/panels/panels-container/panels-container.component";
 import { PanelComponent } from "./components/panels/panel/panel.component";
 import { PanelResizeHandlerComponent } from "./components/panels/panel-resize-handler/panel-resize-handler.component";
+import { BottomFloatingPanelComponent } from './components/bottom-floating-panel/bottom-floating-panel.component';
+import { TopFloatingPanelComponent } from './components/top-floating-panel/top-floating-panel.component';
+import { ShortLongIndicatorComponent } from './components/short-long-indicator/short-long-indicator.component';
+import { NzSliderModule } from "ng-zorro-antd/slider";
+import { LimitOrdersVolumeIndicatorComponent } from './components/limit-orders-volume-indicator/limit-orders-volume-indicator.component';
 
 @NgModule({
   declarations: [
@@ -50,19 +55,24 @@ import { PanelResizeHandlerComponent } from "./components/panels/panel-resize-ha
     TableRulerComponent,
     PanelsContainerComponent,
     PanelComponent,
-    PanelResizeHandlerComponent
+    PanelResizeHandlerComponent,
+    BottomFloatingPanelComponent,
+    TopFloatingPanelComponent,
+    ShortLongIndicatorComponent,
+    LimitOrdersVolumeIndicatorComponent
   ],
-    imports: [
-        CommonModule,
-        SharedModule,
-        NzResizeObserverModule,
-        NzInputModule,
-        NzSpinModule,
-        CdkDropListGroup,
-        CdkDropList,
-        CdkDrag,
-        LetDirective
-    ],
+  imports: [
+    CommonModule,
+    SharedModule,
+    NzResizeObserverModule,
+    NzInputModule,
+    NzSpinModule,
+    CdkDropListGroup,
+    CdkDropList,
+    CdkDrag,
+    LetDirective,
+    NzSliderModule
+  ],
   exports: [
     ScalperOrderBookWidgetComponent
   ]

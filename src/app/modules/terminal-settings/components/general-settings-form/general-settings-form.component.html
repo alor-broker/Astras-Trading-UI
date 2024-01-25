@@ -43,6 +43,25 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
+      <nz-form-label nzFor="tableRowHeight" nzRequired>{{t('terminalSettingsGeneralSettingsForm.tableRowHeightLabel')}}</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName='tableRowHeight'>
+          <nz-option
+            [nzLabel]="t('terminalSettingsGeneralSettingsForm.tableRowHeight.low')"
+            [nzValue]="tableRowHeight.Low"
+          ></nz-option>
+          <nz-option
+            [nzLabel]="t('terminalSettingsGeneralSettingsForm.tableRowHeight.medium')"
+            [nzValue]="tableRowHeight.Medium"
+          ></nz-option>
+          <nz-option
+            [nzLabel]="t('terminalSettingsGeneralSettingsForm.tableRowHeight.high')"
+            [nzValue]="tableRowHeight.High"
+          ></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
       <nz-form-label nzFor="userIdleDurationMin"
                      nzRequired>{{t('terminalSettingsGeneralSettingsForm.userIdleDurationLabel')}}</nz-form-label>
       <nz-form-control

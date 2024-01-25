@@ -1,9 +1,13 @@
-import {Injectable} from '@angular/core';
+import {
+  Injectable,
+  OnDestroy
+} from '@angular/core';
 import {
   HttpClient,
   HttpErrorResponse
 } from "@angular/common/http";
 import {
+  BehaviorSubject,
   forkJoin,
   Observable,
   of,
@@ -13,6 +17,7 @@ import {
 } from "rxjs";
 import {
   catchError,
+  filter,
   map
 } from "rxjs/operators";
 import {ErrorHandlerService} from "../handle-error/error-handler.service";
@@ -40,8 +45,9 @@ export type NewLinkedOrder = (NewLimitOrder | NewStopLimitOrder | NewStopMarketO
 @Injectable({
   providedIn: 'root'
 })
-export class OrderService {
+export class OrderService implements OnDestroy {
   private readonly baseApiUrl =this.environmentService.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions';
+  private readonly ordersDelayMSec$ = new BehaviorSubject<number | null>(null);
 
   constructor(
     private readonly environmentService: EnvironmentService,
@@ -51,6 +57,16 @@ export class OrderService {
     private readonly ordersGroupService: OrdersGroupService,
     private readonly canceller: OrderCancellerService,
   ) {
+  }
+
+  ngOnDestroy(): void {
+    this.ordersDelayMSec$.complete();
+  }
+
+  get lastOrderDelayMSec$(): Observable<number> {
+    return this.ordersDelayMSec$.pipe(
+      filter((x): x is number => x != null)
+    );
   }
 
   submitMarketOrder(order: NewMarketOrder, portfolio: string): Observable<SubmitOrderResult> {
@@ -289,7 +305,10 @@ export class OrderService {
       ? this.httpService.post<SubmitOrderResponse>(orderRequest.url, body, options)
       : this.httpService.put<SubmitOrderResponse>(orderRequest.url, body, options);
 
-    return requestPipe.pipe(
+    let startTime: number;
+    return of(Date.now()).pipe(
+      tap(st => startTime = st),
+      switchMap(() => requestPipe),
       catchError(err => {
         onError(err);
         return of(null);
@@ -298,7 +317,10 @@ export class OrderService {
         isSuccess: response?.orderNumber != null,
         orderNumber: response?.orderNumber
       } as SubmitOrderResult)),
-      take(1)
+      take(1),
+      tap(() => {
+        this.ordersDelayMSec$.next(Date.now() - startTime);
+      })
     );
   }
 

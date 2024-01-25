@@ -9,12 +9,15 @@ import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-dat
 import { Subject } from 'rxjs';
 import {
   mockComponent,
+  mockDirective,
   ngZorroMockComponents
 } from '../../../../shared/utils/testing';
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { LetDirective } from "@ngrx/component";
+import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
+import { SCALPER_ORDERBOOK_SHARED_CONTEXT } from "../scalper-order-book/scalper-order-book.component";
 
 describe('ScalperOrderBookBodyComponent', () => {
   let component: ScalperOrderBookBodyComponent;
@@ -34,6 +37,10 @@ describe('ScalperOrderBookBodyComponent', () => {
         mockComponent({ selector: 'ats-possible-actions-panel' }),
         mockComponent({ selector: 'ats-panels-container', inputs: ['initialWidths'] }),
         mockComponent({ selector: 'ats-panel', inputs: ['canResize', 'minWidthPx', 'defaultWidthPercent', 'expandable']}),
+        mockComponent({ selector: 'ats-top-floating-panel', inputs: ['guid', 'isActive']}),
+        mockComponent({ selector: 'ats-bottom-floating-panel', inputs: ['guid', 'isActive', 'dataContext']}),
+        mockComponent({ selector: 'ats-limit-orders-volume-indicator', inputs: ['dataContext', 'side']}),
+        mockDirective({selector: '[cdkDrag]', inputs: ['cdkDragBoundary', 'cdkDragFreeDragPosition']}),
         ...ngZorroMockComponents
       ],
       providers: [
@@ -42,7 +49,7 @@ describe('ScalperOrderBookBodyComponent', () => {
           useValue: {
             createContext: jasmine.createSpy('createContext').and.returnValue({
               extendedSettings$: new Subject(),
-              orderBookData$: new Subject(),
+              orderBook$: new Subject(),
               position$: new Subject(),
               currentOrders$: new Subject(),
               currentPortfolio$: new Subject(),
@@ -66,7 +73,21 @@ describe('ScalperOrderBookBodyComponent', () => {
         {
           provide: WidgetSettingsService,
           useValue: {
-            updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
+            updateSettings: jasmine.createSpy('updateSettings').and.callThrough(),
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: WidgetLocalStateService,
+          useValue: {
+            getStateRecord: jasmine.createSpy('getStateRecord').and.returnValue(new Subject()),
+            setStateRecord: jasmine.createSpy('setStateRecord').and.callThrough()
+          }
+        },
+        {
+          provide: SCALPER_ORDERBOOK_SHARED_CONTEXT,
+          useValue: {
+            workingVolume$: new Subject()
           }
         }
       ]

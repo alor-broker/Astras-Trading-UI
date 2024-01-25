@@ -1,4 +1,4 @@
-<ng-container *ngrxLet="{ isLoading: isLoading$ } as vm">
+<div class="container" *ngrxLet="{ isLoading: isLoading$ } as vm">
   <nz-spin [nzSpinning]="vm.isLoading">
     <cdk-virtual-scroll-viewport
       (nzResizeObserve)="updateContentSize($event)"
@@ -68,17 +68,50 @@
         </ng-container>
       </ng-container>
     </cdk-virtual-scroll-viewport>
-    <div class="position-absolute top-0 end-0">
-      <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.up ?? false"
-                            direction="up"></ats-orders-indicator>
-    </div>
-    <div class="position-absolute bottom-0 end-0">
-      <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.down ?? false"
-                            direction="down"></ats-orders-indicator>
-    </div>
-    <div class="position-absolute bottom-0 w-100" id="possible-actions-panel-container">
-      <ats-possible-actions-panel></ats-possible-actions-panel>
-    </div>
+
+    <ng-container *ngrxLet="dataContext.extendedSettings$ as settings">
+      <div class="position-absolute top-0 start-50 translate-middle-x" *ngIf="settings.widgetSettings.showLimitOrdersVolumeIndicators">
+        <ats-limit-orders-volume-indicator [dataContext]="dataContext" [side]="sides.Sell"></ats-limit-orders-volume-indicator>
+      </div>
+      <div class="position-absolute bottom-0 start-50 translate-middle-x" *ngIf="settings.widgetSettings.showLimitOrdersVolumeIndicators">
+        <ats-limit-orders-volume-indicator [dataContext]="dataContext" [side]="sides.Buy"></ats-limit-orders-volume-indicator>
+      </div>
+
+      <div class="position-absolute top-0 end-0">
+        <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.up ?? false"
+                              direction="up"></ats-orders-indicator>
+      </div>
+      <div class="position-absolute bottom-0 end-0">
+        <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.down ?? false"
+                              direction="down"></ats-orders-indicator>
+      </div>
+
+      <div
+        class="position-absolute top-0 p-3 z-3"
+        cdkDrag
+        cdkDragBoundary=".container"
+        [cdkDragFreeDragPosition]="(topFloatingPanelPosition$ | async) ?? {x: 0, y: 0}"
+        (cdkDragEnded)="saveFloatingPanelPosition($event, topFloatingPanelPositionStateKey)"
+        #topFloatingPanelContainer
+      >
+        <ats-top-floating-panel [guid]="guid"></ats-top-floating-panel>
+      </div>
+
+      <div
+        class="position-absolute bottom-0 p-3 z-3"
+        cdkDrag
+        cdkDragBoundary=".container"
+        [cdkDragFreeDragPosition]="(bottomFloatingPanelPosition$ | async) ?? {x: 0, y: 0}"
+        (cdkDragEnded)="saveFloatingPanelPosition($event, bottomFloatingPanelPositionStateKey)"
+        #bottomFloatingPanelContainer
+      >
+        <ats-bottom-floating-panel [guid]="guid" [isActive]="isActive" [dataContext]="dataContext"></ats-bottom-floating-panel>
+      </div>
+
+      <div class="position-absolute bottom-0 w-100" id="possible-actions-panel-container">
+        <ats-possible-actions-panel></ats-possible-actions-panel>
+      </div>
+    </ng-container>
     <div
       *ngIf="(dataContext.orderBookBody$  | async)?.length === 0 && !vm.isLoading"
       class="position-absolute top-0 w-100"
@@ -89,4 +122,4 @@
       ></nz-empty>
     </div>
 </nz-spin>
-</ng-container>
+</div>

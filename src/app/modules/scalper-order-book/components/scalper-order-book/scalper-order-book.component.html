@@ -1,23 +1,8 @@
 <ng-container>
   <ng-container *ngIf="settings$ | async as settings">
     <div [class.active]="isActive" class="container">
-      <div class="header flex-gap-2">
-        <div class="d-flex flex-gap-2">
-          <div>
-            <ats-working-volumes-panel
-              (selectedVolumeChanged)="workingVolume$.next($event)"
-              [guid]="guid"
-              [isActive]="isActive"
-            ></ats-working-volumes-panel>
-          </div>
-          <div class="mt-1">
-            <ats-modifiers-indicator></ats-modifiers-indicator>
-          </div>
-        </div>
-      </div>
       <div class="order-book-body">
-        <ats-scalper-order-book-body [guid]="guid" [isActive]="isActive"
-                                     [workingVolume]="(workingVolume$ | async) ?? 0"></ats-scalper-order-book-body>
+        <ats-scalper-order-book-body [guid]="guid" [isActive]="isActive"></ats-scalper-order-book-body>
       </div>
       <div class="footer">
         <ats-current-position-panel [guid]="guid"></ats-current-position-panel>

@@ -28,10 +28,12 @@ export class TreemapSettingsComponent extends WidgetSettingsBaseComponent<Treema
       max: 600
     }
   };
+
   readonly marks: NzMarks = {
     [this.validation.refreshIntervalSec.min]: this.validation.refreshIntervalSec.min.toString(),
     [this.validation.refreshIntervalSec.max]: this.validation.refreshIntervalSec.max.toString(),
   };
+
   form = this.formBuilder.group({
     refreshIntervalSec: this.formBuilder.nonNullable.control(
       60,

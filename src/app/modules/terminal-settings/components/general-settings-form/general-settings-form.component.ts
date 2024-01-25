@@ -1,5 +1,6 @@
 import {
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   Input,
   OnInit
 } from '@angular/core';
@@ -13,15 +14,16 @@ import {
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
-import {validationSettings} from '../../utils/validation-settings';
+import { validationSettings } from '../../utils/validation-settings';
 import {
   DesignSettings,
   GridType
 } from '../../../../shared/models/terminal-settings/terminal-settings.model';
-import {TimezoneDisplayOption} from '../../../../shared/models/enums/timezone-display-option';
-import {ThemeType} from '../../../../shared/models/settings/theme-settings.model';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {GeneralSettings} from "../../models/terminal-settings.model";
+import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
+import { ThemeType } from '../../../../shared/models/settings/theme-settings.model';
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { GeneralSettings } from "../../models/terminal-settings.model";
+import { TableRowHeight } from "../../../../shared/models/enums/table-row-height";
 
 @Component({
   selector: 'ats-general-settings-form',
@@ -41,6 +43,7 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
   readonly validationSettings = validationSettings;
 
   timezoneDisplayOption = TimezoneDisplayOption;
+  tableRowHeight = TableRowHeight;
 
   themeTypes = ThemeType;
 
@@ -91,6 +94,7 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
           ]),
         language: new UntypedFormControl(''),
         badgesBind: new UntypedFormControl(null),
+        tableRowHeight: new UntypedFormControl(TableRowHeight.Medium)
       }
     );
 

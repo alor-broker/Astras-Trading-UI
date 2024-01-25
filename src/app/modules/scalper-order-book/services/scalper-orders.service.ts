@@ -413,7 +413,7 @@ export class ScalperOrdersService {
       }
     } else {
       const order = currentOrders[0];
-      if(order.type !== 'stop' && order.type !== 'stoplimit') {
+      if(order.type !== 'limit') {
         return;
       }
 
@@ -427,7 +427,7 @@ export class ScalperOrdersService {
           exchange: order.exchange
         },
         orderId: order.orderId,
-        orderType: OrderType.Stop,
+        orderType: OrderType.Limit,
         initialValues: {
           quantity: order.displayVolume,
           price: updates.price

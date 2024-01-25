@@ -316,8 +316,9 @@ export class ScalperCommandProcessorService {
   private callWithCurrentOrderBook(
     dataContext: ScalperOrderBookDataContext,
     action: (orderBook: OrderbookData) => void): void {
-    dataContext.orderBookData$.pipe(
-      take(1)
+    dataContext.orderBook$.pipe(
+      take(1),
+      map(ob => ob.rows)
     ).subscribe(action);
   }
 
