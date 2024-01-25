@@ -36,6 +36,12 @@ export class WidgetsGalleryComponent {
   @Input({ required: true })
   gallery: GalleryDisplay | null = null;
 
+  @Input()
+  isMobile = false;
+
+  @Input()
+  activeWidget: string | null = null;
+
   @Output()
   selected = new EventEmitter<string>();
   @Output()

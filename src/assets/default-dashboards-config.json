@@ -139,9 +139,6 @@
         "widgetTypeId": "order-submit"
       },
       {
-        "widgetTypeId": "instrument-info"
-      },
-      {
         "widgetTypeId": "blotter"
       },
       {
@@ -149,6 +146,12 @@
       },
       {
         "widgetTypeId": "light-chart"
+      },
+      {
+        "widgetTypeId": "tech-chart"
+      },
+      {
+        "widgetTypeId": "instrument-info"
       },
       {
         "widgetTypeId": "news"
@@ -167,6 +170,12 @@
       },
       {
         "widgetTypeId": "treemap"
+      },
+      {
+        "widgetTypeId": "events-calendar"
+      },
+      {
+        "widgetTypeId": "option-board"
       }
     ]
   }

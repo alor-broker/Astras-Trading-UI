@@ -70,6 +70,8 @@ import { RegularInstrumentKey, SyntheticInstrumentKey } from "../../models/synth
 import { SyntheticInstrumentsService } from "../../services/synthetic-instruments.service";
 import { MarketService } from "../../../../shared/services/market.service";
 import { MarketExchange } from "../../../../shared/models/market-settings.model";
+import { DeviceService } from "../../../../shared/services/device.service";
+import { DeviceInfo } from "../../../../shared/models/device-info.model";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -232,7 +234,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly tradesHistoryService: TradesHistoryService,
     private readonly destroyRef: DestroyRef,
     private readonly syntheticInstrumentsService: SyntheticInstrumentsService,
-    private readonly marketService: MarketService
+    private readonly marketService: MarketService,
+    private readonly deviceService: DeviceService
   ) {
   }
 
@@ -287,7 +290,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         translator: this.translatorService.getTranslator('tech-chart/tech-chart'),
         timezoneConverter: this.timezoneConverterService.getConverter(),
         linkToActiveChange: linkToActiveChange$,
-        exchanges: this.marketService.getAllExchanges()
+        exchanges: this.marketService.getAllExchanges(),
+        deviceInfo: this.deviceService.deviceInfo$
       }).pipe(
       // read settings with recent changes
       withLatestFrom(this.settings$!),
@@ -303,6 +307,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         x.theme,
         x.timezoneConverter,
         x.exchanges,
+        x.deviceInfo,
         this.lastTheme && this.lastTheme.theme !== x.theme.theme
         || this.lastLang !== this.translatorService.getActiveLang()
         || this.lastTimezone !== x.timezoneConverter.displayTimezone,
@@ -362,6 +367,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     theme: ThemeSettings,
     timezoneConverter: TimezoneConverter,
     exchanges: MarketExchange[],
+    deviceInfo: DeviceInfo,
     forceRecreate = false): void {
     if (this.chartState) {
       if (forceRecreate) {
@@ -399,6 +405,25 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         chartLayout.charts[0].panes[0].sources[0].state.symbol = selectedInstrumentSymbol;
         chartLayout.charts[0].panes[0].sources[0].state.shortName = selectedInstrumentSymbol;
       }
+    }
+    const disabledFeatures = [
+      'symbol_info',
+      'display_market_status',
+      'symbol_search_hot_key',
+      'save_shortcut',
+      'save_chart_properties_to_local_storage',
+    ]  as ChartingLibraryFeatureset[];
+    const enabledFeatures = [
+      'side_toolbar_in_fullscreen_mode',
+      'chart_crosshair_menu',
+      'show_spread_operators',
+      'seconds_resolution'
+    ]  as ChartingLibraryFeatureset[];
+
+    if (deviceInfo.isMobile) {
+      disabledFeatures.push('header_symbol_search');
+    } else {
+      enabledFeatures.push('header_symbol_search');
     }
 
     this.techChartDatafeedService.setExchangeSettings(exchanges);
@@ -439,20 +464,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       ],
       symbol_search_request_delay: 2000,
       //features
-      disabled_features: [
-        'symbol_info',
-        'display_market_status',
-        'symbol_search_hot_key',
-        'save_shortcut',
-        'save_chart_properties_to_local_storage',
-      ],
-      enabled_features: [
-        'header_symbol_search',
-        'side_toolbar_in_fullscreen_mode',
-        'chart_crosshair_menu',
-        'show_spread_operators',
-        'seconds_resolution'
-      ] as unknown as ChartingLibraryFeatureset[]
+      disabled_features: disabledFeatures,
+      enabled_features: enabledFeatures
     };
 
     const chartWidget = new widget(config);

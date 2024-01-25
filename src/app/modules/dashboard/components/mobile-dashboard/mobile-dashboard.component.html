@@ -1,28 +1,67 @@
-<div class="d-flex mobile-dashboard" *transloco="let t">
-  <nz-tabset
-    *ngIf="widgets$ | async as widgets"
-    nzTabPosition="bottom"
-    nzSize="large"
-    class="mobile-dashboard-menu"
-    [nzAnimated]="false"
-    #tabs
+<div class="d-flex flex-column w-100 h-100" *transloco="let t; scope: 'dashboard/mobile-dashboard'">
+  <ng-container
+    *ngrxLet="{
+      defaultWidgets: defaultWidgets$,
+      selectedWidget: selectedWidget$,
+      widgetsGallery: widgetsGallery$
+    } as vm"
   >
-    <nz-tab
-      #tab
-      *ngFor="let widget of widgets"
-      nzForceRender
-      [nzTitle]="titleTemplate"
-    >
-      <ng-template #titleTemplate>
-        <div class="d-flex flex-column" [class.new-order]="widget.instance.widgetType === newOrderWidgetId">
-          <i nz-icon [nzType]="widget.widgetMeta.mobileMeta!.ribbonIcon" class="widget-icon" nzTheme="outline"></i>
+    <div class="d-flex w-100 h-100 overflow-hidden">
+      <div class="overflow-auto w-100">
+        <ats-parent-widget
+          *ngIf="vm.selectedWidget"
+          [widgetInstance]="vm.selectedWidget"
+          [isBlockWidget]="false"
+        ></ats-parent-widget>
+      </div>
+    </div>
 
+    <div class="widgets-menu d-flex justify-content-around p-10 flex-gap-10 overflow-auto">
+      <div
+        class="d-flex flex-column"
+        [class.active-widget]="!defaultWidgetNames.includes(vm.selectedWidget?.instance?.widgetType ?? '')"
+        (click)="galleryVisible = true"
+      >
+        <i nz-icon nzType="ellipsis" nzTheme="outline"></i>
+        <div class="widget-label">
+          <span>{{t('dashboardMobileDashboard.more')}}</span>
+        </div>
+      </div>
+
+      <ng-container
+        *ngFor="let widget of vm.defaultWidgets"
+      >
+        <nz-divider
+          class="vertical-divider"
+          nzType="vertical"
+          *ngIf="widget.instance.widgetType === newOrderWidgetId"
+        ></nz-divider>
+
+        <div
+          class="d-flex flex-column"
+          [class.active-widget]="widget.instance.widgetType === vm.selectedWidget?.instance?.widgetType"
+          (click)="selectedWidget$.next(widget)"
+        >
+          <i nz-icon [nzType]="widget.widgetMeta.mobileMeta!.ribbonIcon" class="widget-icon" nzTheme="outline"></i>
           <div class="widget-label">
             <span>{{getWidgetName(widget.widgetMeta)}}</span>
           </div>
         </div>
-      </ng-template>
-      <ats-parent-widget [widgetInstance]="widget" [isBlockWidget]="false" [isVisible]="tab.isActive"></ats-parent-widget>
-    </nz-tab>
-  </nz-tabset>
+
+        <nz-divider
+          class="vertical-divider"
+          nzType="vertical"
+          *ngIf="widget.instance.widgetType === newOrderWidgetId"
+        ></nz-divider>
+      </ng-container>
+    </div>
+
+    <ats-widgets-gallery
+      [gallery]="vm.widgetsGallery"
+      [isMobile]="true"
+      [activeWidget]="vm.selectedWidget?.instance?.widgetType ?? null"
+      [(atsVisible)]="galleryVisible"
+      (selected)="selectWidget($event)"
+    ></ats-widgets-gallery>
+  </ng-container>
 </div>

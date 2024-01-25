@@ -48,6 +48,7 @@ import { EmptyPortfoliosWarningModalWidgetComponent } from './widgets/empty-port
 import { InstrumentsCorrelationModule } from "../instruments-correlation/instruments-correlation.module";
 import { LetDirective } from "@ngrx/component";
 import { WidgetsGalleryComponent } from './components/widgets-gallery/widgets-gallery.component';
+import { NzDividerModule } from "ng-zorro-antd/divider";
 
 @NgModule({
   declarations: [
@@ -65,42 +66,43 @@ import { WidgetsGalleryComponent } from './components/widgets-gallery/widgets-ga
     EmptyPortfoliosWarningModalWidgetComponent,
     WidgetsGalleryComponent
   ],
-  imports: [
-    DashboardRoutingModule,
-    SharedModule,
-    OrderbookModule,
-    LightChartModule,
-    InstrumentsModule,
-    BlotterModule,
-    InfoModule,
-    TerminalSettingsModule,
-    JoyrideModule.forRoot(),
-    AllTradesModule,
-    NewsModule,
-    ExchangeRateModule,
-    TechChartModule,
-    AllInstrumentsModule,
-    NotificationsModule,
-    FeedbackModule,
-    ApplicationMetaModule,
-    NzInputModule,
-    ExternalLinkModule,
-    OrdersBasketModule,
-    ScalperOrderBookModule,
-    NzDrawerModule,
-    TreemapModule,
-    RibbonModule,
-    EventsCalendarModule,
-    OptionBoardModule,
-    ArbitrageSpreadModule,
-    PortfolioSummaryModule,
-    NzSegmentedModule,
-    DragDropModule,
-    OrderCommandsModule,
-    InstrumentsCorrelationModule,
-    LetDirective,
-    // components
-  ],
+    imports: [
+        DashboardRoutingModule,
+        SharedModule,
+        OrderbookModule,
+        LightChartModule,
+        InstrumentsModule,
+        BlotterModule,
+        InfoModule,
+        TerminalSettingsModule,
+        JoyrideModule.forRoot(),
+        AllTradesModule,
+        NewsModule,
+        ExchangeRateModule,
+        TechChartModule,
+        AllInstrumentsModule,
+        NotificationsModule,
+        FeedbackModule,
+        ApplicationMetaModule,
+        NzInputModule,
+        ExternalLinkModule,
+        OrdersBasketModule,
+        ScalperOrderBookModule,
+        NzDrawerModule,
+        TreemapModule,
+        RibbonModule,
+        EventsCalendarModule,
+        OptionBoardModule,
+        ArbitrageSpreadModule,
+        PortfolioSummaryModule,
+        NzSegmentedModule,
+        DragDropModule,
+        OrderCommandsModule,
+        InstrumentsCorrelationModule,
+        LetDirective,
+        NzDividerModule
+        // components
+    ],
   providers: [
     OnboardingService
   ]

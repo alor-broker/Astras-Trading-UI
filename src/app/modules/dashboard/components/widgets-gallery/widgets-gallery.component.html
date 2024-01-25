@@ -2,7 +2,7 @@
   <nz-drawer
     (nzOnClose)="close()"
     [nzClosable]="false"
-    [nzExtra]="extra"
+    [nzExtra]="isMobile ? '' : extra"
     [nzTitle]="t('dashboardWidgetsGallery.title')"
     [nzVisible]="atsVisible"
     [nzWidth]="250"
@@ -45,6 +45,7 @@
     <div
       (click)="selectWidget(widget)"
       class="cursor-pointer user-select-none d-flex flex-row flex-nowrap align-items-center gallery-item"
+      [class.active-item]="activeWidget === widget.typeId"
     >
       <i [nzType]="widget.icon" class="fs-5 mr-10" nz-icon nzTheme="outline"></i>&nbsp;{{widget.name}}
     </div>
