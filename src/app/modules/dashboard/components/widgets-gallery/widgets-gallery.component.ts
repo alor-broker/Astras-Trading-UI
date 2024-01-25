@@ -39,6 +39,9 @@ export class WidgetsGalleryComponent {
   @Input()
   isMobile = false;
 
+  @Input()
+  activeWidget: string | null = null;
+
   @Output()
   selected = new EventEmitter<string>();
   @Output()

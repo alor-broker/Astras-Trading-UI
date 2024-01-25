@@ -59,6 +59,7 @@
     <ats-widgets-gallery
       [gallery]="vm.widgetsGallery"
       [isMobile]="true"
+      [activeWidget]="vm.selectedWidget?.instance?.widgetType ?? null"
       [(atsVisible)]="galleryVisible"
       (selected)="selectWidget($event)"
     ></ats-widgets-gallery>
