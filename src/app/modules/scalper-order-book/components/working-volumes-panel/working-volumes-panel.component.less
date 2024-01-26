@@ -3,10 +3,10 @@
 .themeMixin({
   :host {
     .working-volume-item {
-      color: @working-volume-tag-color;
-      border: @working-volume-tag-border-color solid 1px;
+      color: @text-color;
+      border: @border-color-base solid 1px;
       border-radius: @border-radius-base;
-      background-color: @working-volume-tag-background-color;
+      background-color: @component-background;
 
       &.active {
         color: @primary-color;
@@ -16,6 +16,7 @@
 
       &:hover {
         border-color: @border-color-active;
+        color: @text-max-contrast-color;
       }
     }
   }

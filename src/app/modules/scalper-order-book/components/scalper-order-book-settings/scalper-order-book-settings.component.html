@@ -140,7 +140,7 @@
                   [nzHeader]="t('scalperOrderBookSettings.autoAlignSettingsLabel')"
                 >
                   <nz-form-item>
-                    <nz-form-label nzFor="autoAlignIntervalSec" class="auto-align-label">
+                    <nz-form-label nzFor="autoAlignIntervalSec">
                       {{t('scalperOrderBookSettings.autoAlignIntervalLabel')}}
                     </nz-form-label>
                     <nz-form-control
@@ -164,6 +164,38 @@
               </nz-form-control>
             </nz-form-item>
           </nz-collapse-panel>
+
+          <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.gridSettingsLabel')">
+            <nz-form-item>
+              <nz-form-control>
+                <nz-form-label nzFor="fontSize" nzRequired>{{ t('scalperOrderBookSettings.fontSizeLabel') }}
+                </nz-form-label>
+                <nz-slider
+                  [nzMin]="validationOptions.fontSize.min"
+                  [nzMax]="validationOptions.fontSize.max"
+                  [nzStep]="1"
+                  [nzMarks]="getSliderMarks(validationOptions.fontSize.min, validationOptions.fontSize.max)"
+                  formControlName="fontSize"
+                >
+                </nz-slider>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-control>
+                <nz-form-label nzFor="rowHeight" nzRequired>{{ t('scalperOrderBookSettings.rowHeightLabel') }}
+                </nz-form-label>
+                <nz-slider
+                  [nzMin]="validationOptions.rowHeight.min"
+                  [nzMax]="validationOptions.rowHeight.max"
+                  [nzStep]="1"
+                  [nzMarks]="getSliderMarks(validationOptions.rowHeight.min, validationOptions.rowHeight.max)"
+                  formControlName="rowHeight"
+                >
+                </nz-slider>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-collapse-panel>
+
           <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.ordersSettingsHeader')">
             <nz-form-item class="one-row">
               <nz-form-label nzFor="disableHotkeys">{{t('scalperOrderBookSettings.disableHotkeysLabel')}}</nz-form-label>

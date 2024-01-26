@@ -55,8 +55,8 @@ import { Instrument } from "../../../shared/models/instruments/instrument.model"
 
 
 export interface ContextGetters {
-  getVisibleRowsCount: () => number;
-  isFillingByHeightNeeded: (currentRows: PriceRow[]) => boolean;
+  getVisibleRowsCount: (rowHeight: number) => number;
+  isFillingByHeightNeeded: (currentRows: PriceRow[], rowHeight: number) => boolean;
 }
 
 export interface ContextChangeActions {
@@ -84,6 +84,7 @@ export class ScalperOrderBookDataContextService {
     widgetGuid: string,
     priceRowsStore: PriceRowsStore,
     contentSize$: Observable<ContentSize | null>,
+    rowHeight$: Observable<number>,
     getters: ContextGetters,
     actions: ContextChangeActions
   ): Omit<ScalperOrderBookDataContext, 'displayRange$' | 'workingVolume$'> {
@@ -103,6 +104,7 @@ export class ScalperOrderBookDataContextService {
         orderBook$,
         position$,
         contentSize$,
+        rowHeight$,
         getters,
         actions
       ),
@@ -272,6 +274,7 @@ export class ScalperOrderBookDataContextService {
     orderBookData$: Observable<OrderBook>,
     position$: Observable<Position | null>,
     contentSize$: Observable<ContentSize | null>,
+    rowHeight$: Observable<number>,
     getters: ContextGetters,
     actions: ContextChangeActions
   ): Observable<BodyRow[]> {
@@ -280,10 +283,10 @@ export class ScalperOrderBookDataContextService {
       priceRowsStore.state$,
       orderBookData$,
       position$,
-      contentSize$
-
+      contentSize$,
+      rowHeight$
     ]).pipe(
-      map(([settings, rowsState, orderBook, position]) => {
+      map(([settings, rowsState, orderBook, position, ,rowHeight]) => {
         return this.mapToBodyRows(
           settings,
           rowsState,
@@ -291,7 +294,8 @@ export class ScalperOrderBookDataContextService {
           position,
           getters,
           actions,
-          priceRowsStore
+          priceRowsStore,
+          rowHeight
         ) ?? [];
       }),
       shareReplay({ bufferSize: 1, refCount: true })
@@ -305,12 +309,13 @@ export class ScalperOrderBookDataContextService {
     position: Position | null,
     getters: ContextGetters,
     actions: ContextChangeActions,
-    priceRowsStore: PriceRowsStore
+    priceRowsStore: PriceRowsStore,
+    rowHeight: number
   ): BodyRow[] | null {
     if (!isInstrumentEqual(settings.widgetSettings, rowsState.instrumentKey)
       || !isInstrumentEqual(settings.widgetSettings, orderBook.instrumentKey)
     ) {
-      this.regenerateRowsForHeight(null, settings, getters, actions, priceRowsStore);
+      this.regenerateRowsForHeight(null, settings, getters, actions, priceRowsStore, rowHeight);
       return [];
     }
 
@@ -319,8 +324,8 @@ export class ScalperOrderBookDataContextService {
     }
 
     if (rowsState.rows.length === 0
-      || getters.isFillingByHeightNeeded(rowsState.rows)) {
-      this.regenerateRowsForHeight(orderBook.rows, settings, getters, actions, priceRowsStore);
+      || getters.isFillingByHeightNeeded(rowsState.rows, rowHeight)) {
+      this.regenerateRowsForHeight(orderBook.rows, settings, getters, actions, priceRowsStore, rowHeight);
       return [];
     }
 
@@ -330,7 +335,8 @@ export class ScalperOrderBookDataContextService {
       settings,
       getters,
       actions,
-      priceRowsStore
+      priceRowsStore,
+      rowHeight
     )
     ) {
       return [];
@@ -363,7 +369,8 @@ export class ScalperOrderBookDataContextService {
     settings: ScalperOrderBookExtendedSettings,
     getters: ContextGetters,
     actions: ContextChangeActions,
-    priceRowsStore: PriceRowsStore
+    priceRowsStore: PriceRowsStore,
+    rowHeight: number
   ): void {
     actions.priceRowsRegenerationStarted();
 
@@ -404,7 +411,7 @@ export class ScalperOrderBookDataContextService {
           }
           : null,
         settings.instrument.minstep,
-        getters.getVisibleRowsCount(),
+        getters.getVisibleRowsCount(rowHeight),
         () => {
           actions.priceRowsRegenerationCompleted();
         }
@@ -417,7 +424,8 @@ export class ScalperOrderBookDataContextService {
     settings: ScalperOrderBookExtendedSettings,
     getters: ContextGetters,
     actions: ContextChangeActions,
-    priceRowsStore: PriceRowsStore
+    priceRowsStore: PriceRowsStore,
+    rowHeight: number
   ): void {
     actions.priceRowsRegenerationStarted();
 
@@ -436,7 +444,7 @@ export class ScalperOrderBookDataContextService {
         max: expectedMaxPrice
       },
       settings.instrument.minstep,
-      getters.getVisibleRowsCount(),
+      getters.getVisibleRowsCount(rowHeight),
       () => {
         actions.priceRowsRegenerationCompleted();
       }
@@ -449,7 +457,8 @@ export class ScalperOrderBookDataContextService {
     settings: ScalperOrderBookExtendedSettings,
     getters: ContextGetters,
     actions: ContextChangeActions,
-    priceRowsStore: PriceRowsStore
+    priceRowsStore: PriceRowsStore,
+    rowHeight: number
   ): boolean {
     const maxRowPrice = priceRows[0].price;
     const minRowPrice = priceRows[priceRows.length - 1].price;
@@ -459,7 +468,7 @@ export class ScalperOrderBookDataContextService {
     const expectedMinPrice = orderBookBounds.bidsRange?.min ?? orderBookBounds.asksRange?.min;
     if ((expectedMinPrice != null && expectedMinPrice < minRowPrice)
       || (expectedMaxPrice != null && expectedMaxPrice > maxRowPrice)) {
-      this.regeneratePriceRows(orderBookData, settings, getters, actions, priceRowsStore);
+      this.regeneratePriceRows(orderBookData, settings, getters, actions, priceRowsStore, rowHeight);
       return false;
     }
 

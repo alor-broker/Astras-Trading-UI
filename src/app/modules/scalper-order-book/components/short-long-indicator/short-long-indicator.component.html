@@ -1,18 +1,19 @@
 <ng-container *transloco="let t; scope: 'scalper-order-book/short-long-indicator'">
-  <div class="d-flex flex-column justify-content-start fw-bold lh-1 container" *ngrxLet="shortLongValues$ as shortLongValues">
+  <div *ngIf="shortLongValues$ | async as shortLongValues"
+       class="d-flex flex-column justify-content-start fw-bold lh-1 container">
     <div
-      nz-tooltip
-      [nzTooltipTitle]="t('scalperOrderBookShortLongIndicator.longTooltip', { count: shortLongValues.long})"
       [nzTooltipMouseEnterDelay]="1"
+      [nzTooltipTitle]="t('scalperOrderBookShortLongIndicator.longTooltip', { count: shortLongValues.long})"
+      nz-tooltip
     >
-      <span>L {{shortLongValues.long}}</span>
+      <span>L {{ shortLongValues.long }}</span>
     </div>
     <div
-      nz-tooltip
-      [nzTooltipTitle]="t('scalperOrderBookShortLongIndicator.shortTooltip', { count: shortLongValues.short})"
       [nzTooltipMouseEnterDelay]="1"
+      [nzTooltipTitle]="t('scalperOrderBookShortLongIndicator.shortTooltip', { count: shortLongValues.short})"
+      nz-tooltip
     >
-      <span>S {{shortLongValues.short}}</span>
+      <span>S {{ shortLongValues.short }}</span>
     </div>
   </div>
 </ng-container>

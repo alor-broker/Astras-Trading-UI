@@ -14,6 +14,7 @@ import {
 } from "../../../../shared/utils/testing";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+import { NzSliderModule } from "ng-zorro-antd/slider";
 
 describe('ScalperOrderBookSettingsComponent', () => {
   let component: ScalperOrderBookSettingsComponent;
@@ -27,6 +28,7 @@ describe('ScalperOrderBookSettingsComponent', () => {
       imports: [
         getTranslocoModule(),
         NoopAnimationsModule,
+        NzSliderModule,
         ...sharedModuleImportForTests
       ],
       providers: [

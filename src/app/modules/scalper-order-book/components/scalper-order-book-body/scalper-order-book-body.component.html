@@ -1,10 +1,10 @@
-<div class="container" *ngrxLet="{ isLoading: isLoading$ } as vm">
-  <nz-spin [nzSpinning]="vm.isLoading">
+<div class="container" *ngrxLet="{ isLoading: isLoading$, rowHeight: rowHeight$} as shared">
+  <nz-spin [nzSpinning]="shared.isLoading">
     <cdk-virtual-scroll-viewport
       (nzResizeObserve)="updateContentSize($event)"
-      [itemSize]="rowHeight"
-      [maxBufferPx]="rowHeight * 10"
-      [minBufferPx]="rowHeight * 10"
+      [itemSize]="shared.rowHeight"
+      [maxBufferPx]="shared.rowHeight * 10"
+      [minBufferPx]="shared.rowHeight * 10"
       [orientation]="'vertical'"
       class="container show-scroll"
       nzResizeObserver>
@@ -15,8 +15,8 @@
         extendedSettings: dataContext.extendedSettings$} as vm">
           <div id="spacer">
               <div *cdkVirtualFor="let row of vm.orderBookBody; templateCacheSize: 0"
-                   [style.height]="rowHeight + 'px'"
-                   [style.line-height]="rowHeight + 'px'"
+                   [style.height]="shared.rowHeight + 'px'"
+                   [style.line-height]="shared.rowHeight + 'px'"
               ></div>
             </div>
           <ng-container *ngIf="vm.orderBookBody.length > 0">
@@ -35,7 +35,7 @@
               >
                 <ats-trade-clusters-panel
                   [dataContext]="dataContext"
-                  [xAxisStep]="rowHeight"
+                  [xAxisStep]="shared.rowHeight"
                 ></ats-trade-clusters-panel>
               </ats-panel>
 
@@ -48,7 +48,7 @@
               >
                 <ats-trades-panel
                   [dataContext]="dataContext"
-                  [xAxisStep]="rowHeight"
+                  [xAxisStep]="shared.rowHeight"
                 ></ats-trades-panel>
               </ats-panel>
 
@@ -59,7 +59,7 @@
               >
                 <ats-scalper-order-book-table [dataContext]="dataContext"
                                               [isActive]="isActive"
-                                              [rowHeight]="rowHeight"
+                                              [rowHeight]="shared.rowHeight"
                 >
                 </ats-scalper-order-book-table>
               </ats-panel>
@@ -70,10 +70,10 @@
     </cdk-virtual-scroll-viewport>
 
     <ng-container *ngrxLet="dataContext.extendedSettings$ as settings">
-      <div class="position-absolute top-0 start-50 translate-middle-x" *ngIf="settings.widgetSettings.showLimitOrdersVolumeIndicators">
+      <div class="position-absolute top-0 start-50 translate-middle-x lh-1" *ngIf="settings.widgetSettings.showLimitOrdersVolumeIndicators">
         <ats-limit-orders-volume-indicator [dataContext]="dataContext" [side]="sides.Sell"></ats-limit-orders-volume-indicator>
       </div>
-      <div class="position-absolute bottom-0 start-50 translate-middle-x" *ngIf="settings.widgetSettings.showLimitOrdersVolumeIndicators">
+      <div class="position-absolute bottom-0 start-50 translate-middle-x lh-1" *ngIf="settings.widgetSettings.showLimitOrdersVolumeIndicators">
         <ats-limit-orders-volume-indicator [dataContext]="dataContext" [side]="sides.Buy"></ats-limit-orders-volume-indicator>
       </div>
 
@@ -113,7 +113,7 @@
       </div>
     </ng-container>
     <div
-      *ngIf="(dataContext.orderBookBody$  | async)?.length === 0 && !vm.isLoading"
+      *ngIf="(dataContext.orderBookBody$  | async)?.length === 0 && !shared.isLoading"
       class="position-absolute top-0 w-100"
     >
       <nz-empty

@@ -16,13 +16,19 @@
 }
 );
 
-.marker {
+.marker-container {
   position: absolute;
   box-sizing: border-box;
   pointer-events: none;
+  z-index: 10000;
 
   &.left {
-    right: 0;
+    @reserved-width: 150px;
+
+    left: 0;
+    margin-left: (-1 * @reserved-width);
+    width: @reserved-width;
+    text-align: end;
   }
 
   &.right {
