@@ -65,5 +65,24 @@
       "name": "Rho",
       "tooltip": "Rho"
     }
+  },
+
+  "optionTranscription": {
+    "ticker": "Тикер",
+    "settlementType": "Тип расчётов",
+    "expirationDate": "Дата исполнения",
+    "optionType": "Тип опциона",
+    "expirationType": "Тип экспирации",
+    "strikePrice": "Страйк"
+  },
+
+  "settlementType": {
+    "P": "Премиальный",
+    "M": "Маржируемый"
+  },
+
+  "expirationType": {
+    "E": "Европейский",
+    "A": "Американский"
   }
 }

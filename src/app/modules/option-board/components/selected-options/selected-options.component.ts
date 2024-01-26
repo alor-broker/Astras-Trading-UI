@@ -26,7 +26,17 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ActionsContext } from 'src/app/shared/services/actions-context';
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 
+interface OptionTranscription {
+  ticker: string;
+  settlementType: string;
+  expirationDate: string;
+  optionType: string;
+  expirationType: string;
+  strikePrice: string;
+}
+
 interface DetailsDisplay extends OptionKey {
+  optionTranscription?: OptionTranscription;
   underlyingAssetSymbol: string;
   description: string;
   expirationDate: Date;
@@ -60,11 +70,12 @@ export class SelectedOptionsComponent implements OnInit, AfterViewInit, OnDestro
   @Input({required: true})
   dataContext!: OptionBoardDataContext;
   readonly isLoading$ = new BehaviorSubject(false);
+  readonly minOptionTableWidth = 400;
   detailsDisplay$!: Observable<DetailsDisplay[]>;
   displayColumns$!: Observable<BaseColumnSettings<DetailsDisplay>[]>;
 
   public tableScroll$?: Observable<ContentSize>;
-  private readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
+  readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   private readonly columnsConfig: BaseColumnSettings<DetailsDisplay>[] = [
     {
       id: 'symbol',
@@ -229,6 +240,21 @@ export class SelectedOptionsComponent implements OnInit, AfterViewInit, OnDestro
     });
   }
 
+  private getOptionTranscription(optionTicker: string, baseTicker: string): OptionTranscription {
+    const optionTickerRegExp = new RegExp(`(${baseTicker})([PM])(\\d{6})([PC])([AE])(\\d+)`);
+    const matchedParts = Array.from(optionTicker.match(optionTickerRegExp)!);
+    matchedParts.shift();
+
+    return {
+      ticker: matchedParts[0],
+      settlementType: matchedParts[1],
+      expirationDate: matchedParts[2],
+      optionType: matchedParts[3],
+      expirationType: matchedParts[4],
+      strikePrice: matchedParts[5],
+    };
+  }
+
   private initDetailsDisplay(): void {
     const refreshTimer$ = timer(0, 60000).pipe(
       // for some reasons timer pipe is not completed in detailsDisplay$ when component destroyed (https://github.com/alor-broker/Astras-Trading-UI/issues/1176)
@@ -272,6 +298,7 @@ export class SelectedOptionsComponent implements OnInit, AfterViewInit, OnDestro
           return {
             ...i.details,
             ...i.details.calculations,
+            optionTranscription : this.getOptionTranscription(i.details.symbol, i.instrument.symbol),
             underlyingAssetSymbol: i.instrument.symbol,
             price: MathHelper.roundPrice(i.details.calculations.price, i.instrument.minStep)
           } as DetailsDisplay;

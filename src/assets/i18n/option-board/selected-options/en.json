@@ -65,5 +65,24 @@
       "name": "Rho",
       "tooltip": "Rho"
     }
+  },
+
+  "optionTranscription": {
+    "ticker": "Ticker",
+    "settlementType": "Settlement type",
+    "expirationDate": "Expiration date",
+    "optionType": "Option type",
+    "expirationType": "Expiration type",
+    "strikePrice": "Strike price"
+  },
+
+  "settlementType": {
+    "P": "Equity-style",
+    "M": "Futures-style"
+  },
+
+  "expirationType": {
+    "E": "European",
+    "A": "American"
   }
 }
