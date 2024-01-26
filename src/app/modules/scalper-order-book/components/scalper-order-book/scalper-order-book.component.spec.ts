@@ -10,6 +10,7 @@ import {
   getTranslocoModule,
   mockComponent
 } from '../../../../shared/utils/testing';
+import { LetDirective } from "@ngrx/component";
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -17,7 +18,10 @@ describe('ScalperOrderBookComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports:[getTranslocoModule()],
+      imports:[
+        getTranslocoModule(),
+        LetDirective
+      ],
       declarations: [
         ScalperOrderBookComponent,
         mockComponent({ selector: 'ats-working-volumes-panel' }),

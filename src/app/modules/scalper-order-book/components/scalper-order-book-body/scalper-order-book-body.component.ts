@@ -77,7 +77,9 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     currentTrades: 'current-trades',
     tradeClusters: 'trade-clusters'
   };
-  readonly rowHeight = 18;
+
+  rowHeight$!: Observable<number>;
+
   @ViewChild(CdkVirtualScrollViewport)
   scrollContainer!: CdkVirtualScrollViewport;
 
@@ -130,6 +132,10 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   }
 
   ngOnInit(): void {
+    this.rowHeight$ = this.scalperOrderBookSharedContext.gridSettings$.pipe(
+      map(s => s.rowHeight)
+    );
+
     this.initWidgetSettings();
     this.initContext();
     this.initAutoAlign();
@@ -227,14 +233,15 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     this.hiddenOrdersIndicators$ = combineLatest([
       this.dataContext.orderBookBody$,
       this.dataContext.currentOrders$,
-      this.dataContext.displayRange$
+      this.dataContext.displayRange$,
+      this.rowHeight$
     ]).pipe(
-      map(([orderBookBody, currentOrders,]) => {
+      map(([orderBookBody, currentOrders,, rowHeight]) => {
         const topOffset = this.scrollContainer.measureScrollOffset('top');
         const bottomOffset = topOffset + this.scrollContainer.getViewportSize();
 
-        const topVisibleIndex = Math.ceil(topOffset / this.rowHeight);
-        const bottomVisibleIndex = Math.round(bottomOffset / this.rowHeight) - 1;
+        const topVisibleIndex = Math.ceil(topOffset / rowHeight);
+        const bottomVisibleIndex = Math.round(bottomOffset / rowHeight) - 1;
 
         const upPrice = topVisibleIndex < orderBookBody.length
           ? orderBookBody[topVisibleIndex]?.price
@@ -271,9 +278,10 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
       this.guid,
       this.priceRowsStore,
       this.contentSize$,
+      this.rowHeight$,
       {
-        getVisibleRowsCount: () => this.getDisplayRowsCount(),
-        isFillingByHeightNeeded: (currentRows: PriceRow[]) => this.isFillingByHeightNeeded(currentRows)
+        getVisibleRowsCount: (rowHeight: number) => this.getDisplayRowsCount(rowHeight),
+        isFillingByHeightNeeded: (currentRows: PriceRow[], rowHeight: number) => this.isFillingByHeightNeeded(currentRows, rowHeight)
       },
       {
         priceRowsRegenerationStarted: () => this.isLoading$.next(true),
@@ -296,16 +304,16 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     };
   }
 
-  private isFillingByHeightNeeded(currentRows: PriceRow[]): boolean {
-    const displayRowsCount = this.getDisplayRowsCount();
+  private isFillingByHeightNeeded(currentRows: PriceRow[], rowHeight: number): boolean {
+    const displayRowsCount = this.getDisplayRowsCount(rowHeight);
     const previousHeight = this.lastContainerHeight;
     this.lastContainerHeight = this.getContainerHeight();
 
     return currentRows.length < displayRowsCount || previousHeight < this.lastContainerHeight;
   }
 
-  private getDisplayRowsCount(): number {
-    return Math.ceil((this.getContainerHeight() * 2 / this.rowHeight));
+  private getDisplayRowsCount(rowHeight: number): number {
+    return Math.ceil((this.getContainerHeight() * 2 / rowHeight));
   }
 
   private getContainerHeight(): number {
@@ -314,20 +322,23 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
 
   private alignTable(): void {
     setTimeout(() => {
-      this.dataContext.orderBookBody$.pipe(
+      combineLatest({
+        orderBookBody: this.dataContext.orderBookBody$,
+        rowHeight: this.rowHeight$
+      }).pipe(
         take(1)
-      ).subscribe(orderBookBody => {
+      ).subscribe(x => {
         let targetIndex: number | null = null;
 
-        const spreadRows = orderBookBody.filter(r => r.rowType === ScalperOrderBookRowType.Spread);
+        const spreadRows = x.orderBookBody.filter(r => r.rowType === ScalperOrderBookRowType.Spread);
         if (spreadRows.length > 0) {
-          targetIndex = orderBookBody.indexOf(spreadRows[0]) + Math.round(spreadRows.length / 2);
+          targetIndex = x.orderBookBody.indexOf(spreadRows[0]) + Math.round(spreadRows.length / 2);
         } else {
-          const bestSellRowIndex = orderBookBody.findIndex(r => r.rowType === ScalperOrderBookRowType.Ask && r.isBest);
+          const bestSellRowIndex = x.orderBookBody.findIndex(r => r.rowType === ScalperOrderBookRowType.Ask && r.isBest);
           if (bestSellRowIndex >= 0) {
             targetIndex = bestSellRowIndex;
           } else {
-            const startRowIndex = orderBookBody.findIndex(r => r.isStartRow);
+            const startRowIndex = x.orderBookBody.findIndex(r => r.isStartRow);
             if (startRowIndex >= 0) {
               targetIndex = startRowIndex;
             }
@@ -337,7 +348,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
         setTimeout(() => {
           if (targetIndex != null && !!targetIndex) {
             const viewPortSize = this.getContainerHeight();
-            const visibleItemsCount = viewPortSize / this.rowHeight;
+            const visibleItemsCount = viewPortSize / x.rowHeight;
             const centerCorrection = Math.floor(visibleItemsCount / 2) - 1;
 
             this.scrollContainer.scrollToIndex(targetIndex! - centerCorrection);
@@ -348,25 +359,28 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   }
 
   private initTableScrolling(): void {
-    this.scrollContainer.scrolledIndexChange.pipe(
+    combineLatest({
+      index: this.scrollContainer.scrolledIndexChange,
+      rowHeight: this.rowHeight$
+    }).pipe(
       withLatestFrom(this.isLoading$),
       filter(([, isLoading]) => !isLoading),
-      map(([index,]) => index),
+      map(([x,]) => x),
       withLatestFrom(this.priceRowsStore.state$.pipe(map(x => x.rows))),
       filter(([, priceRows]) => priceRows.length > 0),
-      map(([index, priceRows]) => ({ index, priceRows })),
+      map(([x, priceRows]) => ({ ...x, priceRows })),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
       const bufferItemsCount = 10;
       const topScrollOffset = this.scrollContainer.measureScrollOffset('top');
       const bottomScrollOffset = this.scrollContainer.measureScrollOffset('bottom');
 
-      if ((topScrollOffset / this.rowHeight) < bufferItemsCount) {
+      if ((topScrollOffset / x.rowHeight) < bufferItemsCount) {
         this.isLoading$.next(true);
         this.priceRowsStore.extendTop(bufferItemsCount, (addedItemsCount: number) => {
           ScalperOrderBookTableHelper.scrollTableToIndex(
             this.scrollContainer,
-            this.rowHeight,
+            x.rowHeight,
             x.index + addedItemsCount,
             false,
             false
@@ -377,7 +391,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
         return;
       }
 
-      if ((bottomScrollOffset / this.rowHeight) < bufferItemsCount) {
+      if ((bottomScrollOffset / x.rowHeight) < bufferItemsCount) {
         this.isLoading$.next(true);
         this.priceRowsStore.extendBottom(bufferItemsCount, () => {
           this.isLoading$.next(false);

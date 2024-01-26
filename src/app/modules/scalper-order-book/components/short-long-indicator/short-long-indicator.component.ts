@@ -1,11 +1,14 @@
 import {
   Component,
+  DestroyRef,
   Input,
+  OnDestroy,
   OnInit
 } from '@angular/core';
 import { EvaluationService } from "../../../../shared/services/evaluation.service";
 import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-data-context.model";
 import {
+  BehaviorSubject,
   combineLatest,
   defer,
   distinctUntilChanged,
@@ -15,6 +18,7 @@ import {
   shareReplay,
   switchMap,
   take,
+  tap,
   timer
 } from "rxjs";
 import {
@@ -26,19 +30,27 @@ import {
 import { Evaluation } from "../../../../shared/models/evaluation.model";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { toInstrumentKey } from "../../../../shared/utils/instruments";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-short-long-indicator',
   templateUrl: './short-long-indicator.component.html',
   styleUrls: ['./short-long-indicator.component.less']
 })
-export class ShortLongIndicatorComponent implements OnInit {
+export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
   @Input({ required: true })
   dataContext!: ScalperOrderBookDataContext;
 
-  shortLongValues$!: Observable<{ short: number, long: number }>;
+  shortLongValues$ = new BehaviorSubject<{ short: number, long: number } | null>(null);
 
-  constructor(private readonly evaluationService: EvaluationService) {
+  constructor(
+    private readonly evaluationService: EvaluationService,
+    private readonly destroyRef: DestroyRef
+  ) {
+  }
+
+  ngOnDestroy(): void {
+    this.shortLongValues$.complete();
   }
 
   ngOnInit(): void {
@@ -49,7 +61,8 @@ export class ShortLongIndicatorComponent implements OnInit {
 
     const instrumentKey$ = widgetSettings$.pipe(
       map(s => toInstrumentKey(s)),
-      distinctUntilChanged((prev, curr) => isInstrumentEqual(prev, curr))
+      distinctUntilChanged((prev, curr) => isInstrumentEqual(prev, curr)),
+      tap(() => this.shortLongValues$.next(null))
     );
 
     const updateInterval$ = widgetSettings$.pipe(
@@ -88,7 +101,7 @@ export class ShortLongIndicatorComponent implements OnInit {
     });
 
 
-    this.shortLongValues$ = refreshTrigger$.pipe(
+    refreshTrigger$.pipe(
       switchMap(() => dataStream$),
       switchMap(d => {
         const bestAsk: number | null = d.orderBookData.a[0]?.p ?? d.orderBookData.b[0]?.p ?? null;
@@ -109,12 +122,13 @@ export class ShortLongIndicatorComponent implements OnInit {
 
         return forkJoin([getEvaluation(bestAsk), getEvaluation(bestBid)]);
       }),
-      map(([long, short]) => {
+      map(([short, long]) => {
         return {
-          short: short?.quantityToBuy ?? 0,
-          long: long?.quantityToSell ?? 0,
+          short: short?.quantityToSell ?? 0,
+          long: long?.quantityToBuy ?? 0,
         };
-      })
-    );
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(value => this.shortLongValues$.next(value));
   }
 }

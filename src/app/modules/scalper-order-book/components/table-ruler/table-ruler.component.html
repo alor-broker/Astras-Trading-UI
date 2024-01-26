@@ -2,25 +2,26 @@
   <div class="h-100">
     <ng-container *ngIf="markerPosition$ | async as markerPosition">
       <ng-container *ngIf="displayMarker$ | async as displayMarker">
-        <span
-          #marker
+        <div
           [ngClass]="markerPosition"
           [ngStyle]="{
           'height': xAxisStep + 'px',
           'line-height': xAxisStep + 'px',
           'top': displayMarker.index * xAxisStep + 'px'
           }"
-          class="marker"
+          class="marker-container"
         >
-          <ng-container
-            *ngIf="settings.widgetSettings.rulerSettings!.markerDisplayFormat === priceUnits.Points">
-            {{displayMarker.points}}
-          </ng-container>
-          <ng-container
-            *ngIf="settings.widgetSettings.rulerSettings!.markerDisplayFormat === priceUnits.Percents">
-            {{displayMarker.percents}}%
-          </ng-container>
+          <span class="marker" #marker>
+            <ng-container
+              *ngIf="settings.widgetSettings.rulerSettings!.markerDisplayFormat === priceUnits.Points">
+              {{ displayMarker.points }}
+            </ng-container>
+            <ng-container
+              *ngIf="settings.widgetSettings.rulerSettings!.markerDisplayFormat === priceUnits.Percents">
+              {{ displayMarker.percents }}%
+            </ng-container>
         </span>
+        </div>
       </ng-container>
     </ng-container>
   </div>

@@ -1,4 +1,4 @@
 ﻿{
-  "longTooltip": "{{count}} lots available in Long",
-  "shortTooltip": "{{count}} lots available in Short"
+  "longTooltip": "{{count}} (lots) available in Long",
+  "shortTooltip": "{{count}} (lots) available in Short"
 }

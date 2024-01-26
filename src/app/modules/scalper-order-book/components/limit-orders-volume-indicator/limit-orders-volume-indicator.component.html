@@ -4,7 +4,7 @@
       *ngIf="ordersVolume > 0"
       [nzTooltipMouseEnterDelay]="1"
       [nzTooltipTitle]="t('scalperOrderBookLimitOrdersVolumeIndicator.tooltip', {side})"
-      class="d-inline-block lh-1 fw-bold fs-6 text-center px-3 user-select-none volume-item"
+      class="d-inline-block lh-1 fw-bold text-center px-3 user-select-none volume-item"
       nz-tooltip
     >
       {{ ordersVolume | number: '1.0-4' }}

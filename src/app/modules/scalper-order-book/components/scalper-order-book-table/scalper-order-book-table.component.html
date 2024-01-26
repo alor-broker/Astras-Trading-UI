@@ -1,6 +1,6 @@
 <ng-container *transloco="let t; scope: 'scalper-order-book/scalper-order-book-table'">
   <ng-container *ngIf="dataContext.extendedSettings$ | async as settings">
-    <div class="position-absolute" *ngIf="settings.widgetSettings.showRuler">
+    <div class="position-absolute start" *ngIf="settings.widgetSettings.showRuler">
       <ats-table-ruler
         [activeRow]="hoveredRow$ | async"
         [dataContext]="dataContext"

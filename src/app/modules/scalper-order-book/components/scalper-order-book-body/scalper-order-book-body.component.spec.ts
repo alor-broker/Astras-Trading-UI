@@ -6,7 +6,10 @@ import {
 import { ScalperOrderBookBodyComponent } from './scalper-order-book-body.component';
 import { ScalperOrderBookDataContextService } from '../../services/scalper-order-book-data-context.service';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
-import { Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  Subject
+} from 'rxjs';
 import {
   mockComponent,
   mockDirective,
@@ -87,7 +90,11 @@ describe('ScalperOrderBookBodyComponent', () => {
         {
           provide: SCALPER_ORDERBOOK_SHARED_CONTEXT,
           useValue: {
-            workingVolume$: new Subject()
+            workingVolume$: new Subject(),
+            gridSettings$: new BehaviorSubject({
+              rowHeight: 18,
+              fontSize: 12
+            })
           }
         }
       ]

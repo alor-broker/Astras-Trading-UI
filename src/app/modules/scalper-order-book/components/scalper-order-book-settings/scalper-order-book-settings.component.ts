@@ -67,6 +67,14 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       min: 5,
       max: 60
     },
+    fontSize: {
+      min: 10,
+      max: 14
+    },
+    rowHeight: {
+      min: 12,
+      max: 20
+    },
     bracket: {
       price: {
         min: 0,
@@ -129,6 +137,22 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       ]
     ),
     showPriceWithZeroPadding: this.formBuilder.nonNullable.control(false),
+    fontSize: this.formBuilder.nonNullable.control(
+      12,
+      [
+        Validators.required,
+        Validators.min(this.validationOptions.fontSize.min),
+        Validators.max(this.validationOptions.fontSize.max)
+      ]
+    ),
+    rowHeight: this.formBuilder.nonNullable.control(
+      18,
+      [
+        Validators.required,
+        Validators.min(this.validationOptions.rowHeight.min),
+        Validators.max(this.validationOptions.rowHeight.max)
+      ]
+    ),
     // orders
     disableHotkeys: this.formBuilder.nonNullable.control(true),
     enableMouseClickSilentOrders: this.formBuilder.nonNullable.control(false),
@@ -281,6 +305,8 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       exchange: formValue.instrument!.exchange,
       depth: Number(formValue.depth),
       workingVolumes: formValue.workingVolumes?.map(wv => Number(wv)),
+      fontSize: Number(formValue.fontSize),
+      rowHeight: Number(formValue.rowHeight),
     } as Partial<ScalperOrderBookWidgetSettings> & InstrumentKey;
 
     delete newSettings.instrument;
@@ -369,6 +395,9 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     this.form.controls.autoAlignIntervalSec.setValue(settings.autoAlignIntervalSec ?? 15);
 
     this.form.controls.showPriceWithZeroPadding.setValue(settings.showPriceWithZeroPadding ?? false);
+
+    this.form.controls.fontSize.setValue(settings.fontSize ?? 12);
+    this.form.controls.rowHeight.setValue(settings.rowHeight ?? 18);
 
     this.form.controls.disableHotkeys.setValue(settings.disableHotkeys);
     this.form.controls.enableMouseClickSilentOrders.setValue(settings.enableMouseClickSilentOrders);

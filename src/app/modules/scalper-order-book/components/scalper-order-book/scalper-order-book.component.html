@@ -1,12 +1,13 @@
-<ng-container>
-  <ng-container *ngIf="settings$ | async as settings">
-    <div [class.active]="isActive" class="container">
-      <div class="order-book-body">
-        <ats-scalper-order-book-body [guid]="guid" [isActive]="isActive"></ats-scalper-order-book-body>
-      </div>
-      <div class="footer">
-        <ats-current-position-panel [guid]="guid"></ats-current-position-panel>
-      </div>
+<ng-container *ngrxLet="{ gridSettings: gridSettings$ } as vm">
+  <div [class.active]="isActive" class="container">
+    <div
+      class="order-book-body"
+      [ngStyle]="{'font-size': vm.gridSettings.fontSize + 'px' }"
+    >
+      <ats-scalper-order-book-body [guid]="guid" [isActive]="isActive"></ats-scalper-order-book-body>
     </div>
-  </ng-container>
+    <div class="footer">
+      <ats-current-position-panel [guid]="guid"></ats-current-position-panel>
+    </div>
+  </div>
 </ng-container>

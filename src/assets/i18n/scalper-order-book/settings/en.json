@@ -41,6 +41,9 @@
   "topOrderPriceRatioLabel": "Order from above (≥)",
   "bottomOrderPriceRatioLabel": "Order from below (≤)",
   "useBracketsWhenClosingPositionLabel": "Use bracket when closing position",
+  "gridSettingsLabel": "Grid settings",
+  "fontSizeLabel": "Font size",
+  "rowHeightLabel": "Row height",
 
   "tickerError": "Select ticker",
   "intervalError": "Value should be from {{min}} to {{max}}",

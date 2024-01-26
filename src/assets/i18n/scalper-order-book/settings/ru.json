@@ -41,6 +41,9 @@
   "topOrderPriceRatioLabel": "Условная заявка сверху (≥)",
   "bottomOrderPriceRatioLabel": "Условная заявка снизу (≤)",
   "useBracketsWhenClosingPositionLabel": "Ставить коридор при закрытии позиции",
+  "gridSettingsLabel": "Настройки сетки",
+  "fontSizeLabel": "Размер шрифта",
+  "rowHeightLabel": "Высота строки",
 
   "tickerError": "Выберите тикер",
   "intervalError": "Значение должно быть от {{min}} до {{max}}",
