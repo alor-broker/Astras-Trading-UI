@@ -13,7 +13,6 @@
         [class.d-none]="vm.selectedWidget?.instance?.widgetType !== widget.instance.widgetType"
       >
         <ats-parent-widget
-          *ngIf="vm.selectedWidget"
           [widgetInstance]="widget"
           [isBlockWidget]="false"
         ></ats-parent-widget>
