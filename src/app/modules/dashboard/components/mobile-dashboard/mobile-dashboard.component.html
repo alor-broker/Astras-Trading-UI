@@ -7,10 +7,14 @@
     } as vm"
   >
     <div class="d-flex w-100 h-100 overflow-hidden">
-      <div class="overflow-auto w-100">
+      <div
+        *ngFor="let widget of vm.defaultWidgets"
+        class="overflow-auto w-100"
+        [class.d-none]="vm.selectedWidget?.instance?.widgetType !== widget.instance.widgetType"
+      >
         <ats-parent-widget
           *ngIf="vm.selectedWidget"
-          [widgetInstance]="vm.selectedWidget"
+          [widgetInstance]="widget"
           [isBlockWidget]="false"
         ></ats-parent-widget>
       </div>
