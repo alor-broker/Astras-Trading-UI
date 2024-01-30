@@ -33,6 +33,10 @@ export const MobileDashboardItemsActions = createActionGroup({
   events: {
     "Add Widget": props<{
       widget: Omit<Widget, 'guid'>;
+    }>(),
+    "Update Widget": props<{
+      guid: string;
+      updates: Partial<Widget>;
     }>()
   }
 });

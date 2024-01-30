@@ -69,6 +69,23 @@ const reducer = createReducer(
       }
   })),
 
+  on(MobileDashboardItemsActions.updateWidget, (state, props) => ({
+      ...state,
+      dashboard: {
+        ...state.dashboard!,
+        items: state.dashboard!.items.map(w => {
+          if (w.guid !== props.guid) {
+            return w;
+          }
+
+          return {
+            ...w,
+            ...props.updates
+          };
+        })
+      }
+  })),
+
   on(MobileDashboardCurrentSelectionActions.selectPortfolio, (state, { portfolioKey }) => ({
     ...state,
     dashboard: {

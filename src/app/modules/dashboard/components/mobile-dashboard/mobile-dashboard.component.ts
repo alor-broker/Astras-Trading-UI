@@ -26,6 +26,7 @@ import { MobileActionsContextService } from "../../services/mobile-actions-conte
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { GalleryDisplay, WidgetDisplay, WidgetGroup } from "../widgets-gallery/widgets-gallery.component";
 import { MobileDashboardService } from "../../services/mobile-dashboard.service";
+import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 
 
 @Component({
@@ -54,7 +55,8 @@ export class MobileDashboardComponent implements OnInit {
     private readonly translatorService: TranslatorService,
     private readonly mobileActionsContextService: MobileActionsContextService,
     private readonly destroyRef: DestroyRef,
-    private readonly mobileDashboardService: MobileDashboardService
+    private readonly mobileDashboardService: MobileDashboardService,
+    private readonly widgetsSharedDataService: WidgetsSharedDataService
   ) {
   }
 
@@ -94,6 +96,13 @@ export class MobileDashboardComponent implements OnInit {
     ).subscribe(() => {
       this.selectWidget(this.newOrderWidgetId);
     });
+
+    this.widgetsSharedDataService.getDataProvideValues('selectedPrice').pipe(
+      takeUntilDestroyed(this.destroyRef)
+    )
+      .subscribe(() => {
+        this.selectWidget(this.newOrderWidgetId);
+      });
 
     this.initWidgetsGallery();
   }

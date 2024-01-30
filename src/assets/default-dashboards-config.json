@@ -142,7 +142,10 @@
         "widgetTypeId": "blotter"
       },
       {
-        "widgetTypeId": "order-book"
+        "widgetTypeId": "order-book",
+        "initialSettings": {
+          "useOrderWidget": true
+        }
       },
       {
         "widgetTypeId": "light-chart"
