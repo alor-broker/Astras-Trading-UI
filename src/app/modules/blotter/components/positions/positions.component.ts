@@ -1,22 +1,6 @@
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  OnInit,
-  Output
-} from '@angular/core';
-import {
-  distinctUntilChanged,
-  Observable,
-  of,
-  switchMap
-} from 'rxjs';
-import {
-  debounceTime,
-  map,
-  mergeMap,
-  startWith
-} from 'rxjs/operators';
+import { Component, DestroyRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { distinctUntilChanged, iif, Observable, of, switchMap } from 'rxjs';
+import { debounceTime, map, mergeMap, startWith } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { PositionFilter } from '../../models/position-filter.model';
@@ -27,16 +11,14 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import {
-  BlotterSettings,
-  ColumnsNames,
-  TableNames
-} from '../../models/blotter-settings.model';
+import { BlotterSettings, ColumnsNames, TableNames } from '../../models/blotter-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BaseTableComponent } from "../base-table/base-table.component";
 import { OrderService } from "../../../../shared/services/orders/order.service";
 import { CommonOrderCommands } from "../../../../shared/utils/common-order-commands";
+import { MarketType } from "../../../../shared/models/portfolio-key.model";
+import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 
 interface PositionDisplay extends Position {
   id: string;
@@ -49,6 +31,12 @@ interface PositionDisplay extends Position {
   styleUrls: ['./positions.component.less']
 })
 export class PositionsComponent extends BaseTableComponent<PositionDisplay, PositionFilter> implements OnInit {
+  @Input()
+  marketType?: MarketType | null;
+  marketTypes = MarketType;
+
+  portfolioTotalCost$!: Observable<number>;
+
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   displayPositions$: Observable<PositionDisplay[]> = of([]);
@@ -83,6 +71,13 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       sortOrder: null,
       sortFn: (a: PositionDisplay, b: PositionDisplay): number => Number(a.avgPrice) - Number(b.avgPrice),
       tooltip: 'Средняя цена',
+      minWidth: 70
+    },
+    {
+      id: 'shareOfPortfolio',
+      displayName: 'Доля, %',
+      sortOrder: null,
+      tooltip: 'Доля от общей ценности портфеля',
       minWidth: 70
     },
     {
@@ -142,11 +137,25 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       minWidth: 60
     },
     {
+      id: 'unrealisedPlRatio',
+      displayName: 'P/L всего, %',
+      sortOrder: null,
+      tooltip: 'Соотношение прибыли и убытка в процентах',
+      minWidth: 60
+    },
+    {
       id: 'dailyUnrealisedPl',
       displayName: 'P/L дн.',
       sortOrder: null,
       sortFn: (a: PositionDisplay, b: PositionDisplay): number => a.dailyUnrealisedPl - b.dailyUnrealisedPl,
       tooltip: 'Соотношение прибыли и убытка за сегодня',
+      minWidth: 60
+    },
+    {
+      id: 'dailyUnrealisedPlRatio',
+      displayName: 'P/L дн., %',
+      sortOrder: null,
+      tooltip: 'Соотношение прибыли и убытка за сегодня в процентах',
       minWidth: 60
     },
   ];
@@ -162,6 +171,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
     protected readonly settingsService: WidgetSettingsService,
     protected readonly translatorService: TranslatorService,
     protected readonly ordersService: OrderService,
+    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     protected readonly destroyRef: DestroyRef
   ) {
     super(service, settingsService, translatorService, destroyRef);
@@ -225,6 +235,21 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       mergeMap(positions => this.filter$.pipe(
         map(f => positions.filter(o => this.justifyFilter(o, f)))
       ))
+    );
+
+    this.portfolioTotalCost$ = this.settings$.pipe(
+      distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
+      switchMap(s => iif(
+          () => this.marketType === MarketType.Forward,
+          this.portfolioSubscriptionsService.getSpectraRisksSubscription(s.portfolio, s.exchange)
+            .pipe(map(i => {
+              return i.moneyAmount;
+            })),
+          this.portfolioSubscriptionsService.getSummariesSubscription(s.portfolio, s.exchange)
+            .pipe(map(i => {
+              return i.portfolioLiquidationValue;
+            }))
+        ))
     );
   }
 

@@ -6,10 +6,11 @@ import {
 } from '@angular/core';
 import { NzTabChangeEvent } from 'ng-zorro-antd/tabs';
 import {
-  BehaviorSubject,
-  Observable,
-  of,
-  take
+    BehaviorSubject,
+    Observable,
+    of,
+    shareReplay,
+    take
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BlotterService } from '../../services/blotter.service';
@@ -126,10 +127,10 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
       take(1)
     );
 
-    this.marketType$ = this.settings$
-      .pipe(
-        map(s => getMarketTypeByPortfolio(s.portfolio))
-      );
+    this.marketType$ = this.settings$.pipe(
+      map(s => getMarketTypeByPortfolio(s.portfolio)),
+      shareReplay(1)
+    );
   }
 
   onSettingsChange(): void {

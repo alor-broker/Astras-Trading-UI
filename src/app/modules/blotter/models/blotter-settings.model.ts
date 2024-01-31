@@ -62,6 +62,7 @@ export const allPositionsColumns: BaseColumnId[] = [
   { id: 'symbol', displayName: "Тикер", isDefault: true },
   { id: 'shortName', displayName: "Имя", isDefault: true },
   { id: 'avgPrice', displayName: "Средняя", isDefault: true },
+  { id: 'shareOfPortfolio', displayName: "Доля, %", isDefault: false },
   { id: 'qtyT0', displayName: "T0", isDefault: false },
   { id: 'qtyT1', displayName: "T1", isDefault: false },
   { id: 'qtyT2', displayName: "T2", isDefault: true },
@@ -70,6 +71,8 @@ export const allPositionsColumns: BaseColumnId[] = [
   { id: 'currentVolume', displayName: "тек. объём", isDefault: false },
   { id: 'unrealisedPl', displayName: "P/L всего", isDefault: true },
   { id: 'dailyUnrealisedPl', displayName: "P/L дн.", isDefault: false },
+  { id: 'unrealisedPlRatio', displayName: "P/L всего, %", isDefault: true },
+  { id: 'dailyUnrealisedPlRatio', displayName: "P/L дн., %", isDefault: false },
 ];
 
 export const allTradesColumns: BaseColumnId[] = [
