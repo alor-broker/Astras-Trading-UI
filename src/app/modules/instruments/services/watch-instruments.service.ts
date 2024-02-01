@@ -178,7 +178,7 @@ export class WatchInstrumentsService {
   }
 
   getHistoryFromTime(timeframe: TimeframeValue): number {
-    const nowDate = Math.round(new Date().getTime() / 1000);
+    const nowDate = this.getHistoryToTime(timeframe);
     switch(timeframe) {
       case TimeframeValue.Day:
         return nowDate - 3600 * 24 * 3;
