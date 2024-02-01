@@ -14,6 +14,10 @@
       "name": "Average",
       "tooltip": "Average price"
     },
+    "shareOfPortfolio": {
+      "name": "Share, %",
+      "tooltip": "Share of portfolio total cost"
+    },
     "qtyT0": {
       "name": "Quantity Т0",
       "tooltip": "Positions quantity, taking into account today"
@@ -42,9 +46,17 @@
       "name": "P/L total",
       "tooltip": "Profit to Loss ratio"
     },
+    "unrealisedPlRatio": {
+      "name": "P/L total, %",
+      "tooltip": "Profit to Loss ratio in percents"
+    },
     "dailyUnrealisedPl": {
       "name": "P/L daily",
       "tooltip": "Profit to Loss ratio for today"
+    },
+    "dailyUnrealisedPlRatio": {
+      "name": "P/L daily, %",
+      "tooltip": "Profit to Loss ratio for today in percents"
     }
   },
   "emptyPositions": "There are no positions",

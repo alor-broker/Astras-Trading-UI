@@ -21,6 +21,7 @@ import { OrdersGroupModalComponent } from './components/orders-group-modal/order
 import { NzTreeModule } from "ng-zorro-antd/tree";
 import { RepoTradesComponent } from './components/repo-trades/repo-trades.component';
 import { TradesHistoryComponent } from './components/trades-history/trades-history.component';
+import { LetDirective } from "@ngrx/component";
 
 
 @NgModule({
@@ -46,7 +47,8 @@ import { TradesHistoryComponent } from './components/trades-history/trades-histo
     NzInputModule,
     DragDropModule,
     NzResizeObserverModule,
-    NzTreeModule
+    NzTreeModule,
+    LetDirective
   ],
   exports: [
     BlotterWidgetComponent
