@@ -1,5 +1,5 @@
 import { DestroyRef, Injectable } from '@angular/core';
-import { combineLatest, Observable, pairwise, Subscription, switchMap, take } from 'rxjs';
+import { combineLatest, Observable, of, pairwise, Subscription, switchMap, take } from 'rxjs';
 import { filter, map, startWith } from 'rxjs/operators';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
@@ -134,11 +134,31 @@ export class WatchInstrumentsService {
       to: this.getHistoryToTime(timeframe),
     })
       .pipe(
-        switchMap(h => this.candlesService.getInstrumentLastCandle(wi.instrument, timeframe)
+        switchMap(h => {
+          if (h == null) {
+            return of(null);
+          }
+
+          if (h.history.length === 0 && h.prev != null) {
+            return this.history.getHistory({
+              symbol: wi.instrument.symbol,
+              exchange: wi.instrument.exchange,
+              tf: timeframe,
+              from: h.prev - 1,
+              to: h.prev
+            })
+              .pipe(
+                map(h => h?.history[h?.history.length - 1] ?? null)
+              );
+          }
+
+          return of(h.history[h.history.length - 1]);
+        }),
+        switchMap(candle => this.candlesService.getInstrumentLastCandle(wi.instrument, timeframe)
           .pipe(
             startWith(
-              h?.history[h?.history.length - 1] ?? null,
-              h?.history[h?.history.length - 1] ?? null // Needs for pairwise emits first value
+              candle,
+              candle // Needs for pairwise emits first value
             ),
             pairwise(), // Needs to get last value of previous candle
             filter((c, i) => c[0]?.time !== c[1]?.time || i === 0)
