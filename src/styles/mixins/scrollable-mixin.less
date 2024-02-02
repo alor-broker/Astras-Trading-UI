@@ -1,7 +1,10 @@
 .scrollable(@scrollbar-color) {
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: @scrollbar-color transparent;
+
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-width: thin;
+    scrollbar-color: @scrollbar-color  transparent;
+  }
 
   &::-webkit-scrollbar {
     width: 3px;

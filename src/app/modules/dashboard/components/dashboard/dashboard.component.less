@@ -3,8 +3,10 @@
 .themeMixin({
   :host {
     gridster {
-      scrollbar-width: thin;
-      scrollbar-color: @scrollbar-color transparent;
+      @supports not selector(::-webkit-scrollbar) {
+        scrollbar-width: thin;
+        scrollbar-color: @scrollbar-color transparent;
+      }
 
       &::-webkit-scrollbar {
         width: 12px;
