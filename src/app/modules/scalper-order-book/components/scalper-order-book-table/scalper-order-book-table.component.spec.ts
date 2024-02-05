@@ -6,7 +6,10 @@ import {
 import { ScalperOrderBookTableComponent } from './scalper-order-book-table.component';
 import { ScalperOrdersService } from '../../services/scalper-orders.service';
 import { ThemeService } from '../../../../shared/services/theme.service';
-import { Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  Subject
+} from 'rxjs';
 import { ScalperCommandProcessorService } from '../../services/scalper-command-processor.service';
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
@@ -66,6 +69,7 @@ describe('ScalperOrderBookTableComponent', () => {
       orderBookBody$: new Subject(),
       displayRange$: new Subject(),
       workingVolume$: new Subject(),
+      scaleFactor$: new BehaviorSubject(1),
     } as ScalperOrderBookDataContext;
 
     fixture.detectChanges();

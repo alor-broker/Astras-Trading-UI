@@ -10,12 +10,10 @@ import {
 } from '../../models/scalper-order-book.model';
 import {
   combineLatest,
-  filter,
   Observable,
   Subject
 } from 'rxjs';
 import {
-  OrderBook,
   ScalperOrderBookDataContext,
   ScalperOrderBookExtendedSettings
 } from '../../models/scalper-order-book-data-context.model';
@@ -39,7 +37,8 @@ import { color } from "d3";
 
 interface VolumeHighlightArguments {
   rowType: ScalperOrderBookRowType;
-  volume: number;
+  askVolume: number;
+  bidVolume: number;
   maxVolume: number;
 }
 
@@ -57,6 +56,7 @@ interface DisplayRow extends BodyRow {
 })
 export class ScalperOrderBookTableComponent implements OnInit {
   readonly numberFormats = NumberDisplayFormat;
+  readonly rowTypes = ScalperOrderBookRowType;
 
   ordersSides = Side;
   @Input({required: true})
@@ -101,6 +101,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
       'ask-side-item': row.rowType === ScalperOrderBookRowType.Ask,
       'bid-side-item': row.rowType === ScalperOrderBookRowType.Bid,
       'spread-item': row.rowType === ScalperOrderBookRowType.Spread,
+      'mixed-item': row.rowType === ScalperOrderBookRowType.Mixed,
       'best-row': row.isBest
     };
   }
@@ -173,19 +174,17 @@ export class ScalperOrderBookTableComponent implements OnInit {
     this.displayItems$ = combineLatest([
       this.dataContext.extendedSettings$,
       this.dataContext.orderBookBody$,
-      this.dataContext.orderBook$,
       this.dataContext.displayRange$,
       this.dataContext.currentOrders$,
       this.themeService.getThemeSettings()
     ]).pipe(
-      filter(([, , orderBookData, , ,]) => !!(orderBookData as OrderBook | null)),
-      map(([settings, body, orderBook, displayRange, currentOrders, themeSettings]) => {
+      map(([settings, body, displayRange, currentOrders, themeSettings]) => {
         const displayRows = body.slice(displayRange!.start, Math.min(displayRange!.end + 1, body.length));
         const minOrderPrice = Math.min(...currentOrders.map(x => x.linkedPrice));
         const maxOrderPrice = Math.max(...currentOrders.map(x => x.linkedPrice));
         const volumeHighlightStrategy = this.getVolumeHighlightStrategy(settings.widgetSettings, themeSettings);
         const maxOrderBookVolume = settings.widgetSettings.volumeHighlightMode === VolumeHighlightMode.BiggestVolume
-          ? Math.max(...[...orderBook.rows.a, ...orderBook.rows.b].map(x => x.v))
+          ? body.reduce((max, curr) => Math.max(max, curr.askVolume ?? 0, curr.bidVolume ?? 0), 0)
           : 0;
 
         return displayRows.map(row => {
@@ -194,14 +193,15 @@ export class ScalperOrderBookTableComponent implements OnInit {
             currentOrders: [],
             getVolumeStyle: () => volumeHighlightStrategy({
               rowType: row.rowType!,
-              volume: row.volume ?? 0,
+              askVolume: row.askVolume ?? 0,
+              bidVolume: row.bidVolume ?? 0,
               maxVolume: maxOrderBookVolume
             }) as VolumeHighlightStrategy
 
           } as DisplayRow;
 
-          if (row.price >= minOrderPrice && row.price <= maxOrderPrice) {
-            displayRow.currentOrders = currentOrders.filter(x => x.linkedPrice === row.price);
+          if (row.baseRange.max >= minOrderPrice && row.baseRange.min <= maxOrderPrice) {
+            displayRow.currentOrders = currentOrders.filter(x => x.linkedPrice >= row.baseRange.min && x.linkedPrice <= row.baseRange.max);
           }
 
           return displayRow;
@@ -240,16 +240,20 @@ export class ScalperOrderBookTableComponent implements OnInit {
 
   private createBiggestVolumeHighlightStrategy(themeSettings: ThemeSettings): VolumeHighlightStrategy {
     return (args: VolumeHighlightArguments) => {
-      if (args.rowType !== ScalperOrderBookRowType.Ask && args.rowType !== ScalperOrderBookRowType.Bid || !args.volume) {
+      if (args.rowType !== ScalperOrderBookRowType.Ask && args.rowType !== ScalperOrderBookRowType.Bid && args.rowType !== ScalperOrderBookRowType.Mixed) {
         return {
           width: 0
         };
       }
 
-      const size = 100 * (args.volume / args.maxVolume);
-      const backgroundColor = args.rowType === ScalperOrderBookRowType.Bid
-        ?  color(themeSettings.themeColors.buyColor)
-        : color(themeSettings.themeColors.sellColor);
+      const size = 100 * (Math.max(args.askVolume, args.bidVolume) / args.maxVolume);
+      let backgroundColor = color(themeSettings.themeColors.mixColor);
+
+      if(args.rowType === ScalperOrderBookRowType.Bid) {
+        backgroundColor = color(themeSettings.themeColors.buyColor);
+      } else if(args.rowType === ScalperOrderBookRowType.Ask) {
+        backgroundColor = color(themeSettings.themeColors.sellColor);
+      }
 
       backgroundColor!.opacity = 0.6;
       return {
@@ -261,18 +265,19 @@ export class ScalperOrderBookTableComponent implements OnInit {
 
   private volumeBoundsWithFixedValueStrategy(settings: ScalperOrderBookWidgetSettings): VolumeHighlightStrategy {
     return (args: VolumeHighlightArguments) => {
-      if (args.rowType !== ScalperOrderBookRowType.Ask && args.rowType !== ScalperOrderBookRowType.Bid || !args.volume) {
+      if (args.rowType !== ScalperOrderBookRowType.Ask && args.rowType !== ScalperOrderBookRowType.Bid && args.rowType !== ScalperOrderBookRowType.Mixed) {
         return null;
       }
 
       let size = 0;
-      const volumeHighlightOption = this.getVolumeHighlightOption(settings, args.volume);
+      const volume = Math.max(args.askVolume, args.bidVolume);
+      const volumeHighlightOption = this.getVolumeHighlightOption(settings,volume);
       if (!volumeHighlightOption) {
         return null;
       }
 
       if (settings.volumeHighlightFullness != null && settings.volumeHighlightFullness) {
-        size = 100 * (args.volume / settings.volumeHighlightFullness!);
+        size = 100 * (volume / settings.volumeHighlightFullness!);
         if (size > 100) {
           size = 100;
         }

@@ -244,7 +244,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Buy,
             price: testBids[0].p + testInstrument.minstep,
             quantity: quantity,
-            instrument: testInstrument
+            instrument: toInstrumentKey(testInstrument)
           } as NewLimitOrder,
           portfolioKey.portfolio
         );
@@ -269,7 +269,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Sell,
             price: testAsks[0].p - testInstrument.minstep,
             quantity: quantity,
-            instrument: testInstrument
+            instrument: toInstrumentKey(testInstrument)
           } as NewLimitOrder,
           portfolioKey.portfolio
         );
@@ -305,7 +305,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Buy,
             price: testBids[0].p,
             quantity: quantity,
-            instrument: testInstrument
+            instrument: toInstrumentKey(testInstrument)
           } as NewLimitOrder,
           portfolioKey.portfolio
         );
@@ -329,7 +329,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Sell,
             price: testAsks[0].p,
             quantity: quantity,
-            instrument: testInstrument
+            instrument: toInstrumentKey(testInstrument)
           } as NewLimitOrder,
           portfolioKey.portfolio
         );
@@ -387,7 +387,7 @@ describe('ScalperOrdersService', () => {
       side: Side.Buy,
       quantity,
       price: testBids[0].p,
-      instrument: testInstrument
+      instrument: toInstrumentKey(testInstrument)
     };
 
     expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
@@ -470,7 +470,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Sell,
             price: testBids[0].p,
             quantity: quantity,
-            instrument: testSettings
+            instrument: toInstrumentKey(testSettings)
           } as NewLimitOrder,
           portfolioKey.portfolio
         );
@@ -532,7 +532,7 @@ describe('ScalperOrdersService', () => {
       side: Side.Sell,
       quantity,
       price: testBids[0].p,
-      instrument: testSettings
+      instrument: toInstrumentKey(testSettings)
     };
 
     expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
@@ -615,7 +615,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Buy,
             price: testAsks[0].p,
             quantity: quantity,
-            instrument: testSettings
+            instrument: toInstrumentKey(testSettings)
           } as NewLimitOrder,
           portfolioKey.portfolio
         );
@@ -676,7 +676,7 @@ describe('ScalperOrdersService', () => {
       side: Side.Buy,
       quantity,
       price: testAsks[0].p,
-      instrument: testSettings
+      instrument: toInstrumentKey(testSettings)
     };
 
     expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
@@ -728,7 +728,7 @@ describe('ScalperOrdersService', () => {
           {
             side: Side.Sell,
             quantity,
-            instrument: testInstrumentKey
+            instrument: toInstrumentKey(testInstrumentKey)
           } as NewMarketOrder,
           portfolioKey.portfolio
         );
@@ -747,7 +747,7 @@ describe('ScalperOrdersService', () => {
         .withContext('Buy')
         .toHaveBeenCalledOnceWith(
           {
-            instrumentKey: testInstrumentKey,
+            instrumentKey: toInstrumentKey(testInstrumentKey),
             initialValues: {
               orderType: OrderType.Market,
               quantity
@@ -799,7 +799,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Sell,
             quantity,
             price: price,
-            instrument: testSettings
+            instrument: toInstrumentKey(testSettings)
           } as NewLimitOrder,
           portfolioKey.portfolio
         );
@@ -879,7 +879,7 @@ describe('ScalperOrdersService', () => {
       side: Side.Buy,
       quantity,
       price,
-      instrument: testSettings
+      instrument: toInstrumentKey(testSettings)
     };
 
     expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
@@ -958,7 +958,7 @@ describe('ScalperOrdersService', () => {
       side: Side.Buy,
       quantity,
       price,
-      instrument: testSettings
+      instrument: toInstrumentKey(testSettings)
     };
 
     expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
@@ -1069,7 +1069,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Sell,
             quantity: quantity,
             price,
-            instrument: testInstrumentKey,
+            instrument: toInstrumentKey(testInstrumentKey),
             triggerPrice: price,
             condition: LessMore.MoreOrEqual
           } as NewStopLimitOrder,
@@ -1094,7 +1094,7 @@ describe('ScalperOrdersService', () => {
             side: Side.Buy,
             quantity: quantity,
             price,
-            instrument: testInstrumentKey,
+            instrument: toInstrumentKey(testInstrumentKey),
             triggerPrice: price,
             condition: LessMore.LessOrEqual
           } as NewStopLimitOrder,
@@ -1115,7 +1115,7 @@ describe('ScalperOrdersService', () => {
       expect(ordersDialogServiceSpy.openNewOrderDialog)
         .withContext('Show dialog')
         .toHaveBeenCalledOnceWith(jasmine.objectContaining({
-          instrumentKey: testInstrumentKey,
+          instrumentKey: toInstrumentKey(testInstrumentKey),
           initialValues: {
             orderType: OrderType.Stop,
             quantity,

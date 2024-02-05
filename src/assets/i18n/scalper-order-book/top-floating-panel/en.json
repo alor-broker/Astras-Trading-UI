@@ -1,3 +1,4 @@
 ﻿{
-  "priceDayChangePercentTooltip": "Price change per day"
+  "priceDayChangePercentTooltip": "Price change per day",
+  "scaleFactorTooltip": "Price step multiplier"
 }

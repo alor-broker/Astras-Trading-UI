@@ -15,10 +15,23 @@ export class TerminalSettingsEffects {
     return this.actions$.pipe(
       ofType(TerminalSettingsInternalActions.init),
       map(action => {
+        const defaultSettings = TerminalSettingsHelper.getDefaultSettings();
         return TerminalSettingsInternalActions.initSuccess({
             settings: {
-              ...TerminalSettingsHelper.getDefaultSettings(),
-              ...action.settings
+              ...defaultSettings,
+              ...action.settings,
+              hotKeysSettings: {
+                ...defaultSettings.hotKeysSettings,
+                ...action.settings?.hotKeysSettings
+              },
+              scalperOrderBookMouseActions: {
+                ...defaultSettings.scalperOrderBookMouseActions!,
+                ...action.settings?.scalperOrderBookMouseActions
+              },
+              instantNotificationsSettings: {
+                ...defaultSettings.instantNotificationsSettings!,
+                ...action.settings?.instantNotificationsSettings
+              }
             }
           }
         );

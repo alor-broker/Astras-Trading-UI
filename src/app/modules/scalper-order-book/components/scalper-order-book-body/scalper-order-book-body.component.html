@@ -60,6 +60,8 @@
                 <ats-scalper-order-book-table [dataContext]="dataContext"
                                               [isActive]="isActive"
                                               [rowHeight]="shared.rowHeight"
+                                              (mouseenter)="isTableHovered$.next(true)"
+                                              (mouseleave)="isTableHovered$.next(false)"
                 >
                 </ats-scalper-order-book-table>
               </ats-panel>

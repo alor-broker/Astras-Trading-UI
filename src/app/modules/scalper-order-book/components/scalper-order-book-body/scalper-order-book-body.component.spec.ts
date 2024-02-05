@@ -60,6 +60,7 @@ describe('ScalperOrderBookBodyComponent', () => {
               orderBookBody$: new Subject(),
               displayRange$: new Subject(),
               workingVolume$: new Subject(),
+              scaleFactor$: new BehaviorSubject(1)
             } as ScalperOrderBookDataContext),
             getOrderBookBounds: jasmine.createSpy('getOrderBookBounds').and.returnValue({
               asksRange: null,

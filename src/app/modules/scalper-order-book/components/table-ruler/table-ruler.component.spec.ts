@@ -4,7 +4,10 @@ import {
 } from '@angular/core/testing';
 
 import { TableRulerComponent } from './table-ruler.component';
-import { Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  Subject
+} from 'rxjs';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 import { SCALPER_ORDERBOOK_BODY_REF } from '../scalper-order-book-body/scalper-order-book-body.component';
 
@@ -42,6 +45,7 @@ describe('TableRulerComponent', () => {
       orderBookBody$: new Subject(),
       displayRange$: new Subject(),
       workingVolume$: new Subject(),
+      scaleFactor$: new BehaviorSubject(1)
     } as ScalperOrderBookDataContext;
 
     fixture.detectChanges();

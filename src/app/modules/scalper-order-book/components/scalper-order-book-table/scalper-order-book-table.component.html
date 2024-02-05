@@ -31,15 +31,28 @@
           <ng-container *ngIf="(row.volume ?? 0) > 0">
             <span class="highlighter" [ngStyle]="row.getVolumeStyle()">&nbsp;</span>
             <span class="volume px-2">
-              <ats-short-number
-                *ngIf="settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
-                [value]="row.volume"
-                [allowRounding]="true"
-              ></ats-short-number>
+              <ng-container *ngIf="row.rowType === rowTypes.Mixed; else defaultVolumeDisplay">
+                <span [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.askVolume ?? 0}"></span>
+                <span>&nbsp;|&nbsp;</span>
+                <span [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.bidVolume ?? 0}"></span>
+              </ng-container>
 
-              <ng-template #defaultVolumeFormat>
-                <span>{{row.volume}}</span>
-              </ng-template></span>
+              <ng-template #defaultVolumeDisplay>
+                <ng-container [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.volume}"></ng-container>
+              </ng-template>
+            </span>
+
+            <ng-template #volumeDisplay let-volume='volume'>
+                <ats-short-number
+                  *ngIf="settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
+                  [value]="volume"
+                  [allowRounding]="true"
+                ></ats-short-number>
+
+                <ng-template #defaultVolumeFormat>
+                  <span>{{volume}}</span>
+                </ng-template>
+            </ng-template>
           </ng-container>
         </div>
       </div>

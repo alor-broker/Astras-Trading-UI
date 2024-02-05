@@ -37,7 +37,7 @@
       nzSize="small"
     >
       <nz-descriptions-item [nzTitle]="t('orderCommandsInstrumentInfo.dayChangeLabel')">
-        <p [class]='data.priceData.dayChange < 0 ? "sell" : "buy"' class="upper-row">{{data.priceData.dayChange}}</p>
+        <p [class]='(data.priceData.dayChange ?? 0) < 0 ? "sell" : "buy"' class="upper-row">{{data.priceData.dayChange}}</p>
       </nz-descriptions-item>
       <nz-descriptions-item nzTitle="High">
         <p class="upper-row">{{data.priceData.high}}</p>
@@ -47,7 +47,7 @@
       </nz-descriptions-item>
 
       <nz-descriptions-item [nzTitle]="t('orderCommandsInstrumentInfo.dayChangePerPriceLabel')">
-        <p [class]='data.priceData.dayChange < 0 ? "sell" : "buy"'
+        <p [class]='(data.priceData.dayChange ?? 0) < 0 ? "sell" : "buy"'
            class="lower-row">{{data.priceData.dayChangePerPrice}}</p>
       </nz-descriptions-item>
       <nz-descriptions-item nzTitle="Low">

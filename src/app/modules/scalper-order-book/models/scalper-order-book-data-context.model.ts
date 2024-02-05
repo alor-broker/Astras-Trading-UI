@@ -31,5 +31,6 @@ export interface ScalperOrderBookDataContext {
   readonly currentOrders$: Observable<CurrentOrderDisplay[]>;
   readonly trades$: Observable<AllTradesItem[]>;
   readonly workingVolume$: Observable<number>;
+  readonly scaleFactor$: Observable<number>;
   displayRange$: Observable<ListRange | null>;
 }

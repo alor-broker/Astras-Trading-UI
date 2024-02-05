@@ -19,8 +19,8 @@ export class InstrumentInfoComponent implements OnInit, OnDestroy {
     priceData: {
       dayOpen: number;
       prevClose: number;
-      dayChange: number;
-      dayChangePerPrice: number;
+      dayChange?: number;
+      dayChangePerPrice?: number;
       lastPrice: number;
       ask: number;
       bid: number;

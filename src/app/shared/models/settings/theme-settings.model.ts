@@ -8,6 +8,7 @@ export interface ThemeColors {
   sellColorBackground: string;
   sellColorAccent: string;
   buyColor: string;
+  mixColor: string;
   buyColorBackground: string;
   buyColorBackgroundLight: string;
   buySellBtnTextColor: string;

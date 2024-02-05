@@ -25,6 +25,8 @@ export interface HotKeysSettings {
   buyBestOrder?: HotKeyMeta | string;
   buyBestAsk?: HotKeyMeta | string;
   sellBestBid?: HotKeyMeta | string;
+  increaseScale?: HotKeyMeta;
+  decreaseScale?: HotKeyMeta;
   extraHotKeys?: boolean;
 }
 

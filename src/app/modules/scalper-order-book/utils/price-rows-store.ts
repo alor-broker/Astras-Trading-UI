@@ -4,21 +4,33 @@ import { MathHelper } from '../../../shared/utils/math-helper';
 import { take } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { PriceRow } from '../models/scalper-order-book.model';
-import { Range } from '../../../shared/models/common.model';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
+import { OrderBookScaleHelper } from "./order-book-scale.helper";
+
+export interface PriceOptions {
+  startPrice: number;
+  expectedRangeMin: number;
+  expectedRangeMax: number;
+  scaledStep: number;
+  basePriceStep: number;
+  scaleFactor: number;
+}
 
 export interface PriceRowsState {
   instrumentKey: InstrumentKey | null;
-  rowStep: number | null;
+  priceOptions: PriceOptions | null;
   directionRowsCount: number;
   rows: PriceRow[];
+  // indicates that price range was generated without order book data
+  isDirty: boolean;
 }
 
 const initialState: PriceRowsState = {
   instrumentKey: null,
-  rowStep: null,
+  priceOptions: null,
   directionRowsCount: 100,
-  rows: []
+  rows: [],
+  isDirty: true
 };
 
 @Injectable()
@@ -29,19 +41,21 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
     super(initialState);
   }
 
-  resetState(): void {
-    this.patchState(initialState);
-  }
-
   extendTop(itemsToAdd: number, callback?: (addedItemsCount: number) => void): void {
     this.select(state => state).pipe(
       take(1),
-      filter(s => s.rowStep != null && !!s.rowStep)
+      filter(s => s.priceOptions != null)
     ).subscribe(state => {
-      const step = state.rowStep!;
+      const step = state.priceOptions!.scaledStep;
       const topRows = this.generatePriceSequence(state.rows[0].price + step, step, itemsToAdd)
         .reverse()
-        .map(price => ({ price: price } as PriceRow));
+        .map(price => (
+            {
+              price: price,
+              baseRange: OrderBookScaleHelper.scaledPriceToOriginal(price, state.priceOptions!.basePriceStep, state.priceOptions!.scaleFactor)
+            } as PriceRow
+          )
+        );
 
       this.patchState({
         rows: [
@@ -59,14 +73,20 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
   extendBottom(minItemsToAdd: number, callback?: (addedItemsCount: number) => void): void {
     this.select(state => state).pipe(
       take(1),
-      filter(s => s.rowStep != null && !!s.rowStep)
+      filter(s => s.priceOptions != null)
     ).subscribe(state => {
-      const step = state.rowStep!;
+      const step = state.priceOptions!.scaledStep;
       const lastElement = state.rows[state.rows.length - 1];
 
       const itemsToAdd = Math.max(state.directionRowsCount, minItemsToAdd);
       const bottomRows = this.generatePriceSequence(lastElement.price - step, -step, itemsToAdd)
-        .map(price => ({ price: price } as PriceRow));
+        .map(price => (
+            {
+              price: price,
+              baseRange: OrderBookScaleHelper.scaledPriceToOriginal(price, state.priceOptions!.basePriceStep, state.priceOptions!.scaleFactor)
+            } as PriceRow
+          )
+        );
 
       this.patchState({
         rows: [
@@ -79,45 +99,51 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
     });
   }
 
-  public initWithPriceRange(instrumentKey: InstrumentKey, priceRange: Range | null, step: number, renderRowsCount: number, complete?: () => void): void {
-    if(!!priceRange) {
-      const priceRowsCount = Math.ceil((priceRange.max - priceRange.min) / step);
-      const startPrice = MathHelper.round(
-        priceRange.min + Math.ceil(priceRowsCount / 2) * step,
-        MathHelper.getPrecision(step)
-      );
+  public initWithPriceRange(
+    instrumentKey: InstrumentKey,
+    priceOptions: PriceOptions | null,
+    isDirty: boolean,
+    minRowsCount: number,
+    complete?: () => void
+  ): void {
+    if(!!priceOptions) {
+      const priceRowsCountByRange = Math.ceil((priceOptions.expectedRangeMax - priceOptions.expectedRangeMin) / priceOptions.scaledStep);
 
-      const oneDirectionRowsCount = Math.ceil(renderRowsCount / 2);
+      const directionRowsCountMin = Math.ceil(minRowsCount / 2);
 
-      const rowsCount = Math.ceil(Math.max(priceRowsCount + 5, oneDirectionRowsCount));
+      const rowsCount = Math.ceil(Math.max(priceRowsCountByRange + 5, directionRowsCountMin));
 
-      let topRows = this.generatePriceSequence(startPrice + step, step, rowsCount).reverse();
-      const bottomRows = this.generatePriceSequence(startPrice - step, -step, rowsCount);
-
-      if((topRows.length + bottomRows.length) < renderRowsCount) {
-        topRows = this.generatePriceSequence(startPrice + step, step, rowsCount * 2,).reverse();
-      }
+      let topRows = this.generatePriceSequence(priceOptions.startPrice + priceOptions.scaledStep, priceOptions.scaledStep, rowsCount).reverse();
+      const bottomRows = this.generatePriceSequence(priceOptions.startPrice - priceOptions.scaledStep, -priceOptions.scaledStep, rowsCount);
 
       const rows = [
         ...topRows,
-        startPrice,
+        priceOptions.startPrice,
         ...bottomRows
-      ].map(price => ({ price: price } as PriceRow));
+      ].map(price => (
+          {
+            price: price,
+            baseRange: OrderBookScaleHelper.scaledPriceToOriginal(price, priceOptions.basePriceStep, priceOptions.scaleFactor)
+          } as PriceRow
+        )
+      );
 
       rows[rowsCount].isStartRow = true;
 
       this.setState({
         instrumentKey,
-        rowStep: step,
+        priceOptions: priceOptions,
         directionRowsCount: rowsCount,
-        rows: rows
+        rows: rows,
+        isDirty
       });
     } else {
       this.setState({
         instrumentKey,
-        rowStep: step,
+        priceOptions: null,
         directionRowsCount: 0,
-        rows: []
+        rows: [],
+        isDirty: true
       });
     }
 

@@ -2,7 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BottomFloatingPanelComponent } from './bottom-floating-panel.component';
 import { mockComponent } from "../../../../shared/utils/testing";
-import { Subject } from "rxjs";
+import {
+  BehaviorSubject,
+  Subject
+} from "rxjs";
 import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-data-context.model";
 import { LetDirective } from "@ngrx/component";
 
@@ -34,6 +37,7 @@ describe('BottomFloatingPanelComponent', () => {
       orderBookBody$: new Subject(),
       displayRange$: new Subject(),
       workingVolume$: new Subject(),
+      scaleFactor$: new BehaviorSubject(1)
     } as ScalperOrderBookDataContext;
 
     fixture.detectChanges();

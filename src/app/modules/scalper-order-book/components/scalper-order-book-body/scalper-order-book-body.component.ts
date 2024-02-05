@@ -15,6 +15,7 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import {
   BehaviorSubject,
   combineLatest,
+  distinctUntilChanged,
   filter,
   interval,
   NEVER,
@@ -53,6 +54,9 @@ import {
 } from "@angular/cdk/drag-drop";
 import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
 import { Side } from "../../../../shared/models/enums/side.model";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
+import { toInstrumentKey } from "../../../../shared/utils/instruments";
 
 export interface ScalperOrderBookBodyRef {
   getElement(): ElementRef<HTMLElement>;
@@ -60,6 +64,9 @@ export interface ScalperOrderBookBodyRef {
 
 export const SCALPER_ORDERBOOK_BODY_REF = new InjectionToken<ScalperOrderBookBodyRef>('ScalperOrderBookBodyRef');
 
+interface ScaleState {
+  scaleFactor: number;
+}
 
 @Component({
   selector: 'ats-scalper-order-book-body',
@@ -71,6 +78,7 @@ export const SCALPER_ORDERBOOK_BODY_REF = new InjectionToken<ScalperOrderBookBod
   ]
 })
 export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnDestroy, ScalperOrderBookBodyRef {
+  readonly maxScaleFactor = 10;
   readonly sides = Side;
   readonly panelIds = {
     ordersTable: 'orders-table',
@@ -100,6 +108,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   bottomFloatingPanelPosition$!: Observable<Point>;
   readonly topFloatingPanelPositionStateKey = 'top-floating-panel-position';
   readonly bottomFloatingPanelPositionStateKey = 'bottom-floating-panel-position';
+  readonly isTableHovered$ = new BehaviorSubject(false);
   private readonly renderItemsRange$ = new BehaviorSubject<ListRange | null>(null);
   private readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   private lastContainerHeight = 0;
@@ -139,9 +148,10 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     this.initWidgetSettings();
     this.initContext();
     this.initAutoAlign();
-    this.subscribeToHotkeys();
+    this.initManualAlign();
     this.initHiddenOrdersIndicators();
     this.initLayout();
+    this.initScaleChange();
 
     this.topFloatingPanelPosition$ = this.initFloatingPanelPosition(
       this.topFloatingPanelPositionStateKey,
@@ -197,7 +207,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     );
   }
 
-  private subscribeToHotkeys(): void {
+  private initManualAlign(): void {
     this.hotkeysService.commands$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(command => {
@@ -261,7 +271,6 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
 
   private initLayout(): void {
     this.panelWidths$ = this.dataContext.extendedSettings$.pipe(
-      take(1),
       map(x => x.widgetSettings.layout?.widths
         ?? {
           [this.panelIds.ordersTable]: 50,
@@ -273,12 +282,77 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     );
   }
 
+  private initScaleChange(): void {
+    const instrumentKey$ = this.widgetSettings$.pipe(
+      distinctUntilChanged((prev, curr) => isInstrumentEqual(prev, curr)),
+      map(s => toInstrumentKey(s)),
+      shareReplay({bufferSize: 1, refCount: true})
+    );
+
+    const getStorageKey = (instrumentKey: InstrumentKey): string => {
+      return `scale_${instrumentKey.exchange}_${instrumentKey.symbol}_${instrumentKey.instrumentGroup}`;
+    };
+
+    const setScaleFactor = (scaleFactor: number, instrumentKey: InstrumentKey): void => {
+      this.scalperOrderBookSharedContext.setScaleFactor(scaleFactor);
+      this.widgetLocalStateService.setStateRecord<ScaleState>(
+        this.guid,
+        getStorageKey(instrumentKey),
+        {
+          scaleFactor
+        },
+        false
+      );
+    };
+
+    this.isTableHovered$.pipe(
+      switchMap(isHovered => {
+        if(isHovered) {
+          return this.hotkeysService.commands$;
+        }
+
+        return NEVER;
+      }),
+      withLatestFrom(this.scalperOrderBookSharedContext.scaleFactor$, instrumentKey$),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(([command, scaleFactor, instrumentKey]) => {
+      if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.increaseScale && scaleFactor < this.maxScaleFactor) {
+        const newScaleFactor = scaleFactor + 1;
+        setScaleFactor(newScaleFactor, instrumentKey);
+        return;
+      }
+
+      if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.decreaseScale && scaleFactor > 1) {
+        const newScaleFactor = scaleFactor - 1;
+        setScaleFactor(newScaleFactor, instrumentKey);
+        return;
+      }
+    });
+
+    instrumentKey$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(settings => {
+      const storageKey = getStorageKey(settings);
+
+      this.widgetLocalStateService.getStateRecord<ScaleState>(this.guid, storageKey).pipe(
+        take(1)
+      ).subscribe(savedValue => {
+        if(savedValue != null) {
+          this.scalperOrderBookSharedContext.setScaleFactor(savedValue.scaleFactor);
+        } else {
+          this.scalperOrderBookSharedContext.setScaleFactor(1);
+        }
+      });
+    });
+  }
+
   private initContext(): void {
     const context = this.scalperOrderBookDataContextService.createContext(
       this.guid,
       this.priceRowsStore,
       this.contentSize$,
       this.rowHeight$,
+      this.scalperOrderBookSharedContext.scaleFactor$,
       {
         getVisibleRowsCount: (rowHeight: number) => this.getDisplayRowsCount(rowHeight),
         isFillingByHeightNeeded: (currentRows: PriceRow[], rowHeight: number) => this.isFillingByHeightNeeded(currentRows, rowHeight)
