@@ -117,7 +117,7 @@ export class ScalperOrdersService {
             side: side,
             price: price!,
             quantity: quantity,
-            instrument: instrument
+            instrument: toInstrumentKey(instrument)
           },
           this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Top),
           this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Bottom),
@@ -128,7 +128,7 @@ export class ScalperOrdersService {
             side: side,
             price: price!,
             quantity: quantity,
-            instrument: instrument
+            instrument: toInstrumentKey(instrument)
           },
           portfolio.portfolio)
           .subscribe();
@@ -155,7 +155,7 @@ export class ScalperOrdersService {
           side: Side.Sell,
           quantity: quantity,
           price: bestBid!,
-          instrument: settings
+          instrument: toInstrumentKey(settings)
         },
         this.getBracketOrderPrice(settings, bestBid, instrument.minstep, BracketOrderType.Top),
         this.getBracketOrderPrice(settings, bestBid, instrument.minstep, BracketOrderType.Bottom),
@@ -166,7 +166,7 @@ export class ScalperOrdersService {
           side: Side.Sell,
           price: bestBid!,
           quantity: quantity,
-          instrument: settings
+          instrument: toInstrumentKey(settings)
         },
         portfolio.portfolio)
         .subscribe();
@@ -192,7 +192,7 @@ export class ScalperOrdersService {
         side: Side.Buy,
         quantity: quantity,
         price: bestAsk!,
-        instrument: settings
+        instrument: toInstrumentKey(settings)
       },
         this.getBracketOrderPrice(settings, bestAsk, instrument.minstep, BracketOrderType.Top),
         this.getBracketOrderPrice(settings, bestAsk, instrument.minstep, BracketOrderType.Bottom),
@@ -203,7 +203,7 @@ export class ScalperOrdersService {
           side: Side.Buy,
           price: bestAsk!,
           quantity: quantity,
-          instrument: settings
+          instrument: toInstrumentKey(settings)
         },
         portfolio.portfolio)
         .subscribe();
@@ -214,7 +214,7 @@ export class ScalperOrdersService {
     const order: NewMarketOrder = {
       side: side,
       quantity: quantity,
-      instrument: instrumentKey
+      instrument: toInstrumentKey(instrumentKey)
     };
 
     if (silent) {
@@ -222,7 +222,7 @@ export class ScalperOrdersService {
     }
     else {
       this.ordersDialogService.openNewOrderDialog({
-        instrumentKey: order.instrument,
+        instrumentKey: toInstrumentKey(order.instrument),
         initialValues: {
           orderType: OrderType.Market,
           quantity: order.quantity
@@ -249,7 +249,7 @@ export class ScalperOrdersService {
         side: side,
         quantity: quantity,
         price: price,
-        instrument: settings
+        instrument: toInstrumentKey(settings)
       };
 
       if (
@@ -318,7 +318,7 @@ export class ScalperOrdersService {
       side: side,
       quantity: quantity,
       price: price,
-      instrument: instrumentKey,
+      instrument: toInstrumentKey(instrumentKey),
       triggerPrice: price,
       condition: side === Side.Sell ? LessMore.MoreOrEqual : LessMore.LessOrEqual
     };
@@ -328,7 +328,7 @@ export class ScalperOrdersService {
     }
     else {
       this.ordersDialogService.openNewOrderDialog({
-        instrumentKey: order.instrument,
+        instrumentKey: toInstrumentKey(order.instrument),
         initialValues: {
           orderType: OrderType.Stop,
           price: order.price,
@@ -377,7 +377,7 @@ export class ScalperOrdersService {
     }
     else {
       this.ordersDialogService.openNewOrderDialog({
-        instrumentKey: order.instrument,
+        instrumentKey: toInstrumentKey(order.instrument),
         initialValues: {
           orderType: OrderType.Stop,
           quantity: order.quantity,

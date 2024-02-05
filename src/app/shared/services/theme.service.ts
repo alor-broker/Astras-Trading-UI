@@ -67,6 +67,8 @@ export class ThemeService {
               buyColorAccent: colorsMap['buy-color-accent'],
               buyColorBackgroundLight: colorsMap['buy-color-background-light'],
 
+              mixColor: colorsMap['mix-color'],
+
               buySellBtnTextColor: colorsMap['buy-sell-btn-text-color'],
 
               componentBackground: colorsMap['component-background'],

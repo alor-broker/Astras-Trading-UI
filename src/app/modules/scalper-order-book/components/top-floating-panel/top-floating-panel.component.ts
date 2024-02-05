@@ -1,7 +1,9 @@
 import {
   Component,
+  Inject,
   Input,
-  OnInit
+  OnInit,
+  SkipSelf
 } from '@angular/core';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { QuotesService } from "../../../../shared/services/quotes.service";
@@ -13,6 +15,10 @@ import {
 import { ScalperOrderBookWidgetSettings } from "../../models/scalper-order-book-settings.model";
 import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 import { map } from "rxjs/operators";
+import {
+  SCALPER_ORDERBOOK_SHARED_CONTEXT,
+  ScalperOrderBookSharedContext
+} from "../scalper-order-book/scalper-order-book.component";
 
 @Component({
   selector: 'ats-top-floating-panel',
@@ -25,10 +31,14 @@ export class TopFloatingPanelComponent implements OnInit {
 
   settings$!: Observable<ScalperOrderBookWidgetSettings>;
   priceDayChangePercent$!: Observable<number>;
+  currentScaleFactor$!: Observable<number | null>;
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly quotesService: QuotesService
+    private readonly quotesService: QuotesService,
+    @Inject(SCALPER_ORDERBOOK_SHARED_CONTEXT)
+    @SkipSelf()
+    private readonly scalperOrderBookSharedContext: ScalperOrderBookSharedContext,
   ) {
   }
 
@@ -39,7 +49,11 @@ export class TopFloatingPanelComponent implements OnInit {
 
     this.priceDayChangePercent$ = this.settings$.pipe(
       switchMap(s => this.quotesService.getQuotes(s.symbol, s.exchange, s.instrumentGroup)),
-      map(q => q.change_percent)
+      map(q => q.change_percent ?? 0)
+    );
+
+    this.currentScaleFactor$ = this.scalperOrderBookSharedContext.scaleFactor$.pipe(
+      map(sf => sf === 1 ? null : sf)
     );
   }
 }

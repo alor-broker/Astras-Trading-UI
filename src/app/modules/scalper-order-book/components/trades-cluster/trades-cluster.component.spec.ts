@@ -1,7 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TradesClusterComponent } from './trades-cluster.component';
-import { Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  Subject
+} from 'rxjs';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 
 describe('TradesClusterComponent', () => {
@@ -27,6 +30,7 @@ describe('TradesClusterComponent', () => {
       orderBookBody$: new Subject(),
       displayRange$: new Subject(),
       workingVolume$: new Subject(),
+      scaleFactor$: new BehaviorSubject(1)
     } as ScalperOrderBookDataContext;
 
     fixture.detectChanges();

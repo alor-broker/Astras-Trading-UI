@@ -83,6 +83,8 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
       buyBestOrder: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       buyBestAsk: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       sellBestBid: new UntypedFormControl(null, this.isKeyUniqueValidator()),
+      increaseScale: new UntypedFormControl(null, this.isKeyUniqueValidator()),
+      decreaseScale: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       workingVolumes: new UntypedFormArray([]),
       extraHotKeys: new UntypedFormControl(false)
     });

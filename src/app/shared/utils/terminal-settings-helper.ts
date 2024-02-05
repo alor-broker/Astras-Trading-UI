@@ -85,6 +85,14 @@ export class TerminalSettingsHelper {
         key: 'X',
         code: 'KeyX',
         shiftKey: true
+      },
+      increaseScale: {
+        key: '+',
+        code: 'NumpadAdd'
+      },
+      decreaseScale: {
+        key: '-',
+        code: 'NumpadSubtract'
       }
     };
   }
