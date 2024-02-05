@@ -12,7 +12,7 @@
   "depthLabel": "Depth",
   "showZeroVolumeItemsLabel": "Show order prices with zero volume",
   "showSpreadItemsLabel": "Show prices between the best buy/sell prices",
-  "showTradesPanelLabel": "Show orders panel",
+  "showTradesPanelLabel": "Show trades panel",
   "showTradesClustersPanelLabel": "Show clusters panel",
   "disableHotkeysLabel": "Turn off hotkeys",
   "enableMouseClickSilentOrdersLabel": "Buy by click without notification",
