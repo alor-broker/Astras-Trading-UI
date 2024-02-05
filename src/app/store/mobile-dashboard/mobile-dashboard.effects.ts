@@ -20,6 +20,7 @@ import {
 import { MobileDashboardFeature } from "./mobile-dashboard.reducer";
 import { InitialSettingsMap } from "../../../assets/charting_library";
 import { InstrumentKey } from "../../shared/models/instruments/instrument-key.model";
+import { Widget } from "../../shared/models/dashboard/widget.model";
 
 @Injectable()
 export class MobileDashboardEffects {
@@ -132,6 +133,21 @@ export class MobileDashboardEffects {
           ));
         }
       ));
+  });
+
+  setDefaultOrderbookSettings$ = createEffect(() => {
+    return MobileDashboardStreams.getMobileDashboard(this.store).pipe(
+      map(d => d.items.find(w => w.widgetType === 'order-book')),
+      filter((o): o is Widget => o != null && !o.initialSettings.useOrderWidget),
+      map(o => MobileDashboardItemsActions.updateWidget({
+        guid: o.guid,
+        updates: {
+          initialSettings: {
+            useOrderWidget: true
+          }
+        }
+      }))
+    );
   });
 
   constructor(

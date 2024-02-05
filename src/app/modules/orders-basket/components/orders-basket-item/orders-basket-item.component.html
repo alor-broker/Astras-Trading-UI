@@ -17,15 +17,17 @@
           <nz-form-label *ngIf="showLabels$ | async" nzFor="quota"
                          nzRequired>{{t('ordersBasketOrdersBasketItem.quotaLabel')}}</nz-form-label>
           <nz-form-control
-            [nzErrorTip]="t('ordersBasketOrdersBasketItem.intervalError', {min: validationOptions.quota.min, max: validationOptions.quota.max})">
-            <nz-input-group nzSuffix="%">
-              <ats-input-number
-                formControlName="quota"
-                [step]="0.1"
-                [placeholder]="t('ordersBasketOrdersBasketItem.quotaPlaceholder')"
-                (atsBlur)="onTouched()"
-              ></ats-input-number>
-            </nz-input-group>
+            [nzErrorTip]="t('ordersBasketOrdersBasketItem.intervalError', {min: validationOptions.quota.min, max: validationOptions.quota.max})"
+          >
+            <ats-input-number
+              [suffix]="suffixTmp"
+              formControlName="quota"
+              [step]="0.1"
+              [placeholder]="t('ordersBasketOrdersBasketItem.quotaPlaceholder')"
+              (atsBlur)="onTouched()"
+            ></ats-input-number>
+
+            <ng-template #suffixTmp>%</ng-template>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>

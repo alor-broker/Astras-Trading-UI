@@ -136,20 +136,16 @@ export class ScalperOrderBookTableComponent implements OnInit {
     }
   }
 
-  leftMouseClick(e: MouseEvent, row: DisplayRow): void {
+  mouseDown(e: MouseEvent, row: DisplayRow): void {
+    if(e.button === 0) {
+      this.commandProcessorService.processLeftMouseClick(e, row, this.dataContext);
+    } else if(e.button === 2) {
+      this.commandProcessorService.processRightMouseClick(e, row, this.dataContext);
+    }
+
     e.preventDefault();
     e.stopPropagation();
     document.getSelection()?.removeAllRanges();
-
-    this.commandProcessorService.processLeftMouseClick(e, row, this.dataContext);
-  }
-
-  rightMouseClick(e: MouseEvent, row: DisplayRow): void {
-    e.preventDefault();
-    e.stopPropagation();
-    document.getSelection()?.removeAllRanges();
-
-    this.commandProcessorService.processRightMouseClick(e, row, this.dataContext);
   }
 
   updateOrderPrice(orders: CurrentOrderDisplay[], row: DisplayRow): void {

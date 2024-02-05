@@ -15,8 +15,8 @@
          class="user-select-none"
     >
     <div class="table-col" id="volume-panel">
-      <div (mousedown)="leftMouseClick($event, row)"
-           (contextmenu)="rightMouseClick($event, row)"
+      <div (mousedown)="mouseDown($event, row)"
+           (contextmenu)="$event.preventDefault()"
            *ngFor="let row of displayItems; trackBy: getTrackKey"
            [style.height]="rowHeight + 'px'"
            [style.line-height]="rowHeight + 'px'"
@@ -58,8 +58,8 @@
       </div>
     </div>
     <div class="table-col" id="price-panel">
-      <div (mousedown)="leftMouseClick($event, row)"
-           (contextmenu)="rightMouseClick($event, row)"
+      <div (mousedown)="mouseDown($event, row)"
+           (contextmenu)="$event.preventDefault()"
            (dblclick)="$event.stopPropagation()"
            *ngFor="let row of displayItems; trackBy: getTrackKey"
            [style.height]="rowHeight + 'px'"
@@ -82,6 +82,7 @@
     </div>
     <div class="table-col orders-drag-boundary" id="orders-panel" cdkDropListGroup>
       <div (dblclick)="$event.stopPropagation()"
+           (contextmenu)="$event.preventDefault()"
            *ngFor="let row of displayItems; trackBy: getTrackKey"
            [style.height]="rowHeight + 'px'"
            [style.line-height]="rowHeight + 'px'"
