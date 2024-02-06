@@ -56,7 +56,6 @@ import { ShortNumberComponent } from './components/short-number/short-number.com
 import { ScrollableRowComponent } from './components/scrollable-row/scrollable-row.component';
 import { ScrollableItemDirective } from "./directives/scrollable-item.directive";
 import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
-import { ResizableDirective } from './directives/resizable.directive';
 import { PushNotificationsProvider } from "../modules/push-notifications/services/push-notifications-provider";
 import { InputNumberComponent } from "./components/input-number/input-number.component";
 import {
@@ -86,7 +85,6 @@ import { TableRowHeightDirective } from './directives/table-row-height.directive
     ShortNumberComponent,
     ScrollableRowComponent,
     ScrollableItemDirective,
-    ResizableDirective,
     InputNumberComponent,
     InstrumentBadgeDisplayComponent,
     MergedBadgeComponent,
@@ -202,7 +200,6 @@ import { TableRowHeightDirective } from './directives/table-row-height.directive
     // directives
     ResizeColumnDirective,
     ScrollableItemDirective,
-    ResizableDirective,
     RemoveSelectTitlesDirective,
     TableRowHeightDirective,
     // pipes

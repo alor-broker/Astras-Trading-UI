@@ -5,7 +5,10 @@ import {
 
 import { TradesPanelComponent } from './trades-panel.component';
 import { ThemeService } from '../../../../shared/services/theme.service';
-import { Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  Subject
+} from 'rxjs';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 
 describe('TradesPanelComponent', () => {
@@ -38,6 +41,7 @@ describe('TradesPanelComponent', () => {
       orderBookBody$: new Subject(),
       displayRange$: new Subject(),
       workingVolume$: new Subject(),
+      scaleFactor$: new BehaviorSubject(1)
     } as ScalperOrderBookDataContext;
 
     fixture.detectChanges();

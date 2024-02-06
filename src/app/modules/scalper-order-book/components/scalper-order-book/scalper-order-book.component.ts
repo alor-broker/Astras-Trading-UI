@@ -18,8 +18,11 @@ import { map } from "rxjs/operators";
 export interface ScalperOrderBookSharedContext {
   readonly workingVolume$: Observable<number | null>;
   gridSettings$: Observable<{ rowHeight: number, fontSize: number }>;
+  readonly scaleFactor$: Observable<number>;
 
   setWorkingVolume(value: number): void;
+
+  setScaleFactor(value: number): void;
 }
 
 export const SCALPER_ORDERBOOK_SHARED_CONTEXT = new InjectionToken<ScalperOrderBookSharedContext>('ScalperOrderBookSharedContext');
@@ -43,10 +46,15 @@ export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext,
   isActive = false;
 
   workingVolume$ = new BehaviorSubject<number | null>(null);
+  scaleFactor$ = new BehaviorSubject<number>(1);
 
   gridSettings$!: Observable<{ rowHeight: number, fontSize: number }>;
 
   constructor(private readonly widgetSettingsService: WidgetSettingsService) {
+  }
+
+  setScaleFactor(value: number): void {
+    this.scaleFactor$.next(value);
   }
 
   ngOnInit(): void {

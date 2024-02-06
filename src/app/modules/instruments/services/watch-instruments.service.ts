@@ -180,7 +180,7 @@ export class WatchInstrumentsService {
       )
       .subscribe(({ quote, lastCandle }) => {
         const update = <WatchedInstrument>{
-          prevTickPrice: quote.last_price - quote.change,
+          prevTickPrice: quote.last_price - (quote.change ?? 0),
           closePrice: quote.prev_close_price,
           openPrice: quote.open_price,
           price: quote.last_price,

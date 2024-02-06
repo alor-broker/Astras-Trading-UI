@@ -63,27 +63,33 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
           return Math.round(item.buyQty + item.sellQty);
         };
 
-        const maxVolume = !!currentCluster && currentCluster.tradeClusters.length > 0
-          ? Math.max(...currentCluster.tradeClusters.map(c => getVolume(c)))
-          : null;
-
-        return displayRows.map(r => {
+        let maxVolume = 0;
+        const mappedRows = displayRows.map(r => {
           if (!currentCluster) {
             return null;
           }
 
-          const mappedItem = currentCluster.tradeClusters.find(x => x.price === r.price);
-          if (!mappedItem) {
+          const mappedItems = currentCluster.tradeClusters.filter(c => c.price >= r.baseRange.min && c.price <= r.baseRange.max);
+          if (mappedItems.length === 0) {
             return null;
           }
 
-          const itemVolume  = getVolume(mappedItem);
+          const itemVolume  = mappedItems.reduce((total, curr) => Math.round(total + getVolume(curr)), 0);
+          maxVolume = Math.max(maxVolume, itemVolume);
 
           return {
             volume: itemVolume,
-            isMaxVolume: itemVolume === maxVolume
+            isMaxVolume: false
           };
         });
+
+        mappedRows.forEach(r => {
+          if(r !== null) {
+            r.isMaxVolume = r.volume === maxVolume;
+          }
+        });
+
+        return mappedRows;
       })
     );
   }

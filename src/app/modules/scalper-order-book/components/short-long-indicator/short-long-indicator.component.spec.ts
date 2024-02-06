@@ -7,7 +7,10 @@ import {
   ngZorroMockComponents
 } from "../../../../shared/utils/testing";
 import { EvaluationService } from "../../../../shared/services/evaluation.service";
-import { Subject } from "rxjs";
+import {
+  BehaviorSubject,
+  Subject
+} from "rxjs";
 import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-data-context.model";
 
 describe('ShortLongIndicatorComponent', () => {
@@ -46,6 +49,7 @@ describe('ShortLongIndicatorComponent', () => {
       orderBookBody$: new Subject(),
       displayRange$: new Subject(),
       workingVolume$: new Subject(),
+      scaleFactor$: new BehaviorSubject(1)
     } as ScalperOrderBookDataContext;
 
     fixture.detectChanges();

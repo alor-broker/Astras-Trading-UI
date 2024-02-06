@@ -15,6 +15,8 @@
   "buyBestOrder": "Submit the best order for buy",
   "sellBestBid": "Sell best BID",
   "buyBestAsk": "Buy best ASK",
+  "increaseScale": "Increase price step",
+  "decreaseScale": "Decrease price step",
   "workingVolumesHeader": "Working volumes",
   "selectWorkingVolume": "Select working volume",
 

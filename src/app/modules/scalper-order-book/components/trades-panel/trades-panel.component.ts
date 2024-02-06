@@ -32,6 +32,7 @@ import {
   ArrayReverseIterator,
   CustomIteratorWrapper
 } from "../../../../shared/utils/array-iterators";
+import { BodyRow } from "../../models/scalper-order-book.model";
 
 interface LayerDrawer {
   zIndex: number;
@@ -104,7 +105,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   };
 
   private readonly contentSize$ = new BehaviorSubject<ContentSize>({ width: 0, height: 0 });
-  private displayPriceItems$!: Observable<number[]>;
+  private displayPriceItems$!: Observable<BodyRow[]>;
 
   constructor(
     private readonly themeService: ThemeService,
@@ -158,16 +159,16 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       filter(([, displayRange]) => !!displayRange),
       map(([body, displayRange]) => {
         return body
-          .slice(displayRange!.start, Math.min(displayRange!.end + 1, body.length))
-          .map(x => x.price);
-      })
+          .slice(displayRange!.start, Math.min(displayRange!.end + 1, body.length));
+      }),
+      filter(priceItems => priceItems.length > 0),
     );
   }
 
   private draw(
     canvas: HTMLCanvasElement,
     themeSettings: ThemeSettings,
-    priceItems: number[],
+    priceItems: BodyRow[],
     orderedTrades: AllTradesItem[]
   ): void {
     const context = canvas.getContext('2d')!;
@@ -234,13 +235,13 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private drawTrade(
     trade: AllTradesItem,
-    priceItems: number[],
+    priceItems: BodyRow[],
     prevItem: DrewItemMeta | null,
     xScale: ScaleLinear<number, number>,
     yScale: ScaleLinear<number, number>,
     context: CanvasRenderingContext2D,
     themeColors: ThemeColors): { meta: DrewItemMeta, drawer: LayerDrawer } {
-    const mappedPriceIndex = priceItems.indexOf(trade.price);
+    const mappedPriceIndex = priceItems.findIndex(priceItem => trade.price >= priceItem.baseRange.min && trade.price <= priceItem.baseRange.max);
     const tradeDisplay: TradeDisplay = {
       rowIndex: mappedPriceIndex,
       color: trade.side === 'buy' ? 'green' : 'red',
@@ -249,7 +250,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let currentItem: { meta: DrewItemMeta, drawer: LayerDrawer };
     if (mappedPriceIndex < 0) {
-      if (trade.price < priceItems[0] && trade.price > priceItems[priceItems.length - 1]) {
+      if (trade.price < priceItems[0].baseRange.max && trade.price > priceItems[priceItems.length - 1].baseRange.min) {
         currentItem = this.drawMissingPriceItem(
           {
             ...tradeDisplay,
@@ -265,7 +266,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         currentItem = this.drawOuterItem(
           {
             ...tradeDisplay,
-            rowIndex: trade.price > priceItems[0]
+            rowIndex: trade.price > priceItems[0].baseRange.max
               ? 0
               : priceItems.length
           },
@@ -291,10 +292,10 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     return currentItem;
   }
 
-  private getNearestPriceIndex(trade: AllTradesItem, priceItems: number[]): number {
+  private getNearestPriceIndex(trade: AllTradesItem, priceItems: BodyRow[]): number {
     let index = 0;
     for (let i = priceItems.length - 1; i >= 0; i--) {
-      if (trade.price < priceItems[i]) {
+      if (trade.price < priceItems[i].baseRange.min) {
         break;
       }
 

@@ -1,4 +1,5 @@
 import { Side } from '../../../shared/models/enums/side.model';
+import { Range } from "../../../shared/models/common.model";
 
 export interface CurrentOrderDisplay {
   orderId: string;
@@ -15,16 +16,21 @@ export interface CurrentOrderDisplay {
 export interface PriceRow {
   price: number;
   isStartRow: boolean;
+  baseRange: Range;
 }
 
 export enum ScalperOrderBookRowType {
   Ask = 'ask',
   Bid = 'bid',
+  Mixed = 'mixed',
   Spread = 'spread'
 }
 
 export interface BodyRow extends PriceRow {
   volume?: number | null;
+  askVolume?: number | null;
+  bidVolume?: number | null;
+
   isBest?: boolean | null;
 
   rowType?: ScalperOrderBookRowType | null;

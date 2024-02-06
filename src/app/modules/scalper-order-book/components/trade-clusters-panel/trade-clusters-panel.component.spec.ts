@@ -7,7 +7,10 @@ import { TradeClustersPanelComponent } from './trade-clusters-panel.component';
 import { getTranslocoModule } from '../../../../shared/utils/testing';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { ContextMenuService } from '../../../../shared/services/context-menu.service';
-import { Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  Subject
+} from 'rxjs';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 import { TradeClustersService } from '../../services/trade-clusters.service';
 
@@ -57,6 +60,7 @@ describe('TradeClustersPanelComponent', () => {
       orderBookBody$: new Subject(),
       displayRange$: new Subject(),
       workingVolume$: new Subject(),
+      scaleFactor$: new BehaviorSubject(1)
     } as ScalperOrderBookDataContext;
 
     fixture.detectChanges();

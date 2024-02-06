@@ -45,6 +45,7 @@ import { AllTradesItem } from '../../../shared/models/all-trades.model';
 import { AllTradesService } from '../../../shared/services/all-trades.service';
 import { ContentSize } from '../../../shared/models/dashboard/dashboard-item.model';
 import {
+  PriceOptions,
   PriceRowsState,
   PriceRowsStore
 } from '../utils/price-rows-store';
@@ -52,6 +53,7 @@ import { isInstrumentEqual } from '../../../shared/utils/settings-helper';
 import { QuotesService } from '../../../shared/services/quotes.service';
 import { ScalperSettingsHelper } from "../utils/scalper-settings.helper";
 import { Instrument } from "../../../shared/models/instruments/instrument.model";
+import { OrderBookScaleHelper } from "../utils/order-book-scale.helper";
 
 
 export interface ContextGetters {
@@ -85,6 +87,7 @@ export class ScalperOrderBookDataContextService {
     priceRowsStore: PriceRowsStore,
     contentSize$: Observable<ContentSize | null>,
     rowHeight$: Observable<number>,
+    scaleFactor$: Observable<number>,
     getters: ContextGetters,
     actions: ContextChangeActions
   ): Omit<ScalperOrderBookDataContext, 'displayRange$' | 'workingVolume$'> {
@@ -105,15 +108,17 @@ export class ScalperOrderBookDataContextService {
         position$,
         contentSize$,
         rowHeight$,
+        scaleFactor$,
         getters,
         actions
       ),
       currentOrders$: this.getCurrentOrdersStream(settings$, currentPortfolio$),
-      trades$: this.getInstrumentTradesStream(settings$)
+      trades$: this.getInstrumentTradesStream(settings$),
+      scaleFactor$
     };
   }
 
-  public getOrderBookBounds(orderBookData: OrderbookData): { asksRange: Range | null, bidsRange: Range | null } {
+  private getOrderBookBounds(orderBookData: OrderbookData): { asksRange: Range | null, bidsRange: Range | null } {
     let asksRange: Range | null = null;
     if (orderBookData.a.length > 0) {
       asksRange = {
@@ -275,6 +280,7 @@ export class ScalperOrderBookDataContextService {
     position$: Observable<Position | null>,
     contentSize$: Observable<ContentSize | null>,
     rowHeight$: Observable<number>,
+    scaleFactor$: Observable<number>,
     getters: ContextGetters,
     actions: ContextChangeActions
   ): Observable<BodyRow[]> {
@@ -284,9 +290,10 @@ export class ScalperOrderBookDataContextService {
       orderBookData$,
       position$,
       contentSize$,
-      rowHeight$
+      rowHeight$,
+      scaleFactor$
     ]).pipe(
-      map(([settings, rowsState, orderBook, position, ,rowHeight]) => {
+      map(([settings, rowsState, orderBook, position, ,rowHeight, scaleFactor]) => {
         return this.mapToBodyRows(
           settings,
           rowsState,
@@ -295,7 +302,8 @@ export class ScalperOrderBookDataContextService {
           getters,
           actions,
           priceRowsStore,
-          rowHeight
+          rowHeight,
+          scaleFactor
         ) ?? [];
       }),
       shareReplay({ bufferSize: 1, refCount: true })
@@ -310,25 +318,37 @@ export class ScalperOrderBookDataContextService {
     getters: ContextGetters,
     actions: ContextChangeActions,
     priceRowsStore: PriceRowsStore,
-    rowHeight: number
+    rowHeight: number,
+    scaleFactor: number
   ): BodyRow[] | null {
+    // цены или ордербук от другого инструмента
     if (!isInstrumentEqual(settings.widgetSettings, rowsState.instrumentKey)
       || !isInstrumentEqual(settings.widgetSettings, orderBook.instrumentKey)
     ) {
-      this.regenerateRowsForHeight(null, settings, getters, actions, priceRowsStore, rowHeight);
+      this.regenerateRowsForHeight(null, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor);
       return [];
     }
 
+    // инструмент не торгуется
     if(rowsState.rows.length === 0 && rowsState.directionRowsCount === 0) {
       return [];
     }
 
-    if (rowsState.rows.length === 0
-      || getters.isFillingByHeightNeeded(rowsState.rows, rowHeight)) {
-      this.regenerateRowsForHeight(orderBook.rows, settings, getters, actions, priceRowsStore, rowHeight);
+    // цены были сгенерированы без ордербука или изменен масштаб
+    if (rowsState.isDirty && (orderBook.rows.b.length > 0 || orderBook.rows.a.length > 0) || rowsState.priceOptions?.scaleFactor !== scaleFactor)
+     {
+      this.regenerateRowsForHeight(orderBook.rows, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor);
       return [];
     }
 
+    // нет цен или не вся высота виджета заполнена
+    if (rowsState.rows.length === 0
+      || getters.isFillingByHeightNeeded(rowsState.rows, rowHeight)) {
+      this.regenerateRowsForHeight(orderBook.rows, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor);
+      return [];
+    }
+
+    // ордебук не помещается в текущий диапазон
     if (!this.checkPriceRowBounds(
       rowsState.rows,
       orderBook.rows,
@@ -336,7 +356,8 @@ export class ScalperOrderBookDataContextService {
       getters,
       actions,
       priceRowsStore,
-      rowHeight
+      rowHeight,
+      scaleFactor
     )
     ) {
       return [];
@@ -370,19 +391,17 @@ export class ScalperOrderBookDataContextService {
     getters: ContextGetters,
     actions: ContextChangeActions,
     priceRowsStore: PriceRowsStore,
-    rowHeight: number
+    rowHeight: number,
+    scaleFactor: number
   ): void {
     actions.priceRowsRegenerationStarted();
 
-    let priceBounds$: Observable<{ min: number, max: number } | null> | null = null;
+    let priceBounds$: Observable<{ asksRange: Range | null, bidsRange: Range | null } | null> | null = null;
 
     if (orderBookData) {
       const bounds = this.getOrderBookBounds(orderBookData);
-      const expectedMaxPrice = bounds.asksRange?.max ?? bounds.bidsRange?.max;
-      const expectedMinPrice = bounds.bidsRange?.min ?? bounds.asksRange?.min;
-
-      if (expectedMaxPrice != null && expectedMinPrice != null) {
-        priceBounds$ = of({ min: expectedMinPrice, max: expectedMaxPrice });
+      if (bounds.asksRange != null || bounds.bidsRange != null) {
+        priceBounds$ = of(bounds);
       }
     }
 
@@ -390,7 +409,16 @@ export class ScalperOrderBookDataContextService {
       priceBounds$ = this.quotesService.getLastPrice(settings.widgetSettings, 1).pipe(
         map(lp => {
           if(lp != null) {
-            return { min: lp!, max: lp! };
+            return {
+              asksRange:{
+                min: lp,
+                max: lp
+              },
+              bidsRange:{
+                min: lp,
+                max: lp
+              },
+            };
           }
 
           return null;
@@ -403,14 +431,8 @@ export class ScalperOrderBookDataContextService {
     ).subscribe(x => {
       priceRowsStore.initWithPriceRange(
         settings.widgetSettings,
-        !!x
-          ? {
-            min: x.min,
-            max: x.max
-
-          }
-          : null,
-        settings.instrument.minstep,
+        this.getPriceOptions(x, settings.instrument.minstep, scaleFactor),
+        x == null,
         getters.getVisibleRowsCount(rowHeight),
         () => {
           actions.priceRowsRegenerationCompleted();
@@ -419,31 +441,55 @@ export class ScalperOrderBookDataContextService {
     });
   }
 
-  private regeneratePriceRows(
+  private getPriceOptions(orderBookRange: { asksRange: Range | null, bidsRange: Range | null } | null, priceStep: number, scaleFactor: number): PriceOptions | null {
+    if(orderBookRange == null) {
+      return null;
+    }
+
+    const bestAsk = orderBookRange.asksRange?.min ?? orderBookRange.bidsRange?.max;
+    const bestBid = orderBookRange.bidsRange?.max ?? orderBookRange.asksRange?.min;
+    const maxPrice = orderBookRange.asksRange?.max ?? orderBookRange.bidsRange?.max;
+    const minPrice = orderBookRange.bidsRange?.min ?? orderBookRange.asksRange?.min;
+
+    if(bestAsk == null || bestBid == null || maxPrice == null || minPrice == null) {
+      return null;
+    }
+
+    const startPrice = OrderBookScaleHelper.getStartPrice(bestAsk, bestBid, priceStep, scaleFactor);
+
+    return {
+      startPrice: startPrice.startPrice,
+      scaledStep: startPrice.step,
+      basePriceStep: priceStep,
+      scaleFactor,
+      expectedRangeMin: minPrice,
+      expectedRangeMax: maxPrice
+    };
+  }
+
+  private regenerateForOrderBook(
     orderBookData: OrderbookData,
     settings: ScalperOrderBookExtendedSettings,
     getters: ContextGetters,
     actions: ContextChangeActions,
     priceRowsStore: PriceRowsStore,
-    rowHeight: number
+    rowHeight: number,
+    scaleFactor: number
   ): void {
     actions.priceRowsRegenerationStarted();
 
     const bounds = this.getOrderBookBounds(orderBookData);
-    const expectedMaxPrice = bounds.asksRange?.max ?? bounds.bidsRange?.max;
-    const expectedMinPrice = bounds.bidsRange?.min ?? bounds.asksRange?.min;
+    const expectedBestAsk = bounds.asksRange?.min ?? bounds.bidsRange?.max;
+    const expectedBestBid = bounds.bidsRange?.max ?? bounds.asksRange?.min;
 
-    if (expectedMaxPrice == null || expectedMinPrice == null) {
+    if (expectedBestAsk == null || expectedBestBid == null) {
       return;
     }
 
     priceRowsStore.initWithPriceRange(
       settings.widgetSettings,
-      {
-        min: expectedMinPrice,
-        max: expectedMaxPrice
-      },
-      settings.instrument.minstep,
+      this.getPriceOptions(this.getOrderBookBounds(orderBookData), settings.instrument.minstep, scaleFactor),
+      false,
       getters.getVisibleRowsCount(rowHeight),
       () => {
         actions.priceRowsRegenerationCompleted();
@@ -458,7 +504,8 @@ export class ScalperOrderBookDataContextService {
     getters: ContextGetters,
     actions: ContextChangeActions,
     priceRowsStore: PriceRowsStore,
-    rowHeight: number
+    rowHeight: number,
+    scaleFactor: number
   ): boolean {
     const maxRowPrice = priceRows[0].price;
     const minRowPrice = priceRows[priceRows.length - 1].price;
@@ -468,7 +515,7 @@ export class ScalperOrderBookDataContextService {
     const expectedMinPrice = orderBookBounds.bidsRange?.min ?? orderBookBounds.asksRange?.min;
     if ((expectedMinPrice != null && expectedMinPrice < minRowPrice)
       || (expectedMaxPrice != null && expectedMaxPrice > maxRowPrice)) {
-      this.regeneratePriceRows(orderBookData, settings, getters, actions, priceRowsStore, rowHeight);
+      this.regenerateForOrderBook(orderBookData, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor);
       return false;
     }
 
@@ -479,7 +526,7 @@ export class ScalperOrderBookDataContextService {
     row: PriceRow,
     orderBookData: OrderbookData,
     orderBookBounds: { asksRange: Range | null, bidsRange: Range | null },
-    settings: ScalperOrderBookWidgetSettings,
+    settings: ScalperOrderBookWidgetSettings
   ): BodyRow | null {
     const resultRow = {
       ...row
@@ -489,49 +536,80 @@ export class ScalperOrderBookDataContextService {
       return resultRow;
     }
 
-    const matchRow = (targetRow: BodyRow, source: OrderbookDataRow[]): boolean => {
-      const matchedRowIndex = source.findIndex(x => x.p === targetRow.price);
-      if (matchedRowIndex >= 0) {
-        const matchedRow = source[matchedRowIndex];
-        targetRow.volume = matchedRow.v;
-        targetRow.isBest = matchedRowIndex === 0;
+    const matchRow = (targetRow: BodyRow, source: OrderbookDataRow[]): { volume: number, isBest: boolean} | null => {
+      const matchedRows: {row: OrderbookDataRow, index: number}[] = [];
 
-        return true;
+      for(let index = 0; index < source.length; index++) {
+        const row = source[index];
+        if(row.p >= targetRow.baseRange.min && row.p <= targetRow.baseRange.max) {
+          matchedRows.push({row, index});
+
+          if(targetRow.baseRange.min === targetRow.baseRange.max) {
+            break;
+          }
+        }
       }
 
-      return false;
+      if(matchedRows.length > 0) {
+        return {
+          volume: matchedRows.reduce((total, curr) => Math.round(total + curr.row.v), 0),
+          isBest: matchedRows.some(r=> r.index === 0)
+        };
+      }
+
+      return null;
     };
 
-    if (orderBookBounds.asksRange && row.price >= orderBookBounds.asksRange.min) {
+    const isAskSide = orderBookBounds.asksRange != null && row.baseRange.max >= orderBookBounds.asksRange.min;
+    const isBidSide = orderBookBounds.bidsRange != null && row.baseRange.min <= orderBookBounds.bidsRange.max;
+
+    if(isAskSide && isBidSide) {
+      resultRow.rowType = ScalperOrderBookRowType.Mixed;
+
+      resultRow.askVolume = matchRow(resultRow, orderBookData.a)?.volume ?? 0;
+      resultRow.bidVolume = matchRow(resultRow, orderBookData.b)?.volume ?? 0;
+      resultRow.volume = Math.round(resultRow.askVolume + resultRow.bidVolume);
+      resultRow.isBest = true;
+
+      return resultRow;
+    } else if(isAskSide) {
       resultRow.rowType = ScalperOrderBookRowType.Ask;
-      if (resultRow.price <= orderBookBounds.asksRange.max) {
-        if (!matchRow(resultRow, orderBookData.a)) {
+      if (resultRow.baseRange.min <= orderBookBounds.asksRange!.max) {
+        const matched = matchRow(resultRow, orderBookData.a);
+        if (matched == null) {
           if (settings.showZeroVolumeItems) {
             resultRow.isFiller = true;
           }
           else {
             return null;
           }
+        } else {
+          resultRow.volume = matched.volume;
+          resultRow.askVolume = resultRow.volume;
+          resultRow.isBest = matched.isBest;
         }
       }
 
       return resultRow;
-    }
-    else if (orderBookBounds.bidsRange && row.price <= orderBookBounds.bidsRange.max) {
+    } else if(isBidSide) {
       resultRow.rowType = ScalperOrderBookRowType.Bid;
-      if (resultRow.price >= orderBookBounds.bidsRange.min) {
-        if (!matchRow(resultRow, orderBookData.b)) {
+      if (resultRow.baseRange.max >= orderBookBounds.bidsRange!.min) {
+        const matched = matchRow(resultRow, orderBookData.b);
+        if (matched == null) {
           if (settings.showZeroVolumeItems) {
             resultRow.isFiller = true;
           }
           else {
             return null;
           }
+        } else {
+          resultRow.volume = matched.volume;
+          resultRow.bidVolume = resultRow.volume;
+          resultRow.isBest = matched.isBest;
         }
       }
       return resultRow;
-    }
-    else if (settings.showSpreadItems) {
+    } else if (settings.showSpreadItems) {
       resultRow.rowType = ScalperOrderBookRowType.Spread;
       return resultRow;
     }

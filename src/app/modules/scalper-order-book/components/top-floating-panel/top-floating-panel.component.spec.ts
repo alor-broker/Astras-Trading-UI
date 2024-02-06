@@ -6,6 +6,10 @@ import { Subject } from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { getTranslocoModule } from "../../../../shared/utils/testing";
 import { LetDirective } from "@ngrx/component";
+import {
+  SCALPER_ORDERBOOK_SHARED_CONTEXT,
+  ScalperOrderBookSharedContext
+} from "../scalper-order-book/scalper-order-book.component";
 
 describe('TopFloatingPanelComponent', () => {
   let component: TopFloatingPanelComponent;
@@ -29,6 +33,12 @@ describe('TopFloatingPanelComponent', () => {
           provide: QuotesService,
           useValue: {
             getQuotes: jasmine.createSpy('getQuotes').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: SCALPER_ORDERBOOK_SHARED_CONTEXT,
+          useValue: {
+            scaleFactor$: new Subject()
           }
         }
       ]
