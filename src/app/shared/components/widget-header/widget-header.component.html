@@ -85,7 +85,7 @@
       (mousedown)="preventMouseEvents($event)"
     >
       <a
-        [href]="helpUrl + (widgetMeta?.typeId ?? '')"
+        [href]="helpUrl$ | async"
         target="_blank"
       >
         <i nz-icon nzType="question-circle" [nzTheme]="'outline'"

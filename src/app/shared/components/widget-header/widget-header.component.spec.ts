@@ -10,6 +10,7 @@ import {TranslatorService} from "../../services/translator.service";
 import {DashboardContextService} from "../../services/dashboard-context.service";
 import {Subject} from "rxjs";
 import { EnvironmentService } from "../../services/environment.service";
+import { HelpService } from "../../services/help.service";
 
 
 describe('WidgetHeaderComponent', () => {
@@ -54,6 +55,13 @@ describe('WidgetHeaderComponent', () => {
             externalLinks: {
               help: ''
             }
+          }
+        },
+        {
+          provide: HelpService,
+          useValue: {
+            getHelpLink: jasmine.createSpy('getHelpLink').and.returnValue('')
+
           }
         }
       ]

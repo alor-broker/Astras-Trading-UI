@@ -1,15 +1,16 @@
-import {Component, EventEmitter, Input, OnInit, Output, TemplateRef} from '@angular/core';
-import {WidgetSettingsService} from '../../services/widget-settings.service';
-import {ManageDashboardsService} from '../../services/manage-dashboards.service';
-import {instrumentsBadges} from '../../utils/instruments';
-import {WidgetMeta} from "../../models/widget-meta.model";
-import {TranslatorService} from "../../services/translator.service";
-import {WidgetsHelper} from "../../utils/widgets";
-import {DashboardContextService} from "../../services/dashboard-context.service";
-import {Observable, shareReplay} from "rxjs";
-import {InstrumentKey} from "../../models/instruments/instrument-key.model";
-import {map} from "rxjs/operators";
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef } from '@angular/core';
+import { WidgetSettingsService } from '../../services/widget-settings.service';
+import { ManageDashboardsService } from '../../services/manage-dashboards.service';
+import { instrumentsBadges } from '../../utils/instruments';
+import { WidgetMeta } from "../../models/widget-meta.model";
+import { TranslatorService } from "../../services/translator.service";
+import { WidgetsHelper } from "../../utils/widgets";
+import { DashboardContextService } from "../../services/dashboard-context.service";
+import { Observable, shareReplay } from "rxjs";
+import { InstrumentKey } from "../../models/instruments/instrument-key.model";
+import { map } from "rxjs/operators";
 import { EnvironmentService } from "../../services/environment.service";
+import { HelpService } from "../../services/help.service";
 
 @Component({
   selector: 'ats-widget-header',
@@ -53,7 +54,7 @@ export class WidgetHeaderComponent implements OnInit {
 
   titleText!: string;
 
-  helpUrl = this.environmentService.externalLinks.help + '/';
+  helpUrl$!: Observable<string | null>;
 
   badgeOptions$!: Observable<{
     color: string;
@@ -65,7 +66,8 @@ export class WidgetHeaderComponent implements OnInit {
     private readonly settingsService: WidgetSettingsService,
     private readonly manageDashboardService: ManageDashboardsService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly helpService: HelpService
   ) {
   }
 
@@ -104,6 +106,8 @@ export class WidgetHeaderComponent implements OnInit {
     this.titleText = !!this.widgetMeta
       ? WidgetsHelper.getWidgetName(this.widgetMeta.widgetName, this.translatorService.getActiveLang())
       : '';
+
+    this.helpUrl$ = this.helpService.getHelpLink(this.widgetMeta?.typeId ?? '');
   }
 
   switchBadgeColor(badgeColor: string): void {
