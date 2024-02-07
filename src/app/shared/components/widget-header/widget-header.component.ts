@@ -44,9 +44,6 @@ export class WidgetHeaderComponent implements OnInit {
   hasSettings = false;
 
   @Input()
-  hasHelp = false;
-
-  @Input()
   titleTemplate: TemplateRef<any> | null = null;
 
   @Output()

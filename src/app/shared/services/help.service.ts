@@ -1,51 +1,28 @@
-import { Injectable } from '@angular/core';
+import { DestroyRef, Injectable } from '@angular/core';
 import { environment } from "../../../environments/environment";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { map } from "rxjs/operators";
-import { Observable } from "rxjs";
+import { Observable, shareReplay } from "rxjs";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { catchHttpError } from "../utils/observable-helper";
+import { ErrorHandlerService } from "./handle-error/error-handler.service";
 
 interface HelpDatabaseResponse {
-  id: string;
-  title: string;
-  archived: boolean;
-  schemaProperties: {
-    id: string;
-    spaceId: string;
-    propertyId: string;
-    name: string;
-    type: string;
-    code: string;
-    format: string;
-  }[];
   content: {
     article: {
       properties: {
         properties: {
-          a8Kv: {
-            id: string;
-            name: string;
-            surname: string;
-            fullName: string;
-            avatarPath: string | null;
-            externalId: string | null;
-          }[];
-          fxJo: string | null;
           jfYn: string; // help link id
           nuQL: string; // widget type name
-          title: {
-            icon: string | null;
-            text: string | null;
-          };
-          author: {
-            id: string;
-            fullName: string;
-            avatarPath: string | null;
-            externalId: string | null;
-          };
         };
       };
     };
   }[];
+}
+
+interface HelpLinkInfo {
+  id: string;
+  widgetType: string;
 }
 
 @Injectable({
@@ -55,55 +32,63 @@ export class HelpService {
 
   private readonly helpUrl = environment.externalLinks.help;
   private readonly teamlyDatabaseUrl = environment.teamlyDatabaseUrl;
+  private teamlyData$!: Observable<HelpLinkInfo[]>;
 
   constructor(
-    private readonly http: HttpClient
+    private readonly http: HttpClient,
+    private readonly destroyRef: DestroyRef,
+    private readonly errorHandlerService: ErrorHandlerService
   ) { }
 
   getHelpLink(widgetType: string): Observable<string | null> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'X-Account-Slug': 'alor'
-      })
-    };
-
-    const body = {
-      "query": {
-        "__filter": {
-          "contentDatabaseId": "100970c7-dde3-4404-9d69-0069ce176bfa"
-        },
-        "id": true,
-        "title": true,
-        "archived": true,
-        "schemaProperties": {
-          "id": true,
-          "spaceId": true,
-          "propertyId": true,
-          "name": true,
-          "type": true,
-          "code": true,
-          "format": true
-        },
-        "content": {
-          "article": {
-            "properties": {
-              "properties": true
-            }
-          }
-        }
-      }
-    };
-
-    return this.http.post<HelpDatabaseResponse>(this.teamlyDatabaseUrl, body, httpOptions)
+    return this.getTeamlyData()
       .pipe(
-        map(res => res.content.find(c => c.article.properties.properties.nuQL === widgetType) ?? null),
+        map(info => info.find(c => c.widgetType === widgetType) ?? null),
         map(info => {
           if (info == null) {
             return null;
           }
 
-          return this.helpUrl + info.article.properties.properties.jfYn;
+          return this.helpUrl + info.id;
         })
       );
+  }
+
+  private getTeamlyData(): Observable<HelpLinkInfo[]> {
+    if (this.teamlyData$ == null) {
+      this.teamlyData$ = this.http.post<HelpDatabaseResponse>(
+        this.teamlyDatabaseUrl,
+        {
+          query: {
+            "__filter": {
+              contentDatabaseId: "100970c7-dde3-4404-9d69-0069ce176bfa"
+            },
+            content: {
+              article: {
+                properties: {
+                  properties: true
+                }
+              }
+            }
+          }
+        },
+        {
+          headers: {
+            'X-Account-Slug': 'alor'
+          }
+        }
+      )
+        .pipe(
+          catchHttpError<HelpDatabaseResponse>({ content: [] }, this.errorHandlerService),
+          map(res => res.content
+            .map(item => item.article.properties.properties)
+            .map(item => ({ id: item.jfYn, widgetType: item.nuQL }))
+          ),
+          shareReplay(1),
+          takeUntilDestroyed(this.destroyRef)
+        );
+    }
+
+    return this.teamlyData$;
   }
 }
