@@ -275,6 +275,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
 
       return {
         ...cleanedFilters,
+        limit: this.loadingChunkSize,
         offset: 0
       };
     });
