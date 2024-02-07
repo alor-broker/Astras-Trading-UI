@@ -149,14 +149,14 @@ export class InfoService {
   }
 
   getCalendar(exchangeInfo: ExchangeInfo): Observable<Calendar | null> {
-    return this.getInstrumentEntity<Calendar>(exchangeInfo, 'bond/calendar', 'isin')
+    return this.getInstrumentEntity<Calendar>(exchangeInfo, 'bond/calendar', eo => eo.isin)
       .pipe(
         catchError(() => of(null)),
       );
   }
 
   getIssue(exchangeInfo: ExchangeInfo): Observable<Issue | null> {
-    return this.getInstrumentEntity<Issue>(exchangeInfo, 'bond/issue', 'isin').pipe(
+    return this.getInstrumentEntity<Issue>(exchangeInfo, 'bond/issue', eo => eo.isin).pipe(
       map(i => ({
         ...i
       })),
@@ -177,11 +177,12 @@ export class InfoService {
       );
   }
 
-  private getInstrumentEntity<T>(exchangeInfo: ExchangeInfo, path: string, identifierProperty: keyof ExchangeInfo = 'symbol'): Observable<T> {
+  private getInstrumentEntity<T>(exchangeInfo: ExchangeInfo, path: string, getIdentifier?: (eo: ExchangeInfo) => string): Observable<T> {
     return this.marketService.getExchangeSettings(exchangeInfo.exchange)
       .pipe(
         switchMap(exchangeSettings => {
-          let identifier = exchangeInfo[identifierProperty];
+          const identifier = getIdentifier?.(exchangeInfo) ?? exchangeInfo.symbol;
+
           return this.http.get<T>(
             this.instrumentUrl +
             ((exchangeSettings.isInternational ?? false) ? "/international/" : "/") +
