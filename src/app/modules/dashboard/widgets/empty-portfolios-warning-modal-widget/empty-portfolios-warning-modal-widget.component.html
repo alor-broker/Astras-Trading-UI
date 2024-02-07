@@ -16,7 +16,7 @@
           YouTube
         </ats-external-link>
         {{t('dashboardEmptyPortfoliosWarningModal.point2Pt2')}}
-        <ats-external-link klass="link" [href]="helpLink">
+        <ats-external-link klass="link" [href]="(helpLink$ | async) ?? ''">
           {{t('dashboardEmptyPortfoliosWarningModal.documentation')}}
         </ats-external-link>,
         {{t('dashboardEmptyPortfoliosWarningModal.point2Pt3')}}

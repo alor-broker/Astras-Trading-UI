@@ -61,7 +61,6 @@ describe('WidgetHeaderComponent', () => {
           provide: HelpService,
           useValue: {
             getHelpLink: jasmine.createSpy('getHelpLink').and.returnValue('')
-
           }
         }
       ]
