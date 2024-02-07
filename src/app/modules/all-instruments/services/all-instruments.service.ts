@@ -18,12 +18,12 @@ export class AllInstrumentsService {
     private readonly errorHandlerService: ErrorHandlerService
   ) {}
 
-  getAllInstruments(filters: AllInstrumentsFilters): Observable<AllInstruments[]> {
+  getAllInstruments(filters: AllInstrumentsFilters): Observable<AllInstruments[] | null> {
     return this.http.get<AllInstruments[]>(this.baseUrl + '/advanced', {
       params: { ...filters }
     })
       .pipe(
-        catchHttpError<AllInstruments[]>([], this.errorHandlerService)
+        catchHttpError<AllInstruments[] | null>(null, this.errorHandlerService)
       );
   }
 }
