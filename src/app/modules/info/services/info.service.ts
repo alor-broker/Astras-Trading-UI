@@ -130,6 +130,8 @@ export class InfoService {
         if(d.securityType !== 'stock' && d.securityType !== 'bond') {
           return {
             ...d,
+            priceStep: exchangeInfo.priceStep,
+            expirationDate: exchangeInfo.expirationDate,
             marginbuy: exchangeInfo.marginbuy,
             marginsell: exchangeInfo.marginsell
           };
@@ -210,8 +212,10 @@ export class InfoService {
             currency: r.currency,
             type: getTypeByCfi(r.cfiCode),
             lotsize: r.lotsize ?? 1,
+            priceStep: r.pricestep ?? 0,
             marginbuy: r.marginbuy,
-            marginsell: r.marginsell
+            marginsell: r.marginsell,
+            expirationDate: r.expirationDate ?? null
           };
           return info;
         })

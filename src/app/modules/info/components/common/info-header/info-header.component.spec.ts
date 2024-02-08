@@ -15,7 +15,9 @@ describe('InfoHeaderComponent', () => {
     isin: '',
     currency: '',
     type: '',
-    lotsize: 1
+    lotsize: 1,
+    priceStep: 1,
+    expirationDate: null
   };
 
   beforeAll(() => TestBed.resetTestingModule());

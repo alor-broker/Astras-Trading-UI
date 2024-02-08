@@ -44,11 +44,13 @@ export class InstrumentsService {
           isin: r.ISIN,
           currency: r.currency,
           minstep: r.minstep ?? 0.01,
+          pricestep: r.pricestep,
           lotsize: r.lotsize,
           cfiCode: r.cfiCode,
           type: r.type,
           marginbuy: r.marginbuy,
-          marginsell: r.marginsell
+          marginsell: r.marginsell,
+          expirationDate: r.cancellation
         };
         return selected;
       }),

@@ -5,6 +5,8 @@
   "baseCurrency": "Базовая валюта",
   "type": "Тип",
   "lotSize": "Размер лота",
+  "priceStep": "Стоимость шага цены",
+  "expirationDate": "Дата исполнения",
   "marginBuy": "ГО на покупку",
   "marginSell": "ГО на продажу"
 }

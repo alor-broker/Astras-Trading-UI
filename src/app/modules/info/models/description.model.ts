@@ -5,6 +5,8 @@ export interface Description {
   baseCurrency: string; // "RUB",
   securityType: string; // "stock"
   lotsize: number; // "10"
+  priceStep: number;
+  expirationDate: Date | null;
   marginbuy?: number;
   marginsell?: number;
 }

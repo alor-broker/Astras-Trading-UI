@@ -5,6 +5,8 @@
   "baseCurrency": "Base currency",
   "type": "Type",
   "lotSize": "Lot size",
+  "priceStep": "Step price",
+  "expirationDate": "Expiration date",
   "marginBuy": "Margin buy",
   "marginSell": "Margin sell"
 }
