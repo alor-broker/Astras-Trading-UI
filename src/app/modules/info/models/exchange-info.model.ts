@@ -10,7 +10,10 @@ export interface ExchangeInfo {
   currency: string;
   type: string;
   lotsize: number;
+  priceStep: number;
   marginbuy?: number;
   marginsell?: number;
   exchangeSettings?: ExchangeSettings;
+  expirationDate: Date | null;
+  cfiCode: string | null;
 }

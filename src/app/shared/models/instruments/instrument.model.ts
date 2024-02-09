@@ -8,8 +8,10 @@ export interface Instrument extends InstrumentKey {
   currency: string;
   minstep: number;
   lotsize?: number;
+  pricestep?: number;
   cfiCode?: string;
   type?: string;
   marginbuy?: number;
   marginsell?: number;
+  expirationDate?: Date;
 }
