@@ -184,8 +184,8 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
           0,
           [
             Validators.required,
-            Validators.min(this.validationOptions.tradesPanelSettings.minTradeVolumeFilter.min),
-            Validators.max(this.validationOptions.tradesPanelSettings.minTradeVolumeFilter.max)
+            Validators.min(this.validationOptions.tradesPanelSettings.tradesAggregationPeriodMs.min),
+            Validators.max(this.validationOptions.tradesPanelSettings.tradesAggregationPeriodMs.max)
           ]
         ),
       },
