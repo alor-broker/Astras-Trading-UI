@@ -17,7 +17,8 @@ describe('InfoHeaderComponent', () => {
     type: '',
     lotsize: 1,
     priceStep: 1,
-    expirationDate: null
+    expirationDate: null,
+    cfiCode: null
   };
 
   beforeAll(() => TestBed.resetTestingModule());

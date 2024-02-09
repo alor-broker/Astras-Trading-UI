@@ -8,5 +8,8 @@
   "priceStep": "Стоимость шага цены",
   "expirationDate": "Дата исполнения",
   "marginBuy": "ГО на покупку",
-  "marginSell": "ГО на продажу"
+  "marginSell": "ГО на продажу",
+  "futureType": "Тип фьючерса",
+  "deliverable":  "Поставочный",
+  "settlement": "Расчётный"
 }

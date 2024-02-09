@@ -8,5 +8,8 @@
   "priceStep": "Step price",
   "expirationDate": "Expiration date",
   "marginBuy": "Margin buy",
-  "marginSell": "Margin sell"
+  "marginSell": "Margin sell",
+  "futureType": "Future type",
+  "deliverable":  "Deliverable",
+  "settlement": "Settlement"
 }

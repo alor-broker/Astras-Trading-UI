@@ -15,4 +15,5 @@ export interface ExchangeInfo {
   marginsell?: number;
   exchangeSettings?: ExchangeSettings;
   expirationDate: Date | null;
+  cfiCode: string | null;
 }

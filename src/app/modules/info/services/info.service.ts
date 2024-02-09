@@ -133,7 +133,8 @@ export class InfoService {
             priceStep: exchangeInfo.priceStep,
             expirationDate: exchangeInfo.expirationDate,
             marginbuy: exchangeInfo.marginbuy,
-            marginsell: exchangeInfo.marginsell
+            marginsell: exchangeInfo.marginsell,
+            cfiCode: exchangeInfo.cfiCode
           };
         }
 
@@ -215,7 +216,8 @@ export class InfoService {
             priceStep: r.pricestep ?? 0,
             marginbuy: r.marginbuy,
             marginsell: r.marginsell,
-            expirationDate: r.expirationDate ?? null
+            expirationDate: r.expirationDate ?? null,
+            cfiCode: r.cfiCode ?? null
           };
           return info;
         })

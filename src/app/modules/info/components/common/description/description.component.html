@@ -7,9 +7,12 @@
       <nz-descriptions-item *ngIf="description.isin" [nzTitle]="t('infoDescription.isin')">{{description.isin}}</nz-descriptions-item>
       <nz-descriptions-item *ngIf="description.baseCurrency" [nzTitle]="t('infoDescription.baseCurrency')">{{description.baseCurrency}}</nz-descriptions-item>
       <nz-descriptions-item *ngIf="description.securityType" [nzTitle]="t('infoDescription.type')">{{description.securityType}}</nz-descriptions-item>
-      <nz-descriptions-item *ngIf="description.expirationDate" [nzTitle]="t('infoDescription.expirationDate')">
-        {{description.expirationDate | date : 'dd.MM.yyyy'}}
-      </nz-descriptions-item>
+      <ng-container *ngIf="description.securityType === 'futures'">
+        <nz-descriptions-item *ngIf="getFutureType(description.cfiCode!) as futureType" [nzTitle]="t('infoDescription.futureType')">{{t('infoDescription.' + futureType)}}</nz-descriptions-item>
+        <nz-descriptions-item *ngIf="description.expirationDate" [nzTitle]="t('infoDescription.expirationDate')">
+          {{description.expirationDate | date : 'dd.MM.yyyy'}}
+        </nz-descriptions-item>
+      </ng-container>
       <nz-descriptions-item *ngIf="description.lotsize" [nzTitle]="t('infoDescription.lotSize')">{{description.lotsize}}</nz-descriptions-item>
       <nz-descriptions-item *ngIf="description.priceStep" [nzTitle]="t('infoDescription.priceStep')">{{description.priceStep}}</nz-descriptions-item>
       <nz-descriptions-item *ngIf="description.marginbuy" [nzTitle]="t('infoDescription.marginBuy')">{{description.marginbuy}}</nz-descriptions-item>
