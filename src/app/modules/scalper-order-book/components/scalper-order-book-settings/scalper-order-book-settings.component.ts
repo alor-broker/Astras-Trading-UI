@@ -82,6 +82,16 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
         percentsStep: 0.01,
         stepsStep: 1
       }
+    },
+    tradesPanelSettings: {
+      minTradeVolumeFilter: {
+        min: 0,
+        max: inputNumberValidation.max
+      },
+      tradesAggregationPeriodMs: {
+        min: 0,
+        max: 60 * 60 * 1000
+      }
     }
   };
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
@@ -157,8 +167,30 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     disableHotkeys: this.formBuilder.nonNullable.control(true),
     enableMouseClickSilentOrders: this.formBuilder.nonNullable.control(false),
     // additional panels
-    showTradesPanel: this.formBuilder.nonNullable.control(false),
     showTradesClustersPanel: this.formBuilder.nonNullable.control(false),
+    showTradesPanel: this.formBuilder.nonNullable.control(false),
+    tradesPanelSettings: this.formBuilder.nonNullable.group(
+      {
+        minTradeVolumeFilter: this.formBuilder.nonNullable.control(
+          0,
+          [
+            Validators.required,
+            Validators.min(this.validationOptions.tradesPanelSettings.minTradeVolumeFilter.min),
+            Validators.max(this.validationOptions.tradesPanelSettings.minTradeVolumeFilter.max)
+          ]
+        ),
+        hideFilteredTrades: this.formBuilder.nonNullable.control(false),
+        tradesAggregationPeriodMs: this.formBuilder.nonNullable.control(
+          0,
+          [
+            Validators.required,
+            Validators.min(this.validationOptions.tradesPanelSettings.minTradeVolumeFilter.min),
+            Validators.max(this.validationOptions.tradesPanelSettings.minTradeVolumeFilter.max)
+          ]
+        ),
+      },
+      { validators: Validators.required }
+    ),
     // working volumes
     workingVolumes: this.formBuilder.nonNullable.array<number[]>([], Validators.minLength(1)),
     // volume highlight
@@ -334,6 +366,14 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       newSettings.bottomOrderPriceRatio = Number(formValue.bracketsSettings!.bottomOrderPriceRatio);
     }
 
+    if (formValue.showTradesPanel ?? false) {
+      newSettings.tradesPanelSettings = {
+        minTradeVolumeFilter: Number(formValue.tradesPanelSettings!.minTradeVolumeFilter),
+        hideFilteredTrades: formValue.tradesPanelSettings?.hideFilteredTrades!,
+        tradesAggregationPeriodMs: Number(formValue.tradesPanelSettings!.tradesAggregationPeriodMs)
+      };
+    }
+
     newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings, newSettings);
 
     const instrumentLinkedSettingsKey = ScalperSettingsHelper.getInstrumentKey(newSettings);
@@ -349,6 +389,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       workingVolumes: newSettings.workingVolumes!,
       tradesClusterPanelSettings: initialSettings.tradesClusterPanelSettings,
       bracketsSettings: newSettings.bracketsSettings ?? prevInstrumentLinkedSettings?.bracketsSettings ?? initialSettings.bracketsSettings,
+      tradesPanelSettings: newSettings.tradesPanelSettings ?? prevInstrumentLinkedSettings?.tradesPanelSettings ?? initialSettings.tradesPanelSettings,
     };
 
     newSettings.instrumentLinkedSettings = {
@@ -403,8 +444,17 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     this.form.controls.enableMouseClickSilentOrders.setValue(settings.enableMouseClickSilentOrders);
 
     this.form.controls.showTradesPanel.setValue(settings.showTradesPanel ?? false);
+    if(settings.tradesPanelSettings) {
+      this.form.controls.tradesPanelSettings.setValue({
+        minTradeVolumeFilter: settings.tradesPanelSettings.minTradeVolumeFilter,
+        hideFilteredTrades: settings.tradesPanelSettings.hideFilteredTrades,
+        tradesAggregationPeriodMs: settings.tradesPanelSettings.tradesAggregationPeriodMs
+      });
+    }
+
     this.form.controls.showTradesClustersPanel.setValue(settings.showTradesClustersPanel ?? false);
 
+    this.form.controls.workingVolumes.clear();
     settings.workingVolumes.forEach(volume => {
       this.form.controls.workingVolumes.push(this.createWorkingVolumeControl(volume));
     });
@@ -477,6 +527,12 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       this.form.controls.bracketsSettings.enable();
     } else {
       this.form.controls.bracketsSettings.disable();
+    }
+
+    if ((formValue?.showTradesPanel) ?? false) {
+      this.form.controls.tradesPanelSettings.enable();
+    } else {
+      this.form.controls.tradesPanelSettings.disable();
     }
   }
 

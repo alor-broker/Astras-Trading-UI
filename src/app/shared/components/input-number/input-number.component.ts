@@ -41,6 +41,9 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   @Input()
   focused = false;
 
+  @Input()
+  allowDecimal = true;
+
   @Output()
   atsBlur = new EventEmitter();
 
@@ -99,6 +102,10 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
       parsedValue = this.removeExtraSign(parsedValue);
     } else {
       parsedValue = parsedValue.replace(/-/g, '');
+    }
+
+    if(!this.allowDecimal) {
+      parsedValue = parsedValue.replace(/\./g, '');
     }
 
     let newValue: number | null = parsedValue.length > 0

@@ -78,7 +78,6 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
         enableMouseClickSilentOrders: getValueOrDefault(settings.enableMouseClickSilentOrders, false),
         enableAutoAlign: getValueOrDefault(settings.enableAutoAlign, true),
         autoAlignIntervalSec: getValueOrDefault(settings.autoAlignIntervalSec, 15),
-        showTradesPanel: getValueOrDefault(settings.showTradesPanel, true),
         showTradesClustersPanel: getValueOrDefault(settings.showTradesClustersPanel, true),
         tradesClusterPanelSettings: getValueOrDefault(
           settings.tradesClusterPanelSettings,
@@ -103,6 +102,12 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
         showLimitOrdersVolumeIndicators: getValueOrDefault(settings.showLimitOrdersVolumeIndicators, true),
         rowHeight: getValueOrDefault(settings.rowHeight, 14),
         fontSize: getValueOrDefault(settings.fontSize, 11),
+        showTradesPanel: getValueOrDefault(settings.showTradesPanel, true),
+        tradesPanelSettings: {
+          minTradeVolumeFilter: getValueOrDefault(settings.tradesPanelSettings?.minTradeVolumeFilter ?? null, 0),
+          hideFilteredTrades: getValueOrDefault(settings.tradesPanelSettings?.hideFilteredTrades ?? null, false),
+          tradesAggregationPeriodMs: getValueOrDefault(settings.tradesPanelSettings?.tradesAggregationPeriodMs ?? null, 0),
+        }
       }),
       this.dashboardContextService,
       this.widgetSettingsService,
