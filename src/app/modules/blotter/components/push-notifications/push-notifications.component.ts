@@ -159,7 +159,7 @@ export class PushNotificationsComponent extends BaseTableComponent<DisplayNotifi
       ),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(({s, t}) => {
-      const tableSettings = s.notificationsTable ?? TableSettingHelper.toTableDisplaySettings(allNotificationsColumns.filter(c => c.isDefault).map(c => c.id));
+      const tableSettings = TableSettingHelper.toTableDisplaySettings(s.notificationsTable, allNotificationsColumns.filter(c => c.isDefault).map(c => c.id));
 
       if (tableSettings) {
         this.listOfColumns = this.allColumns

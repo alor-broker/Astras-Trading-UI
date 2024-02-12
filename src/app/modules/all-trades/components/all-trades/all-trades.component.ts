@@ -31,6 +31,9 @@ import { TimezoneConverterService } from "../../../../shared/services/timezone-c
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Side } from "../../../../shared/models/enums/side.model";
+import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import { TablesHelper } from "../../../../shared/utils/tables.helper";
+import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 
 @Component({
   selector: 'ats-all-trades',
@@ -120,7 +123,8 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       displayName: '',
       width: 5,
       classFn: (data): string => `side-indicator bg-${data.side} ${data.side}`,
-      transformFn: (): string => '.'
+      transformFn: (): string => '.',
+      order: -1
     }
   ];
   private timezoneConverter?: TimezoneConverter;
@@ -222,6 +226,29 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     });
   }
 
+  changeColumnOrder(event: CdkDragDrop<any>): void {
+    this.settings$.pipe(
+      withLatestFrom(this.tableConfig$),
+      take(1)
+    ).subscribe(([settings, tableConfig]) => {
+      const fixedColumnsIds = this.fixedColumns.map(c => c.id);
+      this.settingsService.updateSettings<AllTradesSettings>(
+        settings.guid,
+        {
+          allTradesTable: TablesHelper.changeColumnOrder(
+            {
+              ...event,
+              previousIndex: event.previousIndex - this.fixedColumns.length,
+              currentIndex: event.currentIndex - this.fixedColumns.length
+            },
+            TableSettingHelper.toTableDisplaySettings(settings.allTradesTable, settings.allTradesColumns)!,
+            tableConfig.columns.filter(c => !fixedColumnsIds.includes(c.id))
+          )
+        }
+      );
+    });
+  }
+
   private initTableConfig(): void {
     this.tableConfig$ = this.settings$.pipe(
       mapWith(
@@ -230,30 +257,34 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       ),
       map(({ settings, translate }) => {
           const highlightRows = settings.highlightRowsBySide ?? false;
+          const tableSettings = TableSettingHelper.toTableDisplaySettings(settings.allTradesTable, settings.allTradesColumns);
 
           return {
             columns: [
               ...this.fixedColumns,
               ...this.allColumns
-                .filter(col => settings.allTradesColumns.includes(col.id))
-                .map(col => ({
-                    ...col,
+                .map(column => ({column, settings: tableSettings?.columns.find(c => c.columnId === column.id)}))
+                .filter(col => col.settings != null)
+                .map((col, index) => ({
+                    ...col.column,
                     displayName: translate(
-                      ['columns', col.id, 'displayName'],
-                      { fallback: col.displayName }
+                      ['columns', col.column.id, 'displayName'],
+                      {fallback: col.column.displayName}
                     ),
-                    filterData: col.filterData && {
-                      ...col.filterData,
-                      filters: col.filterData.filters?.map(f => ({
+                    filterData: col.column.filterData && {
+                      ...col.column.filterData,
+                      filters: col.column.filterData.filters?.map(f => ({
                         text: translate(
-                          ['columns', col.id, 'filters', f.value],
-                          { fallback: f.text }
+                          ['columns', col.column.id, 'filters', f.value],
+                          {fallback: f.text}
                         ),
                         value: f.value as string
                       }))
-                    }
+                    },
+                    order: col.settings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
                   })
                 )
+                .sort((a, b) => a.order - b.order)
             ],
             rowConfig: {
               rowClass: (data): string | null => {

@@ -1,10 +1,15 @@
 import { WidgetSettings } from '../../../shared/models/widget-settings.model';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
-import { BaseColumnId } from "../../../shared/models/settings/table-settings.model";
+import { BaseColumnId, TableDisplaySettings } from "../../../shared/models/settings/table-settings.model";
 
 export interface AllTradesSettings extends WidgetSettings, InstrumentKey {
-  allTradesColumns: string[];
   highlightRowsBySide?: boolean;
+  allTradesTable: TableDisplaySettings;
+
+  /**
+   * @deprecated use allTradesTable
+   */
+  allTradesColumns: string[];
 }
 
 export const allTradesWidgetColumns: BaseColumnId[] = [

@@ -5,12 +5,12 @@ import {
   AllTradesSettings,
   allTradesWidgetColumns
 } from '../../models/all-trades-settings.model';
-import { BaseColumnId } from "../../../../shared/models/settings/table-settings.model";
+import { BaseColumnId, TableDisplaySettings } from "../../../../shared/models/settings/table-settings.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { Observable } from "rxjs";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { TechChartSettings } from "../../../tech-chart/models/tech-chart-settings.model";
+import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 
 @Component({
   selector: 'ats-all-trades-settings',
@@ -45,15 +45,41 @@ export class AllTradesSettingsComponent extends WidgetSettingsBaseComponent<AllT
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
       this.form = new UntypedFormGroup({
-        allTradesColumns: new UntypedFormControl(settings.allTradesColumns, Validators.required),
+        allTradesColumns: new UntypedFormControl(
+          TableSettingHelper.toTableDisplaySettings(settings.allTradesTable, settings.allTradesColumns ?? [])?.columns.map(c => c.columnId),
+          Validators.required
+        ),
         highlightRowsBySide: new UntypedFormControl(settings.highlightRowsBySide ?? false, Validators.required)
       });
     });
   }
 
-  protected getUpdatedSettings(): Partial<TechChartSettings> {
-    return {
+  protected getUpdatedSettings(initialSettings: AllTradesSettings): Partial<AllTradesSettings> {
+    const newSettings = {
       ...this.form!.value,
-    } as Partial<TechChartSettings>;
+    } as Partial<AllTradesSettings>;
+
+    newSettings.allTradesTable = this.updateTableSettings(newSettings.allTradesColumns ?? [], initialSettings.allTradesTable);
+    delete newSettings.allTradesColumns;
+
+    return newSettings;
+  }
+
+  private updateTableSettings(columnIds: string[], currentSettings?: TableDisplaySettings): TableDisplaySettings {
+    const newSettings = TableSettingHelper.toTableDisplaySettings(null, columnIds)!;
+
+    if (currentSettings) {
+      newSettings.columns.forEach((column, index) => {
+        const matchedColumn = currentSettings!.columns.find(x => x.columnId === column.columnId);
+        if (matchedColumn) {
+          newSettings.columns[index] = {
+            ...column,
+            ...matchedColumn
+          };
+        }
+      });
+    }
+
+    return newSettings!;
   }
 }

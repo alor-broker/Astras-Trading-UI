@@ -57,6 +57,9 @@ import {
   ActionsContext
 } from "../../../../shared/services/actions-context";
 import { TimeframeValue } from "../../../light-chart/models/light-chart.models";
+import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import { TablesHelper } from "../../../../shared/utils/tables.helper";
+import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 
 @Component({
   selector: 'ats-watchlist-table',
@@ -88,7 +91,6 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     { id: 'volume', displayName: "Объём", tooltip: 'Объём' },
     { id: 'openPrice', displayName: "Откр.", tooltip: 'Цена на начало дня' },
     { id: 'closePrice', displayName: "Закр.", tooltip: 'Цена на конец предыдущего дня' },
-    { id: 'remove', displayName: "Удл.", tooltip: 'Убрать из наблюдения', width: 40 },
   ];
   displayedColumns: BaseColumnSettings<WatchedInstrument>[] = [];
   badgeColor = '';
@@ -151,7 +153,17 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     this.currentWatchlist$ = this.settings$.pipe(
       filter(s => s.activeListId != null && s.activeListId.length > 0),
       tap(settings => {
-        this.displayedColumns = this.allColumns.filter(c => settings.instrumentColumns.includes(c.id));
+        const tableSettings = TableSettingHelper.toTableDisplaySettings(settings.instrumentTable, settings.instrumentColumns);
+
+        this.displayedColumns = this.allColumns
+          .map(column => ({column, settings: tableSettings?.columns.find(c => c.columnId === column.id)}))
+          .filter(c => c.settings != null)
+          .map((col, index) => ({
+            ...col.column,
+            order: col.settings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+          }))
+          .sort((a, b) => a.order - b.order)
+        ;
         this.badgeColor = settings.badgeColor!;
       }),
       mapWith(
@@ -312,6 +324,23 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     this.watchlistCollectionService.moveItem(this.selectedItem.recordId, fromList.id, toList.id);
+  }
+
+  changeColumnOrder(event: CdkDragDrop<any>): void {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      this.settingsService.updateSettings<InstrumentSelectSettings>(
+        settings.guid,
+        {
+          instrumentTable: TablesHelper.changeColumnOrder(
+            event,
+            TableSettingHelper.toTableDisplaySettings(settings.instrumentTable, settings.instrumentColumns)!,
+            this.displayedColumns
+          )
+        }
+      );
+    });
   }
 
   private getSortFn(propName: string): (a: InstrumentKey, b: InstrumentKey) => number {

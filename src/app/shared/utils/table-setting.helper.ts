@@ -6,10 +6,15 @@ import {
 export class TableSettingHelper {
   /**
    * Converts old table settings to new format
+   * @param tableSettings new table settings if exists
    * @param columnIds old format settings
    * @returns new table settings format
    */
-  static toTableDisplaySettings(columnIds?: string[]): TableDisplaySettings | undefined {
+  static toTableDisplaySettings(tableSettings?: TableDisplaySettings | null, columnIds?: string[]): TableDisplaySettings | undefined {
+    if (tableSettings != null) {
+      return tableSettings;
+    }
+
     if (!columnIds) {
       return undefined;
     }

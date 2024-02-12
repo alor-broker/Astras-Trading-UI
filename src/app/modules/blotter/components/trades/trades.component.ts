@@ -158,7 +158,7 @@ export class TradesComponent extends BaseTableComponent<DisplayTrade, TradeFilte
       ),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(({ s, t }) => {
-      const tableSettings = s.tradesTable ?? TableSettingHelper.toTableDisplaySettings(s.tradesColumns);
+      const tableSettings = TableSettingHelper.toTableDisplaySettings(s.tradesTable, s.tradesColumns);
 
       if (tableSettings) {
         this.listOfColumns = this.allColumns

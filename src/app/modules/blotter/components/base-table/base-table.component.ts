@@ -16,7 +16,6 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 import { BlotterSettings, ColumnsNames, TableNames } from "../../models/blotter-settings.model";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import { BlotterTablesHelper } from "../../utils/blotter-tables.helper";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { ExportHelper } from "../../utils/export-helper";
 import { NzTableComponent } from "ng-zorro-antd/table";
@@ -24,6 +23,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { BlotterService } from "../../services/blotter.service";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import { TablesHelper } from "../../../../shared/utils/tables.helper";
 
 @Component({
   template: ''
@@ -166,7 +166,7 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends obj
     this.settings$.pipe(
       take(1)
     ).subscribe(settings => {
-      const tableSettings = settings[this.settingsTableName] ?? TableSettingHelper.toTableDisplaySettings(settings[this.settingsColumnsName]);
+      const tableSettings = TableSettingHelper.toTableDisplaySettings(settings[this.settingsTableName], settings[this.settingsColumnsName]);
       if (tableSettings) {
         this.settingsService.updateSettings<BlotterSettings>(
           settings.guid,
@@ -196,9 +196,9 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends obj
       this.settingsService.updateSettings<BlotterSettings>(
         settings.guid,
         {
-          [this.settingsTableName]: BlotterTablesHelper.changeColumnOrder(
+          [this.settingsTableName]: TablesHelper.changeColumnOrder(
             event,
-            settings[this.settingsTableName] ?? TableSettingHelper.toTableDisplaySettings(settings[this.settingsColumnsName])!,
+            TableSettingHelper.toTableDisplaySettings(settings[this.settingsTableName], settings[this.settingsColumnsName])!,
             this.listOfColumns
           )
         }

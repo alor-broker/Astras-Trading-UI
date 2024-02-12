@@ -1,7 +1,12 @@
 import { WidgetSettings } from '../../../shared/models/widget-settings.model';
-import { BaseColumnId } from "../../../shared/models/settings/table-settings.model";
+import { BaseColumnId, TableDisplaySettings } from "../../../shared/models/settings/table-settings.model";
 
 export interface AllInstrumentsSettings extends WidgetSettings {
+  allInstrumentsTable: TableDisplaySettings;
+
+  /**
+   * @deprecated use allInstrumentsTable
+   */
   allInstrumentsColumns: string[];
 }
 

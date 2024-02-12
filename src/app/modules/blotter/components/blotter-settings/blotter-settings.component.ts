@@ -96,12 +96,12 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
       this.form = new UntypedFormGroup({
         portfolio: new UntypedFormControl(this.toPortfolioKey(settings), Validators.required),
         exchange: new UntypedFormControl({value: settings.exchange, disabled: true}, Validators.required),
-        ordersColumns: new UntypedFormControl(this.toTableSettings(settings.ordersTable, settings.ordersColumns)?.columns.map(c => c.columnId)),
-        stopOrdersColumns: new UntypedFormControl(this.toTableSettings(settings.stopOrdersTable, settings.stopOrdersColumns)?.columns.map(c => c.columnId)),
-        tradesColumns: new UntypedFormControl(this.toTableSettings(settings.tradesTable, settings.tradesColumns)?.columns.map(c => c.columnId)),
-        positionsColumns: new UntypedFormControl(this.toTableSettings(settings.positionsTable, settings.positionsColumns)?.columns.map(c => c.columnId)),
+        ordersColumns: new UntypedFormControl(TableSettingHelper.toTableDisplaySettings(settings.ordersTable, settings.ordersColumns)?.columns.map(c => c.columnId)),
+        stopOrdersColumns: new UntypedFormControl(TableSettingHelper.toTableDisplaySettings(settings.stopOrdersTable, settings.stopOrdersColumns)?.columns.map(c => c.columnId)),
+        tradesColumns: new UntypedFormControl(TableSettingHelper.toTableDisplaySettings(settings.tradesTable, settings.tradesColumns)?.columns.map(c => c.columnId)),
+        positionsColumns: new UntypedFormControl(TableSettingHelper.toTableDisplaySettings(settings.positionsTable, settings.positionsColumns)?.columns.map(c => c.columnId)),
         notificationsColumns: new UntypedFormControl(
-          this.toTableSettings(
+          TableSettingHelper.toTableDisplaySettings(
             settings.notificationsTable,
             allNotificationsColumns.filter(c => c.isDefault).map(x => x.id)
           )?.columns.map(c => c.columnId)
@@ -109,8 +109,8 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
         isSoldPositionsHidden: new UntypedFormControl(settings.isSoldPositionsHidden),
         cancelOrdersWithoutConfirmation: new UntypedFormControl(settings.cancelOrdersWithoutConfirmation ?? false),
         showRepoTrades: new UntypedFormControl(settings.showRepoTrades ?? false),
-        repoTradesColumns: new UntypedFormControl(this.toTableSettings(settings.repoTradesTable)?.columns.map(c => c.columnId)),
-        tradesHistoryColumns: new UntypedFormControl(this.toTableSettings(
+        repoTradesColumns: new UntypedFormControl(TableSettingHelper.toTableDisplaySettings(settings.repoTradesTable)?.columns.map(c => c.columnId)),
+        tradesHistoryColumns: new UntypedFormControl(TableSettingHelper.toTableDisplaySettings(
           settings.tradesHistoryTable,
           this.allTradesHistoryColumns.filter(c => c.isDefault).map(c => c.id)
         )?.columns.map(c => c.columnId)),
@@ -167,20 +167,8 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
       && settings1.exchange === settings2.exchange;
   }
 
-  private toTableSettings(tableSettings?: TableDisplaySettings | null, columnIds?: string[]): TableDisplaySettings | undefined {
-    if (tableSettings) {
-      return tableSettings;
-    }
-
-    if (columnIds) {
-      return TableSettingHelper.toTableDisplaySettings(columnIds);
-    }
-
-    return undefined;
-  }
-
   private updateTableSettings(columnIds: string[], currentSettings?: TableDisplaySettings): TableDisplaySettings {
-    const newSettings = this.toTableSettings(null, columnIds)!;
+    const newSettings = TableSettingHelper.toTableDisplaySettings(null, columnIds)!;
 
     if (currentSettings) {
       newSettings.columns.forEach((column, index) => {
