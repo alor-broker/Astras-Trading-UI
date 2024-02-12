@@ -35,6 +35,12 @@ export interface BracketsSettings {
   useBracketsWhenClosingPosition?: boolean;
 }
 
+export interface TradesPanelSettings {
+  minTradeVolumeFilter: number;
+  hideFilteredTrades: boolean;
+  tradesAggregationPeriodMs: number;
+}
+
 export enum VolumeHighlightMode {
   Off = 'off',
   BiggestVolume = 'biggestVolume',
@@ -56,6 +62,7 @@ export interface InstrumentLinkedSettings {
   workingVolumes: number[];
   tradesClusterPanelSettings?: TradesClusterPanelSettings;
   bracketsSettings?: BracketsSettings;
+  tradesPanelSettings?: TradesPanelSettings;
 }
 
 export interface ScalperOrderBookWidgetSettings extends WidgetSettings, InstrumentKey, InstrumentLinkedSettings {

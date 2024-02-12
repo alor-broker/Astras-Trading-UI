@@ -12,7 +12,13 @@
   "depthLabel": "Глубина стакана",
   "showZeroVolumeItemsLabel": "Показывать цены заявок с нулевым объемом",
   "showSpreadItemsLabel": "Показывать цены между лучшими ценами покупки/продажи",
+
   "showTradesPanelLabel": "Показывать панель сделок",
+  "tradesPanelSettingsLabel": "Настройки панели сделок",
+  "minTradeVolumeFilterLabel": "Показывать сделки с объемом от",
+  "hideFilteredTradesLabel": "Скрывать отфильтрованные сделки",
+  "tradesAggregationPeriodMsLabel": "Складывать сделки за период, мсек.",
+
   "showTradesClustersPanelLabel": "Показывать панель кластеров",
   "disableHotkeysLabel": "Выключить горячие клавиши",
   "enableMouseClickSilentOrdersLabel": "Покупать по кликам без уведомлений",

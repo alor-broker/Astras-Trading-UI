@@ -22,6 +22,7 @@ export interface ThemeColors {
   chartPrimaryTextColor: string;
   chartShadow: string;
   textColor: string;
+  textMaxContrastColor: string;
 }
 
 export interface ThemeSettings {

@@ -80,7 +80,8 @@ export class ThemeService {
               chartGridColor: colorsMap['chart-grid-color'],
               chartLabelsColor: colorsMap['chart-labels-color'],
               chartPrimaryTextColor: colorsMap['chart-primary-text-color'],
-              chartShadow: colorsMap['chart-shadow']
+              chartShadow: colorsMap['chart-shadow'],
+              textMaxContrastColor: colorsMap['text-max-contrast-color'],
             };
 
             return {

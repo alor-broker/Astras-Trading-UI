@@ -20,5 +20,6 @@
  "chart-grid-color": "#D8E3F5",
  "chart-labels-color": "#647188",
  "chart-primary-text-color": "#000000",
- "chart-shadow": "#F1F4F9"
+ "chart-shadow": "#F1F4F9",
+ "text-max-contrast-color": "black"
 }

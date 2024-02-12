@@ -39,7 +39,7 @@
             <nz-form-item>
               <nz-form-label nzFor="depth" nzRequired>{{t('scalperOrderBookSettings.depthLabel')}}</nz-form-label>
               <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.intervalError', { min: validationOptions.depth.min, max: validationOptions.depth.max })">
-                <ats-input-number formControlName="depth" [placeholder]="t('scalperOrderBookSettings.intervalPlaceholder', { min: validationOptions.depth.min, max: validationOptions.depth.max })"></ats-input-number>
+                <ats-input-number formControlName="depth" [allowDecimal]="false" [placeholder]="t('scalperOrderBookSettings.intervalPlaceholder', { min: validationOptions.depth.min, max: validationOptions.depth.max })"></ats-input-number>
               </nz-form-control>
             </nz-form-item>
             <nz-form-item class="one-row">
@@ -151,7 +151,7 @@
                       max: validationOptions.autoAlignIntervalSec.max
                       })"
                     >
-                      <ats-input-number formControlName="autoAlignIntervalSec"></ats-input-number>
+                      <ats-input-number formControlName="autoAlignIntervalSec" [allowDecimal]="false"></ats-input-number>
                     </nz-form-control>
                   </nz-form-item>
                 </nz-collapse-panel>
@@ -217,6 +217,53 @@
                 <nz-switch formControlName='showTradesPanel'></nz-switch>
               </nz-form-control>
             </nz-form-item>
+            <nz-form-item *ngIf="form.controls.showTradesPanel.value">
+              <nz-collapse [nzBordered]="false" nzGhost>
+                <nz-collapse-panel
+                  [nzActive]="true"
+                  [nzHeader]="t('scalperOrderBookSettings.tradesPanelSettingsLabel')"
+                  [formGroup]="form.controls.tradesPanelSettings"
+                >
+                  <nz-form-item>
+                    <nz-form-label nzFor="minTradeVolumeFilter" nzRequired>
+                      {{t('scalperOrderBookSettings.minTradeVolumeFilterLabel')}}
+                    </nz-form-label>
+                    <nz-form-control
+                      [nzErrorTip]="t(
+                      'scalperOrderBookSettings.intervalError',
+                      {
+                      min: validationOptions.tradesPanelSettings.minTradeVolumeFilter.min,
+                      max: validationOptions.tradesPanelSettings.minTradeVolumeFilter.max
+                      })"
+                    >
+                      <ats-input-number formControlName="minTradeVolumeFilter" [allowDecimal]="false"></ats-input-number>
+                    </nz-form-control>
+                  </nz-form-item>
+                  <nz-form-item class="one-row">
+                    <nz-form-label nzFor="hideFilteredTrades">{{t('scalperOrderBookSettings.hideFilteredTradesLabel')}}</nz-form-label>
+                    <nz-form-control>
+                      <nz-switch formControlName='hideFilteredTrades'></nz-switch>
+                    </nz-form-control>
+                  </nz-form-item>
+                  <nz-form-item>
+                    <nz-form-label nzFor="tradesAggregationPeriodMs" nzRequired>
+                      {{t('scalperOrderBookSettings.tradesAggregationPeriodMsLabel')}}
+                    </nz-form-label>
+                    <nz-form-control
+                      [nzErrorTip]="t(
+                      'scalperOrderBookSettings.intervalError',
+                      {
+                      min: validationOptions.tradesPanelSettings.tradesAggregationPeriodMs.min,
+                      max: validationOptions.tradesPanelSettings.tradesAggregationPeriodMs.max
+                      })"
+                    >
+                      <ats-input-number formControlName="tradesAggregationPeriodMs" [allowDecimal]="false"></ats-input-number>
+                    </nz-form-control>
+                  </nz-form-item>
+                </nz-collapse-panel>
+              </nz-collapse>
+            </nz-form-item>
+
             <nz-form-item class="one-row">
               <nz-form-label nzFor="showTradesClustersPanel">{{t('scalperOrderBookSettings.showTradesClustersPanelLabel')}}</nz-form-label>
               <nz-form-control>
@@ -230,7 +277,7 @@
               <div *ngFor="let ctrl of form.controls.workingVolumes.controls; let i = index" class="working-volume-option">
                 <nz-form-label nzFor="workingVolume1" nzRequired>{{t('scalperOrderBookSettings.workingVolumeLabel')}} {{i + 1}}</nz-form-label>
                 <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.intervalError', { min: validationOptions.workingVolume.min, max: validationOptions.workingVolume.max })">
-                  <ats-input-number [formControl]="ctrl" placeholder="1"></ats-input-number>
+                  <ats-input-number [formControl]="ctrl" placeholder="1" [allowDecimal]="false"></ats-input-number>
                 </nz-form-control>
                 <button
                   (click)="removeWorkingVolume($event, i)"
@@ -284,7 +331,7 @@
                  max: validationOptions.volumeHighlightOption.volumeHighlightFullness.max
                  })"
                     >
-                      <ats-input-number formControlName="volumeHighlightFullness"></ats-input-number>
+                      <ats-input-number formControlName="volumeHighlightFullness" [allowDecimal]="false"></ats-input-number>
                     </nz-form-control>
                   </nz-form-item>
                   <nz-form-item>
@@ -299,7 +346,7 @@
                     })"
                         >
                           <nz-form-label nzFor="boundary" nzRequired>{{t('scalperOrderBookSettings.volumeLabel')}}</nz-form-label>
-                          <ats-input-number formControlName="boundary"></ats-input-number>
+                          <ats-input-number formControlName="boundary" [allowDecimal]="false"></ats-input-number>
                         </nz-form-control>
                         <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.colorError')">
                           <nz-color-picker
