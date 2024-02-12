@@ -97,7 +97,7 @@
               >
                 <a
                   class="help-link"
-                  [href]="helpUrl"
+                  [href]="(helpUrl$ | async) ?? ''"
                   target="_blank"
                 >
                   <i [nzTheme]="'outline'" nz-icon nzType="question-circle"></i>

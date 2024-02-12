@@ -5,6 +5,7 @@ import { ModalService } from "../../../../shared/services/modal.service";
 import { BehaviorSubject } from "rxjs";
 import { getTranslocoModule, ngZorroMockComponents } from "../../../../shared/utils/testing";
 import { EnvironmentService } from "../../../../shared/services/environment.service";
+import { HelpService } from "../../../../shared/services/help.service";
 
 describe('EmptyPortfoliosWarningModalWidgetComponent', () => {
   let component: EmptyPortfoliosWarningModalWidgetComponent;
@@ -32,6 +33,12 @@ describe('EmptyPortfoliosWarningModalWidgetComponent', () => {
               support: '',
               help: ''
             }
+          }
+        },
+        {
+          provide: HelpService,
+          useValue: {
+            getHelpLink: jasmine.createSpy('getHelpLink').and.returnValue('')
           }
         }
       ]
