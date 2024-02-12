@@ -275,6 +275,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
 
       return {
         ...cleanedFilters,
+        limit: this.loadingChunkSize,
         offset: 0
       };
     });
@@ -356,11 +357,11 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     this.filters$.pipe(
       tap(() => this.isLoading$.next(true)),
       mapWith(
-        f => this.service.getAllInstruments(f),
+        f => this.service.getAllInstruments(f).pipe(filter(i => i != null)),
         (filters, res) => ({ filters, res })
       ),
       withLatestFrom(this.instrumentsList$),
-      map(([s, currentList]) => s.filters.offset! > 0 ? [...currentList, ...s.res] : s.res),
+      map(([s, currentList]) => s.filters.offset! > 0 ? [...currentList, ...s.res!] : s.res!),
       tap(() => this.isLoading$.next(false)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(instruments => {
@@ -398,9 +399,13 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
           offset: 0,
           limit: filters.limit! + filters.offset!
         })),
-        switchMap(f => this.service.getAllInstruments(f))
+        switchMap(f => this.service.getAllInstruments(f).pipe(filter(i => i != null)))
       ).subscribe(instruments => {
-        this.instrumentsList$.next(instruments);
+        if (instruments!.length === 0) {
+          return;
+        }
+
+        this.instrumentsList$.next(instruments!);
       });
   }
 

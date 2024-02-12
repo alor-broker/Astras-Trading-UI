@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, filter, Observable, Subject, switchMap, tap } from 'rxjs';
-import { Description } from '../../../models/description.model';
+import { Description, FutureType } from '../../../models/description.model';
 import { InfoService } from '../../../services/info.service';
 import { distinct, map } from 'rxjs/operators';
 
@@ -16,6 +16,7 @@ export class DescriptionComponent implements OnInit, OnDestroy {
   description$?: Observable<Description | null>;
   isLoading$ = new BehaviorSubject<boolean>(true);
   private readonly isActivated$ = new Subject<boolean>();
+  private readonly cfiFutureTypeIndex = 4;
 
   constructor(private readonly service: InfoService) {
   }
@@ -43,5 +44,15 @@ export class DescriptionComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.isLoading$.complete();
     this.isActivated$.complete();
+  }
+
+  getFutureType(symbolCfi: string): FutureType {
+    const futureTypeCode = symbolCfi[this.cfiFutureTypeIndex];
+
+    if (futureTypeCode === 'P') {
+        return FutureType.Deliverable;
+    }
+
+    return FutureType.Settlement;
   }
 }
