@@ -135,7 +135,7 @@ export class NavbarComponent implements OnInit {
     this.initWidgetsGallery();
 
     // all-instruments because it`s first in docs list
-    this.helpLink$ = this.helpService.getHelpLink('all-instruments');
+    this.helpLink$ = this.helpService.getHelpLink('main');
   }
 
   isFindedPortfolio(portfolio: PortfolioExtended): boolean {

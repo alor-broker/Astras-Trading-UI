@@ -26,7 +26,7 @@ export class EmptyPortfoliosWarningModalWidgetComponent implements OnInit {
     this.isVisible$ = this.modalService.shouldShowEmptyPortfoliosWarningModal$;
 
     // all-instruments because it`s first in docs list
-    this.helpLink$ = this.helpService.getHelpLink('all-instruments');
+    this.helpLink$ = this.helpService.getHelpLink('main');
   }
 
   handleClose(): void {
