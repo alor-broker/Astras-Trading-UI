@@ -247,7 +247,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       ),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(({ s, tStopOrders, tCommon }) => {
-      const tableSettings = s.stopOrdersTable ?? TableSettingHelper.toTableDisplaySettings(s.stopOrdersColumns);
+      const tableSettings = TableSettingHelper.toTableDisplaySettings(s.stopOrdersTable, s.stopOrdersColumns);
 
       if (tableSettings) {
         this.listOfColumns = this.allColumns

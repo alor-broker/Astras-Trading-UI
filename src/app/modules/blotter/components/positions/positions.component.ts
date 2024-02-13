@@ -191,7 +191,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       ),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(({ s, t }) => {
-        const tableSettings = s.positionsTable ?? TableSettingHelper.toTableDisplaySettings(s.positionsColumns);
+        const tableSettings = TableSettingHelper.toTableDisplaySettings(s.positionsTable, s.positionsColumns);
 
         if (tableSettings) {
           this.listOfColumns = this.allColumns
