@@ -32,7 +32,6 @@ import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Side } from "../../../../shared/models/enums/side.model";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import { TablesHelper } from "../../../../shared/utils/tables.helper";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 
 @Component({
@@ -235,7 +234,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       this.settingsService.updateSettings<AllTradesSettings>(
         settings.guid,
         {
-          allTradesTable: TablesHelper.changeColumnOrder(
+          allTradesTable: TableSettingHelper.changeColumnOrder(
             {
               ...event,
               previousIndex: event.previousIndex - this.fixedColumns.length,

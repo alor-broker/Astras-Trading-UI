@@ -47,7 +47,6 @@ import {
 } from "../../../instruments/models/watchlist.model";
 import { ACTIONS_CONTEXT, ActionsContext } from 'src/app/shared/services/actions-context';
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import { TablesHelper } from "../../../../shared/utils/tables.helper";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 
 @Component({
@@ -361,7 +360,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       this.settingsService.updateSettings<AllInstrumentsSettings>(
         settings.guid,
         {
-          allInstrumentsTable: TablesHelper.changeColumnOrder(
+          allInstrumentsTable: TableSettingHelper.changeColumnOrder(
             event,
             TableSettingHelper.toTableDisplaySettings(settings.allInstrumentsTable, settings.allInstrumentsColumns)!,
             tableConfig.columns

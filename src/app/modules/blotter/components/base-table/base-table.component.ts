@@ -23,7 +23,6 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { BlotterService } from "../../services/blotter.service";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { TablesHelper } from "../../../../shared/utils/tables.helper";
 
 @Component({
   template: ''
@@ -196,7 +195,7 @@ export abstract class BaseTableComponent<T extends { id: string }, F extends obj
       this.settingsService.updateSettings<BlotterSettings>(
         settings.guid,
         {
-          [this.settingsTableName]: TablesHelper.changeColumnOrder(
+          [this.settingsTableName]: TableSettingHelper.changeColumnOrder(
             event,
             TableSettingHelper.toTableDisplaySettings(settings[this.settingsTableName], settings[this.settingsColumnsName])!,
             this.listOfColumns

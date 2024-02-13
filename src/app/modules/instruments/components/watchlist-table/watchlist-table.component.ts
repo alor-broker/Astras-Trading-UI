@@ -58,7 +58,6 @@ import {
 } from "../../../../shared/services/actions-context";
 import { TimeframeValue } from "../../../light-chart/models/light-chart.models";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import { TablesHelper } from "../../../../shared/utils/tables.helper";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 
 @Component({
@@ -333,7 +332,7 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
       this.settingsService.updateSettings<InstrumentSelectSettings>(
         settings.guid,
         {
-          instrumentTable: TablesHelper.changeColumnOrder(
+          instrumentTable: TableSettingHelper.changeColumnOrder(
             event,
             TableSettingHelper.toTableDisplaySettings(settings.instrumentTable, settings.instrumentColumns)!,
             this.displayedColumns

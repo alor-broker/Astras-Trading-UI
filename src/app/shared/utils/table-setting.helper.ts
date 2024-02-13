@@ -1,7 +1,9 @@
 import {
+  BaseColumnSettings,
   ColumnDisplaySettings,
   TableDisplaySettings
 } from '../models/settings/table-settings.model';
+import { CdkDragDrop } from "@angular/cdk/drag-drop";
 
 export class TableSettingHelper {
   /**
@@ -74,5 +76,36 @@ export class TableSettingHelper {
    */
   static isTableSettingsEqual(settings1?: TableDisplaySettings | null, settings2?: TableDisplaySettings | null): boolean {
     return JSON.stringify(settings1) === JSON.stringify(settings2);
+  }
+
+  /**
+   * Change table columns order
+   * @param event drag-n-drop event
+   * @param targetSettings table settings
+   * @param displayColumns displayed columns list
+   * @returns updated settings with new columns order
+   */
+  static changeColumnOrder(
+    event: CdkDragDrop<any>,
+    targetSettings: TableDisplaySettings,
+    displayColumns: BaseColumnSettings<any>[]): TableDisplaySettings {
+    let updatedSettings = targetSettings;
+
+    const currentColumn = displayColumns[event.previousIndex];
+    displayColumns.splice(event.previousIndex, 1);
+    displayColumns.splice(event.currentIndex, 0, currentColumn);
+    displayColumns.forEach((column, index) => {
+      const columnSettings = targetSettings.columns.find(c => c.columnId === column.id)!;
+
+      updatedSettings = TableSettingHelper.updateColumn(
+        columnSettings.columnId,
+        updatedSettings,
+        {
+          columnOrder: index
+        }
+      );
+    });
+
+    return updatedSettings;
   }
 }
