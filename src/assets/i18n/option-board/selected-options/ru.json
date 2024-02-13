@@ -19,7 +19,7 @@
     },
     "optionSide": {
       "name": "Сторона",
-      "tooltip": "Сторона оциона"
+      "tooltip": "Сторона опциона"
     },
     "optionType": {
       "name": "Тип",
