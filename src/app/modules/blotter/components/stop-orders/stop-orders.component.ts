@@ -294,7 +294,7 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       map(([orders, f, converter, groups]) => orders
         .map((o: StopOrder) => ({
           ...o,
-          residue: `${o.filled ?? 0}/${o.qty}`,
+          residue: `${o.filledQtyBatch ?? 0}/${o.qty}`,
           transTime: converter.toTerminalDate(o.transTime),
           endTime: !!o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime,
           groupId: groups.find(g => !!g.orders.find(go => go.orderId === o.id))?.id
