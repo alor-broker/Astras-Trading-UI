@@ -32,16 +32,12 @@ export interface Order {
   qty: number; //1,
   filledQtyUnits: number; // 0,
   filledQtyBatch?: number; // 0,
+  filled?: number; // 0
   price: number; // 270,
   existing: boolean; // true
   volume: number | null;
   timeInForce?: TimeInForce;
   iceberg?: IcebergParameters | null;
-
-  /**
-   * @deprecated use filledQtyBatch
-   */
-  filled?: number;
 }
 
 export interface StopOrder extends Order {
