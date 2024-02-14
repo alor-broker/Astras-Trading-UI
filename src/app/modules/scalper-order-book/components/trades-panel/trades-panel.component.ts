@@ -589,14 +589,14 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
       for (let i = 0; i < priceItems.length; i++) {
         const priceRow = priceItems[i];
-        if(priceRow.isMinorLinePrice === true || priceRow.isMajorLinePrice === true) {
+        if(priceRow.isMinorLinePrice || priceRow.isMajorLinePrice) {
           context.beginPath();
           // plus 0.5 to fix line width. See https://stackoverflow.com/a/13879402
           const y = Math.ceil(yScale(i) + yRowOffset) + 0.5;
           context.moveTo(xScale(0), y) ;
           context.lineTo(xScale(xScale.domain()[1]), y);
           context.strokeStyle = themeColors.tableGridColor;
-          context.lineWidth = priceRow.isMajorLinePrice === true  ? 2 : 1;
+          context.lineWidth = priceRow.isMajorLinePrice  ? 2 : 1;
           context.stroke();
         }
 

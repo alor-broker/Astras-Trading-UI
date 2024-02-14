@@ -74,8 +74,8 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
           const displayRow = {
             volume: null,
             isMaxVolume: false,
-            isMajorLinePrice: r.isMajorLinePrice ?? false,
-            isMinorLinePrice: r.isMinorLinePrice ?? false
+            isMajorLinePrice: r.isMajorLinePrice,
+            isMinorLinePrice: r.isMinorLinePrice
           };
 
           if (!currentCluster) {
