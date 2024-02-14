@@ -10,6 +10,7 @@ import {CommonParameters, CommonParametersService} from "../../services/common-p
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import {OrderDialogParams, OrderType} from "../../../../shared/models/orders/orders-dialog.model";
 import { EnvironmentService } from "../../../../shared/services/environment.service";
+import { HelpService } from "../../../../shared/services/help.service";
 
 @Component({
   selector: 'ats-orders-dialog-widget',
@@ -18,7 +19,7 @@ import { EnvironmentService } from "../../../../shared/services/environment.serv
   providers: [CommonParametersService]
 })
 export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
-  helpUrl = this.environmentService.externalLinks.help + '/new-order';
+  helpUrl$!: Observable<string | null>;
   dialogParams$!: Observable<OrderDialogParams | null>;
 
   currentPortfolio$!: Observable<PortfolioKey>;
@@ -42,6 +43,7 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
     private readonly currentDashboardService: DashboardContextService,
     private readonly instrumentService: InstrumentsService,
     private readonly commonParametersService: CommonParametersService,
+    private readonly helpService: HelpService
   ) {
   }
 
@@ -62,6 +64,8 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
       filter((i): i is Instrument => !!i),
       shareReplay(1)
     );
+
+    this.helpUrl$ = this.helpService.getHelpLink('new-order');
   }
 
   ngOnDestroy(): void {

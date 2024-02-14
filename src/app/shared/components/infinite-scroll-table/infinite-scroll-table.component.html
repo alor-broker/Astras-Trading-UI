@@ -15,7 +15,12 @@
     [nzLoading]="isLoading"
   >
     <thead>
-    <tr #headerRow>
+    <tr
+      #headerRow
+      (cdkDropListDropped)="orderColumnChange.emit($event)"
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+    >
       <th
         *ngFor="let column of tableConfig.columns"
         [nzWidth]="column.width ? column.width + 'px' : null"
@@ -27,6 +32,8 @@
         (nzFilterChange)="defaultFilterChange(column.filterData!.filterName!, $event)"
         [nzCustomFilter]="!column.filterData?.isDefaultFilter"
         class="table-cell"
+        cdkDrag
+        cdkDragLockAxis="x"
       >
         {{column.displayName}}
         <nz-filter-trigger

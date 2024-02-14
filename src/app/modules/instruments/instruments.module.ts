@@ -15,6 +15,7 @@ import { ExportWatchlistDialogComponent } from './components/export-watchlist-di
 import { ImportWatchlistDialogComponent } from './components/import-watchlist-dialog/import-watchlist-dialog.component';
 import { NzSpinModule } from "ng-zorro-antd/spin";
 import { NzUploadModule } from "ng-zorro-antd/upload";
+import { DragDropModule } from "@angular/cdk/drag-drop";
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import { NzUploadModule } from "ng-zorro-antd/upload";
     NzResizeObserverModule,
     LetDirective,
     NzSpinModule,
-    NzUploadModule
+    NzUploadModule,
+    DragDropModule
   ],
   exports: [
     InstrumentSelectWidgetComponent

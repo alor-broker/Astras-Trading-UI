@@ -14,9 +14,14 @@
         [nzShowPagination]="false"
         [nzVirtualItemSize]="20"
         atsTableRowHeight
-        nzTableLayout="fixed">
+        nzTableLayout="fixed"
+      >
         <thead *transloco="let t; scope: 'instruments/select'">
-        <tr>
+        <tr
+          cdkDropList
+          cdkDropListOrientation="horizontal"
+          (cdkDropListDropped)="changeColumnOrder($event)"
+        >
           <th
             #col
             *ngIf="vm.settings.showFavorites ?? false"
@@ -43,13 +48,24 @@
             <th
               [nzSortFn]="sortFns[col.id]"
               [nzWidth]="(col.minWidth ?? 50) + 'px'"
+              cdkDrag
+              cdkDragLockAxis="x"
             >
-            <span [nzTooltipTitle]="t('instrumentsSelect.columns.' + col.id + '.tooltip', { fallback: col.tooltip })"
-                  nz-tooltip>
-              {{t('instrumentsSelect.columns.' + col.id + '.name', { fallback: col.displayName })}}
-            </span>
+              <span [nzTooltipTitle]="t('instrumentsSelect.columns.' + col.id + '.tooltip', { fallback: col.tooltip })"
+                    nz-tooltip>
+                {{t('instrumentsSelect.columns.' + col.id + '.name', { fallback: col.displayName })}}
+              </span>
             </th>
           </ng-container>
+
+          <th nzWidth="40px">
+            <span
+              [nzTooltipTitle]="t('instrumentsSelect.columns.remove.tooltip')"
+              nz-tooltip
+            >
+              {{t('instrumentsSelect.columns.remove.name')}}
+            </span>
+          </th>
         </tr>
         </thead>
         <tbody>
@@ -73,37 +89,40 @@
             >
             </span>
           </td>
-          <td *ngIf="isVisibleColumn('symbol')" class="ticker">
-            <span class="ticker-name">{{ inst.instrument.symbol }}</span>
-            <ats-instrument-badge-display [instrumentKey]="inst.instrument"></ats-instrument-badge-display>
-          </td>
-          <td *ngIf="isVisibleColumn('shortName')">
-            {{inst.instrument.shortName}}
-          </td>
-          <td *ngIf="isVisibleColumn('price')">
-            <ats-price-diff
-              *ngIf="(inst.price ?? null) !== null && (inst.prevTickPrice ?? null) !== null"
-              [currentPrice]="inst.price!"
-              [basePrice]="inst.prevTickPrice!"
-              [showChangeForce]="false"
-            >
-            </ats-price-diff>
-          </td>
-          <td *ngIf="isVisibleColumn('priceChange')" [ngClass]="inst.priceChange < 0 ? 'sellCell' : 'buyCell'">
-            {{ inst.priceChange }}
-          </td>
-          <td *ngIf="isVisibleColumn('priceChangeRatio')"
-              [ngClass]="inst.priceChangeRatio < 0 ? 'sellCell' : 'buyCell'">
-            {{ inst.priceChangeRatio }}
-          </td>
-          <td *ngIf="isVisibleColumn('maxPrice')">{{ inst.maxPrice }}</td>
-          <td *ngIf="isVisibleColumn('minPrice')">{{ inst.minPrice }}</td>
-          <td *ngIf="isVisibleColumn('volume')" style="white-space: nowrap;">
-            <ats-short-number [allowRounding]="true" [roundPrecision]="3" [value]="inst.volume"></ats-short-number>
-          </td>
-          <td *ngIf="isVisibleColumn('openPrice')">{{ inst.openPrice }}</td>
-          <td *ngIf="isVisibleColumn('closePrice')">{{ inst.closePrice }}</td>
-          <td *ngIf="isVisibleColumn('remove')">
+
+          <ng-container *ngFor="let col of displayedColumns">
+            <td *ngIf="col.id === 'symbol'">
+              <span class="ticker-name">{{ inst.instrument.symbol }}</span>
+              <ats-instrument-badge-display [instrumentKey]="inst.instrument"></ats-instrument-badge-display>
+            </td>
+
+            <td *ngIf="col.id === 'shortName'">{{inst.instrument.shortName}}</td>
+
+            <td *ngIf="col.id === 'price'">
+              <ats-price-diff
+                *ngIf="(inst.price ?? null) !== null && (inst.prevTickPrice ?? null) !== null"
+                [currentPrice]="inst.price!"
+                [basePrice]="inst.prevTickPrice!"
+                [showChangeForce]="false"
+              >
+              </ats-price-diff>
+            </td>
+
+            <td *ngIf="col.id === 'priceChange'" [ngClass]="inst.priceChange < 0 ? 'sellCell' : 'buyCell'">{{ inst.priceChange }}</td>
+
+            <td *ngIf="col.id === 'priceChangeRatio'" [ngClass]="inst.priceChangeRatio < 0 ? 'sellCell' : 'buyCell'">
+              {{ inst.priceChangeRatio }}
+            </td>
+            <td *ngIf="col.id === 'maxPrice'">{{ inst.maxPrice }}</td>
+            <td *ngIf="col.id === 'minPrice'">{{ inst.minPrice }}</td>
+            <td *ngIf="col.id === 'volume'" style="white-space: nowrap;">
+              <ats-short-number [allowRounding]="true" [roundPrecision]="3" [value]="inst.volume"></ats-short-number>
+            </td>
+            <td *ngIf="col.id === 'openPrice'">{{ inst.openPrice }}</td>
+            <td *ngIf="col.id === 'closePrice'">{{ inst.closePrice }}</td>
+          </ng-container>
+
+          <td>
             <a (click)="remove(inst.recordId); $event.preventDefault(); $event.stopPropagation();">
               <i nz-icon nzTheme="outline" nzType="close"></i>
             </a>

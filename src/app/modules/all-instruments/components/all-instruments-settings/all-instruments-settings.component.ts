@@ -13,11 +13,12 @@ import {
   allInstrumentsColumns,
   AllInstrumentsSettings
 } from '../../model/all-instruments-settings.model';
-import { BaseColumnId } from "../../../../shared/models/settings/table-settings.model";
+import { BaseColumnId, TableDisplaySettings } from "../../../../shared/models/settings/table-settings.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { Observable } from "rxjs";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 
 @Component({
   selector: 'ats-all-instruments-settings',
@@ -53,14 +54,41 @@ export class AllInstrumentsSettingsComponent extends WidgetSettingsBaseComponent
       takeUntilDestroyed(this.destroyRef),
     ).subscribe(settings => {
       this.form = new UntypedFormGroup({
-        allInstrumentsColumns: new UntypedFormControl(settings.allInstrumentsColumns, Validators.required),
+        allInstrumentsColumns: new UntypedFormControl(
+          TableSettingHelper.toTableDisplaySettings(settings.allInstrumentsTable, settings.allInstrumentsColumns ?? [])?.columns.map(c => c.columnId),
+          Validators.required
+        ),
       });
     });
   }
 
-  protected getUpdatedSettings(): Partial<AllInstrumentsSettings> {
-    return {
+  protected getUpdatedSettings(initialSettings: AllInstrumentsSettings): Partial<AllInstrumentsSettings> {
+    const newSettings = {
       ...this.form!.value,
     } as Partial<AllInstrumentsSettings>;
+
+    newSettings.allInstrumentsTable = this.updateTableSettings(newSettings.allInstrumentsColumns ?? [], initialSettings.allInstrumentsTable);
+    delete newSettings.allInstrumentsColumns;
+
+    return newSettings;
+  }
+
+
+  private updateTableSettings(columnIds: string[], currentSettings?: TableDisplaySettings): TableDisplaySettings {
+    const newSettings = TableSettingHelper.toTableDisplaySettings(null, columnIds)!;
+
+    if (currentSettings) {
+      newSettings.columns.forEach((column, index) => {
+        const matchedColumn = currentSettings!.columns.find(x => x.columnId === column.columnId);
+        if (matchedColumn) {
+          newSettings.columns[index] = {
+            ...column,
+            ...matchedColumn
+          };
+        }
+      });
+    }
+
+    return newSettings!;
   }
 }

@@ -78,14 +78,15 @@
          [title]="t('joyride.step9.title')"
          [text]="t('joyride.step9.text')"></i>
     </button>
+
     <button
-      *ngIf="hasHelp"
+      *ngIf="helpUrl$ | async as helpUrl"
       nz-button
       nzSize="small"
       (mousedown)="preventMouseEvents($event)"
     >
       <a
-        [href]="helpUrl + (widgetMeta?.typeId ?? '')"
+        [href]="helpUrl"
         target="_blank"
       >
         <i nz-icon nzType="question-circle" [nzTheme]="'outline'"
@@ -94,6 +95,7 @@
            [text]="t('joyride.step7.text')"></i>
       </a>
     </button>
+
     <button nz-button
             nzSize="small"
             class="close-btn"

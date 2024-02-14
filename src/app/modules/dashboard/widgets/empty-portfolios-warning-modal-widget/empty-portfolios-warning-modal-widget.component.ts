@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from "rxjs";
 import { ModalService } from "../../../../shared/services/modal.service";
 import { EnvironmentService } from "../../../../shared/services/environment.service";
+import { HelpService } from "../../../../shared/services/help.service";
 
 @Component({
   selector: 'ats-empty-portfolios-warning-modal-widget',
@@ -10,18 +11,21 @@ import { EnvironmentService } from "../../../../shared/services/environment.serv
 })
 export class EmptyPortfoliosWarningModalWidgetComponent implements OnInit {
   supportLink = this.environmentService.externalLinks.support;
-  helpLink = this.environmentService.externalLinks.help;
+  helpLink$!: Observable<string | null>;
 
   isVisible$!: Observable<boolean>;
 
   constructor(
     private readonly environmentService: EnvironmentService,
-    private readonly modalService: ModalService
+    private readonly modalService: ModalService,
+    private readonly helpService: HelpService
   ) {
   }
 
   ngOnInit(): void {
     this.isVisible$ = this.modalService.shouldShowEmptyPortfoliosWarningModal$;
+
+    this.helpLink$ = this.helpService.getHelpLink('main');
   }
 
   handleClose(): void {

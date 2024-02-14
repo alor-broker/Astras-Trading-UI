@@ -6,6 +6,7 @@ export const environment = {
   ssoUrl: 'https://login.alor.ru',
   warpUrl: 'https://warp.alor.dev',
   remoteSettingsStorageUrl: 'https://astras.alor.ru/identity/v5/UserSettings',
+  teamlyDatabaseUrl: 'https://astras.alor.ru/teamly/api/v1/ql/content-database/content',
   logging: {
     console: {
       minLevel: 'error'
@@ -32,7 +33,7 @@ export const environment = {
     reports: 'https://lk.alor.ru/reports/broker',
     releases: 'https://warp.alor.dev/ru/releases/astras',
     support: 'https://t.me/+oM0i9QbtD4cwMzNi',
-    help: 'https://alor.gitbook.io/astras',
+    help: 'https://alor.teamly.ru/space/5e0d0c41-20c0-4eef-a55d-782bda40e507/article',
     officialSite: 'https://www.alorbroker.ru',
     riskRate: 'https://www.alorbroker.ru/trading/leverage',
     personalAccount: 'https://lk.alor.ru/main',

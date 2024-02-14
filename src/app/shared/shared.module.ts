@@ -71,6 +71,7 @@ import { WidgetSettingsComponent } from './components/widget-settings/widget-set
 import { NzColorPickerModule } from "ng-zorro-antd/color-picker";
 import { PriceDiffComponent } from './components/price-diff/price-diff.component';
 import { TableRowHeightDirective } from './directives/table-row-height.directive';
+import { DragDropModule } from "@angular/cdk/drag-drop";
 
 @NgModule({
   declarations: [
@@ -140,6 +141,7 @@ import { TableRowHeightDirective } from './directives/table-row-height.directive
     JoyrideModule,
     NzResizeObserverModule,
     NzColorPickerModule,
+    DragDropModule,
   ],
   exports: [
     // Ng zorro
