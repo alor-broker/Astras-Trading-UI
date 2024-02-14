@@ -24,6 +24,14 @@
   overflow: hidden;
 
   ::ng-deep {
+    .cdk-virtual-scroll-viewport {
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        width: 0;
+      }
+    }
+
     .cdk-virtual-scroll-content-wrapper {
       display: flex;
       flex-direction: row;

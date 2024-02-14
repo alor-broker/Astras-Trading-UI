@@ -50,6 +50,8 @@
   "gridSettingsLabel": "Grid settings",
   "fontSizeLabel": "Font size",
   "rowHeightLabel": "Row height",
+  "minorLinesStepLabel": "Minor levels multiplier",
+  "majorLinesStepLabel": "Major levels multiplier",
 
   "tickerError": "Select ticker",
   "intervalError": "Value should be from {{min}} to {{max}}",

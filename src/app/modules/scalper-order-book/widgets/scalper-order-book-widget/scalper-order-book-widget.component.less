@@ -1,0 +1,14 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    ::ng-deep {
+      .widget-header {
+        @padding: (@widget-padding - @gridster-item-resizable-handler-width);
+
+        padding-left: @padding;
+        padding-right: @padding;
+      }
+    }
+  }
+});

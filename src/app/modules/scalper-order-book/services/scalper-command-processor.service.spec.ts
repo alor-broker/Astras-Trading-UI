@@ -85,7 +85,7 @@ describe('ScalperCommandProcessorService', () => {
         'reversePositionsByMarket',
         'cancelOrders',
         'closePositionsByMarket',
-        'placeBestOrder'
+        'placeBestOrder',
       ]
     );
 
@@ -210,6 +210,35 @@ describe('ScalperCommandProcessorService', () => {
         service.processHotkeyPress(
           {
             type: ScalperOrderBookCommands.cancelLimitOrdersCurrent
+          } as TerminalCommand,
+          true,
+          dataContextMock
+        );
+      })
+    );
+
+    it('should process cancelStopOrdersCurrent command', ((done) => {
+        const expectedOrder: CurrentOrderDisplay = {
+          orderId: generateRandomString(5),
+          type: 'stop',
+          symbol: 'TEST',
+          exchange: orderBookDefaultSettings.exchange,
+          portfolio: 'D1234',
+          linkedPrice: 100,
+          side: Side.Buy,
+          displayVolume: 100
+        };
+
+        scalperOrdersServiceSpy.cancelOrders.and.callFake((currentOrders: CurrentOrderDisplay[]) => {
+          done();
+          expect(currentOrders).toEqual([expectedOrder]);
+        });
+
+        dataContextMock.currentOrders$.next([expectedOrder]);
+
+        service.processHotkeyPress(
+          {
+            type: ScalperOrderBookCommands.cancelStopOrdersCurrent
           } as TerminalCommand,
           true,
           dataContextMock

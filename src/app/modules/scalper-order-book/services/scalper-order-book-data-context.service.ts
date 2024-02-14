@@ -54,6 +54,8 @@ import { QuotesService } from '../../../shared/services/quotes.service';
 import { ScalperSettingsHelper } from "../utils/scalper-settings.helper";
 import { Instrument } from "../../../shared/models/instruments/instrument.model";
 import { OrderBookScaleHelper } from "../utils/order-book-scale.helper";
+import { MathHelper } from "../../../shared/utils/math-helper";
+import { ScalperOrderBookConstants } from "../constants/scalper-order-book.constants";
 
 
 export interface ContextGetters {
@@ -368,6 +370,7 @@ export class ScalperOrderBookDataContextService {
     for (let i = 0; i < rowsState.rows.length; i++) {
       const mappedRow = this.mapPriceRowToOrderBook(
         rowsState.rows[i],
+        rowsState.priceOptions.scaledStep,
         orderBook.rows,
         orderBookBounds,
         settings.widgetSettings
@@ -431,7 +434,7 @@ export class ScalperOrderBookDataContextService {
     ).subscribe(x => {
       priceRowsStore.initWithPriceRange(
         settings.widgetSettings,
-        this.getPriceOptions(x, settings.instrument.minstep, scaleFactor),
+        this.getPriceOptions(x, settings.instrument.minstep, scaleFactor, settings.widgetSettings.majorLinesStep ?? ScalperOrderBookConstants.defaultMajorLinesStep),
         x == null,
         getters.getVisibleRowsCount(rowHeight),
         () => {
@@ -441,7 +444,12 @@ export class ScalperOrderBookDataContextService {
     });
   }
 
-  private getPriceOptions(orderBookRange: { asksRange: Range | null, bidsRange: Range | null } | null, priceStep: number, scaleFactor: number): PriceOptions | null {
+  private getPriceOptions(
+    orderBookRange: { asksRange: Range | null, bidsRange: Range | null } | null,
+    priceStep: number,
+    scaleFactor: number,
+    majorLinesStep: number
+  ) : PriceOptions | null {
     if(orderBookRange == null) {
       return null;
     }
@@ -455,7 +463,7 @@ export class ScalperOrderBookDataContextService {
       return null;
     }
 
-    const startPrice = OrderBookScaleHelper.getStartPrice(bestAsk, bestBid, priceStep, scaleFactor);
+    const startPrice = OrderBookScaleHelper.getStartPrice(bestAsk, bestBid, priceStep, scaleFactor, majorLinesStep);
 
     return {
       startPrice: startPrice.startPrice,
@@ -488,7 +496,11 @@ export class ScalperOrderBookDataContextService {
 
     priceRowsStore.initWithPriceRange(
       settings.widgetSettings,
-      this.getPriceOptions(this.getOrderBookBounds(orderBookData), settings.instrument.minstep, scaleFactor),
+      this.getPriceOptions(
+        this.getOrderBookBounds(orderBookData),
+        settings.instrument.minstep,
+        scaleFactor,
+        settings.widgetSettings.majorLinesStep ?? ScalperOrderBookConstants.defaultMajorLinesStep),
       false,
       getters.getVisibleRowsCount(rowHeight),
       () => {
@@ -524,12 +536,22 @@ export class ScalperOrderBookDataContextService {
 
   private mapPriceRowToOrderBook(
     row: PriceRow,
+    priceStep: number,
     orderBookData: OrderbookData,
     orderBookBounds: { asksRange: Range | null, bidsRange: Range | null },
     settings: ScalperOrderBookWidgetSettings
   ): BodyRow | null {
+    const priceStepPrecision = MathHelper.getPrecision(priceStep);
     const resultRow = {
-      ...row
+      ...row,
+      isMinorLinePrice: MathHelper.isMultipleOf(
+        row.price,
+        MathHelper.round(priceStep * (settings.minorLinesStep ?? ScalperOrderBookConstants.defaultMinorLinesStep), priceStepPrecision)
+      ),
+      isMajorLinePrice: MathHelper.isMultipleOf(
+        row.price,
+        MathHelper.round(priceStep * (settings.majorLinesStep ?? ScalperOrderBookConstants.defaultMajorLinesStep), priceStepPrecision)
+      )
     } as BodyRow;
 
     if (!orderBookBounds.bidsRange && !orderBookBounds.asksRange) {

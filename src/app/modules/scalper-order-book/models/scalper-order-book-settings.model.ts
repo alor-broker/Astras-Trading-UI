@@ -63,6 +63,8 @@ export interface InstrumentLinkedSettings {
   tradesClusterPanelSettings?: TradesClusterPanelSettings;
   bracketsSettings?: BracketsSettings;
   tradesPanelSettings?: TradesPanelSettings;
+  minorLinesStep?: number;
+  majorLinesStep?: number;
 }
 
 export interface ScalperOrderBookWidgetSettings extends WidgetSettings, InstrumentKey, InstrumentLinkedSettings {

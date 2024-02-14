@@ -21,6 +21,12 @@ import {
 import { map } from 'rxjs/operators';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 
+interface DisplayItem {
+  volume: number | null;
+  isMaxVolume: boolean;
+  isMajorLinePrice: boolean;
+  isMinorLinePrice: boolean;
+}
 
 @Component({
   selector: 'ats-trades-cluster',
@@ -30,11 +36,11 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 export class TradesClusterComponent implements OnInit, OnDestroy {
   readonly numberFormats = NumberDisplayFormat;
 
-  @Input({required: true})
+  @Input({ required: true })
   xAxisStep!: number;
-  @Input({required: true})
+  @Input({ required: true })
   dataContext!: ScalperOrderBookDataContext;
-  displayItems$!: Observable<({ volume: number, isMaxVolume: boolean } | null)[]>;
+  displayItems$!: Observable<(DisplayItem)[]>;
   settings$!: Observable<ScalperOrderBookExtendedSettings>;
   private readonly currentCluster$ = new BehaviorSubject<TradesCluster | null>(null);
 
@@ -65,26 +71,33 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
 
         let maxVolume = 0;
         const mappedRows = displayRows.map(r => {
+          const displayRow = {
+            volume: null,
+            isMaxVolume: false,
+            isMajorLinePrice: r.isMajorLinePrice ?? false,
+            isMinorLinePrice: r.isMinorLinePrice ?? false
+          };
+
           if (!currentCluster) {
-            return null;
+            return displayRow;
           }
 
           const mappedItems = currentCluster.tradeClusters.filter(c => c.price >= r.baseRange.min && c.price <= r.baseRange.max);
           if (mappedItems.length === 0) {
-            return null;
+            return displayRow;
           }
 
-          const itemVolume  = mappedItems.reduce((total, curr) => Math.round(total + getVolume(curr)), 0);
+          const itemVolume = mappedItems.reduce((total, curr) => Math.round(total + getVolume(curr)), 0);
           maxVolume = Math.max(maxVolume, itemVolume);
 
           return {
-            volume: itemVolume,
-            isMaxVolume: false
+            ...displayRow,
+            volume: itemVolume
           };
         });
 
         mappedRows.forEach(r => {
-          if(r !== null) {
+          if (r !== null) {
             r.isMaxVolume = r.volume === maxVolume;
           }
         });

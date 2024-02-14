@@ -20,6 +20,7 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import { ScalperOrderBookConstants } from "../../constants/scalper-order-book.constants";
 
 @Component({
   selector: 'ats-scalper-order-book-widget',
@@ -102,6 +103,8 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
         showLimitOrdersVolumeIndicators: getValueOrDefault(settings.showLimitOrdersVolumeIndicators, true),
         rowHeight: getValueOrDefault(settings.rowHeight, 14),
         fontSize: getValueOrDefault(settings.fontSize, 11),
+        minorLinesStep: getValueOrDefault(settings.minorLinesStep, ScalperOrderBookConstants.defaultMinorLinesStep),
+        majorLinesStep: getValueOrDefault(settings.majorLinesStep, ScalperOrderBookConstants.defaultMajorLinesStep),
         showTradesPanel: getValueOrDefault(settings.showTradesPanel, true),
         tradesPanelSettings: {
           minTradeVolumeFilter: getValueOrDefault(settings.tradesPanelSettings?.minTradeVolumeFilter ?? null, 0),

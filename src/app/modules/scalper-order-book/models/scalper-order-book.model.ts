@@ -37,6 +37,9 @@ export interface BodyRow extends PriceRow {
 
   isFiller: boolean;
 
+  isMinorLinePrice?: boolean;
+  isMajorLinePrice?: boolean;
+
   currentPositionRangeSign: number | null;
 }
 

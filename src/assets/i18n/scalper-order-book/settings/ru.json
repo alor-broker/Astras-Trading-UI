@@ -50,6 +50,8 @@
   "gridSettingsLabel": "Настройки сетки",
   "fontSizeLabel": "Размер шрифта",
   "rowHeightLabel": "Высота строки",
+  "minorLinesStepLabel": "Множитель промежуточных уровней",
+  "majorLinesStepLabel": "Множитель основных уровней",
 
   "tickerError": "Выберите тикер",
   "intervalError": "Значение должно быть от {{min}} до {{max}}",

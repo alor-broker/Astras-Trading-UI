@@ -167,9 +167,9 @@
 
           <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.gridSettingsLabel')">
             <nz-form-item>
+              <nz-form-label nzFor="fontSize" nzRequired>{{ t('scalperOrderBookSettings.fontSizeLabel') }}
+              </nz-form-label>
               <nz-form-control>
-                <nz-form-label nzFor="fontSize" nzRequired>{{ t('scalperOrderBookSettings.fontSizeLabel') }}
-                </nz-form-label>
                 <nz-slider
                   [nzMin]="validationOptions.fontSize.min"
                   [nzMax]="validationOptions.fontSize.max"
@@ -181,9 +181,9 @@
               </nz-form-control>
             </nz-form-item>
             <nz-form-item>
+              <nz-form-label nzFor="rowHeight" nzRequired>{{ t('scalperOrderBookSettings.rowHeightLabel') }}
+              </nz-form-label>
               <nz-form-control>
-                <nz-form-label nzFor="rowHeight" nzRequired>{{ t('scalperOrderBookSettings.rowHeightLabel') }}
-                </nz-form-label>
                 <nz-slider
                   [nzMin]="validationOptions.rowHeight.min"
                   [nzMax]="validationOptions.rowHeight.max"
@@ -192,6 +192,34 @@
                   formControlName="rowHeight"
                 >
                 </nz-slider>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzFor="minorLinesStep" nzRequired>{{ t('scalperOrderBookSettings.minorLinesStepLabel') }}
+              </nz-form-label>
+              <nz-form-control
+                [nzErrorTip]="t(
+                      'scalperOrderBookSettings.intervalError',
+                      {
+                      min: validationOptions.minorLinesStep.min,
+                      max: validationOptions.minorLinesStep.max
+                      })"
+              >
+                <ats-input-number formControlName="minorLinesStep" [allowDecimal]="false"></ats-input-number>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzFor="majorLinesStep" nzRequired>{{ t('scalperOrderBookSettings.majorLinesStepLabel') }}
+              </nz-form-label>
+              <nz-form-control
+                [nzErrorTip]="t(
+                      'scalperOrderBookSettings.intervalError',
+                      {
+                      min: validationOptions.majorLinesStep.min,
+                      max: validationOptions.majorLinesStep.max
+                      })"
+              >
+                <ats-input-number formControlName="majorLinesStep" [allowDecimal]="false"></ats-input-number>
               </nz-form-control>
             </nz-form-item>
           </nz-collapse-panel>
