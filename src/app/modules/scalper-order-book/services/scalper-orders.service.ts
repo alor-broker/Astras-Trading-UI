@@ -350,16 +350,6 @@ export class ScalperOrdersService {
 
     const side = position.qtyTFutureBatch < 0 ? Side.Buy : Side.Sell;
 
-    if (side === Side.Sell && price >= position.avgPrice) {
-      this.notification.warning('Некорректная цена', `Для установки стоп-лосс цена должна быть меньше ${position.avgPrice}`);
-      return;
-    }
-
-    if (side === Side.Buy && price <= position.avgPrice) {
-      this.notification.warning('Некорректная цена', `Для установки стоп-лосс цена должна быть больше ${position.avgPrice}`);
-      return;
-    }
-
     const order: NewStopMarketOrder = {
       side: side,
       quantity: Math.abs(position.qtyTFutureBatch),
