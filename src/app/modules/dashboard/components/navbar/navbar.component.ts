@@ -37,6 +37,7 @@ import { WidgetsHelper } from "../../../../shared/utils/widgets";
 import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.service";
 import { NewYearHelper } from "../../utils/new-year.helper";
 import { DashboardTitleHelper } from "../../utils/dashboard-title.helper";
+import { HelpService } from "../../../../shared/services/help.service";
 
 @Component({
   selector: 'ats-navbar',
@@ -45,6 +46,7 @@ import { DashboardTitleHelper } from "../../utils/dashboard-title.helper";
 })
 export class NavbarComponent implements OnInit {
   readonly externalLinks = this.environmentService.externalLinks;
+  helpLink$!: Observable<string | null>;
   galleryVisible = false;
 
   isSideMenuVisible = false;
@@ -70,6 +72,7 @@ export class NavbarComponent implements OnInit {
     private readonly themeService: ThemeService,
     private readonly translatorService: TranslatorService,
     private readonly widgetsMetaService: WidgetsMetaService,
+    private readonly helpService: HelpService,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -130,6 +133,8 @@ export class NavbarComponent implements OnInit {
     );
 
     this.initWidgetsGallery();
+
+    this.helpLink$ = this.helpService.getHelpLink('main');
   }
 
   isFindedPortfolio(portfolio: PortfolioExtended): boolean {

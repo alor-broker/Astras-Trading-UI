@@ -301,7 +301,7 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.tradesHistoryTable, current.tradesHistoryTable)
         && previous.badgeColor === current.badgeColor),
-      map(s => s[this.settingsTableName] ?? TableSettingHelper.toTableDisplaySettings(allTradesColumns.filter(c => c.isDefault).map(c => c.id))),
+      map(s => TableSettingHelper.toTableDisplaySettings(s[this.settingsTableName], allTradesColumns.filter(c => c.isDefault).map(c => c.id))),
       filter((s): s is TableDisplaySettings => !!s)
     );
 

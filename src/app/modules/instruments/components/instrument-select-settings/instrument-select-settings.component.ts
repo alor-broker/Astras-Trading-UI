@@ -2,7 +2,7 @@ import { Component, DestroyRef, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { allInstrumentsColumns, InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
-import { BaseColumnId } from "../../../../shared/models/settings/table-settings.model";
+import { BaseColumnId, TableDisplaySettings } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
   WidgetSettingsBaseComponent
@@ -10,6 +10,7 @@ import {
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { Observable } from "rxjs";
 import { TimeframeValue } from "../../../light-chart/models/light-chart.models";
+import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 
 @Component({
   selector: 'ats-instrument-select-settings',
@@ -61,17 +62,43 @@ export class InstrumentSelectSettingsComponent extends WidgetSettingsBaseCompone
     });
   }
 
-  protected getUpdatedSettings(): Partial<InstrumentSelectSettings> {
-    return {
+  protected getUpdatedSettings(initialSetting: InstrumentSelectSettings): Partial<InstrumentSelectSettings> {
+    const newSettings = {
       ...this.settingsForm!.value
     } as Partial<InstrumentSelectSettings>;
+
+    newSettings.instrumentTable = this.updateTableSettings(newSettings.instrumentColumns ?? [], initialSetting.instrumentTable);
+    delete newSettings.instrumentColumns;
+
+    return newSettings;
   }
+
 
   private buildSettingsForm(currentSettings: InstrumentSelectSettings): void {
     this.settingsForm = new UntypedFormGroup({
-      instrumentColumns: new UntypedFormControl(currentSettings.instrumentColumns),
+      instrumentColumns: new UntypedFormControl(
+        TableSettingHelper.toTableDisplaySettings(currentSettings.instrumentTable, currentSettings.instrumentColumns ?? [])?.columns.map(c => c.columnId)
+      ),
       showFavorites: new UntypedFormControl(currentSettings.showFavorites ?? false),
       priceChangeTimeframe: new UntypedFormControl(currentSettings.priceChangeTimeframe ?? TimeframeValue.Day)
     });
+  }
+
+  private updateTableSettings(columnIds: string[], currentSettings?: TableDisplaySettings): TableDisplaySettings {
+    const newSettings = TableSettingHelper.toTableDisplaySettings(null, columnIds)!;
+
+    if (currentSettings) {
+      newSettings.columns.forEach((column, index) => {
+        const matchedColumn = currentSettings!.columns.find(x => x.columnId === column.columnId);
+        if (matchedColumn) {
+          newSettings.columns[index] = {
+            ...column,
+            ...matchedColumn
+          };
+        }
+      });
+    }
+
+    return newSettings!;
   }
 }

@@ -46,6 +46,8 @@ import {
   WatchlistType
 } from "../../../instruments/models/watchlist.model";
 import { ACTIONS_CONTEXT, ActionsContext } from 'src/app/shared/services/actions-context';
+import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 
 @Component({
   selector: 'ats-all-instruments',
@@ -213,17 +215,22 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
         (settings, translate) => ({ settings, translate })
       ),
       map(({ settings, translate }) => {
+        const tableSettings = TableSettingHelper.toTableDisplaySettings(settings.allInstrumentsTable, settings.allInstrumentsColumns);
+
         return {
           columns: this.allColumns
-            .filter(col => settings.allInstrumentsColumns.includes(col.id))
-            .map(col => ({
-                ...col,
+            .map(column => ({ column, settings: tableSettings?.columns.find(c => c.columnId === column.id) }))
+            .filter(col => col.settings != null)
+            .map((col, index) => ({
+                ...col.column,
                 displayName: translate(
-                  ['columns', col.id],
-                  { fallback: col.displayName }
-                )
+                  ['columns', col.column.id],
+                  { fallback: col.column.displayName }
+                ),
+              order: col.settings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
               })
             )
+            .sort((a, b) => a.order - b.order)
         };
       })
     );
@@ -342,6 +349,24 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
         width: Math.floor(x.contentRect.width),
         height: Math.floor(x.contentRect.height)
       });
+    });
+  }
+
+  changeColumnOrder(event: CdkDragDrop<any>): void {
+    this.settings$.pipe(
+      withLatestFrom(this.tableConfig$),
+      take(1)
+    ).subscribe(([settings, tableConfig]) => {
+      this.settingsService.updateSettings<AllInstrumentsSettings>(
+        settings.guid,
+        {
+          allInstrumentsTable: TableSettingHelper.changeColumnOrder(
+            event,
+            TableSettingHelper.toTableDisplaySettings(settings.allInstrumentsTable, settings.allInstrumentsColumns)!,
+            tableConfig.columns
+          )
+        }
+      );
     });
   }
 

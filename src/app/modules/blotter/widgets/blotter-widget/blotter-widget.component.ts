@@ -77,33 +77,33 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
       'BlotterSettings',
       settings => ({
         ...settings,
-        tradesTable: getValueOrDefault(
+        tradesTable: TableSettingHelper.toTableDisplaySettings(
           settings.tradesTable,
-          TableSettingHelper.toTableDisplaySettings(allTradesColumns.filter(c => c.isDefault).map(c => c.id))
+          allTradesColumns.filter(c => c.isDefault).map(c => c.id)
         ),
-        positionsTable: getValueOrDefault(
+        positionsTable: TableSettingHelper.toTableDisplaySettings(
           settings.positionsTable,
-          TableSettingHelper.toTableDisplaySettings(allPositionsColumns.filter(c => c.isDefault).map(c => c.id))
+          allPositionsColumns.filter(c => c.isDefault).map(c => c.id)
         ),
-        ordersTable: getValueOrDefault(
+        ordersTable: TableSettingHelper.toTableDisplaySettings(
           settings.ordersTable,
-          TableSettingHelper.toTableDisplaySettings(allOrdersColumns.filter(c => c.isDefault).map(c => c.id))
+          allOrdersColumns.filter(c => c.isDefault).map(c => c.id)
         ),
-        stopOrdersTable: getValueOrDefault(
+        stopOrdersTable: TableSettingHelper.toTableDisplaySettings(
           settings.stopOrdersTable,
-          TableSettingHelper.toTableDisplaySettings(allStopOrdersColumns.filter(c => c.isDefault).map(c => c.id))
+          allStopOrdersColumns.filter(c => c.isDefault).map(c => c.id)
         ) ,
-        notificationsTable: getValueOrDefault(
+        notificationsTable: TableSettingHelper.toTableDisplaySettings(
           settings.notificationsTable,
-          TableSettingHelper.toTableDisplaySettings(allNotificationsColumns.filter(c => c.isDefault).map(c => c.id))
+          allNotificationsColumns.filter(c => c.isDefault).map(c => c.id)
         ),
-        repoTradesTable: getValueOrDefault(
+        repoTradesTable: TableSettingHelper.toTableDisplaySettings(
           settings.repoTradesTable,
-          TableSettingHelper.toTableDisplaySettings(allRepoTradesColumns.filter(c => c.isDefault).map(c => c.id))
+          allRepoTradesColumns.filter(c => c.isDefault).map(c => c.id)
         ),
-        tradesHistoryTable: getValueOrDefault(
+        tradesHistoryTable: TableSettingHelper.toTableDisplaySettings(
           settings.tradesTable,
-          TableSettingHelper.toTableDisplaySettings(allTradesHistoryColumns.filter(c => c.isDefault).map(c => c.id))
+          allTradesHistoryColumns.filter(c => c.isDefault).map(c => c.id)
         ),
         badgeColor: getValueOrDefault(settings.badgeColor, defaultBadgeColor),
         isSoldPositionsHidden: getValueOrDefault(settings.isSoldPositionsHidden, true),

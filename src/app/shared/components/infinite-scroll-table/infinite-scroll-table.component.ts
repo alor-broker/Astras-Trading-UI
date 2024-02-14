@@ -9,7 +9,7 @@ import {
   SimpleChanges, TrackByFunction
 } from '@angular/core';
 import { NzTableComponent } from "ng-zorro-antd/table";
-import { filter, Observable, shareReplay, switchMap, take } from "rxjs";
+import { filter, Observable, pairwise, shareReplay, switchMap, take } from "rxjs";
 import { ITEM_HEIGHT } from "../../../modules/all-trades/utils/all-trades.utils";
 import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
 import { debounceTime, map, startWith } from "rxjs/operators";
@@ -61,6 +61,8 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   scrolled = new EventEmitter();
   @Output()
   filterApplied = new EventEmitter();
+  @Output()
+  orderColumnChange = new EventEmitter();
 
   @ViewChildren('dataTable')
   dataTableQuery!: QueryList<NzTableComponent<TableDataRow>>;
@@ -88,6 +90,25 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   ngOnInit(): void {
     this.filtersForm.valueChanges
       .pipe(
+        startWith(null),
+        pairwise(),
+        filter(([prev, curr]) => {
+          // check if form has value and its changed
+          const isSameValue = JSON.stringify(prev) === JSON.stringify(curr);
+
+          if (isSameValue) {
+            return false;
+          }
+
+          if (prev == null) {
+            const filtersLength = Object.values(curr).filter((f: any) => (f?.length ?? 0) > 0).length;
+
+            return filtersLength > 0;
+          }
+
+          return true;
+        }),
+        map(([, curr]) => curr as { [filterName: string]: string | string[] | null}),
         debounceTime(300),
         takeUntilDestroyed(this.destroyRef)
       )

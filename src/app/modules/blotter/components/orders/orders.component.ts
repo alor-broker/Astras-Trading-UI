@@ -14,7 +14,7 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-import {catchError, debounceTime, map, mergeMap, startWith, tap} from 'rxjs/operators';
+import { catchError, debounceTime, map, mergeMap, startWith, tap } from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { OrderFilter } from '../../models/order-filter.model';
@@ -35,8 +35,8 @@ import { OrdersGroupService } from "../../../../shared/services/orders/orders-gr
 import { DomHelper } from "../../../../shared/utils/dom-helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BaseTableComponent } from "../base-table/base-table.component";
-import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
-import {OrderType} from "../../../../shared/models/orders/orders-dialog.model";
+import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
+import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
 
 interface DisplayOrder extends Order {
   residue: string;
@@ -233,7 +233,7 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
       ),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(({ s, tOrders, tCommon }) => {
-      const tableSettings = s.ordersTable ?? TableSettingHelper.toTableDisplaySettings(s.ordersColumns);
+      const tableSettings = TableSettingHelper.toTableDisplaySettings(s.ordersTable, s.ordersColumns);
 
       if (tableSettings) {
         this.listOfColumns = this.allColumns

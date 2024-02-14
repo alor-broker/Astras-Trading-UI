@@ -160,7 +160,12 @@
             <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.videoTutorial')}"></ng-container>
           </span>
         </li>
-        <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink(externalLinks.help)">
+        <li
+          *ngIf="helpLink$ | async as helpLink"
+          nz-menu-item
+          class='menu-item external-link'
+          (click)="openThirdPartyLink(helpLink)"
+        >
           <span>
             <i nz-icon nzType="question-circle" nzTheme="outline"></i>
             <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.help')}"></ng-container>

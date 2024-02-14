@@ -10,6 +10,7 @@
     [isLoading]="(isLoading$ | async) ?? true"
     [tableContainerHeight]="(contentSize$ | async)?.height || 0"
     [tableContainerWidth]="(contentSize$ | async)?.width || 0"
+    (orderColumnChange)="changeColumnOrder($event)"
   ></ats-infinite-scroll-table>
 </div>
 

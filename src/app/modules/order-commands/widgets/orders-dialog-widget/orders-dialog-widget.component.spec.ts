@@ -11,6 +11,7 @@ import {
 } from "../../../../shared/utils/testing";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import { EnvironmentService } from "../../../../shared/services/environment.service";
+import { HelpService } from "../../../../shared/services/help.service";
 
 describe('OrdersDialogWidgetComponent', () => {
   let component: OrdersDialogWidgetComponent;
@@ -62,6 +63,12 @@ describe('OrdersDialogWidgetComponent', () => {
             externalLinks: {
               help: ''
             }
+          }
+        },
+        {
+          provide: HelpService,
+          useValue: {
+            getHelpLink: jasmine.createSpy('getHelpLink').and.returnValue('')
           }
         }
       ]

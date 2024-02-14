@@ -30,6 +30,7 @@ import { ThemeService } from '../../../../shared/services/theme.service';
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import { EnvironmentService } from "../../../../shared/services/environment.service";
 import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.service";
+import { HelpService } from "../../../../shared/services/help.service";
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
@@ -100,6 +101,12 @@ describe('NavbarComponent', () => {
           provide: WidgetsMetaService,
           useValue: {
             getWidgetsMeta: jasmine.createSpy('getWidgetsMeta').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: HelpService,
+          useValue: {
+            getHelpLink: jasmine.createSpy('getHelpLink').and.returnValue('')
           }
         }
       ],
