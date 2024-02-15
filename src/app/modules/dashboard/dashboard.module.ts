@@ -49,6 +49,7 @@ import { InstrumentsCorrelationModule } from "../instruments-correlation/instrum
 import { LetDirective } from "@ngrx/component";
 import { WidgetsGalleryComponent } from './components/widgets-gallery/widgets-gallery.component';
 import { NzDividerModule } from "ng-zorro-antd/divider";
+import { BondScreenerModule } from "../bond-screener/bond-screener.module";
 
 @NgModule({
   declarations: [
@@ -100,7 +101,8 @@ import { NzDividerModule } from "ng-zorro-antd/divider";
         OrderCommandsModule,
         InstrumentsCorrelationModule,
         LetDirective,
-        NzDividerModule
+        NzDividerModule,
+        BondScreenerModule,
         // components
     ],
   providers: [
