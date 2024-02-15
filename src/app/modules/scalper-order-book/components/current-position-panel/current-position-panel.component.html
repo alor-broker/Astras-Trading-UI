@@ -1,34 +1,43 @@
 <ng-container *transloco="let t; scope: 'scalper-order-book/current-position-state'">
-  <div *ngIf="orderBookPosition$ | async as position" class="container">
+  <div
+    *ngrxLet="{ orderBookPosition: orderBookPosition$, lossOrProfitDisplayType: lossOrProfitDisplayType$} as vm"
+    class="container lh-1"
+  >
     <div
       [nz-tooltip]="t('scalperOrderBookCurrentPositionState.avgPositionPriceTooltip')"
       [nzTooltipMouseEnterDelay]="1"
+      class="p-2"
     >
-      {{position.price}}
+      {{vm.orderBookPosition?.price ?? '--'}}
     </div>
     <div [ngClass]="{
         'qty': true,
-        'positive': position.qty >= 0,
-        'negative': position.qty < 0
+        'positive': (vm.orderBookPosition?.qty ?? 0) > 0,
+        'negative': (vm.orderBookPosition?.qty ?? 0) < 0
         }"
          [nz-tooltip]="t('scalperOrderBookCurrentPositionState.lotsQtyTooltip')"
-         [nzTooltipMouseEnterDelay]="1">
-      {{position.qty}}{{t('scalperOrderBookCurrentPositionState.lots')}}.
+         [nzTooltipMouseEnterDelay]="1"
+         class="p-2"
+    >
+      {{vm.orderBookPosition?.qty ?? 0}}{{t('scalperOrderBookCurrentPositionState.lots')}}.
     </div>
     <div [ngClass]="{
         'loss-or-profit': true,
-        'positive': position.lossOrProfitPoints > 0,
-        'negative': position.lossOrProfitPoints < 0
+        'positive': (vm.orderBookPosition?.lossOrProfitPoints ?? 0) > 0,
+        'negative': (vm.orderBookPosition?.lossOrProfitPoints ?? 0) < 0
         }"
          [nz-tooltip]="t('scalperOrderBookCurrentPositionState.lossOrProfitTooltip')"
          [nzTooltipMouseEnterDelay]="1"
          (click)="changeLossOrProfitDisplayType()"
+         class="p-2"
     >
-      <ng-container *ngIf="lossOrProfitDisplayType$ | async as lossOrProfitDisplayType">
-        <span *ngIf="lossOrProfitDisplayType === 'points'">{{position.lossOrProfitPoints}}{{t('scalperOrderBookCurrentPositionState.positions')}}.</span>
-        <span *ngIf="lossOrProfitDisplayType === 'percentage'">{{position.lossOrProfitPercent}}%</span>
+      <ng-container *ngIf="vm.orderBookPosition">
+        <span *ngIf="vm.lossOrProfitDisplayType === 'points'">{{vm.orderBookPosition.lossOrProfitPoints}}{{t('scalperOrderBookCurrentPositionState.positions')}}.</span>
+        <span *ngIf="vm.lossOrProfitDisplayType === 'percentage'">{{vm.orderBookPosition.lossOrProfitPercent}}%</span>
       </ng-container>
-
+      <ng-container *ngIf="vm.orderBookPosition === null">
+        <span>--</span>
+      </ng-container>
     </div>
   </div>
 </ng-container>
