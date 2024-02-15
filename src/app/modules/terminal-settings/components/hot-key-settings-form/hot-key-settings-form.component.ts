@@ -75,6 +75,7 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
       closePositionsKey: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       centerOrderbookKey: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       cancelOrderbookOrders: new UntypedFormControl(null, this.isKeyUniqueValidator()),
+      cancelStopOrdersCurrent: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       closeOrderbookPositions: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       reverseOrderbookPositions: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       buyMarket: new UntypedFormControl(null, this.isKeyUniqueValidator()),

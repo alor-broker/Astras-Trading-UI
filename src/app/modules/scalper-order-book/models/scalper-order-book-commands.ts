@@ -3,6 +3,7 @@ export enum ScalperOrderBookCommands {
   cancelLimitOrdersAll = 'cancelLimitOrdersAll',
   closePositionsByMarketAll = 'closePositionsByMarketAll',
   cancelLimitOrdersCurrent = 'cancelLimitOrdersCurrent',
+  cancelStopOrdersCurrent = 'cancelStopOrdersCurrent',
   closePositionsByMarketCurrent = 'closePositionsByMarketCurrent',
   sellBestOrder = 'sellBestOrder',
   buyBestOrder = 'buyBestOrder',

@@ -191,7 +191,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let layers: LayerDrawer[] = [];
 
-    layers.push(this.drawGridLines(priceItems.length, xScale, yScale, context, themeSettings.themeColors));
+    layers.push(this.drawGridLines(priceItems, xScale, yScale, context, themeSettings.themeColors));
 
     const itemsDraws: LayerDrawer[] = [];
     let prevItem: DrewItemMeta | null = null;
@@ -579,19 +579,27 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private drawGridLines(
-    rowsCount: number,
+    priceItems: BodyRow[],
     xScale: ScaleLinear<number, number>,
     yScale: ScaleLinear<number, number>,
     context: CanvasRenderingContext2D,
     themeColors: ThemeColors): LayerDrawer {
     const draw = (): void => {
-      for (let i = 5; i < rowsCount; i = i + 5) {
-        context.beginPath();
-        context.moveTo(xScale(0), yScale(i) - 0.5);
-        context.lineTo(xScale(xScale.domain()[1]), yScale(i));
-        context.strokeStyle = themeColors.chartGridColor;
-        context.lineWidth = 1;
-        context.stroke();
+      const yRowOffset =  Math.ceil(this.xAxisStep / 2);
+
+      for (let i = 0; i < priceItems.length; i++) {
+        const priceRow = priceItems[i];
+        if(priceRow.isMinorLinePrice || priceRow.isMajorLinePrice) {
+          context.beginPath();
+          // plus 0.5 to fix line width. See https://stackoverflow.com/a/13879402
+          const y = Math.ceil(yScale(i) + yRowOffset) + 0.5;
+          context.moveTo(xScale(0), y) ;
+          context.lineTo(xScale(xScale.domain()[1]), y);
+          context.strokeStyle = themeColors.tableGridColor;
+          context.lineWidth = priceRow.isMajorLinePrice  ? 2 : 1;
+          context.stroke();
+        }
+
       }
     };
 

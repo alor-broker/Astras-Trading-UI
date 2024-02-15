@@ -32,6 +32,7 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
 import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { NzMarks } from "ng-zorro-antd/slider";
+import { ScalperOrderBookConstants } from "../../constants/scalper-order-book.constants";
 
 @Component({
   selector: 'ats-scalper-order-book-settings',
@@ -74,6 +75,14 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     rowHeight: {
       min: 12,
       max: 20
+    },
+    minorLinesStep: {
+      min: 1,
+      max: inputNumberValidation.max
+    },
+    majorLinesStep: {
+      min: 1,
+      max: inputNumberValidation.max
     },
     bracket: {
       price: {
@@ -161,6 +170,22 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
         Validators.required,
         Validators.min(this.validationOptions.rowHeight.min),
         Validators.max(this.validationOptions.rowHeight.max)
+      ]
+    ),
+    minorLinesStep: this.formBuilder.nonNullable.control(
+      5,
+      [
+        Validators.required,
+        Validators.min(this.validationOptions.minorLinesStep.min),
+        Validators.max(this.validationOptions.minorLinesStep.max)
+      ]
+    ),
+    majorLinesStep: this.formBuilder.nonNullable.control(
+      10,
+      [
+        Validators.required,
+        Validators.min(this.validationOptions.majorLinesStep.min),
+        Validators.max(this.validationOptions.majorLinesStep.max)
       ]
     ),
     // orders
@@ -439,6 +464,8 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
 
     this.form.controls.fontSize.setValue(settings.fontSize ?? 12);
     this.form.controls.rowHeight.setValue(settings.rowHeight ?? 18);
+    this.form.controls.minorLinesStep.setValue(settings.minorLinesStep ?? ScalperOrderBookConstants.defaultMinorLinesStep);
+    this.form.controls.majorLinesStep.setValue(settings.majorLinesStep ?? ScalperOrderBookConstants.defaultMajorLinesStep);
 
     this.form.controls.disableHotkeys.setValue(settings.disableHotkeys);
     this.form.controls.enableMouseClickSilentOrders.setValue(settings.enableMouseClickSilentOrders);

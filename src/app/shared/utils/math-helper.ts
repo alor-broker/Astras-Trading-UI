@@ -69,4 +69,16 @@ export class MathHelper {
 
     return this.round(roundedValue - valueMOD, minStepPrecision);
   }
+
+  /**
+   * checks if valueToCheck is a multiple of multiplier
+   * @param valueToCheck
+   * @param multiplier
+   */
+  static isMultipleOf(valueToCheck: number, multiplier: number): boolean {
+    const multiplierPrecision = Math.max(MathHelper.getPrecision(valueToCheck), MathHelper.getPrecision(multiplier));
+    const base = Math.pow(10, multiplierPrecision);
+
+    return Math.ceil(Math.round(valueToCheck * base) % Math.round(multiplier * base)) === 0;
+  }
 }

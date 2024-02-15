@@ -36,8 +36,14 @@
       color: @text-color;
       border-radius: 6px;
 
-      .gridster-item-resizable-handler.handle-e {
-        width: 5px;
+      .gridster-item-resizable-handler {
+        &.handle-e, &.handle-w {
+          width: @gridster-item-resizable-handler-width;
+        }
+
+        &.handle-s, &.handle-n {
+          height: @gridster-item-resizable-handler-width;
+        }
       }
     }
   }

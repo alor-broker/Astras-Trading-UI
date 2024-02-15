@@ -21,6 +21,7 @@ export interface ThemeColors {
   chartLabelsColor: string;
   chartPrimaryTextColor: string;
   chartShadow: string;
+  tableGridColor: string;
   textColor: string;
   textMaxContrastColor: string;
 }

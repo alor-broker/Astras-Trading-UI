@@ -1,6 +1,17 @@
-.widget {
-  height: inherit;
-  width: inherit;
-  padding: 0 10px 10px;
-}
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .widget {
+      height: inherit;
+      width: inherit;
+      padding: 0 @widget-padding @widget-padding;
+
+      &.zero-paddings {
+        padding: 0 @gridster-item-resizable-handler-width @gridster-item-resizable-handler-width;
+      }
+    }
+  }
+});
+
 

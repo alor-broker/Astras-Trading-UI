@@ -3,6 +3,7 @@
      (mouseleave)="isWidgetActivated$.next(false)"
      [class.active]="isWidgetActivated$ | async"
      class="widget"
+     [class.zero-paddings]="widgetInstance.widgetMeta.desktopMeta?.hasZeroPaddings"
 >
   <ng-container [ngSwitch]="widgetInstance.instance.widgetType">
     <ats-orderbook-widget *ngSwitchCase="'order-book'"

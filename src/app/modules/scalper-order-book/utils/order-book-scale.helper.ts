@@ -2,7 +2,7 @@
 import { Range } from "../../../shared/models/common.model";
 
 export class OrderBookScaleHelper {
-  static getStartPrice(bestAsk: number, bestBid: number, priceStep: number, scaleFactor: number): { startPrice: number, step: number }
+  static getStartPrice(bestAsk: number, bestBid: number, priceStep: number, scaleFactor: number, majorLinesStep: number): { startPrice: number, step: number }
   {
     const pricePrecision = MathHelper.getPrecision(priceStep);
 
@@ -23,9 +23,10 @@ export class OrderBookScaleHelper {
 
     let startPrice = bestAsk;
     const multiplier = Math.pow(10, pricePrecision);
+    const roundedPriceStep = Math.round(newPriceStep * multiplier * majorLinesStep);
+
     while (true) {
-      const roundedPrice = Math.floor(startPrice * multiplier);
-      const roundedPriceStep = Math.floor(newPriceStep * multiplier);
+      const roundedPrice = Math.round(startPrice * multiplier);
       if (Math.round(roundedPrice % roundedPriceStep) > 0) {
         startPrice = MathHelper.round(startPrice - priceStep, pricePrecision);
         continue;
