@@ -8,11 +8,17 @@ import {
   UntypedFormGroup,
   Validators
 } from "@angular/forms";
-import { Observable, take } from "rxjs";
+import {
+  Observable,
+  take
+} from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import { TechChartSettings } from '../../models/tech-chart-settings.model';
+import {
+  LineMarkerPosition,
+  TechChartSettings
+} from '../../models/tech-chart-settings.model';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
@@ -26,6 +32,8 @@ import { DeviceInfo } from "../../../../shared/models/device-info.model";
   styleUrls: ['./tech-chart-settings.component.less']
 })
 export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<TechChartSettings> implements OnInit {
+  readonly availableLineMarkerPositions = Object.values(LineMarkerPosition);
+
   form?: UntypedFormGroup;
   isSyntheticInstrument = SyntheticInstrumentsHelper.isSyntheticInstrument;
 
@@ -68,7 +76,11 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
         } as InstrumentKey, Validators.required),
         exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
         instrumentGroup: new UntypedFormControl(settings.instrumentGroup),
-        showTrades: new UntypedFormControl(settings.showTrades ?? false)
+        showTrades: new UntypedFormControl(settings.showTrades ?? false),
+        showOrders: new UntypedFormControl(settings.showOrders ?? true),
+        ordersLineMarkerPosition: new UntypedFormControl(settings.ordersLineMarkerPosition ?? LineMarkerPosition.Right),
+        showPosition: new UntypedFormControl(settings.showPosition ?? true),
+        positionLineMarkerPosition: new UntypedFormControl(settings.positionLineMarkerPosition ?? LineMarkerPosition.Right),
       });
     });
   }

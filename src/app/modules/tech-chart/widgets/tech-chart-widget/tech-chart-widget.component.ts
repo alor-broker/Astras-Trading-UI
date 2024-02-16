@@ -8,7 +8,10 @@ import { DashboardContextService } from '../../../../shared/services/dashboard-c
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import { Observable } from 'rxjs';
-import { TechChartSettings } from '../../models/tech-chart-settings.model';
+import {
+  LineMarkerPosition,
+  TechChartSettings
+} from '../../models/tech-chart-settings.model';
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
 import { TerminalSettingsService } from 'src/app/shared/services/terminal-settings.service';
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
@@ -55,7 +58,11 @@ export class TechChartWidgetComponent implements OnInit {
       'TechChartSettings',
       settings => ({
         ...settings,
-        showTrades: getValueOrDefault(settings.showTrades, false)
+        showTrades: getValueOrDefault(settings.showTrades, false),
+        showOrders: getValueOrDefault(settings.showOrders, true),
+        ordersLineMarkerPosition: getValueOrDefault(settings.ordersLineMarkerPosition, LineMarkerPosition.Middle),
+        showPosition: getValueOrDefault(settings.showPosition, true),
+        positionLineMarkerPosition: getValueOrDefault(settings.positionLineMarkerPosition, LineMarkerPosition.Middle),
       }),
       this.dashboardContextService,
       this.widgetSettingsService

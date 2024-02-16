@@ -20,14 +20,60 @@
             <input formControlName='exchange' nz-input>
           </nz-form-control>
         </nz-form-item>
-        <nz-form-item *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '')">
-          <nz-form-label nzFor="showTrades">
-            {{t('techChartSettings.showTradesLabel')}}
-          </nz-form-label>
-          <nz-form-control>
-            <nz-switch formControlName='showTrades'></nz-switch>
-          </nz-form-control>
-        </nz-form-item>
+
+        <ng-container *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '')">
+          <nz-form-item>
+            <nz-form-label nzFor="showOrders">
+              {{t('techChartSettings.showOrdersLabel')}}
+            </nz-form-label>
+            <nz-form-control>
+              <nz-switch formControlName='showOrders'></nz-switch>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item *ngIf="form.controls.showOrders.value">
+            <nz-form-control>
+              <nz-form-label nzFor="ordersLineMarkerPosition">{{t('techChartSettings.ordersLineMarkerPositionLabel')}}</nz-form-label>
+              <nz-select formControlName='ordersLineMarkerPosition'>
+                <nz-option
+                  *ngFor='let option of availableLineMarkerPositions'
+                  [nzLabel]="t('techChartSettings.lineMarkerPositionOptions.' + option, { fallback: option })"
+                  [nzValue]="option"
+                ></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzFor="showPosition">
+              {{t('techChartSettings.showPositionLabel')}}
+            </nz-form-label>
+            <nz-form-control>
+              <nz-switch formControlName='showPosition'></nz-switch>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item *ngIf="form.controls.showPosition.value">
+            <nz-form-control>
+              <nz-form-label nzFor="positionLineMarkerPosition">{{t('techChartSettings.positionLineMarkerPositionLabel')}}</nz-form-label>
+              <nz-select formControlName='positionLineMarkerPosition'>
+                <nz-option
+                  *ngFor='let option of availableLineMarkerPositions'
+                  [nzLabel]="t('techChartSettings.lineMarkerPositionOptions.' + option, { fallback: option })"
+                  [nzValue]="option"
+                ></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzFor="showTrades">
+              {{t('techChartSettings.showTradesLabel')}}
+            </nz-form-label>
+            <nz-form-control>
+              <nz-switch formControlName='showTrades'></nz-switch>
+            </nz-form-control>
+          </nz-form-item>
+        </ng-container>
+
         <nz-form-item *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '') && !deviceInfo.isMobile">
           <nz-collapse [nzBordered]="false" nzGhost>
             <nz-collapse-panel [nzHeader]="t('techChartSettings.advanced')">
