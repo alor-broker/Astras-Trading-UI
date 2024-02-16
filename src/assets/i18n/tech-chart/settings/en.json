@@ -5,5 +5,16 @@
   "advanced": "Advanced",
   "instrumentGroupLabel": "Trading mode",
   "instrumentGroupError": "Select trading mode",
-  "showTradesLabel": "Show trades"
+
+  "showOrdersLabel": "Show orders",
+  "ordersLineMarkerPositionLabel": "Order marker position",
+  "showPositionLabel": "Show position",
+  "positionLineMarkerPositionLabel": "Position marker position",
+  "showTradesLabel": "Show trades",
+
+  "lineMarkerPositionOptions": {
+    "right": "Right",
+    "middle": "Middle",
+    "left": "Left"
+  }
 }
