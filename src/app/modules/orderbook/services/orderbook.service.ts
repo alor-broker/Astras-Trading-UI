@@ -52,6 +52,7 @@ export class OrderbookService {
       ),
       OrderBookDataFeedHelper.getOrderbookSubscriptionId
     ).pipe(
+      startWith({ a: [], b: []}),
       map(ob => this.toOrderBook(ob))
     );
 
