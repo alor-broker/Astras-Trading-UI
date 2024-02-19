@@ -2,7 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BondScreenerComponent } from './bond-screener.component';
 import { Apollo } from "apollo-angular";
-import { of } from "rxjs";
+import { of, Subject } from "rxjs";
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 
 describe('BondScreenerComponent', () => {
   let component: BondScreenerComponent;
@@ -16,6 +17,12 @@ describe('BondScreenerComponent', () => {
           provide: Apollo,
           useValue: {
             watchQuery: jasmine.createSpy('watchQuery').and.returnValue({ valueChanges: of({})})
+          }
+        },
+        {
+          provide: WidgetSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject()),
           }
         }
       ]

@@ -4,6 +4,7 @@ import { BondScreenerWidgetComponent } from './widgets/bond-screener-widget/bond
 import { BondScreenerComponent } from './components/bond-screener/bond-screener.component';
 import { BondScreenerSettingsComponent } from './components/bond-screener-settings/bond-screener-settings.component';
 import { SharedModule } from "../../shared/shared.module";
+import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 
 
 
@@ -16,9 +17,10 @@ import { SharedModule } from "../../shared/shared.module";
   exports: [
     BondScreenerWidgetComponent
   ],
-  imports: [
-    CommonModule,
-    SharedModule
-  ]
+    imports: [
+        CommonModule,
+        SharedModule,
+        NzResizeObserverModule
+    ]
 })
 export class BondScreenerModule { }
