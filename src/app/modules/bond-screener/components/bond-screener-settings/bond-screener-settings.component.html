@@ -1,1 +1,37 @@
-<p>bond-screener-settings works!</p>
+<ats-widget-settings
+  [canSave]="canSave"
+  [canCopy]="canCopy"
+  [showCopy]="showCopy"
+  (saveClick)="updateSettings()"
+  (copyClick)="createWidgetCopy()"
+>
+  <ng-container *transloco="let t">
+    <div>
+      <form *ngIf="form" nz-form [nzLayout]="'horizontal'" [formGroup]="form">
+        <nz-form-item class="compact" *transloco="let tSettings; scope: 'bond-screener/settings'">
+          <nz-form-control [nzErrorTip]="tSettings('bondScreenerSettings.selectColumnsError')">
+            <nz-form-label nzRequired nzFor="bondScreenerColumns">{{tSettings('bondScreenerSettings.selectColumnLabel')}}</nz-form-label>
+            <nz-select
+              [nzMaxTagCount]="10"
+              [nzMaxTagPlaceholder]="tagPlaceHolder"
+              nzMode="multiple"
+              [nzPlaceHolder]="tSettings('bondScreenerSettings.selectColumnPlaceholder')"
+              formControlName="bondScreenerColumns"
+            >
+              <ng-container *transloco="let tBondScreener; scope: 'bond-screener/bond-screener'">
+                <nz-option
+                  *ngFor="let item of bondScreenerColumns"
+                  [nzLabel]="tBondScreener('bondScreenerBondScreener.columns.' + item.id)"
+                  [nzValue]="item.id"
+                >
+                </nz-option>
+              </ng-container>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </div>
+
+    <ng-template #tagPlaceHolder let-selectedList>{{t('maxTagPlaceholder', { count: selectedList.length })}}</ng-template>
+  </ng-container>
+</ats-widget-settings>

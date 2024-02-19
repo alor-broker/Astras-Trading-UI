@@ -17,13 +17,17 @@
     </ng-template>
 
     <ng-template #contentRef>
-      <ats-bond-screener [guid]="guid"></ats-bond-screener>
+      <nz-tabset nzSize="small">
+        <nz-tab nzTitle="Скринер">
+          <ats-bond-screener [guid]="guid"></ats-bond-screener>
+        </nz-tab>
+      </nz-tabset>
     </ng-template>
     <ng-template #settingsRef>
-<!--      <ats-bond-screener-settings-->
-<!--        (settingsChange)="onSettingsChange()"-->
-<!--        [guid]="guid"-->
-<!--      ></ats-bond-screener-settings>-->
+      <ats-bond-screener-settings
+        (settingsChange)="onSettingsChange()"
+        [guid]="guid"
+      ></ats-bond-screener-settings>
     </ng-template>
   </ats-widget-skeleton>
 

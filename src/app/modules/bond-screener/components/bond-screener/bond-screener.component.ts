@@ -78,10 +78,10 @@ export class BondScreenerComponent implements OnInit {
     this.bondsDisplay$ = of([]);
 
 
-    const gqlReq = gql<any, { first: number }>`
+    const gqlReq = gql<any, any>`
         {
         instruments(
-          first: $first
+          first: 5
           where: {
               basicInformation: {
                   symbol: {
@@ -125,10 +125,11 @@ export class BondScreenerComponent implements OnInit {
       }`;
 
     this.apollo.watchQuery({
-      query: gqlReq,
-      variables: { "first": 5 }
+      query: gqlReq
     })
-      .valueChanges.subscribe(v => console.log(v));
+      .valueChanges.subscribe(() => {
+
+    });
   }
 
   containerSizeChanged(entries: ResizeObserverEntry[]): void {

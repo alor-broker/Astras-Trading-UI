@@ -5,7 +5,7 @@ import {
   InstrumentSelectSettings
 } from "../../../instruments/models/instrument-select-settings.model";
 import { WidgetSettingsCreationHelper } from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
-import { bondScreenerColumns, BondScreenerSettings } from "../../models/bond-screener-settings.model";
+import { BondScreenerSettings, bondScreenerColumns } from "../../models/bond-screener-settings.model";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
