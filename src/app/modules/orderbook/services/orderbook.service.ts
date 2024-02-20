@@ -52,6 +52,7 @@ export class OrderbookService {
       ),
       OrderBookDataFeedHelper.getOrderbookSubscriptionId
     ).pipe(
+      startWith({ a: [], b: []}),
       map(ob => this.toOrderBook(ob))
     );
 
@@ -137,42 +138,34 @@ export class OrderbookService {
   }
 
   private makeChartData(rows: OrderBookViewRow[]): ChartData {
-    const asks = new Array<ChartPoint>(rows.length);
-    const bids = new Array<ChartPoint>(rows.length);
+    const asks = new Array<ChartPoint | null>(rows.length).fill(null);
+    const bids = new Array<ChartPoint | null>(rows.length).fill(null);
+
     let j = 0;
     for (let k = rows.length - 1; k >= 0; k--) {
       const row = rows[k] as OrderBookViewRow | undefined;
       j++;
       for (let i = 0; i < j; i++) {
-        asks[i] = {
-          y: (asks[i]?.y ?? 0) + (row?.askVolume ?? 0),
-          x: (asks[i] as ChartPoint | undefined)?.x ?? row?.ask ?? 0,
-        };
-        bids[i] = {
-          y: (bids[i]?.y ?? 0) + (row?.bidVolume ?? 0),
-          x: (bids[i] as ChartPoint | undefined)?.x ?? row?.bid ?? 0,
-        };
+        if(row?.ask != null) {
+          asks[i] =
+            {
+              y: (asks[i]?.y ?? 0) + (row?.askVolume ?? 0),
+              x: (asks[i] as ChartPoint | undefined)?.x ?? row?.ask ?? 0,
+            };
+        }
+
+        if(row?.bid != null) {
+          bids[i] = {
+            y: (bids[i]?.y ?? 0) + (row?.bidVolume ?? 0),
+            x: (bids[i] as ChartPoint | undefined)?.x ?? row?.bid ?? 0,
+          };
+        }
       }
     }
 
-    let minPrice = Math.min(...bids.map(b => b.x).filter(x => x > 0));
-    let maxPrice = Math.max(...asks.map(a => a.x).filter(x => x > 0));
-
-    if (minPrice === Infinity) {
-      minPrice = maxPrice === -Infinity ? maxPrice : Math.min(...asks.map(a => a.x).filter(x => x > 0));
-      minPrice -= maxPrice === minPrice ? minPrice : maxPrice - minPrice;
-    }
-
-    if (maxPrice === -Infinity) {
-      maxPrice = minPrice === Infinity ? minPrice : Math.max(...bids.map(b => b.x).filter(x => x > 0));
-      maxPrice += maxPrice === minPrice ? maxPrice : maxPrice - minPrice;
-    }
-
     return {
-      asks: asks.filter(x => x.x > 0),
-      bids: bids.filter(x => x.x > 0),
-      minPrice,
-      maxPrice
+      asks: asks.filter((x): x is ChartPoint => x != null),
+      bids: bids.filter((x): x is ChartPoint => x != null),
     };
   }
 
