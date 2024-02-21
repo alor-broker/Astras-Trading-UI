@@ -237,14 +237,6 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     this.form.updateValueAndValidity();
   }
 
-  private getCurrentPrice(): Observable<number | null> {
-    return this.getInstrumentWithPortfolio()
-      .pipe(
-        take(1),
-        switchMap(x => this.quotesService.getLastPrice(x.instrument))
-      );
-  }
-
   private checkNowTimeSelection(timezoneConverter: TimezoneConverter): void {
     // nz-date-picker does not support timezones changing
     // now selection will be available only if time displayed in current timezone
