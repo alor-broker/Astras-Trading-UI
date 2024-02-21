@@ -35,16 +35,32 @@ export class TimezoneConverter {
 
   /**
    * Converts terminal date (the date that is displayed in the terminal, taking into account the selected time zone) to utc date
-   * @param {Date} dateWithTimezone -  terminal date.
+   * @param dateWithTimezone -  terminal date.
+   * @param skipTime -  use only date part
    *
    * @returns {Date} utc date
    */
-  public terminalToUtc0Date(dateWithTimezone: Date): Date {
-    let convertedDate = dateWithTimezone;
+  public terminalToUtc0Date(dateWithTimezone: Date, skipTime = false): Date {
+    let convertedDate = new Date(dateWithTimezone);
+    if(skipTime) {
+      convertedDate.setHours(0);
+      convertedDate.setMinutes(0);
+      convertedDate.setSeconds(0);
+      convertedDate.setMilliseconds(0);
+    }
+
     if (this.displayTimezone === TimezoneDisplayOption.MskTime) {
       const localTime = new Date();
-      localTime.setMilliseconds(dateWithTimezone.getMilliseconds());
-      localTime.setSeconds(dateWithTimezone.getSeconds());
+
+      if(skipTime) {
+        localTime.setHours(0);
+        localTime.setMinutes(0);
+        localTime.setSeconds(0);
+        localTime.setMilliseconds(0);
+      } else {
+        localTime.setMilliseconds(dateWithTimezone.getMilliseconds());
+        localTime.setSeconds(dateWithTimezone.getSeconds());
+      }
 
       const mskTime = this.toMskTime(localTime);
       const correction = localTime.getTime() - mskTime.getTime();

@@ -31,7 +31,8 @@ export class OrderDetailsService {
 
         return {
           ...order,
-          transTime: new Date(order.transTime)
+          transTime: new Date(order.transTime),
+          endTime: order.endTime ? new Date(order.endTime!) : undefined,
         };
       }),
       take(1)

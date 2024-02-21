@@ -1,14 +1,36 @@
-import { Component, DestroyRef, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 import { CommonParametersService } from "../../../services/common-parameters.service";
-import { FormBuilder, Validators } from "@angular/forms";
+import {
+  FormBuilder,
+  Validators
+} from "@angular/forms";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
 import { AtsValidators } from "../../../../../shared/utils/form-validators";
 import { Side } from "../../../../../shared/models/enums/side.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
-import { BehaviorSubject, combineLatest, distinctUntilChanged, Observable, switchMap, take } from "rxjs";
-import { debounceTime, filter, map, startWith } from "rxjs/operators";
+import {
+  BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged,
+  Observable,
+  shareReplay,
+  switchMap,
+  take
+} from "rxjs";
+import {
+  debounceTime,
+  filter,
+  map,
+  startWith
+} from "rxjs/operators";
 import { PriceDiffHelper } from "../../../utils/price-diff.helper";
 import { TimeInForce } from "../../../../../shared/models/orders/order.model";
 import {
@@ -17,12 +39,30 @@ import {
   SubmitOrderResult
 } from "../../../../../shared/models/orders/new-order.model";
 import { LessMore } from "../../../../../shared/models/enums/less-more.model";
-import { NewLinkedOrder, OrderService } from "../../../../../shared/services/orders/order.service";
-import { ExecutionPolicy, SubmitGroupResult } from "../../../../../shared/models/orders/orders-group.model";
+import {
+  NewLinkedOrder,
+  OrderService
+} from "../../../../../shared/services/orders/order.service";
+import {
+  ExecutionPolicy,
+  SubmitGroupResult
+} from "../../../../../shared/models/orders/orders-group.model";
 import { BaseOrderFormComponent } from "../base-order-form.component";
 import { EvaluationBaseProperties } from "../../../../../shared/models/evaluation-base-properties.model";
-import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
+import {
+  MarketType,
+  PortfolioKey
+} from "../../../../../shared/models/portfolio-key.model";
 import { toInstrumentKey } from "../../../../../shared/utils/instruments";
+import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
+import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
+import {
+  addDays,
+  addSeconds,
+  startOfDay,
+  toUnixTime
+} from "../../../../../shared/utils/datetime";
+import { MarketService } from "../../../../../shared/services/market.service";
 
 @Component({
   selector: 'ats-limit-order-form',
@@ -34,6 +74,13 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
   readonly evaluationRequest$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   readonly sides = Side;
   timeInForceEnum = TimeInForce;
+
+  timezones$!: Observable<{ exchangeTimezone: string, displayTimezone: string}>;
+
+  disabledDate = (date: Date): boolean => {
+    const today = startOfDay(new Date());
+    return toUnixTime(date) < toUnixTime(today);
+  };
 
   form = this.formBuilder.group({
     quantity: this.formBuilder.nonNullable.control(
@@ -49,6 +96,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     price: this.formBuilder.control<number | null>(null),
     instrumentGroup: this.formBuilder.nonNullable.control<string>(''),
     timeInForce: this.formBuilder.control<TimeInForce | null>(null),
+    orderEndUnixTime: this.formBuilder.control<Date | null>(null),
     isIceberg: this.formBuilder.nonNullable.control(false),
     icebergFixed: this.formBuilder.control<number | null>(
       null,
@@ -87,7 +135,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
         ]
       }
     ),
-    bottomOrderSide: this.formBuilder.nonNullable.control(Side.Buy),
+    bottomOrderSide: this.formBuilder.nonNullable.control(Side.Buy)
   });
 
   currentPriceDiffPercent$!: Observable<{ percent: number, sign: number } | null>;
@@ -109,6 +157,8 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     private readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly orderService: OrderService,
+    private readonly timezoneConverterService: TimezoneConverterService,
+    private readonly marketService: MarketService,
     protected readonly destroyRef: DestroyRef) {
     super(destroyRef);
   }
@@ -123,6 +173,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     this.initPriceDiffCalculation();
     this.initEvaluationUpdate();
     this.initFormFieldsCheck();
+    this.initTimezones();
   }
 
   setQuantity(value: number): void {
@@ -136,10 +187,10 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     this.evaluationRequest$.complete();
   }
 
-  protected changeInstrument(newInstrument: Instrument): void {
+  protected changeInstrument(instrument: Instrument, portfolioKey: PortfolioKey): void {
     this.form.reset(undefined, {emitEvent: true});
 
-    this.setPriceValidators(this.form.controls.price, newInstrument);
+    this.setPriceValidators(this.form.controls.price, instrument);
 
     if (this.initialValues) {
       if (this.initialValues.price != null) {
@@ -170,7 +221,13 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       }
     }
 
-    this.form.controls.instrumentGroup.setValue(newInstrument.instrumentGroup ?? '');
+    this.form.controls.instrumentGroup.setValue(instrument.instrumentGroup ?? '');
+
+    if(portfolioKey.marketType !== MarketType.Forward) {
+      this.disableControl(this.form.controls.orderEndUnixTime);
+    } else {
+      this.enableControl(this.form.controls.orderEndUnixTime);
+    }
 
     this.form.clearValidators();
     this.form.addValidators([
@@ -181,25 +238,30 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
   }
 
   protected prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<SubmitOrderResult | SubmitGroupResult | null> {
-    const limitOrder = this.getLimitOrder(instrument, side);
-    const bracketOrders = this.getBracketOrders(limitOrder);
+    return this.timezoneConverterService.getConverter().pipe(
+      take(1),
+      switchMap(tc => {
+        const limitOrder = this.getLimitOrder(instrument, side, tc);
+        const bracketOrders = this.getBracketOrders(limitOrder);
 
-    if (bracketOrders.length === 0) {
-      return this.orderService.submitLimitOrder(limitOrder, portfolioKey.portfolio);
-    } else {
-      return this.orderService.submitOrdersGroup([
-          {
-            ...limitOrder,
-            type: "Limit"
-          },
-          ...bracketOrders.map(x => ({
-            ...x,
-            type: "StopLimit"
-          } as NewLinkedOrder))
-        ],
-        portfolioKey.portfolio,
-        ExecutionPolicy.TriggerBracketOrders);
-    }
+        if (bracketOrders.length === 0) {
+          return this.orderService.submitLimitOrder(limitOrder, portfolioKey.portfolio);
+        } else {
+          return this.orderService.submitOrdersGroup([
+              {
+                ...limitOrder,
+                type: "Limit"
+              },
+              ...bracketOrders.map(x => ({
+                ...x,
+                type: "StopLimit"
+              } as NewLinkedOrder))
+            ],
+            portfolioKey.portfolio,
+            ExecutionPolicy.TriggerBracketOrders);
+        }
+      })
+    );
   }
 
   private initCommonParametersUpdate(): void {
@@ -227,7 +289,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     });
   }
 
-  private getLimitOrder(instrument: Instrument, side: Side): NewLimitOrder {
+  private getLimitOrder(instrument: Instrument, side: Side, timezoneConverter: TimezoneConverter): NewLimitOrder {
     const formValue = this.form.value;
     const limitOrder = {
       instrument: this.getOrderInstrument(formValue, instrument),
@@ -246,6 +308,14 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
 
     if (formValue.icebergVariance != null) {
       limitOrder.icebergVariance = Number(formValue.icebergVariance);
+    }
+
+    if(formValue.orderEndUnixTime != null) {
+      let selectedDate = timezoneConverter.terminalToUtc0Date(formValue.orderEndUnixTime, true);
+      selectedDate = addDays(selectedDate, 1);
+      selectedDate = addSeconds(selectedDate, -1);
+
+      limitOrder.orderEndUnixTime = Math.ceil( selectedDate.getTime() / 1000);
     }
 
     return limitOrder;
@@ -355,6 +425,28 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       this.disableControl(this.form.controls.icebergVariance);
     }
 
+    if(this.form.controls.orderEndUnixTime.enabled && this.form.controls.orderEndUnixTime.value !== null) {
+      this.disableControl(this.form.controls.timeInForce);
+    } else {
+      this.enableControl(this.form.controls.timeInForce);
+    }
+
     this.form.updateValueAndValidity();
+  }
+
+  private initTimezones(): void {
+    this.timezones$ = combineLatest({
+      marketSettings: this.marketService.getMarketSettings(),
+      instrumentWithPortfolio: this.getInstrumentWithPortfolio(),
+      timezoneConverter: this.timezoneConverterService.getConverter()
+    }).pipe(
+      map(x => {
+        return {
+          displayTimezone: x.timezoneConverter.getTimezone().name,
+          exchangeTimezone: x.marketSettings.exchanges.find(e => e.exchange === x.instrumentWithPortfolio.portfolioKey.exchange)?.settings.timezone ?? ''
+        };
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
   }
 }
