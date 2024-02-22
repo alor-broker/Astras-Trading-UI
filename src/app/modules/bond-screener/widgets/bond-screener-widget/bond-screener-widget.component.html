@@ -1,4 +1,4 @@
-<ng-container *transloco="let t;">
+<ng-container *transloco="let t; scope: 'bond-screener'">
   <ats-widget-skeleton
     *ngIf="settings$ | async as settings"
     [content]="contentRef"
@@ -12,13 +12,16 @@
         (switchSettings)="onSettingsChange()"
         [guid]="guid"
         [hasSettings]="true"
+        [selectedBadgeColor]="settings.badgeColor"
+        [showBadgesMenu]="(showBadge$ | async) ?? false"
+        badgeShape="square"
         [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
     </ng-template>
 
     <ng-template #contentRef>
       <nz-tabset nzSize="small">
-        <nz-tab nzTitle="Скринер">
+        <nz-tab [nzTitle]="t('bondScreener.screenerTab')">
           <ats-bond-screener [guid]="guid"></ats-bond-screener>
         </nz-tab>
       </nz-tabset>

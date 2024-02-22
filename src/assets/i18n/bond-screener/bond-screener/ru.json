@@ -1,6 +1,40 @@
 {
   "columns": {
+    "tradingStatusInfo": "Статус",
     "symbol": "Тикер",
-    "shortName": "Назв."
+    "shortName": "Назв.",
+    "exchange": "Биржа",
+    "maturityDate": "Дата погашения",
+    "placementEndDate": "Дата окончания размещения",
+    "cancellation": "Дата окончания",
+    "emissionValue": "Заявл. объём выпуска",
+    "couponType": "Тип купона",
+    "couponRate": "Ставка купона, %",
+    "priceMultiplier": "Множитель цены",
+    "board": "Режим торогов",
+    "guaranteed": "Гарантия",
+    "hasOffer": "Доср. выкуп/погашение",
+    "lotSize": "Размер лота",
+    "minStep": "Шаг цены",
+    "priceMax": "Макс. цена",
+    "priceMin": "Мин. цена",
+    "priceStep": "Стоимость шага цены",
+    "currentYield": "Доходность, %"
+  },
+
+  "filters": {
+    "couponType": {
+      "FIXED": "Фиксированный",
+      "FLOAT": "Переменный",
+      "UNKNOWN": "Неизвестно"
+    },
+    "hasOffer": {
+      "true": "Да",
+      "false": "Нет"
+    },
+    "guaranteed": {
+      "true": "Да",
+      "false": "Нет"
+    }
   }
 }

@@ -712,8 +712,8 @@
     },
     "category": "info",
     "desktopMeta": {
-      "headerIcon": "eye",
-      "galleryIcon": "eye",
+      "headerIcon": "monitor",
+      "galleryIcon": "monitor",
       "addOptions": {
         "initialPosition": "auto",
         "isFullWidth": false,

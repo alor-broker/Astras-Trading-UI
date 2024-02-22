@@ -1,6 +1,40 @@
 {
   "columns": {
+    "tradingStatusInfo": "Status",
     "symbol": "Ticker",
-    "shortName": "Name"
+    "shortName": "Name",
+    "exchange": "Exchange",
+    "maturityDate": "Maturity date",
+    "placementEndDate": "Placement end date",
+    "cancellation": "Cancellation date",
+    "emissionValue": "Emission",
+    "couponType": "Coupon type",
+    "couponRate": "Coupon rate, %",
+    "priceMultiplier": "Price multiplier",
+    "board": "Board",
+    "guaranteed": "Guaranteed",
+    "hasOffer": "Has offer",
+    "lotSize": "Lot size",
+    "minStep": "Min step",
+    "priceMax": "Max price",
+    "priceMin": "Min price",
+    "priceStep": "Price step",
+    "currentYield": "Yield, %"
+  },
+
+  "filters": {
+    "couponType": {
+      "FIXED": "Fixed",
+      "FLOAT": "Float",
+      "UNKNOWN": "Unknown"
+    },
+    "hasOffer": {
+      "true": "Yes",
+      "false": "No"
+    },
+    "guaranteed": {
+      "true": "Yes",
+      "false": "No"
+    }
   }
 }
