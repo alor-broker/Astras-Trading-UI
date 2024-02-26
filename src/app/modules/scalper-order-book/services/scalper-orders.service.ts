@@ -1,23 +1,23 @@
-import {Injectable} from '@angular/core';
-import {OrderCancellerService} from "../../../shared/services/order-canceller.service";
-import {CancelCommand} from "../../../shared/models/commands/cancel-command.model";
-import {take} from "rxjs";
-import {InstrumentKey} from "../../../shared/models/instruments/instrument-key.model";
-import {PortfolioKey} from "../../../shared/models/portfolio-key.model";
-import {Position} from "../../../shared/models/positions/position.model";
-import {OrderService} from "../../../shared/services/orders/order.service";
-import {Side} from "../../../shared/models/enums/side.model";
-import {NzNotificationService} from "ng-zorro-antd/notification";
-import {Instrument} from '../../../shared/models/instruments/instrument.model';
-import {CurrentOrderDisplay,} from '../models/scalper-order-book.model';
-import {OrderbookData} from '../../orderbook/models/orderbook-data.model';
-import {MathHelper} from '../../../shared/utils/math-helper';
-import {LessMore} from "../../../shared/models/enums/less-more.model";
-import {PriceUnits, ScalperOrderBookWidgetSettings} from "../models/scalper-order-book-settings.model";
-import {ExecutionPolicy} from "../../../shared/models/orders/orders-group.model";
-import {OrdersDialogService} from "../../../shared/services/orders/orders-dialog.service";
-import {OrderType} from "../../../shared/models/orders/orders-dialog.model";
-import {toInstrumentKey} from "../../../shared/utils/instruments";
+import { Injectable } from '@angular/core';
+import { OrderCancellerService } from "../../../shared/services/order-canceller.service";
+import { CancelCommand } from "../../../shared/models/commands/cancel-command.model";
+import { take } from "rxjs";
+import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
+import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
+import { Position } from "../../../shared/models/positions/position.model";
+import { OrderService } from "../../../shared/services/orders/order.service";
+import { Side } from "../../../shared/models/enums/side.model";
+import { NzNotificationService } from "ng-zorro-antd/notification";
+import { Instrument } from '../../../shared/models/instruments/instrument.model';
+import { CurrentOrderDisplay, } from '../models/scalper-order-book.model';
+import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
+import { MathHelper } from '../../../shared/utils/math-helper';
+import { LessMore } from "../../../shared/models/enums/less-more.model";
+import { PriceUnits, ScalperOrderBookWidgetSettings } from "../models/scalper-order-book-settings.model";
+import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
+import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
+import { OrderType } from "../../../shared/models/orders/orders-dialog.model";
+import { toInstrumentKey } from "../../../shared/utils/instruments";
 import {
   NewLimitOrder,
   NewMarketOrder,
@@ -119,8 +119,8 @@ export class ScalperOrdersService {
             quantity: quantity,
             instrument: toInstrumentKey(instrument)
           },
-          this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Top),
-          this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Bottom),
+          this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Top, side),
+          this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Bottom, side),
           portfolio.portfolio
         );
       } else {
@@ -157,8 +157,8 @@ export class ScalperOrdersService {
           price: bestBid!,
           instrument: toInstrumentKey(settings)
         },
-        this.getBracketOrderPrice(settings, bestBid, instrument.minstep, BracketOrderType.Top),
-        this.getBracketOrderPrice(settings, bestBid, instrument.minstep, BracketOrderType.Bottom),
+        this.getBracketOrderPrice(settings, bestBid, instrument.minstep, BracketOrderType.Top, Side.Sell),
+        this.getBracketOrderPrice(settings, bestBid, instrument.minstep, BracketOrderType.Bottom, Side.Sell),
         portfolio.portfolio
       );
     } else {
@@ -194,8 +194,8 @@ export class ScalperOrdersService {
         price: bestAsk!,
         instrument: toInstrumentKey(settings)
       },
-        this.getBracketOrderPrice(settings, bestAsk, instrument.minstep, BracketOrderType.Top),
-        this.getBracketOrderPrice(settings, bestAsk, instrument.minstep, BracketOrderType.Bottom),
+        this.getBracketOrderPrice(settings, bestAsk, instrument.minstep, BracketOrderType.Top, Side.Buy),
+        this.getBracketOrderPrice(settings, bestAsk, instrument.minstep, BracketOrderType.Bottom, Side.Buy),
         portfolio.portfolio
         );
     } else {
@@ -241,8 +241,8 @@ export class ScalperOrdersService {
     portfolio: PortfolioKey,
     position: Position | null
   ): void {
-    const topOrderPrice = this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Top);
-    const bottomOrderPrice = this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Bottom);
+    const topOrderPrice = this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Top, side);
+    const bottomOrderPrice = this.getBracketOrderPrice(settings, price, instrument.minstep, BracketOrderType.Bottom, side);
 
     if (silent) {
       const order: NewLimitOrder = {
@@ -471,28 +471,36 @@ export class ScalperOrdersService {
     return (settings.bracketsSettings.useBracketsWhenClosingPosition ?? false) || !isClosingPosition;
   }
 
-  private getBracketOrderPrice(settings: ScalperOrderBookWidgetSettings, price: number, minStep: number, orderType: BracketOrderType): number | null {
+  private getBracketOrderPrice(
+    settings: ScalperOrderBookWidgetSettings,
+    price: number,
+    minStep: number,
+    orderType: BracketOrderType,
+    side: Side
+  ): number | null {
     if (!(settings.useBrackets ?? false)) {
       return null;
     }
 
     let dirtyPrice: number | null;
+    const topOrderPriceRatio  = side === Side.Buy ? settings.bracketsSettings?.topOrderPriceRatio :  settings.bracketsSettings?.bottomOrderPriceRatio;
+    const bottomOrderPriceRatio  = side === Side.Buy ? settings.bracketsSettings?.bottomOrderPriceRatio :  settings.bracketsSettings?.topOrderPriceRatio;
 
     if (!settings.bracketsSettings!.orderPriceUnits || settings.bracketsSettings!.orderPriceUnits === PriceUnits.Points) {
       dirtyPrice = orderType === BracketOrderType.Top
-        ? settings.bracketsSettings!.topOrderPriceRatio != null
-          ? price + (settings.bracketsSettings!.topOrderPriceRatio! * minStep)
+        ? topOrderPriceRatio != null
+          ? price + (topOrderPriceRatio! * minStep)
           : null
-        : settings.bracketsSettings!.bottomOrderPriceRatio != null
-          ? price - (settings.bracketsSettings!.bottomOrderPriceRatio! * minStep)
+        : bottomOrderPriceRatio != null
+          ? price - (bottomOrderPriceRatio! * minStep)
           : null;
     } else {
       dirtyPrice = orderType === BracketOrderType.Top
-        ? settings.bracketsSettings!.topOrderPriceRatio != null
-          ? (1 + settings.bracketsSettings!.topOrderPriceRatio! * 0.01) * price
+        ? topOrderPriceRatio != null
+          ? (1 + topOrderPriceRatio! * 0.01) * price
           : null
-        : settings.bracketsSettings!.bottomOrderPriceRatio != null
-          ? (1 - settings.bracketsSettings!.bottomOrderPriceRatio! * 0.01) * price
+        : bottomOrderPriceRatio != null
+          ? (1 - bottomOrderPriceRatio! * 0.01) * price
           : null;
     }
 
