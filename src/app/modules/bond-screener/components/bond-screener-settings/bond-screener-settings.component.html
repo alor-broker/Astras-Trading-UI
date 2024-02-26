@@ -8,14 +8,14 @@
   <ng-container *transloco="let t">
     <div>
       <form *ngIf="form" nz-form [nzLayout]="'horizontal'" [formGroup]="form">
-        <nz-form-item class="compact" *transloco="let tSettings; scope: 'bond-screener/settings'">
-          <nz-form-control [nzErrorTip]="tSettings('bondScreenerSettings.selectColumnsError')">
-            <nz-form-label nzRequired nzFor="bondScreenerColumns">{{tSettings('bondScreenerSettings.selectColumnLabel')}}</nz-form-label>
+        <nz-form-item class="compact">
+          <nz-form-control [nzErrorTip]="t('validationErrors.selectColumnsError')">
+            <nz-form-label nzRequired nzFor="bondScreenerColumns">{{t('form.tableColumns.selectColumnLabel')}}</nz-form-label>
             <nz-select
               [nzMaxTagCount]="10"
               [nzMaxTagPlaceholder]="tagPlaceHolder"
               nzMode="multiple"
-              [nzPlaceHolder]="tSettings('bondScreenerSettings.selectColumnPlaceholder')"
+              [nzPlaceHolder]="t('form.tableColumns.selectColumnLabel')"
               formControlName="bondScreenerColumns"
             >
               <ng-container *transloco="let tBondScreener; scope: 'bond-screener/bond-screener'">

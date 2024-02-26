@@ -75,12 +75,16 @@
     "instrumentGroup": {
       "label": "Режим торгов",
       "commonError": "Выберите режим торгов"
+    },
+    "tableColumns": {
+      "selectColumnLabel": "Колонки таблицы"
     }
   },
 
   "validationErrors": {
     "emptyFieldError": "Введите значение",
     "selectValueError": "Выберите значение",
+    "selectColumnsError": "Выберите колонки",
     "tooLittle": "Слишком мало",
     "tooMuch": "Слишком много",
     "intervalError": "Значение должно быть от {{min}} до {{max}}"

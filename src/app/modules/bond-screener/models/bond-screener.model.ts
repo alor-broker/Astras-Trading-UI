@@ -6,7 +6,7 @@ export interface BondScreenerResponse {
 }
 
 export interface BondEdge {
-  node: BondNode;
+  node: Partial<BondNode>;
   cursor: string;
 }
 

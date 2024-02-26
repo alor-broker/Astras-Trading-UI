@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Inject, Input, OnInit } from '@angular/core';
+import { Component, DestroyRef, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, shareReplay, switchMap, take, tap, withLatestFrom } from 'rxjs';
 import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
 import { TableConfig } from '../../../../shared/models/table-config.model';
@@ -25,52 +25,9 @@ import { DashboardContextService } from "../../../../shared/services/dashboard-c
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import { InstrumentGroups } from "../../../../shared/models/dashboard/dashboard.model";
 import { MathHelper } from "../../../../shared/utils/math-helper";
+import { BOND_FILTER_TYPES, BOND_NESTED_FIELDS } from "../../utils/bond-screener.helper";
 
-const BOND_NESTED_FIELDS: { [fieldName: string]: string[] } = {
-  basicInformation: ['symbol', 'shortName', 'exchange'],
-  financialAttributes: ['tradingStatusInfo'],
-  additionalInformation: ['cancellation', 'priceMultiplier'],
-  boardInformation: ['board'],
-  yield: ['currentYield'],
-  tradingDetails: ['lotSize', 'minStep', 'priceMax', 'priceMin', 'priceStep', 'rating'],
-  rootFields: ['couponRate', 'couponType', 'emissionValue', 'guaranteed', 'hasOffer', 'maturityDate', 'placementEndDate']
-};
-
-const BOND_FILTER_TYPES: { [fieldName: string]: string[] } = {
-  search: ['symbol', 'shortName', 'board'],
-  multiSelect: ['exchange', 'couponType'],
-  interval: [
-    'priceMultiplierFrom',
-    'priceMultiplierTo',
-    'couponRateFrom',
-    'couponRateTo',
-    'currentYieldFrom',
-    'currentYieldTo',
-    'emissionValueFrom',
-    'emissionValueTo',
-    'lotSizeFrom',
-    'lotSizeTo',
-    'minStepFrom',
-    'minStepTo',
-    'priceMaxFrom',
-    'priceMaxTo',
-    'priceMinFrom',
-    'priceMinTo',
-    'priceStepFrom',
-    'priceStepTo'
-  ],
-  bool: ['guaranteed', 'hasOffer'],
-  date: [
-    'cancellationTo',
-    'cancellationFrom',
-    'maturityDateTo',
-    'maturityDateFrom',
-    'placementEndDateTo',
-    'placementEndDateFrom',
-  ]
-};
-
-interface BondDisplay extends BondNode {
+interface BondDisplay extends Partial<BondNode> {
   id: string;
 }
 
@@ -79,7 +36,7 @@ interface BondDisplay extends BondNode {
   templateUrl: './bond-screener.component.html',
   styleUrls: ['./bond-screener.component.less']
 })
-export class BondScreenerComponent implements OnInit {
+export class BondScreenerComponent implements OnInit, OnDestroy {
 
   @Input({required: true}) guid!: string;
 
@@ -452,8 +409,8 @@ export class BondScreenerComponent implements OnInit {
             ...b,
             badges: Object.keys(availableBadges)
               .filter(key =>
-                b.basicInformation.symbol === availableBadges[key]!.symbol &&
-                b.basicInformation.exchange === availableBadges[key]!.exchange
+                b.basicInformation!.symbol === availableBadges[key]!.symbol &&
+                b.basicInformation!.exchange === availableBadges[key]!.exchange
               )
           }));
         })
@@ -461,6 +418,15 @@ export class BondScreenerComponent implements OnInit {
 
     this.initTableSettings();
     this.initBonds();
+  }
+
+  ngOnDestroy(): void {
+    this.contentSize$.complete();
+    this.isLoading$.complete();
+    this.bondsList$.complete();
+    this.filters$.complete();
+    this.sort$.complete();
+    this.scrolled$.complete();
   }
 
   containerSizeChanged(entries: ResizeObserverEntry[]): void {
@@ -525,8 +491,8 @@ export class BondScreenerComponent implements OnInit {
 
   selectInstrument(row: BondDisplay): void {
     const instrument = {
-      symbol: row.basicInformation.symbol,
-      exchange: row.basicInformation.exchange,
+      symbol: row.basicInformation!.symbol,
+      exchange: row.basicInformation!.exchange,
     };
 
     this.settings$.pipe(
@@ -569,72 +535,27 @@ export class BondScreenerComponent implements OnInit {
         filter(() => this.pageInfo == null || this.pageInfo.hasNextPage),
         switchMap(([ tableConfig, filters, sort ]) => {
           this.isLoading$.next(true);
-          const columns = tableConfig.columns;
-          const columnIds = columns.map(c => c.id);
 
-          const basicInformationFields = BOND_NESTED_FIELDS.basicInformation.filter(f => columnIds.includes(f));
-          const additionalInformationFields = BOND_NESTED_FIELDS.additionalInformation.filter(f => columnIds.includes(f));
-          const financialAttributesFields = BOND_NESTED_FIELDS.financialAttributes.filter(f => columnIds.includes(f));
-          const boardInformationFields = BOND_NESTED_FIELDS.boardInformation.filter(f => columnIds.includes(f));
-          const tradingDetailsFields = BOND_NESTED_FIELDS.tradingDetails.filter(f => columnIds.includes(f));
-          const yieldFields = BOND_NESTED_FIELDS.yield.filter(f => columnIds.includes(f));
-          const rootFields = BOND_NESTED_FIELDS.rootFields.filter(f => columnIds.includes(f));
+          const columnIds = tableConfig.columns.map(c => c.id);
 
-          const query = `query GET_BONDS($first: Int, $after: String, $filters: BondFilterInput) {
-            bonds(
-              first: $first,
-              after: $after,
-              where: $filters,
-              ${ sort == null ? '' : ('order: ' + sort) }
-              ) {
-              edges {
-                node {
-                  basicInformation { symbol exchange ${ basicInformationFields.join(' ') } }
-                  ${ additionalInformationFields.length > 0
-                    ? 'additionalInformation {' + additionalInformationFields.join(' ') + '}'
-                    : ''
-                  }
-                  ${ financialAttributesFields.length > 0
-                    ? 'financialAttributes {' + financialAttributesFields.join(' ') + '}'
-                    : ''
-                  }
-                  ${ boardInformationFields.length > 0
-                    ? 'boardInformation {' + boardInformationFields.join(' ') + '}'
-                    : ''
-                  }
-                  ${ tradingDetailsFields.length > 0
-                    ? 'tradingDetails {' + tradingDetailsFields.join(' ') + '}'
-                    : ''
-                  }
-                  ${ yieldFields.length > 0
-                    ? 'yield {' + yieldFields.join(' ') + '}'
-                    : ''
-                  }
-                  ${ rootFields.join(' ') }
-                }
-                cursor
-              }
-              pageInfo {
-                hasNextPage
-                endCursor
-              }
-            }
-          }`;
-
-          return this.service.getBonds(query, { first: this.limit, after: this.pageInfo?.endCursor, filters });
+          return this.service.getBonds(columnIds, sort, { first: this.limit, after: this.pageInfo?.endCursor, filters });
         }),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(data => {
-        const newBonds = data.bonds.edges.map((be: BondEdge) => ({
+        if (data == null) {
+          return;
+        }
+
+        const newBonds = data!.bonds.edges.map((be: BondEdge) => ({
           ...be.node,
           id: be.cursor
-        }));
+        })) ?? [];
 
         this.isLoading$.next(false);
         if (this.pageInfo == null) {
           this.bondsList$.next(newBonds);
-          this.pageInfo = data.bonds.pageInfo;
+          this.pageInfo = data?.bonds.pageInfo ?? null;
           return;
         }
 
@@ -642,7 +563,7 @@ export class BondScreenerComponent implements OnInit {
           .pipe(take(1))
           .subscribe(bonds => {
             this.bondsList$.next([...bonds, ...newBonds]);
-            this.pageInfo = data.bonds.pageInfo;
+            this.pageInfo = data?.bonds.pageInfo ?? null;
           });
       });
   }
@@ -705,7 +626,7 @@ export class BondScreenerComponent implements OnInit {
               ),
               transformFn: ['couponType', 'hasOffer', 'guaranteed'].includes(col.column.id)
                 ? (data: BondDisplay): string => translate(
-                  ['filters', col.column.id, data[col.column.id as keyof BondDisplay]?.toString()],
+                  ['filters', col.column.id, data[col.column.id as keyof BondDisplay]?.toString() ?? ''],
                   {fallback: data[col.column.id as keyof BondDisplay] as string}
                 )
                 : col.column.transformFn,
