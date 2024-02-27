@@ -545,7 +545,7 @@ describe('ScalperOrdersService', () => {
           ...expectedLimitOrder,
           type: 'StopLimit',
           condition: LessMore.MoreOrEqual,
-          triggerPrice: MathHelper.roundPrice(testBids[0].p + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
+          triggerPrice: MathHelper.roundPrice(testBids[0].p + (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Buy,
           activate: false
         },
@@ -553,7 +553,7 @@ describe('ScalperOrdersService', () => {
           ...expectedLimitOrder,
           type: 'StopLimit',
           condition: LessMore.LessOrEqual,
-          triggerPrice: MathHelper.roundPrice(testBids[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
+          triggerPrice: MathHelper.roundPrice(testBids[0].p - (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Buy,
           activate: false
         },
