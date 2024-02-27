@@ -6,43 +6,43 @@ export interface BondScreenerResponse {
 }
 
 export interface BondEdge {
-  node: Partial<BondNode>;
+  node: BondNode;
   cursor: string;
 }
 
 export interface BondNode {
   basicInformation: {
     symbol: string;
-    shortName: string;
+    shortName?: string;
     exchange: string;
   };
-  financialAttributes: {
-    tradingStatusInfo: string;
+  financialAttributes?: {
+    tradingStatusInfo?: string;
   };
-  additionalInformation: {
-    cancellation: Date;
-    priceMultiplier: number;
+  additionalInformation?: {
+    cancellation?: Date;
+    priceMultiplier?: number;
   };
-  boardInformation: {
-    board: string;
+  boardInformation?: {
+    board?: string;
   };
-  tradingDetails: {
-    lotSize: number;
-    minStep: number;
-    priceMax: number;
-    priceMin: number;
-    priceStep: number;
-    rating: number;
+  tradingDetails?: {
+    lotSize?: number;
+    minStep?: number;
+    priceMax?: number;
+    priceMin?: number;
+    priceStep?: number;
+    rating?: number;
   };
-  couponRate: string;
-  couponType: string;
-  emissionValue: string;
-  guaranteed: boolean;
-  hasOffer: boolean;
-  maturityDate: Date;
-  placementEndDate: Date;
-  yield: {
-    currentYield: number;
+  couponRate?: string;
+  couponType?: string;
+  emissionValue?: string;
+  guaranteed?: boolean;
+  hasOffer?: boolean;
+  maturityDate?: Date;
+  placementEndDate?: Date;
+  yield?: {
+    currentYield?: number;
   };
 }
 

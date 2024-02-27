@@ -27,7 +27,7 @@ import { InstrumentGroups } from "../../../../shared/models/dashboard/dashboard.
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import { BOND_FILTER_TYPES, BOND_NESTED_FIELDS } from "../../utils/bond-screener.helper";
 
-interface BondDisplay extends Partial<BondNode> {
+interface BondDisplay extends BondNode {
   id: string;
 }
 
@@ -51,7 +51,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     {
       id: 'tradingStatusInfo',
       displayName: 'Статус',
-      transformFn: (d: BondNode): string => d.financialAttributes.tradingStatusInfo ?? '',
+      transformFn: (d: BondNode): string => d.financialAttributes!.tradingStatusInfo ?? '',
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
         :`{ financialAttributes: { tradingStatusInfo: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
@@ -61,7 +61,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     {
       id: 'symbol',
       displayName: 'Тикер',
-      transformFn: (d: BondNode): string => d.basicInformation.symbol ?? '',
+      transformFn: (d: BondNode): string => d.basicInformation.symbol,
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
         :`{ basicInformation: { symbol: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
@@ -88,7 +88,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     {
       id: 'exchange',
       displayName: 'Биржа',
-      transformFn: (d: BondNode): string => d.basicInformation.exchange ?? '',
+      transformFn: (d: BondNode): string => d.basicInformation.exchange,
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
         :`{ basicInformation: { exchange: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
@@ -139,7 +139,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     {
       id: 'cancellation',
       displayName: 'Дата окончания',
-      transformFn: (d: BondNode): string => d.additionalInformation.cancellation == null ? '' : new Date(d.additionalInformation.cancellation).toLocaleDateString(),
+      transformFn: (d: BondNode): string => d.additionalInformation!.cancellation == null ? '' : new Date(d.additionalInformation!.cancellation).toLocaleDateString(),
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
         :`{ additionalInformation: { cancellation: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
@@ -155,7 +155,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     {
       id: 'currentYield',
       displayName: 'Доходность, %',
-      transformFn: (d: BondNode): string => d.yield.currentYield != null ? MathHelper.round(d.yield.currentYield, 2).toString() : '',
+      transformFn: (d: BondNode): string => d.yield!.currentYield != null ? MathHelper.round(d.yield!.currentYield, 2).toString() : '',
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
         :`{ yield: { currentYield: ${dir === 'ascend' ? 'ASC' : 'DESC'} }}`
@@ -220,7 +220,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     {
       id: 'priceMultiplier',
       displayName: 'Множитель цены',
-      transformFn: (d: BondNode): string => d.additionalInformation.priceMultiplier?.toString() ?? '',
+      transformFn: (d: BondNode): string => d.additionalInformation!.priceMultiplier?.toString() ?? '',
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
         : `{ additionalInformation: { priceMultiplier: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
@@ -236,7 +236,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     {
       id: 'board',
       displayName: 'Режим торогов',
-      transformFn: (d: BondNode): string => d.boardInformation.board ?? '',
+      transformFn: (d: BondNode): string => d.boardInformation!.board ?? '',
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
         : `{ boardInformation: { board: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
@@ -283,7 +283,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     {
       id: 'lotSize',
       displayName: 'Размер лота',
-      transformFn: (d: BondNode): string => d.tradingDetails.lotSize?.toString() ?? '',
+      transformFn: (d: BondNode): string => d.tradingDetails!.lotSize?.toString() ?? '',
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
         : `{ tradingDetails: { lotSize: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
@@ -299,7 +299,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     {
       id: 'minStep',
       displayName: 'Шаг цены',
-      transformFn: (d: BondNode): string => d.tradingDetails.minStep?.toString() ?? '',
+      transformFn: (d: BondNode): string => d.tradingDetails!.minStep?.toString() ?? '',
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
         : `{ tradingDetails: { minStep: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
@@ -315,7 +315,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     {
       id: 'priceMax',
       displayName: 'Макс. цена',
-      transformFn: (d: BondNode): string => d.tradingDetails.priceMax?.toString() ?? '',
+      transformFn: (d: BondNode): string => d.tradingDetails!.priceMax?.toString() ?? '',
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
         : `{ tradingDetails: { priceMax: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
@@ -331,7 +331,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     {
       id: 'priceMin',
       displayName: 'Мин. цена',
-      transformFn: (d: BondNode): string => d.tradingDetails.priceMin?.toString() ?? '',
+      transformFn: (d: BondNode): string => d.tradingDetails!.priceMin?.toString() ?? '',
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
         : `{ tradingDetails: { priceMin: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
@@ -347,7 +347,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     {
       id: 'priceStep',
       displayName: 'Стоимость шага цены',
-      transformFn: (d: BondNode): string => d.tradingDetails.priceStep?.toString() ?? '',
+      transformFn: (d: BondNode): string => d.tradingDetails!.priceStep?.toString() ?? '',
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
         : `{ tradingDetails: { priceStep: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
@@ -409,8 +409,8 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
             ...b,
             badges: Object.keys(availableBadges)
               .filter(key =>
-                b.basicInformation!.symbol === availableBadges[key]!.symbol &&
-                b.basicInformation!.exchange === availableBadges[key]!.exchange
+                b.basicInformation.symbol === availableBadges[key]!.symbol &&
+                b.basicInformation.exchange === availableBadges[key]!.exchange
               )
           }));
         })
@@ -491,8 +491,8 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
 
   selectInstrument(row: BondDisplay): void {
     const instrument = {
-      symbol: row.basicInformation!.symbol,
-      exchange: row.basicInformation!.exchange,
+      symbol: row.basicInformation.symbol,
+      exchange: row.basicInformation.exchange,
     };
 
     this.settings$.pipe(
