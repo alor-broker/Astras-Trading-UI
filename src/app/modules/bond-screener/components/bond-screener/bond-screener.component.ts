@@ -155,7 +155,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     {
       id: 'currentYield',
       displayName: 'Доходность, %',
-      transformFn: (d: BondNode): string => d.yield!.currentYield != null ? MathHelper.round(d.yield!.currentYield, 2).toString() : '',
+      transformFn: (d: BondNode): string => d.yield!.currentYield != null ? MathHelper.round(d.yield!.currentYield * 100, 2).toString() : '',
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
         :`{ yield: { currentYield: ${dir === 'ascend' ? 'ASC' : 'DESC'} }}`
