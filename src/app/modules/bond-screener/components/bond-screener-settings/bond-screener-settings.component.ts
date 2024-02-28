@@ -52,6 +52,7 @@ export class BondScreenerSettingsComponent extends WidgetSettingsBaseComponent<B
           )?.columns.map(c => c.columnId),
           Validators.required
         ),
+        notShowExpired: new UntypedFormControl(settings.notShowExpired ?? true)
       });
     });
   }

@@ -5,7 +5,7 @@
   (saveClick)="updateSettings()"
   (copyClick)="createWidgetCopy()"
 >
-  <ng-container *transloco="let t">
+  <ng-container *transloco="let t; scope: 'bond-screener/settings'">
     <div>
       <form *ngIf="form" nz-form [nzLayout]="'horizontal'" [formGroup]="form">
         <nz-form-item class="compact">
@@ -27,6 +27,13 @@
                 </nz-option>
               </ng-container>
             </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzFor="notShowExpired">{{t('bondScreenerSettings.notShowExpired')}}</nz-form-label>
+          <nz-form-control>
+            <nz-switch formControlName='notShowExpired'></nz-switch>
           </nz-form-control>
         </nz-form-item>
       </form>

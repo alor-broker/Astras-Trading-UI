@@ -3,6 +3,7 @@ import { BaseColumnId, TableDisplaySettings } from "../../../shared/models/setti
 
 export interface BondScreenerSettings extends WidgetSettings {
   bondScreenerTable: TableDisplaySettings;
+  notShowExpired: boolean;
 }
 
 export const bondScreenerColumns: BaseColumnId[] = [

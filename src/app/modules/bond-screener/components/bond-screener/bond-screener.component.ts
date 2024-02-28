@@ -12,7 +12,7 @@ import {
   BondEdge,
   BondNode,
   BondScreenerFilter,
-  BondScreenerFilters,
+  BondScreenerFilters, FilterCondition,
   PageInfo
 } from "../../models/bond-screener.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -527,18 +527,45 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
   private initBonds(): void {
     combineLatest([
       this.tableConfig$,
+      this.settings$,
       this.filters$,
       this.sort$.pipe(tap(() => this.pageInfo = null)),
       this.scrolled$
     ])
       .pipe(
         filter(() => this.pageInfo == null || this.pageInfo.hasNextPage),
-        switchMap(([ tableConfig, filters, sort ]) => {
+        switchMap(([ tableConfig, settings, filters, sort ]) => {
           this.isLoading$.next(true);
 
           const columnIds = tableConfig.columns.map(c => c.id);
 
-          return this.service.getBonds(columnIds, sort, { first: this.limit, after: this.pageInfo?.endCursor, filters });
+          const filtersWithDefaultValues = JSON.parse(JSON.stringify(filters)) as BondScreenerFilters;
+          const cancellationFromFilterValue = filtersWithDefaultValues.and?.find(f => (
+              (
+                (
+                  f as BondScreenerFilter
+                ).additionalInformation as BondScreenerFilter
+              )?.cancellation as FilterCondition
+            )?.gte != null);
+
+          if ((settings.notShowExpired ?? true) && cancellationFromFilterValue == null) {
+            filtersWithDefaultValues.and?.push({
+              additionalInformation: {
+                cancellation: {
+                  gte: new Date().toISOString()
+                }
+              }
+            });
+          }
+
+          return this.service.getBonds(
+            columnIds,
+            sort,
+            {
+              first: this.limit,
+              after: this.pageInfo?.endCursor,
+              filters: filtersWithDefaultValues
+            });
         }),
         takeUntilDestroyed(this.destroyRef)
       )

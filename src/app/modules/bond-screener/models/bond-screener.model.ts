@@ -60,6 +60,6 @@ export interface BondScreenerFilter {
   [filterName: string]: FilterCondition | BondScreenerFilter | BondScreenerFilters;
 }
 
-interface FilterCondition {
+export interface FilterCondition {
   [conditionType: string]: unknown;
 }
