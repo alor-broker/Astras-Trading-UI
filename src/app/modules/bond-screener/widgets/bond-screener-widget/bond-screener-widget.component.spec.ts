@@ -24,6 +24,10 @@ describe('BondScreenerWidgetComponent', () => {
           selector: 'ats-bond-screener-settings',
           inputs: ['guid']
         }),
+        mockComponent({
+          selector: 'ats-yield-curve-chart',
+          inputs: ['guid']
+        }),
         widgetSkeletonMock
       ],
       providers: [

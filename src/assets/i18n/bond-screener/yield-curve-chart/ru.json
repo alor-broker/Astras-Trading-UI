@@ -1,0 +1,21 @@
+﻿{
+  "yieldAxisTitle": "Доходность, %",
+  "durationAxisTitle": "Дюрация, лет",
+
+  "durationLabel": "Дюрация",
+  "yieldLabel": "Доходность",
+  "yearsUnit": "лeт",
+
+  "durationTypeLabel": "Тип дюрации",
+  "durationTypeOptions": {
+    "maturityDateBased": "По дате погашения",
+    "modifiedDuration": "Дюрация модифицированная",
+    "macaulayDuration": "Дюрация по Маколею"
+  },
+
+  "yieldTypeLabel": "Тип доходности",
+  "yieldTypeOptions": {
+    "currentYield": "Текущая доходность по последней цене",
+    "yieldToMaturity": "Доходность к погашению"
+  }
+}
