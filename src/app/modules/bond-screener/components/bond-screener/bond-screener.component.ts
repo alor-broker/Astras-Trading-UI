@@ -548,7 +548,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
               )?.cancellation as FilterCondition
             )?.gte != null);
 
-          if ((settings.notShowExpired ?? true) && cancellationFromFilterValue == null) {
+          if ((settings.hideExpired ?? true) && cancellationFromFilterValue == null) {
             filtersWithDefaultValues.and?.push({
               additionalInformation: {
                 cancellation: {

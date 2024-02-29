@@ -51,7 +51,7 @@ export class BondScreenerWidgetComponent implements OnInit {
         ...settings,
         badgeColor: getValueOrDefault(settings.badgeColor, defaultBadgeColor),
         bondScreenerTable: TableSettingHelper.toTableDisplaySettings(settings.bondScreenerTable, bondScreenerColumns.filter(c => c.isDefault).map(c => c.id))!,
-        notShowExpired: getValueOrDefault(settings.notShowExpired, true)
+        hideExpired: getValueOrDefault(settings.hideExpired, true)
       }),
       this.widgetSettingsService
     );
