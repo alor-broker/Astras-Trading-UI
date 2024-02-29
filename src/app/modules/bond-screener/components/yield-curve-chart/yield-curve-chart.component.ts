@@ -647,8 +647,12 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
   }
 
   private extendDomain(value: number, coeff: number): number {
-    if (value < 0 && coeff < 1) {
-      return value * (2 - coeff);
+    if (value < 0) {
+      if(coeff < 1) {
+        return value * (2 - coeff);
+      } else {
+        return (Math.ceil(coeff) - coeff) * value;
+      }
     }
 
     return value * coeff;
