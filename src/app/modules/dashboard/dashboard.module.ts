@@ -29,9 +29,7 @@ import { NzDrawerModule } from "ng-zorro-antd/drawer";
 import { ScalperOrderBookModule } from '../scalper-order-book/scalper-order-book.module';
 import { MobileDashboardWidgetComponent } from './widgets/mobile-dashboard-widget/mobile-dashboard-widget.component';
 import { MobileNavbarComponent } from "./components/mobile-navbar/mobile-navbar.component";
-import {
-  MobileInstrumentsHistoryComponent
-} from './components/mobile-instruments-history/mobile-instruments-history.component';
+import { MobileInstrumentsHistoryComponent } from './components/mobile-instruments-history/mobile-instruments-history.component';
 import { MobileDashboardComponent } from "./components/mobile-dashboard/mobile-dashboard.component";
 import { NetworkIndicatorComponent } from "./components/network-indicator/network-indicator.component";
 import { TreemapModule } from "../treemap/treemap.module";
@@ -39,16 +37,17 @@ import { RibbonModule } from '../ribbon/ribbon.module';
 import { EventsCalendarModule } from "../events-calendar/events-calendar.module";
 import { OptionBoardModule } from "../option-board/option-board.module";
 import { ArbitrageSpreadModule } from "../arbitrage-spread/arbitrage-spread.module";
-import {PortfolioSummaryModule} from "../portfolio-summary/portfolio-summary.module";
+import { PortfolioSummaryModule } from "../portfolio-summary/portfolio-summary.module";
 import { NzSegmentedModule } from "ng-zorro-antd/segmented";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { DashboardsPanelComponent } from './components/dashboards-panel/dashboards-panel.component';
-import {OrderCommandsModule} from "../order-commands/order-commands.module";
+import { OrderCommandsModule } from "../order-commands/order-commands.module";
 import { EmptyPortfoliosWarningModalWidgetComponent } from './widgets/empty-portfolios-warning-modal-widget/empty-portfolios-warning-modal-widget.component';
 import { InstrumentsCorrelationModule } from "../instruments-correlation/instruments-correlation.module";
 import { LetDirective } from "@ngrx/component";
 import { WidgetsGalleryComponent } from './components/widgets-gallery/widgets-gallery.component';
 import { NzDividerModule } from "ng-zorro-antd/divider";
+import { AiChatModule } from "../ai-chat/ai-chat.module";
 
 @NgModule({
   declarations: [
@@ -66,43 +65,44 @@ import { NzDividerModule } from "ng-zorro-antd/divider";
     EmptyPortfoliosWarningModalWidgetComponent,
     WidgetsGalleryComponent
   ],
-    imports: [
-        DashboardRoutingModule,
-        SharedModule,
-        OrderbookModule,
-        LightChartModule,
-        InstrumentsModule,
-        BlotterModule,
-        InfoModule,
-        TerminalSettingsModule,
-        JoyrideModule.forRoot(),
-        AllTradesModule,
-        NewsModule,
-        ExchangeRateModule,
-        TechChartModule,
-        AllInstrumentsModule,
-        NotificationsModule,
-        FeedbackModule,
-        ApplicationMetaModule,
-        NzInputModule,
-        ExternalLinkModule,
-        OrdersBasketModule,
-        ScalperOrderBookModule,
-        NzDrawerModule,
-        TreemapModule,
-        RibbonModule,
-        EventsCalendarModule,
-        OptionBoardModule,
-        ArbitrageSpreadModule,
-        PortfolioSummaryModule,
-        NzSegmentedModule,
-        DragDropModule,
-        OrderCommandsModule,
-        InstrumentsCorrelationModule,
-        LetDirective,
-        NzDividerModule
-        // components
-    ],
+  imports: [
+    DashboardRoutingModule,
+    SharedModule,
+    OrderbookModule,
+    LightChartModule,
+    InstrumentsModule,
+    BlotterModule,
+    InfoModule,
+    TerminalSettingsModule,
+    JoyrideModule.forRoot(),
+    AllTradesModule,
+    NewsModule,
+    ExchangeRateModule,
+    TechChartModule,
+    AllInstrumentsModule,
+    NotificationsModule,
+    FeedbackModule,
+    ApplicationMetaModule,
+    NzInputModule,
+    ExternalLinkModule,
+    OrdersBasketModule,
+    ScalperOrderBookModule,
+    NzDrawerModule,
+    TreemapModule,
+    RibbonModule,
+    EventsCalendarModule,
+    OptionBoardModule,
+    ArbitrageSpreadModule,
+    PortfolioSummaryModule,
+    NzSegmentedModule,
+    DragDropModule,
+    OrderCommandsModule,
+    InstrumentsCorrelationModule,
+    LetDirective,
+    NzDividerModule,
+    AiChatModule
+    // components
+  ],
   providers: [
     OnboardingService
   ]

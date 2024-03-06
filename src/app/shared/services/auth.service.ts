@@ -1,4 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpContext
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
@@ -25,6 +28,7 @@ import {
 import { ErrorHandlerService } from './handle-error/error-handler.service';
 import { BroadcastService } from './broadcast.service';
 import { EnvironmentService } from "./environment.service";
+import { HttpContextTokens } from "../constants/http.constants";
 
 export const ForceLogoutMessageType = 'forceLogout';
 
@@ -140,10 +144,6 @@ export class AuthService {
     });
   }
 
-  isAuthRequest(url: string): boolean {
-    return url == `${this.accountUrl}/login` || url == `${this.accountUrl}/refresh`;
-  }
-
   private redirectToSso(isExit: boolean): void {
     this.window.location.assign(this.ssoUrl + `?url=http://${window.location.host}/auth/callback&scope=Astras` + (isExit ? '&exit=1' : ''));
   }
@@ -162,6 +162,9 @@ export class AuthService {
         `${this.accountUrl}/refresh`,
         {
           refreshToken: userState.ssoToken?.refreshToken
+        },
+        {
+          context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true)
         }
       ).pipe(
         catchHttpError<RefreshTokenResponse | null>(null, this.errorHandlerService),

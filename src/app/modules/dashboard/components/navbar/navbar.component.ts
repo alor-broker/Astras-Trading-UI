@@ -48,8 +48,7 @@ export class NavbarComponent implements OnInit {
   readonly externalLinks = this.environmentService.externalLinks;
   helpLink$!: Observable<string | null>;
   galleryVisible = false;
-
-  isSideMenuVisible = false;
+  aiChatVisible = false;
 
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
@@ -144,7 +143,6 @@ export class NavbarComponent implements OnInit {
 
   resetDashboard(): void {
     this.manageDashboardsService.resetCurrentDashboard();
-    this.closeSideMenu();
   }
 
   logout(): void {
@@ -161,7 +159,6 @@ export class NavbarComponent implements OnInit {
 
   addItem(type: string): void {
     this.manageDashboardsService.addWidget(type);
-    this.closeSideMenu();
   }
 
   newOrder(): void {
@@ -184,7 +181,6 @@ export class NavbarComponent implements OnInit {
 
   openTerminalSettings(): void {
     this.modal.openTerminalSettingsModal();
-    this.closeSideMenu();
   }
 
   openThirdPartyLink(link: string): void {
@@ -197,10 +193,6 @@ export class NavbarComponent implements OnInit {
 
   portfoliosTrackByFn(index: number, item: PortfolioExtended): string {
     return item.market + item.portfolio;
-  }
-
-  closeSideMenu(): void {
-    this.isSideMenuVisible = false;
   }
 
   private initWidgetsGallery(): void{

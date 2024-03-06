@@ -66,7 +66,8 @@ describe('NavbarComponent', () => {
         mockComponent({ selector: 'ats-select-dashboard-menu', inputs: ['visibilityChange']}),
         mockComponent({ selector: 'ats-network-indicator'}),
         mockComponent({ selector: 'ats-dashboards-panel', inputs: ['selectedDashboard'] }),
-        mockComponent({ selector: 'ats-widgets-gallery', inputs: ['gallery', 'atsVisible'] })
+        mockComponent({ selector: 'ats-widgets-gallery', inputs: ['gallery', 'atsVisible'] }),
+        mockComponent({ selector: 'ats-side-chat-widget', inputs: ['atsVisible'] })
       ],
       providers: [
         { provide: ManageDashboardsService, useValue: spyDashboard },

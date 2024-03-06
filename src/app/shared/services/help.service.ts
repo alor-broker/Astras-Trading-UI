@@ -1,11 +1,15 @@
 import { DestroyRef, Injectable } from '@angular/core';
 import { environment } from "../../../environments/environment";
-import { HttpClient } from "@angular/common/http";
+import {
+  HttpClient,
+  HttpContext
+} from "@angular/common/http";
 import { map } from "rxjs/operators";
 import { Observable, shareReplay } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { catchHttpError } from "../utils/observable-helper";
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
+import { HttpContextTokens } from "../constants/http.constants";
 
 interface HelpDatabaseResponse {
   content: {
@@ -75,7 +79,8 @@ export class HelpService {
         {
           headers: {
             'X-Account-Slug': 'alor'
-          }
+          },
+          context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true)
         }
       )
         .pipe(
