@@ -1,6 +1,16 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {forkJoin, Observable, of, shareReplay, Subject, switchMap, take, tap, throwError} from "rxjs";
+import {
+  forkJoin,
+  Observable,
+  of,
+  shareReplay,
+  Subject,
+  switchMap,
+  take,
+  tap,
+  throwError,
+} from "rxjs";
 import {AngularFireMessaging} from "@angular/fire/compat/messaging";
 import {catchHttpError, mapWith} from "../../../shared/utils/observable-helper";
 import {catchError, filter, map} from "rxjs/operators";
@@ -16,6 +26,7 @@ import {PortfolioKey} from "../../../shared/models/portfolio-key.model";
 import {isPortfoliosEqual} from "../../../shared/utils/portfolios";
 import firebase from "firebase/compat";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { TranslatorService } from "../../../shared/services/translator.service";
 
 interface MessagePayload extends firebase.messaging.MessagePayload {
   data?: {
@@ -43,6 +54,7 @@ export class PushNotificationsService implements OnDestroy {
     private readonly http: HttpClient,
     private readonly angularFireMessaging: AngularFireMessaging,
     private readonly errorHandlerService: ErrorHandlerService,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -178,7 +190,13 @@ export class PushNotificationsService implements OnDestroy {
       .pipe(
         filter(token => token != null && !!token.length),
         mapWith(
-          token => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addToken', {token})
+          token => this.http.post<BaseCommandResponse>(
+            this.baseUrl + '/actions/addToken',
+            {
+              token,
+              culture: this.translatorService.getActiveLang()
+            }
+          )
             .pipe(
               catchError(err => {
                 if (err.error?.code === 'TokenAlreadyExists') {
