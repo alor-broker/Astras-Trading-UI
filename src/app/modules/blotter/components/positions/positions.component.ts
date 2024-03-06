@@ -140,6 +140,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       id: 'unrealisedPlRatio',
       displayName: 'P/L всего, %',
       sortOrder: null,
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => (a.unrealisedPl * 100 / a.volume) - (b.unrealisedPl * 100 / b.volume),
       tooltip: 'Соотношение прибыли и убытка в процентах',
       minWidth: 60
     },
@@ -155,6 +156,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       id: 'dailyUnrealisedPlRatio',
       displayName: 'P/L дн., %',
       sortOrder: null,
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => (a.dailyUnrealisedPl * 100 / a.volume) - (b.dailyUnrealisedPl * 100 / b.volume),
       tooltip: 'Соотношение прибыли и убытка за сегодня в процентах',
       minWidth: 60
     },
