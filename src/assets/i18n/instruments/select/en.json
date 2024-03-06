@@ -15,7 +15,7 @@
     },
     "price": {
       "name": "Price",
-      "tooltip": "Last order price"
+      "tooltip": "Last trade price"
     },
     "priceChange": {
       "name": "Price change",

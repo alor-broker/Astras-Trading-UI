@@ -48,6 +48,7 @@ describe('PushNotificationsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PushNotificationsComponent);
     component = fixture.componentInstance;
+    component.guid = 'testGuid';
     fixture.detectChanges();
   });
 

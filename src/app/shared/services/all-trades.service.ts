@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {
-  AllTradesFilters,
   AllTradesItem,
+  AllTradesReqFilters,
   AllTradesSubRequest
 } from "../models/all-trades.model";
 import { Observable } from "rxjs";
@@ -11,6 +11,7 @@ import { ErrorHandlerService } from './handle-error/error-handler.service';
 import { InstrumentKey } from '../models/instruments/instrument-key.model';
 import { catchHttpError } from '../utils/observable-helper';
 import { EnvironmentService } from "./environment.service";
+import { map } from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,7 @@ export class AllTradesService {
     private readonly errorHandlerService: ErrorHandlerService) {
   }
 
-  public getTradesList(req: AllTradesFilters): Observable<AllTradesItem[]> {
+  public getTradesList(req: AllTradesReqFilters): Observable<AllTradesItem[]> {
     const { exchange, symbol } = req;
 
     return this.http.get<AllTradesItem[]>(`${this.allTradesUrl}/${exchange}/${symbol}/alltrades`, {
@@ -33,6 +34,7 @@ export class AllTradesService {
     })
       .pipe(
         catchHttpError<AllTradesItem[]>([], this.errorHandlerService),
+        map(res => res.map(t => ({ ...t, id: t.toString() })))
       );
   }
 

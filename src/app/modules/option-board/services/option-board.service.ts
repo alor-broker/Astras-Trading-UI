@@ -54,7 +54,8 @@ export class OptionBoardService {
 
         return {
           ...response,
-          expirationDate: new Date(response.expirationDate)
+          expirationDate: new Date(response.expirationDate),
+          id: response.symbol
         };
       }),
       take(1)

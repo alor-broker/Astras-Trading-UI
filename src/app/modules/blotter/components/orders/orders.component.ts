@@ -8,8 +8,6 @@ import {
 import {
   combineLatest,
   distinctUntilChanged,
-  Observable,
-  of,
   Subject,
   switchMap,
   take,
@@ -25,7 +23,6 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import {
   isEqualPortfolioDependedSettings
 } from "../../../../shared/utils/settings-helper";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
@@ -34,7 +31,7 @@ import { BaseColumnSettings } from "../../../../shared/models/settings/table-set
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 import { DomHelper } from "../../../../shared/utils/dom-helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { BaseTableComponent } from "../base-table/base-table.component";
+import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
 import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
 
@@ -48,11 +45,10 @@ interface DisplayOrder extends Order {
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.less'],
 })
-export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilter> implements OnInit {
+export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, OrderFilter> implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   isModalOpened = DomHelper.isModalOpen;
-  displayOrders$: Observable<DisplayOrder[]> = of([]);
   allColumns: BaseColumnSettings<DisplayOrder>[] = [
     {
       id: 'id',
@@ -196,16 +192,14 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
   private readonly cancelCommands = new Subject<CancelCommand>();
   private readonly cancels$ = this.cancelCommands.asObservable();
   private orders: Order[] = [];
-  private orders$: Observable<Order[]> = of([]);
 
   settingsTableName = TableNames.OrdersTable;
   settingsColumnsName = ColumnsNames.OrdersColumns;
   fileSuffix = 'orders';
-  badgeColor = defaultBadgeColor;
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,
-    protected readonly service: BlotterService,
+    private readonly service: BlotterService,
     private readonly canceller: OrderCancellerService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
@@ -213,13 +207,21 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
     private readonly ordersDialogService: OrdersDialogService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(service, settingsService, translatorService, destroyRef);
+    super(settingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
 
-    this.settings$.pipe(
+    this.cancels$.pipe(
+      mergeMap((command) => this.canceller.cancelOrder(command)),
+      catchError((e, caught) => caught),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe();
+  }
+
+  protected initTableConfig(): void {
+    this.tableConfig$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.ordersTable, current.ordersTable)
         && previous.badgeColor === current.badgeColor
@@ -231,49 +233,49 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
         ]),
         (s, [tOrders, tCommon]) => ({s, tOrders, tCommon})
       ),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(({ s, tOrders, tCommon }) => {
-      const tableSettings = TableSettingHelper.toTableDisplaySettings(s.ordersTable, s.ordersColumns);
+      takeUntilDestroyed(this.destroyRef),
+      map(({ s, tOrders, tCommon }) => {
+        const tableSettings = TableSettingHelper.toTableDisplaySettings(s.ordersTable, s.ordersColumns);
 
-      if (tableSettings) {
-        this.listOfColumns = this.allColumns
-          .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id)}))
-          .filter(c => !!c.columnSettings)
-          .map((column, index) => ({
-            ...column.column,
-            displayName: tOrders(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
-            tooltip: tOrders(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
-            filterData: column.column.filterData
-              ? {
-                ...column.column.filterData,
-                filterName: tOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-                filters: (column.column.filterData.filters ?? []).map(f => ({
-                  value: f.value as unknown,
-                  text: tCommon([column.column.id + 'Filters', f.value], {fallback: f.text})
-                }))
-              }
-              : undefined,
-            width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
-            order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
-          }))
-          .sort((a, b) => a.order - b.order);
+        return {
+          columns: this.allColumns
+            .map(c => ({column: c, columnSettings: tableSettings?.columns.find(x => x.columnId === c.id)}))
+            .filter(c => c.columnSettings != null)
+            .map((column, index) => ({
+              ...column.column,
+              displayName: tOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+              tooltip: tOrders(['columns', column.column.id, 'tooltip'], {fallback: column.column.tooltip}),
+              filterData: column.column.filterData
+                ? {
+                  ...column.column.filterData,
+                  filterName: tOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+                  filters: (column.column.filterData.filters ?? []).map(f => ({
+                    value: f.value as unknown,
+                    text: tCommon([column.column.id + 'Filters', f.value], {fallback: f.text})
+                  }))
+                }
+                : undefined,
+              width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
+              order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+            }))
+            .sort((a, b) => a.order - b.order)
+        };
+      })
+    );
+  }
 
-        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) =>prev + cur.width! , 0) + 70;
-      }
-      this.badgeColor = s.badgeColor!;
-    });
-
-    this.orders$ = this.settings$.pipe(
+  protected initTableData(): void {
+    const orders$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
-      switchMap(settings=>this.service.getOrders(settings)),
+      switchMap(settings => this.service.getOrders(settings)),
       debounceTime(100),
       startWith([]),
-      tap(orders => this.orders = orders)
+      tap((orders: Order[]) => this.orders = orders)
     );
 
-    this.displayOrders$ = combineLatest([
-      this.orders$,
-      this.filter$,
+    this.tableData$ = combineLatest([
+      orders$,
+      this.filters$,
       this.timezoneConverterService.getConverter(),
       this.ordersGroupService.getAllOrderGroups()
     ]).pipe(
@@ -288,12 +290,6 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
         .filter(o => this.justifyFilter(o, f))
         .sort(this.sortOrders))
     );
-
-    this.cancels$.pipe(
-      mergeMap((command) => this.canceller.cancelOrder(command)),
-      catchError((e, caught) => caught),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe();
   }
 
   cancelOrder(orderId: string): void {

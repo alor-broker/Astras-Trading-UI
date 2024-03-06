@@ -60,6 +60,7 @@ describe('TradesComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TradesComponent);
     component = fixture.componentInstance;
+    component.guid = 'testGuid';
   });
 
   afterEach(() => fixture.destroy());

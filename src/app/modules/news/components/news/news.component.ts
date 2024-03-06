@@ -1,7 +1,6 @@
 import {
-  Component,
+  Component, DestroyRef,
   EventEmitter,
-  Input,
   OnDestroy,
   OnInit,
   Output
@@ -20,16 +19,12 @@ import {
   merge,
   Observable,
   of,
-  shareReplay,
-  Subject,
   switchMap,
   take,
   tap,
   withLatestFrom,
 } from "rxjs";
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
-import { TableConfig } from '../../../../shared/models/table-config.model';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { NewsSettings } from "../../models/news-settings.model";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
@@ -39,13 +34,16 @@ import {
   filter,
   startWith
 } from "rxjs/operators";
+import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
+import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface NewsFilter {
-  symbols: string[];
+  symbols?: string[];
 }
 
 interface NewsListState {
-  filter: NewsFilter | null;
+  filter: NewsFilter;
   loadedHistoryItemsCount: number;
   isEndOfList: boolean;
   loadedItems: NewsListItem[];
@@ -56,40 +54,29 @@ interface NewsListState {
   templateUrl: './news.component.html',
   styleUrls: ['./news.component.less']
 })
-export class NewsComponent implements OnInit, OnDestroy {
-  @Input({ required: true })
-  guid!: string;
+export class NewsComponent extends BaseTableComponent<NewsSettings, NewsListItem, NewsFilter> implements OnInit, OnDestroy {
   @Output() sectionChange = new EventEmitter<NewsSection>();
-  newsListItems$!: Observable<NewsListItem[]>;
-  readonly contentSize$ = new BehaviorSubject<ContentSize>({ height: 0, width: 0 });
-  tableConfig$?: Observable<TableConfig<NewsListItem>>;
   readonly newsSectionEnum = NewsSection;
-  readonly isLoading$ = new BehaviorSubject(false);
   private readonly selectedSection$ = new BehaviorSubject<NewsSection>(NewsSection.All);
-  private readonly scrolled$ = new Subject<void>();
-  private readonly itemsCountPerRequest = 50;
-  private settings$!: Observable<NewsSettings>;
-  private newsFilter$!: Observable<NewsFilter | null>;
 
   constructor(
     private readonly newsService: NewsService,
     private readonly modalService: ModalService,
     private readonly translatorService: TranslatorService,
-    private readonly widgetSettingsService: WidgetSettingsService,
+    protected readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly positionsService: PositionsService
+    private readonly positionsService: PositionsService,
+    protected readonly destroyRef: DestroyRef
   ) {
+    super(widgetSettingsService, destroyRef);
   }
 
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<NewsSettings>(this.guid).pipe(
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
+    super.ngOnInit();
+    this.createFiltersStream();
+  }
 
-    this.newsFilter$ = this.createFiltersStream();
-
-    this.newsListItems$ = this.createNewsListItemsStream();
-
+  protected initTableConfig(): void {
     this.tableConfig$ = this.translatorService.getTranslator('news').pipe(
       map((translate) => ({
           columns: [
@@ -105,35 +92,28 @@ export class NewsComponent implements OnInit, OnDestroy {
 
                 return `[${displayDate}] ${data.header}`;
               }
-            }
+            } as BaseColumnSettings<NewsListItem>
           ]
         })
       )
     );
   }
 
-  openNewsModal(newsItem: NewsListItem): void {
+  protected initTableData(): void {
+    this.tableData$ = this.createNewsListItemsStream();
+  }
+
+  rowClick(newsItem: NewsListItem): void {
     this.modalService.openNewsModal(newsItem);
   }
 
   scrolled(): void {
-    this.scrolled$.next();
+    this.scrolled$.next(null);
   }
 
   ngOnDestroy(): void {
-    this.contentSize$.complete();
+    super.ngOnDestroy();
     this.selectedSection$.complete();
-    this.scrolled$.complete();
-    this.isLoading$.complete();
-  }
-
-  containerSizeChanged(entries: ResizeObserverEntry[]): void {
-    entries.forEach(x => {
-      this.contentSize$.next({
-        width: Math.floor(x.contentRect.width),
-        height: Math.floor(x.contentRect.height)
-      });
-    });
   }
 
   newsSectionChange(section: NewsSection): void {
@@ -149,7 +129,7 @@ export class NewsComponent implements OnInit, OnDestroy {
         filter(([, isLoading]) => !isLoading),
         tap(() => this.isLoading$.next(true)),
         switchMap(() => this.loadNews(state)),
-        map(items => {
+        map((items: NewsListItem[]) => {
           if (items.length === 0) {
             state.isEndOfList = true;
           }
@@ -198,7 +178,7 @@ export class NewsComponent implements OnInit, OnDestroy {
       );
     };
 
-    return this.newsFilter$.pipe(
+    return this.filters$.pipe(
       tap(() => this.isLoading$.next(true)),
       map(filter => ({
         filter,
@@ -233,16 +213,16 @@ export class NewsComponent implements OnInit, OnDestroy {
 
     return this.newsService.getNews({
       symbols: state.filter?.symbols ?? null,
-      limit: this.itemsCountPerRequest,
+      limit: this.loadingChunkSize,
       offset: state.loadedHistoryItemsCount,
     }).pipe(
-      take(1)
+      take(1),
     );
   }
 
-  private loadUpdates(state: NewsListState, limit = this.itemsCountPerRequest): Observable<NewsListItem[]> {
+  private loadUpdates(state: NewsListState, limit = this.loadingChunkSize): Observable<NewsListItem[]> {
     return this.newsService.getNews({
-      symbols: state.filter?.symbols ?? null,
+      symbols: state.filter.symbols ?? null,
       limit: limit,
       offset: 0,
     }).pipe(
@@ -268,8 +248,8 @@ export class NewsComponent implements OnInit, OnDestroy {
     );
   }
 
-  private createFiltersStream(): Observable<NewsFilter | null> {
-    return this.selectedSection$.pipe(
+  private createFiltersStream(): void {
+    this.selectedSection$.pipe(
       switchMap(section => {
         if (section === NewsSection.Symbol) {
           return this.settings$.pipe(
@@ -291,9 +271,10 @@ export class NewsComponent implements OnInit, OnDestroy {
             );
         }
 
-        return of(null);
+        return of({});
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
+      takeUntilDestroyed(this.destroyRef)
+    )
+      .subscribe(f => this.filters$.next(f));
   }
 }

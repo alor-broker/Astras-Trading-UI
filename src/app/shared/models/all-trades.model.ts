@@ -17,7 +17,7 @@ export interface AllTradesSubRequest extends SubscriptionRequest {
 
 export interface AllTradesItem {
   existing: boolean;
-  id: number;
+  id: string;
   oi: number;
   orderno: number;
   price: number;
@@ -28,19 +28,25 @@ export interface AllTradesItem {
   timestamp: number;
 }
 
-export interface AllTradesFilters {
-  limit?: number;
-  offset?: number;
+export interface AllTradesReqFilters extends AllTradesPagination, AllTradesFilters {
   descending?: boolean;
   orderBy?: string;
+}
+
+export interface AllTradesFilters {
   exchange: string;
   symbol: string;
-  from: number;
-  to: number;
-  take: number;
   qtyFrom?: number;
   qtyTo?: number;
   priceFrom?: number;
   priceTo?: number;
   side?: string;
+}
+
+export interface AllTradesPagination {
+  limit?: number;
+  offset?: number;
+  from: number;
+  to: number;
+  take: number;
 }

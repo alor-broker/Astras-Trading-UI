@@ -1,17 +1,13 @@
 import {
-  AfterViewInit,
   Component,
   DestroyRef,
-  OnDestroy,
   OnInit,
 } from '@angular/core';
 import {
-  BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
   fromEvent,
   Observable,
-  of,
   shareReplay,
   take,
   tap
@@ -37,7 +33,7 @@ import { TableSettingHelper } from "../../../../shared/utils/table-setting.helpe
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { BaseTableComponent } from "../base-table/base-table.component";
+import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
 
 interface NotificationFilter {
   id?: string;
@@ -52,15 +48,12 @@ type DisplayNotification = Partial<OrderExecuteSubscription> & Partial<PriceSpar
   templateUrl: './push-notifications.component.html',
   styleUrls: ['./push-notifications.component.less']
 })
-export class PushNotificationsComponent extends BaseTableComponent<DisplayNotification, NotificationFilter> implements OnInit, AfterViewInit, OnDestroy {
+export class PushNotificationsComponent extends BlotterBaseTableComponent<DisplayNotification, NotificationFilter> implements OnInit {
   readonly subscriptionTypes = PushSubscriptionType;
-  readonly isLoading$ = new BehaviorSubject(false);
-
-  displayNotifications$: Observable<DisplayNotification[]> = of([]);
 
   isNotificationsAllowed$!: Observable<boolean>;
 
-  private readonly allColumns: BaseColumnSettings<DisplayNotification>[] = [
+  protected readonly allColumns: BaseColumnSettings<DisplayNotification>[] = [
     {
       id: 'id',
       displayName: 'Id',
@@ -110,45 +103,15 @@ export class PushNotificationsComponent extends BaseTableComponent<DisplayNotifi
     protected readonly translatorService: TranslatorService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(blotterService, widgetSettingsService, translatorService, destroyRef);
-  }
-
-  trackBy(index: number, notification: DisplayNotification): string {
-    return notification.id!;
-  }
-
-  ngOnDestroy(): void {
-    this.isLoading$.complete();
-    this.scrollHeight$.complete();
+    super(widgetSettingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
-
-    this.initColumns();
-    this.initNotificationStatusCheck();
-    this.initDisplayNotifications();
   }
 
-  selectNotificationInstrument(notification: SubscriptionBase): void {
-    if (notification.subscriptionType !== PushSubscriptionType.PriceSpark) {
-      return;
-    }
-
-    const priceSparkSubscription = <PriceSparkSubscription>notification;
-
-    super.selectInstrument(priceSparkSubscription.instrument, priceSparkSubscription.exchange);
-  }
-
-  cancelSubscription(id: string): void {
-    this.isLoading$.next(true);
-    this.pushNotificationsService.cancelSubscription(id).pipe(
-      take(1)
-    ).subscribe();
-  }
-
-  private initColumns(): void {
-    this.settings$.pipe(
+  protected initTableConfig(): void {
+    this.tableConfig$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.notificationsTable, current.notificationsTable)
         && previous.badgeColor === current.badgeColor
@@ -157,41 +120,40 @@ export class PushNotificationsComponent extends BaseTableComponent<DisplayNotifi
         () => this.translatorService.getTranslator('blotter/notifications'),
         (s, t) => ({s, t})
       ),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(({s, t}) => {
-      const tableSettings = TableSettingHelper.toTableDisplaySettings(s.notificationsTable, allNotificationsColumns.filter(c => c.isDefault).map(c => c.id));
+      takeUntilDestroyed(this.destroyRef),
+      map(({s, t}) => {
+        const tableSettings = TableSettingHelper.toTableDisplaySettings(s.notificationsTable, allNotificationsColumns.filter(c => c.isDefault).map(c => c.id));
 
-      if (tableSettings) {
-        this.listOfColumns = this.allColumns
-          .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id)}))
-          .filter(c => !!c.columnSettings)
-          .map((column, index) => ({
-            ...column.column,
-            displayName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-            tooltip: t(['columns', column.column.id, 'tooltip'], {fallback: column.column.tooltip}),
-            filterData: column.column.filterData
-              ? {
-                ...column.column.filterData,
-                filterName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-                filters: (column.column.filterData.filters ?? []).map(f => ({
-                  value: f.value as unknown,
-                  text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
-                }))
-              }
-              : undefined,
-            width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
-            order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
-          }))
-          .sort((a, b) => a.order - b.order);
-
-        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) => prev + cur.width!, 0) + 70;
-      }
-
-      this.badgeColor = s.badgeColor!;
-    });
+        return {
+          columns: this.allColumns
+            .map(c => ({column: c, columnSettings: tableSettings?.columns.find(x => x.columnId === c.id)}))
+            .filter(c => !!c.columnSettings)
+            .map((column, index) => ({
+              ...column.column,
+              displayName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+              tooltip: t(['columns', column.column.id, 'tooltip'], {fallback: column.column.tooltip}),
+              filterData: column.column.filterData
+                ? {
+                  ...column.column.filterData,
+                  filterName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+                  filters: (column.column.filterData.filters ?? []).map(f => ({
+                    value: f.value as unknown,
+                    text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
+                  }))
+                }
+                : undefined,
+              width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
+              order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+            }))
+            .sort((a, b) => a.order - b.order)
+        };
+      })
+    );
   }
 
-  private initDisplayNotifications(): void {
+  protected initTableData(): void {
+    this.initNotificationStatusCheck();
+
     const currentPositions$ = this.settings$.pipe(
       switchMap(s => this.blotterService.getPositions(s)),
       map(p => p.map(p => ({
@@ -223,7 +185,7 @@ export class PushNotificationsComponent extends BaseTableComponent<DisplayNotifi
       this.settings$,
       currentPositions$,
       currentSubscriptions$,
-      this.filter$
+      this.filters$
     ]).pipe(
       map(([
              settings,
@@ -257,10 +219,33 @@ export class PushNotificationsComponent extends BaseTableComponent<DisplayNotifi
       tap(() => this.isLoading$.next(false))
     );
 
-    this.displayNotifications$ = this.isNotificationsAllowed$.pipe(
+    this.tableData$ = this.isNotificationsAllowed$.pipe(
       filter(x => x),
       switchMap(() => displayNotifications$)
     );
+  }
+
+  rowClick(row: DisplayNotification): void {
+    if (row.subscriptionType !== PushSubscriptionType.PriceSpark) {
+      return;
+    }
+
+    super.rowClick(row);
+  }
+
+  rowToInstrumentKey(row: SubscriptionBase): InstrumentKey {
+    const priceSparkSubscription = <PriceSparkSubscription>row;
+    return {
+      symbol: priceSparkSubscription.instrument,
+      exchange: priceSparkSubscription.exchange
+    };
+  }
+
+  cancelSubscription(id: string): void {
+    this.isLoading$.next(true);
+    this.pushNotificationsService.cancelSubscription(id).pipe(
+      take(1)
+    ).subscribe();
   }
 
   private initNotificationStatusCheck(): void {

@@ -6,25 +6,36 @@
       nzNotFoundImage="simple">
     </nz-empty>
   </ng-template>
-  <div #tableContainer class="table-container" *ngIf="displayPositions$ | async as positions">
-    <ng-container *ngIf="scrollHeight$ | async as scrollHeight">
-      <ng-container *ngIf="settings$ | async as settings">
-        <nz-table #nzTable [nzData]="positions"
-                [nzFooter]="footer"
-                [nzFrontPagination]="false"
-                [nzNoResult]="empty"
-                [nzScroll]="{ x: tableInnerWidth + 'px', y: scrollHeight - 5 + 'px' }"
-                [nzShowPagination]="false"
-                [nzVirtualItemSize]="20"
-                [nzVirtualMaxBufferPx]="scrollHeight"
-                [nzVirtualMinBufferPx]="scrollHeight"
-                [nzVirtualForTrackBy]="trackBy"
-                atsTableRowHeight
-                nzTableLayout="fixed">
-        <thead>
-        <tr (cdkDropListDropped)="changeColumnOrder($event)" cdkDropList cdkDropListOrientation="horizontal">
-          <th nzWidth="45px" *ngIf="showPositionActions(settings)">
-            <ng-container *ngIf="getClosablePositions(nzTable.data) as closablePositions">
+  <div
+    *ngrxLet="{ positions: tableData$, contentSize: contentSize$, tableConfig: tableConfig$, settings: settings$ } as td"
+    class="table-container"
+    nzResizeObserver
+    (nzResizeObserve)="containerSizeChanged($event)"
+  >
+    <nz-table
+      [nzData]="td.positions"
+      [nzFooter]="footer"
+      [nzFrontPagination]="false"
+      [nzNoResult]="empty"
+      [nzScroll]="{ x: (td.contentSize?.width ?? 0) + 'px', y: (td.contentSize?.height ?? 0) - 5 + 'px' }"
+      [nzShowPagination]="false"
+      [nzVirtualItemSize]="20"
+      [nzVirtualMaxBufferPx]="td.contentSize?.height ?? 0"
+      [nzVirtualMinBufferPx]="td.contentSize?.height ?? 0"
+      [nzVirtualForTrackBy]="trackBy"
+      atsTableRowHeight
+      nzTableLayout="fixed"
+    >
+      <thead>
+        <tr
+          (nzResizeObserve)="headerSizeChanged($event)"
+          nzResizeObserver
+          (cdkDropListDropped)="changeColumnOrder($event)"
+          cdkDropList
+          cdkDropListOrientation="horizontal"
+        >
+          <th nzWidth="45px" *ngIf="showPositionActions(td.settings)">
+            <ng-container *ngIf="getClosablePositions(td.positions) as closablePositions">
               <a
                 *ngIf="closablePositions.length > 0"
                 (click)="$event.preventDefault(); $event.stopPropagation()"
@@ -41,9 +52,8 @@
               </a>
             </ng-container>
           </th>
-          <th (atsWidthChanged)="saveColumnWidth(column.id, $event)"
-              (atsWidthChanging)="recalculateTableWidth($event)"
-              *ngFor='let column of listOfColumns'
+          <th (atsWidthChanged)="saveColumnWidth({columnId: column.id, width: $event})"
+              *ngFor='let column of td.tableConfig.columns'
               [atsResizeColumn]
               [minWidth]="column.minWidth ?? 50"
               [nzCustomFilter]='column.filterData && !column.filterData.isDefaultFilter'
@@ -64,7 +74,7 @@
             <nz-filter-trigger
               *ngIf="column.filterData && !column.filterData.isDefaultFilter"
               [(nzVisible)]="!!column.filterData.isOpenedFilter"
-              [nzActive]="!!filter$"
+              [nzActive]="!!filters$"
               [nzDropdownMenu]="searchMenu"
             >
               <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon
@@ -72,41 +82,41 @@
             </nz-filter-trigger>
           </th>
         </tr>
-        </thead>
-        <tbody>
-          <ng-template let-pos nz-virtual-scroll>
-          <tr (click)="selectInstrument(pos.symbol, pos.exchange)">
-            <td *ngIf="showPositionActions(settings)">
-                <a
-                  *ngIf="canClosePosition(pos)"
-                  [title]="t('blotterPositions.closePositionTooltip')"
-                  (click)="$event.preventDefault(); $event.stopPropagation()"
-                  nz-popconfirm
-                  [nzCancelText]="t('no')"
-                  [nzOkText]="t('yes')"
-                  [nzPopconfirmTitle]="t('blotterPositions.confirmClose')"
-                  nzOkDanger="true"
-                  [nzAutofocus]="'cancel'"
-                  (nzOnConfirm)="closePosition(pos)"
-                >
-                  <i nz-icon nzTheme="outline" nzType="close-circle"></i>
-                </a>
-                &nbsp;
-                <a *ngIf="canReversePosition(pos)"
-                   [title]="t('blotterPositions.reversePositionTooltip')"
-                   (click)="$event.preventDefault(); $event.stopPropagation()"
-                   nz-popconfirm
-                   [nzCancelText]="t('no')"
-                   [nzOkText]="t('yes')"
-                   [nzPopconfirmTitle]="t('blotterPositions.confirmReverse')"
-                   nzOkDanger="true"
-                   [nzAutofocus]="'cancel'"
-                   (nzOnConfirm)="reversePosition(pos)"
-                >
-                  <i nz-icon nzTheme="outline" nzType="retweet"></i>
-                </a>
+      </thead>
+      <tbody>
+        <ng-template let-pos nz-virtual-scroll>
+          <tr (click)="rowClick(pos)">
+            <td *ngIf="showPositionActions(td.settings)">
+              <a
+                *ngIf="canClosePosition(pos)"
+                [title]="t('blotterPositions.closePositionTooltip')"
+                (click)="$event.preventDefault(); $event.stopPropagation()"
+                nz-popconfirm
+                [nzCancelText]="t('no')"
+                [nzOkText]="t('yes')"
+                [nzPopconfirmTitle]="t('blotterPositions.confirmClose')"
+                nzOkDanger="true"
+                [nzAutofocus]="'cancel'"
+                (nzOnConfirm)="closePosition(pos)"
+              >
+                <i nz-icon nzTheme="outline" nzType="close-circle"></i>
+              </a>
+              &nbsp;
+              <a *ngIf="canReversePosition(pos)"
+                 [title]="t('blotterPositions.reversePositionTooltip')"
+                 (click)="$event.preventDefault(); $event.stopPropagation()"
+                 nz-popconfirm
+                 [nzCancelText]="t('no')"
+                 [nzOkText]="t('yes')"
+                 [nzPopconfirmTitle]="t('blotterPositions.confirmReverse')"
+                 nzOkDanger="true"
+                 [nzAutofocus]="'cancel'"
+                 (nzOnConfirm)="reversePosition(pos)"
+              >
+                <i nz-icon nzTheme="outline" nzType="retweet"></i>
+              </a>
             </td>
-            <ng-container *ngFor='let column of listOfColumns'>
+            <ng-container *ngFor='let column of td.tableConfig.columns'>
               <td *ngIf='column.id === "symbol"' class='bold'>
                 <span class="symbol-name">{{ pos.symbol }}</span>
                 <ats-instrument-badge-display [instrumentKey]="pos"></ats-instrument-badge-display>
@@ -142,27 +152,24 @@
                 *ngIf='column.id === "dailyUnrealisedPlRatio"'
                 [class]='pos.dailyUnrealisedPl < 0 ? "sell" : "buy"'
               >
-                {{round(pos.dailyUnrealisedPl * 100 / pos.volume) | number}}
+                  {{round(pos.dailyUnrealisedPl * 100 / pos.volume) | number}}
               </td>
             </ng-container>
           </tr>
         </ng-template>
-        </tbody>
-        <ng-template #footer>
-          <div class="export-button-container" *transloco="let tCommon; scope: 'blotter/blotter-common'">
-            <button nz-button nzType="link" *ngIf="canExport(nzTable.data)" (click)="exportToFile(nzTable.data)">
-              <i nz-icon nzType="download"></i>
-              {{tCommon('blotterBlotterCommon.exportToFile')}}
-            </button>
-          </div>
-        </ng-template>
-      </nz-table>
-      </ng-container>
-    </ng-container>
+      </tbody>
+      <ng-template #footer>
+        <div class="export-button-container" *transloco="let tCommon; scope: 'blotter/blotter-common'">
+          <button nz-button nzType="link" *ngIf="canExport(td.positions)" (click)="exportToFile(td.positions)">
+            <i nz-icon nzType="download"></i>
+            {{tCommon('blotterBlotterCommon.exportToFile')}}
+          </button>
+        </div>
+      </ng-template>
+    </nz-table>
+    <nz-dropdown-menu #searchMenu="nzDropdownMenu">
+      <ats-table-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns"></ats-table-filter>
+    </nz-dropdown-menu>
   </div>
-
-  <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-    <ats-table-filter (filterChange)="filterChange($event)" [columns]="listOfColumns"></ats-table-filter>
-  </nz-dropdown-menu>
 
 </div>

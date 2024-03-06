@@ -57,6 +57,7 @@ describe('TradesHistoryComponent', () => {
     });
     fixture = TestBed.createComponent(TradesHistoryComponent);
     component = fixture.componentInstance;
+    component.guid = 'testGuid';
     fixture.detectChanges();
   });
 

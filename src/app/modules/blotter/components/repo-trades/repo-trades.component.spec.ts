@@ -47,6 +47,7 @@ describe('RepoTradesComponent', () => {
     });
     fixture = TestBed.createComponent(RepoTradesComponent);
     component = fixture.componentInstance;
+    component.guid = 'testGuid';
     fixture.detectChanges();
   });
 

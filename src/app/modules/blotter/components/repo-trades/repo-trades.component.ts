@@ -8,12 +8,10 @@ import {
 import {
   combineLatest,
   distinctUntilChanged,
-  Observable,
-  of,
   switchMap
 } from "rxjs";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
-import { TableNames } from "../../models/blotter-settings.model";
+import { allRepoTradesColumns, TableNames } from "../../models/blotter-settings.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterService } from "../../services/blotter.service";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
@@ -24,7 +22,7 @@ import { TableSettingHelper } from "../../../../shared/utils/table-setting.helpe
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { RepoTrade } from "../../../../shared/models/trades/trade.model";
-import { BaseTableComponent } from "../base-table/base-table.component";
+import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
 import { TradeFilter } from "../../models/trade.model";
 
 @Component({
@@ -32,10 +30,9 @@ import { TradeFilter } from "../../models/trade.model";
   templateUrl: './repo-trades.component.html',
   styleUrls: ['./repo-trades.component.less']
 })
-export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilter> implements OnInit {
+export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, TradeFilter> implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-  displayRepoTrades$: Observable<RepoTrade[]> = of([]);
   allColumns: BaseColumnSettings<RepoTrade>[] = [
     {
       id: 'id',
@@ -207,13 +204,15 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
     protected readonly translatorService: TranslatorService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(service, settingsService, translatorService, destroyRef);
+    super(settingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
+  }
 
-    this.settings$.pipe(
+  protected initTableConfig(): void {
+    this.tableConfig$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.repoTradesTable, current.repoTradesTable)
         && previous.badgeColor === current.badgeColor
@@ -226,52 +225,53 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
         () => this.translatorService.getTranslator('blotter/repo-trades'),
         ({ s, tTrades }, tRepoTrades) => ({ s, tTrades, tRepoTrades })
       ),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(({ s, tTrades, tRepoTrades }) => {
-      const tableSettings = s.repoTradesTable;
+      takeUntilDestroyed(this.destroyRef),
+      map(({ s, tTrades, tRepoTrades }) => {
+        const tableSettings = TableSettingHelper.toTableDisplaySettings(s.repoTradesTable, allRepoTradesColumns.filter(c => c.isDefault).map(c => c.id));
 
-      if (tableSettings) {
-        this.listOfColumns = this.allColumns
-          .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id)}))
-          .filter(c => !!c.columnSettings)
-          .map((column, index) => ({
-            ...column.column,
-            displayName: tTrades(
-              ['columns', column.column.id, 'name'],
-              {
-                fallback: tRepoTrades(['columns', column.column.id, 'name'], {falback: column.column.displayName})
-              }
-            ),
-            tooltip: tTrades(
-              ['columns', column.column.id, 'tooltip'],
-              {
-                fallback: tRepoTrades(['columns', column.column.id, 'tooltip'], {falback: column.column.tooltip})
-              }
-            ),
-            filterData: column.column.filterData
-              ? {
-                ...column.column.filterData,
-                filterName: tTrades(
+          return {
+            columns: this.allColumns
+              .map(c => ({column: c, columnSettings: tableSettings?.columns.find(x => x.columnId === c.id)}))
+              .filter(c => !!c.columnSettings)
+              .map((column, index) => ({
+                ...column.column,
+                displayName: tTrades(
                   ['columns', column.column.id, 'name'],
                   {
                     fallback: tRepoTrades(['columns', column.column.id, 'name'], {falback: column.column.displayName})
                   }
                 ),
-                filters: (column.column.filterData.filters ?? []).map(f => ({
-                  value: f.value as unknown,
-                  text: tTrades(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
-                }))
-              }
-              : undefined,
-            width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
-            order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
-          }))
-          .sort((a, b) => a.order - b.order);
+                tooltip: tTrades(
+                  ['columns', column.column.id, 'tooltip'],
+                  {
+                    fallback: tRepoTrades(['columns', column.column.id, 'tooltip'], {falback: column.column.tooltip})
+                  }
+                ),
+                filterData: column.column.filterData
+                  ? {
+                    ...column.column.filterData,
+                    filterName: tTrades(
+                      ['columns', column.column.id, 'name'],
+                      {
+                        fallback: tRepoTrades(['columns', column.column.id, 'name'], {falback: column.column.displayName})
+                      }
+                    ),
+                    filters: (column.column.filterData.filters ?? []).map(f => ({
+                      value: f.value as unknown,
+                      text: tTrades(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
+                    }))
+                  }
+                  : undefined,
+                width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
+                order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+              }))
+              .sort((a, b) => a.order - b.order)
+          };
+      })
+    );
+  }
 
-        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) =>prev + cur.width! , 0);
-      }
-    });
-
+  protected initTableData(): void {
     const trades$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getRepoTrades(settings)),
@@ -279,7 +279,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
       startWith([])
     );
 
-    this.displayRepoTrades$ = combineLatest([
+    this.tableData$ = combineLatest([
         trades$,
         this.timezoneConverterService.getConverter()
       ]
@@ -288,7 +288,7 @@ export class RepoTradesComponent extends BaseTableComponent<RepoTrade, TradeFilt
         ...t,
         date: converter.toTerminalDate(t.date)
       })),
-      mergeMap(trades => this.filter$.pipe(
+      mergeMap(trades => this.filters$.pipe(
         map(f => trades.filter((t: RepoTrade) => this.justifyFilter(t, f)))
       ))
     );

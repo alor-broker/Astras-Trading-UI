@@ -2,16 +2,14 @@ import {
   Component,
   DestroyRef,
   Inject,
-  Input,
   OnDestroy,
   OnInit
 } from '@angular/core';
 import { AllInstrumentsService } from "../../services/all-instruments.service";
 import {
   BehaviorSubject,
+  combineLatest,
   interval,
-  Observable,
-  shareReplay,
   Subscription,
   switchMap,
   take,
@@ -32,12 +30,10 @@ import {
 } from 'rxjs/operators';
 import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
 import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 import { AllInstrumentsSettings } from '../../model/all-instruments-settings.model';
-import { TableConfig } from '../../../../shared/models/table-config.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
@@ -46,26 +42,23 @@ import {
   WatchlistType
 } from "../../../instruments/models/watchlist.model";
 import { ACTIONS_CONTEXT, ActionsContext } from 'src/app/shared/services/actions-context';
-import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
+import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 
 @Component({
   selector: 'ats-all-instruments',
   templateUrl: './all-instruments.component.html',
   styleUrls: ['./all-instruments.component.less']
 })
-export class AllInstrumentsComponent implements OnInit, OnDestroy {
-  @Input({required: true})
-  guid!: string;
-
-  contentSize$ = new BehaviorSubject<ContentSize | null>(null);
-  public isLoading$ = new BehaviorSubject<boolean>(false);
+export class AllInstrumentsComponent extends BaseTableComponent<AllInstrumentsSettings, AllInstruments, AllInstrumentsFilters>
+implements OnInit, OnDestroy {
   public allColumns: BaseColumnSettings<AllInstruments>[] = [
     {
       id: 'name',
       displayName: 'Тикер',
       width: 100,
-      sortChangeFn: this.getSortFn('symbol'),
+      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'symbol' }),
       filterData: {
         filterName: 'query'
       },
@@ -80,14 +73,14 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
         filterName: 'currency',
         isOpenedFilter: false,
       },
-      sortChangeFn: this.getSortFn('currency'),
+      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'currency' }),
     },
     {
       id: 'dailyGrowth',
       displayName: 'Рост за сегодня',
       classFn: (data): 'sell' | 'buy' => data.dailyGrowth < 0 ? 'sell' : 'buy',
       width: 100,
-      sortChangeFn: this.getSortFn('dailyGrowth'),
+      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'dailyGrowth' }),
       filterData: {
         filterName: 'dailyGrowth',
         isInterval: true,
@@ -100,13 +93,13 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       displayName: 'Рост за сегодня, %',
       classFn: (data): 'sell' | 'buy' => data.dailyGrowth < 0 ? 'sell' : 'buy',
       width: 100,
-      sortChangeFn: this.getSortFn('dailyGrowthPercent')
+      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'dailyGrowthPercent' }),
     },
     {
       id: 'tradeVolume',
       displayName: 'Объём торгов',
       width: 110,
-      sortChangeFn: this.getSortFn('tradeVolume'),
+      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'tradeVolume' }),
       filterData: {
         filterName: 'tradeVolume',
         isInterval: true,
@@ -118,7 +111,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       id: 'exchange',
       displayName: 'Биржа',
       width: 90,
-      sortChangeFn: this.getSortFn('exchange'),
+      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'exchange' }),
       filterData: {
         filterName: 'exchange',
         isOpenedFilter: false,
@@ -134,7 +127,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       id: 'market',
       displayName: 'Рынок',
       width: 90,
-      sortChangeFn: this.getSortFn('marketType'),
+      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'marketType' }),
       filterData: {
         filterName: 'marketType',
         isOpenedFilter: false,
@@ -153,7 +146,7 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
       id: 'price',
       displayName: 'Цена',
       width: 80,
-      sortChangeFn: this.getSortFn('price'),
+      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'price' }),
       filterData: {
         filterName: 'price',
         isInterval: true,
@@ -163,52 +156,51 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
     },
     { id: 'priceMax', displayName: 'Макс. цена', width: 80 },
     { id: 'priceMin', displayName: 'Мин. цена', width: 80 },
-    { id: 'priceScale', displayName: 'Шаг цены', width: 90, sortChangeFn: this.getSortFn('priceScale') },
-    { id: 'yield', displayName: 'Доходность', width: 100, sortChangeFn: this.getSortFn('yield') },
+    {
+      id: 'priceScale',
+      displayName: 'Шаг цены',
+      width: 90,
+      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'priceScale' }),
+    },
+    {
+      id: 'yield',
+      displayName: 'Доходность',
+      width: 100,
+      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'yield' }),
+    },
   ];
-  public tableConfig$!: Observable<TableConfig<AllInstruments>>;
   public contextMenu: ContextMenu[] = [];
-  public instrumentsDisplay$!: Observable<AllInstruments[]>;
   private readonly instrumentsList$ = new BehaviorSubject<AllInstruments[]>([]);
-  private readonly loadingChunkSize = 50;
 
   private updatesSub?: Subscription;
-  private readonly filters$ = new BehaviorSubject<AllInstrumentsFilters>({ limit: this.loadingChunkSize, offset: 0 });
-  private settings$!: Observable<AllInstrumentsSettings>;
+  protected settingsTableName = 'allInstrumentsTable';
+  protected settingsColumnsName = 'allInstrumentsColumns';
 
   constructor(
-    private readonly settingsService: WidgetSettingsService,
+    protected readonly settingsService: WidgetSettingsService,
     private readonly service: AllInstrumentsService,
     private readonly dashboardContextService: DashboardContextService,
     @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext,
+    protected readonly actionsContext: ActionsContext,
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
+    protected readonly destroyRef: DestroyRef
   ) {
+    super(settingsService, destroyRef, actionsContext);
   }
 
   ngOnInit(): void {
-    this.initInstruments();
+    super.ngOnInit();
 
-    this.instrumentsDisplay$ = this.instrumentsList$.pipe(
-      mapWith(
-        () => this.dashboardContextService.instrumentsSelection$,
-        (instruments, output) => ({ instruments, badges: output })
-      ),
-      mapWith(
-        () => this.terminalSettingsService.getSettings(),
-        (source, output) => ({ ...source, terminalSettings: output })
-      ),
-      map(s => this.mapInstrumentsToBadges(s.instruments, s.badges, s.terminalSettings))
-    );
+    this.watchlistCollectionService.getWatchlistCollection()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(collection => {
+        this.initContextMenu(collection);
+      });
+  }
 
-    this.settings$ = this.settingsService.getSettings<AllInstrumentsSettings>(this.guid).pipe(
-      shareReplay(1)
-    );
-
-
+  protected initTableConfig(): void {
     this.tableConfig$ = this.settings$.pipe(
       mapWith(
         () => this.translatorService.getTranslator('all-instruments/all-instruments'),
@@ -224,81 +216,61 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
             .map((col, index) => ({
                 ...col.column,
                 displayName: translate(
-                  ['columns', col.column.id],
+                  ['columns', col.column.id, 'name'],
                   { fallback: col.column.displayName }
                 ),
-              order: col.settings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+                tooltip: translate(
+                  ['columns', col.column.id, 'tooltip'],
+                  {fallback: col.column.displayName}
+                ),
+                width: col.settings!.columnWidth ?? this.defaultColumnWidth as number,
+                order: col.settings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
               })
             )
             .sort((a, b) => a.order - b.order)
         };
       })
     );
+  }
 
-    this.watchlistCollectionService.getWatchlistCollection()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(collection => {
-        this.initContextMenu(collection);
-      });
+  initTableData(): void {
+    this.tableData$ = this.instrumentsList$.pipe(
+      mapWith(
+        () => this.dashboardContextService.instrumentsSelection$,
+        (instruments, output) => ({ instruments, badges: output })
+      ),
+      mapWith(
+        () => this.terminalSettingsService.getSettings(),
+        (source, output) => ({ ...source, terminalSettings: output })
+      ),
+      map(s => this.mapInstrumentsToBadges(s.instruments, s.badges, s.terminalSettings))
+    );
+
+    this.initInstruments();
   }
 
   scrolled(): void {
     this.instrumentsList$.pipe(
       take(1),
-      withLatestFrom(this.isLoading$, this.filters$),
+      withLatestFrom(this.isLoading$),
       filter(([, isLoading,]) => !isLoading),
-      map(([instrumentsList, , currentFilters]) => ({ instrumentsList, currentFilters })),
-    ).subscribe(s => {
-      const loadedIndex = s.currentFilters.limit! + s.currentFilters.offset!;
-      if (s.instrumentsList.length < loadedIndex) {
+      map(([instrumentsList]) => instrumentsList),
+    ).subscribe(instruments => {
+      const loadedIndex = this.pagination && (this.pagination.limit + this.pagination.offset);
+      if (loadedIndex != null && instruments.length < loadedIndex) {
         return;
       }
 
-      this.updateFilters(curr => ({
-        ...curr,
-        offset: s.instrumentsList.length
-      }));
+      this.pagination = { limit: this.loadingChunkSize, offset: instruments.length };
+      this.scrolled$.next(null);
     });
   }
 
-  applyFilter(filters: any): void {
-    this.updateFilters(curr => {
-      const allFilters = {
-        ...curr,
-        ...filters
-      } as { [filterKey: string]: string | string[] | null};
-
-      const cleanedFilters = Object.keys(allFilters)
-        .filter(key => allFilters[key] != null && !!allFilters[key]!.length)
-        .reduce((acc, curr) => {
-          if (Array.isArray(allFilters[curr])) {
-            acc[curr] = (allFilters[curr] as string[]).join(';');
-          }
-          else {
-            acc[curr] = allFilters[curr]!;
-          }
-          return acc;
-        }, {} as { [filterName: string]: string | string[] });
-
-      return {
-        ...cleanedFilters,
-        limit: this.loadingChunkSize,
-        offset: 0
-      };
-    });
-  }
-
-  selectInstrument(row: AllInstruments): void {
-    const instrument = {
+  rowToInstrumentKey(row: AllInstruments): InstrumentKey {
+    return {
       symbol: row.name,
       exchange: row.exchange,
-    };
-
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(s => {
-      this.actionsContext.instrumentSelected(instrument, s.badgeColor ?? defaultBadgeColor);
-    });
+    } as InstrumentKey;
   }
 
   initContextMenu(collection: WatchlistCollection): void {
@@ -335,63 +307,55 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    super.ngOnDestroy();
     this.updatesSub?.unsubscribe();
-
-    this.filters$.complete();
     this.instrumentsList$.complete();
-    this.isLoading$.complete();
-    this.contentSize$.complete();
-  }
-
-  containerSizeChanged(entries: ResizeObserverEntry[]): void {
-    entries.forEach(x => {
-      this.contentSize$.next({
-        width: Math.floor(x.contentRect.width),
-        height: Math.floor(x.contentRect.height)
-      });
-    });
-  }
-
-  changeColumnOrder(event: CdkDragDrop<any>): void {
-    this.settings$.pipe(
-      withLatestFrom(this.tableConfig$),
-      take(1)
-    ).subscribe(([settings, tableConfig]) => {
-      this.settingsService.updateSettings<AllInstrumentsSettings>(
-        settings.guid,
-        {
-          allInstrumentsTable: TableSettingHelper.changeColumnOrder(
-            event,
-            TableSettingHelper.toTableDisplaySettings(settings.allInstrumentsTable, settings.allInstrumentsColumns)!,
-            tableConfig.columns
-          )
-        }
-      );
-    });
-  }
-
-  private updateFilters(update: (curr: AllInstrumentsFilters) => AllInstrumentsFilters): void {
-    this.filters$.pipe(
-      take(1)
-    ).subscribe(curr => {
-      this.filters$.next(update(curr));
-    });
   }
 
   private initInstruments(): void {
-    this.filters$.pipe(
-      tap(() => this.isLoading$.next(true)),
-      mapWith(
-        f => this.service.getAllInstruments(f).pipe(filter(i => i != null)),
-        (filters, res) => ({ filters, res })
-      ),
-      withLatestFrom(this.instrumentsList$),
-      map(([s, currentList]) => s.filters.offset! > 0 ? [...currentList, ...s.res!] : s.res!),
-      tap(() => this.isLoading$.next(false)),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(instruments => {
-      this.instrumentsList$.next(instruments);
-      this.subscribeToUpdates();
+    combineLatest([
+      this.filters$,
+      this.sort$
+        .pipe(
+          tap(() => this.pagination = null)
+        ),
+      this.scrolled$
+    ])
+      .pipe(
+        tap(() => this.isLoading$.next(true)),
+        mapWith(
+          ([filters, sort]) => {
+            let reqFilters = (filters ?? {}) as AllInstrumentsFilters;
+
+            if (sort != null) {
+              reqFilters = { ...reqFilters, ...sort };
+            }
+
+            if (this.pagination == null) {
+              reqFilters.limit = this.loadingChunkSize;
+              reqFilters.offset = 0;
+            } else {
+              reqFilters = { ...reqFilters, ...this.pagination };
+            }
+
+            return this.service.getAllInstruments(reqFilters).pipe(filter(i => i != null));
+          },
+          (f, res) => res
+        ),
+        tap(() => this.isLoading$.next(false)),
+        takeUntilDestroyed(this.destroyRef)
+      ).subscribe(res => {
+        if (this.pagination == null) {
+          this.instrumentsList$.next(res!);
+          this.subscribeToUpdates();
+          return;
+        }
+
+        this.instrumentsList$.pipe(take(1))
+          .subscribe(instruments => {
+            this.instrumentsList$.next([...instruments, ...res!]);
+            this.subscribeToUpdates();
+          });
     });
   }
 
@@ -416,13 +380,14 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
 
     this.updatesSub = interval(10_000)
       .pipe(
-        withLatestFrom(this.isLoading$, this.filters$),
+        withLatestFrom(this.isLoading$, this.filters$, this.sort$),
         filter(([, isLoading,]) => !isLoading),
-        map(([, , filters]) => filters),
-        map(filters => ({
+        map(([, , filters, sort]) => ({ filters, sort: sort ?? {} })),
+        map(({ filters, sort }) => ({
           ...filters,
+          ...sort,
           offset: 0,
-          limit: filters.limit! + filters.offset!
+          limit: this.pagination == null ? this.loadingChunkSize : (this.pagination.limit + this.pagination.offset)
         })),
         switchMap(f => this.service.getAllInstruments(f).pipe(filter(i => i != null)))
       ).subscribe(instruments => {
@@ -432,27 +397,5 @@ export class AllInstrumentsComponent implements OnInit, OnDestroy {
 
         this.instrumentsList$.next(instruments!);
       });
-  }
-
-  private getSortFn(orderBy: string): (dir: string | null) => void {
-    return (dir: string | null) => {
-      this.updateFilters(curr => {
-        const filter = {
-          ...curr,
-          offset: 0
-        };
-
-        delete filter.descending;
-        delete filter.orderBy;
-
-        if (dir != null && dir.length > 0) {
-          filter.descending = dir === 'descend';
-          filter.orderBy = orderBy;
-        }
-
-        return filter;
-      });
-
-    };
   }
 }

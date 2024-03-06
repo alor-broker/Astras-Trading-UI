@@ -7,24 +7,36 @@
     </nz-empty>
   </ng-template>
 
-  <div class="table-container" #tableContainer *ngIf="displayRepoTrades$ | async as trades">
-    <ng-container *ngIf="scrollHeight$ | async as scrollHeight">
-      <nz-table  #nzTable [nzData]="trades"
-                 [nzNoResult]="empty"
-                 nzTableLayout="fixed"
-                 atsTableRowHeight
-                 [nzFrontPagination]="false"
-                 [nzShowPagination]="false"
-                 [nzScroll]="{ x: tableInnerWidth + 'px', y: scrollHeight - 5 + 'px' }"
-                 [nzVirtualItemSize]="20"
-                 [nzVirtualMaxBufferPx]="scrollHeight"
-                 [nzVirtualMinBufferPx]="scrollHeight"
-                 [nzVirtualForTrackBy]="trackBy"
-                 [nzFooter]="footer">
+  <ng-container *ngrxLet="{ contentSize: contentSize$, tableConfig: tableConfig$, settings: settings$, trades: tableData$ } as td">
+    <div
+      class="table-container"
+      (nzResizeObserve)="containerSizeChanged($event)"
+      nzResizeObserver
+    >
+      <nz-table
+        [nzData]="td.trades"
+        [nzNoResult]="empty"
+        nzTableLayout="fixed"
+        atsTableRowHeight
+        [nzFrontPagination]="false"
+        [nzShowPagination]="false"
+        [nzScroll]="{ x: (td.contentSize?.width ?? 0) + 'px', y: (td.contentSize?.height ?? 0) + 'px' }"
+        [nzVirtualItemSize]="20"
+        [nzVirtualMaxBufferPx]="td.contentSize?.height ?? 0"
+        [nzVirtualMinBufferPx]="td.contentSize?.height ?? 0"
+        [nzVirtualForTrackBy]="trackBy"
+        [nzFooter]="footer"
+      >
         <thead>
-        <tr cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="changeColumnOrder($event)">
+        <tr
+          (nzResizeObserve)="headerSizeChanged($event)"
+          nzResizeObserver
+          cdkDropList
+          cdkDropListOrientation="horizontal"
+          (cdkDropListDropped)="changeColumnOrder($event)"
+        >
           <th nzWidth="5px"></th>
-          <th *ngFor="let column of listOfColumns"
+          <th *ngFor="let column of td.tableConfig.columns"
               [nzCustomFilter]="column.filterData && !column.filterData.isDefaultFilter"
               [nzSortFn]="column.sortFn ?? false"
               [nzFilters]="column.filterData?.filters ?? []"
@@ -33,8 +45,7 @@
               [nzWidth]="column.width ? column.width + 'px': null"
               [atsResizeColumn]
               [minWidth]="column.minWidth ?? 50"
-              (atsWidthChanged)="saveColumnWidth(column.id, $event)"
-              (atsWidthChanging)="recalculateTableWidth($event)"
+              (atsWidthChanged)="saveColumnWidth({ columnId: column.id, width: $event })"
               cdkDrag
               cdkDragLockAxis="x"
           >
@@ -48,7 +59,7 @@
             <nz-filter-trigger
               *ngIf="column.filterData && !column.filterData.isDefaultFilter"
               [(nzVisible)]="!!column.filterData.isOpenedFilter"
-              [nzActive]="!!filter$"
+              [nzActive]="!!filters$"
               [nzDropdownMenu]="searchMenu"
             >
               <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'"  nz-icon nzType="search"></i>
@@ -62,7 +73,7 @@
             <td>
               <span [class]='trd.side.toString() === "sell" ? "bg-sell" : "bg-buy"'>&nbsp;</span>
             </td>
-            <ng-container *ngFor='let column of listOfColumns'>
+            <ng-container *ngFor='let column of td.tableConfig.columns'>
               <td *ngIf='column.id === "id"'>{{ trd.id }}</td>
               <td *ngIf='column.id === "orderno"'>{{ trd.orderno }}</td>
               <td *ngIf='column.id === "symbol"' class='bold'>{{ trd.symbol }}</td>
@@ -83,17 +94,17 @@
         </tbody>
         <ng-template #footer>
           <div class="export-button-container" *transloco="let tCommon; scope: 'blotter/blotter-common'">
-            <button nz-button nzType="link" *ngIf="canExport(nzTable.data)" (click)="exportToFile(nzTable.data)">
+            <button nz-button nzType="link" *ngIf="canExport(td.trades)" (click)="exportToFile(td.trades)">
               <i nz-icon nzType="download"></i>
               {{tCommon('blotterBlotterCommon.exportToFile')}}
             </button>
           </div>
         </ng-template>
       </nz-table>
-    </ng-container>
-  </div>
+    </div>
 
-  <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-    <ats-table-filter [columns]="listOfColumns" (filterChange)="filterChange($event)"></ats-table-filter>
-  </nz-dropdown-menu>
+    <nz-dropdown-menu #searchMenu="nzDropdownMenu">
+      <ats-table-filter [columns]="td.tableConfig.columns" (filterChange)="filterChange($event)"></ats-table-filter>
+    </nz-dropdown-menu>
+  </ng-container>
 </div>

@@ -8,8 +8,6 @@ import {
 import {
   combineLatest,
   distinctUntilChanged,
-  Observable,
-  of,
   switchMap
 } from 'rxjs';
 import {
@@ -30,7 +28,7 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { BaseTableComponent } from "../base-table/base-table.component";
+import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
 import {
   DisplayTrade,
   TradeFilter
@@ -41,10 +39,9 @@ import {
   templateUrl: './trades.component.html',
   styleUrls: ['./trades.component.less']
 })
-export class TradesComponent extends BaseTableComponent<DisplayTrade, TradeFilter> implements OnInit {
+export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, TradeFilter> implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-  displayTrades$: Observable<DisplayTrade[]> = of([]);
   allColumns: BaseColumnSettings<DisplayTrade>[] = [
     {
       id: 'id',
@@ -141,13 +138,15 @@ export class TradesComponent extends BaseTableComponent<DisplayTrade, TradeFilte
     protected readonly translatorService: TranslatorService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(service, settingsService, translatorService, destroyRef);
+    super(settingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
+  }
 
-    this.settings$.pipe(
+  protected initTableConfig(): void {
+    this.tableConfig$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.tradesTable, current.tradesTable)
         && previous.badgeColor === current.badgeColor
@@ -156,37 +155,38 @@ export class TradesComponent extends BaseTableComponent<DisplayTrade, TradeFilte
         () => this.translatorService.getTranslator('blotter/trades'),
         (s, t) => ({ s, t })
       ),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(({ s, t }) => {
-      const tableSettings = TableSettingHelper.toTableDisplaySettings(s.tradesTable, s.tradesColumns);
+      takeUntilDestroyed(this.destroyRef),
+      map(({ s, t }) => {
+        const tableSettings = TableSettingHelper.toTableDisplaySettings(s.tradesTable, s.tradesColumns);
 
-      if (tableSettings) {
-        this.listOfColumns = this.allColumns
-          .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id)}))
-          .filter(c => !!c.columnSettings)
-          .map((column, index) => ({
-            ...column.column,
-            displayName: t(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
-            tooltip: t(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
-            filterData: column.column.filterData
-              ? {
-                ...column.column.filterData,
-                filterName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-                filters: (column.column.filterData.filters ?? []).map(f => ({
-                  value: f.value as unknown,
-                  text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
-                }))
-              }
-              : undefined,
-            width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
-            order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
-          }))
-          .sort((a, b) => a.order - b.order);
+        return  {
+          columns: this.allColumns
+            .map(c => ({column: c, columnSettings: tableSettings?.columns.find(x => x.columnId === c.id)}))
+            .filter(c => !!c.columnSettings)
+            .map((column, index) => ({
+              ...column.column,
+              displayName: t(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
+              tooltip: t(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
+              filterData: column.column.filterData
+                ? {
+                  ...column.column.filterData,
+                  filterName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+                  filters: (column.column.filterData.filters ?? []).map(f => ({
+                    value: f.value as unknown,
+                    text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
+                  }))
+                }
+                : undefined,
+              width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
+              order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+            }))
+            .sort((a, b) => a.order - b.order)
+        };
+      })
+    );
+  }
 
-        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) =>prev + cur.width! , 0);
-      }
-    });
-
+  protected initTableData(): void {
     const trades$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getTrades(settings)),
@@ -194,16 +194,16 @@ export class TradesComponent extends BaseTableComponent<DisplayTrade, TradeFilte
       startWith([])
     );
 
-    this.displayTrades$ = combineLatest([
-      trades$,
-      this.timezoneConverterService.getConverter()
+    this.tableData$ = combineLatest([
+        trades$,
+        this.timezoneConverterService.getConverter()
       ]
     ).pipe(
       map(([trades, converter]) => trades.map(t => <DisplayTrade>{
         ...t,
         date: converter.toTerminalDate(t.date)
       })),
-      mergeMap(trades => this.filter$.pipe(
+      mergeMap(trades => this.filters$.pipe(
         map(f => trades.filter(t => this.justifyFilter(t, f)))
       ))
     );

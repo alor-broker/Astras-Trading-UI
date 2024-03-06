@@ -7,14 +7,13 @@ import { PositionFilter } from '../../models/position-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { BlotterSettings, ColumnsNames, TableNames } from '../../models/blotter-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { BaseTableComponent } from "../base-table/base-table.component";
+import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
 import { OrderService } from "../../../../shared/services/orders/order.service";
 import { CommonOrderCommands } from "../../../../shared/utils/common-order-commands";
 import { MarketType } from "../../../../shared/models/portfolio-key.model";
@@ -30,7 +29,7 @@ interface PositionDisplay extends Position {
   templateUrl: './positions.component.html',
   styleUrls: ['./positions.component.less']
 })
-export class PositionsComponent extends BaseTableComponent<PositionDisplay, PositionFilter> implements OnInit {
+export class PositionsComponent extends BlotterBaseTableComponent<PositionDisplay, PositionFilter> implements OnInit {
   @Input()
   marketType?: MarketType | null;
   marketTypes = MarketType;
@@ -163,79 +162,21 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
   settingsTableName = TableNames.PositionsTable;
   settingsColumnsName = ColumnsNames.PositionsColumns;
   fileSuffix = 'positions';
-  badgeColor = defaultBadgeColor;
 
   readonly abs = Math.abs;
   constructor(
-    protected readonly service: BlotterService,
+    private readonly service: BlotterService,
     protected readonly settingsService: WidgetSettingsService,
     protected readonly translatorService: TranslatorService,
     protected readonly ordersService: OrderService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(service, settingsService, translatorService, destroyRef);
+    super(settingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
-
-    this.settings$.pipe(
-      distinctUntilChanged((previous, current) =>
-        TableSettingHelper.isTableSettingsEqual(previous.positionsTable, current.positionsTable)
-        && previous.badgeColor === current.badgeColor
-      ),
-      mapWith(
-        () => this.translatorService.getTranslator('blotter/positions'),
-        (s, t) => ({ s, t })
-      ),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(({ s, t }) => {
-        const tableSettings = TableSettingHelper.toTableDisplaySettings(s.positionsTable, s.positionsColumns);
-
-        if (tableSettings) {
-          this.listOfColumns = this.allColumns
-            .map(c => ({ column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id) }))
-            .filter(c => !!c.columnSettings)
-            .map((column, index) => ({
-              ...column.column,
-              displayName: t(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
-              tooltip: t(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
-              width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
-              order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index),
-              filterData: column.column.filterData
-                ? {
-                  ...column.column.filterData,
-                  filterName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-                  filters: (column.column.filterData.filters ?? []).map(f => ({
-                    value: f.value as unknown,
-                    text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
-                  }))
-                }
-                : undefined,
-            }))
-            .sort((a, b) => a.order - b.order);
-        }
-
-        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) => prev + cur.width!, 0);
-        this.badgeColor = s.badgeColor!;
-      }
-    );
-
-    this.displayPositions$ = this.settings$.pipe(
-      distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
-      switchMap(
-        settings => this.service.getPositions(settings)
-          .pipe(
-            map((positions) => positions.map(p => ({ ...p, id: `${p.symbol}_${p.exchange}` })))
-          )
-      ),
-      debounceTime(100),
-      startWith([]),
-      mergeMap(positions => this.filter$.pipe(
-        map(f => positions.filter(o => this.justifyFilter(o, f)))
-      ))
-    );
 
     this.portfolioTotalCost$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
@@ -250,6 +191,64 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
               return i.portfolioLiquidationValue;
             }))
         ))
+    );
+  }
+
+  protected initTableConfig(): void {
+    this.tableConfig$ = this.settings$.pipe(
+      distinctUntilChanged((previous, current) =>
+        TableSettingHelper.isTableSettingsEqual(previous.positionsTable, current.positionsTable)
+        && previous.badgeColor === current.badgeColor
+      ),
+      mapWith(
+        () => this.translatorService.getTranslator('blotter/positions'),
+        (s, t) => ({ s, t })
+      ),
+      takeUntilDestroyed(this.destroyRef),
+      map(({ s, t }) => {
+        const tableSettings = TableSettingHelper.toTableDisplaySettings(s.positionsTable, s.positionsColumns);
+
+        return {
+          columns: this.allColumns
+            .map(c => ({ column: c, columnSettings: tableSettings?.columns.find(x => x.columnId === c.id) }))
+            .filter(c => !!c.columnSettings)
+            .map((column, index) => ({
+              ...column.column,
+              displayName: t(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
+              tooltip: t(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
+              width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
+              order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index),
+              filterData: column.column.filterData
+                ? {
+                  ...column.column.filterData,
+                  filterName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+                  filters: (column.column.filterData.filters ?? []).map(f => ({
+                    value: f.value as unknown,
+                    text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
+                  }))
+                }
+                : undefined,
+            }))
+            .sort((a, b) => a.order - b.order)
+        };
+      })
+    );
+  }
+
+  protected initTableData(): void {
+    this.tableData$ = this.settings$.pipe(
+      distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
+      switchMap(
+        settings => this.service.getPositions(settings)
+          .pipe(
+            map((positions) => positions.map(p => ({ ...p, id: `${p.symbol}_${p.exchange}` })))
+          )
+      ),
+      debounceTime(100),
+      startWith([]),
+      mergeMap(positions => this.filters$.pipe(
+        map(f => positions.filter(o => this.justifyFilter(o, f)))
+      ))
     );
   }
 

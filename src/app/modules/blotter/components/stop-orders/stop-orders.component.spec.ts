@@ -75,6 +75,7 @@ describe('StopOrdersComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(StopOrdersComponent);
     component = fixture.componentInstance;
+    component.guid = 'testGuid';
     fixture.detectChanges();
   });
 
