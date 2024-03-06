@@ -1,0 +1,14 @@
+<ats-chat-container>
+  <ats-chat-message-container *ngFor="let msg of displayMessages;trackBy:trackByMessage"
+                              [message]="msg"
+  >
+  </ats-chat-message-container>
+
+  <ats-chat-status [status]="chatStatus$ | async"></ats-chat-status>
+
+  <ats-message-input
+    (send)="sendMessage($event)"
+    *transloco="let t; scope: 'ai-chat/message-input'"
+    [messagePlaceholder]="t('aiChatMessageInput.textPlaceholder')"
+  ></ats-message-input>
+</ats-chat-container>

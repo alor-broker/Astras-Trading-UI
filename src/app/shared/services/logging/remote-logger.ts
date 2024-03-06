@@ -3,7 +3,10 @@ import { Injectable } from '@angular/core';
 import { GuidGenerator } from '../../utils/guid';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpContext
+} from '@angular/common/http';
 import { LocalStorageService } from '../local-storage.service';
 import {
   EnvironmentService,
@@ -11,6 +14,7 @@ import {
   RemoteLoggerConfig
 } from "../environment.service";
 import { LocalStorageLoggingConstants } from "../../constants/local-storage.constants";
+import { HttpContextTokens } from "../../constants/http.constants";
 
 interface LogEntry {
   timestamp: string;
@@ -48,16 +52,6 @@ export class RemoteLogger extends LoggerBase {
           setTimeout(() => this.flushBuffer());
         }
       );
-  }
-
-  public isLoggerRequest(url: string): boolean {
-    const loggerUrl = this.getConfig()?.loggingServerUrl;
-
-    if (loggerUrl == null) {
-      return false;
-    }
-
-    return url.startsWith(loggerUrl);
   }
 
   logMessage(logLevel: LogLevel, message: string, stack?: string): void {
@@ -130,7 +124,8 @@ export class RemoteLogger extends LoggerBase {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Basic ${btoa(`${config.authorization.name}:${config.authorization.password}`)}`
-            }
+            },
+            context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true)
           }
         ).subscribe();
       } while (true);

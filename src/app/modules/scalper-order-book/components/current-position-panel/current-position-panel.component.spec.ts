@@ -6,6 +6,7 @@ import { CurrentPositionPanelComponent } from './current-position-panel.componen
 import { ScalperOrderBookDataContextService } from '../../services/scalper-order-book-data-context.service';
 import { Subject } from 'rxjs';
 import { getTranslocoModule } from '../../../../shared/utils/testing';
+import { LetDirective } from "@ngrx/component";
 
 describe('CurrentPositionPanelComponent', () => {
   let component: CurrentPositionPanelComponent;
@@ -13,7 +14,10 @@ describe('CurrentPositionPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports:[getTranslocoModule()],
+      imports:[
+        getTranslocoModule(),
+        LetDirective
+      ],
       declarations: [CurrentPositionPanelComponent],
       providers: [
         {

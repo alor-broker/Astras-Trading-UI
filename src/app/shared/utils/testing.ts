@@ -134,7 +134,10 @@ export const ngZorroMockComponents = [
       'nzClosable',
       'nzVisible',
       'nzPlacement',
-      'nzWrapClassName'
+      'nzWrapClassName',
+      'nzTitle',
+      'nzSize',
+      'nzContent'
     ]
   }),
   mockComponent({
