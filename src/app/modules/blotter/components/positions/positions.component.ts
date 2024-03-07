@@ -23,6 +23,8 @@ import { PortfolioSubscriptionsService } from "../../../../shared/services/portf
 interface PositionDisplay extends Position {
   id: string;
   volume: number;
+  dailyUnrealisedPlRatio: number;
+  unrealisedPlRatio: number;
 }
 
 @Component({
