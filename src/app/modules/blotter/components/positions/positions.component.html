@@ -136,13 +136,13 @@
                 *ngIf='column.id === "unrealisedPlRatio"'
                 [class]='pos.unrealisedPlRatio < 0 ? "sell" : "buy"'
               >
-                {{pos.unrealisedPlRatio | number}}
+                {{round(pos.unrealisedPlRatio) | number}}
               </td>
               <td
                 *ngIf='column.id === "dailyUnrealisedPlRatio"'
                 [class]='pos.dailyUnrealisedPlRatio < 0 ? "sell" : "buy"'
               >
-                {{pos.dailyUnrealisedPlRatio | number}}
+                {{round(pos.dailyUnrealisedPlRatio) | number}}
               </td>
             </ng-container>
           </tr>
