@@ -59,6 +59,8 @@
   "instrumentGroupError": "Выберите режим торгов",
   "priceRatioPercentsMultiplicityError": "Значение должно быть кратно шагу",
   "priceRatioPointsMultiplicityError": "Значение должно быть целочисленным",
+  "oneOfRequired": "Хотя бы одно из полей должно быть заполнено",
+
 
   "intervalPlaceholder": "Значение от {{min}} до {{max}}",
 

@@ -239,7 +239,6 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
         topOrderPriceRatio: this.formBuilder.control<number | null>(
           null,
           [
-            Validators.required,
             Validators.min(this.validationOptions.bracket.price.min),
             Validators.max(this.validationOptions.bracket.price.max),
             this.bracketsPriceRatioValidation()
@@ -248,7 +247,6 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
         bottomOrderPriceRatio: this.formBuilder.control<number | null>(
           null,
           [
-            Validators.required,
             Validators.min(this.validationOptions.bracket.price.min),
             Validators.max(this.validationOptions.bracket.price.max),
             this.bracketsPriceRatioValidation()
@@ -257,7 +255,10 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
         useBracketsWhenClosingPosition: this.formBuilder.nonNullable.control(false),
       },
       {
-        validators: Validators.required
+        validators: [
+          Validators.required,
+          AtsValidators.oneOfRequired(['topOrderPriceRatio', 'bottomOrderPriceRatio'])
+        ]
       }
     )
   });

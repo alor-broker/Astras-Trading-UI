@@ -458,7 +458,7 @@ export class ScalperOrdersService {
   }
 
   private checkBracketNeeded(settings: ScalperOrderBookWidgetSettings, side: Side, quantity: number, position: Position | null): boolean {
-    if (!(settings.useBrackets ?? false) || settings.bracketsSettings?.topOrderPriceRatio == null && settings.bracketsSettings?.bottomOrderPriceRatio == null) {
+    if (!(settings.useBrackets ?? false)) {
       return false;
     }
 
@@ -468,7 +468,7 @@ export class ScalperOrdersService {
         : Math.abs(position.qtyTFutureBatch + quantity) < Math.abs(position.qtyTFutureBatch)
       : false;
 
-    return (settings.bracketsSettings.useBracketsWhenClosingPosition ?? false) || !isClosingPosition;
+    return (settings.bracketsSettings!.useBracketsWhenClosingPosition ?? false) || !isClosingPosition;
   }
 
   private getBracketOrderPrice(

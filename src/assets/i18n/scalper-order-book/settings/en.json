@@ -59,6 +59,7 @@
   "instrumentGroupError": "Select trading mode",
   "priceRatioPercentsMultiplicityError": "The value must be a multiple of the step",
   "priceRatioPointsMultiplicityError": "The value should be integer",
+  "oneOfRequired": "At least one of fields should be filled",
 
   "intervalPlaceholder": "Value from {{min}} to {{max}}",
 

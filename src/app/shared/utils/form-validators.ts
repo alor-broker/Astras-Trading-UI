@@ -132,4 +132,26 @@ export class AtsValidators {
       };
     };
   }
+
+   /**
+   * Validating form when one of fields should be filled
+   * @returns validation result
+   */
+  static oneOfRequired(fieldPaths: string[]): ValidatorFn {
+    return (form: AbstractControl): ValidationErrors | null => {
+      const fieldValues = fieldPaths.map(path => {
+        return path.split('.')
+          .reduce((acc, curr) => acc?.[curr] as string, form.value) as unknown;
+      });
+
+
+      if (fieldValues.some(v => v != null)) {
+        return null;
+      }
+
+      return {
+        oneOfRequired: true
+      };
+    };
+  }
 }
