@@ -41,7 +41,6 @@
   "rulerSettingsLabel": "Настройки линейки",
   "markerDisplayFormatLabel": "Значение маркера",
   "showPriceWithZeroPaddingLabel": "Отображать цены с одинаковым количеством знаков после запятой",
-  "useBracketsLabel": "Использовать коридоры",
   "bracketsSettingsLabel": "Настройки коридора",
   "orderPriceUnitsLabel": "Единицы цены",
   "topOrderPriceRatioLabel": "Условная заявка на закрытие позиции по прибыли",

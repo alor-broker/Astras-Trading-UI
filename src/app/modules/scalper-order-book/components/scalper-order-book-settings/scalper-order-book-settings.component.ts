@@ -233,7 +233,6 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       Validators.minLength(1)
     ),
     // automation
-    useBrackets: this.formBuilder.nonNullable.control(false),
     bracketsSettings: this.formBuilder.group({
         orderPriceUnits: this.formBuilder.nonNullable.control(PriceUnits.Points),
         topOrderPriceRatio: this.formBuilder.control<number | null>(
@@ -257,7 +256,6 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       {
         validators: [
           Validators.required,
-          AtsValidators.oneOfRequired(['topOrderPriceRatio', 'bottomOrderPriceRatio'])
         ]
       }
     )
@@ -387,8 +385,11 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       newSettings.autoAlignIntervalSec = Number(formValue.autoAlignIntervalSec);
     }
 
-    if (formValue.useBrackets ?? false) {
+    if ((formValue.bracketsSettings?.topOrderPriceRatio ?? null) != null) {
       newSettings.topOrderPriceRatio = Number(formValue.bracketsSettings!.topOrderPriceRatio);
+    }
+
+    if ((formValue.bracketsSettings?.bottomOrderPriceRatio ?? null) != null) {
       newSettings.bottomOrderPriceRatio = Number(formValue.bracketsSettings!.bottomOrderPriceRatio);
     }
 
@@ -500,8 +501,6 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
         });
     }
 
-    this.form.controls.useBrackets.setValue(settings.useBrackets ?? false);
-
     if (settings.bracketsSettings) {
       this.form.controls.bracketsSettings.setValue({
         orderPriceUnits: settings.bracketsSettings.orderPriceUnits ?? PriceUnits.Points,
@@ -549,12 +548,6 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     } else {
       this.form.controls.volumeHighlightFullness.disable();
       this.form.controls.volumeHighlightOptions.disable();
-    }
-
-    if ((formValue?.useBrackets) ?? false) {
-      this.form.controls.bracketsSettings.enable();
-    } else {
-      this.form.controls.bracketsSettings.disable();
     }
 
     if ((formValue?.showTradesPanel) ?? false) {

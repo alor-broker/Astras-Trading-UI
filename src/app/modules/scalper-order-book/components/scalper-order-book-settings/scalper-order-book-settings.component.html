@@ -403,14 +403,7 @@
           </nz-collapse-panel>
 
           <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.automationSettingsHeader')">
-            <nz-form-item class="one-row">
-              <nz-form-label nzFor="useBrackets">{{t('scalperOrderBookSettings.useBracketsLabel')}}</nz-form-label>
-              <nz-form-control>
-                <nz-switch formControlName='useBrackets'></nz-switch>
-              </nz-form-control>
-            </nz-form-item>
-
-            <nz-form-item *ngIf="form.value.useBrackets">
+            <nz-form-item>
               <nz-collapse [nzBordered]="false" nzGhost>
                 <nz-collapse-panel
                   [nzActive]="true"
@@ -466,15 +459,6 @@
                           </ng-template>
                       </span>
                     </ng-template>
-                    <span
-                      *ngIf="form.controls.bracketsSettings.errors?.oneOfRequired  && (
-                        form.controls.bracketsSettings.controls.topOrderPriceRatio.dirty ||
-                        form.controls.bracketsSettings.controls.bottomOrderPriceRatio.dirty)"
-                      nz-typography
-                      nzType="danger"
-                    >
-                        {{t('scalperOrderBookSettings.oneOfRequired')}}
-                    </span>
                   </nz-form-item>
 
                   <nz-form-item>
@@ -509,15 +493,6 @@
                         </ng-template>
                       </span>
                     </ng-template>
-                    <span
-                      *ngIf="form.controls.bracketsSettings.errors?.oneOfRequired  && (
-                        form.controls.bracketsSettings.controls.topOrderPriceRatio.dirty ||
-                        form.controls.bracketsSettings.controls.bottomOrderPriceRatio.dirty)"
-                      nz-typography
-                      nzType="danger"
-                    >
-                        {{t('scalperOrderBookSettings.oneOfRequired')}}
-                    </span>
                   </nz-form-item>
 
                   <nz-form-item class="one-row">
