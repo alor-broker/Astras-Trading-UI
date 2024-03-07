@@ -140,7 +140,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       id: 'unrealisedPlRatio',
       displayName: 'P/L всего, %',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay): number => (a.unrealisedPl * 100 / a.volume) - (b.unrealisedPl * 100 / b.volume),
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => a.unrealisedPlRatio - b.unrealisedPlRatio,
       tooltip: 'Соотношение прибыли и убытка в процентах',
       minWidth: 60
     },
@@ -156,7 +156,7 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       id: 'dailyUnrealisedPlRatio',
       displayName: 'P/L дн., %',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay): number => (a.dailyUnrealisedPl * 100 / a.volume) - (b.dailyUnrealisedPl * 100 / b.volume),
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => a.dailyUnrealisedPlRatio - b.dailyUnrealisedPlRatio,
       tooltip: 'Соотношение прибыли и убытка за сегодня в процентах',
       minWidth: 60
     },
@@ -229,7 +229,12 @@ export class PositionsComponent extends BaseTableComponent<PositionDisplay, Posi
       switchMap(
         settings => this.service.getPositions(settings)
           .pipe(
-            map((positions) => positions.map(p => ({ ...p, id: `${p.symbol}_${p.exchange}` })))
+            map((positions) => positions.map(p => ({
+              ...p,
+              id: `${p.symbol}_${p.exchange}`,
+              dailyUnrealisedPlRatio: p.dailyUnrealisedPl * 100 / p.volume,
+              unrealisedPlRatio: p.unrealisedPl * 100 / p.volume
+            })))
           )
       ),
       debounceTime(100),

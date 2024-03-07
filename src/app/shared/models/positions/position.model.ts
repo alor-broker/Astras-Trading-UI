@@ -21,7 +21,9 @@ export interface Position {
   qty: number; // 1,
   open: number; // 1,
   dailyUnrealisedPl: number; // 4.200,
+  dailyUnrealisedPlRatio: number; // 4.200,
   unrealisedPl: number; // 292.600,
+  unrealisedPlRatio: number; // 292.600,
   isCurrency: boolean; // false
   volume: number;
   currentVolume: number;
