@@ -1,6 +1,6 @@
 import {
   Component,
-  DestroyRef,
+  DestroyRef, Inject,
   OnInit,
 } from '@angular/core';
 import { take, combineLatest } from "rxjs";
@@ -11,6 +11,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
 
 @Component({
   template: ''
@@ -26,9 +27,10 @@ implements OnInit {
   protected constructor(
     protected readonly settingsService: WidgetSettingsService,
     protected readonly translatorService: TranslatorService,
-    protected readonly destroyRef: DestroyRef
+    protected readonly destroyRef: DestroyRef,
+    @Inject(ACTIONS_CONTEXT) protected readonly actionsContext?: ActionsContext
   ) {
-    super(settingsService, destroyRef);
+    super(settingsService, destroyRef, actionsContext);
   }
 
   ngOnInit(): void {

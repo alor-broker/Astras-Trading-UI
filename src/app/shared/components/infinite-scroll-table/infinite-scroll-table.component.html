@@ -26,6 +26,7 @@
         cdkDrag
         cdkDragLockAxis="x"
         [nzWidth]="column.width ? column.width + 'px' : null"
+        [minWidth]="column.minWidth ?? 50"
         [nzShowSort]="!!column.sortFn || !!column.sortChangeFn"
         [nzSortOrder]="sortedColumnId === column.id ? sortedColumnOrder : null"
         (nzSortOrderChange)="sortChange($event, column)"

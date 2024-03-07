@@ -16,6 +16,7 @@ import {
 } from "../../../../shared/utils/testing";
 import {OrdersGroupService} from "../../../../shared/services/orders/orders-group.service";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 
 describe('StopOrdersComponent', () => {
   let component: StopOrdersComponent;
@@ -59,6 +60,12 @@ describe('StopOrdersComponent', () => {
           provide: OrdersDialogService,
           useValue: {
             openEditOrderDialog: jasmine.createSpy('openEditOrderDialog').and.callThrough()
+          }
+        },
+        {
+          provide: ACTIONS_CONTEXT,
+          useValue: {
+            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
           }
         },
         ...commonTestProviders

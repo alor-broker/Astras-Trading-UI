@@ -1,4 +1,4 @@
-import { Component, DestroyRef, EventEmitter, OnInit, Output, } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { combineLatest, distinctUntilChanged, Subject, switchMap, take, } from 'rxjs';
 import { catchError, debounceTime, map, mergeMap, startWith, tap } from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
@@ -25,6 +25,7 @@ import {
   getConditionTypeByString
 } from "../../../../shared/utils/order-conditions-helper";
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
+import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
 
 interface DisplayOrder extends StopOrder {
   residue: string;
@@ -222,9 +223,10 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
     private readonly ordersGroupService: OrdersGroupService,
+    @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef);
+    super(settingsService, translatorService, destroyRef, actionsContext);
   }
 
   ngOnInit(): void {
@@ -240,7 +242,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
   protected initTableConfig(): void {
     this.tableConfig$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
-        TableSettingHelper.isTableSettingsEqual(previous.positionsTable, current.positionsTable)
+        TableSettingHelper.isTableSettingsEqual(previous.stopOrdersTable, current.stopOrdersTable)
         && previous.badgeColor === current.badgeColor
       ),
       mapWith(

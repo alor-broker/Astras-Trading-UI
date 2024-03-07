@@ -1,4 +1,4 @@
-import { Component, DestroyRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { distinctUntilChanged, iif, Observable, of, switchMap } from 'rxjs';
 import { debounceTime, map, mergeMap, startWith } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
@@ -18,6 +18,7 @@ import { OrderService } from "../../../../shared/services/orders/order.service";
 import { CommonOrderCommands } from "../../../../shared/utils/common-order-commands";
 import { MarketType } from "../../../../shared/models/portfolio-key.model";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
+import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
 
 interface PositionDisplay extends Position {
   id: string;
@@ -172,9 +173,10 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
     protected readonly translatorService: TranslatorService,
     protected readonly ordersService: OrderService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
+    @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef);
+    super(settingsService, translatorService, destroyRef, actionsContext);
   }
 
   ngOnInit(): void {

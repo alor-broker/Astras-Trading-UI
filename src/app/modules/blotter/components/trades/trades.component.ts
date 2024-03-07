@@ -1,7 +1,7 @@
 import {
   Component,
   DestroyRef,
-  EventEmitter,
+  EventEmitter, Inject,
   OnInit,
   Output
 } from '@angular/core';
@@ -33,6 +33,7 @@ import {
   DisplayTrade,
   TradeFilter
 } from '../../models/trade.model';
+import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
 
 @Component({
   selector: 'ats-trades',
@@ -136,9 +137,10 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
     protected readonly service: BlotterService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
+    @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef);
+    super(settingsService, translatorService, destroyRef, actionsContext);
   }
 
   ngOnInit(): void {

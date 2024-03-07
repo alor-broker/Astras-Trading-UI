@@ -53,6 +53,7 @@ implements OnInit, OnDestroy {
     {
       id: 'qty',
       displayName: 'Кол-во',
+      minWidth: 70,
       classFn: (data): string => data.side,
       sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'qty' }),
       filterData: {
@@ -65,6 +66,7 @@ implements OnInit, OnDestroy {
     {
       id: 'price',
       displayName: 'Цена',
+      minWidth: 70,
       sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'price' }),
       filterData: {
         filterName: 'price',
@@ -76,6 +78,7 @@ implements OnInit, OnDestroy {
     {
       id: 'timestamp',
       displayName: 'Время',
+      minWidth: 70,
       transformFn: (data: AllTradesItem): string | null => {
         const timezone = this.timezoneConverter?.getTimezone();
         const timezoneName = !!timezone ? `UTC${timezone.utcOffset < 0 ? '+' : '-'}${timezone.formattedOffset}` : null;
@@ -89,6 +92,7 @@ implements OnInit, OnDestroy {
     {
       id: 'side',
       displayName: 'Сторона',
+      minWidth: 90,
       classFn: (data): string => data.side,
       sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'side' }),
       filterData: {
@@ -100,8 +104,13 @@ implements OnInit, OnDestroy {
         ]
       }
     },
-    {id: 'oi', displayName: 'Откр. интерес'},
-    {id: 'existing', displayName: 'Новое событие', transformFn: (data: AllTradesItem): string => data.existing ? 'Да' : 'Нет'},
+    {id: 'oi', displayName: 'Откр. интерес', minWidth: 60 },
+    {
+      id: 'existing',
+      displayName: 'Новое событие',
+      minWidth: 60,
+      transformFn: (data: AllTradesItem): string => data.existing ? 'Да' : 'Нет'
+    },
   ];
   private readonly fixedColumns: BaseColumnSettings<AllTradesItem>[] = [
     {
@@ -255,10 +264,21 @@ implements OnInit, OnDestroy {
               }
             }
           };
-
         }
       )
     );
+  }
+
+  applyFilter(filters: AllTradesFilters): void {
+    let updatedFilters = JSON.parse(JSON.stringify(filters)) as AllTradesFilters;
+    if (filters.symbol == null || filters.exchange == null) {
+      this.filters$.pipe(take(1))
+        .subscribe(f => {
+          super.applyFilter({ ...updatedFilters, symbol: f.symbol as string, exchange: f.exchange as string });
+        });
+    } else {
+      super.applyFilter(filters);
+    }
   }
 
   public scrolled(): void {

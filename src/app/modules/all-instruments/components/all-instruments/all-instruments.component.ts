@@ -57,18 +57,20 @@ implements OnInit, OnDestroy {
     {
       id: 'name',
       displayName: 'Тикер',
-      width: 100,
+      width: 80,
+      minWidth: 80,
       sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'symbol' }),
       filterData: {
         filterName: 'query'
       },
       showBadges: true
     },
-    { id: 'shortName', displayName: 'Название', width: 100 },
+    { id: 'shortName', displayName: 'Название', width: 50, minWidth: 50 },
     {
       id: 'currency',
       displayName: 'Валюта',
       width: 90,
+      minWidth: 90,
       filterData: {
         filterName: 'currency',
         isOpenedFilter: false,
@@ -80,6 +82,7 @@ implements OnInit, OnDestroy {
       displayName: 'Рост за сегодня',
       classFn: (data): 'sell' | 'buy' => data.dailyGrowth < 0 ? 'sell' : 'buy',
       width: 100,
+      minWidth: 100,
       sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'dailyGrowth' }),
       filterData: {
         filterName: 'dailyGrowth',
@@ -93,12 +96,14 @@ implements OnInit, OnDestroy {
       displayName: 'Рост за сегодня, %',
       classFn: (data): 'sell' | 'buy' => data.dailyGrowth < 0 ? 'sell' : 'buy',
       width: 100,
+      minWidth: 100,
       sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'dailyGrowthPercent' }),
     },
     {
       id: 'tradeVolume',
       displayName: 'Объём торгов',
-      width: 110,
+      width: 80,
+      minWidth: 80,
       sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'tradeVolume' }),
       filterData: {
         filterName: 'tradeVolume',
@@ -111,6 +116,7 @@ implements OnInit, OnDestroy {
       id: 'exchange',
       displayName: 'Биржа',
       width: 90,
+      minWidth: 90,
       sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'exchange' }),
       filterData: {
         filterName: 'exchange',
@@ -127,6 +133,7 @@ implements OnInit, OnDestroy {
       id: 'market',
       displayName: 'Рынок',
       width: 90,
+      minWidth: 90,
       sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'marketType' }),
       filterData: {
         filterName: 'marketType',
@@ -141,11 +148,12 @@ implements OnInit, OnDestroy {
         ]
       },
     },
-    { id: 'lotSize', displayName: 'Лотность', width: 70 },
+    { id: 'lotSize', displayName: 'Лотность', width: 70, minWidth: 70 },
     {
       id: 'price',
       displayName: 'Цена',
       width: 80,
+      minWidth: 80,
       sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'price' }),
       filterData: {
         filterName: 'price',
@@ -154,18 +162,20 @@ implements OnInit, OnDestroy {
         intervalEndName: 'priceTo'
       }
     },
-    { id: 'priceMax', displayName: 'Макс. цена', width: 80 },
-    { id: 'priceMin', displayName: 'Мин. цена', width: 80 },
+    { id: 'priceMax', displayName: 'Макс. цена', width: 60, minWidth: 60 },
+    { id: 'priceMin', displayName: 'Мин. цена', width: 60, minWidth: 60 },
     {
       id: 'priceScale',
       displayName: 'Шаг цены',
       width: 90,
+      minWidth: 90,
       sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'priceScale' }),
     },
     {
       id: 'yield',
       displayName: 'Доходность',
       width: 100,
+      minWidth: 100,
       sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'yield' }),
     },
   ];

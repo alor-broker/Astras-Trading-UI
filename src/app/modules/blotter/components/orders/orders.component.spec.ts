@@ -16,6 +16,7 @@ import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {OrdersGroupService} from "../../../../shared/services/orders/orders-group.service";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 
 describe('OrdersComponent', () => {
   let component: OrdersComponent;
@@ -58,6 +59,12 @@ describe('OrdersComponent', () => {
           provide: OrdersDialogService,
           useValue: {
             openEditOrderDialog: jasmine.createSpy('openEditOrderDialog').and.callThrough()
+          }
+        },
+        {
+          provide: ACTIONS_CONTEXT,
+          useValue: {
+            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
           }
         },
         ...commonTestProviders

@@ -1,7 +1,7 @@
 import {
   Component,
   DestroyRef,
-  EventEmitter,
+  EventEmitter, Inject,
   OnInit,
   Output,
 } from '@angular/core';
@@ -34,6 +34,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
 import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
+import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
 
 interface DisplayOrder extends Order {
   residue: string;
@@ -205,9 +206,10 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
     protected readonly translatorService: TranslatorService,
     private readonly ordersGroupService: OrdersGroupService,
     private readonly ordersDialogService: OrdersDialogService,
+    @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef);
+    super(settingsService, translatorService, destroyRef, actionsContext,);
   }
 
   ngOnInit(): void {

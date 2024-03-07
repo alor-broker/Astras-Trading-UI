@@ -2,7 +2,7 @@ import {
   AfterViewInit,
   Component,
   DestroyRef,
-  EventEmitter,
+  EventEmitter, Inject,
   OnDestroy,
   Output,
   QueryList,
@@ -49,6 +49,7 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { CdkVirtualScrollViewport } from "@angular/cdk/scrolling";
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
+import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
 
 @Component({
   selector: 'ats-trades-history',
@@ -131,7 +132,6 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
   settingsTableName = TableNames.TradesHistoryTable;
   settingsColumnsName = ColumnsNames.TradesColumns;
   fileSuffix = 'tradesHistory';
-  isLoading$ = new BehaviorSubject<boolean>(false);
   private readonly loadedHistory$ = new BehaviorSubject<Trade[]>([]);
 
   @ViewChildren('nzTable')
@@ -142,9 +142,10 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
     private readonly tradesHistoryService: TradesHistoryService,
+    @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef);
+    super(settingsService, translatorService, destroyRef, actionsContext);
   }
 
   ngAfterViewInit(): void {

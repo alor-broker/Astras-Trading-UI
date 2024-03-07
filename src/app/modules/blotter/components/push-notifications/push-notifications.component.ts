@@ -1,6 +1,6 @@
 import {
   Component,
-  DestroyRef,
+  DestroyRef, Inject,
   OnInit,
 } from '@angular/core';
 import {
@@ -34,6 +34,7 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
+import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
 
 interface NotificationFilter {
   id?: string;
@@ -101,9 +102,10 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
     protected readonly blotterService: BlotterService,
     private readonly pushNotificationsService: PushNotificationsService,
     protected readonly translatorService: TranslatorService,
+    @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(widgetSettingsService, translatorService, destroyRef);
+    super(widgetSettingsService, translatorService, destroyRef, actionsContext);
   }
 
   ngOnInit(): void {

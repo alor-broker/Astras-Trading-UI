@@ -16,6 +16,7 @@ import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { mockComponent, ngZorroMockComponents } from "../../../../shared/utils/testing";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 
 describe('TradesComponent', () => {
   let component: TradesComponent;
@@ -47,7 +48,13 @@ describe('TradesComponent', () => {
           useValue: {
             getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
           }
-        }
+        },
+        {
+          provide: ACTIONS_CONTEXT,
+          useValue: {
+            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
+          }
+        },
       ],
       declarations: [
         TradesComponent,
