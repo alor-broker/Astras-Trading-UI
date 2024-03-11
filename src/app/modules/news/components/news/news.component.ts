@@ -1,6 +1,8 @@
 import {
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   EventEmitter,
+  Input,
   OnDestroy,
   OnInit,
   Output
@@ -19,6 +21,7 @@ import {
   merge,
   Observable,
   of,
+  shareReplay,
   switchMap,
   take,
   tap,
@@ -34,9 +37,12 @@ import {
   filter,
   startWith
 } from "rxjs/operators";
-import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { TableConfig } from "../../../../shared/models/table-config.model";
+import {
+  LazyLoadingBaseTableComponent
+} from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
 
 interface NewsFilter {
   symbols?: string[];
@@ -54,10 +60,13 @@ interface NewsListState {
   templateUrl: './news.component.html',
   styleUrls: ['./news.component.less']
 })
-export class NewsComponent extends BaseTableComponent<NewsSettings, NewsListItem, NewsFilter> implements OnInit, OnDestroy {
+export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, NewsFilter> implements OnInit, OnDestroy {
+  @Input({ required: true }) guid!: string;
+
   @Output() sectionChange = new EventEmitter<NewsSection>();
   readonly newsSectionEnum = NewsSection;
   private readonly selectedSection$ = new BehaviorSubject<NewsSection>(NewsSection.All);
+  private settings$!: Observable<NewsSettings>;
 
   constructor(
     private readonly newsService: NewsService,
@@ -72,12 +81,19 @@ export class NewsComponent extends BaseTableComponent<NewsSettings, NewsListItem
   }
 
   ngOnInit(): void {
+    this.settings$ = this.widgetSettingsService.getSettings<NewsSettings>(this.guid)
+      .pipe(
+        shareReplay(1),
+        takeUntilDestroyed(this.destroyRef)
+      );
+
     super.ngOnInit();
+
     this.createFiltersStream();
   }
 
-  protected initTableConfig(): void {
-    this.tableConfig$ = this.translatorService.getTranslator('news').pipe(
+  protected initTableConfigStream(): Observable<TableConfig<NewsListItem>> {
+    return this.translatorService.getTranslator('news').pipe(
       map((translate) => ({
           columns: [
             {
@@ -99,29 +115,7 @@ export class NewsComponent extends BaseTableComponent<NewsSettings, NewsListItem
     );
   }
 
-  protected initTableData(): void {
-    this.tableData$ = this.createNewsListItemsStream();
-  }
-
-  rowClick(newsItem: NewsListItem): void {
-    this.modalService.openNewsModal(newsItem);
-  }
-
-  scrolled(): void {
-    this.scrolled$.next(null);
-  }
-
-  ngOnDestroy(): void {
-    super.ngOnDestroy();
-    this.selectedSection$.complete();
-  }
-
-  newsSectionChange(section: NewsSection): void {
-    this.selectedSection$.next(section);
-    this.sectionChange.emit(section);
-  }
-
-  private createNewsListItemsStream(): Observable<NewsListItem[]> {
+  protected initTableDataStream(): Observable<NewsListItem[]> {
     const createLoadMoreStream = (state: NewsListState): Observable<NewsListState> => {
       return this.scrolled$.pipe(
         filter(() => state.loadedItems.length > 0 && !state.isEndOfList),
@@ -204,6 +198,24 @@ export class NewsComponent extends BaseTableComponent<NewsSettings, NewsListItem
       }),
       map(state => state.loadedItems)
     );
+  }
+
+  rowClick(newsItem: NewsListItem): void {
+    this.modalService.openNewsModal(newsItem);
+  }
+
+  scrolled(): void {
+    this.scrolled$.next(null);
+  }
+
+  ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.selectedSection$.complete();
+  }
+
+  newsSectionChange(section: NewsSection): void {
+    this.selectedSection$.next(section);
+    this.sectionChange.emit(section);
   }
 
   private loadNews(state: NewsListState): Observable<NewsListItem[]> {

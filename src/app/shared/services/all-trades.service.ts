@@ -11,7 +11,6 @@ import { ErrorHandlerService } from './handle-error/error-handler.service';
 import { InstrumentKey } from '../models/instruments/instrument-key.model';
 import { catchHttpError } from '../utils/observable-helper';
 import { EnvironmentService } from "./environment.service";
-import { map } from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -33,8 +32,7 @@ export class AllTradesService {
       params: { ...req }
     })
       .pipe(
-        catchHttpError<AllTradesItem[]>([], this.errorHandlerService),
-        map(res => res.map(t => ({ ...t, id: t.toString() })))
+        catchHttpError<AllTradesItem[]>([], this.errorHandlerService)
       );
   }
 

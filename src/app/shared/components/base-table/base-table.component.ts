@@ -1,84 +1,65 @@
-import { Component, DestroyRef, Inject, Input, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, shareReplay, take, withLatestFrom } from "rxjs";
+import { Component, DestroyRef, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, combineLatest, Observable, take, withLatestFrom } from "rxjs";
 import { ContentSize } from "../../models/dashboard/dashboard-item.model";
 import { BaseColumnSettings } from "../../models/settings/table-settings.model";
 import { TableConfig } from "../../models/table-config.model";
-import { WidgetSettings } from "../../models/widget-settings.model";
 import { WidgetSettingsService } from "../../services/widget-settings.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { defaultBadgeColor } from "../../utils/instruments";
-import { ACTIONS_CONTEXT, ActionsContext } from "../../services/actions-context";
-import { InstrumentKey } from "../../models/instruments/instrument-key.model";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { TableSettingHelper } from "../../utils/table-setting.helper";
 import { map } from "rxjs/operators";
+import { WidgetSettings } from "../../models/widget-settings.model";
+
+interface Sort {
+  descending: boolean;
+  orderBy: string;
+}
 
 
 @Component({
   template: ''
 })
 export abstract class BaseTableComponent<
-    SETTINGS extends WidgetSettings,
-    DATA extends { [propName: string]: any },
-    FILTERS extends { [propName: string]: any } = object,
-    PAGINATION = { limit: number, offset: number },
-    SORT = { descending: boolean, orderBy: string }
+    T extends { [propName: string]: any },
+    F extends { [propName: string]: any } = object
   >
 implements OnInit, OnDestroy {
-  @Input() guid?: string;
-
-  protected readonly loadingChunkSize = 50;
   protected readonly defaultColumnWidth = 100;
 
   protected contentSize$!: Observable<ContentSize | null>;
-  readonly containerSize$ = new BehaviorSubject<ContentSize | null>(null);
-  readonly headerSize$ = new BehaviorSubject<ContentSize | null>(null);
-  readonly isLoading$ = new BehaviorSubject<boolean>(false);
-  protected readonly filters$ = new BehaviorSubject<FILTERS>({} as FILTERS);
-  protected readonly sort$ = new BehaviorSubject<SORT | null>(null);
-  protected readonly scrolled$ = new BehaviorSubject<null>(null);
-  protected pagination: PAGINATION | null = null;
-  protected allColumns!: BaseColumnSettings<DATA>[];
-  tableConfig$!: Observable<TableConfig<DATA>>;
-  tableData$!: Observable<DATA[]>;
-  protected settings$!: Observable<SETTINGS>;
+  protected containerSize$ = new BehaviorSubject<ContentSize | null>(null);
+  protected headerSize$ = new BehaviorSubject<ContentSize | null>(null);
+  protected readonly filters$ = new BehaviorSubject<F>({} as F);
+  protected readonly sort$ = new BehaviorSubject<Sort | null>(null);
+  protected allColumns!: BaseColumnSettings<T>[];
+  tableConfig$!: Observable<TableConfig<T>>;
+  tableData$!: Observable<T[]>;
 
-  protected settingsTableName!: keyof SETTINGS;
-  protected settingsColumnsName!: keyof SETTINGS;
+  protected settingsTableName?: string;
+  protected settingsColumnsName?: string;
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,
-    protected readonly destroyRef: DestroyRef,
-    @Inject(ACTIONS_CONTEXT) protected readonly actionsContext?: ActionsContext,
+    protected readonly destroyRef: DestroyRef
   ) {
   }
 
   ngOnInit(): void {
-    if (this.guid != null) {
-      this.settings$ = this.settingsService.getSettings<SETTINGS>(this.guid)
-        .pipe(
-          shareReplay(1),
-          takeUntilDestroyed(this.destroyRef)
-        );
-    }
-
-    this.initTableConfig();
-    this.initTableData();
+    this.tableConfig$ = this.initTableConfigStream();
+    this.tableData$ = this.initTableDataStream();
     this.initContentSize();
   }
 
   ngOnDestroy(): void {
     this.containerSize$.complete();
     this.headerSize$.complete();
-    this.isLoading$.complete();
     this.filters$.complete();
     this.sort$.complete();
-    this.scrolled$.complete();
   }
 
-  protected abstract  initTableData(): void;
+  protected abstract  initTableDataStream(): Observable<T[]>;
 
-  protected abstract initTableConfig(): void;
+  protected abstract initTableConfigStream(): Observable<TableConfig<T>>;
 
   protected initContentSize(): void {
     this.contentSize$ = combineLatest([
@@ -94,28 +75,9 @@ implements OnInit, OnDestroy {
       );
   }
 
-  rowClick(row: DATA, event?: Event): void {
-    event?.preventDefault();
-    event?.stopPropagation();
+  rowClick?(row: T, event?: Event): void;
 
-    const instrument = this.rowToInstrumentKey(row);
-
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(s => {
-      this.actionsContext?.instrumentSelected(instrument, s.badgeColor ?? defaultBadgeColor);
-    });
-  }
-
-  rowToInstrumentKey(row: DATA): InstrumentKey {
-    return {
-      symbol: row.symbol as string,
-      exchange: row.exchange as string,
-      instrumentGroup: row.instrumentGroup as string
-    };
-  }
-
-  applyFilter(filters: FILTERS): void {
+  applyFilter(filters: F): void {
     const cleanedFilters = Object.keys(filters)
       .filter(key =>
         filters[key] != null &&
@@ -125,16 +87,15 @@ implements OnInit, OnDestroy {
           (filters[key] as string | string[]).length > 0
         )
       )
-      .reduce((acc, curr: keyof FILTERS) => {
+      .reduce((acc, curr: keyof F) => {
         if (Array.isArray(filters[curr])) {
-          acc[curr] = filters[curr].join(';') as FILTERS[keyof FILTERS];
+          acc[curr] = filters[curr].join(';') as F[keyof F];
         } else {
           acc[curr] = filters[curr]!;
         }
         return acc;
-      }, {} as FILTERS);
+      }, {} as F);
 
-    this.pagination = null;
     this.filters$.next(cleanedFilters);
   }
 
@@ -156,41 +117,41 @@ implements OnInit, OnDestroy {
     });
   }
 
-  changeColumnOrder(event: CdkDragDrop<any>): void {
-    this.settings$.pipe(
+  changeColumnOrder<T extends WidgetSettings>(event: CdkDragDrop<any>, settings$?: Observable<T>): void {
+    settings$?.pipe(
       withLatestFrom(this.tableConfig$),
       take(1)
     ).subscribe(([settings, tableConfig]) => {
-      this.settingsService.updateSettings<SETTINGS>(
+      this.settingsService.updateSettings<T>(
         settings.guid,
         {
-          [this.settingsTableName]: TableSettingHelper.changeColumnOrder(
+          [this.settingsTableName!]: TableSettingHelper.changeColumnOrder(
             event,
-            TableSettingHelper.toTableDisplaySettings(settings[this.settingsTableName], settings[this.settingsColumnsName] ?? [])!,
+            TableSettingHelper.toTableDisplaySettings(settings[this.settingsTableName!], settings[this.settingsColumnsName!] ?? [])!,
             tableConfig.columns
           )
-        } as Partial<SETTINGS>
+        } as Partial<T>
       );
     });
   }
 
-  saveColumnWidth(event: {columnId: string, width: number}): void {
-    this.settings$.pipe(
+  saveColumnWidth<T extends WidgetSettings>(event: {columnId: string, width: number}, settings$?: Observable<T>): void {
+    settings$?.pipe(
       take(1)
     ).subscribe(settings => {
-      const tableSettings = TableSettingHelper.toTableDisplaySettings(settings[this.settingsTableName], settings[this.settingsColumnsName]);
+      const tableSettings = TableSettingHelper.toTableDisplaySettings(settings[this.settingsTableName!], settings[this.settingsColumnsName!]);
       if (tableSettings) {
-        this.settingsService.updateSettings<SETTINGS>(
+        this.settingsService.updateSettings<T>(
           settings.guid,
           {
-            [this.settingsTableName]: TableSettingHelper.updateColumn(
+            [this.settingsTableName!]: TableSettingHelper.updateColumn(
               event.columnId,
               tableSettings,
               {
                 columnWidth: event.width
               }
             )
-          } as Partial<SETTINGS>
+          } as Partial<T>
         );
       }
     });

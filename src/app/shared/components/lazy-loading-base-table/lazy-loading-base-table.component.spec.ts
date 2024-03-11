@@ -1,20 +1,17 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BaseTableComponent } from './base-table.component';
+import { LazyLoadingBaseTableComponent } from './lazy-loading-base-table.component';
 import { Component } from "@angular/core";
-import { By } from "@angular/platform-browser";
-import { WidgetSettingsService } from "../../services/widget-settings.service";
-import { ACTIONS_CONTEXT, ActionsContext } from "../../services/actions-context";
-import { BehaviorSubject, Observable, of } from "rxjs";
-import { getRandomInt } from "../../utils/testing";
-import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import { Observable, of } from "rxjs";
 import { TableConfig } from "../../models/table-config.model";
+import { WidgetSettingsService } from "../../services/widget-settings.service";
+import { By } from "@angular/platform-browser";
 
 @Component({
   selector: 'ats-test-comp',
   template: ''
 })
-class TestComponent extends BaseTableComponent<any, any>{
+class TestComponent extends LazyLoadingBaseTableComponent<any, any>{
   protected initTableConfigStream(): Observable<TableConfig<any>> {
     return of({ columns: [] });
   }
@@ -29,7 +26,7 @@ class TestComponent extends BaseTableComponent<any, any>{
 })
 class TestWrapperComponent {}
 
-describe('BaseTableComponent', () => {
+describe('LazyLoadingBaseTableComponent', () => {
   let hostComponent: TestWrapperComponent;
   let component: TestComponent;
   let hostFixture: ComponentFixture<TestWrapperComponent>;

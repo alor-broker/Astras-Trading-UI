@@ -1,9 +1,10 @@
 import {
   Component,
-  DestroyRef, Inject,
-  OnInit,
+  DestroyRef,
+  Inject
 } from '@angular/core';
 import {
+  BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
   fromEvent,
@@ -35,6 +36,8 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
 import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
+import { TableConfig } from "../../../../shared/models/table-config.model";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 interface NotificationFilter {
   id?: string;
@@ -49,10 +52,11 @@ type DisplayNotification = Partial<OrderExecuteSubscription> & Partial<PriceSpar
   templateUrl: './push-notifications.component.html',
   styleUrls: ['./push-notifications.component.less']
 })
-export class PushNotificationsComponent extends BlotterBaseTableComponent<DisplayNotification, NotificationFilter> implements OnInit {
+export class PushNotificationsComponent extends BlotterBaseTableComponent<DisplayNotification, NotificationFilter> {
   readonly subscriptionTypes = PushSubscriptionType;
 
   isNotificationsAllowed$!: Observable<boolean>;
+  isLoading$ = new BehaviorSubject<boolean>(false);
 
   protected readonly allColumns: BaseColumnSettings<DisplayNotification>[] = [
     {
@@ -105,15 +109,11 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
     @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(widgetSettingsService, translatorService, destroyRef, actionsContext);
+    super(widgetSettingsService, translatorService, destroyRef);
   }
 
-  ngOnInit(): void {
-    super.ngOnInit();
-  }
-
-  protected initTableConfig(): void {
-    this.tableConfig$ = this.settings$.pipe(
+  protected initTableConfigStream(): Observable<TableConfig<DisplayNotification>> {
+    return this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.notificationsTable, current.notificationsTable)
         && previous.badgeColor === current.badgeColor
@@ -153,7 +153,7 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
     );
   }
 
-  protected initTableData(): void {
+  protected initTableDataStream(): Observable<DisplayNotification[]> {
     this.initNotificationStatusCheck();
 
     const currentPositions$ = this.settings$.pipe(
@@ -221,7 +221,7 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
       tap(() => this.isLoading$.next(false))
     );
 
-    this.tableData$ = this.isNotificationsAllowed$.pipe(
+    return this.isNotificationsAllowed$.pipe(
       filter(x => x),
       switchMap(() => displayNotifications$)
     );
@@ -232,15 +232,14 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
       return;
     }
 
-    super.rowClick(row);
-  }
-
-  rowToInstrumentKey(row: SubscriptionBase): InstrumentKey {
-    const priceSparkSubscription = <PriceSparkSubscription>row;
-    return {
-      symbol: priceSparkSubscription.instrument,
-      exchange: priceSparkSubscription.exchange
-    };
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(s => {
+      this.actionsContext.instrumentSelected({
+        symbol: row.instrument!,
+        exchange: row.exchange!,
+      }, s.badgeColor ?? defaultBadgeColor);
+    });
   }
 
   cancelSubscription(id: string): void {

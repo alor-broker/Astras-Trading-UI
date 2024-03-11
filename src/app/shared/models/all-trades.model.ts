@@ -17,7 +17,7 @@ export interface AllTradesSubRequest extends SubscriptionRequest {
 
 export interface AllTradesItem {
   existing: boolean;
-  id: string;
+  id: number;
   oi: number;
   orderno: number;
   price: number;

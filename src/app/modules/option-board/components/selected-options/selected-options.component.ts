@@ -7,7 +7,9 @@ import {
 import { OptionBoardDataContext, OptionsSelection } from "../../models/option-board-data-context.model";
 import { OptionBoardService } from "../../services/option-board.service";
 import {
+  BehaviorSubject,
   forkJoin,
+  Observable,
   of,
   shareReplay,
   switchMap,
@@ -27,7 +29,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ActionsContext } from 'src/app/shared/services/actions-context';
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
-import { OptionBoardSettings } from "../../models/option-board-settings.model";
+import { TableConfig } from "../../../../shared/models/table-config.model";
 
 interface OptionTranscription {
   ticker: string;
@@ -66,10 +68,11 @@ interface DetailsDisplay extends OptionKey {
   templateUrl: './selected-options.component.html',
   styleUrls: ['./selected-options.component.less']
 })
-export class SelectedOptionsComponent extends BaseTableComponent<OptionBoardSettings, DetailsDisplay> {
+export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay> {
   @Input({required: true})
   dataContext!: OptionBoardDataContext;
   readonly minOptionTableWidth = 400;
+  isLoading$ = new BehaviorSubject<boolean>(false);
 
   protected allColumns: BaseColumnSettings<DetailsDisplay>[] = [
     {
@@ -153,24 +156,24 @@ export class SelectedOptionsComponent extends BaseTableComponent<OptionBoardSett
     protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(widgetSettingsService, destroyRef, actionsContext);
+    super(widgetSettingsService, destroyRef);
   }
 
-  protected initTableConfig(): void {
-    this.tableConfig$ = this.translatorService.getTranslator('option-board/selected-options').pipe(
+  protected initTableConfigStream(): Observable<TableConfig<DetailsDisplay>> {
+    return this.translatorService.getTranslator('option-board/selected-options').pipe(
       map(t => ({ columns: this.allColumns.map(c => this.toDisplayColumn(c, t)) })),
       shareReplay(1)
     );
   }
 
-  protected initTableData(): void {
+  protected initTableDataStream(): Observable<DetailsDisplay[]> {
     const refreshTimer$ = timer(0, 60000).pipe(
       // for some reasons timer pipe is not completed in detailsDisplay$ when component destroyed (https://github.com/alor-broker/Astras-Trading-UI/issues/1176)
       // so we need to add takeUntil condition for this stream separately
       takeUntilDestroyed(this.destroyRef)
     );
 
-    this.tableData$ = this.dataContext.currentSelection$.pipe(
+    return this.dataContext.currentSelection$.pipe(
       mapWith(() => refreshTimer$, source => source),
       tap(() => this.isLoading$.next(true)),
       switchMap(selection => {

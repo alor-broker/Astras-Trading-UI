@@ -1,5 +1,5 @@
 import { Component, DestroyRef, EventEmitter, Inject, OnInit, Output } from '@angular/core';
-import { combineLatest, distinctUntilChanged, Subject, switchMap, take, } from 'rxjs';
+import { combineLatest, distinctUntilChanged, Observable, Subject, switchMap, take, } from 'rxjs';
 import { catchError, debounceTime, map, mergeMap, startWith, tap } from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
@@ -26,6 +26,8 @@ import {
 } from "../../../../shared/utils/order-conditions-helper";
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
 import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
+import { TableConfig } from "../../../../shared/models/table-config.model";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 interface DisplayOrder extends StopOrder {
   residue: string;
@@ -226,7 +228,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
     @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef, actionsContext);
+    super(settingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {
@@ -239,8 +241,8 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
     ).subscribe();
   }
 
-  protected initTableConfig(): void {
-    this.tableConfig$ = this.settings$.pipe(
+  protected initTableConfigStream(): Observable<TableConfig<DisplayOrder>> {
+    return this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.stopOrdersTable, current.stopOrdersTable)
         && previous.badgeColor === current.badgeColor
@@ -283,7 +285,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
     );
   }
 
-  protected initTableData(): void {
+  protected initTableDataStream(): Observable<DisplayOrder[]> {
     const orders$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getStopOrders(settings)),
@@ -292,7 +294,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
       tap(orders => this.orders = orders)
     );
 
-    this.tableData$ = combineLatest([
+    return combineLatest([
       orders$,
       this.filters$,
       this.timezoneConverterService.getConverter(),
@@ -309,6 +311,17 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
         .filter(o => this.justifyFilter(o, f))
         .sort(this.sortOrders))
     );
+  }
+
+  rowClick(row: DisplayOrder): void {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(s => {
+      this.actionsContext.instrumentSelected({
+        symbol: row.symbol,
+        exchange: row.exchange,
+      }, s.badgeColor ?? defaultBadgeColor);
+    });
   }
 
   cancelOrder(orderId: string): void {

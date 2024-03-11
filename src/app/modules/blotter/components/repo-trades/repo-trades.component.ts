@@ -2,12 +2,12 @@ import {
   Component,
   DestroyRef,
   EventEmitter,
-  OnInit,
   Output
 } from '@angular/core';
 import {
   combineLatest,
   distinctUntilChanged,
+  Observable,
   switchMap
 } from "rxjs";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
@@ -24,13 +24,14 @@ import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/setti
 import { RepoTrade } from "../../../../shared/models/trades/trade.model";
 import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
 import { TradeFilter } from "../../models/trade.model";
+import { TableConfig } from "../../../../shared/models/table-config.model";
 
 @Component({
   selector: 'ats-repo-trades',
   templateUrl: './repo-trades.component.html',
   styleUrls: ['./repo-trades.component.less']
 })
-export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, TradeFilter> implements OnInit {
+export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, TradeFilter> {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   allColumns: BaseColumnSettings<RepoTrade>[] = [
@@ -207,12 +208,8 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
     super(settingsService, translatorService, destroyRef);
   }
 
-  ngOnInit(): void {
-    super.ngOnInit();
-  }
-
-  protected initTableConfig(): void {
-    this.tableConfig$ = this.settings$.pipe(
+  protected initTableConfigStream(): Observable<TableConfig<RepoTrade>> {
+    return this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.repoTradesTable, current.repoTradesTable)
         && previous.badgeColor === current.badgeColor
@@ -271,7 +268,7 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
     );
   }
 
-  protected initTableData(): void {
+  protected initTableDataStream(): Observable<RepoTrade[]> {
     const trades$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getRepoTrades(settings)),
@@ -279,7 +276,7 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       startWith([])
     );
 
-    this.tableData$ = combineLatest([
+    return combineLatest([
         trades$,
         this.timezoneConverterService.getConverter()
       ]

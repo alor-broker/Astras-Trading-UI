@@ -8,7 +8,7 @@
     (filterApplied)="applyFilter($event)"
     (scrolled)="scrolled()"
     [tableConfig]="tableConfig"
-    [data]="(tradesList$ | async) ?? []"
+    [data]="(tableData$ | async) ?? []"
     [isLoading]="(isLoading$ | async) ?? true"
     [tableContainerHeight]="(contentSize$ | async)?.height || 0"
     [tableContainerWidth]="(contentSize$ | async)?.width || 0"

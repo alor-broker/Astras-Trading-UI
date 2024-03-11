@@ -1,0 +1,40 @@
+import { Component, DestroyRef, OnDestroy } from '@angular/core';
+import { BaseTableComponent } from "../base-table/base-table.component";
+import { WidgetSettingsService } from "../../services/widget-settings.service";
+import { BehaviorSubject } from "rxjs";
+
+
+@Component({
+  template: ''
+})
+export abstract class LazyLoadingBaseTableComponent<
+  T extends { [propName: string]: any },
+  F extends { [propName: string]: any } = object,
+  P = { limit: number, offset: number }
+> extends BaseTableComponent<T, F>
+  implements OnDestroy
+{
+  protected readonly loadingChunkSize = 50;
+
+  readonly isLoading$ = new BehaviorSubject<boolean>(false);
+  protected readonly scrolled$ = new BehaviorSubject<null>(null);
+  protected pagination: P | null = null;
+
+  constructor(
+    protected readonly settingsService: WidgetSettingsService,
+    protected readonly destroyRef: DestroyRef
+  ) {
+    super(settingsService, destroyRef);
+  }
+
+  ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.isLoading$.complete();
+    this.scrolled$.complete();
+  }
+
+  applyFilter(filters: F): void {
+    this.pagination = null;
+    super.applyFilter(filters);
+  }
+}

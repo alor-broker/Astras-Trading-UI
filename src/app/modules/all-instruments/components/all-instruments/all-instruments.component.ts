@@ -2,6 +2,7 @@ import {
   Component,
   DestroyRef,
   Inject,
+  Input,
   OnDestroy,
   OnInit
 } from '@angular/core';
@@ -10,6 +11,8 @@ import {
   BehaviorSubject,
   combineLatest,
   interval,
+  Observable,
+  shareReplay,
   Subscription,
   switchMap,
   take,
@@ -43,16 +46,21 @@ import {
 } from "../../../instruments/models/watchlist.model";
 import { ACTIONS_CONTEXT, ActionsContext } from 'src/app/shared/services/actions-context';
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { TableConfig } from "../../../../shared/models/table-config.model";
+import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import {
+  LazyLoadingBaseTableComponent
+} from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
 
 @Component({
   selector: 'ats-all-instruments',
   templateUrl: './all-instruments.component.html',
   styleUrls: ['./all-instruments.component.less']
 })
-export class AllInstrumentsComponent extends BaseTableComponent<AllInstrumentsSettings, AllInstruments, AllInstrumentsFilters>
+export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<AllInstruments, AllInstrumentsFilters>
 implements OnInit, OnDestroy {
+  @Input({ required: true }) guid!: string;
+
   public allColumns: BaseColumnSettings<AllInstruments>[] = [
     {
       id: 'name',
@@ -181,6 +189,7 @@ implements OnInit, OnDestroy {
   ];
   public contextMenu: ContextMenu[] = [];
   private readonly instrumentsList$ = new BehaviorSubject<AllInstruments[]>([]);
+  private settings$!: Observable<AllInstrumentsSettings>;
 
   private updatesSub?: Subscription;
   protected settingsTableName = 'allInstrumentsTable';
@@ -197,10 +206,16 @@ implements OnInit, OnDestroy {
     private readonly translatorService: TranslatorService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, destroyRef, actionsContext);
+    super(settingsService, destroyRef);
   }
 
   ngOnInit(): void {
+    this.settings$ = this.settingsService.getSettings<AllInstrumentsSettings>(this.guid)
+      .pipe(
+        shareReplay(1),
+        takeUntilDestroyed(this.destroyRef)
+      );
+
     super.ngOnInit();
 
     this.watchlistCollectionService.getWatchlistCollection()
@@ -210,8 +225,8 @@ implements OnInit, OnDestroy {
       });
   }
 
-  protected initTableConfig(): void {
-    this.tableConfig$ = this.settings$.pipe(
+  protected initTableConfigStream(): Observable<TableConfig<AllInstruments>> {
+    return this.settings$.pipe(
       mapWith(
         () => this.translatorService.getTranslator('all-instruments/all-instruments'),
         (settings, translate) => ({ settings, translate })
@@ -243,8 +258,10 @@ implements OnInit, OnDestroy {
     );
   }
 
-  initTableData(): void {
-    this.tableData$ = this.instrumentsList$.pipe(
+  initTableDataStream(): Observable<AllInstruments[]> {
+    this.initInstruments();
+
+    return this.instrumentsList$.pipe(
       mapWith(
         () => this.dashboardContextService.instrumentsSelection$,
         (instruments, output) => ({ instruments, badges: output })
@@ -255,8 +272,6 @@ implements OnInit, OnDestroy {
       ),
       map(s => this.mapInstrumentsToBadges(s.instruments, s.badges, s.terminalSettings))
     );
-
-    this.initInstruments();
   }
 
   scrolled(): void {
@@ -276,11 +291,15 @@ implements OnInit, OnDestroy {
     });
   }
 
-  rowToInstrumentKey(row: AllInstruments): InstrumentKey {
-    return {
-      symbol: row.name,
-      exchange: row.exchange,
-    } as InstrumentKey;
+  rowClick(row: AllInstruments): void {
+      this.settings$.pipe(
+        take(1)
+      ).subscribe(s => {
+        this.actionsContext.instrumentSelected({
+          symbol: row.name,
+          exchange: row.exchange,
+        }, s.badgeColor ?? defaultBadgeColor);
+      });
   }
 
   initContextMenu(collection: WatchlistCollection): void {
@@ -320,6 +339,14 @@ implements OnInit, OnDestroy {
     super.ngOnDestroy();
     this.updatesSub?.unsubscribe();
     this.instrumentsList$.complete();
+  }
+
+  changeColumnOrder(event: CdkDragDrop<any>): void {
+    super.changeColumnOrder<AllInstrumentsSettings>(event, this.settings$);
+  }
+
+  saveColumnWidth(event: { columnId: string, width: number }): void {
+    super.saveColumnWidth<AllInstrumentsSettings>(event, this.settings$);
   }
 
   private initInstruments(): void {

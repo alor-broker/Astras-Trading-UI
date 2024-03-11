@@ -12,12 +12,14 @@ import { BlotterService } from "../../services/blotter.service";
 import { getTranslocoModule, ngZorroMockComponents } from "../../../../shared/utils/testing";
 import { By } from "@angular/platform-browser";
 import {
+  Observable,
   of,
   Subject,
   take
 } from "rxjs";
 import { TableNames } from "../../models/blotter-settings.model";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import { TableConfig } from "../../../../shared/models/table-config.model";
 
 @Component({
   selector: 'ats-test-comp',
@@ -39,12 +41,12 @@ class TestComponent extends BlotterBaseTableComponent<{ id: string }, object> {
     super(settingsService, translatorService, destroyRef);
   }
 
-  protected initTableConfig(): void {
-    this.tableConfig$ = of({ columns: [] });
+  protected initTableConfigStream(): Observable<TableConfig<any>> {
+    return of({ columns: [] });
   }
 
-  protected initTableData(): void {
-    return;
+  protected initTableDataStream(): Observable<any[]> {
+    return of([]);
   }
 }
 

@@ -8,7 +8,9 @@ import {
 import {
   combineLatest,
   distinctUntilChanged,
-  switchMap
+  Observable,
+  switchMap,
+  take
 } from 'rxjs';
 import {
   debounceTime,
@@ -34,6 +36,8 @@ import {
   TradeFilter
 } from '../../models/trade.model';
 import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
+import { TableConfig } from "../../../../shared/models/table-config.model";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 @Component({
   selector: 'ats-trades',
@@ -140,15 +144,15 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
     @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef, actionsContext);
+    super(settingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
   }
 
-  protected initTableConfig(): void {
-    this.tableConfig$ = this.settings$.pipe(
+  protected initTableConfigStream(): Observable<TableConfig<DisplayTrade>> {
+    return this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.tradesTable, current.tradesTable)
         && previous.badgeColor === current.badgeColor
@@ -188,7 +192,7 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
     );
   }
 
-  protected initTableData(): void {
+  protected initTableDataStream(): Observable<DisplayTrade[]> {
     const trades$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getTrades(settings)),
@@ -196,7 +200,7 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
       startWith([])
     );
 
-    this.tableData$ = combineLatest([
+    return combineLatest([
         trades$,
         this.timezoneConverterService.getConverter()
       ]
@@ -209,5 +213,16 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
         map(f => trades.filter(t => this.justifyFilter(t, f)))
       ))
     );
+  }
+
+  rowClick(row: DisplayTrade): void {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(s => {
+      this.actionsContext.instrumentSelected({
+        symbol: row.symbol,
+        exchange: row.exchange,
+      }, s.badgeColor ?? defaultBadgeColor);
+    });
   }
 }

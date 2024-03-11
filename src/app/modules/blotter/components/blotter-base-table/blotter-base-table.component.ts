@@ -1,9 +1,9 @@
 import {
   Component,
-  DestroyRef, Inject,
+  DestroyRef, Input,
   OnInit,
 } from '@angular/core';
-import { take, combineLatest } from "rxjs";
+import { take, combineLatest, Observable, shareReplay } from "rxjs";
 import { BlotterSettings } from "../../models/blotter-settings.model";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { ExportHelper } from "../../utils/export-helper";
@@ -11,14 +11,17 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
+import { CdkDragDrop } from "@angular/cdk/drag-drop";
 
 @Component({
   template: ''
 })
 export abstract class BlotterBaseTableComponent<T extends { id: string }, F extends object>
-extends BaseTableComponent<BlotterSettings, T, F>
+extends BaseTableComponent<T, F>
 implements OnInit {
+  @Input({ required: true }) guid!: string;
+
+  settings$!: Observable<BlotterSettings>;
   protected isFilterDisabled = (): boolean => Object.keys(this.filters$.getValue()).length === 0;
   protected columns!: BaseColumnSettings<T>[];
 
@@ -27,13 +30,18 @@ implements OnInit {
   protected constructor(
     protected readonly settingsService: WidgetSettingsService,
     protected readonly translatorService: TranslatorService,
-    protected readonly destroyRef: DestroyRef,
-    @Inject(ACTIONS_CONTEXT) protected readonly actionsContext?: ActionsContext
+    protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, destroyRef, actionsContext);
+    super(settingsService, destroyRef);
   }
 
   ngOnInit(): void {
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid)
+      .pipe(
+        shareReplay(1),
+        takeUntilDestroyed(this.destroyRef)
+      );
+
     super.ngOnInit();
 
     this.tableConfig$
@@ -43,6 +51,14 @@ implements OnInit {
 
   protected reset(): void {
     this.filters$.next(<F>{});
+  }
+
+  changeColumnOrder(event: CdkDragDrop<any>): void {
+    super.changeColumnOrder<BlotterSettings>(event, this.settings$);
+  }
+
+  saveColumnWidth(event: { columnId: string, width: number }): void {
+    super.saveColumnWidth<BlotterSettings>(event, this.settings$);
   }
 
   protected filterChange(newFilter: F): void {

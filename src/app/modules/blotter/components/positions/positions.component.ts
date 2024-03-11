@@ -1,5 +1,5 @@
 import { Component, DestroyRef, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
-import { distinctUntilChanged, iif, Observable, of, switchMap } from 'rxjs';
+import { distinctUntilChanged, iif, Observable, of, switchMap, take } from 'rxjs';
 import { debounceTime, map, mergeMap, startWith } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
@@ -19,10 +19,14 @@ import { CommonOrderCommands } from "../../../../shared/utils/common-order-comma
 import { MarketType } from "../../../../shared/models/portfolio-key.model";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
+import { TableConfig } from "../../../../shared/models/table-config.model";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 interface PositionDisplay extends Position {
   id: string;
   volume: number;
+  dailyUnrealisedPlRatio: number;
+  unrealisedPlRatio: number;
 }
 
 @Component({
@@ -176,7 +180,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
     @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef, actionsContext);
+    super(settingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {
@@ -198,8 +202,8 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
     );
   }
 
-  protected initTableConfig(): void {
-    this.tableConfig$ = this.settings$.pipe(
+  protected initTableConfigStream(): Observable<TableConfig<PositionDisplay>> {
+    return this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.positionsTable, current.positionsTable)
         && previous.badgeColor === current.badgeColor
@@ -239,8 +243,8 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
     );
   }
 
-  protected initTableData(): void {
-    this.tableData$ = this.settings$.pipe(
+  protected initTableDataStream(): Observable<PositionDisplay[]> {
+    return this.settings$.pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(
         settings => this.service.getPositions(settings)
@@ -263,6 +267,17 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
 
   round(number: number): number {
     return MathHelper.round(number, 2);
+  }
+
+  rowClick(row: PositionDisplay): void {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(s => {
+      this.actionsContext.instrumentSelected({
+        symbol: row.symbol,
+        exchange: row.exchange,
+      }, s.badgeColor ?? defaultBadgeColor);
+    });
   }
 
   closePosition(position: PositionDisplay): void {

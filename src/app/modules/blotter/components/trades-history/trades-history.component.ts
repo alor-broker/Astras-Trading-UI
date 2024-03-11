@@ -18,6 +18,7 @@ import {
   BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
+  Observable,
   pairwise,
   shareReplay,
   switchMap,
@@ -50,6 +51,8 @@ import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/setti
 import { CdkVirtualScrollViewport } from "@angular/cdk/scrolling";
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
 import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
+import { TableConfig } from "../../../../shared/models/table-config.model";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 @Component({
   selector: 'ats-trades-history',
@@ -128,6 +131,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       minWidth: 60
     },
   ];
+  isLoading$ = new BehaviorSubject<boolean>(false);
 
   settingsTableName = TableNames.TradesHistoryTable;
   settingsColumnsName = ColumnsNames.TradesColumns;
@@ -145,7 +149,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef, actionsContext);
+    super(settingsService, translatorService, destroyRef);
   }
 
   ngAfterViewInit(): void {
@@ -273,7 +277,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     });
   }
 
-  protected initTableConfig(): void {
+  protected initTableConfigStream(): Observable<TableConfig<DisplayTrade>> {
     const tableSettings$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.tradesHistoryTable, current.tradesHistoryTable)
@@ -282,7 +286,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       filter((s): s is TableDisplaySettings => !!s)
     );
 
-    this.tableConfig$ = combineLatest({
+    return combineLatest({
       tableSettings: tableSettings$,
       translator: this.translatorService.getTranslator('blotter/trades')
     }).pipe(
@@ -315,8 +319,8 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     );
   }
 
-  protected initTableData(): void {
-    this.tableData$ = combineLatest([
+  protected initTableDataStream(): Observable<DisplayTrade[]> {
+    return combineLatest([
         this.loadedHistory$,
         this.timezoneConverterService.getConverter()
       ]
@@ -331,5 +335,16 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       ),
       shareReplay(1)
     );
+  }
+
+  rowClick(row: DisplayTrade): void {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(s => {
+      this.actionsContext.instrumentSelected({
+        symbol: row.symbol,
+        exchange: row.exchange,
+      }, s.badgeColor ?? defaultBadgeColor);
+    });
   }
 }

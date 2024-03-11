@@ -1,6 +1,7 @@
 import {
   Component,
   DestroyRef,
+  Input,
   OnDestroy,
   OnInit,
 } from '@angular/core';
@@ -10,6 +11,8 @@ import { filter, map, tap, bufferTime } from "rxjs/operators";
 import {
   BehaviorSubject,
   combineLatest,
+  Observable,
+  shareReplay,
   take,
   withLatestFrom
 } from "rxjs";
@@ -31,20 +34,25 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Side } from "../../../../shared/models/enums/side.model";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
+import { TableConfig } from "../../../../shared/models/table-config.model";
+import {
+  LazyLoadingBaseTableComponent
+} from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
 
 @Component({
   selector: 'ats-all-trades',
   templateUrl: './all-trades.component.html',
   styleUrls: ['./all-trades.component.less'],
 })
-export class AllTradesComponent extends BaseTableComponent<
-    AllTradesSettings,
+export class AllTradesComponent extends LazyLoadingBaseTableComponent<
     AllTradesItem,
     AllTradesFilters,
     AllTradesPagination
   >
 implements OnInit, OnDestroy {
+  @Input({ required: true }) guid!: string;
+
+  private settings$!: Observable<AllTradesSettings>;
   private readonly datePipe = new DatePipe('ru-RU');
 
   public readonly tradesList$ = new BehaviorSubject<AllTradesItem[]>([]);
@@ -148,6 +156,12 @@ implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.settings$ = this.settingsService.getSettings<AllTradesSettings>(this.guid)
+      .pipe(
+        shareReplay(1),
+        takeUntilDestroyed(this.destroyRef)
+      );
+
     super.ngOnInit();
 
     this.settings$.pipe(
@@ -160,7 +174,7 @@ implements OnInit, OnDestroy {
     });
   }
 
-  protected initTableData(): void {
+  protected initTableDataStream(): Observable<AllTradesItem[]> {
     combineLatest([
       this.filters$,
       this.sort$
@@ -206,10 +220,12 @@ implements OnInit, OnDestroy {
       .subscribe(({filters, newTrades}) => {
         this.filterNewTrades(filters, newTrades);
       });
+
+    return this.tradesList$;
   }
 
-  protected initTableConfig(): void {
-    this.tableConfig$ = this.settings$.pipe(
+  protected initTableConfigStream(): Observable<TableConfig<AllTradesItem>> {
+    return this.settings$.pipe(
       mapWith(
         () => this.translatorService.getTranslator('all-trades/all-trades'),
         (settings, translate) => ({ settings, translate })
@@ -328,6 +344,10 @@ implements OnInit, OnDestroy {
         }
       );
     });
+  }
+
+  saveColumnWidth(event: { columnId: string, width: number }): void {
+    super.saveColumnWidth<AllTradesSettings>(event, this.settings$);
   }
 
   private filterNewTrades(filters: AllTradesReqFilters, newTrades: AllTradesItem[]): void {

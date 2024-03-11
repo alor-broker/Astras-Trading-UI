@@ -8,6 +8,7 @@ import {
 import {
   combineLatest,
   distinctUntilChanged,
+  Observable,
   Subject,
   switchMap,
   take,
@@ -35,6 +36,8 @@ import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-ta
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
 import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
 import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
+import { TableConfig } from "../../../../shared/models/table-config.model";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 interface DisplayOrder extends Order {
   residue: string;
@@ -209,7 +212,7 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
     @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef, actionsContext,);
+    super(settingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {
@@ -222,8 +225,8 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
     ).subscribe();
   }
 
-  protected initTableConfig(): void {
-    this.tableConfig$ = this.settings$.pipe(
+  protected initTableConfigStream(): Observable<TableConfig<DisplayOrder>> {
+    return this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.ordersTable, current.ordersTable)
         && previous.badgeColor === current.badgeColor
@@ -266,7 +269,7 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
     );
   }
 
-  protected initTableData(): void {
+  protected initTableDataStream(): Observable<DisplayOrder[]> {
     const orders$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getOrders(settings)),
@@ -275,7 +278,7 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       tap((orders: Order[]) => this.orders = orders)
     );
 
-    this.tableData$ = combineLatest([
+    return combineLatest([
       orders$,
       this.filters$,
       this.timezoneConverterService.getConverter(),
@@ -292,6 +295,17 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
         .filter(o => this.justifyFilter(o, f))
         .sort(this.sortOrders))
     );
+  }
+
+  rowClick(row: DisplayOrder): void {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(s => {
+      this.actionsContext?.instrumentSelected({
+        symbol: row.symbol,
+        exchange: row.exchange,
+      }, s.badgeColor ?? defaultBadgeColor);
+    });
   }
 
   cancelOrder(orderId: string): void {
