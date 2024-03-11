@@ -169,18 +169,19 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
       }
     },
     {
-      id: 'emissionValue',
+      id: 'issueValue',
       displayName: 'Заявл. объём выпуска',
+      transformFn: (d: BondNode): string => d.volumes!.issueValue != null ? MathHelper.round(+d.volumes!.issueValue!, 2).toString() : '',
       sortChangeFn: (dir): void => this.sort$.next(dir == null
         ? null
-        :`{ emissionValue: ${dir === 'ascend' ? 'ASC' : 'DESC'} }`
+        :`{ volumes: { issueValue: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
       ),
       width: 100,
       filterData: {
-        filterName: 'emissionValue',
+        filterName: 'issueValue',
         isInterval: true,
-        intervalStartName: 'emissionValueFrom',
-        intervalEndName: 'emissionValueTo'
+        intervalStartName: 'issueValueFrom',
+        intervalEndName: 'issueValueTo'
       }
     },
     {

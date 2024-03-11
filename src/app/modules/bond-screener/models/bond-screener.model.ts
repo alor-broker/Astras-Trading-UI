@@ -34,9 +34,11 @@ export interface BondNode {
     priceStep?: number;
     rating?: number;
   };
+  volumes?: {
+    issueValue: string;
+  };
   couponRate?: string;
   couponType?: string;
-  emissionValue?: string;
   guaranteed?: boolean;
   hasOffer?: boolean;
   maturityDate?: Date;

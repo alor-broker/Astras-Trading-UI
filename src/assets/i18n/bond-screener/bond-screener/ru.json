@@ -7,7 +7,7 @@
     "maturityDate": "Дата погашения",
     "placementEndDate": "Дата окончания размещения",
     "cancellation": "Дата окончания",
-    "emissionValue": "Заявл. объём выпуска",
+    "issueValue": "Заявл. объём выпуска",
     "couponType": "Тип купона",
     "couponRate": "Ставка купона, %",
     "priceMultiplier": "Множитель цены",

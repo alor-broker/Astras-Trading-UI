@@ -12,6 +12,15 @@ import {
   catchError,
   map
 } from "rxjs/operators";
+import { TranslatorService } from "./translator.service";
+import { InstantNotificationsService } from "./instant-notifications.service";
+import { CommonInstantNotificationType } from "../models/terminal-settings/terminal-settings.model";
+
+interface GraphQLError {
+  extensions?: {
+    code?: string;
+  };
+}
 
 export interface GraphQlVariables {
   [propName: string]: any;
@@ -29,7 +38,9 @@ export class GraphQlService {
 
   constructor(
     private readonly apollo: Apollo,
-    private readonly errorHandlerService: ErrorHandlerService
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly translatorService: TranslatorService,
+    private readonly notification: InstantNotificationsService
   ) {
   }
 
@@ -51,6 +62,19 @@ export class GraphQlService {
         catchError(err => {
           if (err.networkError != null) {
             this.errorHandlerService.handleError(err.networkError);
+          } else if (err.graphQLErrors.find((err: GraphQLError) => err.extensions?.code === 'AUTH_NOT_AUTHORIZED')) {
+            return this.translatorService.getTranslator('bond-screener')
+              .pipe(
+                map(t => {
+                  this.notification.showNotification(
+                    CommonInstantNotificationType.Common,
+                    'error',
+                    t(['authErrorTitle']),
+                    t(['authErrorMessage'])
+                  );
+                  return null;
+                })
+              );
           } else {
             this.errorHandlerService.handleError(err);
           }

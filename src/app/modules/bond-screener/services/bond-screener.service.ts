@@ -94,6 +94,7 @@ export class BondScreenerService {
     const financialAttributesFields = BOND_NESTED_FIELDS.financialAttributes.filter(f => columnIds.includes(f));
     const boardInformationFields = BOND_NESTED_FIELDS.boardInformation.filter(f => columnIds.includes(f));
     const tradingDetailsFields = BOND_NESTED_FIELDS.tradingDetails.filter(f => columnIds.includes(f));
+    const volumesFields = BOND_NESTED_FIELDS.volumes.filter(f => columnIds.includes(f));
     const yieldFields = BOND_NESTED_FIELDS.yield.filter(f => columnIds.includes(f));
     const rootFields = BOND_NESTED_FIELDS.rootFields.filter(f => columnIds.includes(f));
 
@@ -108,25 +109,29 @@ export class BondScreenerService {
                 node {
                   basicInformation { ${basicInformationFields.join(' ')} }
                   ${additionalInformationFields.length > 0
-      ? 'additionalInformation {' + additionalInformationFields.join(' ') + '}'
-      : ''
-    }
+                    ? 'additionalInformation {' + additionalInformationFields.join(' ') + '}'
+                    : ''
+                  }
                   ${financialAttributesFields.length > 0
-      ? 'financialAttributes {' + financialAttributesFields.join(' ') + '}'
-      : ''
-    }
+                    ? 'financialAttributes {' + financialAttributesFields.join(' ') + '}'
+                    : ''
+                  }
                   ${boardInformationFields.length > 0
-      ? 'boardInformation {' + boardInformationFields.join(' ') + '}'
-      : ''
-    }
+                    ? 'boardInformation {' + boardInformationFields.join(' ') + '}'
+                    : ''
+                  }
                   ${tradingDetailsFields.length > 0
-      ? 'tradingDetails {' + tradingDetailsFields.join(' ') + '}'
-      : ''
-    }
+                    ? 'tradingDetails {' + tradingDetailsFields.join(' ') + '}'
+                    : ''
+                  }
+                  ${volumesFields.length > 0
+                    ? 'volumes {' + volumesFields.join(' ') + '}'
+                    : ''
+                  }
                   ${yieldFields.length > 0
-      ? 'yield {' + yieldFields.join(' ') + '}'
-      : ''
-    }
+                    ? 'yield {' + yieldFields.join(' ') + '}'
+                    : ''
+                  }
                   ${rootFields.join(' ')}
                 }
                 cursor

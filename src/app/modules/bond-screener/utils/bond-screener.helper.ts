@@ -5,7 +5,8 @@ export const BOND_NESTED_FIELDS: { [fieldName: string]: string[] } = {
   boardInformation: ['board'],
   yield: ['currentYield'],
   tradingDetails: ['lotSize', 'minStep', 'priceMax', 'priceMin', 'priceStep', 'rating'],
-  rootFields: ['couponRate', 'couponType', 'emissionValue', 'guaranteed', 'hasOffer', 'maturityDate', 'placementEndDate']
+  volumes: ['issueValue'],
+  rootFields: ['couponRate', 'couponType', 'guaranteed', 'hasOffer', 'maturityDate', 'placementEndDate']
 };
 
 export const BOND_FILTER_TYPES: { [fieldName: string]: string[] } = {
@@ -18,8 +19,8 @@ export const BOND_FILTER_TYPES: { [fieldName: string]: string[] } = {
     'couponRateTo',
     'currentYieldFrom',
     'currentYieldTo',
-    'emissionValueFrom',
-    'emissionValueTo',
+    'issueValueFrom',
+    'issueValueTo',
     'lotSizeFrom',
     'lotSizeTo',
     'minStepFrom',

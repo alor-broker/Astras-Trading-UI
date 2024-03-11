@@ -7,7 +7,7 @@
     "maturityDate": "Maturity date",
     "placementEndDate": "Placement end date",
     "cancellation": "Cancellation date",
-    "emissionValue": "Emission",
+    "issueValue": "Emission",
     "couponType": "Coupon type",
     "couponRate": "Coupon rate, %",
     "priceMultiplier": "Price multiplier",

@@ -14,7 +14,7 @@ export const bondScreenerColumns: BaseColumnId[] = [
   { id: 'maturityDate', displayName: "Дата погашения", isDefault: true },
   { id: 'placementEndDate', displayName: "Дата окончания размещения", isDefault: true },
   { id: 'currentYield', displayName: "Доходность, %", isDefault: true },
-  { id: 'emissionValue', displayName: "Заявл. объём выпуска", isDefault: true },
+  { id: 'issueValue', displayName: "Заявл. объём выпуска", isDefault: true },
   { id: 'couponType', displayName: "Тип купона", isDefault: true },
   { id: 'couponRate', displayName: "Ставка купона", isDefault: true },
   { id: 'cancellation', displayName: "Дата окончания", isDefault: false },
