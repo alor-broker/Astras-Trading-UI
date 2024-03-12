@@ -48,6 +48,7 @@ import { InitQueryParamsHook } from "./shared/services/app-hook/init-query-param
 import { NzI18nInterface } from "ng-zorro-antd/i18n/nz-i18n.interface";
 import { HashMap } from "@ngneat/transloco/lib/types";
 import { LoggingHook } from "./shared/services/app-hook/logging-hook";
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 class CustomHandler implements TranslocoMissingHandler {
   handle(key: string, config: TranslocoConfig, params?: HashMap): string {
@@ -75,7 +76,13 @@ registerLocaleData(ru);
     TranslocoRootModule,
     AngularFireAuthModule,
     AngularFireMessagingModule,
-    AngularFireModule.initializeApp(environment.firebase)
+    AngularFireModule.initializeApp(environment.firebase),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: true,
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 15 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:15000'
+    })
   ],
   bootstrap: [AppComponent],
   providers: [
