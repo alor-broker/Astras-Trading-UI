@@ -12,7 +12,6 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
-  ValidatorFn,
   Validators
 } from "@angular/forms";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
@@ -26,7 +25,6 @@ import {
 } from '../../models/scalper-order-book-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { AtsValidators } from "../../../../shared/utils/form-validators";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
@@ -239,16 +237,14 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
           null,
           [
             Validators.min(this.validationOptions.bracket.price.min),
-            Validators.max(this.validationOptions.bracket.price.max),
-            this.bracketsPriceRatioValidation()
+            Validators.max(this.validationOptions.bracket.price.max)
           ]
         ),
         bottomOrderPriceRatio: this.formBuilder.control<number | null>(
           null,
           [
             Validators.min(this.validationOptions.bracket.price.min),
-            Validators.max(this.validationOptions.bracket.price.max),
-            this.bracketsPriceRatioValidation()
+            Validators.max(this.validationOptions.bracket.price.max)
           ]
         ),
         useBracketsWhenClosingPosition: this.formBuilder.nonNullable.control(false),
@@ -555,29 +551,6 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     } else {
       this.form.controls.tradesPanelSettings.disable();
     }
-  }
-
-  private bracketsPriceRatioValidation(): ValidatorFn {
-    return control => {
-      const value = Number(control.value);
-      if (isNaN(value)) {
-        return null;
-      }
-
-      if (this.form == null) {
-        return null;
-      }
-
-      if (this.form.value.bracketsSettings?.orderPriceUnits === PriceUnits.Points) {
-        return AtsValidators.priceStepMultiplicity(this.validationOptions.bracket.price.stepsStep)(control);
-      }
-
-      if (this.form.value.bracketsSettings?.orderPriceUnits === PriceUnits.Percents) {
-        return AtsValidators.priceStepMultiplicity(this.validationOptions.bracket.price.percentsStep)(control);
-      }
-
-      return null;
-    };
   }
 
   private createVolumeHighlightOptionsControl(option: VolumeHighlightOption): FormGroup<{

@@ -435,6 +435,7 @@
                         [step]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
                           ? validationOptions.bracket.price.stepsStep
                           : validationOptions.bracket.price.percentsStep"
+                        [allowDecimal]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Percents"
                       ></ats-input-number>
                     </nz-form-control>
                     <ng-template #topOrderPriceRatioError>
@@ -446,17 +447,6 @@
                         min: validationOptions.bracket.price.min,
                         max: validationOptions.bracket.price.max
                       })}}
-                      </span>
-                      <span *ngIf="form.controls.bracketsSettings.controls.topOrderPriceRatio.errors?.priceStepMultiplicity">
-                        <ng-container *ngIf="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points; else percentsError">
-                          {{t('scalperOrderBookSettings.priceRatioPointsMultiplicityError')}}
-                        </ng-container>
-                        <ng-template #percentsError>
-                          {{t('scalperOrderBookSettings.priceRatioPercentsMultiplicityError')}}
-                          ({{form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
-                            ? validationOptions.bracket.price.stepsStep
-                            : validationOptions.bracket.price.percentsStep}})
-                          </ng-template>
                       </span>
                     </ng-template>
                   </nz-form-item>
@@ -471,6 +461,7 @@
                         [step]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
                           ? validationOptions.bracket.price.stepsStep
                           : validationOptions.bracket.price.percentsStep"
+                        [allowDecimal]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Percents"
                       ></ats-input-number>
                     </nz-form-control>
                     <ng-template #bottomOrderPriceRatioError>
@@ -482,15 +473,6 @@
                           min: validationOptions.bracket.price.min,
                           max: validationOptions.bracket.price.max
                         })}}
-                      </span>
-                      <span *ngIf="form.controls.bracketsSettings.controls.bottomOrderPriceRatio.errors?.priceStepMultiplicity">
-                        <ng-container *ngIf="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points; else percentsError">
-                          {{t('scalperOrderBookSettings.priceRatioPointsMultiplicityError')}}
-                        </ng-container>
-                        <ng-template #percentsError>
-                          {{t('scalperOrderBookSettings.priceRatioPercentsMultiplicityError')}}
-                          ({{validationOptions.bracket.price.percentsStep}})
-                        </ng-template>
                       </span>
                     </ng-template>
                   </nz-form-item>
