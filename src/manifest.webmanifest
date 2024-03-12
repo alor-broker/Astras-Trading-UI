@@ -5,7 +5,7 @@
   "scope": "./",
   "start_url": "./",
   "theme_color": "#34363d",
-  "background_color": "40444f",
+  "background_color": "#40444f",
   "gcm_sender_id": "766412584747",
   "icons": [
     {
