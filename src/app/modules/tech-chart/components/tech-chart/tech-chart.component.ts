@@ -1,4 +1,13 @@
-import { AfterViewInit, Component, DestroyRef, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -34,7 +43,11 @@ import {
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { TechChartDatafeedService } from '../../services/tech-chart-datafeed.service';
 import { ThemeService } from '../../../../shared/services/theme.service';
-import { ThemeColors, ThemeSettings, ThemeType } from '../../../../shared/models/settings/theme-settings.model';
+import {
+  ThemeColors,
+  ThemeSettings,
+  ThemeType
+} from '../../../../shared/models/settings/theme-settings.model';
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { SelectedPriceData } from '../../../../shared/models/orders/selected-order-price.model';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
@@ -43,13 +56,23 @@ import { MathHelper } from '../../../../shared/utils/math-helper';
 import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
 import { PortfolioKey } from '../../../../shared/models/portfolio-key.model';
 import { Position } from '../../../../shared/models/positions/position.model';
-import { debounceTime, map, startWith } from 'rxjs/operators';
+import {
+  debounceTime,
+  map,
+  startWith
+} from 'rxjs/operators';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import { Order, StopOrder } from '../../../../shared/models/orders/order.model';
+import {
+  Order,
+  StopOrder
+} from '../../../../shared/models/orders/order.model';
 import { Side } from '../../../../shared/models/enums/side.model';
 import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { TechChartSettings } from '../../models/tech-chart-settings.model';
+import {
+  LineMarkerPosition,
+  TechChartSettings
+} from '../../models/tech-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { HashMap } from "@ngneat/transloco/lib/types";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
@@ -58,15 +81,24 @@ import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
 import { toInstrumentKey } from "../../../../shared/utils/instruments";
-import { EditOrderDialogParams, OrderType } from "../../../../shared/models/orders/orders-dialog.model";
+import {
+  EditOrderDialogParams,
+  OrderType
+} from "../../../../shared/models/orders/orders-dialog.model";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 import { Trade } from "../../../../shared/models/trades/trade.model";
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
 import { addSeconds } from "../../../../shared/utils/datetime";
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
-import { getConditionSign, getConditionTypeByString } from "../../../../shared/utils/order-conditions-helper";
+import {
+  getConditionSign,
+  getConditionTypeByString
+} from "../../../../shared/utils/order-conditions-helper";
 import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
-import { RegularInstrumentKey, SyntheticInstrumentKey } from "../../models/synthetic-instruments.model";
+import {
+  RegularInstrumentKey,
+  SyntheticInstrumentKey
+} from "../../models/synthetic-instruments.model";
 import { SyntheticInstrumentsService } from "../../services/synthetic-instruments.service";
 import { MarketService } from "../../../../shared/services/market.service";
 import { MarketExchange } from "../../../../shared/models/market-settings.model";
@@ -379,8 +411,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         this.chartState.widget.activeChart().setSymbol(
           SyntheticInstrumentsHelper.isSyntheticInstrument(settings.symbol) ? settings.symbol : this.toTvSymbol(settings as InstrumentKey),
           () => {
-            this.initPositionDisplay(settings as InstrumentKey, theme.themeColors);
-            this.initOrdersDisplay(settings as InstrumentKey, theme.themeColors);
+            this.initPositionDisplay(settings, theme.themeColors);
+            this.initOrdersDisplay(settings, theme.themeColors);
             this.initTradesDisplay(settings, theme.themeColors, exchanges);
             this.initTimezoneChangeStream(settings, theme.themeColors, exchanges);
           }
@@ -477,8 +509,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     chartWidget.onChartReady(() => {
       this.chartState?.widget!.activeChart().dataReady(() => {
-          this.initPositionDisplay(settings as InstrumentKey, theme.themeColors);
-          this.initOrdersDisplay(settings as InstrumentKey, theme.themeColors);
+          this.initPositionDisplay(settings, theme.themeColors);
+          this.initOrdersDisplay(settings, theme.themeColors);
           this.initTradesDisplay(settings, theme.themeColors, exchanges);
           this.initTimezoneChangeStream(settings, theme.themeColors, exchanges);
         }
@@ -614,14 +646,17 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.currentDashboardService.selectedPortfolio$;
   }
 
-  private initPositionDisplay(instrument: InstrumentKey, themeColors: ThemeColors): void {
+  private initPositionDisplay(settings: TechChartSettings, themeColors: ThemeColors): void {
     this.chartState!.positionState?.destroy();
+    if(!(settings.showPosition ?? true)) {
+      return;
+    }
 
     const tearDown = new Subscription();
     this.chartState!.positionState = new PositionState(tearDown);
 
     const subscription = this.allActivePositions$!.pipe(
-      map(x => x.find(p => p.symbol === instrument.symbol && p.exchange === instrument.exchange)),
+      map(x => x.find(p => p.symbol === settings.symbol && p.exchange === settings.exchange)),
       distinctUntilChanged((p, c) => p?.avgPrice === c?.avgPrice && p?.qtyTFutureBatch === c?.qtyTFutureBatch),
     ).subscribe(position => {
       const positionState = this.chartState!.positionState!;
@@ -658,32 +693,47 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         .setQuantityBackgroundColor(color)
         .setQuantityBorderColor(backgroundColor)
         .setQuantityTextColor(themeColors.chartPrimaryTextColor)
-        .setBodyTextColor(themeColors.chartPrimaryTextColor);
+        .setBodyTextColor(themeColors.chartPrimaryTextColor)
+        .setLineLength(this.getMarkerLineLengthPercent(settings.positionLineMarkerPosition), "percentage");
     });
 
     tearDown.add(subscription);
   }
 
-  private initOrdersDisplay(instrument: InstrumentKey, themeColors: ThemeColors): void {
+  private getMarkerLineLengthPercent(position: LineMarkerPosition | undefined): number {
+    switch (position) {
+      case LineMarkerPosition.Left:
+        return 90;
+      case LineMarkerPosition.Middle:
+        return 40;
+      default:
+        return 10;
+    }
+  }
+
+  private initOrdersDisplay(settings: TechChartSettings, themeColors: ThemeColors): void {
     this.chartState!.ordersState?.destroy();
+    if(!(settings.showOrders ?? true)) {
+      return;
+    }
 
     const tearDown = new Subscription();
     this.chartState!.ordersState = new OrdersState(tearDown);
 
     tearDown.add(this.setupOrdersUpdate(
-      this.getLimitOrdersStream(instrument),
+      this.getLimitOrdersStream(settings as InstrumentKey),
       this.chartState!.ordersState.limitOrders,
       (order, orderLineAdapter) => {
-        this.fillOrderBaseParameters(order, orderLineAdapter, themeColors);
+        this.fillOrderBaseParameters(order, orderLineAdapter, themeColors, settings.ordersLineMarkerPosition ?? LineMarkerPosition.Right);
         this.fillLimitOrder(order, orderLineAdapter);
       }
     ));
 
     tearDown.add(this.setupOrdersUpdate(
-      this.getStopOrdersStream(instrument),
+      this.getStopOrdersStream(settings as InstrumentKey),
       this.chartState!.ordersState.stopOrders,
       (order, orderLineAdapter) => {
-        this.fillOrderBaseParameters(order, orderLineAdapter, themeColors);
+        this.fillOrderBaseParameters(order, orderLineAdapter, themeColors, settings.ordersLineMarkerPosition ?? LineMarkerPosition.Right);
         this.fillStopOrder(order, orderLineAdapter);
       }
     ));
@@ -954,7 +1004,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
-  private fillOrderBaseParameters(order: Order, orderLineAdapter: IOrderLineAdapter, themeColors: ThemeColors): void {
+  private fillOrderBaseParameters(order: Order, orderLineAdapter: IOrderLineAdapter, themeColors: ThemeColors, position: LineMarkerPosition): void {
     orderLineAdapter
       .setQuantity((order.qtyBatch - (order.filledQtyBatch ?? 0)).toString())
       .setQuantityBackgroundColor(themeColors.componentBackground)
@@ -967,7 +1017,9 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       .setCancelButtonBackgroundColor(themeColors.componentBackground)
       .setCancelButtonBorderColor('transparent')
       .setCancelButtonIconColor(themeColors.primaryColor)
-      .setBodyTextColor(order.side === Side.Buy ? themeColors.buyColor : themeColors.sellColor);
+      .setBodyTextColor(order.side === Side.Buy ? themeColors.buyColor : themeColors.sellColor)
+      .setLineLength(this.getMarkerLineLengthPercent(position), "percentage")
+    ;
   }
 
   private fillLimitOrder(order: Order, orderLineAdapter: IOrderLineAdapter): void {

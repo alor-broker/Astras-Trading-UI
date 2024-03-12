@@ -8,8 +8,6 @@ export interface ChartPoint {
 export interface ChartData {
   asks: ChartPoint[];
   bids: ChartPoint[];
-  minPrice: number;
-  maxPrice: number;
 }
 
 export interface OrderBook {

@@ -1,0 +1,7 @@
+﻿{
+  "messages": {
+    "botGreeting": "Hello! Ask me a question and I'll try to answer it...",
+    "botThinking": "Bot is thinking",
+    "requestError": "Something went wrong..."
+  }
+}

@@ -21,6 +21,7 @@ export interface NewLimitOrder extends NewOrderBase {
   topOrderSide?: Side;
   bottomOrderPrice?: number | null;
   bottomOrderSide?: Side;
+  orderEndUnixTime?: number;
 }
 
 export interface NewStopMarketOrder extends NewOrderBase {

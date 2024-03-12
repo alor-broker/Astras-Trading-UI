@@ -404,7 +404,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
       ).subscribe(x => {
         let targetIndex: number | null = null;
 
-        const spreadRows = x.orderBookBody.filter(r => r.rowType === ScalperOrderBookRowType.Spread);
+        const spreadRows = x.orderBookBody.filter(r => r.rowType === ScalperOrderBookRowType.Spread || r.rowType === ScalperOrderBookRowType.Mixed);
         if (spreadRows.length > 0) {
           targetIndex = x.orderBookBody.indexOf(spreadRows[0]) + Math.round(spreadRows.length / 2);
         } else {

@@ -33,15 +33,15 @@ export class OrdersGroupService {
         catchHttpError<SubmitGroupResult | null>(null, this.errorHandlerService),
         tap((res) => {
           if (!res || res.message !== 'success') {
-            forkJoin([
+            forkJoin(
               req.orders.map(o => this.canceller.cancelOrder({
-                orderid: o.orderId,
-                portfolio: o.portfolio,
-                exchange: o.exchange,
-                stop: o.type !== 'Limit'
-              }))
-            ])
-              .subscribe();
+                  orderid: o.orderId,
+                  portfolio: o.portfolio,
+                  exchange: o.exchange,
+                  stop: o.type !== 'Limit'
+                })
+              )
+            ).subscribe();
           } else {
             this.refresh$.next(null);
             this.instantNotificationsService.showNotification(

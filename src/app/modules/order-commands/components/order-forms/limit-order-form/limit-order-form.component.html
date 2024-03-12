@@ -87,7 +87,31 @@
                   </nz-form-control>
                 </nz-form-item>
 
-                <nz-form-item class="compact">
+                <nz-form-item class="compact" *ngIf="!form.controls.orderEndUnixTime.disabled">
+                  <nz-form-label nzFor="orderEndUnixTime">{{t('orderCommandsOrderForms.orderEndUnixTimeLabel')}}</nz-form-label>
+                  <nz-form-control>
+                    <nz-date-picker
+                      [nzDisabledDate]="disabledDate"
+                      [nzPlaceHolder]="t('orderCommandsOrderForms.selectDatePlaceholder')"
+                      [nzShowNow]="false"
+                      formControlName="orderEndUnixTime"
+                      nzFormat="yyyy-MM-dd"
+                      class="w-100"
+                    >
+                    </nz-date-picker>
+                  </nz-form-control>
+                  <ng-container *ngIf="timezones$ | async as timezones">
+                    <span
+                      *ngIf="timezones.displayTimezone !== timezones.exchangeTimezone && form.controls.orderEndUnixTime.value !== null"
+                      nz-typography
+                      nzType="warning"
+                    >
+                      {{t('orderCommandsOrderForms.orderEndUnixTimeHint')}}
+                    </span>
+                  </ng-container>
+                </nz-form-item>
+
+                <nz-form-item class="compact mt-5">
                   <label
                     formControlName="isIceberg"
                     nz-checkbox
@@ -102,29 +126,27 @@
                       nzFor="icebergFixed">{{t('orderCommandsOrderForms.icebergFixedLabel')}}</nz-form-label>
                     <nz-form-control [nzErrorTip]="icebergFixedError">
                       <ats-input-number formControlName="icebergFixed" placeholder="0"></ats-input-number>
+                      <ng-template #icebergFixedError>
+                        <span *ngIf="form.controls.icebergFixed.errors?.min">{{t('validationErrors.tooLittle')}}</span>
+                        <span *ngIf="form.controls.icebergFixed.errors?.max">{{t('validationErrors.tooMuch')}}</span>
+                      </ng-template>
+                      <span *ngIf="form.errors?.icebergFixedNotBiggerThanQuantity" nz-typography nzType="danger">
+                      {{t('orderCommandsOrderForms.notBiggerThanError', {fieldName: t('orderCommandsOrderForms.quantityLabel')})}}
+                    </span>
                     </nz-form-control>
                   </nz-form-item>
 
-                  <ng-template #icebergFixedError>
-                    <span *ngIf="form.controls.icebergFixed.errors?.min">{{t('validationErrors.tooLittle')}}</span>
-                    <span *ngIf="form.controls.icebergFixed.errors?.max">{{t('validationErrors.tooMuch')}}</span>
-                  </ng-template>
-                  <span *ngIf="form.errors?.icebergFixedNotBiggerThanQuantity" nz-typography nzType="danger">
-                {{t('orderCommandsOrderForms.notBiggerThanError', {fieldName: t('orderCommandsOrderForms.quantityLabel')})}}
-              </span>
-
-                  <nz-form-item class="compact">
+                  <nz-form-item>
                     <nz-form-label nzFor="icebergVariance">
                       {{t('orderCommandsOrderForms.icebergVarianceLabel')}}
                     </nz-form-label>
                     <nz-form-control [nzErrorTip]="icebergVarianceError">
                       <ats-input-number formControlName="icebergVariance" placeholder="0"></ats-input-number>
+                      <ng-template #icebergVarianceError>
+                        <span *ngIf="form.controls.icebergFixed.errors?.min">{{t('validationErrors.tooLittle')}}</span>
+                        <span *ngIf="form.controls.icebergFixed.errors?.max">{{t('validationErrors.tooMuch')}}</span>
+                      </ng-template>
                     </nz-form-control>
-
-                    <ng-template #icebergVarianceError>
-                      <span *ngIf="form.controls.icebergFixed.errors?.min">{{t('validationErrors.tooLittle')}}</span>
-                      <span *ngIf="form.controls.icebergFixed.errors?.max">{{t('validationErrors.tooMuch')}}</span>
-                    </ng-template>
                   </nz-form-item>
                 </ng-container>
 
@@ -133,7 +155,8 @@
                     <nz-form-label class="flex-fill" nzFor="topOrderPrice">
                       {{t('orderCommandsOrderForms.topOrderPriceLabel')}}
                     </nz-form-label>
-                    <nz-form-control [nzErrorTip]="topOrderPriceError" class="flex-fill">
+                    <nz-form-control [nzErrorTip]="topOrderPriceError" class="flex-fill"
+                    >
                       <ats-input-number [allowNegative]="true" formControlName="topOrderPrice"
                                         placeholder="0"></ats-input-number>
                     </nz-form-control>

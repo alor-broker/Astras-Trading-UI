@@ -14,13 +14,11 @@
       .table-row {
         box-sizing: border-box;
         border: @table-border-color @border-width solid;
+        border-bottom: none;
+        border-top: none;
 
         &.hovered {
           background-color: fade(@primary-color, 15%);
-        }
-
-        &:not(:first-child) {
-          border-top: none;
         }
 
         .table-cell {
@@ -60,6 +58,10 @@
             &.negative {
               border-right-color: @sell-color;
             }
+          }
+
+          .grid-line {
+            border-color: @table-border-color;
           }
         }
       }
@@ -119,23 +121,48 @@
   flex-direction: row;
   flex-wrap: nowrap;
 
+  .table-cell {
+    position: relative;
+    height: 100%;
+    width: 100%;
+
+    .grid-line {
+      display: inline-block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 50%;
+      border-bottom-style: solid;
+
+      &.minor {
+        @minor-border-width: @border-width;
+        border-bottom-width: @minor-border-width;
+        height: calc(50% + @minor-border-width);
+      }
+
+      &.major {
+        @major-border-width: @border-width * 2;
+        border-bottom-width: @major-border-width;
+        height: calc(50% + @major-border-width);
+      }
+    }
+  }
+
+
   #volume-panel {
     flex-grow: 1;
     .table-cell {
-      position: relative;
-
       .highlighter {
         display: inline-block;
         position: absolute;
         left: 0;
         top: 0;
         width: 0;
-        z-index: 1;
       }
 
       .volume {
         position: relative;
-        z-index: 2;
       }
     }
   }
@@ -143,7 +170,6 @@
   #price-panel {
     .table-cell {
       text-align: right;
-      position: relative;
 
       .highlighter {
         display: inline-block;
@@ -152,7 +178,6 @@
         top: (-1 * @border-width);
         width: 100%;
         height: calc(100% + @border-width);
-        z-index: 1;
       }
     }
   }

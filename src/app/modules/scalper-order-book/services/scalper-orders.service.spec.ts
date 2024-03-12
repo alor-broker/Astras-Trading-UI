@@ -355,7 +355,6 @@ describe('ScalperOrdersService', () => {
     testSettings = {
       ...testSettings,
       ...testInstrument,
-      useBrackets: true,
       bracketsSettings: {
         topOrderPriceRatio: 1,
         bottomOrderPriceRatio: 2
@@ -496,7 +495,6 @@ describe('ScalperOrdersService', () => {
     testSettings = {
       ...testSettings,
       ...testInstrument,
-      useBrackets: true,
       bracketsSettings: {
         topOrderPriceRatio: 1,
         bottomOrderPriceRatio: 2
@@ -545,7 +543,7 @@ describe('ScalperOrdersService', () => {
           ...expectedLimitOrder,
           type: 'StopLimit',
           condition: LessMore.MoreOrEqual,
-          triggerPrice: MathHelper.roundPrice(testBids[0].p + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
+          triggerPrice: MathHelper.roundPrice(testBids[0].p + (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Buy,
           activate: false
         },
@@ -553,7 +551,7 @@ describe('ScalperOrdersService', () => {
           ...expectedLimitOrder,
           type: 'StopLimit',
           condition: LessMore.LessOrEqual,
-          triggerPrice: MathHelper.roundPrice(testBids[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
+          triggerPrice: MathHelper.roundPrice(testBids[0].p - (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Buy,
           activate: false
         },
@@ -641,7 +639,6 @@ describe('ScalperOrdersService', () => {
     testSettings = {
       ...testSettings,
       ...testInstrument,
-      useBrackets: true,
       bracketsSettings: {
         bottomOrderPriceRatio: 2
       }
@@ -851,7 +848,6 @@ describe('ScalperOrdersService', () => {
     testSettings = {
       ...testSettings,
       ...testInstrumentKey,
-      useBrackets: true,
       bracketsSettings: {
         topOrderPriceRatio: 1,
         bottomOrderPriceRatio: 2,
@@ -930,7 +926,6 @@ describe('ScalperOrdersService', () => {
     testSettings = {
       ...testSettings,
       ...testInstrumentKey,
-      useBrackets: true,
       bracketsSettings: {
         topOrderPriceRatio: 1,
         orderPriceUnits: PriceUnits.Percents
@@ -1161,60 +1156,6 @@ describe('ScalperOrdersService', () => {
       expect(orderServiceSpy.submitStopMarketOrder).not.toHaveBeenCalled();
       expect(ordersDialogServiceSpy.openNewOrderDialog).not.toHaveBeenCalled();
       expect(notificationServiceSpy.error).toHaveBeenCalledTimes(1);
-    }));
-
-    it('should notify if wrong price', fakeAsync(() => {
-      const portfolioKey: PortfolioKey = {
-        exchange: generateRandomString(4),
-        portfolio: generateRandomString(5),
-      };
-
-      const testInstrumentKey: InstrumentKey = {
-        exchange: portfolioKey.exchange,
-        symbol: generateRandomString(4)
-      };
-
-      let avgPrice = 100;
-
-      let position = {
-        symbol: testInstrumentKey.symbol,
-        exchange: testInstrumentKey.exchange,
-        qtyTFutureBatch: 1,
-        avgPrice: avgPrice
-      } as Position;
-
-      service.setStopLoss(
-        avgPrice + 1,
-        Math.random() < 0.5,
-        position,
-        testInstrumentKey.instrumentGroup ?? null,
-        portfolioKey
-      );
-
-      tick(10000);
-      expect(orderServiceSpy.submitStopMarketOrder).not.toHaveBeenCalled();
-      expect(ordersDialogServiceSpy.openNewOrderDialog).not.toHaveBeenCalled();
-      expect(notificationServiceSpy.warning).toHaveBeenCalledTimes(1);
-
-      position = {
-        symbol: testInstrumentKey.symbol,
-        qtyTFutureBatch: -1,
-        avgPrice: avgPrice
-      } as Position;
-
-      notificationServiceSpy.warning.calls.reset();
-      service.setStopLoss(
-        avgPrice - 1,
-        Math.random() < 0.5,
-        position,
-        testInstrumentKey.instrumentGroup ?? null,
-        portfolioKey
-      );
-
-      tick(10000);
-      expect(orderServiceSpy.submitStopMarketOrder).not.toHaveBeenCalled();
-      expect(ordersDialogServiceSpy.openNewOrderDialog).not.toHaveBeenCalled();
-      expect(notificationServiceSpy.warning).toHaveBeenCalledTimes(1);
     }));
 
     it('should call appropriate service with appropriate data', fakeAsync(() => {

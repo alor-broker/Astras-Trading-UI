@@ -16,7 +16,7 @@
   "lessOrEqual": "Less or equal",
   "stopEndTimeLabel": "Expiration date",
   "stopEndTimeError": "Fill expiration date input",
-  "stopEndTimePlaceholder": "Select date",
+  "selectDatePlaceholder": "Select date",
   "withLimitLabel": "Stop type",
   "timeInForceLabel": "Order execution type",
   "timeInForcePlaceholder": "Select type",
@@ -27,6 +27,8 @@
     "AtTheClose": "Till the trading session ends",
     "GoodTillCancelled":  "Good till cancelled"
   },
+  "orderEndUnixTimeLabel": "Expiration date",
+  "orderEndUnixTimeHint": "The date may be adjusted according to the exchange's time zone",
   "isIcebergLabel": "Iceberg",
   "icebergFixedLabel": "Visible fixed part, lots",
   "icebergVarianceLabel": "Variance amplitude, %",

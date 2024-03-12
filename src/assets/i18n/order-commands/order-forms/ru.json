@@ -16,7 +16,7 @@
   "lessOrEqual": "Меньше или равно",
   "stopEndTimeLabel": "Действ. до",
   "stopEndTimeError": "Введите дату",
-  "stopEndTimePlaceholder": "Выберите дату",
+  "selectDatePlaceholder": "Выберите дату",
   "withLimitLabel": "Тип стопа",
   "timeInForceLabel": "Тип исполнения заявки",
   "timeInForcePlaceholder": "Выберите тип",
@@ -27,6 +27,8 @@
     "AtTheClose": "До конца торговой сессии",
     "GoodTillCancelled":  "Годен до отмены"
   },
+  "orderEndUnixTimeLabel": "Действ. до",
+  "orderEndUnixTimeHint": "Дата может быть скорректирована в соответствии с часовым поясом биржи",
   "isIcebergLabel": "Айсберг",
   "icebergFixedLabel": "Видимая постоянная часть, лотов",
   "icebergVarianceLabel": "Амплитуда отклонения, %",

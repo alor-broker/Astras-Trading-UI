@@ -84,9 +84,7 @@ export class OrderBookComponent implements OnInit {
         maxVolume: 1,
         chartData: <ChartData>{
           asks: [],
-          bids: [],
-          minPrice: 0,
-          maxPrice: 0
+          bids: []
         },
         bidVolumes: 0,
         askVolumes: 0,

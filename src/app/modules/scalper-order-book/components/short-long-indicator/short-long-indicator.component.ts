@@ -62,7 +62,8 @@ export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
     const instrumentKey$ = widgetSettings$.pipe(
       map(s => toInstrumentKey(s)),
       distinctUntilChanged((prev, curr) => isInstrumentEqual(prev, curr)),
-      tap(() => this.shortLongValues$.next(null))
+      tap(() => this.shortLongValues$.next(null)),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
     const updateInterval$ = widgetSettings$.pipe(

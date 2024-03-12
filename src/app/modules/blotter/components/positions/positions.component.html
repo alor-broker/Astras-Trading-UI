@@ -134,15 +134,15 @@
                   [class]='pos.dailyUnrealisedPl < 0 ? "sell" : "buy"'>{{ round(pos.dailyUnrealisedPl) | number }}</td>
               <td
                 *ngIf='column.id === "unrealisedPlRatio"'
-                [class]='pos.unrealisedPl < 0 ? "sell" : "buy"'
+                [class]='pos.unrealisedPlRatio < 0 ? "sell" : "buy"'
               >
-                {{round(pos.unrealisedPl * 100 / pos.volume) | number}}
+                {{round(pos.unrealisedPlRatio) | number}}
               </td>
               <td
                 *ngIf='column.id === "dailyUnrealisedPlRatio"'
-                [class]='pos.dailyUnrealisedPl < 0 ? "sell" : "buy"'
+                [class]='pos.dailyUnrealisedPlRatio < 0 ? "sell" : "buy"'
               >
-                {{round(pos.dailyUnrealisedPl * 100 / pos.volume) | number}}
+                {{round(pos.dailyUnrealisedPlRatio) | number}}
               </td>
             </ng-container>
           </tr>

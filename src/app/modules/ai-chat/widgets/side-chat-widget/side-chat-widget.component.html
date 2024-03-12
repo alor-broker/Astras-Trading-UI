@@ -1,0 +1,20 @@
+<ng-container *transloco="let t; scope: 'ai-chat/side-chat-widget'">
+  <nz-drawer
+    (nzOnClose)="close()"
+    [nzClosable]="true"
+    [nzContent]="content"
+    [nzSize]="'default'"
+    [nzTitle]="t('aiChatSideChatWidget.title')"
+    [nzVisible]="atsVisible"
+    [nzWrapClassName]="'ai-chat'"
+    nzPlacement="right"
+  >
+  </nz-drawer>
+  <ng-template #content>
+    <ats-ai-chat></ats-ai-chat>
+  </ng-template>
+</ng-container>
+
+
+
+

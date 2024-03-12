@@ -92,6 +92,7 @@
         "initialHeight": 18,
         "initialWidth": 10
       },
+      "hasZeroPaddings": true,
       "galleryOrder": 3,
       "enabled": true
     }

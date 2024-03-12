@@ -4,6 +4,7 @@
   "allOrderbooksHeader": "Общие для всех открытых стаканов",
   "cancelOrdersKey": "Снять лимитные заявки",
   "cancelOrderbookOrders": "Снять лимитные заявки",
+  "cancelStopOrdersCurrent": "Снять стоп заявки",
   "closePositionsKey": "Закрыть позиции по рынку",
   "centerOrderbookKey": "Отцентровать стакан по спреду",
   "mouseHoverOrderbookHeader": "Для стакана, на который наведена мышь",

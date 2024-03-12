@@ -18,7 +18,10 @@ import {
   ScatterControllerDatasetOptions
 } from 'chart.js';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
-import { ChartData } from '../../models/orderbook.model';
+import {
+  ChartData,
+  ChartPoint
+} from '../../models/orderbook.model';
 import { BaseChartDirective } from 'ng2-charts';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { ThemeService } from '../../../../shared/services/theme.service';
@@ -150,13 +153,38 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.initialData[0].data = changes.chartData.currentValue.bids as any[];
-    this.initialData[1].data = changes.chartData.currentValue.asks as any[];
+    const bids = changes.chartData.currentValue.bids as ChartPoint[];
+    const asks = changes.chartData.currentValue.asks as ChartPoint[];
+
+    this.initialData[0].data = bids;
+    this.initialData[1].data = asks;
     this.chartData$.next(this.initialData);
+
     const x = this.chartOptions.scales?.x;
     if (x) {
-      x.max = changes.chartData.currentValue.maxPrice as number;
-      x.min = changes.chartData.currentValue.minPrice as number;
+      const xBids = bids.map(x => x.x);
+      const xAsks = asks.map(x => x.x);
+
+      let minPrice = xBids.length > 0 ? Math.min(...xBids) : null;
+      let maxPrice = xAsks.length > 0 ? Math.max(...xAsks) : null;
+
+      if (minPrice == null && maxPrice != null) {
+        const minAsk = Math.min(...xAsks);
+        minPrice = minAsk - (maxPrice - minAsk);
+      }
+
+      if (maxPrice == null && minPrice != null) {
+        const maxBid = Math.max(...xBids);
+        maxPrice = maxBid + (maxBid - minPrice);
+      }
+
+      if(maxPrice != null) {
+        x.max = maxPrice;
+      }
+
+      if(minPrice != null) {
+        x.min = minPrice;
+      }
     }
     this.chart?.render();
   }

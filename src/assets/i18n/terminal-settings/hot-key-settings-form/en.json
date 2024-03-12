@@ -4,6 +4,7 @@
   "allOrderbooksHeader": "Common for all open orderbooks",
   "cancelOrdersKey": "Remove limit orders",
   "cancelOrderbookOrders": "Remove limit orders",
+  "cancelStopOrdersCurrent": "Remove stop orders",
   "closePositionsKey": "Close all positions by market",
   "centerOrderbookKey": "Align orderbook",
   "mouseHoverOrderbookHeader": "For the orderbook on which the mouse is hovering",

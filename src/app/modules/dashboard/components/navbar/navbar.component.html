@@ -116,6 +116,11 @@
       <div class="notifications">
         <ats-notification-button></ats-notification-button>
       </div>
+      <div>
+        <button nz-button [nzType]="'text'" [style]="'display: none'" (click)="aiChatVisible = true">
+          <i nz-icon nzType="comment"></i>
+        </button>
+      </div>
       <div
         joyrideStep="step5"
         [title]="t('joyride.step5.title')"
@@ -193,4 +198,9 @@
     (selected)="addItem($event)"
     (resetDashboard)="resetDashboard()"
   ></ats-widgets-gallery>
+
+  <ats-side-chat-widget
+    [(atsVisible)]="aiChatVisible"
+  >
+  </ats-side-chat-widget>
 </ng-container>

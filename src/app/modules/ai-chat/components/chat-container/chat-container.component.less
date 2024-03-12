@@ -1,0 +1,10 @@
+@import "theme-mixin";
+@import 'scrollable-mixin';
+
+.themeMixin({
+  :host {
+    .scrollable {
+      .scrollable(@scrollbar-color);
+    }
+  }
+});

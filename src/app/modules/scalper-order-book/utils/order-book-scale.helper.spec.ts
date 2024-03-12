@@ -11,6 +11,7 @@ describe('OrderBookScaleHelper', () => {
         spreadLength: number;
         scaleFactor: number;
         expectedValue: number;
+        majorLinesStep: number;
       }[] = [
         // scale factor 1
         {
@@ -18,28 +19,32 @@ describe('OrderBookScaleHelper', () => {
           priceStep: 0.1,
           spreadLength: 1,
           scaleFactor: 1,
-          expectedValue: 1.9
+          expectedValue: 1.9,
+          majorLinesStep: 1
         },
         {
           bestAsk: 2.0,
           priceStep: 0.1,
           spreadLength: 2,
           scaleFactor: 1,
-          expectedValue: 1.9
+          expectedValue: 1.9,
+          majorLinesStep: 1
         },
         {
           bestAsk: 2.0,
           priceStep: 0.1,
           spreadLength: 3,
           scaleFactor: 1,
-          expectedValue: 1.8
+          expectedValue: 1.8,
+          majorLinesStep: 1
         },
         {
           bestAsk: 2.0,
           priceStep: 0.1,
           spreadLength: 0,
           scaleFactor: 1,
-          expectedValue: 2.0
+          expectedValue: 2.0,
+          majorLinesStep: 1
         },
         // scale factor 2
         {
@@ -47,21 +52,24 @@ describe('OrderBookScaleHelper', () => {
           priceStep: 0.1,
           spreadLength: 1,
           scaleFactor: 2,
-          expectedValue: 2.0
+          expectedValue: 2.0,
+          majorLinesStep: 1
         },
         {
           bestAsk: 1.9,
           priceStep: 0.1,
           spreadLength: 2,
           scaleFactor: 2,
-          expectedValue: 1.8
+          expectedValue: 1.8,
+          majorLinesStep: 1
         },
         {
           bestAsk: 2.1,
           priceStep: 0.1,
           spreadLength: 0,
           scaleFactor: 2,
-          expectedValue: 2.0
+          expectedValue: 2.0,
+          majorLinesStep: 1
         },
         // scale factor 3
         {
@@ -69,35 +77,47 @@ describe('OrderBookScaleHelper', () => {
           priceStep: 0.1,
           spreadLength: 1,
           scaleFactor: 3,
-          expectedValue: 2.1
+          expectedValue: 2.1,
+          majorLinesStep: 1
         },
         {
           bestAsk: 2.0,
           priceStep: 0.1,
           spreadLength: 2,
           scaleFactor: 3,
-          expectedValue: 1.8
+          expectedValue: 1.8,
+          majorLinesStep: 1
         },
         {
           bestAsk: 2.2,
           priceStep: 0.1,
           spreadLength: 0,
           scaleFactor: 3,
-          expectedValue: 2.1
+          expectedValue: 2.1,
+          majorLinesStep: 1
         },
         {
           bestAsk: 1.3378,
           priceStep: 0.0001,
           spreadLength: 0,
           scaleFactor: 3,
-          expectedValue: 1.3378
+          expectedValue: 1.3377,
+          majorLinesStep: 1
+        },
+        {
+          bestAsk: 1.3378,
+          priceStep: 0.0001,
+          spreadLength: 5,
+          scaleFactor: 3,
+          expectedValue: 1.3365,
+          majorLinesStep: 5
         }
       ];
 
       testCases.forEach(testCase => {
-        const bestBid = testCase.bestAsk - testCase.priceStep * (testCase.spreadLength + 1);
+        const bestBid = MathHelper.roundPrice(testCase.bestAsk - testCase.priceStep * (testCase.spreadLength + 1), testCase.priceStep);
 
-        const value = OrderBookScaleHelper.getStartPrice(testCase.bestAsk, bestBid, testCase.priceStep, testCase.scaleFactor);
+        const value = OrderBookScaleHelper.getStartPrice(testCase.bestAsk, bestBid, testCase.priceStep, testCase.scaleFactor, testCase.majorLinesStep);
 
         expect(value.step)
           .withContext(JSON.stringify(testCase))

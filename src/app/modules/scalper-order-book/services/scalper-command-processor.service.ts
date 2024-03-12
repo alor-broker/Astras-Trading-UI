@@ -121,6 +121,11 @@ export class ScalperCommandProcessorService {
       return;
     }
 
+    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.cancelStopOrdersCurrent) {
+      this.cancelStopOrders(dataContext);
+      return;
+    }
+
     if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.closePositionsByMarketCurrent) {
       this.closePositionsByMarket(dataContext);
       return;
@@ -225,6 +230,18 @@ export class ScalperCommandProcessorService {
 
         if (limitOrders.length > 0) {
           this.scalperOrdersService.cancelOrders(limitOrders);
+        }
+      });
+  }
+
+  private cancelStopOrders(dataContext: ScalperOrderBookDataContext): void {
+    this.callWithCurrentOrders(
+      dataContext,
+      orders => {
+        const stopOrders = orders.filter(x => x.type === 'stop' || x.type === 'stoplimit');
+
+        if (stopOrders.length > 0) {
+          this.scalperOrdersService.cancelOrders(stopOrders);
         }
       });
   }

@@ -1,25 +1,37 @@
 <div class="container">
   <ng-container *ngIf="settings$ | async as settings">
     <ng-container *ngIf="(displayItems$ | async) as displayItems">
-      <ng-container *ngFor="let item of displayItems;index as i; trackBy: trackBy">
+      <ng-container *ngFor="let item of displayItems; trackBy: trackBy">
         <div
           [ngClass]="{
           'volume-cell': true,
-          'border-bottom': (i+1)%5 === 0,
           'max-volume': item?.isMaxVolume
           }"
           [ngStyle]="{
           'height': xAxisStep + 'px',
           'line-height': xAxisStep + 'px'
           }"
+
+          class="position-relative"
         >
-          <ats-short-number
-            *ngIf="settings.widgetSettings.tradesClusterPanelSettings?.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
-            [value]="item?.volume"
-            [allowRounding]="true"></ats-short-number>
+          <span
+            *ngIf="item.isMajorLinePrice || item.isMinorLinePrice"
+            class="z-1"
+            [ngClass]="{
+            'grid-line': true,
+            'major': item.isMajorLinePrice,
+            'minor': item.isMinorLinePrice
+            }"
+          >&nbsp;</span>
+          <span class="position-relative z-2">
+                      <ats-short-number
+                        *ngIf="settings.widgetSettings.tradesClusterPanelSettings?.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
+                        [value]="item?.volume"
+                        [allowRounding]="true"></ats-short-number>
           <ng-template #defaultVolumeFormat>
             <span>{{item?.volume}}</span>
           </ng-template>
+          </span>
         </div>
       </ng-container>
     </ng-container>

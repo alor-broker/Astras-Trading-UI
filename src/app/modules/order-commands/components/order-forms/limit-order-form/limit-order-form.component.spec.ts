@@ -10,7 +10,12 @@ import {
 } from "../../../../../shared/utils/testing";
 import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
 import {CommonParametersService} from "../../../services/common-parameters.service";
-import {BehaviorSubject, Subject, take} from "rxjs";
+import {
+  BehaviorSubject,
+  of,
+  Subject,
+  take
+} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
 import {OrderService} from "../../../../../shared/services/orders/order.service";
 import {OrderCommandsModule} from "../../../order-commands.module";
@@ -24,12 +29,17 @@ import {InstrumentsService} from "../../../../instruments/services/instruments.s
 import {NewLimitOrder} from "../../../../../shared/models/orders/new-order.model";
 import {toInstrumentKey} from "../../../../../shared/utils/instruments";
 import {EvaluationService} from "../../../../../shared/services/evaluation.service";
+import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
+import { TimezoneDisplayOption } from "../../../../../shared/models/enums/timezone-display-option";
+import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
 
 describe('LimitOrderFormComponent', () => {
   let component: LimitOrderFormComponent;
   let fixture: ComponentFixture<LimitOrderFormComponent>;
 
   let orderServiceSpy: any;
+  const timezoneConverter = new TimezoneConverter(TimezoneDisplayOption.MskTime);
+  let timezoneConverterServiceSpy: any;
 
   const getFormInputs = (): { [fieldName: string]: HTMLInputElement } => {
     return {
@@ -68,6 +78,9 @@ describe('LimitOrderFormComponent', () => {
     orderServiceSpy = jasmine.createSpyObj('OrderService', ['submitLimitOrder', 'submitOrdersGroup']);
 
     orderServiceSpy.submitLimitOrder.and.returnValue(new Subject());
+
+    timezoneConverterServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
+    timezoneConverterServiceSpy.getConverter.and.returnValue(of(timezoneConverter));
   });
 
   beforeEach(async () => {
@@ -126,6 +139,10 @@ describe('LimitOrderFormComponent', () => {
           useValue: {
             evaluateOrder: jasmine.createSpy('evaluateOrder').and.returnValue(new Subject())
           }
+        },
+        {
+          provide: TimezoneConverterService,
+          useValue: timezoneConverterServiceSpy
         },
         ...commonTestProviders
       ]

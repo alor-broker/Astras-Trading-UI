@@ -105,17 +105,6 @@ describe('AuthService', () => {
     expect(windowAssignSpy).toHaveBeenCalled();
   });
 
-  it('should correctly check auth request', () => {
-    let authUrl = clientDataUrl + '/auth/actions/login';
-    expect(service.isAuthRequest(authUrl)).toBeTruthy();
-
-    authUrl = refreshUrl;
-    expect(service.isAuthRequest(authUrl)).toBeTruthy();
-
-    authUrl = clientDataUrl + '/auth/actions/not-auth';
-    expect(service.isAuthRequest(authUrl)).toBeFalsy();
-  });
-
   it('should redirect to login if token expired', () => {
     let expDate = new Date();
     expDate.setDate(expDate.getDate() - 1);

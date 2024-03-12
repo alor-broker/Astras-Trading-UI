@@ -30,61 +30,55 @@ export class TerminalSettingsHelper {
       cancelOrdersKey: {
         key: '~',
         code: 'Backquote',
-        shiftKey: true
       },
       closePositionsKey: {
-        key: 'Escape',
-        code: 'Escape'
+        key: 'Delete',
+        code: 'Delete'
       },
       centerOrderbookKey: {
         key: ' ',
         code: 'Space'
       },
       cancelOrderbookOrders: {
-        key: 'E',
+        key: 'e',
         code: 'KeyE',
-        shiftKey: true
+      },
+      cancelStopOrdersCurrent: {
+        key: 'f',
+        code: 'KeyF',
       },
       closeOrderbookPositions: {
-        key: 'R',
+        key: 'r',
         code: 'KeyR',
-        shiftKey: true
       },
       reverseOrderbookPositions: {
-        key: 'T',
+        key: 't',
         code: 'KeyT',
-        shiftKey: true
       },
       buyMarket: {
-        key: 'S',
+        key: 's',
         code: 'KeyS',
-        shiftKey: true
       },
       sellMarket: {
-        key: 'A',
+        key: 'a',
         code: 'KeyA',
-        shiftKey: true
       },
       workingVolumes: ['1', '2', '3', '4'],
       sellBestOrder: {
-        key: 'W',
+        key: 'w',
         code: 'KeyW',
-        shiftKey: true
       },
       buyBestOrder: {
-        key: 'Q',
+        key: 'q',
         code: 'KeyQ',
-        shiftKey: true
       },
       sellBestBid: {
-        key: 'Z',
+        key: 'z',
         code: 'KeyZ',
-        shiftKey: true
       },
       buyBestAsk: {
-        key: 'X',
+        key: 'x',
         code: 'KeyX',
-        shiftKey: true
       },
       increaseScale: {
         key: '+',
@@ -93,7 +87,8 @@ export class TerminalSettingsHelper {
       decreaseScale: {
         key: '-',
         code: 'NumpadSubtract'
-      }
+      },
+      extraHotKeys: true
     };
   }
 

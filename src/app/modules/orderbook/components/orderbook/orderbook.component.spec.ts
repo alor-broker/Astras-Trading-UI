@@ -29,9 +29,7 @@ describe('OrderBookComponent', () => {
     maxVolume: 10,
     chartData: {
       asks: [],
-      bids: [],
-      minPrice: 0,
-      maxPrice: 0
+      bids: []
     },
     bidVolumes: 0,
     askVolumes: 0

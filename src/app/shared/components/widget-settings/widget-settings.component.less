@@ -1,0 +1,13 @@
+@import "theme-mixin";
+.themeMixin({
+  :host {
+    ::ng-deep {
+      .ant-collapse-header {
+        background-color: fade(@background-color-light, 40%);
+        border-radius: @border-radius-base;
+        font-size: (@form-item-label-font-size + 1);
+        padding-left: 2px !important;
+      }
+    }
+  }
+});

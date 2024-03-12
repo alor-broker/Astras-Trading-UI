@@ -54,6 +54,8 @@ export interface WidgetMeta {
       initialWidth?: number;
     };
 
+    hasZeroPaddings?: boolean;
+
     /**
      * Used to sort widgets in gallery
      */

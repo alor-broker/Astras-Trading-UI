@@ -327,7 +327,8 @@ export class OrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilte
         },
         portfolioKey: {
           portfolio: s.portfolio,
-          exchange: s.exchange
+          exchange: s.exchange,
+          marketType: s.marketType
         },
         orderId: order.id,
         orderType: OrderType.Limit,
