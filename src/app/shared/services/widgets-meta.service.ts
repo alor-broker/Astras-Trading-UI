@@ -22,7 +22,7 @@ export class WidgetsMetaService {
 
   private readMeta(): void {
     this.meta$ = this.httpClient.get<WidgetMeta[]>(
-      '../../../assets/widgets-meta.json',
+      '../../../assets/widgets-meta-config.json',
       {
         headers: {
           "Cache-Control": "no-cache",

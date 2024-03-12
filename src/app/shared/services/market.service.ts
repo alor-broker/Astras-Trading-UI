@@ -29,7 +29,7 @@ export class MarketService {
   getMarketSettings(): Observable<MarketSettings> {
     if (!this.settings$) {
       this.settings$ = this.http.get<MarketSettings>(
-        '../../../assets/marketSettings.json',
+        '../../../assets/market-settings-config.json',
         {
           headers: {
             "Cache-Control": "no-cache",
