@@ -10,6 +10,7 @@ import {TimezoneConverter} from "../../../shared/utils/timezone-converter";
 import {TimezoneDisplayOption} from "../../../shared/models/enums/timezone-display-option";
 import {LocalStorageService} from "../../../shared/services/local-storage.service";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { TranslatorService } from "../../../shared/services/translator.service";
 
 describe('FirebaseNotificationsService', () => {
   let service: PushNotificationsService;
@@ -48,6 +49,12 @@ describe('FirebaseNotificationsService', () => {
           provide: EnvironmentService,
           useValue: {
             apiUrl: ''
+          }
+        },
+        {
+          provide: TranslatorService,
+          useValue: {
+            getActiveLang: jasmine.createSpy('getActiveLang').and.returnValue('ru')
           }
         }
       ]

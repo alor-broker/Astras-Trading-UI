@@ -79,7 +79,6 @@ export interface ScalperOrderBookWidgetSettings extends WidgetSettings, Instrume
   layout?: OrderBookLayoutSettings;
   showRuler?: boolean;
   rulerSettings?: RulerSettings;
-  useBrackets?: boolean;
   showInstrumentPriceDayChange?: boolean;
   showShortLongIndicators?: boolean;
   shortLongIndicatorsUpdateIntervalSec?: number;

@@ -72,6 +72,7 @@ import { NzColorPickerModule } from "ng-zorro-antd/color-picker";
 import { PriceDiffComponent } from './components/price-diff/price-diff.component';
 import { TableRowHeightDirective } from './directives/table-row-height.directive';
 import { DragDropModule } from "@angular/cdk/drag-drop";
+import { GraphQlErrorHandlerService } from "./services/handle-error/graph-ql-error-handler.service";
 
 @NgModule({
   declarations: [
@@ -210,6 +211,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
   providers: [
     {provide: ERROR_HANDLER, useClass: HttpErrorHandler, multi: true},
     {provide: ERROR_HANDLER, useClass: LogErrorHandler, multi: true},
+    {provide: ERROR_HANDLER, useClass: GraphQlErrorHandlerService, multi: true},
     {provide: NOTIFICATIONS_PROVIDER, useClass: FeedbackNotificationsProvider, multi: true},
     {provide: NOTIFICATIONS_PROVIDER, useClass: PushNotificationsProvider, multi: true},
     {provide: Window, useValue: window},

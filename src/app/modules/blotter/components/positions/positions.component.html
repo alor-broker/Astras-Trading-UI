@@ -152,7 +152,7 @@
                 *ngIf='column.id === "dailyUnrealisedPlRatio"'
                 [class]='pos.dailyUnrealisedPlRatio < 0 ? "sell" : "buy"'
               >
-                  {{round(pos.dailyUnrealisedPlRatio) | number}}
+                {{round(pos.dailyUnrealisedPlRatio) | number}}
               </td>
             </ng-container>
           </tr>

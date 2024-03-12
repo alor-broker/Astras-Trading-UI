@@ -11,20 +11,20 @@ import {
 } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
-import { RemoteLogger } from '../services/logging/remote-logger';
+import { HttpContextTokens } from "../constants/http.constants";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   constructor(
-    private readonly authService: AuthService,
-    private readonly remoteLogger: RemoteLogger
+    private readonly authService: AuthService
   ) {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (this.authService.isAuthRequest(req.url) || this.remoteLogger.isLoggerRequest(req.url)) {
+    if (req.context.get(HttpContextTokens.SkipAuthorization)) {
       return next.handle(req);
     }
+
     return this.authService.accessToken$
       .pipe(
         take(1),

@@ -1,0 +1,19 @@
+<div
+  class="d-flex flex-column flex-gap-5 align-items-start"
+  [ngClass]="{
+  'right': message.isMe,
+  'left': !message.isMe
+  }"
+>
+  <div class="avatar" *ngIf="!message.isMe">
+    <nz-avatar nzSize="large" nzIcon="user" [nzSrc]="message.avatarUri"></nz-avatar>
+  </div>
+
+  <div class="content">
+    <ng-container [ngSwitch]="message.messageType">
+      <ats-text-message *ngSwitchCase="messageTypes.Text"
+                        [content]="message.content"
+      ></ats-text-message>
+    </ng-container>
+  </div>
+</div>

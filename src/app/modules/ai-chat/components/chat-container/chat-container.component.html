@@ -1,0 +1,15 @@
+<div class="d-flex flex-column h-100">
+  <div class="flex-fill d-flex scrollable" #messagesContainer>
+    <div class="messages w-100 d-flex flex-column flex-gap-10 pr-5">
+      <ng-content select="ats-chat-message-container"></ng-content>
+    </div>
+  </div>
+
+  <div class="status">
+    <ng-content select="ats-chat-status"></ng-content>
+  </div>
+
+  <div class="message-input">
+    <ng-content select="ats-message-input"></ng-content>
+  </div>
+</div>

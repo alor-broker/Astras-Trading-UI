@@ -1,0 +1,22 @@
+<nz-input-group [nzAddOnAfter]="suffixIconButton" nzSearch nzSize="large">
+  <input
+    #inputElement
+    (keydown.enter)="sendMessage()"
+    (ngModelChange)="onTextChange($event)"
+    [ngModel]="text"
+    [placeholder]="messagePlaceholder"
+    nz-input
+    type="text"
+  />
+</nz-input-group>
+<ng-template #suffixIconButton>
+  <button
+    (click)="sendMessage()"
+    nz-button
+    nzSearch
+    nzSize="large"
+    nzType="primary"
+  >
+    <span nz-icon nzType="send"></span>
+  </button>
+</ng-template>
