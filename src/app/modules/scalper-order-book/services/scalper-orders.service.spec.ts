@@ -355,7 +355,6 @@ describe('ScalperOrdersService', () => {
     testSettings = {
       ...testSettings,
       ...testInstrument,
-      useBrackets: true,
       bracketsSettings: {
         topOrderPriceRatio: 1,
         bottomOrderPriceRatio: 2
@@ -496,7 +495,6 @@ describe('ScalperOrdersService', () => {
     testSettings = {
       ...testSettings,
       ...testInstrument,
-      useBrackets: true,
       bracketsSettings: {
         topOrderPriceRatio: 1,
         bottomOrderPriceRatio: 2
@@ -641,7 +639,6 @@ describe('ScalperOrdersService', () => {
     testSettings = {
       ...testSettings,
       ...testInstrument,
-      useBrackets: true,
       bracketsSettings: {
         bottomOrderPriceRatio: 2
       }
@@ -851,7 +848,6 @@ describe('ScalperOrdersService', () => {
     testSettings = {
       ...testSettings,
       ...testInstrumentKey,
-      useBrackets: true,
       bracketsSettings: {
         topOrderPriceRatio: 1,
         bottomOrderPriceRatio: 2,
@@ -930,7 +926,6 @@ describe('ScalperOrdersService', () => {
     testSettings = {
       ...testSettings,
       ...testInstrumentKey,
-      useBrackets: true,
       bracketsSettings: {
         topOrderPriceRatio: 1,
         orderPriceUnits: PriceUnits.Percents

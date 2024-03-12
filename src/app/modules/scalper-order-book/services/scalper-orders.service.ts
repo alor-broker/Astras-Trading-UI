@@ -458,17 +458,17 @@ export class ScalperOrdersService {
   }
 
   private checkBracketNeeded(settings: ScalperOrderBookWidgetSettings, side: Side, quantity: number, position: Position | null): boolean {
-    if (!(settings.useBrackets ?? false) || settings.bracketsSettings?.topOrderPriceRatio == null && settings.bracketsSettings?.bottomOrderPriceRatio == null) {
+    if (settings.bracketsSettings?.topOrderPriceRatio == null && settings.bracketsSettings?.bottomOrderPriceRatio == null) {
       return false;
     }
 
     const isClosingPosition = position
       ? side === Side.Sell
-        ? Math.abs(position.qtyTFutureBatch - quantity) < Math.abs(position.qtyTFutureBatch)
-        : Math.abs(position.qtyTFutureBatch + quantity) < Math.abs(position.qtyTFutureBatch)
+        ? Math.abs(position!.qtyTFutureBatch - quantity) < Math.abs(position!.qtyTFutureBatch)
+        : Math.abs(position!.qtyTFutureBatch + quantity) < Math.abs(position!.qtyTFutureBatch)
       : false;
 
-    return (settings.bracketsSettings.useBracketsWhenClosingPosition ?? false) || !isClosingPosition;
+    return (settings.bracketsSettings!.useBracketsWhenClosingPosition ?? false) || !isClosingPosition;
   }
 
   private getBracketOrderPrice(
@@ -478,7 +478,7 @@ export class ScalperOrdersService {
     orderType: BracketOrderType,
     side: Side
   ): number | null {
-    if (!(settings.useBrackets ?? false)) {
+    if (settings.bracketsSettings?.topOrderPriceRatio == null && settings.bracketsSettings?.bottomOrderPriceRatio == null) {
       return null;
     }
 
