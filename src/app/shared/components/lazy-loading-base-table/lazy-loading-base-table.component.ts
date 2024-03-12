@@ -1,5 +1,5 @@
 import { Component, DestroyRef, OnDestroy } from '@angular/core';
-import { BaseTableComponent } from "../base-table/base-table.component";
+import { BaseTableComponent, Sort } from "../base-table/base-table.component";
 import { WidgetSettingsService } from "../../services/widget-settings.service";
 import { BehaviorSubject } from "rxjs";
 
@@ -10,8 +10,9 @@ import { BehaviorSubject } from "rxjs";
 export abstract class LazyLoadingBaseTableComponent<
   T extends { [propName: string]: any },
   F extends { [propName: string]: any } = object,
-  P = { limit: number, offset: number }
-> extends BaseTableComponent<T, F>
+  P = { limit: number, offset: number },
+  S = Sort,
+> extends BaseTableComponent<T, F, S>
   implements OnDestroy
 {
   protected readonly loadingChunkSize = 50;

@@ -10,7 +10,7 @@ import { TableSettingHelper } from "../../utils/table-setting.helper";
 import { map } from "rxjs/operators";
 import { WidgetSettings } from "../../models/widget-settings.model";
 
-interface Sort {
+export interface Sort {
   descending: boolean;
   orderBy: string;
 }
@@ -21,7 +21,8 @@ interface Sort {
 })
 export abstract class BaseTableComponent<
     T extends { [propName: string]: any },
-    F extends { [propName: string]: any } = object
+    F extends { [propName: string]: any } = object,
+    S = Sort
   >
 implements OnInit, OnDestroy {
   protected readonly defaultColumnWidth = 100;
@@ -30,7 +31,7 @@ implements OnInit, OnDestroy {
   protected containerSize$ = new BehaviorSubject<ContentSize | null>(null);
   protected headerSize$ = new BehaviorSubject<ContentSize | null>(null);
   protected readonly filters$ = new BehaviorSubject<F>({} as F);
-  protected readonly sort$ = new BehaviorSubject<Sort | null>(null);
+  protected readonly sort$ = new BehaviorSubject<S | null>(null);
   protected allColumns!: BaseColumnSettings<T>[];
   tableConfig$!: Observable<TableConfig<T>>;
   tableData$!: Observable<T[]>;
