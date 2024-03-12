@@ -12,15 +12,8 @@ import {
   catchError,
   map
 } from "rxjs/operators";
-import { TranslatorService } from "./translator.service";
-import { InstantNotificationsService } from "./instant-notifications.service";
-import { CommonInstantNotificationType } from "../models/terminal-settings/terminal-settings.model";
-
-interface GraphQLError {
-  extensions?: {
-    code?: string;
-  };
-}
+import { GraphQLError } from "graphql";
+import { HttpErrorResponse } from "@angular/common/http";
 
 export interface GraphQlVariables {
   [propName: string]: any;
@@ -38,9 +31,7 @@ export class GraphQlService {
 
   constructor(
     private readonly apollo: Apollo,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly translatorService: TranslatorService,
-    private readonly notification: InstantNotificationsService
+    private readonly errorHandlerService: ErrorHandlerService
   ) {
   }
 
@@ -61,22 +52,13 @@ export class GraphQlService {
       .pipe(
         catchError(err => {
           if (err.networkError != null) {
-            this.errorHandlerService.handleError(err.networkError);
-          } else if (err.graphQLErrors.find((err: GraphQLError) => err.extensions?.code === 'AUTH_NOT_AUTHORIZED')) {
-            return this.translatorService.getTranslator('bond-screener')
-              .pipe(
-                map(t => {
-                  this.notification.showNotification(
-                    CommonInstantNotificationType.Common,
-                    'error',
-                    t(['authErrorTitle']),
-                    t(['authErrorMessage'])
-                  );
-                  return null;
-                })
-              );
+            this.errorHandlerService.handleError(new HttpErrorResponse(err.networkError));
+          } else if (err.graphQLErrors?.length > 0) {
+            err.graphQLErrors.forEach((e: GraphQLError) => {
+              this.errorHandlerService.handleError(new GraphQLError(e.message, e));
+            });
           } else {
-            this.errorHandlerService.handleError(err);
+            this.errorHandlerService.handleError(new GraphQLError(err.message, err));
           }
 
           return of(null);
