@@ -1,6 +1,4 @@
 {
   "screenerTab": "Скринер",
-  "yieldCurveChartsTab": "Графики",
-  "authErrorTitle": "Ошибка авторизации",
-  "authErrorMessage": "Попробуйте выйти из аккаунта и зайти снова"
+  "yieldCurveChartsTab": "Графики"
 }
