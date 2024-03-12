@@ -5,7 +5,7 @@ import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { StopOrdersComponent } from './stop-orders.component';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
-import {of, Subject} from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -14,9 +14,8 @@ import {
   mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
-import {OrdersGroupService} from "../../../../shared/services/orders/orders-group.service";
-import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
-import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
+import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
+import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
 
 describe('StopOrdersComponent', () => {
   let component: StopOrdersComponent;
@@ -60,12 +59,6 @@ describe('StopOrdersComponent', () => {
           provide: OrdersDialogService,
           useValue: {
             openEditOrderDialog: jasmine.createSpy('openEditOrderDialog').and.callThrough()
-          }
-        },
-        {
-          provide: ACTIONS_CONTEXT,
-          useValue: {
-            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
           }
         },
         ...commonTestProviders

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, EventEmitter, Inject, OnInit, Output } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, OnInit, Output } from '@angular/core';
 import { combineLatest, distinctUntilChanged, Observable, Subject, switchMap, take, } from 'rxjs';
 import { catchError, debounceTime, map, mergeMap, startWith, tap } from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
@@ -25,7 +25,6 @@ import {
   getConditionTypeByString
 } from "../../../../shared/utils/order-conditions-helper";
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
-import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
@@ -225,7 +224,6 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
     private readonly ordersGroupService: OrdersGroupService,
-    @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
     super(settingsService, translatorService, destroyRef);
@@ -314,14 +312,15 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
   }
 
   rowClick(row: DisplayOrder): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(s => {
-      this.actionsContext.instrumentSelected({
-        symbol: row.symbol,
-        exchange: row.exchange,
-      }, s.badgeColor ?? defaultBadgeColor);
-    });
+    this.settings$
+      .pipe(
+        take(1)
+      )
+      .subscribe(s => this.service.selectNewInstrument(
+        row.symbol,
+        row.exchange,
+        s.badgeColor ?? defaultBadgeColor
+      ));
   }
 
   cancelOrder(orderId: string): void {

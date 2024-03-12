@@ -6,7 +6,6 @@ import {Subject} from "rxjs";
 import {BlotterService} from "../../services/blotter.service";
 import {PushNotificationsService} from "../../../push-notifications/services/push-notifications.service";
 import {getTranslocoModule} from "../../../../shared/utils/testing";
-import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 
 describe('PushNotificationsComponent', () => {
   let component: PushNotificationsComponent;
@@ -40,13 +39,7 @@ describe('PushNotificationsComponent', () => {
             getCurrentSubscriptions: jasmine.createSpy('getCurrentSubscriptions').and.returnValue(new Subject()),
             getBrowserNotificationsStatus: jasmine.createSpy('getBrowserNotificationsStatus').and.returnValue(new Subject())
           }
-        },
-        {
-          provide: ACTIONS_CONTEXT,
-          useValue: {
-            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
-          }
-        },
+        }
       ]
     })
     .compileComponents();

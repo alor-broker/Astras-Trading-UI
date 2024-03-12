@@ -1,7 +1,6 @@
 import {
   Component,
-  DestroyRef,
-  Inject
+  DestroyRef
 } from '@angular/core';
 import {
   BehaviorSubject,
@@ -35,7 +34,6 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
-import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
@@ -106,7 +104,6 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
     protected readonly blotterService: BlotterService,
     private readonly pushNotificationsService: PushNotificationsService,
     protected readonly translatorService: TranslatorService,
-    @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
     super(widgetSettingsService, translatorService, destroyRef);
@@ -231,15 +228,15 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
     if (row.subscriptionType !== PushSubscriptionType.PriceSpark) {
       return;
     }
-
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(s => {
-      this.actionsContext.instrumentSelected({
-        symbol: row.instrument!,
-        exchange: row.exchange!,
-      }, s.badgeColor ?? defaultBadgeColor);
-    });
+    this.settings$
+      .pipe(
+        take(1)
+      )
+      .subscribe(s => this.blotterService.selectNewInstrument(
+        row.instrument!,
+        row.exchange!,
+        s.badgeColor ?? defaultBadgeColor
+      ));
   }
 
   cancelSubscription(id: string): void {

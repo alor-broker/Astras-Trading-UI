@@ -11,7 +11,6 @@ import {
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import { OrderService } from "../../../../shared/services/orders/order.service";
-import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
@@ -42,12 +41,6 @@ describe('PositionsComponent', () => {
           provide: OrderService,
           useValue: {
             submitMarketOrder: jasmine.createSpy('submitMarketOrder').and.callThrough()
-          }
-        },
-        {
-          provide: ACTIONS_CONTEXT,
-          useValue: {
-            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
           }
         },
         ...commonTestProviders

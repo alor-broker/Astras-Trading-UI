@@ -2,7 +2,7 @@ import {
   AfterViewInit,
   Component,
   DestroyRef,
-  EventEmitter, Inject,
+  EventEmitter,
   OnDestroy,
   Output,
   QueryList,
@@ -50,9 +50,9 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { CdkVirtualScrollViewport } from "@angular/cdk/scrolling";
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
-import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { BlotterService } from "../../services/blotter.service";
 
 @Component({
   selector: 'ats-trades-history',
@@ -143,10 +143,10 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,
+    private readonly service: BlotterService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
     private readonly tradesHistoryService: TradesHistoryService,
-    @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
     super(settingsService, translatorService, destroyRef);
@@ -338,13 +338,14 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
   }
 
   rowClick(row: DisplayTrade): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(s => {
-      this.actionsContext.instrumentSelected({
-        symbol: row.symbol,
-        exchange: row.exchange,
-      }, s.badgeColor ?? defaultBadgeColor);
-    });
+    this.settings$
+      .pipe(
+        take(1)
+      )
+      .subscribe(s => this.service.selectNewInstrument(
+        row.symbol,
+        row.exchange,
+        s.badgeColor ?? defaultBadgeColor
+      ));
   }
 }

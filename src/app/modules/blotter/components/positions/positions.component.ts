@@ -1,4 +1,4 @@
-import { Component, DestroyRef, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { distinctUntilChanged, iif, Observable, of, switchMap, take } from 'rxjs';
 import { debounceTime, map, mergeMap, startWith } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
@@ -18,7 +18,6 @@ import { OrderService } from "../../../../shared/services/orders/order.service";
 import { CommonOrderCommands } from "../../../../shared/utils/common-order-commands";
 import { MarketType } from "../../../../shared/models/portfolio-key.model";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
-import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
@@ -177,7 +176,6 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
     protected readonly translatorService: TranslatorService,
     protected readonly ordersService: OrderService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    @Inject(ACTIONS_CONTEXT) protected readonly actionsContext: ActionsContext,
     protected readonly destroyRef: DestroyRef
   ) {
     super(settingsService, translatorService, destroyRef);
@@ -270,14 +268,15 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
   }
 
   rowClick(row: PositionDisplay): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(s => {
-      this.actionsContext.instrumentSelected({
-        symbol: row.symbol,
-        exchange: row.exchange,
-      }, s.badgeColor ?? defaultBadgeColor);
-    });
+    this.settings$
+      .pipe(
+        take(1)
+      )
+      .subscribe(s => this.service.selectNewInstrument(
+        row.symbol,
+        row.exchange,
+        s.badgeColor ?? defaultBadgeColor
+      ));
   }
 
   closePosition(position: PositionDisplay): void {
