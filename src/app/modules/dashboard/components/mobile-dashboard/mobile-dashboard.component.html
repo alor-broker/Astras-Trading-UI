@@ -17,6 +17,16 @@
           [isBlockWidget]="false"
         ></ats-parent-widget>
       </div>
+
+      <div
+        class="overflow-auto w-100"
+        *ngIf="!defaultWidgetNames.includes(vm.selectedWidget?.instance?.widgetType ?? '')"
+      >
+        <ats-parent-widget
+          [widgetInstance]="vm.selectedWidget!"
+          [isBlockWidget]="false"
+        ></ats-parent-widget>
+      </div>
     </div>
 
     <div class="widgets-menu d-flex justify-content-around p-10 flex-gap-10 overflow-auto">
