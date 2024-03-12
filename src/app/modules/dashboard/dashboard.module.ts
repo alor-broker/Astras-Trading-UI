@@ -47,6 +47,7 @@ import { InstrumentsCorrelationModule } from "../instruments-correlation/instrum
 import { LetDirective } from "@ngrx/component";
 import { WidgetsGalleryComponent } from './components/widgets-gallery/widgets-gallery.component';
 import { NzDividerModule } from "ng-zorro-antd/divider";
+import { BondScreenerModule } from "../bond-screener/bond-screener.module";
 import { AiChatModule } from "../ai-chat/ai-chat.module";
 
 @NgModule({
@@ -100,6 +101,7 @@ import { AiChatModule } from "../ai-chat/ai-chat.module";
     InstrumentsCorrelationModule,
     LetDirective,
     NzDividerModule,
+    BondScreenerModule,
     AiChatModule
     // components
   ],
