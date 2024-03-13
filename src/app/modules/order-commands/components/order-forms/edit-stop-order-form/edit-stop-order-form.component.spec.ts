@@ -28,6 +28,8 @@ import {NZ_I18N, ru_RU} from "ng-zorro-antd/i18n";
 import {TimezoneConverterService} from "../../../../../shared/services/timezone-converter.service";
 import {TimezoneConverter} from "../../../../../shared/utils/timezone-converter";
 import {TimezoneDisplayOption} from "../../../../../shared/models/enums/timezone-display-option";
+import { registerLocaleData } from "@angular/common";
+import localeRu from '@angular/common/locales/ru';
 
 describe('EditStopOrderFormComponent', () => {
   let component: EditStopOrderFormComponent;
@@ -92,6 +94,8 @@ describe('EditStopOrderFormComponent', () => {
   });
 
   beforeEach(async () => {
+    registerLocaleData(localeRu);
+
     await TestBed.configureTestingModule({
       imports: [
         OrderCommandsModule,
