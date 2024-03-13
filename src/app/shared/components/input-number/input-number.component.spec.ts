@@ -3,7 +3,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {InputNumberComponent} from './input-number.component';
 import {FormsModule} from "@angular/forms";
 import {MathHelper} from "../../utils/math-helper";
-import { mockComponent } from "../../utils/testing";
+import { getRandomInt, mockComponent } from "../../utils/testing";
 
 describe('InputNumberComponent', () => {
   let component: InputNumberComponent;
@@ -327,6 +327,7 @@ describe('InputNumberComponent', () => {
 
     expect(component.inputElement.nativeElement.value).toBe(initialValue.toString());
 
+    component.inputElement.nativeElement.focus();
     component.inputElement.nativeElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 1}));
     let expectedValue = MathHelper.round(initialValue - step, 3);
     expect(component.inputElement.nativeElement.value)
@@ -353,5 +354,16 @@ describe('InputNumberComponent', () => {
     expect(component.inputElement.nativeElement.value)
       .withContext('deltaY < 0 + Shift')
       .toBe(expectedValue.toString());
+  });
+
+  it('should not process mouse wheel when field is not focused', () => {
+    const initialValue = +(getRandomInt(1, 100).toString() + '.' + getRandomInt(100, 999).toString());
+
+    component.step = 0.001;
+    component.writeValue(initialValue);
+
+    component.inputElement.nativeElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 1}));
+
+    expect(component.inputElement.nativeElement.value).toBe(initialValue.toString());
   });
 });
