@@ -10,12 +10,12 @@ const generate = (lessFilePath, jsonFilePath) => {
 
 generate(
   path.resolve('./src/styles/themes/default-shared-colors.less'),
-  path.resolve('./src/assets/default-shared-colors.json')
+  path.resolve('./src/assets/default-shared-colors-config.json')
 );
 
 generate(
   path.resolve('./src/styles/themes/dark-shared-colors.less'),
-  path.resolve('./src/assets/dark-shared-colors.json')
+  path.resolve('./src/assets/dark-shared-colors-config.json')
 );
 
 

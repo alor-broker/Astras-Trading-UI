@@ -100,7 +100,7 @@ export class ThemeService {
 
   private getColorsMap(theme: ThemeType): Observable<{ [key: string]: string }> {
     return this.httpClient.get<{ [key: string]: string }>(
-      `../../../assets/${theme}-shared-colors.json`,
+      `../../../assets/${theme}-shared-colors-config.json`,
       {
         headers: {
           "Cache-Control": "no-cache",

@@ -36,7 +36,6 @@
               "src/favicon.svg",
               "src/assets",
               "src/firebase-messaging-sw.js",
-              "src/manifest.json",
               {
                 "glob": "**/*",
                 "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
@@ -46,7 +45,8 @@
                 "glob": "**/*",
                 "input": "src/assets/custom_icons/",
                 "output": "/assets/"
-              }
+              },
+              "src/manifest.webmanifest"
             ],
             "styles": [
               "src/styles.less",
@@ -75,7 +75,9 @@
             "allowedCommonJsDependencies": [
               "flat",
               "json-patch"
-            ]
+            ],
+            "serviceWorker": true,
+            "ngswConfigPath": "ngsw-config.json"
           },
           "configurations": {
             "production": {
@@ -168,12 +170,12 @@
               "src/favicon.svg",
               "src/assets",
               "src/firebase-messaging-sw.js",
-              "src/manifest.json",
               {
                 "glob": "**/*",
                 "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
                 "output": "/assets/"
-              }
+              },
+              "src/manifest.webmanifest"
             ],
             "styles": [
               "src/styles.less"
