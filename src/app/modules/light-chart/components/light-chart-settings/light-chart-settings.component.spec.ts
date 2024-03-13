@@ -5,7 +5,6 @@ import {
 
 import { LightChartSettingsComponent } from './light-chart-settings.component';
 import { of } from 'rxjs';
-import { AppModule } from 'src/app/app.module';
 import {
   getTranslocoModule,
   mockComponent
@@ -86,7 +85,6 @@ describe('LightChartSettingsComponent', () => {
         })
       ],
       imports: [
-        AppModule,
         getTranslocoModule(),
         ReactiveFormsModule,
         NzSelectModule,
