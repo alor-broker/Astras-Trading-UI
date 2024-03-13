@@ -1,5 +1,6 @@
 import {
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   Input,
   OnDestroy,
   OnInit,
@@ -18,14 +19,14 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
 import { AllTradesSettings } from '../../models/all-trades-settings.model';
 import {
   AllTradesFilters,
-  AllTradesItem
+  AllTradesItem,
+  AllTradesPagination,
+  AllTradesReqFilters
 } from '../../../../shared/models/all-trades.model';
 import { AllTradesService } from '../../../../shared/services/all-trades.service';
-import { TableConfig } from '../../../../shared/models/table-config.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
@@ -33,41 +34,36 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Side } from "../../../../shared/models/enums/side.model";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
+import { TableConfig } from "../../../../shared/models/table-config.model";
+import {
+  LazyLoadingBaseTableComponent
+} from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
 
 @Component({
   selector: 'ats-all-trades',
   templateUrl: './all-trades.component.html',
   styleUrls: ['./all-trades.component.less'],
 })
-export class AllTradesComponent implements OnInit, OnDestroy {
-  @Input({required: true})
-  guid!: string;
+export class AllTradesComponent extends LazyLoadingBaseTableComponent<
+    AllTradesItem,
+    AllTradesFilters,
+    AllTradesPagination
+  >
+implements OnInit, OnDestroy {
+  @Input({ required: true }) guid!: string;
 
-  contentSize$ = new BehaviorSubject<ContentSize | null>(null);
-  private readonly datePipe = new DatePipe('ru-RU');
-  private readonly maxItemsInRequestWithPeriod = 50;
   private settings$!: Observable<AllTradesSettings>;
+  private readonly datePipe = new DatePipe('ru-RU');
 
-  public tableContainerHeight = 0;
-  public tableContainerWidth = 0;
-
-  public readonly isLoading$ = new BehaviorSubject<boolean>(false);
   public readonly tradesList$ = new BehaviorSubject<AllTradesItem[]>([]);
-  private readonly filters$ = new BehaviorSubject<AllTradesFilters>({
-    take: this.maxItemsInRequestWithPeriod,
-    exchange: '',
-    symbol: '',
-    to: 0,
-    from: 0,
-    descending: true
-  });
 
-  private readonly allColumns: BaseColumnSettings<AllTradesItem>[] = [
+  protected readonly allColumns: BaseColumnSettings<AllTradesItem>[] = [
     {
       id: 'qty',
       displayName: 'Кол-во',
+      minWidth: 70,
       classFn: (data): string => data.side,
-      sortChangeFn: this.getSortFn('qty'),
+      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'qty' }),
       filterData: {
         filterName: 'qty',
         intervalStartName: 'qtyFrom',
@@ -78,7 +74,8 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     {
       id: 'price',
       displayName: 'Цена',
-      sortChangeFn: this.getSortFn('price'),
+      minWidth: 70,
+      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'price' }),
       filterData: {
         filterName: 'price',
         intervalStartName: 'priceFrom',
@@ -89,6 +86,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     {
       id: 'timestamp',
       displayName: 'Время',
+      minWidth: 70,
       transformFn: (data: AllTradesItem): string | null => {
         const timezone = this.timezoneConverter?.getTimezone();
         const timezoneName = !!timezone ? `UTC${timezone.utcOffset < 0 ? '+' : '-'}${timezone.formattedOffset}` : null;
@@ -102,8 +100,9 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     {
       id: 'side',
       displayName: 'Сторона',
+      minWidth: 90,
       classFn: (data): string => data.side,
-      sortChangeFn: this.getSortFn('side'),
+      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'side' }),
       filterData: {
         filterName: 'side',
         isDefaultFilter: true,
@@ -113,8 +112,13 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         ]
       }
     },
-    {id: 'oi', displayName: 'Откр. интерес'},
-    {id: 'existing', displayName: 'Новое событие', transformFn: (data: AllTradesItem): string => data.existing ? 'Да' : 'Нет'},
+    {id: 'oi', displayName: 'Откр. интерес', minWidth: 60 },
+    {
+      id: 'existing',
+      displayName: 'Новое событие',
+      minWidth: 60,
+      transformFn: (data: AllTradesItem): string => data.existing ? 'Да' : 'Нет'
+    },
   ];
   private readonly fixedColumns: BaseColumnSettings<AllTradesItem>[] = [
     {
@@ -123,109 +127,203 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       width: 5,
       classFn: (data): string => `side-indicator bg-${data.side} ${data.side}`,
       transformFn: (): string => '.',
+      isResizable: false,
       order: -1
     }
   ];
   private timezoneConverter?: TimezoneConverter;
   private readonly NEW_TRADES_PERIOD = 50;
 
-  tableConfig$!: Observable<TableConfig<AllTradesItem>>;
+  protected settingsTableName = 'allTradesTable';
+  protected settingsColumnsName = 'allTradesColumns';
+
+  private get defaultPagination(): AllTradesPagination {
+    return  {
+      from: toUnixTimestampSeconds(startOfDay(new Date())),
+      to: toUnixTimestampSeconds(new Date()),
+      take: this.loadingChunkSize
+    };
+  }
 
   constructor(
     private readonly allTradesService: AllTradesService,
-    private readonly settingsService: WidgetSettingsService,
+    protected readonly settingsService: WidgetSettingsService,
     private readonly translatorService: TranslatorService,
     private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly destroyRef: DestroyRef
+    protected readonly destroyRef: DestroyRef
   ) {
+    super(settingsService, destroyRef);
   }
 
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<AllTradesSettings>(this.guid)
       .pipe(
-        shareReplay(1)
+        shareReplay(1),
+        takeUntilDestroyed(this.destroyRef)
       );
 
-    this.initTrades();
-    this.initTableConfig();
+    super.ngOnInit();
 
     this.settings$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
       this.applyFilter({
         exchange: settings.exchange,
-        symbol: settings.symbol,
-        from: toUnixTimestampSeconds(startOfDay(new Date())),
-        to: toUnixTimestampSeconds(new Date()),
-        take: this.maxItemsInRequestWithPeriod
+        symbol: settings.symbol
       });
     });
+  }
+
+  protected initTableDataStream(): Observable<AllTradesItem[]> {
+    combineLatest([
+      this.filters$,
+      this.sort$
+        .pipe(tap(() => this.pagination = null)),
+      this.timezoneConverterService.getConverter(),
+      this.scrolled$
+    ])
+      .pipe(
+        tap(([,, timezoneConverter]) => {
+          this.timezoneConverter = timezoneConverter;
+          this.isLoading$.next(true);
+        }),
+        map(([filters, sort]) => ({
+          ...filters,
+          ...(sort == null ? { descending: true } : sort),
+          ...(this.pagination == null ? this.defaultPagination : this.pagination)
+        } as AllTradesReqFilters)),
+        mapWith(
+          (f: AllTradesReqFilters) => this.allTradesService.getTradesList(f),
+          (filters, res) => ({ filters, res })
+        ),
+        withLatestFrom(this.tradesList$),
+        map(([s, currentList]) => {
+          if (this.pagination != null && (this.pagination.offset ?? 0) > 0) {
+            this.tradesList$.next([...currentList, ...s.res]);
+          } else {
+            this.tradesList$.next(s.res);
+          }
+
+          return s.filters;
+        }),
+        tap(() => this.isLoading$.next(false)),
+        withLatestFrom(this.settings$),
+        mapWith(
+          ([, s]) => this.allTradesService.getNewTradesSubscription(s)
+            .pipe(
+              bufferTime(this.NEW_TRADES_PERIOD)
+            ),
+          ([filters], newTrades) => ({ filters, newTrades })
+        ),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(({filters, newTrades}) => {
+        this.filterNewTrades(filters, newTrades);
+      });
+
+    return this.tradesList$;
+  }
+
+  protected initTableConfigStream(): Observable<TableConfig<AllTradesItem>> {
+    return this.settings$.pipe(
+      mapWith(
+        () => this.translatorService.getTranslator('all-trades/all-trades'),
+        (settings, translate) => ({ settings, translate })
+      ),
+      map(({ settings, translate }) => {
+          const highlightRows = settings.highlightRowsBySide ?? false;
+          const tableSettings = TableSettingHelper.toTableDisplaySettings(settings.allTradesTable, settings.allTradesColumns);
+
+          return {
+            columns: [
+              ...this.fixedColumns,
+              ...this.allColumns
+                .map(column => ({column, settings: tableSettings?.columns.find(c => c.columnId === column.id)}))
+                .filter(col => col.settings != null)
+                .map((col, index) => ({
+                    ...col.column,
+                    displayName: translate(
+                      ['columns', col.column.id, 'displayName'],
+                      {fallback: col.column.displayName}
+                    ),
+                    tooltip: translate(
+                      ['columns', col.column.id, 'tooltip'],
+                      {fallback: col.column.displayName}
+                    ),
+                    filterData: col.column.filterData && {
+                      ...col.column.filterData,
+                      filters: col.column.filterData.filters?.map(f => ({
+                        text: translate(
+                          ['columns', col.column.id, 'filters', f.value],
+                          {fallback: f.text}
+                        ),
+                        value: f.value as string
+                      }))
+                    },
+                    width: col.settings!.columnWidth ?? this.defaultColumnWidth,
+                    order: col.settings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+                  })
+                )
+                .sort((a, b) => a.order - b.order)
+            ],
+            rowConfig: {
+              rowClass: (data): string | null => {
+                if (!highlightRows) {
+                  return null;
+                }
+
+                if (data.side === 'buy') {
+                  return 'buy-row';
+                }
+
+                return 'sell-row';
+              }
+            }
+          };
+        }
+      )
+    );
+  }
+
+  applyFilter(filters: AllTradesFilters): void {
+    let updatedFilters = JSON.parse(JSON.stringify(filters)) as AllTradesFilters;
+    if (filters.symbol == null || filters.exchange == null) {
+      this.filters$.pipe(take(1))
+        .subscribe(f => {
+          super.applyFilter({ ...updatedFilters, symbol: f.symbol as string, exchange: f.exchange as string });
+        });
+    } else {
+      super.applyFilter(filters);
+    }
   }
 
   public scrolled(): void {
     this.tradesList$.pipe(
       take(1),
-      withLatestFrom(this.isLoading$, this.filters$),
+      withLatestFrom(this.isLoading$),
       filter(([, isLoading,]) => !isLoading),
-      map(([tradesList, , currentFilters]) => ({ tradesList, currentFilters })),
-    ).subscribe(s => {
-      const loadedIndex = s.currentFilters.take! + s.currentFilters.offset!;
-      if (s.tradesList.length < loadedIndex) {
-        return;
-      }
+    )
+      .subscribe(([tradesList]) => {
+        const loadedIndex = this.pagination && (this.pagination.take + this.pagination.offset!);
+        if (loadedIndex != null && tradesList.length < loadedIndex) {
+          return;
+        }
 
-      this.updateFilters(curr => ({
-        ...curr,
-        offset: s.tradesList.length
-      }));
-    });
-  }
-
-  applyFilter(filters: any): void {
-    this.updateFilters(curr => {
-      const allFilters = {
-        ...curr,
-        ...filters
-      } as { [filterKey: string]: string | string[] | null };
-
-      const cleanedFilters: { [filterKey: string]: string | string[] | null } = Object.keys(allFilters)
-        .filter(key => allFilters[key] != null && allFilters[key]!.length > 0)
-        .reduce((acc, curr) => {
-          if (Array.isArray(allFilters[curr])) {
-            acc[curr] = (allFilters[curr] as string[]).join(';');
-          }
-          else {
-            acc[curr] = allFilters[curr];
-          }
-          return acc;
-        }, {} as { [filterName: string]: string | string[] | null });
-
-      return {
-        ...cleanedFilters,
-        descending: (cleanedFilters.orderBy as string) ? cleanedFilters.descending ?? false : true,
-        to: toUnixTimestampSeconds(new Date()),
-        offset: 0
-      } as AllTradesFilters;
-    });
+        this.pagination = {...(this.pagination ?? this.defaultPagination), offset: tradesList.length};
+        this.scrolled$.next(null);
+      });
   }
 
   public ngOnDestroy(): void {
+    super.ngOnDestroy();
     this.tradesList$.complete();
-    this.isLoading$.complete();
-    this.filters$.complete();
-    this.contentSize$.complete();
-  }
-
-  containerSizeChanged(entries: ResizeObserverEntry[]): void {
-    entries.forEach(x => {
-      this.contentSize$.next({
-        width: Math.floor(x.contentRect.width),
-        height: Math.floor(x.contentRect.height)
-      });
-    });
   }
 
   changeColumnOrder(event: CdkDragDrop<any>): void {
+    if (event.previousIndex < this.fixedColumns.length || event.currentIndex < this.fixedColumns.length) {
+      return;
+    }
+
     this.settings$.pipe(
       withLatestFrom(this.tableConfig$),
       take(1)
@@ -248,112 +346,11 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     });
   }
 
-  private initTableConfig(): void {
-    this.tableConfig$ = this.settings$.pipe(
-      mapWith(
-        () => this.translatorService.getTranslator('all-trades/all-trades'),
-        (settings, translate) => ({ settings, translate })
-      ),
-      map(({ settings, translate }) => {
-          const highlightRows = settings.highlightRowsBySide ?? false;
-          const tableSettings = TableSettingHelper.toTableDisplaySettings(settings.allTradesTable, settings.allTradesColumns);
-
-          return {
-            columns: [
-              ...this.fixedColumns,
-              ...this.allColumns
-                .map(column => ({column, settings: tableSettings?.columns.find(c => c.columnId === column.id)}))
-                .filter(col => col.settings != null)
-                .map((col, index) => ({
-                    ...col.column,
-                    displayName: translate(
-                      ['columns', col.column.id, 'displayName'],
-                      {fallback: col.column.displayName}
-                    ),
-                    filterData: col.column.filterData && {
-                      ...col.column.filterData,
-                      filters: col.column.filterData.filters?.map(f => ({
-                        text: translate(
-                          ['columns', col.column.id, 'filters', f.value],
-                          {fallback: f.text}
-                        ),
-                        value: f.value as string
-                      }))
-                    },
-                    order: col.settings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
-                  })
-                )
-                .sort((a, b) => a.order - b.order)
-            ],
-            rowConfig: {
-              rowClass: (data): string | null => {
-                if (!highlightRows) {
-                  return null;
-                }
-
-                if (data.side === 'buy') {
-                  return 'buy-row';
-                }
-
-                return 'sell-row';
-              }
-            }
-          };
-
-        }
-      )
-    );
+  saveColumnWidth(event: { columnId: string, width: number }): void {
+    super.saveColumnWidth<AllTradesSettings>(event, this.settings$);
   }
 
-  private updateFilters(update: (curr: AllTradesFilters) => AllTradesFilters): void {
-    this.filters$.pipe(
-      take(1)
-    ).subscribe(curr => {
-      this.filters$.next(update(curr));
-    });
-  }
-
-  private initTrades(): void {
-    combineLatest([
-      this.filters$,
-      this.timezoneConverterService.getConverter()
-    ])
-    .pipe(
-      tap(([, timezoneConverter]) => {
-        this.timezoneConverter = timezoneConverter;
-        this.isLoading$.next(true);
-      }),
-      map(([filters,]) => filters),
-      mapWith(
-        f => this.allTradesService.getTradesList(f),
-        (filters, res) => ({ filters, res })
-      ),
-      withLatestFrom(this.tradesList$),
-      map(([s, currentList]) => {
-        if ((s.filters.offset ?? 0) > 0) {
-          this.tradesList$.next([...currentList, ...s.res]);
-        } else {
-          this.tradesList$.next(s.res);
-        }
-
-        return s.filters;
-      }),
-      tap(() => this.isLoading$.next(false)),
-      withLatestFrom(this.settings$),
-      mapWith(
-        ([, s]) => this.allTradesService.getNewTradesSubscription(s)
-          .pipe(
-            bufferTime(this.NEW_TRADES_PERIOD)
-          ),
-        ([filters], newTrades) => ({ filters, newTrades })
-      ),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(({ filters, newTrades }) => {
-      this.filterNewTrades(filters, newTrades);
-    });
-  }
-
-  private filterNewTrades(filters: AllTradesFilters, newTrades: AllTradesItem[]): void {
+  private filterNewTrades(filters: AllTradesReqFilters, newTrades: AllTradesItem[]): void {
     const filteredNewTrades = newTrades.filter(trade =>
       (filters.qtyFrom == null || trade.qty > filters.qtyFrom) &&
       (filters.qtyTo == null || trade.qty < filters.qtyTo) &&
@@ -387,31 +384,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       }
     });
 
-    tradesListCopy = tradesListCopy.slice(0, (filters.offset ?? 0) + (filters.limit ?? this.maxItemsInRequestWithPeriod));
+    tradesListCopy = tradesListCopy.slice(0, (filters.offset ?? 0) + (filters.limit ?? this.loadingChunkSize));
     this.tradesList$.next(tradesListCopy);
-  }
-
-  private getSortFn(orderBy: string): (dir: string | null) => void {
-    return (dir: string | null) => {
-      this.updateFilters(curr => {
-        const filter = {
-          ...curr,
-          to: toUnixTimestampSeconds(new Date()),
-          offset: 0
-        };
-
-        delete filter.descending;
-        delete filter.orderBy;
-
-        if (dir != null && dir.length > 0) {
-          filter.descending = dir === 'descend';
-          filter.orderBy = orderBy;
-        } else {
-          filter.descending = true;
-        }
-
-        return filter;
-      });
-    };
   }
 }

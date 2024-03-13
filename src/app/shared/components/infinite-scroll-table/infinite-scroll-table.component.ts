@@ -63,6 +63,8 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   filterApplied = new EventEmitter();
   @Output()
   orderColumnChange = new EventEmitter();
+  @Output()
+  columnWidthChange = new EventEmitter();
 
   @ViewChildren('dataTable')
   dataTableQuery!: QueryList<NzTableComponent<TableDataRow>>;

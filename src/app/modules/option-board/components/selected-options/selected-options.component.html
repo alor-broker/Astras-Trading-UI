@@ -1,5 +1,5 @@
 <ng-container *transloco="let t; scope: 'option-board/selected-options'">
-  <div #tableContainer (nzResizeObserve)="updateContainerSize($event)" class="h-100 w-100" nzResizeObserver>
+  <div (nzResizeObserve)="containerSizeChanged($event)" class="h-100 w-100" nzResizeObserver>
     <ng-template #empty>
       <nz-empty
         [nzNotFoundContent]="t('optionBoardSelectedOptions.noSelectionMessage')"
@@ -9,24 +9,26 @@
     </ng-template>
     <ng-container
       *ngrxLet="{
-          tableScroll: tableScroll$ | async,
-          displayColumns: displayColumns$ | async,
-          details: detailsDisplay$ | async,
+          tableConfig: tableConfig$ | async,
+          details: tableData$ | async,
           contentSize: contentSize$ | async
         } as vm"
     >
-      <nz-table #table
-                *ngIf="(vm.contentSize?.width ?? (minOptionTableWidth + 1)) > minOptionTableWidth; else optionsShortView"
-                [nzData]="vm.details ?? []"
-                [nzFrontPagination]="false"
-                [nzLoading]="isLoading$ | async"
-                [nzNoResult]="empty"
-                [nzScroll]="{ y: vm.tableScroll?.height + 'px' }"
-                [nzShowPagination]="false"
-                atsTableRowHeight
+      <nz-table
+        *ngIf="(vm.contentSize?.width ?? (minOptionTableWidth + 1)) > minOptionTableWidth; else optionsShortView"
+        [nzData]="vm.details ?? []"
+        [nzFrontPagination]="false"
+        [nzLoading]="isLoading$ | async"
+        [nzNoResult]="empty"
+        [nzScroll]="{ y: vm.contentSize?.height + 'px' }"
+        [nzShowPagination]="false"
+        atsTableRowHeight
       >
         <thead>
-        <tr>
+        <tr
+          (nzResizeObserve)="headerSizeChanged($event)"
+          nzResizeObserver
+        >
           <th nzWidth="30px" nzLeft>
                 <span class="text-nowrap">
                   <a (nzOnConfirm)="clearSelection()"
@@ -37,7 +39,7 @@
                 </span>
           </th>
           <th
-            *ngFor='let column of vm.displayColumns'
+            *ngFor='let column of vm.tableConfig!.columns'
             [nzWidth]="column.width ? column.width + 'px': null"
             [nzLeft]="column.leftFixed ?? false"
           >
@@ -53,8 +55,8 @@
         </tr>
         </thead>
         <tbody>
-        <ng-container *ngFor="let option of table.data">
-          <tr (click)="selectOption($event, option)" class="cursor-pointer">
+        <ng-template nz-virtual-scroll let-option>
+          <tr (click)="rowClick(option, $event)" class="cursor-pointer">
             <td nzLeft>
               <a (click)="unselectOption($event, option)"
                  [nzTooltipMouseEnterDelay]="0.5"
@@ -64,7 +66,7 @@
                 <i nz-icon nzTheme="outline" nzType="close-circle"></i>
               </a>
             </td>
-            <ng-container *ngFor='let column of vm.displayColumns'>
+            <ng-container *ngFor='let column of vm.tableConfig!.columns'>
               <td *ngIf='column.id === "symbol"' [nzLeft]="column.leftFixed ?? false">{{ option.symbol }}</td>
               <td *ngIf='column.id === "underlyingAssetSymbol"'>{{ option.underlyingAssetSymbol }}</td>
               <td *ngIf='column.id === "optionSide"'>{{ option.optionSide }}</td>
@@ -82,7 +84,7 @@
               <td *ngIf='column.id === "rho"'>{{ option.rho | number : '0.0-2' }}</td>
             </ng-container>
           </tr>
-        </ng-container>
+        </ng-template>
         </tbody>
       </nz-table>
 

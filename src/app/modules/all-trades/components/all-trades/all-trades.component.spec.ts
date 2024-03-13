@@ -55,6 +55,7 @@ describe('AllTradesComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AllTradesComponent);
     component = fixture.componentInstance;
+    component.guid = 'testGuid';
 
     fixture.detectChanges();
   });

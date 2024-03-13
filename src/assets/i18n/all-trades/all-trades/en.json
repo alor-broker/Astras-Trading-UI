@@ -1,26 +1,32 @@
 {
   "columns": {
     "qty": {
-      "displayName": "Quantity"
+      "displayName": "Quantity",
+      "tooltip": "Lots quantity"
     },
     "price": {
-      "displayName": "Price"
+      "displayName": "Price",
+      "tooltip": "Trade price"
     },
     "timestamp": {
-      "displayName": "Time"
+      "displayName": "Time",
+      "tooltip": "Trade time"
     },
     "side": {
       "displayName": "Side",
+      "tooltip": "Trade side",
       "filters": {
         "sell": "Sell",
         "buy": "Buy"
       }
     },
     "oi": {
-      "displayName": "Opened interest"
+      "displayName": "Opened interest",
+      "tooltip": "Opened interest"
     },
     "existing": {
-      "displayName": "New event"
+      "displayName": "New event",
+      "tooltip": "New event"
     }
   }
 }

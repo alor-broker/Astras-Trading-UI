@@ -88,6 +88,7 @@ describe('AllInstrumentsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AllInstrumentsComponent);
     component = fixture.componentInstance;
+    component.guid = 'testGuid';
     fixture.detectChanges();
   });
 

@@ -1,21 +1,15 @@
 import {
-  AfterViewInit,
   Component,
   DestroyRef,
-  ElementRef,
   Inject,
   Input,
   OnDestroy,
-  OnInit,
-  QueryList,
-  ViewChildren
+  OnInit
 } from '@angular/core';
 import {
-  BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
   Observable,
-  of,
   shareReplay,
   switchMap,
   take,
@@ -27,8 +21,7 @@ import { InstrumentKey } from '../../../../shared/models/instruments/instrument-
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import {
   filter,
-  map,
-  startWith
+  map
 } from 'rxjs/operators';
 import { getPropertyFromPath } from "../../../../shared/utils/object-helper";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -37,12 +30,10 @@ import {
   NzDropdownMenuComponent
 } from "ng-zorro-antd/dropdown";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { toInstrumentKey } from "../../../../shared/utils/instruments";
-import { TableAutoHeightBehavior } from '../../../blotter/utils/table-auto-height.behavior';
+import { defaultBadgeColor, toInstrumentKey } from "../../../../shared/utils/instruments";
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
   Watchlist,
   WatchlistCollection,
@@ -57,8 +48,15 @@ import {
   ActionsContext
 } from "../../../../shared/services/actions-context";
 import { TimeframeValue } from "../../../light-chart/models/light-chart.models";
-import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
+import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
+import { TableConfig } from "../../../../shared/models/table-config.model";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { CdkDragDrop } from "@angular/cdk/drag-drop";
+
+interface DisplayInstrument extends WatchedInstrument {
+  id: string;
+}
 
 @Component({
   selector: 'ats-watchlist-table',
@@ -66,19 +64,16 @@ import { TableSettingHelper } from "../../../../shared/utils/table-setting.helpe
   styleUrls: ['./watchlist-table.component.less'],
   providers: [WatchInstrumentsService]
 })
-export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit {
+export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrument>
+  implements OnInit, OnDestroy {
+  @Input({ required: true }) guid!: string;
+
   readonly listTypes = WatchlistType;
-  @Input({ required: true })
-  guid!: string;
+  settings$!: Observable<InstrumentSelectSettings>;
 
-  @ViewChildren('tableContainer')
-  tableContainer!: QueryList<ElementRef<HTMLElement>>;
-
-  watchedInstruments$: Observable<WatchedInstrument[]> = of([]);
   currentWatchlist$!: Observable<Watchlist>;
   collection$!: Observable<WatchlistCollection>;
 
-  readonly scrollHeight$ = new BehaviorSubject<number>(100);
   allColumns: BaseColumnSettings<WatchedInstrument>[] = [
     { id: 'symbol', displayName: "Тикер", tooltip: 'Биржевой идентификатор ценной бумаги', minWidth: 55 },
     { id: 'shortName', displayName: "Назв.", tooltip: 'Название тикера', minWidth: 60 },
@@ -91,8 +86,6 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     { id: 'openPrice', displayName: "Откр.", tooltip: 'Цена на начало дня' },
     { id: 'closePrice', displayName: "Закр.", tooltip: 'Цена на конец предыдущего дня' },
   ];
-  displayedColumns: BaseColumnSettings<WatchedInstrument>[] = [];
-  badgeColor = '';
 
   sortFns: { [keyName: string]: (a: InstrumentKey, b: InstrumentKey) => number } = {
     symbol: this.getSortFn('instrument.symbol'),
@@ -112,13 +105,15 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     icon: string;
   }[]>;
 
-  settings$!: Observable<InstrumentSelectSettings>;
   getListTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
   selectedItem: WatchedInstrument | null = null;
   private defaultSortFn?: (a: WatchedInstrument, b: WatchedInstrument) => number;
 
+  protected settingsTableName = 'instrumentTable';
+  protected settingsColumnsName = 'instrumentColumns';
+
   constructor(
-    private readonly settingsService: WidgetSettingsService,
+    protected readonly settingsService: WidgetSettingsService,
     private readonly watchInstrumentsService: WatchInstrumentsService,
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly nzContextMenuService: NzContextMenuService,
@@ -126,9 +121,10 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
     private readonly widgetsMetaService: WidgetsMetaService,
     private readonly translatorService: TranslatorService,
     @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext,
-    private readonly destroyRef: DestroyRef
+    protected readonly actionsContext: ActionsContext,
+    protected readonly destroyRef: DestroyRef
   ) {
+    super(settingsService, destroyRef);
   }
 
   sortFavorites = (a: WatchedInstrument, b: WatchedInstrument): number => {
@@ -141,30 +137,47 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   };
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
+    this.settings$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid)
+      .pipe(
+        shareReplay(1),
+        takeUntilDestroyed(this.destroyRef)
+      );
 
+    super.ngOnInit();
+  }
+
+  protected initTableConfigStream(): Observable<TableConfig<DisplayInstrument>> {
+    return this.settings$
+      .pipe(
+        map(settings => {
+          const tableSettings = TableSettingHelper.toTableDisplaySettings(settings.instrumentTable, settings.instrumentColumns);
+
+          return {
+            columns: this.allColumns
+              .map(column => ({column, settings: tableSettings?.columns.find(c => c.columnId === column.id)}))
+              .filter(c => c.settings != null)
+              .map((col, index) => ({
+                ...col.column,
+                order: col.settings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index),
+                width: col.settings!.columnWidth ?? this.defaultColumnWidth
+              }))
+              .sort((a, b) => a.order - b.order)
+          };
+        })
+      );
+  }
+
+  protected initTableDataStream(): Observable<DisplayInstrument[]> {
     this.collection$ = this.watchlistCollectionService.getWatchlistCollection().pipe(
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    this.currentWatchlist$ = this.settings$.pipe(
-      filter(s => s.activeListId != null && s.activeListId.length > 0),
-      tap(settings => {
-        const tableSettings = TableSettingHelper.toTableDisplaySettings(settings.instrumentTable, settings.instrumentColumns);
+    const filteredSettings$ = this.settings$.pipe(
+      distinctUntilChanged((prev, curr) => prev.activeListId === curr.activeListId)
+    );
 
-        this.displayedColumns = this.allColumns
-          .map(column => ({column, settings: tableSettings?.columns.find(c => c.columnId === column.id)}))
-          .filter(c => c.settings != null)
-          .map((col, index) => ({
-            ...col.column,
-            order: col.settings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
-          }))
-          .sort((a, b) => a.order - b.order)
-        ;
-        this.badgeColor = settings.badgeColor!;
-      }),
+    this.currentWatchlist$ = filteredSettings$.pipe(
+      filter(s => s.activeListId != null && s.activeListId.length > 0),
       mapWith(
         () => this.collection$,
         (settings, collection) => collection.collection.find(x => x.id === settings.activeListId)
@@ -177,23 +190,6 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
         } else {
           this.defaultSortFn = (a, b): number => a.instrument.symbol.localeCompare(b.instrument.symbol);
         }
-      }),
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
-
-
-    this.watchedInstruments$ = this.currentWatchlist$.pipe(
-      mapWith(
-        () => this.settings$,
-        (watchlist, settings) => ({ watchlist, settings })
-      ),
-      switchMap(({ watchlist, settings }) => this.watchInstrumentsService.getWatched(watchlist.id, settings.priceChangeTimeframe ?? TimeframeValue.Day)),
-      map(updates => {
-        if (this.defaultSortFn) {
-          return updates.sort(this.defaultSortFn);
-        }
-
-        return updates;
       }),
       shareReplay({ bufferSize: 1, refCount: true })
     );
@@ -218,31 +214,38 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
       ),
       shareReplay(1)
     );
-  }
 
-  ngAfterViewInit(): void {
-    const container$ = this.tableContainer.changes.pipe(
-      map(x => x.first as ElementRef<HTMLElement> | undefined),
-      startWith(this.tableContainer.first),
-      filter((x): x is ElementRef<HTMLElement> => !!x),
-      shareReplay(1)
+    return this.currentWatchlist$.pipe(
+      mapWith(
+        () => filteredSettings$.pipe(
+          distinctUntilChanged((prev, curr) => prev.activeListId !== curr.activeListId),
+        ),
+        (watchlist, settings) => ({ watchlist, settings })
+      ),
+      switchMap(({ watchlist, settings }) => this.watchInstrumentsService.getWatched(watchlist.id, settings.priceChangeTimeframe ?? TimeframeValue.Day)),
+      map(updates => updates.map(u => ({ ...u, id: u.recordId }))),
+      map(updates => {
+        if (this.defaultSortFn) {
+          return updates.sort(this.defaultSortFn);
+        }
+
+        return updates;
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
-
-    container$.pipe(
-      switchMap(x => TableAutoHeightBehavior.getScrollHeight(x)),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(x => {
-      setTimeout(() => this.scrollHeight$.next(x));
-    });
   }
 
   ngOnDestroy(): void {
+    super.ngOnDestroy();
     this.watchInstrumentsService.clear();
-    this.scrollHeight$.complete();
   }
 
-  makeActive(item: InstrumentKey): void {
-    this.actionsContext.instrumentSelected(item, this.badgeColor);
+  rowClick(row: DisplayInstrument): void {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(s => {
+      this.actionsContext?.instrumentSelected(row.instrument, s.badgeColor ?? defaultBadgeColor);
+    });
   }
 
   remove(itemId: string): void {
@@ -257,10 +260,6 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
 
   getTrackKey(index: number, item: WatchedInstrument): string {
     return item.recordId;
-  }
-
-  isVisibleColumn(colName: string): boolean {
-    return this.displayedColumns.map(c => c.id).includes(colName);
   }
 
   contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent, selectedInstrument: WatchedInstrument): void {
@@ -326,20 +325,11 @@ export class WatchlistTableComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   changeColumnOrder(event: CdkDragDrop<any>): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      this.settingsService.updateSettings<InstrumentSelectSettings>(
-        settings.guid,
-        {
-          instrumentTable: TableSettingHelper.changeColumnOrder(
-            event,
-            TableSettingHelper.toTableDisplaySettings(settings.instrumentTable, settings.instrumentColumns)!,
-            this.displayedColumns
-          )
-        }
-      );
-    });
+    super.changeColumnOrder<InstrumentSelectSettings>(event, this.settings$);
+  }
+
+  saveColumnWidth(event: { columnId: string, width: number }): void {
+    super.saveColumnWidth<InstrumentSelectSettings>(event, this.settings$);
   }
 
   private getSortFn(propName: string): (a: InstrumentKey, b: InstrumentKey) => number {

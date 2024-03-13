@@ -1,18 +1,60 @@
 {
   "columns": {
-    "name":  "Ticker",
-    "shortName": "Name",
-    "currency":  "Currency",
-    "dailyGrowth": "Daily growth",
-    "dailyGrowthPercent": "Daily growth, %",
-    "tradeVolume":  "Trade Volume",
-    "exchange": "Exchange",
-    "market":  "Market",
-    "lotSize": "Lot size",
-    "price": "Price",
-    "priceMax":  "Max price",
-    "priceMin": "Min price",
-    "priceScale":  "Price scale",
-    "yield": "Yield"
+    "name": {
+      "name": "Ticker",
+      "tooltip": "Exchange identifier of the security"
+    },
+    "shortName": {
+      "name": "Name",
+      "tooltip": "Ticker name"
+    },
+    "exchange": {
+      "name": "Exchange",
+      "tooltip": "Ticker exchange"
+    },
+    "currency": {
+      "name": "Currency",
+      "tooltip": "Currency"
+    },
+    "price": {
+      "name": "Price",
+      "tooltip": "Last trade price"
+    },
+    "priceMax": {
+      "name": "Max price",
+      "tooltip": "Maximal price per day"
+    },
+    "priceMin": {
+      "name": "Min price",
+      "tooltip": "Minimal price per day"
+    },
+    "dailyGrowth": {
+      "name": "Daily growth",
+      "tooltip": "Price change per day"
+    },
+    "dailyGrowthPercent": {
+      "name": "Daily growth, %",
+      "tooltip": "Price change ratio per day"
+    },
+    "tradeVolume": {
+      "name": "Volume",
+      "tooltip": "Trade Volume"
+    },
+    "market": {
+      "name": "Market",
+      "tooltip": "Market"
+    },
+    "lotSize": {
+      "name": "Lot size",
+      "tooltip": "Lot size"
+    },
+    "priceScale": {
+      "name": "Price scale",
+      "tooltip": "Price scale"
+    },
+    "yield": {
+      "name": "Yield",
+      "tooltip": "Yield"
+    }
   }
 }

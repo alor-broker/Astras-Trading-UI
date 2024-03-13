@@ -4,10 +4,11 @@ import {
   DestroyRef,
   EventEmitter,
   OnDestroy,
-  OnInit,
-  Output
+  Output,
+  QueryList,
+  ViewChildren
 } from '@angular/core';
-import { BaseTableComponent } from "../base-table/base-table.component";
+import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
 import {
   DisplayTrade,
   TradeFilter
@@ -18,7 +19,6 @@ import {
   combineLatest,
   distinctUntilChanged,
   Observable,
-  of,
   pairwise,
   shareReplay,
   switchMap,
@@ -36,7 +36,6 @@ import {
   TableNames
 } from "../../models/blotter-settings.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { BlotterService } from "../../services/blotter.service";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
@@ -51,17 +50,19 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { CdkVirtualScrollViewport } from "@angular/cdk/scrolling";
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
+import { TableConfig } from "../../../../shared/models/table-config.model";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { BlotterService } from "../../services/blotter.service";
 
 @Component({
   selector: 'ats-trades-history',
   templateUrl: './trades-history.component.html',
   styleUrls: ['./trades-history.component.less']
 })
-export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, TradeFilter> implements OnInit, AfterViewInit, OnDestroy {
+export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTrade, TradeFilter> implements AfterViewInit, OnDestroy {
   readonly rowHeight = 20;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-  displayTrades$: Observable<DisplayTrade[]> = of([]);
   allColumns: BaseColumnSettings<DisplayTrade>[] = [
     {
       id: 'id',
@@ -130,47 +131,28 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
       minWidth: 60
     },
   ];
+  isLoading$ = new BehaviorSubject<boolean>(false);
+
   settingsTableName = TableNames.TradesHistoryTable;
   settingsColumnsName = ColumnsNames.TradesColumns;
   fileSuffix = 'tradesHistory';
-  isLoading$ = new BehaviorSubject<boolean>(false);
   private readonly loadedHistory$ = new BehaviorSubject<Trade[]>([]);
+
+  @ViewChildren('nzTable')
+  dataTableQuery!: QueryList<NzTableComponent<DisplayTrade>>;
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,
-    protected readonly service: BlotterService,
+    private readonly service: BlotterService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
     private readonly tradesHistoryService: TradesHistoryService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(service, settingsService, translatorService, destroyRef);
-  }
-
-  ngOnInit(): void {
-    super.ngOnInit();
-    this.initTableSettings();
-
-    this.displayTrades$ = combineLatest([
-        this.loadedHistory$,
-        this.timezoneConverterService.getConverter()
-      ]
-    ).pipe(
-      map(([trades, converter]) => trades.map(t => <DisplayTrade>{
-        ...t,
-        date: converter.toTerminalDate(t.date)
-      })),
-      mapWith(
-        () => this.filter$,
-        (data, filter) => data.filter(t => this.justifyFilter(t, filter))
-      ),
-      shareReplay(1)
-    );
+    super(settingsService, translatorService, destroyRef);
   }
 
   ngAfterViewInit(): void {
-    super.ngAfterViewInit();
-
     const scrollViewport$ = this.dataTableQuery.changes.pipe(
       map(x => x.first as NzTableComponent<DisplayTrade>),
       startWith(this.dataTableQuery.first),
@@ -227,7 +209,7 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
     // In this case, we are trying to fill the free space
     combineLatest([
       scrollViewport$,
-      this.displayTrades$
+      this.tableData$
     ]).pipe(
       filter(([,displayTrades]) => displayTrades.length > 0),
       takeUntilDestroyed(this.destroyRef)
@@ -242,7 +224,6 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
   ngOnDestroy(): void {
     super.ngOnDestroy();
     this.loadedHistory$.complete();
-    this.isLoading$.complete();
   }
 
   formatDate(date: Date): string {
@@ -296,7 +277,7 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
     });
   }
 
-  private initTableSettings(): void {
+  protected initTableConfigStream(): Observable<TableConfig<DisplayTrade>> {
     const tableSettings$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.tradesHistoryTable, current.tradesHistoryTable)
@@ -305,35 +286,66 @@ export class TradesHistoryComponent extends BaseTableComponent<DisplayTrade, Tra
       filter((s): s is TableDisplaySettings => !!s)
     );
 
-    combineLatest({
+    return combineLatest({
       tableSettings: tableSettings$,
       translator: this.translatorService.getTranslator('blotter/trades')
     }).pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(x => {
-      this.listOfColumns = this.allColumns
-        .map(c => ({column: c, columnSettings: x.tableSettings.columns.find(x => x.columnId === c.id)}))
-        .filter(c => !!c.columnSettings)
-        .map((column, index) => ({
-          ...column.column,
-          displayName: x.translator(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-          tooltip: x.translator(['columns', column.column.id, 'tooltip'], {fallback: column.column.tooltip}),
-          filterData: column.column.filterData
-            ? {
-              ...column.column.filterData,
-              filterName: x.translator(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-              filters: (column.column.filterData.filters ?? []).map(f => ({
-                value: f.value as unknown,
-                text: x.translator(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
-              }))
-            }
-            : undefined,
-          width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
-          order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
-        }))
-        .sort((a, b) => a.order - b.order);
+      takeUntilDestroyed(this.destroyRef),
+      map(x => {
+        return {
+          columns: this.allColumns
+            .map(c => ({column: c, columnSettings: x.tableSettings?.columns.find(x => x.columnId === c.id)}))
+            .filter(c => !!c.columnSettings)
+            .map((column, index) => ({
+              ...column.column,
+              displayName: x.translator(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+              tooltip: x.translator(['columns', column.column.id, 'tooltip'], {fallback: column.column.tooltip}),
+              filterData: column.column.filterData
+                ? {
+                  ...column.column.filterData,
+                  filterName: x.translator(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+                  filters: (column.column.filterData.filters ?? []).map(f => ({
+                    value: f.value as unknown,
+                    text: x.translator(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
+                  }))
+                }
+                : undefined,
+              width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
+              order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+            }))
+            .sort((a, b) => a.order - b.order)
+        };
+      })
+    );
+  }
 
-      this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) => prev + cur.width!, 0);
-    });
+  protected initTableDataStream(): Observable<DisplayTrade[]> {
+    return combineLatest([
+        this.loadedHistory$,
+        this.timezoneConverterService.getConverter()
+      ]
+    ).pipe(
+      map(([trades, converter]) => trades.map(t => <DisplayTrade>{
+        ...t,
+        date: converter.toTerminalDate(t.date)
+      })),
+      mapWith(
+        () => this.filters$,
+        (data, filter) => data.filter(t => this.justifyFilter(t, filter))
+      ),
+      shareReplay(1)
+    );
+  }
+
+  rowClick(row: DisplayTrade): void {
+    this.settings$
+      .pipe(
+        take(1)
+      )
+      .subscribe(s => this.service.selectNewInstrument(
+        row.symbol,
+        row.exchange,
+        s.badgeColor ?? defaultBadgeColor
+      ));
   }
 }

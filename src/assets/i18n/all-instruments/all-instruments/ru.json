@@ -1,18 +1,60 @@
 {
   "columns": {
-    "name":  "Тикер",
-    "shortName": "Название",
-    "currency":  "Валюта",
-    "dailyGrowth": "Рост за сегодня",
-    "dailyGrowthPercent": "Рост за сегодня, %",
-    "tradeVolume":  "Объём торгов",
-    "exchange": "Биржа",
-    "market":  "Рынок",
-    "lotSize": "Лотность",
-    "price": "Цена",
-    "priceMax":  "Макс. цена",
-    "priceMin": "Мин. цена",
-    "priceScale":  "Шаг цены",
-    "yield": "Доходность"
+    "name": {
+      "name": "Тикер",
+      "tooltip": "Биржевой идентификатор ценной бумаги"
+    },
+    "shortName": {
+      "name": "Назв.",
+      "tooltip": "Название тикера"
+    },
+    "exchange": {
+      "name": "Биржа",
+      "tooltip": "Наименоваение биржи"
+    },
+    "currency": {
+      "name": "Валюта",
+      "tooltip": "Валюта ценной бумаги"
+    },
+    "price": {
+      "name": "Цена",
+      "tooltip": "Цена последней сделки"
+    },
+    "priceMax": {
+      "name": "Д.макс.",
+      "tooltip": "Максимальная цена за день"
+    },
+    "priceMin": {
+      "name": "Д.мин.",
+      "tooltip": "Минимальная цена за день"
+    },
+    "dailyGrowth": {
+      "name": "Рост за сегодня",
+      "tooltip": "Изменение цены за день"
+    },
+    "dailyGrowthPercent": {
+      "name": "Рост за сегодня, %",
+      "tooltip": "Изменение цены за день в %"
+    },
+    "tradeVolume": {
+      "name": "Объём",
+      "tooltip": "Объём торгов"
+    },
+    "market": {
+      "name": "Рынок",
+      "tooltip": "Наименование рынка ценной бумаги"
+    },
+    "lotSize": {
+      "name": "Лотность",
+      "tooltip": "Размер лота ценной бумаги"
+    },
+    "priceScale": {
+      "name": "Шаг цены",
+      "tooltip": "Шаг цены ценной бумаги"
+    },
+    "yield": {
+      "name": "Доходность",
+      "tooltip": "Доходность ценной бумаги"
+    }
   }
 }

@@ -39,7 +39,7 @@ describe('PushNotificationsComponent', () => {
             getCurrentSubscriptions: jasmine.createSpy('getCurrentSubscriptions').and.returnValue(new Subject()),
             getBrowserNotificationsStatus: jasmine.createSpy('getBrowserNotificationsStatus').and.returnValue(new Subject())
           }
-        },
+        }
       ]
     })
     .compileComponents();
@@ -48,6 +48,7 @@ describe('PushNotificationsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PushNotificationsComponent);
     component = fixture.componentInstance;
+    component.guid = 'testGuid';
     fixture.detectChanges();
   });
 

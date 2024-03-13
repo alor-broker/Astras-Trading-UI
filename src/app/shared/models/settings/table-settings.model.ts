@@ -29,6 +29,7 @@ export interface BaseColumnSettings<T> extends Omit<BaseColumnId, 'isDefault'> {
   minWidth?: number | null;
   order?: number | null;
   leftFixed?: boolean;
+  isResizable?: boolean;
 }
 
 export interface FilterData {

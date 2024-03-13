@@ -5,6 +5,7 @@ import { NewsListItem } from "../models/news.model";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { map } from "rxjs/operators";
 
 interface GetNewsParams {
   limit: number;
@@ -35,7 +36,8 @@ export class NewsService {
       }
     })
       .pipe(
-        catchHttpError<NewsListItem[]>([], this.errorHandlerService)
+        catchHttpError<NewsListItem[]>([], this.errorHandlerService),
+        map(news => news.map(n => ({ ...n, id: n.id.toString() })))
       );
   }
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {
-  AllTradesFilters,
   AllTradesItem,
+  AllTradesReqFilters,
   AllTradesSubRequest
 } from "../models/all-trades.model";
 import { Observable } from "rxjs";
@@ -25,14 +25,14 @@ export class AllTradesService {
     private readonly errorHandlerService: ErrorHandlerService) {
   }
 
-  public getTradesList(req: AllTradesFilters): Observable<AllTradesItem[]> {
+  public getTradesList(req: AllTradesReqFilters): Observable<AllTradesItem[]> {
     const { exchange, symbol } = req;
 
     return this.http.get<AllTradesItem[]>(`${this.allTradesUrl}/${exchange}/${symbol}/alltrades`, {
       params: { ...req }
     })
       .pipe(
-        catchHttpError<AllTradesItem[]>([], this.errorHandlerService),
+        catchHttpError<AllTradesItem[]>([], this.errorHandlerService)
       );
   }
 

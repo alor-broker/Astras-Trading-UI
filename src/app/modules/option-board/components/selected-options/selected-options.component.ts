@@ -1,30 +1,35 @@
 import {
-  AfterViewInit,
   Component,
   DestroyRef,
-  ElementRef,
   Inject,
-  Input,
-  OnDestroy,
-  OnInit,
-  QueryList,
-  ViewChildren
+  Input
 } from '@angular/core';
 import { OptionBoardDataContext, OptionsSelection } from "../../models/option-board-data-context.model";
-import {OptionBoardService} from "../../services/option-board.service";
-import {BehaviorSubject, combineLatest, forkJoin, Observable, of, shareReplay, switchMap, take, tap, timer} from "rxjs";
-import {OptionKey, OptionSide} from "../../models/option-board.model";
-import {filter, map, startWith} from "rxjs/operators";
-import {BaseColumnSettings} from "../../../../shared/models/settings/table-settings.model";
-import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
-import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
-import {mapWith} from "../../../../shared/utils/observable-helper";
-import {MathHelper} from "../../../../shared/utils/math-helper";
-import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
-import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import { OptionBoardService } from "../../services/option-board.service";
+import {
+  BehaviorSubject,
+  forkJoin,
+  Observable,
+  of,
+  shareReplay,
+  switchMap,
+  take,
+  tap,
+  timer
+} from "rxjs";
+import { OptionKey, OptionSide } from "../../models/option-board.model";
+import { map } from "rxjs/operators";
+import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import { TranslatorFn, TranslatorService } from "../../../../shared/services/translator.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
+import { MathHelper } from "../../../../shared/utils/math-helper";
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ActionsContext } from 'src/app/shared/services/actions-context';
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
+import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
+import { TableConfig } from "../../../../shared/models/table-config.model";
 
 interface OptionTranscription {
   ticker: string;
@@ -63,20 +68,13 @@ interface DetailsDisplay extends OptionKey {
   templateUrl: './selected-options.component.html',
   styleUrls: ['./selected-options.component.less']
 })
-export class SelectedOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChildren('tableContainer')
-  tableQuery!: QueryList<ElementRef<HTMLElement>>;
-
+export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay> {
   @Input({required: true})
   dataContext!: OptionBoardDataContext;
-  readonly isLoading$ = new BehaviorSubject(false);
   readonly minOptionTableWidth = 400;
-  detailsDisplay$!: Observable<DetailsDisplay[]>;
-  displayColumns$!: Observable<BaseColumnSettings<DetailsDisplay>[]>;
+  isLoading$ = new BehaviorSubject<boolean>(false);
 
-  public tableScroll$?: Observable<ContentSize>;
-  readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
-  private readonly columnsConfig: BaseColumnSettings<DetailsDisplay>[] = [
+  protected allColumns: BaseColumnSettings<DetailsDisplay>[] = [
     {
       id: 'symbol',
       displayName: 'symbol',
@@ -153,116 +151,29 @@ export class SelectedOptionsComponent implements OnInit, AfterViewInit, OnDestro
   constructor(
     private readonly optionBoardService: OptionBoardService,
     private readonly translatorService: TranslatorService,
-    private readonly widgetSettingsService: WidgetSettingsService,
+    protected readonly widgetSettingsService: WidgetSettingsService,
     @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext,
-    private readonly destroyRef: DestroyRef
+    protected readonly actionsContext: ActionsContext,
+    protected readonly destroyRef: DestroyRef
   ) {
+    super(widgetSettingsService, destroyRef);
   }
 
-  ngOnInit(): void {
-    this.initDetailsDisplay();
-    this.initColumns();
-  }
-
-  ngOnDestroy(): void {
-    this.isLoading$.complete();
-  }
-
-  formatExpirationDate(date: Date): string {
-    return date.toLocaleDateString();
-  }
-
-  unselectOption($event: Event, option: DetailsDisplay): void {
-    $event.preventDefault();
-    $event.stopPropagation();
-
-    this.dataContext.removeItemFromSelection(option.symbol);
-  }
-
-  clearSelection(): void {
-    this.dataContext.clearCurrentSelection();
-  }
-
-  updateContainerSize(entries: ResizeObserverEntry[]): void {
-    entries.forEach(x => {
-      this.contentSize$.next({
-        width: Math.floor(x.contentRect.width),
-        height: Math.floor(x.contentRect.height)
-      });
-    });
-  }
-
-  ngAfterViewInit(): void {
-    const tableRef$ = this.tableQuery.changes.pipe(
-      map(x => x.first as ElementRef<HTMLElement> | undefined),
-      startWith(this.tableQuery.first),
-      filter((x): x is ElementRef<HTMLElement> => !!x),
-      shareReplay(1)
-    );
-
-    this.tableScroll$ = combineLatest([
-      this.contentSize$,
-      tableRef$
-    ]).pipe(
-      filter(([contentSize,]) => !!contentSize),
-      map(([contentSize, tableRef]) => {
-        const tableHeader = tableRef.nativeElement.querySelector('.ant-table-thead');
-        const scrollHeight = Math.floor(contentSize!.height - (tableHeader?.clientHeight ?? 0));
-
-        return {
-          height: scrollHeight,
-          width: contentSize!.width
-        };
-      }),
+  protected initTableConfigStream(): Observable<TableConfig<DetailsDisplay>> {
+    return this.translatorService.getTranslator('option-board/selected-options').pipe(
+      map(t => ({ columns: this.allColumns.map(c => this.toDisplayColumn(c, t)) })),
       shareReplay(1)
     );
   }
 
-  selectOption($event: Event, optionKey: OptionKey): void {
-    $event.preventDefault();
-    $event.stopPropagation();
-
-    this.dataContext.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      if (settings.linkToActive === true) {
-        this.widgetSettingsService.updateSettings(settings.guid, {linkToActive: false});
-      }
-
-      this.actionsContext.instrumentSelected(
-        {
-          symbol: optionKey.symbol,
-          exchange: optionKey.exchange
-        },
-        settings.badgeColor ?? defaultBadgeColor
-      );
-    });
-  }
-
-  private getOptionTranscription(optionTicker: string, baseTicker: string): OptionTranscription {
-    const optionTickerRegExp = new RegExp(`(${baseTicker})([PM])(\\d{6})([PC])([AE])(\\d+)`);
-    const matchedParts = Array.from(optionTicker.match(optionTickerRegExp)!);
-    matchedParts.shift();
-
-    return {
-      ticker: matchedParts[0],
-      settlementType: matchedParts[1],
-      expirationDate: matchedParts[2],
-      optionType: matchedParts[3],
-      expirationType: matchedParts[4],
-      strikePrice: matchedParts[5],
-    };
-  }
-
-  private initDetailsDisplay(): void {
+  protected initTableDataStream(): Observable<DetailsDisplay[]> {
     const refreshTimer$ = timer(0, 60000).pipe(
       // for some reasons timer pipe is not completed in detailsDisplay$ when component destroyed (https://github.com/alor-broker/Astras-Trading-UI/issues/1176)
       // so we need to add takeUntil condition for this stream separately
       takeUntilDestroyed(this.destroyRef)
     );
 
-    this.detailsDisplay$ = this.dataContext.currentSelection$.pipe(
+    return this.dataContext.currentSelection$.pipe(
       mapWith(() => refreshTimer$, source => source),
       tap(() => this.isLoading$.next(true)),
       switchMap(selection => {
@@ -310,11 +221,55 @@ export class SelectedOptionsComponent implements OnInit, AfterViewInit, OnDestro
     );
   }
 
-  private initColumns(): void {
-    this.displayColumns$ = this.translatorService.getTranslator('option-board/selected-options').pipe(
-      map(t => this.columnsConfig.map(c => this.toDisplayColumn(c, t))),
-      shareReplay(1)
-    );
+  formatExpirationDate(date: Date): string {
+    return date.toLocaleDateString();
+  }
+
+  unselectOption($event: Event, option: DetailsDisplay): void {
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    this.dataContext.removeItemFromSelection(option.symbol);
+  }
+
+  clearSelection(): void {
+    this.dataContext.clearCurrentSelection();
+  }
+
+  rowClick(optionKey: OptionKey, $event: Event): void {
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    this.dataContext.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      if (settings.linkToActive === true) {
+        this.widgetSettingsService.updateSettings(settings.guid, {linkToActive: false});
+      }
+
+      this.actionsContext.instrumentSelected(
+        {
+          symbol: optionKey.symbol,
+          exchange: optionKey.exchange
+        },
+        settings.badgeColor ?? defaultBadgeColor
+      );
+    });
+  }
+
+  private getOptionTranscription(optionTicker: string, baseTicker: string): OptionTranscription {
+    const optionTickerRegExp = new RegExp(`(${baseTicker})([PM])(\\d{6})([PC])([AE])(\\d+)`);
+    const matchedParts = Array.from(optionTicker.match(optionTickerRegExp)!);
+    matchedParts.shift();
+
+    return {
+      ticker: matchedParts[0],
+      settlementType: matchedParts[1],
+      expirationDate: matchedParts[2],
+      optionType: matchedParts[3],
+      expirationType: matchedParts[4],
+      strikePrice: matchedParts[5],
+    };
   }
 
   private toDisplayColumn(columnConfig: BaseColumnSettings<DetailsDisplay>, translator: TranslatorFn): BaseColumnSettings<DetailsDisplay> {

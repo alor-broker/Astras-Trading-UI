@@ -9,31 +9,42 @@
     </ng-template>
 
     <ng-container *ngIf="(isNotificationsAllowed$ | async) === true">
-      <div #tableContainer class="table-container" *ngIf="displayNotifications$ | async as notifications">
-        <ng-container *ngIf="scrollHeight$ | async as scrollHeight">
-          <nz-table  [nzData]="notifications"
-                     [nzFrontPagination]="false"
-                     [nzLoading]="isLoading$ | async"
-                     [nzNoResult]="empty"
-                     [nzScroll]="{ x: tableInnerWidth + 'px', y: scrollHeight - 5 + 'px' }"
-                     [nzShowPagination]="false"
-                     [nzVirtualForTrackBy]="trackBy"
-                     [nzVirtualItemSize]="20"
-                     [nzVirtualMaxBufferPx]="scrollHeight"
-                     [nzVirtualMinBufferPx]="scrollHeight"
-                     atsTableRowHeight
-                     nzTableLayout="fixed">
+      <ng-container *ngrxLet="{ contentSize: contentSize$, tableConfig: tableConfig$, settings: settings$, notifications: tableData$ } as td">
+        <div
+          class="table-container"
+          (nzResizeObserve)="containerSizeChanged($event)"
+          nzResizeObserver
+        >
+          <nz-table
+            [nzData]="td.notifications"
+            [nzFrontPagination]="false"
+            [nzLoading]="isLoading$ | async"
+            [nzNoResult]="empty"
+            [nzScroll]="{ x: (td.contentSize?.width ?? 0) + 'px', y: (td.contentSize?.height ?? 0) + 'px' }"
+            [nzShowPagination]="false"
+            [nzVirtualForTrackBy]="trackBy"
+            [nzVirtualItemSize]="20"
+            [nzVirtualMaxBufferPx]="td.contentSize?.height ?? 0"
+            [nzVirtualMinBufferPx]="td.contentSize?.height ?? 0"
+            atsTableRowHeight
+            nzTableLayout="fixed"
+          >
             <thead>
-            <tr (cdkDropListDropped)="changeColumnOrder($event)" cdkDropList cdkDropListOrientation="horizontal">
+            <tr
+              (nzResizeObserve)="headerSizeChanged($event)"
+              nzResizeObserver
+              (cdkDropListDropped)="changeColumnOrder($event)"
+              cdkDropList
+              cdkDropListOrientation="horizontal"
+            >
               <th nzWidth="30px">
             <span [nzTooltipTitle]="t('blotterNotifications.columns.cancel.tooltip')" nz-tooltip>
               {{t('blotterNotifications.columns.cancel.name')}}
             </span>
               </th>
-              <th (atsWidthChanged)="saveColumnWidth(column.id, $event)"
-                  (atsWidthChanging)="recalculateTableWidth($event)"
+              <th (atsWidthChanged)="saveColumnWidth({ columnId: column.id, width: $event})"
                   (nzFilterChange)="defaultFilterChange(column.id, $event)"
-                  *ngFor='let column of listOfColumns'
+                  *ngFor='let column of td.tableConfig.columns'
                   [atsResizeColumn]
                   [minWidth]="column.minWidth ?? 50"
                   [nzCustomFilter]="column.filterData && !column.filterData.isDefaultFilter"
@@ -55,7 +66,7 @@
                 <nz-filter-trigger
                   *ngIf="column.filterData && !column.filterData.isDefaultFilter"
                   [(nzVisible)]="!!column.filterData.isOpenedFilter"
-                  [nzActive]="!!filter$"
+                  [nzActive]="!!filters$"
                   [nzDropdownMenu]="searchMenu"
                 >
                   <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon
@@ -66,7 +77,7 @@
             </thead>
             <tbody>
             <ng-template let-notification nz-virtual-scroll>
-              <tr (click)="selectNotificationInstrument(notification)">
+              <tr (click)="rowClick(notification)">
                 <td>
                   <a (click)="cancelSubscription(notification.id)"
                      *ngIf='notification.subscriptionType === subscriptionTypes.PriceSpark'
@@ -77,7 +88,7 @@
                     <i nz-icon nzTheme="outline" nzType="close-circle"></i>
                   </a>
                 </td>
-                <ng-container *ngFor='let column of listOfColumns'>
+                <ng-container *ngFor='let column of td.tableConfig.columns'>
                   <td *ngIf='column.id === "id"'>{{ notification.id }}</td>
                   <td
                     *ngIf='column.id === "subscriptionType"'>{{t('blotterNotifications.columns.subscriptionType.listOfFilter.' + notification.subscriptionType, {fallback: notification.subscriptionType}) }}</td>
@@ -93,17 +104,18 @@
             </ng-template>
             </tbody>
           </nz-table>
-        </ng-container>
-      </div>
+        </div>
+
+        <nz-dropdown-menu #searchMenu="nzDropdownMenu">
+          <ats-table-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns"></ats-table-filter>
+        </nz-dropdown-menu>
+      </ng-container>
     </ng-container>
+
     <ng-container *ngIf="(isNotificationsAllowed$ | async) === false">
       <ng-container *transloco="let t; scope: 'push-notifications/setup-instrument-notifications'">
         <span nz-typography nzType="warning">{{t('pushNotificationsSetupInstrumentNotifications.notificationsDisabledWarning')}}</span>
       </ng-container>
     </ng-container>
-
-    <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-      <ats-table-filter (filterChange)="filterChange($event)" [columns]="listOfColumns"></ats-table-filter>
-    </nz-dropdown-menu>
   </div>
 </ng-container>

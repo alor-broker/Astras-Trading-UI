@@ -11,7 +11,6 @@
     [nzShowPagination]="false"
     [nzFrontPagination]="false"
     [nzScroll]="{y: scrollHeight + 'px'}"
-    [nzWidthConfig]="getWidthArr()"
     [nzLoading]="isLoading"
   >
     <thead>
@@ -23,19 +22,33 @@
     >
       <th
         *ngFor="let column of tableConfig.columns"
+        class="table-cell"
+        cdkDrag
+        cdkDragLockAxis="x"
         [nzWidth]="column.width ? column.width + 'px' : null"
+        [minWidth]="column.minWidth ?? 50"
         [nzShowSort]="!!column.sortFn || !!column.sortChangeFn"
         [nzSortOrder]="sortedColumnId === column.id ? sortedColumnOrder : null"
         (nzSortOrderChange)="sortChange($event, column)"
         [nzFilters]="column.filterData?.filters || []"
         [nzFilterMultiple]="column.filterData?.isMultipleFilter!"
-        (nzFilterChange)="defaultFilterChange(column.filterData!.filterName!, $event)"
         [nzCustomFilter]="!column.filterData?.isDefaultFilter"
-        class="table-cell"
-        cdkDrag
-        cdkDragLockAxis="x"
+        (nzFilterChange)="defaultFilterChange(column.filterData!.filterName!, $event)"
+        [atsResizeColumn]="column.isResizable !== false"
+        (atsWidthChanged)="columnWidthChange.emit({columnId: column.id, width: $event})"
       >
-        {{column.displayName}}
+        <span
+          *ngIf="column.tooltip; else simpleColumn"
+          [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+          [nzTooltipTitle]="column.tooltip"
+          nz-tooltip
+        >
+          {{column.displayName}}
+        </span>
+
+        <ng-template #simpleColumn>
+          {{column.displayName}}
+        </ng-template>
         <nz-filter-trigger
           *ngIf="!!column.filterData"
           (nzVisibleChange)="openedFilterChange(column.filterData.filterName, $event)"

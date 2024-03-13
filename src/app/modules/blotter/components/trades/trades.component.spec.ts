@@ -7,10 +7,7 @@ import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { TradesComponent } from './trades.component';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
-import {
-  of,
-  Subject
-} from 'rxjs';
+import { of } from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -60,6 +57,7 @@ describe('TradesComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TradesComponent);
     component = fixture.componentInstance;
+    component.guid = 'testGuid';
   });
 
   afterEach(() => fixture.destroy());

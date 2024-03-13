@@ -1,10 +1,9 @@
 import { Component, DestroyRef, Inject, Input, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, shareReplay, switchMap, take, tap, withLatestFrom } from 'rxjs';
-import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
+import { BehaviorSubject, combineLatest, Observable, shareReplay, switchMap, take, tap } from 'rxjs';
 import { TableConfig } from '../../../../shared/models/table-config.model';
 import { BaseColumnSettings } from '../../../../shared/models/settings/table-settings.model';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { bondScreenerColumns, BondScreenerSettings } from '../../models/bond-screener-settings.model';
+import { BondScreenerSettings } from '../../models/bond-screener-settings.model';
 import { filter, map } from 'rxjs/operators';
 import { BondScreenerService } from "../../services/bond-screener.service";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
@@ -20,12 +19,15 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import { InstrumentGroups } from "../../../../shared/models/dashboard/dashboard.model";
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import { BOND_FILTER_TYPES, BOND_NESTED_FIELDS } from "../../utils/bond-screener.helper";
+import {
+  LazyLoadingBaseTableComponent
+} from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
+import { CdkDragDrop } from "@angular/cdk/drag-drop";
 
 interface BondDisplay extends BondNode {
   id: string;
@@ -36,15 +38,15 @@ interface BondDisplay extends BondNode {
   templateUrl: './bond-screener.component.html',
   styleUrls: ['./bond-screener.component.less']
 })
-export class BondScreenerComponent implements OnInit, OnDestroy {
+export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
+  BondDisplay,
+  { [propName: string]: any },
+  PageInfo,
+  string
+> implements OnInit, OnDestroy {
 
   @Input({required: true}) guid!: string;
 
-  readonly limit = 50;
-  contentSize$ = new BehaviorSubject<ContentSize | null>(null);
-  isLoading$ = new BehaviorSubject<boolean>(false);
-  tableConfig$!: Observable<TableConfig<BondDisplay>>;
-  bondsDisplay$!: Observable<BondDisplay[]>;
   bondsList$ = new BehaviorSubject<BondDisplay[]>([]);
   settings$!:Observable<BondScreenerSettings>;
   allColumns: BaseColumnSettings<BondDisplay>[] = [
@@ -363,6 +365,8 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     }
   ];
 
+  settingsTableName = 'bondScreenerTable';
+
   private readonly defaultFilter = {
     boardInformation: {
       isPrimaryBoard: {
@@ -370,73 +374,30 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
       }
     }
   };
-  filters$ = new BehaviorSubject<BondScreenerFilters>({ and: [this.defaultFilter]});
-  sort$ = new BehaviorSubject<string | null>(null);
-  scrolled$ = new BehaviorSubject<null>(null);
-  pageInfo: PageInfo | null = null;
 
   constructor(
-    private readonly settingsService: WidgetSettingsService,
+    protected readonly settingsService: WidgetSettingsService,
     private readonly service: BondScreenerService,
     private readonly translatorService: TranslatorService,
     @Inject(ACTIONS_CONTEXT) private readonly actionsContext: ActionsContext,
     private readonly dashboardContextService: DashboardContextService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly destroyRef: DestroyRef
+    protected readonly destroyRef: DestroyRef
   ) {
+    super(settingsService, destroyRef);
   }
 
   ngOnInit(): void {
+    this.filters$.next({ and: [this.defaultFilter ]});
     this.settings$ = this.settingsService.getSettings<BondScreenerSettings>(this.guid)
       .pipe(shareReplay(1));
 
-    this.bondsDisplay$ = this.bondsList$.asObservable()
-      .pipe(
-        mapWith(
-          () => this.dashboardContextService.instrumentsSelection$,
-          (bonds, badges) => ({ bonds, badges })
-        ),
-        mapWith(
-          () => this.terminalSettingsService.getSettings(),
-          (data, terminalSettings) => ({ ...data, terminalSettings })
-        ),
-        map(({ bonds, badges, terminalSettings }) => {
-          const defaultBadges: InstrumentGroups = badges[defaultBadgeColor] != null
-            ? {[defaultBadgeColor]: badges[defaultBadgeColor]}
-            : {};
-          const availableBadges = (terminalSettings.badgesBind ?? false) ? badges : defaultBadges;
-
-          return bonds.map(b => ({
-            ...b,
-            badges: Object.keys(availableBadges)
-              .filter(key =>
-                b.basicInformation.symbol === availableBadges[key]!.symbol &&
-                b.basicInformation.exchange === availableBadges[key]!.exchange
-              )
-          }));
-        })
-      );
-
-    this.initTableSettings();
-    this.initBonds();
+    super.ngOnInit();
   }
 
   ngOnDestroy(): void {
-    this.contentSize$.complete();
-    this.isLoading$.complete();
+    super.ngOnDestroy();
     this.bondsList$.complete();
-    this.filters$.complete();
-    this.sort$.complete();
-    this.scrolled$.complete();
-  }
-
-  containerSizeChanged(entries: ResizeObserverEntry[]): void {
-    entries.forEach(x => {
-      this.contentSize$.next({
-        width: Math.floor(x.contentRect.width),
-        height: Math.floor(x.contentRect.height)
-      });
-    });
   }
 
   applyFilter(filters: { [filterName: string]: string | string[] | null | number | boolean }): void {
@@ -481,7 +442,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
         return acc;
       }, [] as (BondScreenerFilter | BondScreenerFilters)[]);
 
-    this.pageInfo = null;
+    this.pagination = null;
     this.filters$.next({
       and: [
         this.defaultFilter,
@@ -490,7 +451,7 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     });
   }
 
-  selectInstrument(row: BondDisplay): void {
+  rowClick(row: BondDisplay): void {
     const instrument = {
       symbol: row.basicInformation.symbol,
       exchange: row.basicInformation.exchange,
@@ -508,92 +469,11 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
   }
 
   changeColumnOrder(event: CdkDragDrop<any>): void {
-    this.settings$.pipe(
-      withLatestFrom(this.tableConfig$),
-      take(1)
-    ).subscribe(([settings, tableConfig]) => {
-      this.settingsService.updateSettings<BondScreenerSettings>(
-        settings.guid,
-        {
-          bondScreenerTable: TableSettingHelper.changeColumnOrder(
-            event,
-            TableSettingHelper.toTableDisplaySettings(settings.bondScreenerTable, bondScreenerColumns.map(c => c.id))!,
-            tableConfig.columns
-          )
-        }
-      );
-    });
+    super.changeColumnOrder<BondScreenerSettings>(event, this.settings$);
   }
 
-  private initBonds(): void {
-    combineLatest([
-      this.tableConfig$,
-      this.settings$,
-      this.filters$,
-      this.sort$.pipe(tap(() => this.pageInfo = null)),
-      this.scrolled$
-    ])
-      .pipe(
-        filter(() => this.pageInfo == null || this.pageInfo.hasNextPage),
-        switchMap(([ tableConfig, settings, filters, sort ]) => {
-          this.isLoading$.next(true);
-
-          const columnIds = tableConfig.columns.map(c => c.id);
-
-          const filtersWithDefaultValues = JSON.parse(JSON.stringify(filters)) as BondScreenerFilters;
-          const cancellationFromFilterValue = filtersWithDefaultValues.and?.find(f => (
-              (
-                (
-                  f as BondScreenerFilter
-                ).additionalInformation as BondScreenerFilter
-              )?.cancellation as FilterCondition
-            )?.gte != null);
-
-          if ((settings.hideExpired ?? true) && cancellationFromFilterValue == null) {
-            filtersWithDefaultValues.and?.push({
-              additionalInformation: {
-                cancellation: {
-                  gte: new Date().toISOString()
-                }
-              }
-            });
-          }
-
-          return this.service.getBonds(
-            columnIds,
-            sort,
-            {
-              first: this.limit,
-              after: this.pageInfo?.endCursor,
-              filters: filtersWithDefaultValues
-            });
-        }),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(data => {
-        if (data == null) {
-          return;
-        }
-
-        const newBonds = data!.bonds.edges.map((be: BondEdge) => ({
-          ...be.node,
-          id: be.cursor
-        })) ?? [];
-
-        this.isLoading$.next(false);
-        if (this.pageInfo == null) {
-          this.bondsList$.next(newBonds);
-          this.pageInfo = data?.bonds.pageInfo ?? null;
-          return;
-        }
-
-        this.bondsList$
-          .pipe(take(1))
-          .subscribe(bonds => {
-            this.bondsList$.next([...bonds, ...newBonds]);
-            this.pageInfo = data?.bonds.pageInfo ?? null;
-          });
-      });
+  saveColumnWidth(event: { columnId: string, width: number }): void {
+    super.saveColumnWidth<BondScreenerSettings>(event, this.settings$);
   }
 
   private getFilterValue(filterName: string, filterValue: string | string[] | boolean | number): BondScreenerFilter | BondScreenerFilters | null {
@@ -635,8 +515,8 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
     return { [filterName]: { contains: filterValue }};
   }
 
-  private initTableSettings(): void {
-    this.tableConfig$ = this.settings$.pipe(
+  protected initTableConfigStream(): Observable<TableConfig<BondDisplay>> {
+    return this.settings$.pipe(
       mapWith(
         () => this.translatorService.getTranslator('bond-screener/bond-screener'),
         (settings, translate) => ({ settings, translate })
@@ -668,11 +548,110 @@ export class BondScreenerComponent implements OnInit, OnDestroy {
                   value: f.value as string
                 }))
               },
+              width: col.settings!.columnWidth ?? this.defaultColumnWidth,
               order: col.settings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
             }))
             .sort((a, b) => a.order - b.order)
         };
       })
     );
+  }
+
+  protected initTableDataStream(): Observable<BondDisplay[]> {
+    combineLatest([
+      this.tableConfig$,
+      this.settings$,
+      this.filters$,
+      this.sort$.pipe(tap(() => this.pagination = null)),
+      this.scrolled$
+    ])
+      .pipe(
+        filter(() => this.pagination == null || this.pagination.hasNextPage),
+        switchMap(([ tableConfig, settings, filters, sort ]) => {
+          this.isLoading$.next(true);
+
+          const columnIds = tableConfig.columns.map(c => c.id);
+
+          const filtersWithDefaultValues = JSON.parse(JSON.stringify(filters)) as BondScreenerFilters;
+          const cancellationFromFilterValue = filtersWithDefaultValues.and?.find(f => (
+            (
+              (
+                f as BondScreenerFilter
+              ).additionalInformation as BondScreenerFilter
+            )?.cancellation as FilterCondition
+          )?.gte != null);
+
+          if ((settings.hideExpired ?? true) && cancellationFromFilterValue == null) {
+            filtersWithDefaultValues.and?.push({
+              additionalInformation: {
+                cancellation: {
+                  gte: new Date().toISOString()
+                }
+              }
+            });
+          }
+
+          return this.service.getBonds(
+            columnIds,
+            sort,
+            {
+              first: this.loadingChunkSize,
+              after: this.pagination?.endCursor,
+              filters: filtersWithDefaultValues
+            });
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(data => {
+        if (data == null) {
+          return;
+        }
+
+        const newBonds = data!.bonds.edges.map((be: BondEdge) => ({
+          ...be.node,
+          id: be.cursor
+        })) ?? [];
+
+        this.isLoading$.next(false);
+        if (this.pagination == null) {
+          this.bondsList$.next(newBonds);
+          this.pagination = data?.bonds.pageInfo ?? null;
+          return;
+        }
+
+        this.bondsList$
+          .pipe(take(1))
+          .subscribe(bonds => {
+            this.bondsList$.next([...bonds, ...newBonds]);
+            this.pagination = data?.bonds.pageInfo ?? null;
+          });
+      });
+
+    return this.bondsList$.asObservable()
+      .pipe(
+        mapWith(
+          () => this.dashboardContextService.instrumentsSelection$,
+          (bonds, badges) => ({ bonds, badges })
+        ),
+        mapWith(
+          () => this.terminalSettingsService.getSettings(),
+          (data, terminalSettings) => ({ ...data, terminalSettings })
+        ),
+        map(({ bonds, badges, terminalSettings }) => {
+          const defaultBadges: InstrumentGroups = badges[defaultBadgeColor] != null
+            ? {[defaultBadgeColor]: badges[defaultBadgeColor]}
+            : {};
+          const availableBadges = (terminalSettings.badgesBind ?? false) ? badges : defaultBadges;
+
+          return bonds.map(b => ({
+            ...b,
+            badges: Object.keys(availableBadges)
+              .filter(key =>
+                b.basicInformation.symbol === availableBadges[key]!.symbol &&
+                b.basicInformation.exchange === availableBadges[key]!.exchange
+              )
+          }));
+        })
+      );
   }
 }

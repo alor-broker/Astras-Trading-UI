@@ -1,5 +1,5 @@
-import { Component, DestroyRef, EventEmitter, OnInit, Output, } from '@angular/core';
-import { combineLatest, distinctUntilChanged, Observable, of, Subject, switchMap, take, } from 'rxjs';
+import { Component, DestroyRef, EventEmitter, OnInit, Output } from '@angular/core';
+import { combineLatest, distinctUntilChanged, Observable, Subject, switchMap, take, } from 'rxjs';
 import { catchError, debounceTime, map, mergeMap, startWith, tap } from 'rxjs/operators';
 import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
 import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
@@ -8,7 +8,6 @@ import { BlotterService } from '../../services/blotter.service';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
@@ -17,7 +16,7 @@ import { BaseColumnSettings } from "../../../../shared/models/settings/table-set
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 import { DomHelper } from "../../../../shared/utils/dom-helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { BaseTableComponent } from "../base-table/base-table.component";
+import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
 import { StopOrder } from "../../../../shared/models/orders/order.model";
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
 import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
@@ -26,6 +25,8 @@ import {
   getConditionTypeByString
 } from "../../../../shared/utils/order-conditions-helper";
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
+import { TableConfig } from "../../../../shared/models/table-config.model";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 interface DisplayOrder extends StopOrder {
   residue: string;
@@ -37,11 +38,10 @@ interface DisplayOrder extends StopOrder {
   templateUrl: './stop-orders.component.html',
   styleUrls: ['./stop-orders.component.less'],
 })
-export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderFilter> implements OnInit {
+export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder, OrderFilter> implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   isModalOpened = DomHelper.isModalOpen;
-  displayOrders$: Observable<DisplayOrder[]> = of([]);
 
   allColumns: BaseColumnSettings<DisplayOrder>[] = [
     {
@@ -215,7 +215,6 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
   settingsTableName = TableNames.StopOrdersTable;
   settingsColumnsName = ColumnsNames.StopOrdersColumns;
   fileSuffix = 'stopOrders';
-  badgeColor = defaultBadgeColor;
 
   constructor(
     protected readonly service: BlotterService,
@@ -227,15 +226,23 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
     private readonly ordersGroupService: OrdersGroupService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(service, settingsService, translatorService, destroyRef);
+    super(settingsService, translatorService, destroyRef);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
 
-    this.settings$.pipe(
+    this.cancels$.pipe(
+      mergeMap((command) => this.canceller.cancelOrder(command)),
+      catchError((e, caught) => caught),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe();
+  }
+
+  protected initTableConfigStream(): Observable<TableConfig<DisplayOrder>> {
+    return this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
-        TableSettingHelper.isTableSettingsEqual(previous.positionsTable, current.positionsTable)
+        TableSettingHelper.isTableSettingsEqual(previous.stopOrdersTable, current.stopOrdersTable)
         && previous.badgeColor === current.badgeColor
       ),
       mapWith(
@@ -245,38 +252,38 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
         ]),
         (s, [tStopOrders, tCommon]) => ({ s, tStopOrders, tCommon })
       ),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(({ s, tStopOrders, tCommon }) => {
-      const tableSettings = TableSettingHelper.toTableDisplaySettings(s.stopOrdersTable, s.stopOrdersColumns);
+      takeUntilDestroyed(this.destroyRef),
+      map(({ s, tStopOrders, tCommon }) => {
+        const tableSettings = TableSettingHelper.toTableDisplaySettings(s.stopOrdersTable, s.stopOrdersColumns);
 
-      if (tableSettings) {
-        this.listOfColumns = this.allColumns
-          .map(c => ({column: c, columnSettings: tableSettings.columns.find(x => x.columnId === c.id)}))
-          .filter(c => !!c.columnSettings)
-          .map((column, index) => ({
-            ...column.column,
-            displayName: tStopOrders(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
-            tooltip: tStopOrders(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
-            filterData: column.column.filterData
-              ? {
-                ...column.column.filterData,
-                filterName: tStopOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-                filters: (column.column.filterData.filters ?? []).map(f => ({
-                  value: f.value as unknown,
-                  text: tCommon([column.column.id + 'Filters', f.value], {fallback: f.text})
-                }))
-              }
-              : undefined,
-            width: column.columnSettings!.columnWidth ?? this.columnDefaultWidth,
-            order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
-          }))
-          .sort((a, b) => a.order - b.order);
+        return {
+          columns: this.allColumns
+            .map(c => ({column: c, columnSettings: tableSettings?.columns.find(x => x.columnId === c.id)}))
+            .filter(c => !!c.columnSettings)
+            .map((column, index) => ({
+              ...column.column,
+              displayName: tStopOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+              tooltip: tStopOrders(['columns', column.column.id, 'tooltip'], {fallback: column.column.tooltip}),
+              filterData: column.column.filterData
+                ? {
+                  ...column.column.filterData,
+                  filterName: tStopOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+                  filters: (column.column.filterData.filters ?? []).map(f => ({
+                    value: f.value as unknown,
+                    text: tCommon([column.column.id + 'Filters', f.value], {fallback: f.text})
+                  }))
+                }
+                : undefined,
+              width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
+              order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+            }))
+            .sort((a, b) => a.order - b.order)
+        };
+      })
+    );
+  }
 
-        this.tableInnerWidth = this.listOfColumns.reduce((prev, cur) =>prev + cur.width! , 0) + 70;
-      }
-      this.badgeColor = s.badgeColor!;
-    });
-
+  protected initTableDataStream(): Observable<DisplayOrder[]> {
     const orders$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getStopOrders(settings)),
@@ -285,9 +292,9 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
       tap(orders => this.orders = orders)
     );
 
-    this.displayOrders$ = combineLatest([
+    return combineLatest([
       orders$,
-      this.filter$,
+      this.filters$,
       this.timezoneConverterService.getConverter(),
       this.ordersGroupService.getAllOrderGroups()
     ]).pipe(
@@ -302,12 +309,18 @@ export class StopOrdersComponent extends BaseTableComponent<DisplayOrder, OrderF
         .filter(o => this.justifyFilter(o, f))
         .sort(this.sortOrders))
     );
+  }
 
-    this.cancels$.pipe(
-      mergeMap((command) => this.canceller.cancelOrder(command)),
-      catchError((e, caught) => caught),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe();
+  rowClick(row: DisplayOrder): void {
+    this.settings$
+      .pipe(
+        take(1)
+      )
+      .subscribe(s => this.service.selectNewInstrument(
+        row.symbol,
+        row.exchange,
+        s.badgeColor ?? defaultBadgeColor
+      ));
   }
 
   cancelOrder(orderId: string): void {

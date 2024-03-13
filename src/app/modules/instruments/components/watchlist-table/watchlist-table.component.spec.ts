@@ -78,6 +78,7 @@ describe('WatchlistTableComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WatchlistTableComponent);
     component = fixture.componentInstance;
+    component.guid = 'testGuid';
     fixture.detectChanges();
   });
 

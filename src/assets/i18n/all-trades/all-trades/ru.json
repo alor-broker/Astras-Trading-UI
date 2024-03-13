@@ -1,26 +1,32 @@
 {
   "columns": {
     "qty": {
-      "displayName": "Кол-во"
+      "displayName": "Кол-во",
+      "tooltip": "Количество лотов"
     },
     "price": {
-      "displayName": "Цена"
+      "displayName": "Цена",
+      "tooltip": "Цена сделки"
     },
     "timestamp": {
-      "displayName": "Время"
+      "displayName": "Время",
+      "tooltip": "Время совершения сделки"
     },
     "side": {
       "displayName": "Сторона",
+      "tooltip": "Сторона сделки",
       "filters": {
         "sell": "Продажа",
         "buy": "Покупка"
       }
     },
     "oi": {
-      "displayName": "Откр. интерес"
+      "displayName": "Откр. интерес",
+      "tooltip": "Открытый интерес"
     },
     "existing": {
-      "displayName": "Новое событие"
+      "displayName": "Новое событие",
+      "tooltip": "Новое событие"
     }
   }
 }

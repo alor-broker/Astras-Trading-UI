@@ -57,6 +57,7 @@ describe('PositionsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PositionsComponent);
     component = fixture.componentInstance;
+    component.guid = 'testGuid';
     fixture.detectChanges();
   });
 
