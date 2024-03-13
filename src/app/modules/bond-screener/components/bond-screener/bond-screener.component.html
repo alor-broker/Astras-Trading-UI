@@ -1,0 +1,18 @@
+<div
+  class="container"
+  (nzResizeObserve)="containerSizeChanged($event)"
+  nzResizeObserver
+>
+  <ats-infinite-scroll-table
+    *ngIf="tableConfig$ | async as tableConfig"
+    (filterApplied)="applyFilter($event)"
+    (rowClick)="selectInstrument($event)"
+    (scrolled)="scrolled()"
+    (orderColumnChange)="changeColumnOrder($event)"
+    [tableConfig]="tableConfig"
+    [data]="(bondsDisplay$ | async) ?? []"
+    [isLoading]="(isLoading$ | async) ?? false"
+    [tableContainerHeight]="(contentSize$ | async)?.height || 0"
+    [tableContainerWidth]="(contentSize$ | async)?.width || 0"
+  ></ats-infinite-scroll-table>
+</div>

@@ -33,6 +33,7 @@
     "@ngrx/store": "^16.1.0",
     "@ngrx/store-devtools": "^16.1.0",
     "angular-gridster2": "^16.0.0",
+    "apollo-angular": "5.0.2",
     "chart.js": "^4.1.1",
     "chartjs-chart-treemap": "^2.3.0",
     "d3": "^7.8.5",
@@ -47,7 +48,9 @@
     "ngx-markdown": "^16.0.0",
     "rxjs": "^7.8.1",
     "tslib": "^2.4.0",
-    "zone.js": "^0.13.1"
+    "zone.js": "^0.13.1",
+    "@apollo/client": "^3.0.0",
+    "graphql": "^16"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^16.1.4",

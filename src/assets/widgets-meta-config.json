@@ -694,5 +694,35 @@
       "galleryOrder": 20,
       "enabled": true
     }
+  },
+  {
+    "typeId": "bond-screener",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "BondScreenerModule",
+        "componentName": "BondScreenerWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Bond Screener",
+      "translations": {
+        "ru": "Скринер облигаций",
+        "en": "Bond Screener"
+      }
+    },
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "monitor",
+      "galleryIcon": "monitor",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 21,
+      "enabled": true
+    }
   }
 ]

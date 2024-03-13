@@ -403,14 +403,7 @@
           </nz-collapse-panel>
 
           <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.automationSettingsHeader')">
-            <nz-form-item class="one-row">
-              <nz-form-label nzFor="useBrackets">{{t('scalperOrderBookSettings.useBracketsLabel')}}</nz-form-label>
-              <nz-form-control>
-                <nz-switch formControlName='useBrackets'></nz-switch>
-              </nz-form-control>
-            </nz-form-item>
-
-            <nz-form-item *ngIf="form.value.useBrackets">
+            <nz-form-item>
               <nz-collapse [nzBordered]="false" nzGhost>
                 <nz-collapse-panel
                   [nzActive]="true"
@@ -442,6 +435,7 @@
                         [step]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
                           ? validationOptions.bracket.price.stepsStep
                           : validationOptions.bracket.price.percentsStep"
+                        [allowDecimal]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Percents"
                       ></ats-input-number>
                     </nz-form-control>
                     <ng-template #topOrderPriceRatioError>
@@ -454,29 +448,20 @@
                         max: validationOptions.bracket.price.max
                       })}}
                       </span>
-                      <span *ngIf="form.controls.bracketsSettings.controls.topOrderPriceRatio.errors?.priceStepMultiplicity">
-                        <ng-container *ngIf="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points; else percentsError">
-                          {{t('scalperOrderBookSettings.priceRatioPointsMultiplicityError')}}
-                        </ng-container>
-                        <ng-template #percentsError>
-                          {{t('scalperOrderBookSettings.priceRatioPercentsMultiplicityError')}}
-                          ({{form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
-                            ? validationOptions.bracket.price.stepsStep
-                            : validationOptions.bracket.price.percentsStep}})
-                          </ng-template>
-                      </span>
                     </ng-template>
                   </nz-form-item>
 
                   <nz-form-item>
-                    <nz-form-label
-                      nzFor="bottomOrderPriceRatio">{{t('scalperOrderBookSettings.bottomOrderPriceRatioLabel')}}</nz-form-label>
+                    <nz-form-label nzFor="bottomOrderPriceRatio">
+                      {{t('scalperOrderBookSettings.bottomOrderPriceRatioLabel')}}
+                    </nz-form-label>
                     <nz-form-control [nzErrorTip]="bottomOrderPriceRatioError">
                       <ats-input-number
                         formControlName="bottomOrderPriceRatio"
                         [step]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
                           ? validationOptions.bracket.price.stepsStep
                           : validationOptions.bracket.price.percentsStep"
+                        [allowDecimal]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Percents"
                       ></ats-input-number>
                     </nz-form-control>
                     <ng-template #bottomOrderPriceRatioError>
@@ -484,20 +469,11 @@
                         *ngIf="form.controls.bracketsSettings.controls.bottomOrderPriceRatio.errors?.min ||
                          form.controls.bracketsSettings.controls.bottomOrderPriceRatio.errors?.max"
                       >
-                      {{t('scalperOrderBookSettings.intervalError', {
-                        min: validationOptions.bracket.price.min,
-                        max: validationOptions.bracket.price.max
-                      })}}
-                    </span>
-                    <span *ngIf="form.controls.bracketsSettings.controls.bottomOrderPriceRatio.errors?.priceStepMultiplicity">
-                      <ng-container *ngIf="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points; else percentsError">
-                        {{t('scalperOrderBookSettings.priceRatioPointsMultiplicityError')}}
-                      </ng-container>
-                      <ng-template #percentsError>
-                        {{t('scalperOrderBookSettings.priceRatioPercentsMultiplicityError')}}
-                        ({{validationOptions.bracket.price.percentsStep}})
-                      </ng-template>
-                    </span>
+                        {{t('scalperOrderBookSettings.intervalError', {
+                          min: validationOptions.bracket.price.min,
+                          max: validationOptions.bracket.price.max
+                        })}}
+                      </span>
                     </ng-template>
                   </nz-form-item>
 

@@ -1,0 +1,4 @@
+{
+  "authErrorTitle": "Authorization error",
+  "authErrorMessage": "Try to logout and login again"
+}
