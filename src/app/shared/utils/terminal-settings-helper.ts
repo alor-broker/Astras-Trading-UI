@@ -8,6 +8,7 @@
 } from '../models/terminal-settings/terminal-settings.model';
 import { ThemeType } from '../models/settings/theme-settings.model';
 import { TimezoneDisplayOption } from '../models/enums/timezone-display-option';
+import { TableRowHeight } from "../models/enums/table-row-height";
 
 export class TerminalSettingsHelper {
   static getDefaultSettings(): TerminalSettings {
@@ -15,6 +16,7 @@ export class TerminalSettingsHelper {
       timezoneDisplayOption: TimezoneDisplayOption.MskTime,
       userIdleDurationMin: 15,
       badgesBind: false,
+      tableRowHeight: TableRowHeight.Medium,
       hotKeysSettings: this.getDefaultHotkeys(),
       scalperOrderBookMouseActions: this.getScalperOrderBookMouseActionsScheme1(),
       designSettings: {
