@@ -149,7 +149,6 @@ export class TechChartDatafeedService implements IBasicDataFeed {
         minmov: Math.round(instrumentDetails.minstep * priceScale),
         pricescale: priceScale,
         format: 'price',
-        full_name: instrumentDetails.symbol,
         type: instrumentDetails.type ?? '',
         has_empty_bars: false,
         has_intraday: true,
