@@ -441,7 +441,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     const disabledFeatures = [
       'symbol_info',
       'display_market_status',
-      'symbol_search_hot_key',
       'save_shortcut',
       'save_chart_properties_to_local_storage',
     ]  as ChartingLibraryFeatureset[];
@@ -527,6 +526,9 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         .subscribe(null, this.symbolChangeCallback);
       this.symbolChangeSub.add(() => this.chartState?.widget!.activeChart().onSymbolChanged().unsubscribe(null, this.symbolChangeCallback));
 
+      this.chartState!.widget.onShortcut("ctrl+f", () => {
+        this.chartState!.widget.activeChart().executeActionById("symbolSearch");
+      });
     });
   }
 
