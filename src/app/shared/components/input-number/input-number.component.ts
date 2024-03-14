@@ -9,9 +9,11 @@ import {
   TemplateRef,
   ViewChild
 } from '@angular/core';
-import {NG_VALUE_ACCESSOR} from "@angular/forms";
-import {ControlValueAccessorBaseComponent} from "../control-value-accessor-base/control-value-accessor-base.component";
-import {MathHelper} from "../../utils/math-helper";
+import { NG_VALUE_ACCESSOR } from "@angular/forms";
+import {
+  ControlValueAccessorBaseComponent
+} from "../control-value-accessor-base/control-value-accessor-base.component";
+import { MathHelper } from "../../utils/math-helper";
 
 @Component({
   selector: 'ats-input-number',
@@ -139,12 +141,16 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
     }
   }
 
-  processWheel($event: WheelEvent): void {
-    $event.stopPropagation();
-    $event.preventDefault();
+  processWheel(event: WheelEvent): void {
+    if (event.target !== document.activeElement) {
+      return;
+    }
 
-    let multiplier = $event.deltaY > 0 ? -1 : 1;
-    if ($event.shiftKey) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    let multiplier = event.deltaY > 0 ? -1 : 1;
+    if (event.shiftKey) {
       multiplier = multiplier * 10;
     }
 
