@@ -7,13 +7,7 @@ import { BondScreenerSettings } from '../../models/bond-screener-settings.model'
 import { filter, map } from 'rxjs/operators';
 import { BondScreenerService } from "../../services/bond-screener.service";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import {
-  BondEdge,
-  BondNode,
-  BondScreenerFilter,
-  BondScreenerFilters, FilterCondition,
-  PageInfo
-} from "../../models/bond-screener.model";
+import { BondNode } from "../../models/bond-screener.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
@@ -28,6 +22,15 @@ import {
   LazyLoadingBaseTableComponent
 } from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import {
+  GraphQlCondition,
+  GraphQlEdge,
+  GraphQlFilter,
+  GraphQlFilters,
+  GraphQlPageInfo,
+  GraphQlSort,
+  GraphQlSortType
+} from "../../../../shared/models/graph-ql.model";
 
 interface BondDisplay extends BondNode {
   id: string;
@@ -41,8 +44,8 @@ interface BondDisplay extends BondNode {
 export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
   BondDisplay,
   { [propName: string]: any },
-  PageInfo,
-  string
+  GraphQlPageInfo,
+  GraphQlSort
 > implements OnInit, OnDestroy {
 
   @Input({required: true}) guid!: string;
@@ -54,20 +57,14 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'tradingStatusInfo',
       displayName: 'Статус',
       transformFn: (d: BondNode): string => d.financialAttributes!.tradingStatusInfo ?? '',
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        :`{ financialAttributes: { tradingStatusInfo: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['financialAttributes', 'tradingStatusInfo'], dir),
       width: 90
     },
     {
       id: 'symbol',
       displayName: 'Тикер',
       transformFn: (d: BondNode): string => d.basicInformation.symbol,
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        :`{ basicInformation: { symbol: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'symbol'], dir),
       width: 120,
       filterData: {
         filterName: 'symbol'
@@ -78,10 +75,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'shortName',
       displayName: 'Назв.',
       transformFn: (d: BondNode): string => d.basicInformation.shortName ?? '',
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        :`{ basicInformation: { shortName: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'shortName'], dir),
       width: 100,
       filterData: {
         filterName: 'shortName'
@@ -91,10 +85,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'exchange',
       displayName: 'Биржа',
       transformFn: (d: BondNode): string => d.basicInformation.exchange,
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        :`{ basicInformation: { exchange: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'exchange'], dir),
       width: 90,
       filterData: {
         filterName: 'exchange',
@@ -110,10 +101,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'maturityDate',
       displayName: 'Дата погашения',
       transformFn: (d: BondNode): string => d.maturityDate == null ? '' : new Date(d.maturityDate).toLocaleDateString(),
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        :`{ maturityDate: ${dir === 'ascend' ? 'ASC' : 'DESC'} }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['maturityDate'], dir),
       width: 110,
       filterData: {
         filterName: 'maturityDate',
@@ -126,10 +114,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'placementEndDate',
       displayName: 'Дата окончания размещения',
       transformFn: (d: BondNode): string => d.placementEndDate == null ? '' : new Date(d.placementEndDate).toLocaleDateString(),
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        :`{ placementEndDate: ${dir === 'ascend' ? 'ASC' : 'DESC'} }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['placementEndDate'], dir),
       width: 120,
       filterData: {
         filterName: 'placementEndDate',
@@ -142,10 +127,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'cancellation',
       displayName: 'Дата окончания',
       transformFn: (d: BondNode): string => d.additionalInformation!.cancellation == null ? '' : new Date(d.additionalInformation!.cancellation).toLocaleDateString(),
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        :`{ additionalInformation: { cancellation: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['additionalInformation', 'cancellation'], dir),
       width: 110,
       filterData: {
         filterName: 'cancellation',
@@ -158,10 +140,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'currentYield',
       displayName: 'Доходность, %',
       transformFn: (d: BondNode): string => d.yield!.currentYield != null ? MathHelper.round(d.yield!.currentYield * 100, 2).toString() : '',
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        :`{ yield: { currentYield: ${dir === 'ascend' ? 'ASC' : 'DESC'} }}`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['yield', 'currentYield'], dir),
       width: 120,
       filterData: {
         filterName: 'currentYield',
@@ -174,10 +153,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'issueValue',
       displayName: 'Заявл. объём выпуска',
       transformFn: (d: BondNode): string => d.volumes!.issueValue != null ? MathHelper.round(+d.volumes!.issueValue!, 2).toString() : '',
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        :`{ volumes: { issueValue: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['volumes', 'issueValue'], dir),
       width: 100,
       filterData: {
         filterName: 'issueValue',
@@ -189,10 +165,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'couponType',
       displayName: 'Тип купона',
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        :`{ couponType: ${dir === 'ascend' ? 'ASC' : 'DESC'} }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['couponType'], dir),
       width: 110,
       filterData: {
         filterName: 'couponType',
@@ -208,10 +181,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'couponRate',
       displayName: 'Ставка купона',
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        : `{ couponRate: ${dir === 'ascend' ? 'ASC' : 'DESC'} }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['couponRate'], dir),
       width: 90,
       filterData: {
         filterName: 'couponRate',
@@ -224,10 +194,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'priceMultiplier',
       displayName: 'Множитель цены',
       transformFn: (d: BondNode): string => d.additionalInformation!.priceMultiplier?.toString() ?? '',
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        : `{ additionalInformation: { priceMultiplier: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['additionalInformation', 'priceMultiplier'], dir),
       width: 110,
       filterData: {
         filterName: 'priceMultiplier',
@@ -240,10 +207,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'board',
       displayName: 'Режим торогов',
       transformFn: (d: BondNode): string => d.boardInformation!.board ?? '',
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        : `{ boardInformation: { board: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['boardInformation', 'board'], dir),
       width: 90,
       filterData: {
         filterName: 'board'
@@ -252,10 +216,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'guaranteed',
       displayName: 'Гарантия',
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        : `{ guaranteed: ${dir === 'ascend' ? 'ASC' : 'DESC'} }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['guaranteed'], dir),
       width: 100,
       filterData: {
         filterName: 'guaranteed',
@@ -269,10 +230,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'hasOffer',
       displayName: 'Доср. выкуп/погашение',
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        : `{ hasOffer: ${dir === 'ascend' ? 'ASC' : 'DESC'} }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['hasOffer'], dir),
       width: 110,
       filterData: {
         filterName: 'hasOffer',
@@ -287,10 +245,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'lotSize',
       displayName: 'Размер лота',
       transformFn: (d: BondNode): string => d.tradingDetails!.lotSize?.toString() ?? '',
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        : `{ tradingDetails: { lotSize: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'lotSize'], dir),
       width: 90,
       filterData: {
         filterName: 'lotSize',
@@ -303,10 +258,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'minStep',
       displayName: 'Шаг цены',
       transformFn: (d: BondNode): string => d.tradingDetails!.minStep?.toString() ?? '',
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        : `{ tradingDetails: { minStep: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'minStep'], dir),
       width: 80,
       filterData: {
         filterName: 'minStep',
@@ -319,10 +271,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'priceMax',
       displayName: 'Макс. цена',
       transformFn: (d: BondNode): string => d.tradingDetails!.priceMax?.toString() ?? '',
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        : `{ tradingDetails: { priceMax: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceMax'], dir),
       width: 80,
       filterData: {
         filterName: 'priceMax',
@@ -335,10 +284,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'priceMin',
       displayName: 'Мин. цена',
       transformFn: (d: BondNode): string => d.tradingDetails!.priceMin?.toString() ?? '',
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        : `{ tradingDetails: { priceMin: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceMin'], dir),
       width: 80,
       filterData: {
         filterName: 'priceMin',
@@ -351,10 +297,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'priceStep',
       displayName: 'Стоимость шага цены',
       transformFn: (d: BondNode): string => d.tradingDetails!.priceStep?.toString() ?? '',
-      sortChangeFn: (dir): void => this.sort$.next(dir == null
-        ? null
-        : `{ tradingDetails: { priceStep: ${dir === 'ascend' ? 'ASC' : 'DESC'} } }`
-      ),
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceStep'], dir),
       width: 110,
       filterData: {
         filterName: 'priceStep',
@@ -440,7 +383,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         }
 
         return acc;
-      }, [] as (BondScreenerFilter | BondScreenerFilters)[]);
+      }, [] as (GraphQlFilter | GraphQlFilters)[]);
 
     this.pagination = null;
     this.filters$.next({
@@ -476,7 +419,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     super.saveColumnWidth<BondScreenerSettings>(event, this.settings$);
   }
 
-  private getFilterValue(filterName: string, filterValue: string | string[] | boolean | number): BondScreenerFilter | BondScreenerFilters | null {
+  private getFilterValue(filterName: string, filterValue: string | string[] | boolean | number): GraphQlFilter | GraphQlFilters | null {
     const filterType = Object.keys(BOND_FILTER_TYPES).find(key => BOND_FILTER_TYPES[key].includes(filterName));
 
     if (filterType === 'multiSelect') {
@@ -572,13 +515,13 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
 
           const columnIds = tableConfig.columns.map(c => c.id);
 
-          const filtersWithDefaultValues = JSON.parse(JSON.stringify(filters)) as BondScreenerFilters;
+          const filtersWithDefaultValues = JSON.parse(JSON.stringify(filters)) as GraphQlFilters;
           const cancellationFromFilterValue = filtersWithDefaultValues.and?.find(f => (
             (
               (
-                f as BondScreenerFilter
-              ).additionalInformation as BondScreenerFilter
-            )?.cancellation as FilterCondition
+                f as GraphQlFilter
+              ).additionalInformation as GraphQlFilter
+            )?.cancellation as GraphQlCondition
           )?.gte != null);
 
           if ((settings.hideExpired ?? true) && cancellationFromFilterValue == null) {
@@ -593,11 +536,11 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
 
           return this.service.getBonds(
             columnIds,
-            sort,
             {
               first: this.loadingChunkSize,
               after: this.pagination?.endCursor,
-              filters: filtersWithDefaultValues
+              filters: filtersWithDefaultValues,
+              sort: sort
             });
         }),
         takeUntilDestroyed(this.destroyRef)
@@ -607,10 +550,10 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
           return;
         }
 
-        const newBonds = data!.bonds.edges.map((be: BondEdge) => ({
+        const newBonds = data!.bonds.edges.map((be: GraphQlEdge<BondNode>) => ({
           ...be.node,
           id: be.cursor
-        })) ?? [];
+        } as BondDisplay)) ?? [];
 
         this.isLoading$.next(false);
         if (this.pagination == null) {
@@ -653,5 +596,21 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
           }));
         })
       );
+  }
+
+  private sortChange(fields: string[], sort: string | null): void {
+    if (sort == null) {
+      this.sort$.next(null);
+      return;
+    }
+
+    const sortObj = fields.reduceRight((acc, curr, index) => {
+      if (index === fields.length - 1) {
+        return { [curr]: sort === 'descend' ? GraphQlSortType.DESC : GraphQlSortType.ASC };
+      }
+      return { [curr]: acc };
+    }, {} as GraphQlSort);
+
+    this.sort$.next(sortObj);
   }
 }

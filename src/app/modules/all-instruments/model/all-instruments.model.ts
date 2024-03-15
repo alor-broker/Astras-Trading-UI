@@ -1,3 +1,45 @@
+import { GraphQlEdge, GraphQlPageInfo } from "../../../shared/models/graph-ql.model";
+
+export interface AllInstrumentsResponse {
+  instruments: {
+    edges: GraphQlEdge<AllInstrumentsNode>[];
+    pageInfo: GraphQlPageInfo;
+  };
+}
+
+export interface AllInstrumentsNode {
+  basicInformation?: {
+    symbol?: string;
+    shortName?: string;
+    type?: string;
+    exchange?: string;
+  };
+  financialAttributes?: {
+    tradingStatus?: string;
+    tradingStatusInfo?: string;
+    currency?: string;
+  };
+  additionalInformation?: {
+    cancellation?: Date;
+    priceMultiplier?: number;
+    complexProductCategory?: string;
+  };
+  boardInformation?: {
+    board?: string;
+  };
+  tradingDetails?: {
+    lotSize?: number;
+    minStep?: number;
+    priceMax?: number;
+    priceMin?: number;
+    priceStep?: number;
+    rating?: number;
+  };
+  currencyInformation?: {
+    nominal?: string;
+  };
+}
+
 export interface AllInstruments {
   cfiCode: string;
   currency: string;
