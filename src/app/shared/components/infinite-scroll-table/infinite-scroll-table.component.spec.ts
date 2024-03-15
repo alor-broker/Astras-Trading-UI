@@ -9,6 +9,7 @@ import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { UntypedFormControl } from "@angular/forms";
 import { TableConfig } from '../../models/table-config.model';
 import { BaseColumnSettings } from "../../models/settings/table-settings.model";
+import { ResizeColumnDirective } from "../../directives/resize-column.directive";
 
 @Component({
   template: `
@@ -66,7 +67,8 @@ describe('InfiniteScrollTableComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         InfiniteScrollTableComponent,
-        TestWrapperComponent
+        TestWrapperComponent,
+        ResizeColumnDirective
       ],
       imports: [
         NoopAnimationsModule,

@@ -6,11 +6,13 @@ import { PositionsComponent } from './positions.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import {
-  commonTestProviders, getTranslocoModule,
+  commonTestProviders,
+  getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import { OrderService } from "../../../../shared/services/orders/order.service";
+import { LetDirective } from "@ngrx/component";
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
@@ -29,7 +31,8 @@ describe('PositionsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         getTranslocoModule(),
-        ...sharedModuleImportForTests
+        ...sharedModuleImportForTests,
+        LetDirective
       ],
       providers: [
         {

@@ -10,12 +10,14 @@ import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
-  commonTestProviders, getTranslocoModule,
+  commonTestProviders,
+  getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
+import { LetDirective } from "@ngrx/component";
 
 describe('StopOrdersComponent', () => {
   let component: StopOrdersComponent;
@@ -37,7 +39,8 @@ describe('StopOrdersComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         getTranslocoModule(),
-        ...sharedModuleImportForTests
+        ...sharedModuleImportForTests,
+        LetDirective
       ],
       providers: [
         {

@@ -18,6 +18,7 @@ import {
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-display-option";
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
+import { LetDirective } from "@ngrx/component";
 
 describe('TradesHistoryComponent', () => {
   let component: TradesHistoryComponent;
@@ -28,7 +29,10 @@ describe('TradesHistoryComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [
+        getTranslocoModule(),
+        LetDirective
+      ],
       declarations: [
         TradesHistoryComponent,
         ...ngZorroMockComponents,

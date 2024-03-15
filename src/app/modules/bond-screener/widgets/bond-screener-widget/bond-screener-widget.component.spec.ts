@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BondScreenerWidgetComponent } from './bond-screener-widget.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import { mockComponent, widgetSkeletonMock } from "../../../../shared/utils/testing";
+import { getTranslocoModule, mockComponent, widgetSkeletonMock } from "../../../../shared/utils/testing";
 import { Widget } from "../../../../shared/models/dashboard/widget.model";
 import { WidgetMeta } from "../../../../shared/models/widget-meta.model";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
@@ -29,6 +29,9 @@ describe('BondScreenerWidgetComponent', () => {
           inputs: ['guid']
         }),
         widgetSkeletonMock
+      ],
+      imports: [
+        getTranslocoModule()
       ],
       providers: [
         {

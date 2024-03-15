@@ -12,6 +12,7 @@ import {
   mockComponent,
   ngZorroMockComponents
 } from "../../../../shared/utils/testing";
+import { LetDirective } from "@ngrx/component";
 
 describe('RepoTradesComponent', () => {
   let component: RepoTradesComponent;
@@ -19,11 +20,15 @@ describe('RepoTradesComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [
+        getTranslocoModule(),
+        LetDirective
+      ],
       declarations: [
         RepoTradesComponent,
         ...ngZorroMockComponents,
-        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] })
+        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
+        mockComponent({ selector: 'nz-filter-trigger', inputs: ['nzActive', 'nzDropdownMenu', 'nzVisible'] })
       ],
       providers: [
         {
