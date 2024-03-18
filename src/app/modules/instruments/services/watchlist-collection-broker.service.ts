@@ -138,8 +138,8 @@ export class WatchlistCollectionBrokerService {
 
     return forkJoin(
       lists.map(l => this.remoteStorageService.setRecord(
-        l.id,
         {
+          key: l.id,
           meta: {
             timestamp: this.getTimestamp()
           },

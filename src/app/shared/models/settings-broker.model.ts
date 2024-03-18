@@ -3,6 +3,7 @@
 }
 
 export interface StorageRecord {
+  key: string;
   meta: RecordMeta;
   value: any;
 }

@@ -85,7 +85,8 @@ export class TerminalSettingsBrokerService {
 
   private setRemoteRecord(settings: TerminalSettings): Observable<boolean> {
     return this.remoteStorageService.setRecord(
-      this.settingsKey, {
+      {
+        key: this.settingsKey,
         meta: {
           timestamp: this.getTimestamp()
         },

@@ -60,8 +60,8 @@ export class MigrationsMetaService {
   saveAppliedMigrations(migrations: string[]): Observable<boolean> {
     const now = Date.now();
     const saveStreams$ = migrations.map(m => this.remoteStorageService.setRecord(
-      GuidGenerator.newGuid(),
       {
+        key: GuidGenerator.newGuid(),
         meta: {
           timestamp: now
         },

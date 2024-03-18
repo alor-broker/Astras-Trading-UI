@@ -50,6 +50,7 @@ export class RemoteStorageService {
         if (!!r && !!r.UserSettings) {
           try {
             return {
+              key: r.UserSettings.Key,
               meta: JSON.parse(r.UserSettings.Description) as RecordMeta,
               value: JSON.parse(r.UserSettings.Content) as unknown
             };
@@ -83,6 +84,7 @@ export class RemoteStorageService {
 
         try {
           return r.map(i => ({
+            key: i.Key,
             meta: JSON.parse(i.Description) as RecordMeta,
             value: JSON.parse(i.Content) as unknown
           }));
@@ -96,8 +98,7 @@ export class RemoteStorageService {
       take(1)
     );
   }
-
-  setRecord(key: string, record: StorageRecord, groupKey?: string): Observable<boolean> {
+  setRecord(record: StorageRecord, groupKey?: string): Observable<boolean> {
     return this.httpClient.put(
       this.baseUrl,
       {
@@ -108,7 +109,7 @@ export class RemoteStorageService {
       {
         params: {
           serviceName: this.serviceName,
-          key: key
+          key: record.key
         },
         responseType: 'text'
       },

@@ -12,6 +12,7 @@ import {
   combineLatest,
   distinctUntilChanged,
   filter,
+  firstValueFrom,
   Observable,
   pairwise,
   shareReplay,
@@ -25,15 +26,21 @@ import {
 import {
   ChartingLibraryFeatureset,
   ChartingLibraryWidgetOptions,
+  ChartMetaInfo,
+  ChartTemplate,
+  ChartTemplateContent,
   CustomTimezoneId,
   GmtTimezoneId,
   IChartingLibraryWidget,
+  IExternalSaveLoadAdapter,
   IOrderLineAdapter,
   IPositionLineAdapter,
   LanguageCode,
+  LineToolsAndGroupsState,
   PlusClickParams,
   ResolutionString,
   SubscribeEventsMap,
+  StudyTemplateMetaInfo,
   TimeFrameType,
   TimeFrameValue,
   Timezone,
@@ -104,6 +111,7 @@ import { MarketService } from "../../../../shared/services/market.service";
 import { MarketExchange } from "../../../../shared/models/market-settings.model";
 import { DeviceService } from "../../../../shared/services/device.service";
 import { DeviceInfo } from "../../../../shared/models/device-info.model";
+import { ChartTemplatesSettingsBrokerService } from "../../services/chart-templates-settings-broker.service";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -267,7 +275,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly destroyRef: DestroyRef,
     private readonly syntheticInstrumentsService: SyntheticInstrumentsService,
     private readonly marketService: MarketService,
-    private readonly deviceService: DeviceService
+    private readonly deviceService: DeviceService,
+    private readonly chartTemplatesSettingsBrokerService: ChartTemplatesSettingsBrokerService
   ) {
   }
 
@@ -443,12 +452,16 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       'display_market_status',
       'save_shortcut',
       'save_chart_properties_to_local_storage',
+      'header_quick_search',
+      'header_saveload'
     ]  as ChartingLibraryFeatureset[];
+
     const enabledFeatures = [
       'side_toolbar_in_fullscreen_mode',
       'chart_crosshair_menu',
       'show_spread_operators',
-      'seconds_resolution'
+      'seconds_resolution',
+      'chart_template_storage'
     ]  as ChartingLibraryFeatureset[];
 
     if (deviceInfo.isMobile) {
@@ -494,6 +507,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         { text: '1d', resolution: '5' as ResolutionString, description: this.translateFn(['timeframes', '1d', 'desc']), title: this.translateFn(['timeframes', '1d', 'title']) },
       ],
       symbol_search_request_delay: 2000,
+      // for some reasons TV stringifies this field. So service cannot be passed directly
+      save_load_adapter: this.createSaveLoadAdapter(),
       //features
       disabled_features: disabledFeatures,
       enabled_features: enabledFeatures
@@ -1118,5 +1133,90 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         this.ordersDialogService.openEditOrderDialog(params);
       }
     );
+  }
+
+  private createSaveLoadAdapter(): IExternalSaveLoadAdapter {
+    const service = this.chartTemplatesSettingsBrokerService;
+    return {
+      getAllChartTemplates(): Promise<string[]> {
+        return firstValueFrom(service.getSavedTemplates().pipe(
+            map(t => t.map(x => x.templateName))
+          )
+        );
+      },
+
+      getChartTemplateContent(templateName: string): Promise<ChartTemplate> {
+        return firstValueFrom(service.getSavedTemplates().pipe(
+            map(t => ({
+              content: t.find(x => x.templateName === templateName)?.content
+            }))
+          )
+        );
+      },
+
+      saveChartTemplate(newName: string, theme: ChartTemplateContent): Promise<void> {
+        return firstValueFrom(service.saveChartTemplate(newName, theme));
+      },
+
+      removeChartTemplate(templateName: string): Promise<void> {
+        return firstValueFrom(service.removeTemplate(templateName));
+      },
+
+      saveChart(): Promise<string> {
+        return Promise.resolve('');
+      },
+
+      getAllCharts(): Promise<ChartMetaInfo[]> {
+        return Promise.resolve([]);
+      },
+
+      getChartContent(): Promise<string> {
+        return Promise.resolve('');
+      },
+
+      removeChart(): Promise<void> {
+        return Promise.resolve();
+      },
+
+      getAllStudyTemplates(): Promise<StudyTemplateMetaInfo[]> {
+        return Promise.resolve([]);
+      },
+
+      loadDrawingTemplate(): Promise<string> {
+        return Promise.resolve('');
+      },
+
+      getDrawingTemplates(): Promise<string[]> {
+        return Promise.resolve([]);
+      },
+
+      loadLineToolsAndGroups(): Promise<Partial<LineToolsAndGroupsState> | null> {
+        return Promise.resolve(null);
+      },
+
+      removeDrawingTemplate(): Promise<void> {
+        return Promise.resolve();
+      },
+
+      saveDrawingTemplate(): Promise<void> {
+        return Promise.resolve();
+      },
+
+      saveLineToolsAndGroups(): Promise<void> {
+        return Promise.resolve();
+      },
+
+      saveStudyTemplate(): Promise<void> {
+        return Promise.resolve();
+      },
+
+      removeStudyTemplate(): Promise<void> {
+        return Promise.resolve();
+      },
+
+      getStudyTemplateContent(): Promise<string> {
+        return Promise.resolve('');
+      }
+    };
   }
 }

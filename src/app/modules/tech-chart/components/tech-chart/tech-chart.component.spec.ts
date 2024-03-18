@@ -33,6 +33,7 @@ import {OrdersDialogService} from "../../../../shared/services/orders/orders-dia
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
 import { MarketService } from "../../../../shared/services/market.service";
+import { ChartTemplatesSettingsBrokerService } from "../../services/chart-templates-settings-broker.service";
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -150,6 +151,14 @@ describe('TechChartComponent', () => {
           provide: MarketService,
           useValue: {
             getAllExchanges: jasmine.createSpy('getAllExchanges').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: ChartTemplatesSettingsBrokerService,
+          useValue: {
+            getSavedTemplates: jasmine.createSpy('getSavedTemplates').and.returnValue(new Subject()),
+            saveChartTemplate: jasmine.createSpy('saveChartTemplate').and.returnValue(new Subject()),
+            removeTemplate: jasmine.createSpy('removeTemplate').and.returnValue(new Subject()),
           }
         },
         ...commonTestProviders
