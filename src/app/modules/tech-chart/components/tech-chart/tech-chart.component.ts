@@ -447,28 +447,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         chartLayout.charts[0].panes[0].sources[0].state.shortName = selectedInstrumentSymbol;
       }
     }
-    const disabledFeatures = [
-      'symbol_info',
-      'display_market_status',
-      'save_shortcut',
-      'save_chart_properties_to_local_storage',
-      'header_quick_search',
-      'header_saveload'
-    ]  as ChartingLibraryFeatureset[];
 
-    const enabledFeatures = [
-      'side_toolbar_in_fullscreen_mode',
-      'chart_crosshair_menu',
-      'show_spread_operators',
-      'seconds_resolution',
-      'chart_template_storage'
-    ]  as ChartingLibraryFeatureset[];
-
-    if (deviceInfo.isMobile) {
-      disabledFeatures.push('header_symbol_search');
-    } else {
-      enabledFeatures.push('header_symbol_search');
-    }
+    const features = this.getFeatures(settings, deviceInfo);
 
     this.techChartDatafeedService.setExchangeSettings(exchanges);
     const config: ChartingLibraryWidgetOptions = {
@@ -510,8 +490,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       // for some reasons TV stringifies this field. So service cannot be passed directly
       save_load_adapter: this.createSaveLoadAdapter(),
       //features
-      disabled_features: disabledFeatures,
-      enabled_features: enabledFeatures
+      disabled_features: features.disabled,
+      enabled_features: features.enabled
     };
 
     const chartWidget = new widget(config);
@@ -1218,5 +1198,56 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         return Promise.resolve('');
       }
     };
+  }
+
+  private getFeatures(settings: TechChartSettings, deviceInfo: DeviceInfo): { enabled: ChartingLibraryFeatureset[], disabled: ChartingLibraryFeatureset[] } {
+    const enabled = new Set<ChartingLibraryFeatureset>([
+      'side_toolbar_in_fullscreen_mode',
+      'chart_crosshair_menu' as ChartingLibraryFeatureset,
+      'show_spread_operators',
+      'seconds_resolution',
+      'chart_template_storage'
+    ]);
+
+    const disabled = new Set<ChartingLibraryFeatureset>(
+      [
+        'symbol_info',
+        'display_market_status',
+        'save_shortcut',
+        'save_chart_properties_to_local_storage',
+        'header_quick_search',
+        'header_saveload'
+      ]
+    );
+
+    this.switchChartFeature('header_widget', settings.panels?.header ?? true, enabled, disabled);
+    this.switchChartFeature('header_symbol_search', !deviceInfo.isMobile && (settings.panels?.headerSymbolSearch ?? true), enabled, disabled);
+    this.switchChartFeature('header_chart_type', settings.panels?.headerChartType ?? true, enabled, disabled);
+    this.switchChartFeature('header_compare', settings.panels?.headerCompare ?? true, enabled, disabled);
+    this.switchChartFeature('header_resolutions', settings.panels?.headerResolutions ?? true, enabled, disabled);
+    this.switchChartFeature('header_indicators', settings.panels?.headerIndicators ?? true, enabled, disabled);
+    this.switchChartFeature('header_screenshot', settings.panels?.headerScreenshot ?? true, enabled, disabled);
+    this.switchChartFeature('header_settings', settings.panels?.headerSettings ?? true, enabled, disabled);
+    this.switchChartFeature('header_undo_redo', settings.panels?.headerUndoRedo ?? true, enabled, disabled);
+    this.switchChartFeature('header_fullscreen_button', settings.panels?.headerFullscreenButton ?? true, enabled, disabled);
+    this.switchChartFeature('left_toolbar', settings.panels?.drawingsToolbar ?? true, enabled, disabled);
+    this.switchChartFeature('timeframes_toolbar', settings.panels?.timeframesBottomToolbar ?? true, enabled, disabled);
+
+    return {
+      enabled: [...enabled.values()],
+      disabled: [...disabled.values()],
+    };
+  }
+
+  private switchChartFeature(
+    feature: ChartingLibraryFeatureset,
+    enabled: boolean,
+    enabledSet: Set<ChartingLibraryFeatureset>,
+    disabledSet: Set<ChartingLibraryFeatureset>): void {
+    if(enabled) {
+      enabledSet.add(feature);
+    } else {
+      disabledSet.add(feature);
+    }
   }
 }

@@ -4,8 +4,7 @@ import {
   OnInit,
 } from '@angular/core';
 import {
-  UntypedFormControl,
-  UntypedFormGroup,
+  FormBuilder,
   Validators
 } from "@angular/forms";
 import {
@@ -34,15 +33,40 @@ import { DeviceInfo } from "../../../../shared/models/device-info.model";
 export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<TechChartSettings> implements OnInit {
   readonly availableLineMarkerPositions = Object.values(LineMarkerPosition);
 
-  form?: UntypedFormGroup;
-  isSyntheticInstrument = SyntheticInstrumentsHelper.isSyntheticInstrument;
+  form = this.formBuilder.group({
+    // instrument
+    instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
+    instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null),
+    // view
+    showTrades: this.formBuilder.nonNullable.control(false),
+    showOrders: this.formBuilder.nonNullable.control(true),
+    ordersLineMarkerPosition: this.formBuilder.nonNullable.control(LineMarkerPosition.Right),
+    showPosition: this.formBuilder.nonNullable.control(true),
+    positionLineMarkerPosition: this.formBuilder.nonNullable.control(LineMarkerPosition.Right),
+    panels: this.formBuilder.group({
+      header:this.formBuilder.nonNullable.control(true),
+      headerSymbolSearch: this.formBuilder.nonNullable.control(true),
+      headerChartType: this.formBuilder.nonNullable.control(true),
+      headerCompare: this.formBuilder.nonNullable.control(true),
+      headerResolutions: this.formBuilder.nonNullable.control(true),
+      headerIndicators: this.formBuilder.nonNullable.control(true),
+      headerScreenshot: this.formBuilder.nonNullable.control(true),
+      headerSettings: this.formBuilder.nonNullable.control(true),
+      headerUndoRedo: this.formBuilder.nonNullable.control(true),
+      headerFullscreenButton: this.formBuilder.nonNullable.control(true),
+      drawingsToolbar: this.formBuilder.nonNullable.control(true),
+      timeframesBottomToolbar: this.formBuilder.nonNullable.control(true),
+    })
+  });
 
-  protected settings$!: Observable<TechChartSettings>;
+  isSyntheticInstrument = SyntheticInstrumentsHelper.isSyntheticInstrument;
   deviceInfo$!: Observable<DeviceInfo>;
+  protected settings$!: Observable<TechChartSettings>;
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     protected readonly manageDashboardsService: ManageDashboardsService,
+    private readonly formBuilder: FormBuilder,
     private readonly deviceService: DeviceService,
     private readonly destroyRef: DestroyRef
   ) {
@@ -68,25 +92,11 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
     this.settings$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(settings => {
-      this.form = new UntypedFormGroup({
-        instrument: new UntypedFormControl({
-          symbol: settings.symbol,
-          exchange: settings.exchange,
-          instrumentGroup: settings.instrumentGroup
-        } as InstrumentKey, Validators.required),
-        exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
-        instrumentGroup: new UntypedFormControl(settings.instrumentGroup),
-        showTrades: new UntypedFormControl(settings.showTrades ?? false),
-        showOrders: new UntypedFormControl(settings.showOrders ?? true),
-        ordersLineMarkerPosition: new UntypedFormControl(settings.ordersLineMarkerPosition ?? LineMarkerPosition.Right),
-        showPosition: new UntypedFormControl(settings.showPosition ?? true),
-        positionLineMarkerPosition: new UntypedFormControl(settings.positionLineMarkerPosition ?? LineMarkerPosition.Right),
-      });
+      this.setCurrentFormValues(settings);
     });
   }
 
   instrumentSelected(instrument: InstrumentKey | null): void {
-    this.form!.controls.exchange.setValue(instrument?.exchange ?? null);
     this.form!.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
@@ -103,5 +113,37 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
     newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings as InstrumentKey, newSettings as InstrumentKey);
 
     return newSettings;
+  }
+
+  private setCurrentFormValues(settings: TechChartSettings): void {
+    this.form.reset();
+
+    this.form.controls.instrument.setValue({
+      symbol: settings.symbol,
+      exchange: settings.exchange ?? '',
+      instrumentGroup: settings.instrumentGroup ?? null
+    });
+    this.form.controls.instrumentGroup.setValue(settings.instrumentGroup ?? null);
+
+    this.form.controls.showTrades.setValue(settings.showTrades ?? false);
+    this.form.controls.showOrders.setValue(settings.showOrders ?? true);
+    this.form.controls.ordersLineMarkerPosition.setValue(settings.ordersLineMarkerPosition ?? LineMarkerPosition.Right);
+    this.form.controls.showPosition.setValue(settings.showPosition ?? true);
+    this.form.controls.positionLineMarkerPosition.setValue(settings.positionLineMarkerPosition ?? LineMarkerPosition.Right);
+
+    this.form.controls.panels.setValue({
+      header: settings.panels?.header ?? true,
+      headerSymbolSearch: settings.panels?.headerSymbolSearch ?? true,
+      headerCompare: settings.panels?.headerCompare ?? true,
+      headerResolutions: settings.panels?.headerResolutions ?? true,
+      headerChartType: settings.panels?.headerChartType ?? true,
+      headerIndicators: settings.panels?.headerIndicators ?? true,
+      headerScreenshot: settings.panels?.headerScreenshot ?? true,
+      headerSettings: settings.panels?.headerSettings ?? true,
+      headerUndoRedo: settings.panels?.headerUndoRedo ?? true,
+      headerFullscreenButton: settings.panels?.headerFullscreenButton ?? true,
+      drawingsToolbar: settings.panels?.drawingsToolbar ?? true,
+      timeframesBottomToolbar: settings.panels?.timeframesBottomToolbar ?? true,
+    });
   }
 }

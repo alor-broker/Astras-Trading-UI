@@ -63,6 +63,23 @@ export class TechChartWidgetComponent implements OnInit {
         ordersLineMarkerPosition: getValueOrDefault(settings.ordersLineMarkerPosition, LineMarkerPosition.Middle),
         showPosition: getValueOrDefault(settings.showPosition, true),
         positionLineMarkerPosition: getValueOrDefault(settings.positionLineMarkerPosition, LineMarkerPosition.Middle),
+        panels: getValueOrDefault(
+          settings.panels,
+          {
+            timeframesBottomToolbar: true,
+            drawingsToolbar: true,
+            header: true,
+            headerSymbolSearch: true,
+            headerChartType: true,
+            headerCompare: true,
+            headerResolutions: true,
+            headerIndicators: true,
+            headerScreenshot: true,
+            headerSettings: true,
+            headerUndoRedo: true,
+            headerFullscreenButton: true
+          }
+        )
       }),
       this.dashboardContextService,
       this.widgetSettingsService

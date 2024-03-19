@@ -6,6 +6,21 @@ export enum LineMarkerPosition {
   Left = 'left'
 }
 
+export interface ChartPanels {
+  timeframesBottomToolbar: boolean;
+  drawingsToolbar: boolean;
+  header: boolean;
+  headerSymbolSearch: boolean;
+  headerChartType: boolean;
+  headerResolutions: boolean;
+  headerCompare: boolean;
+  headerIndicators: boolean;
+  headerScreenshot: boolean;
+  headerSettings: boolean;
+  headerUndoRedo: boolean;
+  headerFullscreenButton: boolean;
+}
+
 export interface TechChartSettings extends WidgetSettings {
   chartLayout?: object;
   showTrades?: boolean;
@@ -17,4 +32,5 @@ export interface TechChartSettings extends WidgetSettings {
   exchange?: string;
   instrumentGroup?: string;
   isin?: string;
+  panels?: ChartPanels;
 }
