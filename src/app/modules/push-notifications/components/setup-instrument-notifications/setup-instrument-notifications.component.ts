@@ -36,7 +36,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
   currentInstrumentSubscriptions$!: Observable<PriceSparkSubscription[]>;
   newPriceChangeSubscriptionForm?: UntypedFormGroup;
   readonly isLoading$ = new BehaviorSubject(false);
-  readonly availablePriceConditions = [ LessMore.Less, LessMore.More ];
+  readonly lessMore = LessMore;
   instrument$!: Observable<Instrument>;
   private readonly instrumentKey$ = new BehaviorSubject<InstrumentKey | null>(null);
   private readonly refresh$ = new BehaviorSubject(null);
