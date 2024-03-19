@@ -4,6 +4,8 @@ import { BondScreenerSettingsComponent } from './bond-screener-settings.componen
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { commonTestProviders, getTranslocoModule, sharedModuleImportForTests } from "../../../../shared/utils/testing";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 
 describe('BondScreenerSettingsComponent', () => {
   let component: BondScreenerSettingsComponent;
@@ -12,6 +14,11 @@ describe('BondScreenerSettingsComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [BondScreenerSettingsComponent],
+      imports: [
+        NoopAnimationsModule,
+        getTranslocoModule(),
+        ...sharedModuleImportForTests,
+      ],
       providers: [
         {
           provide: WidgetSettingsService,
@@ -25,7 +32,8 @@ describe('BondScreenerSettingsComponent', () => {
           useValue: {
             copyWidget: jasmine.createSpy('copyWidget').and.callThrough(),
           }
-        }
+        },
+        ...commonTestProviders
       ]
     });
     fixture = TestBed.createComponent(BondScreenerSettingsComponent);

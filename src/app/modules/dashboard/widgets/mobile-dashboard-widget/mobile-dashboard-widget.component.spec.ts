@@ -26,6 +26,8 @@ describe('MobileDashboardWidgetComponent', () => {
         mockComponent({ selector: 'ats-feedback-widget' }),
         mockComponent({ selector: 'ats-application-updated-widget' }),
         mockComponent({ selector: 'ats-edit-order-dialog-widget' }),
+        mockComponent({ selector: 'ats-empty-portfolios-warning-modal-widget' })
+
       ],
       providers: [
         {

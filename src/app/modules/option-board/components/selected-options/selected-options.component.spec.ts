@@ -1,13 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SelectedOptionsComponent } from './selected-options.component';
-import {Subject} from "rxjs";
-import {OptionParameters, OptionSide} from "../../models/option-board.model";
-import {OptionBoardDataContext, OptionsSelection} from "../../models/option-board-data-context.model";
-import {getTranslocoModule} from "../../../../shared/utils/testing";
-import {OptionBoardService} from "../../services/option-board.service";
-import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import { Subject } from "rxjs";
+import { OptionParameters, OptionSide } from "../../models/option-board.model";
+import { OptionBoardDataContext, OptionsSelection } from "../../models/option-board-data-context.model";
+import { getTranslocoModule } from "../../../../shared/utils/testing";
+import { OptionBoardService } from "../../services/option-board.service";
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
+import { LetDirective } from "@ngrx/component";
 
 describe('SelectedOptionsComponent', () => {
   let component: SelectedOptionsComponent;
@@ -15,7 +16,10 @@ describe('SelectedOptionsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [
+        getTranslocoModule(),
+        LetDirective
+      ],
       declarations: [ SelectedOptionsComponent ],
       providers: [
         {

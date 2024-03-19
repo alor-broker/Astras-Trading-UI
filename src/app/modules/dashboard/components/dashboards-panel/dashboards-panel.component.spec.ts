@@ -5,6 +5,7 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
 import { of } from "rxjs";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { LetDirective } from "@ngrx/component";
 
 describe('DashboardsPanelComponent', () => {
   let component: DashboardsPanelComponent;
@@ -15,6 +16,9 @@ describe('DashboardsPanelComponent', () => {
       declarations: [
         DashboardsPanelComponent,
         ...ngZorroMockComponents
+      ],
+      imports:[
+        LetDirective
       ],
       providers: [
         {
