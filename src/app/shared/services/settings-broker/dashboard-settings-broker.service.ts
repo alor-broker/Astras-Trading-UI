@@ -96,7 +96,8 @@ export class DashboardSettingsBrokerService {
 
   private setRemoteRecord(settings: Dashboard[]): Observable<boolean> {
     return this.remoteStorageService.setRecord(
-      this.settingsKey, {
+      {
+        key: this.settingsKey,
         meta: {
           timestamp: this.getTimestamp()
         },

@@ -105,8 +105,8 @@ export class WidgetsSettingsBrokerService {
       source: newRequestSource,
       stream$: newRequestSource.pipe(
         switchMap(newSettings => this.remoteStorageService.setRecord(
-          newSettings.guid,
           {
+            key: newSettings.guid,
             meta: {
               timestamp: this.getTimestamp()
             },

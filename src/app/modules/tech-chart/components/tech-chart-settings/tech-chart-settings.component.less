@@ -1,6 +1,22 @@
 .ant-form-item {
   margin-bottom: 10px;
 
+  &.switch-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 5px;
+
+    .ant-form-item-control {
+      width: initial;
+      flex-grow: initial;
+
+      max-width: initial;
+      flex-basis: initial;
+    }
+  }
+
   nz-collapse {
     width: 100%;
   }

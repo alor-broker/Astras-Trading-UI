@@ -7,87 +7,191 @@
 >
   <ng-container *transloco="let t; scope: 'tech-chart/settings'">
     <ng-container *ngIf="deviceInfo$ | async as deviceInfo">
-      <form *ngIf="form" [formGroup]="form" [nzLayout]="'horizontal'" nz-form>
-        <nz-form-item *ngIf="!deviceInfo.isMobile">
-          <nz-form-control [nzErrorTip]="t('techChartSettings.tickerError')">
-            <nz-form-label nzRequired nzFor="instrument">{{t('techChartSettings.tickerLabel')}}</nz-form-label>
-            <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '') && !deviceInfo.isMobile">
-          <nz-form-control>
-            <nz-form-label nzFor="exchange" nzRequired>{{t('techChartSettings.exchangeLabel')}}</nz-form-label>
-            <input formControlName='exchange' nz-input>
-          </nz-form-control>
-        </nz-form-item>
-
-        <ng-container *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '')">
-          <nz-form-item>
-            <nz-form-label nzFor="showOrders">
-              {{t('techChartSettings.showOrdersLabel')}}
-            </nz-form-label>
-            <nz-form-control>
-              <nz-switch formControlName='showOrders'></nz-switch>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item *ngIf="form.controls.showOrders.value">
-            <nz-form-control>
-              <nz-form-label nzFor="ordersLineMarkerPosition">{{t('techChartSettings.ordersLineMarkerPositionLabel')}}</nz-form-label>
-              <nz-select formControlName='ordersLineMarkerPosition'>
-                <nz-option
-                  *ngFor='let option of availableLineMarkerPositions'
-                  [nzLabel]="t('techChartSettings.lineMarkerPositionOptions.' + option, { fallback: option })"
-                  [nzValue]="option"
-                ></nz-option>
-              </nz-select>
-            </nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label nzFor="showPosition">
-              {{t('techChartSettings.showPositionLabel')}}
-            </nz-form-label>
-            <nz-form-control>
-              <nz-switch formControlName='showPosition'></nz-switch>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item *ngIf="form.controls.showPosition.value">
-            <nz-form-control>
-              <nz-form-label nzFor="positionLineMarkerPosition">{{t('techChartSettings.positionLineMarkerPositionLabel')}}</nz-form-label>
-              <nz-select formControlName='positionLineMarkerPosition'>
-                <nz-option
-                  *ngFor='let option of availableLineMarkerPositions'
-                  [nzLabel]="t('techChartSettings.lineMarkerPositionOptions.' + option, { fallback: option })"
-                  [nzValue]="option"
-                ></nz-option>
-              </nz-select>
-            </nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label nzFor="showTrades">
-              {{t('techChartSettings.showTradesLabel')}}
-            </nz-form-label>
-            <nz-form-control>
-              <nz-switch formControlName='showTrades'></nz-switch>
-            </nz-form-control>
-          </nz-form-item>
-        </ng-container>
-
-        <nz-form-item *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '') && !deviceInfo.isMobile">
-          <nz-collapse [nzBordered]="false" nzGhost>
-            <nz-collapse-panel [nzHeader]="t('techChartSettings.advanced')">
+      <form *ngIf="form" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
+        <nz-collapse [nzBordered]="false" nzGhost *ngIf="!deviceInfo.isMobile">
+          <nz-collapse-panel [nzHeader]="t('techChartSettings.instrumentSelectionHeader')" nzActive="true">
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="instrument">{{t('techChartSettings.tickerLabel')}}</nz-form-label>
+              <nz-form-control [nzErrorTip]="t('techChartSettings.tickerError')">
+                <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '')">
+              <nz-form-label nzFor="exchange" nzRequired>{{t('techChartSettings.exchangeLabel')}}</nz-form-label>
+              <nz-form-control>
+                <input nz-input type="text" [value]="form.value.instrument?.exchange" readonly/>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item *ngIf="form.value.instrument && !isSyntheticInstrument(form.value?.instrument?.symbol ?? '')">
+              <nz-form-label nzFor="instrumentGroup">{{t('techChartSettings.instrumentGroupLabel')}}</nz-form-label>
               <nz-form-control [nzErrorTip]="t('techChartSettings.instrumentGroupError')">
-                <nz-form-label nzFor="instrumentGroup" nzRequired>{{t('techChartSettings.instrumentGroupLabel')}}</nz-form-label>
                 <ats-instrument-board-select
-                  [instrument]="form.value?.instrument ?? null"
+                  [instrument]="form.value.instrument"
                   [placeholder]="t('techChartSettings.instrumentGroupLabel')"
                   formControlName="instrumentGroup">
                 </ats-instrument-board-select>
               </nz-form-control>
+            </nz-form-item>
+          </nz-collapse-panel>
+        </nz-collapse>
+
+        <ng-container *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '')">
+          <nz-collapse [nzBordered]="false" nzGhost>
+            <nz-collapse-panel [nzHeader]="t('techChartSettings.portfolioSettingsGroupLabel')">
+              <nz-form-item class="switch-row">
+                <nz-form-control>
+                  <nz-switch formControlName='showOrders'></nz-switch>
+                </nz-form-control>
+                <nz-form-label nzFor="showOrders">
+                  {{t('techChartSettings.showOrdersLabel')}}
+                </nz-form-label>
+              </nz-form-item>
+              <nz-form-item *ngIf="form.controls.showOrders.value">
+                <nz-form-control>
+                  <nz-form-label nzFor="ordersLineMarkerPosition">{{t('techChartSettings.ordersLineMarkerPositionLabel')}}</nz-form-label>
+                  <nz-select formControlName='ordersLineMarkerPosition'>
+                    <nz-option
+                      *ngFor='let option of availableLineMarkerPositions'
+                      [nzLabel]="t('techChartSettings.lineMarkerPositionOptions.' + option, { fallback: option })"
+                      [nzValue]="option"
+                    ></nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item class="switch-row">
+                <nz-form-control>
+                  <nz-switch formControlName='showPosition'></nz-switch>
+                </nz-form-control>
+                <nz-form-label nzFor="showPosition">
+                  {{t('techChartSettings.showPositionLabel')}}
+                </nz-form-label>
+              </nz-form-item>
+              <nz-form-item *ngIf="form.controls.showPosition.value">
+                <nz-form-control>
+                  <nz-form-label nzFor="positionLineMarkerPosition">{{t('techChartSettings.positionLineMarkerPositionLabel')}}</nz-form-label>
+                  <nz-select formControlName='positionLineMarkerPosition'>
+                    <nz-option
+                      *ngFor='let option of availableLineMarkerPositions'
+                      [nzLabel]="t('techChartSettings.lineMarkerPositionOptions.' + option, { fallback: option })"
+                      [nzValue]="option"
+                    ></nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item  class="switch-row">
+                <nz-form-control>
+                  <nz-switch formControlName='showTrades'></nz-switch>
+                </nz-form-control>
+                <nz-form-label nzFor="showTrades">
+                  {{t('techChartSettings.showTradesLabel')}}
+                </nz-form-label>
+              </nz-form-item>
             </nz-collapse-panel>
           </nz-collapse>
-        </nz-form-item>
+        </ng-container>
+
+        <nz-collapse [nzBordered]="false" nzGhost>
+          <nz-collapse-panel [nzHeader]="t('techChartSettings.chartElementsGroupLabel')" [formGroup]="form.controls.panels">
+            <nz-form-item class="switch-row">
+              <nz-form-control>
+                <nz-switch formControlName='header'></nz-switch>
+              </nz-form-control>
+              <nz-form-label nzFor="header">
+                {{t('techChartSettings.headerLabel')}}
+              </nz-form-label>
+            </nz-form-item>
+            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+              <nz-form-control>
+                <nz-switch formControlName='headerSymbolSearch'></nz-switch>
+              </nz-form-control>
+              <nz-form-label nzFor="headerSymbolSearch">
+                {{t('techChartSettings.headerSymbolSearchLabel')}}
+              </nz-form-label>
+            </nz-form-item>
+            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+              <nz-form-control>
+                <nz-switch formControlName='headerCompare'></nz-switch>
+              </nz-form-control>
+              <nz-form-label nzFor="headerCompare">
+                {{t('techChartSettings.headerCompareLabel')}}
+              </nz-form-label>
+            </nz-form-item>
+            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+              <nz-form-control>
+                <nz-switch formControlName='headerResolutions'></nz-switch>
+              </nz-form-control>
+              <nz-form-label nzFor="headerResolutions">
+                {{t('techChartSettings.headerResolutionsLabel')}}
+              </nz-form-label>
+            </nz-form-item>
+            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+              <nz-form-control>
+                <nz-switch formControlName='headerChartType'></nz-switch>
+              </nz-form-control>
+              <nz-form-label nzFor="headerChartType">
+                {{t('techChartSettings.headerChartTypeLabel')}}
+              </nz-form-label>
+            </nz-form-item>
+            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+              <nz-form-control>
+                <nz-switch formControlName='headerIndicators'></nz-switch>
+              </nz-form-control>
+              <nz-form-label nzFor="headerIndicators">
+                {{t('techChartSettings.headerIndicatorsLabel')}}
+              </nz-form-label>
+            </nz-form-item>
+            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+              <nz-form-control>
+                <nz-switch formControlName='headerUndoRedo'></nz-switch>
+              </nz-form-control>
+              <nz-form-label nzFor="headerUndoRedo">
+                {{t('techChartSettings.headerUndoRedoLabel')}}
+              </nz-form-label>
+            </nz-form-item>
+            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+              <nz-form-control>
+                <nz-switch formControlName='headerSettings'></nz-switch>
+              </nz-form-control>
+              <nz-form-label nzFor="headerSettings">
+                {{t('techChartSettings.headerSettingsLabel')}}
+              </nz-form-label>
+            </nz-form-item>
+            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+              <nz-form-control>
+                <nz-switch formControlName='headerFullscreenButton'></nz-switch>
+              </nz-form-control>
+              <nz-form-label nzFor="headerFullscreenButton">
+                {{t('techChartSettings.headerFullscreenButtonLabel')}}
+              </nz-form-label>
+            </nz-form-item>
+            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+              <nz-form-control>
+                <nz-switch formControlName='headerScreenshot'></nz-switch>
+              </nz-form-control>
+              <nz-form-label nzFor="headerScreenshot">
+                {{t('techChartSettings.headerScreenshotLabel')}}
+              </nz-form-label>
+            </nz-form-item>
+            <nz-form-item class="switch-row">
+              <nz-form-control>
+                <nz-switch formControlName='drawingsToolbar'></nz-switch>
+              </nz-form-control>
+              <nz-form-label nzFor="drawingsToolbar">
+                {{t('techChartSettings.drawingsToolbarLabel')}}
+              </nz-form-label>
+            </nz-form-item>
+            <nz-form-item class="switch-row">
+              <nz-form-control>
+                <nz-switch formControlName='timeframesBottomToolbar'></nz-switch>
+              </nz-form-control>
+              <nz-form-label nzFor="timeframesBottomToolbar">
+                {{t('techChartSettings.timeframesBottomToolbarLabel')}}
+              </nz-form-label>
+            </nz-form-item>
+          </nz-collapse-panel>
+        </nz-collapse>
       </form>
     </ng-container>
   </ng-container>
