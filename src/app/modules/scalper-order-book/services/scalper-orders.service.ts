@@ -262,14 +262,6 @@ export class ScalperOrdersService {
     }
     else {
       if (this.checkBracketNeeded(settings, side, quantity, position)) {
-        this.ordersDialogService.openNewOrderDialog({
-          instrumentKey: toInstrumentKey(settings),
-          initialValues: {
-            orderType: OrderType.Limit,
-            quantity,
-            price
-          }
-        });
         const bracketSide = side === Side.Buy ? Side.Sell : Side.Buy;
         this.ordersDialogService.openNewOrderDialog({
           instrumentKey: toInstrumentKey(settings),

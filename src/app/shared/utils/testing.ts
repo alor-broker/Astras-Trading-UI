@@ -107,7 +107,7 @@ export function mockDirective(options: Directive, klass = (class {
  *  array of ng-zorro mock components
  */
 export const ngZorroMockComponents = [
-  mockComponent({selector: 'nz-header'}),
+  mockComponent({selector: 'nz-header', inputs: [ 'stepContent' ]}),
   mockComponent({
     selector: 'nz-table',
     inputs: [
@@ -211,7 +211,7 @@ export const ngZorroMockComponents = [
   }),
   mockDirective({
     selector: 'th',
-    inputs: ['nzWidth']
+    inputs: ['nzWidth', 'nzCustomFilter', 'nzSortFn', 'nzFilters', 'nzShowFilter', 'minWidth']
   }),
   mockDirective({
     selector: '[nz-typography]',

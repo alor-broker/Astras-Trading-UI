@@ -5,17 +5,19 @@ import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { OrdersComponent } from './orders.component';
 import {
-  commonTestProviders, getTranslocoModule,
+  commonTestProviders,
+  getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
-import {of, Subject} from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {OrdersGroupService} from "../../../../shared/services/orders/orders-group.service";
-import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
+import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
+import { LetDirective } from "@ngrx/component";
 
 describe('OrdersComponent', () => {
   let component: OrdersComponent;
@@ -38,7 +40,8 @@ describe('OrdersComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         getTranslocoModule(),
-        ...sharedModuleImportForTests
+        ...sharedModuleImportForTests,
+        LetDirective
       ],
       providers: [
         {

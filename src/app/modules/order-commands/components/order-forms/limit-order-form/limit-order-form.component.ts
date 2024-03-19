@@ -332,7 +332,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
         quantity: limitOrder.quantity,
         side: formValue.topOrderSide!,
         price: limitOrder.price,
-        condition: LessMore.More,
+        condition: LessMore.MoreOrEqual,
         triggerPrice: Number(formValue.topOrderPrice),
         activate: false
       });
@@ -344,7 +344,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
         quantity: limitOrder.quantity,
         side: formValue.bottomOrderSide!,
         price: limitOrder.price,
-        condition: LessMore.Less,
+        condition: LessMore.LessOrEqual,
         triggerPrice: Number(formValue.bottomOrderPrice),
         activate: false
       });
