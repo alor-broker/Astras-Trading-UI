@@ -91,17 +91,17 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(([ dashboards, lastSelectedDashboard ]) => {
-        const selectedDashboard: Dashboard = dashboards.find((d: Dashboard) => d.isSelected)!;
+        const selectedDashboard: Dashboard | undefined = dashboards.find((d: Dashboard) => d.isSelected);
         const updatedLastSelectedDashboard: Dashboard | undefined = dashboards.find(d => d.guid === lastSelectedDashboard?.guid);
 
-        if (!updatedLastSelectedDashboard || (updatedLastSelectedDashboard.isFavorite ?? false)) {
+        if (updatedLastSelectedDashboard == null || (updatedLastSelectedDashboard.isFavorite ?? false)) {
           this.lastSelectedDashboard$.next(dashboards.find(d => !(d.isFavorite ?? false)) ?? null);
+          return;
         }
 
-        if (selectedDashboard.guid !== updatedLastSelectedDashboard?.guid && !(selectedDashboard.isFavorite ?? false)) {
+        if (selectedDashboard != null && selectedDashboard.guid !== updatedLastSelectedDashboard?.guid && !(selectedDashboard.isFavorite ?? false)) {
           this.lastSelectedDashboard$.next(selectedDashboard);
         }
-
       });
 
     this.favoriteDashboards$
