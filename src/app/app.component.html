@@ -1,1 +1,10 @@
 <router-outlet></router-outlet>
+<div *ngIf="isLoading$ | async"
+     class="loading-indicator-container"
+>
+  <nz-spin [nzSize]="'large'" nzSpinning="true">
+  </nz-spin>
+</div>
+
+
+

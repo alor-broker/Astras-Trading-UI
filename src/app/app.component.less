@@ -1,0 +1,22 @@
+@import 'theme-mixin';
+
+.themeMixin({
+  :host {
+    .loading-indicator-container {
+      background-color: @modal-mask-bg;
+      z-index: @zindex-modal;
+    }
+  }
+});
+
+.loading-indicator-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

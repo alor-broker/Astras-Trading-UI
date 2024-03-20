@@ -50,6 +50,7 @@ import { HashMap } from "@ngneat/transloco/lib/types";
 import { LoggingHook } from "./shared/services/app-hook/logging-hook";
 import { GraphQLModule } from './graphql.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { NzSpinModule } from "ng-zorro-antd/spin";
 
 class CustomHandler implements TranslocoMissingHandler {
   handle(key: string, config: TranslocoConfig, params?: HashMap): string {
@@ -63,29 +64,30 @@ registerLocaleData(ru);
   declarations: [
     AppComponent,
   ],
-  imports: [
-    AppRoutingModule,
-    SharedModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    HttpClientModule,
-    StoreModule.forRoot({}),
-    EffectsModule.forRoot(),
-    ...extModules,
-    ApplicationMetaModule,
-    TranslocoRootModule,
-    AngularFireAuthModule,
-    AngularFireMessagingModule,
-    AngularFireModule.initializeApp(environment.firebase),
-    ServiceWorkerModule.register('ngsw-worker.js', {
+    imports: [
+        AppRoutingModule,
+        SharedModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        HttpClientModule,
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot(),
+        ...extModules,
+        ApplicationMetaModule,
+        TranslocoRootModule,
+        AngularFireAuthModule,
+        AngularFireMessagingModule,
+        AngularFireModule.initializeApp(environment.firebase),
+        ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: true,
-      // Register the ServiceWorker as soon as the application is stable
-      // or after 15 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:15000'
-    }),
-    GraphQLModule
-  ],
+            // Register the ServiceWorker as soon as the application is stable
+            // or after 15 seconds (whichever comes first).
+            registrationStrategy: 'registerWhenStable:15000'
+        }),
+        GraphQLModule,
+        NzSpinModule
+    ],
   bootstrap: [AppComponent],
   providers: [
     {
