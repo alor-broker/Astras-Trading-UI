@@ -6,9 +6,10 @@ import {
   getTranslocoModule, mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
-import {PushNotificationsService} from "../../services/push-notifications.service";
-import {Subject} from "rxjs";
-import {NoopAnimationsModule} from "@angular/platform-browser/animations";
+import { PushNotificationsService } from "../../services/push-notifications.service";
+import { of, Subject } from "rxjs";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+import { CommonParametersService } from "../../../order-commands/services/common-parameters.service";
 
 describe('SetupInstrumentNotificationsComponent', () => {
   let component: SetupInstrumentNotificationsComponent;
@@ -35,6 +36,12 @@ describe('SetupInstrumentNotificationsComponent', () => {
             getCurrentSubscriptions: jasmine.createSpy('getCurrentSubscriptions').and.returnValue(new Subject()),
             getBrowserNotificationsStatus: jasmine.createSpy('getBrowserNotificationsStatus').and.returnValue(new Subject()),
             getMessages: jasmine.createSpy('getMessages').and.returnValue(new Subject()),
+          }
+        },
+        {
+          provide: CommonParametersService,
+          useValue: {
+            parameters$: of({})
           }
         },
         ...commonTestProviders

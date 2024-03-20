@@ -49,7 +49,7 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.dialogParams$ = this.ordersDialogService.newOrderDialogParameters$.pipe(
-      tap(() => this.setCommonParameters({})),
+      tap((p) => this.setCommonParameters(p?.initialValues ?? {})),
       shareReplay(1)
     );
 

@@ -22,20 +22,15 @@
             <form *ngIf="newPriceChangeSubscriptionForm" [formGroup]="newPriceChangeSubscriptionForm"
                   [nzLayout]="'vertical'" nz-form>
               <div class="d-flex justify-content-between flex-gap-10">
-                <nz-form-item class="w-100">
+                <nz-form-item>
                   <nz-form-control [nzErrorTip]="t('validationErrors.selectValueError')">
-                    <nz-select [nzPlaceHolder]="t('pushNotificationsSetupInstrumentNotifications.priceConditionLabel')"
-                               formControlName="priceCondition">
-                      <ng-container *ngFor="let condition of availablePriceConditions">
-                        <nz-option
-                          [nzLabel]="t('lessMoreOptions.' + condition.toLowerCase(), { fallback: condition })"
-                          [nzValue]="condition">
-                        </nz-option>
-                      </ng-container>
-                    </nz-select>
+                    <nz-radio-group formControlName="priceCondition">
+                      <label [nzValue]="lessMore.Less" nz-radio-button> {{t('lessMoreOptions.less')}} </label>
+                      <label [nzValue]="lessMore.More" nz-radio-button> {{t('lessMoreOptions.more')}} </label>
+                    </nz-radio-group>
                   </nz-form-control>
                 </nz-form-item>
-                <nz-form-item class="w-100">
+                <nz-form-item  class="stretched-field">
                   <nz-form-control [nzErrorTip]="priceError">
                     <ats-input-number
                       [step]="(instrument$ | async)?.minstep ?? 1"
