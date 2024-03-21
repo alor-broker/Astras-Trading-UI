@@ -43,13 +43,14 @@ import { environment } from "../environments/environment";
 import { AngularFireAuthModule } from "@angular/fire/compat/auth";
 import { AngularFireMessagingModule } from "@angular/fire/compat/messaging";
 import { AngularFireModule } from "@angular/fire/compat";
-import {MobileHook} from "./shared/services/app-hook/mobile-hook";
+import { MobileHook } from "./shared/services/app-hook/mobile-hook";
 import { InitQueryParamsHook } from "./shared/services/app-hook/init-query-params-hook";
 import { NzI18nInterface } from "ng-zorro-antd/i18n/nz-i18n.interface";
 import { HashMap } from "@ngneat/transloco/lib/types";
 import { LoggingHook } from "./shared/services/app-hook/logging-hook";
 import { GraphQLModule } from './graphql.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { NzSpinModule } from "ng-zorro-antd/spin";
 
 class CustomHandler implements TranslocoMissingHandler {
   handle(key: string, config: TranslocoConfig, params?: HashMap): string {
@@ -82,9 +83,10 @@ registerLocaleData(ru);
       enabled: true,
       // Register the ServiceWorker as soon as the application is stable
       // or after 15 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:15000'
+      // registrationStrategy: 'registerWhenStable:15000'
     }),
-    GraphQLModule
+    GraphQLModule,
+    NzSpinModule
   ],
   bootstrap: [AppComponent],
   providers: [

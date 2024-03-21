@@ -34,6 +34,8 @@ import {
   TerminalSettingsServicesActions
 } from "../../../store/terminal-settings/terminal-settings.actions";
 import { WidgetsLocalStateInternalActions } from "../../../store/widgets-local-state/widgets-local-state.actions";
+import { GlobalLoadingIndicatorService } from "../../../shared/services/global-loading-indicator.service";
+import { GuidGenerator } from "../../../shared/utils/guid";
 
 @Injectable({
   providedIn: 'root'
@@ -48,6 +50,7 @@ export class DesktopSettingsBrokerService {
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly terminalSettingsBrokerService: TerminalSettingsBrokerService,
     private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly globalLoadingIndicatorService: GlobalLoadingIndicatorService,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -68,10 +71,14 @@ export class DesktopSettingsBrokerService {
       }
     );
 
+    const loadingId = GuidGenerator.newGuid();
+    this.globalLoadingIndicatorService.registerLoading(loadingId);
+
     this.dashboardSettingsBrokerService.readSettings().pipe(
       take(1)
     ).subscribe(dashboards => {
       this.store.dispatch(DashboardsInternalActions.init({ dashboards: dashboards ?? [] }));
+      this.globalLoadingIndicatorService.releaseLoading(loadingId);
     });
   }
 
@@ -106,10 +113,14 @@ export class DesktopSettingsBrokerService {
       action => this.saveWidgetSettings(action.settingGuids)
     );
 
+    const loadingId = GuidGenerator.newGuid();
+    this.globalLoadingIndicatorService.registerLoading(loadingId);
+
     this.widgetsSettingsBrokerService.readSettings().pipe(
       take(1)
     ).subscribe(settings => {
       this.store.dispatch(WidgetSettingsInternalActions.init({ settings: settings ?? [] }));
+      this.globalLoadingIndicatorService.releaseLoading(loadingId);
     });
   }
 
@@ -138,10 +149,14 @@ export class DesktopSettingsBrokerService {
       }
     );
 
+    const loadingId = GuidGenerator.newGuid();
+    this.globalLoadingIndicatorService.registerLoading(loadingId);
+
     this.terminalSettingsBrokerService.readSettings().pipe(
       take(1)
     ).subscribe(settings => {
       this.store.dispatch(TerminalSettingsInternalActions.init({ settings }));
+      this.globalLoadingIndicatorService.releaseLoading(loadingId);
     });
   }
 

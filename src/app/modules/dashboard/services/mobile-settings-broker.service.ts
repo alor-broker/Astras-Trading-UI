@@ -36,6 +36,8 @@ import { LocalStorageMobileConstants } from "../../../shared/constants/local-sto
 import { DashboardSettingsMobileMigrationManager } from "../../settings-migration/dashboard-settings/dashboard-settings-mobile-migration-manager";
 import { WidgetSettingsMobileMigrationManager } from "../../settings-migration/widget-settings/widget-settings-mobile-migration-manager";
 import { TerminalSettingsMobileMigrationManager } from "../../settings-migration/terminal-settings/terminal-settings-mobile-migration-manager";
+import { GlobalLoadingIndicatorService } from "../../../shared/services/global-loading-indicator.service";
+import { GuidGenerator } from "../../../shared/utils/guid";
 
 @Injectable({
   providedIn: 'root'
@@ -49,6 +51,7 @@ export class MobileSettingsBrokerService {
     private readonly dashboardSettingsMobileMigrationManager: DashboardSettingsMobileMigrationManager,
     private readonly widgetSettingsMobileMigrationManager: WidgetSettingsMobileMigrationManager,
     private readonly terminalSettingsMobileMigrationManager: TerminalSettingsMobileMigrationManager,
+    private readonly globalLoadingIndicatorService: GlobalLoadingIndicatorService,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -71,6 +74,9 @@ export class MobileSettingsBrokerService {
       }
     );
 
+    const loadingId = GuidGenerator.newGuid();
+    this.globalLoadingIndicatorService.registerLoading(loadingId);
+
     const savedItems = this.localStorageService.getItem<[string, WidgetSettings][]>(LocalStorageMobileConstants.WidgetsSettingsStorageKey) ?? [];
     const settings = savedItems.map(x => x[1]);
 
@@ -82,7 +88,10 @@ export class MobileSettingsBrokerService {
       }
     ).pipe(
       take(1)
-    ).subscribe(x => this.store.dispatch(WidgetSettingsInternalActions.init({ settings: x.updatedData })));
+    ).subscribe(x => {
+      this.store.dispatch(WidgetSettingsInternalActions.init({ settings: x.updatedData }));
+      this.globalLoadingIndicatorService.releaseLoading(loadingId);
+    });
   }
 
   private initDashboardSettingsBroker(): void {
@@ -102,6 +111,9 @@ export class MobileSettingsBrokerService {
       }
     );
 
+    const loadingId = GuidGenerator.newGuid();
+    this.globalLoadingIndicatorService.registerLoading(loadingId);
+
     const dashboard = this.localStorageService.getItem<Dashboard>(LocalStorageMobileConstants.DashboardsSettingsStorageKey) ?? null;
     const history = this.localStorageService.getItem<InstrumentKey[]>(LocalStorageMobileConstants.InstrumentsHistoryStorageKey) ?? [];
 
@@ -110,6 +122,8 @@ export class MobileSettingsBrokerService {
         mobileDashboard: dashboard,
         instrumentsHistory: history
       }));
+
+      this.globalLoadingIndicatorService.releaseLoading(loadingId);
 
       return;
     }
@@ -127,6 +141,8 @@ export class MobileSettingsBrokerService {
         mobileDashboard: x.updatedData,
         instrumentsHistory: history
       }));
+
+      this.globalLoadingIndicatorService.releaseLoading(loadingId);
     });
   }
 
@@ -158,10 +174,14 @@ export class MobileSettingsBrokerService {
       }
     );
 
+    const loadingId = GuidGenerator.newGuid();
+    this.globalLoadingIndicatorService.registerLoading(loadingId);
+
     const terminalSettings = this.localStorageService.getItem<TerminalSettings>(LocalStorageMobileConstants.TerminalSettingsStorageKey) ?? null;
 
     if (!terminalSettings) {
       this.store.dispatch(TerminalSettingsInternalActions.init({ settings: null }));
+      this.globalLoadingIndicatorService.releaseLoading(loadingId);
       return;
     }
 
@@ -173,7 +193,11 @@ export class MobileSettingsBrokerService {
       }
     ).pipe(
       take(1)
-    ).subscribe(x => this.store.dispatch(TerminalSettingsInternalActions.init({ settings: x.updatedData })));
+    ).subscribe(x => {
+        this.store.dispatch(TerminalSettingsInternalActions.init({ settings: x.updatedData }));
+        this.globalLoadingIndicatorService.releaseLoading(loadingId);
+      }
+    );
   }
 
   private addActionSubscription<AC extends ActionCreator, U = ReturnType<AC>>(actionCreator: AC, callback: (action: U) => void): void {

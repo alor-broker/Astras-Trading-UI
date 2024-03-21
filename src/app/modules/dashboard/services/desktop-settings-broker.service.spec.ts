@@ -11,6 +11,7 @@ import {WidgetsSettingsBrokerService} from "../../../shared/services/settings-br
 import {WidgetSettingsService} from "../../../shared/services/widget-settings.service";
 import {TerminalSettingsBrokerService} from "../../../shared/services/settings-broker/terminal-settings-broker.service";
 import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
+import { GlobalLoadingIndicatorService } from "../../../shared/services/global-loading-indicator.service";
 
 describe('DesktopSettingsBrokerService', () => {
   let service: DesktopSettingsBrokerService;
@@ -58,6 +59,14 @@ describe('DesktopSettingsBrokerService', () => {
           provide: TerminalSettingsService,
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject()),
+          }
+        },
+        {
+          provide: GlobalLoadingIndicatorService,
+          useValue: {
+            isLoading$: new Subject(),
+            registerLoading: jasmine.createSpy('registerLoading').and.callThrough(),
+            releaseLoading: jasmine.createSpy('releaseLoading').and.callThrough(),
           }
         },
         ...commonTestProviders

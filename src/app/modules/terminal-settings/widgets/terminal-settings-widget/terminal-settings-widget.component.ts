@@ -4,6 +4,8 @@ import {ModalService} from 'src/app/shared/services/modal.service';
 import {TerminalSettings} from "../../../../shared/models/terminal-settings/terminal-settings.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 import { TabNames } from '../../models/terminal-settings.model';
+import { GlobalLoadingIndicatorService } from "../../../../shared/services/global-loading-indicator.service";
+import { GuidGenerator } from "../../../../shared/utils/guid";
 
 @Component({
   selector: 'ats-terminal-settings-widget',
@@ -23,6 +25,7 @@ export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
   constructor(
     private readonly modal: ModalService,
     private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly globalLoadingIndicatorService: GlobalLoadingIndicatorService
   ) {
   }
 
@@ -68,6 +71,10 @@ export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
       ).subscribe(currentSettings => {
         const newSettings = this.getTerminalSettingsUpdates(this.settingsFormValue!);
         const isReloadNeeded = this.isReloadNeeded(currentSettings, newSettings);
+
+        if(isReloadNeeded) {
+          this.globalLoadingIndicatorService.registerLoading(GuidGenerator.newGuid());
+        }
 
         this.terminalSettingsService.updateSettings(
           newSettings,

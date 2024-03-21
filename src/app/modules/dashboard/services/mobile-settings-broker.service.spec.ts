@@ -6,6 +6,7 @@ import {LocalStorageService} from "../../../shared/services/local-storage.servic
 import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
 import {Subject} from "rxjs";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { GlobalLoadingIndicatorService } from "../../../shared/services/global-loading-indicator.service";
 
 describe('MobileSettingsBrokerService', () => {
   let service: MobileSettingsBrokerService;
@@ -32,6 +33,14 @@ describe('MobileSettingsBrokerService', () => {
           provide: TerminalSettingsService,
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: GlobalLoadingIndicatorService,
+          useValue: {
+            isLoading$: new Subject(),
+            registerLoading: jasmine.createSpy('registerLoading').and.callThrough(),
+            releaseLoading: jasmine.createSpy('releaseLoading').and.callThrough(),
           }
         },
         ...commonTestProviders
