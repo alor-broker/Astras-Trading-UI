@@ -1,5 +1,7 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {APP_HOOK, AppHook} from "./shared/services/app-hook/app-hook-token";
+import { GlobalLoadingIndicatorService } from "./shared/services/global-loading-indicator.service";
+import { Observable } from "rxjs";
 
 @Component({
   selector: 'ats-app-root',
@@ -9,17 +11,20 @@ import {APP_HOOK, AppHook} from "./shared/services/app-hook/app-hook-token";
 export class AppComponent implements OnInit, OnDestroy {
   title = 'astras';
 
+  readonly isLoading$: Observable<boolean>;
+
   constructor(
     @Inject(APP_HOOK)
-    private readonly appHooks: AppHook[]
+    private readonly appHooks: AppHook[],
+    globalLoadingIndicatorService: GlobalLoadingIndicatorService
   ) {
+    this.isLoading$ = globalLoadingIndicatorService.isLoading$;
   }
 
   ngOnInit(): void {
     this.appHooks.forEach(x => {
       x.onInit();
     });
-
   }
 
   ngOnDestroy(): void {
