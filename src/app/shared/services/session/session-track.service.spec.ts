@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { SessionTrackService } from './session-track.service';
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, of } from "rxjs";
 import { TerminalSettings } from "../../models/terminal-settings/terminal-settings.model";
 import { map } from "rxjs/operators";
 import { ActivityTrackerService } from "./activity-tracker.service";
@@ -9,6 +9,7 @@ import { AuthService } from "../auth.service";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { NzNotificationRef } from "ng-zorro-antd/notification/typings";
 import {TerminalSettingsService} from "../terminal-settings.service";
+import { TranslatorService } from "../translator.service";
 
 describe('SessionTrackService', () => {
   let service: SessionTrackService;
@@ -52,6 +53,12 @@ describe('SessionTrackService', () => {
           provide: NzNotificationService,
           useValue: notificationServiceSpy
         },
+        {
+          provide: TranslatorService,
+          useValue: {
+            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
+          }
+        }
       ]
     });
     service = TestBed.inject(SessionTrackService);

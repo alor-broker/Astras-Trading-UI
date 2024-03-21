@@ -11,6 +11,7 @@ import {
   forkJoin,
   Observable,
   of,
+  shareReplay,
   switchMap,
   take,
   tap
@@ -37,6 +38,8 @@ import {
 } from "../../models/orders/new-order.model";
 import {LimitOrderEdit, StopLimitOrderEdit, StopMarketOrderEdit} from "../../models/orders/edit-order.model";
 import { EnvironmentService } from "../environment.service";
+import { TranslatorFn, TranslatorService } from "../translator.service";
+import { mapWith } from "../../utils/observable-helper";
 
 export type NewLinkedOrder = (NewLimitOrder | NewStopLimitOrder | NewStopMarketOrder) & {
   type: 'Limit' | 'StopLimit' | 'Stop';
@@ -48,6 +51,7 @@ export type NewLinkedOrder = (NewLimitOrder | NewStopLimitOrder | NewStopMarketO
 export class OrderService implements OnDestroy {
   private readonly baseApiUrl =this.environmentService.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders/actions';
   private readonly ordersDelayMSec$ = new BehaviorSubject<number | null>(null);
+  private translator$!: Observable<TranslatorFn>;
 
   constructor(
     private readonly environmentService: EnvironmentService,
@@ -56,6 +60,7 @@ export class OrderService implements OnDestroy {
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly ordersGroupService: OrdersGroupService,
     private readonly canceller: OrderCancellerService,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -227,57 +232,86 @@ export class OrderService implements OnDestroy {
     url: string;
     body: any;
   }): Observable<SubmitOrderResult> {
-    return this.submitRequest(
-      portfolio,
-      'post',
-      prepareOrderRequest,
-      error => {
-        if (!(error instanceof HttpErrorResponse)) {
-          this.errorHandlerService.handleError(error);
-        } else {
-          this.handleCommandError(OrdersInstantNotificationType.OrderSubmitFailed, error, 'Заявка не выставлена');
-        }
-      }
-    ).pipe(
-      tap(result => {
-        if (result.isSuccess) {
-          this.instantNotificationsService.showNotification(
-            OrdersInstantNotificationType.OrderCreated,
-            'success',
-            `Заявка выставлена`,
-            `Заявка успешно выставлена, её номер на бирже: \n ${result.orderNumber}`
-          );
-        }
-      })
-    );
+    return this.getTranslatorFn()
+      .pipe(
+        take(1),
+        mapWith(
+          t => this.submitRequest(
+            portfolio,
+            'post',
+            prepareOrderRequest,
+            error => {
+              if (!(error instanceof HttpErrorResponse)) {
+                this.errorHandlerService.handleError(error);
+              } else {
+                this.handleCommandError(
+                  OrdersInstantNotificationType.OrderSubmitFailed,
+                  error,
+                  t(['orderSubmitFailedLabel'], { fallback: 'Ошибка выставления заявки' })
+                );
+              }
+            }
+          ),
+          (t, result) => ({ t, result })
+        ),
+        map(({ t, result }) => {
+          if (result.isSuccess) {
+            this.instantNotificationsService.showNotification(
+              OrdersInstantNotificationType.OrderCreated,
+              'success',
+              t(['orderCreatedLabel'], { fallback: 'Заявка выставлена' }),
+              t(['orderCreatedContent'], {
+                fallback: `Заявка успешно выставлена, её номер на бирже: \n ${result.orderNumber}`,
+                orderNumber: result.orderNumber
+              })
+            );
+          }
+
+          return result;
+        }),
+      );
   }
 
   private submitOrderEdit(portfolio: string, prepareOrderRequest: () => {
     url: string;
     body: any;
   }): Observable<SubmitOrderResult> {
-    return this.submitRequest(
-      portfolio,
-      'put',
-      prepareOrderRequest,
-      error => {
-        if (!(error instanceof HttpErrorResponse)) {
-          this.errorHandlerService.handleError(error);
-        } else {
-          this.handleCommandError(OrdersInstantNotificationType.OrderUpdateFailed, error, 'Заявка не изменена');
-        }
-      }
-    ).pipe(
-      tap(result => {
-        if (result.isSuccess) {
-          this.instantNotificationsService.showNotification(
-            OrdersInstantNotificationType.OrderUpdated,
-            'success',
-            `Заявка изменена`,
-            `Заявка успешно изменена, её номер на бирже: \n ${result.orderNumber}`
-          );
-        }
-      })
+    return this.getTranslatorFn()
+      .pipe(
+        take(1),
+        mapWith(
+          t => this.submitRequest(
+            portfolio,
+            'put',
+            prepareOrderRequest,
+            error => {
+              if (!(error instanceof HttpErrorResponse)) {
+                this.errorHandlerService.handleError(error);
+              } else {
+                this.handleCommandError(
+                  OrdersInstantNotificationType.OrderUpdateFailed,
+                  error,
+                  t(['orderUpdateFailedLabel'], { fallback: 'Ошибка изменения заявки' }));
+              }
+            }
+          ),
+          (t, result) => ({ t, result })
+        ),
+        map(({ t, result }) => {
+          if (result.isSuccess) {
+            this.instantNotificationsService.showNotification(
+              OrdersInstantNotificationType.OrderUpdated,
+              'success',
+              t(['orderUpdatedLabel'], { fallback: 'Заявка изменена' }),
+              t(['orderUpdatedContent'], {
+                fallback: `Заявка успешно изменена, её номер на бирже: \n ${result.orderNumber}`,
+                orderNumber: result.orderNumber
+              })
+            );
+          }
+
+          return result;
+        }),
     );
   }
 
@@ -335,6 +369,15 @@ export class OrderService implements OnDestroy {
       errorTitle,
       this.prepareErrorMessage(errorMessage)
     );
+  }
+
+  private getTranslatorFn(): Observable<TranslatorFn> {
+    if (this.translator$ == null) {
+      this.translator$ = this.translatorService.getTranslator('shared/orders-notifications')
+        .pipe(shareReplay(1));
+    }
+
+    return this.translator$;
   }
 
   private prepareErrorMessage(message: string): string {

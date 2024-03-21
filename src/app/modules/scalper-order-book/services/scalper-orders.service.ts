@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { OrderCancellerService } from "../../../shared/services/order-canceller.service";
 import { CancelCommand } from "../../../shared/models/commands/cancel-command.model";
-import { take } from "rxjs";
+import { Observable, shareReplay, take } from "rxjs";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { Position } from "../../../shared/models/positions/position.model";
@@ -25,6 +25,7 @@ import {
   NewStopMarketOrder
 } from "../../../shared/models/orders/new-order.model";
 import { CommonOrderCommands } from "../../../shared/utils/common-order-commands";
+import { TranslatorFn, TranslatorService } from "../../../shared/services/translator.service";
 
 enum BracketOrderType {
   Top = 'top',
@@ -35,12 +36,14 @@ enum BracketOrderType {
   providedIn: 'root'
 })
 export class ScalperOrdersService {
+  private translator$!: Observable<TranslatorFn>;
 
   constructor(
     private readonly orderCancellerService: OrderCancellerService,
     private readonly orderService: OrderService,
     private readonly notification: NzNotificationService,
     private readonly ordersDialogService: OrdersDialogService,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -336,7 +339,12 @@ export class ScalperOrdersService {
 
   setStopLoss(price: number, silent: boolean, position: Position | null, instrumentGroup: string | null, portfolio: PortfolioKey): void {
     if (!position || position.qtyTFutureBatch === 0 || !position.avgPrice) {
-      this.notification.error('Нет позиций', 'Позиции для установки стоп-лосс отсутствуют');
+      this.getTranslatorFn()
+        .pipe(take(1))
+        .subscribe(t => this.notification.error(
+            t(['emptyPositionsErrorTitle'], { fallback: 'Нет позиций' }),
+            t(['emptyPositionsErrorContent'], { fallback: 'Позиции для установки стоп-лосс отсутствуют'})
+          ));
       return;
     }
 
@@ -501,5 +509,14 @@ export class ScalperOrdersService {
     }
 
     return MathHelper.roundPrice(dirtyPrice!, minStep);
+  }
+
+  private getTranslatorFn(): Observable<TranslatorFn> {
+    if (this.translator$ == null) {
+      this.translator$ = this.translatorService.getTranslator('scalper-order-book/scalper-order-book-table')
+        .pipe(shareReplay(1));
+    }
+
+    return this.translator$;
   }
 }

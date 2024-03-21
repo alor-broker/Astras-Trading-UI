@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { OrdersNotificationsService } from './orders-notifications.service';
 import { InstantNotificationsService } from './instant-notifications.service';
+import { TranslatorService } from "./translator.service";
+import { of } from "rxjs";
 
 describe('OrdersNotificationsService', () => {
   let service: OrdersNotificationsService;
@@ -11,7 +13,13 @@ describe('OrdersNotificationsService', () => {
     TestBed.configureTestingModule({
       providers: [
         OrdersNotificationsService,
-        { provide: InstantNotificationsService, useValue: spy }
+        { provide: InstantNotificationsService, useValue: spy },
+        {
+          provide: TranslatorService,
+          useValue: {
+            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
+          }
+        }
       ]
     });
 

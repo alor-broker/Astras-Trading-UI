@@ -7,6 +7,7 @@ import { OrderCancellerService } from "../order-canceller.service";
 import { of } from "rxjs";
 import { InstantNotificationsService } from "../instant-notifications.service";
 import { EnvironmentService } from "../environment.service";
+import { TranslatorService } from "../translator.service";
 
 describe('OrdersGroupService', () => {
   let service: OrdersGroupService;
@@ -35,6 +36,12 @@ describe('OrdersGroupService', () => {
           provide: EnvironmentService,
           useValue: {
             apiUrl: ''
+          }
+        },
+        {
+          provide: TranslatorService,
+          useValue: {
+            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
           }
         }
       ]

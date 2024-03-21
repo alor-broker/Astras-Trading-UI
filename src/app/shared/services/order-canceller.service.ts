@@ -4,6 +4,7 @@ import {
   BehaviorSubject,
   Observable,
   of,
+  shareReplay,
   switchMap,
   take,
   tap
@@ -14,9 +15,10 @@ import { GuidGenerator } from '../utils/guid';
 import { InstantNotificationsService } from './instant-notifications.service';
 import { OrdersInstantNotificationType } from '../models/terminal-settings/terminal-settings.model';
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
-import { catchHttpError } from "../utils/observable-helper";
+import { catchHttpError, mapWith } from "../utils/observable-helper";
 import { EnvironmentService } from "./environment.service";
 import { filter } from "rxjs/operators";
+import { TranslatorFn, TranslatorService } from "./translator.service";
 
 @Injectable({
   providedIn: 'root'
@@ -24,12 +26,14 @@ import { filter } from "rxjs/operators";
 export class OrderCancellerService {
   private readonly url = this.environmentService.apiUrl + '/commandapi/warptrans/TRADE/v2/client/orders';
   private readonly requestDelayMSec$ = new BehaviorSubject<number | null>(null);
+  private translator$!: Observable<TranslatorFn>;
 
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly http: HttpClient,
     private readonly instantNotificationsService: InstantNotificationsService,
-    private readonly errorHandlerService: ErrorHandlerService
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly translatorService: TranslatorService
   ) {
   }
 
@@ -55,16 +59,35 @@ export class OrderCancellerService {
       tap(() => {
         this.requestDelayMSec$.next(Date.now() - startTime);
       }),
-      tap(resp => {
-        if (resp?.orderNumber != null) {
-          this.instantNotificationsService.showNotification(
-            OrdersInstantNotificationType.OrderCancelled,
-            'success',
-            `Заявка отменена`,
-            `Заявка ${command.orderid} на ${command.exchange} успешно отменена`
-          );
-        }
-      })
+      mapWith(
+        () => this.getTranslatorFn(),
+        (resp, t) => {
+          if (resp?.orderNumber != null) {
+            this.instantNotificationsService.showNotification(
+              OrdersInstantNotificationType.OrderCancelled,
+              'success',
+              t(['orderCancelledTitle'], { fallback: 'Заявка отменена'}),
+              t(
+                ['orderCancelledContent'],
+                {
+                  fallback: `Заявка ${command.orderid} на ${command.exchange} успешно отменена`,
+                  orderId: command.orderid,
+                  exchange: command.exchange
+                }),
+            );
+          }
+
+          return resp;
+        })
     );
+  }
+
+  private getTranslatorFn(): Observable<TranslatorFn> {
+    if (this.translator$ == null) {
+      this.translator$ = this.translatorService.getTranslator('shared/orders-notifications')
+        .pipe(shareReplay(1));
+    }
+
+    return this.translator$;
   }
 }
