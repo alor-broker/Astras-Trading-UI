@@ -43,7 +43,7 @@ import { environment } from "../environments/environment";
 import { AngularFireAuthModule } from "@angular/fire/compat/auth";
 import { AngularFireMessagingModule } from "@angular/fire/compat/messaging";
 import { AngularFireModule } from "@angular/fire/compat";
-import {MobileHook} from "./shared/services/app-hook/mobile-hook";
+import { MobileHook } from "./shared/services/app-hook/mobile-hook";
 import { InitQueryParamsHook } from "./shared/services/app-hook/init-query-params-hook";
 import { NzI18nInterface } from "ng-zorro-antd/i18n/nz-i18n.interface";
 import { HashMap } from "@ngneat/transloco/lib/types";
@@ -64,30 +64,30 @@ registerLocaleData(ru);
   declarations: [
     AppComponent,
   ],
-    imports: [
-        AppRoutingModule,
-        SharedModule,
-        BrowserModule,
-        BrowserAnimationsModule,
-        FormsModule,
-        HttpClientModule,
-        StoreModule.forRoot({}),
-        EffectsModule.forRoot(),
-        ...extModules,
-        ApplicationMetaModule,
-        TranslocoRootModule,
-        AngularFireAuthModule,
-        AngularFireMessagingModule,
-        AngularFireModule.initializeApp(environment.firebase),
-        ServiceWorkerModule.register('ngsw-worker.js', {
+  imports: [
+    AppRoutingModule,
+    SharedModule,
+    BrowserModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    HttpClientModule,
+    StoreModule.forRoot({}),
+    EffectsModule.forRoot(),
+    ...extModules,
+    ApplicationMetaModule,
+    TranslocoRootModule,
+    AngularFireAuthModule,
+    AngularFireMessagingModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: true,
-            // Register the ServiceWorker as soon as the application is stable
-            // or after 15 seconds (whichever comes first).
-            registrationStrategy: 'registerWhenStable:15000'
-        }),
-        GraphQLModule,
-        NzSpinModule
-    ],
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 15 seconds (whichever comes first).
+      // registrationStrategy: 'registerWhenStable:15000'
+    }),
+    GraphQLModule,
+    NzSpinModule
+  ],
   bootstrap: [AppComponent],
   providers: [
     {
