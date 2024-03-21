@@ -18,6 +18,7 @@ import { HttpContextTokens } from "../../constants/http.constants";
 
 interface LogEntry {
   timestamp: string;
+  timestampUtc: number;
   logLevel: LogLevel;
   message: string;
   stack?: string;
@@ -28,14 +29,18 @@ interface LogEntry {
   version: string;
   environment: 'local' | 'dev' | 'prod';
 }
+
 @Injectable({
   providedIn: 'root'
 })
 export class RemoteLogger extends LoggerBase {
+  private readonly duplicatedMessagesLatencyMs = 1000;
   private readonly buffer: LogEntry[] = [];
   private readonly guid = GuidGenerator.newGuid();
   private readonly flush = new Subject();
   private config?: RemoteLoggerConfig | null;
+
+  private lastLoggedMessage: LogEntry | null = null;
 
   constructor(
     private readonly localStorageService: LocalStorageService,
@@ -65,8 +70,12 @@ export class RemoteLogger extends LoggerBase {
         return;
       }
 
-      this.buffer.push(this.formatMessage(logLevel, message, stack));
+      const logEntry = this.formatMessage(logLevel, message, stack);
+      if (!this.shouldIgnoreMessage(logEntry)) {
+        this.buffer.push(logEntry);
+      }
 
+      this.lastLoggedMessage = logEntry;
       this.flush.next({});
     } catch (e) {
       console.error(e);
@@ -79,8 +88,10 @@ export class RemoteLogger extends LoggerBase {
     stack?: string
   ): LogEntry {
 
+    const entryDate = new Date();
     return {
-      timestamp: new Date().toISOString(),
+      timestamp: entryDate.toISOString(),
+      timestampUtc: entryDate.getTime(),
       logLevel: logLevel,
       message: message,
       stack: stack ?? '',
@@ -113,7 +124,7 @@ export class RemoteLogger extends LoggerBase {
               currentValue
             ];
           },
-          [] as (LogEntry | { index: { _index: string} })[]
+          [] as (LogEntry | { index: { _index: string } })[]
         );
 
 
@@ -133,6 +144,7 @@ export class RemoteLogger extends LoggerBase {
       console.error(e);
     }
   }
+
   private getConfig(): RemoteLoggerConfig | null {
     if (this.config === undefined) {
       this.config = this.environmentService.logging.remote ?? null;
@@ -142,15 +154,26 @@ export class RemoteLogger extends LoggerBase {
   }
 
   private isLoggerEnabled(config: RemoteLoggerConfig | null): boolean {
-    if(!config) {
+    if (!config) {
       return false;
     }
 
-    if(!config.authorization.name || !config.authorization.password) {
+    if (!config.authorization.name || !config.authorization.password) {
       console.warn('Remote logger is enabled but credentials are not configured');
       return false;
     }
 
     return true;
+  }
+
+  private shouldIgnoreMessage(entry: LogEntry): boolean {
+    if (!this.lastLoggedMessage) {
+      return false;
+    }
+
+    return entry.logLevel === this.lastLoggedMessage.logLevel
+      && entry.message === this.lastLoggedMessage.message
+      && (entry.stack ?? '') === (this.lastLoggedMessage.stack ?? '')
+      && (entry.timestampUtc - this.lastLoggedMessage.timestampUtc) < this.duplicatedMessagesLatencyMs;
   }
 }
