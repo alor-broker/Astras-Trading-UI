@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import { ThemeType } from '../models/settings/theme-settings.model';
 import {TerminalSettingsService} from "./terminal-settings.service";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { LocalStorageService } from "./local-storage.service";
 
 describe('ThemeService', () => {
   let service: ThemeService;
@@ -28,6 +29,13 @@ describe('ThemeService', () => {
         {
           provide: TerminalSettingsService,
           useValue: terminalSettingsServiceSpy
+        },
+        {
+          provide: LocalStorageService,
+          useValue: {
+            getStringItem: jasmine.createSpy('getStringItem').and.returnValue(''),
+            setStringItem: jasmine.createSpy('setStringItem').and.callThrough()
+          }
         }
       ]
     });

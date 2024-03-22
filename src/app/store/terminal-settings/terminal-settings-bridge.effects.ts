@@ -25,6 +25,7 @@ export class TerminalSettingsBridgeEffects {
 
         this.localStorageService.removeItem(LocalStorageDesktopConstants.ProfileStorageKey);
         this.localStorageService.removeItem(LocalStorageCommonConstants.FeedbackStorageKey);
+        this.localStorageService.removeItem(LocalStorageCommonConstants.LastThemeStorageKey);
       }),
       map(() => DashboardsManageActions.removeAll())
     );

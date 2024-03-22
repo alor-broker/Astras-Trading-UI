@@ -1,6 +1,7 @@
 ﻿export class LocalStorageCommonConstants {
   static WidgetsLocalStateStorageKey = 'widgets-local-state';
   static FeedbackStorageKey = 'feedback';
+  static LastThemeStorageKey = 'last-theme';
 }
 
 export class LocalStorageDesktopConstants {
