@@ -310,14 +310,6 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
 
   settingsTableName = 'bondScreenerTable';
 
-  private readonly defaultFilter = {
-    boardInformation: {
-      isPrimaryBoard: {
-        eq: true
-      }
-    }
-  };
-
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     private readonly service: BondScreenerService,
@@ -331,7 +323,6 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
   }
 
   ngOnInit(): void {
-    this.filters$.next({ and: [this.defaultFilter ]});
     this.settings$ = this.settingsService.getSettings<BondScreenerSettings>(this.guid)
       .pipe(shareReplay(1));
 
@@ -387,10 +378,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
 
     this.pagination = null;
     this.filters$.next({
-      and: [
-        this.defaultFilter,
-        ...parsedFilters
-      ]
+      and: parsedFilters
     });
   }
 

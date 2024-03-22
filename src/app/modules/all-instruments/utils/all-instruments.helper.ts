@@ -1,15 +1,16 @@
 export const ALL_INSTRUMENTS_NESTED_FIELDS: { [fieldName: string]: string[] } = {
-  basicInformation: ['symbol', 'shortName', 'exchange'],
+  basicInformation: ['symbol', 'shortName', 'exchange', 'market'],
   financialAttributes: ['tradingStatusInfo'],
   additionalInformation: ['cancellation', 'priceMultiplier'],
   boardInformation: ['board'],
   tradingDetails: ['lotSize', 'minStep', 'priceMax', 'priceMin', 'priceStep', 'rating'],
-  currencyInformation: ['nominal']
+  currencyInformation: ['nominal'],
+  realTimeData: ['dailyGrowth', 'dailyGrowthPercent', 'price', 'tradeVolume', 'yield']
 };
 
 export const ALL_INSTRUMENTS_FILTER_TYPES: { [fieldName: string]: string[] } = {
   search: ['symbol', 'shortName', 'board', 'nominal'],
-  multiSelect: ['exchange'],
+  multiSelect: ['exchange', 'market'],
   interval: [
     'priceMultiplierFrom',
     'priceMultiplierTo',
@@ -22,7 +23,17 @@ export const ALL_INSTRUMENTS_FILTER_TYPES: { [fieldName: string]: string[] } = {
     'priceMinFrom',
     'priceMinTo',
     'priceStepFrom',
-    'priceStepTo'
+    'priceStepTo',
+    'dailyGrowthFrom',
+    'dailyGrowthTo',
+    'dailyGrowthPercentFrom',
+    'dailyGrowthPercentTo',
+    'tradeVolumeFrom',
+    'tradeVolumeTo',
+    'priceFrom',
+    'priceTo',
+    'yieldFrom',
+    'yieldTo'
   ],
   date: [
     'cancellationTo',

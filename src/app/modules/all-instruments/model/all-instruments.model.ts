@@ -13,6 +13,7 @@ export interface AllInstrumentsNode {
     shortName?: string;
     type?: string;
     exchange?: string;
+    market?: string;
   };
   financialAttributes?: {
     tradingStatus?: string;
@@ -37,6 +38,13 @@ export interface AllInstrumentsNode {
   };
   currencyInformation?: {
     nominal?: string;
+  };
+  realTimeData?: {
+    dailyGrowth?: number;
+    dailyGrowthPercent?: number;
+    price?: number;
+    tradeVolume?: number;
+    yield?: number;
   };
 }
 

@@ -112,41 +112,50 @@ implements OnInit, OnDestroy {
       width: 90,
       minWidth: 90,
     },
-    // {
-    //   id: 'dailyGrowth',
-    //   displayName: 'Рост за сегодня',
-    //   classFn: (data): 'sell' | 'buy' => data.dailyGrowth < 0 ? 'sell' : 'buy',
-    //   width: 100,
-    //   minWidth: 100,
-    //   sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'dailyGrowth' }),
-    //   filterData: {
-    //     filterName: 'dailyGrowth',
-    //     isInterval: true,
-    //     intervalStartName: 'dailyGrowthFrom',
-    //     intervalEndName: 'dailyGrowthTo'
-    //   }
-    // },
-    // {
-    //   id: 'dailyGrowthPercent',
-    //   displayName: 'Рост за сегодня, %',
-    //   classFn: (data): 'sell' | 'buy' => data.dailyGrowth < 0 ? 'sell' : 'buy',
-    //   width: 100,
-    //   minWidth: 100,
-    //   sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'dailyGrowthPercent' }),
-    // },
-    // {
-    //   id: 'tradeVolume',
-    //   displayName: 'Объём торгов',
-    //   width: 80,
-    //   minWidth: 80,
-    //   sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'tradeVolume' }),
-    //   filterData: {
-    //     filterName: 'tradeVolume',
-    //     isInterval: true,
-    //     intervalStartName: 'tradeVolumeFrom',
-    //     intervalEndName: 'tradeVolumeTo'
-    //   }
-    // },
+    {
+      id: 'dailyGrowth',
+      displayName: 'Рост за сегодня',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.realTimeData!.dailyGrowth!.toString(),
+      classFn: (data): 'sell' | 'buy' => data.realTimeData!.dailyGrowth! < 0 ? 'sell' : 'buy',
+      width: 100,
+      minWidth: 100,
+      sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'dailyGrowth'], dir),
+      filterData: {
+        filterName: 'dailyGrowth',
+        isInterval: true,
+        intervalStartName: 'dailyGrowthFrom',
+        intervalEndName: 'dailyGrowthTo'
+      }
+    },
+    {
+      id: 'dailyGrowthPercent',
+      displayName: 'Рост за сегодня, %',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.realTimeData!.dailyGrowthPercent!.toString(),
+      classFn: (data): 'sell' | 'buy' => data.realTimeData!.dailyGrowthPercent! < 0 ? 'sell' : 'buy',
+      width: 100,
+      minWidth: 100,
+      sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'dailyGrowthPercent'], dir),
+      filterData: {
+        filterName: 'dailyGrowthPercent',
+        isInterval: true,
+        intervalStartName: 'dailyGrowthPercentFrom',
+        intervalEndName: 'dailyGrowthPercentTo'
+      }
+    },
+    {
+      id: 'tradeVolume',
+      displayName: 'Объём торгов',
+      width: 80,
+      minWidth: 80,
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.realTimeData!.tradeVolume!.toString(),
+      sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'tradeVolume'], dir),
+      filterData: {
+        filterName: 'tradeVolume',
+        isInterval: true,
+        intervalStartName: 'tradeVolumeFrom',
+        intervalEndName: 'tradeVolumeTo'
+      }
+    },
     {
       id: 'exchange',
       displayName: 'Биржа',
@@ -165,25 +174,26 @@ implements OnInit, OnDestroy {
         ]
       },
     },
-    // {
-    //   id: 'market',
-    //   displayName: 'Рынок',
-    //   width: 90,
-    //   minWidth: 90,
-    //   sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'marketType' }),
-    //   filterData: {
-    //     filterName: 'marketType',
-    //     isOpenedFilter: false,
-    //     isDefaultFilter: true,
-    //     isMultipleFilter: true,
-    //     filters: [
-    //       { value: 'CURR', text: 'CURR' },
-    //       { value: 'FOND', text: 'FOND' },
-    //       { value: 'FORTS', text: 'FORTS' },
-    //       { value: 'SPBX', text: 'SPBX' },
-    //     ]
-    //   },
-    // },
+    {
+      id: 'market',
+      displayName: 'Рынок',
+      width: 90,
+      minWidth: 90,
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.market!,
+      sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'market'], dir),
+      filterData: {
+        filterName: 'market',
+        isOpenedFilter: false,
+        isDefaultFilter: true,
+        isMultipleFilter: true,
+        filters: [
+          { value: 'CURR', text: 'CURR' },
+          { value: 'FOND', text: 'FOND' },
+          { value: 'FORTS', text: 'FORTS' },
+          { value: 'SPBX', text: 'SPBX' },
+        ]
+      },
+    },
     {
       id: 'lotSize',
       displayName: 'Лотность',
@@ -198,20 +208,20 @@ implements OnInit, OnDestroy {
       width: 70,
       minWidth: 70
     },
-    // {
-    //   id: 'price',
-    //   displayName: 'Цена',
-    //   transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.price!.toString(),
-    //   width: 80,
-    //   minWidth: 80,
-    //   sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'price' }),
-    //   filterData: {
-    //     filterName: 'price',
-    //     isInterval: true,
-    //     intervalStartName: 'priceFrom',
-    //     intervalEndName: 'priceTo'
-    //   }
-    // },
+    {
+      id: 'price',
+      displayName: 'Цена',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.realTimeData!.price!.toString(),
+      width: 80,
+      minWidth: 80,
+      sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'price'], dir),
+      filterData: {
+        filterName: 'price',
+        isInterval: true,
+        intervalStartName: 'priceFrom',
+        intervalEndName: 'priceTo'
+      }
+    },
     {
       id: 'priceMax',
       displayName: 'Макс. цена',
@@ -268,24 +278,24 @@ implements OnInit, OnDestroy {
       minWidth: 90,
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceStep'], dir),
     },
-    // {
-    //   id: 'yield',
-    //   displayName: 'Доходность',
-    //   width: 100,
-    //   minWidth: 100,
-    //   sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'yield' }),
-    // },
+    {
+      id: 'yield',
+      displayName: 'Доходность',
+      width: 100,
+      minWidth: 100,
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.realTimeData!.yield!.toString(),
+      sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'yield'], dir),
+      filterData: {
+        filterName: 'yield',
+        isInterval: true,
+        intervalStartName: 'yieldFrom',
+        intervalEndName: 'yieldTo'
+      }
+    }
   ];
   public contextMenu: ContextMenu[] = [];
   private readonly instrumentsList$ = new BehaviorSubject<AllInstrumentsNodeDisplay[]>([]);
   private settings$!: Observable<AllInstrumentsSettings>;
-  private readonly defaultFilter = {
-    boardInformation: {
-      isPrimaryBoard: {
-        eq: true
-      }
-    }
-  };
 
   private updatesSub?: Subscription;
   protected settingsTableName = 'allInstrumentsTable';
@@ -306,7 +316,6 @@ implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.filters$.next({ and: [this.defaultFilter ]});
     this.settings$ = this.settingsService.getSettings<AllInstrumentsSettings>(this.guid)
       .pipe(
         shareReplay(1),
@@ -419,10 +428,7 @@ implements OnInit, OnDestroy {
 
     this.pagination = null;
     this.filters$.next({
-      and: [
-        this.defaultFilter,
-        ...parsedFilters
-      ]
+      and: parsedFilters
     });
   }
 

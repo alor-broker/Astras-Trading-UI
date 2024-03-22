@@ -24,6 +24,7 @@ export class AllInstrumentsService {
     const boardInformationFields = ALL_INSTRUMENTS_NESTED_FIELDS.boardInformation.filter(f => columnIds.includes(f));
     const tradingDetailsFields = ALL_INSTRUMENTS_NESTED_FIELDS.tradingDetails.filter(f => columnIds.includes(f));
     const currencyInformationFields = ALL_INSTRUMENTS_NESTED_FIELDS.currencyInformation.filter(f => columnIds.includes(f));
+    const realTimeDataFields = ALL_INSTRUMENTS_NESTED_FIELDS.realTimeData.filter(f => columnIds.includes(f));
 
     return `
       query GET_INSTRUMENTS($first: Int, $after: String, $filters: InstrumentModelFilterInput, $sort: [InstrumentModelSortInput!]) {
@@ -54,6 +55,10 @@ export class AllInstrumentsService {
               }
               ${currencyInformationFields.length > 0
                 ? 'currencyInformation {' + currencyInformationFields.join(' ') + '}'
+                : ''
+              }
+              ${realTimeDataFields.length > 0
+                ? 'realTimeData {' + realTimeDataFields.join(' ') + '}'
                 : ''
               }
             }
