@@ -14,4 +14,18 @@ export interface Instrument extends InstrumentKey {
   marginbuy?: number;
   marginsell?: number;
   expirationDate?: Date;
+  tradingStatus?: TradingStatus;
+}
+
+export enum TradingStatus {
+  Break = 2,
+  NormalPeriod = 17,
+  Closed = 18,
+  ClosingAuction = 102,
+  ClosingPeriod = 103,
+  LargePackagesAuction = 106,
+  DiscreteAuction = 107,
+  OpeningPeriod = 118,
+  OpeningAuction = 119,
+  ClosingPriceAuctionPeriod = 120
 }
