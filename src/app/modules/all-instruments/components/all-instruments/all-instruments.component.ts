@@ -175,6 +175,26 @@ implements OnInit, OnDestroy {
       },
     },
     {
+      id: 'board',
+      displayName: 'Режим торгов',
+      width: 90,
+      minWidth: 90,
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.boardInformation!.board!,
+      sortChangeFn: (dir): void => this.sortChange(['boardInformation', 'board'], dir),
+      filterData: {
+        filterName: 'board',
+        isOpenedFilter: false,
+        isDefaultFilter: false,
+        isMultipleFilter: true,
+        filters: [
+          { value: 'CURR', text: 'CURR' },
+          { value: 'FOND', text: 'FOND' },
+          { value: 'FORTS', text: 'FORTS' },
+          { value: 'SPBX', text: 'SPBX' },
+        ]
+      },
+    },
+    {
       id: 'market',
       displayName: 'Рынок',
       width: 90,
