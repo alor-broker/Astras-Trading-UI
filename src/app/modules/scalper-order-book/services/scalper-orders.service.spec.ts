@@ -1,39 +1,45 @@
-import {fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
 
-import {ScalperOrdersService} from './scalper-orders.service';
+import { ScalperOrdersService } from './scalper-orders.service';
 import {
   commonTestProviders,
   generateRandomString,
   getRandomInt,
   sharedModuleImportForTests
 } from "../../../shared/utils/testing";
-import {OrderCancellerService} from "../../../shared/services/order-canceller.service";
-import {OrderService} from "../../../shared/services/orders/order.service";
-import {NzNotificationService} from "ng-zorro-antd/notification";
-import {of} from "rxjs";
-import {Store} from "@ngrx/store";
-import {PortfolioKey} from "../../../shared/models/portfolio-key.model";
-import {InstrumentKey} from "../../../shared/models/instruments/instrument-key.model";
-import {Position} from "../../../shared/models/positions/position.model";
-import {Side} from "../../../shared/models/enums/side.model";
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import {Instrument} from '../../../shared/models/instruments/instrument.model';
-import {CancelCommand} from '../../../shared/models/commands/cancel-command.model';
-import {CurrentOrderDisplay} from '../models/scalper-order-book.model';
-import {OrderbookDataRow} from '../../orderbook/models/orderbook-data.model';
-import {LessMore} from "../../../shared/models/enums/less-more.model";
-import {PriceUnits, ScalperOrderBookWidgetSettings, VolumeHighlightMode} from "../models/scalper-order-book-settings.model";
-import {ExecutionPolicy} from "../../../shared/models/orders/orders-group.model";
-import {MathHelper} from "../../../shared/utils/math-helper";
-import {OrdersDialogService} from "../../../shared/services/orders/orders-dialog.service";
-import {OrderDialogParams, OrderType} from "../../../shared/models/orders/orders-dialog.model";
+import { OrderCancellerService } from "../../../shared/services/order-canceller.service";
+import { OrderService } from "../../../shared/services/orders/order.service";
+import { of } from "rxjs";
+import { Store } from "@ngrx/store";
+import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
+import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
+import { Position } from "../../../shared/models/positions/position.model";
+import { Side } from "../../../shared/models/enums/side.model";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { Instrument } from '../../../shared/models/instruments/instrument.model';
+import { CancelCommand } from '../../../shared/models/commands/cancel-command.model';
+import { CurrentOrderDisplay } from '../models/scalper-order-book.model';
+import { OrderbookDataRow } from '../../orderbook/models/orderbook-data.model';
+import { LessMore } from "../../../shared/models/enums/less-more.model";
+import {
+  PriceUnits,
+  ScalperOrderBookWidgetSettings,
+  VolumeHighlightMode
+} from "../models/scalper-order-book-settings.model";
+import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
+import { MathHelper } from "../../../shared/utils/math-helper";
+import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
+import { OrderDialogParams, OrderType } from "../../../shared/models/orders/orders-dialog.model";
 import {
   NewLimitOrder,
   NewMarketOrder,
   NewStopLimitOrder,
   NewStopMarketOrder
 } from "../../../shared/models/orders/new-order.model";
-import {toInstrumentKey} from "../../../shared/utils/instruments";
+import { toInstrumentKey } from "../../../shared/utils/instruments";
+import {
+  InstantTranslatableNotificationsService
+} from "../../../shared/services/instant-translatable-notifications.service";
 
 describe('ScalperOrdersService', () => {
   let service: ScalperOrdersService;
@@ -60,7 +66,7 @@ describe('ScalperOrdersService', () => {
       ]
     );
 
-    notificationServiceSpy = jasmine.createSpyObj('NzNotificationService', ['error', 'warning']);
+    notificationServiceSpy = jasmine.createSpyObj('InstantTranslatableNotificationsService', ['showNotification']);
     ordersDialogServiceSpy = jasmine.createSpyObj('OrdersDialogService', ['openNewOrderDialog', 'openEditOrderDialog']);
 
     testSettings = {
@@ -88,7 +94,7 @@ describe('ScalperOrdersService', () => {
         ScalperOrdersService,
         { provide: OrderCancellerService, useValue: orderCancellerServiceSpy },
         { provide: OrderService, useValue: orderServiceSpy },
-        { provide: NzNotificationService, useValue: notificationServiceSpy },
+        { provide: InstantTranslatableNotificationsService, useValue: notificationServiceSpy },
         { provide: OrdersDialogService, useValue: ordersDialogServiceSpy },
         ...commonTestProviders
       ]
@@ -1155,7 +1161,7 @@ describe('ScalperOrdersService', () => {
       tick(10000);
       expect(orderServiceSpy.submitStopMarketOrder).not.toHaveBeenCalled();
       expect(ordersDialogServiceSpy.openNewOrderDialog).not.toHaveBeenCalled();
-      expect(notificationServiceSpy.error).toHaveBeenCalledTimes(1);
+      expect(notificationServiceSpy.showNotification).toHaveBeenCalledTimes(1);
     }));
 
     it('should call appropriate service with appropriate data', fakeAsync(() => {

@@ -1,25 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 import { OrdersNotificationsService } from './orders-notifications.service';
-import { InstantNotificationsService } from './instant-notifications.service';
-import { TranslatorService } from "./translator.service";
-import { of } from "rxjs";
+import { InstantTranslatableNotificationsService } from "./instant-translatable-notifications.service";
 
 describe('OrdersNotificationsService', () => {
   let service: OrdersNotificationsService;
-  const spy = jasmine.createSpyObj('InstantNotificationsService', ['showNotification']);
+  const spy = jasmine.createSpyObj('InstantTranslatableNotificationsService', ['showNotification']);
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         OrdersNotificationsService,
-        { provide: InstantNotificationsService, useValue: spy },
-        {
-          provide: TranslatorService,
-          useValue: {
-            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
-          }
-        }
+        { provide: InstantTranslatableNotificationsService, useValue: spy }
       ]
     });
 

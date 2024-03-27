@@ -5,9 +5,8 @@ import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { ErrorHandlerService } from "../handle-error/error-handler.service";
 import { OrderCancellerService } from "../order-canceller.service";
 import { of } from "rxjs";
-import { InstantNotificationsService } from "../instant-notifications.service";
 import { EnvironmentService } from "../environment.service";
-import { TranslatorService } from "../translator.service";
+import { InstantTranslatableNotificationsService } from "../instant-translatable-notifications.service";
 
 describe('OrdersGroupService', () => {
   let service: OrdersGroupService;
@@ -27,7 +26,7 @@ describe('OrdersGroupService', () => {
           }
         },
         {
-          provide: InstantNotificationsService,
+          provide: InstantTranslatableNotificationsService,
           useValue: {
             showNotification: jasmine.createSpy('showNotification').and.callThrough()
           }
@@ -36,12 +35,6 @@ describe('OrdersGroupService', () => {
           provide: EnvironmentService,
           useValue: {
             apiUrl: ''
-          }
-        },
-        {
-          provide: TranslatorService,
-          useValue: {
-            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
           }
         }
       ]

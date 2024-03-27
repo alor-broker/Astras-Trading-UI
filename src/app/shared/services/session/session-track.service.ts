@@ -15,10 +15,11 @@ import {
 import { map } from "rxjs/operators";
 import { AuthService } from "../auth.service";
 import { mapWith } from "../../utils/observable-helper";
-import { NzNotificationService } from "ng-zorro-antd/notification";
 import { NzNotificationDataOptions } from "ng-zorro-antd/notification/typings";
-import {TerminalSettingsService} from "../terminal-settings.service";
-import { TranslatorFn, TranslatorService } from "../translator.service";
+import { TerminalSettingsService } from "../terminal-settings.service";
+import { InstantTranslatableNotificationsService } from "../instant-translatable-notifications.service";
+import { SessionInstantNotificationType } from "../../models/terminal-settings/terminal-settings.model";
+import { NzNotificationService } from "ng-zorro-antd/notification";
 
 @Injectable({
   providedIn: 'root'
@@ -26,14 +27,13 @@ import { TranslatorFn, TranslatorService } from "../translator.service";
 export class SessionTrackService {
   private trackingSubscription?: Subscription;
   private lastWarningId?: string;
-  private translator$!: Observable<TranslatorFn>;
 
   constructor(
     private readonly activityTrackerService: ActivityTrackerService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly authService: AuthService,
     private readonly notificationService: NzNotificationService,
-    private readonly translatorService: TranslatorService
+    private readonly instantNotificationService: InstantTranslatableNotificationsService
   ) {
   }
 
@@ -152,18 +152,13 @@ export class SessionTrackService {
   }
 
   private showWarningMessage(): void {
-    this.getTranslatorFn()
-      .pipe(take(1))
-      .subscribe(t => {
-        this.removeWarningMessage();
-        this.lastWarningId = this.notificationService.warning(
-          t(['warningMessageTitle'], { fallback: 'Завершение сеанса' }),
-          t(['warningMessageContent'], { fallback: 'Текущий сеанс будет завершен из-за бездействия пользователя' }),
-          {
-            nzDuration: 0
-          } as NzNotificationDataOptions
-        ).messageId;
-      });
+    this.removeWarningMessage();
+    this.instantNotificationService.showNotification(
+      SessionInstantNotificationType.EndOfSession,
+      {},
+      { nzDuration: 0 } as NzNotificationDataOptions,
+      n => this.lastWarningId = n.messageId
+    );
   }
 
   private removeWarningMessage(): void {
@@ -171,15 +166,6 @@ export class SessionTrackService {
       this.notificationService.remove(this.lastWarningId);
       this.lastWarningId = undefined;
     }
-  }
-
-  private getTranslatorFn(): Observable<TranslatorFn> {
-    if (this.translator$ == null) {
-      this.translator$ = this.translatorService.getTranslator('shared/orders-notifications')
-        .pipe(shareReplay(1));
-    }
-
-    return this.translator$;
   }
 }
 

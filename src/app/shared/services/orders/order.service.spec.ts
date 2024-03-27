@@ -11,7 +11,6 @@ import {
 } from "rxjs";
 import { Side } from "../../models/enums/side.model";
 import { toUnixTimestampSeconds } from "../../utils/datetime";
-import { InstantNotificationsService } from '../instant-notifications.service';
 import {LessMore} from "../../models/enums/less-more.model";
 import {
   NewLimitOrder,
@@ -21,7 +20,7 @@ import {
 } from "../../models/orders/new-order.model";
 import {LimitOrderEdit, StopLimitOrderEdit, StopMarketOrderEdit} from "../../models/orders/edit-order.model";
 import { EnvironmentService } from "../environment.service";
-import { TranslatorService } from "../translator.service";
+import { InstantTranslatableNotificationsService } from "../instant-translatable-notifications.service";
 
 
 describe('OrderService', () => {
@@ -43,7 +42,7 @@ describe('OrderService', () => {
   };
 
   beforeEach(() => {
-    notificationServiceSpy = jasmine.createSpyObj('InstantNotificationsService', ['showNotification']);
+    notificationServiceSpy = jasmine.createSpyObj('InstantTranslatableNotificationsService', ['showNotification']);
     errorHandlerServiceSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
     httpSpy = jasmine.createSpyObj<HttpClient>('HttpClient', ['post', 'put']);
 
@@ -55,7 +54,7 @@ describe('OrderService', () => {
           useValue: httpSpy
         },
         {
-          provide: InstantNotificationsService,
+          provide: InstantTranslatableNotificationsService,
           useValue: notificationServiceSpy
         },
         {
@@ -66,12 +65,6 @@ describe('OrderService', () => {
           provide: EnvironmentService,
           useValue: {
             apiUrl
-          }
-        },
-        {
-          provide: TranslatorService,
-          useValue: {
-            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
           }
         }
       ]

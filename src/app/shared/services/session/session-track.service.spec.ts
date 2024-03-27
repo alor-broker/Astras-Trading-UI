@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { SessionTrackService } from './session-track.service';
-import { BehaviorSubject, of } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { TerminalSettings } from "../../models/terminal-settings/terminal-settings.model";
 import { map } from "rxjs/operators";
 import { ActivityTrackerService } from "./activity-tracker.service";
@@ -9,7 +9,7 @@ import { AuthService } from "../auth.service";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { NzNotificationRef } from "ng-zorro-antd/notification/typings";
 import {TerminalSettingsService} from "../terminal-settings.service";
-import { TranslatorService } from "../translator.service";
+import { InstantTranslatableNotificationsService } from "../instant-translatable-notifications.service";
 
 describe('SessionTrackService', () => {
   let service: SessionTrackService;
@@ -18,6 +18,7 @@ describe('SessionTrackService', () => {
   let terminalSettingsServiceSpy: any;
   let authServiceSpy: any;
   let notificationServiceSpy: any;
+  let instantNotificationsServiceSpy: any;
   const userIdleDurationMinMock = new BehaviorSubject<number>(1 / 60);
   const lastActivityTimeMock = new BehaviorSubject<number | null>(null);
   const nowDateMock = Date.now();
@@ -27,6 +28,7 @@ describe('SessionTrackService', () => {
     terminalSettingsServiceSpy = jasmine.createSpyObj('TerminalSettingsService', ['getSettings']);
     authServiceSpy = jasmine.createSpyObj('AuthService', ['logout']);
     notificationServiceSpy = jasmine.createSpyObj('NzNotificationService', ['warning', 'remove']);
+    instantNotificationsServiceSpy = jasmine.createSpyObj('InstantTranslatableNotificationsService', ['showNotification']);
 
     terminalSettingsServiceSpy.getSettings.and.returnValue(
       userIdleDurationMinMock.pipe(
@@ -54,10 +56,8 @@ describe('SessionTrackService', () => {
           useValue: notificationServiceSpy
         },
         {
-          provide: TranslatorService,
-          useValue: {
-            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
-          }
+          provide: InstantTranslatableNotificationsService,
+          useValue: instantNotificationsServiceSpy
         }
       ]
     });
@@ -115,7 +115,7 @@ describe('SessionTrackService', () => {
     service.startTracking();
     jasmine.clock().tick(usrIdleDurationMs);
 
-    expect(notificationServiceSpy.warning).not.toHaveBeenCalled();
+    expect(instantNotificationsServiceSpy.showNotification).not.toHaveBeenCalled();
   });
 
   it('should warning on inactivity', () => {
@@ -128,10 +128,14 @@ describe('SessionTrackService', () => {
     service.startTracking();
     jasmine.clock().tick(usrIdleDurationMs);
 
-    expect(notificationServiceSpy.warning).toHaveBeenCalled();
+    expect(instantNotificationsServiceSpy.showNotification).toHaveBeenCalled();
   });
 
   it('should warning on inactivity and hide warning on activity', () => {
+    instantNotificationsServiceSpy.showNotification.and.callFake(
+      (a: any, b: any, c: any, d: (e: any) => void) => d?.({ messageId: 1})
+    ); // Needs to assign lastWarningId property ID of warning
+
     const usrIdleDuration = 2 / 60;
     const usrIdleDurationMs = Math.round(usrIdleDuration * 60 * 1000);
 
@@ -141,7 +145,7 @@ describe('SessionTrackService', () => {
     service.startTracking();
     jasmine.clock().tick(usrIdleDurationMs);
 
-    expect(notificationServiceSpy.warning).toHaveBeenCalled();
+    expect(instantNotificationsServiceSpy.showNotification).toHaveBeenCalled();
 
     lastActivityTimeMock.next(Date.now());
     jasmine.clock().tick(100);

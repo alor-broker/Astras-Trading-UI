@@ -1,4 +1,5 @@
 {
+  "error": "Error",
   "orderTitle": "Order",
   "orderCreatedLabel": "Order created",
   "orderCreatedContent": "Order is successfully placed with exchange number:\n{{orderNumber}}",
@@ -14,5 +15,11 @@
   "ordersGroupCreatedContent": "Group with orders {{orderIds}} successfully created",
 
   "orderCancelledTitle": "Order cancelled",
-  "orderCancelledContent": "Order {{orderId}} on {{exchange}} successfully cancelled"
+  "orderCancelledContent": "Order {{orderId}} on {{exchange}} successfully cancelled",
+
+  "sessionWarningMessageTitle": "Session end",
+  "sessionWarningMessageContent": "The current session will end due to user inactivity",
+
+  "scalperOrderBookEmptyPositionsErrorTitle": "No positions",
+  "scalperOrderBookEmptyPositionsErrorContent": "There are no positions for setting stop-loss"
 }

@@ -1,11 +1,12 @@
 {
+  "error": "Ошибка",
   "orderTitle": "Заявка",
   "orderCreatedLabel": "Заявка выставлена",
   "orderCreatedContent": "Заявка успешно выставлена, её номер на бирже:\n{{orderNumber}}",
   "orderSubmitFailedLabel": "Ошибка выставления заявки",
   "orderFilledLabel": "Заявка {{orderId}} исполнилась",
   "orderPartiallyFilledLabel": "Заявка {{orderId}} исполнилась на {{qty}} шт.",
-  "orderCancelledLabel": "Заявка {{orderId}} была отменена",
+  "OrderStatusChangeToCancelledLabel": "Заявка {{orderId}} была отменена",
   "orderUpdatedLabel": "Заявка изменена",
   "orderUpdatedContent": "Заявка успешно изменена, её номер на бирже:\n{{orderNumber}}",
   "orderUpdateFailedLabel": "Ошибка изменения заявки",
@@ -14,5 +15,11 @@
   "ordersGroupCreatedContent": "Группа с заявками {{orderIds}} успешно создана",
 
   "orderCancelledTitle": "Заявка отменена",
-  "orderCancelledContent": "Заявка {{orderId}} на {{exchange}} успешно отменена"
+  "orderCancelledContent": "Заявка {{orderId}} на {{exchange}} успешно отменена",
+
+  "sessionWarningMessageTitle": "Завершение сеанса",
+  "sessionWarningMessageContent": "Текущий сеанс будет завершен из-за бездействия пользователя",
+
+  "scalperOrderBookEmptyPositionsErrorTitle": "Нет позиций",
+  "scalperOrderBookEmptyPositionsErrorContent": "Позиции для установки стоп-лосс отсутствуют"
 }

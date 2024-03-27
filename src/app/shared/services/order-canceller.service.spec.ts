@@ -3,11 +3,9 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { OrderCancellerService } from './order-canceller.service';
-import { InstantNotificationsService } from './instant-notifications.service';
-import {ErrorHandlerService} from "./handle-error/error-handler.service";
+import { ErrorHandlerService } from "./handle-error/error-handler.service";
 import { EnvironmentService } from "./environment.service";
-import { TranslatorService } from "./translator.service";
-import { of } from "rxjs";
+import { InstantTranslatableNotificationsService } from "./instant-translatable-notifications.service";
 
 describe('OrderCancellerService', () => {
   let service: OrderCancellerService;
@@ -20,7 +18,7 @@ describe('OrderCancellerService', () => {
       imports: [HttpClientTestingModule],
       providers: [
         {
-          provide: InstantNotificationsService,
+          provide: InstantTranslatableNotificationsService,
           useValue: {
             showNotification: jasmine.createSpy('showNotification').and.callThrough()
           }
@@ -35,12 +33,6 @@ describe('OrderCancellerService', () => {
           provide: EnvironmentService,
           useValue: {
             apiUrl: ''
-          }
-        },
-        {
-          provide: TranslatorService,
-          useValue: {
-            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
           }
         },
         OrderCancellerService
