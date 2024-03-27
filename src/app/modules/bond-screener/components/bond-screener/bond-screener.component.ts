@@ -1,7 +1,7 @@
 import { Component, DestroyRef, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, shareReplay, switchMap, take, tap } from 'rxjs';
 import { TableConfig } from '../../../../shared/models/table-config.model';
-import { BaseColumnSettings } from '../../../../shared/models/settings/table-settings.model';
+import { BaseColumnSettings, DefaultTableFilters } from '../../../../shared/models/settings/table-settings.model';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { BondScreenerSettings } from '../../models/bond-screener-settings.model';
 import { filter, map } from 'rxjs/operators';
@@ -17,16 +17,12 @@ import { DashboardContextService } from "../../../../shared/services/dashboard-c
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import { InstrumentGroups } from "../../../../shared/models/dashboard/dashboard.model";
 import { MathHelper } from "../../../../shared/utils/math-helper";
-import { BOND_FILTER_TYPES, BOND_NESTED_FIELDS } from "../../utils/bond-screener.helper";
 import {
   LazyLoadingBaseTableComponent
 } from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import {
-  GraphQlCondition,
   GraphQlEdge,
-  GraphQlFilter,
-  GraphQlFilters,
   GraphQlPageInfo,
   GraphQlSort,
   GraphQlSortType
@@ -43,7 +39,7 @@ interface BondDisplay extends BondNode {
 })
 export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
   BondDisplay,
-  { [propName: string]: any },
+  DefaultTableFilters,
   GraphQlPageInfo,
   GraphQlSort
 > implements OnInit, OnDestroy {
@@ -334,9 +330,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     this.bondsList$.complete();
   }
 
-  applyFilter(filters: { [filterName: string]: string | string[] | null | number | boolean }): void {
-    // Parse applied filters to graphQL filters
-    const parsedFilters = Object.keys(filters)
+  applyFilter(filters: DefaultTableFilters): void {
+    const cleanedFilters = Object.keys(filters)
       .filter(key =>
         filters[key] != null &&
         (
@@ -345,41 +340,14 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
           (filters[key] as string | string[]).length > 0
         )
       )
-      .reduce((acc, key) => {
-        const parentField = Object.keys(BOND_NESTED_FIELDS)
-          .find(k =>
-            key.endsWith('From')
-              ? BOND_NESTED_FIELDS[k].includes(key.replace('From', ''))
-              : key.endsWith('To')
-                ? BOND_NESTED_FIELDS[k].includes(key.replace('To', ''))
-                : BOND_NESTED_FIELDS[k].includes(key)
-          );
-
-        if (parentField == null) {
-          return acc;
-        }
-
-        const filterValue = this.getFilterValue(key, filters[key]!);
-
-        if (filterValue == null) {
-          return acc;
-        }
-
-        if (parentField === 'rootFields') {
-          acc.push(filterValue);
-        } else {
-          acc.push({
-            [parentField]: filterValue
-          });
-        }
-
+      .reduce((acc, curr) => {
+        acc[curr] = filters[curr];
         return acc;
-      }, [] as (GraphQlFilter | GraphQlFilters)[]);
+      }, {} as DefaultTableFilters);
+
 
     this.pagination = null;
-    this.filters$.next({
-      and: parsedFilters
-    });
+    this.filters$.next(cleanedFilters);
   }
 
   rowClick(row: BondDisplay): void {
@@ -405,45 +373,6 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
 
   saveColumnWidth(event: { columnId: string, width: number }): void {
     super.saveColumnWidth<BondScreenerSettings>(event, this.settings$);
-  }
-
-  private getFilterValue(filterName: string, filterValue: string | string[] | boolean | number): GraphQlFilter | GraphQlFilters | null {
-    const filterType = Object.keys(BOND_FILTER_TYPES).find(key => BOND_FILTER_TYPES[key].includes(filterName));
-
-    if (filterType === 'multiSelect') {
-      return {
-        or: (filterValue as string[]).map(value => ({ [filterName]: { eq: value } }))
-      };
-    }
-
-    if (filterType === 'interval') {
-      if (filterName.includes('From')) {
-        return { [filterName.replace('From', '')]: { gte: Number(filterValue) } };
-      }
-      return { [filterName.replace('To', '')]: { lte: Number(filterValue) } };
-    }
-
-    if (filterType === 'bool') {
-      return { [filterName]: { eq: filterValue }};
-    }
-
-    if (filterType === 'date') {
-      const [day, month, year] = (filterValue as string).split('.').map(d => +d);
-      const filterDate = new Date(year, month - 1, day);
-
-      if (isNaN(filterDate.getTime())) {
-        return null;
-      }
-
-      const parsedDate = filterDate.toISOString();
-
-      if (filterName.includes('From')) {
-        return { [filterName.replace('From', '')]: { gte: parsedDate } };
-      }
-      return { [filterName.replace('To', '')]: { lte: parsedDate } };
-    }
-
-    return { [filterName]: { contains: filterValue }};
   }
 
   protected initTableConfigStream(): Observable<TableConfig<BondDisplay>> {
@@ -503,31 +432,18 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
 
           const columnIds = tableConfig.columns.map(c => c.id);
 
-          const filtersWithDefaultValues = JSON.parse(JSON.stringify(filters)) as GraphQlFilters;
-          const cancellationFromFilterValue = filtersWithDefaultValues.and?.find(f => (
-            (
-              (
-                f as GraphQlFilter
-              ).additionalInformation as GraphQlFilter
-            )?.cancellation as GraphQlCondition
-          )?.gte != null);
+          const filtersWithDefaultValues = JSON.parse(JSON.stringify(filters)) as DefaultTableFilters;
 
-          if ((settings.hideExpired ?? true) && cancellationFromFilterValue == null) {
-            filtersWithDefaultValues.and?.push({
-              additionalInformation: {
-                cancellation: {
-                  gte: new Date().toISOString()
-                }
-              }
-            });
+          if ((settings.hideExpired ?? true) && filtersWithDefaultValues.cancellationFrom == null) {
+            filtersWithDefaultValues.cancellationFrom = new Date().toISOString();
           }
 
           return this.service.getBonds(
             columnIds,
+            filtersWithDefaultValues,
             {
               first: this.loadingChunkSize,
               after: this.pagination?.endCursor,
-              filters: filtersWithDefaultValues,
               sort: sort
             });
         }),

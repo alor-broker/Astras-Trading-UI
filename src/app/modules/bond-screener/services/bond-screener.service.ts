@@ -8,12 +8,14 @@ import {
   FetchPolicy,
   GraphQlService
 } from "../../../shared/services/graph-ql.service";
-import { BOND_NESTED_FIELDS } from "../utils/bond-screener.helper";
+import { BOND_FILTER_TYPES, BOND_NESTED_FIELDS } from "../utils/bond-screener.helper";
 import {
   BondYield,
   BondYieldsResponse
 } from "../models/bond-yield-curve.model";
 import { map } from "rxjs/operators";
+import { DefaultTableFilters } from "../../../shared/models/settings/table-settings.model";
+import { GraphQlHelper } from "../../../shared/utils/graph-ql-helper";
 
 @Injectable({
   providedIn: 'root'
@@ -25,10 +27,18 @@ export class BondScreenerService {
   ) {
   }
 
-  getBonds(columnIds: string[], variables: {
-    [propName: string]: any;
-  } = {}): Observable<BondScreenerResponse | null> {
-    return this.graphQlService.watchQuery(this.getBondsQuery(columnIds), variables);
+  getBonds(
+    columnIds: string[],
+    filters: DefaultTableFilters,
+    variables: { [propName: string]: any } = {}
+  ): Observable<BondScreenerResponse | null> {
+    return this.graphQlService.watchQuery(
+      this.getBondsQuery(columnIds),
+      {
+        ...variables,
+        filters: GraphQlHelper.parseFilters(filters, BOND_NESTED_FIELDS, BOND_FILTER_TYPES)
+      }
+    );
   }
 
   getBondsYieldCurve(): Observable<BondYield[] | null> {

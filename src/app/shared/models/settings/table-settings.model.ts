@@ -47,3 +47,7 @@ export interface FilterData {
   intervalStartName?: string;
   intervalEndName?: string;
 }
+
+export interface DefaultTableFilters {
+  [filterName: string]: string | string[] | number | boolean | null | undefined;
+}

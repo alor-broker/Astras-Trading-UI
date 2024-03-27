@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable } from "rxjs";
 import { AllInstrumentsResponse } from "../model/all-instruments.model";
 import { FetchPolicy, GraphQlService } from "../../../shared/services/graph-ql.service";
-import { ALL_INSTRUMENTS_NESTED_FIELDS } from "../utils/all-instruments.helper";
+import { ALL_INSTRUMENTS_FILTER_TYPES, ALL_INSTRUMENTS_NESTED_FIELDS } from "../utils/all-instruments.helper";
+import { DefaultTableFilters } from "../../../shared/models/settings/table-settings.model";
+import { GraphQlHelper } from "../../../shared/utils/graph-ql-helper";
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +15,15 @@ export class AllInstrumentsService {
     private readonly graphQlService: GraphQlService
   ) {}
 
-  getInstruments(columnIds: string[], variables: { [propName: string]: any } = {}): Observable<AllInstrumentsResponse | null> {
-    return this.graphQlService.watchQuery(this.getAllInstrumentsRequestQuery(columnIds), variables, { fetchPolicy: FetchPolicy.NoCache });
+  getInstruments(columnIds: string[], filters: DefaultTableFilters, variables: { [propName: string]: any } = {}): Observable<AllInstrumentsResponse | null> {
+    return this.graphQlService.watchQuery(
+      this.getAllInstrumentsRequestQuery(columnIds),
+      {
+        ...variables,
+        filters: GraphQlHelper.parseFilters(filters, ALL_INSTRUMENTS_NESTED_FIELDS, ALL_INSTRUMENTS_FILTER_TYPES)
+      },
+      { fetchPolicy: FetchPolicy.NoCache }
+    );
   }
 
   private getAllInstrumentsRequestQuery(columnIds: string[]): string {

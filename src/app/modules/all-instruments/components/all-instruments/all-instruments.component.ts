@@ -34,7 +34,7 @@ import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 import { AllInstrumentsSettings } from '../../model/all-instruments-settings.model';
-import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import { BaseColumnSettings, DefaultTableFilters } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import {
@@ -50,13 +50,10 @@ import {
 } from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
 import {
   GraphQlEdge,
-  GraphQlFilter,
-  GraphQlFilters,
   GraphQlPageInfo,
   GraphQlSort,
   GraphQlSortType
 } from "../../../../shared/models/graph-ql.model";
-import { ALL_INSTRUMENTS_FILTER_TYPES, ALL_INSTRUMENTS_NESTED_FIELDS } from "../../utils/all-instruments.helper";
 
 interface AllInstrumentsNodeDisplay extends AllInstrumentsNode {
   id: string;
@@ -69,7 +66,7 @@ interface AllInstrumentsNodeDisplay extends AllInstrumentsNode {
 })
 export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
   AllInstrumentsNodeDisplay,
-  { [propName: string]: any },
+  DefaultTableFilters,
   GraphQlPageInfo,
   GraphQlSort
 >
@@ -384,9 +381,8 @@ implements OnInit, OnDestroy {
       this.scrolled$.next(null);
   }
 
-  applyFilter(filters: { [filterName: string]: string | string[] | null | number | boolean }): void {
-    // Parse applied filters to graphQL filters
-    const parsedFilters = Object.keys(filters)
+  applyFilter(filters: DefaultTableFilters): void {
+    const cleanedFilters = Object.keys(filters)
       .filter(key =>
         filters[key] != null &&
         (
@@ -395,41 +391,13 @@ implements OnInit, OnDestroy {
           (filters[key] as string | string[]).length > 0
         )
       )
-      .reduce((acc, key) => {
-        const parentField = Object.keys(ALL_INSTRUMENTS_NESTED_FIELDS)
-          .find(k =>
-            key.endsWith('From')
-              ? ALL_INSTRUMENTS_NESTED_FIELDS[k].includes(key.replace('From', ''))
-              : key.endsWith('To')
-                ? ALL_INSTRUMENTS_NESTED_FIELDS[k].includes(key.replace('To', ''))
-                : ALL_INSTRUMENTS_NESTED_FIELDS[k].includes(key)
-          );
-
-        if (parentField == null) {
-          return acc;
-        }
-
-        const filterValue = this.getFilterValue(key, filters[key]!);
-
-        if (filterValue == null) {
-          return acc;
-        }
-
-        if (parentField === 'rootFields') {
-          acc.push(filterValue);
-        } else {
-          acc.push({
-            [parentField]: filterValue
-          });
-        }
-
+      .reduce((acc, curr) => {
+        acc[curr] = filters[curr];
         return acc;
-      }, [] as (GraphQlFilter | GraphQlFilters)[]);
+      }, {} as DefaultTableFilters);
 
     this.pagination = null;
-    this.filters$.next({
-      and: parsedFilters
-    });
+    this.filters$.next(cleanedFilters);
   }
 
   rowClick(row: AllInstrumentsNodeDisplay): void {
@@ -496,45 +464,6 @@ implements OnInit, OnDestroy {
     super.saveColumnWidth<AllInstrumentsSettings>(event, this.settings$);
   }
 
-  private getFilterValue(filterName: string, filterValue: string | string[] | boolean | number): GraphQlFilter | GraphQlFilters | null {
-    const filterType = Object.keys(ALL_INSTRUMENTS_FILTER_TYPES).find(key => ALL_INSTRUMENTS_FILTER_TYPES[key].includes(filterName));
-
-    if (filterType === 'multiSelect') {
-      return {
-        or: (filterValue as string[]).map(value => ({ [filterName]: { eq: value } }))
-      };
-    }
-
-    if (filterType === 'interval') {
-      if (filterName.includes('From')) {
-        return { [filterName.replace('From', '')]: { gte: Number(filterValue) } };
-      }
-      return { [filterName.replace('To', '')]: { lte: Number(filterValue) } };
-    }
-
-    if (filterType === 'bool') {
-      return { [filterName]: { eq: filterValue }};
-    }
-
-    if (filterType === 'date') {
-      const [day, month, year] = (filterValue as string).split('.').map(d => +d);
-      const filterDate = new Date(year, month - 1, day);
-
-      if (isNaN(filterDate.getTime())) {
-        return null;
-      }
-
-      const parsedDate = filterDate.toISOString();
-
-      if (filterName.includes('From')) {
-        return { [filterName.replace('From', '')]: { gte: parsedDate } };
-      }
-      return { [filterName.replace('To', '')]: { lte: parsedDate } };
-    }
-
-    return { [filterName]: { contains: filterValue }};
-  }
-
   private initInstruments(): void {
     combineLatest([
       this.tableConfig$,
@@ -553,10 +482,10 @@ implements OnInit, OnDestroy {
 
             return this.service.getInstruments(
               columnIds,
+              filters,
               {
                 first: this.loadingChunkSize,
                 after: this.pagination?.endCursor,
-                filters,
                 sort
               }
             );
@@ -622,11 +551,13 @@ implements OnInit, OnDestroy {
         switchMap(({ tableConfig, instrumentsList, filters, sort }) => {
           const columnIds = tableConfig.columns.map(c => c.id);
 
-          return this.service.getInstruments(columnIds, {
-            first: instrumentsList.length,
+          return this.service.getInstruments(
+            columnIds,
             filters,
-            sort
-          });
+            {
+              first: instrumentsList.length,
+              sort
+            });
         }),
         filter(i => i != null)
       ).subscribe(res => {
