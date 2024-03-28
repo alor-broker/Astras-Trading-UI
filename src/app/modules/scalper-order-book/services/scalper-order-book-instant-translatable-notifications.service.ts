@@ -14,7 +14,7 @@ extends BaseTranslatorService {
   protected translationsPath = 'scalper-order-book/scalper-order-book-notifications';
 
   constructor(
-    protected readonly notificationsService: InstantNotificationsService,
+    private readonly notificationsService: InstantNotificationsService,
     protected readonly translatorService: TranslatorService
   ) {
     super(translatorService);

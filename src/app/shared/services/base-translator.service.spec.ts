@@ -4,9 +4,22 @@ import { BaseTranslatorService } from './base-translator.service';
 import { InstantNotificationsService } from "./instant-notifications.service";
 import { TranslatorService } from "./translator.service";
 import { of } from "rxjs";
+import { Injectable } from "@angular/core";
 
-describe('InstantTranslatableNotificationsService', () => {
-  let service: BaseTranslatorService;
+@Injectable({
+  providedIn: 'root'
+})
+class WrapperService extends BaseTranslatorService {
+  protected translationsPath = '';
+  constructor(
+    protected readonly translatorService: TranslatorService,
+  ) {
+    super(translatorService);
+  }
+}
+
+describe('BaseTranslatorService', () => {
+  let service: WrapperService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -25,7 +38,7 @@ describe('InstantTranslatableNotificationsService', () => {
         }
       ]
     });
-    service = TestBed.inject(BaseTranslatorService);
+    service = TestBed.inject(WrapperService);
   });
 
   it('should be created', () => {

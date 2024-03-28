@@ -27,15 +27,13 @@ describe('SessionTrackService', () => {
     activityTrackerServiceSpy = jasmine.createSpyObj('ActivityTrackerService', ['startTracking', 'stopTracking', 'lastActivityUnixTime$']);
     terminalSettingsServiceSpy = jasmine.createSpyObj('TerminalSettingsService', ['getSettings']);
     authServiceSpy = jasmine.createSpyObj('AuthService', ['logout']);
-    notificationServiceSpy = jasmine.createSpyObj('NzNotificationService', ['warning', 'remove']);
-    instantNotificationsServiceSpy = jasmine.createSpyObj('SessionInstantTranslatableNotificationsService', ['endOfSession']);
+    instantNotificationsServiceSpy = jasmine.createSpyObj('SessionInstantTranslatableNotificationsService', ['endOfSession', 'removeNotification']);
 
     terminalSettingsServiceSpy.getSettings.and.returnValue(
       userIdleDurationMinMock.pipe(
         map(x => ({ userIdleDurationMin: x }) as TerminalSettings))
     );
     activityTrackerServiceSpy.lastActivityUnixTime$ = lastActivityTimeMock;
-    notificationServiceSpy.warning.and.returnValue({ messageId: 'messageId' } as NzNotificationRef);
 
     TestBed.configureTestingModule({
       providers: [
@@ -50,10 +48,6 @@ describe('SessionTrackService', () => {
         {
           provide: AuthService,
           useValue: authServiceSpy
-        },
-        {
-          provide: NzNotificationService,
-          useValue: notificationServiceSpy
         },
         {
           provide: SessionInstantTranslatableNotificationsService,
@@ -150,6 +144,6 @@ describe('SessionTrackService', () => {
     lastActivityTimeMock.next(Date.now());
     jasmine.clock().tick(100);
 
-    expect(notificationServiceSpy.remove).toHaveBeenCalled();
+    expect(instantNotificationsServiceSpy.removeNotification).toHaveBeenCalled();
   });
 });

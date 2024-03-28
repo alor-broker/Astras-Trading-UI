@@ -1,15 +1,11 @@
-import { Injectable } from '@angular/core';
 import { Observable, shareReplay, take } from "rxjs";
 import { TranslatorFn, TranslatorService } from "./translator.service";
 
-@Injectable({
-  providedIn: 'root'
-})
 export abstract class BaseTranslatorService {
   protected translator$?: Observable<TranslatorFn>;
-  protected translationsPath = '';
+  protected abstract translationsPath: string;
 
-  constructor(
+  protected constructor(
     protected readonly translatorService: TranslatorService
   ) { }
 

@@ -16,7 +16,7 @@ extends BaseTranslatorService {
   protected translationsPath = 'shared/orders-notifications';
 
   constructor(
-    protected readonly notificationsService: InstantNotificationsService,
+    private readonly notificationsService: InstantNotificationsService,
     protected readonly translatorService: TranslatorService
   ) {
     super(translatorService);
