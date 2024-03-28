@@ -4,6 +4,7 @@ export interface BaseColumnId {
   id: string;
   displayName: string;
   isDefault: boolean;
+  sourceField?: string;
 }
 
 export interface ColumnDisplaySettings {

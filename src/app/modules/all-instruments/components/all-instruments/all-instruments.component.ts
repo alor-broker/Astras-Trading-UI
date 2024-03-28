@@ -75,7 +75,8 @@ implements OnInit, OnDestroy {
 
   public allColumns: BaseColumnSettings<AllInstrumentsNodeDisplay>[] = [
     {
-      id: 'symbol',
+      id: 'name',
+      sourceField: 'symbol',
       displayName: 'Тикер',
       width: 80,
       minWidth: 80,
@@ -98,7 +99,8 @@ implements OnInit, OnDestroy {
       minWidth: 50
     },
     {
-      id: 'nominal',
+      id: 'currency',
+      sourceField: 'nominal',
       displayName: 'Валюта',
       transformFn: (data: AllInstrumentsNodeDisplay): string => data.currencyInformation!.nominal!,
       sortChangeFn: (dir): void => this.sortChange(['currencyInformation', 'nominal'], dir),
@@ -248,7 +250,8 @@ implements OnInit, OnDestroy {
       minWidth: 60
     },
     {
-      id: 'minStep',
+      id: 'priceScale',
+      sourceField: 'minStep',
       displayName: 'Шаг цены',
       transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.minStep!.toString(),
       filterData: {
@@ -478,7 +481,7 @@ implements OnInit, OnDestroy {
         tap(() => this.isLoading$.next(true)),
         switchMap(
           ([tableConfig, filters, sort]) => {
-            const columnIds = tableConfig.columns.map(c => c.id);
+            const columnIds = tableConfig.columns.map(c => c.sourceField ?? c.id);
 
             return this.service.getInstruments(
               columnIds,
@@ -549,7 +552,7 @@ implements OnInit, OnDestroy {
         filter(([, isLoading,, instrumentsList]) => !isLoading && instrumentsList.length > 0),
         map(([,, tableConfig, instrumentsList, filters, sort]) => ({ tableConfig, instrumentsList, filters, sort })),
         switchMap(({ tableConfig, instrumentsList, filters, sort }) => {
-          const columnIds = tableConfig.columns.map(c => c.id);
+          const columnIds = tableConfig.columns.map(c => c.sourceField ?? c.id);
 
           return this.service.getInstruments(
             columnIds,

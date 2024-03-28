@@ -8,7 +8,6 @@ import {
   FetchPolicy,
   GraphQlService
 } from "../../../shared/services/graph-ql.service";
-import { BOND_FILTER_TYPES, BOND_NESTED_FIELDS } from "../utils/bond-screener.helper";
 import {
   BondYield,
   BondYieldsResponse
@@ -16,6 +15,52 @@ import {
 import { map } from "rxjs/operators";
 import { DefaultTableFilters } from "../../../shared/models/settings/table-settings.model";
 import { GraphQlHelper } from "../../../shared/utils/graph-ql-helper";
+import { GraphQlSort } from "../../../shared/models/graph-ql.model";
+
+const BOND_NESTED_FIELDS: { [fieldName: string]: string[] } = {
+  basicInformation: ['symbol', 'shortName', 'exchange'],
+  financialAttributes: ['tradingStatusInfo'],
+  additionalInformation: ['cancellation', 'priceMultiplier'],
+  boardInformation: ['board'],
+  yield: ['currentYield'],
+  tradingDetails: ['lotSize', 'minStep', 'priceMax', 'priceMin', 'priceStep', 'rating'],
+  volumes: ['issueValue'],
+  rootFields: ['couponRate', 'couponType', 'guaranteed', 'hasOffer', 'maturityDate', 'placementEndDate']
+};
+
+const BOND_FILTER_TYPES: { [fieldName: string]: string[] } = {
+  search: ['symbol', 'shortName', 'board'],
+  multiSelect: ['exchange', 'couponType'],
+  interval: [
+    'priceMultiplierFrom',
+    'priceMultiplierTo',
+    'couponRateFrom',
+    'couponRateTo',
+    'currentYieldFrom',
+    'currentYieldTo',
+    'issueValueFrom',
+    'issueValueTo',
+    'lotSizeFrom',
+    'lotSizeTo',
+    'minStepFrom',
+    'minStepTo',
+    'priceMaxFrom',
+    'priceMaxTo',
+    'priceMinFrom',
+    'priceMinTo',
+    'priceStepFrom',
+    'priceStepTo'
+  ],
+  bool: ['guaranteed', 'hasOffer'],
+  date: [
+    'cancellationTo',
+    'cancellationFrom',
+    'maturityDateTo',
+    'maturityDateFrom',
+    'placementEndDateTo',
+    'placementEndDateFrom',
+  ]
+};
 
 @Injectable({
   providedIn: 'root'
@@ -30,12 +75,12 @@ export class BondScreenerService {
   getBonds(
     columnIds: string[],
     filters: DefaultTableFilters,
-    variables: { [propName: string]: any } = {}
+    params: { first: number, after?: string, sort: GraphQlSort | null }
   ): Observable<BondScreenerResponse | null> {
     return this.graphQlService.watchQuery(
       this.getBondsQuery(columnIds),
       {
-        ...variables,
+        ...params,
         filters: GraphQlHelper.parseFilters(filters, BOND_NESTED_FIELDS, BOND_FILTER_TYPES)
       }
     );
