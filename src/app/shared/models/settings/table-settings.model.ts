@@ -4,6 +4,7 @@ export interface BaseColumnId {
   id: string;
   displayName: string;
   isDefault: boolean;
+  sourceField?: string;
 }
 
 export interface ColumnDisplaySettings {
@@ -46,4 +47,8 @@ export interface FilterData {
   isInterval?: boolean;
   intervalStartName?: string;
   intervalEndName?: string;
+}
+
+export interface DefaultTableFilters {
+  [filterName: string]: string | string[] | number | boolean | null | undefined;
 }
