@@ -5,7 +5,9 @@ import { TestBed } from '@angular/core/testing';
 import { OrderCancellerService } from './order-canceller.service';
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
 import { EnvironmentService } from "./environment.service";
-import { InstantTranslatableNotificationsService } from "./instant-translatable-notifications.service";
+import {
+  OrderInstantTranslatableNotificationsService
+} from "./orders/order-instant-translatable-notifications.service";
 
 describe('OrderCancellerService', () => {
   let service: OrderCancellerService;
@@ -18,9 +20,9 @@ describe('OrderCancellerService', () => {
       imports: [HttpClientTestingModule],
       providers: [
         {
-          provide: InstantTranslatableNotificationsService,
+          provide: OrderInstantTranslatableNotificationsService,
           useValue: {
-            showNotification: jasmine.createSpy('showNotification').and.callThrough()
+            orderCancelled: jasmine.createSpy('orderCancelled').and.callThrough()
           }
         },
         {

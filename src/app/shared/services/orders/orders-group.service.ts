@@ -5,9 +5,8 @@ import { ErrorHandlerService } from "../handle-error/error-handler.service";
 import { BehaviorSubject, forkJoin, Observable, shareReplay, switchMap, tap } from "rxjs";
 import { CreateOrderGroupReq, OrdersGroup, SubmitGroupResult } from "../../models/orders/orders-group.model";
 import { OrderCancellerService } from "../order-canceller.service";
-import { OrdersInstantNotificationType } from "../../models/terminal-settings/terminal-settings.model";
 import { EnvironmentService } from "../environment.service";
-import { InstantTranslatableNotificationsService } from "../instant-translatable-notifications.service";
+import { OrderInstantTranslatableNotificationsService } from "./order-instant-translatable-notifications.service";
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +22,7 @@ export class OrdersGroupService {
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly canceller: OrderCancellerService,
-    private readonly instantNotificationsService: InstantTranslatableNotificationsService
+    private readonly instantNotificationsService: OrderInstantTranslatableNotificationsService
   ) {
   }
 
@@ -44,10 +43,7 @@ export class OrdersGroupService {
             ).subscribe();
           } else {
             this.refresh$.next(null);
-            this.instantNotificationsService.showNotification(
-              OrdersInstantNotificationType.OrdersGroupCreated,
-              { orderIds: req.orders.map(o => o.orderId).join(', ') }
-            );
+            this.instantNotificationsService.ordersGroupCreated(req.orders.map(o => o.orderId).join(', '));
           }
         })
       );

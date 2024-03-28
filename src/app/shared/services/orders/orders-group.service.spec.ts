@@ -6,7 +6,7 @@ import { ErrorHandlerService } from "../handle-error/error-handler.service";
 import { OrderCancellerService } from "../order-canceller.service";
 import { of } from "rxjs";
 import { EnvironmentService } from "../environment.service";
-import { InstantTranslatableNotificationsService } from "../instant-translatable-notifications.service";
+import { OrderInstantTranslatableNotificationsService } from "./order-instant-translatable-notifications.service";
 
 describe('OrdersGroupService', () => {
   let service: OrdersGroupService;
@@ -26,9 +26,9 @@ describe('OrdersGroupService', () => {
           }
         },
         {
-          provide: InstantTranslatableNotificationsService,
+          provide: OrderInstantTranslatableNotificationsService,
           useValue: {
-            showNotification: jasmine.createSpy('showNotification').and.callThrough()
+            ordersGroupCreated: jasmine.createSpy('ordersGroupCreated').and.callThrough()
           }
         },
         {

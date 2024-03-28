@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { InstantTranslatableNotificationsService } from './instant-translatable-notifications.service';
+import { BaseTranslatorService } from './base-translator.service';
 import { InstantNotificationsService } from "./instant-notifications.service";
 import { TranslatorService } from "./translator.service";
 import { of } from "rxjs";
 
 describe('InstantTranslatableNotificationsService', () => {
-  let service: InstantTranslatableNotificationsService;
+  let service: BaseTranslatorService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -25,7 +25,7 @@ describe('InstantTranslatableNotificationsService', () => {
         }
       ]
     });
-    service = TestBed.inject(InstantTranslatableNotificationsService);
+    service = TestBed.inject(BaseTranslatorService);
   });
 
   it('should be created', () => {

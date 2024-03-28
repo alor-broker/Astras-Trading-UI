@@ -17,9 +17,8 @@ import { AuthService } from "../auth.service";
 import { mapWith } from "../../utils/observable-helper";
 import { NzNotificationDataOptions } from "ng-zorro-antd/notification/typings";
 import { TerminalSettingsService } from "../terminal-settings.service";
-import { InstantTranslatableNotificationsService } from "../instant-translatable-notifications.service";
-import { SessionInstantNotificationType } from "../../models/terminal-settings/terminal-settings.model";
 import { NzNotificationService } from "ng-zorro-antd/notification";
+import { SessionInstantTranslatableNotificationsService } from "./session-instant-translatable-notifications.service";
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +32,7 @@ export class SessionTrackService {
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly authService: AuthService,
     private readonly notificationService: NzNotificationService,
-    private readonly instantNotificationService: InstantTranslatableNotificationsService
+    private readonly instantNotificationService: SessionInstantTranslatableNotificationsService
   ) {
   }
 
@@ -153,9 +152,7 @@ export class SessionTrackService {
 
   private showWarningMessage(): void {
     this.removeWarningMessage();
-    this.instantNotificationService.showNotification(
-      SessionInstantNotificationType.EndOfSession,
-      {},
+    this.instantNotificationService.endOfSession(
       { nzDuration: 0 } as NzNotificationDataOptions,
       n => this.lastWarningId = n.messageId
     );

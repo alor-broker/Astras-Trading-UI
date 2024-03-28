@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Order } from '../models/orders/order.model';
 import { OrdersInstantNotificationType } from '../models/terminal-settings/terminal-settings.model';
-import { InstantTranslatableNotificationsService } from "./instant-translatable-notifications.service";
+import {
+  OrderInstantTranslatableNotificationsService
+} from "./orders/order-instant-translatable-notifications.service";
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +12,7 @@ export class OrdersNotificationsService {
   prevNotifications = new Set();
 
   constructor(
-    private readonly notification: InstantTranslatableNotificationsService
+    private readonly notification: OrderInstantTranslatableNotificationsService
   ) {
   }
 
@@ -18,14 +20,14 @@ export class OrdersNotificationsService {
     let secondsPassed = (new Date().getTime() - order.transTime.getTime()) / 1000;
     if (order.status == 'filled' && secondsPassed < 5) {
       this.notify(
-        OrdersInstantNotificationType.OrderFilled,
-        { orderId: order.id }
+        `${OrdersInstantNotificationType.OrderFilled}_${order.id}`,
+        () => this.notification.orderFilled(order.id),
       );
     }
     if (order.status == 'canceled' && secondsPassed < 5) {
       this.notify(
-        OrdersInstantNotificationType.OrderCancelled,
-        { orderId: order.id, exchange: order.exchange }
+        `${OrdersInstantNotificationType.OrderStatusChangeToCancelled}_${order.id}`,
+        () => this.notification.orderStatusChangeToCancelled(order.id)
       );
     }
   }
@@ -33,24 +35,22 @@ export class OrdersNotificationsService {
   notificateOrderChange(newOrder: Order, oldOrder: Order): void {
     if (newOrder.status != oldOrder.status) {
       this.notify(
-        OrdersInstantNotificationType.OrderStatusChanged,
-        { orderId: newOrder.id, orderStatus: newOrder.status }
+        `${OrdersInstantNotificationType.OrderStatusChanged}_${newOrder.id}_${newOrder.status}`,
+        () => this.notification.orderStatusChanged(newOrder.id, newOrder.status)
       );
     } else if (newOrder.filledQtyUnits != oldOrder.filledQtyUnits) {
       this.notify(
-        OrdersInstantNotificationType.OrderPartiallyFilled,
-        { orderId: newOrder.id, qty: newOrder.filledQtyUnits - oldOrder.filledQtyUnits}
+        `${OrdersInstantNotificationType.OrderPartiallyFilled}_${newOrder.id}_${newOrder.filledQtyUnits - oldOrder.filledQtyUnits}`,
+        () => this.notification.orderPartiallyFilled(newOrder.id, newOrder.filledQtyUnits - oldOrder.filledQtyUnits)
       );
     }
   }
 
-  private notify(notificationType: OrdersInstantNotificationType, variables: { [varName: string]: unknown }): void {
-    const notificationKey = `${notificationType}_${JSON.stringify(variables)}`;
-
+  private notify(notificationKey: string, notifyFn: () => void): void {
     if (this.prevNotifications.has(notificationKey)) {
       return;
     } else {
-      this.notification.showNotification(notificationType, variables);
+      notifyFn();
       this.prevNotifications.add(notificationKey);
     }
   }

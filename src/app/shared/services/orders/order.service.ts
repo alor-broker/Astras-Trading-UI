@@ -20,22 +20,23 @@ import {
   filter,
   map
 } from "rxjs/operators";
-import {ErrorHandlerService} from "../handle-error/error-handler.service";
-import {toUnixTimestampSeconds} from "../../utils/datetime";
-import {GuidGenerator} from "../../utils/guid";
-import {OrdersInstantNotificationType} from '../../models/terminal-settings/terminal-settings.model';
-import {OrdersGroupService} from "./orders-group.service";
-import {OrderCancellerService} from "../order-canceller.service";
+import { ErrorHandlerService } from "../handle-error/error-handler.service";
+import { toUnixTimestampSeconds } from "../../utils/datetime";
+import { GuidGenerator } from "../../utils/guid";
+import { OrdersGroupService } from "./orders-group.service";
+import { OrderCancellerService } from "../order-canceller.service";
 import { ExecutionPolicy, SubmitGroupResult } from "../../models/orders/orders-group.model";
 import {
   NewLimitOrder,
   NewMarketOrder,
   NewStopLimitOrder,
-  NewStopMarketOrder, SubmitOrderResponse, SubmitOrderResult
+  NewStopMarketOrder,
+  SubmitOrderResponse,
+  SubmitOrderResult
 } from "../../models/orders/new-order.model";
-import {LimitOrderEdit, StopLimitOrderEdit, StopMarketOrderEdit} from "../../models/orders/edit-order.model";
+import { LimitOrderEdit, StopLimitOrderEdit, StopMarketOrderEdit } from "../../models/orders/edit-order.model";
 import { EnvironmentService } from "../environment.service";
-import { InstantTranslatableNotificationsService } from "../instant-translatable-notifications.service";
+import { OrderInstantTranslatableNotificationsService } from "./order-instant-translatable-notifications.service";
 
 export type NewLinkedOrder = (NewLimitOrder | NewStopLimitOrder | NewStopMarketOrder) & {
   type: 'Limit' | 'StopLimit' | 'Stop';
@@ -51,7 +52,7 @@ export class OrderService implements OnDestroy {
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly httpService: HttpClient,
-    private readonly instantNotificationsService: InstantTranslatableNotificationsService,
+    private readonly instantNotificationsService: OrderInstantTranslatableNotificationsService,
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly ordersGroupService: OrdersGroupService,
     private readonly canceller: OrderCancellerService,
@@ -234,20 +235,14 @@ export class OrderService implements OnDestroy {
         if (!(error instanceof HttpErrorResponse)) {
           this.errorHandlerService.handleError(error);
         } else {
-          this.instantNotificationsService.showNotification(
-            OrdersInstantNotificationType.OrderSubmitFailed,
-            error
-          );
+          this.instantNotificationsService.orderSubmitFailed(error);
         }
       }
     )
       .pipe(
         tap(result => {
           if (result.isSuccess) {
-            this.instantNotificationsService.showNotification(
-              OrdersInstantNotificationType.OrderCreated,
-              { orderNumber: result.orderNumber }
-            );
+            this.instantNotificationsService.orderCreated(result.orderNumber!);
           }
         })
       );
@@ -265,20 +260,14 @@ export class OrderService implements OnDestroy {
               if (!(error instanceof HttpErrorResponse)) {
                 this.errorHandlerService.handleError(error);
               } else {
-                this.instantNotificationsService.showNotification(
-                  OrdersInstantNotificationType.OrderUpdateFailed,
-                  error
-                );
+                this.instantNotificationsService.orderUpdateFailed(error);
               }
             }
           )
       .pipe(
         tap(result => {
           if (result.isSuccess) {
-            this.instantNotificationsService.showNotification(
-              OrdersInstantNotificationType.OrderUpdated,
-              { orderNumber: result.orderNumber }
-            );
+            this.instantNotificationsService.orderUpdated(result.orderNumber!);
           }
         }),
     );

@@ -38,8 +38,8 @@ import {
 } from "../../../shared/models/orders/new-order.model";
 import { toInstrumentKey } from "../../../shared/utils/instruments";
 import {
-  InstantTranslatableNotificationsService
-} from "../../../shared/services/instant-translatable-notifications.service";
+  ScalperOrderBookInstantTranslatableNotificationsService
+} from "./scalper-order-book-instant-translatable-notifications.service";
 
 describe('ScalperOrdersService', () => {
   let service: ScalperOrdersService;
@@ -66,7 +66,7 @@ describe('ScalperOrdersService', () => {
       ]
     );
 
-    notificationServiceSpy = jasmine.createSpyObj('InstantTranslatableNotificationsService', ['showNotification']);
+    notificationServiceSpy = jasmine.createSpyObj('ScalperOrderBookInstantTranslatableNotificationsService', ['emptyPositions']);
     ordersDialogServiceSpy = jasmine.createSpyObj('OrdersDialogService', ['openNewOrderDialog', 'openEditOrderDialog']);
 
     testSettings = {
@@ -94,7 +94,7 @@ describe('ScalperOrdersService', () => {
         ScalperOrdersService,
         { provide: OrderCancellerService, useValue: orderCancellerServiceSpy },
         { provide: OrderService, useValue: orderServiceSpy },
-        { provide: InstantTranslatableNotificationsService, useValue: notificationServiceSpy },
+        { provide: ScalperOrderBookInstantTranslatableNotificationsService, useValue: notificationServiceSpy },
         { provide: OrdersDialogService, useValue: ordersDialogServiceSpy },
         ...commonTestProviders
       ]
@@ -1161,7 +1161,7 @@ describe('ScalperOrdersService', () => {
       tick(10000);
       expect(orderServiceSpy.submitStopMarketOrder).not.toHaveBeenCalled();
       expect(ordersDialogServiceSpy.openNewOrderDialog).not.toHaveBeenCalled();
-      expect(notificationServiceSpy.showNotification).toHaveBeenCalledTimes(1);
+      expect(notificationServiceSpy.emptyPositions).toHaveBeenCalledTimes(1);
     }));
 
     it('should call appropriate service with appropriate data', fakeAsync(() => {

@@ -25,11 +25,8 @@ import {
 } from "../../../shared/models/orders/new-order.model";
 import { CommonOrderCommands } from "../../../shared/utils/common-order-commands";
 import {
-  InstantTranslatableNotificationsService
-} from "../../../shared/services/instant-translatable-notifications.service";
-import {
-  ScalperOrderBookInstantNotificationType
-} from "../../../shared/models/terminal-settings/terminal-settings.model";
+  ScalperOrderBookInstantTranslatableNotificationsService
+} from "./scalper-order-book-instant-translatable-notifications.service";
 
 enum BracketOrderType {
   Top = 'top',
@@ -44,7 +41,7 @@ export class ScalperOrdersService {
   constructor(
     private readonly orderCancellerService: OrderCancellerService,
     private readonly orderService: OrderService,
-    private readonly notification: InstantTranslatableNotificationsService,
+    private readonly notification: ScalperOrderBookInstantTranslatableNotificationsService,
     private readonly ordersDialogService: OrdersDialogService
   ) {
   }
@@ -341,7 +338,7 @@ export class ScalperOrdersService {
 
   setStopLoss(price: number, silent: boolean, position: Position | null, instrumentGroup: string | null, portfolio: PortfolioKey): void {
     if (!position || position.qtyTFutureBatch === 0 || !position.avgPrice) {
-      this.notification.showNotification(ScalperOrderBookInstantNotificationType.EmptyPositions);
+      this.notification.emptyPositions();
       return;
     }
 

@@ -15,11 +15,5 @@
   "ordersGroupCreatedContent": "Group with orders {{orderIds}} successfully created",
 
   "orderCancelledTitle": "Order cancelled",
-  "orderCancelledContent": "Order {{orderId}} on {{exchange}} successfully cancelled",
-
-  "sessionWarningMessageTitle": "Session end",
-  "sessionWarningMessageContent": "The current session will end due to user inactivity",
-
-  "scalperOrderBookEmptyPositionsErrorTitle": "No positions",
-  "scalperOrderBookEmptyPositionsErrorContent": "There are no positions for setting stop-loss"
+  "orderCancelledContent": "Order {{orderId}} on {{exchange}} successfully cancelled"
 }
