@@ -23,9 +23,9 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { DashboardTitleHelper } from "../../utils/dashboard-title.helper";
 
-interface DashboardSegmentedOption extends NzSegmentedOption {
+type DashboardSegmentedOption =  {
   value: string;
-}
+} & NzSegmentedOption;
 
 @Component({
   selector: 'ats-dashboards-panel',
