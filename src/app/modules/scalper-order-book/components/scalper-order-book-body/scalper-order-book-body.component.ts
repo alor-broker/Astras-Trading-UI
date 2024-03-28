@@ -412,9 +412,14 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
           if (bestSellRowIndex >= 0) {
             targetIndex = bestSellRowIndex;
           } else {
-            const startRowIndex = x.orderBookBody.findIndex(r => r.isStartRow);
-            if (startRowIndex >= 0) {
-              targetIndex = startRowIndex;
+            const bestBidRowIndex = x.orderBookBody.findIndex(r => r.rowType === ScalperOrderBookRowType.Bid && r.isBest);
+            if (bestBidRowIndex >= 0) {
+              targetIndex = bestBidRowIndex;
+            } else {
+              const startRowIndex = x.orderBookBody.findIndex(r => r.isStartRow);
+              if (startRowIndex >= 0) {
+                targetIndex = startRowIndex;
+              }
             }
           }
         }

@@ -1,11 +1,12 @@
 <div
   *ngrxLet="{ allVolumes: workingVolumes$, selectedVolume: selectedVolume$} as vm"
-  class="d-flex flex-column flex-gap-2"
+  class="d-flex"
+  [class]="orientation"
 >
   <ng-container *ngIf="vm.selectedVolume">
       <span
         *ngFor="let vol of vm.allVolumes; let i = index"
-        class="working-volume-item d-inline-block text-end cursor-pointer pl-2 pr-2"
+        class="working-volume-item d-inline-block cursor-pointer pl-2 pr-2"
         [class.active]="vm.selectedVolume.index === i && vm.selectedVolume.value === vol"
         (click)="selectVolume(i)"
         (dblclick)="openVolumeChange(i, vol)"

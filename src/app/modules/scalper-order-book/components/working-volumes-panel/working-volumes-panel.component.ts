@@ -59,6 +59,9 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
   @Input({ required: true })
   guid!: string;
 
+  @Input()
+  orientation: 'vertical' | 'horizontal' = 'vertical';
+
   workingVolumes$!: Observable<number[]>;
   readonly selectedVolume$ = new BehaviorSubject<{ index: number, value: number } | null>(null);
   changeVolumeConfirmVisibleIndex: null | number = null;
@@ -141,7 +144,6 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
       take(1)
     ).subscribe(v => {
       this.selectedVolume$.next({ index, value: v[index] });
-
     });
   }
 

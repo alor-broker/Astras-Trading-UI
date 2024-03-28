@@ -7,18 +7,17 @@ import { WidgetSettingsService } from '../../../../shared/services/widget-settin
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
-import {
-  Observable
-} from 'rxjs';
+import { Observable } from 'rxjs';
 import {
   ClusterTimeframe,
+  PanelSlots,
   PriceUnits,
   ScalperOrderBookWidgetSettings,
   VolumeHighlightMode
 } from '../../models/scalper-order-book-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
-import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
-import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
+import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 import { ScalperOrderBookConstants } from "../../constants/scalper-order-book.constants";
 
@@ -97,6 +96,8 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
           }
         ),
         showPriceWithZeroPadding: getValueOrDefault(settings.showPriceWithZeroPadding, true),
+        showWorkingVolumesPanel: getValueOrDefault(settings.showInstrumentPriceDayChange, true),
+        workingVolumesPanelSlot: getValueOrDefault(settings.workingVolumesPanelSlot, PanelSlots.BottomFloatingPanel),
         showInstrumentPriceDayChange: getValueOrDefault(settings.showInstrumentPriceDayChange, true),
         showShortLongIndicators: getValueOrDefault(settings.showShortLongIndicators, true),
         shortLongIndicatorsUpdateIntervalSec: getValueOrDefault(settings.shortLongIndicatorsUpdateIntervalSec, 60),

@@ -25,6 +25,7 @@
   "highlightHighVolumeLabel": "Volume highlighting",
   "volumeHighlightSettingsLabel": "Volume selection settings",
   "workingVolumeLabel": "Working volume",
+  "showWorkingVolumesPanelLabel": "Show working volume panel",
   "volumeLabel": "Volume",
   "colorLabel": "Highlight color",
   "enableAutoAlignLabel": "Autoscroll",
@@ -33,6 +34,7 @@
   "volumeFormatDisplayLabel": "Volume display format",
   "showInstrumentPriceDayChangeLabel": "Show price change per day",
   "showShortLongIndicatorsLabel": "Show the number of lots available in Short/Long",
+  "shortLongIndicatorsSettingsLabel": "Short/Long view settings",
   "shortLongIndicatorsUpdateIntervalSecLabel": "Short/Long refresh interval, sec.",
   "showLimitOrdersVolumeIndicatorsLabel": "Show volumes of active limit orders",
   "instrumentGroupLabel": "Trading mode",
@@ -51,6 +53,7 @@
   "rowHeightLabel": "Row height",
   "minorLinesStepLabel": "Minor levels multiplier",
   "majorLinesStepLabel": "Major levels multiplier",
+  "panelSlotsLabel": "Panel slot",
 
   "tickerError": "Select ticker",
   "intervalError": "Value should be from {{min}} to {{max}}",
@@ -70,8 +73,14 @@
     "biggestVolume": "Relative to the largest volume",
     "volumeBoundsWithFixedValue":  "By borders (more than volume)"
   },
+
   "priceUnitsOptions": {
     "points": "Points",
     "percents": "Percents"
+  },
+
+  "panelSlotOptions": {
+    "topPanel": "Top panel",
+    "bottomFloatingPanel": "Bottom floating panel"
   }
 }

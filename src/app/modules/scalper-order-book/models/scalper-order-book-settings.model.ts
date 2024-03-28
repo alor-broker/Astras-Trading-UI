@@ -14,6 +14,11 @@ export enum PriceUnits {
   Percents = 'percents'
 }
 
+export enum PanelSlots {
+  TopPanel = 'topPanel',
+  BottomFloatingPanel = 'bottomFloatingPanel'
+}
+
 export interface TradesClusterPanelSettings {
   timeframe: ClusterTimeframe;
   displayIntervalsCount: number;
@@ -79,8 +84,11 @@ export interface ScalperOrderBookWidgetSettings extends WidgetSettings, Instrume
   layout?: OrderBookLayoutSettings;
   showRuler?: boolean;
   rulerSettings?: RulerSettings;
+  showWorkingVolumesPanel?: boolean;
+  workingVolumesPanelSlot?: PanelSlots.BottomFloatingPanel | PanelSlots.TopPanel;
   showInstrumentPriceDayChange?: boolean;
   showShortLongIndicators?: boolean;
+  shortLongIndicatorsPanelSlot?: PanelSlots.BottomFloatingPanel | PanelSlots.TopPanel;
   shortLongIndicatorsUpdateIntervalSec?: number;
   showLimitOrdersVolumeIndicators?: boolean;
   rowHeight?: number;

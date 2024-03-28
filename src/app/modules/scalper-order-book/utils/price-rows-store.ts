@@ -21,7 +21,7 @@ export interface PriceRowsState {
   priceOptions: PriceOptions | null;
   directionRowsCount: number;
   rows: PriceRow[];
-  // indicates that price range was generated without order book data
+  // rows were generated based on last price without actual data from orderbook
   isDirty: boolean;
 }
 
@@ -154,8 +154,9 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
 
   private generatePriceSequence(start: number, step: number, count: number): number[] {
     const pricePrecision = MathHelper.getPrecision(step);
+    const roundedStart = MathHelper.round(start, pricePrecision);
     return [...Array(count).keys()]
-      .map(i => start + (i * step))
+      .map(i => roundedStart + (i * step))
       .map(x => MathHelper.round(x, pricePrecision));
   }
 }
