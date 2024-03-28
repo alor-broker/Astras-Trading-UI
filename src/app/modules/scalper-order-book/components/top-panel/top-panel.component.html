@@ -9,9 +9,8 @@
     ></ats-working-volumes-panel>
     <ats-modifiers-indicator></ats-modifiers-indicator>
   </div>
-  <div
-    *ngIf="showShortLongIndicators(extendedSettings.widgetSettings)"
-    class="py-2"
+  <div *ngIf="showShortLongIndicators(extendedSettings.widgetSettings)"
+       class="py-2"
   >
     <ats-short-long-indicator [dataContext]="dataContext" orientation="horizontal"></ats-short-long-indicator>
   </div>
