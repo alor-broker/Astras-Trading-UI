@@ -56,6 +56,7 @@ import { Instrument } from "../../../shared/models/instruments/instrument.model"
 import { OrderBookScaleHelper } from "../utils/order-book-scale.helper";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { ScalperOrderBookConstants } from "../constants/scalper-order-book.constants";
+import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 
 
 export interface ContextGetters {
@@ -200,17 +201,23 @@ export class ScalperOrderBookDataContextService {
   private getInstrumentTradesStream(settings$: Observable<ScalperOrderBookExtendedSettings>, depth = 1000): Observable<AllTradesItem[]> {
     let results: AllTradesItem[] = [];
 
+    const getTrades = (instrumentKey: InstrumentKey): Observable<AllTradesItem | null> => this.allTradesService.getNewTradesSubscription(instrumentKey, 100).pipe(
+      startWith(null)
+    );
+
     return settings$.pipe(
       distinctUntilChanged((prev, curr) => isInstrumentEqual(prev.widgetSettings, curr.widgetSettings)),
       tap(() => {
         results = [];
       }),
-      switchMap(x => this.allTradesService.getNewTradesSubscription(x.widgetSettings, 100)),
+      switchMap(x => getTrades(x.widgetSettings)),
       map(trade => {
-        results.push(trade);
+        if(trade != null) {
+          results.push(trade);
 
-        if(results.length > depth) {
-          results = results.slice(-depth);
+          if(results.length > depth) {
+            results = results.slice(-depth);
+          }
         }
 
         return results;
@@ -295,7 +302,7 @@ export class ScalperOrderBookDataContextService {
       rowHeight$,
       scaleFactor$
     ]).pipe(
-      map(([settings, rowsState, orderBook, position, ,rowHeight, scaleFactor]) => {
+      switchMap(([settings, rowsState, orderBook, position, ,rowHeight, scaleFactor]) => {
         return this.mapToBodyRows(
           settings,
           rowsState,
@@ -322,32 +329,43 @@ export class ScalperOrderBookDataContextService {
     priceRowsStore: PriceRowsStore,
     rowHeight: number,
     scaleFactor: number
-  ): BodyRow[] | null {
-    // цены или ордербук от другого инструмента
+  ): Observable<BodyRow[]> {
+    // цены или ордербук от другого инструмента (рассинхрон стримов)
+    const isOrderbookInstrumentCorrect = isInstrumentEqual(settings.widgetSettings, orderBook.instrumentKey);
     if (!isInstrumentEqual(settings.widgetSettings, rowsState.instrumentKey)
-      || !isInstrumentEqual(settings.widgetSettings, orderBook.instrumentKey)
+      || !isOrderbookInstrumentCorrect
     ) {
-      this.regenerateRowsForHeight(null, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor);
-      return [];
+      return this.regenerateRowsForHeight(
+        isOrderbookInstrumentCorrect ? orderBook.rows : null,
+        settings,
+        getters,
+        actions,
+        priceRowsStore,
+        rowHeight,
+        scaleFactor).pipe(
+          map(() => [])
+      );
     }
 
-    // инструмент не торгуется
+    // инструмент не торгуется / нет данных
     if(rowsState.rows.length === 0 && rowsState.directionRowsCount === 0) {
-      return [];
+      return of([]);
     }
 
     // цены были сгенерированы без ордербука или изменен масштаб
     if (rowsState.isDirty && (orderBook.rows.b.length > 0 || orderBook.rows.a.length > 0) || rowsState.priceOptions?.scaleFactor !== scaleFactor)
      {
-      this.regenerateRowsForHeight(orderBook.rows, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor);
-      return [];
+      return this.regenerateRowsForHeight(orderBook.rows, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor).pipe(
+        map(() => [])
+      );
     }
 
     // нет цен или не вся высота виджета заполнена
     if (rowsState.rows.length === 0
       || getters.isFillingByHeightNeeded(rowsState.rows, rowHeight)) {
-      this.regenerateRowsForHeight(orderBook.rows, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor);
-      return [];
+      return this.regenerateRowsForHeight(orderBook.rows, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor).pipe(
+        map(() => [])
+      );
     }
 
     // ордебук не помещается в текущий диапазон
@@ -362,7 +380,7 @@ export class ScalperOrderBookDataContextService {
       scaleFactor
     )
     ) {
-      return [];
+      return of([]);
     }
 
     const orderBookBounds = this.getOrderBookBounds(orderBook.rows);
@@ -385,7 +403,7 @@ export class ScalperOrderBookDataContextService {
       rows.push(mappedRow);
     }
 
-    return rows;
+    return of(rows);
   }
 
   private regenerateRowsForHeight(
@@ -396,7 +414,7 @@ export class ScalperOrderBookDataContextService {
     priceRowsStore: PriceRowsStore,
     rowHeight: number,
     scaleFactor: number
-  ): void {
+  ): Observable<void> {
     actions.priceRowsRegenerationStarted();
 
     let priceBounds$: Observable<{ asksRange: Range | null, bidsRange: Range | null } | null> | null = null;
@@ -429,19 +447,22 @@ export class ScalperOrderBookDataContextService {
       );
     }
 
-    priceBounds$.pipe(
-      take(1)
-    ).subscribe(x => {
-      priceRowsStore.initWithPriceRange(
-        settings.widgetSettings,
-        this.getPriceOptions(x, settings.instrument.minstep, scaleFactor, settings.widgetSettings.majorLinesStep ?? ScalperOrderBookConstants.defaultMajorLinesStep),
-        x == null,
-        getters.getVisibleRowsCount(rowHeight),
-        () => {
-          actions.priceRowsRegenerationCompleted();
-        }
-      );
-    });
+    return priceBounds$.pipe(
+      take(1),
+      map(x => {
+        priceRowsStore.initWithPriceRange(
+          settings.widgetSettings,
+          this.getPriceOptions(x, settings.instrument.minstep, scaleFactor, settings.widgetSettings.majorLinesStep ?? ScalperOrderBookConstants.defaultMajorLinesStep),
+          x == null || x.bidsRange?.max === x.asksRange?.min,
+          getters.getVisibleRowsCount(rowHeight),
+          () => {
+            actions.priceRowsRegenerationCompleted();
+          }
+        );
+
+        return void 0;
+      })
+    );
   }
 
   private getPriceOptions(
@@ -470,8 +491,8 @@ export class ScalperOrderBookDataContextService {
       scaledStep: startPrice.step,
       basePriceStep: priceStep,
       scaleFactor,
-      expectedRangeMin: minPrice,
-      expectedRangeMax: maxPrice
+      expectedRangeMin: Math.min(minPrice, startPrice.startPrice),
+      expectedRangeMax: Math.max(maxPrice, startPrice.startPrice)
     };
   }
 
@@ -631,8 +652,13 @@ export class ScalperOrderBookDataContextService {
         }
       }
       return resultRow;
-    } else if (settings.showSpreadItems) {
+    } else if (
+      orderBookBounds.asksRange != null
+      && orderBookBounds.bidsRange != null
+      && settings.showSpreadItems) {
       resultRow.rowType = ScalperOrderBookRowType.Spread;
+      return resultRow;
+    } else if(orderBookBounds.asksRange == null || orderBookBounds.bidsRange == null) {
       return resultRow;
     }
 

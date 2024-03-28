@@ -34,6 +34,7 @@ import { TopFloatingPanelComponent } from './components/top-floating-panel/top-f
 import { ShortLongIndicatorComponent } from './components/short-long-indicator/short-long-indicator.component';
 import { NzSliderModule } from "ng-zorro-antd/slider";
 import { LimitOrdersVolumeIndicatorComponent } from './components/limit-orders-volume-indicator/limit-orders-volume-indicator.component';
+import { TopPanelComponent } from './components/top-panel/top-panel.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { LimitOrdersVolumeIndicatorComponent } from './components/limit-orders-v
     BottomFloatingPanelComponent,
     TopFloatingPanelComponent,
     ShortLongIndicatorComponent,
-    LimitOrdersVolumeIndicatorComponent
+    LimitOrdersVolumeIndicatorComponent,
+    TopPanelComponent
   ],
   imports: [
     CommonModule,

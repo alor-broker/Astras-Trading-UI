@@ -41,6 +41,9 @@ export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
   @Input({ required: true })
   dataContext!: ScalperOrderBookDataContext;
 
+  @Input()
+  orientation: 'vertical' | 'horizontal' = 'vertical';
+
   shortLongValues$ = new BehaviorSubject<{ short: number, long: number } | null>(null);
 
   constructor(
