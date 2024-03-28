@@ -1,13 +1,10 @@
+import { GraphQlEdge, GraphQlPageInfo } from "../../../shared/models/graph-ql.model";
+
 export interface BondScreenerResponse {
   bonds: {
-    edges: BondEdge[];
-    pageInfo: PageInfo;
+    edges: GraphQlEdge<BondNode>[];
+    pageInfo: GraphQlPageInfo;
   };
-}
-
-export interface BondEdge {
-  node: BondNode;
-  cursor: string;
 }
 
 export interface BondNode {
@@ -46,22 +43,4 @@ export interface BondNode {
   yield?: {
     currentYield?: number;
   };
-}
-
-export interface PageInfo {
-  hasNextPage: boolean;
-  endCursor: string;
-}
-
-export interface BondScreenerFilters {
-  and?: (BondScreenerFilter | BondScreenerFilters)[];
-  or?: (BondScreenerFilter | BondScreenerFilters)[];
-}
-
-export interface BondScreenerFilter {
-  [filterName: string]: FilterCondition | BondScreenerFilter | BondScreenerFilters;
-}
-
-export interface FilterCondition {
-  [conditionType: string]: unknown;
 }

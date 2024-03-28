@@ -25,10 +25,10 @@ export class BondScreenerService {
   ) {
   }
 
-  getBonds(columnIds: string[], sort: string | null, variables: {
+  getBonds(columnIds: string[], variables: {
     [propName: string]: any;
   } = {}): Observable<BondScreenerResponse | null> {
-    return this.graphQlService.watchQuery(this.getBondsQuery(columnIds, sort), variables);
+    return this.graphQlService.watchQuery(this.getBondsQuery(columnIds), variables);
   }
 
   getBondsYieldCurve(): Observable<BondYield[] | null> {
@@ -88,7 +88,7 @@ export class BondScreenerService {
     );
   }
 
-  private getBondsQuery(columnIds: string[], sort: string | null): string {
+  private getBondsQuery(columnIds: string[]): string {
     const basicInformationFields = BOND_NESTED_FIELDS.basicInformation.filter(f => columnIds.includes(f) || f === 'symbol' || f === 'exchange');
     const additionalInformationFields = BOND_NESTED_FIELDS.additionalInformation.filter(f => columnIds.includes(f));
     const financialAttributesFields = BOND_NESTED_FIELDS.financialAttributes.filter(f => columnIds.includes(f));
@@ -98,12 +98,12 @@ export class BondScreenerService {
     const yieldFields = BOND_NESTED_FIELDS.yield.filter(f => columnIds.includes(f));
     const rootFields = BOND_NESTED_FIELDS.rootFields.filter(f => columnIds.includes(f));
 
-    return `query GET_BONDS($first: Int, $after: String, $filters: BondFilterInput) {
+    return `query GET_BONDS($first: Int, $after: String, $filters: BondFilterInput, $sort: [BondSortInput!]) {
             bonds(
               first: $first,
               after: $after,
               where: $filters,
-              ${sort == null ? '' : ('order: ' + sort)}
+              order: $sort
               ) {
               edges {
                 node {
