@@ -21,6 +21,7 @@ import {
 } from "../../models/orders/new-order.model";
 import {LimitOrderEdit, StopLimitOrderEdit, StopMarketOrderEdit} from "../../models/orders/edit-order.model";
 import { EnvironmentService } from "../environment.service";
+import { InstrumentsService } from "../../../modules/instruments/services/instruments.service";
 
 
 describe('OrderService', () => {
@@ -65,6 +66,12 @@ describe('OrderService', () => {
           provide: EnvironmentService,
           useValue: {
             apiUrl
+          }
+        },
+        {
+          provide: InstrumentsService,
+          useValue: {
+            getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of({}))
           }
         }
       ]

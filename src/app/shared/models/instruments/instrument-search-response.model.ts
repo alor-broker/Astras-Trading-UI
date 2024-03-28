@@ -1,3 +1,5 @@
+import { TradingStatus } from "./instrument.model";
+
 export interface InstrumentSearchResponse {
   symbol: string;
   shortname: string;
@@ -24,7 +26,7 @@ export interface InstrumentSearchResponse {
   theorPriceLimit?: number;
   volatility?: number;
   yield?: number | null;
-  tradingStatus?: number;
+  tradingStatus?: TradingStatus;
   tradingStatusInfo?: string;
   complexProductCategory?: string;
 }

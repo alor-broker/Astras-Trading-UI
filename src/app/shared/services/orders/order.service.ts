@@ -1,42 +1,28 @@
-import {
-  Injectable,
-  OnDestroy
-} from '@angular/core';
-import {
-  HttpClient,
-  HttpErrorResponse
-} from "@angular/common/http";
-import {
-  BehaviorSubject,
-  forkJoin,
-  Observable,
-  of,
-  switchMap,
-  take,
-  tap
-} from "rxjs";
-import {
-  catchError,
-  filter,
-  map
-} from "rxjs/operators";
-import {ErrorHandlerService} from "../handle-error/error-handler.service";
-import {toUnixTimestampSeconds} from "../../utils/datetime";
-import {GuidGenerator} from "../../utils/guid";
-import {httpLinkRegexp} from "../../utils/regexps";
-import {InstantNotificationsService} from '../instant-notifications.service';
-import {OrdersInstantNotificationType} from '../../models/terminal-settings/terminal-settings.model';
-import {OrdersGroupService} from "./orders-group.service";
-import {OrderCancellerService} from "../order-canceller.service";
+import { Injectable, OnDestroy } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { BehaviorSubject, forkJoin, Observable, of, switchMap, take, tap } from "rxjs";
+import { catchError, filter, map } from "rxjs/operators";
+import { ErrorHandlerService } from "../handle-error/error-handler.service";
+import { toUnixTimestampSeconds } from "../../utils/datetime";
+import { GuidGenerator } from "../../utils/guid";
+import { httpLinkRegexp } from "../../utils/regexps";
+import { InstantNotificationsService } from '../instant-notifications.service';
+import { OrdersInstantNotificationType } from '../../models/terminal-settings/terminal-settings.model';
+import { OrdersGroupService } from "./orders-group.service";
+import { OrderCancellerService } from "../order-canceller.service";
 import { ExecutionPolicy, SubmitGroupResult } from "../../models/orders/orders-group.model";
 import {
   NewLimitOrder,
   NewMarketOrder,
   NewStopLimitOrder,
-  NewStopMarketOrder, SubmitOrderResponse, SubmitOrderResult
+  NewStopMarketOrder,
+  SubmitOrderResponse,
+  SubmitOrderResult
 } from "../../models/orders/new-order.model";
-import {LimitOrderEdit, StopLimitOrderEdit, StopMarketOrderEdit} from "../../models/orders/edit-order.model";
+import { LimitOrderEdit, StopLimitOrderEdit, StopMarketOrderEdit } from "../../models/orders/edit-order.model";
 import { EnvironmentService } from "../environment.service";
+import { TradingStatus } from "../../models/instruments/instrument.model";
+import { InstrumentsService } from "../../../modules/instruments/services/instruments.service";
 
 export type NewLinkedOrder = (NewLimitOrder | NewStopLimitOrder | NewStopMarketOrder) & {
   type: 'Limit' | 'StopLimit' | 'Stop';
@@ -52,6 +38,7 @@ export class OrderService implements OnDestroy {
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly httpService: HttpClient,
+    private readonly instrumentsService: InstrumentsService,
     private readonly instantNotificationsService: InstantNotificationsService,
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly ordersGroupService: OrdersGroupService,
@@ -70,15 +57,31 @@ export class OrderService implements OnDestroy {
   }
 
   submitMarketOrder(order: NewMarketOrder, portfolio: string): Observable<SubmitOrderResult> {
-    return this.submitOrder(
-      portfolio,
-      () => ({
-        url: `${this.baseApiUrl}/market`,
-        body: {
-          ...order
-        }
-      })
-    );
+    return this.instrumentsService.getInstrument(order.instrument)
+      .pipe(
+        take(1),
+        switchMap(instrument => {
+          const additionalParams = {} as {[paramName: string]: any};
+
+          if (
+            instrument?.tradingStatus === TradingStatus.ClosingAuction ||
+            instrument?.tradingStatus === TradingStatus.OpeningAuction
+          ) {
+            additionalParams.timeInForce = 'oneDay';
+          }
+
+          return this.submitOrder(
+            portfolio,
+            () => ({
+              url: `${this.baseApiUrl}/market`,
+              body: {
+                ...order,
+                ...additionalParams
+              }
+            })
+          );
+        })
+      );
   }
 
   submitLimitOrder(order: NewLimitOrder, portfolio: string): Observable<SubmitOrderResult> {
