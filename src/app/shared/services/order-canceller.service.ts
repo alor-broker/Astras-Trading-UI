@@ -11,12 +11,13 @@ import {
 import { CancelCommand } from '../models/commands/cancel-command.model';
 import { CommandResponse } from '../models/commands/command-response.model';
 import { GuidGenerator } from '../utils/guid';
-import { InstantNotificationsService } from './instant-notifications.service';
-import { OrdersInstantNotificationType } from '../models/terminal-settings/terminal-settings.model';
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
 import { catchHttpError } from "../utils/observable-helper";
 import { EnvironmentService } from "./environment.service";
 import { filter } from "rxjs/operators";
+import {
+  OrderInstantTranslatableNotificationsService
+} from "./orders/order-instant-translatable-notifications.service";
 
 @Injectable({
   providedIn: 'root'
@@ -28,8 +29,8 @@ export class OrderCancellerService {
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly http: HttpClient,
-    private readonly instantNotificationsService: InstantNotificationsService,
-    private readonly errorHandlerService: ErrorHandlerService
+    private readonly instantNotificationsService: OrderInstantTranslatableNotificationsService,
+    private readonly errorHandlerService: ErrorHandlerService,
   ) {
   }
 
@@ -57,12 +58,7 @@ export class OrderCancellerService {
       }),
       tap(resp => {
         if (resp?.orderNumber != null) {
-          this.instantNotificationsService.showNotification(
-            OrdersInstantNotificationType.OrderCancelled,
-            'success',
-            `Заявка отменена`,
-            `Заявка ${command.orderid} на ${command.exchange} успешно отменена`
-          );
+          this.instantNotificationsService.orderCancelled(command.orderid, command.exchange);
         }
       })
     );

@@ -77,6 +77,7 @@ export enum OrdersInstantNotificationType {
   OrderFilled = 'orderFilled',
   OrderPartiallyFilled = 'orderPartiallyFilled',
   OrderStatusChanged = 'orderStatusChanged',
+  OrderStatusChangeToCancelled = 'OrderStatusChangeToCancelled',
   OrderCancelled = 'orderCancelled',
   OrderUpdated = 'orderUpdated',
   OrderUpdateFailed = 'orderUpdateFailed',
@@ -87,7 +88,18 @@ export enum CommonInstantNotificationType {
   Common = 'common'
 }
 
-export type InstantNotificationType = CommonInstantNotificationType | OrdersInstantNotificationType;
+export enum SessionInstantNotificationType {
+  EndOfSession = 'endOfSession'
+}
+
+export enum ScalperOrderBookInstantNotificationType {
+  EmptyPositions = 'emptyPositions'
+}
+
+export type InstantNotificationType = CommonInstantNotificationType |
+  OrdersInstantNotificationType |
+  SessionInstantNotificationType |
+  ScalperOrderBookInstantNotificationType;
 
 export interface InstantNotificationsSettings {
   hiddenNotifications?: InstantNotificationType[];

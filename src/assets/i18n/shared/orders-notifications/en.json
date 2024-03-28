@@ -1,0 +1,19 @@
+{
+  "error": "Error",
+  "orderTitle": "Order",
+  "orderCreatedLabel": "Order created",
+  "orderCreatedContent": "Order is successfully placed with exchange number:\n{{orderNumber}}",
+  "orderSubmitFailedLabel": "Order submit failed",
+  "orderFilledLabel": "Order {{orderId}} filled",
+  "orderPartiallyFilledLabel": "Order {{orderId}} filled for {{qty}} pc.",
+  "orderCancelledLabel": "Order {{orderId}} was cancelled",
+  "orderUpdatedLabel": "Order updated",
+  "orderUpdatedContent": "Order is successfully changed with exchange number:\n{{orderNumber}}",
+  "orderUpdateFailedLabel": "Order update failed",
+  "orderStatusChangedLabel": "Status of order {{orderId}} changed to {{orderStatus}}",
+  "ordersGroupCreatedLabel": "Orders group created",
+  "ordersGroupCreatedContent": "Group with orders {{orderIds}} successfully created",
+
+  "orderCancelledTitle": "Order cancelled",
+  "orderCancelledContent": "Order {{orderId}} on {{exchange}} successfully cancelled"
+}
