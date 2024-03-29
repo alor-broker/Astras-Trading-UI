@@ -41,7 +41,7 @@
     "graphql": "^16.8.1",
     "json-patch": "^0.7.0",
     "lightweight-charts": "^4.1.3",
-    "ng-antd-color-picker": "^0.0.2",
+    "ng-antd-color-picker": "^1.1.0",
     "ng-zorro-antd": "^17.3.0",
     "ng2-charts": "^4.1.1",
     "ngx-device-info": "^3.0.3",

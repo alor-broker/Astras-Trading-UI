@@ -7256,10 +7256,10 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-ng-antd-color-picker@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/ng-antd-color-picker/-/ng-antd-color-picker-0.0.2.tgz#a4a207ca13f6232abe0acb500793ce4e05e0dd6c"
-  integrity sha512-jM7ekWdT32HP9Nhc/ob8Ly9fEvTwk0Idpnp7daUN/jwaMGahuVbBoQk3+8YOz6nnX+l/s1CLFHO3lLTRdbQg3Q==
+ng-antd-color-picker@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/ng-antd-color-picker/-/ng-antd-color-picker-1.1.0.tgz#58f7c51ffcb0a75f328d6490017feb17431987da"
+  integrity sha512-B2v3gDMlC7tyoZ2qs0C1xorKTxxXga9iSznO/DFS64h+933uU79OIjJNJsACKZ2j5HVU5dzyx4WaDHY5MZ0TXQ==
   dependencies:
     tslib "^2.3.0"
 
