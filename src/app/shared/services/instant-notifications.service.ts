@@ -11,6 +11,7 @@ import {
 import { map } from 'rxjs/operators';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import {TerminalSettingsService} from "./terminal-settings.service";
+import { NzNotificationDataOptions, NzNotificationRef } from "ng-zorro-antd/notification/typings";
 
 @Injectable({
   providedIn: 'root'
@@ -26,9 +27,11 @@ export class InstantNotificationsService {
 
   showNotification(
     notificationType: InstantNotificationType,
-    displayType: 'info' | 'success' | 'error',
+    displayType: 'info' | 'success' | 'error' | 'warning',
     title: string,
-    content: string
+    content: string,
+    notificationParams?: NzNotificationDataOptions,
+    notificationCallback?: (n: NzNotificationRef) => void
   ): void {
     this.getSettings().pipe(
       take(1)
@@ -37,18 +40,30 @@ export class InstantNotificationsService {
         return;
       }
 
+      let notificationRef: NzNotificationRef | null = null;
+
       if (displayType === 'info') {
-        this.notificationService.info(title, content);
+        notificationRef = this.notificationService.info(title, content, notificationParams);
       }
 
       if (displayType === 'success') {
-        this.notificationService.success(title, content);
+        notificationRef = this.notificationService.success(title, content, notificationParams);
+      }
+
+      if (displayType === 'warning') {
+        notificationRef = this.notificationService.warning(title, content, notificationParams);
       }
 
       if (displayType === 'error') {
-        this.notificationService.error(title, content);
+        notificationRef = this.notificationService.error(title, content, notificationParams);
       }
+
+      notificationCallback?.(notificationRef!);
     });
+  }
+
+  removeNotification(id?: string): void {
+    this.notificationService.remove(id);
   }
 
   private getSettings(): Observable<InstantNotificationsSettings> {

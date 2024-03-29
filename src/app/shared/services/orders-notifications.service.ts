@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Order } from '../models/orders/order.model';
-import { InstantNotificationsService } from './instant-notifications.service';
 import { OrdersInstantNotificationType } from '../models/terminal-settings/terminal-settings.model';
+import {
+  OrderInstantTranslatableNotificationsService
+} from "./orders/order-instant-translatable-notifications.service";
 
 @Injectable({
   providedIn: 'root'
@@ -9,35 +11,47 @@ import { OrdersInstantNotificationType } from '../models/terminal-settings/termi
 export class OrdersNotificationsService {
   prevNotifications = new Set();
 
-  constructor(private readonly notification: InstantNotificationsService) {
+  constructor(
+    private readonly notification: OrderInstantTranslatableNotificationsService
+  ) {
   }
 
   notificateAboutNewOrder(order: Order): void {
-    let seccondsPassed = (new Date().getTime() - order.transTime.getTime()) / 1000;
-    if (order.status == 'filled' && seccondsPassed < 5) {
-      this.notify(`Заявка ${order.id} исполнилась`, OrdersInstantNotificationType.OrderFilled);
+    let secondsPassed = (new Date().getTime() - order.transTime.getTime()) / 1000;
+    if (order.status == 'filled' && secondsPassed < 5) {
+      this.notify(
+        `${OrdersInstantNotificationType.OrderFilled}_${order.id}`,
+        () => this.notification.orderFilled(order.id),
+      );
     }
-    if (order.status == 'canceled' && seccondsPassed < 5) {
-      this.notify(`Заявка ${order.id} была отменена`, OrdersInstantNotificationType.OrderCancelled);
+    if (order.status == 'canceled' && secondsPassed < 5) {
+      this.notify(
+        `${OrdersInstantNotificationType.OrderStatusChangeToCancelled}_${order.id}`,
+        () => this.notification.orderStatusChangeToCancelled(order.id)
+      );
     }
   }
 
   notificateOrderChange(newOrder: Order, oldOrder: Order): void {
     if (newOrder.status != oldOrder.status) {
-      this.notify(`Статус заявки ${newOrder.id} изменился на ${newOrder.status}`, OrdersInstantNotificationType.OrderStatusChanged);
-    }
-    else if (newOrder.filledQtyUnits != oldOrder.filledQtyUnits) {
-      this.notify(`Заявка ${newOrder.id} исполнилась на ${newOrder.filledQtyUnits - oldOrder.filledQtyUnits} шт.`, OrdersInstantNotificationType.OrderPartiallyFilled);
+      this.notify(
+        `${OrdersInstantNotificationType.OrderStatusChanged}_${newOrder.id}_${newOrder.status}`,
+        () => this.notification.orderStatusChanged(newOrder.id, newOrder.status)
+      );
+    } else if (newOrder.filledQtyUnits != oldOrder.filledQtyUnits) {
+      this.notify(
+        `${OrdersInstantNotificationType.OrderPartiallyFilled}_${newOrder.id}_${newOrder.filledQtyUnits - oldOrder.filledQtyUnits}`,
+        () => this.notification.orderPartiallyFilled(newOrder.id, newOrder.filledQtyUnits - oldOrder.filledQtyUnits)
+      );
     }
   }
 
-  private notify(message: string, notificationType: OrdersInstantNotificationType): void {
-    if (this.prevNotifications.has(message)) {
+  private notify(notificationKey: string, notifyFn: () => void): void {
+    if (this.prevNotifications.has(notificationKey)) {
       return;
-    }
-    else {
-      this.notification.showNotification(notificationType, 'info', 'Заявка', message);
-      this.prevNotifications.add(message);
+    } else {
+      notifyFn();
+      this.prevNotifications.add(notificationKey);
     }
   }
 }

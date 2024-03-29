@@ -7,7 +7,6 @@ import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { Position } from "../../../shared/models/positions/position.model";
 import { OrderService } from "../../../shared/services/orders/order.service";
 import { Side } from "../../../shared/models/enums/side.model";
-import { NzNotificationService } from "ng-zorro-antd/notification";
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
 import { CurrentOrderDisplay, } from '../models/scalper-order-book.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
@@ -25,6 +24,9 @@ import {
   NewStopMarketOrder
 } from "../../../shared/models/orders/new-order.model";
 import { CommonOrderCommands } from "../../../shared/utils/common-order-commands";
+import {
+  ScalperOrderBookInstantTranslatableNotificationsService
+} from "./scalper-order-book-instant-translatable-notifications.service";
 
 enum BracketOrderType {
   Top = 'top',
@@ -39,8 +41,8 @@ export class ScalperOrdersService {
   constructor(
     private readonly orderCancellerService: OrderCancellerService,
     private readonly orderService: OrderService,
-    private readonly notification: NzNotificationService,
-    private readonly ordersDialogService: OrdersDialogService,
+    private readonly notification: ScalperOrderBookInstantTranslatableNotificationsService,
+    private readonly ordersDialogService: OrdersDialogService
   ) {
   }
 
@@ -336,7 +338,7 @@ export class ScalperOrdersService {
 
   setStopLoss(price: number, silent: boolean, position: Position | null, instrumentGroup: string | null, portfolio: PortfolioKey): void {
     if (!position || position.qtyTFutureBatch === 0 || !position.avgPrice) {
-      this.notification.error('Нет позиций', 'Позиции для установки стоп-лосс отсутствуют');
+      this.notification.emptyPositions();
       return;
     }
 
