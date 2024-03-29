@@ -25,6 +25,7 @@
   "highlightHighVolumeLabel": "Выделение цветом объема",
   "volumeHighlightSettingsLabel": "Настройки выделения объемов",
   "workingVolumeLabel": "Рабочий объём",
+  "showWorkingVolumesPanelLabel": "Показывать панель рабочих объемов",
   "volumeLabel": "Объём",
   "colorLabel": "Цвет выделения",
   "enableAutoAlignLabel": "Автопрокрутка",
@@ -33,6 +34,7 @@
   "volumeFormatDisplayLabel": "Формат отображения объема",
   "showInstrumentPriceDayChangeLabel": "Показывать изменение цены за день",
   "showShortLongIndicatorsLabel": "Показывать количество лотов доступных в Short/Long",
+  "shortLongIndicatorsSettingsLabel": "Настройки отображения Short/Long",
   "shortLongIndicatorsUpdateIntervalSecLabel": "Интервал обновления Short/Long, сек.",
   "showLimitOrdersVolumeIndicatorsLabel": "Показывать объемы активных лимитных заявок",
   "instrumentGroupLabel": "Режим торгов",
@@ -51,6 +53,7 @@
   "rowHeightLabel": "Высота строки",
   "minorLinesStepLabel": "Множитель промежуточных уровней",
   "majorLinesStepLabel": "Множитель основных уровней",
+  "panelSlotsLabel": "Слот панели",
 
   "tickerError": "Выберите тикер",
   "intervalError": "Значение должно быть от {{min}} до {{max}}",
@@ -70,8 +73,14 @@
     "biggestVolume": "Относительно наибольшего объема",
     "volumeBoundsWithFixedValue":  "По границам (более объема)"
   },
+
   "priceUnitsOptions": {
     "points": "Пункты",
     "percents": "Проценты"
+  },
+
+  "panelSlotOptions": {
+    "topPanel": "Верхняя панель",
+    "bottomFloatingPanel": "Нижняя плавающая панель"
   }
 }

@@ -45,7 +45,7 @@ export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext,
   @Input()
   isActive = false;
 
-  workingVolume$ = new BehaviorSubject<number | null>(null);
+  workingVolume$ = new BehaviorSubject<number>(1);
   scaleFactor$ = new BehaviorSubject<number>(1);
 
   gridSettings$!: Observable<{ rowHeight: number, fontSize: number }>;

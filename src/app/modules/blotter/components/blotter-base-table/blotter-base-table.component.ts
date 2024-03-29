@@ -3,7 +3,7 @@ import {
   DestroyRef, Input,
   OnInit,
 } from '@angular/core';
-import { take, combineLatest, Observable, shareReplay } from "rxjs";
+import { take, combineLatest, Observable, shareReplay, BehaviorSubject } from "rxjs";
 import { BlotterSettings } from "../../models/blotter-settings.model";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { ExportHelper } from "../../utils/export-helper";
@@ -12,6 +12,8 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import { ContentSize } from "../../../../shared/models/dashboard/dashboard-item.model";
+import { map } from "rxjs/operators";
 
 @Component({
   template: ''
@@ -24,6 +26,7 @@ implements OnInit {
   settings$!: Observable<BlotterSettings>;
   protected isFilterDisabled = (): boolean => Object.keys(this.filters$.getValue()).length === 0;
   protected columns!: BaseColumnSettings<T>[];
+  protected footerSize$ = new BehaviorSubject<ContentSize | null>(null);
 
   protected fileSuffix!: string;
 
@@ -59,6 +62,30 @@ implements OnInit {
 
   saveColumnWidth(event: { columnId: string, width: number }): void {
     super.saveColumnWidth<BlotterSettings>(event, this.settings$);
+  }
+
+  protected initContentSize(): void {
+    this.contentSize$ = combineLatest([
+      this.containerSize$,
+      this.headerSize$,
+      this.footerSize$
+    ])
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        map(([containerSize, headerSize, footerSize]) => ({
+          width: containerSize?.width ?? headerSize?.width ?? footerSize?.width ?? 0,
+          height: (containerSize?.height ?? 0) - ((headerSize?.height ?? 0) + (footerSize?.height ?? 0))
+        }))
+      );
+  }
+
+  footerSizeChanged(entries: ResizeObserverEntry[]): void {
+    entries.forEach(x => {
+      this.footerSize$.next({
+        width: Math.floor(x.contentRect.width),
+        height: Math.floor(x.contentRect.height)
+      });
+    });
   }
 
   protected filterChange(newFilter: F): void {

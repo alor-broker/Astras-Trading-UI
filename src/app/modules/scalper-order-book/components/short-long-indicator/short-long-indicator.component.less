@@ -7,3 +7,22 @@
     }
   }
 });
+
+.vertical {
+  flex-direction: column;
+  justify-content: start;
+}
+
+.horizontal {
+  flex-direction: row;
+  justify-content: start;
+  flex-wrap: nowrap;
+
+  div:first-child {
+    :after {
+      content: '/';
+      padding-left: 3px;
+      padding-right: 3px;
+    }
+  }
+}

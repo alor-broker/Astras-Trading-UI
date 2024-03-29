@@ -55,32 +55,6 @@
               </nz-form-control>
             </nz-form-item>
             <nz-form-item class="one-row">
-              <nz-form-label nzFor="showInstrumentPriceDayChange">{{t('scalperOrderBookSettings.showInstrumentPriceDayChangeLabel')}}</nz-form-label>
-              <nz-form-control>
-                <nz-switch formControlName='showInstrumentPriceDayChange'></nz-switch>
-              </nz-form-control>
-            </nz-form-item>
-            <nz-form-item class="one-row">
-              <nz-form-label nzFor="showShortLongIndicators">{{t('scalperOrderBookSettings.showShortLongIndicatorsLabel')}}</nz-form-label>
-              <nz-form-control>
-                <nz-switch formControlName='showShortLongIndicators'></nz-switch>
-              </nz-form-control>
-            </nz-form-item>
-            <nz-form-item *ngIf="form.value.showShortLongIndicators">
-              <nz-form-control>
-                <nz-form-label nzFor="shortLongIndicatorsUpdateIntervalSec" nzRequired>{{ t('scalperOrderBookSettings.shortLongIndicatorsUpdateIntervalSecLabel') }}
-                </nz-form-label>
-                <nz-slider
-                  [nzMin]="validationOptions.shortLongIndicators.min"
-                  [nzMax]="validationOptions.shortLongIndicators.max"
-                  [nzStep]="1"
-                  [nzMarks]="getSliderMarks(validationOptions.shortLongIndicators.min, validationOptions.shortLongIndicators.max)"
-                  formControlName="shortLongIndicatorsUpdateIntervalSec"
-                >
-                </nz-slider>
-              </nz-form-control>
-            </nz-form-item>
-            <nz-form-item class="one-row">
               <nz-form-label nzFor="showLimitOrdersVolumeIndicators">{{t('scalperOrderBookSettings.showLimitOrdersVolumeIndicatorsLabel')}}</nz-form-label>
               <nz-form-control>
                 <nz-switch formControlName='showLimitOrdersVolumeIndicators'></nz-switch>
@@ -240,6 +214,55 @@
           </nz-collapse-panel>
           <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.additionalPanelsHeader')">
             <nz-form-item class="one-row">
+              <nz-form-label nzFor="showShortLongIndicators">{{t('scalperOrderBookSettings.showShortLongIndicatorsLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='showShortLongIndicators'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item *ngIf="form.controls.showShortLongIndicators.value">
+              <nz-collapse [nzBordered]="false" nzGhost>
+                <nz-collapse-panel
+                  [nzActive]="true"
+                  [nzHeader]="t('scalperOrderBookSettings.shortLongIndicatorsSettingsLabel')"
+                >
+                  <nz-form-item>
+                    <nz-form-label nzFor="shortLongIndicatorsPanelSlot">{{t('scalperOrderBookSettings.panelSlotsLabel')}}</nz-form-label>
+                    <nz-form-control>
+                      <nz-select formControlName='shortLongIndicatorsPanelSlot'>
+                        <nz-option
+                          *ngFor='let option of shortLongPanelSlots'
+                          [nzLabel]="t('scalperOrderBookSettings.panelSlotOptions.' + option, { fallback: option })"
+                          [nzValue]="option"
+                        ></nz-option>
+                      </nz-select>
+                    </nz-form-control>
+                  </nz-form-item>
+                  <nz-form-item>
+                    <nz-form-control>
+                      <nz-form-label nzFor="shortLongIndicatorsUpdateIntervalSec" nzRequired>{{ t('scalperOrderBookSettings.shortLongIndicatorsUpdateIntervalSecLabel') }}
+                      </nz-form-label>
+                      <nz-slider
+                        [nzMin]="validationOptions.shortLongIndicators.min"
+                        [nzMax]="validationOptions.shortLongIndicators.max"
+                        [nzStep]="1"
+                        [nzMarks]="getSliderMarks(validationOptions.shortLongIndicators.min, validationOptions.shortLongIndicators.max)"
+                        formControlName="shortLongIndicatorsUpdateIntervalSec"
+                      >
+                      </nz-slider>
+                    </nz-form-control>
+                  </nz-form-item>
+                </nz-collapse-panel>
+              </nz-collapse>
+            </nz-form-item>
+
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="showInstrumentPriceDayChange">{{t('scalperOrderBookSettings.showInstrumentPriceDayChangeLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='showInstrumentPriceDayChange'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item class="one-row">
               <nz-form-label nzFor="showTradesPanel">{{t('scalperOrderBookSettings.showTradesPanelLabel')}}</nz-form-label>
               <nz-form-control>
                 <nz-switch formControlName='showTradesPanel'></nz-switch>
@@ -298,10 +321,29 @@
                 <nz-switch formControlName='showTradesClustersPanel'></nz-switch>
               </nz-form-control>
             </nz-form-item>
+
           </nz-collapse-panel>
-          <nz-collapse-panel class="working-volumes" [nzDisabled]="!form.controls.workingVolumes.valid" [nzHeader]="t('scalperOrderBookSettings.workingVolumesHeader')">
+          <nz-collapse-panel class="working-volumes" [nzDisabled]="form.controls.workingVolumes.enabled && !form.controls.workingVolumes.valid" [nzHeader]="t('scalperOrderBookSettings.workingVolumesHeader')">
             <div class="hint">{{t('scalperOrderBookSettings.workingVolumesHint')}}</div>
-            <nz-form-item>
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="showWorkingVolumesPanel">{{t('scalperOrderBookSettings.showWorkingVolumesPanelLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='showWorkingVolumesPanel'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item *ngIf="form.value.showWorkingVolumesPanel">
+              <nz-form-label nzFor="workingVolumesPanelSlot">{{t('scalperOrderBookSettings.panelSlotsLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-select formControlName='workingVolumesPanelSlot'>
+                  <nz-option
+                    *ngFor='let option of workingVolumesPanelSlots'
+                    [nzLabel]="t('scalperOrderBookSettings.panelSlotOptions.' + option, { fallback: option })"
+                    [nzValue]="option"
+                  ></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item *ngIf="form.value.showWorkingVolumesPanel">
               <div *ngFor="let ctrl of form.controls.workingVolumes.controls; let i = index" class="working-volume-option">
                 <nz-form-label nzFor="workingVolume1" nzRequired>{{t('scalperOrderBookSettings.workingVolumeLabel')}} {{i + 1}}</nz-form-label>
                 <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.intervalError', { min: validationOptions.workingVolume.min, max: validationOptions.workingVolume.max })">
@@ -317,7 +359,7 @@
               </div>
               <button (click)="addWorkingVolume($event)"
                       [disabled]="!form.controls.workingVolumes.valid"
-                      class="add-volume-btn"
+                      class="w-100"
                       nz-button
                       nzType="dashed">
                 <i nz-icon nzType="plus"></i>

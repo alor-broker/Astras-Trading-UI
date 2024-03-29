@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BottomFloatingPanelComponent } from './bottom-floating-panel.component';
+import { TopPanelComponent } from './top-panel.component';
 import { mockComponent } from "../../../../shared/utils/testing";
 import {
   BehaviorSubject,
@@ -9,23 +9,21 @@ import {
 import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-data-context.model";
 import { LetDirective } from "@ngrx/component";
 
-describe('BottomFloatingPanelComponent', () => {
-  let component: BottomFloatingPanelComponent;
-  let fixture: ComponentFixture<BottomFloatingPanelComponent>;
+describe('TopPanelComponent', () => {
+  let component: TopPanelComponent;
+  let fixture: ComponentFixture<TopPanelComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        LetDirective
-      ],
+      imports: [LetDirective],
       declarations: [
-        BottomFloatingPanelComponent,
+        TopPanelComponent,
         mockComponent({ selector: 'ats-modifiers-indicator'}),
         mockComponent({ selector: 'ats-working-volumes-panel', inputs: ['guid', 'isActive', 'orientation']}),
         mockComponent({ selector: 'ats-short-long-indicator', inputs: ['dataContext', 'orientation']}),
       ]
     });
-    fixture = TestBed.createComponent(BottomFloatingPanelComponent);
+    fixture = TestBed.createComponent(TopPanelComponent);
     component = fixture.componentInstance;
     component.dataContext = {
       extendedSettings$: new Subject(),
