@@ -20,10 +20,7 @@ import {
   withLatestFrom
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  AllInstruments,
-  AllInstrumentsFilters
-} from "../../model/all-instruments.model";
+import { AllInstrumentsNode } from "../../model/all-instruments.model";
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.model";
 import { mapWith } from '../../../../shared/utils/observable-helper';
@@ -37,7 +34,7 @@ import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 import { AllInstrumentsSettings } from '../../model/all-instruments-settings.model';
-import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import { BaseColumnSettings, DefaultTableFilters } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import {
@@ -51,47 +48,77 @@ import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import {
   LazyLoadingBaseTableComponent
 } from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
+import {
+  GraphQlEdge,
+  GraphQlPageInfo,
+  GraphQlSort,
+  GraphQlSortType
+} from "../../../../shared/models/graph-ql.model";
+
+interface AllInstrumentsNodeDisplay extends AllInstrumentsNode {
+  id: string;
+}
 
 @Component({
   selector: 'ats-all-instruments',
   templateUrl: './all-instruments.component.html',
   styleUrls: ['./all-instruments.component.less']
 })
-export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<AllInstruments, AllInstrumentsFilters>
+export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
+  AllInstrumentsNodeDisplay,
+  DefaultTableFilters,
+  GraphQlPageInfo,
+  GraphQlSort
+>
 implements OnInit, OnDestroy {
   @Input({ required: true }) guid!: string;
 
-  public allColumns: BaseColumnSettings<AllInstruments>[] = [
+  public allColumns: BaseColumnSettings<AllInstrumentsNodeDisplay>[] = [
     {
       id: 'name',
+      sourceField: 'symbol',
       displayName: 'Тикер',
       width: 80,
       minWidth: 80,
-      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'symbol' }),
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.symbol!,
+      sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'symbol'], dir),
       filterData: {
-        filterName: 'query'
+        filterName: 'symbol'
       },
       showBadges: true
     },
-    { id: 'shortName', displayName: 'Название', width: 50, minWidth: 50 },
+    {
+      id: 'shortName',
+      displayName: 'Название',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.shortName!,
+      sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'shortName'], dir),
+      filterData: {
+        filterName: 'shortName'
+      },
+      width: 50,
+      minWidth: 50
+    },
     {
       id: 'currency',
+      sourceField: 'nominal',
       displayName: 'Валюта',
-      width: 90,
-      minWidth: 90,
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.currencyInformation!.nominal!,
+      sortChangeFn: (dir): void => this.sortChange(['currencyInformation', 'nominal'], dir),
       filterData: {
-        filterName: 'currency',
+        filterName: 'nominal',
         isOpenedFilter: false,
       },
-      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'currency' }),
+      width: 90,
+      minWidth: 90,
     },
     {
       id: 'dailyGrowth',
       displayName: 'Рост за сегодня',
-      classFn: (data): 'sell' | 'buy' => data.dailyGrowth < 0 ? 'sell' : 'buy',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.realTimeData!.dailyGrowth!.toString(),
+      classFn: (data): 'sell' | 'buy' => data.realTimeData!.dailyGrowth! < 0 ? 'sell' : 'buy',
       width: 100,
       minWidth: 100,
-      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'dailyGrowth' }),
+      sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'dailyGrowth'], dir),
       filterData: {
         filterName: 'dailyGrowth',
         isInterval: true,
@@ -102,17 +129,25 @@ implements OnInit, OnDestroy {
     {
       id: 'dailyGrowthPercent',
       displayName: 'Рост за сегодня, %',
-      classFn: (data): 'sell' | 'buy' => data.dailyGrowth < 0 ? 'sell' : 'buy',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.realTimeData!.dailyGrowthPercent!.toString(),
+      classFn: (data): 'sell' | 'buy' => data.realTimeData!.dailyGrowthPercent! < 0 ? 'sell' : 'buy',
       width: 100,
       minWidth: 100,
-      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'dailyGrowthPercent' }),
+      sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'dailyGrowthPercent'], dir),
+      filterData: {
+        filterName: 'dailyGrowthPercent',
+        isInterval: true,
+        intervalStartName: 'dailyGrowthPercentFrom',
+        intervalEndName: 'dailyGrowthPercentTo'
+      }
     },
     {
       id: 'tradeVolume',
       displayName: 'Объём торгов',
       width: 80,
       minWidth: 80,
-      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'tradeVolume' }),
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.realTimeData!.tradeVolume!.toString(),
+      sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'tradeVolume'], dir),
       filterData: {
         filterName: 'tradeVolume',
         isInterval: true,
@@ -123,9 +158,10 @@ implements OnInit, OnDestroy {
     {
       id: 'exchange',
       displayName: 'Биржа',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.exchange!,
       width: 90,
       minWidth: 90,
-      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'exchange' }),
+      sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'exchange'], dir),
       filterData: {
         filterName: 'exchange',
         isOpenedFilter: false,
@@ -142,9 +178,10 @@ implements OnInit, OnDestroy {
       displayName: 'Рынок',
       width: 90,
       minWidth: 90,
-      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'marketType' }),
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.market!,
+      sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'market'], dir),
       filterData: {
-        filterName: 'marketType',
+        filterName: 'market',
         isOpenedFilter: false,
         isDefaultFilter: true,
         isMultipleFilter: true,
@@ -156,13 +193,27 @@ implements OnInit, OnDestroy {
         ]
       },
     },
-    { id: 'lotSize', displayName: 'Лотность', width: 70, minWidth: 70 },
+    {
+      id: 'lotSize',
+      displayName: 'Лотность',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.lotSize!.toString(),
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'lotSize'], dir),
+      filterData: {
+        filterName: 'lotSize',
+        isInterval: true,
+        intervalStartName: 'lotSizeFrom',
+        intervalEndName: 'lotSizeTo'
+      },
+      width: 70,
+      minWidth: 70
+    },
     {
       id: 'price',
       displayName: 'Цена',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.realTimeData!.price!.toString(),
       width: 80,
       minWidth: 80,
-      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'price' }),
+      sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'price'], dir),
       filterData: {
         filterName: 'price',
         isInterval: true,
@@ -170,25 +221,80 @@ implements OnInit, OnDestroy {
         intervalEndName: 'priceTo'
       }
     },
-    { id: 'priceMax', displayName: 'Макс. цена', width: 60, minWidth: 60 },
-    { id: 'priceMin', displayName: 'Мин. цена', width: 60, minWidth: 60 },
+    {
+      id: 'priceMax',
+      displayName: 'Макс. цена',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceMax!.toString(),
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceMax'], dir),
+      filterData: {
+        filterName: 'priceMax',
+        isInterval: true,
+        intervalStartName: 'priceMaxFrom',
+        intervalEndName: 'priceMaxTo'
+      },
+      width: 60,
+      minWidth: 60
+    },
+    {
+      id: 'priceMin',
+      displayName: 'Мин. цена',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceMin!.toString(),
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceMin'], dir),
+      filterData: {
+        filterName: 'priceMin',
+        isInterval: true,
+        intervalStartName: 'priceMinFrom',
+        intervalEndName: 'priceMinTo'
+      },
+      width: 60,
+      minWidth: 60
+    },
     {
       id: 'priceScale',
+      sourceField: 'minStep',
       displayName: 'Шаг цены',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.minStep!.toString(),
+      filterData: {
+        filterName: 'minStep',
+        isInterval: true,
+        intervalStartName: 'minStepFrom',
+        intervalEndName: 'minStepTo'
+      },
       width: 90,
       minWidth: 90,
-      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'priceScale' }),
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'minStep'], dir),
+    },
+    {
+      id: 'priceStep',
+      displayName: 'Стоимость шага цены',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceStep!.toString(),
+      filterData: {
+        filterName: 'priceStep',
+        isInterval: true,
+        intervalStartName: 'priceStepFrom',
+        intervalEndName: 'priceStepTo'
+      },
+      width: 90,
+      minWidth: 90,
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceStep'], dir),
     },
     {
       id: 'yield',
       displayName: 'Доходность',
       width: 100,
       minWidth: 100,
-      sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'yield' }),
-    },
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.realTimeData!.yield!.toString(),
+      sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'yield'], dir),
+      filterData: {
+        filterName: 'yield',
+        isInterval: true,
+        intervalStartName: 'yieldFrom',
+        intervalEndName: 'yieldTo'
+      }
+    }
   ];
   public contextMenu: ContextMenu[] = [];
-  private readonly instrumentsList$ = new BehaviorSubject<AllInstruments[]>([]);
+  private readonly instrumentsList$ = new BehaviorSubject<AllInstrumentsNodeDisplay[]>([]);
   private settings$!: Observable<AllInstrumentsSettings>;
 
   private updatesSub?: Subscription;
@@ -225,7 +331,7 @@ implements OnInit, OnDestroy {
       });
   }
 
-  protected initTableConfigStream(): Observable<TableConfig<AllInstruments>> {
+  protected initTableConfigStream(): Observable<TableConfig<AllInstrumentsNodeDisplay>> {
     return this.settings$.pipe(
       mapWith(
         () => this.translatorService.getTranslator('all-instruments/all-instruments'),
@@ -258,7 +364,7 @@ implements OnInit, OnDestroy {
     );
   }
 
-  initTableDataStream(): Observable<AllInstruments[]> {
+  initTableDataStream(): Observable<AllInstrumentsNodeDisplay[]> {
     this.initInstruments();
 
     return this.instrumentsList$.pipe(
@@ -275,29 +381,35 @@ implements OnInit, OnDestroy {
   }
 
   scrolled(): void {
-    this.instrumentsList$.pipe(
-      take(1),
-      withLatestFrom(this.isLoading$),
-      filter(([, isLoading,]) => !isLoading),
-      map(([instrumentsList]) => instrumentsList),
-    ).subscribe(instruments => {
-      const loadedIndex = this.pagination && (this.pagination.limit + this.pagination.offset);
-      if (loadedIndex != null && instruments.length < loadedIndex) {
-        return;
-      }
-
-      this.pagination = { limit: this.loadingChunkSize, offset: instruments.length };
       this.scrolled$.next(null);
-    });
   }
 
-  rowClick(row: AllInstruments): void {
+  applyFilter(filters: DefaultTableFilters): void {
+    const cleanedFilters = Object.keys(filters)
+      .filter(key =>
+        filters[key] != null &&
+        (
+          (typeof filters[key] === 'number') ||
+          (typeof filters[key] === 'boolean') ||
+          (filters[key] as string | string[]).length > 0
+        )
+      )
+      .reduce((acc, curr) => {
+        acc[curr] = filters[curr];
+        return acc;
+      }, {} as DefaultTableFilters);
+
+    this.pagination = null;
+    this.filters$.next(cleanedFilters);
+  }
+
+  rowClick(row: AllInstrumentsNodeDisplay): void {
       this.settings$.pipe(
         take(1)
       ).subscribe(s => {
         this.actionsContext.instrumentSelected({
-          symbol: row.name,
-          exchange: row.exchange,
+          symbol: row.basicInformation!.symbol!,
+          exchange: row.basicInformation!.exchange!
         }, s.badgeColor ?? defaultBadgeColor);
       });
   }
@@ -308,7 +420,7 @@ implements OnInit, OnDestroy {
     this.contextMenu = [
       {
         title: 'Добавить в список',
-        clickFn: (row: AllInstruments) : void => {
+        clickFn: (row: AllInstrumentsNodeDisplay) : void => {
           if (avalableWatchlists.length > 1) {
             return;
           }
@@ -316,7 +428,10 @@ implements OnInit, OnDestroy {
           this.watchlistCollectionService.addItemsToList(
             avalableWatchlists[0].id,
             [
-            { symbol: row.name, exchange: row.exchange }
+              {
+                symbol: row.basicInformation!.symbol!,
+                exchange: row.basicInformation!.exchange!
+              }
             ]);
         }
       }
@@ -326,9 +441,12 @@ implements OnInit, OnDestroy {
       this.contextMenu[0].subMenu = avalableWatchlists
         .map(list => ({
           title: list.title,
-          clickFn: (row: AllInstruments): void => {
+          clickFn: (row: AllInstrumentsNodeDisplay): void => {
             this.watchlistCollectionService.addItemsToList(list.id, [
-              { symbol: row.name, exchange: row.exchange }
+              {
+                symbol: row.basicInformation!.symbol!,
+                exchange: row.basicInformation!.exchange!
+              }
             ]);
           }
         }));
@@ -351,6 +469,7 @@ implements OnInit, OnDestroy {
 
   private initInstruments(): void {
     combineLatest([
+      this.tableConfig$,
       this.filters$,
       this.sort$
         .pipe(
@@ -360,43 +479,46 @@ implements OnInit, OnDestroy {
     ])
       .pipe(
         tap(() => this.isLoading$.next(true)),
-        mapWith(
-          ([filters, sort]) => {
-            let reqFilters = (filters ?? {}) as AllInstrumentsFilters;
+        switchMap(
+          ([tableConfig, filters, sort]) => {
+            const columnIds = tableConfig.columns.map(c => c.sourceField ?? c.id);
 
-            if (sort != null) {
-              reqFilters = { ...reqFilters, ...sort };
-            }
-
-            if (this.pagination == null) {
-              reqFilters.limit = this.loadingChunkSize;
-              reqFilters.offset = 0;
-            } else {
-              reqFilters = { ...reqFilters, ...this.pagination };
-            }
-
-            return this.service.getAllInstruments(reqFilters).pipe(filter(i => i != null));
-          },
-          (f, res) => res
-        ),
+            return this.service.getInstruments(
+              columnIds,
+              filters,
+              {
+                first: this.loadingChunkSize,
+                after: this.pagination?.endCursor,
+                sort
+              }
+            );
+          }),
+        filter(i => i != null),
         tap(() => this.isLoading$.next(false)),
         takeUntilDestroyed(this.destroyRef)
       ).subscribe(res => {
+        const newInstruments = res!.instruments.edges.map((ie: GraphQlEdge<AllInstrumentsNode>) => ({
+          ...ie.node,
+          id: ie.cursor
+        } as AllInstrumentsNodeDisplay));
+
         if (this.pagination == null) {
-          this.instrumentsList$.next(res!);
+          this.instrumentsList$.next(newInstruments!);
+          this.pagination = res!.instruments.pageInfo ?? null;
           this.subscribeToUpdates();
           return;
         }
 
         this.instrumentsList$.pipe(take(1))
           .subscribe(instruments => {
-            this.instrumentsList$.next([...instruments, ...res!]);
+            this.instrumentsList$.next([...instruments, ...newInstruments!]);
+            this.pagination = res!.instruments.pageInfo ?? null;
             this.subscribeToUpdates();
           });
     });
   }
 
-  private mapInstrumentsToBadges(instruments: AllInstruments[], badges: InstrumentGroups, terminalSettings: TerminalSettings): AllInstruments[] {
+  private mapInstrumentsToBadges(instruments: AllInstrumentsNodeDisplay[], badges: InstrumentGroups, terminalSettings: TerminalSettings): AllInstrumentsNodeDisplay[] {
     const defaultBadges: InstrumentGroups = badges[defaultBadgeColor] != null
     ? { [defaultBadgeColor]: badges[defaultBadgeColor] }
       : {};
@@ -408,7 +530,10 @@ implements OnInit, OnDestroy {
     return instruments.map(instr => ({
       ...instr,
       badges: Object.keys(availableBadges)
-        .filter(key => instr.name === availableBadges[key]!.symbol && instr.exchange === availableBadges[key]!.exchange)
+        .filter(key =>
+          instr.basicInformation!.symbol === availableBadges[key]!.symbol &&
+          instr.basicInformation!.exchange === availableBadges[key]!.exchange
+        )
     }));
   }
 
@@ -417,22 +542,50 @@ implements OnInit, OnDestroy {
 
     this.updatesSub = interval(10_000)
       .pipe(
-        withLatestFrom(this.isLoading$, this.filters$, this.sort$),
-        filter(([, isLoading,]) => !isLoading),
-        map(([, , filters, sort]) => ({ filters, sort: sort ?? {} })),
-        map(({ filters, sort }) => ({
-          ...filters,
-          ...sort,
-          offset: 0,
-          limit: this.pagination == null ? this.loadingChunkSize : (this.pagination.limit + this.pagination.offset)
-        })),
-        switchMap(f => this.service.getAllInstruments(f).pipe(filter(i => i != null)))
-      ).subscribe(instruments => {
-        if (instruments!.length === 0) {
-          return;
-        }
+        withLatestFrom(
+          this.isLoading$,
+          this.tableConfig$,
+          this.instrumentsList$,
+          this.filters$,
+          this.sort$
+        ),
+        filter(([, isLoading,, instrumentsList]) => !isLoading && instrumentsList.length > 0),
+        map(([,, tableConfig, instrumentsList, filters, sort]) => ({ tableConfig, instrumentsList, filters, sort })),
+        switchMap(({ tableConfig, instrumentsList, filters, sort }) => {
+          const columnIds = tableConfig.columns.map(c => c.sourceField ?? c.id);
 
-        this.instrumentsList$.next(instruments!);
+          return this.service.getInstruments(
+            columnIds,
+            filters,
+            {
+              first: instrumentsList.length,
+              sort
+            });
+        }),
+        filter(i => i != null)
+      ).subscribe(res => {
+        const updatedInstruments = res!.instruments.edges.map(ie => ({
+          ...ie.node,
+          id: ie.cursor
+        } as AllInstrumentsNodeDisplay));
+
+        this.instrumentsList$.next(updatedInstruments!);
       });
+  }
+
+  private sortChange(fields: string[], sort: string | null): void {
+    if (sort == null) {
+      this.sort$.next(null);
+      return;
+    }
+
+    const sortObj = fields.reduceRight((acc, curr, index) => {
+      if (index === fields.length - 1) {
+        return { [curr]: sort === 'descend' ? GraphQlSortType.DESC : GraphQlSortType.ASC };
+      }
+      return { [curr]: acc };
+    }, {} as GraphQlSort);
+
+    this.sort$.next(sortObj);
   }
 }
