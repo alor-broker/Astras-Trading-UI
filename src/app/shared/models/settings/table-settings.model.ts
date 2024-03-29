@@ -17,6 +17,7 @@ export interface TableDisplaySettings {
 }
 
 export interface BaseColumnSettings<T> extends Omit<BaseColumnId, 'isDefault'> {
+  sourceField?: string;
   transformFn?: (data: any) => string | null;
   classFn?: (data: T) => string | null;
   width?: number | null;
@@ -46,4 +47,8 @@ export interface FilterData {
   isInterval?: boolean;
   intervalStartName?: string;
   intervalEndName?: string;
+}
+
+export interface DefaultTableFilters {
+  [filterName: string]: string | string[] | number | boolean | null | undefined;
 }

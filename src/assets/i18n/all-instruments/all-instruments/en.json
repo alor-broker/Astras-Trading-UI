@@ -1,6 +1,6 @@
 {
   "columns": {
-    "symbol": {
+    "name": {
       "name": "Ticker",
       "tooltip": "Exchange identifier of the security"
     },
@@ -12,7 +12,7 @@
       "name": "Exchange",
       "tooltip": "Ticker exchange"
     },
-    "nominal": {
+    "currency": {
       "name": "Currency",
       "tooltip": "Currency"
     },
@@ -52,7 +52,7 @@
       "name": "Lot size",
       "tooltip": "Lot size"
     },
-    "minStep": {
+    "priceScale": {
       "name": "Min step",
       "tooltip": "Minimal step"
     },
