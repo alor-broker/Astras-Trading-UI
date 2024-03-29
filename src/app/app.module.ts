@@ -51,6 +51,10 @@ import { LoggingHook } from "./shared/services/app-hook/logging-hook";
 import { GraphQLModule } from './graphql.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { NzSpinModule } from "ng-zorro-antd/spin";
+import {
+  provideCharts,
+  withDefaultRegisterables
+} from 'ng2-charts';
 
 class CustomHandler implements TranslocoMissingHandler {
   handle(key: string, config: TranslocoConfig, params?: HashMap): string {
@@ -152,7 +156,8 @@ registerLocaleData(ru);
       provide: APP_HOOK,
       useClass: LoggingHook,
       multi: true
-    }
+    },
+    provideCharts(withDefaultRegisterables())
   ]
 })
 export class AppModule {

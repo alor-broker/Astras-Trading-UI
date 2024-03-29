@@ -11,6 +11,7 @@ import { InfoHeaderComponent } from './components/common/info-header/info-header
 import { FinanceBarChartComponent } from './components/common/finance-bar-chart/finance-bar-chart.component';
 import { RisksComponent } from './components/common/risks/risks.component';
 import { LetDirective } from "@ngrx/component";
+import { BaseChartDirective } from "ng2-charts";
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { LetDirective } from "@ngrx/component";
     imports: [
         SharedModule,
         InfoRoutingModule,
-        LetDirective
+        LetDirective,
+        BaseChartDirective
     ],
   exports: [
     InfoWidgetComponent

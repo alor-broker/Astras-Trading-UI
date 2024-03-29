@@ -7273,10 +7273,10 @@ ng-zorro-antd@^17.3.0:
     date-fns "^2.16.1"
     tslib "^2.3.0"
 
-ng2-charts@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/ng2-charts/-/ng2-charts-4.1.1.tgz#699bee539030b093caf54ab6111c6dea9e8e7ed3"
-  integrity sha512-iHwXDbmX86lfeH8VRcsaW2tJATsuAZo4kvvC/Yk2l35zOHjevja1qBvO6BAibiDazi9r9aS6ZRJOqWPsz1pP2w==
+ng2-charts@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/ng2-charts/-/ng2-charts-6.0.0.tgz#7ec47548ee4d3d0b2fe1316dff9fa2823dcc3a3a"
+  integrity sha512-Hg45RDOoFoXSDya4U8t2IW2teKnXjy10zJVij65G/62Si+A5+uu8hKQKkBahxg67iTdpOwtyPGnQJ/chHVfFVA==
   dependencies:
     lodash-es "^4.17.15"
     tslib "^2.3.0"
