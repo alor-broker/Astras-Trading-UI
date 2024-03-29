@@ -7281,10 +7281,10 @@ ng2-charts@^6.0.0:
     lodash-es "^4.17.15"
     tslib "^2.3.0"
 
-ngx-device-info@^3.0.3:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/ngx-device-info/-/ngx-device-info-3.0.4.tgz#1eadaa87fe6801b8a4e4d049e3b44ed55a5a9227"
-  integrity sha512-r8KWFLnn6nFEruPA6gv6FFoyKmrt1tIUFDyCubqL7sVEpJ/Ih3Cm41Wu7WLUsXWV1JxJiUYwKs5cOgSKKT4LOQ==
+ngx-device-info@^3.0.6:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/ngx-device-info/-/ngx-device-info-3.0.6.tgz#213afad15960c724bf72b7d44b52f41364a486d1"
+  integrity sha512-nP0uzBe+3yYzMuf0lIJ2bZeALrDjDHQVFYPbBpLJkUUkGG/vI7b2nAYwRArBKyt9xbt6UjcVsuvzebKsAE3scA==
   dependencies:
     tslib "^2.3.0"
 
