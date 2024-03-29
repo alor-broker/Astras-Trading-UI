@@ -62,6 +62,10 @@ export class InstantNotificationsService {
     });
   }
 
+  removeNotification(id?: string): void {
+    this.notificationService.remove(id);
+  }
+
   private getSettings(): Observable<InstantNotificationsSettings> {
     if (!this.notificationsSettings$) {
       this.notificationsSettings$ = this.terminalSettingsService.getSettings().pipe(

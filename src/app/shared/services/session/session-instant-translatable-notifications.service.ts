@@ -4,7 +4,6 @@ import { InstantNotificationsService } from "../instant-notifications.service";
 import { TranslatorService } from "../translator.service";
 import { SessionInstantNotificationType } from "../../models/terminal-settings/terminal-settings.model";
 import { NzNotificationDataOptions } from "ng-zorro-antd/notification/typings";
-import { NzNotificationService } from "ng-zorro-antd/notification";
 
 @Injectable({
   providedIn: 'root'
@@ -16,8 +15,7 @@ extends BaseTranslatorService {
 
   constructor(
     private readonly notificationsService: InstantNotificationsService,
-    protected readonly translatorService: TranslatorService,
-    private readonly notificationService: NzNotificationService
+    protected readonly translatorService: TranslatorService
   ) {
     super(translatorService);
   }
@@ -35,7 +33,7 @@ extends BaseTranslatorService {
 
   removeNotification(): void {
     if (this.lastWarningId != null) {
-      this.notificationService.remove(this.lastWarningId);
+      this.notificationsService.removeNotification(this.lastWarningId);
       this.lastWarningId = undefined;
     }
   }

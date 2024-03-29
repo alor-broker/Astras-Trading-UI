@@ -14,7 +14,8 @@ describe('SessionInstantTranslatableNotificationsService', () => {
         {
           provide: InstantNotificationsService,
           useValue: {
-            showNotification: jasmine.createSpy('showNotification').and.callThrough()
+            showNotification: jasmine.createSpy('showNotification').and.callThrough(),
+            removeNotification: jasmine.createSpy('removeNotification').and.callThrough(),
           }
         }
       ]
