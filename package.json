@@ -19,7 +19,7 @@
     "@angular/common": "^17.3.1",
     "@angular/compiler": "^17.3.1",
     "@angular/core": "^17.3.1",
-    "@angular/fire": "^7.6",
+    "@angular/fire": "^17.0.1",
     "@angular/forms": "^17.3.1",
     "@angular/platform-browser": "^17.3.1",
     "@angular/platform-browser-dynamic": "^17.3.1",
