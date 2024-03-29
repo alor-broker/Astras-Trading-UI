@@ -25,7 +25,7 @@
     "@angular/platform-browser-dynamic": "^17.3.1",
     "@angular/router": "^17.3.1",
     "@angular/service-worker": "^17.3.1",
-    "@ngneat/transloco": "4.3.0",
+    "@ngneat/transloco": "6.0.4",
     "@ngrx/component": "^17.1.1",
     "@ngrx/component-store": "^17.1.1",
     "@ngrx/effects": "^17.1.1",
