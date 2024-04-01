@@ -20,6 +20,7 @@ import {
 import { TableNames } from "../../models/blotter-settings.model";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { TableConfig } from "../../../../shared/models/table-config.model";
+import { FilterType } from "../../../../shared/models/settings/table-settings.model";
 
 @Component({
   selector: 'ats-test-comp',
@@ -154,14 +155,15 @@ describe('BlotterBaseTableComponent', () => {
       {
         id: 'id',
         filterData: {
-          filterName: 'id'
+          filterName: 'id',
+          filterType: FilterType.Search
         }
       },
       {
         id: 'someKey',
         filterData: {
           filterName: 'someKey',
-          isDefaultFilter: true,
+          filterType: FilterType.DefaultMultiple,
           filters: ['someVal', 'anotherVal']
         }
       }

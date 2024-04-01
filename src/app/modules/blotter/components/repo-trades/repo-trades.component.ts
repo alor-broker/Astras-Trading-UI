@@ -10,7 +10,7 @@ import {
   Observable,
   switchMap
 } from "rxjs";
-import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
 import { allRepoTradesColumns, TableNames } from "../../models/blotter-settings.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterService } from "../../services/blotter.service";
@@ -42,7 +42,7 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       sortFn: (a: RepoTrade, b: RepoTrade): number => Number(a.id) - Number(b.id),
       filterData: {
         filterName: 'id',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Идентификационный номер сделки'
     },
@@ -53,7 +53,7 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       sortFn: (a: RepoTrade, b: RepoTrade): number => Number(a.orderno) - Number(b.orderno),
       filterData: {
         filterName: 'orderno',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Номер заявки',
       minWidth: 80
@@ -65,7 +65,7 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       sortFn: (a: RepoTrade, b: RepoTrade): number => a.symbol.localeCompare(b.symbol),
       filterData: {
         filterName: 'symbol',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Биржевой идентификатор ценной бумаги',
       minWidth: 75
@@ -77,7 +77,7 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       sortFn: (a: RepoTrade, b: RepoTrade): number => a.side.toString().localeCompare(b.side.toString()),
       filterData: {
         filterName: 'side',
-        isDefaultFilter: true,
+        filterType: FilterType.DefaultMultiple,
         filters: [
           { text: 'Покупка', value: 'buy' },
           { text: 'Продажа', value: 'sell' }
@@ -116,7 +116,7 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       sortFn: (a: RepoTrade, b: RepoTrade): number => Number(b.repoSpecificFields.value) - Number(a.repoSpecificFields.value),
       filterData: {
         filterName: 'repoSpecificFields.value',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Объём',
       minWidth: 60
@@ -128,7 +128,7 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       sortFn: (a: RepoTrade, b: RepoTrade): number => Number(b.repoSpecificFields.repoRate) - Number(a.repoSpecificFields.repoRate),
       filterData: {
         filterName: 'repoSpecificFields.repoRate',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: '% годовых',
       minWidth: 60
@@ -140,7 +140,7 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       sortFn: (a: RepoTrade, b: RepoTrade): number => a.repoSpecificFields.extRef.toString().localeCompare(b.repoSpecificFields.extRef.toString()),
       filterData: {
         filterName: 'repoSpecificFields.extRef',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Пользователь внеш. системы',
       minWidth: 60
@@ -152,7 +152,7 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       sortFn: (a: RepoTrade, b: RepoTrade): number => Number(b.repoSpecificFields.repoTerm) - Number(a.repoSpecificFields.repoTerm),
       filterData: {
         filterName: 'repoSpecificFields.repoTerm',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Срок РЕПО',
       minWidth: 50
@@ -164,7 +164,7 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       sortFn: (a: RepoTrade, b: RepoTrade): number => a.repoSpecificFields.account.toString().localeCompare(b.repoSpecificFields.account.toString()),
       filterData: {
         filterName: 'repoSpecificFields.account',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Торговый счёт',
       minWidth: 60
@@ -176,7 +176,7 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       sortFn: (a: RepoTrade, b: RepoTrade): number => a.repoSpecificFields.tradeTypeInfo.toString().localeCompare(b.repoSpecificFields.tradeTypeInfo.toString()),
       filterData: {
         filterName: 'repoSpecificFields.tradeTypeInfo',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Тип',
       minWidth: 60
@@ -188,7 +188,7 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       sortFn: (a: RepoTrade, b: RepoTrade): number => Number(b.repoSpecificFields.yield) - Number(a.repoSpecificFields.yield),
       filterData: {
         filterName: 'repoSpecificFields.yield',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Доход',
       minWidth: 50

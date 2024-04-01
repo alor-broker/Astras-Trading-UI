@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 import { take, combineLatest, Observable, shareReplay, BehaviorSubject } from "rxjs";
 import { BlotterSettings } from "../../models/blotter-settings.model";
-import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
 import { ExportHelper } from "../../utils/export-helper";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
@@ -23,6 +23,7 @@ extends BaseTableComponent<T, F>
 implements OnInit {
   @Input({ required: true }) guid!: string;
 
+  filterTypes = FilterType;
   settings$!: Observable<BlotterSettings>;
   protected isFilterDisabled = (): boolean => Object.keys(this.filters$.getValue()).length === 0;
   protected columns!: BaseColumnSettings<T>[];
@@ -155,8 +156,8 @@ implements OnInit {
       if ((filter[key as keyof F] as string | undefined) != null && !!(filter[key as keyof F] as string).length) {
         const column = this.columns.find(o => o.id == key);
         if (
-          !(column!.filterData!.isDefaultFilter ?? false) && !this.searchInItem(item, <keyof T>key, <string>filter[<keyof F>key]) ||
-          (column!.filterData!.isDefaultFilter ?? false) && ((<string | undefined>filter[<keyof F>key])?.length ?? 0) && !(<string>filter[<keyof F>key])!.includes(item[<keyof T>key]!.toString())
+          column!.filterData!.filterType !== FilterType.DefaultMultiple && !this.searchInItem(item, <keyof T>key, <string>filter[<keyof F>key]) ||
+          column!.filterData!.filterType === FilterType.DefaultMultiple && ((<string | undefined>filter[<keyof F>key])?.length ?? 0) && !(<string>filter[<keyof F>key])!.includes(item[<keyof T>key]!.toString())
         ) {
           isFiltered = false;
         }

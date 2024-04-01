@@ -12,7 +12,7 @@ import { TableSettingHelper } from '../../../../shared/utils/table-setting.helpe
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
-import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 import { DomHelper } from "../../../../shared/utils/dom-helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -51,7 +51,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
       sortFn: (a: DisplayOrder, b: DisplayOrder): number => Number(a.id) - Number(b.id),
       filterData: {
         filterName: 'id',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Идентификационный номер заявки'
     },
@@ -62,7 +62,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
       sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.symbol.localeCompare(b.symbol),
       filterData: {
         filterName: 'id',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Биржевой идентификатор ценной бумаги',
       minWidth: 75
@@ -74,7 +74,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
       sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.side.toString().localeCompare(b.side.toString()),
       filterData: {
         filterName: 'side',
-        isDefaultFilter: true,
+        filterType: FilterType.DefaultMultiple,
         filters: [
           { text: 'Покупка', value: 'buy' },
           { text: 'Продажа', value: 'sell' }
@@ -129,7 +129,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
       sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.status.localeCompare(b.status),
       filterData: {
         filterName: 'status',
-        isDefaultFilter: true,
+        filterType: FilterType.DefaultMultiple,
         filters: [
           { text: 'Исполнена', value: 'filled' },
           { text: 'Активна', value: 'working' },
@@ -147,7 +147,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
       sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.conditionType.localeCompare(b.conditionType),
       filterData: {
         filterName: 'conditionType',
-        isDefaultFilter: true,
+        filterType: FilterType.DefaultMultiple,
         filters: [
           { text: getConditionSign(LessMore.More)!, value: 'more' },
           { text: getConditionSign(LessMore.Less)!, value: 'less' },
@@ -173,7 +173,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
       sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.exchange.localeCompare(a.exchange),
       filterData: {
         filterName: 'exchange',
-        isDefaultFilter: true,
+        filterType: FilterType.DefaultMultiple,
         filters: [
           { text: 'ММВБ', value: 'MOEX' },
           { text: 'СПБ', value: 'SPBX' }
@@ -189,7 +189,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
       sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.type.localeCompare(a.type),
       filterData: {
         filterName: 'exchange',
-        isDefaultFilter: true,
+        filterType: FilterType.DefaultMultiple,
         filters: [
           { text: 'Лимит', value: 'stoplimit' },
           { text: 'Рыночн.', value: 'stop' }

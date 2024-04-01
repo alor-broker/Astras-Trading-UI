@@ -34,7 +34,11 @@ import { defaultBadgeColor } from '../../../../shared/utils/instruments';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
 import { AllInstrumentsSettings } from '../../model/all-instruments-settings.model';
-import { BaseColumnSettings, DefaultTableFilters } from "../../../../shared/models/settings/table-settings.model";
+import {
+  BaseColumnSettings,
+  DefaultTableFilters,
+  FilterType
+} from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import {
@@ -54,6 +58,7 @@ import {
   GraphQlSort,
   GraphQlSortType
 } from "../../../../shared/models/graph-ql.model";
+import { BoardsService } from "../../services/boards.service";
 
 interface AllInstrumentsNodeDisplay extends AllInstrumentsNode {
   id: string;
@@ -83,7 +88,8 @@ implements OnInit, OnDestroy {
       transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.symbol!,
       sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'symbol'], dir),
       filterData: {
-        filterName: 'symbol'
+        filterName: 'symbol',
+        filterType: FilterType.Search
       },
       showBadges: true
     },
@@ -93,7 +99,8 @@ implements OnInit, OnDestroy {
       transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.shortName!,
       sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'shortName'], dir),
       filterData: {
-        filterName: 'shortName'
+        filterName: 'shortName',
+        filterType: FilterType.Search
       },
       width: 50,
       minWidth: 50
@@ -106,7 +113,7 @@ implements OnInit, OnDestroy {
       sortChangeFn: (dir): void => this.sortChange(['currencyInformation', 'nominal'], dir),
       filterData: {
         filterName: 'nominal',
-        isOpenedFilter: false,
+        filterType: FilterType.Search
       },
       width: 90,
       minWidth: 90,
@@ -121,7 +128,7 @@ implements OnInit, OnDestroy {
       sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'dailyGrowth'], dir),
       filterData: {
         filterName: 'dailyGrowth',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'dailyGrowthFrom',
         intervalEndName: 'dailyGrowthTo'
       }
@@ -136,7 +143,7 @@ implements OnInit, OnDestroy {
       sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'dailyGrowthPercent'], dir),
       filterData: {
         filterName: 'dailyGrowthPercent',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'dailyGrowthPercentFrom',
         intervalEndName: 'dailyGrowthPercentTo'
       }
@@ -150,7 +157,7 @@ implements OnInit, OnDestroy {
       sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'tradeVolume'], dir),
       filterData: {
         filterName: 'tradeVolume',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'tradeVolumeFrom',
         intervalEndName: 'tradeVolumeTo'
       }
@@ -165,8 +172,7 @@ implements OnInit, OnDestroy {
       filterData: {
         filterName: 'exchange',
         isOpenedFilter: false,
-        isDefaultFilter: true,
-        isMultipleFilter: true,
+        filterType: FilterType.DefaultMultiple,
         filters: [
           { value: 'MOEX', text: 'MOEX' },
           { value: 'SPBX', text: 'SPBX' },
@@ -183,14 +189,9 @@ implements OnInit, OnDestroy {
       filterData: {
         filterName: 'board',
         isOpenedFilter: false,
-        isDefaultFilter: false,
-        isMultipleFilter: true,
-        filters: [
-          { value: 'CURR', text: 'CURR' },
-          { value: 'FOND', text: 'FOND' },
-          { value: 'FORTS', text: 'FORTS' },
-          { value: 'SPBX', text: 'SPBX' },
-        ]
+        filterType: FilterType.MultipleAutocomplete,
+        multipleAutocompleteSelectedOptionLabelKey: 'nzValue',
+        filters: []
       },
     },
     {
@@ -203,8 +204,7 @@ implements OnInit, OnDestroy {
       filterData: {
         filterName: 'market',
         isOpenedFilter: false,
-        isDefaultFilter: true,
-        isMultipleFilter: true,
+        filterType: FilterType.DefaultMultiple,
         filters: [
           { value: 'CURR', text: 'CURR' },
           { value: 'FOND', text: 'FOND' },
@@ -220,7 +220,7 @@ implements OnInit, OnDestroy {
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'lotSize'], dir),
       filterData: {
         filterName: 'lotSize',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'lotSizeFrom',
         intervalEndName: 'lotSizeTo'
       },
@@ -236,7 +236,7 @@ implements OnInit, OnDestroy {
       sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'price'], dir),
       filterData: {
         filterName: 'price',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'priceFrom',
         intervalEndName: 'priceTo'
       }
@@ -248,7 +248,7 @@ implements OnInit, OnDestroy {
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceMax'], dir),
       filterData: {
         filterName: 'priceMax',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'priceMaxFrom',
         intervalEndName: 'priceMaxTo'
       },
@@ -262,7 +262,7 @@ implements OnInit, OnDestroy {
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceMin'], dir),
       filterData: {
         filterName: 'priceMin',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'priceMinFrom',
         intervalEndName: 'priceMinTo'
       },
@@ -276,7 +276,7 @@ implements OnInit, OnDestroy {
       transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.minStep!.toString(),
       filterData: {
         filterName: 'minStep',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'minStepFrom',
         intervalEndName: 'minStepTo'
       },
@@ -290,7 +290,7 @@ implements OnInit, OnDestroy {
       transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceStep!.toString(),
       filterData: {
         filterName: 'priceStep',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'priceStepFrom',
         intervalEndName: 'priceStepTo'
       },
@@ -307,7 +307,7 @@ implements OnInit, OnDestroy {
       sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'yield'], dir),
       filterData: {
         filterName: 'yield',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'yieldFrom',
         intervalEndName: 'yieldTo'
       }
@@ -324,6 +324,7 @@ implements OnInit, OnDestroy {
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     private readonly service: AllInstrumentsService,
+    private readonly boardsService: BoardsService,
     private readonly dashboardContextService: DashboardContextService,
     @Inject(ACTIONS_CONTEXT)
     protected readonly actionsContext: ActionsContext,
@@ -352,36 +353,44 @@ implements OnInit, OnDestroy {
   }
 
   protected initTableConfigStream(): Observable<TableConfig<AllInstrumentsNodeDisplay>> {
-    return this.settings$.pipe(
-      mapWith(
-        () => this.translatorService.getTranslator('all-instruments/all-instruments'),
-        (settings, translate) => ({ settings, translate })
-      ),
-      map(({ settings, translate }) => {
-        const tableSettings = TableSettingHelper.toTableDisplaySettings(settings.allInstrumentsTable, settings.allInstrumentsColumns);
+    return this.boardsService.getAllBoards()
+      .pipe(
+        take(1),
+        tap(boards => {
+          const boardColumn: BaseColumnSettings<AllInstrumentsNodeDisplay> = this.allColumns.find(c => c.id === 'board')!;
+          boardColumn.filterData!.filters = boards.map(b => ({ text: `${b.code} (${b.description})`, value: b.code }));
+        }),
+        switchMap(() => this.settings$),
+        mapWith(
+          () => this.translatorService.getTranslator('all-instruments/all-instruments'),
+          (settings, translate) => ({ settings, translate })
+        ),
+        map(({ settings, translate }) => {
+          const tableSettings = TableSettingHelper.toTableDisplaySettings(settings.allInstrumentsTable, settings.allInstrumentsColumns);
 
-        return {
-          columns: this.allColumns
-            .map(column => ({ column, settings: tableSettings?.columns.find(c => c.columnId === column.id) }))
-            .filter(col => col.settings != null)
-            .map((col, index) => ({
-                ...col.column,
-                displayName: translate(
-                  ['columns', col.column.id, 'name'],
-                  { fallback: col.column.displayName }
-                ),
-                tooltip: translate(
-                  ['columns', col.column.id, 'tooltip'],
-                  {fallback: col.column.displayName}
-                ),
-                width: col.settings!.columnWidth ?? this.defaultColumnWidth as number,
-                order: col.settings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
-              })
-            )
-            .sort((a, b) => a.order - b.order)
-        };
-      })
-    );
+          return {
+            columns: this.allColumns
+              .map(column => ({ column, settings: tableSettings?.columns.find(c => c.columnId === column.id) }))
+              .filter(col => col.settings != null)
+              .map((col, index) => ({
+                  ...col.column,
+                  displayName: translate(
+                    ['columns', col.column.id, 'name'],
+                    { fallback: col.column.displayName }
+                  ),
+                  tooltip: translate(
+                    ['columns', col.column.id, 'tooltip'],
+                    {fallback: col.column.displayName}
+                  ),
+                  width: col.settings!.columnWidth ?? this.defaultColumnWidth as number,
+                  order: col.settings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+                })
+              )
+              .sort((a, b) => a.order - b.order)
+          };
+        }),
+        shareReplay(1)
+      );
   }
 
   initTableDataStream(): Observable<AllInstrumentsNodeDisplay[]> {

@@ -13,6 +13,7 @@ import { DashboardContextService } from '../../../../shared/services/dashboard-c
 import { TranslatorService } from '../../../../shared/services/translator.service';
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
+import { BoardsService } from "../../services/boards.service";
 
 describe('AllInstrumentsComponent', () => {
   let component: AllInstrumentsComponent;
@@ -77,6 +78,12 @@ describe('AllInstrumentsComponent', () => {
           provide: TranslatorService,
           useValue: {
             getTranslator: jasmine.createSpy('getTranslator').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: BoardsService,
+          useValue: {
+            getAllBoards: jasmine.createSpy('getAllBoards').and.returnValue(new Subject())
           }
         },
         ...commonTestProviders

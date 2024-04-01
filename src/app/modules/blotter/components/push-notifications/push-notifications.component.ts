@@ -28,7 +28,7 @@ import { BlotterService } from "../../services/blotter.service";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { isArrayEqual } from "../../../../shared/utils/collections";
 import { PushNotificationsService } from "../../../push-notifications/services/push-notifications.service";
-import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
@@ -62,7 +62,7 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
       displayName: 'Id',
       filterData: {
         filterName: 'id',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       }
     },
     {
@@ -70,7 +70,7 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
       displayName: 'subscriptionType',
       filterData: {
         filterName: 'subscriptionType',
-        isDefaultFilter: true,
+        filterType: FilterType.DefaultMultiple,
         filters: [
           {value: 'OrderExecute', text: 'OrderExecute'},
           {value: 'PriceSpark', text: 'PriceSpark'},
@@ -81,7 +81,8 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
       id: 'instrument',
       displayName: 'instrument',
       filterData: {
-        filterName: 'instrument'
+        filterName: 'instrument',
+        filterType: FilterType.Search
       }
     },
     {

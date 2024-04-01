@@ -37,10 +37,11 @@
         >
           <th nzWidth="5px"></th>
           <th *ngFor="let column of td.tableConfig.columns"
-              [nzCustomFilter]="column.filterData && !column.filterData.isDefaultFilter"
+              [nzCustomFilter]="column.filterData?.filterType !== filterTypes.DefaultMultiple"
               [nzSortFn]="column.sortFn ?? false"
               [nzFilters]="column.filterData?.filters ?? []"
-              [nzShowFilter]="column.filterData && column.filterData.isDefaultFilter"
+              [nzShowFilter]="column.filterData?.filterType === filterTypes.DefaultMultiple"
+              [nzFilterMultiple]="column.filterData?.filterType === filterTypes.DefaultMultiple"
               (nzFilterChange)="defaultFilterChange(column.id, $event)"
               [nzWidth]="column.width ? column.width + 'px': null"
               [atsResizeColumn]
@@ -57,7 +58,7 @@
             {{column.displayName}}
           </span>
             <nz-filter-trigger
-              *ngIf="column.filterData && !column.filterData.isDefaultFilter"
+              *ngIf="column.filterData != null && column.filterData?.filterType !== filterTypes.DefaultMultiple"
               [(nzVisible)]="!!column.filterData.isOpenedFilter"
               [nzActive]="!!filters$"
               [nzDropdownMenu]="searchMenu"

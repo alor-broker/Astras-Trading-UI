@@ -31,8 +31,8 @@
         [nzSortOrder]="sortedColumnId === column.id ? sortedColumnOrder : null"
         (nzSortOrderChange)="sortChange($event, column)"
         [nzFilters]="column.filterData?.filters || []"
-        [nzFilterMultiple]="column.filterData?.isMultipleFilter!"
-        [nzCustomFilter]="!column.filterData?.isDefaultFilter"
+        [nzFilterMultiple]="column.filterData?.filterType === filterTypes.DefaultMultiple"
+        [nzCustomFilter]="column.filterData?.filterType !== filterTypes.DefaultMultiple && column.filterData?.filterType !== filterTypes.Default"
         (nzFilterChange)="defaultFilterChange(column.filterData!.filterName!, $event)"
         [atsResizeColumn]="column.isResizable !== false"
         (atsWidthChanged)="columnWidthChange.emit({columnId: column.id, width: $event})"
@@ -57,7 +57,7 @@
           <i
             nz-icon
             nzType="search"
-            [class.active-filter]="!!getFilterControl(column.filterData.filterName)?.value
+            [class.active-filter]="(getFilterControl(column.filterData.filterName)?.value?.length ?? 0) > 0
             || !!getFilterControl(column.filterData.intervalStartName!)?.value
             || !!getFilterControl(column.filterData.intervalEndName!)?.value"
           >
@@ -87,36 +87,68 @@
   </nz-table>
 
   <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-    <div class="ant-table-filter-dropdown custom-filter" *transloco="let t">
-      <div *ngFor='let column of tableConfig.columns'>
-        <div *ngIf='!!column.filterData && activeFilterName === column.filterData.filterName'>
+    <div class="ant-table-filter-dropdown custom-filter" *transloco="let t; scope: 'shared/infinite-scroll-table'">
+      <ng-container *ngFor='let column of tableConfig.columns'>
+        <div
+          *ngIf='!!column.filterData && activeFilterName === column.filterData.filterName'
+          class="d-flex flex-column justify-content-start"
+        >
+          <nz-select
+            *ngIf="column.filterData.filterType === filterTypes.MultipleAutocomplete"
+            class="multiple-autocomplete-filter mb-10"
+            [nzMaxTagCount]="3"
+            [nzMaxTagPlaceholder]="tagPlaceHolder"
+            nzMode="multiple"
+            [nzPlaceHolder]="t('sharedInfiniteScrollTable.selectValuesPlaceHolder')"
+            [nzCustomTemplate]="customOption"
+            [formControl]="getFilterControl(column.filterData.filterName)!"
+          >
+              <nz-option
+                *ngFor="let item of column.filterData.filters"
+                [nzLabel]="item.text"
+                [nzValue]="item.value"
+              >
+              </nz-option>
+          </nz-select>
+          <ng-template #tagPlaceHolder let-selectedList>{{t('maxTagPlaceholder', { count: selectedList.length })}}</ng-template>
+          <ng-template #customOption let-option>
+            {{option[column.filterData.multipleAutocompleteSelectedOptionLabelKey ?? 'nzLabel']}}
+          </ng-template>
           <input
-            *ngIf="!column.filterData.isInterval; else intervalFilter"
+            *ngIf="column.filterData.filterType === filterTypes.Search"
             nz-input
-            class="filter-input"
+            class="mb-10"
             type="text"
             [placeholder]="column.displayName"
             [formControl]="getFilterControl(column.filterData.filterName)!"
           />
-          <ng-template #intervalFilter>
+          <ng-container *ngIf="column.filterData.filterType === filterTypes.Interval">
             <input
               nz-input
-              class="filter-input"
+              class="mb-10"
               type="text"
               [placeholder]="column.displayName + ', ' + t('from')"
               [formControl]="getFilterControl(column.filterData.intervalStartName!)!"
             />
             <input
               nz-input
-              class="filter-input"
+              class="mb-10"
               type="text"
               [placeholder]="column.displayName + ', ' + t('to')"
               [formControl]="getFilterControl(column.filterData.intervalEndName!)!"
             />
-          </ng-template>
-          <button nz-button nzType="text" nzSize="small" (click)="resetFilter(column.filterData)">{{t('resetBtnText')}}</button>
+          </ng-container>
+          <button
+            nz-button
+            nzType="text"
+            nzSize="small"
+            class="reset-button"
+            (click)="resetFilter(column.filterData)"
+          >
+            {{t('resetBtnText')}}
+          </button>
         </div>
-      </div>
+      </ng-container>
     </div>
   </nz-dropdown-menu>
 
