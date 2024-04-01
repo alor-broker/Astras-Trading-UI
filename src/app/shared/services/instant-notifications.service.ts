@@ -33,7 +33,7 @@ export class InstantNotificationsService {
     this.getSettings().pipe(
       take(1)
     ).subscribe(s => {
-      if (!!s.hiddenNotifications?.find(x => x === notificationType)) {
+      if (s.hiddenNotifications?.find(x => x === notificationType) == null) {
         return;
       }
 

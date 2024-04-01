@@ -81,7 +81,7 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
       filter((p): p is OrderDialogParams => !!p),
       take(1)
     ).subscribe(params => {
-      if (!params.initialValues.orderType) {
+      if (params.initialValues.orderType == null) {
         return;
       }
 

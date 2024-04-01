@@ -27,7 +27,5 @@ export function getPropertyFromPath(obj: any, path: string): any {
  * @returns source value if not null or default value
  */
 export function getValueOrDefault<T>(value: T | null, defaultValue: T): T {
-  return value != null
-    ? value
-    : defaultValue;
+  return value ?? defaultValue;
 }

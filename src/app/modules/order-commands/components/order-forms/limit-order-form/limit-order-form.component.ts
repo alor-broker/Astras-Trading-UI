@@ -207,7 +207,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
           this.form.controls.topOrderPrice.setValue(this.initialValues.bracket.topOrderPrice as number);
         }
 
-        if (this.initialValues.bracket.topOrderSide) {
+        if (this.initialValues.bracket.topOrderSide != null) {
           this.form.controls.topOrderSide.setValue(this.initialValues.bracket.topOrderSide);
         }
 
@@ -215,7 +215,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
           this.form.controls.bottomOrderPrice.setValue(this.initialValues.bracket.bottomOrderPrice as number);
         }
 
-        if (this.initialValues.bracket.bottomOrderSide) {
+        if (this.initialValues.bracket.bottomOrderSide != null) {
           this.form.controls.bottomOrderSide.setValue(this.initialValues.bracket.bottomOrderSide);
         }
       }
@@ -298,7 +298,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       side: side
     } as NewLimitOrder;
 
-    if (!!formValue.timeInForce) {
+    if (formValue.timeInForce != null) {
       limitOrder.timeInForce = formValue.timeInForce;
     }
 

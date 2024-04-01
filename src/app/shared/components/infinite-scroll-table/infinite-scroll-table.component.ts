@@ -120,7 +120,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (changes.tableContainerHeight as SimpleChange | undefined || changes.tableContainerWidth as SimpleChange | undefined) {
+    if ((changes.tableContainerHeight != null) || (changes.tableContainerWidth != null)) {
       this.calculateScrollHeight();
     }
 

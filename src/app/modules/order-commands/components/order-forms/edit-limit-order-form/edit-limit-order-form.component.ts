@@ -287,7 +287,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
           quantity: Number(formValue.quantity)
         } as LimitOrderEdit;
 
-        if (formValue.timeInForce) {
+        if (formValue.timeInForce != null) {
           updatedOrder.timeInForce = formValue.timeInForce;
         }
 

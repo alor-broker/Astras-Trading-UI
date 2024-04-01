@@ -137,7 +137,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
       tap(() => this.loadingStatus$.next(LoadingStatus.Loading)),
       switchMap(r => this.instrumentsCorrelationService.getCorrelation(r)),
       map(x => {
-        if (!!x.errorCode) {
+        if (x.errorCode != null) {
           this.loadingError = {
             errorCode: x.errorCode,
             errorMessage: x.errorMessage

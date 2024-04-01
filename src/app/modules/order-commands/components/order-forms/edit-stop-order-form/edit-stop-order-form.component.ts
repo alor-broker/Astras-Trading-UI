@@ -294,7 +294,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
             price: Number(formValue.price)
           } as StopLimitOrderEdit;
 
-          if (formValue.timeInForce) {
+          if (formValue.timeInForce != null) {
             limitOrder.timeInForce = formValue.timeInForce;
           }
 
