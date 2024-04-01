@@ -61,7 +61,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.symbol.localeCompare(b.symbol),
       filterData: {
-        filterName: 'id',
+        filterName: 'symbol',
         filterType: FilterType.Search
       },
       tooltip: 'Биржевой идентификатор ценной бумаги',
@@ -188,7 +188,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
       sortOrder: null,
       sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.type.localeCompare(a.type),
       filterData: {
-        filterName: 'exchange',
+        filterName: 'type',
         filterType: FilterType.DefaultMultiple,
         filters: [
           { text: 'Лимит', value: 'stoplimit' },
