@@ -3,6 +3,10 @@ import {
   Input
 } from '@angular/core';
 import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-data-context.model";
+import {
+  PanelSlots,
+  ScalperOrderBookWidgetSettings
+} from "../../models/scalper-order-book-settings.model";
 
 @Component({
   selector: 'ats-bottom-floating-panel',
@@ -16,4 +20,14 @@ export class BottomFloatingPanelComponent {
   isActive!: boolean;
   @Input({ required: true })
   dataContext!: ScalperOrderBookDataContext;
+
+  showWorkingVolumes(settings: ScalperOrderBookWidgetSettings): boolean {
+    return (settings.showWorkingVolumesPanel ?? true)
+      && (settings.workingVolumesPanelSlot ?? PanelSlots.BottomFloatingPanel) === PanelSlots.BottomFloatingPanel;
+  }
+
+  showShortLongIndicators(settings: ScalperOrderBookWidgetSettings): boolean {
+    return (settings.showShortLongIndicators ?? true)
+      && (settings.shortLongIndicatorsPanelSlot ?? PanelSlots.BottomFloatingPanel) === PanelSlots.BottomFloatingPanel;
+  }
 }

@@ -18,6 +18,7 @@ import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import {
   InstrumentLinkedSettings,
+  PanelSlots,
   PriceUnits,
   ScalperOrderBookWidgetSettings,
   VolumeHighlightMode,
@@ -102,6 +103,9 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     }
   };
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
+  readonly workingVolumesPanelSlots = [PanelSlots.BottomFloatingPanel, PanelSlots.TopPanel];
+  readonly shortLongPanelSlots = [PanelSlots.BottomFloatingPanel, PanelSlots.TopPanel];
+
   orderPriceUnits = PriceUnits;
   readonly availableVolumeHighlightModes: string[] = [
     VolumeHighlightMode.Off,
@@ -125,6 +129,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     showSpreadItems: this.formBuilder.nonNullable.control(true),
     showInstrumentPriceDayChange: this.formBuilder.nonNullable.control(true),
     showShortLongIndicators: this.formBuilder.nonNullable.control(true),
+    shortLongIndicatorsPanelSlot: this.formBuilder.nonNullable.control(PanelSlots.BottomFloatingPanel),
     shortLongIndicatorsUpdateIntervalSec: this.formBuilder.nonNullable.control(
       60,
       [
@@ -215,7 +220,12 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       { validators: Validators.required }
     ),
     // working volumes
-    workingVolumes: this.formBuilder.nonNullable.array<number[]>([], Validators.minLength(1)),
+    showWorkingVolumesPanel: this.formBuilder.nonNullable.control(true),
+    workingVolumesPanelSlot: this.formBuilder.nonNullable.control(PanelSlots.BottomFloatingPanel),
+    workingVolumes: this.formBuilder.nonNullable.array(
+      [this.createWorkingVolumeControl(1)],
+      Validators.minLength(1)
+    ),
     // volume highlight
     volumeHighlightMode: this.formBuilder.nonNullable.control(VolumeHighlightMode.Off),
     volumeHighlightFullness: this.formBuilder.nonNullable.control(
@@ -356,7 +366,6 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       symbol: formValue.instrument!.symbol,
       exchange: formValue.instrument!.exchange,
       depth: Number(formValue.depth),
-      workingVolumes: formValue.workingVolumes?.map(wv => Number(wv)),
       fontSize: Number(formValue.fontSize),
       rowHeight: Number(formValue.rowHeight),
     } as Partial<ScalperOrderBookWidgetSettings> & InstrumentKey;
@@ -395,6 +404,12 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
         hideFilteredTrades: formValue.tradesPanelSettings?.hideFilteredTrades!,
         tradesAggregationPeriodMs: Number(formValue.tradesPanelSettings!.tradesAggregationPeriodMs)
       };
+    }
+
+    if((formValue.workingVolumes?.length ?? 0) > 0) {
+      newSettings.workingVolumes = formValue.workingVolumes!.map(wv => Number(wv));
+    } else {
+      newSettings.workingVolumes = [1];
     }
 
     newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings, newSettings);
@@ -445,6 +460,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     this.form.controls.showSpreadItems.setValue(settings.showSpreadItems);
     this.form.controls.showInstrumentPriceDayChange.setValue(settings.showInstrumentPriceDayChange ?? false);
     this.form.controls.showShortLongIndicators.setValue(settings.showShortLongIndicators ?? false);
+    this.form.controls.shortLongIndicatorsPanelSlot.setValue(settings.shortLongIndicatorsPanelSlot ?? PanelSlots.BottomFloatingPanel);
     this.form.controls.shortLongIndicatorsUpdateIntervalSec.setValue(settings.shortLongIndicatorsUpdateIntervalSec ?? 60);
     this.form.controls.showLimitOrdersVolumeIndicators.setValue(settings.showLimitOrdersVolumeIndicators ?? false);
 
@@ -479,10 +495,14 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
 
     this.form.controls.showTradesClustersPanel.setValue(settings.showTradesClustersPanel ?? false);
 
-    this.form.controls.workingVolumes.clear();
-    settings.workingVolumes.forEach(volume => {
-      this.form.controls.workingVolumes.push(this.createWorkingVolumeControl(volume));
-    });
+    this.form.controls.showWorkingVolumesPanel.setValue(settings.showWorkingVolumesPanel ?? true);
+    this.form.controls.workingVolumesPanelSlot.setValue(settings.workingVolumesPanelSlot ?? PanelSlots.BottomFloatingPanel);
+    if(settings.workingVolumes.length > 0) {
+      this.form.controls.workingVolumes.clear();
+      settings.workingVolumes.forEach(volume => {
+        this.form.controls.workingVolumes.push(this.createWorkingVolumeControl(volume));
+      });
+    }
 
     this.form.controls.volumeHighlightMode.setValue(settings.volumeHighlightMode ?? VolumeHighlightMode.Off);
     this.form.controls.volumeHighlightFullness.setValue(settings.volumeHighlightFullness ?? 1000);
@@ -550,6 +570,12 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       this.form.controls.tradesPanelSettings.enable();
     } else {
       this.form.controls.tradesPanelSettings.disable();
+    }
+
+    if ((formValue?.showWorkingVolumesPanel) ?? false) {
+      this.form.controls.workingVolumes.enable();
+    } else {
+      this.form.controls.workingVolumes.disable();
     }
   }
 

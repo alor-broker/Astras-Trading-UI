@@ -21,8 +21,8 @@ describe('BottomFloatingPanelComponent', () => {
       declarations: [
         BottomFloatingPanelComponent,
         mockComponent({ selector: 'ats-modifiers-indicator'}),
-        mockComponent({ selector: 'ats-working-volumes-panel', inputs: ['guid', 'isActive']}),
-        mockComponent({ selector: 'ats-short-long-indicator', inputs: ['dataContext']}),
+        mockComponent({ selector: 'ats-working-volumes-panel', inputs: ['guid', 'isActive', 'orientation']}),
+        mockComponent({ selector: 'ats-short-long-indicator', inputs: ['dataContext', 'orientation']}),
       ]
     });
     fixture = TestBed.createComponent(BottomFloatingPanelComponent);

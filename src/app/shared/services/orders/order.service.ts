@@ -1,13 +1,28 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { BehaviorSubject, forkJoin, Observable, of, switchMap, take, tap } from "rxjs";
-import { catchError, filter, map } from "rxjs/operators";
+import {
+  Injectable,
+  OnDestroy
+} from '@angular/core';
+import {
+  HttpClient,
+  HttpErrorResponse
+} from "@angular/common/http";
+import {
+  BehaviorSubject,
+  forkJoin,
+  Observable,
+  of,
+  switchMap,
+  take,
+  tap
+} from "rxjs";
+import {
+  catchError,
+  filter,
+  map
+} from "rxjs/operators";
 import { ErrorHandlerService } from "../handle-error/error-handler.service";
 import { toUnixTimestampSeconds } from "../../utils/datetime";
 import { GuidGenerator } from "../../utils/guid";
-import { httpLinkRegexp } from "../../utils/regexps";
-import { InstantNotificationsService } from '../instant-notifications.service';
-import { OrdersInstantNotificationType } from '../../models/terminal-settings/terminal-settings.model';
 import { OrdersGroupService } from "./orders-group.service";
 import { OrderCancellerService } from "../order-canceller.service";
 import { ExecutionPolicy, SubmitGroupResult } from "../../models/orders/orders-group.model";
@@ -23,6 +38,7 @@ import { LimitOrderEdit, StopLimitOrderEdit, StopMarketOrderEdit } from "../../m
 import { EnvironmentService } from "../environment.service";
 import { TradingStatus } from "../../models/instruments/instrument.model";
 import { InstrumentsService } from "../../../modules/instruments/services/instruments.service";
+import { OrderInstantTranslatableNotificationsService } from "./order-instant-translatable-notifications.service";
 
 export type NewLinkedOrder = (NewLimitOrder | NewStopLimitOrder | NewStopMarketOrder) & {
   type: 'Limit' | 'StopLimit' | 'Stop';
@@ -39,7 +55,7 @@ export class OrderService implements OnDestroy {
     private readonly environmentService: EnvironmentService,
     private readonly httpService: HttpClient,
     private readonly instrumentsService: InstrumentsService,
-    private readonly instantNotificationsService: InstantNotificationsService,
+    private readonly instantNotificationsService: OrderInstantTranslatableNotificationsService,
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly ordersGroupService: OrdersGroupService,
     private readonly canceller: OrderCancellerService,
@@ -238,21 +254,17 @@ export class OrderService implements OnDestroy {
         if (!(error instanceof HttpErrorResponse)) {
           this.errorHandlerService.handleError(error);
         } else {
-          this.handleCommandError(OrdersInstantNotificationType.OrderSubmitFailed, error, 'Заявка не выставлена');
+          this.instantNotificationsService.orderSubmitFailed(error);
         }
       }
-    ).pipe(
-      tap(result => {
-        if (result.isSuccess) {
-          this.instantNotificationsService.showNotification(
-            OrdersInstantNotificationType.OrderCreated,
-            'success',
-            `Заявка выставлена`,
-            `Заявка успешно выставлена, её номер на бирже: \n ${result.orderNumber}`
-          );
-        }
-      })
-    );
+    )
+      .pipe(
+        tap(result => {
+          if (result.isSuccess) {
+            this.instantNotificationsService.orderCreated(result.orderNumber!);
+          }
+        })
+      );
   }
 
   private submitOrderEdit(portfolio: string, prepareOrderRequest: () => {
@@ -260,27 +272,23 @@ export class OrderService implements OnDestroy {
     body: any;
   }): Observable<SubmitOrderResult> {
     return this.submitRequest(
-      portfolio,
-      'put',
-      prepareOrderRequest,
-      error => {
-        if (!(error instanceof HttpErrorResponse)) {
-          this.errorHandlerService.handleError(error);
-        } else {
-          this.handleCommandError(OrdersInstantNotificationType.OrderUpdateFailed, error, 'Заявка не изменена');
-        }
-      }
-    ).pipe(
-      tap(result => {
-        if (result.isSuccess) {
-          this.instantNotificationsService.showNotification(
-            OrdersInstantNotificationType.OrderUpdated,
-            'success',
-            `Заявка изменена`,
-            `Заявка успешно изменена, её номер на бирже: \n ${result.orderNumber}`
-          );
-        }
-      })
+            portfolio,
+            'put',
+            prepareOrderRequest,
+            error => {
+              if (!(error instanceof HttpErrorResponse)) {
+                this.errorHandlerService.handleError(error);
+              } else {
+                this.instantNotificationsService.orderUpdateFailed(error);
+              }
+            }
+          )
+      .pipe(
+        tap(result => {
+          if (result.isSuccess) {
+            this.instantNotificationsService.orderUpdated(result.orderNumber!);
+          }
+        }),
     );
   }
 
@@ -325,27 +333,5 @@ export class OrderService implements OnDestroy {
         this.ordersDelayMSec$.next(Date.now() - startTime);
       })
     );
-  }
-
-  private handleCommandError(notificationType: OrdersInstantNotificationType, error: HttpErrorResponse, errorTitle: string): void {
-    const errorMessage = !!error.error.code && !!error.error.message
-      ? `Ошибка ${error.error.code} <br/> ${error.error.message}`
-      : error.message;
-
-    this.instantNotificationsService.showNotification(
-      notificationType,
-      'error',
-      errorTitle,
-      this.prepareErrorMessage(errorMessage)
-    );
-  }
-
-  private prepareErrorMessage(message: string): string {
-    const links = new RegExp(httpLinkRegexp, 'im').exec(message);
-    if (links == null || !links.length) {
-      return message;
-    }
-
-    return links!.reduce((result, link) => result.replace(link, `<a href="${link}" target="_blank">${link}</a>`), message);
   }
 }

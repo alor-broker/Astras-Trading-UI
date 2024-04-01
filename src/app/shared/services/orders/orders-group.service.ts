@@ -5,9 +5,8 @@ import { ErrorHandlerService } from "../handle-error/error-handler.service";
 import { BehaviorSubject, forkJoin, Observable, shareReplay, switchMap, tap } from "rxjs";
 import { CreateOrderGroupReq, OrdersGroup, SubmitGroupResult } from "../../models/orders/orders-group.model";
 import { OrderCancellerService } from "../order-canceller.service";
-import { InstantNotificationsService } from "../instant-notifications.service";
-import { OrdersInstantNotificationType } from "../../models/terminal-settings/terminal-settings.model";
 import { EnvironmentService } from "../environment.service";
+import { OrderInstantTranslatableNotificationsService } from "./order-instant-translatable-notifications.service";
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +22,7 @@ export class OrdersGroupService {
     private readonly http: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly canceller: OrderCancellerService,
-    private readonly instantNotificationsService: InstantNotificationsService
+    private readonly instantNotificationsService: OrderInstantTranslatableNotificationsService
   ) {
   }
 
@@ -31,7 +30,7 @@ export class OrdersGroupService {
     return this.http.post<SubmitGroupResult>(this.orderGroupsUrl, req)
       .pipe(
         catchHttpError<SubmitGroupResult | null>(null, this.errorHandlerService),
-        tap((res) => {
+        tap(res => {
           if (!res || res.message !== 'success') {
             forkJoin(
               req.orders.map(o => this.canceller.cancelOrder({
@@ -44,12 +43,7 @@ export class OrdersGroupService {
             ).subscribe();
           } else {
             this.refresh$.next(null);
-            this.instantNotificationsService.showNotification(
-              OrdersInstantNotificationType.OrdersGroupCreated,
-              'success',
-              `Группа создана`,
-              `Группа с заявками ${req.orders.map(o => o.orderId).join(', ')} успешно создана`
-            );
+            this.instantNotificationsService.ordersGroupCreated(req.orders.map(o => o.orderId).join(', '));
           }
         })
       );
