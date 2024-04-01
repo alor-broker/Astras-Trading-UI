@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { WidgetSettingsService } from './widget-settings.service';
 import {
   commonTestProviders,
+  getTranslocoModule,
   sharedModuleImportForTests
 } from "../utils/testing";
 import { LoggerService } from './logging/logger.service';
@@ -12,7 +13,10 @@ describe('WidgetSettingsService', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [...sharedModuleImportForTests],
+      imports: [
+        ...sharedModuleImportForTests,
+        getTranslocoModule()
+      ],
       providers: [
         WidgetSettingsService,
         {
