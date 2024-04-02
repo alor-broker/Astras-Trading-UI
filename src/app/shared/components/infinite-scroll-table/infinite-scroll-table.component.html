@@ -96,8 +96,6 @@
           <nz-select
             *ngIf="column.filterData.filterType === filterTypes.MultipleAutocomplete"
             class="multiple-autocomplete-filter mb-10"
-            [nzMaxTagCount]="3"
-            [nzMaxTagPlaceholder]="tagPlaceHolder"
             nzMode="multiple"
             [nzPlaceHolder]="t('sharedInfiniteScrollTable.selectValuesPlaceHolder')"
             [nzCustomTemplate]="customOption"
@@ -110,7 +108,6 @@
               >
               </nz-option>
           </nz-select>
-          <ng-template #tagPlaceHolder let-selectedList>{{t('maxTagPlaceholder', { count: selectedList.length })}}</ng-template>
           <ng-template #customOption let-option>
             {{option[column.filterData.multipleAutocompleteSelectedOptionLabelKey ?? 'nzLabel']}}
           </ng-template>

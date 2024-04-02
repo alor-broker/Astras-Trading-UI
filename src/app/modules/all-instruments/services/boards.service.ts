@@ -18,10 +18,10 @@ export class BoardsService {
     private readonly errorHandlerService: ErrorHandlerService
   ) { }
 
-  getAllBoards(): Observable<Board[]> {
+  getAllBoards(): Observable<Board[] | null> {
     return this.http.get<Board[]>(this.url)
       .pipe(
-        catchHttpError<Board[]>([], this.errorHandlerService),
+        catchHttpError<Board[] | null>(null, this.errorHandlerService),
       );
   }
 }

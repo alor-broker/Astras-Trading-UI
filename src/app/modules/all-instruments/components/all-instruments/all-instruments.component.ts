@@ -357,8 +357,11 @@ implements OnInit, OnDestroy {
       .pipe(
         take(1),
         tap(boards => {
-          const boardColumn: BaseColumnSettings<AllInstrumentsNodeDisplay> = this.allColumns.find(c => c.id === 'board')!;
-          boardColumn.filterData!.filters = boards.map(b => ({ text: `${b.code} (${b.description})`, value: b.code }));
+          const boardColumn: BaseColumnSettings<AllInstrumentsNodeDisplay> | undefined = this.allColumns.find(c => c.id === 'board');
+
+          if (boardColumn != null) {
+            boardColumn.filterData!.filters = boards?.map(b => ({ text: `${b.code} (${b.description})`, value: b.code })) ?? [];
+          }
         }),
         switchMap(() => this.settings$),
         mapWith(
