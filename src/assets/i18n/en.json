@@ -84,7 +84,7 @@
   "validationErrors": {
     "emptyFieldError": "Enter value",
     "selectValueError": "Select value",
-    "selectColumnsError": "Выберите колонки",
+    "selectColumnsError": "Select columns",
     "tooLittle": "Too little",
     "tooMuch": "Too much",
     "intervalError": "Value should be from {{min}} to {{max}}"

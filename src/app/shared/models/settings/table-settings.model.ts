@@ -1,4 +1,5 @@
 import { NzTableFilterList, NzTableSortFn, NzTableSortOrder } from "ng-zorro-antd/table";
+import { NzOptionComponent } from "ng-zorro-antd/select";
 
 export interface BaseColumnId {
   id: string;
@@ -38,15 +39,19 @@ export interface FilterData {
   filterName: string;
   // Открыт ли фильтр
   isOpenedFilter?: boolean;
-  // Выпадающий список
-  isDefaultFilter?: boolean;
-  // Множественный выбор
-  isMultipleFilter?: boolean;
-  // значения фильтров
+  filterType: FilterType;
   filters?: NzTableFilterList;
-  isInterval?: boolean;
   intervalStartName?: string;
   intervalEndName?: string;
+  multipleAutocompleteSelectedOptionLabelKey?: keyof NzOptionComponent;
+}
+
+export enum FilterType {
+  Default = 'default',
+  DefaultMultiple = 'defaultMultiple',
+  Interval = 'interval',
+  Search = 'search',
+  MultipleAutocomplete = 'multipleAutocomplete'
 }
 
 export interface DefaultTableFilters {

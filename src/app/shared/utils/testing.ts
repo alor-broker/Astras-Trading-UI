@@ -211,7 +211,7 @@ export const ngZorroMockComponents = [
   }),
   mockDirective({
     selector: 'th',
-    inputs: ['nzWidth', 'nzCustomFilter', 'nzSortFn', 'nzFilters', 'nzShowFilter', 'minWidth']
+    inputs: ['nzWidth', 'nzCustomFilter', 'nzSortFn', 'nzFilters', 'nzShowFilter', 'minWidth', 'nzFilterMultiple']
   }),
   mockDirective({
     selector: '[nz-typography]',

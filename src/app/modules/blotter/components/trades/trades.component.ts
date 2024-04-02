@@ -28,7 +28,7 @@ import { TableSettingHelper } from '../../../../shared/utils/table-setting.helpe
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
-import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
 import {
@@ -54,7 +54,7 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
       sortFn: (a: DisplayTrade, b: DisplayTrade): number => Number(a.id) - Number(b.id),
       filterData: {
         filterName: 'id',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Идентификационный номер сделки'
     },
@@ -65,7 +65,7 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
       sortFn: (a: DisplayTrade, b: DisplayTrade): number => Number(a.orderno) - Number(b.orderno),
       filterData: {
         filterName: 'orderno',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Номер заявки',
       minWidth: 80
@@ -77,7 +77,7 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
       sortFn: (a: DisplayTrade, b: DisplayTrade): number => a.symbol.localeCompare(b.symbol),
       filterData: {
         filterName: 'symbol',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Биржевой идентификатор ценной бумаги',
       minWidth: 75
@@ -89,7 +89,7 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
       sortFn: (a: DisplayTrade, b: DisplayTrade): number => a.side.toString().localeCompare(b.side.toString()),
       filterData: {
         filterName: 'side',
-        isDefaultFilter: true,
+        filterType: FilterType.DefaultMultiple,
         filters: [
           { text: 'Покупка', value: 'buy' },
           { text: 'Продажа', value: 'sell' }

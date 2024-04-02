@@ -8,8 +8,9 @@ import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { UntypedFormControl } from "@angular/forms";
 import { TableConfig } from '../../models/table-config.model';
-import { BaseColumnSettings } from "../../models/settings/table-settings.model";
+import { BaseColumnSettings, FilterType } from "../../models/settings/table-settings.model";
 import { ResizeColumnDirective } from "../../directives/resize-column.directive";
+import { getTranslocoModule } from "../../utils/testing";
 
 @Component({
   template: `
@@ -36,7 +37,15 @@ class TestWrapperComponent implements OnInit {
 
   tableConfig: TableConfig<any> = {
     columns: [
-      { id: 'id1', displayName: 'name1', filterData: { filterName: 'name1' }, width: 50 },
+      {
+        id: 'id1',
+        displayName: 'name1',
+        filterData: {
+          filterName: 'name1',
+          filterType: FilterType.Search
+        },
+        width: 50
+      },
       { id: 'id2', displayName: 'name2' },
     ]
   };
@@ -73,7 +82,8 @@ describe('InfiniteScrollTableComponent', () => {
       imports: [
         NoopAnimationsModule,
         NzTableModule,
-        NzDropDownModule
+        NzDropDownModule,
+        getTranslocoModule()
       ]
     })
     .compileComponents();
@@ -130,7 +140,7 @@ describe('InfiniteScrollTableComponent', () => {
 
   it('should reset filter', () => {
     component.getFilterControl('name1')?.setValue('testValue');
-    component.resetFilter({filterName: 'name1'});
+    component.resetFilter({filterName: 'name1', filterType: FilterType.Search });
     expect(component.getFilterControl('name1')?.value).toBe('');
   });
 });
