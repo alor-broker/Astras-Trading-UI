@@ -46,7 +46,7 @@
           {{t('blotterOrdersGroup.qtyLabel')}}: <b class="text-nowrap">{{data.origin.order.qtyBatch}}</b>
         </div>
         <div class="text-nowrap">
-          <span *ngIf="data.origin.order.stopPrice">
+          <span *ngIf="data.origin.order.stopPrice != null">
             {{t('blotterOrdersGroup.triggerPriceLabel')}}:
             <b class="text-nowrap">{{getOrderConditionSign(data.origin.order.condition)}}{{data.origin.order.stopPrice}}</b>
           </span>
