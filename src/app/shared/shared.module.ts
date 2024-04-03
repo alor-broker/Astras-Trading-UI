@@ -27,7 +27,6 @@ import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { NgChartsModule } from 'ng2-charts';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { HttpErrorHandler } from './services/handle-error/http-error-handler';
 import { LogErrorHandler } from './services/handle-error/log-error-handler';
@@ -102,7 +101,6 @@ import { GraphQlErrorHandlerService } from "./services/handle-error/graph-ql-err
     FormsModule,
     ReactiveFormsModule,
     GridsterModule,
-    NgChartsModule,
     TranslocoModule,
     // Ng zorro
     NzTableModule,
@@ -183,7 +181,6 @@ import { GraphQlErrorHandlerService } from "./services/handle-error/graph-ql-err
     FormsModule,
     ReactiveFormsModule,
     GridsterModule,
-    NgChartsModule,
     TranslocoModule,
     // components
     LoadingIndicatorComponent,

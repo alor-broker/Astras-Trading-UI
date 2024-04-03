@@ -384,7 +384,7 @@ export class ScalperCommandProcessorService {
         )?.action ?? null;
       })
     ).subscribe(action => {
-      if (!action) {
+      if (action == null) {
         return;
       }
 

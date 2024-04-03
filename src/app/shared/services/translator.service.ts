@@ -11,7 +11,6 @@ export type TranslatorFn = (key: string[], params?: HashMap) => string;
   providedIn: 'root'
 })
 export class TranslatorService {
-
   constructor(
     private readonly translocoService: TranslocoService
   ) {}

@@ -349,7 +349,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         x.timezoneConverter,
         x.exchanges,
         x.deviceInfo,
-        this.lastTheme && this.lastTheme.theme !== x.theme.theme
+        (this.lastTheme != null && this.lastTheme.theme !== x.theme.theme)
         || this.lastLang !== this.translatorService.getActiveLang()
         || this.lastTimezone !== x.timezoneConverter.displayTimezone,
       );

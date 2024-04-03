@@ -189,8 +189,8 @@ implements OnInit, OnDestroy {
         }),
         map(([filters, sort]) => ({
           ...filters,
-          ...(sort == null ? { descending: true } : sort),
-          ...(this.pagination == null ? this.defaultPagination : this.pagination)
+          ...(sort ?? { descending: true }),
+          ...(this.pagination ?? this.defaultPagination)
         } as AllTradesReqFilters)),
         mapWith(
           (f: AllTradesReqFilters) => this.allTradesService.getTradesList(f),

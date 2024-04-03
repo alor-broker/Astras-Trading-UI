@@ -232,6 +232,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                 display: false
               },
               tooltip: {
+                position: 'nearest',
                 external: ({ tooltip }): void => {
                   // Hide if no tooltip
                   if (tooltip.opacity === 0) {

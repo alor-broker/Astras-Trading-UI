@@ -3819,8 +3819,8 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	height?: number;
 	/**
-	 * Set the storage URL endpoint for use with the high-level saving / loading charts API.
-	 * Refer to [Saving and Loading Charts](https://www.tradingview.com/charting-library-docs/latest/saving_loading/saving_loading.md) for more information.
+	 * Set the storage URL endpoint for use with the high-level saving/loading chart API.
+	 * Refer to [Save and load REST API](https://www.tradingview.com/charting-library-docs/latest/saving_loading/save-load-rest-api/save-load-rest-api.md) for more information.
 	 *
 	 * ```javascript
 	 * charts_storage_url: 'http://storage.yourserver.com',
@@ -4053,7 +4053,7 @@ export interface ChartingLibraryWidgetOptions {
 	/**
 	 * An object containing the save/load functions.
 	 * It is used to implement a custom save/load algorithm.
-	 * Please see details and an example on [Saving and Loading Charts page](https://www.tradingview.com/charting-library-docs/latest/saving_loading/saving_loading.md#api-handlers).
+	 * Refer to [API handlers](https://www.tradingview.com/charting-library-docs/latest/saving_loading/save-load-adapter.md) for more information.
 	 */
 	save_load_adapter?: IExternalSaveLoadAdapter;
 	/**
@@ -4070,7 +4070,7 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	loading_screen?: LoadingScreenOptions;
 	/**
-	 * An object that contains set/remove functions. Use it to save chart settings to your preferred storage (including server-side).
+	 * An object that contains set/remove functions. Use it to save [user settings](https://www.tradingview.com/charting-library-docs/latest/saving_loading/user-settings.md) to your preferred storage, including the server-side one.
 	 *
 	 * Example:
 	 * ```javascript
@@ -5006,6 +5006,11 @@ export interface CustomFormatter {
 	format(date: Date): string;
 	/** Converts date and time to local time zone. */
 	formatLocal(date: Date): string;
+	/**
+	 * Returns a value in a format known by the UI.
+	 * Required when using `dateFormatter`, it has to return a date in the following format: `YYYY-MM-DD`.
+	 */
+	parse(value: string): string;
 }
 /**
  * Formatters used to adjust the displayed format of the date and time values.
@@ -5041,12 +5046,11 @@ export interface CustomIndicator {
 	 */
 	readonly metainfo: StudyMetaInfo;
 	/**
-	 * The Custom Study Constructor is a Function Constructor in terms of ES5.
-	 * The library creates an instance of a custom study by applying operator new to the constructor.
-	 * The library expects the constructor to create an instance of the study with one mandatory method - `main()` and one optional method - `init()`.
-	 * Once the study is created the library calls init (if exists) and main sequentially with empty context to collect information about all vars.
+	 * The field should contain an ES5 constructor function. The library applies the `new` operator to the constructor to create an instance of the custom indicator.
+	 * The constructor contains the mandatory `main` method and the optional `init` method.
+	 * Once the indicator instance is created, the library calls `init` (if exists) and `main` sequentially with empty context to collect information about all variables.
 	 *
-	 * Refer to [Custom Studies Constructor](https://www.tradingview.com/charting-library-docs/latest/custom_studies/Custom-Studies-Constructor.md) for more information.
+	 * Refer to the [Constructor](https://www.tradingview.com/charting-library-docs/latest/custom_studies/custom-indicator-constructor.md) article for more information.
 	 */
 	readonly constructor: LibraryPineStudyConstructor<IPineStudyResult> | ((this: LibraryPineStudy<IPineStudyResult>) => void);
 }
@@ -10513,6 +10517,24 @@ export interface IChartingLibraryWidget {
 	 */
 	chartsCount(): number;
 	/**
+	 * This method deletes non-visible charts from a multiple-chart layout.
+	 *
+	 * When a user transitions from a layout with a larger number of charts
+	 * to one with fewer charts, the unused chart APIs still exist behind the scenes.
+	 * This inherent behavior allows the library to restore previously displayed charts.
+	 *
+	 * If you prefer that additional charts are displayed as new, with no record of previous
+	 * charts at the same position, you can use this method to delete all non-visible charts.
+	 * It is most effective to run this method right after a layout change (one can subscribe to
+	 * {@link SubscribeEventsMap.layout_changed} to know when this occurs).
+	 *
+	 * Please ensure that any subscriptions or event listeners associated with the
+	 * hidden charts are removed prior to invoking this method.
+	 *
+	 * @returns void
+	 */
+	unloadUnusedCharts(): void;
+	/**
 	 * Get the current chart layout type.
 	 *
 	 * @returns A string representation of the current layout type. E.g. `'2h'` for two charts split vertically.
@@ -10530,6 +10552,13 @@ export interface IChartingLibraryWidget {
 	 * @returns A string of the name of the current chart layout.
 	 */
 	layoutName(): string;
+	/**
+	 * Resets the sizes of all charts within a multiple-chart layout back to their initial default values.
+	 * This action redistributes the space equally among all charts to ensure consistency in layout design.
+	 *
+	 * @param disableUndo When set to true, the reset action is not added to the undo stack. Hence, the user cannot undo the reset operation.
+	 */
+	resetLayoutSizes(disableUndo?: boolean): void;
 	/**
 	 * Change the theme of the chart.
 	 *
@@ -10691,6 +10720,13 @@ export interface IChartingLibraryWidget {
 	 * @param enabled A boolean flag. `true` to enable debug mode, `false` to disable.
 	 */
 	setDebugMode(enabled: boolean): void;
+	/**
+	 * Get a watched value that read/write/subscribe to the state of the 'draw on all charts' mode.
+	 *
+	 * When enabled new drawings will be replicated to all charts in the layout
+	 * and shown when the same ticker is selected.
+	 */
+	drawOnAllChartsEnabled(): IWatchedValue<boolean>;
 	/**
 	 * Clears the undo & redo history.
 	 *
@@ -11371,7 +11407,7 @@ export interface IExternalSaveLoadAdapter {
 	 * @param chartId The chart ID
 	 * @param state The drawings and drawing groups state
 	 */
-	saveLineToolsAndGroups(layoutId: string | undefined, chartId: string, state: LineToolsAndGroupsState): Promise<void>;
+	saveLineToolsAndGroups(layoutId: string | undefined, chartId: string | number, state: LineToolsAndGroupsState): Promise<void>;
 	/**
 	 * Load drawings and drawing groups associated with a chart layout.
 	 *
@@ -11382,7 +11418,7 @@ export interface IExternalSaveLoadAdapter {
 	 *
 	 * @returns The drawings and drawing groups state
 	 */
-	loadLineToolsAndGroups(layoutId: string | undefined, chartId: string, requestType: LineToolsAndGroupsLoadRequestType, requestContext: LineToolsAndGroupsLoadRequestContext): Promise<Partial<LineToolsAndGroupsState> | null>;
+	loadLineToolsAndGroups(layoutId: string | undefined, chartId: string | number, requestType: LineToolsAndGroupsLoadRequestType, requestContext: LineToolsAndGroupsLoadRequestContext): Promise<Partial<LineToolsAndGroupsState> | null>;
 }
 /** Definition of a formatter */
 export interface IFormatter<T> {
@@ -12463,12 +12499,15 @@ export interface ISeriesApi {
 	/** Sets properties for a specific chart style */
 	setChartStyleProperties<T extends ChartStyle>(chartStyle: T, newPrefs: Partial<SeriesPreferencesMap[T]>): void;
 }
+/**
+ * Properties of the {@link ChartingLibraryWidgetOptions.settings_adapter} property that allows saving [user settings](https://www.tradingview.com/charting-library-docs/latest/saving_loading/user-settings.md) to your preferred storage, including server-side.
+ */
 export interface ISettingsAdapter {
-	/** Initial settings */
+	/** Initial settings the chart should be initiated with. */
 	initialSettings?: InitialSettingsMap;
-	/** Set a value for a setting */
+	/** Set a value for a setting. */
 	setValue(key: string, value: string): void;
-	/** Remove a value for a setting */
+	/** Remove a value for a setting. */
 	removeValue(key: string): void;
 }
 /**
@@ -13814,10 +13853,12 @@ export interface LibrarySubsessionInfo {
 }
 export interface LibrarySymbolInfo {
 	/**
-	 * Symbol Name
-	 * It's the name of the symbol. It is a string that your users will be able to see.
-	 * Also, it will be used for data requests if you are not using tickers.
-	 * It should not contain the exchange name.
+	 * It is a symbol name within an exchange, such as `AAPL` or `9988` (Hong Kong).
+	 * Note that it should not contain the exchange name.
+	 * This symbol name is visible to users and can be repeated.
+	 *
+	 * By default, `name` is used to resolve symbols in the [Datafeed API](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Datafeed-API.md).
+	 * If you use {@link LibrarySymbolInfo.ticker}, the library will use the ticker for Datafeed API requests.
 	 */
 	name: string;
 	/**
@@ -13828,10 +13869,10 @@ export interface LibrarySymbolInfo {
 		string
 	];
 	/**
-	 * Unique symbol id
-	 * It's an unique identifier for this particular symbol in your symbology.
-	 * If you specify this property then its value will be used for all data requests for this symbol. ticker will be treated the same as {@link LibrarySymbolInfo.name} if not specified explicitly.
-	 * It should not contain the exchange name.
+	 * It is an unique identifier for a particular symbol in your [symbology](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Symbology.md).
+	 * If you specify this property, its value will be used for all data requests for this symbol.
+	 * `ticker` will be treated the same as {@link LibrarySymbolInfo.name} if not specified explicitly.
+	 * Note that it should not contain the exchange name.
 	 */
 	ticker?: string;
 	/**
@@ -13851,7 +13892,7 @@ export interface LibrarySymbolInfo {
 	 */
 	type: string;
 	/**
-	 * Trading hours for this symbol. See the [Trading Sessions article](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Trading-Sessions) to learn more details.
+	 * Trading hours for this symbol. See the [Trading sessions](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Trading-Sessions.md) article to learn more details.
 	 * @example "1700-0200"
 	 */
 	session: string;
@@ -13860,16 +13901,23 @@ export interface LibrarySymbolInfo {
 	 */
 	session_display?: string;
 	/**
-	 * List of holidays for this symbol. These dates are not displayed on the chart.
-	 * It's a string in the following format: `YYYYMMDD[,YYYYMMDD]`.
+	 * A string that contains a list of non-trading holidays for the symbol.
+	 * Holiday dates should be in the `YYYYMMDD` format.
+	 * These dates are not displayed on the chart.
+	 *
+	 * You can specify a correction for a holiday using {@link LibrarySymbolInfo.corrections}.
 	 * @example "20181105,20181107,20181112"
 	 */
 	session_holidays?: string;
 	/**
-	 * List of corrections for this symbol. Corrections are days with specific trading sessions. They can be applied to holidays as well.
+	 * List of corrections for a symbol. The corrections are days when the trading session differs from the default one set in {@link LibrarySymbolInfo.session}.
+	 * The `corrections` value is a string in the following format: `SESSION:YYYYMMDD`.
+	 * For more information, refer to [corrections](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Symbology.md#corrections).
 	 *
-	 * It's a string in the following format: `SESSION:YYYYMMDD[,YYYYMMDD][;SESSION:YYYYMMDD[,YYYYMMDD]]`
-	 * Where SESSION has the same format as [Trading Sessions](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Trading-Sessions).
+	 * The string below specifies corrections for two trading days:
+	 *
+	 * - November 13, 2018. This trading day is split into two sessions. The first session starts at 19:00 four days before (November 9, 2018) and ends at 23:50 four days before. The second session starts at 10:00 and ends at 18:45.
+	 * - November 14, 2018. The session starts at 10:00 and ends at 14:00.
 	 *
 	 * @example "1900F4-2350F4,1000-1845:20181113;1000-1400:20181114"
 	 */
@@ -14096,7 +14144,9 @@ export interface LibrarySymbolInfo {
 	volume_precision?: number;
 	/**
 	 * The status code of a series with this symbol.
-	 * This could be represented as an icon in the legend, next to the market status icon for `delayed_streaming` & `endofday` type of data.
+	 * For `delayed_streaming` and `endofday` type of data, the status is displayed as an icon and the *Data is delayed* section in the [_Legend_](https://www.tradingview.com/charting-library-docs/latest/ui_elements/Legend.md#display-delayed-data-information), next to the market status icon.
+	 * Note that you should also enable the [`display_data_mode`](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets.md#display_data_mode) featureset.
+	 *
 	 * When declaring `delayed_streaming` you also have to specify its {@link LibrarySymbolInfo.delay} in seconds.
 	 */
 	data_status?: "streaming" | "endofday" | "delayed_streaming";
@@ -27337,7 +27387,7 @@ export type SingleChartLayoutType = "s";
 export type SingleIndicatorOverrides = FiftyTwoWeekHighLowIndicatorOverrides | AcceleratorOscillatorIndicatorOverrides | AccumulationDistributionIndicatorOverrides | AccumulativeSwingIndexIndicatorOverrides | AdvanceDeclineIndicatorOverrides | AnchoredVWAPIndicatorOverrides | ArnaudLegouxMovingAverageIndicatorOverrides | AroonIndicatorOverrides | AverageDirectionalIndexIndicatorOverrides | AveragePriceIndicatorOverrides | AverageTrueRangeIndicatorOverrides | AwesomeOscillatorIndicatorOverrides | BalanceofPowerIndicatorOverrides | BollingerBandsIndicatorOverrides | BollingerBandsBIndicatorOverrides | BollingerBandsWidthIndicatorOverrides | ChaikinMoneyFlowIndicatorOverrides | ChaikinOscillatorIndicatorOverrides | ChaikinVolatilityIndicatorOverrides | ChandeKrollStopIndicatorOverrides | ChandeMomentumOscillatorIndicatorOverrides | ChopZoneIndicatorOverrides | ChoppinessIndexIndicatorOverrides | CommodityChannelIndexIndicatorOverrides | CompareIndicatorOverrides | ConnorsRSIIndicatorOverrides | CoppockCurveIndicatorOverrides | CorrelationLogIndicatorOverrides | CorrelationCoefficientIndicatorOverrides | DetrendedPriceOscillatorIndicatorOverrides | DirectionalMovementIndicatorOverrides | DonchianChannelsIndicatorOverrides | DoubleEMAIndicatorOverrides | EMACrossIndicatorOverrides | EaseOfMovementIndicatorOverrides | EldersForceIndexIndicatorOverrides | EnvelopesIndicatorOverrides | FisherTransformIndicatorOverrides | FixedRangeIndicatorOverrides | GuppyMultipleMovingAverageIndicatorOverrides | HistoricalVolatilityIndicatorOverrides | HullMovingAverageIndicatorOverrides | IchimokuCloudIndicatorOverrides | KeltnerChannelsIndicatorOverrides | KlingerOscillatorIndicatorOverrides | KnowSureThingIndicatorOverrides | LeastSquaresMovingAverageIndicatorOverrides | LinearRegressionCurveIndicatorOverrides | LinearRegressionSlopeIndicatorOverrides | MACrossIndicatorOverrides | MAwithEMACrossIndicatorOverrides | MACDIndicatorOverrides | MajorityRuleIndicatorOverrides | MassIndexIndicatorOverrides | McGinleyDynamicIndicatorOverrides | MedianPriceIndicatorOverrides | MomentumIndicatorOverrides | MoneyFlowIndexIndicatorOverrides | MovingAverageIndicatorOverrides | MovingAverageAdaptiveIndicatorOverrides | MovingAverageChannelIndicatorOverrides | MovingAverageDoubleIndicatorOverrides | MovingAverageExponentialIndicatorOverrides | MovingAverageHammingIndicatorOverrides | MovingAverageMultipleIndicatorOverrides | MovingAverageTripleIndicatorOverrides | MovingAverageWeightedIndicatorOverrides | NetVolumeIndicatorOverrides | OnBalanceVolumeIndicatorOverrides | OverlayIndicatorOverrides | ParabolicSARIndicatorOverrides | PivotPointsStandardIndicatorOverrides | PriceChannelIndicatorOverrides | PriceOscillatorIndicatorOverrides | PriceVolumeTrendIndicatorOverrides | RateOfChangeIndicatorOverrides | RatioIndicatorOverrides | RegressionTrendIndicatorOverrides | RelativeStrengthIndexIndicatorOverrides | RelativeVigorIndexIndicatorOverrides | RelativeVolatilityIndexIndicatorOverrides | SMIErgodicIndicatorOscillatorIndicatorOverrides | SessionsIndicatorOverrides | SmoothedMovingAverageIndicatorOverrides | SpreadIndicatorOverrides | StandardDeviationIndicatorOverrides | StandardErrorIndicatorOverrides | StandardErrorBandsIndicatorOverrides | StochasticIndicatorOverrides | StochasticRSIIndicatorOverrides | SuperTrendIndicatorOverrides | TRIXIndicatorOverrides | TrendStrengthIndexIndicatorOverrides | TripleEMAIndicatorOverrides | TrueStrengthIndexIndicatorOverrides | TypicalPriceIndicatorOverrides | UltimateOscillatorIndicatorOverrides | VWAPIndicatorOverrides | VWMAIndicatorOverrides | VolatilityClosetoCloseIndicatorOverrides | VolatilityIndexIndicatorOverrides | VolatilityOHLCIndicatorOverrides | VolatilityZeroTrendClosetoCloseIndicatorOverrides | VolumeIndicatorOverrides | VolumeOscillatorIndicatorOverrides | VolumeProfileFixedRangeIndicatorOverrides | VolumeProfileVisibleRangeIndicatorOverrides | VortexIndicatorIndicatorOverrides | WilliamsRIndicatorOverrides | WilliamsAlligatorIndicatorOverrides | WilliamsFractalIndicatorOverrides | ZigZagIndicatorOverrides;
 export type StudyAvailableConstSources = "open" | "high" | "low" | "close" | "hl2" | "hlc3" | "ohlc4" | "hlcc4";
 /** An event related to a study. */
-export type StudyEventType = "remove" | "price_scale_changed" | "paste_study";
+export type StudyEventType = "create" | "remove" | "price_scale_changed" | "paste_study";
 export type StudyFilledAreaStyle = StudyFilledAreaSolidColorStyle | StudyFilledAreaGradientColorStyle;
 export type StudyInputId = Nominal<string, "StudyInputId">;
 export type StudyInputInfo = StudyBooleanInputInfo | StudyTextInputInfo | StudySymbolInputInfo | StudyResolutionInputInfo | StudySessionInputInfo | StudySourceInputInfo | StudyNumericInputInfo | StudyPriceInputInfo | StudyColorInputInfo | StudyTimeInputInfo | StudyBarTimeInputInfo | StudyTextareaInputInfo;

@@ -4,6 +4,7 @@ import { of } from "rxjs";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import {
   commonTestProviders,
+  getTranslocoModule,
   mockComponent,
   ngZorroMockComponents,
   sharedModuleImportForTests
@@ -21,7 +22,10 @@ describe('MobileNavbarComponent', () => {
         ...ngZorroMockComponents,
         mockComponent({selector: 'ats-notification-button'})
       ],
-      imports: [...sharedModuleImportForTests],
+      imports: [
+        ...sharedModuleImportForTests,
+        getTranslocoModule()
+      ],
       providers: [
         {
           provide: DashboardContextService,

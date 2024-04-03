@@ -70,7 +70,7 @@
                 </span>
             <nz-filter-trigger
               *ngIf="column.filterData != null && column.filterData?.filterType !== filterTypes.DefaultMultiple"
-              [(nzVisible)]="!!column.filterData.isOpenedFilter"
+              [nzVisible]="!!column.filterData.isOpenedFilter" (nzVisibleChange)="column.filterData.isOpenedFilter = $event"
               [nzActive]="!!filters$"
               [nzDropdownMenu]="searchMenu"
             >

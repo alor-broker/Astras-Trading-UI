@@ -1,19 +1,21 @@
 import { HttpClient } from '@angular/common/http';
 import {
-  TRANSLOCO_LOADER,
+  provideTransloco,
   Translation,
   TranslocoLoader,
-  TRANSLOCO_CONFIG,
-  translocoConfig,
   TranslocoModule
 } from '@ngneat/transloco';
-import { Injectable, NgModule } from '@angular/core';
+import {
+  Injectable,
+  NgModule
+} from '@angular/core';
 import { environment } from '../environments/environment';
 import { Observable } from "rxjs";
 
 @Injectable({ providedIn: 'root' })
 export class TranslocoHttpLoader implements TranslocoLoader {
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {
+  }
 
   getTranslation(lang: string): Observable<Translation> {
     return this.http.get<Translation>(
@@ -29,18 +31,18 @@ export class TranslocoHttpLoader implements TranslocoLoader {
 }
 
 @NgModule({
-  exports: [ TranslocoModule ],
+  exports: [TranslocoModule],
   providers: [
-    {
-      provide: TRANSLOCO_CONFIG,
-      useValue: translocoConfig({
+    provideTransloco({
+      config: {
         availableLangs: ['ru', 'en'],
         defaultLang: 'ru',
         reRenderOnLangChange: true,
         prodMode: environment.production,
-      })
-    },
-    { provide: TRANSLOCO_LOADER, useClass: TranslocoHttpLoader }
+      },
+      loader: TranslocoHttpLoader
+    })
   ]
 })
-export class TranslocoRootModule {}
+export class TranslocoRootModule {
+}

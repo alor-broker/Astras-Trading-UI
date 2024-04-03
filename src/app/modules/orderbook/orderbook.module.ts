@@ -13,6 +13,7 @@ import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 import { ScalperOrderBookModule } from '../scalper-order-book/scalper-order-book.module';
 import { OrderbookTableVolumesAtTheEdgesComponent } from './components/orderbook-tables/orderbook-table-volumes-at-the-edges/orderbook-table-volumes-at-the-edges.component';
 import { OrderbookTableVolumesAtTheMiddleComponent } from './components/orderbook-tables/orderbook-table-volumes-at-the-middle/orderbook-table-volumes-at-the-middle.component';
+import { BaseChartDirective } from "ng2-charts";
 
 @NgModule({
   declarations: [
@@ -23,15 +24,16 @@ import { OrderbookTableVolumesAtTheMiddleComponent } from './components/orderboo
     OrderbookTableVolumesAtTheEdgesComponent,
     OrderbookTableVolumesAtTheMiddleComponent
   ],
-  imports: [
-    CommonModule,
-    OrderbookRoutingModule,
-    SharedModule,
-    NzInputModule,
-    DragDropModule,
-    NzResizeObserverModule,
-    ScalperOrderBookModule
-  ],
+    imports: [
+        CommonModule,
+        OrderbookRoutingModule,
+        SharedModule,
+        NzInputModule,
+        DragDropModule,
+        NzResizeObserverModule,
+        ScalperOrderBookModule,
+        BaseChartDirective
+    ],
   exports: [
     OrderbookWidgetComponent
   ]
