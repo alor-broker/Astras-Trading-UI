@@ -44,13 +44,21 @@
       "name": "Market",
       "tooltip": "Market"
     },
+    "board": {
+      "name": "Board",
+      "tooltip": "Board"
+    },
     "lotSize": {
       "name": "Lot size",
       "tooltip": "Lot size"
     },
     "priceScale": {
-      "name": "Price scale",
-      "tooltip": "Price scale"
+      "name": "Min step",
+      "tooltip": "Minimal step"
+    },
+    "priceStep": {
+      "name": "Price step",
+      "tooltip": "Price step"
     },
     "yield": {
       "name": "Yield",

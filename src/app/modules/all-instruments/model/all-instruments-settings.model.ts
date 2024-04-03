@@ -18,11 +18,13 @@ export const allInstrumentsColumns: BaseColumnId[] = [
   { id: 'tradeVolume', displayName: "Объём торгов", isDefault: true },
   { id: 'currency', displayName: "Валюта", isDefault: true },
   { id: 'exchange', displayName: "Биржа", isDefault: false },
+  { id: 'board', displayName: "Режим торгов", isDefault: false },
   { id: 'market', displayName: "Рынок", isDefault: false },
   { id: 'lotSize', displayName: "Лотность", isDefault: false },
   { id: 'price', displayName: "Цена", isDefault: true },
   { id: 'priceMax', displayName: "Макс. цена", isDefault: true },
   { id: 'priceMin', displayName: "Мин. цена", isDefault: true },
   { id: 'priceScale', displayName: 'Шаг цены', isDefault: true },
+  { id: 'priceStep', displayName: 'Стоимость шага цены', isDefault: true },
   { id: 'yield', displayName: "Доходность", isDefault: false },
 ];

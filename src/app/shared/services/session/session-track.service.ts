@@ -15,22 +15,20 @@ import {
 import { map } from "rxjs/operators";
 import { AuthService } from "../auth.service";
 import { mapWith } from "../../utils/observable-helper";
-import { NzNotificationService } from "ng-zorro-antd/notification";
-import { NzNotificationDataOptions } from "ng-zorro-antd/notification/typings";
-import {TerminalSettingsService} from "../terminal-settings.service";
+import { TerminalSettingsService } from "../terminal-settings.service";
+import { SessionInstantTranslatableNotificationsService } from "./session-instant-translatable-notifications.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SessionTrackService {
   private trackingSubscription?: Subscription;
-  private lastWarningId?: string;
 
   constructor(
     private readonly activityTrackerService: ActivityTrackerService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly authService: AuthService,
-    private readonly notificationService: NzNotificationService
+    private readonly instantNotificationService: SessionInstantTranslatableNotificationsService
   ) {
   }
 
@@ -93,7 +91,7 @@ export class SessionTrackService {
           filter(x => !this.isNeedToCompleteSession(5000, x)),
           take(1)
         ).subscribe(() => {
-            this.removeWarningMessage();
+          this.instantNotificationService.removeNotification();
             nextWarningCheckMoment$.next(this.getNextCheckPeriod(track.checkPeriod, track.lastActivityUnixTime));
           }
         );
@@ -149,21 +147,8 @@ export class SessionTrackService {
   }
 
   private showWarningMessage(): void {
-    this.removeWarningMessage();
-    this.lastWarningId = this.notificationService.warning(
-      'Завершение сеанса',
-      'Текущий сеанс будет завершен из-за бездействия пользователя',
-      {
-        nzDuration: 0
-      } as NzNotificationDataOptions
-    ).messageId;
-  }
-
-  private removeWarningMessage(): void {
-    if (this.lastWarningId != null) {
-      this.notificationService.remove(this.lastWarningId);
-      this.lastWarningId = undefined;
-    }
+    this.instantNotificationService.removeNotification();
+    this.instantNotificationService.endOfSession();
   }
 }
 

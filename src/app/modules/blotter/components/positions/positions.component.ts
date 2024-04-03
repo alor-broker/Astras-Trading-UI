@@ -11,7 +11,7 @@ import { TableSettingHelper } from '../../../../shared/utils/table-setting.helpe
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { BlotterSettings, ColumnsNames, TableNames } from '../../models/blotter-settings.model';
-import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
 import { OrderService } from "../../../../shared/services/orders/order.service";
@@ -51,7 +51,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
       sortFn: (a: PositionDisplay, b: PositionDisplay): number => a.symbol.localeCompare(b.symbol),
       filterData: {
         filterName: 'symbol',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Биржевой идентификатор ценной бумаги',
       minWidth: 75
@@ -63,7 +63,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
       sortFn: (a: PositionDisplay, b: PositionDisplay): number => a.shortName.localeCompare(b.shortName),
       filterData: {
         filterName: 'shortName',
-        isDefaultFilter: false
+        filterType: FilterType.Search
       },
       tooltip: 'Наименование позиции',
       minWidth: 70
