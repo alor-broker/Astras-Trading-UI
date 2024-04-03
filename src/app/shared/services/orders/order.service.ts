@@ -36,6 +36,8 @@ import {
 } from "../../models/orders/new-order.model";
 import { LimitOrderEdit, StopLimitOrderEdit, StopMarketOrderEdit } from "../../models/orders/edit-order.model";
 import { EnvironmentService } from "../environment.service";
+import { TradingStatus } from "../../models/instruments/instrument.model";
+import { InstrumentsService } from "../../../modules/instruments/services/instruments.service";
 import { OrderInstantTranslatableNotificationsService } from "./order-instant-translatable-notifications.service";
 
 export type NewLinkedOrder = (NewLimitOrder | NewStopLimitOrder | NewStopMarketOrder) & {
@@ -52,6 +54,7 @@ export class OrderService implements OnDestroy {
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly httpService: HttpClient,
+    private readonly instrumentsService: InstrumentsService,
     private readonly instantNotificationsService: OrderInstantTranslatableNotificationsService,
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly ordersGroupService: OrdersGroupService,
@@ -70,15 +73,31 @@ export class OrderService implements OnDestroy {
   }
 
   submitMarketOrder(order: NewMarketOrder, portfolio: string): Observable<SubmitOrderResult> {
-    return this.submitOrder(
-      portfolio,
-      () => ({
-        url: `${this.baseApiUrl}/market`,
-        body: {
-          ...order
-        }
-      })
-    );
+    return this.instrumentsService.getInstrument(order.instrument)
+      .pipe(
+        take(1),
+        switchMap(instrument => {
+          const additionalParams = {} as {[paramName: string]: any};
+
+          if (
+            instrument?.tradingStatus === TradingStatus.ClosingAuction ||
+            instrument?.tradingStatus === TradingStatus.OpeningAuction
+          ) {
+            additionalParams.timeInForce = 'oneDay';
+          }
+
+          return this.submitOrder(
+            portfolio,
+            () => ({
+              url: `${this.baseApiUrl}/market`,
+              body: {
+                ...order,
+                ...additionalParams
+              }
+            })
+          );
+        })
+      );
   }
 
   submitLimitOrder(order: NewLimitOrder, portfolio: string): Observable<SubmitOrderResult> {

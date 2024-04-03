@@ -50,7 +50,8 @@ export class InstrumentsService {
           type: r.type,
           marginbuy: r.marginbuy,
           marginsell: r.marginsell,
-          expirationDate: r.cancellation
+          expirationDate: r.cancellation,
+          tradingStatus: r.tradingStatus
         };
         return selected;
       }),
