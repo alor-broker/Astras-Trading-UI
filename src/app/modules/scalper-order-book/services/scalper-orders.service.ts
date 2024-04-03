@@ -480,7 +480,7 @@ export class ScalperOrdersService {
     const topOrderPriceRatio  = side === Side.Buy ? settings.bracketsSettings?.topOrderPriceRatio :  settings.bracketsSettings?.bottomOrderPriceRatio;
     const bottomOrderPriceRatio  = side === Side.Buy ? settings.bracketsSettings?.bottomOrderPriceRatio :  settings.bracketsSettings?.topOrderPriceRatio;
 
-    if (!settings.bracketsSettings!.orderPriceUnits || settings.bracketsSettings!.orderPriceUnits === PriceUnits.Points) {
+    if ((settings.bracketsSettings!.orderPriceUnits ?? PriceUnits.Points) === PriceUnits.Points) {
       dirtyPrice = orderType === BracketOrderType.Top
         ? topOrderPriceRatio != null
           ? price + (topOrderPriceRatio! * minStep)

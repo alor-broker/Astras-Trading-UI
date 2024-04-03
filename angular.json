@@ -141,13 +141,13 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "astras:build:production"
+              "buildTarget": "astras:build:production"
             },
             "devContour": {
-              "browserTarget": "astras:build:production"
+              "buildTarget": "astras:build:production"
             },
             "development": {
-              "browserTarget": "astras:build:development"
+              "buildTarget": "astras:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -155,7 +155,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "astras:build"
+            "buildTarget": "astras:build"
           }
         },
         "test": {

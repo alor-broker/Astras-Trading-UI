@@ -2,5 +2,5 @@
 import { environment } from "../../environments/environment";
 
 export const extModules = [
-  StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production })
+  StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production , connectInZone: true})
 ];

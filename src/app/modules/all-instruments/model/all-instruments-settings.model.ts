@@ -18,6 +18,7 @@ export const allInstrumentsColumns: BaseColumnId[] = [
   { id: 'tradeVolume', displayName: "Объём торгов", isDefault: true },
   { id: 'currency', displayName: "Валюта", isDefault: true },
   { id: 'exchange', displayName: "Биржа", isDefault: false },
+  { id: 'board', displayName: "Режим торгов", isDefault: false },
   { id: 'market', displayName: "Рынок", isDefault: false },
   { id: 'lotSize', displayName: "Лотность", isDefault: false },
   { id: 'price', displayName: "Цена", isDefault: true },

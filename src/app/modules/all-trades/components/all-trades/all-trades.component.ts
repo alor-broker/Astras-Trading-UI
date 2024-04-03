@@ -27,7 +27,7 @@ import {
   AllTradesReqFilters
 } from '../../../../shared/models/all-trades.model';
 import { AllTradesService } from '../../../../shared/services/all-trades.service';
-import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
+import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -68,7 +68,7 @@ implements OnInit, OnDestroy {
         filterName: 'qty',
         intervalStartName: 'qtyFrom',
         intervalEndName: 'qtyTo',
-        isInterval: true
+        filterType: FilterType.Interval
       }
     },
     {
@@ -80,7 +80,7 @@ implements OnInit, OnDestroy {
         filterName: 'price',
         intervalStartName: 'priceFrom',
         intervalEndName: 'priceTo',
-        isInterval: true
+        filterType: FilterType.Interval
       }
     },
     {
@@ -105,7 +105,7 @@ implements OnInit, OnDestroy {
       sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'side' }),
       filterData: {
         filterName: 'side',
-        isDefaultFilter: true,
+        filterType: FilterType.Default,
         filters: [
           { text: 'Продажа', value: 'sell' },
           { text: 'Покупка', value: 'buy' }
@@ -189,8 +189,8 @@ implements OnInit, OnDestroy {
         }),
         map(([filters, sort]) => ({
           ...filters,
-          ...(sort == null ? { descending: true } : sort),
-          ...(this.pagination == null ? this.defaultPagination : this.pagination)
+          ...(sort ?? { descending: true }),
+          ...(this.pagination ?? this.defaultPagination)
         } as AllTradesReqFilters)),
         mapWith(
           (f: AllTradesReqFilters) => this.allTradesService.getTradesList(f),

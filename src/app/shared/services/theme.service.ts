@@ -129,7 +129,7 @@ export class ThemeService {
   }
 
   private removeUnusedTheme(theme?: ThemeType | null): void {
-    if (!theme) {
+    if (theme == null) {
       return;
     }
 

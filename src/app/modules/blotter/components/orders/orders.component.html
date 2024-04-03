@@ -52,9 +52,10 @@
               *ngFor='let column of td.tableConfig.columns'
               [atsResizeColumn]
               [minWidth]="column.minWidth ?? 50"
-              [nzCustomFilter]="column.filterData && !column.filterData.isDefaultFilter"
+              [nzCustomFilter]="column.filterData?.filterType !== filterTypes.DefaultMultiple"
               [nzFilters]="column.filterData?.filters ?? []"
-              [nzShowFilter]="column.filterData && column.filterData.isDefaultFilter"
+              [nzFilterMultiple]="column.filterData?.filterType === filterTypes.DefaultMultiple"
+              [nzShowFilter]="column.filterData?.filterType === filterTypes.DefaultMultiple"
               [nzSortFn]="column.sortFn ?? false"
               [nzWidth]="column.width ? column.width + 'px': null"
               cdkDrag
@@ -68,8 +69,8 @@
                   {{column.displayName}}
                 </span>
             <nz-filter-trigger
-              *ngIf="column.filterData && !column.filterData.isDefaultFilter"
-              [(nzVisible)]="!!column.filterData.isOpenedFilter"
+              *ngIf="column.filterData != null && column.filterData?.filterType !== filterTypes.DefaultMultiple"
+              [nzVisible]="!!column.filterData.isOpenedFilter" (nzVisibleChange)="column.filterData.isOpenedFilter = $event"
               [nzActive]="!!filters$"
               [nzDropdownMenu]="searchMenu"
             >

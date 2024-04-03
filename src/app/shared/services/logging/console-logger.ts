@@ -16,7 +16,7 @@ export class ConsoleLogger extends LoggerBase {
   }
 
   logMessage(logLevel: LogLevel, message: string, stack?: string): void {
-    if (!this.minLevel) {
+    if (this.minLevel == null) {
       return;
     }
 

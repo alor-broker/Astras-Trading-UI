@@ -17,8 +17,8 @@ const ALL_INSTRUMENTS_NESTED_FIELDS: { [fieldName: string]: string[] } = {
 };
 
 const ALL_INSTRUMENTS_FILTER_TYPES: { [fieldName: string]: string[] } = {
-  search: ['symbol', 'shortName', 'board', 'nominal'],
-  multiSelect: ['exchange', 'market'],
+  search: ['symbol', 'shortName', 'nominal'],
+  multiSelect: ['exchange', 'market', 'board'],
   interval: [
     'priceMultiplierFrom',
     'priceMultiplierTo',

@@ -327,7 +327,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
       price: Number(formValue.price)
     } as NewStopLimitOrder;
 
-    if (!!formValue.timeInForce) {
+    if (formValue.timeInForce != null) {
       order.timeInForce = formValue.timeInForce;
     }
 

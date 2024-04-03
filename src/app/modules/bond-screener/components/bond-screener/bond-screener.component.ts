@@ -1,7 +1,11 @@
 import { Component, DestroyRef, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, shareReplay, switchMap, take, tap } from 'rxjs';
 import { TableConfig } from '../../../../shared/models/table-config.model';
-import { BaseColumnSettings, DefaultTableFilters } from '../../../../shared/models/settings/table-settings.model';
+import {
+  BaseColumnSettings,
+  DefaultTableFilters,
+  FilterType
+} from '../../../../shared/models/settings/table-settings.model';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { BondScreenerSettings } from '../../models/bond-screener-settings.model';
 import { filter, map } from 'rxjs/operators';
@@ -63,7 +67,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'symbol'], dir),
       width: 120,
       filterData: {
-        filterName: 'symbol'
+        filterName: 'symbol',
+        filterType: FilterType.Search
       },
       showBadges: true
     },
@@ -74,7 +79,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'shortName'], dir),
       width: 100,
       filterData: {
-        filterName: 'shortName'
+        filterName: 'shortName',
+        filterType: FilterType.Search,
       }
     },
     {
@@ -85,12 +91,11 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 90,
       filterData: {
         filterName: 'exchange',
-        isDefaultFilter: true,
+        filterType: FilterType.DefaultMultiple,
         filters: [
           { value: 'MOEX', text: 'MOEX' },
           { value: 'SPBX', text: 'SPBX' }
-        ],
-        isMultipleFilter: true
+        ]
       }
     },
     {
@@ -101,7 +106,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 110,
       filterData: {
         filterName: 'maturityDate',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'maturityDateFrom',
         intervalEndName: 'maturityDateTo'
       }
@@ -114,7 +119,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 120,
       filterData: {
         filterName: 'placementEndDate',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'placementEndDateFrom',
         intervalEndName: 'placementEndDateTo'
       }
@@ -127,7 +132,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 110,
       filterData: {
         filterName: 'cancellation',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'cancellationFrom',
         intervalEndName: 'cancellationTo'
       }
@@ -140,7 +145,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 120,
       filterData: {
         filterName: 'currentYield',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'currentYieldFrom',
         intervalEndName: 'currentYieldTo'
       }
@@ -153,7 +158,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 100,
       filterData: {
         filterName: 'issueValue',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'issueValueFrom',
         intervalEndName: 'issueValueTo'
       }
@@ -165,13 +170,12 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 110,
       filterData: {
         filterName: 'couponType',
-        isDefaultFilter: true,
+        filterType: FilterType.DefaultMultiple,
         filters: [
           { value: 'FIXED', text: 'FIXED'},
           { value: 'FLOAT', text: 'FLOAT'},
           { value: 'UNKNOWN', text: 'UNKNOWN'}
-        ],
-        isMultipleFilter: true
+        ]
       }
     },
     {
@@ -181,7 +185,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 90,
       filterData: {
         filterName: 'couponRate',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'couponRateFrom',
         intervalEndName: 'couponRateTo'
       }
@@ -194,7 +198,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 110,
       filterData: {
         filterName: 'priceMultiplier',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'priceMultiplierFrom',
         intervalEndName: 'priceMultiplierTo'
       }
@@ -206,7 +210,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       sortChangeFn: (dir): void => this.sortChange(['boardInformation', 'board'], dir),
       width: 90,
       filterData: {
-        filterName: 'board'
+        filterName: 'board',
+        filterType: FilterType.Search,
       }
     },
     {
@@ -216,7 +221,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 100,
       filterData: {
         filterName: 'guaranteed',
-        isDefaultFilter: true,
+        filterType: FilterType.Default,
         filters: [
           { value: true, text: 'Да'},
           { value: false, text: 'Нет'}
@@ -230,7 +235,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 110,
       filterData: {
         filterName: 'hasOffer',
-        isDefaultFilter: true,
+        filterType: FilterType.Default,
         filters: [
           { value: true, text: 'Да'},
           { value: false, text: 'Нет'}
@@ -245,7 +250,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 90,
       filterData: {
         filterName: 'lotSize',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'lotSizeFrom',
         intervalEndName: 'lotSizeTo'
       }
@@ -258,7 +263,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 80,
       filterData: {
         filterName: 'minStep',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'minStepFrom',
         intervalEndName: 'minStepTo'
       }
@@ -271,7 +276,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 80,
       filterData: {
         filterName: 'priceMax',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'priceMaxFrom',
         intervalEndName: 'priceMaxTo'
       }
@@ -284,7 +289,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 80,
       filterData: {
         filterName: 'priceMin',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'priceMinFrom',
         intervalEndName: 'priceMinTo'
       }
@@ -297,7 +302,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       width: 110,
       filterData: {
         filterName: 'priceStep',
-        isInterval: true,
+        filterType: FilterType.Interval,
         intervalStartName: 'priceStepFrom',
         intervalEndName: 'priceStepTo'
       }

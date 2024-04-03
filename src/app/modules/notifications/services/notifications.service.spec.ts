@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { NotificationsService } from './notifications.service';
 import {
   commonTestProviders,
+  getTranslocoModule,
   sharedModuleImportForTests
 } from '../../../shared/utils/testing';
 import { of, Subject } from "rxjs";
@@ -13,7 +14,10 @@ describe('NotificationsService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports:[...sharedModuleImportForTests],
+      imports:[
+        ...sharedModuleImportForTests,
+        getTranslocoModule()
+      ],
       providers:[
         ...commonTestProviders,
         {

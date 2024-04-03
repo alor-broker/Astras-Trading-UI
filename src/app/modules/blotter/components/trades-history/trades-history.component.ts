@@ -28,6 +28,7 @@ import {
 } from "rxjs";
 import {
   BaseColumnSettings,
+  FilterType,
   TableDisplaySettings
 } from "../../../../shared/models/settings/table-settings.model";
 import {
@@ -83,7 +84,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       sortOrder: null,
       filterData: {
         filterName: 'symbol',
-        isDefaultFilter: false
+        filterType: FilterType.Search,
       },
       tooltip: 'Биржевой идентификатор ценной бумаги',
       minWidth: 75
@@ -94,7 +95,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       sortOrder: null,
       filterData: {
         filterName: 'side',
-        isDefaultFilter: true,
+        filterType: FilterType.DefaultMultiple,
         filters: [
           { text: 'Покупка', value: 'buy' },
           { text: 'Продажа', value: 'sell' }

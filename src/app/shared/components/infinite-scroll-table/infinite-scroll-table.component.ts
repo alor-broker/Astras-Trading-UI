@@ -1,12 +1,18 @@
 import {
-  AfterViewInit, Component, DestroyRef,
+  AfterViewInit,
+  Component,
+  DestroyRef,
   ElementRef,
   EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output, SimpleChange,
-  SimpleChanges, TrackByFunction
+  Output,
+  QueryList,
+  SimpleChange,
+  SimpleChanges,
+  TrackByFunction,
+  ViewChildren
 } from '@angular/core';
 import { NzTableComponent } from "ng-zorro-antd/table";
 import { filter, Observable, pairwise, shareReplay, switchMap, take } from "rxjs";
@@ -16,9 +22,7 @@ import { debounceTime, map, startWith } from "rxjs/operators";
 import { ContextMenu } from "../../models/infinite-scroll-table.model";
 import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
 import { TableConfig } from '../../models/table-config.model';
-import { BaseColumnSettings, FilterData } from "../../models/settings/table-settings.model";
-import { ViewChildren } from "@angular/core";
-import { QueryList } from "@angular/core";
+import { BaseColumnSettings, FilterData, FilterType } from "../../models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface TableDataRow {
@@ -75,6 +79,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   private visibleItemsCount = 1;
   private tableRef$?: Observable<NzTableComponent<TableDataRow>>;
 
+  filterTypes = FilterType;
   itemHeight = ITEM_HEIGHT;
   scrollHeight = 0;
   filtersForm = new UntypedFormGroup({});
@@ -120,7 +125,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (changes.tableContainerHeight as SimpleChange | undefined || changes.tableContainerWidth as SimpleChange | undefined) {
+    if ((changes.tableContainerHeight != null) || (changes.tableContainerWidth != null)) {
       this.calculateScrollHeight();
     }
 
@@ -129,11 +134,14 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
         .filter(col => !!col.filterData)
         .map(col => col.filterData!)
         .forEach(filter => {
-          if (!(filter.isInterval ?? false)) {
-            this.filtersForm.addControl(filter.filterName, new UntypedFormControl(''));
-          } else {
+          if (filter.filterType === FilterType.Interval) {
             this.filtersForm.addControl(filter.intervalStartName!, new UntypedFormControl(''));
             this.filtersForm.addControl(filter.intervalEndName!, new UntypedFormControl(''));
+          } else if (filter.filterType === FilterType.MultipleAutocomplete) {
+            this.filtersForm.addControl(filter.filterName, new UntypedFormControl([]));
+          } else {
+            this.filtersForm.addControl(filter.filterName, new UntypedFormControl(''));
+
           }
         });
     }
@@ -174,9 +182,11 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   }
 
   public resetFilter(filterData: FilterData): void {
-    if (filterData.isInterval ?? false) {
+    if (filterData.filterType === FilterType.Interval) {
       this.getFilterControl(filterData.intervalStartName!)?.reset('');
       this.getFilterControl(filterData.intervalEndName!)?.reset('');
+    } else if (filterData.filterType === FilterType.MultipleAutocomplete) {
+      this.getFilterControl(filterData.filterName)?.reset([]);
     } else {
       this.getFilterControl(filterData.filterName)?.reset('');
     }

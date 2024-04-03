@@ -4,7 +4,8 @@ import { TerminalSettingsComponent } from './terminal-settings.component';
 import {
   mockComponent,
   commonTestProviders,
-  sharedModuleImportForTests
+  sharedModuleImportForTests,
+  getTranslocoModule
 } from '../../../../shared/utils/testing';
 import {Subject} from 'rxjs';
 import {AccountService} from "../../../../shared/services/account.service";
@@ -17,7 +18,10 @@ describe('TerminalSettingsComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [...sharedModuleImportForTests],
+      imports: [
+        ...sharedModuleImportForTests,
+        getTranslocoModule()
+      ],
       declarations: [
         TerminalSettingsComponent,
         mockComponent({selector: 'ats-useful-links'}),
