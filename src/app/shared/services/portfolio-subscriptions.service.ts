@@ -3,7 +3,8 @@ import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service'
 import {
   Observable,
   of,
-  shareReplay
+  shareReplay,
+  switchMap
 } from 'rxjs';
 import { CommonSummaryModel } from '../../modules/blotter/models/common-summary.model';
 import { ForwardRisks } from '../../modules/blotter/models/forward-risks.model';
@@ -13,11 +14,14 @@ import {
   map,
   startWith
 } from 'rxjs/operators';
-import { mapWith } from '../utils/observable-helper';
+import { catchHttpError, mapWith } from '../utils/observable-helper';
 import { Position } from '../models/positions/position.model';
 import {Order, StopOrder, StopOrderResponse} from '../models/orders/order.model';
 import {PortfolioKey} from "../models/portfolio-key.model";
 import {InstrumentKey} from "../models/instruments/instrument-key.model";
+import { HttpClient } from "@angular/common/http";
+import { EnvironmentService } from "./environment.service";
+import { ErrorHandlerService } from "./handle-error/error-handler.service";
 
 interface PortfolioRequestBase {
   opcode: string;
@@ -30,8 +34,14 @@ interface PortfolioRequestBase {
 })
 export class PortfolioSubscriptionsService {
   private readonly subscriptions = new Map<string, Observable<any>>;
+  private readonly baseUrl = this.environmentService.apiUrl + '/md/v2/Clients';
 
-  constructor(private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService) {
+  constructor(
+    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
+    private readonly environmentService: EnvironmentService,
+    private readonly http: HttpClient,
+    private readonly errorHandlerService: ErrorHandlerService,
+  ) {
   }
 
   getSummariesSubscription(portfolio: string, exchange: string): Observable<CommonSummaryModel> {
@@ -55,26 +65,36 @@ export class PortfolioSubscriptionsService {
   }
 
   getTradesSubscription(portfolio: string, exchange: string): Observable<Trade[]> {
-    return this.getOrCreateSubscription(
-      {
-        opcode: 'TradesGetAndSubscribeV2',
-        portfolio,
-        exchange
-      },
-      request => of(new Map<string, Trade>()).pipe(
-        mapWith(
-          () => this.subscriptionsDataFeedService.subscribe<any, Trade>(request, this.getSubscriptionKey),
-          (allTrades, trade) => ({ allTrades, trade })),
-        map(({ allTrades, trade }) => {
-          allTrades.set(trade.id, {
-            ...trade,
-            date: new Date(trade.date)
-          });
-          return Array.from(allTrades.values());
-        }),
-        startWith([])
-      )
-    );
+    return this.getTradesHistory(portfolio, exchange)
+      .pipe(
+        map(trades => new Map((trades ?? []).map(t => ([
+              t.id,
+              {
+                ...t, date: new Date(t.date)
+              }
+            ]))
+          )
+        ),
+        switchMap(tradesMap => this.getOrCreateSubscription(
+          {
+            opcode: 'TradesGetAndSubscribeV2',
+            skipHistory: true,
+            portfolio,
+            exchange
+          },
+          request => this.subscriptionsDataFeedService.subscribe<any, Trade>(request, this.getSubscriptionKey)
+            .pipe(
+              map(trade => {
+                tradesMap.set(trade.id, {
+                  ...trade,
+                  date: new Date(trade.date)
+                });
+                return Array.from(tradesMap.values());
+              }),
+              startWith(Array.from(tradesMap.values()))
+            )
+        ))
+      );
   }
 
   getAllPositionsSubscription(portfolio: string, exchange: string): Observable<Position[]> {
@@ -108,78 +128,124 @@ export class PortfolioSubscriptionsService {
   }
 
   getOrdersSubscription(portfolio: string, exchange: string): Observable<{ allOrders: Order[], existingOrder?: Order, lastOrder?: Order }> {
-    return this.getOrCreateSubscription(
-      {
-        opcode: 'OrdersGetAndSubscribeV2',
-        portfolio,
-        exchange
-      },
-      request => of(new Map<string, Order>()).pipe(
-        mapWith(
-          () => this.subscriptionsDataFeedService.subscribe<any, Order>(request, this.getSubscriptionKey),
-          (allOrders, order) => ({ allOrders, order })),
-        map(({ allOrders, order }) => {
-          order.transTime = new Date(order.transTime);
-          if (order.endTime) {
-            order.endTime = new Date(order.endTime);
-          }
+    return this.getOrdersHistory(portfolio, exchange)
+      .pipe(
+        map(orders => {
+          return new Map<string, Order>((orders ?? []).map(o => {
+            const order = JSON.parse(JSON.stringify(o)) as Order;
 
-          const lastOrder = order;
-          const existingOrder = allOrders.get(order.id);
+            if (order.endTime) {
+              order.endTime = new Date(order.endTime);
+            }
 
-          allOrders.set(order.id, lastOrder);
-
-          return {
-            allOrders: Array.from(allOrders.values()).sort((o1, o2) => o2.id.localeCompare(o1.id)),
-            existingOrder,
-            lastOrder
-          };
+            return [order.id, order];
+          }));
         }),
-        startWith(({
-            allOrders: [],
-          }
+        switchMap(ordersMap => this.getOrCreateSubscription(
+          {
+            opcode: 'OrdersGetAndSubscribeV2',
+            skipHistory: true,
+            portfolio,
+            exchange
+          },
+          request => this.subscriptionsDataFeedService.subscribe<any, Order>(request, this.getSubscriptionKey)
+            .pipe(
+              map(order => {
+                order.transTime = new Date(order.transTime);
+                if (order.endTime) {
+                  order.endTime = new Date(order.endTime);
+                }
+
+                const lastOrder = order;
+                const existingOrder = ordersMap.get(order.id);
+
+                ordersMap.set(order.id, lastOrder);
+
+                return {
+                  allOrders: Array.from(ordersMap.values()).sort((o1, o2) => o2.id.localeCompare(o1.id)),
+                  existingOrder,
+                  lastOrder
+                };
+              }),
+              startWith(({
+                  allOrders: Array.from(ordersMap.values()).sort((o1, o2) => o2.id.localeCompare(o1.id)),
+                }
+              ))
+            )
         ))
-      )
-    );
+      );
   }
 
   getStopOrdersSubscription(portfolio: string, exchange: string): Observable<{ allOrders: StopOrder[], existingOrder?: StopOrder, lastOrder?: StopOrder }> {
-    return this.getOrCreateSubscription(
-      {
-        opcode: 'StopOrdersGetAndSubscribeV2',
-        portfolio,
-        exchange
-      },
-      request => of(new Map<string, StopOrder>()).pipe(
-        mapWith(
-          () => this.subscriptionsDataFeedService.subscribe<any, StopOrderResponse>(request, this.getSubscriptionKey),
-          (allOrders, order) => ({ allOrders, order })),
-        map(({ allOrders, order }) => {
-          order.transTime = new Date(order.transTime);
-          order.endTime = new Date(order.endTime!);
+    return this.getStopOrdersHistory(portfolio, exchange)
+      .pipe(
+        map(orders => {
+          return new Map<string, StopOrder>((orders ?? []).map(o => {
+            const order = JSON.parse(JSON.stringify(o)) as StopOrderResponse;
 
-          const lastOrder = {
-            ...order,
-            triggerPrice: order.stopPrice,
-            conditionType: order.condition
-          };
+            order.transTime = new Date(order.transTime);
+            order.endTime = new Date(order.endTime!);
 
-          const existingOrder = allOrders.get(order.id);
-
-          allOrders.set(order.id, lastOrder);
-
-          return {
-            allOrders: Array.from(allOrders.values()).sort((o1, o2) => o2.id.localeCompare(o1.id)),
-            existingOrder,
-            lastOrder
-          };
+            return [order.id, { ...order, triggerPrice: order.stopPrice, conditionType: order.condition}];
+          }));
         }),
-        startWith(({
-            allOrders: [],
-          }
+        switchMap(ordersMap => this.getOrCreateSubscription(
+          {
+            skipHistory: true,
+            opcode: 'StopOrdersGetAndSubscribeV2',
+            portfolio,
+            exchange,
+          },
+          request => this.subscriptionsDataFeedService.subscribe<any, StopOrderResponse>(request, this.getSubscriptionKey)
+            .pipe(
+              map(order => {
+                order.transTime = new Date(order.transTime);
+                order.endTime = new Date(order.endTime!);
+
+                const lastOrder = {
+                  ...order,
+                  triggerPrice: order.stopPrice,
+                  conditionType: order.condition
+                };
+
+                const existingOrder = ordersMap.get(order.id);
+
+                ordersMap.set(order.id, lastOrder);
+
+                return {
+                  allOrders: Array.from(ordersMap.values()).sort((o1, o2) => o2.id.localeCompare(o1.id)),
+                  existingOrder,
+                  lastOrder
+                };
+              }),
+              startWith(({
+                  allOrders: Array.from(ordersMap.values()).sort((o1, o2) => o2.id.localeCompare(o1.id)),
+                }
+              ))
+            )
         ))
-      )
-    );
+      );
+  }
+
+  private getOrdersHistory(portfolio: string, exchange: string): Observable<Order[] | null> {
+    return this.http.get<Order[]>(`${this.baseUrl}/${exchange}/${portfolio}/orders`)
+      .pipe(
+        catchHttpError<Order[] | null>(null, this.errorHandlerService)
+      );
+  }
+
+  private getStopOrdersHistory(portfolio: string, exchange: string): Observable<StopOrderResponse[] | null> {
+    return this.http.get<StopOrderResponse[]>(`${this.baseUrl}/${exchange}/${portfolio}/stoporders`)
+      .pipe(
+        catchHttpError<StopOrderResponse[] | null>(null, this.errorHandlerService)
+      );
+  }
+
+  private getTradesHistory(portfolio: string, exchange: string): Observable<Trade[] | null> {
+    return this.http.get<Trade[]>(`${this.baseUrl}/${exchange}/${portfolio}/trades`)
+      .pipe(
+        catchHttpError<Trade[] | null>(null, this.errorHandlerService)
+      );
   }
 
   private getSubscriptionKey<T extends PortfolioRequestBase>(request: T): string {
