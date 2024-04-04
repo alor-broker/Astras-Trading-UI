@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service';
 import {
+  combineLatest,
   Observable,
   of,
-  shareReplay,
-  switchMap
+  shareReplay
 } from 'rxjs';
 import { CommonSummaryModel } from '../../modules/blotter/models/common-summary.model';
 import { ForwardRisks } from '../../modules/blotter/models/forward-risks.model';
@@ -65,36 +65,64 @@ export class PortfolioSubscriptionsService {
   }
 
   getTradesSubscription(portfolio: string, exchange: string): Observable<Trade[]> {
-    return this.getTradesHistory(portfolio, exchange)
-      .pipe(
-        map(trades => new Map((trades ?? []).map(t => ([
-              t.id,
-              {
-                ...t, date: new Date(t.date)
-              }
-            ]))
-          )
-        ),
-        switchMap(tradesMap => this.getOrCreateSubscription(
-          {
-            opcode: 'TradesGetAndSubscribeV2',
-            skipHistory: true,
-            portfolio,
-            exchange
-          },
-          request => this.subscriptionsDataFeedService.subscribe<any, Trade>(request, this.getSubscriptionKey)
-            .pipe(
-              map(trade => {
-                tradesMap.set(trade.id, {
-                  ...trade,
-                  date: new Date(trade.date)
-                });
-                return Array.from(tradesMap.values());
-              }),
-              startWith(Array.from(tradesMap.values()))
-            )
-        ))
-      );
+    const getTradeWithDates = (t: Trade): Trade => ({
+      ...t,
+      date: new Date(t.date)
+    });
+
+    return this.getOrCreateSubscription(
+      {
+        opcode: 'TradesGetAndSubscribeV2',
+        skipHistory: true,
+        portfolio,
+        exchange
+      },
+      request => of({
+        allTrades: new Map<string, Trade>(),
+        isHistoryFilled: false
+      })
+        .pipe(
+          mapWith(
+            () => combineLatest([
+              this.subscriptionsDataFeedService.subscribe<any, Trade>(request, this.getSubscriptionKey)
+                .pipe(
+                  startWith(null)
+                ),
+              this.getTradesHistory(portfolio, exchange)
+                .pipe(
+                  startWith(null)
+                )
+            ]),
+            (state, [subscriptionTrade, tradesHistory]) => ({
+              state,
+              subscriptionTrade,
+              tradesHistory
+            })
+          ),
+          map(({ state, subscriptionTrade, tradesHistory }) => {
+            if (!state.isHistoryFilled && (tradesHistory ?? []).length > 0) {
+              tradesHistory!.forEach(t => {
+                if (state.allTrades.get(t.id) != null) {
+                  return;
+                }
+
+                state.allTrades.set(t.id, getTradeWithDates(t));
+              });
+
+              state.isHistoryFilled = true;
+            }
+
+            return { state, subscriptionTrade };
+          }),
+          map(({ state, subscriptionTrade }) => {
+            if (subscriptionTrade != null) {
+              state.allTrades.set(subscriptionTrade.id, getTradeWithDates(subscriptionTrade));
+            }
+
+            return Array.from(state.allTrades.values());
+          })
+        )
+    );
   }
 
   getAllPositionsSubscription(portfolio: string, exchange: string): Observable<Position[]> {
@@ -128,103 +156,145 @@ export class PortfolioSubscriptionsService {
   }
 
   getOrdersSubscription(portfolio: string, exchange: string): Observable<{ allOrders: Order[], existingOrder?: Order, lastOrder?: Order }> {
-    return this.getOrdersHistory(portfolio, exchange)
-      .pipe(
-        map(orders => {
-          return new Map<string, Order>((orders ?? []).map(o => {
-            const order = JSON.parse(JSON.stringify(o)) as Order;
+    const getOrderWithDates = (o: Order): Order => {
+      o.transTime = new Date(o.transTime);
+      if (o.endTime) {
+        o.endTime = new Date(o.endTime);
+      }
 
-            if (order.endTime) {
-              order.endTime = new Date(order.endTime);
+      return o;
+    };
+
+    return this.getOrCreateSubscription(
+      {
+        opcode: 'OrdersGetAndSubscribeV2',
+        skipHistory: true,
+        portfolio,
+        exchange
+      },
+      request => of({
+        allOrders: new Map<string, Order>(),
+        isHistoryFilled: false
+      })
+        .pipe(
+          mapWith(
+            () => combineLatest([
+              this.subscriptionsDataFeedService.subscribe<any, Order>(request, this.getSubscriptionKey)
+                .pipe(startWith(null)),
+              this.getOrdersHistory(portfolio, exchange)
+                .pipe(startWith(null))
+            ]),
+            (state, [subscriptionOrder, ordersHistory] ) => ({
+              state,
+              subscriptionOrder,
+              ordersHistory
+            })
+          ),
+          map(({ state, subscriptionOrder, ordersHistory }) => {
+            if (!state.isHistoryFilled && (ordersHistory ?? []).length > 0) {
+              ordersHistory!.forEach(o => {
+                if (state.allOrders.get(o.id) != null) {
+                  return;
+                }
+
+                state.allOrders.set(o.id, getOrderWithDates(o));
+              });
+
+              state.isHistoryFilled = true;
             }
 
-            return [order.id, order];
-          }));
-        }),
-        switchMap(ordersMap => this.getOrCreateSubscription(
-          {
-            opcode: 'OrdersGetAndSubscribeV2',
-            skipHistory: true,
-            portfolio,
-            exchange
-          },
-          request => this.subscriptionsDataFeedService.subscribe<any, Order>(request, this.getSubscriptionKey)
-            .pipe(
-              map(order => {
-                order.transTime = new Date(order.transTime);
-                if (order.endTime) {
-                  order.endTime = new Date(order.endTime);
-                }
+            return { state, subscriptionOrder };
+          }),
+          map(({ state, subscriptionOrder }) => {
+            let lastOrder: Order | undefined = undefined;
+            const existingOrder = state.allOrders.get(subscriptionOrder?.id ?? '');
 
-                const lastOrder = order;
-                const existingOrder = ordersMap.get(order.id);
+            if (subscriptionOrder != null) {
+              state.allOrders.set(subscriptionOrder.id, getOrderWithDates(subscriptionOrder));
+              lastOrder = getOrderWithDates(subscriptionOrder);
+            }
 
-                ordersMap.set(order.id, lastOrder);
-
-                return {
-                  allOrders: Array.from(ordersMap.values()).sort((o1, o2) => o2.id.localeCompare(o1.id)),
-                  existingOrder,
-                  lastOrder
-                };
-              }),
-              startWith(({
-                  allOrders: Array.from(ordersMap.values()).sort((o1, o2) => o2.id.localeCompare(o1.id)),
-                }
-              ))
-            )
-        ))
-      );
+            return {
+              allOrders: Array.from(state.allOrders.values()) as Order[],
+              lastOrder,
+              existingOrder
+            };
+          })
+        )
+    );
   }
 
   getStopOrdersSubscription(portfolio: string, exchange: string): Observable<{ allOrders: StopOrder[], existingOrder?: StopOrder, lastOrder?: StopOrder }> {
-    return this.getStopOrdersHistory(portfolio, exchange)
-      .pipe(
-        map(orders => {
-          return new Map<string, StopOrder>((orders ?? []).map(o => {
-            const order = JSON.parse(JSON.stringify(o)) as StopOrderResponse;
+    const getOrderWithDates = (o: StopOrderResponse): StopOrder => {
+      o.transTime = new Date(o.transTime);
+      o.endTime = new Date(o.endTime!);
 
-            order.transTime = new Date(order.transTime);
-            order.endTime = new Date(order.endTime!);
+      return {
+        ...o,
+        transTime: new Date(o.transTime),
+        endTime: new Date(o.endTime!),
+        triggerPrice: o.stopPrice,
+        conditionType: o.condition
+      } as StopOrder;
+    };
 
-            return [order.id, { ...order, triggerPrice: order.stopPrice, conditionType: order.condition}];
-          }));
-        }),
-        switchMap(ordersMap => this.getOrCreateSubscription(
-          {
-            skipHistory: true,
-            opcode: 'StopOrdersGetAndSubscribeV2',
-            portfolio,
-            exchange,
-          },
-          request => this.subscriptionsDataFeedService.subscribe<any, StopOrderResponse>(request, this.getSubscriptionKey)
-            .pipe(
-              map(order => {
-                order.transTime = new Date(order.transTime);
-                order.endTime = new Date(order.endTime!);
-
-                const lastOrder = {
-                  ...order,
-                  triggerPrice: order.stopPrice,
-                  conditionType: order.condition
-                };
-
-                const existingOrder = ordersMap.get(order.id);
-
-                ordersMap.set(order.id, lastOrder);
-
-                return {
-                  allOrders: Array.from(ordersMap.values()).sort((o1, o2) => o2.id.localeCompare(o1.id)),
-                  existingOrder,
-                  lastOrder
-                };
-              }),
-              startWith(({
-                  allOrders: Array.from(ordersMap.values()).sort((o1, o2) => o2.id.localeCompare(o1.id)),
+    return this.getOrCreateSubscription(
+      {
+        skipHistory: true,
+        opcode: 'StopOrdersGetAndSubscribeV2',
+        portfolio,
+        exchange,
+      },
+      request => of({
+        allOrders: new Map<string, StopOrder>(),
+        isHistoryFilled: false
+      })
+        .pipe(
+          mapWith(
+            () => combineLatest([
+              this.subscriptionsDataFeedService.subscribe<any, StopOrderResponse>(request, this.getSubscriptionKey)
+                .pipe(startWith(null)),
+              this.getStopOrdersHistory(portfolio, exchange)
+                .pipe(startWith(null))
+            ]),
+            (state, [subscriptionOrder, ordersHistory] ) => ({
+              state,
+              subscriptionOrder,
+              ordersHistory
+            })
+          ),
+          map(({ state, subscriptionOrder, ordersHistory }) => {
+            if (!state.isHistoryFilled && (ordersHistory ?? []).length > 0) {
+              ordersHistory!.forEach(o => {
+                if (state.allOrders.get(o.id) != null) {
+                  return;
                 }
-              ))
-            )
-        ))
-      );
+
+                state.allOrders.set(o.id, getOrderWithDates(o));
+              });
+
+              state.isHistoryFilled = true;
+            }
+
+            return { state, subscriptionOrder };
+          }),
+          map(({ state, subscriptionOrder }) => {
+            let lastOrder: StopOrder | undefined = undefined;
+            const existingOrder = state.allOrders.get(subscriptionOrder?.id ?? '');
+
+            if (subscriptionOrder != null) {
+              state.allOrders.set(subscriptionOrder.id, getOrderWithDates(subscriptionOrder));
+              lastOrder = getOrderWithDates(subscriptionOrder);
+            }
+
+            return {
+              allOrders: Array.from(state.allOrders.values()) as StopOrder[],
+              lastOrder,
+              existingOrder
+            };
+          })
+        )
+    );
   }
 
   private getOrdersHistory(portfolio: string, exchange: string): Observable<Order[] | null> {
