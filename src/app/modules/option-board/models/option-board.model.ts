@@ -61,3 +61,15 @@ export interface InstrumentOptions {
 export interface OptionDetails extends Option {
 
 }
+
+export interface OptionPlotPoint {
+  label: number;
+  value: number;
+}
+
+export interface OptionPlot {
+  priceByAssetPrice: OptionPlotPoint[];
+  priceByVolatility: OptionPlotPoint[];
+  priceByYears: OptionPlotPoint[];
+  priceByStrikePrice: OptionPlotPoint[];
+}

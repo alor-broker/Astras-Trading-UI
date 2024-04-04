@@ -24,6 +24,10 @@ describe('OptionBoardComponent', () => {
         mockComponent({
           selector: 'ats-selected-options',
           inputs: ['dataContext']
+        }),
+        mockComponent({
+          selector: 'ats-option-board-charts-layout',
+          inputs: ['dataContext']
         })
       ],
       providers: [

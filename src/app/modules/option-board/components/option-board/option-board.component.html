@@ -27,8 +27,9 @@
       <div *ngIf="dataContext.currentSelection$ | async as currentSelection" class="flex-fill d-flex flex-row justify-content-end">
         <nz-radio-group (ngModelChange)="selectTab($event)" [ngModel]="selectedTab$ | async">
           <label [nzValue]="tabs.AllOptions" nz-radio-button>{{t('optionBoard.tabNames.' + tabs.AllOptions)}}</label>
-          <label [nzValue]="tabs.SelectedOptions" nz-radio-button>{{t('optionBoard.tabNames.' + tabs.SelectedOptions)}}
+          <label [nzValue]="tabs.SelectedOptions" nz-radio-button [nzDisabled]="currentSelection.selectedOptions.length === 0">{{t('optionBoard.tabNames.' + tabs.SelectedOptions)}}
             ({{currentSelection.selectedOptions.length}})</label>
+          <label [nzValue]="tabs.Charts" nz-radio-button [nzDisabled]="currentSelection.selectedOptions.length === 0">{{t('optionBoard.tabNames.' + tabs.Charts)}}</label>
         </nz-radio-group>
       </div>
     </div>
@@ -41,6 +42,9 @@
 
         <div [hidden]="selectedTab !== componentTabs.SelectedOptions" class="tab">
           <ats-selected-options [dataContext]="dataContext"></ats-selected-options>
+        </div>
+        <div [hidden]="selectedTab !== componentTabs.Charts" class="tab">
+          <ats-option-board-charts-layout [dataContext]="dataContext"></ats-option-board-charts-layout>
         </div>
       </ng-container>
 
