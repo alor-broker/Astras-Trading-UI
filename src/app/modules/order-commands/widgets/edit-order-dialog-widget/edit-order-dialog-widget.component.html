@@ -3,6 +3,7 @@
     <ng-container *ngIf="currentPortfolio$ | async as currentPortfolio">
       <ng-container *ngIf="currentInstrument$ | async as currentInstrument">
         <nz-modal
+          *ngrxLet="(dialogParams$ | async) as dialogParams"
           (nzOnCancel)="cancelEditing()"
           (nzOnOk)='submit()'
           [nzCancelText]="t('cancelBtnText')"
@@ -11,11 +12,12 @@
           [nzVisible]="(dialogParams$ | async) !== null"
           [nzOkDisabled]="!(formState$ | async)?.isValid"
           [nzOkLoading]="busy$ | async"
+          [nzAutofocus]="(dialogParams?.initialValues?.isDifferentPrice ?? false) ? 'ok' : null"
           nzClosable="false"
           nzMaskClosable="false"
         >
           <ng-container *nzModalContent>
-            <ng-container *ngIf="dialogParams$ | async as dialogParams">
+            <ng-container *ngIf="dialogParams">
               <div>
                 <ats-instrument-info
                   (priceSelected)="setCommonParameters({price: $event})"

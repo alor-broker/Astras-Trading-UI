@@ -44,8 +44,13 @@
                 <nz-form-label nzFor="triggerPrice"
                                nzRequired>{{t('orderCommandsOrderForms.triggerPriceLabel')}}</nz-form-label>
                 <nz-form-control [nzErrorTip]="triggerPriceError">
-                  <ats-input-number [allowNegative]="true" [step]="formInstrument.minstep"
-                                    formControlName="triggerPrice" placeholder="0"></ats-input-number>
+                  <ats-input-number
+                    [allowNegative]="true"
+                    [step]="formInstrument.minstep"
+                    [focused]="!initialValues?.isDifferentPrice"
+                    formControlName="triggerPrice"
+                    placeholder="0"
+                  ></ats-input-number>
                 </nz-form-control>
                 <ng-template #triggerPriceError>
                   <span

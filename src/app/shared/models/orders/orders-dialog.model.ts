@@ -39,6 +39,7 @@ export interface EditOrderDialogParams {
   initialValues: {
     price?: number;
     quantity?: number;
+    isDifferentPrice?: boolean;
   };
   cancelCallback?: () => void;
 }

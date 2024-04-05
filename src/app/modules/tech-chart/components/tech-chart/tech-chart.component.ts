@@ -1053,7 +1053,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
           params.initialValues = {
             ...params.initialValues,
-            price: orderLineAdapter.getPrice()
+            price: orderLineAdapter.getPrice(),
+            isDifferentPrice: orderLineAdapter.getPrice() !== order.price
           };
           this.ordersDialogService.openEditOrderDialog(params);
         }
@@ -1108,7 +1109,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
         params.initialValues = {
           ...params.initialValues,
-          price: orderLineAdapter.getPrice()
+          price: orderLineAdapter.getPrice(),
+          isDifferentPrice: orderLineAdapter.getPrice() !== order.price
         };
         this.ordersDialogService.openEditOrderDialog(params);
       }

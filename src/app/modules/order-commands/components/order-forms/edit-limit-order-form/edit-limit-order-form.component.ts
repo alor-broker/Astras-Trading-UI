@@ -32,6 +32,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
   initialValues: {
     price?: number;
     quantity?: number;
+    isDifferentPrice?: boolean;
   } | null = null;
 
   form = this.formBuilder.group({

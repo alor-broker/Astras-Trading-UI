@@ -30,6 +30,7 @@
                     [allowNegative]="true"
                     [step]="formInstrument.minstep"
                     [suffix]="priceDiff"
+                    [focused]="!initialValues?.isDifferentPrice"
                     formControlName="price"
                     placeholder="0"
                   ></ats-input-number>
