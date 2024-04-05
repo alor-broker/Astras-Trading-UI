@@ -121,6 +121,9 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
         map(x => {
           return {
             maintainAspectRatio: false,
+            layout:{
+              padding: 0
+            },
             plugins: {
               legend: { display: false },
             },
