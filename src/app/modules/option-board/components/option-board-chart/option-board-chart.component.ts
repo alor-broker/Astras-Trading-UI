@@ -7,15 +7,12 @@ import {
 } from '@angular/core';
 import { OptionBoardDataContext } from "../../models/option-board-data-context.model";
 import {
-  ChartConfiguration,
-  ChartType
-} from "chart.js";
-import {
   BehaviorSubject,
   combineLatest,
   Observable,
   of,
   switchMap,
+  take,
   tap,
   timer,
   withLatestFrom
@@ -25,8 +22,26 @@ import { OptionBoardService } from "../../services/option-board.service";
 import { map } from "rxjs/operators";
 import { ThemeService } from "../../../../shared/services/theme.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { ChartData } from "chart.js/dist/types";
+import {
+  ChartData,
+  ChartOptions,
+} from "chart.js/dist/types";
 import { MathHelper } from "../../../../shared/utils/math-helper";
+import { TranslatorService } from "../../../../shared/services/translator.service";
+
+interface ZoomState {
+  baseRange: {
+    min: number;
+    max: number;
+  };
+
+  currentMultiplier: number;
+
+  currentRange: {
+    from: number;
+    to: number;
+  };
+}
 
 @Component({
   selector: 'ats-option-board-chart',
@@ -35,25 +50,18 @@ import { MathHelper } from "../../../../shared/utils/math-helper";
 })
 export class OptionBoardChartComponent implements OnInit, OnDestroy {
   isLoading$ = new BehaviorSubject<boolean>(false);
-  selectedRange$ = new BehaviorSubject<{ from: number, to: number } | null>(null);
+  zoomState$ = new BehaviorSubject<ZoomState | null>(null);
   @Input({ required: true })
   dataContext!: OptionBoardDataContext;
-  lineChartType: ChartType = 'line';
-  chartData$!: Observable<ChartData<'line', number[], number> | null>;
-  chartOptions: ChartConfiguration['options'] = {
-    maintainAspectRatio: false,
-    elements: {
-      line: {},
-    },
-    plugins: {
-      legend: { display: false }
-    },
-  };
+  chartData$!: Observable<ChartData<'line', (number | null)[], number> | null>;
+  chartOptions$!: Observable<ChartOptions<'line'>>;
+
   private readonly zoomMultiplier = 0.2;
 
   constructor(
     private readonly optionBoardService: OptionBoardService,
     private readonly themeService: ThemeService,
+    private readonly translatorService: TranslatorService,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -63,10 +71,85 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.initOptions();
     this.initDataStream();
   }
 
-  initDataStream(): void {
+  applyZoom(step: number, currentLabels: number[]): void {
+    const round = (value: number): number => MathHelper.round(value, 6);
+
+    this.zoomState$.pipe(
+      take(1)
+    ).subscribe(state => {
+      let updatedState: ZoomState | null;
+
+      if (state == null) {
+        const min = round(currentLabels[0]);
+        const max = round(currentLabels[currentLabels.length - 1]) ?? min;
+
+        updatedState = {
+          baseRange: { min, max },
+          currentRange: { from: min, to: max },
+          currentMultiplier: 0
+        };
+      } else {
+        updatedState = {
+          ...state
+        };
+      }
+
+      updatedState.currentMultiplier = Math.round(updatedState.currentMultiplier + step);
+
+      updatedState.currentRange = {
+        from: round(updatedState.baseRange.min + (updatedState.baseRange.min * updatedState.currentMultiplier * this.zoomMultiplier)),
+        to: round(updatedState.baseRange.max - (updatedState.baseRange.min * updatedState.currentMultiplier * this.zoomMultiplier)),
+      };
+
+      if (updatedState.currentRange.from < updatedState.currentRange.to) {
+        this.zoomState$.next(updatedState);
+      }
+    });
+  }
+
+  private initOptions(): void {
+    this.chartOptions$ = combineLatest({
+      theme: this.themeService.getThemeSettings(),
+      translator: this.translatorService.getTranslator('option-board/option-board-chart')
+    })
+
+      .pipe(
+        map(x => {
+          return {
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: x.translator(['priceByAssetPrice', 'x', 'title'])
+                },
+                ticks: {
+                  color: x.theme.themeColors.chartLabelsColor
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: x.translator(['priceByAssetPrice', 'y', 'title'])
+                },
+                ticks: {
+                  color: x.theme.themeColors.chartLabelsColor
+                }
+              }
+            }
+          };
+        })
+      );
+  }
+
+  private initDataStream(): void {
     const refreshTimer$ = timer(0, 60000).pipe(
       // for some reasons timer pipe is not completed in detailsDisplay$ when component destroyed (https://github.com/alor-broker/Astras-Trading-UI/issues/1176)
       // so we need to add takeUntil condition for this stream separately
@@ -75,7 +158,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
 
     this.chartData$ = combineLatest({
       selection: this.dataContext.currentSelection$,
-      selectedRange: this.selectedRange$
+      zoomState: this.zoomState$
     }).pipe(
       mapWith(() => refreshTimer$, source => source),
       switchMap(x => {
@@ -87,7 +170,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
         return this.optionBoardService.getPlots({
           instrumentKeys: x.selection.selectedOptions,
           range: 0.3,
-          selection: x.selectedRange ?? undefined
+          selection: x.zoomState?.currentRange
         });
       }),
       withLatestFrom(this.themeService.getThemeSettings()),
@@ -97,28 +180,37 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
         }
 
         const labels: number[] = [];
-        const values: number[] = [];
+        const positiveValues: (number | null)[] = [];
+        const negativeValues: (number | null)[] = [];
 
         for (const datum of plots.priceByAssetPrice) {
           labels.push(datum.label);
-          values.push(datum.value);
+
+          positiveValues.push(datum.value >= 0 ? datum.value : null);
+          negativeValues.push(datum.value < 0 ? datum.value : null);
         }
 
         return {
           datasets: [
             {
-              data: values,
-              backgroundColor: 'rgba(148,159,177,0.2)',
-              borderColor: 'rgba(148,159,177,1)',
-              pointBackgroundColor: 'rgba(148,159,177,1)',
-              pointBorderColor: '#fff',
-              pointHoverBackgroundColor: '#fff',
-              pointHoverBorderColor: 'rgba(148,159,177,0.8)',
+              data: positiveValues,
               fill: {
                 target: { value: 0 },
                 above: theme.themeColors.buyColorBackground,
+                below: theme.themeColors.buyColorBackground
+              },
+              borderColor: theme.themeColors.buyColor,
+              pointBackgroundColor: theme.themeColors.buyColorBackground
+            },
+            {
+              data: negativeValues,
+              fill: {
+                target: { value: 0 },
+                above: theme.themeColors.sellColorBackground,
                 below: theme.themeColors.sellColorBackground
-              }
+              },
+              borderColor: theme.themeColors.sellColor,
+              pointBackgroundColor: theme.themeColors.sellColorBackground
             }
           ],
           labels: labels
@@ -126,19 +218,5 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
       }),
       tap(() => this.isLoading$.next(false))
     );
-  }
-
-  applyZoom(step: number, currentLabels: number[]): void {
-    const round = (value: number): number => MathHelper.round(value, 6);
-
-    const minValue = round(currentLabels[0]);
-    const maxValue = round(currentLabels[currentLabels.length - 1]) ?? minValue;
-
-    const from = round(minValue + (minValue * this.zoomMultiplier * step));
-    const to = round(maxValue - (maxValue * this.zoomMultiplier * step));
-
-    if (from < to) {
-      this.selectedRange$.next({ from, to });
-    }
   }
 }

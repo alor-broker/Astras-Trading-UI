@@ -2,7 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { OptionBoardChartComponent } from './option-board-chart.component';
 import { OptionBoardService } from "../../services/option-board.service";
-import { Subject } from "rxjs";
+import {
+  of,
+  Subject
+} from "rxjs";
 import { ThemeService } from "../../../../shared/services/theme.service";
 import {
   OptionParameters,
@@ -13,6 +16,7 @@ import {
   OptionsSelection
 } from "../../models/option-board-data-context.model";
 import { LetDirective } from "@ngrx/component";
+import { TranslatorService } from "../../../../shared/services/translator.service";
 
 describe('OptionBoardChartComponent', () => {
   let component: OptionBoardChartComponent;
@@ -37,6 +41,12 @@ describe('OptionBoardChartComponent', () => {
           provide: ThemeService,
           useValue: {
             getThemeSettings: jasmine.createSpy('getThemeSettings').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: TranslatorService,
+          useValue: {
+            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
           }
         }
       ]

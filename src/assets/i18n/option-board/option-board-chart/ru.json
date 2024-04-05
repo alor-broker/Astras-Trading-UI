@@ -1,0 +1,10 @@
+﻿{
+  "priceByAssetPrice": {
+    "x": {
+      "title": "Цена актива"
+    },
+    "y": {
+      "title": "Цена"
+    }
+  }
+}

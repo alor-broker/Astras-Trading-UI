@@ -1,0 +1,10 @@
+﻿{
+  "priceByAssetPrice": {
+    "x": {
+      "title": "Asset Price"
+    },
+    "y": {
+      "title": "Price"
+    }
+  }
+}
