@@ -88,7 +88,7 @@ export class PortfolioSubscriptionsService {
                 .pipe(
                   startWith(null)
                 ),
-              this.getTradesHistory(portfolio, exchange)
+              this.getCurrentSessionTrades(portfolio, exchange)
                 .pipe(
                   startWith(null)
                 )
@@ -112,9 +112,6 @@ export class PortfolioSubscriptionsService {
               state.isHistoryFilled = true;
             }
 
-            return { state, subscriptionTrade };
-          }),
-          map(({ state, subscriptionTrade }) => {
             if (subscriptionTrade != null) {
               state.allTrades.set(subscriptionTrade.id, getTradeWithDates(subscriptionTrade));
             }
@@ -181,7 +178,7 @@ export class PortfolioSubscriptionsService {
             () => combineLatest([
               this.subscriptionsDataFeedService.subscribe<any, Order>(request, this.getSubscriptionKey)
                 .pipe(startWith(null)),
-              this.getOrdersHistory(portfolio, exchange)
+              this.getCurrentSessionOrders(portfolio, exchange)
                 .pipe(startWith(null))
             ]),
             (state, [subscriptionOrder, ordersHistory] ) => ({
@@ -203,9 +200,6 @@ export class PortfolioSubscriptionsService {
               state.isHistoryFilled = true;
             }
 
-            return { state, subscriptionOrder };
-          }),
-          map(({ state, subscriptionOrder }) => {
             let lastOrder: Order | undefined = undefined;
             const existingOrder = state.allOrders.get(subscriptionOrder?.id ?? '');
 
@@ -254,7 +248,7 @@ export class PortfolioSubscriptionsService {
             () => combineLatest([
               this.subscriptionsDataFeedService.subscribe<any, StopOrderResponse>(request, this.getSubscriptionKey)
                 .pipe(startWith(null)),
-              this.getStopOrdersHistory(portfolio, exchange)
+              this.getCurrentSessionStopOrders(portfolio, exchange)
                 .pipe(startWith(null))
             ]),
             (state, [subscriptionOrder, ordersHistory] ) => ({
@@ -276,9 +270,6 @@ export class PortfolioSubscriptionsService {
               state.isHistoryFilled = true;
             }
 
-            return { state, subscriptionOrder };
-          }),
-          map(({ state, subscriptionOrder }) => {
             let lastOrder: StopOrder | undefined = undefined;
             const existingOrder = state.allOrders.get(subscriptionOrder?.id ?? '');
 
@@ -297,21 +288,21 @@ export class PortfolioSubscriptionsService {
     );
   }
 
-  private getOrdersHistory(portfolio: string, exchange: string): Observable<Order[] | null> {
+  private getCurrentSessionOrders(portfolio: string, exchange: string): Observable<Order[] | null> {
     return this.http.get<Order[]>(`${this.baseUrl}/${exchange}/${portfolio}/orders`)
       .pipe(
         catchHttpError<Order[] | null>(null, this.errorHandlerService)
       );
   }
 
-  private getStopOrdersHistory(portfolio: string, exchange: string): Observable<StopOrderResponse[] | null> {
+  private getCurrentSessionStopOrders(portfolio: string, exchange: string): Observable<StopOrderResponse[] | null> {
     return this.http.get<StopOrderResponse[]>(`${this.baseUrl}/${exchange}/${portfolio}/stoporders`)
       .pipe(
         catchHttpError<StopOrderResponse[] | null>(null, this.errorHandlerService)
       );
   }
 
-  private getTradesHistory(portfolio: string, exchange: string): Observable<Trade[] | null> {
+  private getCurrentSessionTrades(portfolio: string, exchange: string): Observable<Trade[] | null> {
     return this.http.get<Trade[]>(`${this.baseUrl}/${exchange}/${portfolio}/trades`)
       .pipe(
         catchHttpError<Trade[] | null>(null, this.errorHandlerService)
