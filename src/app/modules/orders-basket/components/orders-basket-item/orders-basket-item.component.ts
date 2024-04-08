@@ -241,7 +241,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
       switchMap(instrument => this.quotesService.getLastPrice(instrument!)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(lastPrice => {
-      if ((lastPrice ?? 0) != 0) {
+      if (lastPrice != null) {
         this.form.controls.price.setValue(lastPrice);
       }
     });
