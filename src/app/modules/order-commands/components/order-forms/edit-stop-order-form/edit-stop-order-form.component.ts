@@ -39,7 +39,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
   initialValues: {
     price?: number;
     quantity?: number;
-    isDifferentPrice?: boolean;
+    hasPriceChanged?: boolean;
   } | null = null;
 
   form = this.formBuilder.group({

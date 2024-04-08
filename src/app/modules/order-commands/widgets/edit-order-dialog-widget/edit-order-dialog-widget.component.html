@@ -3,7 +3,7 @@
     <ng-container *ngIf="currentPortfolio$ | async as currentPortfolio">
       <ng-container *ngIf="currentInstrument$ | async as currentInstrument">
         <nz-modal
-          *ngrxLet="(dialogParams$ | async) as dialogParams"
+          *ngrxLet="dialogParams$ as dialogParams"
           (nzOnCancel)="cancelEditing()"
           (nzOnOk)='submit()'
           [nzCancelText]="t('cancelBtnText')"
@@ -12,7 +12,7 @@
           [nzVisible]="(dialogParams$ | async) !== null"
           [nzOkDisabled]="!(formState$ | async)?.isValid"
           [nzOkLoading]="busy$ | async"
-          [nzAutofocus]="(dialogParams?.initialValues?.isDifferentPrice ?? false) ? 'ok' : null"
+          [nzAutofocus]="(dialogParams?.initialValues?.hasPriceChanged ?? false) ? 'ok' : null"
           nzClosable="false"
           nzMaskClosable="false"
         >
