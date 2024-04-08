@@ -159,6 +159,12 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
       takeUntilDestroyed(this.destroyRef)
     );
 
+    this.dataContext.currentSelection$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => {
+      this.zoomState$.next(null);
+    });
+
     this.chartData$ = combineLatest({
       selection: this.dataContext.currentSelection$,
       zoomState: this.zoomState$
@@ -189,8 +195,13 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
         for (const datum of plots.priceByAssetPrice) {
           labels.push(datum.label);
 
-          positiveValues.push(datum.value >= 0 ? datum.value : null);
-          negativeValues.push(datum.value < 0 ? datum.value : null);
+          if(!isNaN(datum.value)) {
+            positiveValues.push(datum.value>= 0 || isNaN(datum.value)  ? datum.value : null);
+            negativeValues.push(datum.value < 0 ? datum.value : null);
+          } else {
+            positiveValues.push(null);
+            negativeValues.push(null);
+          }
         }
 
         return {
