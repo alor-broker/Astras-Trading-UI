@@ -1,5 +1,5 @@
 <ng-container *transloco="let t; scope: 'option-board'">
-  <div *ngIf="selectedTab$ | async as selectedTab" class="container h-100 d-flex flex-column">
+  <div *ngIf="selectedTab$ | async as selectedTab" class="container h-100 d-flex flex-column  user-select-none">
     <div class="header d-flex flex-row justify-content-between flex-gap-5">
       <div [hidden]="selectedTab !== tabs.AllOptions" class="d-flex flex-row justify-content-start flex-gap-5">
         <div>

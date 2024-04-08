@@ -67,7 +67,8 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.isLoading$.next(false);
+    this.isLoading$.complete();
+    this.zoomState$.complete();
   }
 
   ngOnInit(): void {
@@ -115,9 +116,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
     this.chartOptions$ = combineLatest({
       theme: this.themeService.getThemeSettings(),
       translator: this.translatorService.getTranslator('option-board/option-board-chart')
-    })
-
-      .pipe(
+    }).pipe(
         map(x => {
           return {
             maintainAspectRatio: false,

@@ -10,7 +10,7 @@
           </nz-empty>
         </ng-container>
         <ng-container *ngIf="layoutSizes$ | async as layoutSizes">
-          <div (nzResizeObserve)="updateContainerSize($event)" class="h-100 w-100 d-flex flex-column user-select-none" nzResizeObserver>
+          <div (nzResizeObserve)="updateContainerSize($event)" class="h-100 w-100 d-flex flex-column" nzResizeObserver>
             <ng-container *ngIf="contentSize$ | async as contentSize">
               <div #header class="d-flex flex-row heading-color header">
                 <div [ngStyle]="{ width: layoutSizes.priceColumnWidth + 'px'}"
