@@ -275,6 +275,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
       .subscribe(s => this.service.selectNewInstrument(
         row.symbol,
         row.exchange,
+        null,
         s.badgeColor ?? defaultBadgeColor
       ));
   }

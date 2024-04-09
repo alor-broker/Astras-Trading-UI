@@ -346,6 +346,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       .subscribe(s => this.service.selectNewInstrument(
         row.symbol,
         row.exchange,
+        row.board,
         s.badgeColor ?? defaultBadgeColor
       ));
   }

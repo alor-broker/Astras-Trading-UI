@@ -236,6 +236,7 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
       .subscribe(s => this.blotterService.selectNewInstrument(
         row.instrument!,
         row.exchange!,
+        null,
         s.badgeColor ?? defaultBadgeColor
       ));
   }
