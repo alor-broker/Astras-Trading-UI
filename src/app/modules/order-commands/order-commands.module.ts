@@ -37,6 +37,7 @@ import {
   EditStopOrderFormComponent
 } from './components/order-forms/edit-stop-order-form/edit-stop-order-form.component';
 import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
+import { LetDirective } from "@ngrx/component";
 
 @NgModule({
   declarations: [
@@ -78,7 +79,8 @@ import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
     ReactiveFormsModule,
     SharedModule,
     NzInputNumberModule,
-    NzResizeObserverModule
+    NzResizeObserverModule,
+    LetDirective
   ]
 })
 export class OrderCommandsModule {
