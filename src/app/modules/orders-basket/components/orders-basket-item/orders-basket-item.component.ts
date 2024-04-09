@@ -37,7 +37,7 @@ import { Instrument } from '../../../../shared/models/instruments/instrument.mod
 import { QuotesService } from '../../../../shared/services/quotes.service';
 import { OrdersBasketItem } from '../../models/orders-basket-form.model';
 import { AtsValidators } from '../../../../shared/utils/form-validators';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { toInstrumentKey } from "../../../../shared/utils/instruments";
 
 @Component({
@@ -231,7 +231,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
           return false;
         }
 
-        if(index===0 && this.form.controls.price.value != null) {
+        if (index === 0 && this.form.controls.price.value != null) {
           return false;
         }
 
@@ -241,7 +241,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
       switchMap(instrument => this.quotesService.getLastPrice(instrument!)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(lastPrice => {
-      if (lastPrice == null || !lastPrice) {
+      if (lastPrice != null) {
         this.form.controls.price.setValue(lastPrice);
       }
     });
