@@ -4,5 +4,5 @@
 . "$(dirname "$0")/common.sh"
 
 pnpm lint
-pnpm run test --browsers=ChromeHeadless --watch=false
+pnpm test -- --browsers=ChromeHeadless --watch=false
 pnpm build --configuration production
