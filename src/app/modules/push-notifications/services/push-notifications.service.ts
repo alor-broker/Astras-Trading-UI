@@ -1,5 +1,5 @@
-import {Injectable, OnDestroy} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import { Injectable, OnDestroy } from '@angular/core';
+import { HttpClient } from "@angular/common/http";
 import {
   forkJoin,
   Observable,
@@ -11,24 +11,23 @@ import {
   tap,
   throwError,
 } from "rxjs";
-import {AngularFireMessaging} from "@angular/fire/compat/messaging";
-import {catchHttpError, mapWith} from "../../../shared/utils/observable-helper";
-import {catchError, filter, map} from "rxjs/operators";
-import {ErrorHandlerService} from "../../../shared/services/handle-error/error-handler.service";
+import { AngularFireMessaging } from "@angular/fire/compat/messaging";
+import { catchHttpError, mapWith } from "../../../shared/utils/observable-helper";
+import { catchError, filter, map } from "rxjs/operators";
+import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import {
   OrderExecuteSubscription,
   PriceChangeRequest,
   PushSubscriptionType,
   SubscriptionBase
 } from "../models/push-notifications.model";
-import {BaseCommandResponse} from "../../../shared/models/http-request-response.model";
-import {PortfolioKey} from "../../../shared/models/portfolio-key.model";
-import {isPortfoliosEqual} from "../../../shared/utils/portfolios";
-import firebase from "firebase/compat";
+import { BaseCommandResponse } from "../../../shared/models/http-request-response.model";
+import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
+import { isPortfoliosEqual } from "../../../shared/utils/portfolios";
 import { EnvironmentService } from "../../../shared/services/environment.service";
 import { TranslatorService } from "../../../shared/services/translator.service";
 
-interface MessagePayload extends firebase.messaging.MessagePayload {
+interface MessagePayload extends firebase.default.messaging.MessagePayload {
   data?: {
     body?: string;
   };
