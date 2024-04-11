@@ -11,9 +11,8 @@ const ALL_INSTRUMENTS_NESTED_FIELDS: { [fieldName: string]: string[] } = {
   financialAttributes: ['tradingStatusInfo'],
   additionalInformation: ['cancellation', 'priceMultiplier'],
   boardInformation: ['board'],
-  tradingDetails: ['lotSize', 'minStep', 'priceMax', 'priceMin', 'priceStep', 'rating'],
-  currencyInformation: ['nominal'],
-  realTimeData: ['dailyGrowth', 'dailyGrowthPercent', 'price', 'tradeVolume', 'yield']
+  tradingDetails: ['lotSize', 'minStep', 'priceMax', 'priceMin', 'priceStep', 'rating', 'dailyGrowth', 'dailyGrowthPercent', 'price', 'tradeVolume'],
+  currencyInformation: ['nominal']
 };
 
 const ALL_INSTRUMENTS_FILTER_TYPES: { [fieldName: string]: string[] } = {
@@ -39,9 +38,7 @@ const ALL_INSTRUMENTS_FILTER_TYPES: { [fieldName: string]: string[] } = {
     'tradeVolumeFrom',
     'tradeVolumeTo',
     'priceFrom',
-    'priceTo',
-    'yieldFrom',
-    'yieldTo'
+    'priceTo'
   ],
   date: [
     'cancellationTo',
@@ -80,7 +77,6 @@ export class AllInstrumentsService {
     const boardInformationFields = ALL_INSTRUMENTS_NESTED_FIELDS.boardInformation.filter(f => columnIds.includes(f));
     const tradingDetailsFields = ALL_INSTRUMENTS_NESTED_FIELDS.tradingDetails.filter(f => columnIds.includes(f));
     const currencyInformationFields = ALL_INSTRUMENTS_NESTED_FIELDS.currencyInformation.filter(f => columnIds.includes(f));
-    const realTimeDataFields = ALL_INSTRUMENTS_NESTED_FIELDS.realTimeData.filter(f => columnIds.includes(f));
 
     return `
       query GET_INSTRUMENTS($first: Int, $after: String, $filters: InstrumentModelFilterInput, $sort: [InstrumentModelSortInput!]) {
@@ -111,10 +107,6 @@ export class AllInstrumentsService {
               }
               ${currencyInformationFields.length > 0
                 ? 'currencyInformation {' + currencyInformationFields.join(' ') + '}'
-                : ''
-              }
-              ${realTimeDataFields.length > 0
-                ? 'realTimeData {' + realTimeDataFields.join(' ') + '}'
                 : ''
               }
             }
