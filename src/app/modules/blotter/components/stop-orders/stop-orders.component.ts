@@ -319,6 +319,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
       .subscribe(s => this.service.selectNewInstrument(
         row.symbol,
         row.exchange,
+        row.board,
         s.badgeColor ?? defaultBadgeColor
       ));
   }

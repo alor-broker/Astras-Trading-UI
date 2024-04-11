@@ -441,7 +441,8 @@ implements OnInit, OnDestroy {
       ).subscribe(s => {
         this.actionsContext.instrumentSelected({
           symbol: row.basicInformation!.symbol!,
-          exchange: row.basicInformation!.exchange!
+          exchange: row.basicInformation!.exchange!,
+          instrumentGroup: row.boardInformation?.board
         }, s.badgeColor ?? defaultBadgeColor);
       });
   }
