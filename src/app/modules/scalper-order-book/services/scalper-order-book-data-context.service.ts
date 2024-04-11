@@ -264,10 +264,13 @@ export class ScalperOrderBookDataContextService {
       map(orders => orders.map(x => ({
         orderId: x.id,
         exchange: x.exchange,
+        symbol: x.symbol,
         portfolio: x.portfolio,
         type: x.type,
         side: x.side,
         linkedPrice: x.triggerPrice,
+        price: x.price,
+        condition: x.conditionType,
         displayVolume: x.qty - (x.filledQtyBatch ?? 0)
       } as CurrentOrderDisplay))),
       shareReplay({ bufferSize: 1, refCount: true })

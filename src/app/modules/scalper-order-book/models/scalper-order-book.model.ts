@@ -1,5 +1,6 @@
 import { Side } from '../../../shared/models/enums/side.model';
 import { Range } from "../../../shared/models/common.model";
+import { LessMore } from "../../../shared/models/enums/less-more.model";
 
 export interface CurrentOrderDisplay {
   orderId: string;
@@ -11,6 +12,8 @@ export interface CurrentOrderDisplay {
   side: Side;
   linkedPrice: number;
   displayVolume: number;
+  price?: number;
+  condition?: LessMore;
 }
 
 export interface PriceRow {

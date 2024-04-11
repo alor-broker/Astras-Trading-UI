@@ -381,26 +381,49 @@ export class ScalperOrdersService {
 
     if(silent) {
       for (const order of currentOrders) {
-        if(order.type === 'limit') {
-          this.orderService.submitLimitOrderEdit({
-            id: order.orderId,
-            price: updates.price,
-            quantity: order.displayVolume,
-            instrument: {
-              symbol: order.symbol,
-              exchange: order.exchange
-            }
-          },
-            order.portfolio
-          ).subscribe();
+        const baseOrderEditData = {
+          id: order.orderId,
+          quantity: order.displayVolume,
+          instrument: {
+            symbol: order.symbol,
+            exchange: order.exchange
+          }
+        };
+
+        switch (order.type) {
+          case "limit":
+            this.orderService.submitLimitOrderEdit({
+                ...baseOrderEditData,
+                price: updates.price,
+              },
+              order.portfolio
+            ).subscribe();
+            break;
+          case "stoplimit":
+            this.orderService.submitStopLimitOrderEdit({
+                ...baseOrderEditData,
+                condition: order.condition!,
+                triggerPrice: updates.price,
+                price: order.price! - (order.linkedPrice - updates.price),
+                side: order.side
+              },
+              order.portfolio
+            ).subscribe();
+            break;
+          case "stop":
+            this.orderService.submitStopMarketOrderEdit({
+                ...baseOrderEditData,
+                condition: order.condition!,
+                triggerPrice: updates.price,
+                side: order.side
+              },
+              order.portfolio
+            ).subscribe();
+            break;
         }
       }
     } else {
       const order = currentOrders[0];
-      if(order.type !== 'limit') {
-        return;
-      }
-
       this.ordersDialogService.openEditOrderDialog({
         instrumentKey: {
           symbol: order.symbol,
@@ -411,10 +434,11 @@ export class ScalperOrdersService {
           exchange: order.exchange
         },
         orderId: order.orderId,
-        orderType: OrderType.Limit,
+        orderType: order.type === 'limit' ? OrderType.Limit : OrderType.Stop,
         initialValues: {
           quantity: order.displayVolume,
-          price: updates.price,
+          price: order.type === 'limit' ? updates.price : (order.price ?? 0) - (order.linkedPrice - updates.price),
+          triggerPrice: updates.price,
           hasPriceChanged: true
         }
       });
