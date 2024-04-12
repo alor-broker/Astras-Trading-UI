@@ -142,7 +142,7 @@ describe('ScalperCommandProcessorService', () => {
           symbol: 'TEST',
           exchange: orderBookDefaultSettings.exchange,
           portfolio: 'D1234',
-          linkedPrice: 100,
+          price: 100,
           side: Side.Buy,
           displayVolume: 100
         };
@@ -195,7 +195,7 @@ describe('ScalperCommandProcessorService', () => {
           symbol: 'TEST',
           exchange: orderBookDefaultSettings.exchange,
           portfolio: 'D1234',
-          linkedPrice: 100,
+          price: 100,
           side: Side.Buy,
           displayVolume: 100
         };
@@ -224,7 +224,7 @@ describe('ScalperCommandProcessorService', () => {
           symbol: 'TEST',
           exchange: orderBookDefaultSettings.exchange,
           portfolio: 'D1234',
-          linkedPrice: 100,
+          triggerPrice: 100,
           side: Side.Buy,
           displayVolume: 100
         };

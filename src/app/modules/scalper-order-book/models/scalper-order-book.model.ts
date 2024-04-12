@@ -10,9 +10,9 @@ export interface CurrentOrderDisplay {
   type: 'limit' | 'stoplimit' | 'stop';
 
   side: Side;
-  linkedPrice: number;
-  displayVolume: number;
   price?: number;
+  triggerPrice?: number;
+  displayVolume: number;
   condition?: LessMore;
 }
 

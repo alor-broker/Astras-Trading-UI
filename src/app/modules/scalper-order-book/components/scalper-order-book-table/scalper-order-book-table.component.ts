@@ -176,8 +176,8 @@ export class ScalperOrderBookTableComponent implements OnInit {
     ]).pipe(
       map(([settings, body, displayRange, currentOrders, themeSettings]) => {
         const displayRows = body.slice(displayRange!.start, Math.min(displayRange!.end + 1, body.length));
-        const minOrderPrice = Math.min(...currentOrders.map(x => x.linkedPrice));
-        const maxOrderPrice = Math.max(...currentOrders.map(x => x.linkedPrice));
+        const minOrderPrice = Math.min(...currentOrders.map(x => x.triggerPrice ?? x.price!));
+        const maxOrderPrice = Math.max(...currentOrders.map(x => x.triggerPrice ?? x.price!));
         const volumeHighlightStrategy = this.getVolumeHighlightStrategy(settings.widgetSettings, themeSettings);
         const maxOrderBookVolume = settings.widgetSettings.volumeHighlightMode === VolumeHighlightMode.BiggestVolume
           ? body.reduce((max, curr) => Math.max(max, curr.askVolume ?? 0, curr.bidVolume ?? 0), 0)
@@ -197,7 +197,10 @@ export class ScalperOrderBookTableComponent implements OnInit {
           } as DisplayRow;
 
           if (row.baseRange.max >= minOrderPrice && row.baseRange.min <= maxOrderPrice) {
-            displayRow.currentOrders = currentOrders.filter(x => x.linkedPrice >= row.baseRange.min && x.linkedPrice <= row.baseRange.max);
+            displayRow.currentOrders = currentOrders.filter(x =>
+              (x.triggerPrice ?? x.price!) >= row.baseRange.min &&
+              (x.triggerPrice ?? x.price!) <= row.baseRange.max
+            );
           }
 
           return displayRow;

@@ -404,7 +404,14 @@ export class ScalperOrdersService {
                 ...baseOrderEditData,
                 condition: order.condition!,
                 triggerPrice: updates.price,
-                price: order.price! - (order.linkedPrice - updates.price),
+                price: MathHelper.round(
+                  order.price! - (order.triggerPrice! - updates.price),
+                  Math.max(
+                    MathHelper.getPrecision(order.price!),
+                    MathHelper.getPrecision(order.triggerPrice!),
+                    MathHelper.getPrecision(updates.price)
+                  )
+                ),
                 side: order.side
               },
               order.portfolio
@@ -437,7 +444,16 @@ export class ScalperOrdersService {
         orderType: order.type === 'limit' ? OrderType.Limit : OrderType.Stop,
         initialValues: {
           quantity: order.displayVolume,
-          price: order.type === 'limit' ? updates.price : (order.price ?? 0) - (order.linkedPrice - updates.price),
+          price: order.type === 'limit'
+            ? updates.price
+            : MathHelper.round(
+              (order.price ?? 0) - (order.triggerPrice! - updates.price),
+            Math.max(
+              MathHelper.getPrecision(order.price ?? 0),
+              MathHelper.getPrecision(order.triggerPrice!),
+              MathHelper.getPrecision(updates.price)
+            )
+          ),
           triggerPrice: updates.price,
           hasPriceChanged: true
         }

@@ -261,8 +261,8 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
           : null;
 
         return {
-          up: !!(upPrice ?? 0) && !!currentOrders.find(o => o.linkedPrice > upPrice!),
-          down: !!(downPrice ?? 0) && !!currentOrders.find(o => o.linkedPrice < downPrice!),
+          up: !!(upPrice ?? 0) && !!currentOrders.find(o => (o.triggerPrice ?? o.price!) > upPrice!),
+          down: !!(downPrice ?? 0) && !!currentOrders.find(o => (o.triggerPrice ?? o.price!) < downPrice!),
         };
       }),
       shareReplay({ bufferSize: 1, refCount: true }),
