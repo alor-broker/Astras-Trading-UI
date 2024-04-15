@@ -191,7 +191,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
         const positiveValues: (number | null)[] = [];
         const negativeValues: (number | null)[] = [];
 
-        for (const datum of plots.priceByAssetPrice) {
+        for (const datum of plots.profitLossByAssetPrice) {
           labels.push(datum.label);
 
           if(!isNaN(datum.value)) {

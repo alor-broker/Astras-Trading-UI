@@ -72,4 +72,5 @@ export interface OptionPlot {
   priceByVolatility: OptionPlotPoint[];
   priceByYears: OptionPlotPoint[];
   priceByStrikePrice: OptionPlotPoint[];
+  profitLossByAssetPrice: OptionPlotPoint[];
 }
