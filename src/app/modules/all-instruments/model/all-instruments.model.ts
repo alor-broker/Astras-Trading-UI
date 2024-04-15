@@ -35,39 +35,14 @@ export interface AllInstrumentsNode {
     priceMin?: number;
     priceStep?: number;
     rating?: number;
-  };
-  currencyInformation?: {
-    nominal?: string;
-  };
-  realTimeData?: {
     dailyGrowth?: number;
     dailyGrowthPercent?: number;
     price?: number;
     tradeVolume?: number;
-    yield?: number;
   };
-}
-
-export interface AllInstruments {
-  cfiCode: string;
-  currency: string;
-  dailyGrowth: number;
-  dailyGrowthPercent: number;
-  description: string;
-  exchange: string;
-  lotSize: number;
-  name: string;
-  price: number;
-  priceMax: number;
-  priceMin: number;
-  priceScale: number;
-  shortName: string;
-  tradeVolume: number;
-  tradingStatusCode: number;
-  tradingStatusInfo: string;
-  yield: number;
-  badges?: string[];
-  id: string;
+  currencyInformation?: {
+    nominal?: string;
+  };
 }
 
 export interface AllInstrumentsFilters {
