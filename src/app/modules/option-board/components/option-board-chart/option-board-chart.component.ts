@@ -11,7 +11,6 @@ import {
   combineLatest,
   Observable,
   of,
-  switchMap,
   take,
   tap,
   timer,
@@ -28,6 +27,7 @@ import {
 } from "chart.js/dist/types";
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import { OptionPlotPoint } from "../../models/option-board.model";
 
 interface ZoomState {
   baseRange: {
@@ -43,14 +43,31 @@ interface ZoomState {
   };
 }
 
+enum ChartType {
+  PriceByAssetPrice = 'priceByAssetPrice',
+  PriceByVolatility = 'priceByVolatility',
+  PriceByYears = 'priceByYears',
+  PriceByStrikePrice = 'priceByStrikePrice',
+  ProfitLossByAssetPrice = 'profitLossByAssetPrice',
+}
+
+
 @Component({
   selector: 'ats-option-board-chart',
   templateUrl: './option-board-chart.component.html',
   styleUrl: './option-board-chart.component.less'
 })
 export class OptionBoardChartComponent implements OnInit, OnDestroy {
-  isLoading$ = new BehaviorSubject<boolean>(false);
-  zoomState$ = new BehaviorSubject<ZoomState | null>(null);
+  readonly isLoading$ = new BehaviorSubject<boolean>(false);
+  readonly zoomState$ = new BehaviorSubject<ZoomState | null>(null);
+  readonly selectedChartType$ = new BehaviorSubject<ChartType>(ChartType.PriceByAssetPrice);
+  readonly chartTypes = [
+    ChartType.PriceByAssetPrice,
+    ChartType.PriceByVolatility,
+    ChartType.PriceByStrikePrice,
+    ChartType.ProfitLossByAssetPrice,
+  ];
+
   @Input({ required: true })
   dataContext!: OptionBoardDataContext;
   chartData$!: Observable<ChartData<'line', (number | null)[], number> | null>;
@@ -69,6 +86,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.isLoading$.complete();
     this.zoomState$.complete();
+    this.selectedChartType$.complete();
   }
 
   ngOnInit(): void {
@@ -114,41 +132,42 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
 
   private initOptions(): void {
     this.chartOptions$ = combineLatest({
+      selectedChartType: this.selectedChartType$,
       theme: this.themeService.getThemeSettings(),
       translator: this.translatorService.getTranslator('option-board/option-board-chart')
     }).pipe(
-        map(x => {
-          return {
-            maintainAspectRatio: false,
-            layout:{
-              padding: 0
-            },
-            plugins: {
-              legend: { display: false },
-            },
-            scales: {
-              x: {
-                title: {
-                  display: true,
-                  text: x.translator(['priceByAssetPrice', 'x', 'title'])
-                },
-                ticks: {
-                  color: x.theme.themeColors.chartLabelsColor
-                }
+      map(x => {
+        return {
+          maintainAspectRatio: false,
+          layout: {
+            padding: 0
+          },
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: x.translator([x.selectedChartType, 'x', 'title'])
               },
-              y: {
-                title: {
-                  display: true,
-                  text: x.translator(['priceByAssetPrice', 'y', 'title'])
-                },
-                ticks: {
-                  color: x.theme.themeColors.chartLabelsColor
-                }
+              ticks: {
+                color: x.theme.themeColors.chartLabelsColor
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: x.translator([x.selectedChartType, 'y', 'title'])
+              },
+              ticks: {
+                color: x.theme.themeColors.chartLabelsColor
               }
             }
-          };
-        })
-      );
+          }
+        };
+      })
+    );
   }
 
   private initDataStream(): void {
@@ -158,7 +177,10 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
       takeUntilDestroyed(this.destroyRef)
     );
 
-    this.dataContext.currentSelection$.pipe(
+    combineLatest([
+      this.dataContext.currentSelection$,
+      this.selectedChartType$
+    ]).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.zoomState$.next(null);
@@ -166,24 +188,30 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
 
     this.chartData$ = combineLatest({
       selection: this.dataContext.currentSelection$,
+      currentChartType: this.selectedChartType$,
       zoomState: this.zoomState$
     }).pipe(
       mapWith(() => refreshTimer$, source => source),
-      switchMap(x => {
-        if (x.selection.selectedOptions.length === 0) {
-          return of(null);
-        }
+      mapWith(x => {
+          if (x.selection.selectedOptions.length === 0) {
+            return of(null);
+          }
 
-        this.isLoading$.next(true);
-        return this.optionBoardService.getPlots({
-          instrumentKeys: x.selection.selectedOptions,
-          range: 0.3,
-          selection: x.zoomState?.currentRange
-        });
-      }),
+          this.isLoading$.next(true);
+          return this.optionBoardService.getPlots({
+            instrumentKeys: x.selection.selectedOptions,
+            range: 0.3,
+            selection: x.zoomState?.currentRange
+          });
+        },
+        (source, plots) => ({
+          ...source,
+          plots,
+        })
+      ),
       withLatestFrom(this.themeService.getThemeSettings()),
-      map(([plots, theme]) => {
-        if (plots == null) {
+      map(([x, theme]) => {
+        if (x.plots == null) {
           return null;
         }
 
@@ -191,11 +219,13 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
         const positiveValues: (number | null)[] = [];
         const negativeValues: (number | null)[] = [];
 
-        for (const datum of plots.profitLossByAssetPrice) {
+        const dataSet = (x.plots as any)[x.currentChartType] as OptionPlotPoint[] ?? [];
+
+        for (const datum of dataSet) {
           labels.push(datum.label);
 
-          if(!isNaN(datum.value)) {
-            positiveValues.push(datum.value>= 0 || isNaN(datum.value)  ? datum.value : null);
+          if (!isNaN(datum.value)) {
+            positiveValues.push(datum.value >= 0 || isNaN(datum.value) ? datum.value : null);
             negativeValues.push(datum.value < 0 ? datum.value : null);
           } else {
             positiveValues.push(null);

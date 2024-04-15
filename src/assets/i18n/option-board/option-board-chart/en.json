@@ -1,10 +1,47 @@
 ﻿{
   "priceByAssetPrice": {
+    "chartTitle": "Price by Asset Price",
     "x": {
       "title": "Asset Price"
     },
     "y": {
       "title": "Price"
+    }
+  },
+  "priceByVolatility": {
+    "chartTitle": "Price by Volatility",
+    "x": {
+      "title": "Volatility"
+    },
+    "y": {
+      "title": "Price"
+    }
+  },
+  "priceByYears": {
+    "chartTitle": "Price by Years",
+    "x": {
+      "title": "Years"
+    },
+    "y": {
+      "title": "Price"
+    }
+  },
+  "priceByStrikePrice": {
+    "chartTitle": "Price by Strike",
+    "x": {
+      "title": "Strike"
+    },
+    "y": {
+      "title": "Price"
+    }
+  },
+  "profitLossByAssetPrice": {
+    "chartTitle": "Profit/Loss by Asset Price",
+    "x": {
+      "title": "Price"
+    },
+    "y": {
+      "title": "Profit/Loss"
     }
   }
 }

@@ -17,6 +17,10 @@ import {
 } from "../../models/option-board-data-context.model";
 import { LetDirective } from "@ngrx/component";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import {
+  getTranslocoModule,
+  ngZorroMockComponents
+} from "../../../../shared/utils/testing";
 
 describe('OptionBoardChartComponent', () => {
   let component: OptionBoardChartComponent;
@@ -25,10 +29,12 @@ describe('OptionBoardChartComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        LetDirective
+        LetDirective,
+        getTranslocoModule()
       ],
       declarations: [
-        OptionBoardChartComponent
+        OptionBoardChartComponent,
+        ...ngZorroMockComponents
       ],
       providers: [
         {
