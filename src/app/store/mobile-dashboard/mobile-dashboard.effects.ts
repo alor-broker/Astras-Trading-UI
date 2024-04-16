@@ -66,7 +66,8 @@ export class MobileDashboardEffects {
         MobileDashboardInternalActions.add,
         MobileDashboardCurrentSelectionActions.selectPortfolio,
         MobileDashboardCurrentSelectionActions.selectInstrument,
-        MobileDashboardItemsActions.addWidget
+        MobileDashboardItemsActions.addWidget,
+        MobileDashboardItemsActions.updateWidget
       ),
       withLatestFrom(MobileDashboardStreams.getMobileDashboard(this.store)),
       map(([, dashboard]) => MobileDashboardEventsActions.updated({dashboard}))
@@ -138,7 +139,8 @@ export class MobileDashboardEffects {
   setDefaultOrderbookSettings$ = createEffect(() => {
     return MobileDashboardStreams.getMobileDashboard(this.store).pipe(
       map(d => d.items.find(w => w.widgetType === 'order-book')),
-      filter((o): o is Widget => o != null && !o.initialSettings.useOrderWidget),
+      filter((o): o is Widget => o != null && (o.initialSettings?.useOrderWidget ?? false) === false
+      ),
       map(o => MobileDashboardItemsActions.updateWidget({
         guid: o.guid,
         updates: {
