@@ -37,6 +37,7 @@ export interface EditOrderDialogParams {
   };
   portfolioKey: PortfolioKey;
   initialValues: {
+    triggerPrice?: number;
     price?: number;
     quantity?: number;
     hasPriceChanged?: boolean;

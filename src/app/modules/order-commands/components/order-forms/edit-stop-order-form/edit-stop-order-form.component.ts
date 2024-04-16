@@ -37,6 +37,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
 
   @Input()
   initialValues: {
+    triggerPrice?: number;
     price?: number;
     quantity?: number;
     hasPriceChanged?: boolean;
@@ -132,7 +133,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       this.setPriceValidators(this.form.controls.price, x.currentInstrument);
 
       this.form.controls.quantity.setValue(this.initialValues?.quantity ?? x.currentOrder.qtyBatch);
-      this.form.controls.triggerPrice.setValue(this.initialValues?.price ?? x.currentOrder.triggerPrice);
+      this.form.controls.triggerPrice.setValue(this.initialValues?.triggerPrice ?? this.initialValues?.price ?? x.currentOrder.triggerPrice);
       this.form.controls.condition.setValue(getConditionTypeByString(x.currentOrder.conditionType) ?? LessMore.More);
       this.form.controls.price.setValue(this.initialValues?.price ?? x.currentOrder.price);
 
@@ -278,7 +279,8 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
           id: x.currentOrder.id,
           instrument: {
             symbol: x.currentOrder.symbol,
-            exchange: x.currentOrder.exchange
+            exchange: x.currentOrder.exchange,
+            instrumentGroup: x.currentOrder.board
           },
           quantity: Number(formValue.quantity),
           triggerPrice: Number(formValue.triggerPrice),

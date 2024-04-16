@@ -9,8 +9,9 @@
     </ng-template>
 
     <ng-container *ngIf="(isNotificationsAllowed$ | async) === true">
-      <ng-container *ngrxLet="{ contentSize: contentSize$, tableConfig: tableConfig$, settings: settings$, notifications: tableData$ } as td">
+      <ng-container *ngrxLet="{ contentSize: contentSize$, tableConfig: tableConfig$, notifications: tableData$ } as td">
         <div
+          *ngIf="td != null"
           class="table-container"
           (nzResizeObserve)="containerSizeChanged($event)"
           nzResizeObserver
