@@ -39,6 +39,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
   initialValues: {
     price?: number;
     quantity?: number;
+    hasPriceChanged?: boolean;
   } | null = null;
 
   form = this.formBuilder.group({
@@ -277,7 +278,8 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
           id: x.currentOrder.id,
           instrument: {
             symbol: x.currentOrder.symbol,
-            exchange: x.currentOrder.exchange
+            exchange: x.currentOrder.exchange,
+            instrumentGroup: x.currentOrder.board
           },
           quantity: Number(formValue.quantity),
           triggerPrice: Number(formValue.triggerPrice),

@@ -4,14 +4,14 @@ name: Automatic versioning
 
 on:
   workflow_run:
-    workflows: [ "NPM Test" ]
+    workflows: [ "PNPM Test" ]
     types: [completed]
     branches: [master]
 
 jobs:
   versioning:
 
-    # Run only if NPM Test in success
+    # Run only if PNPM Test in success
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     runs-on: ubuntu-latest

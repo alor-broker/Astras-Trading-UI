@@ -303,6 +303,7 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       .subscribe(s => this.service.selectNewInstrument(
         row.symbol,
         row.exchange,
+        row.board,
         s.badgeColor ?? defaultBadgeColor
       ));
   }

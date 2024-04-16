@@ -265,6 +265,7 @@ describe('EditLimitOrderFormComponent', () => {
         id: '111',
         symbol: instrument.symbol,
         exchange: instrument.exchange,
+        board: instrument.instrumentGroup,
         price: 10,
         qty: 2
       } as Order;
@@ -284,7 +285,8 @@ describe('EditLimitOrderFormComponent', () => {
         quantity: Math.round(Math.random() * 100),
         instrument: {
           symbol: instrument.symbol,
-          exchange: instrument.exchange
+          exchange: instrument.exchange,
+          instrumentGroup: instrument.instrumentGroup
         }
       };
 

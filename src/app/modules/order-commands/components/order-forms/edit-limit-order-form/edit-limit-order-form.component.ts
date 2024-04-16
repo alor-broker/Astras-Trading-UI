@@ -32,6 +32,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
   initialValues: {
     price?: number;
     quantity?: number;
+    hasPriceChanged?: boolean;
   } | null = null;
 
   form = this.formBuilder.group({
@@ -281,7 +282,8 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
           id: x.currentOrder.id,
           instrument: {
             symbol: x.currentOrder.symbol,
-            exchange: x.currentOrder.exchange
+            exchange: x.currentOrder.exchange,
+            instrumentGroup: x.currentOrder.board
           },
           price: Number(formValue.price),
           quantity: Number(formValue.quantity)

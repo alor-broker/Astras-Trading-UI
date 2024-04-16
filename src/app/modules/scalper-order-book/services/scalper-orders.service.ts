@@ -414,7 +414,8 @@ export class ScalperOrdersService {
         orderType: OrderType.Limit,
         initialValues: {
           quantity: order.displayVolume,
-          price: updates.price
+          price: updates.price,
+          hasPriceChanged: true
         }
       });
     }

@@ -115,7 +115,8 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
       orderType: order.type === 'limit' ? OrderType.Limit : OrderType.Stop,
       initialValues: {
         quantity: order.volume,
-        price
+        price,
+        hasPriceChanged: true
       }
     });
   }
