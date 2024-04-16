@@ -11,6 +11,7 @@ import {
   combineLatest,
   Observable,
   of,
+  shareReplay,
   take,
   tap,
   timer,
@@ -18,7 +19,10 @@ import {
 } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { OptionBoardService } from "../../services/option-board.service";
-import { map } from "rxjs/operators";
+import {
+  debounceTime,
+  map
+} from "rxjs/operators";
 import { ThemeService } from "../../../../shared/services/theme.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import {
@@ -27,20 +31,15 @@ import {
 } from "chart.js/dist/types";
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { OptionPlotPoint } from "../../models/option-board.model";
+import {
+  OptionPlot,
+  OptionPlotPoint
+} from "../../models/option-board.model";
+import { OptionBoardDataContextFactory } from "../../utils/option-board-data-context-factory";
+import { ThemeSettings } from "../../../../shared/models/settings/theme-settings.model";
 
 interface ZoomState {
-  baseRange: {
-    min: number;
-    max: number;
-  };
-
-  currentMultiplier: number;
-
-  currentRange: {
-    from: number;
-    to: number;
-  };
+  currentRange: number;
 }
 
 enum ChartType {
@@ -73,7 +72,8 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
   chartData$!: Observable<ChartData<'line', (number | null)[], number> | null>;
   chartOptions$!: Observable<ChartOptions<'line'>>;
 
-  private readonly zoomMultiplier = 0.2;
+  private readonly zoomStep = 0.1;
+  private readonly defaultRange = 0.1;
 
   constructor(
     private readonly optionBoardService: OptionBoardService,
@@ -94,22 +94,15 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
     this.initDataStream();
   }
 
-  applyZoom(step: number, currentLabels: number[]): void {
-    const round = (value: number): number => MathHelper.round(value, 6);
-
+  applyZoom(step: number): void {
     this.zoomState$.pipe(
       take(1)
     ).subscribe(state => {
       let updatedState: ZoomState | null;
 
       if (state == null) {
-        const min = round(currentLabels[0]);
-        const max = round(currentLabels[currentLabels.length - 1]) ?? min;
-
         updatedState = {
-          baseRange: { min, max },
-          currentRange: { from: min, to: max },
-          currentMultiplier: 0
+          currentRange: this.defaultRange
         };
       } else {
         updatedState = {
@@ -117,14 +110,12 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
         };
       }
 
-      updatedState.currentMultiplier = Math.round(updatedState.currentMultiplier + step);
+      updatedState.currentRange = MathHelper.round(updatedState.currentRange + (-1 * step * this.zoomStep), 1);
+      if (updatedState.currentRange <= 0) {
+        updatedState.currentRange = 0.01;
+      }
 
-      updatedState.currentRange = {
-        from: round(updatedState.baseRange.min + (updatedState.baseRange.min * updatedState.currentMultiplier * this.zoomMultiplier)),
-        to: round(updatedState.baseRange.max - (updatedState.baseRange.min * updatedState.currentMultiplier * this.zoomMultiplier)),
-      };
-
-      if (updatedState.currentRange.from < updatedState.currentRange.to) {
+      if (state == null || state.currentRange !== updatedState.currentRange) {
         this.zoomState$.next(updatedState);
       }
     });
@@ -177,8 +168,14 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
       takeUntilDestroyed(this.destroyRef)
     );
 
+    const selectionParameters$ = this.dataContext.selectionParameters$.pipe(
+      debounceTime(2000),
+      shareReplay(1)
+    );
+
     combineLatest([
       this.dataContext.currentSelection$,
+      selectionParameters$,
       this.selectedChartType$
     ]).pipe(
       takeUntilDestroyed(this.destroyRef)
@@ -188,6 +185,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
 
     this.chartData$ = combineLatest({
       selection: this.dataContext.currentSelection$,
+      parameters: selectionParameters$,
       currentChartType: this.selectedChartType$,
       zoomState: this.zoomState$
     }).pipe(
@@ -199,9 +197,16 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
 
           this.isLoading$.next(true);
           return this.optionBoardService.getPlots({
-            instrumentKeys: x.selection.selectedOptions,
-            range: 0.3,
-            selection: x.zoomState?.currentRange
+            instrumentKeys: x.selection.selectedOptions.map(o => {
+              const parameters = x.parameters.get(OptionBoardDataContextFactory.getParametersKey(o));
+              const quantity = parameters?.quantity ?? 1;
+
+              return {
+                ...o,
+                quantity
+              };
+            }),
+            range: x.zoomState?.currentRange ?? this.defaultRange
           });
         },
         (source, plots) => ({
@@ -211,55 +216,63 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
       ),
       withLatestFrom(this.themeService.getThemeSettings()),
       map(([x, theme]) => {
-        if (x.plots == null) {
-          return null;
-        }
-
-        const labels: number[] = [];
-        const positiveValues: (number | null)[] = [];
-        const negativeValues: (number | null)[] = [];
-
-        const dataSet = (x.plots as any)[x.currentChartType] as OptionPlotPoint[] ?? [];
-
-        for (const datum of dataSet) {
-          labels.push(datum.label);
-
-          if (!isNaN(datum.value)) {
-            positiveValues.push(datum.value >= 0 || isNaN(datum.value) ? datum.value : null);
-            negativeValues.push(datum.value < 0 ? datum.value : null);
-          } else {
-            positiveValues.push(null);
-            negativeValues.push(null);
-          }
-        }
-
-        return {
-          datasets: [
-            {
-              data: positiveValues,
-              fill: {
-                target: { value: 0 },
-                above: theme.themeColors.buyColorBackground,
-                below: theme.themeColors.buyColorBackground
-              },
-              borderColor: theme.themeColors.buyColor,
-              pointBackgroundColor: theme.themeColors.buyColorBackground
-            },
-            {
-              data: negativeValues,
-              fill: {
-                target: { value: 0 },
-                above: theme.themeColors.sellColorBackground,
-                below: theme.themeColors.sellColorBackground
-              },
-              borderColor: theme.themeColors.sellColor,
-              pointBackgroundColor: theme.themeColors.sellColorBackground
-            }
-          ],
-          labels: labels
-        };
+        return this.prepareDatasets(x, theme);
       }),
       tap(() => this.isLoading$.next(false))
     );
+  }
+
+  private prepareDatasets(selection: { plots: OptionPlot | null, currentChartType: ChartType }, theme: ThemeSettings): ChartData<'line', (number | null)[], number> | null {
+    if (selection.plots == null) {
+      return null;
+    }
+
+    const labels: number[] = [];
+    const positiveValues: (number | null)[] = [];
+    const negativeValues: (number | null)[] = [];
+
+    const dataSet = (selection.plots as any)[selection.currentChartType] as OptionPlotPoint[] ?? [];
+
+    for (const datum of dataSet) {
+      if(isNaN(datum.label)) {
+        continue;
+      }
+
+      labels.push(datum.label);
+
+      if (!isNaN(datum.value)) {
+        positiveValues.push(datum.value >= 0 || isNaN(datum.value) ? datum.value : null);
+        negativeValues.push(datum.value < 0 ? datum.value : null);
+      } else {
+        positiveValues.push(null);
+        negativeValues.push(null);
+      }
+    }
+
+    return {
+      datasets: [
+        {
+          data: positiveValues,
+          fill: {
+            target: { value: 0 },
+            above: theme.themeColors.buyColorBackground,
+            below: theme.themeColors.buyColorBackground
+          },
+          borderColor: theme.themeColors.buyColor,
+          pointBackgroundColor: theme.themeColors.buyColorBackground
+        },
+        {
+          data: negativeValues,
+          fill: {
+            target: { value: 0 },
+            above: theme.themeColors.sellColorBackground,
+            below: theme.themeColors.sellColorBackground
+          },
+          borderColor: theme.themeColors.sellColor,
+          pointBackgroundColor: theme.themeColors.sellColorBackground
+        }
+      ],
+      labels: labels
+    };
   }
 }

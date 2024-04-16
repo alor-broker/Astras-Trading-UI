@@ -13,7 +13,8 @@ import {
 } from "../../models/option-board.model";
 import {
   OptionBoardDataContext,
-  OptionsSelection
+  OptionsSelection,
+  SelectionParameters
 } from "../../models/option-board-data-context.model";
 import { LetDirective } from "@ngrx/component";
 import { TranslatorService } from "../../../../shared/services/translator.service";
@@ -68,11 +69,14 @@ describe('OptionBoardChartComponent', () => {
       selectedParameter$: new Subject<OptionParameters>(),
       optionsSelection$: new Subject<OptionsSelection[]>(),
       currentSelection$: new Subject<OptionsSelection>(),
+      selectionParameters$: new Subject<Map<string, Partial<SelectionParameters>>>(),
       updateOptionSelection: () => {
       },
       clearCurrentSelection: () => {
       },
       removeItemFromSelection: () => {
+      },
+      setParameters: () => {
       },
       destroy: () => {
       }

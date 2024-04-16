@@ -79,20 +79,13 @@ export class OptionBoardService {
   }
 
   getPlots(parameters: {
-    instrumentKeys: { symbol: string, exchange: string }[];
+    instrumentKeys: { symbol: string, exchange: string, quantity: number }[];
     range?: number | null;
-    selection?: { from: number, to: number } | null;
   }): Observable<OptionPlot | null> {
     const body: { [key: string]: any } = {
       instrumentKeys: parameters.instrumentKeys,
+      range: parameters.range ?? 0.1
     };
-
-    if (parameters.selection != null) {
-      body.from = parameters.selection?.from;
-      body.to = parameters.selection?.to;
-    } else {
-      body.range = parameters.range ?? 0.3;
-    }
 
     return this.httpClient.post<OptionPlot>(
       `${this.baseUrl}/options/plots`,

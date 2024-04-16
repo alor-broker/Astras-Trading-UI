@@ -46,11 +46,19 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   @Input()
   allowDecimal = true;
 
+  @Input()
+  set initialValue(value: number) {
+    this.writeValue(value);
+  }
+
   @Output()
   atsBlur = new EventEmitter();
 
   @Output()
   atsEnter = new EventEmitter();
+
+  @Output()
+  valueChanged = new EventEmitter<number | null>();
 
   @ViewChild('inputElement', {static: true})
   inputElement!: ElementRef<HTMLInputElement>;
@@ -89,6 +97,7 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
     if (this.value !== value) {
       this.value = value;
       this.emitValue(value);
+      this.valueChanged.emit(value);
     }
   }
 

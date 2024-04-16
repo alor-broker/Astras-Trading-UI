@@ -16,15 +16,16 @@
           </ng-container>
         </nz-select>
       </div>
-      <div *ngrxLet="{chartOptions: chartOptions$, chartData: chartData$} as vm" class="flex-fill position-relative overflow-hidden">
+      <div *ngrxLet="{chartOptions: chartOptions$, chartData: chartData$} as vm"
+           class="flex-fill position-relative overflow-hidden">
         <ng-container *ngIf="vm.chartData != null && (vm.chartData.labels?.length ?? 0) > 0; else noData">
           <div class="position-absolute top-0 d-flex justify-content-center w-100 pt-15">
             <nz-button-group>
-              <button #btn (click)="applyZoom(-1, vm.chartData.labels!)" nz-button>
+              <button #btn (click)="applyZoom(-1)" nz-button>
                 <span nz-icon nzTheme="outline" nzType="zoom-out"></span>
               </button>
 
-              <button (click)="applyZoom(1, vm.chartData.labels!)" nz-button>
+              <button (click)="applyZoom(1)" nz-button>
                 <span nz-icon nzTheme="outline" nzType="zoom-in"></span>
               </button>
             </nz-button-group>
