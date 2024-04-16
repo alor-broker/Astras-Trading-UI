@@ -35,7 +35,7 @@ describe('SelectedOptionsComponent', () => {
         SelectedOptionsComponent,
         mockComponent({
           selector: 'ats-input-number',
-          inputs: ['step', 'allowNegative', 'allowDecimal', 'initialValue', '']
+          inputs: ['step', 'allowNegative', 'allowDecimal', 'initialValue']
         })
       ],
       providers: [
