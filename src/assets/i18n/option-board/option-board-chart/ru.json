@@ -1,47 +1,38 @@
 ﻿{
   "priceByAssetPrice": {
-    "chartTitle": "Цена от цены актива",
+    "chartTitle": "Теор. цена от цены базового актива",
     "x": {
-      "title": "Цена актива"
+      "title": "Цена базового актива"
     },
     "y": {
-      "title": "Цена"
+      "title": "Теор. цена"
     }
   },
   "priceByVolatility": {
-    "chartTitle": "Цена от волатильности",
+    "chartTitle": "Теор. цена от волатильности",
     "x": {
       "title": "Волатильность"
     },
     "y": {
-      "title": "Цена"
-    }
-  },
-  "priceByYears": {
-    "chartTitle": "Цена от лет",
-    "x": {
-      "title": "Года"
-    },
-    "y": {
-      "title": "Цена"
+      "title": "Теор. цена"
     }
   },
   "priceByStrikePrice": {
-    "chartTitle": "Цена от страйка",
+    "chartTitle": "Теор. цена от цены страйка",
     "x": {
       "title": "Страйк"
     },
     "y": {
-      "title": "Цена"
+      "title": "Теор. цена"
     }
   },
   "profitLossByAssetPrice": {
-    "chartTitle": "Прибыль/потери от цены актива",
+    "chartTitle": "P/L от цены базового актива",
     "x": {
-      "title": "Цена актива"
+      "title": "Цена базового актива"
     },
     "y": {
-      "title": "Прибыль/потери"
+      "title": "P/L"
     }
   }
 }
