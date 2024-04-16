@@ -331,7 +331,8 @@ describe('EditStopOrderFormComponent', () => {
         quantity: Math.round(Math.random() * 100),
         instrument: {
           symbol: order.symbol,
-          exchange: order.exchange
+          exchange: order.exchange,
+          instrumentGroup: order.board
         },
         side: order.side
       };
