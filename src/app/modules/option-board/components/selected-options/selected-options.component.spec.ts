@@ -2,9 +2,20 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SelectedOptionsComponent } from './selected-options.component';
 import { Subject } from "rxjs";
-import { OptionParameters, OptionSide } from "../../models/option-board.model";
-import { OptionBoardDataContext, OptionsSelection } from "../../models/option-board-data-context.model";
-import { getTranslocoModule } from "../../../../shared/utils/testing";
+import {
+  OptionKey,
+  OptionParameters,
+  OptionSide
+} from "../../models/option-board.model";
+import {
+  OptionBoardDataContext,
+  OptionsSelection,
+  SelectionParameters
+} from "../../models/option-board-data-context.model";
+import {
+  getTranslocoModule,
+  mockComponent
+} from "../../../../shared/utils/testing";
 import { OptionBoardService } from "../../services/option-board.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
@@ -20,7 +31,13 @@ describe('SelectedOptionsComponent', () => {
         getTranslocoModule(),
         LetDirective
       ],
-      declarations: [ SelectedOptionsComponent ],
+      declarations: [
+        SelectedOptionsComponent,
+        mockComponent({
+          selector: 'ats-input-number',
+          inputs: ['step', 'allowNegative', 'allowDecimal', 'initialValue']
+        })
+      ],
       providers: [
         {
           provide: OptionBoardService,
@@ -53,11 +70,14 @@ describe('SelectedOptionsComponent', () => {
       selectedParameter$: new Subject<OptionParameters>(),
       optionsSelection$: new Subject<OptionsSelection[]>(),
       currentSelection$: new Subject<OptionsSelection>(),
+      selectionParameters$: new Subject<Map<string, Partial<SelectionParameters>>>(),
       updateOptionSelection: () => {
       },
       clearCurrentSelection: () => {
       },
       removeItemFromSelection: () => {
+      },
+      setParameters: () => {
       },
       destroy: () => {
       }

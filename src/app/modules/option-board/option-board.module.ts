@@ -11,8 +11,14 @@ import { SelectedOptionsComponent } from './components/selected-options/selected
 import { OptionBoardService } from "./services/option-board.service";
 import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
 import { OptionPreviewComponent } from "./components/option-preview/option-preview.component";
-import { CdkDrag, CdkDropList } from "@angular/cdk/drag-drop";
+import {
+  CdkDrag,
+  CdkDropList
+} from "@angular/cdk/drag-drop";
 import { LetDirective } from "@ngrx/component";
+import { OptionBoardChartsLayoutComponent } from "./components/option-board-charts-layout/option-board-charts-layout.component";
+import { OptionBoardChartComponent } from "./components/option-board-chart/option-board-chart.component";
+import { BaseChartDirective } from "ng2-charts";
 
 
 @NgModule({
@@ -22,7 +28,9 @@ import { LetDirective } from "@ngrx/component";
     OptionBoardSettingsComponent,
     AllOptionsComponent,
     SelectedOptionsComponent,
-    OptionPreviewComponent
+    OptionPreviewComponent,
+    OptionBoardChartsLayoutComponent,
+    OptionBoardChartComponent
   ],
   imports: [
     CommonModule,
@@ -32,7 +40,8 @@ import { LetDirective } from "@ngrx/component";
     NzResizeObserverModule,
     CdkDrag,
     CdkDropList,
-    LetDirective
+    LetDirective,
+    BaseChartDirective
   ],
   exports: [
     OptionBoardWidgetComponent

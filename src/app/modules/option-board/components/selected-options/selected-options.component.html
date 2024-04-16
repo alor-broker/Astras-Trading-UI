@@ -68,6 +68,15 @@
             </td>
             <ng-container *ngFor='let column of vm.tableConfig!.columns'>
               <td *ngIf='column.id === "symbol"' [nzLeft]="column.leftFixed ?? false">{{ option.symbol }}</td>
+              <td *ngIf='column.id === "quantity"'>
+                <ats-input-number
+                  [step]="1"
+                  [allowNegative]="true"
+                  [allowDecimal]="false"
+                  [initialValue]="option.quantity ?? 1"
+                  (valueChanged)="setSelectedOptionQuantity(option, $event)"
+                ></ats-input-number>
+              </td>
               <td *ngIf='column.id === "underlyingAssetSymbol"'>{{ option.underlyingAssetSymbol }}</td>
               <td *ngIf='column.id === "optionSide"'>{{ option.optionSide }}</td>
               <td *ngIf='column.id === "optionType"'>{{ option.optionType }}</td>

@@ -215,6 +215,10 @@ export class DashboardComponent implements OnInit {
             newPosition.rows = widgetMeta.desktopMeta.addOptions.initialHeight;
           }
 
+          if (widgetMeta.desktopMeta?.addOptions.initialWidth != null) {
+            newPosition.cols = widgetMeta.desktopMeta.addOptions.initialWidth;
+          }
+
           if (widgetMeta.desktopMeta?.addOptions.initialHeightPx != null && this.gridster?.curRowHeight != null) {
             const expectedHeight = widgetMeta.desktopMeta.addOptions.initialHeightPx;
             let rowsHeight: number;
