@@ -261,8 +261,28 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
           : null;
 
         return {
-          up: !!(upPrice ?? 0) && !!currentOrders.find(o => (o.triggerPrice ?? o.price!) > upPrice!),
-          down: !!(downPrice ?? 0) && !!currentOrders.find(o => (o.triggerPrice ?? o.price!) < downPrice!),
+          up: (upPrice != null) && !!currentOrders.find(o => {
+            if (o.triggerPrice != null) {
+              return o.triggerPrice > upPrice;
+            }
+
+            if (o.price != null) {
+              return o.price > upPrice;
+            }
+
+            throw new Error('Price or trigger price should be present');
+          }),
+          down: (downPrice != null) && !!currentOrders.find(o => {
+            if (o.triggerPrice != null) {
+              return o.triggerPrice < downPrice;
+            }
+
+            if (o.price != null) {
+              return o.price < downPrice;
+            }
+
+            throw new Error('Price or trigger price should be present');
+          }),
         };
       }),
       shareReplay({ bufferSize: 1, refCount: true }),
