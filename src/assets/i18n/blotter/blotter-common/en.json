@@ -6,7 +6,7 @@
     "rejected": "Suspended"
   },
   "statusFilters": {
-    "filled": "Filled",
+    "filled": "Done",
     "working": "Active",
     "canceled": "Canceled",
     "rejected": "Suspended"
