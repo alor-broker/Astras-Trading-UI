@@ -228,8 +228,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
     }
 
     const labels: number[] = [];
-    const positiveValues: (number | null)[] = [];
-    const negativeValues: (number | null)[] = [];
+    const values: (number | null)[] = [];
 
     const dataSet = (selection.plots as any)[selection.currentChartType] as OptionPlotPoint[] ?? [];
 
@@ -241,35 +240,37 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
       labels.push(datum.label);
 
       if (!isNaN(datum.value)) {
-        positiveValues.push(datum.value >= 0 || isNaN(datum.value) ? datum.value : null);
-        negativeValues.push(datum.value < 0 ? datum.value : null);
+        values.push(datum.value);
       } else {
-        positiveValues.push(null);
-        negativeValues.push(null);
+        values.push(null);
       }
     }
+
+    const colors = values.map((value) => (value ?? 0) >= 0 ? theme.themeColors.buyColor : theme.themeColors.sellColor);
 
     return {
       datasets: [
         {
-          data: positiveValues,
+          data: values,
           fill: {
             target: { value: 0 },
             above: theme.themeColors.buyColorBackground,
-            below: theme.themeColors.buyColorBackground
-          },
-          borderColor: theme.themeColors.buyColor,
-          pointBackgroundColor: theme.themeColors.buyColorBackground
-        },
-        {
-          data: negativeValues,
-          fill: {
-            target: { value: 0 },
-            above: theme.themeColors.sellColorBackground,
             below: theme.themeColors.sellColorBackground
           },
-          borderColor: theme.themeColors.sellColor,
-          pointBackgroundColor: theme.themeColors.sellColorBackground
+          pointBorderColor: colors,
+          pointBackgroundColor: colors,
+          segment: {
+            borderColor: (part): string => {
+              const prevValue = part.p0.parsed.y;
+              const nextValue = part.p1.parsed.y;
+
+              if((prevValue < 0 && nextValue > 0) || (nextValue < 0 && prevValue > 0)) {
+                return theme.themeColors.mixColor;
+              }
+
+              return prevValue < 0 || nextValue < 0 ? theme.themeColors.sellColor : theme.themeColors.buyColor;
+            },
+          },
         }
       ],
       labels: labels
