@@ -34,11 +34,11 @@ export interface Finance {
 
 export interface DataOverTime {
   year: YearDatum[];
-  quorter: QuoterDatum[];
+  quarter: QuaterDatum[];
 }
 
-export interface QuoterDatum extends YearDatum {
-  quorterNumber: number; // 2,
+export interface QuaterDatum extends YearDatum {
+  quarter: number; // 2,
 }
 
 export interface YearDatum {
