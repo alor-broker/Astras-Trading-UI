@@ -111,29 +111,52 @@
           <ng-template #customOption let-option>
             {{option[column.filterData.multipleAutocompleteSelectedOptionLabelKey ?? 'nzLabel']}}
           </ng-template>
-          <input
-            *ngIf="column.filterData.filterType === filterTypes.Search"
-            nz-input
-            class="mb-10"
-            type="text"
-            [placeholder]="column.displayName"
-            [formControl]="getFilterControl(column.filterData.filterName)!"
-          />
+          <ng-container *ngIf="column.filterData.filterType === filterTypes.Search">
+            <input
+              *ngIf="(column.filterData.inputFieldType ?? inputFieldType.String) === inputFieldType.String"
+              nz-input
+              class="mb-10"
+              type="text"
+              [placeholder]="column.displayName"
+              [formControl]="getFilterControl(column.filterData.filterName)!"
+            />
+            <ats-input-number
+              *ngIf="column.filterData.inputFieldType === inputFieldType.Number"
+              class="mb-10"
+              [formControl]="getFilterControl(column.filterData.filterName)!"
+              [placeholder]="column.displayName"
+            ></ats-input-number>
+          </ng-container>
           <ng-container *ngIf="column.filterData.filterType === filterTypes.Interval">
-            <input
-              nz-input
-              class="mb-10"
-              type="text"
-              [placeholder]="column.displayName + ', ' + t('from')"
-              [formControl]="getFilterControl(column.filterData.intervalStartName!)!"
-            />
-            <input
-              nz-input
-              class="mb-10"
-              type="text"
-              [placeholder]="column.displayName + ', ' + t('to')"
-              [formControl]="getFilterControl(column.filterData.intervalEndName!)!"
-            />
+            <ng-container *ngIf="(column.filterData.inputFieldType ?? inputFieldType.String) === inputFieldType.String">
+              <input
+                nz-input
+                class="mb-10"
+                type="text"
+                [placeholder]="column.displayName + ', ' + t('from')"
+                [formControl]="getFilterControl(column.filterData.intervalStartName!)!"
+              />
+              <input
+                nz-input
+                class="mb-10"
+                type="text"
+                [placeholder]="column.displayName + ', ' + t('to')"
+                [formControl]="getFilterControl(column.filterData.intervalEndName!)!"
+              />
+            </ng-container>
+            <ng-container *ngIf="column.filterData.inputFieldType === inputFieldType.Number">
+              <ats-input-number
+                class="mb-10"
+                [placeholder]="column.displayName + ', ' + t('from')"
+                [formControl]="getFilterControl(column.filterData.intervalStartName!)!"
+              ></ats-input-number>
+              <ats-input-number
+                class="mb-10"
+                [placeholder]="column.displayName + ', ' + t('to')"
+                [formControl]="getFilterControl(column.filterData.intervalEndName!)!"
+              ></ats-input-number>
+            </ng-container>
+
           </ng-container>
           <button
             nz-button

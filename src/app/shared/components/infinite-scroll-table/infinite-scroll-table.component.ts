@@ -22,7 +22,7 @@ import { debounceTime, map, startWith } from "rxjs/operators";
 import { ContextMenu } from "../../models/infinite-scroll-table.model";
 import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
 import { TableConfig } from '../../models/table-config.model';
-import { BaseColumnSettings, FilterData, FilterType } from "../../models/settings/table-settings.model";
+import { BaseColumnSettings, FilterData, FilterType, InputFieldType } from "../../models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 interface TableDataRow {
@@ -80,6 +80,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   private tableRef$?: Observable<NzTableComponent<TableDataRow>>;
 
   filterTypes = FilterType;
+  inputFieldType = InputFieldType;
   itemHeight = ITEM_HEIGHT;
   scrollHeight = 0;
   filtersForm = new UntypedFormGroup({});

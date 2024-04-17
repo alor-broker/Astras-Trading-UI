@@ -43,6 +43,7 @@ export interface FilterData {
   filters?: NzTableFilterList;
   intervalStartName?: string;
   intervalEndName?: string;
+  inputFieldType?: InputFieldType;
   multipleAutocompleteSelectedOptionLabelKey?: keyof NzOptionComponent;
 }
 
@@ -52,6 +53,11 @@ export enum FilterType {
   Interval = 'interval',
   Search = 'search',
   MultipleAutocomplete = 'multipleAutocomplete'
+}
+
+export enum InputFieldType {
+  String = 'string',
+  Number = 'number'
 }
 
 export interface DefaultTableFilters {
