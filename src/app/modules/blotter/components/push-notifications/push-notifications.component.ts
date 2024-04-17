@@ -8,11 +8,12 @@ import {
   distinctUntilChanged,
   fromEvent,
   Observable,
+  of,
   shareReplay,
   take,
   tap
 } from "rxjs";
-import { filter, map, startWith, switchMap } from "rxjs/operators";
+import { catchError, filter, map, startWith, switchMap } from "rxjs/operators";
 import {
   OrderExecuteSubscription,
   PriceSparkSubscription,
@@ -36,6 +37,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { ErrorHandlerService } from "../../../../shared/services/handle-error/error-handler.service";
 
 interface NotificationFilter {
   id?: string;
@@ -105,7 +107,8 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
     protected readonly blotterService: BlotterService,
     private readonly pushNotificationsService: PushNotificationsService,
     protected readonly translatorService: TranslatorService,
-    protected readonly destroyRef: DestroyRef
+    protected readonly destroyRef: DestroyRef,
+    private readonly errorHandlerService: ErrorHandlerService
   ) {
     super(widgetSettingsService, translatorService, destroyRef);
   }
@@ -221,7 +224,11 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
 
     return this.isNotificationsAllowed$.pipe(
       filter(x => x),
-      switchMap(() => displayNotifications$)
+      switchMap(() => displayNotifications$),
+      catchError(err => {
+        this.errorHandlerService.handleError(err);
+        return of([]);
+      })
     );
   }
 

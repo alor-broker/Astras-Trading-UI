@@ -7,6 +7,7 @@ import { BlotterService } from "../../services/blotter.service";
 import { PushNotificationsService } from "../../../push-notifications/services/push-notifications.service";
 import { getTranslocoModule } from "../../../../shared/utils/testing";
 import { LetDirective } from "@ngrx/component";
+import { ErrorHandlerService } from "../../../../shared/services/handle-error/error-handler.service";
 
 describe('PushNotificationsComponent', () => {
   let component: PushNotificationsComponent;
@@ -42,6 +43,12 @@ describe('PushNotificationsComponent', () => {
             getMessages: jasmine.createSpy('getMessages').and.returnValue(new Subject()),
             getCurrentSubscriptions: jasmine.createSpy('getCurrentSubscriptions').and.returnValue(new Subject()),
             getBrowserNotificationsStatus: jasmine.createSpy('getBrowserNotificationsStatus').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: ErrorHandlerService,
+          useValue: {
+            handleError: jasmine.createSpy('handleError').and.callThrough()
           }
         }
       ]
