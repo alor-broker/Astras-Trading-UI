@@ -37,7 +37,8 @@ import { AllInstrumentsSettings } from '../../model/all-instruments-settings.mod
 import {
   BaseColumnSettings,
   DefaultTableFilters,
-  FilterType
+  FilterType,
+  InputFieldType
 } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
@@ -130,7 +131,8 @@ implements OnInit, OnDestroy {
         filterName: 'dailyGrowth',
         filterType: FilterType.Interval,
         intervalStartName: 'dailyGrowthFrom',
-        intervalEndName: 'dailyGrowthTo'
+        intervalEndName: 'dailyGrowthTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -145,7 +147,8 @@ implements OnInit, OnDestroy {
         filterName: 'dailyGrowthPercent',
         filterType: FilterType.Interval,
         intervalStartName: 'dailyGrowthPercentFrom',
-        intervalEndName: 'dailyGrowthPercentTo'
+        intervalEndName: 'dailyGrowthPercentTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -159,7 +162,8 @@ implements OnInit, OnDestroy {
         filterName: 'tradeVolume',
         filterType: FilterType.Interval,
         intervalStartName: 'tradeVolumeFrom',
-        intervalEndName: 'tradeVolumeTo'
+        intervalEndName: 'tradeVolumeTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -222,7 +226,8 @@ implements OnInit, OnDestroy {
         filterName: 'lotSize',
         filterType: FilterType.Interval,
         intervalStartName: 'lotSizeFrom',
-        intervalEndName: 'lotSizeTo'
+        intervalEndName: 'lotSizeTo',
+        inputFieldType: InputFieldType.Number
       },
       width: 70,
       minWidth: 70
@@ -238,7 +243,8 @@ implements OnInit, OnDestroy {
         filterName: 'price',
         filterType: FilterType.Interval,
         intervalStartName: 'priceFrom',
-        intervalEndName: 'priceTo'
+        intervalEndName: 'priceTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -250,7 +256,8 @@ implements OnInit, OnDestroy {
         filterName: 'priceMax',
         filterType: FilterType.Interval,
         intervalStartName: 'priceMaxFrom',
-        intervalEndName: 'priceMaxTo'
+        intervalEndName: 'priceMaxTo',
+        inputFieldType: InputFieldType.Number
       },
       width: 60,
       minWidth: 60
@@ -264,7 +271,8 @@ implements OnInit, OnDestroy {
         filterName: 'priceMin',
         filterType: FilterType.Interval,
         intervalStartName: 'priceMinFrom',
-        intervalEndName: 'priceMinTo'
+        intervalEndName: 'priceMinTo',
+        inputFieldType: InputFieldType.Number
       },
       width: 60,
       minWidth: 60
@@ -278,7 +286,8 @@ implements OnInit, OnDestroy {
         filterName: 'minStep',
         filterType: FilterType.Interval,
         intervalStartName: 'minStepFrom',
-        intervalEndName: 'minStepTo'
+        intervalEndName: 'minStepTo',
+        inputFieldType: InputFieldType.Number
       },
       width: 90,
       minWidth: 90,
@@ -292,7 +301,8 @@ implements OnInit, OnDestroy {
         filterName: 'priceStep',
         filterType: FilterType.Interval,
         intervalStartName: 'priceStepFrom',
-        intervalEndName: 'priceStepTo'
+        intervalEndName: 'priceStepTo',
+        inputFieldType: InputFieldType.Number
       },
       width: 90,
       minWidth: 90,

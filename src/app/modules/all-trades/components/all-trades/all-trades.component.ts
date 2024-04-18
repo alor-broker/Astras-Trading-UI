@@ -27,7 +27,11 @@ import {
   AllTradesReqFilters
 } from '../../../../shared/models/all-trades.model';
 import { AllTradesService } from '../../../../shared/services/all-trades.service';
-import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
+import {
+  BaseColumnSettings,
+  FilterType,
+  InputFieldType
+} from "../../../../shared/models/settings/table-settings.model";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -68,7 +72,8 @@ implements OnInit, OnDestroy {
         filterName: 'qty',
         intervalStartName: 'qtyFrom',
         intervalEndName: 'qtyTo',
-        filterType: FilterType.Interval
+        filterType: FilterType.Interval,
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -80,7 +85,8 @@ implements OnInit, OnDestroy {
         filterName: 'price',
         intervalStartName: 'priceFrom',
         intervalEndName: 'priceTo',
-        filterType: FilterType.Interval
+        filterType: FilterType.Interval,
+        inputFieldType: InputFieldType.Number
       }
     },
     {
