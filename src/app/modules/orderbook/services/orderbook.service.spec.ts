@@ -7,7 +7,8 @@ import {
 } from '../../../shared/utils/testing';
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
-import {Subject} from "rxjs";
+import { of, Subject } from "rxjs";
+import { QuotesService } from "../../../shared/services/quotes.service";
 
 describe('OrderbookService', () => {
   let service: OrderbookService;
@@ -25,6 +26,13 @@ describe('OrderbookService', () => {
           provide: SubscriptionsDataFeedService,
           useValue: {
             subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: QuotesService,
+          useValue: {
+            getLastQuoteInfo: jasmine.createSpy('getLastQuoteInfo').and.returnValue(of(null)),
+            getQuotes: jasmine.createSpy('getQuotes').and.returnValue(new Subject())
           }
         },
         { provide: PortfolioSubscriptionsService, useValue: portfolioSubscriptionsServiceSpy },
