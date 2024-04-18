@@ -1,5 +1,5 @@
 import { Component, DestroyRef, Input, OnInit } from '@angular/core';
-import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { ChartConfiguration, ChartData, ChartDataset, ChartType } from 'chart.js';
 import { DataOverTime, Finance } from '../../../models/finance.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
 import { ThemeService } from '../../../../../shared/services/theme.service';
@@ -94,29 +94,37 @@ export class FinanceBarChartComponent implements OnInit {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(({ theme, translate }) => {
       this.yearChartData = this.getPlotData('year', theme, translate);
-      this.quorterChartData = this.getPlotData('quorter', theme, translate);
+      this.quorterChartData = this.getPlotData('quarter', theme, translate);
     });
   }
 
-  private getPlotData(period: 'year' | 'quorter', theme: ThemeSettings, t: (key: string[], params?: HashMap) => string): ChartData<'bar'> {
+  private getPlotData(period: 'year' | 'quarter', theme: ThemeSettings, t: (key: string[], params?: HashMap) => string): ChartData<'bar'> {
     let labels: string[] = [];
-    if (this.finance.sales as DataOverTime | undefined) {
-      labels = period == 'quorter' ?
-        this.finance.sales.quorter.map(q => `${q.year} q${q.quorterNumber}`) as string[] :
+    let datasets: ChartDataset<'bar'>[] = [];
+    if ((this.finance.sales as DataOverTime | undefined | null) != null) {
+      labels = period == 'quarter' ?
+        this.finance.sales.quarter.map(q => `${q.year} q${q.quarter}`) as string[] :
         this.finance.sales[period].map(y => y.year.toString()) as string[];
+
+      datasets.push(
+        {
+          data: this.finance.sales[period].map(y => y.value) as number[],
+          label: t(['salesLabel']),
+          ...this.getSalesColors(theme)
+        } as ChartDataset<'bar'>
+      );
     }
-    const datasets = [
-      {
-        data: this.finance.sales[period].map(y => y.value) as number[],
-        label: t(['salesLabel']),
-        ...this.getSalesColors(theme)
-      },
-      {
-        data: this.finance.netIncome[period].map(y => y.value) as number[],
-        label: t(['incomeLabel']),
-        ...this.getIncomeColors(theme)
-      }
-    ];
+
+    if ((this.finance.netIncome as DataOverTime | undefined | null) != null) {
+      datasets.push(
+        {
+          data: this.finance.netIncome[period].map(y => y.value) as number[],
+          label: t(['incomeLabel']),
+          ...this.getIncomeColors(theme)
+        } as ChartDataset<'bar'>
+      );
+    }
+
     return {
       labels,
       datasets
