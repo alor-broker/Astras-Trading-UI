@@ -85,6 +85,24 @@ export class SyntheticInstrumentsService {
           let instrumentsHistories = JSON.parse(JSON.stringify(histories
             .filter(h => !h.isSpreadOperator)
             .map(h => h.value))) as HistoryResponse[];
+
+          if (instrumentsHistories.some(h => h.history.length === 0)) {
+            return histories.map(history => {
+              if (history.isSpreadOperator) {
+                return history as OperatorPart;
+              }
+
+              return {
+                isSpreadOperator: false,
+                value: {
+                  history: [],
+                  prev: 0,
+                  next: 0
+                }
+              } as InstrumentDataPart<HistoryResponse>;
+            });
+          }
+
           instrumentsHistories = instrumentsHistories.map((history, i) => {
             let historyCopy = JSON.parse(JSON.stringify(history.history)) as Candle[];
 
