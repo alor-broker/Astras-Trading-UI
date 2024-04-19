@@ -250,8 +250,8 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
             map((positions) => positions.map(p => ({
               ...p,
               id: `${p.symbol}_${p.exchange}`,
-              dailyUnrealisedPlRatio: p.dailyUnrealisedPl * 100 / p.volume,
-              unrealisedPlRatio: p.unrealisedPl * 100 / p.volume
+              dailyUnrealisedPlRatio: p.dailyUnrealisedPl * 100 / Math.abs(p.volume),
+              unrealisedPlRatio: p.unrealisedPl * 100 / Math.abs(p.volume)
             })))
           )
       ),
