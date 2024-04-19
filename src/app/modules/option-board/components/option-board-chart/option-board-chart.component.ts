@@ -59,7 +59,7 @@ enum ChartType {
 export class OptionBoardChartComponent implements OnInit, OnDestroy {
   readonly isLoading$ = new BehaviorSubject<boolean>(false);
   readonly zoomState$ = new BehaviorSubject<ZoomState | null>(null);
-  readonly selectedChartType$ = new BehaviorSubject<ChartType>(ChartType.PriceByAssetPrice);
+  readonly selectedChartType$ = new BehaviorSubject<ChartType>(ChartType.ProfitLossByAssetPrice);
   readonly chartTypes = [
     ChartType.PriceByAssetPrice,
     ChartType.PriceByVolatility,
@@ -128,6 +128,8 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
       translator: this.translatorService.getTranslator('option-board/option-board-chart')
     }).pipe(
       map(x => {
+        const formatter = new Intl.NumberFormat();
+
         return {
           maintainAspectRatio: false,
           layout: {
@@ -135,6 +137,17 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
           },
           plugins: {
             legend: { display: false },
+            tooltip: {
+              displayColors: false,
+              callbacks: {
+                title: (tooltipItems): string => {
+                  return `${x.translator([x.selectedChartType, 'x', 'title'])}: ${formatter.format(Number(tooltipItems[0].label))}`;
+                },
+                label: (tooltipItem): string => {
+                  return `${x.translator([x.selectedChartType, 'y', 'title'])}: ${formatter.format(Number(tooltipItem.raw))}`;
+                }
+              }
+            }
           },
           scales: {
             x: {
@@ -222,7 +235,10 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
     );
   }
 
-  private prepareDatasets(selection: { plots: OptionPlot | null, currentChartType: ChartType }, theme: ThemeSettings): ChartData<'line', (number | null)[], number> | null {
+  private prepareDatasets(
+    selection: { plots: OptionPlot | null, currentChartType: ChartType },
+    theme: ThemeSettings
+  ): ChartData<'line', (number | null)[], number> | null {
     if (selection.plots == null) {
       return null;
     }
@@ -230,12 +246,11 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
     const labels: number[] = [];
     const values: (number | null)[] = [];
 
-    const dataSet = (selection.plots as any)[selection.currentChartType] as OptionPlotPoint[] ?? [];
+    const dataSet = ((selection.plots as any)[selection.currentChartType] as OptionPlotPoint[] ?? [])
+      .filter(x => !isNaN(x.label))
+      .sort((a, b) => a.label - b.label);
 
     for (const datum of dataSet) {
-      if(isNaN(datum.label)) {
-        continue;
-      }
 
       labels.push(datum.label);
 
@@ -264,7 +279,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
               const prevValue = part.p0.parsed.y;
               const nextValue = part.p1.parsed.y;
 
-              if((prevValue < 0 && nextValue > 0) || (nextValue < 0 && prevValue > 0)) {
+              if ((prevValue < 0 && nextValue > 0) || (nextValue < 0 && prevValue > 0)) {
                 return theme.themeColors.mixColor;
               }
 

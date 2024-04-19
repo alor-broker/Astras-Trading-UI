@@ -192,6 +192,7 @@ export const ngZorroMockComponents = [
   mockComponent({selector: 'nz-tree', inputs: ['nzData', 'nzTreeTemplate']}),
   mockComponent({selector: 'nz-switch'}),
   mockComponent({selector: 'nz-segmented', inputs: ['nzLabelTemplate', 'nzOptions', 'ngModel']}),
+  mockComponent({selector: 'nz-button-group'}),
   mockDirective({selector: '[nzGutter]', inputs: ['nzGutter']}),
   mockDirective({selector: '[text]', inputs: ['text']}),
   mockDirective({selector: '[nzLayout]', inputs: ['nzLayout']}),

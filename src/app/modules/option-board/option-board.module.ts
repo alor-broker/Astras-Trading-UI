@@ -19,6 +19,7 @@ import { LetDirective } from "@ngrx/component";
 import { OptionBoardChartsLayoutComponent } from "./components/option-board-charts-layout/option-board-charts-layout.component";
 import { OptionBoardChartComponent } from "./components/option-board-chart/option-board-chart.component";
 import { BaseChartDirective } from "ng2-charts";
+import { NzAlertComponent } from "ng-zorro-antd/alert";
 
 
 @NgModule({
@@ -32,17 +33,18 @@ import { BaseChartDirective } from "ng2-charts";
     OptionBoardChartsLayoutComponent,
     OptionBoardChartComponent
   ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    TranslocoModule,
-    NzSpinModule,
-    NzResizeObserverModule,
-    CdkDrag,
-    CdkDropList,
-    LetDirective,
-    BaseChartDirective
-  ],
+    imports: [
+        CommonModule,
+        SharedModule,
+        TranslocoModule,
+        NzSpinModule,
+        NzResizeObserverModule,
+        CdkDrag,
+        CdkDropList,
+        LetDirective,
+        BaseChartDirective,
+        NzAlertComponent
+    ],
   exports: [
     OptionBoardWidgetComponent
   ],
