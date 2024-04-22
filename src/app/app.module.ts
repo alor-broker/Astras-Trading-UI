@@ -55,6 +55,7 @@ import {
   provideCharts,
   withDefaultRegisterables
 } from 'ng2-charts';
+import { SwEventsLoggingHook } from "./shared/services/app-hook/sw-events-logging-hook";
 
 class CustomHandler implements TranslocoMissingHandler {
   handle(key: string, config: TranslocoConfig, params?: HashMap): string {
@@ -155,6 +156,11 @@ registerLocaleData(ru);
     {
       provide: APP_HOOK,
       useClass: LoggingHook,
+      multi: true
+    },
+    {
+      provide: APP_HOOK,
+      useClass: SwEventsLoggingHook,
       multi: true
     },
     provideCharts(withDefaultRegisterables())
