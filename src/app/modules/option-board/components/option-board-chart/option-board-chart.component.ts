@@ -244,7 +244,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
     const labels: number[] = [];
     const values: (number | null)[] = [];
 
-    const dataSet = ((selection.plots as any)[selection.currentChartType] as OptionPlotPoint[] ?? [])
+    const dataSet = (selection.plots[selection.currentChartType as keyof OptionPlot] as OptionPlotPoint[] ?? [])
       .filter(x => !isNaN(x.label))
       .sort((a, b) => a.label - b.label);
 
