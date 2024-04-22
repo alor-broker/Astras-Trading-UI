@@ -8,11 +8,11 @@ import { map } from 'rxjs/operators';
 import { Candle } from '../models/history/candle.model';
 import { HistoryRequest } from '../models/history/history-request.model';
 import { HistoryResponse } from '../models/history/history-response.model';
-import { addDaysUnix } from "src/app/shared/utils/datetime";
 import { InstrumentKey } from '../models/instruments/instrument-key.model';
 import { catchHttpError } from "../utils/observable-helper";
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
 import { EnvironmentService } from "./environment.service";
+import { addDaysUnix } from "../utils/datetime";
 
 @Injectable({
   providedIn: 'root'
@@ -33,8 +33,9 @@ export class HistoryService {
         symbol: instrumentKey.symbol,
         exchange: instrumentKey.exchange,
         tf: 'D',
-        from: addDaysUnix(new Date(), -30),
+        from: addDaysUnix(new Date(), -2),
         to: Math.round(Date.now() / 1000),
+        countBack: 2
       }
     ).pipe(
       take(1),
