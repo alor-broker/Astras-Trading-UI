@@ -90,6 +90,18 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       minWidth: 75
     },
     {
+      id: 'shortName',
+      displayName: 'Название',
+      sortOrder: null,
+      sortFn: (a: DisplayTrade, b: DisplayTrade): number => a.symbol.localeCompare(b.shortName),
+      filterData: {
+        filterName: 'shortName',
+        filterType: FilterType.Search
+      },
+      tooltip: 'Наименование ценной бумаги',
+      minWidth: 75
+    },
+    {
       id: 'side',
       displayName: 'Сторона',
       sortOrder: null,

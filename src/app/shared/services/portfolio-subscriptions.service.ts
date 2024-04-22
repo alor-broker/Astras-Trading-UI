@@ -75,7 +75,8 @@ export class PortfolioSubscriptionsService {
         opcode: 'TradesGetAndSubscribeV2',
         skipHistory: true,
         portfolio,
-        exchange
+        exchange,
+        format: 'heavy'
       },
       request => of({
         allTrades: new Map<string, Trade>(),
@@ -303,7 +304,11 @@ export class PortfolioSubscriptionsService {
   }
 
   private getCurrentSessionTrades(portfolio: string, exchange: string): Observable<Trade[] | null> {
-    return this.http.get<Trade[]>(`${this.baseUrl}/${exchange}/${portfolio}/trades`)
+    return this.http.get<Trade[]>(`${this.baseUrl}/${exchange}/${portfolio}/trades`, {
+      params: {
+        format: 'heavy'
+      }
+    })
       .pipe(
         catchHttpError<Trade[] | null>(null, this.errorHandlerService)
       );
