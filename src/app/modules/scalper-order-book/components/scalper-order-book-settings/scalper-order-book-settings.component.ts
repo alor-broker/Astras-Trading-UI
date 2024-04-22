@@ -85,7 +85,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     },
     bracket: {
       price: {
-        min: 0,
+        min: 0.01,
         max: inputNumberValidation.max,
         percentsStep: 0.01,
         stepsStep: 1
