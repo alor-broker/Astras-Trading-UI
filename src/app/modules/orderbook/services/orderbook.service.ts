@@ -30,6 +30,8 @@ import { SubscriptionsDataFeedService } from '../../../shared/services/subscript
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
 import { OrderbookSettings } from '../models/orderbook-settings.model';
+import { QuotesService } from "../../../shared/services/quotes.service";
+import { Quote } from "../../../shared/models/quotes/quote.model";
 
 @Injectable()
 export class OrderbookService {
@@ -38,12 +40,13 @@ export class OrderbookService {
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly currentDashboardService: DashboardContextService,
-    private readonly canceller: OrderCancellerService
+    private readonly canceller: OrderCancellerService,
+    private readonly quotesService: QuotesService
   ) {
   }
 
   getOrderBook(settings: OrderbookSettings): Observable<OrderBook> {
-    const obData$ = this.subscriptionsDataFeedService.subscribe<OrderbookRequest, OrderbookData>(
+    const ob$ = this.subscriptionsDataFeedService.subscribe<OrderbookRequest, OrderbookData>(
       OrderBookDataFeedHelper.getRealtimeDateRequest(
         settings.symbol,
         settings.exchange,
@@ -51,11 +54,24 @@ export class OrderbookService {
         settings.depth
       ),
       OrderBookDataFeedHelper.getOrderbookSubscriptionId
-    ).pipe(
-      startWith({ a: [], b: []}),
-      map(ob => this.toOrderBook(ob))
-    );
+    )
+      .pipe(
+        startWith({ a: [], b: []}),
+      );
 
+    const lastQuote$ = this.quotesService.getLastQuoteInfo(settings.symbol, settings.exchange)
+      .pipe(
+        switchMap(q => this.quotesService.getQuotes(settings.symbol, settings.exchange)
+          .pipe(
+            startWith(q ?? { total_bid_vol: 0, total_ask_vol: 0 } as Quote)
+          )
+        )
+      );
+
+    const obData$ = combineLatest([ ob$, lastQuote$ ])
+      .pipe(
+      map(([ ob, quote ]) => this.toOrderBook(ob, quote))
+    );
 
     return combineLatest([obData$, this.getOrders(settings)]).pipe(
       map(([ob, orders]) => {
@@ -121,7 +137,7 @@ export class OrderbookService {
     return rows;
   }
 
-  private toOrderBook(orderBookData: OrderbookData): OrderBook {
+  private toOrderBook(orderBookData: OrderbookData, quote: Quote): OrderBook {
     const rows = this.toOrderBookRows(orderBookData);
     const volumes = [
       ...rows.map((p) => p.askVolume ?? 0),
@@ -132,8 +148,8 @@ export class OrderbookService {
       maxVolume: Math.max(...volumes),
       rows: rows,
       chartData: this.makeChartData(rows),
-      bidVolumes: rows.map(r => r.bidVolume).reduce((curr, prev) => curr! + prev!, 0),
-      askVolumes: rows.map(r => r.askVolume).reduce((curr, prev) => curr! + prev!, 0),
+      bidVolumes: quote?.total_bid_vol ?? 0,
+      askVolumes: quote?.total_ask_vol ?? 0
     } as OrderBook;
   }
 
