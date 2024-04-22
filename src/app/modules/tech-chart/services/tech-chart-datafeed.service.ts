@@ -177,7 +177,8 @@ export class TechChartDatafeedService implements IBasicDataFeed {
         syntheticInstruments: instrumentsData.parts,
         from: Math.max(periodParams.from, 0),
         to: Math.max(periodParams.to, 1),
-        tf: this.parseTimeframe(resolution)
+        tf: this.parseTimeframe(resolution),
+        countBack: periodParams.countBack
       });
     } else {
       request = this.historyService.getHistory({
@@ -185,7 +186,8 @@ export class TechChartDatafeedService implements IBasicDataFeed {
         exchange: instrumentsData.instrument.exchange,
         from: Math.max(periodParams.from, 0),
         to: Math.max(periodParams.to, 1),
-        tf: this.parseTimeframe(resolution)
+        tf: this.parseTimeframe(resolution),
+        countBack: periodParams.countBack
       });
     }
 
@@ -256,7 +258,8 @@ export class TechChartDatafeedService implements IBasicDataFeed {
                   exchange: instruments[i].value.exchange,
                   tf: this.parseTimeframe(resolution),
                   from: addDaysUnix(new Date(), -30),
-                  to: Math.round(Date.now() / 1000)
+                  to: Math.round(Date.now() / 1000),
+                  countBack: 1
                 })
                   .pipe(map(history => history!.history[history!.history.length - 1]!))
                 : of(c)
