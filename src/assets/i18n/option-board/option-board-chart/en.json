@@ -1,4 +1,6 @@
 ﻿{
+  "betaNotice": "Charts are in beta release stage",
+
   "priceByAssetPrice": {
     "chartTitle": "Theor. Price by Asset Price",
     "x": {

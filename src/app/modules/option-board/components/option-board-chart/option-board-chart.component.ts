@@ -59,7 +59,7 @@ enum ChartType {
 export class OptionBoardChartComponent implements OnInit, OnDestroy {
   readonly isLoading$ = new BehaviorSubject<boolean>(false);
   readonly zoomState$ = new BehaviorSubject<ZoomState | null>(null);
-  readonly selectedChartType$ = new BehaviorSubject<ChartType>(ChartType.PriceByAssetPrice);
+  readonly selectedChartType$ = new BehaviorSubject<ChartType>(ChartType.ProfitLossByAssetPrice);
   readonly chartTypes = [
     ChartType.PriceByAssetPrice,
     ChartType.PriceByVolatility,
@@ -135,6 +135,17 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
           },
           plugins: {
             legend: { display: false },
+            tooltip: {
+              displayColors: false,
+              callbacks: {
+                title: (tooltipItems): string => {
+                  return `${x.translator([x.selectedChartType, 'x', 'title'])}: ${Number(tooltipItems[0].label).toLocaleString()}`;
+                },
+                label: (tooltipItem): string => {
+                  return `${x.translator([x.selectedChartType, 'y', 'title'])}: ${Number(tooltipItem.raw).toLocaleString()}`;
+                }
+              }
+            }
           },
           scales: {
             x: {
@@ -222,54 +233,57 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
     );
   }
 
-  private prepareDatasets(selection: { plots: OptionPlot | null, currentChartType: ChartType }, theme: ThemeSettings): ChartData<'line', (number | null)[], number> | null {
+  private prepareDatasets(
+    selection: { plots: OptionPlot | null, currentChartType: ChartType },
+    theme: ThemeSettings
+  ): ChartData<'line', (number | null)[], number> | null {
     if (selection.plots == null) {
       return null;
     }
 
     const labels: number[] = [];
-    const positiveValues: (number | null)[] = [];
-    const negativeValues: (number | null)[] = [];
+    const values: (number | null)[] = [];
 
-    const dataSet = (selection.plots as any)[selection.currentChartType] as OptionPlotPoint[] ?? [];
+    const dataSet = (selection.plots[selection.currentChartType as keyof OptionPlot] as OptionPlotPoint[] ?? [])
+      .filter(x => !isNaN(x.label))
+      .sort((a, b) => a.label - b.label);
 
     for (const datum of dataSet) {
-      if(isNaN(datum.label)) {
-        continue;
-      }
 
       labels.push(datum.label);
 
       if (!isNaN(datum.value)) {
-        positiveValues.push(datum.value >= 0 || isNaN(datum.value) ? datum.value : null);
-        negativeValues.push(datum.value < 0 ? datum.value : null);
+        values.push(datum.value);
       } else {
-        positiveValues.push(null);
-        negativeValues.push(null);
+        values.push(null);
       }
     }
+
+    const colors = values.map((value) => (value ?? 0) >= 0 ? theme.themeColors.buyColor : theme.themeColors.sellColor);
 
     return {
       datasets: [
         {
-          data: positiveValues,
+          data: values,
           fill: {
             target: { value: 0 },
             above: theme.themeColors.buyColorBackground,
-            below: theme.themeColors.buyColorBackground
-          },
-          borderColor: theme.themeColors.buyColor,
-          pointBackgroundColor: theme.themeColors.buyColorBackground
-        },
-        {
-          data: negativeValues,
-          fill: {
-            target: { value: 0 },
-            above: theme.themeColors.sellColorBackground,
             below: theme.themeColors.sellColorBackground
           },
-          borderColor: theme.themeColors.sellColor,
-          pointBackgroundColor: theme.themeColors.sellColorBackground
+          pointBorderColor: colors,
+          pointBackgroundColor: colors,
+          segment: {
+            borderColor: (part): string => {
+              const prevValue = part.p0.parsed.y;
+              const nextValue = part.p1.parsed.y;
+
+              if ((prevValue < 0 && nextValue > 0) || (nextValue < 0 && prevValue > 0)) {
+                return theme.themeColors.mixColor;
+              }
+
+              return prevValue < 0 || nextValue < 0 ? theme.themeColors.sellColor : theme.themeColors.buyColor;
+            },
+          },
         }
       ],
       labels: labels
