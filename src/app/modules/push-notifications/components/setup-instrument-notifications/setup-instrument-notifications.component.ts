@@ -91,15 +91,18 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         withLatestFrom(this.instrumentKey$),
-        filter(([v, i]) => v?.price != null && i != null),
+        filter(([, i]) => i != null),
         mapWith(
           ([, i]) => this.quoteService.getLastPrice(i!),
-          ([parameters], lastPrice) => ({ selectedPrice: parameters.price!, lastPrice: lastPrice ?? 0 })
+          ([parameters], lastPrice) => ({ selectedPrice: parameters.price, lastPrice: lastPrice ?? 0 })
         )
       )
       .subscribe(({ selectedPrice, lastPrice }) => {
         this.newPriceChangeSubscriptionForm!.controls.price.setValue(selectedPrice);
-        this.newPriceChangeSubscriptionForm!.controls.priceCondition.setValue(selectedPrice > lastPrice ? LessMore.More : LessMore.Less);
+        this.newPriceChangeSubscriptionForm!.controls.priceCondition.setValue((selectedPrice != null && selectedPrice > lastPrice)
+          ? LessMore.More
+          : LessMore.Less
+        );
       });
   }
 
