@@ -29,6 +29,7 @@ export class EvaluationService {
       board: baseRequest.instrument.instrumentGroup,
       price: baseRequest.price,
       lotQuantity: baseRequest.lotQuantity,
+      includeLimitOrders: true
     } as EvaluationRequest).pipe(
       catchHttpError<Evaluation | null>(null, this.errorHandlerService)
     );
