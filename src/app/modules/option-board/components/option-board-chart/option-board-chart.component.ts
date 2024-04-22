@@ -128,8 +128,6 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
       translator: this.translatorService.getTranslator('option-board/option-board-chart')
     }).pipe(
       map(x => {
-        const formatter = new Intl.NumberFormat();
-
         return {
           maintainAspectRatio: false,
           layout: {
@@ -141,10 +139,10 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
               displayColors: false,
               callbacks: {
                 title: (tooltipItems): string => {
-                  return `${x.translator([x.selectedChartType, 'x', 'title'])}: ${formatter.format(Number(tooltipItems[0].label))}`;
+                  return `${x.translator([x.selectedChartType, 'x', 'title'])}: ${Number(tooltipItems[0].label).toLocaleString()}`;
                 },
                 label: (tooltipItem): string => {
-                  return `${x.translator([x.selectedChartType, 'y', 'title'])}: ${formatter.format(Number(tooltipItem.raw))}`;
+                  return `${x.translator([x.selectedChartType, 'y', 'title'])}: ${Number(tooltipItem.raw).toLocaleString()}`;
                 }
               }
             }
