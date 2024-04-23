@@ -4,6 +4,7 @@ export interface Trade {
   id: string; // 4205740801,
   orderno: string; //  28452595240,
   symbol: string;
+  shortName: string;
   brokerSymbol: string;
   exchange: string;
   date: Date; // 2021-12-28T06:43:23.0000000Z,

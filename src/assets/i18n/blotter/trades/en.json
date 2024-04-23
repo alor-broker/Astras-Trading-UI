@@ -15,6 +15,11 @@
       "tooltip": "Exchange identifier of the security",
       "searchDescription": "Search by Ticker"
     },
+    "shortName": {
+      "name": "Name",
+      "tooltip": "Short name of the security",
+      "searchDescription": "Search by Name"
+    },
     "side": {
       "name": "Side",
       "tooltip": "Trade side (buy/sell)",
