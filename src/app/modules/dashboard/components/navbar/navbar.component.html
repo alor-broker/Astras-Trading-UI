@@ -6,9 +6,9 @@
     stepPosition="center"
     [stepContent]="joyrideStep10Content"
   >
-    <div class="logo" [class.new-year]="showNewYearIcon()">
-      <a [routerLink]="['/']"></a>
-    </div>
+    <a [routerLink]="['/']" class="logo">
+      <i [nzType]="showNewYearIcon() ? 'ats-new-year-logo' : 'ats-logo'" nz-icon></i>
+    </a>
     <div class="menu-item">
       <button nz-button
               nzSize='small'

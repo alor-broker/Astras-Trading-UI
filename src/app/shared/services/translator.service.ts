@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from "rxjs";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoEvents, TranslocoService } from "@ngneat/transloco";
 import { map } from "rxjs/operators";
 import { HashMap } from "@ngneat/transloco/lib/types";
 import { getTranslationPath } from "../utils/translation-helper";
@@ -25,6 +25,10 @@ export class TranslatorService {
 
   getLangChanges(): Observable<string> {
     return this.translocoService.langChanges$;
+  }
+
+  getEvents(): Observable<TranslocoEvents> {
+    return this.translocoService.events$;
   }
 
   getTranslator(scope: string): Observable<TranslatorFn> {
