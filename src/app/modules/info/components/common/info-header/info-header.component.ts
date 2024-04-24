@@ -1,6 +1,7 @@
 import {Component, Input, ViewChild} from '@angular/core';
 import { ExchangeInfo } from '../../../models/exchange-info.model';
 import {NzAvatarComponent} from "ng-zorro-antd/avatar";
+import { environment } from "../../../../../../environments/environment";
 
 @Component({
   selector: 'ats-info-header',
@@ -24,4 +25,6 @@ export class InfoHeaderComponent {
       }
     }
   }
+
+  iconsUrl = environment.alorStorageUrl + '/icon/';
 }

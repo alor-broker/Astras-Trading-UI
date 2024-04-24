@@ -69,7 +69,11 @@
 
         <ng-template #emptyPortfolioPopover>
           <p>{{t('dashboardNavbarCommon.emptyPortfolioPopover')}}</p>
-          <p>{{t('dashboardNavbarCommon.emptyPortfolioPopoverHint')}} <ats-external-link href="https://lk.alor.ru/main">{{t('dashboardNavbarCommon.emptyPortfolioPopoverLink')}}</ats-external-link></p>
+          <p>{{t('dashboardNavbarCommon.emptyPortfolioPopoverHint')}}
+            <ats-external-link [href]="externalLinks.personalAccount">
+              {{t('dashboardNavbarCommon.emptyPortfolioPopoverLink')}}
+            </ats-external-link>
+          </p>
         </ng-template>
       </ng-template>
 

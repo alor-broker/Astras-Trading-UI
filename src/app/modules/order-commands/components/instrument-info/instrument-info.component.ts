@@ -6,6 +6,7 @@ import {QuotesService} from "../../../../shared/services/quotes.service";
 import {Position} from "../../../../shared/models/positions/position.model";
 import {startWith} from "rxjs/operators";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
+import { environment } from "../../../../../environments/environment";
 
 @Component({
   selector: 'ats-instrument-info',
@@ -28,6 +29,7 @@ export class InstrumentInfoComponent implements OnInit, OnDestroy {
       low: number;
     };
   }>;
+  iconsUrl = environment.alorStorageUrl + '/icon/';
 
   @Output()
   priceSelected = new EventEmitter<number>();

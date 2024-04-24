@@ -19,6 +19,7 @@ export const environment = {
   warpUrl: 'https://warp.alor.dev',
   remoteSettingsStorageUrl: 'https://astras-dev.alor.ru/identity/v5/UserSettings',
   teamlyDatabaseUrl: 'https://astras-dev.alor.ru/teamly/api/v1/ql/content-database/content',
+  alorStorageUrl: 'https://storage.alorbroker.ru',
   logging: {
     console: {
       minLevel: 'trace'
