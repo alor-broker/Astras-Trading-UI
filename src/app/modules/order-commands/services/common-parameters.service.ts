@@ -4,7 +4,6 @@ import { BehaviorSubject } from "rxjs";
 export interface CommonParameters {
   price: number | null;
   quantity: number | null;
-  stopLimitPrice: number | null;
 }
 
 @Injectable()

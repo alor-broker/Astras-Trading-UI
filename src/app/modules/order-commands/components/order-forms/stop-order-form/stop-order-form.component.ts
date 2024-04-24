@@ -47,6 +47,8 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
       triggerPrice: number | null;
       condition: LessMore | null;
       limit: boolean | null;
+      // Set to true to prevent parameters recalculation.
+      // For example, trigger price, condition and limit order price should not be recalculated when form is called from scalper orderbook
       disableCalculations: boolean | null;
     }>;
   } | null = null;
@@ -265,24 +267,23 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
 
       }
 
-      if (p.price != null || p.stopLimitPrice != null) {
-        const newTriggerPrice = p.price ?? p.stopLimitPrice;
-        const newStopLimitPrice =  p.stopLimitPrice ?? p.price;
+      if (p.price != null) {
+        const newPrice = p.price;
 
-        if (this.form.controls.triggerPrice.value !== newTriggerPrice) {
-          this.form.controls.triggerPrice.setValue(newTriggerPrice!);
+        if (this.form.controls.triggerPrice.value !== newPrice) {
+          this.form.controls.triggerPrice.setValue(newPrice!);
         }
 
-        if (this.form.controls.price.value !== newStopLimitPrice) {
-          this.form.controls.price.setValue(newStopLimitPrice!);
+        if (this.form.controls.price.value !== newPrice) {
+          this.form.controls.price.setValue(newPrice!);
         }
 
-        if (this.form.controls.linkedOrder.controls.triggerPrice.value !== newTriggerPrice) {
-          this.form.controls.linkedOrder.controls.triggerPrice.setValue(newTriggerPrice!);
+        if (this.form.controls.linkedOrder.controls.triggerPrice.value !== newPrice) {
+          this.form.controls.linkedOrder.controls.triggerPrice.setValue(newPrice!);
         }
 
-        if (this.form.controls.linkedOrder.controls.price.value !== newStopLimitPrice) {
-          this.form.controls.linkedOrder.controls.price.setValue(newStopLimitPrice!);
+        if (this.form.controls.linkedOrder.controls.price.value !== newPrice) {
+          this.form.controls.linkedOrder.controls.price.setValue(newPrice!);
         }
       }
     });
