@@ -20,8 +20,11 @@
   "tradesAggregationPeriodMsLabel": "Accumulate trades over a period, msec.",
 
   "showTradesClustersPanelLabel": "Show clusters panel",
+
   "disableHotkeysLabel": "Turn off hotkeys",
   "enableMouseClickSilentOrdersLabel": "Buy by click without notification",
+  "stopLimitOrdersDistanceLabel": "Stop-limit orders distance",
+
   "highlightHighVolumeLabel": "Volume highlighting",
   "volumeHighlightSettingsLabel": "Volume selection settings",
   "workingVolumeLabel": "Working volume",

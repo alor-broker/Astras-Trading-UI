@@ -14,7 +14,6 @@ import { filter, map, switchMap } from "rxjs/operators";
 import { startOfDay, toUnixTime } from "../../../../../shared/utils/datetime";
 import { PriceDiffHelper } from "../../../utils/price-diff.helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { QuotesService } from "../../../../../shared/services/quotes.service";
 import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
 import { AtsValidators } from "../../../../../shared/utils/form-validators";
 import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
@@ -89,7 +88,6 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     protected readonly instrumentService: InstrumentsService,
     private readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly quotesService: QuotesService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly orderService: OrderService,
     protected readonly destroyRef: DestroyRef) {

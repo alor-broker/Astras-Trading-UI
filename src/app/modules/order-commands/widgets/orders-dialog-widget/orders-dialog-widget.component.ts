@@ -9,7 +9,6 @@ import {NzTabComponent, NzTabSetComponent} from "ng-zorro-antd/tabs";
 import {CommonParameters, CommonParametersService} from "../../services/common-parameters.service";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import {OrderDialogParams, OrderType} from "../../../../shared/models/orders/orders-dialog.model";
-import { EnvironmentService } from "../../../../shared/services/environment.service";
 import { HelpService } from "../../../../shared/services/help.service";
 
 @Component({
@@ -38,7 +37,6 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
   stopOrderTab?: NzTabComponent;
 
   constructor(
-    private readonly environmentService: EnvironmentService,
     private readonly ordersDialogService: OrdersDialogService,
     private readonly currentDashboardService: DashboardContextService,
     private readonly instrumentService: InstrumentsService,
@@ -49,7 +47,7 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.dialogParams$ = this.ordersDialogService.newOrderDialogParameters$.pipe(
-      tap((p) => this.setCommonParameters(p?.initialValues ?? {})),
+      tap(() => this.commonParametersService.reset()),
       shareReplay(1)
     );
 

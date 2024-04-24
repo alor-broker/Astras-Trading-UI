@@ -424,10 +424,11 @@ export class ScalperCommandProcessorService {
               dataContext,
               portfolioKey => {
                 this.scalperOrdersService.setStopLimit(
-                  settings.widgetSettings,
+                  settings.instrument,
                   row.price,
                   workingVolume,
                   side,
+                  settings.widgetSettings.stopLimitOrdersDistance ?? 0,
                   settings.widgetSettings.enableMouseClickSilentOrders,
                   portfolioKey
                 );

@@ -69,12 +69,12 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
 
   constructor(
     private readonly formBuilder: FormBuilder,
-    private readonly commonParametersService: CommonParametersService,
+    protected commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly quotesService: QuotesService,
     private readonly orderService: OrderService,
     protected readonly destroyRef: DestroyRef) {
-    super(destroyRef);
+    super(commonParametersService, destroyRef);
   }
 
   get canSubmit(): boolean {
@@ -93,7 +93,7 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
   }
 
   setQuantity(value: number): void {
-    this.commonParametersService.setParameters({
+    this.setCommonParameters({
       quantity: value
     });
   }
@@ -123,7 +123,7 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
   }
 
   private initCommonParametersUpdate(): void {
-    this.commonParametersService.parameters$.pipe(
+    this.getCommonParameters().pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(p => {
       if (p.quantity != null && this.form.controls.quantity.value !== p.quantity) {
@@ -136,7 +136,7 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
       distinctUntilChanged((prev, curr) => prev.quantity === curr.quantity),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
-      this.commonParametersService.setParameters({
+      this.setCommonParameters({
         quantity: x.quantity
       });
     });

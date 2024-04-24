@@ -32,6 +32,7 @@ import { SelectedPriceData } from "../../../../shared/models/orders/selected-ord
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import { tap } from "rxjs/operators";
 
 @Component({
   selector: 'ats-order-submit-widget',
@@ -52,7 +53,6 @@ export class OrderSubmitWidgetComponent implements OnInit {
 
   settings$!: Observable<OrderSubmitSettings>;
   showBadge$!: Observable<boolean>;
-  commonParameters$ = this.commonParametersService.parameters$;
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
@@ -103,6 +103,7 @@ export class OrderSubmitWidgetComponent implements OnInit {
       distinctUntilChanged((previous, current) => this.isEqualOrderSubmitSettings(previous, current)),
       switchMap(settings => this.instrumentService.getInstrument(settings)),
       filter((i): i is Instrument => !!i),
+      tap(() => this.commonParametersService.reset()),
       shareReplay(1)
     );
 
