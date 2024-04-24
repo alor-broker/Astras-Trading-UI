@@ -301,20 +301,25 @@ export class ScalperOrdersService {
   }
 
   setStopLimit(
-    instrumentKey: InstrumentKey,
+    instrument: Instrument,
     price: number,
     quantity: number,
     side: Side,
+    distance: number,
     silent: boolean,
     portfolio: PortfolioKey): void {
+
+    const limitOrderPrice =  side === Side.Sell
+      ? MathHelper.roundPrice(price - distance * instrument.minstep, instrument.minstep)
+      : MathHelper.roundPrice(price + distance * instrument.minstep, instrument.minstep);
 
     const order: NewStopLimitOrder = {
       side: side,
       quantity: quantity,
-      price: price,
-      instrument: toInstrumentKey(instrumentKey),
       triggerPrice: price,
-      condition: side === Side.Sell ? LessMore.MoreOrEqual : LessMore.LessOrEqual
+      price: limitOrderPrice,
+      condition: side === Side.Buy ? LessMore.MoreOrEqual : LessMore.LessOrEqual,
+      instrument: toInstrumentKey(instrument),
     };
 
     if (silent) {
@@ -328,8 +333,10 @@ export class ScalperOrdersService {
           price: order.price,
           quantity: order.quantity,
           stopOrder: {
+            triggerPrice: order.triggerPrice,
             condition: order.condition,
-            limit: true
+            limit: true,
+            disableCalculations: true
           }
         }
       });
@@ -367,7 +374,8 @@ export class ScalperOrdersService {
           quantity: order.quantity,
           price: order.triggerPrice,
           stopOrder: {
-            condition: order.condition
+            condition: order.condition,
+            disableCalculations: true
           }
         }
       });

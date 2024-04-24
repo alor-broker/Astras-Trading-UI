@@ -1,5 +1,5 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject} from "rxjs";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from "rxjs";
 
 export interface CommonParameters {
   price: number | null;
@@ -14,5 +14,9 @@ export class CommonParametersService {
 
   setParameters(params: Partial<CommonParameters>): void {
     this.parametersChange$.next(params);
+  }
+
+  reset(): void {
+    this.parametersChange$.next({});
   }
 }

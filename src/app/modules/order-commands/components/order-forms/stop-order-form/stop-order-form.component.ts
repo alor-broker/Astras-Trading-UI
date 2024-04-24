@@ -43,10 +43,14 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
   initialValues: {
     price?: number;
     quantity?: number;
-    stopOrder?: {
-      condition?: LessMore;
-      limit?: boolean;
-    };
+    stopOrder?: Partial<{
+      triggerPrice: number | null;
+      condition: LessMore | null;
+      limit: boolean | null;
+      // Set to true to prevent parameters recalculation.
+      // For example, trigger price, condition and limit order price should not be recalculated when form is called from scalper orderbook
+      disableCalculations: boolean | null;
+    }>;
   } | null = null;
 
   form = this.formBuilder.group({
@@ -112,13 +116,13 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
 
   constructor(
     private readonly formBuilder: FormBuilder,
-    private readonly commonParametersService: CommonParametersService,
+    protected readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly orderService: OrderService,
     private readonly quotesService: QuotesService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly destroyRef: DestroyRef) {
-    super(destroyRef);
+    super(commonParametersService, destroyRef);
   }
 
   get canSubmit(): boolean {
@@ -158,6 +162,10 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
       }
 
       if (this.initialValues.stopOrder) {
+        if (this.initialValues.stopOrder.triggerPrice != null) {
+          this.form.controls.triggerPrice.setValue(this.initialValues.stopOrder.triggerPrice);
+        }
+
         if (this.initialValues.stopOrder.limit != null) {
           this.form.controls.withLimit.setValue(this.initialValues.stopOrder.limit);
         }
@@ -244,7 +252,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
   }
 
   private initCommonParametersUpdate(): void {
-    this.commonParametersService.parameters$.pipe(
+    this.getCommonParameters().pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(p => {
       if (p.quantity != null) {
@@ -263,11 +271,19 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
         const newPrice = p.price;
 
         if (this.form.controls.triggerPrice.value !== newPrice) {
-          this.form.controls.triggerPrice.setValue(newPrice);
+          this.form.controls.triggerPrice.setValue(newPrice!);
+        }
+
+        if (this.form.controls.price.value !== newPrice) {
+          this.form.controls.price.setValue(newPrice!);
         }
 
         if (this.form.controls.linkedOrder.controls.triggerPrice.value !== newPrice) {
-          this.form.controls.linkedOrder.controls.triggerPrice.setValue(newPrice);
+          this.form.controls.linkedOrder.controls.triggerPrice.setValue(newPrice!);
+        }
+
+        if (this.form.controls.linkedOrder.controls.price.value !== newPrice) {
+          this.form.controls.linkedOrder.controls.price.setValue(newPrice!);
         }
       }
     });
@@ -277,7 +293,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
       distinctUntilChanged((prev, curr) => prev.quantity === curr.quantity),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
-      this.commonParametersService.setParameters({
+      this.setCommonParameters({
         quantity: x.quantity
       });
     });
@@ -394,6 +410,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
 
   private initFieldDependencies(): void {
     this.form.controls.triggerPrice.valueChanges.pipe(
+      filter(() => !(this.initialValues?.stopOrder?.disableCalculations ?? false)),
       distinctUntilChanged((prev, curr) => prev === curr),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(val => {
@@ -404,6 +421,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
       this.isActivated$,
       this.form.controls.price.valueChanges
     ]).pipe(
+      filter(() => !(this.initialValues?.stopOrder?.disableCalculations ?? false)),
       filter(([isActivated, v]) => isActivated && this.form.controls.condition.untouched && !!(v ?? 0)),
       map(([, price]) => price),
       distinctUntilChanged((prev, curr) => prev === curr),

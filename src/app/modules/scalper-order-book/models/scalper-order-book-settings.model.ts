@@ -70,6 +70,7 @@ export interface InstrumentLinkedSettings {
   tradesPanelSettings?: TradesPanelSettings;
   minorLinesStep?: number;
   majorLinesStep?: number;
+  stopLimitOrdersDistance?: number;
 }
 
 export interface ScalperOrderBookWidgetSettings extends WidgetSettings, InstrumentKey, InstrumentLinkedSettings {

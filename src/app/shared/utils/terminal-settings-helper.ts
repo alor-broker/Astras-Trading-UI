@@ -2,6 +2,7 @@
   GridType,
   HotKeysSettings,
   InstantNotificationsSettings,
+  MouseActionsSchemes,
   ScalperOrderBookMouseAction,
   ScalperOrderBookMouseActionsMap,
   TerminalSettings
@@ -96,7 +97,7 @@ export class TerminalSettingsHelper {
 
   static getScalperOrderBookMouseActionsScheme1(): ScalperOrderBookMouseActionsMap {
     return {
-      mapName: 'scheme1',
+      mapName: MouseActionsSchemes.Scheme1,
       actions: [
         {
           button: 'left',
@@ -112,13 +113,13 @@ export class TerminalSettingsHelper {
           button: 'left',
           orderBookRowType: 'ask',
           modifier: 'ctrl',
-          action: ScalperOrderBookMouseAction.StopLimitSellOrder
+          action: ScalperOrderBookMouseAction.StopLimitBuyOrder
         },
         {
           button: 'left',
           orderBookRowType: 'bid',
           modifier: 'ctrl',
-          action: ScalperOrderBookMouseAction.StopLimitBuyOrder
+          action: ScalperOrderBookMouseAction.StopLimitSellOrder
         },
         {
           button: 'left',
@@ -142,7 +143,7 @@ export class TerminalSettingsHelper {
 
   static getScalperOrderBookMouseActionsScheme2(): ScalperOrderBookMouseActionsMap {
     return {
-      mapName: 'scheme2',
+      mapName:  MouseActionsSchemes.Scheme2,
       actions: [
         {
           button: 'left',
@@ -153,13 +154,13 @@ export class TerminalSettingsHelper {
           button: 'left',
           orderBookRowType: 'ask',
           modifier: 'ctrl',
-          action: ScalperOrderBookMouseAction.StopLimitSellOrder
+          action: ScalperOrderBookMouseAction.StopLimitBuyOrder
         },
         {
           button: 'left',
           orderBookRowType: 'bid',
           modifier: 'ctrl',
-          action: ScalperOrderBookMouseAction.StopLimitBuyOrder
+          action: ScalperOrderBookMouseAction.StopLimitSellOrder
         },
         {
           button: 'left',
