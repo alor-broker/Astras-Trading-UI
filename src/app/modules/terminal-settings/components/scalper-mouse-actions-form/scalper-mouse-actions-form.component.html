@@ -13,7 +13,7 @@
       </nz-form-control>
     </nz-form-item>
     <ng-container
-      *ngIf="form.getRawValue().mapName && getActionsFormScheme(form.getRawValue().mapName) as schemeActions">
+      *ngIf="form.getRawValue().mapName && form.value.actions! as schemeActions">
       <nz-table
         atsTableRowHeight
         nzTemplateMode
@@ -28,7 +28,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let action of schemeActions.actions">
+        <tr *ngFor="let action of schemeActions">
           <td>{{t('terminalSettingsScalperMouseActionsForm.schemeDescription.buttons.' + action.button)}}</td>
           <td>{{action.modifier ? t('terminalSettingsScalperMouseActionsForm.schemeDescription.modifiers.' + action.modifier) : ''}}</td>
           <td>{{t('terminalSettingsScalperMouseActionsForm.schemeDescription.sides.' + action.orderBookRowType)}}</td>

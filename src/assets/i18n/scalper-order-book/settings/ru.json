@@ -20,8 +20,11 @@
   "tradesAggregationPeriodMsLabel": "Складывать сделки за период, мсек.",
 
   "showTradesClustersPanelLabel": "Показывать панель кластеров",
+
   "disableHotkeysLabel": "Выключить горячие клавиши",
   "enableMouseClickSilentOrdersLabel": "Покупать по кликам без уведомлений",
+  "stopLimitOrdersDistanceLabel": "Дальность заброса стоп-лимит заявок",
+
   "highlightHighVolumeLabel": "Выделение цветом объема",
   "volumeHighlightSettingsLabel": "Настройки выделения объемов",
   "workingVolumeLabel": "Рабочий объём",

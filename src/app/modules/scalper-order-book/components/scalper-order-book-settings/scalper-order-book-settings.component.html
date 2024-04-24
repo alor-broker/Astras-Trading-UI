@@ -38,8 +38,15 @@
           <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.displaySettingsHeader')">
             <nz-form-item>
               <nz-form-label nzFor="depth" nzRequired>{{t('scalperOrderBookSettings.depthLabel')}}</nz-form-label>
-              <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.intervalError', { min: validationOptions.depth.min, max: validationOptions.depth.max })">
-                <ats-input-number formControlName="depth" [allowDecimal]="false" [placeholder]="t('scalperOrderBookSettings.intervalPlaceholder', { min: validationOptions.depth.min, max: validationOptions.depth.max })"></ats-input-number>
+              <nz-form-control>
+                <nz-slider
+                  [nzMin]="validationOptions.depth.min"
+                  [nzMax]="validationOptions.depth.max"
+                  [nzStep]="1"
+                  [nzMarks]="getSliderMarks(validationOptions.depth.min, validationOptions.depth.max)"
+                  formControlName="depth"
+                >
+                </nz-slider>
               </nz-form-control>
             </nz-form-item>
             <nz-form-item class="one-row">
@@ -209,6 +216,21 @@
               <nz-form-label nzFor="enableMouseClickSilentOrders">{{t('scalperOrderBookSettings.enableMouseClickSilentOrdersLabel')}}</nz-form-label>
               <nz-form-control>
                 <nz-switch formControlName='enableMouseClickSilentOrders'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzFor="stopLimitOrdersDistance">
+                {{t('scalperOrderBookSettings.stopLimitOrdersDistanceLabel')}}
+              </nz-form-label>
+              <nz-form-control
+                [nzErrorTip]="t(
+                      'scalperOrderBookSettings.intervalError',
+                      {
+                      min: validationOptions.stopLimitOrdersDistance.min,
+                      max: validationOptions.stopLimitOrdersDistance.max
+                      })"
+              >
+                <ats-input-number formControlName="stopLimitOrdersDistance" [allowDecimal]="false" [allowNegative]="false"></ats-input-number>
               </nz-form-control>
             </nz-form-item>
           </nz-collapse-panel>

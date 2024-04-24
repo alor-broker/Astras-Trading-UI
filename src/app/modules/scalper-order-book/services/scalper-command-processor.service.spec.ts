@@ -510,12 +510,13 @@ describe('ScalperCommandProcessorService', () => {
           rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
         } as BodyRow;
 
-        scalperOrdersServiceSpy.setStopLimit.and.callFake((instrumentKey: InstrumentKey, price: number, quantity: number, side: Side, silent: boolean) => {
+        scalperOrdersServiceSpy.setStopLimit.and.callFake((instrument: Instrument, price: number, quantity: number, side: Side, distance: number, silent: boolean) => {
           done();
-          expect(instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(instrument).toEqual(defaultInstrumentInfo);
           expect(price).toEqual(testRow.price);
+          expect(distance).toEqual(0);
           expect(quantity).toEqual(workingVolume);
-          expect(side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell);
+          expect(side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Sell : Side.Buy);
           expect(silent).toEqual(true);
         });
 

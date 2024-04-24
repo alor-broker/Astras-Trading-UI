@@ -50,8 +50,13 @@ export interface ScalperOrderBookMouseActionsMapItem {
   action: ScalperOrderBookMouseAction;
 }
 
+export enum MouseActionsSchemes {
+  Scheme1 = 'scheme1',
+  Scheme2 = 'scheme2'
+}
+
 export interface ScalperOrderBookMouseActionsMap {
-  mapName: 'scheme1' | 'scheme2';
+  mapName: MouseActionsSchemes;
   actions: ScalperOrderBookMouseActionsMapItem[];
 }
 

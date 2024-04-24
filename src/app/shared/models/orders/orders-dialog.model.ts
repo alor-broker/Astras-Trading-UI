@@ -21,10 +21,12 @@ export interface OrderDialogParams {
       bottomOrderPrice?: number | null;
       bottomOrderSide?: Side | null;
     };
-    stopOrder?: {
-      condition?: LessMore;
-      limit?: boolean;
-    };
+    stopOrder?: Partial<{
+      triggerPrice: number | null;
+      condition: LessMore | null;
+      limit: boolean | null;
+      disableCalculations: boolean | null;
+    }>;
   };
 }
 
