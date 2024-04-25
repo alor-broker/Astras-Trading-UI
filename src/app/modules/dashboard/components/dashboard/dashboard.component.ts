@@ -78,7 +78,7 @@ export class DashboardComponent implements OnInit {
           fixedRowHeight: 28,
           fixedColWidth: 30,
           compactType: CompactType.None,
-          margin: 5,
+          margin: 6,
           outerMargin: true,
           outerMarginTop: null,
           outerMarginRight: null,
