@@ -81,7 +81,7 @@ export class DashboardComponent implements OnInit {
           margin: 5,
           outerMargin: true,
           outerMarginTop: null,
-          outerMarginRight: 6,
+          outerMarginRight: 6, // needs to fix bug when widget auto shrinks (#783)
           outerMarginBottom: null,
           outerMarginLeft: null,
           useTransformPositioning: true,
