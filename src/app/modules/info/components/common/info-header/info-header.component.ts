@@ -1,7 +1,7 @@
-import {Component, Input, ViewChild} from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { ExchangeInfo } from '../../../models/exchange-info.model';
-import {NzAvatarComponent} from "ng-zorro-antd/avatar";
-import { environment } from "../../../../../../environments/environment";
+import { NzAvatarComponent } from "ng-zorro-antd/avatar";
+import { EnvironmentService } from "../../../../../shared/services/environment.service";
 
 @Component({
   selector: 'ats-info-header',
@@ -26,5 +26,10 @@ export class InfoHeaderComponent {
     }
   }
 
-  iconsUrl = environment.alorStorageUrl + '/icon/';
+  iconsUrl = this.environmentService.alorIconsStorageUrl;
+
+  constructor(
+    private readonly environmentService: EnvironmentService
+  ) {
+  }
 }

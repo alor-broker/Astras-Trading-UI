@@ -2,11 +2,11 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angula
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {BehaviorSubject, combineLatest, filter, map, Observable, shareReplay, switchMap} from "rxjs";
-import {QuotesService} from "../../../../shared/services/quotes.service";
-import {Position} from "../../../../shared/models/positions/position.model";
-import {startWith} from "rxjs/operators";
-import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
-import { environment } from "../../../../../environments/environment";
+import { QuotesService } from "../../../../shared/services/quotes.service";
+import { Position } from "../../../../shared/models/positions/position.model";
+import { startWith } from "rxjs/operators";
+import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
+import { EnvironmentService } from "../../../../shared/services/environment.service";
 
 @Component({
   selector: 'ats-instrument-info',
@@ -29,7 +29,8 @@ export class InstrumentInfoComponent implements OnInit, OnDestroy {
       low: number;
     };
   }>;
-  iconsUrl = environment.alorStorageUrl + '/icon/';
+
+  iconsUrl = this.environmentService.alorIconsStorageUrl;
 
   @Output()
   priceSelected = new EventEmitter<number>();
@@ -40,7 +41,9 @@ export class InstrumentInfoComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly quoteService: QuotesService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService) {
+    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
+    private readonly environmentService: EnvironmentService
+  ) {
   }
 
   @Input({required: true})
