@@ -71,6 +71,10 @@ export class EnvironmentService {
     return this.getDebugStringRecord('remoteSettingsStorageUrl') ?? environment.remoteSettingsStorageUrl;
   }
 
+  get alorIconsStorageUrl(): string {
+    return this.getDebugStringRecord('alorIconsStorageUrl') ?? environment.alorIconsStorageUrl;
+  }
+
   get logging(): LoggingConfig {
     return environment.logging as unknown as LoggingConfig;
   }

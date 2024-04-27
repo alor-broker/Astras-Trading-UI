@@ -1,5 +1,5 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {APP_HOOK, AppHook} from "./shared/services/app-hook/app-hook-token";
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { APP_HOOK, AppHook } from "./shared/services/app-hook/app-hook-token";
 import { GlobalLoadingIndicatorService } from "./shared/services/global-loading-indicator.service";
 import { Observable } from "rxjs";
 
@@ -9,8 +9,6 @@ import { Observable } from "rxjs";
   styleUrls: ['./app.component.less'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'astras';
-
   readonly isLoading$: Observable<boolean>;
 
   constructor(

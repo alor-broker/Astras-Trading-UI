@@ -112,7 +112,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
     return {
       date: new Date(),
       isMe: false,
-      avatarUri: '/assets/custom_icons/logo.svg',
+      avatarUri: '/assets/custom_icons/outline/ats-logo.svg',
       messageType,
       content
     };
