@@ -154,7 +154,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
         has_intraday: true,
         has_seconds: true,
         timezone:  instrumentExchange?.settings.timezone as Timezone ?? 'Europe/Moscow',
-        session: instrumentExchange?.settings.defaultTradingSession ?? '0700-0000,0000-0200',
+        session: instrumentExchange?.settings.defaultTradingSession ?? '0700-0000,0000-0200:1234567',
         supported_resolutions: this.getSupportedResolutions(),
       };
 
