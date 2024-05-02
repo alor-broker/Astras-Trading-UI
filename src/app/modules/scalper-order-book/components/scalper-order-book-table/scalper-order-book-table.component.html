@@ -130,20 +130,20 @@
           >&nbsp;</span>
           <ng-container
             *ngTemplateOutlet="limitOrdersDisplay; context: {
-            orders:  getFilteredOrders(row.currentOrders, 'limit')
+            orders:  getFilteredOrders(row.currentOrders, orderTypes.Limit)
             }"
           >
           </ng-container>
           <ng-container
             *ngTemplateOutlet="stopOrdersDisplay; context: {
-            orders:  getFilteredOrders(row.currentOrders, 'stoplimit'),
+            orders:  getFilteredOrders(row.currentOrders, orderTypes.StopLimit),
             orderSymbol: 'SL',
             tooltipKey: 'stopLimitOrderTooltip'
             }">
           </ng-container>
           <ng-container
             *ngTemplateOutlet="stopOrdersDisplay; context: {
-            orders:  getFilteredOrders(row.currentOrders, 'stop'),
+            orders:  getFilteredOrders(row.currentOrders, orderTypes.StopMarket),
             orderSymbol: 'SM',
             tooltipKey: 'stopMarketOrderTooltip'
             }">

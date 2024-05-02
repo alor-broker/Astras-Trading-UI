@@ -1,13 +1,14 @@
 import { Side } from '../../../shared/models/enums/side.model';
 import { Range } from "../../../shared/models/common.model";
 import { LessMore } from "../../../shared/models/enums/less-more.model";
+import { OrderType } from "../../../shared/models/orders/order.model";
 
 export interface CurrentOrderDisplay {
   orderId: string;
   symbol: string;
   exchange: string;
   portfolio: string;
-  type: 'limit' | 'stoplimit' | 'stop';
+  type: OrderType;
 
   side: Side;
   price?: number;

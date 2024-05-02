@@ -1,32 +1,64 @@
-import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
-import {BaseOrderFormComponent} from "../base-order-form.component";
-import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
-import {FormBuilder, Validators} from "@angular/forms";
-import {CommonParametersService} from "../../../services/common-parameters.service";
-import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
-import {NewLinkedOrder, OrderService} from "../../../../../shared/services/orders/order.service";
-import {inputNumberValidation} from "../../../../../shared/utils/validation-options";
-import {AtsValidators} from "../../../../../shared/utils/form-validators";
-import {LessMore} from "../../../../../shared/models/enums/less-more.model";
-import {TimeInForce} from "../../../../../shared/models/orders/order.model";
-import {Side} from "../../../../../shared/models/enums/side.model";
-import {combineLatest, distinctUntilChanged, Observable, switchMap, take} from "rxjs";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {debounceTime, filter, map} from "rxjs/operators";
-import {PriceDiffHelper} from "../../../utils/price-diff.helper";
-import {QuotesService} from "../../../../../shared/services/quotes.service";
-import {mapWith} from "../../../../../shared/utils/observable-helper";
-import {TimezoneConverterService} from "../../../../../shared/services/timezone-converter.service";
-import {addMonthsUnix, getUtcNow, startOfDay, toUnixTime} from "../../../../../shared/utils/datetime";
-import {TimezoneConverter} from "../../../../../shared/utils/timezone-converter";
-import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
 import {
+  Component,
+  DestroyRef,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
+import { BaseOrderFormComponent } from "../base-order-form.component";
+import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
+import {
+  FormBuilder,
+  Validators
+} from "@angular/forms";
+import { CommonParametersService } from "../../../services/common-parameters.service";
+import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
+import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
+import { AtsValidators } from "../../../../../shared/utils/form-validators";
+import { LessMore } from "../../../../../shared/models/enums/less-more.model";
+import {
+  OrderType,
+  TimeInForce
+} from "../../../../../shared/models/orders/order.model";
+import { Side } from "../../../../../shared/models/enums/side.model";
+import {
+  combineLatest,
+  distinctUntilChanged,
+  Observable,
+  switchMap,
+  take
+} from "rxjs";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {
+  debounceTime,
+  filter,
+  map
+} from "rxjs/operators";
+import { PriceDiffHelper } from "../../../utils/price-diff.helper";
+import { QuotesService } from "../../../../../shared/services/quotes.service";
+import { mapWith } from "../../../../../shared/utils/observable-helper";
+import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
+import {
+  addMonthsUnix,
+  getUtcNow,
+  startOfDay,
+  toUnixTime
+} from "../../../../../shared/utils/datetime";
+import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
+import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
+import {
+  NewLinkedOrder,
   NewStopLimitOrder,
   NewStopMarketOrder,
-  SubmitOrderResult
+  OrderCommandResult
 } from "../../../../../shared/models/orders/new-order.model";
-import {toInstrumentKey} from "../../../../../shared/utils/instruments";
-import {ExecutionPolicy, SubmitGroupResult} from "../../../../../shared/models/orders/orders-group.model";
+import { toInstrumentKey } from "../../../../../shared/utils/instruments";
+import {
+  ExecutionPolicy,
+  SubmitGroupResult
+} from "../../../../../shared/models/orders/orders-group.model";
+import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
+import { OrdersGroupService } from "../../../../../shared/services/orders/orders-group.service";
 
 @Component({
   selector: 'ats-stop-order-form',
@@ -118,7 +150,8 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     private readonly formBuilder: FormBuilder,
     protected readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly orderService: OrderService,
+    private readonly wsOrdersService: WsOrdersService,
+    private readonly ordersGroupService: OrdersGroupService,
     private readonly quotesService: QuotesService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly destroyRef: DestroyRef) {
@@ -195,7 +228,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     this.checkFieldsAvailability();
   }
 
-  protected prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<SubmitOrderResult | SubmitGroupResult | null> {
+  protected prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<OrderCommandResult | SubmitGroupResult | null> {
     return this.timezoneConverterService.getConverter().pipe(
       take(1),
       switchMap(tc => {
@@ -206,27 +239,27 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
             ? {
               ...this.getStopLimitOrder(instrument, side, formValue, tc),
               side,
-              type: 'StopLimit'
+              type: OrderType.StopLimit
             }
             : {
               ...this.getStopMarketOrder(instrument, side, formValue, tc),
               side,
-              type: 'Stop'
+              type: OrderType.StopMarket
             };
 
-          const linkedOrder = (formValue.linkedOrder.withLimit ?? false)
+          const linkedOrder: NewLinkedOrder = (formValue.linkedOrder.withLimit ?? false)
             ? {
               ...this.getStopLimitOrder(instrument, side, formValue.linkedOrder, tc),
-              side: formValue.linkedOrder.side,
-              type: 'StopLimit'
+              side: formValue.linkedOrder.side!,
+              type: OrderType.StopLimit
             }
             : {
               ...this.getStopMarketOrder(instrument, side, formValue.linkedOrder, tc),
-              side: formValue.linkedOrder.side,
-              type: 'Stop'
+              side: formValue.linkedOrder.side!,
+              type: OrderType.StopMarket
             };
 
-          return this.orderService.submitOrdersGroup(
+          return this.ordersGroupService.submitOrdersGroup(
             [
               baseOrder,
               linkedOrder
@@ -236,12 +269,12 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
           );
         } else {
           if (formValue.withLimit === true) {
-            return this.orderService.submitStopLimitOrder(
+            return this.wsOrdersService.submitStopLimitOrder(
               this.getStopLimitOrder(instrument, side, formValue, tc),
               portfolioKey.portfolio
             );
           } else {
-            return this.orderService.submitStopMarketOrder(
+            return this.wsOrdersService.submitStopMarketOrder(
               this.getStopMarketOrder(instrument, side, formValue, tc),
               portfolioKey.portfolio
             );

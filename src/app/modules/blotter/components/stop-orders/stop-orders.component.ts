@@ -1,8 +1,6 @@
 import { Component, DestroyRef, EventEmitter, OnInit, Output } from '@angular/core';
-import { combineLatest, distinctUntilChanged, Observable, Subject, switchMap, take, } from 'rxjs';
-import { catchError, debounceTime, map, mergeMap, startWith, tap } from 'rxjs/operators';
-import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
-import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
+import { combineLatest, distinctUntilChanged, Observable, switchMap, take, } from 'rxjs';
+import { debounceTime, map,startWith, tap } from 'rxjs/operators';
 import { OrderFilter } from '../../models/order-filter.model';
 import { BlotterService } from '../../services/blotter.service';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
@@ -17,9 +15,12 @@ import { OrdersGroupService } from "../../../../shared/services/orders/orders-gr
 import { DomHelper } from "../../../../shared/utils/dom-helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
-import { StopOrder } from "../../../../shared/models/orders/order.model";
+import {
+  OrderType,
+  StopOrder
+} from "../../../../shared/models/orders/order.model";
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
-import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
+import { OrderFormType } from "../../../../shared/models/orders/orders-dialog.model";
 import {
   getConditionSign,
   getConditionTypeByString
@@ -27,6 +28,7 @@ import {
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 
 interface DisplayOrder extends StopOrder {
   residue: string;
@@ -39,6 +41,7 @@ interface DisplayOrder extends StopOrder {
   styleUrls: ['./stop-orders.component.less'],
 })
 export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder, OrderFilter> implements OnInit {
+  readonly orderTypes = OrderType;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
   isModalOpened = DomHelper.isModalOpen;
@@ -208,8 +211,6 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
     },
   ];
 
-  private readonly cancelCommands = new Subject<CancelCommand>();
-  private readonly cancels$ = this.cancelCommands.asObservable();
   private orders: StopOrder[] = [];
 
   settingsTableName = TableNames.StopOrdersTable;
@@ -219,7 +220,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
   constructor(
     protected readonly service: BlotterService,
     protected readonly settingsService: WidgetSettingsService,
-    private readonly canceller: OrderCancellerService,
+    private readonly wsOrdersService: WsOrdersService,
     private readonly ordersDialogService: OrdersDialogService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
@@ -231,12 +232,6 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
 
   ngOnInit(): void {
     super.ngOnInit();
-
-    this.cancels$.pipe(
-      mergeMap((command) => this.canceller.cancelOrder(command)),
-      catchError((e, caught) => caught),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe();
   }
 
   protected initTableConfigStream(): Observable<TableConfig<DisplayOrder>> {
@@ -324,17 +319,15 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
       ));
   }
 
-  cancelOrder(orderId: string): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      this.cancelCommands.next({
-        portfolio: settings.portfolio,
-        exchange: settings.exchange,
-        orderid: orderId,
-        stop: true
-      });
-    });
+  cancelOrder(order: DisplayOrder): void {
+    this.wsOrdersService.cancelOrders([
+      {
+        orderId: order.id,
+        orderType: order.type,
+        exchange: order.exchange,
+        portfolio: order.portfolio
+      }
+    ]).subscribe();
   }
 
   editOrder(order: StopOrder, event: MouseEvent): void {
@@ -354,15 +347,22 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
           exchange: s.exchange
         },
         orderId: order.id,
-        orderType: OrderType.Stop,
+        orderType: OrderFormType.Stop,
         initialValues: {}
       });
     });
   }
 
   cancelAllOrders(): void {
-    const working = this.orders.filter(o => o.status == 'working').map(o => o.id);
-    working.forEach(order => this.cancelOrder(order));
+    const working = this.orders.filter(o => o.status == 'working');
+    if(working.length > 0) {
+      this.wsOrdersService.cancelOrders(working.map(o => ({
+        orderId: o.id,
+        orderType: o.type,
+        exchange: o.exchange,
+        portfolio: o.portfolio
+      }))).subscribe();
+    }
   }
 
   openOrdersGroup(groupId: string, event: MouseEvent): void {

@@ -11,8 +11,8 @@ import {
   mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
-import { OrderService } from "../../../../shared/services/orders/order.service";
 import { LetDirective } from "@ngrx/component";
+import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
@@ -41,7 +41,7 @@ describe('PositionsComponent', () => {
         },
         { provide: BlotterService, useClass: MockServiceBlotter },
         {
-          provide: OrderService,
+          provide: WsOrdersService,
           useValue: {
             submitMarketOrder: jasmine.createSpy('submitMarketOrder').and.callThrough()
           }

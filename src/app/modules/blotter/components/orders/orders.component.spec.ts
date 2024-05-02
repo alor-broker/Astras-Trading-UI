@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { BlotterService } from '../../services/blotter.service';
 import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
@@ -18,6 +17,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
 import { LetDirective } from "@ngrx/component";
+import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 
 describe('OrdersComponent', () => {
   let component: OrdersComponent;
@@ -25,7 +25,6 @@ describe('OrdersComponent', () => {
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
-    const cancelSpy = jasmine.createSpyObj('OrderCancellerService', ['cancelOrder']);
     const timezoneConverterServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
     timezoneConverterServiceSpy.getConverter.and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime)));
     const settingsMock = {
@@ -49,7 +48,12 @@ describe('OrdersComponent', () => {
           useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }
         },
         { provide: BlotterService, useClass: MockServiceBlotter },
-        { provide: OrderCancellerService, useValue: cancelSpy },
+        {
+          provide: WsOrdersService,
+          useValue: {
+            cancelOrders: jasmine.createSpy('cancelOrders').and.returnValue(new Subject())
+          }
+        },
         { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy },
         {
           provide: OrdersGroupService,

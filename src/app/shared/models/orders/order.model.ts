@@ -1,5 +1,12 @@
 import {Side} from "src/app/shared/models/enums/side.model";
 
+export enum OrderType {
+  Market = 'market',
+  Limit = 'limit',
+  StopMarket = 'stop',
+  StopLimit = 'stoplimit'
+}
+
 export enum TimeInForce {
   OneDay = 'oneday',
   ImmediateOrCancel = 'immediateorcancel',
@@ -23,7 +30,7 @@ export interface Order {
   exchange: string; // MOEX,
   board: string;
   portfolio: string; // D39004,
-  type: string; // limit,
+  type: OrderType; // limit,
   side: Side; // buy,
   status: string; // working,
   transTime: Date; // 2021-12-28T06:40:46.0000000Z,

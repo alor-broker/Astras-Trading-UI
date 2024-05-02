@@ -55,6 +55,10 @@ export class EnvironmentService {
     return this.getDebugStringRecord('wsUrl') ?? environment.wsUrl;
   }
 
+  get cwsUrl(): string {
+    return this.getDebugStringRecord('cwsUrl') ?? environment.cwsUrl;
+  }
+
   get clientDataUrl(): string {
     return this.getDebugStringRecord('clientDataUrl') ?? environment.clientDataUrl;
   }

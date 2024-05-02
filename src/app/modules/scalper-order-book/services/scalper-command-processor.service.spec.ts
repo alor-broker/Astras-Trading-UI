@@ -33,7 +33,8 @@ import { InstrumentKey } from '../../../shared/models/instruments/instrument-key
 import { PortfolioKey } from '../../../shared/models/portfolio-key.model';
 import { Position } from '../../../shared/models/positions/position.model';
 import { TerminalSettings } from '../../../shared/models/terminal-settings/terminal-settings.model';
-import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
+import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
+import { OrderType } from "../../../shared/models/orders/order.model";
 
 describe('ScalperCommandProcessorService', () => {
   let service: ScalperCommandProcessorService;
@@ -138,7 +139,7 @@ describe('ScalperCommandProcessorService', () => {
     it('should process cancelLimitOrdersAll command', ((done) => {
         const expectedOrder: CurrentOrderDisplay = {
           orderId: generateRandomString(5),
-          type: 'limit',
+          type: OrderType.Limit,
           symbol: 'TEST',
           exchange: orderBookDefaultSettings.exchange,
           portfolio: 'D1234',
@@ -191,7 +192,7 @@ describe('ScalperCommandProcessorService', () => {
     it('should process cancelLimitOrdersCurrent command', ((done) => {
         const expectedOrder: CurrentOrderDisplay = {
           orderId: generateRandomString(5),
-          type: 'limit',
+          type: OrderType.Limit,
           symbol: 'TEST',
           exchange: orderBookDefaultSettings.exchange,
           portfolio: 'D1234',
@@ -220,7 +221,7 @@ describe('ScalperCommandProcessorService', () => {
     it('should process cancelStopOrdersCurrent command', ((done) => {
         const expectedOrder: CurrentOrderDisplay = {
           orderId: generateRandomString(5),
-          type: 'stop',
+          type: OrderType.StopMarket,
           symbol: 'TEST',
           exchange: orderBookDefaultSettings.exchange,
           portfolio: 'D1234',

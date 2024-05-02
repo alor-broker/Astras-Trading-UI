@@ -1,4 +1,5 @@
 import { Side } from '../../../shared/models/enums/side.model';
+import { OrderType } from "../../../shared/models/orders/order.model";
 
 export interface CurrentOrder {
   orderId: string;
@@ -6,7 +7,7 @@ export interface CurrentOrder {
   portfolio: string;
   volume: number;
   price: number;
-  type: string;
+  type: OrderType;
   side: Side;
   symbol: string;
 }

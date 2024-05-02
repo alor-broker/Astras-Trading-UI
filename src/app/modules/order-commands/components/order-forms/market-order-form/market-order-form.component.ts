@@ -21,7 +21,6 @@ import {
 } from "@angular/forms";
 import { CommonParametersService } from "../../../services/common-parameters.service";
 import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
-import { OrderService } from "../../../../../shared/services/orders/order.service";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
 import { EvaluationBaseProperties } from "../../../../../shared/models/evaluation-base-properties.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -36,8 +35,9 @@ import { Side } from "../../../../../shared/models/enums/side.model";
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
 import { SubmitGroupResult } from "../../../../../shared/models/orders/orders-group.model";
-import { SubmitOrderResult } from "../../../../../shared/models/orders/new-order.model";
+import { OrderCommandResult } from "../../../../../shared/models/orders/new-order.model";
 import { toInstrumentKey } from "../../../../../shared/utils/instruments";
+import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
 
 @Component({
   selector: 'ats-market-order-form',
@@ -72,7 +72,7 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
     protected commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly quotesService: QuotesService,
-    private readonly orderService: OrderService,
+    private readonly wsOrdersService: WsOrdersService,
     protected readonly destroyRef: DestroyRef) {
     super(commonParametersService, destroyRef);
   }
@@ -110,10 +110,10 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
     this.form.controls.instrumentGroup.setValue(newInstrument.instrumentGroup ?? '');
   }
 
-  protected prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<SubmitOrderResult | SubmitGroupResult> {
+  protected prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<OrderCommandResult | SubmitGroupResult> {
     const formValue = this.form.value;
 
-    return this.orderService.submitMarketOrder({
+    return this.wsOrdersService.submitMarketOrder({
         instrument: this.getOrderInstrument(formValue, instrument),
         quantity: Number(formValue.quantity),
         side: side

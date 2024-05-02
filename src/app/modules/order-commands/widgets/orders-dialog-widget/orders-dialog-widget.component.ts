@@ -8,7 +8,7 @@ import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {NzTabComponent, NzTabSetComponent} from "ng-zorro-antd/tabs";
 import {CommonParameters, CommonParametersService} from "../../services/common-parameters.service";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
-import {OrderDialogParams, OrderType} from "../../../../shared/models/orders/orders-dialog.model";
+import {OrderDialogParams, OrderFormType} from "../../../../shared/models/orders/orders-dialog.model";
 import { HelpService } from "../../../../shared/services/help.service";
 
 @Component({
@@ -84,13 +84,13 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
       }
 
       switch (params.initialValues.orderType) {
-        case OrderType.Limit:
+        case OrderFormType.Limit:
           this.activateCommandTab(this.limitOrderTab);
           break;
-        case OrderType.Market:
+        case OrderFormType.Market:
           this.activateCommandTab(this.marketOrderTab);
           break;
-        case OrderType.Stop:
+        case OrderFormType.Stop:
           this.activateCommandTab(this.stopOrderTab);
           break;
         default:

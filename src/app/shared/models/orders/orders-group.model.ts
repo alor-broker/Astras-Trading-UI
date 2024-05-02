@@ -1,5 +1,9 @@
 import { NzTreeNodeOptions } from "ng-zorro-antd/core/tree/nz-tree-base-node";
-import {Order, StopOrder} from "./order.model";
+import {
+  Order,
+  OrderType,
+  StopOrder
+} from "./order.model";
 
 
 
@@ -15,7 +19,7 @@ export interface CreateOrderGroupReq {
     orderId: string;
     exchange: string;
     portfolio: string;
-    type: 'Limit' | 'StopLimit' | 'Stop';
+    type: OrderType.Limit | OrderType.StopMarket | OrderType.StopLimit;
   }[];
   executionPolicy: ExecutionPolicy;
 }

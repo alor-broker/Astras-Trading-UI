@@ -31,7 +31,8 @@ import {
   ScalperOrderBookMouseActionsMap
 } from '../../../shared/models/terminal-settings/terminal-settings.model';
 import { TerminalSettingsHelper } from '../../../shared/utils/terminal-settings-helper';
-import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
+import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
+import { OrderType } from "../../../shared/models/orders/order.model";
 
 @Injectable({
   providedIn: 'root'
@@ -226,7 +227,7 @@ export class ScalperCommandProcessorService {
     this.callWithCurrentOrders(
       dataContext,
       orders => {
-        const limitOrders = orders.filter(x => x.type === 'limit');
+        const limitOrders = orders.filter(x => x.type === OrderType.Limit);
 
         if (limitOrders.length > 0) {
           this.scalperOrdersService.cancelOrders(limitOrders);
@@ -238,7 +239,7 @@ export class ScalperCommandProcessorService {
     this.callWithCurrentOrders(
       dataContext,
       orders => {
-        const stopOrders = orders.filter(x => x.type === 'stop' || x.type === 'stoplimit');
+        const stopOrders = orders.filter(x => x.type === OrderType.StopMarket || x.type === OrderType.StopLimit);
 
         if (stopOrders.length > 0) {
           this.scalperOrdersService.cancelOrders(stopOrders);

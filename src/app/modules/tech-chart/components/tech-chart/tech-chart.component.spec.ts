@@ -23,7 +23,6 @@ import {
   TestData
 } from '../../../../shared/utils/testing';
 import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
-import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
@@ -34,6 +33,7 @@ import { WidgetsSharedDataService } from "../../../../shared/services/widgets-sh
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
 import { MarketService } from "../../../../shared/services/market.service";
 import { ChartTemplatesSettingsBrokerService } from "../../services/chart-templates-settings-broker.service";
+import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -123,9 +123,9 @@ describe('TechChartComponent', () => {
         },
         { provide: PortfolioSubscriptionsService, useValue: portfolioSubscriptionsServiceSpy },
         {
-          provide: OrderCancellerService,
+          provide: WsOrdersService,
           useValue: {
-            cancelOrder: jasmine.createSpy('cancelOrder').and.returnValue(new Subject())
+            cancelOrder: jasmine.createSpy('cancelOrders').and.returnValue(new Subject())
           }
         },
         {

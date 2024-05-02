@@ -57,6 +57,7 @@ import { OrderBookScaleHelper } from "../utils/order-book-scale.helper";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { ScalperOrderBookConstants } from "../constants/scalper-order-book.constants";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
+import { OrderType } from "../../../shared/models/orders/order.model";
 
 
 export interface ContextGetters {
@@ -243,7 +244,7 @@ export class ScalperOrderBookDataContextService {
         symbol: x.symbol,
         exchange: x.exchange,
         portfolio: x.portfolio,
-        type: 'limit',
+        type: OrderType.Limit,
         side: x.side,
         price: x.price,
         displayVolume: x.qty - (x.filledQtyBatch ?? 0)

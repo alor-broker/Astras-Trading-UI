@@ -1,5 +1,5 @@
 import { Component, DestroyRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { distinctUntilChanged, iif, Observable, of, switchMap, take } from 'rxjs';
+import { distinctUntilChanged, iif, Observable, switchMap, take } from 'rxjs';
 import { debounceTime, map, mergeMap, startWith } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
@@ -14,12 +14,12 @@ import { BlotterSettings, ColumnsNames, TableNames } from '../../models/blotter-
 import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
-import { OrderService } from "../../../../shared/services/orders/order.service";
 import { CommonOrderCommands } from "../../../../shared/utils/common-order-commands";
 import { MarketType } from "../../../../shared/models/portfolio-key.model";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 
 interface PositionDisplay extends Position {
   id: string;
@@ -36,13 +36,11 @@ interface PositionDisplay extends Position {
 export class PositionsComponent extends BlotterBaseTableComponent<PositionDisplay, PositionFilter> implements OnInit {
   @Input()
   marketType?: MarketType | null;
-  marketTypes = MarketType;
 
   portfolioTotalCost$!: Observable<number>;
 
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
-  displayPositions$: Observable<PositionDisplay[]> = of([]);
   allColumns: BaseColumnSettings<PositionDisplay>[] = [
     {
       id: 'symbol',
@@ -174,7 +172,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
     private readonly service: BlotterService,
     protected readonly settingsService: WidgetSettingsService,
     protected readonly translatorService: TranslatorService,
-    protected readonly ordersService: OrderService,
+    protected readonly wsOrdersService: WsOrdersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     protected readonly destroyRef: DestroyRef
   ) {
@@ -281,11 +279,11 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
   }
 
   closePosition(position: PositionDisplay): void {
-    CommonOrderCommands.closePositionByMarket(position, null, this.ordersService);
+    CommonOrderCommands.closePositionByMarket(position, null, this.wsOrdersService);
   }
 
   reversePosition(position: PositionDisplay): void {
-    CommonOrderCommands.reversePositionsByMarket(position, null, this.ordersService);
+    CommonOrderCommands.reversePositionsByMarket(position, null, this.wsOrdersService);
   }
 
   closeAllPositions(positions: readonly PositionDisplay[]): void {

@@ -4,10 +4,10 @@ import { ArbitrageSpreadService } from './arbitrage-spread.service';
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
 import { QuotesService } from "../../../shared/services/quotes.service";
 import { of, filter, take, skip } from "rxjs";
-import { OrderService } from "../../../shared/services/orders/order.service";
 import { Side } from "../../../shared/models/enums/side.model";
 import { PortfolioSubscriptionsService } from "../../../shared/services/portfolio-subscriptions.service";
 import { ArbitrageSpread } from "../models/arbitrage-spread.model";
+import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 
 const spreadItem: ArbitrageSpread = {
   id: 'spreadId',
@@ -59,7 +59,7 @@ describe('ArbitrageSpreadService', () => {
           useValue: quotesServiceSpy
         },
         {
-          provide: OrderService,
+          provide: WsOrdersService,
           useValue: orderServiceSpy
         },
         {

@@ -30,7 +30,7 @@ import {
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { toInstrumentKey } from "../../../../shared/utils/instruments";
 import { SubmitGroupResult } from "../../../../shared/models/orders/orders-group.model";
-import { SubmitOrderResult } from "../../../../shared/models/orders/new-order.model";
+import { OrderCommandResult } from "../../../../shared/models/orders/new-order.model";
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { AtsValidators } from "../../../../shared/utils/form-validators";
 import {
@@ -94,13 +94,13 @@ export abstract class BaseOrderFormComponent implements OnDestroy {
         this.requestProcessing$.next({});
       }),
     ).subscribe(r => {
-      if (((<SubmitOrderResult | null>r)?.isSuccess ?? false) || (<SubmitGroupResult | null>r)?.message === 'success') {
+      if (((<OrderCommandResult | null>r)?.isSuccess ?? false) || (<SubmitGroupResult | null>r)?.message === 'success') {
         this.submitted.emit();
       }
     });
   }
 
-  protected abstract prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<SubmitOrderResult | SubmitGroupResult | null>;
+  protected abstract prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<OrderCommandResult | SubmitGroupResult | null>;
 
   protected getInstrumentWithPortfolio(): Observable<{ instrument: Instrument, portfolioKey: PortfolioKey }> {
     return combineLatest({

@@ -84,6 +84,7 @@ export enum OrdersInstantNotificationType {
   OrderStatusChanged = 'orderStatusChanged',
   OrderStatusChangeToCancelled = 'OrderStatusChangeToCancelled',
   OrderCancelled = 'orderCancelled',
+  OrderCancelFailed = 'orderCancelFailed',
   OrderUpdated = 'orderUpdated',
   OrderUpdateFailed = 'orderUpdateFailed',
   OrdersGroupCreated = 'ordersGroupCreated'

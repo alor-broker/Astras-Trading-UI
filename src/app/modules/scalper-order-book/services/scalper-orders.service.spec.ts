@@ -1,4 +1,9 @@
-import { fakeAsync, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
+import {
+  fakeAsync,
+  flushMicrotasks,
+  TestBed,
+  tick
+} from '@angular/core/testing';
 
 import { ScalperOrdersService } from './scalper-orders.service';
 import {
@@ -7,8 +12,6 @@ import {
   getRandomInt,
   sharedModuleImportForTests
 } from "../../../shared/utils/testing";
-import { OrderCancellerService } from "../../../shared/services/order-canceller.service";
-import { OrderService } from "../../../shared/services/orders/order.service";
 import { of } from "rxjs";
 import { Store } from "@ngrx/store";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
@@ -17,7 +20,6 @@ import { Position } from "../../../shared/models/positions/position.model";
 import { Side } from "../../../shared/models/enums/side.model";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
-import { CancelCommand } from '../../../shared/models/commands/cancel-command.model';
 import { CurrentOrderDisplay } from '../models/scalper-order-book.model';
 import { OrderbookDataRow } from '../../orderbook/models/orderbook-data.model';
 import { LessMore } from "../../../shared/models/enums/less-more.model";
@@ -29,7 +31,10 @@ import {
 import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
-import { OrderDialogParams, OrderType } from "../../../shared/models/orders/orders-dialog.model";
+import {
+  OrderDialogParams,
+  OrderFormType
+} from "../../../shared/models/orders/orders-dialog.model";
 import {
   NewLimitOrder,
   NewMarketOrder,
@@ -37,34 +42,35 @@ import {
   NewStopMarketOrder
 } from "../../../shared/models/orders/new-order.model";
 import { toInstrumentKey } from "../../../shared/utils/instruments";
-import {
-  ScalperOrderBookInstantTranslatableNotificationsService
-} from "./scalper-order-book-instant-translatable-notifications.service";
+import { ScalperOrderBookInstantTranslatableNotificationsService } from "./scalper-order-book-instant-translatable-notifications.service";
+import { OrderType } from "../../../shared/models/orders/order.model";
+import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
+import { OrdersGroupService } from "../../../shared/services/orders/orders-group.service";
 
 describe('ScalperOrdersService', () => {
   let service: ScalperOrdersService;
   let store: Store;
 
-  let orderCancellerServiceSpy: any;
   let orderServiceSpy: any;
+  let ordersGroupServiceSpy: any;
   let notificationServiceSpy: any;
   let ordersDialogServiceSpy: any;
 
   let testSettings: ScalperOrderBookWidgetSettings;
 
   beforeEach(() => {
-    orderCancellerServiceSpy = jasmine.createSpyObj('OrderCancellerService', ['cancelOrder']);
-
     orderServiceSpy = jasmine.createSpyObj(
-      'OrderService',
+      'WsOrdersService',
       [
         'submitMarketOrder',
         'submitLimitOrder',
         'submitStopLimitOrder',
         'submitStopMarketOrder',
-        'submitOrdersGroup'
+        'cancelOrders'
       ]
     );
+
+    ordersGroupServiceSpy = jasmine.createSpyObj('OrdersGroupService', ['submitOrdersGroup']);
 
     notificationServiceSpy = jasmine.createSpyObj('ScalperOrderBookInstantTranslatableNotificationsService', ['emptyPositions']);
     ordersDialogServiceSpy = jasmine.createSpyObj('OrdersDialogService', ['openNewOrderDialog', 'openEditOrderDialog']);
@@ -92,10 +98,22 @@ describe('ScalperOrdersService', () => {
       ],
       providers: [
         ScalperOrdersService,
-        { provide: OrderCancellerService, useValue: orderCancellerServiceSpy },
-        { provide: OrderService, useValue: orderServiceSpy },
-        { provide: ScalperOrderBookInstantTranslatableNotificationsService, useValue: notificationServiceSpy },
-        { provide: OrdersDialogService, useValue: ordersDialogServiceSpy },
+        {
+          provide: WsOrdersService,
+          useValue: orderServiceSpy
+        },
+        {
+          provide: ScalperOrderBookInstantTranslatableNotificationsService,
+          useValue: notificationServiceSpy
+        },
+        {
+          provide: OrdersDialogService,
+          useValue: ordersDialogServiceSpy
+        },
+        {
+          provide: OrdersGroupService,
+          useValue: ordersGroupServiceSpy
+        },
         ...commonTestProviders
       ]
     });
@@ -115,19 +133,25 @@ describe('ScalperOrdersService', () => {
           orderId: generateRandomString(5),
           exchange: generateRandomString(4),
           portfolio: generateRandomString(5),
-          type: 'limit',
+          type: OrderType.Limit,
           displayVolume: 10,
           side: Side.Buy
         };
 
-        orderCancellerServiceSpy.cancelOrder.and.callFake((command: CancelCommand) => {
+        orderServiceSpy.cancelOrders.and.callFake((requests: {
+          orderId: string;
+          portfolio: string;
+          exchange: string;
+          orderType: OrderType;
+        }[]) => {
           done();
 
-          expect(command).toEqual({
-            orderid: testOrder.orderId,
+          expect(requests.length).toBe(1);
+          expect(requests[0]).toEqual({
+            orderId: testOrder.orderId,
             exchange: testOrder.exchange,
             portfolio: testOrder.portfolio,
-            stop: false
+            orderType: testOrder.type
           });
 
           return of({});
@@ -240,7 +264,7 @@ describe('ScalperOrdersService', () => {
         { a: testAsks, b: testBids },
         portfolioKey,
         { qtyTFuture: 1 } as Position
-        );
+      );
       tick(10000);
 
       expect(orderServiceSpy.submitLimitOrder)
@@ -367,7 +391,7 @@ describe('ScalperOrdersService', () => {
       }
     };
 
-    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
+    ordersGroupServiceSpy.submitOrdersGroup.and.returnValue(of({}));
     const quantity = getRandomInt(1, 100);
 
     let testAsks: OrderbookDataRow[] = [
@@ -395,15 +419,15 @@ describe('ScalperOrdersService', () => {
       instrument: toInstrumentKey(testInstrument)
     };
 
-    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+    expect(ordersGroupServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
       [
         {
           ...expectedLimitOrder,
-          type: 'Limit'
+          type: OrderType.Limit
         },
         {
           ...expectedLimitOrder,
-          type: 'StopLimit',
+          type: OrderType.StopLimit,
           condition: LessMore.MoreOrEqual,
           triggerPrice: MathHelper.roundPrice(testBids[0].p + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Sell,
@@ -411,7 +435,7 @@ describe('ScalperOrdersService', () => {
         },
         {
           ...expectedLimitOrder,
-          type: 'StopLimit',
+          type: OrderType.StopLimit,
           condition: LessMore.LessOrEqual,
           triggerPrice: MathHelper.roundPrice(testBids[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Sell,
@@ -507,7 +531,7 @@ describe('ScalperOrdersService', () => {
       }
     };
 
-    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
+    ordersGroupServiceSpy.submitOrdersGroup.and.returnValue(of({}));
     const quantity = getRandomInt(1, 100);
 
     let testAsks: OrderbookDataRow[] = [
@@ -539,15 +563,15 @@ describe('ScalperOrdersService', () => {
       instrument: toInstrumentKey(testSettings)
     };
 
-    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+    expect(ordersGroupServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
       [
         {
           ...expectedLimitOrder,
-          type: 'Limit'
+          type: OrderType.Limit
         },
         {
           ...expectedLimitOrder,
-          type: 'StopLimit',
+          type: OrderType.StopLimit,
           condition: LessMore.MoreOrEqual,
           triggerPrice: MathHelper.roundPrice(testBids[0].p + (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Buy,
@@ -555,7 +579,7 @@ describe('ScalperOrdersService', () => {
         },
         {
           ...expectedLimitOrder,
-          type: 'StopLimit',
+          type: OrderType.StopLimit,
           condition: LessMore.LessOrEqual,
           triggerPrice: MathHelper.roundPrice(testBids[0].p - (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Buy,
@@ -610,7 +634,7 @@ describe('ScalperOrdersService', () => {
         { a: testAsks, b: testBids },
         portfolioKey,
         { qtyTFuture: 1 } as Position
-        );
+      );
       tick(10000);
 
       expect(orderServiceSpy.submitLimitOrder)
@@ -650,7 +674,7 @@ describe('ScalperOrdersService', () => {
       }
     };
 
-    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
+    ordersGroupServiceSpy.submitOrdersGroup.and.returnValue(of({}));
     const quantity = getRandomInt(1, 100);
 
     let testAsks: OrderbookDataRow[] = [
@@ -682,15 +706,15 @@ describe('ScalperOrdersService', () => {
       instrument: toInstrumentKey(testSettings)
     };
 
-    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+    expect(ordersGroupServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
       [
         {
           ...expectedLimitOrder,
-          type: 'Limit'
+          type: OrderType.Limit
         },
         {
           ...expectedLimitOrder,
-          type: 'StopLimit',
+          type: OrderType.StopLimit,
           condition: LessMore.LessOrEqual,
           triggerPrice: MathHelper.roundPrice(testAsks[0].p - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Sell,
@@ -752,7 +776,7 @@ describe('ScalperOrdersService', () => {
           {
             instrumentKey: toInstrumentKey(testInstrumentKey),
             initialValues: {
-              orderType: OrderType.Market,
+              orderType: OrderFormType.Market,
               quantity
             }
           } as OrderDialogParams
@@ -825,7 +849,7 @@ describe('ScalperOrdersService', () => {
           {
             instrumentKey: toInstrumentKey(testSettings),
             initialValues: {
-              orderType: OrderType.Limit,
+              orderType: OrderFormType.Limit,
               quantity,
               price: price
             }
@@ -860,7 +884,7 @@ describe('ScalperOrdersService', () => {
       }
     };
 
-    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
+    ordersGroupServiceSpy.submitOrdersGroup.and.returnValue(of({}));
     const quantity = getRandomInt(1, 100);
     const price = getRandomInt(1, 1000);
 
@@ -884,15 +908,15 @@ describe('ScalperOrdersService', () => {
       instrument: toInstrumentKey(testSettings)
     };
 
-    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+    expect(ordersGroupServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
       [
         {
           ...expectedLimitOrder,
-          type: 'Limit'
+          type: OrderType.Limit
         },
         {
           ...expectedLimitOrder,
-          type: 'StopLimit',
+          type: OrderType.StopLimit,
           condition: LessMore.MoreOrEqual,
           triggerPrice: MathHelper.roundPrice(price + (testSettings.bracketsSettings!.topOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Sell,
@@ -900,7 +924,7 @@ describe('ScalperOrdersService', () => {
         },
         {
           ...expectedLimitOrder,
-          type: 'StopLimit',
+          type: OrderType.StopLimit,
           condition: LessMore.LessOrEqual,
           triggerPrice: MathHelper.roundPrice(price - (testSettings.bracketsSettings!.bottomOrderPriceRatio! * testInstrument.minstep), testInstrument.minstep),
           side: Side.Sell,
@@ -938,7 +962,7 @@ describe('ScalperOrdersService', () => {
       }
     };
 
-    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
+    ordersGroupServiceSpy.submitOrdersGroup.and.returnValue(of({}));
     const quantity = getRandomInt(1, 100);
     const price = getRandomInt(1, 1000);
 
@@ -962,15 +986,15 @@ describe('ScalperOrdersService', () => {
       instrument: toInstrumentKey(testSettings)
     };
 
-    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+    expect(ordersGroupServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
       [
         {
           ...expectedLimitOrder,
-          type: 'Limit'
+          type: OrderType.Limit
         },
         {
           ...expectedLimitOrder,
-          type: 'StopLimit',
+          type: OrderType.StopLimit,
           condition: LessMore.MoreOrEqual,
           triggerPrice: MathHelper.roundPrice((1 + testSettings.bracketsSettings!.topOrderPriceRatio! * 0.01) * price, testInstrument.minstep),
           side: Side.Sell,
@@ -1049,10 +1073,10 @@ describe('ScalperOrdersService', () => {
         symbol: generateRandomString(4)
       };
 
-    const testInstrument: Instrument = {
-      ...testInstrumentKey,
-      minstep: 0.5
-    } as Instrument;
+      const testInstrument: Instrument = {
+        ...testInstrumentKey,
+        minstep: 0.5
+      } as Instrument;
 
       orderServiceSpy.submitStopLimitOrder.and.returnValue(of({}));
       const quantity = getRandomInt(1, 100);
@@ -1125,19 +1149,19 @@ describe('ScalperOrdersService', () => {
       expect(ordersDialogServiceSpy.openNewOrderDialog)
         .withContext('Show dialog')
         .toHaveBeenCalledOnceWith(jasmine.objectContaining({
-          instrumentKey: toInstrumentKey(testInstrumentKey),
-          initialValues: {
-            orderType: OrderType.Stop,
-            quantity,
-            price: MathHelper.roundPrice(price + distance * testInstrument.minstep, testInstrument.minstep),
-            stopOrder:{
-              triggerPrice: price,
-              condition: LessMore.MoreOrEqual,
-              limit: true,
-              disableCalculations: true
+            instrumentKey: toInstrumentKey(testInstrumentKey),
+            initialValues: {
+              orderType: OrderFormType.Stop,
+              quantity,
+              price: MathHelper.roundPrice(price + distance * testInstrument.minstep, testInstrument.minstep),
+              stopOrder: {
+                triggerPrice: price,
+                condition: LessMore.MoreOrEqual,
+                limit: true,
+                disableCalculations: true
+              }
             }
-          }
-        } as OrderDialogParams)
+          } as OrderDialogParams)
         );
     })
   );

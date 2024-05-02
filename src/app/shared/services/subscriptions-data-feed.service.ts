@@ -1,5 +1,5 @@
-import { Inject, Injectable, InjectionToken, OnDestroy } from '@angular/core';
-import { webSocket, WebSocketSubject, WebSocketSubjectConfig } from 'rxjs/webSocket';
+import { Inject, Injectable, OnDestroy } from '@angular/core';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { AuthService } from './auth.service';
 import {
   BehaviorSubject,
@@ -28,6 +28,10 @@ import {
 import {isOnline$} from '../utils/network';
 import {LoggerService} from './logging/logger.service';
 import { EnvironmentService } from "./environment.service";
+import {
+  RXJS_WEBSOCKET_CTOR,
+  WsOptions
+} from "../constants/ws.constants";
 
 export interface SubscriptionRequest {
   opcode: string;
@@ -58,14 +62,6 @@ interface SocketState {
   pingPongSub: Subscription | null;
 }
 
-export const RXJS_WEBSOCKET_CTOR = new InjectionToken<typeof webSocket>(
-  'rxjs/webSocket',
-  {
-    providedIn: 'root',
-    factory: (): (urlConfigOrSource: string | WebSocketSubjectConfig<any>) => WebSocketSubject<any> => webSocket,
-  }
-);
-
 @Injectable({
   providedIn: 'root'
 })
@@ -74,12 +70,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
 
   private readonly isConnected$ = new BehaviorSubject<boolean>(false);
 
-  private readonly options = {
-    reconnectTimeout: 2000,
-    reconnectAttempts: 5,
-    pingTimeout: 5000,
-    pingLatency: 3000
-  };
+  private readonly options = WsOptions;
 
   constructor(
     private readonly environmentService: EnvironmentService,

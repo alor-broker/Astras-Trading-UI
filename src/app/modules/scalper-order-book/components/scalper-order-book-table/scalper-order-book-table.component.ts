@@ -34,6 +34,7 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import { color } from "d3";
+import { OrderType } from "../../../../shared/models/orders/order.model";
 
 interface VolumeHighlightArguments {
   rowType: ScalperOrderBookRowType;
@@ -57,6 +58,7 @@ interface DisplayRow extends BodyRow {
 export class ScalperOrderBookTableComponent implements OnInit {
   readonly numberFormats = NumberDisplayFormat;
   readonly rowTypes = ScalperOrderBookRowType;
+  readonly orderTypes = OrderType;
 
   ordersSides = Side;
   @Input({required: true})
@@ -115,7 +117,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
     this.subscribeToHotkeys();
   }
 
-  getFilteredOrders(orders: CurrentOrderDisplay[], type: 'limit' | 'stoplimit' | 'stop'): {
+  getFilteredOrders(orders: CurrentOrderDisplay[], type: OrderType): {
     orders: CurrentOrderDisplay[];
     volume: number;
   } {

@@ -6,8 +6,7 @@ import {
   of,
   Subject
 } from 'rxjs';
-import { OrderService } from "./orders/order.service";
-import { OrderCancellerService } from "./order-canceller.service";
+import { WsOrdersConnector } from "./orders/ws-orders-connector";
 
 describe('NetworkStatusService', () => {
   let service: NetworkStatusService;
@@ -22,15 +21,10 @@ describe('NetworkStatusService', () => {
           }
         },
         {
-          provide: OrderService,
+          provide: WsOrdersConnector,
           useValue: {
-            lastOrderDelayMSec$: new Subject()
-          }
-        },
-        {
-          provide: OrderCancellerService,
-          useValue: {
-            lastRequestDelayMSec$: new Subject()
+            lastOrderDelayMSec$: new Subject(),
+            getConnectionStatus: jasmine.createSpy('getConnectionStatus').and.returnValue(of(true))
           }
         }
       ]

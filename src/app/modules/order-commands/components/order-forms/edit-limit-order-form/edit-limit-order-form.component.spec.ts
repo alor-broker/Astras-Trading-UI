@@ -10,7 +10,6 @@ import {Instrument} from "../../../../../shared/models/instruments/instrument.mo
 import {CommonParametersService} from "../../../services/common-parameters.service";
 import {BehaviorSubject, Subject, Subscription, take} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
-import {OrderService} from "../../../../../shared/services/orders/order.service";
 import {OrderCommandsModule} from "../../../order-commands.module";
 import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
 import {NoopAnimationsModule} from "@angular/platform-browser/animations";
@@ -23,6 +22,7 @@ import {Order} from "../../../../../shared/models/orders/order.model";
 import {InstrumentsService} from "../../../../instruments/services/instruments.service";
 import {LimitOrderEdit} from "../../../../../shared/models/orders/edit-order.model";
 import {OrderFormState} from "../../../models/order-form.model";
+import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
 
 describe('EditLimitOrderFormComponent', () => {
   let component: EditLimitOrderFormComponent;
@@ -111,7 +111,7 @@ describe('EditLimitOrderFormComponent', () => {
           }
         },
         {
-          provide: OrderService,
+          provide: WsOrdersService,
           useValue: orderServiceSpy
         },
         {

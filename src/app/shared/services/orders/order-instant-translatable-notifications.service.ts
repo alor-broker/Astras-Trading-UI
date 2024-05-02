@@ -1,18 +1,16 @@
 import { Injectable } from '@angular/core';
 import { InstantNotificationsService } from "../instant-notifications.service";
-import { TranslatorFn, TranslatorService } from "../translator.service";
+import { TranslatorService } from "../translator.service";
 import { BaseTranslatorService } from "../base-translator.service";
-import { HttpErrorResponse } from "@angular/common/http";
 import { httpLinkRegexp } from "../../utils/regexps";
-import {
-  OrdersInstantNotificationType
-} from "../../models/terminal-settings/terminal-settings.model";
+import { OrdersInstantNotificationType } from "../../models/terminal-settings/terminal-settings.model";
+import { OrderCommandResult } from "../../models/orders/new-order.model";
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrderInstantTranslatableNotificationsService
-extends BaseTranslatorService {
+  extends BaseTranslatorService {
   protected translationsPath = 'shared/orders-notifications';
 
   constructor(
@@ -34,12 +32,12 @@ extends BaseTranslatorService {
     ));
   }
 
-  orderSubmitFailed(err: HttpErrorResponse): void {
+  orderSubmitFailed(result: OrderCommandResult): void {
     this.withTranslation(t => this.notificationsService.showNotification(
       OrdersInstantNotificationType.OrderSubmitFailed,
       'error',
       t(['orderSubmitFailedLabel'], { fallback: 'Ошибка выставления заявки' }),
-      this.handleError(err, t)
+      this.prepareErrorMessage(result.message)
     ));
   }
 
@@ -47,7 +45,7 @@ extends BaseTranslatorService {
     this.withTranslation(t => this.notificationsService.showNotification(
       OrdersInstantNotificationType.OrderFilled,
       'info',
-      t(['orderTitle'], {fallback: 'Заявка'}),
+      t(['orderTitle'], { fallback: 'Заявка' }),
       t(['orderFilledLabel'], {
         fallback: `Заявка ${orderId} исполнилась`,
         orderId
@@ -59,7 +57,7 @@ extends BaseTranslatorService {
     this.withTranslation(t => this.notificationsService.showNotification(
       OrdersInstantNotificationType.OrderPartiallyFilled,
       'info',
-      t(['orderTitle'], {fallback: 'Заявка'}),
+      t(['orderTitle'], { fallback: 'Заявка' }),
       t(['orderPartiallyFilledLabel'], {
         fallback: `Заявка ${orderId} исполнилась на ${qty} шт.`,
         orderId,
@@ -72,7 +70,7 @@ extends BaseTranslatorService {
     this.withTranslation(t => this.notificationsService.showNotification(
       OrdersInstantNotificationType.OrderStatusChangeToCancelled,
       'info',
-      t(['orderTitle'], {fallback: 'Заявка'}),
+      t(['orderTitle'], { fallback: 'Заявка' }),
       t(['OrderStatusChangeToCancelledLabel'], {
         fallback: `Заявка ${orderId} была отменена`,
         orderId
@@ -92,12 +90,12 @@ extends BaseTranslatorService {
     ));
   }
 
-  orderUpdateFailed(error: HttpErrorResponse): void {
+  orderUpdateFailed(result: OrderCommandResult): void {
     this.withTranslation(t => this.notificationsService.showNotification(
       OrdersInstantNotificationType.OrderUpdateFailed,
       'error',
       t(['orderUpdateFailedLabel'], { fallback: 'Ошибка изменения заявки' }),
-      this.handleError(error, t)
+      this.prepareErrorMessage(result.message)
     ));
   }
 
@@ -105,7 +103,7 @@ extends BaseTranslatorService {
     this.withTranslation(t => this.notificationsService.showNotification(
       OrdersInstantNotificationType.OrderStatusChanged,
       'info',
-      t(['orderTitle'], {fallback: 'Заявка'}),
+      t(['orderTitle'], { fallback: 'Заявка' }),
       t(['orderStatusChangedLabel'], {
         fallback: `Статус заявки ${orderId} изменился на ${orderStatus}`,
         orderId,
@@ -132,7 +130,7 @@ extends BaseTranslatorService {
     this.withTranslation(t => this.notificationsService.showNotification(
       OrdersInstantNotificationType.OrderCancelled,
       'success',
-      t(['orderCancelledTitle'], {fallback: 'Заявка отменена'}),
+      t(['orderCancelledTitle'], { fallback: 'Заявка отменена' }),
       t(['orderCancelledContent'], {
         fallback: `Заявка ${orderId} на ${exchange} успешно отменена`,
         orderId,
@@ -141,12 +139,13 @@ extends BaseTranslatorService {
     ));
   }
 
-  private handleError(error: HttpErrorResponse, t: TranslatorFn): string {
-    const errorMessage = error.error?.code != null && error.error?.message != null
-      ? `${t(['error'])} ${error.error.code} <br/> ${error.error.message}`
-      : error.message;
-
-    return this.prepareErrorMessage(errorMessage as string);
+  orderCancelFailed(result: OrderCommandResult): void {
+    this.withTranslation(t => this.notificationsService.showNotification(
+      OrdersInstantNotificationType.OrderCancelFailed,
+      'error',
+      t(['orderCancelFailedLabel'], { fallback: 'Ошибка отмены заявки' }),
+      this.prepareErrorMessage(result.message)
+    ));
   }
 
   private prepareErrorMessage(message: string): string {
