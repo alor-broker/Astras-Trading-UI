@@ -25,12 +25,15 @@ export interface BondNode {
   };
   tradingDetails?: {
     lotSize?: number;
+    price?: number;
     minStep?: number;
     priceMax?: number;
     priceMin?: number;
     priceStep?: number;
     rating?: number;
   };
+  coupons?: BondCoupon[];
+  offers?: BondOffer[];
   volumes?: {
     issueValue: string;
   };
@@ -43,4 +46,20 @@ export interface BondNode {
   yield?: {
     currentYield?: number;
   };
+}
+
+export interface BondCoupon {
+  accruedInterest?: number;
+  amount?: number;
+  couponRate?: number;
+  couponType?: string;
+  currency?: string;
+  date?: Date;
+  fixDate?: Date;
+  intervalInDays?: number;
+  value?: number;
+}
+
+export interface BondOffer {
+  date?: Date;
 }

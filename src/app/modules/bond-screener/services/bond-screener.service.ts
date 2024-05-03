@@ -23,8 +23,10 @@ const BOND_NESTED_FIELDS: { [fieldName: string]: string[] } = {
   additionalInformation: ['cancellation', 'priceMultiplier'],
   boardInformation: ['board'],
   yield: ['currentYield'],
-  tradingDetails: ['lotSize', 'minStep', 'priceMax', 'priceMin', 'priceStep', 'rating'],
+  tradingDetails: ['lotSize', 'minStep', 'price', 'priceMax', 'priceMin', 'priceStep', 'rating'],
   volumes: ['issueValue'],
+  coupons: ['accruedInterest', 'amount', 'date', 'intervalInDays', 'value'],
+  offers: ['date'],
   rootFields: ['couponRate', 'couponType', 'guaranteed', 'hasOffer', 'maturityDate', 'placementEndDate']
 };
 
@@ -44,6 +46,8 @@ const BOND_FILTER_TYPES: { [fieldName: string]: string[] } = {
     'lotSizeTo',
     'minStepFrom',
     'minStepTo',
+    'priceFrom',
+    'priceTo',
     'priceMaxFrom',
     'priceMaxTo',
     'priceMinFrom',
@@ -151,6 +155,14 @@ export class BondScreenerService {
     const tradingDetailsFields = BOND_NESTED_FIELDS.tradingDetails.filter(f => columnIds.includes(f));
     const volumesFields = BOND_NESTED_FIELDS.volumes.filter(f => columnIds.includes(f));
     const yieldFields = BOND_NESTED_FIELDS.yield.filter(f => columnIds.includes(f));
+    const couponsFields = BOND_NESTED_FIELDS.coupons.filter(f => columnIds.map(id =>
+      id.replace('coupon', '').toLowerCase()).includes(f.toLowerCase()) ||
+      f === 'date'
+    );
+    const offersFields = BOND_NESTED_FIELDS.offers.filter(f => columnIds.map(id =>
+      id.replace('offer', '').toLowerCase()).includes(f.toLowerCase()) ||
+      f === 'date'
+    );
     const rootFields = BOND_NESTED_FIELDS.rootFields.filter(f => columnIds.includes(f));
 
     return `query GET_BONDS($first: Int, $after: String, $filters: BondFilterInput, $sort: [BondSortInput!]) {
@@ -185,6 +197,14 @@ export class BondScreenerService {
                   }
                   ${yieldFields.length > 0
                     ? 'yield {' + yieldFields.join(' ') + '}'
+                    : ''
+                  }
+                  ${couponsFields.length > 0
+                    ? 'coupons {' + couponsFields.join(' ') + '}'
+                    : ''
+                  }
+                  ${offersFields.length > 0
+                    ? 'offers {' + offersFields.join(' ') + '}'
                     : ''
                   }
                   ${rootFields.join(' ')}
