@@ -134,7 +134,7 @@ export class OrdersGroupService implements OnDestroy {
           orderId: i.result.orderNumber,
           exchange: i.sourceOrder.instrument.exchange,
           portfolio: portfolio,
-          type: i.sourceOrder.type
+          type: this.toApiOrderType(i.sourceOrder.type)
         })),
         executionPolicy
       } as CreateOrderGroupReq
@@ -154,15 +154,30 @@ export class OrdersGroupService implements OnDestroy {
     );
   }
 
+  private toApiOrderType(type: OrderType): string {
+    switch (type) {
+      case OrderType.Market:
+        return 'Market';
+      case OrderType.Limit:
+        return 'Limit';
+      case OrderType.StopMarket:
+        return 'Stop';
+      case OrderType.StopLimit:
+        return 'StopLimit';
+      default:
+        throw new Error(`Unsupported order type ${type}`);
+    }
+  }
+
   private rollbackItems(items: GroupItem[], portfolio: string): Observable<null> {
     const cancelRequests = items.map(x => ({
-      orderId: x.result.orderNumber,
+      orderId: x.result.orderNumber!,
       portfolio: portfolio,
       exchange: x.sourceOrder.instrument.exchange,
       orderType: x.sourceOrder.type
     }));
 
-    return forkJoin(cancelRequests).pipe(
+    return this.wsOrdersService.cancelOrders(cancelRequests).pipe(
       map(() => null)
     );
   }

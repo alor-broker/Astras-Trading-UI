@@ -519,7 +519,8 @@ describe('WsOrdersService', () => {
         },
         quantity: 100,
         price: 100,
-        id: '123'
+        orderId: '123',
+        side: Side.Buy
       };
 
       wsConnectorSpy.submitCommand.and.callFake((request: any) => {
@@ -532,7 +533,7 @@ describe('WsOrdersService', () => {
         expect(request.quantity).toBe(order.quantity);
         expect(request.price).toBe(order.price);
 
-        return of({ orderNumber: order.id } as OrderCommandResult);
+        return of({ orderNumber: order.orderId } as OrderCommandResult);
       });
 
       submitOrder(order);
@@ -546,7 +547,8 @@ describe('WsOrdersService', () => {
         },
         quantity: 100,
         price: 100,
-        id: '123'
+        orderId: '123',
+        side: Side.Buy
       };
 
       wsConnectorSpy.submitCommand.and.returnValue(of(
@@ -577,7 +579,8 @@ describe('WsOrdersService', () => {
         },
         quantity: 100,
         price: 100,
-        id: '123'
+        orderId: '123',
+        side: Side.Buy
       };
 
       wsConnectorSpy.submitCommand.and.returnValue(of(
@@ -617,7 +620,7 @@ describe('WsOrdersService', () => {
           exchange: 'MOEX'
         },
         quantity: 100,
-        id: '123',
+        orderId: '123',
         condition: LessMore.Less,
         triggerPrice: 100,
         side: Side.Buy,
@@ -637,7 +640,7 @@ describe('WsOrdersService', () => {
         expect(request.triggerPrice).toBe(order.triggerPrice);
         expect(request.stopEndUnixTime).toBe(toUnixTimestampSeconds(orderStopTime));
 
-        return of({ orderNumber: order.id } as OrderCommandResult);
+        return of({ orderNumber: order.orderId } as OrderCommandResult);
       });
 
       submitOrder(order);
@@ -650,7 +653,7 @@ describe('WsOrdersService', () => {
           exchange: 'MOEX'
         },
         quantity: 100,
-        id: '123',
+        orderId: '123',
         condition: LessMore.Less,
         triggerPrice: 100,
         side: Side.Buy,
@@ -684,7 +687,7 @@ describe('WsOrdersService', () => {
           exchange: 'MOEX'
         },
         quantity: 100,
-        id: '123',
+        orderId: '123',
         condition: LessMore.Less,
         triggerPrice: 100,
         side: Side.Buy,
@@ -729,7 +732,7 @@ describe('WsOrdersService', () => {
           exchange: 'MOEX'
         },
         quantity: 100,
-        id: '123',
+        orderId: '123',
         condition: LessMore.Less,
         triggerPrice: 100,
         price: 100,
@@ -751,7 +754,7 @@ describe('WsOrdersService', () => {
         expect(request.stopEndUnixTime).toBe(toUnixTimestampSeconds(orderStopTime));
         expect(request.price).toBe(order.price);
 
-        return of({ orderNumber: order.id } as OrderCommandResult);
+        return of({ orderNumber: order.orderId } as OrderCommandResult);
       });
 
       submitOrder(order);
@@ -764,7 +767,7 @@ describe('WsOrdersService', () => {
           exchange: 'MOEX'
         },
         quantity: 100,
-        id: '123',
+        orderId: '123',
         condition: LessMore.Less,
         triggerPrice: 100,
         price: 100,
@@ -799,7 +802,7 @@ describe('WsOrdersService', () => {
           exchange: 'MOEX'
         },
         quantity: 100,
-        id: '123',
+        orderId: '123',
         condition: LessMore.Less,
         triggerPrice: 100,
         price: 100,

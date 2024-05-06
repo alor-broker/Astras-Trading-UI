@@ -384,7 +384,8 @@ export class ScalperOrdersService {
     if (silent) {
       for (const order of currentOrders) {
         const baseOrderEditData = {
-          id: order.orderId,
+          orderId: order.orderId,
+          side: order.side,
           quantity: order.displayVolume,
           instrument: {
             symbol: order.symbol,

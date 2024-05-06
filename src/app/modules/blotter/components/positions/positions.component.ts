@@ -1,5 +1,12 @@
 import { Component, DestroyRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { distinctUntilChanged, iif, Observable, switchMap, take } from 'rxjs';
+import {
+  distinctUntilChanged,
+  iif,
+  Observable,
+  shareReplay,
+  switchMap,
+  take
+} from 'rxjs';
 import { debounceTime, map, mergeMap, startWith } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
 import { MathHelper } from 'src/app/shared/utils/math-helper';
@@ -194,7 +201,8 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
             .pipe(map(i => {
               return i.portfolioLiquidationValue;
             }))
-        ))
+        )),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 

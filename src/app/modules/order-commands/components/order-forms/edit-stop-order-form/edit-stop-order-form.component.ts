@@ -302,7 +302,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
         const formValue = this.form.value;
 
         const updatedOrder = {
-          id: x.currentOrder.id,
+          orderId: x.currentOrder.id,
           instrument: {
             symbol: x.currentOrder.symbol,
             exchange: x.currentOrder.exchange,

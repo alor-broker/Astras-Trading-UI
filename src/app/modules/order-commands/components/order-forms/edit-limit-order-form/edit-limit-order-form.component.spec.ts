@@ -1,4 +1,9 @@
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick
+} from '@angular/core/testing';
 import {
   commonTestProviders,
   getTranslocoModule,
@@ -6,23 +11,29 @@ import {
   sharedModuleImportForTests,
   TestData
 } from "../../../../../shared/utils/testing";
-import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
-import {CommonParametersService} from "../../../services/common-parameters.service";
-import {BehaviorSubject, Subject, Subscription, take} from "rxjs";
-import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
-import {OrderCommandsModule} from "../../../order-commands.module";
-import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
-import {NoopAnimationsModule} from "@angular/platform-browser/animations";
+import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
+import { CommonParametersService } from "../../../services/common-parameters.service";
+import {
+  BehaviorSubject,
+  Subject,
+  Subscription,
+  take
+} from "rxjs";
+import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
+import { OrderCommandsModule } from "../../../order-commands.module";
+import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import orderCommandsOrderFormsRu from "../../../../../../assets/i18n/order-commands/order-forms/ru.json";
-import {filter} from "rxjs/operators";
-import {EvaluationService} from "../../../../../shared/services/evaluation.service";
-import {EditLimitOrderFormComponent} from "./edit-limit-order-form.component";
-import {OrderDetailsService} from "../../../../../shared/services/orders/order-details.service";
-import {Order} from "../../../../../shared/models/orders/order.model";
-import {InstrumentsService} from "../../../../instruments/services/instruments.service";
-import {LimitOrderEdit} from "../../../../../shared/models/orders/edit-order.model";
-import {OrderFormState} from "../../../models/order-form.model";
+import { filter } from "rxjs/operators";
+import { EvaluationService } from "../../../../../shared/services/evaluation.service";
+import { EditLimitOrderFormComponent } from "./edit-limit-order-form.component";
+import { OrderDetailsService } from "../../../../../shared/services/orders/order-details.service";
+import { Order } from "../../../../../shared/models/orders/order.model";
+import { InstrumentsService } from "../../../../instruments/services/instruments.service";
+import { LimitOrderEdit } from "../../../../../shared/models/orders/edit-order.model";
+import { OrderFormState } from "../../../models/order-form.model";
 import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
+import { Side } from "../../../../../shared/models/enums/side.model";
 
 describe('EditLimitOrderFormComponent', () => {
   let component: EditLimitOrderFormComponent;
@@ -267,7 +278,8 @@ describe('EditLimitOrderFormComponent', () => {
         exchange: instrument.exchange,
         board: instrument.instrumentGroup,
         price: 10,
-        qty: 2
+        qty: 2,
+        side: Side.Buy,
       } as Order;
 
       orderDetailsServiceSpy.getLimitOrderDetails.and.returnValue(new BehaviorSubject(order));
@@ -280,7 +292,8 @@ describe('EditLimitOrderFormComponent', () => {
       tick();
 
       const expectedOrder: LimitOrderEdit = {
-        id: order.id,
+        orderId: order.id,
+        side: order.side,
         price: Math.round(Math.random() * 1000),
         quantity: Math.round(Math.random() * 100),
         instrument: {

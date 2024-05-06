@@ -237,24 +237,15 @@ export class WsOrdersConnector implements OnDestroy {
 
   private sendBaseMessage<T extends WsRequestMessage>(request: T, webSocketSubject: WebSocketSubject<WsResponseMessage> | null): Observable<WsResponseMessage> {
     return new Observable<WsResponseMessage>(observer => {
-      try {
-        webSocketSubject?.next(({
-          ...request
-        } as any));
-      } catch (err) {
-        observer.error(err);
-      }
-
       const subscription = webSocketSubject?.subscribe({
         next: (value: WsResponseMessage) => {
           try {
             if ((value.requestGuid === request.guid)) {
               observer.next(value);
+              observer.complete();
             }
           } catch (err) {
             observer.error(err);
-          } finally {
-            observer.complete();
           }
         },
         error: (err) => {
@@ -264,6 +255,14 @@ export class WsOrdersConnector implements OnDestroy {
           observer.complete();
         },
       });
+
+      try {
+        webSocketSubject?.next(({
+          ...request
+        } as any));
+      } catch (err) {
+        observer.error(err);
+      }
 
       return () => {
         subscription?.unsubscribe();

@@ -20,10 +20,6 @@ export interface NewLimitOrder extends NewOrderBase {
   icebergFixed?: number;
   icebergVariance?: number;
   timeInForce?: TimeInForce;
-  topOrderPrice?: number | null;
-  topOrderSide?: Side;
-  bottomOrderPrice?: number | null;
-  bottomOrderSide?: Side;
   orderEndUnixTime?: number;
 }
 

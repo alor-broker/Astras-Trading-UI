@@ -82,13 +82,14 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
         const newPrice = MathHelper.round(order.price + step * selection.instrument.minstep, precision);
         this.wsOrdersService.submitLimitOrderEdit(
           {
-            id: order.id,
+            orderId: order.id,
             quantity: order.qtyBatch - (order.filledQtyBatch ?? 0),
             price: newPrice,
             instrument: {
               symbol: order.symbol,
               exchange: order.exchange
             },
+            side: order.side
           },
           selection.portfolioKey.portfolio
         ).subscribe();

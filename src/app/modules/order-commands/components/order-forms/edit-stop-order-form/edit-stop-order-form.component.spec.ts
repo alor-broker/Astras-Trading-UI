@@ -334,7 +334,7 @@ describe('EditStopOrderFormComponent', () => {
       fixture.detectChanges();
 
       const expectedOrder: StopMarketOrderEdit = {
-        id: order.id,
+        orderId: order.id,
         triggerPrice: Math.round(Math.random() * 1000),
         condition: LessMore.More,
         quantity: Math.round(Math.random() * 100),

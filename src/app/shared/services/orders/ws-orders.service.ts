@@ -36,6 +36,7 @@ import {
   OrderType,
   TimeInForce
 } from "../../models/orders/order.model";
+import { InstrumentKey } from "../../models/instruments/instrument-key.model";
 
 @Injectable({
   providedIn: 'root'
@@ -189,14 +190,25 @@ export class WsOrdersService {
     };
   }
 
-  private prepareOrderUpdateCommand<T extends { id: string }>(
+  private prepareOrderUpdateCommand<T extends { instrument: InstrumentKey }>(
     type: OrderType.Limit | OrderType.StopMarket | OrderType.StopLimit,
     baseRequest: T,
     portfolio: string
   ): CommandRequest {
+    const clone: OptionalProperty<T, 'instrument'> = {
+      ...baseRequest,
+    };
+
+    delete clone.instrument;
+
     return {
       opcode: `update:${type}`,
-      ...baseRequest,
+      ...clone,
+      instrument: {
+        symbol: baseRequest.instrument.symbol,
+        exchange: baseRequest.instrument.exchange
+      },
+      board: baseRequest.instrument.instrumentGroup,
       user: {
         portfolio
       }
