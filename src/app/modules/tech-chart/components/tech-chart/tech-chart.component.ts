@@ -112,6 +112,7 @@ import { MarketExchange } from "../../../../shared/models/market-settings.model"
 import { DeviceService } from "../../../../shared/services/device.service";
 import { DeviceInfo } from "../../../../shared/models/device-info.model";
 import { ChartTemplatesSettingsBrokerService } from "../../services/chart-templates-settings-broker.service";
+import { LocalStorageService } from "../../../../shared/services/local-storage.service";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -264,6 +265,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly techChartDatafeedService: TechChartDatafeedService,
     private readonly themeService: ThemeService,
     private readonly instrumentsService: InstrumentsService,
+    private readonly syntheticInstrumentsService: SyntheticInstrumentsService,
     private readonly widgetsSharedDataService: WidgetsSharedDataService,
     private readonly ordersDialogService: OrdersDialogService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
@@ -272,11 +274,11 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly translatorService: TranslatorService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly tradesHistoryService: TradesHistoryService,
-    private readonly destroyRef: DestroyRef,
-    private readonly syntheticInstrumentsService: SyntheticInstrumentsService,
     private readonly marketService: MarketService,
     private readonly deviceService: DeviceService,
-    private readonly chartTemplatesSettingsBrokerService: ChartTemplatesSettingsBrokerService
+    private readonly chartTemplatesSettingsBrokerService: ChartTemplatesSettingsBrokerService,
+    private readonly localStorageService: LocalStorageService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -447,6 +449,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         chartLayout.charts[0].panes[0].sources[0].state.shortName = selectedInstrumentSymbol;
       }
     }
+
+    this.localStorageService.removeItem('tradingview.current_theme.name');
 
     const features = this.getFeatures(settings, deviceInfo);
 
@@ -1216,7 +1220,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         'symbol_info',
         'display_market_status',
         'save_shortcut',
-        'save_chart_properties_to_local_storage',
         'header_quick_search',
         'header_saveload'
       ]

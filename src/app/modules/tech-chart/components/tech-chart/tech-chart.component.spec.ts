@@ -34,6 +34,9 @@ import { WidgetsSharedDataService } from "../../../../shared/services/widgets-sh
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
 import { MarketService } from "../../../../shared/services/market.service";
 import { ChartTemplatesSettingsBrokerService } from "../../services/chart-templates-settings-broker.service";
+import { LocalStorageService } from "../../../../shared/services/local-storage.service";
+import { SyntheticInstrumentsService } from "../../services/synthetic-instruments.service";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -114,6 +117,12 @@ describe('TechChartComponent', () => {
         { provide: TechChartDatafeedService, useValue: techChartDatafeedServiceSpy },
         { provide: ThemeService, useValue: themeServiceSpy },
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
+        {
+          provide: SyntheticInstrumentsService,
+          useValue: {
+            getInstrument: jasmine.createSpy('getInstrument').and.returnValue(new Subject())
+          }
+        },
         { provide: WidgetsSharedDataService, useValue: widgetsSharedDataServiceSpy },
         {
           provide: OrdersDialogService,
@@ -122,6 +131,13 @@ describe('TechChartComponent', () => {
           }
         },
         { provide: PortfolioSubscriptionsService, useValue: portfolioSubscriptionsServiceSpy },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            selectedDashboard$: new Subject(),
+            selectedPortfolio$: new Subject()
+          }
+        },
         {
           provide: OrderCancellerService,
           useValue: {
@@ -159,6 +175,14 @@ describe('TechChartComponent', () => {
             getSavedTemplates: jasmine.createSpy('getSavedTemplates').and.returnValue(new Subject()),
             saveChartTemplate: jasmine.createSpy('saveChartTemplate').and.returnValue(new Subject()),
             removeTemplate: jasmine.createSpy('removeTemplate').and.returnValue(new Subject()),
+          }
+        },
+        {
+          provide: LocalStorageService,
+          useValue: {
+            removeItem: jasmine.createSpy('removeItem').and.callThrough(),
+            getStringItem: jasmine.createSpy('getStringItem').and.returnValue(''),
+            getItem: jasmine.createSpy('getItem').and.returnValue(undefined)
           }
         },
         ...commonTestProviders
