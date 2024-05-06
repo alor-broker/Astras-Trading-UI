@@ -37,6 +37,7 @@ import { ChartTemplatesSettingsBrokerService } from "../../services/chart-templa
 import { LocalStorageService } from "../../../../shared/services/local-storage.service";
 import { SyntheticInstrumentsService } from "../../services/synthetic-instruments.service";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -183,6 +184,12 @@ describe('TechChartComponent', () => {
             removeItem: jasmine.createSpy('removeItem').and.callThrough(),
             getStringItem: jasmine.createSpy('getStringItem').and.returnValue(''),
             getItem: jasmine.createSpy('getItem').and.returnValue(undefined)
+          }
+        },
+        {
+          provide: ACTIONS_CONTEXT,
+          useValue: {
+            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
           }
         },
         ...commonTestProviders

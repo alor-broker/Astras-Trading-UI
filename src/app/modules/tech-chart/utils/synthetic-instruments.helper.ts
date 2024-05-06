@@ -13,7 +13,7 @@ const DEFAULT_EXCHANGE = 'MOEX';
 export const SYNTHETIC_INSTRUMENT_REGEX = /[^\[]+(?=])|[\^+*\/()-]|[\w:.]+(?:-\d+\.\d+)?[\w:.]*/g;
 
 export class SyntheticInstrumentsHelper {
-  static getSyntheticInstrumentKeys(searchString: string): RegularOrSyntheticInstrumentKey {
+  static getRegularOrSyntheticInstrumentKey(searchString: string): RegularOrSyntheticInstrumentKey {
     if (!searchString) {
       return { isSynthetic: false, instrument: { symbol: '', exchange: '' }};
     }
@@ -66,7 +66,7 @@ export class SyntheticInstrumentsHelper {
 
   static isSyntheticInstrument(symbolName: string): boolean {
     if (symbolName.includes('[') && symbolName.includes(']')) {
-      return SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(symbolName).isSynthetic;
+      return SyntheticInstrumentsHelper.getRegularOrSyntheticInstrumentKey(symbolName).isSynthetic;
     }
 
     return false;
