@@ -159,7 +159,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     const sub = this.form.valueChanges.pipe(
       map(x => ({
         ...x,
-        instrumentKey: toInstrumentKey(x.instrumentKey),
+        instrumentKey: x.instrumentKey == null ? null : toInstrumentKey(x.instrumentKey),
         quota: Number(x.quota),
         price: Number(x.price),
         quantity: Number(x.quantity)
@@ -247,6 +247,14 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     });
 
     this.form.controls.price.addAsyncValidators(AtsValidators.priceStepMultiplicityAsync(this.instrument$.pipe(map(x => x?.minstep ?? null))));
+
+    this.form.valueChanges
+      .pipe(
+        distinctUntilChanged((prev, curr) => prev.price === curr.price && prev.instrumentKey === curr.instrumentKey)
+      )
+      .subscribe(() => {
+        this.form.controls.price.updateValueAndValidity();
+      });
   }
 
   private initForm(): void {
