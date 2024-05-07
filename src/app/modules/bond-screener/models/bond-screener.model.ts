@@ -13,6 +13,7 @@ export interface BondNode {
     shortName?: string;
     exchange: string;
   };
+  amortizations?: Amortization[];
   financialAttributes?: {
     tradingStatusInfo?: string;
   };
@@ -43,6 +44,8 @@ export interface BondNode {
   hasOffer?: boolean;
   maturityDate?: Date;
   placementEndDate?: Date;
+  durationMacaulay?: number;
+  duration?: number;
   yield?: {
     currentYield?: number;
   };
@@ -62,4 +65,8 @@ export interface BondCoupon {
 
 export interface BondOffer {
   date?: Date;
+}
+
+export interface Amortization {
+  date: number;
 }

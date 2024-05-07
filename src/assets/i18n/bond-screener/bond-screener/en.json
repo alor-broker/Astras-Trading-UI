@@ -20,6 +20,9 @@
     "board": "Board",
     "guaranteed": "Guaranteed",
     "hasOffer": "Has offer",
+    "hasAmortization": "Has amortization",
+    "duration": "Duration, %",
+    "durationMacaulay": "Duration by Macaulay, d.",
     "lotSize": "Lot size",
     "minStep": "Min step",
     "price": "Price",
@@ -43,5 +46,6 @@
       "true": "Yes",
       "false": "No"
     }
-  }
+  },
+  "couponsFilterWarning": "This filter will show bonds that have at least one coupon that meets the conditions (not necessarily the closest one)"
 }

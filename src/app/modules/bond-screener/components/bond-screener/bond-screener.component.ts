@@ -195,36 +195,63 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       id: 'couponAccruedInterest',
       displayName: 'НКД',
       transformFn: (d: BondDisplay): string => d.closestCoupon?.accruedInterest?.toString() ?? '',
+      filterData: {
+        filterName: 'couponAccruedInterest',
+        filterType: FilterType.Interval,
+        intervalStartName: 'couponAccruedInterestFrom',
+        intervalEndName: 'couponAccruedInterestTo',
+        filterWarning: 'По данному фильтру будут показываться облигации, имеющие хотя бы один купон, удовлетворяющий условиям (не обязательно ближайший)'
+      },
       width: 90,
     },
     {
       id: 'couponDate',
       displayName: 'Дата выплаты ближ. купона',
       transformFn: (d: BondDisplay): string => d.closestCoupon?.date == null ? '' : new Date(d.closestCoupon!.date).toLocaleDateString(),
+      filterData: {
+        filterName: 'couponDate',
+        filterType: FilterType.Interval,
+        intervalStartName: 'couponDateFrom',
+        intervalEndName: 'couponDateTo'
+      },
       width: 90,
     },
     {
       id: 'couponIntervalInDays',
       displayName: 'Период купона, д.',
       transformFn: (d: BondDisplay): string => d.closestCoupon?.intervalInDays?.toString() ?? '',
+      filterData: {
+        filterName: 'couponIntervalInDays',
+        filterType: FilterType.Interval,
+        intervalStartName: 'couponIntervalInDaysFrom',
+        intervalEndName: 'couponIntervalInDaysTo',
+        filterWarning: 'По данному фильтру будут показываться облигации, имеющие хотя бы один купон, удовлетворяющий условиям (не обязательно ближайший)'
+      },
       width: 90,
     },
     {
       id: 'couponAmount',
       displayName: 'Размер купона',
       transformFn: (d: BondDisplay): string => d.closestCoupon?.amount?.toString() ?? '',
-      width: 90,
-    },
-    {
-      id: 'couponValue',
-      displayName: 'Доля номинала',
-      transformFn: (d: BondDisplay): string => d.closestCoupon?.value?.toString() ?? '',
+      filterData: {
+        filterName: 'couponAmount',
+        filterType: FilterType.Interval,
+        intervalStartName: 'couponAmountFrom',
+        intervalEndName: 'couponAmountTo',
+        filterWarning: 'По данному фильтру будут показываться облигации, имеющие хотя бы один купон, удовлетворяющий условиям (не обязательно ближайший)'
+      },
       width: 90,
     },
     {
       id: 'offerDate',
       displayName: 'Дата ближайшей оферты',
       transformFn: (d: BondDisplay): string => d.closestOffer?.date == null ? '' : new Date(d.closestOffer!.date).toLocaleDateString(),
+      filterData: {
+        filterName: 'offerDate',
+        filterType: FilterType.Interval,
+        intervalStartName: 'offerDateFrom',
+        intervalEndName: 'offerDateTo'
+      },
       width: 90,
     },
     {
@@ -268,7 +295,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     },
     {
       id: 'hasOffer',
-      displayName: 'Доср. выкуп/погашение',
+      displayName: 'Есть оферта',
       sortChangeFn: (dir): void => this.sortChange(['hasOffer'], dir),
       width: 110,
       filterData: {
@@ -278,6 +305,48 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
           { value: true, text: 'Да'},
           { value: false, text: 'Нет'}
         ]
+      }
+    },
+    {
+      id: 'hasAmortization',
+      displayName: 'Есть амортизация',
+      transformFn: (d: BondDisplay): string => (d.amortizations ?? []).some(a => (new Date(a.date).getTime()) > (new Date().getTime())) ? 'Да' : 'Нет',
+      width: 110,
+      filterData: {
+        filterName: 'hasAmortization',
+        filterType: FilterType.Default,
+        filters: [
+          { value: true, text: 'Да'},
+          { value: false, text: 'Нет'}
+        ]
+      }
+    },
+    {
+      id: 'duration',
+      displayName: 'Дюрация, %',
+      transformFn: (d: BondDisplay): string => d.duration?.toString() ?? '',
+      sortChangeFn: (dir): void => this.sortChange(['duration'], dir),
+      width: 90,
+      filterData: {
+        filterName: 'duration',
+        filterType: FilterType.Interval,
+        intervalStartName: 'durationFrom',
+        intervalEndName: 'durationTo',
+        inputFieldType: InputFieldType.Number,
+      }
+    },
+    {
+      id: 'durationMacaulay',
+      displayName: 'Дюрация по Маколею, д.',
+      transformFn: (d: BondDisplay): string => d.durationMacaulay?.toString() ?? '',
+      sortChangeFn: (dir): void => this.sortChange(['durationMacaulay'], dir),
+      width: 90,
+      filterData: {
+        filterName: 'durationMacaulay',
+        filterType: FilterType.Interval,
+        intervalStartName: 'durationMacaulayFrom',
+        intervalEndName: 'durationMacaulayTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -467,6 +536,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
                 : col.column.transformFn,
               filterData: col.column.filterData && {
                 ...col.column.filterData,
+                filterWarning: col.column.filterData.filterWarning == null ? null : translate(['couponsFilterWarning']),
                 filters: col.column.filterData.filters?.map(f => ({
                   text: translate(
                     [ 'filters', col.column.id, f.value ],

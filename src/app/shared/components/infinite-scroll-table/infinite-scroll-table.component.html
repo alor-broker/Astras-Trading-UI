@@ -60,8 +60,17 @@
             [class.active-filter]="(getFilterControl(column.filterData.filterName)?.value?.length ?? 0) > 0
             || !!getFilterControl(column.filterData.intervalStartName!)?.value
             || !!getFilterControl(column.filterData.intervalEndName!)?.value"
+            nz-tooltip
+            [nzTooltipTitle]="column.filterData.filterWarning == null ? null : filterWarning"
           >
           </i>
+          <ng-template #filterWarning>
+            <span
+              nzType="warning"
+              nz-typography>
+              {{column.filterData.filterWarning}}
+            </span>
+          </ng-template>
         </nz-filter-trigger>
       </th>
     </tr>

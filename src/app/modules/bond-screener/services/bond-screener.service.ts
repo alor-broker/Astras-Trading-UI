@@ -15,7 +15,7 @@ import {
 import { map } from "rxjs/operators";
 import { DefaultTableFilters } from "../../../shared/models/settings/table-settings.model";
 import { GraphQlHelper } from "../../../shared/utils/graph-ql-helper";
-import { GraphQlSort } from "../../../shared/models/graph-ql.model";
+import { GraphQlFilter, GraphQlSort } from "../../../shared/models/graph-ql.model";
 
 const BOND_NESTED_FIELDS: { [fieldName: string]: string[] } = {
   basicInformation: ['symbol', 'shortName', 'exchange'],
@@ -27,7 +27,7 @@ const BOND_NESTED_FIELDS: { [fieldName: string]: string[] } = {
   volumes: ['issueValue'],
   coupons: ['accruedInterest', 'amount', 'date', 'intervalInDays', 'value'],
   offers: ['date'],
-  rootFields: ['couponRate', 'couponType', 'guaranteed', 'hasOffer', 'maturityDate', 'placementEndDate']
+  rootFields: ['couponRate', 'couponType', 'guaranteed', 'hasOffer', 'maturityDate', 'placementEndDate', 'duration', 'durationMacaulay']
 };
 
 const BOND_FILTER_TYPES: { [fieldName: string]: string[] } = {
@@ -53,7 +53,11 @@ const BOND_FILTER_TYPES: { [fieldName: string]: string[] } = {
     'priceMinFrom',
     'priceMinTo',
     'priceStepFrom',
-    'priceStepTo'
+    'priceStepTo',
+    'durationFrom',
+    'durationTo',
+    'durationMacaulayFrom',
+    'durationMacaulayTo',
   ],
   bool: ['guaranteed', 'hasOffer'],
   date: [
@@ -62,7 +66,7 @@ const BOND_FILTER_TYPES: { [fieldName: string]: string[] } = {
     'maturityDateTo',
     'maturityDateFrom',
     'placementEndDateTo',
-    'placementEndDateFrom',
+    'placementEndDateFrom'
   ]
 };
 
@@ -81,11 +85,23 @@ export class BondScreenerService {
     filters: DefaultTableFilters,
     params: { first: number, after?: string, sort: GraphQlSort | null }
   ): Observable<BondScreenerResponse | null> {
+    const filtersCopy = JSON.parse(JSON.stringify(filters)) as DefaultTableFilters;
+
+    const couponsFilters = this.getCouponsFilters(filtersCopy);
+    const offersFilters = this.getOffersFilters(filtersCopy);
+
     return this.graphQlService.watchQuery(
       this.getBondsQuery(columnIds),
       {
         ...params,
-        filters: GraphQlHelper.parseFilters(filters, BOND_NESTED_FIELDS, BOND_FILTER_TYPES)
+        filters: {
+          and: [
+            ...GraphQlHelper.parseFilters(filters, BOND_NESTED_FIELDS, BOND_FILTER_TYPES).and!,
+            ...(couponsFilters == null ? [] : [{ coupons: couponsFilters }]),
+            ...(offersFilters == null ? [] : [{ offers: offersFilters }]),
+            ...(filtersCopy.hasAmortization == null ? [] : [{ amortizations: this.getAmortizationFilter(filtersCopy.hasAmortization as boolean) }])
+          ]
+        }
       }
     );
   }
@@ -208,6 +224,7 @@ export class BondScreenerService {
                     : ''
                   }
                   ${rootFields.join(' ')}
+                  amortizations { date }
                 }
                 cursor
               }
@@ -217,5 +234,148 @@ export class BondScreenerService {
               }
             }
           }`;
+  }
+
+  // If closest coupon filters selected, filter by it
+  private getCouponsFilters(filters: DefaultTableFilters): GraphQlFilter | null {
+    const someFilters: GraphQlFilter[] = [];
+    const noneFilters: GraphQlFilter[] = [];
+
+    if (filters.couponDateFrom != null || filters.couponDateTo != null) {
+      const [fromDay, fromMonth, fromYear] = ((filters.couponDateFrom ?? '') as string).split('.').map(d => +d);
+      const [toDay, toMonth, toYear] = ((filters.couponDateTo ?? '') as string).split('.').map(d => +d);
+      const couponDateFrom = new Date(fromYear, fromMonth - 1, fromDay);
+      const couponDateTo = new Date(toYear, toMonth - 1, toDay);
+
+      // If datFrom selected, search bonds with closest coupon by it
+      if (!isNaN(couponDateFrom.getTime())) {
+        noneFilters.push(
+          {date: {gte: new Date().toISOString()}},
+          {date: {lt: couponDateFrom.toISOString()}}
+        );
+        someFilters.push(
+          {date: {gte: couponDateFrom.toISOString()}}
+        );
+      }
+
+      // If datTo selected, search bonds with closest coupon by it
+      if (!isNaN(couponDateTo.getTime())) {
+        if (!isNaN(couponDateFrom.getTime())) { // If dateFrom selected, add filter by closest coupon before dateTo
+          someFilters.push({
+            date: {lte: couponDateTo.toISOString()}
+          });
+        } else {
+          someFilters.push(
+            {date: {gte: new Date().toISOString()}},
+            {date: {lte: couponDateTo.toISOString()}}
+          );
+        }
+      }
+    }
+
+    if (filters.couponIntervalInDaysFrom != null) {
+      someFilters.push({ intervalInDays: { gte: +filters.couponIntervalInDaysFrom } });
+    }
+
+    if (filters.couponIntervalInDaysTo != null) {
+      someFilters.push({ intervalInDays: { lte: +filters.couponIntervalInDaysTo } });
+    }
+
+    if (filters.couponAccruedInterestFrom != null) {
+      someFilters.push({ accruedInterest: { gte: +filters.couponAccruedInterestFrom } });
+    }
+
+    if (filters.couponAccruedInterestTo != null) {
+      someFilters.push({ accruedInterest: { lte: +filters.couponAccruedInterestTo } });
+    }
+
+    if (filters.couponAmountFrom != null) {
+      someFilters.push({ amount: { gte: +filters.couponAmountFrom } });
+    }
+
+    if (filters.couponAmountTo != null) {
+      someFilters.push({ amount: { lte: +filters.couponAmountTo } });
+    }
+
+
+    if (someFilters.length === 0 && noneFilters.length === 0) {
+      return null;
+    }
+
+    if (noneFilters.length === 0) {
+      return {
+        some: { and: someFilters }
+      };
+    }
+
+    return {
+      some: { and: someFilters },
+      none: { and: noneFilters }
+    };
+  }
+
+  private getOffersFilters(filters: DefaultTableFilters): GraphQlFilter | null {
+    const someFilters: GraphQlFilter[] = [];
+    const noneFilters: GraphQlFilter[] = [];
+
+
+    if (filters.offerDateFrom != null || filters.offerDateTo != null) {
+      const [fromDay, fromMonth, fromYear] = ((filters.offerDateFrom ?? '') as string).split('.').map(d => +d);
+      const [toDay, toMonth, toYear] = ((filters.offerDateTo ?? '') as string).split('.').map(d => +d);
+      const offerDateFrom = new Date(fromYear, fromMonth - 1, fromDay);
+      const offerDateTo = new Date(toYear, toMonth - 1, toDay);
+
+      // If datFrom selected, search bonds with closest coupon by it
+      if (!isNaN(offerDateFrom.getTime())) {
+        noneFilters.push(
+          {date: {gte: new Date().toISOString()}},
+          {date: {lt: offerDateFrom.toISOString()}}
+        );
+        someFilters.push(
+          {date: {gte: offerDateFrom.toISOString()}}
+        );
+      }
+
+      // If datTo selected, search bonds with closest coupon by it
+      if (!isNaN(offerDateTo.getTime())) {
+        if (!isNaN(offerDateFrom.getTime())) { // If dateFrom selected, add filter by closest coupon before dateTo
+          someFilters.push({
+            date: {lte: offerDateTo.toISOString()}
+          });
+        } else {
+          someFilters.push(
+            {date: {gte: new Date().toISOString()}},
+            {date: {lte: offerDateTo.toISOString()}}
+          );
+        }
+      }
+    }
+
+    if (someFilters.length === 0 && noneFilters.length === 0) {
+      return null;
+    }
+
+    if (noneFilters.length === 0) {
+      return {
+        some: { and: noneFilters }
+      };
+    }
+
+    return {
+      some: { and: someFilters },
+      none: { and: noneFilters }
+    };
+  }
+
+  private getAmortizationFilter(hasAmortization: boolean): GraphQlFilter {
+    if (hasAmortization) {
+      return {
+        some: { date: { gte: new Date().toISOString() } }
+      };
+    } else {
+      return {
+        none: { date: { gte: new Date().toISOString() } }
+      };
+    }
   }
 }
