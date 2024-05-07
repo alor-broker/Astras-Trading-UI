@@ -250,7 +250,8 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
 
     this.form.valueChanges
       .pipe(
-        distinctUntilChanged((prev, curr) => prev.price === curr.price && prev.instrumentKey === curr.instrumentKey)
+        distinctUntilChanged((prev, curr) => prev.price === curr.price && prev.instrumentKey === curr.instrumentKey),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(() => {
         this.form.controls.price.updateValueAndValidity();
