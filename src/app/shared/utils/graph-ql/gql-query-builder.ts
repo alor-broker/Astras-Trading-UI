@@ -1,14 +1,14 @@
 ﻿import VariableOptions from "gql-query-builder/build/VariableOptions";
 import { ZodObject } from "zod";
-import { ZodProperties } from "./zod-helper";
 import { GqlFieldsExtractor } from "./gql-fields-extractor";
 import * as queryBuilder from 'gql-query-builder';
+import { ZodPropertiesOf } from "./zod-helper";
 
 export type Variables = VariableOptions;
 
 export class GqlQueryBuilder {
   static getQuery<TResp>(
-    responseSchema: ZodObject<ZodProperties<TResp>>,
+    responseSchema: ZodObject<ZodPropertiesOf<TResp>>,
     variables?: Variables
   ): { query: string, variables: any } {
     const operation = GqlFieldsExtractor.getOperation(responseSchema);

@@ -84,11 +84,11 @@ export function AmortizationFilterInputSchema(): z.ZodObject<Properties<Amortiza
 export function BasicInformationSchema(): z.ZodObject<Properties<BasicInformation>> {
   return z.object({
     __typename: z.literal('BasicInformation').optional(),
-    description: z.string().nullish(),
+    description: z.string(),
     exchange: ExchangeSchema,
     market: MarketSchema,
-    shortName: z.string().nullish(),
-    symbol: z.string().nullish(),
+    shortName: z.string(),
+    symbol: z.string(),
     type: z.string().nullish()
   })
 }
@@ -120,9 +120,9 @@ export function BasicInformationSortInputSchema(): z.ZodObject<Properties<BasicI
 export function BoardInformationSchema(): z.ZodObject<Properties<BoardInformation>> {
   return z.object({
     __typename: z.literal('BoardInformation').optional(),
-    board: z.string().nullish(),
+    board: z.string(),
     isPrimaryBoard: z.boolean(),
-    primaryBoard: z.string().nullish()
+    primaryBoard: z.string()
   })
 }
 
@@ -158,12 +158,12 @@ export function BondSchema(): z.ZodObject<Properties<Bond>> {
     duration: z.number().nullish(),
     durationMacaulay: z.number().nullish(),
     financialAttributes: FinancialAttributesSchema().nullish(),
-    guaranteed: z.boolean().nullish(),
-    hasOffer: z.boolean().nullish(),
+    guaranteed: z.boolean(),
+    hasOffer: z.boolean(),
     maturityDate: z.string().nullish(),
     offers: z.array(OfferSchema()).nullish(),
     placementEndDate: z.string().nullish(),
-    pledged: z.boolean().nullish(),
+    pledged: z.boolean(),
     tradingDetails: TradingDetailsSchema().nullish(),
     volumes: BondVolumesSchema().nullish(),
     yield: BondYieldSchema().nullish()
@@ -231,10 +231,10 @@ export function BondSortInputSchema(): z.ZodObject<Properties<BondSortInput>> {
 export function BondVolumesSchema(): z.ZodObject<Properties<BondVolumes>> {
   return z.object({
     __typename: z.literal('BondVolumes').optional(),
-    issueValue: z.number().nullish(),
-    issueVolume: z.number().nullish(),
-    marketValue: z.number().nullish(),
-    marketVolume: z.number().nullish()
+    issueValue: z.number(),
+    issueVolume: z.number(),
+    marketValue: z.number(),
+    marketVolume: z.number()
   })
 }
 
@@ -261,8 +261,8 @@ export function BondVolumesSortInputSchema(): z.ZodObject<Properties<BondVolumes
 export function BondYieldSchema(): z.ZodObject<Properties<BondYield>> {
   return z.object({
     __typename: z.literal('BondYield').optional(),
-    currentYield: z.number().nullish(),
-    yieldToMaturity: z.number().nullish()
+    currentYield: z.number(),
+    yieldToMaturity: z.number()
   })
 }
 
@@ -574,7 +574,7 @@ export function ExchangeOperationFilterInputSchema(): z.ZodObject<Properties<Exc
 export function FinancialAttributesSchema(): z.ZodObject<Properties<FinancialAttributes>> {
   return z.object({
     __typename: z.literal('FinancialAttributes').optional(),
-    cfiCode: z.string().nullish(),
+    cfiCode: z.string(),
     currency: z.string().nullish(),
     isin: z.string().nullish(),
     tradingStatus: z.number(),
@@ -895,7 +895,7 @@ export function StockSchema(): z.ZodObject<Properties<Stock>> {
     boardInformation: BoardInformationSchema().nullish(),
     costEstimate: CostEstimateSchema().nullish(),
     currencyInformation: CurrencyInformationSchema().nullish(),
-    dividends: z.array(DividendSchema()).nullish(),
+    dividends: z.array(DividendSchema()),
     dividendsAggregateInfo: DividendsAggregateInfoSchema().nullish(),
     financialAttributes: FinancialAttributesSchema().nullish(),
     mainIndicators: MainIndicatorsSchema().nullish(),

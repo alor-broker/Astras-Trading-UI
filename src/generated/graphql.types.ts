@@ -97,15 +97,15 @@ export enum ApplyPolicy {
 
 export interface BasicInformation {
   /** Краткое описание инструмента */
-  description?: Maybe<Scalars['String']['output']>;
+  description: Scalars['String']['output'];
   /** Биржа */
   exchange: Exchange;
   /** Рынок */
   market: Market;
   /** Краткое наименование инструмента */
-  shortName?: Maybe<Scalars['String']['output']>;
+  shortName: Scalars['String']['output'];
   /** Тикер (Код финансового инструмента) */
-  symbol?: Maybe<Scalars['String']['output']>;
+  symbol: Scalars['String']['output'];
   /** Тип финансового инструмента */
   type?: Maybe<Scalars['String']['output']>;
 }
@@ -144,11 +144,11 @@ export interface BasicInformationSortInput {
 
 export interface BoardInformation {
   /** Код режима торгов */
-  board?: Maybe<Scalars['String']['output']>;
+  board: Scalars['String']['output'];
   /** Флаг, показывающий является ли данный режим торгов базовым */
   isPrimaryBoard: Scalars['Boolean']['output'];
   /** Код базового режима торгов */
-  primaryBoard?: Maybe<Scalars['String']['output']>;
+  primaryBoard: Scalars['String']['output'];
 }
 
 export interface BoardInformationFilterInput {
@@ -190,9 +190,9 @@ export interface Bond extends Instrument {
   durationMacaulay?: Maybe<Scalars['Int']['output']>;
   financialAttributes?: Maybe<FinancialAttributes>;
   /** Признак наличия по выпуску гарантии */
-  guaranteed?: Maybe<Scalars['Boolean']['output']>;
+  guaranteed: Scalars['Boolean']['output'];
   /** Признак наличия по выпуску возможности досрочного выкупа или погашения */
-  hasOffer?: Maybe<Scalars['Boolean']['output']>;
+  hasOffer: Scalars['Boolean']['output'];
   /** Дата погашения */
   maturityDate?: Maybe<Scalars['DateTime']['output']>;
   /** События досрочных выкупов/оферт */
@@ -200,7 +200,7 @@ export interface Bond extends Instrument {
   /** Дата окончания размещения */
   placementEndDate?: Maybe<Scalars['DateTime']['output']>;
   /** Признак наличия по продаже и залогу активов */
-  pledged?: Maybe<Scalars['Boolean']['output']>;
+  pledged: Scalars['Boolean']['output'];
   tradingDetails?: Maybe<TradingDetails>;
   /** Объемы */
   volumes?: Maybe<BondVolumes>;
@@ -294,13 +294,13 @@ export interface BondSortInput {
 
 export interface BondVolumes {
   /** Объем выпуска (в деньгах) */
-  issueValue?: Maybe<Scalars['Decimal']['output']>;
+  issueValue: Scalars['Decimal']['output'];
   /** Объем выпуска (в штуках) */
-  issueVolume?: Maybe<Scalars['Decimal']['output']>;
+  issueVolume: Scalars['Decimal']['output'];
   /** Объем в обращении (в деньгах) */
-  marketValue?: Maybe<Scalars['Decimal']['output']>;
+  marketValue: Scalars['Decimal']['output'];
   /** Объем в обращении (в штуках) */
-  marketVolume?: Maybe<Scalars['Decimal']['output']>;
+  marketVolume: Scalars['Decimal']['output'];
 }
 
 export interface BondVolumesFilterInput {
@@ -329,9 +329,9 @@ export interface BondVolumesSortInput {
 
 export interface BondYield {
   /** Текущая доходность по последней цене */
-  currentYield?: Maybe<Scalars['Decimal']['output']>;
+  currentYield: Scalars['Decimal']['output'];
   /** Доходность к погашению */
-  yieldToMaturity?: Maybe<Scalars['Decimal']['output']>;
+  yieldToMaturity: Scalars['Decimal']['output'];
 }
 
 export interface BondYieldFilterInput {
@@ -691,7 +691,7 @@ export interface ExchangeOperationFilterInput {
 
 export interface FinancialAttributes {
   /** Тип ценной бумаги согласно стандарту ISO 10962 */
-  cfiCode?: Maybe<Scalars['String']['output']>;
+  cfiCode: Scalars['String']['output'];
   /** Валюта */
   currency?: Maybe<Scalars['String']['output']>;
   /** Идентификатор ценной бумаги согласно стандарту ISO 6166 */
@@ -1112,7 +1112,7 @@ export interface Stock extends Instrument {
   costEstimate?: Maybe<CostEstimate>;
   currencyInformation?: Maybe<CurrencyInformation>;
   /** Данные о выплате дивидендов (если инструмент является акцией) */
-  dividends?: Maybe<Array<Dividend>>;
+  dividends: Array<Dividend>;
   /** Данные о выплате дивидендов компанией */
   dividendsAggregateInfo?: Maybe<DividendsAggregateInfo>;
   financialAttributes?: Maybe<FinancialAttributes>;

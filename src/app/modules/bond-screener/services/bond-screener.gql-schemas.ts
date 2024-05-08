@@ -1,22 +1,23 @@
 ﻿import {
   BasicInformationSchema,
   BondYieldSchema,
-  PageInfoSchema
 } from "../../../../generated/graphql.schemas";
 import {
   Modify,
-  ZodDefinition
+  ZodPropertiesOf
 } from "../../../shared/utils/graph-ql/zod-helper";
 import {
   Bond,
   BondsConnection,
+  BondYield,
   Query
 } from "../../../../generated/graphql.types";
 import {
   number,
   object,
   string,
-  TypeOf
+  TypeOf,
+  ZodObject
 } from "zod";
 
 const GetBondsYieldCurveBasicInformationSchema = BasicInformationSchema().pick({
@@ -25,12 +26,19 @@ const GetBondsYieldCurveBasicInformationSchema = BasicInformationSchema().pick({
   shortName: true
 });
 
-type GetBondsYieldCurveBond = Modify<Bond, {
-  basicInformation: TypeOf<typeof GetBondsYieldCurveBasicInformationSchema>;
-}>;
+type GetBondsYieldCurveBond = Modify<
+  Bond,
+  'basicInformation' | 'maturityDate' | 'duration' | 'durationMacaulay' | 'yield',
+  {
+    basicInformation: TypeOf<typeof GetBondsYieldCurveBasicInformationSchema>;
+    maturityDate: string;
+    duration: number;
+    durationMacaulay: number;
+    yield: BondYield;
+  }
+>;
 
-
-const GetBondsYieldCurveBondSchema: ZodDefinition<GetBondsYieldCurveBond, 'basicInformation' | 'maturityDate' | 'duration' | 'durationMacaulay' | 'yield'> = object({
+const GetBondsYieldCurveBondSchema: ZodObject<ZodPropertiesOf<GetBondsYieldCurveBond>> = object({
   basicInformation: GetBondsYieldCurveBasicInformationSchema,
   maturityDate: string(),
   duration: number(),
@@ -38,13 +46,30 @@ const GetBondsYieldCurveBondSchema: ZodDefinition<GetBondsYieldCurveBond, 'basic
   yield: BondYieldSchema(),
 });
 
+type GetBondsYieldCurveBondsConnection = Modify<
+  BondsConnection,
+  'nodes',
+  {
+    nodes: TypeOf<typeof GetBondsYieldCurveBondSchema>[];
+  }
+>;
 
-const GetBondsYieldCurveBondsConnectionSchema: ZodDefinition<BondsConnection, 'nodes' | 'pageInfo' | 'totalCount'> = object({
-  nodes: GetBondsYieldCurveBondSchema.array(),
-  pageInfo: PageInfoSchema(),
-  totalCount: number()
+
+const GetBondsYieldCurveBondsConnectionSchema: ZodObject<ZodPropertiesOf<GetBondsYieldCurveBondsConnection>> = object({
+  nodes: GetBondsYieldCurveBondSchema.array()
 });
 
-export const GetBondsYieldCurveResponseSchema: ZodDefinition<Query, 'bonds'> = object({
+type GetBondsYieldCurveBondQuery = Modify<
+  Query,
+  'bonds',
+  {
+    bonds: TypeOf<typeof GetBondsYieldCurveBondsConnectionSchema>;
+  }
+>;
+
+export const GetBondsYieldCurveResponseSchema: ZodObject<ZodPropertiesOf<GetBondsYieldCurveBondQuery>> = object({
   bonds: GetBondsYieldCurveBondsConnectionSchema
 });
+
+export type GetBondsYieldCurveResponse = TypeOf<typeof GetBondsYieldCurveResponseSchema>;
+

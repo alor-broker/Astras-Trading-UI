@@ -3,12 +3,12 @@
   ZodObject
 } from "zod";
 
-export type PropertiesOf<T> = Required<{
+export type ZodPropertiesOf<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any>;
 }>;
 
-export type SelectDefinition<T, K extends keyof T> = PropertiesOf<Pick<T, K>>;
+export type ZodSelectDefinition<T, K extends keyof T> = ZodPropertiesOf<Pick<T, K>>;
 
-export type ZodDefinition<T, K extends keyof T> = ZodObject<SelectDefinition<T, K>>;
+export type ZodDefinition<T, K extends keyof T> = ZodObject<ZodSelectDefinition<T, K>>;
 
-export type Modify<T, R> = Omit<T, keyof R> & R;
+export type Modify<TS, K extends keyof TS, TM> = Omit<Pick<TS, K>, keyof TM> & TM;

@@ -16,16 +16,12 @@ import {
   QueryBondsArgs,
   SortEnumType
 } from "../../../../generated/graphql.types";
-import {
-  BondYield as BondYieldMod,
-  BondYieldsResponse
-} from "../models/bond-yield-curve.model";
+import { BondYield as BondYieldMod } from "../models/bond-yield-curve.model";
 import { map } from "rxjs/operators";
-import { GqlQueryBuilder } from "../../../shared/utils/graph-ql/gql-query-builder";
-import { GetBondsYieldCurveResponseSchema } from "./bond-screener.gql-schemas";
-//import { TypeOf } from "zod";
-
-//type GetBondsYieldCurveResponse = TypeOf<typeof GetBondsYieldCurveResponseSchema>;
+import {
+  GetBondsYieldCurveResponse,
+  GetBondsYieldCurveResponseSchema
+} from "./bond-screener.gql-schemas";
 
 const BOND_NESTED_FIELDS: { [fieldName: string]: string[] } = {
   basicInformation: ['symbol', 'shortName', 'exchange'],
@@ -112,13 +108,7 @@ export class BondScreenerService {
         },
         maturityDate: { gte: now.toISOString() },
         duration: { neq: null },
-        durationMacaulay: { neq: null },
-        yield: {
-          and: [
-            { currentYield: { neq: null } },
-            { yieldToMaturity: { neq: null } }
-          ]
-        }
+        durationMacaulay: { neq: null }
       },
       order: [
         {
@@ -127,18 +117,15 @@ export class BondScreenerService {
       ]
     };
 
-    const query = GqlQueryBuilder.getQuery(
+    return this.graphQlService.watchQueryForSchema<GetBondsYieldCurveResponse>(
       GetBondsYieldCurveResponseSchema,
       {
         first: args.first,
         where: { value: args.where, type: 'BondFilterInput' },
         order: { value: args.order, type: '[BondSortInput!]' },
-      }
-    );
-
-   // let a: GetBondsYieldCurveResponse;
-
-    return this.graphQlService.watchQuery<BondYieldsResponse>(query.query, query.variables, { fetchPolicy: FetchPolicy.NoCache }).pipe(
+      },
+      { fetchPolicy: FetchPolicy.NoCache }
+    ).pipe(
       take(1),
       map(r => {
         if (!r) {
@@ -147,8 +134,7 @@ export class BondScreenerService {
 
         return r.bonds.nodes.map(n => ({
           ...n,
-          basicInformation: n.basicInformation!,
-          maturityDate: new Date(n.maturityDate!)
+          maturityDate: new Date(n.maturityDate)
         }));
       })
     );
