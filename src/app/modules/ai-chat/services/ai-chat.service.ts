@@ -1,8 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpClient,
-  HttpContext
-} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import {
   NewMessageRequest,
@@ -10,51 +7,50 @@ import {
 } from "../models/messages-http.model";
 import {
   Observable,
-  switchMap,
-  timer
+  take
 } from "rxjs";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { map } from "rxjs/operators";
-import { HttpContextTokens } from "../../../shared/constants/http.constants";
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
-interface MessageMock {
-  text: string;
+interface PostMessageResponse {
+  answer: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AiChatService {
+  private readonly baseUrl = `${this.environmentService.apiUrl}/aichat`;
+
   constructor(
     private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly environmentService: EnvironmentService
   ) {
 
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   sendMessage(message: NewMessageRequest): Observable<ReplyResponse | null> {
-    return timer(Math.round(Math.random() * 10_000)).pipe(
-      switchMap(() => this.httpClient.get<MessageMock>(
-        'https://fish-text.ru/get',
-        {
-          params: {
-            type: 'sentence',
-            number: Math.min(Math.round(Math.random() * 10), 5)
-          },
-          context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true)
-        }
-      )),
-      catchHttpError<MessageMock | null>(null, this.errorHandlerService),
+    return this.httpClient.post<PostMessageResponse>(
+      `${this.baseUrl}/messages`,
+      {
+        threadId: 0,
+        sender: 'astras-ai-chart@mock.com',
+        text: message.text
+      }
+    ).pipe(
+      catchHttpError<PostMessageResponse | null>(null, this.errorHandlerService),
       map(r => {
         if (!r) {
           return null;
         }
 
         return {
-          text: r.text
+          text: r.answer
         } as ReplyResponse;
-      })
+      }),
+      take(1)
     );
   }
 }
