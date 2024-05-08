@@ -85,10 +85,8 @@ export class BondScreenerService {
     filters: DefaultTableFilters,
     params: { first: number, after?: string, sort: GraphQlSort | null }
   ): Observable<BondScreenerResponse | null> {
-    const filtersCopy = JSON.parse(JSON.stringify(filters)) as DefaultTableFilters;
-
-    const couponsFilters = this.getCouponsFilters(filtersCopy);
-    const offersFilters = this.getOffersFilters(filtersCopy);
+    const couponsFilters = this.getCouponsFilters(filters);
+    const offersFilters = this.getOffersFilters(filters);
 
     return this.graphQlService.watchQuery(
       this.getBondsQuery(columnIds),
@@ -99,7 +97,7 @@ export class BondScreenerService {
             ...GraphQlHelper.parseFilters(filters, BOND_NESTED_FIELDS, BOND_FILTER_TYPES).and!,
             ...(couponsFilters == null ? [] : [{ coupons: couponsFilters }]),
             ...(offersFilters == null ? [] : [{ offers: offersFilters }]),
-            ...(filtersCopy.hasAmortization == null ? [] : [{ amortizations: this.getAmortizationFilter(filtersCopy.hasAmortization as boolean) }])
+            ...(filters.hasAmortization == null ? [] : [{ amortizations: this.getAmortizationFilter(filters.hasAmortization as boolean) }])
           ]
         }
       }
@@ -241,60 +239,35 @@ export class BondScreenerService {
     const someFilters: GraphQlFilter[] = [];
     const noneFilters: GraphQlFilter[] = [];
 
-    if (filters.couponDateFrom != null || filters.couponDateTo != null) {
-      const [fromDay, fromMonth, fromYear] = ((filters.couponDateFrom ?? '') as string).split('.').map(d => +d);
-      const [toDay, toMonth, toYear] = ((filters.couponDateTo ?? '') as string).split('.').map(d => +d);
-      const couponDateFrom = new Date(fromYear, fromMonth - 1, fromDay);
-      const couponDateTo = new Date(toYear, toMonth - 1, toDay);
-
-      // If datFrom selected, search bonds with closest coupon by it
-      if (!isNaN(couponDateFrom.getTime())) {
-        noneFilters.push(
-          {date: {gte: new Date().toISOString()}},
-          {date: {lt: couponDateFrom.toISOString()}}
-        );
-        someFilters.push(
-          {date: {gte: couponDateFrom.toISOString()}}
-        );
-      }
-
-      // If datTo selected, search bonds with closest coupon by it
-      if (!isNaN(couponDateTo.getTime())) {
-        if (!isNaN(couponDateFrom.getTime())) { // If dateFrom selected, add filter by closest coupon before dateTo
-          someFilters.push({
-            date: {lte: couponDateTo.toISOString()}
-          });
-        } else {
-          someFilters.push(
-            {date: {gte: new Date().toISOString()}},
-            {date: {lte: couponDateTo.toISOString()}}
-          );
-        }
-      }
-    }
+    this.getFiltersOfArrayByDate(
+      filters.couponDateFrom as string | undefined,
+      filters.couponDateTo as string | undefined,
+      someFilters,
+      noneFilters
+    );
 
     if (filters.couponIntervalInDaysFrom != null) {
-      someFilters.push({ intervalInDays: { gte: +filters.couponIntervalInDaysFrom } });
+      someFilters.push({ intervalInDays: { gte: Number(filters.couponIntervalInDaysFrom) } });
     }
 
     if (filters.couponIntervalInDaysTo != null) {
-      someFilters.push({ intervalInDays: { lte: +filters.couponIntervalInDaysTo } });
+      someFilters.push({ intervalInDays: { lte: Number(filters.couponIntervalInDaysTo) } });
     }
 
     if (filters.couponAccruedInterestFrom != null) {
-      someFilters.push({ accruedInterest: { gte: +filters.couponAccruedInterestFrom } });
+      someFilters.push({ accruedInterest: { gte: Number(filters.couponAccruedInterestFrom) } });
     }
 
     if (filters.couponAccruedInterestTo != null) {
-      someFilters.push({ accruedInterest: { lte: +filters.couponAccruedInterestTo } });
+      someFilters.push({ accruedInterest: { lte: Number(filters.couponAccruedInterestTo) } });
     }
 
     if (filters.couponAmountFrom != null) {
-      someFilters.push({ amount: { gte: +filters.couponAmountFrom } });
+      someFilters.push({ amount: { gte: Number(filters.couponAmountFrom) } });
     }
 
     if (filters.couponAmountTo != null) {
-      someFilters.push({ amount: { lte: +filters.couponAmountTo } });
+      someFilters.push({ amount: { lte: Number(filters.couponAmountTo) } });
     }
 
 
@@ -318,38 +291,12 @@ export class BondScreenerService {
     const someFilters: GraphQlFilter[] = [];
     const noneFilters: GraphQlFilter[] = [];
 
-
-    if (filters.offerDateFrom != null || filters.offerDateTo != null) {
-      const [fromDay, fromMonth, fromYear] = ((filters.offerDateFrom ?? '') as string).split('.').map(d => +d);
-      const [toDay, toMonth, toYear] = ((filters.offerDateTo ?? '') as string).split('.').map(d => +d);
-      const offerDateFrom = new Date(fromYear, fromMonth - 1, fromDay);
-      const offerDateTo = new Date(toYear, toMonth - 1, toDay);
-
-      // If datFrom selected, search bonds with closest coupon by it
-      if (!isNaN(offerDateFrom.getTime())) {
-        noneFilters.push(
-          {date: {gte: new Date().toISOString()}},
-          {date: {lt: offerDateFrom.toISOString()}}
-        );
-        someFilters.push(
-          {date: {gte: offerDateFrom.toISOString()}}
-        );
-      }
-
-      // If datTo selected, search bonds with closest coupon by it
-      if (!isNaN(offerDateTo.getTime())) {
-        if (!isNaN(offerDateFrom.getTime())) { // If dateFrom selected, add filter by closest coupon before dateTo
-          someFilters.push({
-            date: {lte: offerDateTo.toISOString()}
-          });
-        } else {
-          someFilters.push(
-            {date: {gte: new Date().toISOString()}},
-            {date: {lte: offerDateTo.toISOString()}}
-          );
-        }
-      }
-    }
+    this.getFiltersOfArrayByDate(
+      filters.offerDateFrom as string | undefined,
+      filters.offerDateTo as string | undefined,
+      someFilters,
+      noneFilters
+    );
 
     if (someFilters.length === 0 && noneFilters.length === 0) {
       return null;
@@ -376,6 +323,47 @@ export class BondScreenerService {
       return {
         none: { date: { gte: new Date().toISOString() } }
       };
+    }
+  }
+
+  private getFiltersOfArrayByDate(
+    from: string | undefined,
+    to: string | undefined,
+    someFilters: GraphQlFilter[],
+    noneFilters: GraphQlFilter[]
+  ): void {
+    if (from == null && to == null) {
+      return;
+    }
+
+    const [fromDay, fromMonth, fromYear] = (from ?? '').split('.').map(d => Number(d));
+    const [toDay, toMonth, toYear] = (to ?? '').split('.').map(d => Number(d));
+    const dateFrom = new Date(fromYear, fromMonth - 1, fromDay);
+    const dateTo = new Date(toYear, toMonth - 1, toDay);
+
+    // If datFrom selected, search bonds with closest coupon by it
+    if (!isNaN(dateFrom.getTime())) {
+      noneFilters.push(
+        {date: {gte: new Date().toISOString()}},
+        {date: {lt: dateFrom.toISOString()}}
+      );
+      someFilters.push(
+        {date: {gte: dateFrom.toISOString()}}
+      );
+    }
+
+    // If datTo selected, search bonds with closest coupon by it
+    if (!isNaN(dateTo.getTime())) {
+      if (!isNaN(dateFrom.getTime())) { // If dateFrom selected, add filter by closest coupon before dateTo
+        someFilters.push({
+          date: {lte: dateTo.toISOString()}
+        });
+      } else {
+        someFilters.push(
+          {date: {gte: new Date().toISOString()}},
+          {date: {lte: dateTo.toISOString()}}
+        );
+      }
     }
   }
 }

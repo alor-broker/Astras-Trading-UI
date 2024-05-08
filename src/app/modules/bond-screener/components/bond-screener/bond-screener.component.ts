@@ -594,12 +594,12 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
                       ...edge,
                       node: {
                         ...edge.node,
-                        closestCoupon: (JSON.parse(JSON.stringify(edge.node.coupons ?? [])) as BondCoupon[])
-                          .sort((a: BondCoupon, b: BondCoupon) => new Date(a.date!).getTime() - new Date(b.date!).getTime())
-                          .find((node: BondCoupon) => new Date(node.date!).getTime() > new Date().getTime()),
-                        closestOffer: (JSON.parse(JSON.stringify(edge.node.offers ?? [])) as BondOffer[])
-                          .sort((a: BondOffer, b: BondOffer) => new Date(a.date!).getTime() - new Date(b.date!).getTime())
-                          .find((node: BondOffer) => new Date(node.date!).getTime() > new Date().getTime())
+                        closestCoupon: ([...(edge.node.coupons ?? [])] as BondCoupon[])
+                          .sort((a: BondCoupon, b: BondCoupon) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                          .find((node: BondCoupon) => new Date(node.date).getTime() > new Date().getTime()),
+                        closestOffer: ([...(edge.node.offers ?? [])] as BondOffer[])
+                          .sort((a: BondOffer, b: BondOffer) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                          .find((node: BondOffer) => new Date(node.date).getTime() > new Date().getTime())
                       } as BondNode,
                     })) as GraphQlEdge<BondNode>[]
                   } as BondScreenerResponse['bonds']

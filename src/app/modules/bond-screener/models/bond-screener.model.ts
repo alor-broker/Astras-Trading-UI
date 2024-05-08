@@ -57,14 +57,14 @@ export interface BondCoupon {
   couponRate?: number;
   couponType?: string;
   currency?: string;
-  date?: Date;
+  date: Date;
   fixDate?: Date;
   intervalInDays?: number;
   value?: number;
 }
 
 export interface BondOffer {
-  date?: Date;
+  date: Date;
 }
 
 export interface Amortization {
