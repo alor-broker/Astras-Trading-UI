@@ -4,4 +4,5 @@ export interface HistoryRequest {
   tf: string;
   from: number;
   to: number;
+  countBack?: number;
 }

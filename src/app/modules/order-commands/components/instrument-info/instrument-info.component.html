@@ -1,6 +1,6 @@
 <div *ngIf="viewData$ | async as data" class="content">
   <div class='instrument-logo'>
-      <nz-avatar [nzSize]="64" [nzSrc]="'https://storage.alorbroker.ru/icon/' + data.instrumentKey.symbol + '.png'"
+      <nz-avatar [nzSize]="64" [nzSrc]="iconsUrl + data.instrumentKey.symbol + '.png'"
                  [nzText]="data.instrumentKey.symbol"
                  nzGap='4'>
       </nz-avatar>

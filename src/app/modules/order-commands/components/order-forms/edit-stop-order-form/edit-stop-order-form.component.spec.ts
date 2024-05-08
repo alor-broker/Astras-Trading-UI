@@ -21,7 +21,6 @@ import {InstrumentsService} from "../../../../instruments/services/instruments.s
 import {StopMarketOrderEdit} from "../../../../../shared/models/orders/edit-order.model";
 import {OrderFormState} from "../../../models/order-form.model";
 import {EditStopOrderFormComponent} from "./edit-stop-order-form.component";
-import {QuotesService} from "../../../../../shared/services/quotes.service";
 import {LessMore} from "../../../../../shared/models/enums/less-more.model";
 import {Side} from "../../../../../shared/models/enums/side.model";
 import {NZ_I18N, ru_RU} from "ng-zorro-antd/i18n";
@@ -35,7 +34,6 @@ describe('EditStopOrderFormComponent', () => {
   let component: EditStopOrderFormComponent;
   let fixture: ComponentFixture<EditStopOrderFormComponent>;
 
-  let lastPrice = 25;
   let orderServiceSpy: any;
   let orderDetailsServiceSpy: any;
   let instrumentsServiceSpy: any;
@@ -137,12 +135,6 @@ describe('EditStopOrderFormComponent', () => {
         {
           provide: InstrumentsService,
           useValue: instrumentsServiceSpy
-        },
-        {
-          provide: QuotesService,
-          useValue: {
-            getLastPrice: jasmine.createSpy('getLastPrice').and.returnValue(new BehaviorSubject(lastPrice))
-          }
         },
         ...commonTestProviders
       ]
@@ -331,7 +323,8 @@ describe('EditStopOrderFormComponent', () => {
         quantity: Math.round(Math.random() * 100),
         instrument: {
           symbol: order.symbol,
-          exchange: order.exchange
+          exchange: order.exchange,
+          instrumentGroup: order.board
         },
         side: order.side
       };

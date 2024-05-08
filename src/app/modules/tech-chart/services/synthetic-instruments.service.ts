@@ -51,6 +51,7 @@ export class SyntheticInstrumentsService {
     from: number;
     to: number;
     tf: string;
+    countBack: number;
   }): Observable<HistoryResponse | null> {
     const instruments: InstrumentKey[] = <InstrumentKey[]>data.syntheticInstruments
       .filter(p => !p.isSpreadOperator)
@@ -68,7 +69,8 @@ export class SyntheticInstrumentsService {
           exchange: p.value.exchange,
           from: data.from,
           to: data.to,
-          tf: data.tf
+          tf: data.tf,
+          countBack: data.countBack
         })
           .pipe(map(value => ({isSpreadOperator: false, value})))
       )
@@ -85,6 +87,24 @@ export class SyntheticInstrumentsService {
           let instrumentsHistories = JSON.parse(JSON.stringify(histories
             .filter(h => !h.isSpreadOperator)
             .map(h => h.value))) as HistoryResponse[];
+
+          if (instrumentsHistories.some(h => h.history.length === 0)) {
+            return histories.map(history => {
+              if (history.isSpreadOperator) {
+                return history as OperatorPart;
+              }
+
+              return {
+                isSpreadOperator: false,
+                value: {
+                  history: [],
+                  prev: 0,
+                  next: 0
+                }
+              } as InstrumentDataPart<HistoryResponse>;
+            });
+          }
+
           instrumentsHistories = instrumentsHistories.map((history, i) => {
             let historyCopy = JSON.parse(JSON.stringify(history.history)) as Candle[];
 

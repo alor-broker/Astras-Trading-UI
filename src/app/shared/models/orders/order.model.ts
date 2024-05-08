@@ -20,8 +20,9 @@ export interface IcebergParameters {
 export interface Order {
   id: string; // 28452595240,
   symbol: string; // SBER,
-  portfolio: string; // D39004,
   exchange: string; // MOEX,
+  board: string;
+  portfolio: string; // D39004,
   type: string; // limit,
   side: Side; // buy,
   status: string; // working,

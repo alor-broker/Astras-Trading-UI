@@ -1,11 +1,26 @@
-﻿import {Injectable} from "@angular/core";
-import {WidgetSettingsService} from "../../../shared/services/widget-settings.service";
-import {BehaviorSubject, combineLatest, Observable, shareReplay, take} from "rxjs";
-import {Option, OptionParameters, OptionSide, UnderlyingAsset} from "../models/option-board.model";
-import {OptionBoardDataContext, OptionsSelection} from "../models/option-board-data-context.model";
-import {OptionBoardSettings} from "../models/option-board-settings.model";
-import {map} from "rxjs/operators";
-import {InstrumentKey} from "../../../shared/models/instruments/instrument-key.model";
+﻿import { Injectable } from "@angular/core";
+import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  shareReplay,
+  take
+} from "rxjs";
+import {
+  OptionKey,
+  OptionParameters,
+  OptionSide,
+  UnderlyingAsset
+} from "../models/option-board.model";
+import {
+  OptionBoardDataContext,
+  OptionsSelection,
+  SelectionParameters
+} from "../models/option-board-data-context.model";
+import { OptionBoardSettings } from "../models/option-board-settings.model";
+import { map } from "rxjs/operators";
+import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +28,10 @@ import {InstrumentKey} from "../../../shared/models/instruments/instrument-key.m
 export class OptionBoardDataContextFactory {
   constructor(private readonly widgetSettingsService: WidgetSettingsService) {
 
+  }
+
+  static getParametersKey(option: OptionKey): string {
+    return `${option.exchange}:${option.symbol}`;
   }
 
   create(widgetGuid: string): OptionBoardDataContext {
@@ -32,14 +51,21 @@ export class OptionBoardDataContextFactory {
       selectedParameter$: new BehaviorSubject<OptionParameters>(OptionParameters.Price),
       optionsSelection$,
       currentSelection$: currentSelection$,
+      selectionParameters$: new BehaviorSubject(new Map<string, Partial<SelectionParameters>>()),
 
       destroy(): void {
         this.selectedSide$.complete();
+        this.optionsSelection$.complete();
         this.selectedParameter$.complete();
+        this.selectionParameters$.complete();
       },
 
-      updateOptionSelection(option: Option, underlyingAsset: UnderlyingAsset): void {
+      updateOptionSelection(option: OptionKey, underlyingAsset: UnderlyingAsset): void {
         factory.updateOptionSelection(option, underlyingAsset, this);
+      },
+
+      setParameters(option: OptionKey, parameters: Partial<SelectionParameters>): void {
+        factory.setParameters(option, parameters, this);
       },
 
       removeItemFromSelection(symbol: string): void {
@@ -74,7 +100,7 @@ export class OptionBoardDataContextFactory {
     );
   }
 
-  private updateOptionSelection(option: Option, underlyingAsset: UnderlyingAsset, context: OptionBoardDataContext): void {
+  private updateOptionSelection(option: OptionKey, underlyingAsset: UnderlyingAsset, context: OptionBoardDataContext): void {
     combineLatest([
       context.settings$,
       context.optionsSelection$
@@ -83,12 +109,11 @@ export class OptionBoardDataContextFactory {
     ).subscribe(([settings, currentSelection]) => {
       let currentSelectionForInstrument = currentSelection.find(x => this.filterSelection(x, settings));
 
-      if (!currentSelectionForInstrument) {
-        currentSelectionForInstrument = {
-          instrument: underlyingAsset,
-          selectedOptions: []
-        };
-      }
+      currentSelectionForInstrument = {
+        instrument: currentSelectionForInstrument?.instrument ?? underlyingAsset,
+        selectedOptions: currentSelectionForInstrument?.selectedOptions ?? []
+      };
+
 
       const currentOptionSelection = currentSelectionForInstrument.selectedOptions.find(x => x.symbol === option.symbol);
       if (!!currentOptionSelection) {
@@ -107,6 +132,24 @@ export class OptionBoardDataContextFactory {
         currentSelectionForInstrument
       ]);
     });
+  }
+
+  private setParameters(option: OptionKey, parameters: Partial<SelectionParameters>, context: OptionBoardDataContext): void {
+    context.selectionParameters$.pipe(
+      take(1)
+    ).subscribe(currentParameters => {
+      const key = OptionBoardDataContextFactory.getParametersKey(option);
+
+      const updatedParameters = {
+        ...currentParameters.get(key),
+        ...parameters
+      };
+
+      currentParameters.set(key, updatedParameters);
+
+      context.selectionParameters$.next(currentParameters);
+    });
+
   }
 
   private removeItemFromSelection(symbol: string, context: OptionBoardDataContext): void {

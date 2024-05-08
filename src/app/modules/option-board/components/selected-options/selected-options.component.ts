@@ -8,6 +8,7 @@ import { OptionBoardDataContext, OptionsSelection } from "../../models/option-bo
 import { OptionBoardService } from "../../services/option-board.service";
 import {
   BehaviorSubject,
+  combineLatest,
   forkJoin,
   Observable,
   of,
@@ -15,10 +16,13 @@ import {
   switchMap,
   take,
   tap,
-  timer
+  timer,
 } from "rxjs";
 import { OptionKey, OptionSide } from "../../models/option-board.model";
-import { map } from "rxjs/operators";
+import {
+  debounceTime,
+  map
+} from "rxjs/operators";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { TranslatorFn, TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
@@ -30,6 +34,7 @@ import { ActionsContext } from 'src/app/shared/services/actions-context';
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
 import { TableConfig } from "../../../../shared/models/table-config.model";
+import { OptionBoardDataContextFactory } from "../../utils/option-board-data-context-factory";
 
 interface OptionTranscription {
   ticker: string;
@@ -61,6 +66,7 @@ interface DetailsDisplay extends OptionKey {
   vega: number;
   theta: number;
   rho: number;
+  quantity?: number | null;
 }
 
 @Component({
@@ -80,6 +86,11 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
       displayName: 'symbol',
       width: 150,
       leftFixed: true
+    },
+    {
+      id: 'quantity',
+      displayName: 'quantity',
+      width: 75
     },
     {
       id: 'underlyingAssetSymbol',
@@ -173,15 +184,22 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
       takeUntilDestroyed(this.destroyRef)
     );
 
-    return this.dataContext.currentSelection$.pipe(
+    const selectionParameters$ = this.dataContext.selectionParameters$.pipe(
+      debounceTime(3000)
+    );
+
+    return combineLatest({
+      currentSelection: this.dataContext.currentSelection$,
+      selectionParameters: selectionParameters$
+    }).pipe(
       mapWith(() => refreshTimer$, source => source),
       tap(() => this.isLoading$.next(true)),
-      switchMap(selection => {
-        if ((selection as OptionsSelection | null)?.selectedOptions.length === 0) {
+      switchMap(x => {
+        if ((x.currentSelection as OptionsSelection | null)?.selectedOptions.length === 0) {
           return of([]);
         }
 
-        const requests = selection.selectedOptions.map(o => {
+        const requests = x.currentSelection.selectedOptions.map(o => {
           return this.optionBoardService.getOptionDetails(o.symbol, o.exchange).pipe(
             take(1),
             map(details => {
@@ -190,8 +208,9 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
               }
 
               return {
-                instrument: selection.instrument,
-                details
+                instrument: x.currentSelection.instrument,
+                details,
+                quantity: x.selectionParameters.get(OptionBoardDataContextFactory.getParametersKey(o))?.quantity ?? 1
               };
             })
           );
@@ -209,6 +228,7 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
           return {
             ...i.details,
             ...i.details.calculations,
+            quantity: i.quantity,
             optionTranscription : this.getOptionTranscription(i.details.symbol, i.instrument.symbol),
             underlyingAssetSymbol: i.instrument.symbol,
             price: MathHelper.roundPrice(i.details.calculations.price, i.instrument.minStep)
@@ -254,6 +274,17 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
         },
         settings.badgeColor ?? defaultBadgeColor
       );
+    });
+  }
+
+  setSelectedOptionQuantity(option: DetailsDisplay, quantity: number | null): void {
+    this.dataContext.currentSelection$.pipe(
+      take(1)
+    ).subscribe(selection => {
+      const targetOption = selection.selectedOptions.find(x => x.symbol === option.symbol && x.exchange === option.exchange);
+      if(targetOption != null) {
+        this.dataContext.setParameters(targetOption, { quantity: quantity ?? 1 });
+      }
     });
   }
 

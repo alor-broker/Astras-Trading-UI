@@ -14,7 +14,6 @@ import { filter, map, switchMap } from "rxjs/operators";
 import { startOfDay, toUnixTime } from "../../../../../shared/utils/datetime";
 import { PriceDiffHelper } from "../../../utils/price-diff.helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { QuotesService } from "../../../../../shared/services/quotes.service";
 import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
 import { AtsValidators } from "../../../../../shared/utils/form-validators";
 import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
@@ -37,6 +36,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
 
   @Input()
   initialValues: {
+    triggerPrice?: number;
     price?: number;
     quantity?: number;
     hasPriceChanged?: boolean;
@@ -88,7 +88,6 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     protected readonly instrumentService: InstrumentsService,
     private readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly quotesService: QuotesService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly orderService: OrderService,
     protected readonly destroyRef: DestroyRef) {
@@ -132,7 +131,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       this.setPriceValidators(this.form.controls.price, x.currentInstrument);
 
       this.form.controls.quantity.setValue(this.initialValues?.quantity ?? x.currentOrder.qtyBatch);
-      this.form.controls.triggerPrice.setValue(this.initialValues?.price ?? x.currentOrder.triggerPrice);
+      this.form.controls.triggerPrice.setValue(this.initialValues?.triggerPrice ?? this.initialValues?.price ?? x.currentOrder.triggerPrice);
       this.form.controls.condition.setValue(getConditionTypeByString(x.currentOrder.conditionType) ?? LessMore.More);
       this.form.controls.price.setValue(this.initialValues?.price ?? x.currentOrder.price);
 
@@ -278,7 +277,8 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
           id: x.currentOrder.id,
           instrument: {
             symbol: x.currentOrder.symbol,
-            exchange: x.currentOrder.exchange
+            exchange: x.currentOrder.exchange,
+            instrumentGroup: x.currentOrder.board
           },
           quantity: Number(formValue.quantity),
           triggerPrice: Number(formValue.triggerPrice),

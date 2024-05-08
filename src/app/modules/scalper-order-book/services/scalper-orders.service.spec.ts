@@ -110,7 +110,7 @@ describe('ScalperOrdersService', () => {
 
   it('#cancelOrders should call service with appropriate data', (done => {
         const testOrder: CurrentOrderDisplay = {
-          linkedPrice: 10,
+          triggerPrice: 10,
           symbol: 'TEST',
           orderId: generateRandomString(5),
           exchange: generateRandomString(4),
@@ -1049,15 +1049,22 @@ describe('ScalperOrdersService', () => {
         symbol: generateRandomString(4)
       };
 
+    const testInstrument: Instrument = {
+      ...testInstrumentKey,
+      minstep: 0.5
+    } as Instrument;
+
       orderServiceSpy.submitStopLimitOrder.and.returnValue(of({}));
       const quantity = getRandomInt(1, 100);
       const price = getRandomInt(1, 1000);
+      const distance = 7;
 
       service.setStopLimit(
-        testInstrumentKey,
+        testInstrument,
         price,
         quantity,
         Side.Sell,
+        distance,
         true,
         portfolioKey
       );
@@ -1069,20 +1076,21 @@ describe('ScalperOrdersService', () => {
           {
             side: Side.Sell,
             quantity: quantity,
-            price,
+            price: MathHelper.roundPrice(price - distance * testInstrument.minstep, testInstrument.minstep),
             instrument: toInstrumentKey(testInstrumentKey),
             triggerPrice: price,
-            condition: LessMore.MoreOrEqual
+            condition: LessMore.LessOrEqual
           } as NewStopLimitOrder,
           portfolioKey.portfolio
         );
 
       orderServiceSpy.submitStopLimitOrder.calls.reset();
       service.setStopLimit(
-        testInstrumentKey,
+        testInstrument,
         price,
         quantity,
         Side.Buy,
+        distance,
         true,
         portfolioKey
       );
@@ -1094,20 +1102,21 @@ describe('ScalperOrdersService', () => {
           {
             side: Side.Buy,
             quantity: quantity,
-            price,
+            price: MathHelper.roundPrice(price + distance * testInstrument.minstep, testInstrument.minstep),
             instrument: toInstrumentKey(testInstrumentKey),
             triggerPrice: price,
-            condition: LessMore.LessOrEqual
+            condition: LessMore.MoreOrEqual
           } as NewStopLimitOrder,
           portfolioKey.portfolio
         );
 
 
       service.setStopLimit(
-        testInstrumentKey,
+        testInstrument,
         price,
         quantity,
         Side.Buy,
+        distance,
         false,
         portfolioKey
       );
@@ -1120,10 +1129,12 @@ describe('ScalperOrdersService', () => {
           initialValues: {
             orderType: OrderType.Stop,
             quantity,
-            price: price,
+            price: MathHelper.roundPrice(price + distance * testInstrument.minstep, testInstrument.minstep),
             stopOrder:{
-              condition: LessMore.LessOrEqual,
-              limit: true
+              triggerPrice: price,
+              condition: LessMore.MoreOrEqual,
+              limit: true,
+              disableCalculations: true
             }
           }
         } as OrderDialogParams)

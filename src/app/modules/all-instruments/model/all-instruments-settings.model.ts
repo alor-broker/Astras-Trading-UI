@@ -25,6 +25,5 @@ export const allInstrumentsColumns: BaseColumnId[] = [
   { id: 'priceMax', displayName: "Макс. цена", isDefault: true },
   { id: 'priceMin', displayName: "Мин. цена", isDefault: true },
   { id: 'priceScale', displayName: 'Шаг цены', isDefault: true },
-  { id: 'priceStep', displayName: 'Стоимость шага цены', isDefault: true },
-  { id: 'yield', displayName: "Доходность", isDefault: false },
+  { id: 'priceStep', displayName: 'Стоимость шага цены', isDefault: true }
 ];

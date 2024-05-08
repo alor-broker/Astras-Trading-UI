@@ -4,8 +4,16 @@ import {AllOptionsComponent} from './all-options.component';
 import {getTranslocoModule, ngZorroMockComponents} from "../../../../shared/utils/testing";
 import {OptionBoardService} from "../../services/option-board.service";
 import {Subject} from "rxjs";
-import {OptionParameters, OptionSide} from "../../models/option-board.model";
-import {OptionBoardDataContext, OptionsSelection} from "../../models/option-board-data-context.model";
+import {
+  OptionKey,
+  OptionParameters,
+  OptionSide
+} from "../../models/option-board.model";
+import {
+  OptionBoardDataContext,
+  OptionsSelection,
+  SelectionParameters
+} from "../../models/option-board-data-context.model";
 
 describe('AllOptionsComponent', () => {
   let component: AllOptionsComponent;
@@ -37,11 +45,14 @@ describe('AllOptionsComponent', () => {
       selectedParameter$: new Subject<OptionParameters>(),
       optionsSelection$: new Subject<OptionsSelection[]>(),
       currentSelection$: new Subject<OptionsSelection>(),
+      selectionParameters$: new Subject<Map<string, Partial<SelectionParameters>>>(),
       updateOptionSelection: () => {
       },
       clearCurrentSelection: () => {
       },
       removeItemFromSelection: () => {
+      },
+      setParameters: () => {
       },
       destroy: () => {
       }

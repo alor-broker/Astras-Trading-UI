@@ -14,7 +14,7 @@
           "instrumentGroup": "TQBR"
         },
         "timezone": "Europe/Moscow",
-        "defaultTradingSession": "0700-0000,0000-0200"
+        "defaultTradingSession": "0700-0000,0000-0200:1234567"
       }
     },
     {
@@ -29,7 +29,7 @@
           "instrumentGroup": "SPBX"
         },
         "timezone": "Europe/Moscow",
-        "defaultTradingSession": "0700-0000,0000-0200"
+        "defaultTradingSession": "0700-0000,0000-0200:1234567"
       }
     }
   ],

@@ -1,4 +1,4 @@
-name: NPM Test
+name: PNPM Test
 
 on:
   push:
@@ -21,9 +21,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: pnpm/action-setup@v3
+      with:
+        version: 8
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: yarn install
-    - run: npm test -- --browsers=ChromeHeadless --watch=false
+    - run: pnpm install
+    - run: pnpm test -- --browsers=ChromeHeadless --watch=false

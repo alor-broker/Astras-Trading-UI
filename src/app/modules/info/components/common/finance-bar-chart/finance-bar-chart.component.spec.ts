@@ -19,11 +19,11 @@ describe('FinanceBarChartComponent', () => {
   let finance = {
     sales: {
       year: [],
-      quorter: []
+      quarter: []
     },
     netIncome: {
       year: [],
-      quorter: []
+      quarter: []
     },
     marketCap: 0,
     currency: '',

@@ -301,20 +301,25 @@ export class ScalperOrdersService {
   }
 
   setStopLimit(
-    instrumentKey: InstrumentKey,
+    instrument: Instrument,
     price: number,
     quantity: number,
     side: Side,
+    distance: number,
     silent: boolean,
     portfolio: PortfolioKey): void {
+
+    const limitOrderPrice =  side === Side.Sell
+      ? MathHelper.roundPrice(price - distance * instrument.minstep, instrument.minstep)
+      : MathHelper.roundPrice(price + distance * instrument.minstep, instrument.minstep);
 
     const order: NewStopLimitOrder = {
       side: side,
       quantity: quantity,
-      price: price,
-      instrument: toInstrumentKey(instrumentKey),
       triggerPrice: price,
-      condition: side === Side.Sell ? LessMore.MoreOrEqual : LessMore.LessOrEqual
+      price: limitOrderPrice,
+      condition: side === Side.Buy ? LessMore.MoreOrEqual : LessMore.LessOrEqual,
+      instrument: toInstrumentKey(instrument),
     };
 
     if (silent) {
@@ -328,8 +333,10 @@ export class ScalperOrdersService {
           price: order.price,
           quantity: order.quantity,
           stopOrder: {
+            triggerPrice: order.triggerPrice,
             condition: order.condition,
-            limit: true
+            limit: true,
+            disableCalculations: true
           }
         }
       });
@@ -367,7 +374,8 @@ export class ScalperOrdersService {
           quantity: order.quantity,
           price: order.triggerPrice,
           stopOrder: {
-            condition: order.condition
+            condition: order.condition,
+            disableCalculations: true
           }
         }
       });
@@ -381,26 +389,56 @@ export class ScalperOrdersService {
 
     if(silent) {
       for (const order of currentOrders) {
-        if(order.type === 'limit') {
-          this.orderService.submitLimitOrderEdit({
-            id: order.orderId,
-            price: updates.price,
-            quantity: order.displayVolume,
-            instrument: {
-              symbol: order.symbol,
-              exchange: order.exchange
-            }
-          },
-            order.portfolio
-          ).subscribe();
+        const baseOrderEditData = {
+          id: order.orderId,
+          quantity: order.displayVolume,
+          instrument: {
+            symbol: order.symbol,
+            exchange: order.exchange
+          }
+        };
+
+        switch (order.type) {
+          case "limit":
+            this.orderService.submitLimitOrderEdit({
+                ...baseOrderEditData,
+                price: updates.price,
+              },
+              order.portfolio
+            ).subscribe();
+            break;
+          case "stoplimit":
+            this.orderService.submitStopLimitOrderEdit({
+                ...baseOrderEditData,
+                condition: order.condition!,
+                triggerPrice: updates.price,
+                price: MathHelper.round(
+                  order.price! - (order.triggerPrice! - updates.price),
+                  Math.max(
+                    MathHelper.getPrecision(order.price!),
+                    MathHelper.getPrecision(order.triggerPrice!),
+                    MathHelper.getPrecision(updates.price)
+                  )
+                ),
+                side: order.side
+              },
+              order.portfolio
+            ).subscribe();
+            break;
+          case "stop":
+            this.orderService.submitStopMarketOrderEdit({
+                ...baseOrderEditData,
+                condition: order.condition!,
+                triggerPrice: updates.price,
+                side: order.side
+              },
+              order.portfolio
+            ).subscribe();
+            break;
         }
       }
     } else {
       const order = currentOrders[0];
-      if(order.type !== 'limit') {
-        return;
-      }
-
       this.ordersDialogService.openEditOrderDialog({
         instrumentKey: {
           symbol: order.symbol,
@@ -411,10 +449,20 @@ export class ScalperOrdersService {
           exchange: order.exchange
         },
         orderId: order.orderId,
-        orderType: OrderType.Limit,
+        orderType: order.type === 'limit' ? OrderType.Limit : OrderType.Stop,
         initialValues: {
           quantity: order.displayVolume,
-          price: updates.price,
+          price: order.type === 'limit'
+            ? updates.price
+            : MathHelper.round(
+              (order.price ?? 0) - (order.triggerPrice! - updates.price),
+            Math.max(
+              MathHelper.getPrecision(order.price ?? 0),
+              MathHelper.getPrecision(order.triggerPrice!),
+              MathHelper.getPrecision(updates.price)
+            )
+          ),
+          triggerPrice: updates.price,
           hasPriceChanged: true
         }
       });

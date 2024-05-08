@@ -1,5 +1,5 @@
 import { DestroyRef, Injectable } from '@angular/core';
-import { combineLatest, Observable, of, pairwise, Subscription, switchMap, take } from 'rxjs';
+import { combineLatest, Observable, pairwise, Subscription, switchMap, take } from 'rxjs';
 import { filter, map, startWith } from 'rxjs/operators';
 import { HistoryService } from 'src/app/shared/services/history.service';
 import { QuotesService } from 'src/app/shared/services/quotes.service';
@@ -132,27 +132,15 @@ export class WatchInstrumentsService {
       tf: timeframe,
       from: this.getHistoryFromTime(timeframe),
       to: this.getHistoryToTime(timeframe),
+      countBack: 1
     })
       .pipe(
-        switchMap(h => {
-          if (h == null) {
-            return of(null);
+        map(h => {
+          if (h == null || h.history.length === 0) {
+            return null;
           }
 
-          if (h.history.length === 0 && h.prev != null) {
-            return this.history.getHistory({
-              symbol: wi.instrument.symbol,
-              exchange: wi.instrument.exchange,
-              tf: timeframe,
-              from: h.prev - 1,
-              to: h.prev
-            })
-              .pipe(
-                map(h => h?.history[h?.history.length - 1] ?? null)
-              );
-          }
-
-          return of(h.history[h.history.length - 1]);
+          return h.history[h.history.length - 1];
         }),
         switchMap(candle => this.candlesService.getInstrumentLastCandle(wi.instrument, timeframe)
           .pipe(

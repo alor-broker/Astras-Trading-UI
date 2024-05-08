@@ -37,7 +37,8 @@ import { AllInstrumentsSettings } from '../../model/all-instruments-settings.mod
 import {
   BaseColumnSettings,
   DefaultTableFilters,
-  FilterType
+  FilterType,
+  InputFieldType
 } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
@@ -121,31 +122,33 @@ implements OnInit, OnDestroy {
     {
       id: 'dailyGrowth',
       displayName: 'Рост за сегодня',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.realTimeData!.dailyGrowth!.toString(),
-      classFn: (data): 'sell' | 'buy' => data.realTimeData!.dailyGrowth! < 0 ? 'sell' : 'buy',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.dailyGrowth!.toString(),
+      classFn: (data): 'sell' | 'buy' => data.tradingDetails!.dailyGrowth! < 0 ? 'sell' : 'buy',
       width: 100,
       minWidth: 100,
-      sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'dailyGrowth'], dir),
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'dailyGrowth'], dir),
       filterData: {
         filterName: 'dailyGrowth',
         filterType: FilterType.Interval,
         intervalStartName: 'dailyGrowthFrom',
-        intervalEndName: 'dailyGrowthTo'
+        intervalEndName: 'dailyGrowthTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
       id: 'dailyGrowthPercent',
       displayName: 'Рост за сегодня, %',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.realTimeData!.dailyGrowthPercent!.toString(),
-      classFn: (data): 'sell' | 'buy' => data.realTimeData!.dailyGrowthPercent! < 0 ? 'sell' : 'buy',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.dailyGrowthPercent!.toString(),
+      classFn: (data): 'sell' | 'buy' => data.tradingDetails!.dailyGrowthPercent! < 0 ? 'sell' : 'buy',
       width: 100,
       minWidth: 100,
-      sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'dailyGrowthPercent'], dir),
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'dailyGrowthPercent'], dir),
       filterData: {
         filterName: 'dailyGrowthPercent',
         filterType: FilterType.Interval,
         intervalStartName: 'dailyGrowthPercentFrom',
-        intervalEndName: 'dailyGrowthPercentTo'
+        intervalEndName: 'dailyGrowthPercentTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -153,13 +156,14 @@ implements OnInit, OnDestroy {
       displayName: 'Объём торгов',
       width: 80,
       minWidth: 80,
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.realTimeData!.tradeVolume!.toString(),
-      sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'tradeVolume'], dir),
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.tradeVolume!.toString(),
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'tradeVolume'], dir),
       filterData: {
         filterName: 'tradeVolume',
         filterType: FilterType.Interval,
         intervalStartName: 'tradeVolumeFrom',
-        intervalEndName: 'tradeVolumeTo'
+        intervalEndName: 'tradeVolumeTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -222,7 +226,8 @@ implements OnInit, OnDestroy {
         filterName: 'lotSize',
         filterType: FilterType.Interval,
         intervalStartName: 'lotSizeFrom',
-        intervalEndName: 'lotSizeTo'
+        intervalEndName: 'lotSizeTo',
+        inputFieldType: InputFieldType.Number
       },
       width: 70,
       minWidth: 70
@@ -230,15 +235,16 @@ implements OnInit, OnDestroy {
     {
       id: 'price',
       displayName: 'Цена',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.realTimeData!.price!.toString(),
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.price!.toString(),
       width: 80,
       minWidth: 80,
-      sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'price'], dir),
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'price'], dir),
       filterData: {
         filterName: 'price',
         filterType: FilterType.Interval,
         intervalStartName: 'priceFrom',
-        intervalEndName: 'priceTo'
+        intervalEndName: 'priceTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -250,7 +256,8 @@ implements OnInit, OnDestroy {
         filterName: 'priceMax',
         filterType: FilterType.Interval,
         intervalStartName: 'priceMaxFrom',
-        intervalEndName: 'priceMaxTo'
+        intervalEndName: 'priceMaxTo',
+        inputFieldType: InputFieldType.Number
       },
       width: 60,
       minWidth: 60
@@ -264,7 +271,8 @@ implements OnInit, OnDestroy {
         filterName: 'priceMin',
         filterType: FilterType.Interval,
         intervalStartName: 'priceMinFrom',
-        intervalEndName: 'priceMinTo'
+        intervalEndName: 'priceMinTo',
+        inputFieldType: InputFieldType.Number
       },
       width: 60,
       minWidth: 60
@@ -278,7 +286,8 @@ implements OnInit, OnDestroy {
         filterName: 'minStep',
         filterType: FilterType.Interval,
         intervalStartName: 'minStepFrom',
-        intervalEndName: 'minStepTo'
+        intervalEndName: 'minStepTo',
+        inputFieldType: InputFieldType.Number
       },
       width: 90,
       minWidth: 90,
@@ -292,25 +301,12 @@ implements OnInit, OnDestroy {
         filterName: 'priceStep',
         filterType: FilterType.Interval,
         intervalStartName: 'priceStepFrom',
-        intervalEndName: 'priceStepTo'
+        intervalEndName: 'priceStepTo',
+        inputFieldType: InputFieldType.Number
       },
       width: 90,
       minWidth: 90,
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceStep'], dir),
-    },
-    {
-      id: 'yield',
-      displayName: 'Доходность',
-      width: 100,
-      minWidth: 100,
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.realTimeData!.yield!.toString(),
-      sortChangeFn: (dir): void => this.sortChange(['realTimeData', 'yield'], dir),
-      filterData: {
-        filterName: 'yield',
-        filterType: FilterType.Interval,
-        intervalStartName: 'yieldFrom',
-        intervalEndName: 'yieldTo'
-      }
     }
   ];
   public contextMenu: ContextMenu[] = [];
@@ -441,7 +437,8 @@ implements OnInit, OnDestroy {
       ).subscribe(s => {
         this.actionsContext.instrumentSelected({
           symbol: row.basicInformation!.symbol!,
-          exchange: row.basicInformation!.exchange!
+          exchange: row.basicInformation!.exchange!,
+          instrumentGroup: row.boardInformation?.board
         }, s.badgeColor ?? defaultBadgeColor);
       });
   }

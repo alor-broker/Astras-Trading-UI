@@ -24,7 +24,8 @@
 
   "tabNames": {
     "allOptions": "All",
-    "selectedOptions": "Selected"
+    "selectedOptions": "Selected",
+    "charts": "Charts"
   },
 
   "abbreviations": {

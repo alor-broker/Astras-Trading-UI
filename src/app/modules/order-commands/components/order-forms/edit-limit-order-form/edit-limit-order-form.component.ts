@@ -282,7 +282,8 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
           id: x.currentOrder.id,
           instrument: {
             symbol: x.currentOrder.symbol,
-            exchange: x.currentOrder.exchange
+            exchange: x.currentOrder.exchange,
+            instrumentGroup: x.currentOrder.board
           },
           price: Number(formValue.price),
           quantity: Number(formValue.quantity)

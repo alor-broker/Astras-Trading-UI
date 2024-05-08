@@ -8,4 +8,5 @@ export interface EvaluationRequest {
   board?: string;
 
   budget: number;
+  includeLimitOrders?: boolean;
 }

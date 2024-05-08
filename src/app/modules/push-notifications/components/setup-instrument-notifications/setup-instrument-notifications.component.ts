@@ -1,6 +1,7 @@
 import { Component, DestroyRef, Input, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
+  combineLatest,
   delay,
   fromEvent,
   NEVER,
@@ -10,7 +11,6 @@ import {
   switchMap,
   take,
   tap,
-  withLatestFrom
 } from "rxjs";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { PushNotificationsService } from "../../services/push-notifications.service";
@@ -19,7 +19,10 @@ import { mapWith } from "../../../../shared/utils/observable-helper";
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
 import { FormControl, UntypedFormGroup, Validators } from "@angular/forms";
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
-import { filter, map } from "rxjs/operators";
+import {
+  filter,
+  map
+} from "rxjs/operators";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -56,6 +59,11 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
   }
 
   @Input()
+  initialValues: {
+    price?: number;
+  } | null = null;
+
+  @Input()
   set active(value: boolean) {
     if (value) {
       this.refresh$.next(null);
@@ -87,19 +95,28 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
       )
       .subscribe(() => this.refresh$.next(null));
 
-    this.commonParametersService.parameters$
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        withLatestFrom(this.instrumentKey$),
-        filter(([v, i]) => v?.price != null && i != null),
-        mapWith(
-          ([, i]) => this.quoteService.getLastPrice(i!),
-          ([parameters], lastPrice) => ({ selectedPrice: parameters.price!, lastPrice: lastPrice ?? 0 })
-        )
-      )
-      .subscribe(({ selectedPrice, lastPrice }) => {
+    combineLatest({
+      initialValues: of(this.initialValues),
+      commonParameters: this.commonParametersService.parameters$,
+      instrumentKey: this.instrumentKey$
+    }).pipe(
+      filter(x => x.instrumentKey != null),
+      mapWith(
+        x => this.quoteService.getLastPrice(x.instrumentKey!),
+        (source, lastPrice) => (
+          {
+            selectedPrice: source.commonParameters.price ?? source.initialValues?.price,
+            lastPrice: lastPrice ?? 0
+          }
+          )
+      ),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(({ selectedPrice, lastPrice }) => {
         this.newPriceChangeSubscriptionForm!.controls.price.setValue(selectedPrice);
-        this.newPriceChangeSubscriptionForm!.controls.priceCondition.setValue(selectedPrice > lastPrice ? LessMore.More : LessMore.Less);
+        this.newPriceChangeSubscriptionForm!.controls.priceCondition.setValue((selectedPrice != null && selectedPrice > lastPrice)
+          ? LessMore.More
+          : LessMore.Less
+        );
       });
   }
 

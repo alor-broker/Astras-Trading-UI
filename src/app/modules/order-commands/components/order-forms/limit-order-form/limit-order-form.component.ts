@@ -154,13 +154,13 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
 
   constructor(
     private readonly formBuilder: FormBuilder,
-    private readonly commonParametersService: CommonParametersService,
+    protected readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly orderService: OrderService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly marketService: MarketService,
     protected readonly destroyRef: DestroyRef) {
-    super(destroyRef);
+    super(commonParametersService, destroyRef);
   }
 
   get canSubmit(): boolean {
@@ -177,7 +177,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
   }
 
   setQuantity(value: number): void {
-    this.commonParametersService.setParameters({
+    this.setCommonParameters({
       quantity: value
     });
   }
@@ -265,7 +265,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
   }
 
   private initCommonParametersUpdate(): void {
-    this.commonParametersService.parameters$.pipe(
+    this.getCommonParameters().pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(p => {
       if (p.price != null && this.form.controls.price.value !== p.price) {
@@ -282,12 +282,13 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       distinctUntilChanged((prev, curr) => prev.price === curr.price && prev.quantity === curr.quantity),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
-      this.commonParametersService.setParameters({
+      this.setCommonParameters({
         price: x.price,
         quantity: x.quantity
       });
     });
   }
+
 
   private getLimitOrder(instrument: Instrument, side: Side, timezoneConverter: TimezoneConverter): NewLimitOrder {
     const formValue = this.form.value;

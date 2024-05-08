@@ -85,7 +85,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     },
     bracket: {
       price: {
-        min: 0,
+        min: 0.01,
         max: inputNumberValidation.max,
         percentsStep: 0.01,
         stepsStep: 1
@@ -100,6 +100,10 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
         min: 0,
         max: 60 * 60 * 1000
       }
+    },
+    stopLimitOrdersDistance: {
+      min: 0,
+      max: 100
     }
   };
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
@@ -194,6 +198,13 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     // orders
     disableHotkeys: this.formBuilder.nonNullable.control(true),
     enableMouseClickSilentOrders: this.formBuilder.nonNullable.control(false),
+    stopLimitOrdersDistance: this.formBuilder.nonNullable.control(
+      0,
+      [
+        Validators.min(this.validationOptions.stopLimitOrdersDistance.min),
+        Validators.max(this.validationOptions.stopLimitOrdersDistance.max)
+      ]
+    ),
     // additional panels
     showTradesClustersPanel: this.formBuilder.nonNullable.control(false),
     showTradesPanel: this.formBuilder.nonNullable.control(false),
@@ -368,6 +379,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       depth: Number(formValue.depth),
       fontSize: Number(formValue.fontSize),
       rowHeight: Number(formValue.rowHeight),
+      stopLimitOrdersDistance: Number(formValue.stopLimitOrdersDistance),
     } as Partial<ScalperOrderBookWidgetSettings> & InstrumentKey;
 
     delete newSettings.instrument;
@@ -483,6 +495,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
 
     this.form.controls.disableHotkeys.setValue(settings.disableHotkeys);
     this.form.controls.enableMouseClickSilentOrders.setValue(settings.enableMouseClickSilentOrders);
+    this.form.controls.stopLimitOrdersDistance.setValue(settings.stopLimitOrdersDistance ?? 0);
 
     this.form.controls.showTradesPanel.setValue(settings.showTradesPanel ?? false);
     if(settings.tradesPanelSettings) {

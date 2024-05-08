@@ -90,6 +90,18 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       minWidth: 75
     },
     {
+      id: 'shortName',
+      displayName: 'Название',
+      sortOrder: null,
+      sortFn: (a: DisplayTrade, b: DisplayTrade): number => a.symbol.localeCompare(b.shortName),
+      filterData: {
+        filterName: 'shortName',
+        filterType: FilterType.Search
+      },
+      tooltip: 'Наименование ценной бумаги',
+      minWidth: 75
+    },
+    {
       id: 'side',
       displayName: 'Сторона',
       sortOrder: null,
@@ -346,6 +358,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       .subscribe(s => this.service.selectNewInstrument(
         row.symbol,
         row.exchange,
+        row.board,
         s.badgeColor ?? defaultBadgeColor
       ));
   }

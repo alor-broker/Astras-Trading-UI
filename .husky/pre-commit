@@ -3,6 +3,6 @@
 . "$(dirname "$0")/_/husky.sh"
 . "$(dirname "$0")/common.sh"
 
-yarn lint
-yarn test --browsers=ChromeHeadless --watch=false
-yarn build --configuration production
+pnpm lint
+pnpm test -- --browsers=ChromeHeadless --watch=false
+pnpm build --configuration production

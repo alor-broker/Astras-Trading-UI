@@ -48,7 +48,7 @@ export class BlotterService {
   ) {
   }
 
-  selectNewInstrument(symbol: string, exchange: string, badgeColor: string): void {
+  selectNewInstrument(symbol: string, exchange: string, board: string | null, badgeColor: string): void {
     this.marketService.getMarketSettings().pipe(
       take(1)
     ).subscribe(marketSettings => {
@@ -73,7 +73,7 @@ export class BlotterService {
         return;
       }
 
-      const instrument: InstrumentKey = { symbol, exchange };
+      const instrument: InstrumentKey = { symbol, exchange, instrumentGroup: board };
 
       this.actionsContext.instrumentSelected(instrument, badgeColor);
     });

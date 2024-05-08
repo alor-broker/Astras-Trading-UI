@@ -81,7 +81,7 @@ export class DashboardComponent implements OnInit {
           margin: 5,
           outerMargin: true,
           outerMarginTop: null,
-          outerMarginRight: null,
+          outerMarginRight: 6, // needs to fix bug when widget auto shrinks (#783)
           outerMarginBottom: null,
           outerMarginLeft: null,
           useTransformPositioning: true,
@@ -213,6 +213,10 @@ export class DashboardComponent implements OnInit {
         if (widgetMeta) {
           if (widgetMeta.desktopMeta?.addOptions.initialHeight != null) {
             newPosition.rows = widgetMeta.desktopMeta.addOptions.initialHeight;
+          }
+
+          if (widgetMeta.desktopMeta?.addOptions.initialWidth != null) {
+            newPosition.cols = widgetMeta.desktopMeta.addOptions.initialWidth;
           }
 
           if (widgetMeta.desktopMeta?.addOptions.initialHeightPx != null && this.gridster?.curRowHeight != null) {

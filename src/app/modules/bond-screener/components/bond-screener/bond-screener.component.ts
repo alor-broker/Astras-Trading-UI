@@ -4,7 +4,8 @@ import { TableConfig } from '../../../../shared/models/table-config.model';
 import {
   BaseColumnSettings,
   DefaultTableFilters,
-  FilterType
+  FilterType,
+  InputFieldType
 } from '../../../../shared/models/settings/table-settings.model';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { BondScreenerSettings } from '../../models/bond-screener-settings.model';
@@ -25,12 +26,7 @@ import {
   LazyLoadingBaseTableComponent
 } from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import {
-  GraphQlEdge,
-  GraphQlPageInfo,
-  GraphQlSort,
-  GraphQlSortType
-} from "../../../../shared/models/graph-ql.model";
+import { GraphQlEdge, GraphQlPageInfo, GraphQlSort, GraphQlSortType } from "../../../../shared/models/graph-ql.model";
 
 interface BondDisplay extends BondNode {
   id: string;
@@ -147,7 +143,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         filterName: 'currentYield',
         filterType: FilterType.Interval,
         intervalStartName: 'currentYieldFrom',
-        intervalEndName: 'currentYieldTo'
+        intervalEndName: 'currentYieldTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -160,7 +157,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         filterName: 'issueValue',
         filterType: FilterType.Interval,
         intervalStartName: 'issueValueFrom',
-        intervalEndName: 'issueValueTo'
+        intervalEndName: 'issueValueTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -187,7 +185,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         filterName: 'couponRate',
         filterType: FilterType.Interval,
         intervalStartName: 'couponRateFrom',
-        intervalEndName: 'couponRateTo'
+        intervalEndName: 'couponRateTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -200,7 +199,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         filterName: 'priceMultiplier',
         filterType: FilterType.Interval,
         intervalStartName: 'priceMultiplierFrom',
-        intervalEndName: 'priceMultiplierTo'
+        intervalEndName: 'priceMultiplierTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -252,7 +252,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         filterName: 'lotSize',
         filterType: FilterType.Interval,
         intervalStartName: 'lotSizeFrom',
-        intervalEndName: 'lotSizeTo'
+        intervalEndName: 'lotSizeTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -265,7 +266,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         filterName: 'minStep',
         filterType: FilterType.Interval,
         intervalStartName: 'minStepFrom',
-        intervalEndName: 'minStepTo'
+        intervalEndName: 'minStepTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -278,7 +280,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         filterName: 'priceMax',
         filterType: FilterType.Interval,
         intervalStartName: 'priceMaxFrom',
-        intervalEndName: 'priceMaxTo'
+        intervalEndName: 'priceMaxTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -291,7 +294,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         filterName: 'priceMin',
         filterType: FilterType.Interval,
         intervalStartName: 'priceMinFrom',
-        intervalEndName: 'priceMinTo'
+        intervalEndName: 'priceMinTo',
+        inputFieldType: InputFieldType.Number
       }
     },
     {
@@ -304,7 +308,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         filterName: 'priceStep',
         filterType: FilterType.Interval,
         intervalStartName: 'priceStepFrom',
-        intervalEndName: 'priceStepTo'
+        intervalEndName: 'priceStepTo',
+        inputFieldType: InputFieldType.Number
       }
     }
   ];
@@ -346,7 +351,12 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         )
       )
       .reduce((acc, curr) => {
-        acc[curr] = filters[curr];
+        if (curr === 'currentYieldFrom' || curr === 'currentYieldTo') {
+          acc[curr] = MathHelper.round((filters[curr] as number) / 100, 4);
+        } else {
+          acc[curr] = filters[curr];
+        }
+
         return acc;
       }, {} as DefaultTableFilters);
 

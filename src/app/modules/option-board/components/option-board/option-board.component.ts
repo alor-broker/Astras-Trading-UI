@@ -6,7 +6,8 @@ import {OptionBoardDataContext} from "../../models/option-board-data-context.mod
 
 enum ComponentTabs {
   AllOptions = 'allOptions',
-  SelectedOptions = 'selectedOptions'
+  SelectedOptions = 'selectedOptions',
+  Charts = 'charts'
 }
 
 @Component({

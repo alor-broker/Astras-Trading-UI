@@ -155,7 +155,8 @@ describe('SyntheticInstrumentsService', () => {
         ],
         to: Date.now(),
         from: Date.now(),
-        tf: '60'
+        tf: '60',
+        countBack: 100
       })
         .pipe(take(1))
         .subscribe(res => expect(res).toBeNull());
@@ -242,7 +243,8 @@ describe('SyntheticInstrumentsService', () => {
           ],
           from: Date.now(),
           to: Date.now(),
-          tf: '60'
+          tf: '60',
+          countBack: 100
         })
           .pipe(take(1))
           .subscribe(h => {
@@ -331,7 +333,8 @@ describe('SyntheticInstrumentsService', () => {
           ],
           from: Date.now(),
           to: Date.now(),
-          tf: '60'
+          tf: '60',
+          countBack: 100
         })
           .pipe(take(1))
           .subscribe(h => {
@@ -396,7 +399,8 @@ describe('SyntheticInstrumentsService', () => {
           ],
           from: Date.now(),
           to: Date.now(),
-          tf: '60'
+          tf: '60',
+          countBack: 100
         })
           .pipe(take(1))
           .subscribe(h => {
@@ -461,7 +465,8 @@ describe('SyntheticInstrumentsService', () => {
           ],
           from: Date.now(),
           to: Date.now(),
-          tf: '60'
+          tf: '60',
+          countBack: 100
         })
           .pipe(take(1))
           .subscribe(h => {
@@ -515,7 +520,8 @@ describe('SyntheticInstrumentsService', () => {
           ],
           from: Date.now(),
           to: Date.now(),
-          tf: '60'
+          tf: '60',
+          countBack: 100
         })
           .pipe(take(1))
           .subscribe(h => {
@@ -596,7 +602,8 @@ describe('SyntheticInstrumentsService', () => {
           ],
           from: Date.now(),
           to: Date.now(),
-          tf: '60'
+          tf: '60',
+          countBack: 100
         })
           .pipe(take(1))
           .subscribe(h => {

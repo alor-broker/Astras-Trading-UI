@@ -17,6 +17,7 @@ import { ChartSubscriptionIdHelper } from '../../../shared/utils/subscription-id
 export class LightChartDatafeed {
   private lastHistoryPoint: number | null = null;
   private lastBarSubscription: Subscription | null = null;
+  private readonly historyPointsCountBack = 300;
 
   constructor(
     private readonly instrumentKey: InstrumentKey,
@@ -39,7 +40,8 @@ export class LightChartDatafeed {
       exchange: this.instrumentKey.exchange,
       from: periodParams.from,
       to: periodParams.to,
-      tf: this.timeFrame
+      tf: this.timeFrame,
+      countBack: this.historyPointsCountBack
     }).pipe(
       take(1)
     ).subscribe(history => {

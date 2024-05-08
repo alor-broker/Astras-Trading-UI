@@ -24,7 +24,8 @@
 
   "tabNames": {
     "allOptions": "Все",
-    "selectedOptions": "Выбранные"
+    "selectedOptions": "Выбранные",
+    "charts": "Графики"
   },
 
   "abbreviations": {

@@ -3,6 +3,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  Inject,
   Input,
   OnDestroy,
   OnInit,
@@ -87,7 +88,10 @@ import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-display-option";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
-import { toInstrumentKey } from "../../../../shared/utils/instruments";
+import {
+  defaultBadgeColor,
+  toInstrumentKey
+} from "../../../../shared/utils/instruments";
 import {
   EditOrderDialogParams,
   OrderType
@@ -112,6 +116,11 @@ import { MarketExchange } from "../../../../shared/models/market-settings.model"
 import { DeviceService } from "../../../../shared/services/device.service";
 import { DeviceInfo } from "../../../../shared/models/device-info.model";
 import { ChartTemplatesSettingsBrokerService } from "../../services/chart-templates-settings-broker.service";
+import { LocalStorageService } from "../../../../shared/services/local-storage.service";
+import {
+  ACTIONS_CONTEXT,
+  ActionsContext
+} from "../../../../shared/services/actions-context";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -264,6 +273,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly techChartDatafeedService: TechChartDatafeedService,
     private readonly themeService: ThemeService,
     private readonly instrumentsService: InstrumentsService,
+    private readonly syntheticInstrumentsService: SyntheticInstrumentsService,
     private readonly widgetsSharedDataService: WidgetsSharedDataService,
     private readonly ordersDialogService: OrdersDialogService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
@@ -272,11 +282,13 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly translatorService: TranslatorService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly tradesHistoryService: TradesHistoryService,
-    private readonly destroyRef: DestroyRef,
-    private readonly syntheticInstrumentsService: SyntheticInstrumentsService,
     private readonly marketService: MarketService,
     private readonly deviceService: DeviceService,
-    private readonly chartTemplatesSettingsBrokerService: ChartTemplatesSettingsBrokerService
+    private readonly chartTemplatesSettingsBrokerService: ChartTemplatesSettingsBrokerService,
+    private readonly localStorageService: LocalStorageService,
+    @Inject(ACTIONS_CONTEXT)
+    private readonly actionsContext: ActionsContext,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -319,7 +331,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         if (!prev) {
           return true;
         }
-        return !(prev.widgetSettings.linkToActive ?? false) && !!(curr?.widgetSettings.linkToActive ?? false) &&
+        return !(prev.widgetSettings.linkToActive ?? false) && (curr?.widgetSettings.linkToActive ?? false) &&
           (chartInstrument?.symbol !== curr?.instrument.symbol || chartInstrument?.exchange !== curr?.instrument.exchange);
       })
     );
@@ -363,7 +375,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private initSettingsStream(): void {
     const getInstrumentInfo = (settings: TechChartSettings): Observable<Instrument> =>
       (SyntheticInstrumentsHelper.isSyntheticInstrument(settings.symbol)
-          ? this.syntheticInstrumentsService.getInstrument((<SyntheticInstrumentKey>SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(settings.symbol)).parts)
+          ? this.syntheticInstrumentsService.getInstrument((<SyntheticInstrumentKey>SyntheticInstrumentsHelper.getRegularOrSyntheticInstrumentKey(settings.symbol)).parts)
           : this.instrumentsService.getInstrument(settings as InstrumentKey)
       ).pipe(
         filter((x): x is Instrument => !!x)
@@ -447,6 +459,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         chartLayout.charts[0].panes[0].sources[0].state.shortName = selectedInstrumentSymbol;
       }
     }
+
+    this.localStorageService.removeItem('tradingview.current_theme.name');
 
     const features = this.getFeatures(settings, deviceInfo);
 
@@ -549,15 +563,31 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         return settingsTicker !== this.chartState!.widget.activeChart().symbol();
       })
     )
-      .subscribe(() => {
-        this.settingsService.updateSettings(this.guid, {
-          linkToActive: false,
-          ...(
-            SyntheticInstrumentsHelper.isSyntheticInstrument(this.chartState!.widget.activeChart().symbol())
-              ? { symbol: this.chartState!.widget.activeChart().symbol() }
-              : (<RegularInstrumentKey>SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(this.chartState!.widget.activeChart().symbol())).instrument
-          )
-        });
+      .subscribe(settings => {
+        const chartSymbol = this.chartState!.widget.activeChart().symbol();
+
+        if(SyntheticInstrumentsHelper.isSyntheticInstrument(chartSymbol)) {
+          this.settingsService.updateSettings(
+            this.guid,
+            {
+              linkToActive: false,
+              symbol: chartSymbol
+            });
+        } else {
+          const instrumentKey = toInstrumentKey((<RegularInstrumentKey>SyntheticInstrumentsHelper.getRegularOrSyntheticInstrumentKey(chartSymbol)).instrument);
+
+          if (settings.widgetSettings.linkToActive ?? false) {
+            this.actionsContext.instrumentSelected(instrumentKey, settings.widgetSettings.badgeColor ?? defaultBadgeColor);
+            return;
+          }
+
+          this.settingsService.updateSettings(
+            settings.widgetSettings.guid,
+            {
+              ...instrumentKey
+            }
+          );
+        }
       });
   };
 
@@ -1216,7 +1246,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         'symbol_info',
         'display_market_status',
         'save_shortcut',
-        'save_chart_properties_to_local_storage',
         'header_quick_search',
         'header_saveload'
       ]

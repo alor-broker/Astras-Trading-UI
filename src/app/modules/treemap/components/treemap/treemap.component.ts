@@ -13,7 +13,7 @@ import {
   ActiveElement,
   Chart,
   ChartEvent
-} from "chart.js";
+} from "chart.js/auto";
 import {
   TreemapController,
   TreemapElement
@@ -100,7 +100,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   private readonly averageTileSize = 4000;
 
   private readonly newTooltip$ = new BehaviorSubject<TooltipModelRaw[] | null>(null);
-  tooltipData$?: Observable<TooltipData>;
+  tooltipData$?: Observable<TooltipData | null>;
   isTooltipVisible$ = new BehaviorSubject(true);
 
   private settings$!: Observable<TreemapSettings>;
@@ -123,7 +123,6 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
     this.settings$ = this.settingsService.getSettings<TreemapSettings>(this.guid).pipe(
       shareReplay({bufferSize: 1, refCount: true})
     );
-
 
     Chart.register(TreemapController, TreemapElement);
     this.initTooltipDataStream();
@@ -169,7 +168,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
       .subscribe(({ treemap, themeColors }) => {
         const ctx = (<HTMLCanvasElement>document.getElementById(this.guid)).getContext('2d');
 
-        if (!ctx) {
+        if (ctx == null) {
           return;
         }
 
@@ -254,11 +253,13 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                     take(1)
                   )
                   .subscribe(sector => {
-                    if (sector) {
-                      this.selectedSector$.next('');
-                    } else {
-                      this.selectedSector$.next((<any>elements[0].element).$context.raw.g);
-                    }
+                    setTimeout(() => {
+                      if (sector) {
+                        this.selectedSector$.next('');
+                      } else {
+                        this.selectedSector$.next((<any>elements[0].element).$context.raw.g);
+                      }
+                    }, 0);
                   });
               }
 
@@ -285,9 +286,13 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
           filter((tr): tr is TooltipModelRaw[] => tr != null && tr.length > 0),
           debounceTime(50),
           switchMap((tooltipRaws: TooltipModelRaw[]) => {
+            if (this.chart == null) {
+              return of(null);
+            }
+
             const position = {
-              top: this.chart!.tooltip!.caretY,
-              left: this.chart!.tooltip!.caretX
+              top: this.chart.tooltip!.caretY,
+              left: this.chart.tooltip!.caretX
             };
 
             if (tooltipRaws.length === 1) {
