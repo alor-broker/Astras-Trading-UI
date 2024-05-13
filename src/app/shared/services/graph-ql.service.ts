@@ -14,6 +14,12 @@ import {
 } from "rxjs/operators";
 import { GraphQLError } from "graphql";
 import { HttpErrorResponse } from "@angular/common/http";
+import { ZodObject } from "zod";
+import { ZodPropertiesOf } from "../utils/graph-ql/zod-helper";
+import {
+  GqlQueryBuilder,
+  Variables
+} from "../utils/graph-ql/gql-query-builder";
 
 export interface GraphQlVariables {
   [propName: string]: any;
@@ -69,5 +75,16 @@ export class GraphQlService {
       this.errorHandlerService.handleError(err as Error);
       return of(null);
     }
+  }
+
+  watchQueryForSchema<TResp>(
+    responseSchema: ZodObject<ZodPropertiesOf<TResp>>,
+    variables?: Variables,
+    options?: {
+      fetchPolicy: FetchPolicy;
+    }): Observable<TResp | null> {
+    const query = GqlQueryBuilder.getQuery(responseSchema, variables);
+
+    return this.watchQuery<TResp>(query.query, query.variables, options);
   }
 }
