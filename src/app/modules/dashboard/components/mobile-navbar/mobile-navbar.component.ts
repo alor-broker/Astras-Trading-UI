@@ -15,6 +15,8 @@ import { groupPortfoliosByAgreement } from "../../../../shared/utils/portfolios"
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
 import { NewYearHelper } from "../../utils/new-year.helper";
+import { EnvironmentService } from "../../../../shared/services/environment.service";
+import { HelpService } from "../../../../shared/services/help.service";
 
 @Component({
   selector: 'ats-mobile-navbar',
@@ -23,7 +25,8 @@ import { NewYearHelper } from "../../utils/new-year.helper";
 })
 export class MobileNavbarComponent implements OnInit {
   isSideMenuVisible = false;
-
+  readonly externalLinks = this.environmentService.externalLinks;
+  helpLink$!: Observable<string | null>;
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
   selectedDashboard$!: Observable<Dashboard>;
@@ -34,10 +37,12 @@ export class MobileNavbarComponent implements OnInit {
   private activeInstrument$!: Observable<InstrumentKey | null>;
 
   constructor(
+    private readonly environmentService: EnvironmentService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly store: Store,
     private readonly auth: AuthService,
-    private readonly modal: ModalService
+    private readonly modal: ModalService,
+    private readonly helpService: HelpService
   ) {
   }
 
@@ -84,6 +89,8 @@ export class MobileNavbarComponent implements OnInit {
           this.modal.openEmptyPortfoliosWarningModal();
         }
       });
+
+    this.helpLink$ = this.helpService.getHelpLink('main');
   }
 
   isFindedPortfolio(portfolio: PortfolioExtended): boolean {

@@ -108,7 +108,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
   }
 
   resolveSymbol(symbolName: string, onResolve: ResolveCallback, onError: ErrorCallback): void {
-    const instrumentsData = SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(symbolName);
+    const instrumentsData = SyntheticInstrumentsHelper.getRegularOrSyntheticInstrumentKey(symbolName);
 
     let request: Observable<Instrument | null>;
 
@@ -154,7 +154,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
         has_intraday: true,
         has_seconds: true,
         timezone:  instrumentExchange?.settings.timezone as Timezone ?? 'Europe/Moscow',
-        session: instrumentExchange?.settings.defaultTradingSession ?? '0700-0000,0000-0200',
+        session: instrumentExchange?.settings.defaultTradingSession ?? '0700-0000,0000-0200:1234567',
         supported_resolutions: this.getSupportedResolutions(),
       };
 
@@ -164,7 +164,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
   }
 
   getBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, periodParams: PeriodParams, onResult: HistoryCallback, onError: ErrorCallback): void {
-    const instrumentsData = SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(symbolInfo.ticker!);
+    const instrumentsData = SyntheticInstrumentsHelper.getRegularOrSyntheticInstrumentKey(symbolInfo.ticker!);
     const lastBarPointKey = this.getLastBarPointKey(symbolInfo.ticker!, resolution);
     if (periodParams.firstDataRequest) {
       this.lastBarPoint.delete(lastBarPointKey);
@@ -226,7 +226,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
   }
 
   subscribeBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, onTick: SubscribeBarsCallback, listenerGuid: string): void {
-    const instrumentsData = SyntheticInstrumentsHelper.getSyntheticInstrumentKeys(symbolInfo.ticker!);
+    const instrumentsData = SyntheticInstrumentsHelper.getRegularOrSyntheticInstrumentKey(symbolInfo.ticker!);
 
     let request: Observable<Candle | null>;
 

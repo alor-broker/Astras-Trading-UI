@@ -1,9 +1,10 @@
 <nz-header *transloco="let t; scope: 'dashboard/navbar/common'" class="d-flex flex-column">
   <div class="header-row d-flex align-items-center">
-    <div class="logo" [class.new-year]="showNewYearIcon()">
-      <a [routerLink]="['/']"></a>
+    <div class="logo" #logoContainer>
+      <a [routerLink]="['/']" [style.font-size]="logoContainer.clientWidth + 'px'">
+        <i [nzType]="showNewYearIcon() ? 'ats-new-year-logo' : 'ats-logo'" nz-icon></i>
+      </a>
     </div>
-
     <div class="menu-item" *ngIf="portfolios$ | async as portfolios">
       <button
         *ngIf="selectedPortfolio$ | async as selectedPortfolio; else emptyPortfolio"
@@ -40,8 +41,9 @@
         <ng-template #emptyPortfolioPopover>
           <p>{{t('dashboardNavbarCommon.emptyPortfolioPopover')}}</p>
           <p>{{t('dashboardNavbarCommon.emptyPortfolioPopoverHint')}}
-            <ats-external-link
-              href="https://lk.alor.ru/main">{{t('dashboardNavbarCommon.emptyPortfolioPopoverLink')}}</ats-external-link>
+            <ats-external-link [href]="externalLinks.personalAccount">
+              {{t('dashboardNavbarCommon.emptyPortfolioPopoverLink')}}
+            </ats-external-link>
           </p>
         </ng-template>
       </ng-template>
@@ -108,7 +110,7 @@
             </li>
             <li nz-menu-divider></li>
             <li nz-menu-item class='menu-item external-link'
-                (click)="openThirdPartyLink('https://lk.alor.ru/reports/broker')">
+                (click)="openThirdPartyLink(externalLinks.reports)">
               <span>
                 <i nz-icon nzType="audit" nzTheme="outline"></i>
                 <ng-container [ngTemplateOutlet]="externalLink"
@@ -117,7 +119,7 @@
             </li>
             <li nz-menu-divider></li>
             <li nz-menu-item class='menu-item external-link'
-                (click)="openThirdPartyLink('https://warp.alor.dev/ru/releases/astras')">
+                (click)="openThirdPartyLink(externalLinks.releases)">
               <span>
                 <i nz-icon nzType="history" nzTheme="outline"></i>
                 <ng-container [ngTemplateOutlet]="externalLink"
@@ -125,11 +127,30 @@
               </span>
             </li>
             <li nz-menu-divider></li>
-            <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink('https://t.me/+oM0i9QbtD4cwMzNi')">
+            <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink(externalLinks.support)">
               <span>
                 <i nz-icon nzType="customer-service" nzTheme="outline"></i>
                 <ng-container [ngTemplateOutlet]="externalLink"
                               [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.support')}"></ng-container>
+              </span>
+            </li>
+            <li nz-menu-divider></li>
+            <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink(externalLinks.videoTutorial)">
+              <span>
+                <i nz-icon nzType="play-circle" nzTheme="outline"></i>
+                <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.videoTutorial')}"></ng-container>
+              </span>
+            </li>
+            <li nz-menu-divider></li>
+            <li
+              *ngIf="helpLink$ | async as helpLink"
+              nz-menu-item
+              class='menu-item external-link'
+              (click)="openThirdPartyLink(helpLink)"
+            >
+              <span>
+                <i nz-icon nzType="question-circle" nzTheme="outline"></i>
+                <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.help')}"></ng-container>
               </span>
             </li>
             <li nz-menu-divider></li>

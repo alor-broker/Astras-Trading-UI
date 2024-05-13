@@ -27,6 +27,12 @@ import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reduc
 export class InstantNotificationsFormComponent
 extends ControlValueAccessorBaseComponent<InstantNotificationsSettings>
 implements OnInit {
+  private readonly nonSwitchableNotifications = [
+    OrdersInstantNotificationType.OrderSubmitFailed,
+    OrdersInstantNotificationType.OrderUpdateFailed,
+    OrdersInstantNotificationType.OrderCancelFailed
+  ];
+
   editableNotificationTypes: { value: OrdersInstantNotificationType, enabled: boolean }[] = [];
   currentValue: InstantNotificationsSettings | null = null;
 
@@ -56,6 +62,7 @@ implements OnInit {
     this.currentValue = value;
 
     this.editableNotificationTypes = Object.values(OrdersInstantNotificationType)
+      .filter(x => !this.nonSwitchableNotifications.includes(x))
       .map(x => ({
         value: x,
         enabled: !(this.currentValue?.hiddenNotifications?.includes(x) ?? false)
