@@ -33,10 +33,7 @@ export interface OrderDialogParams {
 export interface EditOrderDialogParams {
   orderId: string;
   orderType: OrderType;
-  instrumentKey: {
-    symbol: string;
-    exchange: string;
-  };
+  instrumentKey: InstrumentKey;
   portfolioKey: PortfolioKey;
   initialValues: {
     triggerPrice?: number;

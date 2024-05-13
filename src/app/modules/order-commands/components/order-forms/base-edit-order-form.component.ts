@@ -3,12 +3,12 @@ import {BehaviorSubject, combineLatest, Observable, shareReplay, switchMap} from
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
 import {filter, map} from "rxjs/operators";
-import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {AbstractControl, FormControl, Validators} from "@angular/forms";
 import {inputNumberValidation} from "../../../../shared/utils/validation-options";
 import {AtsValidators} from "../../../../shared/utils/form-validators";
 import {OrderFormState} from "../../models/order-form.model";
+import { Order } from "../../../../shared/models/orders/order.model";
 
 @Component({
   template: ''
@@ -42,7 +42,15 @@ export abstract class BaseEditOrderFormComponent implements OnDestroy {
     this.orderId$.complete();
   }
 
-  protected initFormInstrument(instrumentKey$: Observable<InstrumentKey>): void {
+  protected initFormInstrument(order$: Observable<Order>): void {
+    const instrumentKey$ = order$.pipe(
+      map(o => ({
+        symbol: o.symbol,
+        exchange: o.exchange,
+        instrumentGroup: o.board
+      }))
+    );
+
     this.formInstrument$ = instrumentKey$.pipe(
       switchMap(instrumentKey => this.instrumentService.getInstrument(instrumentKey)),
       filter((i): i is Instrument => !!i),
