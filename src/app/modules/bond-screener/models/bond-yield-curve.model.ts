@@ -1,10 +1,4 @@
-﻿export interface BondYieldsResponse {
-  bonds: {
-    nodes: BondYield[];
-  };
-}
-
-export interface BondYield {
+﻿export interface BondYield {
   basicInformation: {
     symbol: string;
     shortName: string;

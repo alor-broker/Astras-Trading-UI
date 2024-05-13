@@ -8,14 +8,20 @@ import {
   FetchPolicy,
   GraphQlService
 } from "../../../shared/services/graph-ql.service";
-import {
-  BondYield,
-  BondYieldsResponse
-} from "../models/bond-yield-curve.model";
-import { map } from "rxjs/operators";
+
 import { DefaultTableFilters } from "../../../shared/models/settings/table-settings.model";
 import { GraphQlHelper } from "../../../shared/utils/graph-ql-helper";
 import { GraphQlSort } from "../../../shared/models/graph-ql.model";
+import {
+  QueryBondsArgs,
+  SortEnumType
+} from "../../../../generated/graphql.types";
+import { BondYield as BondYieldMod } from "../models/bond-yield-curve.model";
+import { map } from "rxjs/operators";
+import {
+  GetBondsYieldCurveResponse,
+  GetBondsYieldCurveResponseSchema
+} from "./bond-screener.gql-schemas";
 
 const BOND_NESTED_FIELDS: { [fieldName: string]: string[] } = {
   basicInformation: ['symbol', 'shortName', 'exchange'],
@@ -86,49 +92,40 @@ export class BondScreenerService {
     );
   }
 
-  getBondsYieldCurve(): Observable<BondYield[] | null> {
-    // now only ОФЗ bonds are supported
+  getBondsYieldCurve(): Observable<BondYieldMod[] | null> {
     const now = new Date();
     now.setMinutes(0, 0, 0);
 
-    const query = `
-          query Bonds($now: DateTime!) {
-          bonds(
-              first: 1000
-              where: {
-                  basicInformation: { shortName: { startsWith: "ОФЗ" } }
-                  boardInformation: { isPrimaryBoard: { eq: true } }
-                  maturityDate: { gte: $now }
-                  duration: { neq: null }
-                  durationMacaulay: { neq: null }
-                  yield: {
-                    and: {
-                      currentYield: { neq: null },
-                      yieldToMaturity: { neq: null }
-                    }
-                  }
-              }
-               order: { maturityDate: DESC }
-          ) {
-              nodes {
-                  basicInformation {
-                      symbol
-                      exchange
-                      shortName
-                  }
-                  maturityDate
-                  duration
-                  durationMacaulay
-                  yield {
-                      currentYield
-                      yieldToMaturity
-                  }
-              }
-          }
-      }
-    `;
+    const args: QueryBondsArgs = {
+      first: 1000,
+      where: {
+        basicInformation: {
+          // now only ОФЗ bonds are supported
+          shortName: { startsWith: "ОФЗ" }
+        },
+        boardInformation: {
+          isPrimaryBoard: { eq: true }
+        },
+        maturityDate: { gte: now.toISOString() },
+        duration: { neq: null },
+        durationMacaulay: { neq: null }
+      },
+      order: [
+        {
+          maturityDate: SortEnumType.Desc
+        }
+      ]
+    };
 
-    return this.graphQlService.watchQuery<BondYieldsResponse>(query, { now: now.toISOString() }, { fetchPolicy: FetchPolicy.NoCache }).pipe(
+    return this.graphQlService.watchQueryForSchema<GetBondsYieldCurveResponse>(
+      GetBondsYieldCurveResponseSchema,
+      {
+        first: args.first,
+        where: { value: args.where, type: 'BondFilterInput' },
+        order: { value: args.order, type: '[BondSortInput!]' },
+      },
+      { fetchPolicy: FetchPolicy.NoCache }
+    ).pipe(
       take(1),
       map(r => {
         if (!r) {
@@ -164,29 +161,29 @@ export class BondScreenerService {
                 node {
                   basicInformation { ${basicInformationFields.join(' ')} }
                   ${additionalInformationFields.length > 0
-                    ? 'additionalInformation {' + additionalInformationFields.join(' ') + '}'
-                    : ''
-                  }
+      ? 'additionalInformation {' + additionalInformationFields.join(' ') + '}'
+      : ''
+    }
                   ${financialAttributesFields.length > 0
-                    ? 'financialAttributes {' + financialAttributesFields.join(' ') + '}'
-                    : ''
-                  }
+      ? 'financialAttributes {' + financialAttributesFields.join(' ') + '}'
+      : ''
+    }
                   ${boardInformationFields.length > 0
-                    ? 'boardInformation {' + boardInformationFields.join(' ') + '}'
-                    : ''
-                  }
+      ? 'boardInformation {' + boardInformationFields.join(' ') + '}'
+      : ''
+    }
                   ${tradingDetailsFields.length > 0
-                    ? 'tradingDetails {' + tradingDetailsFields.join(' ') + '}'
-                    : ''
-                  }
+      ? 'tradingDetails {' + tradingDetailsFields.join(' ') + '}'
+      : ''
+    }
                   ${volumesFields.length > 0
-                    ? 'volumes {' + volumesFields.join(' ') + '}'
-                    : ''
-                  }
+      ? 'volumes {' + volumesFields.join(' ') + '}'
+      : ''
+    }
                   ${yieldFields.length > 0
-                    ? 'yield {' + yieldFields.join(' ') + '}'
-                    : ''
-                  }
+      ? 'yield {' + yieldFields.join(' ') + '}'
+      : ''
+    }
                   ${rootFields.join(' ')}
                 }
                 cursor
