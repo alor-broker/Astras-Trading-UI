@@ -335,7 +335,8 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       this.ordersDialogService.openEditOrderDialog({
         instrumentKey: {
           symbol: order.symbol,
-          exchange: order.exchange
+          exchange: order.exchange,
+          instrumentGroup: order.board
         },
         portfolioKey: {
           portfolio: s.portfolio,
