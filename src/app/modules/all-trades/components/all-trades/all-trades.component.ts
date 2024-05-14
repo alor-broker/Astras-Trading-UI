@@ -174,7 +174,7 @@ implements OnInit, OnDestroy {
 
   protected initTableDataStream(): Observable<AllTradesItem[]> {
     combineLatest({
-      settings: this.settings$,
+      settings: this.settings$.pipe(tap(() => this.filters$.next({}))),
       filters: this.filters$,
       sort: this.sort$.pipe(tap(() => this.pagination = null)),
       timezoneConverter: this.timezoneConverterService.getConverter(),
