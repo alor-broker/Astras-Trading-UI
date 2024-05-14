@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {
+  AllTradesFilters,
   AllTradesItem,
-  AllTradesReqFilters,
+  AllTradesPagination,
+  AllTradesSort,
   AllTradesSubRequest
 } from "../models/all-trades.model";
 import { Observable } from "rxjs";
@@ -25,11 +27,25 @@ export class AllTradesService {
     private readonly errorHandlerService: ErrorHandlerService) {
   }
 
-  public getTradesList(req: AllTradesReqFilters): Observable<AllTradesItem[]> {
-    const { exchange, symbol } = req;
+  public getTradesList(
+    instrumentKey: InstrumentKey,
+    filters?: AllTradesFilters,
+    pagination?: AllTradesPagination,
+    sort?: AllTradesSort
+  ): Observable<AllTradesItem[]> {
 
-    return this.http.get<AllTradesItem[]>(`${this.allTradesUrl}/${exchange}/${symbol}/alltrades`, {
-      params: { ...req }
+    const params: { [param: string]: string | number | boolean } = {
+      ...filters,
+      ...pagination,
+      ...sort
+    };
+
+    if (instrumentKey.instrumentGroup != null && instrumentKey.instrumentGroup.length > 0) {
+      params.instrumentGroup = instrumentKey.instrumentGroup;
+    }
+
+    return this.http.get<AllTradesItem[]>(`${this.allTradesUrl}/${instrumentKey.exchange}/${instrumentKey.symbol}/alltrades`, {
+      params
     })
       .pipe(
         catchHttpError<AllTradesItem[]>([], this.errorHandlerService)
@@ -41,6 +57,7 @@ export class AllTradesService {
       opcode: 'AllTradesSubscribe',
       code: instrumentKey.symbol,
       exchange: instrumentKey.exchange,
+      instrumentGroup: instrumentKey.instrumentGroup ?? '',
       depth: depth,
       format: 'simple',
       repeatCount: depth
@@ -48,7 +65,7 @@ export class AllTradesService {
 
     return this.subscriptionsDataFeedService.subscribe(
       request,
-      request => `${request.opcode}_${request.code}_${request.exchange}_${depth ?? 1}`
+      request => `${request.opcode}_${request.code}_${request.exchange}_${request.instrumentGroup}_${depth ?? 1}`
     );
   }
 
