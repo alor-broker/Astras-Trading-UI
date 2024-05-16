@@ -158,7 +158,8 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       this.timezoneConverterService.getConverter().pipe(
         take(1)
       ).subscribe(tc => {
-        if (x.currentOrder.endTime != null) {
+        // API sets max date if user omits stopEndUnixTime value on create/edit form. See https://github.com/alor-broker/Astras-Trading-UI/issues/1662
+        if(x.currentOrder.endTime != null && x.currentOrder.endTime.getUTCFullYear() !== 9999) {
           this.form.controls.stopEndUnixTime.setValue(tc.toTerminalDate(x.currentOrder.endTime));
         }
 
