@@ -24,7 +24,7 @@ import {
   AllTradesFilters,
   AllTradesItem,
   AllTradesPagination,
-  AllTradesReqFilters
+  AllTradesSort
 } from '../../../../shared/models/all-trades.model';
 import { AllTradesService } from '../../../../shared/services/all-trades.service';
 import {
@@ -42,6 +42,7 @@ import { TableConfig } from "../../../../shared/models/table-config.model";
 import {
   LazyLoadingBaseTableComponent
 } from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
+import { toInstrumentKey } from "../../../../shared/utils/instruments";
 
 @Component({
   selector: 'ats-all-trades',
@@ -169,62 +170,53 @@ implements OnInit, OnDestroy {
       );
 
     super.ngOnInit();
-
-    this.settings$.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(settings => {
-      this.applyFilter({
-        exchange: settings.exchange,
-        symbol: settings.symbol
-      });
-    });
   }
 
   protected initTableDataStream(): Observable<AllTradesItem[]> {
-    combineLatest([
-      this.filters$,
-      this.sort$
-        .pipe(tap(() => this.pagination = null)),
-      this.timezoneConverterService.getConverter(),
-      this.scrolled$
-    ])
+    combineLatest({
+      settings: this.settings$.pipe(tap(() => this.filters$.next({}))),
+      filters: this.filters$,
+      sort: this.sort$.pipe(tap(() => this.pagination = null)),
+      timezoneConverter: this.timezoneConverterService.getConverter(),
+      isScrolled: this.scrolled$
+    })
       .pipe(
-        tap(([,, timezoneConverter]) => {
-          this.timezoneConverter = timezoneConverter;
+        tap(x => {
+          this.timezoneConverter = x.timezoneConverter;
           this.isLoading$.next(true);
         }),
-        map(([filters, sort]) => ({
-          ...filters,
-          ...(sort ?? { descending: true }),
-          ...(this.pagination ?? this.defaultPagination)
-        } as AllTradesReqFilters)),
+        map(x => ({
+          ...x,
+          sort: x.sort ?? { descending: true },
+          pagination: this.pagination ?? this.defaultPagination
+        })
+        ),
         mapWith(
-          (f: AllTradesReqFilters) => this.allTradesService.getTradesList(f),
-          (filters, res) => ({ filters, res })
+          params => this.allTradesService.getTradesList(toInstrumentKey(params.settings), params.filters, params.pagination, params.sort),
+          (params, items) => ({ params, items })
         ),
         withLatestFrom(this.tradesList$),
         map(([s, currentList]) => {
           if (this.pagination != null && (this.pagination.offset ?? 0) > 0) {
-            this.tradesList$.next([...currentList, ...s.res]);
+            this.tradesList$.next([...currentList, ...s.items]);
           } else {
-            this.tradesList$.next(s.res);
+            this.tradesList$.next(s.items);
           }
 
-          return s.filters;
+          return s.params;
         }),
         tap(() => this.isLoading$.next(false)),
-        withLatestFrom(this.settings$),
         mapWith(
-          ([, s]) => this.allTradesService.getNewTradesSubscription(s)
+          params => this.allTradesService.getNewTradesSubscription(toInstrumentKey(params.settings))
             .pipe(
               bufferTime(this.NEW_TRADES_PERIOD)
             ),
-          ([filters], newTrades) => ({ filters, newTrades })
+          (params, newTrades) => ({ params, newTrades })
         ),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe(({filters, newTrades}) => {
-        this.filterNewTrades(filters, newTrades);
+      .subscribe(({params, newTrades}) => {
+        this.filterNewTrades(params.filters, params.sort, params.pagination, newTrades);
       });
 
     return this.tradesList$;
@@ -291,18 +283,6 @@ implements OnInit, OnDestroy {
     );
   }
 
-  applyFilter(filters: AllTradesFilters): void {
-    let updatedFilters = JSON.parse(JSON.stringify(filters)) as AllTradesFilters;
-    if (filters.symbol == null || filters.exchange == null) {
-      this.filters$.pipe(take(1))
-        .subscribe(f => {
-          super.applyFilter({ ...updatedFilters, symbol: f.symbol as string, exchange: f.exchange as string });
-        });
-    } else {
-      super.applyFilter(filters);
-    }
-  }
-
   public scrolled(): void {
     this.tradesList$.pipe(
       take(1),
@@ -356,7 +336,7 @@ implements OnInit, OnDestroy {
     super.saveColumnWidth<AllTradesSettings>(event, this.settings$);
   }
 
-  private filterNewTrades(filters: AllTradesReqFilters, newTrades: AllTradesItem[]): void {
+  private filterNewTrades(filters: AllTradesFilters, sort: AllTradesSort, pagination: AllTradesPagination, newTrades: AllTradesItem[]): void {
     const filteredNewTrades = newTrades.filter(trade =>
       (filters.qtyFrom == null || trade.qty > filters.qtyFrom) &&
       (filters.qtyTo == null || trade.qty < filters.qtyTo) &&
@@ -372,25 +352,25 @@ implements OnInit, OnDestroy {
 
     tradesListCopy.unshift(...filteredNewTrades);
     tradesListCopy.sort((a, b) => {
-      switch (filters.orderBy) {
+      switch (sort.orderBy) {
         case 'side':
           if (a.side !== b.side) {
-            if ((filters.descending ?? false)) {
+            if ((sort.descending ?? false)) {
               return a.side as Side === Side.Buy ? 1 : -1;
             }
             return a.side as Side === Side.Buy ? -1 : 1;
           }
           return 0;
         case 'price':
-          return (filters.descending ?? false) ? b.price - a.price : a.price - b.price;
+          return (sort.descending ?? false) ? b.price - a.price : a.price - b.price;
         case 'qty':
-          return (filters.descending ?? false) ? b.qty - a.qty : a.qty - b.qty;
+          return (sort.descending ?? false) ? b.qty - a.qty : a.qty - b.qty;
         default:
           return 0;
       }
     });
 
-    tradesListCopy = tradesListCopy.slice(0, (filters.offset ?? 0) + (filters.limit ?? this.loadingChunkSize));
+    tradesListCopy = tradesListCopy.slice(0, (pagination.offset ?? 0) + (pagination.limit ?? this.loadingChunkSize));
     this.tradesList$.next(tradesListCopy);
   }
 }
