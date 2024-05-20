@@ -15,11 +15,14 @@ import {
   take,
 } from 'rxjs';
 import {
-  FormControl,
-  UntypedFormGroup,
+  FormBuilder,
   Validators
 } from '@angular/forms';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {
+  map,
+  startWith
+} from "rxjs/operators";
 
 @Component({
   selector: 'ats-editable-string',
@@ -34,8 +37,8 @@ export class EditableStringComponent implements OnInit, OnDestroy {
   content: string | null = null;
 
   @Input()
-  lenghtRestrictions?: {
-    minLenght: number;
+  lengthRestrictions?: {
+    minLength: number;
     maxLength: number;
   };
 
@@ -46,9 +49,14 @@ export class EditableStringComponent implements OnInit, OnDestroy {
   contentChanged = new EventEmitter<string>();
 
   isEditMode$ = new BehaviorSubject(false);
-  editForm?: UntypedFormGroup;
+  editForm = this.formBuilder.group({
+    content: this.formBuilder.nonNullable.control('')
+  });
 
-  constructor(private readonly destroyRef: DestroyRef) {
+  constructor(
+    private readonly formBuilder: FormBuilder,
+    private readonly destroyRef: DestroyRef
+  ) {
   }
 
   ngOnInit(): void {
@@ -83,7 +91,7 @@ export class EditableStringComponent implements OnInit, OnDestroy {
   }
 
   emitValueIfValid(): void {
-    if (this.editForm?.valid ?? false) {
+    if (this.editForm.valid ?? false) {
       this.contentChanged.emit(this.editForm!.value.content);
     }
 
@@ -91,33 +99,29 @@ export class EditableStringComponent implements OnInit, OnDestroy {
   }
 
   private initForm(): void {
-    if (!this.editForm) {
-      const validators = [];
-      if (this.lenghtRestrictions) {
-        validators.push(Validators.required);
-        validators.push(Validators.minLength(this.lenghtRestrictions.minLenght));
-        validators.push(Validators.maxLength(this.lenghtRestrictions.maxLength));
-      }
+    this.editForm.reset();
+    this.editForm.controls.content.clearValidators();
 
-      this.editForm = new UntypedFormGroup({
-        content: new FormControl(this.content, validators)
+    if (this.lengthRestrictions) {
+      this.editForm.controls.content.addValidators([
+        Validators.required,
+        Validators.minLength(this.lengthRestrictions.minLength),
+        Validators.maxLength(this.lengthRestrictions.maxLength)
+      ]);
+    }
+
+    this.editForm.controls.content.setValue(this.content ?? '');
+
+    this.editInput.changes.pipe(
+      map(x => x.first as ElementRef | undefined),
+      startWith(this.editInput.first),
+      filter(x => !!x),
+      take(1)
+    ).subscribe(elRef => {
+      setTimeout(() => {
+        elRef?.nativeElement.focus();
+        elRef?.nativeElement.select();
       });
-    }
-    else {
-      this.editForm.controls.content.setValue(this.content);
-    }
-
-    const setFocus = (el: HTMLInputElement): void => {
-      setTimeout(() => el.focus());
-    };
-
-    if (this.editInput.length > 0) {
-      setFocus(this.editInput.first.nativeElement);
-    }
-    else {
-      this.editInput.changes.pipe(
-        take(1)
-      ).subscribe((x: QueryList<ElementRef<HTMLInputElement>>) => setFocus(x.first.nativeElement));
-    }
+    });
   }
 }
