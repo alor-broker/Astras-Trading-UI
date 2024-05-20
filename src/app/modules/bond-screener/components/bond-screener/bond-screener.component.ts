@@ -12,7 +12,6 @@ import { BondScreenerSettings } from '../../models/bond-screener-settings.model'
 import { filter, map } from 'rxjs/operators';
 import { BondScreenerService } from "../../services/bond-screener.service";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import { BondCoupon, BondNode, BondOffer, BondScreenerResponse } from "../../models/bond-screener.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
@@ -26,12 +25,21 @@ import {
   LazyLoadingBaseTableComponent
 } from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import { GraphQlEdge, GraphQlPageInfo, GraphQlSort, GraphQlSortType } from "../../../../shared/models/graph-ql.model";
+import {
+  Bond,
+  BondsEdge,
+  BondSortInput,
+  Coupon,
+  Offer,
+  PageInfo,
+  Query,
+  SortEnumType
+} from "../../../../../generated/graphql.types";
 
-interface BondDisplay extends Omit<BondNode, 'coupons' | 'offers'>  {
+interface BondDisplay extends Omit<Bond, 'coupons' | 'offers'>  {
   id: string;
-  closestCoupon?: BondCoupon;
-  closestOffer?: BondOffer;
+  closestCoupon?: Coupon;
+  closestOffer?: Offer;
 }
 
 @Component({
@@ -42,8 +50,8 @@ interface BondDisplay extends Omit<BondNode, 'coupons' | 'offers'>  {
 export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
   BondDisplay,
   DefaultTableFilters,
-  GraphQlPageInfo,
-  GraphQlSort
+  PageInfo,
+  BondSortInput
 > implements OnInit, OnDestroy {
 
   @Input({required: true}) guid!: string;
@@ -61,7 +69,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'symbol',
       displayName: 'Тикер',
-      transformFn: (d: BondDisplay): string => d.basicInformation.symbol,
+      transformFn: (d: BondDisplay): string => d.basicInformation!.symbol,
       sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'symbol'], dir),
       width: 120,
       filterData: {
@@ -73,7 +81,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'shortName',
       displayName: 'Назв.',
-      transformFn: (d: BondDisplay): string => d.basicInformation.shortName ?? '',
+      transformFn: (d: BondDisplay): string => d.basicInformation!.shortName ?? '',
       sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'shortName'], dir),
       width: 100,
       filterData: {
@@ -84,7 +92,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'exchange',
       displayName: 'Биржа',
-      transformFn: (d: BondDisplay): string => d.basicInformation.exchange,
+      transformFn: (d: BondDisplay): string => d.basicInformation!.exchange,
       sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'exchange'], dir),
       width: 90,
       filterData: {
@@ -488,8 +496,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
 
   rowClick(row: BondDisplay): void {
     const instrument = {
-      symbol: row.basicInformation.symbol,
-      exchange: row.basicInformation.exchange,
+      symbol: row.basicInformation!.symbol,
+      exchange: row.basicInformation!.exchange,
     };
 
     this.settings$.pipe(
@@ -572,7 +580,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
           const filtersWithDefaultValues = JSON.parse(JSON.stringify(filters)) as DefaultTableFilters;
 
           if ((settings.hideExpired ?? true) && filtersWithDefaultValues.cancellationFrom == null) {
-            filtersWithDefaultValues.cancellationFrom = new Date().toISOString();
+            const dateNow = new Date();
+            filtersWithDefaultValues.cancellationFrom = `${dateNow.getDate()}.${dateNow.getMonth() + 1}.${dateNow.getFullYear()}`;
           }
 
           return this.service.getBonds(
@@ -580,30 +589,30 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
             filtersWithDefaultValues,
             {
               first: this.loadingChunkSize,
-              after: this.pagination?.endCursor,
-              sort: sort
+              after: this.pagination?.endCursor ?? undefined,
+              sort: sort == null ? null : [sort]
             })
             .pipe(
-              map((res: BondScreenerResponse | null) => res == null
+              map((res: Query | null) => res == null
                 ? null
                 : {
                   ...res,
                   bonds: {
-                    ...res.bonds,
-                    edges: res.bonds.edges.map((edge: GraphQlEdge<BondNode>) => ({
+                    ...res.bonds!,
+                    edges: res.bonds!.edges!.map((edge: BondsEdge) => ({
                       ...edge,
                       node: {
                         ...edge.node,
-                        closestCoupon: ([...(edge.node.coupons ?? [])] as BondCoupon[])
-                          .sort((a: BondCoupon, b: BondCoupon) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                          .find((node: BondCoupon) => new Date(node.date).getTime() > new Date().getTime()),
-                        closestOffer: ([...(edge.node.offers ?? [])] as BondOffer[])
-                          .sort((a: BondOffer, b: BondOffer) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                          .find((node: BondOffer) => new Date(node.date).getTime() > new Date().getTime())
-                      } as BondNode,
-                    })) as GraphQlEdge<BondNode>[]
-                  } as BondScreenerResponse['bonds']
-                } as BondScreenerResponse)
+                        closestCoupon: ([...(edge.node.coupons ?? [])] as Coupon[])
+                          .sort((a: Coupon, b: Coupon) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                          .find((node: Coupon) => new Date(node.date).getTime() > new Date().getTime()),
+                        closestOffer: ([...(edge.node.offers ?? [])] as Offer[])
+                          .sort((a: Offer, b: Offer) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                          .find((node: Offer) => new Date(node.date).getTime() > new Date().getTime())
+                      },
+                    }))
+                  }
+                })
             );
         }),
         takeUntilDestroyed(this.destroyRef)
@@ -613,7 +622,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
           return;
         }
 
-        const newBonds = data!.bonds.edges.map((be: GraphQlEdge<BondNode>) => ({
+        const newBonds = data!.bonds.edges.map((be: BondsEdge) => ({
           ...be.node,
           id: be.cursor
         } as BondDisplay)) ?? [];
@@ -653,8 +662,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
             ...b,
             badges: Object.keys(availableBadges)
               .filter(key =>
-                b.basicInformation.symbol === availableBadges[key]!.symbol &&
-                b.basicInformation.exchange === availableBadges[key]!.exchange
+                b.basicInformation!.symbol === availableBadges[key]!.symbol &&
+                b.basicInformation!.exchange as string === availableBadges[key]!.exchange
               )
           }));
         })
@@ -669,10 +678,10 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
 
     const sortObj = fields.reduceRight((acc, curr, index) => {
       if (index === fields.length - 1) {
-        return { [curr]: sort === 'descend' ? GraphQlSortType.DESC : GraphQlSortType.ASC };
+        return { [curr]: sort === 'descend' ? SortEnumType.Desc : SortEnumType.Asc };
       }
       return { [curr]: acc };
-    }, {} as GraphQlSort);
+    }, {} as BondSortInput);
 
     this.sort$.next(sortObj);
   }
