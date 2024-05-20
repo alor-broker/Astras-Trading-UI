@@ -20,7 +20,10 @@ import {
   withLatestFrom
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { AllInstrumentsNode } from "../../model/all-instruments.model";
+import {
+  AllInstrumentsNode,
+  AllInstrumentsResponse
+} from "../../model/all-instruments.model";
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.model";
 import { mapWith } from '../../../../shared/utils/observable-helper';
@@ -335,6 +338,7 @@ implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<AllInstrumentsSettings>(this.guid)
       .pipe(
+        tap(() => this.resetLoadedData()),
         shareReplay(1),
         takeUntilDestroyed(this.destroyRef)
       );
@@ -427,7 +431,8 @@ implements OnInit, OnDestroy {
         return acc;
       }, {} as DefaultTableFilters);
 
-    this.pagination = null;
+    this.resetLoadedData();
+
     this.filters$.next(cleanedFilters);
   }
 
@@ -500,10 +505,7 @@ implements OnInit, OnDestroy {
     combineLatest([
       this.tableConfig$,
       this.filters$,
-      this.sort$
-        .pipe(
-          tap(() => this.pagination = null)
-        ),
+      this.sort$,
       this.scrolled$
     ])
       .pipe(
@@ -522,7 +524,7 @@ implements OnInit, OnDestroy {
               }
             );
           }),
-        filter(i => i != null),
+        filter((i): i is AllInstrumentsResponse => i != null),
         tap(() => this.isLoading$.next(false)),
         takeUntilDestroyed(this.destroyRef)
       ).subscribe(res => {
@@ -532,7 +534,7 @@ implements OnInit, OnDestroy {
         } as AllInstrumentsNodeDisplay));
 
         if (this.pagination == null) {
-          this.instrumentsList$.next(newInstruments!);
+          this.instrumentsList$.next(newInstruments);
           this.pagination = res!.instruments.pageInfo ?? null;
           this.subscribeToUpdates();
           return;
@@ -540,7 +542,7 @@ implements OnInit, OnDestroy {
 
         this.instrumentsList$.pipe(take(1))
           .subscribe(instruments => {
-            this.instrumentsList$.next([...instruments, ...newInstruments!]);
+            this.instrumentsList$.next([...instruments, ...newInstruments]);
             this.pagination = res!.instruments.pageInfo ?? null;
             this.subscribeToUpdates();
           });
@@ -603,6 +605,8 @@ implements OnInit, OnDestroy {
   }
 
   private sortChange(fields: string[], sort: string | null): void {
+    this.resetLoadedData();
+
     if (sort == null) {
       this.sort$.next(null);
       return;
@@ -616,5 +620,10 @@ implements OnInit, OnDestroy {
     }, {} as GraphQlSort);
 
     this.sort$.next(sortObj);
+  }
+
+  private resetLoadedData(): void {
+    this.instrumentsList$.next([]);
+    this.pagination = null;
   }
 }
