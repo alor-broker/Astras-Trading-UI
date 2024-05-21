@@ -1,10 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { OrdersBasketItemComponent } from './orders-basket-item.component';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
-import {
-  Subject
-} from 'rxjs';
+import { of } from 'rxjs';
 import { QuotesService } from '../../../../shared/services/quotes.service';
 import {
   commonTestProviders,
@@ -18,6 +16,9 @@ import { OrdersBasketModule } from '../../orders-basket.module';
 describe('OrdersBasketItemComponent', () => {
   let component: OrdersBasketItemComponent;
   let fixture: ComponentFixture<OrdersBasketItemComponent>;
+
+  const instrumentsServiceMock = jasmine.createSpyObj(['getInstrument']);
+  const quotesServiceMock = jasmine.createSpyObj(['getLastPrice']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -34,15 +35,11 @@ describe('OrdersBasketItemComponent', () => {
       providers: [
         {
           provide: InstrumentsService,
-          useValue: {
-            getInstrument: jasmine.createSpy('getInstrument').and.returnValue(new Subject())
-          }
+          useValue: instrumentsServiceMock
         },
         {
           provide: QuotesService,
-          useValue: {
-            getInstrument: jasmine.createSpy('getLastPrice').and.returnValue(new Subject())
-          }
+          useValue: quotesServiceMock
         },
         ...commonTestProviders
       ]
@@ -57,4 +54,36 @@ describe('OrdersBasketItemComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should correctly validate form', fakeAsync(() => {
+    const testInstrument = {
+      symbol: 'SYMB',
+      exchange: 'EXCH',
+      minstep: 0.001
+    };
+
+    const validPrice = 1.234;
+    const invalidPrice = 1.2345;
+
+    instrumentsServiceMock.getInstrument.and.returnValue(of(testInstrument));
+    quotesServiceMock.getLastPrice.and.returnValue(of(5.432));
+
+
+    component.form.controls.price.setValue(invalidPrice);
+    expect(component.form.controls.price.invalid).toBeFalse();
+
+    component.form.controls.instrumentKey.setValue(testInstrument);
+    tick();
+
+    expect(component.form.controls.price.invalid).toBeTrue();
+
+    component.form.controls.price.setValue(validPrice);
+    expect(component.form.controls.price.invalid).toBeFalse();
+
+    component.form.controls.price.setValue(invalidPrice);
+    component.form.controls.instrumentKey.setValue(null);
+    tick();
+
+    expect(component.form.controls.price.invalid).toBeFalse();
+  }));
 });

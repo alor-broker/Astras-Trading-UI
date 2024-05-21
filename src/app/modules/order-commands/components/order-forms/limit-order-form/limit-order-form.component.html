@@ -157,8 +157,12 @@
                     </nz-form-label>
                     <nz-form-control [nzErrorTip]="topOrderPriceError" class="flex-fill"
                     >
-                      <ats-input-number [allowNegative]="true" formControlName="topOrderPrice"
-                                        placeholder="0"></ats-input-number>
+                      <ats-input-number
+                        [allowNegative]="true"
+                        [step]="formInstrument.minstep"
+                        formControlName="topOrderPrice"
+                        placeholder="0"
+                      ></ats-input-number>
                     </nz-form-control>
                   </nz-form-item>
 
@@ -189,8 +193,12 @@
                       {{t('orderCommandsOrderForms.bottomOrderPriceLabel')}}
                     </nz-form-label>
                     <nz-form-control [nzErrorTip]="bottomOrderPriceError" class="flex-fill">
-                      <ats-input-number [allowNegative]="true" formControlName="bottomOrderPrice"
-                                        placeholder="0"></ats-input-number>
+                      <ats-input-number
+                        [allowNegative]="true"
+                        [step]="formInstrument.minstep"
+                        formControlName="bottomOrderPrice"
+                        placeholder="0"
+                      ></ats-input-number>
                     </nz-form-control>
                   </nz-form-item>
 

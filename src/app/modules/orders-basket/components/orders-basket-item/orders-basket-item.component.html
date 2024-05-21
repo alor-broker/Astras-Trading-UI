@@ -37,7 +37,7 @@
             [nzErrorTip]="priceError">
             <ats-input-number
               formControlName="price"
-              [step]="0.1"
+              [step]="(instrument$ | async)?.minstep ?? 0.1"
               [placeholder]="t('ordersBasketOrdersBasketItem.pricePlaceholder')"
               (atsBlur)="onTouched()"
             ></ats-input-number>
