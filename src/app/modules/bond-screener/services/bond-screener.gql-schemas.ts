@@ -61,7 +61,7 @@ export function getBondScreenerResponseSchema(columnIds: string[]): ZodObject<Zo
     );
   };
 
-  const GetBondScreenerBasicInformationSchema = getPartialSchema<BasicInformation>(BasicInformationSchema(), ['key', 'exchange']);
+  const GetBondScreenerBasicInformationSchema = getPartialSchema<BasicInformation>(BasicInformationSchema(), ['symbol', 'exchange']);
   const GetBondScreenerAdditionalInformationSchema = getPartialSchema<AdditionalInformation>(AdditionalInformationSchema());
   const GetBondScreenerFinancialAttributesSchema = getPartialSchema<FinancialAttributes>(FinancialAttributesSchema());
   const GetBondScreenerBoardInformationSchema = getPartialSchema<BoardInformation>(BoardInformationSchema());

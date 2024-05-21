@@ -27,19 +27,20 @@ import {
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import {
   Bond,
+  BondsConnection,
   BondsEdge,
   BondSortInput,
   Coupon,
   Offer,
   PageInfo,
-  Query,
   SortEnumType
 } from "../../../../../generated/graphql.types";
 
-interface BondDisplay extends Omit<Bond, 'coupons' | 'offers'>  {
+interface BondDisplay extends Omit<Bond, 'coupons' | 'offers' | 'amortizations'>  {
   id: string;
   closestCoupon?: Coupon;
   closestOffer?: Offer;
+  hasAmortization?: boolean;
 }
 
 @Component({
@@ -318,7 +319,6 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'hasAmortization',
       displayName: 'Есть амортизация',
-      transformFn: (d: BondDisplay): string => (d.amortizations ?? []).some(a => (new Date(a.date).getTime()) > (new Date().getTime())) ? 'Да' : 'Нет',
       width: 110,
       filterData: {
         filterName: 'hasAmortization',
@@ -536,7 +536,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
                 ['columns', col.column.id],
                 { fallback: col.column.displayName }
               ),
-              transformFn: ['couponType', 'hasOffer', 'guaranteed'].includes(col.column.id)
+              transformFn: ['couponType', 'hasOffer', 'guaranteed', 'hasAmortization'].includes(col.column.id)
                 ? (data: BondDisplay): string => translate(
                   ['filters', col.column.id, data[col.column.id as keyof BondDisplay]?.toString() ?? ''],
                   {fallback: data[col.column.id as keyof BondDisplay] as string}
@@ -593,25 +593,24 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
               sort: sort == null ? null : [sort]
             })
             .pipe(
-              map((res: Query | null) => res == null
+              map((res: BondsConnection | null) => res == null
                 ? null
                 : {
                   ...res,
-                  bonds: {
-                    ...res.bonds!,
-                    edges: res.bonds!.edges!.map((edge: BondsEdge) => ({
-                      ...edge,
-                      node: {
-                        ...edge.node,
-                        closestCoupon: ([...(edge.node.coupons ?? [])] as Coupon[])
-                          .sort((a: Coupon, b: Coupon) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                          .find((node: Coupon) => new Date(node.date).getTime() > new Date().getTime()),
-                        closestOffer: ([...(edge.node.offers ?? [])] as Offer[])
-                          .sort((a: Offer, b: Offer) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                          .find((node: Offer) => new Date(node.date).getTime() > new Date().getTime())
-                      },
-                    }))
-                  }
+                  edges: res.edges!.map((edge: BondsEdge) => ({
+                    ...edge,
+                    node: {
+                      ...edge.node,
+                      closestCoupon: ([...(edge.node.coupons ?? [])] as Coupon[])
+                        .sort((a: Coupon, b: Coupon) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                        .find((node: Coupon) => new Date(node.date).getTime() > new Date().getTime()),
+                      closestOffer: ([...(edge.node.offers ?? [])] as Offer[])
+                        .sort((a: Offer, b: Offer) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                        .find((node: Offer) => new Date(node.date).getTime() > new Date().getTime()),
+                      hasAmortization: [...(edge.node.amortizations ?? [])]
+                        .some(a => (new Date(a.date).getTime()) > (new Date().getTime())),
+                    },
+                  }))
                 })
             );
         }),
@@ -622,7 +621,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
           return;
         }
 
-        const newBonds = data!.bonds.edges.map((be: BondsEdge) => ({
+        const newBonds = data.edges?.map((be: BondsEdge) => ({
           ...be.node,
           id: be.cursor
         } as BondDisplay)) ?? [];
@@ -630,7 +629,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         this.isLoading$.next(false);
         if (this.pagination == null) {
           this.bondsList$.next(newBonds);
-          this.pagination = data?.bonds.pageInfo ?? null;
+          this.pagination = data?.pageInfo ?? null;
           return;
         }
 
@@ -638,7 +637,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
           .pipe(take(1))
           .subscribe(bonds => {
             this.bondsList$.next([...bonds, ...newBonds]);
-            this.pagination = data?.bonds.pageInfo ?? null;
+            this.pagination = data?.pageInfo ?? null;
           });
       });
 

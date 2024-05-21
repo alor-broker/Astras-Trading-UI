@@ -4,6 +4,7 @@ import {
   BooleanOperationFilterInput,
   DateTimeOperationFilterInput,
   DecimalOperationFilterInput,
+  InputMaybe,
   IntOperationFilterInput,
   StringOperationFilterInput
 } from "../../../generated/graphql.types";
@@ -25,6 +26,11 @@ enum FilterType {
   Number = 'number',
   Date = 'date',
   Boolean = 'boolean'
+}
+
+enum IntervalModifier {
+  From = 'From',
+  To = 'To'
 }
 
 const DEFAULT_FILTER_KEYS = [
@@ -54,25 +60,37 @@ const DEFAULT_FILTER_KEYS = [
   'some'
 ];
 
+const DECIMAL_FILTER_SCHEMA_STRING = JSON.stringify(DecimalOperationFilterInputSchema().shape);
+const INT_FILTER_SCHEMA_STRING = JSON.stringify(IntOperationFilterInputSchema().shape);
+const STRING_FILTER_SCHEMA_STRING = JSON.stringify(StringOperationFilterInputSchema().shape);
+const BOOLEAN_FILTER_SCHEMA_STRING = JSON.stringify(BooleanOperationFilterInputSchema().shape);
+const DATE_FILTER_SCHEMA_STRING = JSON.stringify(DateTimeOperationFilterInputSchema().shape);
+
 export class GraphQlHelper {
-  static parseToGqlFilters<T>(filters: DefaultTableFilters, schema: ZodObject<ZodRawShape>): T {
-    const possibleFilters = this.zodKeys(schema);
+  static parseToGqlFiltersIntersection<T extends { and?: InputMaybe<T[]> }>(filters: DefaultTableFilters, schema: ZodObject<ZodRawShape>): T {
+    const schemaKeys = this.zodKeys(schema);
 
     const reqFilters = Object.keys(filters)
       .map(f => {
-        const findedFilter = possibleFilters.find(pf => {
+        const foundFilter = schemaKeys.find(pf => {
           const nestedFields = pf.split('.');
           const filterName = nestedFields[nestedFields.length - 1].split('/')[0];
 
-          return filterName === f || filterName === f.replace('From', '') || filterName === f.replace('To', '');
+          return filterName === f ||
+            filterName === f.replace(IntervalModifier.From, '') ||
+            filterName === f.replace(IntervalModifier.To, '');
         });
 
-        return { graphQlFilter: findedFilter, tableFilterKey: f };
+        return { graphQlFilter: foundFilter, tableFilterKey: f };
       })
       .filter(fi => fi.graphQlFilter != null)
-      .map(fi => this.getGraphQlFilter<T>(fi.tableFilterKey, filters[fi.tableFilterKey] as string | string[] |  number | boolean, fi.graphQlFilter as string));
+      .map(fi => this.getGraphQlFilter<T>(
+        fi.tableFilterKey,
+        filters[fi.tableFilterKey] as string | string[] | number | boolean,
+        fi.graphQlFilter!
+      ));
 
-    return {and: reqFilters} as T;
+    return { and: reqFilters } as T;
   }
 
   // Parse applied filters to graphQL filters
@@ -205,14 +223,14 @@ export class GraphQlHelper {
 
   private static getFilterType(shape: ZodRawShape): FilterType {
     switch (JSON.stringify(shape)) {
-      case JSON.stringify(DecimalOperationFilterInputSchema().shape):
-      case JSON.stringify(IntOperationFilterInputSchema().shape):
+      case DECIMAL_FILTER_SCHEMA_STRING:
+      case INT_FILTER_SCHEMA_STRING:
         return FilterType.Number;
-      case JSON.stringify(StringOperationFilterInputSchema().shape):
+      case STRING_FILTER_SCHEMA_STRING:
         return FilterType.String;
-      case JSON.stringify(BooleanOperationFilterInputSchema().shape):
+      case BOOLEAN_FILTER_SCHEMA_STRING:
         return FilterType.Boolean;
-      case JSON.stringify(DateTimeOperationFilterInputSchema().shape):
+      case DATE_FILTER_SCHEMA_STRING:
         return FilterType.Date;
       default:
         return FilterType.String;
@@ -227,10 +245,10 @@ export class GraphQlHelper {
     const filterType = graphQlFilter.split('/')[1] as FilterType;
     const nestedFilterKeys = graphQlFilter.split('/')[0].split('.');
 
-    const intervalModifier = tableFilterName.endsWith('From')
-      ? 'From'
-      : tableFilterName.endsWith('To')
-        ? 'To'
+    const intervalModifier = tableFilterName.endsWith(IntervalModifier.From)
+      ? IntervalModifier.From
+      : tableFilterName.endsWith(IntervalModifier.To)
+        ? IntervalModifier.To
         : null;
 
     return nestedFilterKeys.reverse().reduce(
@@ -249,11 +267,11 @@ export class GraphQlHelper {
   private static getGraphQlFilterValue(
     filterType: FilterType,
     filterValue: string | string[] | number | boolean,
-    intervalModifier: 'From' | 'To' | null
+    intervalModifier: IntervalModifier | null
     ): DecimalOperationFilterInput | DateTimeOperationFilterInput | BooleanOperationFilterInput | StringOperationFilterInput | IntOperationFilterInput | null {
     const conditionKey = intervalModifier == null
       ? 'eq'
-      : intervalModifier === 'From'
+      : intervalModifier === IntervalModifier.From
         ? 'gte'
         : 'lte';
 

@@ -42,6 +42,10 @@
       "true": "Да",
       "false": "Нет"
     },
+    "hasAmortization": {
+      "true": "Да",
+      "false": "Нет"
+    },
     "guaranteed": {
       "true": "Да",
       "false": "Нет"

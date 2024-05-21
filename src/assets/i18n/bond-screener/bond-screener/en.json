@@ -42,6 +42,10 @@
       "true": "Yes",
       "false": "No"
     },
+    "hasAmortization": {
+      "true": "Yes",
+      "false": "No"
+    },
     "guaranteed": {
       "true": "Yes",
       "false": "No"

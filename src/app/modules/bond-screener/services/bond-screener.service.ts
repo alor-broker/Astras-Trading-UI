@@ -11,7 +11,13 @@ import {
 import { DefaultTableFilters } from "../../../shared/models/settings/table-settings.model";
 import {
   BondFilterInput,
+  BondsConnection,
   BondSortInput,
+  CouponFilterInput,
+  ListFilterInputTypeOfAmortizationFilterInput,
+  ListFilterInputTypeOfCouponFilterInput,
+  ListFilterInputTypeOfOfferFilterInput,
+  OfferFilterInput,
   Query,
   QueryBondsArgs,
   SortEnumType
@@ -22,7 +28,6 @@ import {
   GetBondsYieldCurveResponse,
   GetBondsYieldCurveResponseSchema
 } from "./bond-yield-curve.gql-schemas";
-import { GraphQlFilter } from "../../../shared/models/graph-ql.model";
 import { getBondScreenerResponseSchema } from "./bond-screener.gql-schemas";
 import { TypeOf } from "zod";
 import { GraphQlHelper } from "../../../shared/utils/graph-ql-helper";
@@ -43,9 +48,9 @@ export class BondScreenerService {
     columnIds: string[],
     filters: DefaultTableFilters,
     params: { first: number, after?: string, sort: BondSortInput[] | null }
-  ): Observable<Query | null> {
+  ): Observable<BondsConnection | null> {
     const bondScreenerResponseSchema = getBondScreenerResponseSchema(columnIds);
-    const parsedFilters = GraphQlHelper.parseToGqlFilters<BondFilterInput>(filters, BondFilterInputSchema());
+    const parsedFilters = GraphQlHelper.parseToGqlFiltersIntersection<BondFilterInput>(filters, BondFilterInputSchema());
     const couponsFilters = this.getCouponsFilters(filters);
     const offersFilters = this.getOffersFilters(filters);
 
@@ -73,6 +78,7 @@ export class BondScreenerService {
       { fetchPolicy: FetchPolicy.NoCache }
     ).pipe(
       take(1),
+      map(q => (q as Query)?.bonds ?? null)
     );
   }
 
@@ -125,16 +131,14 @@ export class BondScreenerService {
   }
 
   // If closest coupon filters selected, filter by it
-  private getCouponsFilters(filters: DefaultTableFilters): GraphQlFilter | null {
-    const someFilters: GraphQlFilter[] = [];
-    const noneFilters: GraphQlFilter[] = [];
-
-    this.getFiltersOfArrayByDate(
-      filters.couponDateFrom as string | undefined,
-      filters.couponDateTo as string | undefined,
-      someFilters,
-      noneFilters
+  private getCouponsFilters(filters: DefaultTableFilters): ListFilterInputTypeOfCouponFilterInput | null {
+    const filtersByDate = this.getFiltersOfArrayByDate<CouponFilterInput>(
+      (filters.couponDateFrom as string | null) ?? null,
+      (filters.couponDateTo as string | null) ?? null,
     );
+
+    const someFilters = filtersByDate.some;
+    const noneFilters = filtersByDate.none;
 
     if (filters.couponIntervalInDaysFrom != null) {
       someFilters.push({ intervalInDays: { gte: Number(filters.couponIntervalInDaysFrom) } });
@@ -177,16 +181,14 @@ export class BondScreenerService {
     };
   }
 
-  private getOffersFilters(filters: DefaultTableFilters): GraphQlFilter | null {
-    const someFilters: GraphQlFilter[] = [];
-    const noneFilters: GraphQlFilter[] = [];
-
-    this.getFiltersOfArrayByDate(
-      filters.offerDateFrom as string | undefined,
-      filters.offerDateTo as string | undefined,
-      someFilters,
-      noneFilters
+  private getOffersFilters(filters: DefaultTableFilters): ListFilterInputTypeOfOfferFilterInput | null {
+    const filtersByDate = this.getFiltersOfArrayByDate<OfferFilterInput>(
+      (filters.offerDateFrom as string | null) ?? null,
+      (filters.offerDateTo as string | null) ?? null
     );
+
+    const someFilters = filtersByDate.some;
+    const noneFilters = filtersByDate.none;
 
     if (someFilters.length === 0 && noneFilters.length === 0) {
       return null;
@@ -204,7 +206,7 @@ export class BondScreenerService {
     };
   }
 
-  private getAmortizationFilter(hasAmortization: boolean): GraphQlFilter {
+  private getAmortizationFilter(hasAmortization: boolean): ListFilterInputTypeOfAmortizationFilterInput {
     if (hasAmortization) {
       return {
         some: { date: { gte: new Date().toISOString() } }
@@ -216,15 +218,16 @@ export class BondScreenerService {
     }
   }
 
-  private getFiltersOfArrayByDate(
-    from: string | undefined,
-    to: string | undefined,
-    someFilters: GraphQlFilter[],
-    noneFilters: GraphQlFilter[]
-  ): void {
+  private getFiltersOfArrayByDate<T>(
+    from: string | null,
+    to: string | null,
+  ): { some: T[], none: T[]} {
     if (from == null && to == null) {
-      return;
+      return { some: [], none: [] };
     }
+
+    const someFilters: T[] = [];
+    const noneFilters: T[] = [];
 
     const [fromDay, fromMonth, fromYear] = (from ?? '').split('.').map(d => Number(d));
     const [toDay, toMonth, toYear] = (to ?? '').split('.').map(d => Number(d));
@@ -234,11 +237,11 @@ export class BondScreenerService {
     // If datFrom selected, search bonds with closest coupon by it
     if (!isNaN(dateFrom.getTime())) {
       noneFilters.push(
-        {date: {gte: new Date().toISOString()}},
-        {date: {lt: dateFrom.toISOString()}}
+        { date: { gte: new Date().toISOString() } } as T,
+        { date: { lt: dateFrom.toISOString() } } as T
       );
       someFilters.push(
-        {date: {gte: dateFrom.toISOString()}}
+        { date: { gte: dateFrom.toISOString() } } as T
       );
     }
 
@@ -246,14 +249,16 @@ export class BondScreenerService {
     if (!isNaN(dateTo.getTime())) {
       if (!isNaN(dateFrom.getTime())) { // If dateFrom selected, add filter by closest coupon before dateTo
         someFilters.push({
-          date: {lte: dateTo.toISOString()}
-        });
+          date: { lte: dateTo.toISOString() }
+        } as T);
       } else {
         someFilters.push(
-          {date: {gte: new Date().toISOString()}},
-          {date: {lte: dateTo.toISOString()}}
+          { date: { gte: new Date().toISOString() } } as T,
+          { date: { lte: dateTo.toISOString() } } as T
         );
       }
     }
+
+    return { some: someFilters, none: noneFilters };
   }
 }
