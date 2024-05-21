@@ -13,6 +13,7 @@ import {
 } from "rxjs";
 import { WidgetSettings } from "../../models/widget-settings.model";
 import {
+  debounceTime,
   finalize,
   map
 } from "rxjs/operators";
@@ -22,6 +23,7 @@ import { WidgetSettingsDesktopMigrationManager } from "../../../modules/settings
   providedIn: 'root'
 })
 export class WidgetsSettingsBrokerService {
+  private readonly saveRequestDelay = 100;
   private readonly saveRequests = new Map<string, {
     source: BehaviorSubject<WidgetSettings>;
     stream$: Observable<boolean>;
@@ -104,6 +106,7 @@ export class WidgetsSettingsBrokerService {
     const newRequest = {
       source: newRequestSource,
       stream$: newRequestSource.pipe(
+        debounceTime(this.saveRequestDelay),
         switchMap(newSettings => this.remoteStorageService.setRecord(
           {
             key: newSettings.guid,

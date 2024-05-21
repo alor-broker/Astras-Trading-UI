@@ -1,7 +1,7 @@
-﻿import {InstrumentKey} from "../instruments/instrument-key.model";
-import {PortfolioKey} from "../portfolio-key.model";
-import {Side} from "../enums/side.model";
-import {LessMore} from "../enums/less-more.model";
+﻿import { InstrumentKey } from "../instruments/instrument-key.model";
+import { PortfolioKey } from "../portfolio-key.model";
+import { Side } from "../enums/side.model";
+import { LessMore } from "../enums/less-more.model";
 
 export enum OrderFormType {
   Limit = 'limit',
@@ -33,10 +33,7 @@ export interface OrderDialogParams {
 export interface EditOrderDialogParams {
   orderId: string;
   orderType: OrderFormType;
-  instrumentKey: {
-    symbol: string;
-    exchange: string;
-  };
+  instrumentKey: InstrumentKey;
   portfolioKey: PortfolioKey;
   initialValues: {
     triggerPrice?: number;

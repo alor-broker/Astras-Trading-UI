@@ -1,17 +1,10 @@
 import { SubscriptionRequest } from '../services/subscriptions-data-feed.service';
 
-export interface GetAllTradesRequest {
-  exchange: string;
-  symbol: string;
-  from: number;
-  to: number;
-  take: number;
-}
-
 export interface AllTradesSubRequest extends SubscriptionRequest {
   code: string;
-  format: string;
   exchange: string;
+  instrumentGroup?: string;
+  format: string;
   depth?: number;
 }
 
@@ -28,14 +21,7 @@ export interface AllTradesItem {
   timestamp: number;
 }
 
-export interface AllTradesReqFilters extends AllTradesPagination, AllTradesFilters {
-  descending?: boolean;
-  orderBy?: string;
-}
-
 export interface AllTradesFilters {
-  exchange: string;
-  symbol: string;
   qtyFrom?: number;
   qtyTo?: number;
   priceFrom?: number;
@@ -49,4 +35,9 @@ export interface AllTradesPagination {
   from: number;
   to: number;
   take: number;
+}
+
+export interface AllTradesSort {
+  descending: boolean;
+  orderBy?: string;
 }
