@@ -12,9 +12,7 @@ import {
 import { Dashboard } from '../../../../shared/models/dashboard/dashboard.model';
 import { ManageDashboardsService } from '../../../../shared/services/manage-dashboards.service';
 import {
-  FormControl,
-  FormGroup,
-  UntypedFormGroup,
+  FormBuilder,
   Validators
 } from '@angular/forms';
 import { NzModalService } from 'ng-zorro-antd/modal';
@@ -36,7 +34,16 @@ export class SelectDashboardMenuComponent implements OnInit {
     }
   };
 
-  newDashboardForm?: UntypedFormGroup;
+  newDashboardForm = this.formBuilder.group({
+    title: this.formBuilder.nonNullable.control(
+      '',
+      [
+        Validators.required,
+        Validators.minLength(this.validationOptions.title.minLength),
+        Validators.maxLength(this.validationOptions.title.maxLength),
+      ]
+    )
+  });
 
   allDashboards$!: Observable<Dashboard[]>;
 
@@ -47,6 +54,7 @@ export class SelectDashboardMenuComponent implements OnInit {
   isNewDashboardFocused = new EventEmitter<boolean>();
 
   constructor(
+    private readonly formBuilder: FormBuilder,
     private readonly dashboardService: ManageDashboardsService,
     private readonly modal: NzModalService,
     private readonly translatorService: TranslatorService
@@ -55,7 +63,7 @@ export class SelectDashboardMenuComponent implements OnInit {
 
   @Input()
   set visibilityChange(value: boolean) {
-    this.newDashboardForm?.reset();
+    this.newDashboardForm.reset();
   }
 
   checkInputComplete(event: KeyboardEvent): void {
@@ -65,7 +73,6 @@ export class SelectDashboardMenuComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.buildNewDashboardForm();
     this.allDashboards$ = this.translatorService.getTranslator('dashboard/select-dashboard-menu').pipe(
       mapWith(() => this.dashboardService.allDashboards$, (translator, allDashboards) => ({
         t: translator,
@@ -79,10 +86,10 @@ export class SelectDashboardMenuComponent implements OnInit {
   }
 
   addDashboard(): void {
-    if (this.newDashboardForm!.valid) {
-      this.dashboardService.addDashboard(this.newDashboardForm!.value.title);
+    if (this.newDashboardForm.valid) {
+      this.dashboardService.addDashboard(this.newDashboardForm.value.title!);
       this.hideMenu.emit();
-      this.newDashboardForm!.reset();
+      this.newDashboardForm.reset();
     }
   }
 
@@ -133,18 +140,5 @@ export class SelectDashboardMenuComponent implements OnInit {
     } else {
       this.dashboardService.addDashboardToFavorites(dashboard.guid);
     }
-  }
-
-  private buildNewDashboardForm(): void {
-    this.newDashboardForm = new FormGroup({
-      title: new FormControl(
-        '',
-        [
-          Validators.required,
-          Validators.minLength(this.validationOptions.title.minLength),
-          Validators.maxLength(this.validationOptions.title.maxLength),
-        ]
-      )
-    });
   }
 }

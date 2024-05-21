@@ -8,7 +8,7 @@
     </div>
   </div>
   <div *ngIf="(isEditMode$ | async)" class="edit-mode">
-    <form *ngIf="editForm" [formGroup]="editForm" nz-form nzLayout="inline">
+    <form [formGroup]="editForm" nz-form nzLayout="inline">
       <nz-form-item>
         <nz-form-control [nzErrorTip]="contentError">
           <nz-input-group  [nzSuffix]="suffix">
@@ -27,11 +27,11 @@
           </nz-input-group>
         </nz-form-control>
         <ng-template #contentError>
-            <span *ngIf="lenghtRestrictions">{{t(
-              'sharedEditableString.stringLenghtError',
+            <span *ngIf="lengthRestrictions">{{t(
+              'sharedEditableString.stringLengthError',
               {
-                min: lenghtRestrictions.minLenght,
-                max: lenghtRestrictions.maxLength
+                min: lengthRestrictions.minLength,
+                max: lengthRestrictions.maxLength
               })}}</span>
         </ng-template>
       </nz-form-item>

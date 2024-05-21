@@ -1,7 +1,6 @@
 import {
   Component,
   DestroyRef,
-  Input,
   OnDestroy,
   OnInit,
 } from '@angular/core';
@@ -11,20 +10,24 @@ import {
   Observable,
   shareReplay,
   take,
-  tap,
   withLatestFrom
 } from "rxjs";
 import { Dashboard } from "../../../../shared/models/dashboard/dashboard.model";
 import { NzSegmentedOption } from "ng-zorro-antd/segmented/types";
-import { debounceTime, map } from "rxjs/operators";
+import {
+  debounceTime,
+  filter,
+  map
+} from "rxjs/operators";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { DashboardTitleHelper } from "../../utils/dashboard-title.helper";
 
-type DashboardSegmentedOption =  {
+type DashboardSegmentedOption = {
   value: string;
+  hasSelection: boolean;
 } & NzSegmentedOption;
 
 @Component({
@@ -33,11 +36,10 @@ type DashboardSegmentedOption =  {
   styleUrls: ['./dashboards-panel.component.less']
 })
 export class DashboardsPanelComponent implements OnInit, OnDestroy {
-  @Input({ required: true }) selectedDashboard!: Dashboard | null;
-  favoriteDashboards$!: Observable<DashboardSegmentedOption[]>;
-  selectedDashboardIndex$ = new BehaviorSubject<number>(0);
+  options$!: Observable<DashboardSegmentedOption[]>;
+  selectedOptionIndex$ = new BehaviorSubject<number>(0);
   isDashboardSelectionMenuVisible$ = new BehaviorSubject(false);
-  lastSelectedDashboard$ = new BehaviorSubject<Dashboard | null>(null);
+  lastSelectedNonFavoriteDashboard$ = new BehaviorSubject<Dashboard | null>(null);
   dropdownTrigger$ = new BehaviorSubject<'click' | 'hover'>('hover');
 
   constructor(
@@ -59,14 +61,7 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
       shareReplay(1)
     );
 
-    this.favoriteDashboards$ = allDashboards$.pipe(
-      tap(dashboards => {
-        const favDashboardsLength = dashboards.filter(d => d.isFavorite).length;
-
-        if (this.selectedDashboardIndex$.getValue() > favDashboardsLength) {
-          this.selectedDashboardIndex$.next(favDashboardsLength);
-        }
-      }),
+    this.options$ = allDashboards$.pipe(
       debounceTime(50), // used to prevent animation error
       map((dashboards) => {
           const options: DashboardSegmentedOption[] = dashboards
@@ -75,9 +70,17 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
             .map(d => ({
               value: d.guid,
               label: d.title,
-              useTemplate: true
+              useTemplate: true,
+              hasSelection: d.isSelected ?? false
             }));
-          options.push({ value: 'dashboardsDropdown', label: 'dashboards dropdown', useTemplate: true, disabled: true });
+
+          options.push({
+            value: 'all_dashboards',
+            label: 'all dashboards',
+            useTemplate: true,
+            disabled: true,
+            hasSelection: false
+          });
 
           return options;
         }
@@ -85,37 +88,41 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
       shareReplay(1)
     );
 
+    this.initSelectedOptionIndexChange();
+
     allDashboards$
       .pipe(
-        withLatestFrom(this.lastSelectedDashboard$),
+        withLatestFrom(this.lastSelectedNonFavoriteDashboard$),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe(([ dashboards, lastSelectedDashboard ]) => {
-        const selectedDashboard: Dashboard | undefined = dashboards.find((d: Dashboard) => d.isSelected);
-        const updatedLastSelectedDashboard: Dashboard | undefined = dashboards.find(d => d.guid === lastSelectedDashboard?.guid);
+      .subscribe(([dashboards, lastSelection]) => {
+        const selectedDashboard = dashboards.find((d: Dashboard) => d.isSelected);
+        const isFavorite = (dashboard: Dashboard): boolean => {
+          return dashboard.isFavorite ?? false;
+        };
 
-        if (updatedLastSelectedDashboard == null || (updatedLastSelectedDashboard.isFavorite ?? false)) {
-          this.lastSelectedDashboard$.next(dashboards.find(d => !(d.isFavorite ?? false)) ?? null);
-          return;
-        }
+        if (selectedDashboard != null && !isFavorite(selectedDashboard)) {
+          this.lastSelectedNonFavoriteDashboard$.next(selectedDashboard);
+        } else {
+          if (lastSelection != null) {
+            const lastSelectedDashboard = dashboards.find(d => d.guid === lastSelection.guid);
+            if (lastSelectedDashboard != null && !isFavorite(lastSelectedDashboard)) {
+              // need to update selection. For example, dashboard can be renamed
+              this.lastSelectedNonFavoriteDashboard$.next(lastSelectedDashboard);
+              return;
+            }
+          }
 
-        if (selectedDashboard != null && selectedDashboard.guid !== updatedLastSelectedDashboard?.guid && !(selectedDashboard.isFavorite ?? false)) {
-          this.lastSelectedDashboard$.next(selectedDashboard);
+          const firstNonFavorite = dashboards.find(d => !isFavorite(d)) ?? null;
+          this.lastSelectedNonFavoriteDashboard$.next(firstNonFavorite);
         }
       });
-
-    this.favoriteDashboards$
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        map(fd => fd.findIndex((d, i) => i === fd.length - 1 ? true : d.value === this.selectedDashboard!.guid)),
-      )
-      .subscribe(i => this.selectedDashboardIndex$.next(i));
   }
 
   ngOnDestroy(): void {
-    this.selectedDashboardIndex$.complete();
+    this.selectedOptionIndex$.complete();
     this.isDashboardSelectionMenuVisible$.complete();
-    this.lastSelectedDashboard$.complete();
+    this.lastSelectedNonFavoriteDashboard$.complete();
     this.dropdownTrigger$.complete();
   }
 
@@ -128,12 +135,27 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
   }
 
   changeDashboardsOrder(e: CdkDragDrop<any>): void {
-    this.favoriteDashboards$
+    this.options$
       .pipe(
         take(1)
       )
       .subscribe(dashboards => {
         this.manageDashboardsService.changeFavoriteDashboardsOrder(dashboards[e.previousIndex]!.value, e.currentIndex);
       });
+  }
+
+  private initSelectedOptionIndexChange(): void {
+    this.options$.pipe(
+      filter(o => o.length > 0),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(options => {
+      const selectedIndex = options.findIndex(o => o.hasSelection);
+
+      if (selectedIndex >= 0) {
+        this.selectedOptionIndex$.next(selectedIndex);
+      } else {
+        this.selectedOptionIndex$.next(options.length - 1);
+      }
+    });
   }
 }

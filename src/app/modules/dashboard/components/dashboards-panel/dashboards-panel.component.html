@@ -1,35 +1,34 @@
 <div
-  class="favorite-dashboards-wrapper"
+  class="max-w-100 min-w-0"
   cdkDropList
   cdkDropListOrientation="horizontal"
   (cdkDropListDropped)="changeDashboardsOrder($event)"
 >
-  <ng-container *ngIf="favoriteDashboards$ | async as favDashboards">
+  <ng-container *ngIf="options$ | async as options">
     <nz-segmented
-      class="favorite-dashboards"
-      [ngModel]="selectedDashboardIndex$ | async"
+      class="max-w-100 min-w-0"
+      [ngModel]="selectedOptionIndex$ | async"
       [nzLabelTemplate]="dashboardLabels"
-      [nzOptions]="favDashboards"
-      (nzValueChange)="$event === favDashboards.length ? null : selectDashboard(favDashboards[$event].value)"
+      [nzOptions]="options"
+      (nzValueChange)="$event === options.length ? null : selectDashboard(options[$event].value)"
     ></nz-segmented>
 
     <ng-template #dashboardLabels let-index="index">
-      <ng-container *ngIf="index !== (favDashboards.length - 1); else dashboardsDropdown">
+      <ng-container *ngIf="index !== (options.length - 1); else dashboardsDropdown">
         <div
           class="dashboard-label"
           nz-tooltip
-          [nzTooltipTitle]="favDashboards[index].label"
+          [nzTooltipTitle]="options[index].label"
           [nzTooltipPlacement]="['bottom', 'bottomLeft', 'bottomRight']"
           cdkDrag
           cdkDragLockAxis="x"
         >
-          {{ favDashboards[index].label }}
+          {{ options[index].label }}
         </div>
       </ng-container>
 
       <ng-template #dashboardsDropdown>
         <button
-          *ngIf="selectedDashboard"
           class="dropdown-btn"
           id="dashboard-select-btn"
           nz-button
@@ -44,12 +43,12 @@
         >
           <span
             class="dashboard-label"
-            *ngIf="lastSelectedDashboard$ | async as lastSelectedDashboard"
-            (click)="selectDashboard(lastSelectedDashboard.guid)"
+            *ngIf="lastSelectedNonFavoriteDashboard$ | async as lastSelectedNonFavoriteDashboard"
+            (click)="selectDashboard(lastSelectedNonFavoriteDashboard.guid)"
             nz-typography
             nzEllipsis
           >
-            {{lastSelectedDashboard.title}}&nbsp;
+            {{lastSelectedNonFavoriteDashboard.title}}&nbsp;
           </span>
           <span><i nz-icon nzType="down" nzTheme="outline" class="arrow-icon"></i></span>
 
