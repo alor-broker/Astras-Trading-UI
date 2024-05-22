@@ -133,8 +133,8 @@ export class BondScreenerService {
   // If closest coupon filters selected, filter by it
   private getCouponsFilters(filters: DefaultTableFilters): ListFilterInputTypeOfCouponFilterInput | null {
     const filtersByDate = this.getFiltersOfArrayByDate<CouponFilterInput>(
-      (filters.couponDateFrom as string | null) ?? null,
-      (filters.couponDateTo as string | null) ?? null,
+      filters.couponDateFrom as string,
+      filters.couponDateTo as string
     );
 
     const someFilters = filtersByDate.some;
@@ -183,8 +183,8 @@ export class BondScreenerService {
 
   private getOffersFilters(filters: DefaultTableFilters): ListFilterInputTypeOfOfferFilterInput | null {
     const filtersByDate = this.getFiltersOfArrayByDate<OfferFilterInput>(
-      (filters.offerDateFrom as string | null) ?? null,
-      (filters.offerDateTo as string | null) ?? null
+      filters.offerDateFrom as string,
+      filters.offerDateTo as string
     );
 
     const someFilters = filtersByDate.some;

@@ -185,19 +185,13 @@ export class GraphQlHelper {
 
   // get zod object keys recursively
   static getZodObject(schema: ZodTypeAny): ZodObject<any> | null {
-    // make sure schema is not null or undefined
     if (schema === null || schema === undefined) return null;
-    // check if schema is zod lazy
     if (schema instanceof ZodLazy) return this.getZodObject(schema.schema);
-    // check if schema is nullable or optional
     if (schema instanceof ZodNullable || schema instanceof ZodOptional) return this.getZodObject(schema.unwrap());
-    // check if schema is an array
     if (schema instanceof ZodArray) return this.getZodObject(schema.element);
-    // check if schema is an object
     if (schema instanceof ZodObject) {
       return schema;
     }
-    // return empty array
     return null;
   };
 
@@ -216,7 +210,6 @@ export class GraphQlHelper {
       .flatMap(([key, value]) => {
         // get nested keys
         const nested = (this.zodKeys(value as ZodTypeAny) ?? []).map(subKey => `${key}.${subKey}`);
-        // return nested keys
         return nested.length ? nested : `${key}/${this.getFilterType(this.getZodObject(value as ZodTypeAny)?.shape ?? {})}`;
       });
   };
