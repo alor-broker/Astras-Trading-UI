@@ -44,6 +44,7 @@ export interface FilterData {
   intervalStartName?: string;
   intervalEndName?: string;
   inputFieldType?: InputFieldType;
+  filterWarning?: string | null;
   multipleAutocompleteSelectedOptionLabelKey?: keyof NzOptionComponent;
 }
 

@@ -12,7 +12,6 @@ import { BondScreenerSettings } from '../../models/bond-screener-settings.model'
 import { filter, map } from 'rxjs/operators';
 import { BondScreenerService } from "../../services/bond-screener.service";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import { BondNode } from "../../models/bond-screener.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
@@ -26,10 +25,22 @@ import {
   LazyLoadingBaseTableComponent
 } from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import { GraphQlEdge, GraphQlPageInfo, GraphQlSort, GraphQlSortType } from "../../../../shared/models/graph-ql.model";
+import {
+  Bond,
+  BondsConnection,
+  BondsEdge,
+  BondSortInput,
+  Coupon,
+  Offer,
+  PageInfo,
+  SortEnumType
+} from "../../../../../generated/graphql.types";
 
-interface BondDisplay extends BondNode {
+interface BondDisplay extends Omit<Bond, 'coupons' | 'offers' | 'amortizations'>  {
   id: string;
+  closestCoupon?: Coupon;
+  closestOffer?: Offer;
+  hasAmortization?: boolean;
 }
 
 @Component({
@@ -40,8 +51,8 @@ interface BondDisplay extends BondNode {
 export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
   BondDisplay,
   DefaultTableFilters,
-  GraphQlPageInfo,
-  GraphQlSort
+  PageInfo,
+  BondSortInput
 > implements OnInit, OnDestroy {
 
   @Input({required: true}) guid!: string;
@@ -52,14 +63,14 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'tradingStatusInfo',
       displayName: 'Статус',
-      transformFn: (d: BondNode): string => d.financialAttributes!.tradingStatusInfo ?? '',
+      transformFn: (d: BondDisplay): string => d.financialAttributes!.tradingStatusInfo ?? '',
       sortChangeFn: (dir): void => this.sortChange(['financialAttributes', 'tradingStatusInfo'], dir),
       width: 90
     },
     {
       id: 'symbol',
       displayName: 'Тикер',
-      transformFn: (d: BondNode): string => d.basicInformation.symbol,
+      transformFn: (d: BondDisplay): string => d.basicInformation!.symbol,
       sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'symbol'], dir),
       width: 120,
       filterData: {
@@ -71,7 +82,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'shortName',
       displayName: 'Назв.',
-      transformFn: (d: BondNode): string => d.basicInformation.shortName ?? '',
+      transformFn: (d: BondDisplay): string => d.basicInformation!.shortName ?? '',
       sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'shortName'], dir),
       width: 100,
       filterData: {
@@ -82,7 +93,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'exchange',
       displayName: 'Биржа',
-      transformFn: (d: BondNode): string => d.basicInformation.exchange,
+      transformFn: (d: BondDisplay): string => d.basicInformation!.exchange,
       sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'exchange'], dir),
       width: 90,
       filterData: {
@@ -97,7 +108,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'maturityDate',
       displayName: 'Дата погашения',
-      transformFn: (d: BondNode): string => d.maturityDate == null ? '' : new Date(d.maturityDate).toLocaleDateString(),
+      transformFn: (d: BondDisplay): string => d.maturityDate == null ? '' : new Date(d.maturityDate).toLocaleDateString(),
       sortChangeFn: (dir): void => this.sortChange(['maturityDate'], dir),
       width: 110,
       filterData: {
@@ -110,7 +121,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'placementEndDate',
       displayName: 'Дата окончания размещения',
-      transformFn: (d: BondNode): string => d.placementEndDate == null ? '' : new Date(d.placementEndDate).toLocaleDateString(),
+      transformFn: (d: BondDisplay): string => d.placementEndDate == null ? '' : new Date(d.placementEndDate).toLocaleDateString(),
       sortChangeFn: (dir): void => this.sortChange(['placementEndDate'], dir),
       width: 120,
       filterData: {
@@ -123,7 +134,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'cancellation',
       displayName: 'Дата окончания',
-      transformFn: (d: BondNode): string => d.additionalInformation!.cancellation == null ? '' : new Date(d.additionalInformation!.cancellation).toLocaleDateString(),
+      transformFn: (d: BondDisplay): string => d.additionalInformation!.cancellation == null ? '' : new Date(d.additionalInformation!.cancellation).toLocaleDateString(),
       sortChangeFn: (dir): void => this.sortChange(['additionalInformation', 'cancellation'], dir),
       width: 110,
       filterData: {
@@ -136,7 +147,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'currentYield',
       displayName: 'Доходность, %',
-      transformFn: (d: BondNode): string => d.yield!.currentYield != null ? MathHelper.round(d.yield!.currentYield * 100, 2).toString() : '',
+      transformFn: (d: BondDisplay): string => d.yield!.currentYield != null ? MathHelper.round(d.yield!.currentYield * 100, 2).toString() : '',
       sortChangeFn: (dir): void => this.sortChange(['yield', 'currentYield'], dir),
       width: 120,
       filterData: {
@@ -150,7 +161,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'issueValue',
       displayName: 'Заявл. объём выпуска',
-      transformFn: (d: BondNode): string => d.volumes!.issueValue != null ? MathHelper.round(+d.volumes!.issueValue!, 2).toString() : '',
+      transformFn: (d: BondDisplay): string => d.volumes!.issueValue != null ? MathHelper.round(+d.volumes!.issueValue!, 2).toString() : '',
       sortChangeFn: (dir): void => this.sortChange(['volumes', 'issueValue'], dir),
       width: 100,
       filterData: {
@@ -190,9 +201,72 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       }
     },
     {
+      id: 'couponAccruedInterest',
+      displayName: 'НКД',
+      transformFn: (d: BondDisplay): string => d.closestCoupon?.accruedInterest?.toString() ?? '',
+      filterData: {
+        filterName: 'couponAccruedInterest',
+        filterType: FilterType.Interval,
+        intervalStartName: 'couponAccruedInterestFrom',
+        intervalEndName: 'couponAccruedInterestTo',
+        filterWarning: 'По данному фильтру будут показываться облигации, имеющие хотя бы один купон, удовлетворяющий условиям (не обязательно ближайший)'
+      },
+      width: 90,
+    },
+    {
+      id: 'couponDate',
+      displayName: 'Дата выплаты ближ. купона',
+      transformFn: (d: BondDisplay): string => d.closestCoupon?.date == null ? '' : new Date(d.closestCoupon!.date).toLocaleDateString(),
+      filterData: {
+        filterName: 'couponDate',
+        filterType: FilterType.Interval,
+        intervalStartName: 'couponDateFrom',
+        intervalEndName: 'couponDateTo'
+      },
+      width: 90,
+    },
+    {
+      id: 'couponIntervalInDays',
+      displayName: 'Период купона, д.',
+      transformFn: (d: BondDisplay): string => d.closestCoupon?.intervalInDays?.toString() ?? '',
+      filterData: {
+        filterName: 'couponIntervalInDays',
+        filterType: FilterType.Interval,
+        intervalStartName: 'couponIntervalInDaysFrom',
+        intervalEndName: 'couponIntervalInDaysTo',
+        filterWarning: 'По данному фильтру будут показываться облигации, имеющие хотя бы один купон, удовлетворяющий условиям (не обязательно ближайший)'
+      },
+      width: 90,
+    },
+    {
+      id: 'couponAmount',
+      displayName: 'Размер купона',
+      transformFn: (d: BondDisplay): string => d.closestCoupon?.amount?.toString() ?? '',
+      filterData: {
+        filterName: 'couponAmount',
+        filterType: FilterType.Interval,
+        intervalStartName: 'couponAmountFrom',
+        intervalEndName: 'couponAmountTo',
+        filterWarning: 'По данному фильтру будут показываться облигации, имеющие хотя бы один купон, удовлетворяющий условиям (не обязательно ближайший)'
+      },
+      width: 90,
+    },
+    {
+      id: 'offerDate',
+      displayName: 'Дата ближайшей оферты',
+      transformFn: (d: BondDisplay): string => d.closestOffer?.date == null ? '' : new Date(d.closestOffer!.date).toLocaleDateString(),
+      filterData: {
+        filterName: 'offerDate',
+        filterType: FilterType.Interval,
+        intervalStartName: 'offerDateFrom',
+        intervalEndName: 'offerDateTo'
+      },
+      width: 90,
+    },
+    {
       id: 'priceMultiplier',
       displayName: 'Множитель цены',
-      transformFn: (d: BondNode): string => d.additionalInformation!.priceMultiplier?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.additionalInformation!.priceMultiplier?.toString() ?? '',
       sortChangeFn: (dir): void => this.sortChange(['additionalInformation', 'priceMultiplier'], dir),
       width: 110,
       filterData: {
@@ -205,8 +279,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     },
     {
       id: 'board',
-      displayName: 'Режим торогов',
-      transformFn: (d: BondNode): string => d.boardInformation!.board ?? '',
+      displayName: 'Режим торгов',
+      transformFn: (d: BondDisplay): string => d.boardInformation!.board ?? '',
       sortChangeFn: (dir): void => this.sortChange(['boardInformation', 'board'], dir),
       width: 90,
       filterData: {
@@ -230,7 +304,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     },
     {
       id: 'hasOffer',
-      displayName: 'Доср. выкуп/погашение',
+      displayName: 'Есть оферта',
       sortChangeFn: (dir): void => this.sortChange(['hasOffer'], dir),
       width: 110,
       filterData: {
@@ -243,9 +317,50 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       }
     },
     {
+      id: 'hasAmortization',
+      displayName: 'Есть амортизация',
+      width: 110,
+      filterData: {
+        filterName: 'hasAmortization',
+        filterType: FilterType.Default,
+        filters: [
+          { value: true, text: 'Да'},
+          { value: false, text: 'Нет'}
+        ]
+      }
+    },
+    {
+      id: 'duration',
+      displayName: 'Дюрация, %',
+      transformFn: (d: BondDisplay): string => d.duration?.toString() ?? '',
+      sortChangeFn: (dir): void => this.sortChange(['duration'], dir),
+      width: 90,
+      filterData: {
+        filterName: 'duration',
+        filterType: FilterType.Interval,
+        intervalStartName: 'durationFrom',
+        intervalEndName: 'durationTo',
+        inputFieldType: InputFieldType.Number,
+      }
+    },
+    {
+      id: 'durationMacaulay',
+      displayName: 'Дюрация по Маколею, д.',
+      transformFn: (d: BondDisplay): string => d.durationMacaulay?.toString() ?? '',
+      sortChangeFn: (dir): void => this.sortChange(['durationMacaulay'], dir),
+      width: 90,
+      filterData: {
+        filterName: 'durationMacaulay',
+        filterType: FilterType.Interval,
+        intervalStartName: 'durationMacaulayFrom',
+        intervalEndName: 'durationMacaulayTo',
+        inputFieldType: InputFieldType.Number
+      }
+    },
+    {
       id: 'lotSize',
       displayName: 'Размер лота',
-      transformFn: (d: BondNode): string => d.tradingDetails!.lotSize?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.tradingDetails!.lotSize?.toString() ?? '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'lotSize'], dir),
       width: 90,
       filterData: {
@@ -259,7 +374,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'minStep',
       displayName: 'Шаг цены',
-      transformFn: (d: BondNode): string => d.tradingDetails!.minStep?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.tradingDetails!.minStep?.toString() ?? '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'minStep'], dir),
       width: 80,
       filterData: {
@@ -271,9 +386,23 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       }
     },
     {
+      id: 'price',
+      displayName: 'Тек. цена',
+      transformFn: (d: BondDisplay): string => d.tradingDetails!.price?.toString() ?? '',
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'price'], dir),
+      width: 80,
+      filterData: {
+        filterName: 'price',
+        filterType: FilterType.Interval,
+        intervalStartName: 'priceFrom',
+        intervalEndName: 'priceTo',
+        inputFieldType: InputFieldType.Number
+      }
+    },
+    {
       id: 'priceMax',
       displayName: 'Макс. цена',
-      transformFn: (d: BondNode): string => d.tradingDetails!.priceMax?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.tradingDetails!.priceMax?.toString() ?? '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceMax'], dir),
       width: 80,
       filterData: {
@@ -287,7 +416,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'priceMin',
       displayName: 'Мин. цена',
-      transformFn: (d: BondNode): string => d.tradingDetails!.priceMin?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.tradingDetails!.priceMin?.toString() ?? '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceMin'], dir),
       width: 80,
       filterData: {
@@ -301,7 +430,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'priceStep',
       displayName: 'Стоимость шага цены',
-      transformFn: (d: BondNode): string => d.tradingDetails!.priceStep?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.tradingDetails!.priceStep?.toString() ?? '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceStep'], dir),
       width: 110,
       filterData: {
@@ -367,8 +496,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
 
   rowClick(row: BondDisplay): void {
     const instrument = {
-      symbol: row.basicInformation.symbol,
-      exchange: row.basicInformation.exchange,
+      symbol: row.basicInformation!.symbol,
+      exchange: row.basicInformation!.exchange,
     };
 
     this.settings$.pipe(
@@ -407,7 +536,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
                 ['columns', col.column.id],
                 { fallback: col.column.displayName }
               ),
-              transformFn: ['couponType', 'hasOffer', 'guaranteed'].includes(col.column.id)
+              transformFn: ['couponType', 'hasOffer', 'guaranteed', 'hasAmortization'].includes(col.column.id)
                 ? (data: BondDisplay): string => translate(
                   ['filters', col.column.id, data[col.column.id as keyof BondDisplay]?.toString() ?? ''],
                   {fallback: data[col.column.id as keyof BondDisplay] as string}
@@ -415,6 +544,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
                 : col.column.transformFn,
               filterData: col.column.filterData && {
                 ...col.column.filterData,
+                filterWarning: col.column.filterData.filterWarning == null ? null : translate(['couponsFilterWarning']),
                 filters: col.column.filterData.filters?.map(f => ({
                   text: translate(
                     [ 'filters', col.column.id, f.value ],
@@ -450,7 +580,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
           const filtersWithDefaultValues = JSON.parse(JSON.stringify(filters)) as DefaultTableFilters;
 
           if ((settings.hideExpired ?? true) && filtersWithDefaultValues.cancellationFrom == null) {
-            filtersWithDefaultValues.cancellationFrom = new Date().toISOString();
+            const dateNow = new Date();
+            filtersWithDefaultValues.cancellationFrom = `${dateNow.getDate()}.${dateNow.getMonth() + 1}.${dateNow.getFullYear()}`;
           }
 
           return this.service.getBonds(
@@ -458,9 +589,30 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
             filtersWithDefaultValues,
             {
               first: this.loadingChunkSize,
-              after: this.pagination?.endCursor,
-              sort: sort
-            });
+              after: this.pagination?.endCursor ?? undefined,
+              sort: sort == null ? null : [sort]
+            })
+            .pipe(
+              map((res: BondsConnection | null) => res == null
+                ? null
+                : {
+                  ...res,
+                  edges: res.edges!.map((edge: BondsEdge) => ({
+                    ...edge,
+                    node: {
+                      ...edge.node,
+                      closestCoupon: ([...(edge.node.coupons ?? [])] as Coupon[])
+                        .sort((a: Coupon, b: Coupon) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                        .find((node: Coupon) => new Date(node.date).getTime() > new Date().getTime()),
+                      closestOffer: ([...(edge.node.offers ?? [])] as Offer[])
+                        .sort((a: Offer, b: Offer) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                        .find((node: Offer) => new Date(node.date).getTime() > new Date().getTime()),
+                      hasAmortization: [...(edge.node.amortizations ?? [])]
+                        .some(a => (new Date(a.date).getTime()) > (new Date().getTime())),
+                    },
+                  }))
+                })
+            );
         }),
         takeUntilDestroyed(this.destroyRef)
       )
@@ -469,7 +621,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
           return;
         }
 
-        const newBonds = data!.bonds.edges.map((be: GraphQlEdge<BondNode>) => ({
+        const newBonds = data.edges?.map((be: BondsEdge) => ({
           ...be.node,
           id: be.cursor
         } as BondDisplay)) ?? [];
@@ -477,7 +629,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         this.isLoading$.next(false);
         if (this.pagination == null) {
           this.bondsList$.next(newBonds);
-          this.pagination = data?.bonds.pageInfo ?? null;
+          this.pagination = data?.pageInfo ?? null;
           return;
         }
 
@@ -485,7 +637,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
           .pipe(take(1))
           .subscribe(bonds => {
             this.bondsList$.next([...bonds, ...newBonds]);
-            this.pagination = data?.bonds.pageInfo ?? null;
+            this.pagination = data?.pageInfo ?? null;
           });
       });
 
@@ -509,8 +661,8 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
             ...b,
             badges: Object.keys(availableBadges)
               .filter(key =>
-                b.basicInformation.symbol === availableBadges[key]!.symbol &&
-                b.basicInformation.exchange === availableBadges[key]!.exchange
+                b.basicInformation!.symbol === availableBadges[key]!.symbol &&
+                b.basicInformation!.exchange as string === availableBadges[key]!.exchange
               )
           }));
         })
@@ -525,10 +677,10 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
 
     const sortObj = fields.reduceRight((acc, curr, index) => {
       if (index === fields.length - 1) {
-        return { [curr]: sort === 'descend' ? GraphQlSortType.DESC : GraphQlSortType.ASC };
+        return { [curr]: sort === 'descend' ? SortEnumType.Desc : SortEnumType.Asc };
       }
       return { [curr]: acc };
-    }, {} as GraphQlSort);
+    }, {} as BondSortInput);
 
     this.sort$.next(sortObj);
   }

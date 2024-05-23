@@ -10,12 +10,22 @@
     "issueValue": "Emission",
     "couponType": "Coupon type",
     "couponRate": "Coupon rate, %",
+    "couponAccruedInterest": "Accrued interest",
+    "couponDate": "Closest coupon date",
+    "couponIntervalInDays": "Coupon interval, d.",
+    "couponAmount": "Coupon amount",
+    "couponValue": "Coupon value",
+    "offerDate": "Closest offer date",
     "priceMultiplier": "Price multiplier",
     "board": "Board",
     "guaranteed": "Guaranteed",
     "hasOffer": "Has offer",
+    "hasAmortization": "Has amortization",
+    "duration": "Duration, %",
+    "durationMacaulay": "Duration by Macaulay, d.",
     "lotSize": "Lot size",
     "minStep": "Min step",
+    "price": "Price",
     "priceMax": "Max price",
     "priceMin": "Min price",
     "priceStep": "Price step",
@@ -32,9 +42,14 @@
       "true": "Yes",
       "false": "No"
     },
+    "hasAmortization": {
+      "true": "Yes",
+      "false": "No"
+    },
     "guaranteed": {
       "true": "Yes",
       "false": "No"
     }
-  }
+  },
+  "couponsFilterWarning": "This filter will show bonds that have at least one coupon that meets the conditions (not necessarily the closest one)"
 }

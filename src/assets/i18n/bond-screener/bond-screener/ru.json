@@ -10,12 +10,22 @@
     "issueValue": "Заявл. объём выпуска",
     "couponType": "Тип купона",
     "couponRate": "Ставка купона, %",
+    "couponAccruedInterest": "НКД",
+    "couponDate": "Дата выплаты ближ. купона",
+    "couponIntervalInDays": "Период купона, д.",
+    "couponAmount": "Размер купона",
+    "couponValue": "Доля номинала",
+    "offerDate": "Дата ближайшей оферты",
     "priceMultiplier": "Множитель цены",
-    "board": "Режим торогов",
+    "board": "Режим торгов",
     "guaranteed": "Гарантия",
-    "hasOffer": "Доср. выкуп/погашение",
+    "hasOffer": "Есть оферта",
+    "hasAmortization": "Есть амортизация",
+    "duration": "Дюрация, %",
+    "durationMacaulay": "Дюрация по Маколею, д.",
     "lotSize": "Размер лота",
     "minStep": "Шаг цены",
+    "price": "Тек. цена",
     "priceMax": "Макс. цена",
     "priceMin": "Мин. цена",
     "priceStep": "Стоимость шага цены",
@@ -32,9 +42,14 @@
       "true": "Да",
       "false": "Нет"
     },
+    "hasAmortization": {
+      "true": "Да",
+      "false": "Нет"
+    },
     "guaranteed": {
       "true": "Да",
       "false": "Нет"
     }
-  }
+  },
+  "couponsFilterWarning": "По данному фильтру будут показываться облигации, имеющие хотя бы один купон, удовлетворяющий условиям (не обязательно ближайший)"
 }

@@ -3,16 +3,22 @@ import {
   Observable,
   take
 } from "rxjs";
-import { BondScreenerResponse } from "../models/bond-screener.model";
 import {
   FetchPolicy,
   GraphQlService
 } from "../../../shared/services/graph-ql.service";
 
 import { DefaultTableFilters } from "../../../shared/models/settings/table-settings.model";
-import { GraphQlHelper } from "../../../shared/utils/graph-ql-helper";
-import { GraphQlSort } from "../../../shared/models/graph-ql.model";
 import {
+  BondFilterInput,
+  BondsConnection,
+  BondSortInput,
+  CouponFilterInput,
+  ListFilterInputTypeOfAmortizationFilterInput,
+  ListFilterInputTypeOfCouponFilterInput,
+  ListFilterInputTypeOfOfferFilterInput,
+  OfferFilterInput,
+  Query,
   QueryBondsArgs,
   SortEnumType
 } from "../../../../generated/graphql.types";
@@ -21,52 +27,12 @@ import { map } from "rxjs/operators";
 import {
   GetBondsYieldCurveResponse,
   GetBondsYieldCurveResponseSchema
-} from "./bond-screener.gql-schemas";
+} from "./bond-yield-curve.gql-schemas";
+import { getBondScreenerResponseSchema } from "./bond-screener.gql-schemas";
+import { TypeOf } from "zod";
+import { GraphQlHelper } from "../../../shared/utils/graph-ql-helper";
+import { BondFilterInputSchema } from "../../../../generated/graphql.schemas";
 
-const BOND_NESTED_FIELDS: { [fieldName: string]: string[] } = {
-  basicInformation: ['symbol', 'shortName', 'exchange'],
-  financialAttributes: ['tradingStatusInfo'],
-  additionalInformation: ['cancellation', 'priceMultiplier'],
-  boardInformation: ['board'],
-  yield: ['currentYield'],
-  tradingDetails: ['lotSize', 'minStep', 'priceMax', 'priceMin', 'priceStep', 'rating'],
-  volumes: ['issueValue'],
-  rootFields: ['couponRate', 'couponType', 'guaranteed', 'hasOffer', 'maturityDate', 'placementEndDate']
-};
-
-const BOND_FILTER_TYPES: { [fieldName: string]: string[] } = {
-  search: ['symbol', 'shortName', 'board'],
-  multiSelect: ['exchange', 'couponType'],
-  interval: [
-    'priceMultiplierFrom',
-    'priceMultiplierTo',
-    'couponRateFrom',
-    'couponRateTo',
-    'currentYieldFrom',
-    'currentYieldTo',
-    'issueValueFrom',
-    'issueValueTo',
-    'lotSizeFrom',
-    'lotSizeTo',
-    'minStepFrom',
-    'minStepTo',
-    'priceMaxFrom',
-    'priceMaxTo',
-    'priceMinFrom',
-    'priceMinTo',
-    'priceStepFrom',
-    'priceStepTo'
-  ],
-  bool: ['guaranteed', 'hasOffer'],
-  date: [
-    'cancellationTo',
-    'cancellationFrom',
-    'maturityDateTo',
-    'maturityDateFrom',
-    'placementEndDateTo',
-    'placementEndDateFrom',
-  ]
-};
 
 @Injectable({
   providedIn: 'root'
@@ -81,14 +47,38 @@ export class BondScreenerService {
   getBonds(
     columnIds: string[],
     filters: DefaultTableFilters,
-    params: { first: number, after?: string, sort: GraphQlSort | null }
-  ): Observable<BondScreenerResponse | null> {
-    return this.graphQlService.watchQuery(
-      this.getBondsQuery(columnIds),
+    params: { first: number, after?: string, sort: BondSortInput[] | null }
+  ): Observable<BondsConnection | null> {
+    const bondScreenerResponseSchema = getBondScreenerResponseSchema(columnIds);
+    const parsedFilters = GraphQlHelper.parseToGqlFiltersIntersection<BondFilterInput>(filters, BondFilterInputSchema());
+    const couponsFilters = this.getCouponsFilters(filters);
+    const offersFilters = this.getOffersFilters(filters);
+
+    const args: QueryBondsArgs = {
+      first: params.first,
+      after: params.after,
+      where: {
+        and: [
+          ...parsedFilters.and!,
+          ...(couponsFilters == null ? [] : [{ coupons: couponsFilters }]),
+          ...(offersFilters == null ? [] : [{ offers: offersFilters }]),
+          ...(filters.hasAmortization == null ? [] : [{ amortizations: this.getAmortizationFilter(filters.hasAmortization as boolean) }])
+        ]
+      },
+      order: params.sort
+    };
+
+    return this.graphQlService.watchQueryForSchema<TypeOf<typeof bondScreenerResponseSchema>>(
+      bondScreenerResponseSchema,
       {
-        ...params,
-        filters: GraphQlHelper.parseFilters(filters, BOND_NESTED_FIELDS, BOND_FILTER_TYPES)
-      }
+        first: args.first,
+        where: { value: args.where, type: 'BondFilterInput' },
+        order: { value: args.order, type: '[BondSortInput!]' },
+      },
+      { fetchPolicy: FetchPolicy.NoCache }
+    ).pipe(
+      take(1),
+      map(q => (q as Query)?.bonds ?? null)
     );
   }
 
@@ -140,59 +130,135 @@ export class BondScreenerService {
     );
   }
 
-  private getBondsQuery(columnIds: string[]): string {
-    const basicInformationFields = BOND_NESTED_FIELDS.basicInformation.filter(f => columnIds.includes(f) || f === 'symbol' || f === 'exchange');
-    const additionalInformationFields = BOND_NESTED_FIELDS.additionalInformation.filter(f => columnIds.includes(f));
-    const financialAttributesFields = BOND_NESTED_FIELDS.financialAttributes.filter(f => columnIds.includes(f));
-    const boardInformationFields = BOND_NESTED_FIELDS.boardInformation.filter(f => columnIds.includes(f));
-    const tradingDetailsFields = BOND_NESTED_FIELDS.tradingDetails.filter(f => columnIds.includes(f));
-    const volumesFields = BOND_NESTED_FIELDS.volumes.filter(f => columnIds.includes(f));
-    const yieldFields = BOND_NESTED_FIELDS.yield.filter(f => columnIds.includes(f));
-    const rootFields = BOND_NESTED_FIELDS.rootFields.filter(f => columnIds.includes(f));
+  // If closest coupon filters selected, filter by it
+  private getCouponsFilters(filters: DefaultTableFilters): ListFilterInputTypeOfCouponFilterInput | null {
+    const filtersByDate = this.getFiltersOfArrayByDate<CouponFilterInput>(
+      filters.couponDateFrom as string,
+      filters.couponDateTo as string
+    );
 
-    return `query GET_BONDS($first: Int, $after: String, $filters: BondFilterInput, $sort: [BondSortInput!]) {
-            bonds(
-              first: $first,
-              after: $after,
-              where: $filters,
-              order: $sort
-              ) {
-              edges {
-                node {
-                  basicInformation { ${basicInformationFields.join(' ')} }
-                  ${additionalInformationFields.length > 0
-      ? 'additionalInformation {' + additionalInformationFields.join(' ') + '}'
-      : ''
+    const someFilters = filtersByDate.some;
+    const noneFilters = filtersByDate.none;
+
+    if (filters.couponIntervalInDaysFrom != null) {
+      someFilters.push({ intervalInDays: { gte: Number(filters.couponIntervalInDaysFrom) } });
     }
-                  ${financialAttributesFields.length > 0
-      ? 'financialAttributes {' + financialAttributesFields.join(' ') + '}'
-      : ''
+
+    if (filters.couponIntervalInDaysTo != null) {
+      someFilters.push({ intervalInDays: { lte: Number(filters.couponIntervalInDaysTo) } });
     }
-                  ${boardInformationFields.length > 0
-      ? 'boardInformation {' + boardInformationFields.join(' ') + '}'
-      : ''
+
+    if (filters.couponAccruedInterestFrom != null) {
+      someFilters.push({ accruedInterest: { gte: Number(filters.couponAccruedInterestFrom) } });
     }
-                  ${tradingDetailsFields.length > 0
-      ? 'tradingDetails {' + tradingDetailsFields.join(' ') + '}'
-      : ''
+
+    if (filters.couponAccruedInterestTo != null) {
+      someFilters.push({ accruedInterest: { lte: Number(filters.couponAccruedInterestTo) } });
     }
-                  ${volumesFields.length > 0
-      ? 'volumes {' + volumesFields.join(' ') + '}'
-      : ''
+
+    if (filters.couponAmountFrom != null) {
+      someFilters.push({ amount: { gte: Number(filters.couponAmountFrom) } });
     }
-                  ${yieldFields.length > 0
-      ? 'yield {' + yieldFields.join(' ') + '}'
-      : ''
+
+    if (filters.couponAmountTo != null) {
+      someFilters.push({ amount: { lte: Number(filters.couponAmountTo) } });
     }
-                  ${rootFields.join(' ')}
-                }
-                cursor
-              }
-              pageInfo {
-                hasNextPage
-                endCursor
-              }
-            }
-          }`;
+
+
+    if (someFilters.length === 0 && noneFilters.length === 0) {
+      return null;
+    }
+
+    if (noneFilters.length === 0) {
+      return {
+        some: { and: someFilters }
+      };
+    }
+
+    return {
+      some: { and: someFilters },
+      none: { and: noneFilters }
+    };
+  }
+
+  private getOffersFilters(filters: DefaultTableFilters): ListFilterInputTypeOfOfferFilterInput | null {
+    const filtersByDate = this.getFiltersOfArrayByDate<OfferFilterInput>(
+      filters.offerDateFrom as string,
+      filters.offerDateTo as string
+    );
+
+    const someFilters = filtersByDate.some;
+    const noneFilters = filtersByDate.none;
+
+    if (someFilters.length === 0 && noneFilters.length === 0) {
+      return null;
+    }
+
+    if (noneFilters.length === 0) {
+      return {
+        some: { and: noneFilters }
+      };
+    }
+
+    return {
+      some: { and: someFilters },
+      none: { and: noneFilters }
+    };
+  }
+
+  private getAmortizationFilter(hasAmortization: boolean): ListFilterInputTypeOfAmortizationFilterInput {
+    if (hasAmortization) {
+      return {
+        some: { date: { gte: new Date().toISOString() } }
+      };
+    } else {
+      return {
+        none: { date: { gte: new Date().toISOString() } }
+      };
+    }
+  }
+
+  private getFiltersOfArrayByDate<T>(
+    from: string | null,
+    to: string | null,
+  ): { some: T[], none: T[]} {
+    if (from == null && to == null) {
+      return { some: [], none: [] };
+    }
+
+    const someFilters: T[] = [];
+    const noneFilters: T[] = [];
+
+    const [fromDay, fromMonth, fromYear] = (from ?? '').split('.').map(d => Number(d));
+    const [toDay, toMonth, toYear] = (to ?? '').split('.').map(d => Number(d));
+    const dateFrom = new Date(fromYear, fromMonth - 1, fromDay);
+    const dateTo = new Date(toYear, toMonth - 1, toDay);
+
+    // If datFrom selected, search bonds with closest coupon by it
+    if (!isNaN(dateFrom.getTime())) {
+      noneFilters.push(
+        { date: { gte: new Date().toISOString() } } as T,
+        { date: { lt: dateFrom.toISOString() } } as T
+      );
+      someFilters.push(
+        { date: { gte: dateFrom.toISOString() } } as T
+      );
+    }
+
+    // If datTo selected, search bonds with closest coupon by it
+    if (!isNaN(dateTo.getTime())) {
+      if (!isNaN(dateFrom.getTime())) { // If dateFrom selected, add filter by closest coupon before dateTo
+        someFilters.push({
+          date: { lte: dateTo.toISOString() }
+        } as T);
+      } else {
+        someFilters.push(
+          { date: { gte: new Date().toISOString() } } as T,
+          { date: { lte: dateTo.toISOString() } } as T
+        );
+      }
+    }
+
+    return { some: someFilters, none: noneFilters };
   }
 }
