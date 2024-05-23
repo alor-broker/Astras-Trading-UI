@@ -150,6 +150,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
             timezoneDisplayOption: currentSettings.timezoneDisplayOption,
             userIdleDurationMin: currentSettings.userIdleDurationMin,
             badgesBind: currentSettings.badgesBind,
+            badgesColors: currentSettings.badgesColors,
             tableRowHeight: currentSettings.tableRowHeight
           } as GeneralSettings,
           Validators.required),

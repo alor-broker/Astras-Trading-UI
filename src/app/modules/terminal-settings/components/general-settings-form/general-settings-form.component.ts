@@ -24,6 +24,12 @@ import { ThemeType } from '../../../../shared/models/settings/theme-settings.mod
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { GeneralSettings } from "../../models/terminal-settings.model";
 import { TableRowHeight } from "../../../../shared/models/enums/table-row-height";
+import {
+  additionalInstrumentsBadges,
+  defaultBadgeColor,
+  instrumentsBadges
+} from "../../../../shared/utils/instruments";
+import { CdkDrag, CdkDragEnter, CdkDragStart } from "@angular/cdk/drag-drop";
 
 @Component({
   selector: 'ats-general-settings-form',
@@ -50,6 +56,11 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
   gridTypes = GridType;
 
   form?: UntypedFormGroup;
+
+  newBadgeColorControl = new UntypedFormControl(null);
+  defaultBadgeColor = defaultBadgeColor;
+
+  draggedBadge: string | null = null;
 
   constructor(private readonly destroyRef: DestroyRef) {
     super();
@@ -94,6 +105,7 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
           ]),
         language: new UntypedFormControl(''),
         badgesBind: new UntypedFormControl(null),
+        badgesColors: new UntypedFormControl([]),
         tableRowHeight: new UntypedFormControl(TableRowHeight.Medium)
       }
     );
@@ -144,4 +156,77 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
     }
   }
 
+  addNewBadgeColor(isPopupVisible: boolean): void {
+    if (isPopupVisible) {
+      return;
+    }
+
+    if (
+      this.form == null ||
+      (this.newBadgeColorControl.value ?? '').length === 0 ||
+      this.form.controls.badgesColors.value.includes(this.newBadgeColorControl.value)) {
+      return;
+    }
+
+    this.form!.controls.badgesColors.setValue([
+      ...(this.form.controls.badgesColors.value as string[]),
+      this.newBadgeColorControl.value
+    ]);
+
+    this.newBadgeColorControl.reset();
+  }
+
+  addPredefinedLabels(): void {
+    if (this.form == null) {
+      return;
+    }
+
+    const badgesColorsFormValue = this.form.controls.badgesColors.value as string[];
+
+    this.form.controls.badgesColors.setValue([
+      ...badgesColorsFormValue,
+      ...[...instrumentsBadges, ...additionalInstrumentsBadges].filter(b => !badgesColorsFormValue.includes(b)).slice(0, 2)
+    ]);
+  }
+
+  removeBadgeColor(e: MouseEvent, color: string): void {
+    if (this.form == null) {
+      return;
+    }
+
+    e.stopPropagation();
+
+    this.form!.controls.badgesColors.setValue(
+      this.form!.controls.badgesColors.value.filter((b: string) => b !== color)
+    );
+  }
+
+  changeBadgesOrder(e: CdkDragEnter<string>): void {
+    if (this.form == null) {
+      return;
+    }
+
+    if (this.draggedBadge == null) {
+      return;
+    }
+
+    const badgesColorsCopy = [...(this.form.controls.badgesColors.value as string[])];
+    const sourceIndex = badgesColorsCopy.findIndex(b => b === this.draggedBadge);
+    const targetBadge = e.container.data;
+    const targetIndex = badgesColorsCopy.findIndex(b => b === targetBadge);
+
+    if (sourceIndex > targetIndex) {
+      badgesColorsCopy.splice(sourceIndex, 1);
+      badgesColorsCopy.splice(targetIndex, 0, this.draggedBadge);
+    } else {
+      badgesColorsCopy.splice(targetIndex, 0, this.draggedBadge);
+      badgesColorsCopy.splice(sourceIndex, 1);
+    }
+
+    this.form.controls.badgesColors.setValue(badgesColorsCopy);
+  }
+
+  badgeDragStarts(e: CdkDragStart<CdkDrag>): void {
+    this.draggedBadge = e.source.dropContainer.data as string;
+  }
 }

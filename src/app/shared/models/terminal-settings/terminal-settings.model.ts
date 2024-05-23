@@ -122,4 +122,5 @@ export interface TerminalSettings {
   designSettings?: DesignSettings;
   portfoliosCurrency?: PortfolioCurrencySettings[];
   instantNotificationsSettings?: InstantNotificationsSettings;
+  badgesColors?: string[];
 }

@@ -15,6 +15,7 @@ import { GeneralSettingsFormComponent } from './components/general-settings-form
 import { ScalperMouseActionsFormComponent } from './components/scalper-mouse-actions-form/scalper-mouse-actions-form.component';
 import { HotKeyInputComponent } from './components/hot-key-input/hot-key-input.component';
 import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
+import { DragDropModule } from "@angular/cdk/drag-drop";
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
         ExternalLinkModule,
         NzInputModule,
         NzDividerModule,
-        NzResizeObserverModule
+        NzResizeObserverModule,
+        DragDropModule
     ],
   exports: [
     TerminalSettingsWidgetComponent

@@ -29,6 +29,7 @@ import { UserPortfoliosService } from "../../shared/services/user-portfolios.ser
 import { DashboardsStreams } from "./dashboards.streams";
 import { WatchlistCollectionService } from "../../modules/instruments/services/watchlist-collection.service";
 import { DashboardsFeature } from "./dashboards.reducer";
+import { TerminalSettingsService } from "../../shared/services/terminal-settings.service";
 
 
 @Injectable()
@@ -190,13 +191,20 @@ export class DashboardsEffects {
 
   setDefaultInstrumentsSelectionForCurrentDashboard$ = createEffect(() => {
     return DashboardsStreams.getSelectedDashboard(this.store).pipe(
-      filter(d => instrumentsBadges.some(badge => d.instrumentsSelection?.[badge] == null)),
-      distinctUntilChanged((previous, current) => previous.guid === current.guid),
+      mapWith(
+        () => this.terminalSettingsService.getSettings().pipe(map(s => s.badgesColors ?? instrumentsBadges)),
+        (dashboard, badgesColors) => ({ dashboard, badgesColors })
+      ),
+      filter(({ dashboard, badgesColors }) => badgesColors.some(badge => dashboard.instrumentsSelection?.[badge] == null)),
+      distinctUntilChanged((previous, current) =>
+        previous.dashboard.guid === current.dashboard.guid &&
+        JSON.stringify(previous.badgesColors) === JSON.stringify(current.badgesColors)
+      ),
       mapWith(
         () => this.marketService.getAllExchanges().pipe(take(1)),
-        (dashboard, marketSettings) => ({dashboard, marketSettings})
+        ({ dashboard, badgesColors }, marketSettings) => ({ dashboard, badgesColors, marketSettings })
       ),
-      switchMap(({dashboard, marketSettings}) => {
+      switchMap(({dashboard, badgesColors, marketSettings}) => {
           let exchangeSettings = marketSettings.find(x => x.settings.isDefault);
           if (dashboard.selectedPortfolio) {
             exchangeSettings = marketSettings.find(x => x.exchange === dashboard.selectedPortfolio!.exchange) ?? exchangeSettings;
@@ -208,7 +216,7 @@ export class DashboardsEffects {
 
           return of(DashboardsCurrentSelectionActions.selectInstruments({
               dashboardGuid: dashboard.guid,
-              selection: instrumentsBadges.map(badge => ({
+              selection: badgesColors.map(badge => ({
                 groupKey: badge,
                 instrumentKey: dashboard.instrumentsSelection?.[badge] ?? {
                   ...exchangeSettings!.settings.defaultInstrument!,
@@ -241,7 +249,8 @@ export class DashboardsEffects {
     private readonly dashboardService: ManageDashboardsService,
     private readonly marketService: MarketService,
     private readonly userPortfoliosService: UserPortfoliosService,
-    private readonly watchlistCollectionService: WatchlistCollectionService
+    private readonly watchlistCollectionService: WatchlistCollectionService,
+    private readonly terminalSettingsService: TerminalSettingsService
   ) {
   }
 }
