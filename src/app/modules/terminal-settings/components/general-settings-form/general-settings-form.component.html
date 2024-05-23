@@ -150,6 +150,7 @@
             <nz-color-picker
               [nzFlipFlop]="newBadgeTrigger"
               [formControl]="newBadgeColorControl"
+              [nzDisabledAlpha]="true"
               (nzOnOpenChange)="addNewBadgeColor($event)"
             ></nz-color-picker>
 
