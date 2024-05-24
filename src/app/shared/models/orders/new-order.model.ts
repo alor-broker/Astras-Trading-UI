@@ -10,6 +10,7 @@ export interface NewOrderBase {
   side: Side;
   instrument: InstrumentKey;
   quantity: number;
+  comment?: string;
 }
 
 export interface NewMarketOrder extends NewOrderBase {

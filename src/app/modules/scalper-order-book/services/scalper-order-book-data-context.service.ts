@@ -31,6 +31,7 @@ import { SubscriptionsDataFeedService } from '../../../shared/services/subscript
 import {
   BodyRow,
   CurrentOrderDisplay,
+  OrderMeta,
   PriceRow,
   ScalperOrderBookRowType
 } from '../models/scalper-order-book.model';
@@ -57,6 +58,7 @@ import { OrderBookScaleHelper } from "../utils/order-book-scale.helper";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { ScalperOrderBookConstants } from "../constants/scalper-order-book.constants";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
+import { Order } from "../../../shared/models/orders/order.model";
 
 
 export interface ContextGetters {
@@ -246,7 +248,8 @@ export class ScalperOrderBookDataContextService {
         type: x.type,
         side: x.side,
         price: x.price,
-        displayVolume: x.qty - (x.filledQtyBatch ?? 0)
+        displayVolume: x.qty - (x.filledQtyBatch ?? 0),
+        meta: this.getOrderMeta(x)
       } as CurrentOrderDisplay))),
       shareReplay({ bufferSize: 1, refCount: true })
     );
@@ -271,7 +274,8 @@ export class ScalperOrderBookDataContextService {
         triggerPrice: x.triggerPrice,
         price: x.price,
         condition: x.conditionType,
-        displayVolume: x.qty - (x.filledQtyBatch ?? 0)
+        displayVolume: x.qty - (x.filledQtyBatch ?? 0),
+        meta: this.getOrderMeta(x)
       } as CurrentOrderDisplay))),
       shareReplay({ bufferSize: 1, refCount: true })
     );
@@ -283,6 +287,19 @@ export class ScalperOrderBookDataContextService {
       map(([limitOrders, stopOrders]) => [...limitOrders, ...stopOrders]),
       shareReplay({ bufferSize: 1, refCount: true })
     );
+  }
+
+  private getOrderMeta(order: Order): OrderMeta | undefined {
+    const comment = order.comment ?? '';
+
+    if(comment.includes('meta')) {
+      try {
+        const meta = JSON.parse(comment) as { meta: OrderMeta };
+        return meta.meta;
+      } catch {}
+    }
+
+    return undefined;
   }
 
   private getOrderBookBody(

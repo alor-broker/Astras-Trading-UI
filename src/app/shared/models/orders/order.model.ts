@@ -46,6 +46,7 @@ export interface Order {
   volume: number | null;
   timeInForce?: TimeInForce;
   iceberg?: IcebergParameters | null;
+  comment?: string;
 }
 
 export interface StopOrder extends Order {

@@ -20,9 +20,11 @@ import {
   map,
   switchMap
 } from 'rxjs/operators';
-import { ScalperOrdersService } from './scalper-orders.service';
 import { ScalperOrderBookCommands } from '../models/scalper-order-book-commands';
-import { ScalperOrderBookWidgetSettings } from '../models/scalper-order-book-settings.model';
+import {
+  PriceUnits,
+  ScalperOrderBookWidgetSettings
+} from '../models/scalper-order-book-settings.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { PortfolioKey } from '../../../shared/models/portfolio-key.model';
 import { Position } from '../../../shared/models/positions/position.model';
@@ -33,6 +35,19 @@ import {
 import { TerminalSettingsHelper } from '../../../shared/utils/terminal-settings-helper';
 import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
 import { OrderType } from "../../../shared/models/orders/order.model";
+import { CancelOrdersCommand } from "../commands/cancel-orders-command";
+import { ClosePositionByMarketCommand } from "../commands/close-position-by-market-command";
+import { SubmitMarketOrderCommand } from "../commands/submit-market-order-command";
+import { ReversePositionByMarketCommand } from "../commands/reverse-position-by-market-command";
+import { SubmitStopLimitOrderCommand } from "../commands/submit-stop-limit-order-command";
+import { SetStopLossCommand } from "../commands/set-stop-loss-command";
+import {
+  BracketOptions,
+  SubmitLimitOrderCommand
+} from "../commands/submit-limit-order-command";
+import { SubmitBestPriceOrderCommand } from "../commands/submit-best-price-order-command";
+import { GetBestOfferCommand } from "../commands/get-best-offer-command";
+import { UpdateOrdersCommand } from "../commands/update-orders-command";
 
 @Injectable({
   providedIn: 'root'
@@ -43,7 +58,18 @@ export class ScalperCommandProcessorService {
   constructor(
     private readonly hotkeysService: HotKeyCommandService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly scalperOrdersService: ScalperOrdersService) {
+    // commands
+    private readonly cancelOrdersCommand: CancelOrdersCommand,
+    private readonly closePositionByMarketCommand: ClosePositionByMarketCommand,
+    private readonly submitMarketOrderCommand: SubmitMarketOrderCommand,
+    private readonly reversePositionByMarketCommand: ReversePositionByMarketCommand,
+    private readonly submitStopLimitOrderCommand: SubmitStopLimitOrderCommand,
+    private readonly setStopLossCommand: SetStopLossCommand,
+    private readonly submitLimitOrderCommand: SubmitLimitOrderCommand,
+    private readonly submitBestPriceOrderCommand: SubmitBestPriceOrderCommand,
+    private readonly getBestOfferCommand: GetBestOfferCommand,
+    private readonly updateOrdersCommand: UpdateOrdersCommand
+  ) {
   }
 
   processLeftMouseClick(e: MouseEvent, row: BodyRow, dataContext: ScalperOrderBookDataContext): void {
@@ -70,11 +96,11 @@ export class ScalperCommandProcessorService {
     this.callWithSettings(
       dataContext,
       settings => {
-        this.scalperOrdersService.updateOrders(
-          orders,
-          { price: row.price },
-          settings.widgetSettings.enableMouseClickSilentOrders
-        );
+        this.updateOrdersCommand.execute({
+          ordersToUpdate: orders,
+          updates: { price: row.price },
+          silent: settings.widgetSettings.enableMouseClickSilentOrders
+        });
       }
     );
   }
@@ -85,13 +111,13 @@ export class ScalperCommandProcessorService {
       this.hotkeysService.modifiers$
     ]).pipe(
       map(([availableActions, modifiers]) => {
-        if(modifiers.shiftKey && !modifiers.altKey && !modifiers.ctrlKey) {
-         return availableActions.actions
-           .filter(x => x.modifier === 'shift')
-           .map(x => x.action);
+        if (modifiers.shiftKey && !modifiers.altKey && !modifiers.ctrlKey) {
+          return availableActions.actions
+            .filter(x => x.modifier === 'shift')
+            .map(x => x.action);
         }
 
-        if(modifiers.ctrlKey && !modifiers.altKey && !modifiers.shiftKey) {
+        if (modifiers.ctrlKey && !modifiers.altKey && !modifiers.shiftKey) {
           return availableActions.actions
             .filter(x => x.modifier === 'ctrl')
             .map(x => x.action);
@@ -157,10 +183,17 @@ export class ScalperCommandProcessorService {
                     portfolioKey => {
                       this.callWithPosition(
                         dataContext,
-                        position => this.scalperOrdersService.sellBestBid(settings.widgetSettings, settings.instrument, workingVolume!, orderBook, portfolioKey, position)
+                        position => this.getBestOfferCommand.execute({
+                          side: Side.Sell,
+                          instrumentKey: settings.widgetSettings,
+                          quantity: workingVolume,
+                          orderBook,
+                          targetPortfolio: portfolioKey.portfolio,
+                          bracketOptions: this.getBracketOptions(settings.widgetSettings, position),
+                          priceStep: settings.instrument.minstep
+                        })
                       );
                     }
-
                   );
                 });
             });
@@ -184,10 +217,17 @@ export class ScalperCommandProcessorService {
                     portfolioKey => {
                       this.callWithPosition(
                         dataContext,
-                        position => this.scalperOrdersService.buyBestAsk(settings.widgetSettings, settings.instrument, workingVolume!, orderBook, portfolioKey, position)
+                        position => this.getBestOfferCommand.execute({
+                          side: Side.Buy,
+                          instrumentKey: settings.widgetSettings,
+                          quantity: workingVolume,
+                          orderBook,
+                          targetPortfolio: portfolioKey.portfolio,
+                          bracketOptions: this.getBracketOptions(settings.widgetSettings, position),
+                          priceStep: settings.instrument.minstep
+                        })
                       );
                     }
-
                   );
                 });
             });
@@ -213,7 +253,10 @@ export class ScalperCommandProcessorService {
           this.callWithPosition(
             dataContext,
             position => {
-              this.scalperOrdersService.reversePositionsByMarket(position, settings.widgetSettings.instrumentGroup ?? null);
+              this.reversePositionByMarketCommand.execute({
+                currentPosition: position,
+                targetInstrumentBoard: settings.widgetSettings.instrumentGroup ?? null
+              });
             }
           );
         }
@@ -224,25 +267,28 @@ export class ScalperCommandProcessorService {
   }
 
   private cancelLimitOrders(dataContext: ScalperOrderBookDataContext): void {
-    this.callWithCurrentOrders(
-      dataContext,
-      orders => {
-        const limitOrders = orders.filter(x => x.type === OrderType.Limit);
-
-        if (limitOrders.length > 0) {
-          this.scalperOrdersService.cancelOrders(limitOrders);
-        }
-      });
+    this.cancelOrdersOfType([OrderType.Limit], dataContext);
   }
 
   private cancelStopOrders(dataContext: ScalperOrderBookDataContext): void {
+    this.cancelOrdersOfType([OrderType.StopMarket, OrderType.StopLimit], dataContext);
+  }
+
+  private cancelOrdersOfType(types: OrderType[], dataContext: ScalperOrderBookDataContext): void {
     this.callWithCurrentOrders(
       dataContext,
       orders => {
-        const stopOrders = orders.filter(x => x.type === OrderType.StopMarket || x.type === OrderType.StopLimit);
+        const filteredOrders = orders.filter(x => types.includes(x.type));
 
-        if (stopOrders.length > 0) {
-          this.scalperOrdersService.cancelOrders(stopOrders);
+        if (filteredOrders.length > 0) {
+          this.cancelOrdersCommand.execute({
+            ordersToCancel: filteredOrders.map(x => ({
+              orderId: x.orderId,
+              exchange: x.exchange,
+              portfolio: x.portfolio,
+              orderType: x.type
+            }))
+          });
         }
       });
   }
@@ -253,7 +299,10 @@ export class ScalperCommandProcessorService {
       settings => {
         this.callWithPosition(
           dataContext,
-          position => this.scalperOrdersService.closePositionsByMarket(position, settings.widgetSettings.instrumentGroup ?? null)
+          position => this.closePositionByMarketCommand.execute({
+            currentPosition: position,
+            targetInstrumentBoard: settings.widgetSettings.instrumentGroup ?? null
+          })
         );
       }
     );
@@ -274,10 +323,17 @@ export class ScalperCommandProcessorService {
                   portfolioKey => {
                     this.callWithPosition(
                       dataContext,
-                      position => this.scalperOrdersService.placeBestOrder(settings.widgetSettings, settings.instrument, side, workingVolume!, orderBook, portfolioKey, position)
+                      position => this.submitBestPriceOrderCommand.execute({
+                        instrumentKey: settings.widgetSettings,
+                        quantity: workingVolume,
+                        side,
+                        targetPortfolio: portfolioKey.portfolio,
+                        orderBook,
+                        priceStep: settings.instrument.minstep,
+                        bracketOptions: this.getBracketOptions(settings.widgetSettings, position)
+                      })
                     );
                   }
-
                 );
               });
           });
@@ -301,7 +357,13 @@ export class ScalperCommandProcessorService {
           workingVolume => {
             this.callWithPortfolioKey(
               dataContext,
-              portfolioKey => this.scalperOrdersService.placeMarketOrder(settings.widgetSettings, side, workingVolume, true, portfolioKey)
+              portfolioKey => this.submitMarketOrderCommand.execute({
+                instrumentKey: settings.widgetSettings,
+                side,
+                quantity: workingVolume,
+                targetPortfolio: portfolioKey.portfolio,
+                silent: true
+              })
             );
           });
       });
@@ -375,9 +437,9 @@ export class ScalperCommandProcessorService {
       take(1),
       map(map => {
         return map.actions.find(a =>
-          a.button === btn
-          && (a.orderBookRowType === row.rowType || a.orderBookRowType === 'any')
-          && (
+            a.button === btn
+            && (a.orderBookRowType === row.rowType || a.orderBookRowType === 'any')
+            && (
               (!a.modifier && !e.ctrlKey && !e.shiftKey && !e.metaKey)
               || (a.modifier === 'ctrl' && (e.ctrlKey || e.metaKey))
               || (a.modifier === 'shift' && e.shiftKey)
@@ -424,15 +486,18 @@ export class ScalperCommandProcessorService {
             this.callWithPortfolioKey(
               dataContext,
               portfolioKey => {
-                this.scalperOrdersService.setStopLimit(
-                  settings.instrument,
-                  row.price,
-                  workingVolume,
+                this.submitStopLimitOrderCommand.execute({
+                  instrumentKey: settings.instrument,
                   side,
-                  settings.widgetSettings.stopLimitOrdersDistance ?? 0,
-                  settings.widgetSettings.enableMouseClickSilentOrders,
-                  portfolioKey
-                );
+                  quantity: workingVolume,
+                  triggerPrice: row.price,
+                  priceOptions: {
+                    distance: settings.widgetSettings.stopLimitOrdersDistance ?? 0,
+                    priceStep: settings.instrument.minstep
+                  },
+                  targetPortfolio: portfolioKey.portfolio,
+                  silent: settings.widgetSettings.enableMouseClickSilentOrders
+                });
               }
             );
           });
@@ -443,21 +508,15 @@ export class ScalperCommandProcessorService {
     this.callWithSettings(
       dataContext,
       settings => {
-        this.callWithPortfolioKey(
+        this.callWithPosition(
           dataContext,
-          portfolioKey => {
-            this.callWithPosition(
-              dataContext,
-              position => {
-                this.scalperOrdersService.setStopLoss(
-                  row.price,
-                  settings.widgetSettings.enableMouseClickSilentOrders,
-                  position,
-                  settings.widgetSettings.instrumentGroup ?? null,
-                  portfolioKey
-                );
-              }
-            );
+          position => {
+            this.setStopLossCommand.execute({
+              currentPosition: position,
+              triggerPrice: row.price,
+              targetInstrumentBoard: settings.widgetSettings.instrumentGroup ?? null,
+              silent: settings.widgetSettings.enableMouseClickSilentOrders
+            });
           }
         );
       }
@@ -477,22 +536,40 @@ export class ScalperCommandProcessorService {
                 this.callWithPosition(
                   dataContext,
                   position => {
-                    this.scalperOrdersService.placeLimitOrder(
-                      settings.widgetSettings,
-                      settings.instrument,
+                    const widgetSettings = settings.widgetSettings;
+
+                    this.submitLimitOrderCommand.execute({
+                      instrumentKey: widgetSettings,
                       side,
-                      workingVolume,
-                      row.price,
-                      settings.widgetSettings.enableMouseClickSilentOrders,
-                      portfolioKey,
-                      position
-                    );
+                      price: row.price,
+                      quantity: workingVolume,
+                      targetPortfolio: portfolioKey.portfolio,
+                      bracketOptions: this.getBracketOptions(
+                        widgetSettings,
+                        position
+                      ),
+                      priceStep: settings.instrument.minstep,
+                      silent: settings.widgetSettings.enableMouseClickSilentOrders
+                    });
                   }
                 );
               }
             );
           });
       });
+  }
+
+  private getBracketOptions(
+    settings: ScalperOrderBookWidgetSettings,
+    currentPosition: Position | null
+  ): BracketOptions {
+    return {
+      profitPriceRatio: settings.bracketsSettings?.topOrderPriceRatio ?? null,
+      lossPriceRatio: settings.bracketsSettings?.bottomOrderPriceRatio ?? null,
+      orderPriceUnits: settings.bracketsSettings?.orderPriceUnits ?? PriceUnits.Points,
+      applyBracketOnClosing: settings.bracketsSettings?.useBracketsWhenClosingPosition ?? false,
+      currentPosition
+    };
   }
 
   private marketOrderAction(side: Side, dataContext: ScalperOrderBookDataContext): void {
@@ -505,13 +582,13 @@ export class ScalperCommandProcessorService {
             this.callWithPortfolioKey(
               dataContext,
               portfolioKey => {
-                this.scalperOrdersService.placeMarketOrder(
-                  settings.widgetSettings,
+                this.submitMarketOrderCommand.execute({
+                  instrumentKey: settings.widgetSettings,
                   side,
-                  workingVolume,
-                  settings.widgetSettings.enableMouseClickSilentOrders,
-                  portfolioKey
-                );
+                  quantity: workingVolume,
+                  targetPortfolio: portfolioKey.portfolio,
+                  silent: settings.widgetSettings.enableMouseClickSilentOrders
+                });
               }
             );
           });
