@@ -28,7 +28,7 @@
   "badgesBindHint2": "Widgets where you can select an instrument",
   "badgesBindHint3": "Widgets in which data will change depending on the selected instrument",
   "addBadgesBtnLabel": "Add predefined labels",
-  "badgesColorsHeaders": "Available badges",
+  "badgesColorsHeaders": "Available labels",
 
   "intervalError": "Value should be from {{min}} to {{max}}"
 }

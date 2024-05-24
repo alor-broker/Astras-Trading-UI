@@ -138,6 +138,7 @@
                   class="badge-btn remove-btn"
                   nz-button
                   nzSize="small"
+                  nzType="primary"
                   (click)="removeBadgeColor($event, badge)"
                 >
                   <i nz-icon nzType="close"></i>
@@ -148,6 +149,7 @@
             </div>
 
             <nz-color-picker
+              nzFormat="hex"
               [nzFlipFlop]="newBadgeTrigger"
               [formControl]="newBadgeColorControl"
               [nzDisabledAlpha]="true"
