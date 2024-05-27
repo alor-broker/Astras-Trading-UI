@@ -30,7 +30,7 @@ export class TerminalSettingsHelper {
 
   static getDefaultHotkeys(): HotKeysSettings {
     return {
-      cancelOrdersKey: {
+      cancelLimitOrdersKey: {
         key: '~',
         code: 'Backquote',
       },

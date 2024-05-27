@@ -5,6 +5,7 @@
       (keydown)="hotkeyChange($event)"
       (mousedown)="$event.stopPropagation()"
       [formControl]="control"
+      [placeholder]="t('terminalSettingsHotKeySettingsForm.hotKeyPlaceholder')"
       nz-input
       readonly
     />

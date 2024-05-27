@@ -3,28 +3,12 @@ import { TerminalCommand } from '../../../shared/models/terminal-command';
 import { ScalperOrderBookDataContext } from '../models/scalper-order-book-data-context.model';
 import { HotKeyCommandService } from '../../../shared/services/hot-key-command.service';
 import { Side } from '../../../shared/models/enums/side.model';
-import {
-  BodyRow,
-  CurrentOrderDisplay
-} from '../models/scalper-order-book.model';
-import {
-  combineLatest,
-  filter,
-  iif,
-  Observable,
-  shareReplay,
-  take
-} from 'rxjs';
+import { BodyRow, CurrentOrderDisplay } from '../models/scalper-order-book.model';
+import { combineLatest, filter, iif, Observable, shareReplay, take } from 'rxjs';
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
-import {
-  map,
-  switchMap
-} from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { ScalperOrderBookCommands } from '../models/scalper-order-book-commands';
-import {
-  PriceUnits,
-  ScalperOrderBookWidgetSettings
-} from '../models/scalper-order-book-settings.model';
+import { PriceUnits, ScalperOrderBookWidgetSettings } from '../models/scalper-order-book-settings.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { PortfolioKey } from '../../../shared/models/portfolio-key.model';
 import { Position } from '../../../shared/models/positions/position.model';
@@ -41,10 +25,7 @@ import { SubmitMarketOrderCommand } from "../commands/submit-market-order-comman
 import { ReversePositionByMarketCommand } from "../commands/reverse-position-by-market-command";
 import { SubmitStopLimitOrderCommand } from "../commands/submit-stop-limit-order-command";
 import { SetStopLossCommand } from "../commands/set-stop-loss-command";
-import {
-  BracketOptions,
-  SubmitLimitOrderCommand
-} from "../commands/submit-limit-order-command";
+import { BracketOptions, SubmitLimitOrderCommand } from "../commands/submit-limit-order-command";
 import { SubmitBestPriceOrderCommand } from "../commands/submit-best-price-order-command";
 import { GetBestOfferCommand } from "../commands/get-best-offer-command";
 import { UpdateOrdersCommand } from "../commands/update-orders-command";
@@ -129,6 +110,19 @@ export class ScalperCommandProcessorService {
   }
 
   private handleAllCommands(command: TerminalCommand, dataContext: ScalperOrderBookDataContext): boolean {
+    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.cancelOrdersAll) {
+      this.cancelLimitOrders(dataContext);
+      this.cancelStopOrders(dataContext);
+      return true;
+    }
+
+    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.cancelOrdersAndClosePositionsByMarketAll) {
+      this.cancelLimitOrders(dataContext);
+      this.cancelStopOrders(dataContext);
+      this.closePositionsByMarket(dataContext);
+      return true;
+    }
+
     if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.cancelLimitOrdersAll) {
       this.cancelLimitOrders(dataContext);
       return true;

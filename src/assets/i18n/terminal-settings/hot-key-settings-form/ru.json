@@ -2,7 +2,9 @@
   "extraHotkeysLabel": "Игнорировать язык клавиатуры",
   "extraHotkeysTooltip": "клавиши будут срабатывать независимо от текущего языка клавиатуры",
   "allOrderbooksHeader": "Общие для всех открытых стаканов",
-  "cancelOrdersKey": "Снять лимитные заявки",
+  "cancelAllOrdersKey": "Снять все заявки",
+  "cancelAllOrdersAndClosePositionsKey": "Снять все заявки и закрыть позиции по рынку",
+  "cancelLimitOrdersKey": "Снять лимитные заявки",
   "cancelOrderbookOrders": "Снять лимитные заявки",
   "cancelStopOrdersCurrent": "Снять стоп заявки",
   "closePositionsKey": "Закрыть позиции по рынку",
@@ -21,5 +23,6 @@
   "workingVolumesHeader": "Рабочие объёмы",
   "selectWorkingVolume": "Выбрать рабочий объём",
   "notUniqueError": "Выбранная клавиша уже назначена на другое действие",
-  "emptyFieldError": "Введите значение"
+  "emptyFieldError": "Введите значение",
+  "hotKeyPlaceholder": "Не выбрано"
 }

@@ -71,7 +71,9 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
 
   ngOnInit(): void {
     this.form = new UntypedFormGroup({
-      cancelOrdersKey: new UntypedFormControl(null, this.isKeyUniqueValidator()),
+      cancelAllOrdersKey: new UntypedFormControl(null, this.isKeyUniqueValidator()),
+      cancelAllOrdersAndClosePositionsKey: new UntypedFormControl(null, this.isKeyUniqueValidator()),
+      cancelLimitOrdersKey: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       closePositionsKey: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       centerOrderbookKey: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       cancelOrderbookOrders: new UntypedFormControl(null, this.isKeyUniqueValidator()),

@@ -12,7 +12,9 @@ export interface HotKeyMeta {
 }
 
 export interface HotKeysSettings {
-  cancelOrdersKey?: HotKeyMeta | string;
+  cancelAllOrdersKey?: HotKeyMeta | string;
+  cancelAllOrdersAndClosePositionsKey?: HotKeyMeta | string;
+  cancelLimitOrdersKey?: HotKeyMeta | string;
   closePositionsKey?: HotKeyMeta | string;
   centerOrderbookKey?: HotKeyMeta | string;
   cancelOrderbookOrders?: HotKeyMeta | string;

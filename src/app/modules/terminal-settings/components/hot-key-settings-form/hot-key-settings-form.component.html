@@ -17,7 +17,9 @@
     <nz-divider></nz-divider>
     <ng-container>
       <h3>{{t('terminalSettingsHotKeySettingsForm.allOrderbooksHeader')}}</h3>
-      <ats-hot-key-input actionName="cancelOrdersKey" formControlName="cancelOrdersKey"></ats-hot-key-input>
+      <ats-hot-key-input actionName="cancelAllOrdersKey" formControlName="cancelAllOrdersKey"></ats-hot-key-input>
+      <ats-hot-key-input actionName="cancelAllOrdersAndClosePositionsKey" formControlName="cancelAllOrdersAndClosePositionsKey"></ats-hot-key-input>
+      <ats-hot-key-input actionName="cancelLimitOrdersKey" formControlName="cancelLimitOrdersKey"></ats-hot-key-input>
       <ats-hot-key-input actionName="closePositionsKey" formControlName="closePositionsKey"></ats-hot-key-input>
       <ats-hot-key-input actionName="centerOrderbookKey" formControlName="centerOrderbookKey"></ats-hot-key-input>
     </ng-container>

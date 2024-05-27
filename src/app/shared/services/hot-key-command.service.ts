@@ -39,7 +39,11 @@ export class HotKeyCommandService {
 
   private static mapToCommandType(settingCode: string): string {
     switch (settingCode) {
-      case 'cancelOrdersKey':
+      case 'cancelAllOrdersKey':
+        return 'cancelOrdersAll';
+      case 'cancelAllOrdersAndClosePositionsKey':
+        return 'cancelOrdersAndClosePositionsByMarketAll';
+      case 'cancelLimitOrdersKey':
         return 'cancelLimitOrdersAll';
       case 'closePositionsKey':
         return 'closePositionsByMarketAll';
