@@ -4,15 +4,19 @@ import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { PositionsComponent } from './positions.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { of } from "rxjs";
+import {
+  of,
+  Subject
+} from "rxjs";
 import {
   commonTestProviders,
   getTranslocoModule,
   mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
-import { OrderService } from "../../../../shared/services/orders/order.service";
 import { LetDirective } from "@ngrx/component";
+import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
+import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
@@ -41,9 +45,16 @@ describe('PositionsComponent', () => {
         },
         { provide: BlotterService, useClass: MockServiceBlotter },
         {
-          provide: OrderService,
+          provide: WsOrdersService,
           useValue: {
             submitMarketOrder: jasmine.createSpy('submitMarketOrder').and.callThrough()
+          }
+        },
+        {
+          provide: PortfolioSubscriptionsService,
+          useValue: {
+            getSpectraRisksSubscription: jasmine.createSpy('getSpectraRisksSubscription').and.returnValue(new Subject()),
+            getSummariesSubscription: jasmine.createSpy('getSummariesSubscription').and.returnValue(new Subject()),
           }
         },
         ...commonTestProviders

@@ -40,8 +40,8 @@ import {
   LineToolsAndGroupsState,
   PlusClickParams,
   ResolutionString,
-  SubscribeEventsMap,
   StudyTemplateMetaInfo,
+  SubscribeEventsMap,
   TimeFrameType,
   TimeFrameValue,
   Timezone,
@@ -72,10 +72,10 @@ import {
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import {
   Order,
+  OrderType,
   StopOrder
 } from '../../../../shared/models/orders/order.model';
 import { Side } from '../../../../shared/models/enums/side.model';
-import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import {
   LineMarkerPosition,
@@ -94,7 +94,7 @@ import {
 } from "../../../../shared/utils/instruments";
 import {
   EditOrderDialogParams,
-  OrderType
+  OrderFormType
 } from "../../../../shared/models/orders/orders-dialog.model";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 import { Trade } from "../../../../shared/models/trades/trade.model";
@@ -121,6 +121,7 @@ import {
   ACTIONS_CONTEXT,
   ActionsContext
 } from "../../../../shared/services/actions-context";
+import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -276,9 +277,9 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly syntheticInstrumentsService: SyntheticInstrumentsService,
     private readonly widgetsSharedDataService: WidgetsSharedDataService,
     private readonly ordersDialogService: OrdersDialogService,
+    private readonly wsOrdersService: WsOrdersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly currentDashboardService: DashboardContextService,
-    private readonly orderCancellerService: OrderCancellerService,
     private readonly translatorService: TranslatorService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly tradesHistoryService: TradesHistoryService,
@@ -654,7 +655,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         this.ordersDialogService.openNewOrderDialog({
           instrumentKey: toInstrumentKey(x.settings.widgetSettings as InstrumentKey),
           initialValues: {
-            orderType: OrderType.Limit,
+            orderType: OrderFormType.Limit,
             price: roundedPrice,
             quantity: 1
           }
@@ -1014,7 +1015,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private getLimitOrdersStream(instrumentKey: InstrumentKey): Observable<Order[]> {
     return this.getCurrentPortfolio().pipe(
       switchMap(portfolio => this.portfolioSubscriptionsService.getOrdersSubscription(portfolio.portfolio, portfolio.exchange)),
-      map(orders => orders.allOrders.filter(o => o.type === 'limit')),
+      map(orders => orders.allOrders.filter(o => o.type === OrderType.Limit)),
       debounceTime(100),
       map(orders => orders.filter(o => o.symbol === instrumentKey.symbol && o.exchange === instrumentKey.exchange)),
       startWith([])
@@ -1052,7 +1053,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private fillLimitOrder(order: Order, orderLineAdapter: IOrderLineAdapter): void {
     const getEditCommand = (): EditOrderDialogParams => ({
       orderId: order.id,
-      orderType: OrderType.Limit,
+      orderType: OrderFormType.Limit,
       instrumentKey: {
         symbol: order.symbol,
         exchange: order.exchange
@@ -1067,12 +1068,12 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     orderLineAdapter.setText('L')
       .setTooltip(`${this.translateFn([order.side === Side.Buy ? 'buy' : 'sell'])} ${this.translateFn(['limit'])}`)
       .setPrice(order.price)
-      .onCancel(() => this.orderCancellerService.cancelOrder({
-          orderid: order.id,
+      .onCancel(() => this.wsOrdersService.cancelOrders([{
+          orderId: order.id,
           portfolio: order.portfolio,
           exchange: order.exchange,
-          stop: false
-        }).subscribe()
+          orderType: order.type
+        }]).subscribe()
       )
       .onModify(() => this.ordersDialogService.openEditOrderDialog(getEditCommand()))
       .onMove(() => {
@@ -1094,20 +1095,20 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private fillStopOrder(order: StopOrder, orderLineAdapter: IOrderLineAdapter): void {
     const conditionType: LessMore = getConditionTypeByString(order.conditionType)!;
     const orderText = 'S'
-      + (order.type === 'stoplimit' ? 'L' : 'M')
+      + (order.type === OrderType.StopLimit ? 'L' : 'M')
       + ' '
       + (getConditionSign(conditionType) as string);
 
     const orderTooltip = this.translateFn([order.side === Side.Buy ? 'buy' : 'sell'])
       + ' '
-      + this.translateFn([order.type === 'stoplimit' ? 'stopLimit' : 'stopMarket'])
+      + this.translateFn([order.type === OrderType.StopLimit ? 'stopLimit' : 'stopMarket'])
       + ' ('
       + this.translateFn([(conditionType as LessMore | null) ?? ''])
       + ')';
 
     const getEditCommand = (): EditOrderDialogParams => ({
       orderId: order.id,
-      orderType: OrderType.Stop,
+      orderType: OrderFormType.Stop,
       instrumentKey: {
         symbol: order.symbol,
         exchange: order.exchange
@@ -1123,12 +1124,12 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       .setText(orderText)
       .setTooltip(orderTooltip)
       .setPrice(order.triggerPrice)
-      .onCancel(() => this.orderCancellerService.cancelOrder({
-          orderid: order.id,
+      .onCancel(() => this.wsOrdersService.cancelOrders([{
+          orderId: order.id,
           portfolio: order.portfolio,
           exchange: order.exchange,
-          stop: true
-        }).subscribe()
+          orderType: order.type
+        }]).subscribe()
       )
       .onModify(() => this.ordersDialogService.openEditOrderDialog(getEditCommand()))
       .onMove(() => {

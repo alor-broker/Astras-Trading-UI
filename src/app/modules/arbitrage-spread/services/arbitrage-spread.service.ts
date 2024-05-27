@@ -4,12 +4,12 @@ import { LocalStorageService } from "../../../shared/services/local-storage.serv
 import { ArbitrageSpread, SpreadLeg } from "../models/arbitrage-spread.model";
 import { GuidGenerator } from "../../../shared/utils/guid";
 import { QuotesService } from "../../../shared/services/quotes.service";
-import { OrderService } from "../../../shared/services/orders/order.service";
 import { Side } from "../../../shared/models/enums/side.model";
 import { PortfolioSubscriptionsService } from "../../../shared/services/portfolio-subscriptions.service";
-import { SubmitOrderResult } from "../../../shared/models/orders/new-order.model";
+import { OrderCommandResult } from "../../../shared/models/orders/new-order.model";
 import { Position } from "../../../shared/models/positions/position.model";
 import { Quote } from "../../../shared/models/quotes/quote.model";
+import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +26,7 @@ export class ArbitrageSpreadService {
   constructor(
     private readonly localStorage: LocalStorageService,
     private readonly quotesService: QuotesService,
-    private readonly orderService: OrderService,
+    private readonly wsOrdersService: WsOrdersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService
   ) {
   }
@@ -197,8 +197,8 @@ export class ArbitrageSpreadService {
     this.localStorage.setItem(this.spreadsKey, spreads);
   }
 
-  buySpread(spread: ArbitrageSpread, volume = 1, side: Side = Side.Buy): Observable<SubmitOrderResult | null> {
-    return this.orderService.submitMarketOrder(
+  buySpread(spread: ArbitrageSpread, volume = 1, side: Side = Side.Buy): Observable<OrderCommandResult | null> {
+    return this.wsOrdersService.submitMarketOrder(
       {
         instrument: spread.firstLeg.instrument,
         side: side,
@@ -212,7 +212,7 @@ export class ArbitrageSpreadService {
             return of(null);
           }
 
-          return this.orderService.submitMarketOrder(
+          return this.wsOrdersService.submitMarketOrder(
             {
               instrument: spread.secondLeg.instrument,
               side: side === Side.Sell ? Side.Buy : Side.Sell,
@@ -221,7 +221,7 @@ export class ArbitrageSpreadService {
             spread.secondLeg.portfolio.portfolio
           );
         }),
-        switchMap((order: SubmitOrderResult | null) => {
+        switchMap((order: OrderCommandResult | null) => {
           if (!order) {
             return of(null);
           }
@@ -230,7 +230,7 @@ export class ArbitrageSpreadService {
             return of(order);
           }
 
-          return this.orderService.submitMarketOrder(
+          return this.wsOrdersService.submitMarketOrder(
             {
               instrument: spread.thirdLeg.instrument,
               side: spread.thirdLeg.side === Side.Buy

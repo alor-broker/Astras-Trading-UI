@@ -3,7 +3,6 @@ import { BaseEditOrderFormComponent } from "../base-edit-order-form.component";
 import { FormBuilder, Validators } from "@angular/forms";
 import { CommonParametersService } from "../../../services/common-parameters.service";
 import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
-import { OrderService } from "../../../../../shared/services/orders/order.service";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
 import { Order, TimeInForce } from "../../../../../shared/models/orders/order.model";
 import { debounceTime, filter, map, startWith, switchMap } from "rxjs/operators";
@@ -16,6 +15,7 @@ import { EvaluationBaseProperties } from "../../../../../shared/models/evaluatio
 import { PriceDiffHelper } from "../../../utils/price-diff.helper";
 import { LimitOrderEdit } from "../../../../../shared/models/orders/edit-order.model";
 import { toInstrumentKey } from "../../../../../shared/utils/instruments";
+import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
 
 @Component({
   selector: 'ats-edit-limit-order-form',
@@ -75,7 +75,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
     protected readonly instrumentService: InstrumentsService,
     private readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly orderService: OrderService,
+    private readonly wsOrdersService: WsOrdersService,
     protected readonly destroyRef: DestroyRef) {
     super(instrumentService, destroyRef);
   }
@@ -279,12 +279,13 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
         const formValue = this.form.value;
 
         const updatedOrder = {
-          id: x.currentOrder.id,
+          orderId: x.currentOrder.id,
           instrument: {
             symbol: x.currentOrder.symbol,
             exchange: x.currentOrder.exchange,
             instrumentGroup: x.currentOrder.board
           },
+          side:  x.currentOrder.side,
           price: Number(formValue.price),
           quantity: Number(formValue.quantity)
         } as LimitOrderEdit;
@@ -306,7 +307,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
           portfolio: x.portfolioKey!.portfolio
         };
       }),
-      switchMap(x => this.orderService.submitLimitOrderEdit(x.updatedOrder, x.portfolio)),
+      switchMap(x => this.wsOrdersService.submitLimitOrderEdit(x.updatedOrder, x.portfolio)),
       map(r => r.isSuccess),
       take(1)
     );

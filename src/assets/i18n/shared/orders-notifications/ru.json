@@ -15,5 +15,6 @@
   "ordersGroupCreatedContent": "Группа с заявками {{orderIds}} успешно создана",
 
   "orderCancelledTitle": "Заявка отменена",
-  "orderCancelledContent": "Заявка {{orderId}} на {{exchange}} успешно отменена"
+  "orderCancelledContent": "Заявка {{orderId}} на {{exchange}} успешно отменена",
+  "orderCancelFailedLabel": "Ошибка отмены заявки"
 }

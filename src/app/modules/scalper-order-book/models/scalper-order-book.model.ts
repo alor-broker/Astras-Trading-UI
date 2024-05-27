@@ -1,19 +1,25 @@
 import { Side } from '../../../shared/models/enums/side.model';
 import { Range } from "../../../shared/models/common.model";
 import { LessMore } from "../../../shared/models/enums/less-more.model";
+import { OrderType } from "../../../shared/models/orders/order.model";
+
+export interface OrderMeta {
+  draftId?: string;
+}
 
 export interface CurrentOrderDisplay {
   orderId: string;
   symbol: string;
   exchange: string;
   portfolio: string;
-  type: 'limit' | 'stoplimit' | 'stop';
+  type: OrderType;
 
   side: Side;
   price?: number;
   triggerPrice?: number;
   displayVolume: number;
   condition?: LessMore;
+  meta?: OrderMeta;
 }
 
 export interface PriceRow {

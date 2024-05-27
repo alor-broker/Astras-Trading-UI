@@ -10,7 +10,6 @@ import {Instrument} from "../../../../../shared/models/instruments/instrument.mo
 import {CommonParametersService} from "../../../services/common-parameters.service";
 import {BehaviorSubject, Subject, take} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
-import {OrderService} from "../../../../../shared/services/orders/order.service";
 import {OrderCommandsModule} from "../../../order-commands.module";
 import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
 import {NoopAnimationsModule} from "@angular/platform-browser/animations";
@@ -24,6 +23,7 @@ import {toInstrumentKey} from "../../../../../shared/utils/instruments";
 import {MarketOrderFormComponent} from "./market-order-form.component";
 import {QuotesService} from "../../../../../shared/services/quotes.service";
 import {EvaluationService} from "../../../../../shared/services/evaluation.service";
+import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
 
 describe('MarketOrderFormComponent', () => {
   let component: MarketOrderFormComponent;
@@ -118,7 +118,7 @@ describe('MarketOrderFormComponent', () => {
           }
         },
         {
-          provide: OrderService,
+          provide: WsOrdersService,
           useValue: orderServiceSpy
         },
         {

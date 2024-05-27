@@ -22,7 +22,6 @@ import {
   OrderBook
 } from '../models/orderbook.model';
 import { Order } from 'src/app/shared/models/orders/order.model';
-import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { OrderBookDataFeedHelper } from "../utils/order-book-data-feed.helper";
@@ -32,6 +31,7 @@ import { DashboardContextService } from '../../../shared/services/dashboard-cont
 import { OrderbookSettings } from '../models/orderbook-settings.model';
 import { QuotesService } from "../../../shared/services/quotes.service";
 import { Quote } from "../../../shared/models/quotes/quote.model";
+import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 
 @Injectable()
 export class OrderbookService {
@@ -40,7 +40,7 @@ export class OrderbookService {
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly currentDashboardService: DashboardContextService,
-    private readonly canceller: OrderCancellerService,
+    private readonly wsOrdersService: WsOrdersService,
     private readonly quotesService: QuotesService
   ) {
   }
@@ -104,12 +104,12 @@ export class OrderbookService {
   }
 
   cancelOrder(order: CurrentOrder): void {
-    this.canceller.cancelOrder({
+    this.wsOrdersService.cancelOrders([{
+      orderId: order.orderId,
+      orderType: order.type,
       exchange: order.exchange,
-      portfolio: order.portfolio,
-      orderid: order.orderId,
-      stop: false
-    }).subscribe();
+      portfolio: order.portfolio
+    }]).subscribe();
   }
 
   private toOrderBookRows(orderBookData: OrderbookData): OrderBookViewRow[] {

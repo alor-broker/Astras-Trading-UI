@@ -3,9 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { OrdersGroupService } from './orders-group.service';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { ErrorHandlerService } from "../handle-error/error-handler.service";
-import { OrderCancellerService } from "../order-canceller.service";
-import { of } from "rxjs";
 import { EnvironmentService } from "../environment.service";
+import { WsOrdersService } from "./ws-orders.service";
+import { Subject } from "rxjs";
 import { OrderInstantTranslatableNotificationsService } from "./order-instant-translatable-notifications.service";
 
 describe('OrdersGroupService', () => {
@@ -16,13 +16,23 @@ describe('OrdersGroupService', () => {
       imports: [ HttpClientTestingModule ],
       providers: [
         {
-          provide: ErrorHandlerService,
-          useValue: {}
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
+          }
         },
         {
-          provide: OrderCancellerService,
+          provide: ErrorHandlerService,
           useValue: {
-            cancelOrder: jasmine.createSpy('cancelOrder').and.returnValue(of({}))
+            handleError: jasmine.createSpy('handleError').and.callThrough()
+          }
+        },
+        {
+          provide: WsOrdersService,
+          useValue: {
+            submitLimitOrder: jasmine.createSpy('submitLimitOrder').and.returnValue(new Subject()),
+            submitStopMarketOrder: jasmine.createSpy('submitStopMarketOrder').and.returnValue(new Subject()),
+            submitStopLimitOrder: jasmine.createSpy('submitStopLimitOrder').and.returnValue(new Subject()),
           }
         },
         {
@@ -31,12 +41,6 @@ describe('OrdersGroupService', () => {
             ordersGroupCreated: jasmine.createSpy('ordersGroupCreated').and.callThrough()
           }
         },
-        {
-          provide: EnvironmentService,
-          useValue: {
-            apiUrl: ''
-          }
-        }
       ]
     });
     service = TestBed.inject(OrdersGroupService);

@@ -93,7 +93,7 @@
                 <i nz-icon nzTheme="outline" nzType="edit"></i>
               </a>
               &nbsp;
-              <a (nzOnConfirm)="cancelOrder(ord.id)" *ngIf='ord.status.toString() === "working"'
+              <a (nzOnConfirm)="cancelOrder(ord)" *ngIf='ord.status.toString() === "working"'
                  (click)="$event.preventDefault(); $event.stopPropagation()"
                  [nzCancelText]="t('no')"
                  [nzCondition]="td.settings.cancelOrdersWithoutConfirmation ?? false"

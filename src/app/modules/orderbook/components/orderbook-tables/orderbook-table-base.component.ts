@@ -1,13 +1,27 @@
-import { Component, DestroyRef, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  Input,
+  OnInit
+} from '@angular/core';
 import { OrderBook } from "../../models/orderbook.model";
 import { OrderbookSettings } from "../../models/orderbook-settings.model";
-import { filter, Observable, of, shareReplay, take } from "rxjs";
+import {
+  filter,
+  Observable,
+  of,
+  shareReplay,
+  take
+} from "rxjs";
 import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { CurrentOrder } from "../../models/orderbook-view-row.model";
 import { OrderbookService } from "../../services/orderbook.service";
 import { map } from 'rxjs/operators';
-import { getTypeByCfi, toInstrumentKey } from '../../../../shared/utils/instruments';
+import {
+  getTypeByCfi,
+  toInstrumentKey
+} from '../../../../shared/utils/instruments';
 import { InstrumentType } from '../../../../shared/models/enums/instrument-type.model';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
@@ -18,8 +32,9 @@ import { Instrument } from "../../../../shared/models/instruments/instrument.mod
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
-import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
+import { OrderFormType } from "../../../../shared/models/orders/orders-dialog.model";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
+import { OrderType } from "../../../../shared/models/orders/order.model";
 
 interface ExtendedOrderbookSettings {
   widgetSettings: OrderbookSettings;
@@ -88,7 +103,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
         this.ordersDialogService.openNewOrderDialog({
           instrumentKey: toInstrumentKey(settings.widgetSettings),
           initialValues: {
-            orderType:OrderType.Limit,
+            orderType:OrderFormType.Limit,
             price,
             quantity: quantity ?? 1
           }
@@ -98,7 +113,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
   }
 
   updateOrderPrice(order: CurrentOrder, price: number): void {
-    if(order.type !== 'limit' && order.type !== 'stop' &&  order.type !== 'stoplimit') {
+    if(order.type !== OrderType.Limit && order.type !== OrderType.StopMarket &&  order.type !== OrderType.StopLimit) {
       return;
     }
 
@@ -112,7 +127,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
         exchange: order.exchange
       },
       orderId: order.orderId,
-      orderType: order.type === 'limit' ? OrderType.Limit : OrderType.Stop,
+      orderType: order.type === OrderType.Limit ? OrderFormType.Limit : OrderFormType.Stop,
       initialValues: {
         quantity: order.volume,
         price,

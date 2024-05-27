@@ -3,12 +3,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { OrdersBasketComponent } from './orders-basket.component';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { Subject } from 'rxjs';
-import { OrderService } from '../../../../shared/services/orders/order.service';
 import {
   getTranslocoModule,
   mockComponent
 } from '../../../../shared/utils/testing';
 import { EvaluationService } from '../../../../shared/services/evaluation.service';
+import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 
 describe('OrdersBasketComponent', () => {
   let component: OrdersBasketComponent;
@@ -31,7 +31,7 @@ describe('OrdersBasketComponent', () => {
           }
         },
         {
-          provide: OrderService,
+          provide: WsOrdersService,
           useValue: {
             getSettings: jasmine.createSpy('submitLimitOrder').and.returnValue(new Subject())
           }

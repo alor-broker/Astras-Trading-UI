@@ -1,34 +1,51 @@
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick
+} from '@angular/core/testing';
 import {
   commonTestProviders,
   getTranslocoModule,
   sharedModuleImportForTests,
   TestData
 } from "../../../../../shared/utils/testing";
-import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
-import {CommonParametersService} from "../../../services/common-parameters.service";
-import {BehaviorSubject, of, Subject, Subscription, take} from "rxjs";
-import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
-import {OrderService} from "../../../../../shared/services/orders/order.service";
-import {OrderCommandsModule} from "../../../order-commands.module";
-import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
-import {NoopAnimationsModule} from "@angular/platform-browser/animations";
+import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
+import { CommonParametersService } from "../../../services/common-parameters.service";
+import {
+  BehaviorSubject,
+  of,
+  Subject,
+  Subscription,
+  take
+} from "rxjs";
+import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
+import { OrderCommandsModule } from "../../../order-commands.module";
+import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import orderCommandsOrderFormsRu from "../../../../../../assets/i18n/order-commands/order-forms/ru.json";
-import {filter} from "rxjs/operators";
-import {OrderDetailsService} from "../../../../../shared/services/orders/order-details.service";
-import {StopOrder} from "../../../../../shared/models/orders/order.model";
-import {InstrumentsService} from "../../../../instruments/services/instruments.service";
-import {StopMarketOrderEdit} from "../../../../../shared/models/orders/edit-order.model";
-import {OrderFormState} from "../../../models/order-form.model";
-import {EditStopOrderFormComponent} from "./edit-stop-order-form.component";
-import {LessMore} from "../../../../../shared/models/enums/less-more.model";
-import {Side} from "../../../../../shared/models/enums/side.model";
-import {NZ_I18N, ru_RU} from "ng-zorro-antd/i18n";
-import {TimezoneConverterService} from "../../../../../shared/services/timezone-converter.service";
-import {TimezoneConverter} from "../../../../../shared/utils/timezone-converter";
-import {TimezoneDisplayOption} from "../../../../../shared/models/enums/timezone-display-option";
+import { filter } from "rxjs/operators";
+import { OrderDetailsService } from "../../../../../shared/services/orders/order-details.service";
+import {
+  OrderType,
+  StopOrder
+} from "../../../../../shared/models/orders/order.model";
+import { InstrumentsService } from "../../../../instruments/services/instruments.service";
+import { StopMarketOrderEdit } from "../../../../../shared/models/orders/edit-order.model";
+import { OrderFormState } from "../../../models/order-form.model";
+import { EditStopOrderFormComponent } from "./edit-stop-order-form.component";
+import { LessMore } from "../../../../../shared/models/enums/less-more.model";
+import { Side } from "../../../../../shared/models/enums/side.model";
+import {
+  NZ_I18N,
+  ru_RU
+} from "ng-zorro-antd/i18n";
+import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
+import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
+import { TimezoneDisplayOption } from "../../../../../shared/models/enums/timezone-display-option";
 import { registerLocaleData } from "@angular/common";
 import localeRu from '@angular/common/locales/ru';
+import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
 
 describe('EditStopOrderFormComponent', () => {
   let component: EditStopOrderFormComponent;
@@ -125,7 +142,7 @@ describe('EditStopOrderFormComponent', () => {
           }
         },
         {
-          provide: OrderService,
+          provide: WsOrdersService,
           useValue: orderServiceSpy
         },
         {
@@ -164,7 +181,7 @@ describe('EditStopOrderFormComponent', () => {
       triggerPrice: 10,
       price: 8,
       qty: 2,
-      type: 'stoplimit',
+      type: OrderType.StopLimit,
       endTime: new Date(),
     } as StopOrder;
 
@@ -234,7 +251,7 @@ describe('EditStopOrderFormComponent', () => {
         triggerPrice: 10,
         price: 8,
         qtyBatch: 2,
-        type: 'stoplimit',
+        type: OrderType.StopLimit,
         endTime: new Date(),
       } as StopOrder;
 
@@ -264,7 +281,7 @@ describe('EditStopOrderFormComponent', () => {
         triggerPrice: 10,
         price: 8,
         qtyBatch: 2,
-        type: 'stoplimit',
+        type: OrderType.StopLimit,
         endTime: new Date(),
       } as StopOrder;
 
@@ -297,7 +314,7 @@ describe('EditStopOrderFormComponent', () => {
         triggerPrice: 10,
         price: 8,
         qtyBatch: 2,
-        type: 'stop',
+        type: OrderType.StopMarket,
         endTime: new Date(),
         side: Side.Buy
       } as StopOrder;
@@ -317,7 +334,7 @@ describe('EditStopOrderFormComponent', () => {
       fixture.detectChanges();
 
       const expectedOrder: StopMarketOrderEdit = {
-        id: order.id,
+        orderId: order.id,
         triggerPrice: Math.round(Math.random() * 1000),
         condition: LessMore.More,
         quantity: Math.round(Math.random() * 100),

@@ -23,7 +23,7 @@ import { mapWith } from '../../../../shared/utils/observable-helper';
 import { defaultBadgeColor, toInstrumentKey } from '../../../../shared/utils/instruments';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
-import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
+import { OrderFormType } from "../../../../shared/models/orders/orders-dialog.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
 import { EnvironmentService } from "../../../../shared/services/environment.service";
@@ -173,7 +173,7 @@ export class NavbarComponent implements OnInit {
       this.ordersDialogService.openNewOrderDialog({
         instrumentKey: toInstrumentKey(activeInstrument),
         initialValues: {
-          orderType: OrderType.Limit,
+          orderType: OrderFormType.Limit,
           quantity: 1
         }
       });

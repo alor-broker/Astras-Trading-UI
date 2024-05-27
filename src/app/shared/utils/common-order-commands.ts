@@ -1,18 +1,18 @@
 ﻿import { Position } from "../models/positions/position.model";
-import { OrderService } from "../services/orders/order.service";
 import { Side } from "../models/enums/side.model";
+import { WsOrdersService } from "../services/orders/ws-orders.service";
 
 export class CommonOrderCommands {
   static closePositionByMarket(
     position: Position,
     instrumentGroup: string | null,
-    orderService: OrderService
+    wsOrdersService: WsOrdersService
   ): void {
     if (!position.qtyTFutureBatch) {
       return;
     }
 
-    orderService.submitMarketOrder({
+    wsOrdersService.submitMarketOrder({
         side: position.qtyTFutureBatch > 0 ? Side.Sell : Side.Buy,
         quantity: Math.abs(position.qtyTFutureBatch),
         instrument: {
@@ -28,13 +28,13 @@ export class CommonOrderCommands {
   static reversePositionsByMarket(
     position: Position,
     instrumentGroup: string | null,
-    orderService: OrderService
+    wsOrdersService: WsOrdersService
   ): void {
     if (!position.qtyTFutureBatch) {
       return;
     }
 
-    orderService.submitMarketOrder({
+    wsOrdersService.submitMarketOrder({
         side: position.qtyTFutureBatch > 0 ? Side.Sell : Side.Buy,
         quantity: Math.abs(position.qtyTFutureBatch * 2),
         instrument: {

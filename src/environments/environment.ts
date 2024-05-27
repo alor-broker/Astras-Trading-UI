@@ -14,6 +14,7 @@ export const environment = {
   production: false,
   apiUrl: 'https://apidev.alor.ru',
   wsUrl: 'wss://apidev.alor.ru/ws',
+  cwsUrl: 'wss://apidev.alor.ru/cws',
   clientDataUrl: 'https://lk-api-dev.alorbroker.ru',
   ssoUrl: 'https://login-dev.alor.ru',
   warpUrl: 'https://warp.alor.dev',

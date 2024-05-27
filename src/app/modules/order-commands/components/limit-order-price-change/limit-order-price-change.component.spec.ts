@@ -7,7 +7,7 @@ import {
 } from '../../../../shared/utils/testing';
 import {Subject} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
-import {OrderService} from "../../../../shared/services/orders/order.service";
+import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 
 describe('LimitOrderPriceChangeComponent', () => {
   let component: LimitOrderPriceChangeComponent;
@@ -28,7 +28,7 @@ describe('LimitOrderPriceChangeComponent', () => {
           }
         },
         {
-          provide: OrderService,
+          provide: WsOrdersService,
           useValue: {
             getInstrumentPositionSubscription: jasmine.createSpy('submitLimitOrderEdit').and.returnValue(new Subject())
           }

@@ -24,7 +24,6 @@ import { ThemeService } from '../../../../shared/services/theme.service';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 import { ScalperCommandProcessorService } from '../../services/scalper-command-processor.service';
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
-import { ScalperOrdersService } from '../../services/scalper-orders.service';
 import {
   ScalperOrderBookWidgetSettings,
   VolumeHighlightMode,
@@ -34,6 +33,8 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import { color } from "d3";
+import { OrderType } from "../../../../shared/models/orders/order.model";
+import { CancelOrdersCommand } from "../../commands/cancel-orders-command";
 
 interface VolumeHighlightArguments {
   rowType: ScalperOrderBookRowType;
@@ -57,6 +58,7 @@ interface DisplayRow extends BodyRow {
 export class ScalperOrderBookTableComponent implements OnInit {
   readonly numberFormats = NumberDisplayFormat;
   readonly rowTypes = ScalperOrderBookRowType;
+  readonly orderTypes = OrderType;
 
   ordersSides = Side;
   @Input({required: true})
@@ -71,7 +73,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
   readonly hoveredRow$ = new Subject<{ price: number } | null>();
 
   constructor(
-    private readonly scalperOrdersService: ScalperOrdersService,
+    private readonly cancelOrdersCommand: CancelOrdersCommand,
     private readonly themeService: ThemeService,
     private readonly commandProcessorService: ScalperCommandProcessorService,
     private readonly hotkeysService: HotKeyCommandService,
@@ -115,7 +117,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
     this.subscribeToHotkeys();
   }
 
-  getFilteredOrders(orders: CurrentOrderDisplay[], type: 'limit' | 'stoplimit' | 'stop'): {
+  getFilteredOrders(orders: CurrentOrderDisplay[], type: OrderType): {
     orders: CurrentOrderDisplay[];
     volume: number;
   } {
@@ -132,7 +134,14 @@ export class ScalperOrderBookTableComponent implements OnInit {
     e.stopPropagation();
 
     if (orders.length > 0) {
-      this.scalperOrdersService.cancelOrders(orders);
+      this.cancelOrdersCommand.execute({
+        ordersToCancel: orders.map(x => ({
+          orderId: x.orderId,
+          exchange: x.exchange,
+          portfolio: x.portfolio,
+          orderType: x.type
+        }))
+      });
     }
   }
 

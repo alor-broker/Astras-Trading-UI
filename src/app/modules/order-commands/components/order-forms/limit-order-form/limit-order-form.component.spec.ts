@@ -17,7 +17,6 @@ import {
   take
 } from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
-import {OrderService} from "../../../../../shared/services/orders/order.service";
 import {OrderCommandsModule} from "../../../order-commands.module";
 import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
 import {NoopAnimationsModule} from "@angular/platform-browser/animations";
@@ -32,12 +31,15 @@ import {EvaluationService} from "../../../../../shared/services/evaluation.servi
 import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
 import { TimezoneDisplayOption } from "../../../../../shared/models/enums/timezone-display-option";
 import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
+import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
+import { OrdersGroupService } from "../../../../../shared/services/orders/orders-group.service";
 
 describe('LimitOrderFormComponent', () => {
   let component: LimitOrderFormComponent;
   let fixture: ComponentFixture<LimitOrderFormComponent>;
 
   let orderServiceSpy: any;
+  let orderGroupServiceSpy: any;
   const timezoneConverter = new TimezoneConverter(TimezoneDisplayOption.MskTime);
   let timezoneConverterServiceSpy: any;
 
@@ -75,9 +77,10 @@ describe('LimitOrderFormComponent', () => {
   };
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('OrderService', ['submitLimitOrder', 'submitOrdersGroup']);
-
+    orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['submitLimitOrder']);
     orderServiceSpy.submitLimitOrder.and.returnValue(new Subject());
+
+    orderGroupServiceSpy = jasmine.createSpyObj('OrdersGroupService', ['submitOrdersGroup']);
 
     timezoneConverterServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
     timezoneConverterServiceSpy.getConverter.and.returnValue(of(timezoneConverter));
@@ -125,8 +128,12 @@ describe('LimitOrderFormComponent', () => {
           }
         },
         {
-          provide: OrderService,
+          provide: WsOrdersService,
           useValue: orderServiceSpy
+        },
+        {
+          provide: OrdersGroupService,
+          useValue: orderGroupServiceSpy
         },
         {
           provide: InstrumentsService,

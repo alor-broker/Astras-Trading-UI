@@ -1,12 +1,12 @@
 ﻿import {TimeInForce} from "./order.model";
 import {NewLimitOrder, NewStopMarketOrder} from "./new-order.model";
 
-export interface LimitOrderEdit extends Omit<NewLimitOrder, 'side' | 'topOrderPrice' | 'topOrderSide' | 'bottomOrderPrice' | 'bottomOrderSide'> {
-  id: string;
+export interface LimitOrderEdit extends NewLimitOrder {
+  orderId: string;
 }
 
 export interface StopMarketOrderEdit extends NewStopMarketOrder {
-  id: string;
+  orderId: string;
 }
 
 export interface StopLimitOrderEdit extends StopMarketOrderEdit {

@@ -32,17 +32,17 @@ import {
   startWith
 } from "rxjs/operators";
 import { PriceDiffHelper } from "../../../utils/price-diff.helper";
-import { TimeInForce } from "../../../../../shared/models/orders/order.model";
+import {
+  OrderType,
+  TimeInForce
+} from "../../../../../shared/models/orders/order.model";
 import {
   NewLimitOrder,
+  NewLinkedOrder,
   NewStopLimitOrder,
-  SubmitOrderResult
+  OrderCommandResult
 } from "../../../../../shared/models/orders/new-order.model";
 import { LessMore } from "../../../../../shared/models/enums/less-more.model";
-import {
-  NewLinkedOrder,
-  OrderService
-} from "../../../../../shared/services/orders/order.service";
 import {
   ExecutionPolicy,
   SubmitGroupResult
@@ -63,6 +63,8 @@ import {
   toUnixTime
 } from "../../../../../shared/utils/datetime";
 import { MarketService } from "../../../../../shared/services/market.service";
+import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
+import { OrdersGroupService } from "../../../../../shared/services/orders/orders-group.service";
 
 @Component({
   selector: 'ats-limit-order-form',
@@ -156,7 +158,8 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     private readonly formBuilder: FormBuilder,
     protected readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly orderService: OrderService,
+    private readonly wsOrdersService: WsOrdersService,
+    private readonly ordersGroupService: OrdersGroupService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly marketService: MarketService,
     protected readonly destroyRef: DestroyRef) {
@@ -237,7 +240,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     this.checkFieldsAvailability();
   }
 
-  protected prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<SubmitOrderResult | SubmitGroupResult | null> {
+  protected prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<OrderCommandResult | SubmitGroupResult | null> {
     return this.timezoneConverterService.getConverter().pipe(
       take(1),
       switchMap(tc => {
@@ -245,16 +248,16 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
         const bracketOrders = this.getBracketOrders(limitOrder);
 
         if (bracketOrders.length === 0) {
-          return this.orderService.submitLimitOrder(limitOrder, portfolioKey.portfolio);
+          return this.wsOrdersService.submitLimitOrder(limitOrder, portfolioKey.portfolio);
         } else {
-          return this.orderService.submitOrdersGroup([
+          return this.ordersGroupService.submitOrdersGroup([
               {
                 ...limitOrder,
-                type: "Limit"
+                type: OrderType.Limit
               },
               ...bracketOrders.map(x => ({
                 ...x,
-                type: "StopLimit"
+                type: OrderType.StopLimit
               } as NewLinkedOrder))
             ],
             portfolioKey.portfolio,

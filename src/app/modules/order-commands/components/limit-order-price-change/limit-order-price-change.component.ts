@@ -1,14 +1,17 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, shareReplay, take, withLatestFrom} from "rxjs";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
-import {Order} from "../../../../shared/models/orders/order.model";
+import {
+  Order,
+  OrderType
+} from "../../../../shared/models/orders/order.model";
 import {Side} from "../../../../shared/models/enums/side.model";
 import {mapWith} from "../../../../shared/utils/observable-helper";
 import {filter, map} from "rxjs/operators";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
-import {OrderService} from "../../../../shared/services/orders/order.service";
+import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 
 @Component({
   selector: 'ats-limit-order-price-change',
@@ -25,7 +28,7 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly orderService: OrderService,
+    private readonly wsOrdersService: WsOrdersService,
   ) {
   }
 
@@ -49,7 +52,7 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
         x => this.portfolioSubscriptionsService.getOrdersSubscription(x.portfolioKey!.portfolio, x.instrument!.exchange),
         (source, orders) => ({instrument: source.instrument!, orders})
       ),
-      map(s => s.orders.allOrders.filter(o => o.symbol === s.instrument.symbol && o.type === 'limit' && o.status === 'working')),
+      map(s => s.orders.allOrders.filter(o => o.symbol === s.instrument.symbol && o.type === OrderType.Limit && o.status === 'working')),
       shareReplay({bufferSize: 1, refCount: true})
     );
   }
@@ -77,15 +80,16 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
         const precision = MathHelper.getPrecision(selection.instrument.minstep);
 
         const newPrice = MathHelper.round(order.price + step * selection.instrument.minstep, precision);
-        this.orderService.submitLimitOrderEdit(
+        this.wsOrdersService.submitLimitOrderEdit(
           {
-            id: order.id,
+            orderId: order.id,
             quantity: order.qtyBatch - (order.filledQtyBatch ?? 0),
             price: newPrice,
             instrument: {
               symbol: order.symbol,
               exchange: order.exchange
             },
+            side: order.side
           },
           selection.portfolioKey.portfolio
         ).subscribe();

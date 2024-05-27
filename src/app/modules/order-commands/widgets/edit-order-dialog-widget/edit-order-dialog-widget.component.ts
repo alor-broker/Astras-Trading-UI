@@ -5,7 +5,7 @@ import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {filter, map} from "rxjs/operators";
 import {OrderFormState} from "../../models/order-form.model";
-import {OrderType} from "../../../../shared/models/orders/orders-dialog.model";
+import {OrderFormType} from "../../../../shared/models/orders/orders-dialog.model";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 
 @Component({
@@ -17,7 +17,7 @@ import {OrdersDialogService} from "../../../../shared/services/orders/orders-dia
 export class EditOrderDialogWidgetComponent implements OnInit, OnDestroy {
   readonly formState$ = new BehaviorSubject<OrderFormState | null>(null);
   readonly busy$ = new BehaviorSubject<boolean>(false);
-  readonly orderTypes = OrderType;
+  readonly orderTypes = OrderFormType;
   readonly dialogParams$ = this.ordersDialogService.editOrderDialogParameters$;
   currentPortfolio$!: Observable<PortfolioKey>;
   currentInstrument$!: Observable<InstrumentKey>;

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
   combineLatest,
-  merge,
   Observable,
   shareReplay
 } from 'rxjs';
@@ -9,8 +8,7 @@ import { NetworkStatus } from '../models/enums/network-status.model';
 import { isOnline$ } from '../utils/network';
 import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service';
 import { map } from 'rxjs/operators';
-import { OrderService } from "./orders/order.service";
-import { OrderCancellerService } from "./order-canceller.service";
+import { WsOrdersConnector } from "./orders/ws-orders-connector";
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +18,7 @@ export class NetworkStatusService {
 
   constructor(
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
-    private readonly orderService: OrderService,
-    private readonly orderCancellerService: OrderCancellerService
+    private readonly wsOrdersConnector: WsOrdersConnector
   ) {
   }
 
@@ -29,10 +26,11 @@ export class NetworkStatusService {
     if (!this.networkStatus$) {
       this.networkStatus$ = combineLatest([
         isOnline$(),
-        this.subscriptionsDataFeedService.getConnectionStatus()
+        this.subscriptionsDataFeedService.getConnectionStatus(),
+        this.wsOrdersConnector.getConnectionStatus()
       ]).pipe(
-        map(([browserStatus, connectionStatus]) => {
-          const isConnected = browserStatus && connectionStatus;
+        map(([browserStatus, connectionStatus, wsOrdersConnectorStatus]) => {
+          const isConnected = browserStatus && connectionStatus && wsOrdersConnectorStatus;
 
           return isConnected
             ? NetworkStatus.Online
@@ -46,9 +44,6 @@ export class NetworkStatusService {
   }
 
   get lastOrderDelayMSec$(): Observable<number> {
-    return merge(
-      this.orderService.lastOrderDelayMSec$,
-      this.orderCancellerService.lastRequestDelayMSec$
-    );
+    return this.wsOrdersConnector.lastOrderDelayMSec$;
   }
 }

@@ -9,15 +9,15 @@ import {
   combineLatest,
   distinctUntilChanged,
   Observable,
-  Subject,
   switchMap,
   take,
 } from 'rxjs';
-import { catchError, debounceTime, map, mergeMap, startWith, tap } from 'rxjs/operators';
-import { CancelCommand } from 'src/app/shared/models/commands/cancel-command.model';
-import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
+import { debounceTime, map, startWith, tap } from 'rxjs/operators';
 import { OrderFilter } from '../../models/order-filter.model';
-import { Order } from '../../../../shared/models/orders/order.model';
+import {
+  Order,
+  OrderType
+} from '../../../../shared/models/orders/order.model';
 import { BlotterService } from '../../services/blotter.service';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -34,9 +34,10 @@ import { DomHelper } from "../../../../shared/utils/dom-helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
-import { OrderType } from "../../../../shared/models/orders/orders-dialog.model";
+import { OrderFormType } from "../../../../shared/models/orders/orders-dialog.model";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 
 interface DisplayOrder extends Order {
   residue: string;
@@ -192,8 +193,6 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
     },
   ];
 
-  private readonly cancelCommands = new Subject<CancelCommand>();
-  private readonly cancels$ = this.cancelCommands.asObservable();
   private orders: Order[] = [];
 
   settingsTableName = TableNames.OrdersTable;
@@ -203,7 +202,7 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     private readonly service: BlotterService,
-    private readonly canceller: OrderCancellerService,
+    private readonly wsOrdersService: WsOrdersService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
     private readonly ordersGroupService: OrdersGroupService,
@@ -215,12 +214,6 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
 
   ngOnInit(): void {
     super.ngOnInit();
-
-    this.cancels$.pipe(
-      mergeMap((command) => this.canceller.cancelOrder(command)),
-      catchError((e, caught) => caught),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe();
   }
 
   protected initTableConfigStream(): Observable<TableConfig<DisplayOrder>> {
@@ -308,24 +301,22 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       ));
   }
 
-  cancelOrder(orderId: string): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      this.cancelCommands.next({
-        portfolio: settings.portfolio,
-        exchange: settings.exchange,
-        orderid: orderId,
-        stop: false
-      });
-    });
+  cancelOrder(order: DisplayOrder): void {
+    this.wsOrdersService.cancelOrders([
+      {
+        orderId: order.id,
+        orderType: order.type,
+        exchange: order.exchange,
+        portfolio: order.portfolio
+      }
+    ]).subscribe();
   }
 
   editOrder(order: Order, event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
 
-    if(order.type as OrderType !== OrderType.Limit) {
+    if(order.type !== OrderType.Limit) {
       return;
     }
 
@@ -344,7 +335,7 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
           marketType: s.marketType
         },
         orderId: order.id,
-        orderType: OrderType.Limit,
+        orderType: OrderFormType.Limit,
         initialValues: {
           price: order.price,
           quantity: order.qty - (order.filledQtyBatch ?? 0)
@@ -354,12 +345,19 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
   }
 
   cancelAllOrders(): void {
-    const working = this.orders.filter(o => o.status == 'working').map(o => o.id);
-    working.forEach(order => this.cancelOrder(order));
+    const working = this.orders.filter(o => o.status == 'working');
+    if(working.length > 0) {
+      this.wsOrdersService.cancelOrders(working.map(o => ({
+        orderId: o.id,
+        orderType: o.type,
+        exchange: o.exchange,
+        portfolio: o.portfolio
+      }))).subscribe();
+    }
   }
 
   isMarketOrder(order: DisplayOrder): boolean {
-    return order.type === 'market';
+    return order.type === OrderType.Market;
   }
 
   openOrdersGroup(groupId: string, event: MouseEvent): void {

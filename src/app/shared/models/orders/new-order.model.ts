@@ -1,12 +1,16 @@
 ﻿import {Side} from "../enums/side.model";
 import {InstrumentKey} from "../instruments/instrument-key.model";
 import {LessMore} from "../enums/less-more.model";
-import {TimeInForce} from "./order.model";
+import {
+  OrderType,
+  TimeInForce
+} from "./order.model";
 
 export interface NewOrderBase {
   side: Side;
   instrument: InstrumentKey;
   quantity: number;
+  comment?: string;
 }
 
 export interface NewMarketOrder extends NewOrderBase {
@@ -17,10 +21,6 @@ export interface NewLimitOrder extends NewOrderBase {
   icebergFixed?: number;
   icebergVariance?: number;
   timeInForce?: TimeInForce;
-  topOrderPrice?: number | null;
-  topOrderSide?: Side;
-  bottomOrderPrice?: number | null;
-  bottomOrderSide?: Side;
   orderEndUnixTime?: number;
 }
 
@@ -46,7 +46,12 @@ export interface SubmitOrderResponse {
   code?: string;
 }
 
-export interface SubmitOrderResult {
+export interface OrderCommandResult {
   isSuccess: boolean;
+  message: string;
   orderNumber?: string;
 }
+
+export type NewLinkedOrder = (NewLimitOrder | NewStopLimitOrder | NewStopMarketOrder) & {
+  type: OrderType.Limit | OrderType.StopMarket | OrderType.StopLimit;
+};

@@ -10,7 +10,6 @@ import {Instrument} from "../../../../../shared/models/instruments/instrument.mo
 import {CommonParametersService} from "../../../services/common-parameters.service";
 import {BehaviorSubject, of, Subject} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
-import {OrderService} from "../../../../../shared/services/orders/order.service";
 import {OrderCommandsModule} from "../../../order-commands.module";
 import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
 import {NoopAnimationsModule} from "@angular/platform-browser/animations";
@@ -27,6 +26,8 @@ import {TimezoneConverterService} from "../../../../../shared/services/timezone-
 import {LessMore} from "../../../../../shared/models/enums/less-more.model";
 import { registerLocaleData } from "@angular/common";
 import localeRu from '@angular/common/locales/ru';
+import { OrdersGroupService } from "../../../../../shared/services/orders/orders-group.service";
+import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
 
 describe('StopOrderFormComponent', () => {
   let component: StopOrderFormComponent;
@@ -34,6 +35,7 @@ describe('StopOrderFormComponent', () => {
 
   let lastPrice = 25;
   let orderServiceSpy: any;
+  let orderGroupServiceSpy: any;
   const timezoneConverter = new TimezoneConverter(TimezoneDisplayOption.MskTime);
   let timezoneConverterServiceSpy: any;
 
@@ -73,10 +75,12 @@ describe('StopOrderFormComponent', () => {
   };
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('OrderService', ['submitStopLimitOrder', 'submitStopMarketOrder', 'submitOrdersGroup']);
+    orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['submitStopLimitOrder', 'submitStopMarketOrder']);
     orderServiceSpy.submitStopLimitOrder.and.returnValue(new Subject());
     orderServiceSpy.submitStopMarketOrder.and.returnValue(new Subject());
-    orderServiceSpy.submitOrdersGroup.and.returnValue(new Subject());
+
+    orderGroupServiceSpy = jasmine.createSpyObj('OrdersGroupService', ['submitOrdersGroup']);
+    orderGroupServiceSpy.submitOrdersGroup.and.returnValue(new Subject());
 
     timezoneConverterServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
     timezoneConverterServiceSpy.getConverter.and.returnValue(of(timezoneConverter));
@@ -116,8 +120,12 @@ describe('StopOrderFormComponent', () => {
           }
         },
         {
-          provide: OrderService,
+          provide: WsOrdersService,
           useValue: orderServiceSpy
+        },
+        {
+          provide: OrdersGroupService,
+          useValue: orderGroupServiceSpy
         },
         {
           provide: QuotesService,

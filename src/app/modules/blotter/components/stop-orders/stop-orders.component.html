@@ -95,7 +95,7 @@
                 <i nz-icon nzTheme="outline" nzType="edit"></i>
               </a>
               &nbsp;
-              <a (nzOnConfirm)="cancelOrder(ord.id)" *ngIf='ord.status.toString() === "working"'
+              <a (nzOnConfirm)="cancelOrder(ord)" *ngIf='ord.status.toString() === "working"'
                  (click)="$event.preventDefault(); $event.stopPropagation()"
                  [nzCancelText]="t('no')"
                  [nzCondition]="td.settings.cancelOrdersWithoutConfirmation ?? false"
@@ -125,11 +125,11 @@
                   [class]='ord.side.toString() === "sell" ? "sell" : "buy"'>{{ ord.side }}</td>
               <td *ngIf='column.id === "residue"'>{{ ord.residue }}</td>
               <td
-                *ngIf='column.id === "volume"'>{{ (ord.type === 'stoplimit' ? ''  : '≈') + (ord.volume | number) }}</td>
+                *ngIf='column.id === "volume"'>{{ (ord.type === orderTypes.StopLimit ? ''  : '≈') + (ord.volume | number) }}</td>
               <td *ngIf='column.id === "qty"'>{{ ord.qty | number }}</td>
               <td
-                *ngIf='column.id === "price"'>{{ ord.type === 'stoplimit' ? (ord.price | number : '0.0-10') : '' }}</td>
-              <td *ngIf='column.id === "triggerPrice"'>{{ ord.triggerPrice | number }}</td>
+                *ngIf='column.id === "price"'>{{ ord.type === orderTypes.StopLimit ? (ord.price | number : '0.0-10') : '' }}</td>
+              <td *ngIf='column.id === "triggerPrice"'>{{ ord.triggerPrice | number : '0.0-10' }}</td>
               <td *ngIf='column.id === "status"' [class]='ord.status.toString() === "filled"
               ? (ord.status.toString() === "sell" ? "sell" : "buy") :
               (ord.status.toString() === "canceled" ? "cancelled" : "bold" )'>
@@ -147,7 +147,7 @@
               <td *ngIf='column.id === "conditionType"'>{{ getConditionSign(ord.conditionType) }}</td>
               <td *ngIf='column.id === "transTime"'>{{ formatDate(ord.transTime) }}</td>
               <td *ngIf='column.id === "exchange"'>{{ ord.exchange }}</td>
-              <td *ngIf='column.id === "type"'>{{ ord.type }}</td>
+              <td *ngIf='column.id === "type"'>{{ t('blotterBlotterCommon.typeFilters.' + ord.type, { fallback: ord.type }) }}</td>
               <td *ngIf='column.id === "endTime"'>{{ formatDate(ord.endTime) }}</td>
             </ng-container>
           </tr>
@@ -156,13 +156,12 @@
         <ng-template #footer>
           <div
             class="export-button-container"
-            *transloco="let tCommon; scope: 'blotter/blotter-common'"
             (nzResizeObserve)="footerSizeChanged($event)"
             nzResizeObserver
           >
             <button nz-button nzType="link" *ngIf="canExport(td.orders)" (click)="exportToFile(td.orders)">
               <i nz-icon nzType="download"></i>
-              {{tCommon('blotterBlotterCommon.exportToFile')}}
+              {{t('blotterBlotterCommon.exportToFile')}}
             </button>
           </div>
         </ng-template>

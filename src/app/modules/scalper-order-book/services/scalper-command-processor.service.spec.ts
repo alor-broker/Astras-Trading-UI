@@ -6,7 +6,6 @@ import {
   BehaviorSubject,
   of
 } from 'rxjs';
-import { ScalperOrdersService } from './scalper-orders.service';
 import { ModifierKeys } from '../../../shared/models/modifier-keys.model';
 import {
   generateRandomString,
@@ -29,17 +28,64 @@ import {
 import { ScalperOrderBookCommands } from '../models/scalper-order-book-commands';
 import { TerminalCommand } from '../../../shared/models/terminal-command';
 import { Side } from '../../../shared/models/enums/side.model';
-import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { PortfolioKey } from '../../../shared/models/portfolio-key.model';
 import { Position } from '../../../shared/models/positions/position.model';
 import { TerminalSettings } from '../../../shared/models/terminal-settings/terminal-settings.model';
-import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
+import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
+import { OrderType } from "../../../shared/models/orders/order.model";
+import {
+  CancelOrdersCommand,
+  CancelOrdersCommandArgs
+} from "../commands/cancel-orders-command";
+import {
+  ClosePositionByMarketCommand,
+  ClosePositionByMarketCommandArgs
+} from "../commands/close-position-by-market-command";
+import {
+  SubmitMarketOrderCommand,
+  SubmitMarketOrderCommandArgs
+} from "../commands/submit-market-order-command";
+import {
+  ReversePositionByMarketCommand,
+  ReversePositionByMarketCommandArgs
+} from "../commands/reverse-position-by-market-command";
+import {
+  SubmitStopLimitOrderCommand,
+  SubmitStopLimitOrderCommandArgs
+} from "../commands/submit-stop-limit-order-command";
+import {
+  SetStopLossCommand,
+  SetStopLossCommandArgs
+} from "../commands/set-stop-loss-command";
+import {
+  SubmitLimitOrderCommand,
+  SubmitLimitOrderCommandArgs
+} from "../commands/submit-limit-order-command";
+import {
+  SubmitBestPriceOrderCommand,
+  SubmitBestPriceOrderCommandArgs
+} from "../commands/submit-best-price-order-command";
+import {
+  GetBestOfferCommand,
+  GetBestOfferCommandArgs
+} from "../commands/get-best-offer-command";
+import { UpdateOrdersCommand } from "../commands/update-orders-command";
 
 describe('ScalperCommandProcessorService', () => {
   let service: ScalperCommandProcessorService;
 
   let modifiersMock$: BehaviorSubject<ModifierKeys>;
-  let scalperOrdersServiceSpy: any;
+
+  let cancelOrdersCommandSpy: any;
+  let closePositionByMarketCommandSpy: any;
+  let submitMarketOrderCommandSpy: any;
+  let reversePositionByMarketCommandSpy: any;
+  let submitStopLimitOrderCommandSpy: any;
+  let setStopLossCommandSpy: any;
+  let submitLimitOrderCommandSpy: any;
+  let submitBestPriceOrderCommandSpy: any;
+  let getBestOfferCommandSpy: any;
+  let updateOrdersCommandSpy: any;
 
   const orderBookDefaultSettings: ScalperOrderBookWidgetSettings = {
     guid: generateRandomString(10),
@@ -73,22 +119,6 @@ describe('ScalperCommandProcessorService', () => {
       shiftKey: false
     });
 
-    scalperOrdersServiceSpy = jasmine.createSpyObj(
-      'ScalperOrdersService',
-      [
-        'setStopLimit',
-        'setStopLoss',
-        'placeLimitOrder',
-        'placeMarketOrder',
-        'sellBestBid',
-        'buyBestAsk',
-        'reversePositionsByMarket',
-        'cancelOrders',
-        'closePositionsByMarket',
-        'placeBestOrder',
-      ]
-    );
-
     dataContextMock = {
       extendedSettings$: new BehaviorSubject({
         widgetSettings: orderBookDefaultSettings,
@@ -98,12 +128,22 @@ describe('ScalperCommandProcessorService', () => {
         portfolio: 'D1234',
         exchange: orderBookDefaultSettings.ex
       } as PortfolioKey),
-      orderBook$: new BehaviorSubject<OrderBook>( { instrumentKey: defaultInstrumentInfo, rows: { a: [], b: [] }} ),
+      orderBook$: new BehaviorSubject<OrderBook>({ instrumentKey: defaultInstrumentInfo, rows: { a: [], b: [] } }),
       position$: new BehaviorSubject<Position | null>(null),
       currentOrders$: new BehaviorSubject<CurrentOrderDisplay[]>([]),
       workingVolume$: new BehaviorSubject<number>(1)
     };
 
+    cancelOrdersCommandSpy = jasmine.createSpyObj('CancelOrdersCommand', ['execute']);
+    closePositionByMarketCommandSpy = jasmine.createSpyObj('ClosePositionByMarketCommand', ['execute']);
+    submitMarketOrderCommandSpy = jasmine.createSpyObj('SubmitMarketOrderCommand', ['execute']);
+    reversePositionByMarketCommandSpy = jasmine.createSpyObj('ReversePositionByMarketCommand', ['execute']);
+    submitStopLimitOrderCommandSpy = jasmine.createSpyObj('SubmitStopLimitOrderCommand', ['execute']);
+    setStopLossCommandSpy = jasmine.createSpyObj('SetStopLossCommand', ['execute']);
+    submitLimitOrderCommandSpy = jasmine.createSpyObj('SubmitLimitOrderCommand', ['execute']);
+    submitBestPriceOrderCommandSpy = jasmine.createSpyObj('SubmitBestPriceOrderCommand', ['execute']);
+    getBestOfferCommandSpy = jasmine.createSpyObj('GetBestOfferCommand', ['execute']);
+    updateOrdersCommandSpy = jasmine.createSpyObj('UpdateOrdersCommand', ['execute']);
   });
 
   beforeEach(() => {
@@ -116,15 +156,51 @@ describe('ScalperCommandProcessorService', () => {
           }
         },
         {
-          provide: ScalperOrdersService,
-          useValue: scalperOrdersServiceSpy
-        },
-        {
           provide: TerminalSettingsService,
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({} as TerminalSettings))
           }
-        }
+        },
+        {
+          provide: CancelOrdersCommand,
+          useValue: cancelOrdersCommandSpy
+        },
+        {
+          provide: ClosePositionByMarketCommand,
+          useValue: closePositionByMarketCommandSpy
+        },
+        {
+          provide: SubmitMarketOrderCommand,
+          useValue: submitMarketOrderCommandSpy
+        },
+        {
+          provide: ReversePositionByMarketCommand,
+          useValue: reversePositionByMarketCommandSpy
+        },
+        {
+          provide: SubmitStopLimitOrderCommand,
+          useValue: submitStopLimitOrderCommandSpy
+        },
+        {
+          provide: SetStopLossCommand,
+          useValue: setStopLossCommandSpy
+        },
+        {
+          provide: SubmitLimitOrderCommand,
+          useValue: submitLimitOrderCommandSpy
+        },
+        {
+          provide: SubmitBestPriceOrderCommand,
+          useValue: submitBestPriceOrderCommandSpy
+        },
+        {
+          provide: GetBestOfferCommand,
+          useValue: getBestOfferCommandSpy
+        },
+        {
+          provide: UpdateOrdersCommand,
+          useValue: updateOrdersCommandSpy
+        },
       ]
     });
     service = TestBed.inject(ScalperCommandProcessorService);
@@ -138,7 +214,7 @@ describe('ScalperCommandProcessorService', () => {
     it('should process cancelLimitOrdersAll command', ((done) => {
         const expectedOrder: CurrentOrderDisplay = {
           orderId: generateRandomString(5),
-          type: 'limit',
+          type: OrderType.Limit,
           symbol: 'TEST',
           exchange: orderBookDefaultSettings.exchange,
           portfolio: 'D1234',
@@ -147,9 +223,14 @@ describe('ScalperCommandProcessorService', () => {
           displayVolume: 100
         };
 
-        scalperOrdersServiceSpy.cancelOrders.and.callFake((currentOrders: CurrentOrderDisplay[]) => {
+        cancelOrdersCommandSpy.execute.and.callFake((args: CancelOrdersCommandArgs) => {
           done();
-          expect(currentOrders).toEqual([expectedOrder]);
+          expect(args.ordersToCancel[0]).toEqual({
+            orderId: expectedOrder.orderId,
+            exchange: expectedOrder.exchange,
+            portfolio: expectedOrder.portfolio,
+            orderType: expectedOrder.type
+          });
         });
 
         dataContextMock.currentOrders$.next([expectedOrder]);
@@ -171,9 +252,9 @@ describe('ScalperCommandProcessorService', () => {
           qtyTFutureBatch: 0
         } as Position;
 
-        scalperOrdersServiceSpy.closePositionsByMarket.and.callFake((position: Position) => {
+        closePositionByMarketCommandSpy.execute.and.callFake((args: ClosePositionByMarketCommandArgs) => {
           done();
-          expect(position).toEqual(expectedPosition);
+          expect(args.currentPosition).toEqual(expectedPosition);
         });
 
         dataContextMock.position$.next(expectedPosition);
@@ -191,7 +272,7 @@ describe('ScalperCommandProcessorService', () => {
     it('should process cancelLimitOrdersCurrent command', ((done) => {
         const expectedOrder: CurrentOrderDisplay = {
           orderId: generateRandomString(5),
-          type: 'limit',
+          type: OrderType.Limit,
           symbol: 'TEST',
           exchange: orderBookDefaultSettings.exchange,
           portfolio: 'D1234',
@@ -200,12 +281,32 @@ describe('ScalperCommandProcessorService', () => {
           displayVolume: 100
         };
 
-        scalperOrdersServiceSpy.cancelOrders.and.callFake((currentOrders: CurrentOrderDisplay[]) => {
+        const secondOrder: CurrentOrderDisplay = {
+          orderId: generateRandomString(5),
+          type: OrderType.StopLimit,
+          symbol: 'TEST',
+          exchange: orderBookDefaultSettings.exchange,
+          portfolio: 'D1234',
+          price: 100,
+          triggerPrice: 99,
+          side: Side.Buy,
+          displayVolume: 100
+        };
+
+        cancelOrdersCommandSpy.execute.and.callFake((args: CancelOrdersCommandArgs) => {
           done();
-          expect(currentOrders).toEqual([expectedOrder]);
+
+          expect(args.ordersToCancel.length).toBe(1);
+
+          expect(args.ordersToCancel[0]).toEqual({
+            orderId: expectedOrder.orderId,
+            exchange: expectedOrder.exchange,
+            portfolio: expectedOrder.portfolio,
+            orderType: expectedOrder.type
+          });
         });
 
-        dataContextMock.currentOrders$.next([expectedOrder]);
+        dataContextMock.currentOrders$.next([expectedOrder, secondOrder]);
 
         service.processHotkeyPress(
           {
@@ -220,7 +321,7 @@ describe('ScalperCommandProcessorService', () => {
     it('should process cancelStopOrdersCurrent command', ((done) => {
         const expectedOrder: CurrentOrderDisplay = {
           orderId: generateRandomString(5),
-          type: 'stop',
+          type: OrderType.StopMarket,
           symbol: 'TEST',
           exchange: orderBookDefaultSettings.exchange,
           portfolio: 'D1234',
@@ -229,12 +330,30 @@ describe('ScalperCommandProcessorService', () => {
           displayVolume: 100
         };
 
-        scalperOrdersServiceSpy.cancelOrders.and.callFake((currentOrders: CurrentOrderDisplay[]) => {
+        const secondOrder: CurrentOrderDisplay = {
+          orderId: generateRandomString(5),
+          type: OrderType.Limit,
+          symbol: 'TEST',
+          exchange: orderBookDefaultSettings.exchange,
+          portfolio: 'D1234',
+          side: Side.Buy,
+          displayVolume: 100
+        };
+
+        cancelOrdersCommandSpy.execute.and.callFake((args: CancelOrdersCommandArgs) => {
           done();
-          expect(currentOrders).toEqual([expectedOrder]);
+
+          expect(args.ordersToCancel.length).toBe(1);
+
+          expect(args.ordersToCancel[0]).toEqual({
+            orderId: expectedOrder.orderId,
+            exchange: expectedOrder.exchange,
+            portfolio: expectedOrder.portfolio,
+            orderType: expectedOrder.type
+          });
         });
 
-        dataContextMock.currentOrders$.next([expectedOrder]);
+        dataContextMock.currentOrders$.next([expectedOrder, secondOrder]);
 
         service.processHotkeyPress(
           {
@@ -255,9 +374,9 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.position$.next(expectedPosition);
 
-        scalperOrdersServiceSpy.closePositionsByMarket.and.callFake((position: Position) => {
+        closePositionByMarketCommandSpy.execute.and.callFake((args: ClosePositionByMarketCommandArgs) => {
           done();
-          expect(position).toEqual(expectedPosition);
+          expect(args.currentPosition).toEqual(expectedPosition);
         });
 
         service.processHotkeyPress(
@@ -287,14 +406,12 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.workingVolume$.next(workingVolume);
 
-
-        scalperOrdersServiceSpy.placeBestOrder.and.callFake((settings: ScalperOrderBookWidgetSettings, instrument: Instrument, side: Side, quantity: number) => {
+        submitBestPriceOrderCommandSpy.execute.and.callFake((args: SubmitBestPriceOrderCommandArgs) => {
           done();
 
-          expect(instrument).toEqual(defaultInstrumentInfo);
-          expect(settings).toEqual(orderBookDefaultSettings);
-          expect(side).toEqual(Side.Sell);
-          expect(quantity).toEqual(workingVolume);
+          expect(args.instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(args.side).toEqual(Side.Sell);
+          expect(args.quantity).toEqual(workingVolume);
         });
 
         service.processHotkeyPress(
@@ -324,13 +441,12 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.workingVolume$.next(workingVolume);
 
-        scalperOrdersServiceSpy.placeBestOrder.and.callFake((settings: ScalperOrderBookWidgetSettings, instrument: Instrument, side: Side, quantity: number) => {
+        submitBestPriceOrderCommandSpy.execute.and.callFake((args: SubmitBestPriceOrderCommandArgs) => {
           done();
 
-          expect(instrument).toEqual(defaultInstrumentInfo);
-          expect(settings).toEqual(orderBookDefaultSettings);
-          expect(side).toEqual(Side.Buy);
-          expect(quantity).toEqual(workingVolume);
+          expect(args.instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(args.side).toEqual(Side.Buy);
+          expect(args.quantity).toEqual(workingVolume);
         });
 
         service.processHotkeyPress(
@@ -364,12 +480,11 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.workingVolume$.next(workingVolume);
 
-        scalperOrdersServiceSpy.sellBestBid.and.callFake((settings: ScalperOrderBookWidgetSettings, instrument: Instrument, quantity: number) => {
+        getBestOfferCommandSpy.execute.and.callFake((args: GetBestOfferCommandArgs) => {
           done();
 
-          expect(settings).toEqual(orderBookDefaultSettings);
-          expect(instrument).toEqual(defaultInstrumentInfo);
-          expect(quantity).toEqual(workingVolume);
+          expect(args.instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(args.quantity).toEqual(workingVolume);
         });
 
         service.processHotkeyPress(
@@ -400,12 +515,11 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.workingVolume$.next(workingVolume);
 
-        scalperOrdersServiceSpy.buyBestAsk.and.callFake((settings: ScalperOrderBookWidgetSettings, instrument: Instrument, quantity: number) => {
+        getBestOfferCommandSpy.execute.and.callFake((args: GetBestOfferCommandArgs) => {
           done();
 
-          expect(settings).toEqual(orderBookDefaultSettings);
-          expect(instrument).toEqual(defaultInstrumentInfo);
-          expect(quantity).toEqual(workingVolume);
+          expect(args.instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(args.quantity).toEqual(workingVolume);
         });
 
         service.processHotkeyPress(
@@ -423,12 +537,12 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.workingVolume$.next(workingVolume);
 
-        scalperOrdersServiceSpy.placeMarketOrder.and.callFake((instrumentKey: InstrumentKey, side: Side, quantity: number, silent: boolean) => {
+        submitMarketOrderCommandSpy.execute.and.callFake((args: SubmitMarketOrderCommandArgs) => {
           done();
-          expect(instrumentKey).toEqual(orderBookDefaultSettings);
-          expect(side).toEqual(Side.Sell);
-          expect(quantity).toEqual(workingVolume);
-          expect(silent).toEqual(true);
+          expect(args.instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(args.side).toEqual(Side.Sell);
+          expect(args.quantity).toEqual(workingVolume);
+          expect(args.silent).toEqual(true);
         });
 
         service.processHotkeyPress(
@@ -446,12 +560,12 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.workingVolume$.next(workingVolume);
 
-        scalperOrdersServiceSpy.placeMarketOrder.and.callFake((instrumentKey: InstrumentKey, side: Side, quantity: number, silent: boolean) => {
+        submitMarketOrderCommandSpy.execute.and.callFake((args: SubmitMarketOrderCommandArgs) => {
           done();
-          expect(instrumentKey).toEqual(orderBookDefaultSettings);
-          expect(side).toEqual(Side.Buy);
-          expect(quantity).toEqual(workingVolume);
-          expect(silent).toEqual(true);
+          expect(args.instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(args.side).toEqual(Side.Buy);
+          expect(args.quantity).toEqual(workingVolume);
+          expect(args.silent).toEqual(true);
         });
 
         service.processHotkeyPress(
@@ -473,9 +587,9 @@ describe('ScalperCommandProcessorService', () => {
 
         dataContextMock.position$.next(expectedPosition);
 
-        scalperOrdersServiceSpy.reversePositionsByMarket.and.callFake((position: Position) => {
+        reversePositionByMarketCommandSpy.execute.and.callFake((args: ReversePositionByMarketCommandArgs) => {
           done();
-          expect(position).toEqual(expectedPosition);
+          expect(args.currentPosition).toEqual(expectedPosition);
         });
 
         service.processHotkeyPress(
@@ -510,14 +624,14 @@ describe('ScalperCommandProcessorService', () => {
           rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
         } as BodyRow;
 
-        scalperOrdersServiceSpy.setStopLimit.and.callFake((instrument: Instrument, price: number, quantity: number, side: Side, distance: number, silent: boolean) => {
+        submitStopLimitOrderCommandSpy.execute.and.callFake((args: SubmitStopLimitOrderCommandArgs) => {
           done();
-          expect(instrument).toEqual(defaultInstrumentInfo);
-          expect(price).toEqual(testRow.price);
-          expect(distance).toEqual(0);
-          expect(quantity).toEqual(workingVolume);
-          expect(side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Sell : Side.Buy);
-          expect(silent).toEqual(true);
+          expect(args.instrumentKey).toEqual(defaultInstrumentInfo);
+          expect(args.triggerPrice).toEqual(testRow.price);
+          expect(args.priceOptions?.distance).toEqual(0);
+          expect(args.quantity).toEqual(workingVolume);
+          expect(args.side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Sell : Side.Buy);
+          expect(args.silent).toEqual(true);
         });
 
         service.processLeftMouseClick(event, testRow, dataContextMock);
@@ -552,11 +666,11 @@ describe('ScalperCommandProcessorService', () => {
           rowType: ScalperOrderBookRowType.Ask
         } as BodyRow;
 
-        scalperOrdersServiceSpy.setStopLoss.and.callFake((price: number, silent: boolean, position: Position | null) => {
+        setStopLossCommandSpy.execute.and.callFake((args: SetStopLossCommandArgs) => {
           done();
-          expect(position).toEqual(expectedPosition);
-          expect(price).toEqual(testRow.price);
-          expect(silent).toEqual(true);
+          expect(args.currentPosition).toEqual(expectedPosition);
+          expect(args.triggerPrice).toEqual(testRow.price);
+          expect(args.silent).toEqual(true);
         });
 
         service.processLeftMouseClick(event, testRow, dataContextMock);
@@ -582,14 +696,14 @@ describe('ScalperCommandProcessorService', () => {
           rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
         } as BodyRow;
 
-        scalperOrdersServiceSpy.placeLimitOrder.and.callFake((settings: ScalperOrderBookWidgetSettings, instrumentKey: InstrumentKey, side: Side, quantity: number, price: number, silent: boolean) => {
+        submitLimitOrderCommandSpy.execute.and.callFake((args: SubmitLimitOrderCommandArgs) => {
           done();
-          expect(settings).toEqual(orderBookDefaultSettings);
-          expect(instrumentKey).toEqual(defaultInstrumentInfo);
-          expect(side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell);
-          expect(quantity).toEqual(workingVolume);
-          expect(price).toEqual(testRow.price);
-          expect(silent).toEqual(true);
+
+          expect(args.instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(args.side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell);
+          expect(args.quantity).toEqual(workingVolume);
+          expect(args.price).toEqual(testRow.price);
+          expect(args.silent).toEqual(true);
         });
 
         service.processLeftMouseClick(event, testRow, dataContextMock);
@@ -615,12 +729,12 @@ describe('ScalperCommandProcessorService', () => {
           rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
         } as BodyRow;
 
-        scalperOrdersServiceSpy.placeMarketOrder.and.callFake((instrumentKey: InstrumentKey, side: Side, quantity: number, silent: boolean) => {
+        submitMarketOrderCommandSpy.execute.and.callFake((args: SubmitMarketOrderCommandArgs) => {
           done();
-          expect(instrumentKey).toEqual(orderBookDefaultSettings);
-          expect(side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Sell : Side.Buy);
-          expect(quantity).toEqual(workingVolume);
-          expect(silent).toEqual(true);
+          expect(args.instrumentKey).toEqual(orderBookDefaultSettings);
+          expect(args.side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Sell : Side.Buy);
+          expect(args.quantity).toEqual(workingVolume);
+          expect(args.silent).toEqual(true);
         });
 
         service.processRightMouseClick(event, testRow, dataContextMock);
@@ -659,14 +773,13 @@ describe('ScalperCommandProcessorService', () => {
         rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
       } as BodyRow;
 
-      scalperOrdersServiceSpy.placeLimitOrder.and.callFake((settings: ScalperOrderBookWidgetSettings, instrumentKey: InstrumentKey, side: Side, quantity: number, price: number, silent: boolean) => {
+      submitLimitOrderCommandSpy.execute.and.callFake((args: SubmitLimitOrderCommandArgs) => {
         done();
-        expect(settings).toEqual(orderBookDefaultSettings);
-        expect(instrumentKey).toEqual(defaultInstrumentInfo);
-        expect(side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell);
-        expect(quantity).toEqual(positionQty);
-        expect(price).toEqual(testRow.price);
-        expect(silent).toEqual(true);
+        expect(args.instrumentKey).toEqual(orderBookDefaultSettings);
+        expect(args.side).toEqual(testRow.rowType === ScalperOrderBookRowType.Bid ? Side.Buy : Side.Sell);
+        expect(args.quantity).toEqual(positionQty);
+        expect(args.price).toEqual(testRow.price);
+        expect(args.silent).toEqual(true);
       });
 
       service.processLeftMouseClick(event, testRow, dataContextMock);

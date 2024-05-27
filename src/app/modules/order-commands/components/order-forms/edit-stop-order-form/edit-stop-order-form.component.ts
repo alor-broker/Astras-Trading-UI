@@ -1,25 +1,53 @@
-import { Component, DestroyRef, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  Input,
+  OnInit
+} from '@angular/core';
 import { BaseEditOrderFormComponent } from "../base-edit-order-form.component";
-import { FormBuilder, Validators } from "@angular/forms";
+import {
+  FormBuilder,
+  Validators
+} from "@angular/forms";
 import { OrderDetailsService } from "../../../../../shared/services/orders/order-details.service";
 import { InstrumentsService } from "../../../../instruments/services/instruments.service";
 import { CommonParametersService } from "../../../services/common-parameters.service";
 import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
-import { OrderService } from "../../../../../shared/services/orders/order.service";
 import { LessMore } from "../../../../../shared/models/enums/less-more.model";
-import { StopOrder, TimeInForce } from "../../../../../shared/models/orders/order.model";
+import {
+  OrderType,
+  StopOrder,
+  TimeInForce
+} from "../../../../../shared/models/orders/order.model";
 import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
-import { combineLatest, distinctUntilChanged, Observable, shareReplay, take } from "rxjs";
-import { filter, map, switchMap } from "rxjs/operators";
-import { startOfDay, toUnixTime } from "../../../../../shared/utils/datetime";
+import {
+  combineLatest,
+  distinctUntilChanged,
+  Observable,
+  shareReplay,
+  take
+} from "rxjs";
+import {
+  filter,
+  map,
+  switchMap
+} from "rxjs/operators";
+import {
+  startOfDay,
+  toUnixTime
+} from "../../../../../shared/utils/datetime";
 import { PriceDiffHelper } from "../../../utils/price-diff.helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
 import { AtsValidators } from "../../../../../shared/utils/form-validators";
 import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
-import { StopLimitOrderEdit, StopMarketOrderEdit } from "../../../../../shared/models/orders/edit-order.model";
+import {
+  StopLimitOrderEdit,
+  StopMarketOrderEdit
+} from "../../../../../shared/models/orders/edit-order.model";
 import { getConditionTypeByString } from "../../../../../shared/utils/order-conditions-helper";
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
+import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
 
 @Component({
   selector: 'ats-edit-stop-order-form',
@@ -89,7 +117,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     private readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly orderService: OrderService,
+    private readonly wsOrdersService: WsOrdersService,
     protected readonly destroyRef: DestroyRef) {
     super(instrumentService, destroyRef);
   }
@@ -135,7 +163,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       this.form.controls.condition.setValue(getConditionTypeByString(x.currentOrder.conditionType) ?? LessMore.More);
       this.form.controls.price.setValue(this.initialValues?.price ?? x.currentOrder.price);
 
-      this.form.controls.withLimit.setValue(x.currentOrder.type === 'stoplimit');
+      this.form.controls.withLimit.setValue(x.currentOrder.type === OrderType.StopLimit);
 
       this.form.controls.timeInForce.setValue(x.currentOrder.timeInForce ?? null);
 
@@ -275,7 +303,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
         const formValue = this.form.value;
 
         const updatedOrder = {
-          id: x.currentOrder.id,
+          orderId: x.currentOrder.id,
           instrument: {
             symbol: x.currentOrder.symbol,
             exchange: x.currentOrder.exchange,
@@ -291,27 +319,27 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
         } as StopMarketOrderEdit;
 
         if (formValue.withLimit ?? false) {
-          const limitOrder = {
+          const updatedLimitOrder = {
             ...updatedOrder,
             price: Number(formValue.price)
           } as StopLimitOrderEdit;
 
           if (formValue.timeInForce != null) {
-            limitOrder.timeInForce = formValue.timeInForce;
+            updatedLimitOrder.timeInForce = formValue.timeInForce;
           }
 
           if (formValue.icebergFixed ?? 0) {
-            limitOrder.icebergFixed = Number(formValue.icebergFixed);
+            updatedLimitOrder.icebergFixed = Number(formValue.icebergFixed);
           }
 
           if (formValue.icebergVariance ?? 0) {
-            limitOrder.icebergVariance = Number(formValue.icebergVariance);
+            updatedLimitOrder.icebergVariance = Number(formValue.icebergVariance);
           }
 
-          return this.orderService.submitStopLimitOrderEdit(limitOrder, x.portfolioKey!.portfolio);
+          return this.wsOrdersService.submitStopLimitOrderEdit(updatedLimitOrder, x.portfolioKey!.portfolio);
         }
 
-        return this.orderService.submitStopMarketOrderEdit(updatedOrder, x.portfolioKey!.portfolio);
+        return this.wsOrdersService.submitStopMarketOrderEdit(updatedOrder, x.portfolioKey!.portfolio);
       }),
       map(r => r.isSuccess),
       take(1)

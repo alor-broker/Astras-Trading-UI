@@ -39,7 +39,6 @@ import {
   finalize,
   map
 } from 'rxjs/operators';
-import { OrderService } from '../../../../shared/services/orders/order.service';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { Side } from '../../../../shared/models/enums/side.model';
 import { MathHelper } from '../../../../shared/utils/math-helper';
@@ -51,7 +50,8 @@ import {
   OrdersBasketSettings
 } from '../../models/orders-basket-settings.model';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import { NewLimitOrder, SubmitOrderResult } from "../../../../shared/models/orders/new-order.model";
+import { NewLimitOrder, OrderCommandResult } from "../../../../shared/models/orders/new-order.model";
+import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 
 @Component({
   selector: 'ats-orders-basket',
@@ -76,7 +76,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly orderService: OrderService,
+    private readonly wsOrdersService: WsOrdersService,
     private readonly evaluationService: EvaluationService,
     private readonly destroyRef: DestroyRef
   ) {
@@ -150,7 +150,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
 
         if(orders.length > 0) {
           return forkJoin([
-              ...orders.map(o => this.orderService.submitLimitOrder(o, settings.portfolio).pipe(take(1)))
+              ...orders.map(o => this.wsOrdersService.submitLimitOrder(o, settings.portfolio).pipe(take(1)))
             ]
           );
         }
@@ -160,7 +160,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       finalize(() => this.processing$.next(false)),
       take(1)
     ).subscribe(results => {
-      this.submitResult$.next(results.every((x: SubmitOrderResult | null) => !!x && x.isSuccess) ? 'success' : 'failed');
+      this.submitResult$.next(results.every((x: OrderCommandResult | null) => !!x && x.isSuccess) ? 'success' : 'failed');
     });
   }
 

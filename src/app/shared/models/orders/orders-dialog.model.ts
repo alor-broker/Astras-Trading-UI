@@ -1,9 +1,9 @@
-﻿import {InstrumentKey} from "../instruments/instrument-key.model";
-import {PortfolioKey} from "../portfolio-key.model";
-import {Side} from "../enums/side.model";
-import {LessMore} from "../enums/less-more.model";
+﻿import { InstrumentKey } from "../instruments/instrument-key.model";
+import { PortfolioKey } from "../portfolio-key.model";
+import { Side } from "../enums/side.model";
+import { LessMore } from "../enums/less-more.model";
 
-export enum OrderType {
+export enum OrderFormType {
   Limit = 'limit',
   Market = 'market',
   Stop = 'stop'
@@ -12,7 +12,7 @@ export enum OrderType {
 export interface OrderDialogParams {
   instrumentKey: InstrumentKey;
   initialValues: {
-    orderType?: OrderType;
+    orderType?: OrderFormType;
     price?: number;
     quantity?: number;
     bracket?: {
@@ -32,7 +32,7 @@ export interface OrderDialogParams {
 
 export interface EditOrderDialogParams {
   orderId: string;
-  orderType: OrderType;
+  orderType: OrderFormType;
   instrumentKey: InstrumentKey;
   portfolioKey: PortfolioKey;
   initialValues: {

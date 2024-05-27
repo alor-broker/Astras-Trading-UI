@@ -15,5 +15,6 @@
   "ordersGroupCreatedContent": "Group with orders {{orderIds}} successfully created",
 
   "orderCancelledTitle": "Order cancelled",
-  "orderCancelledContent": "Order {{orderId}} on {{exchange}} successfully cancelled"
+  "orderCancelledContent": "Order {{orderId}} on {{exchange}} successfully cancelled",
+  "orderCancelFailedLabel": "Order cancel failed"
 }

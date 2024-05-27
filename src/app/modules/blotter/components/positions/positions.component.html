@@ -7,7 +7,7 @@
     </nz-empty>
   </ng-template>
   <div
-    *ngrxLet="{ positions: tableData$, contentSize: contentSize$, tableConfig: tableConfig$, settings: settings$ } as td"
+    *ngrxLet="{ positions: tableData$, contentSize: contentSize$, tableConfig: tableConfig$, settings: settings$, portfolioTotalCost: portfolioTotalCost$} as td"
     class="table-container"
     nzResizeObserver
     (nzResizeObserve)="containerSizeChanged($event)"
@@ -124,9 +124,7 @@
               <td *ngIf='column.id === "shortName"'>{{ pos.shortName }}</td>
               <td *ngIf='column.id === "avgPrice"'>{{ pos.avgPrice | number : '0.0-10' }}</td>
               <td *ngIf='column.id === "shareOfPortfolio"'>
-                <ng-container *ngrxLet="portfolioTotalCost$ | async as portfolioCost">
-                  {{ portfolioCost ?  (round(pos.volume * 100 / portfolioCost) | number) : '-' }}
-                </ng-container>
+                {{ td.portfolioTotalCost !== 0 ?  (round(pos.volume * 100 / td.portfolioTotalCost) | number) : '-' }}
               </td>
               <td *ngIf='column.id === "qtyT0"'
                   [class]='pos.qtyT0 < 0 ? "sell" : "buy"'>{{ round(pos.qtyT0) | number }}</td>

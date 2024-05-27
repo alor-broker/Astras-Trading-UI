@@ -6,6 +6,7 @@
   "orderFilledLabel": "Заявка исполнилась",
   "orderPartiallyFilledLabel": "Заявка частично исполнилась",
   "orderCancelledLabel": "Заявка успешно отменена",
+  "orderCancelFailedLabel": "Ошибка отмены заявки",
   "OrderStatusChangeToCancelledLabel": "Заявку отменили",
   "orderUpdatedLabel": "Заявка изменена",
   "orderUpdateFailedLabel": "Ошибка изменения заявки",

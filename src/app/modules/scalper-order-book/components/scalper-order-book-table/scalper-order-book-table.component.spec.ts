@@ -4,7 +4,6 @@ import {
 } from '@angular/core/testing';
 
 import { ScalperOrderBookTableComponent } from './scalper-order-book-table.component';
-import { ScalperOrdersService } from '../../services/scalper-orders.service';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import {
   BehaviorSubject,
@@ -14,6 +13,7 @@ import { ScalperCommandProcessorService } from '../../services/scalper-command-p
 import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 import { getTranslocoModule } from '../../../../shared/utils/testing';
+import { CancelOrdersCommand } from "../../commands/cancel-orders-command";
 
 describe('ScalperOrderBookTableComponent', () => {
   let component: ScalperOrderBookTableComponent;
@@ -24,12 +24,6 @@ describe('ScalperOrderBookTableComponent', () => {
       imports:[getTranslocoModule()],
       declarations: [ScalperOrderBookTableComponent],
       providers: [
-        {
-          provide: ScalperOrdersService,
-          useValue: {
-            cancelOrders: jasmine.createSpy('cancelOrders').and.callThrough()
-          }
-        },
         {
           provide: ThemeService,
           useValue: {
@@ -52,7 +46,13 @@ describe('ScalperOrderBookTableComponent', () => {
           useValue: {
             commands$: new Subject()
           }
-        }
+        },
+        {
+          provide: CancelOrdersCommand,
+          useValue: {
+            execute: jasmine.createSpy('execute').and.callThrough()
+          }
+        },
       ]
     })
       .compileComponents();

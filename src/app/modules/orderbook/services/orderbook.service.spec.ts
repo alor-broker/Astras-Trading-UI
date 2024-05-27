@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import { OrderCancellerService } from 'src/app/shared/services/order-canceller.service';
 import { OrderbookService } from './orderbook.service';
 import {
   commonTestProviders,
@@ -9,6 +8,7 @@ import { SubscriptionsDataFeedService } from '../../../shared/services/subscript
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { of, Subject } from "rxjs";
 import { QuotesService } from "../../../shared/services/quotes.service";
+import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 
 describe('OrderbookService', () => {
   let service: OrderbookService;
@@ -16,7 +16,6 @@ describe('OrderbookService', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     const portfolioSubscriptionsServiceSpy = jasmine.createSpyObj('PortfolioSubscriptionsService', ['getOrdersSubscription']);
-    const cancellerSpy = jasmine.createSpyObj('OrderCancellerService', ['cancelOrder']);
 
     TestBed.configureTestingModule({
       imports: [...sharedModuleImportForTests],
@@ -36,7 +35,12 @@ describe('OrderbookService', () => {
           }
         },
         { provide: PortfolioSubscriptionsService, useValue: portfolioSubscriptionsServiceSpy },
-        { provide: OrderCancellerService, useValue: cancellerSpy },
+        {
+          provide: WsOrdersService,
+          useValue: {
+            cancelOrders: jasmine.createSpy('cancelOrders').and.returnValue(new Subject())
+          }
+        },
         ...commonTestProviders,
         OrderbookService
       ]

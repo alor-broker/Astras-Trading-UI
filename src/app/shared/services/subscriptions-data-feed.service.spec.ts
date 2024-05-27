@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
 import {
-  RXJS_WEBSOCKET_CTOR,
   SubscriptionsDataFeedService
 } from './subscriptions-data-feed.service';
 import {
@@ -11,6 +10,7 @@ import {
 import { AuthService } from './auth.service';
 import { LoggerService } from './logging/logger.service';
 import { EnvironmentService } from "./environment.service";
+import { RXJS_WEBSOCKET_CTOR } from "../constants/ws.constants";
 
 describe('SubscriptionsDataFeedService', () => {
   let service: SubscriptionsDataFeedService;

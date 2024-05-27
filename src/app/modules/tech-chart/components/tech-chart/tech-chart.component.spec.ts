@@ -23,7 +23,6 @@ import {
   TestData
 } from '../../../../shared/utils/testing';
 import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
-import { OrderCancellerService } from '../../../../shared/services/order-canceller.service';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
@@ -38,6 +37,7 @@ import { LocalStorageService } from "../../../../shared/services/local-storage.s
 import { SyntheticInstrumentsService } from "../../services/synthetic-instruments.service";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
+import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -140,9 +140,9 @@ describe('TechChartComponent', () => {
           }
         },
         {
-          provide: OrderCancellerService,
+          provide: WsOrdersService,
           useValue: {
-            cancelOrder: jasmine.createSpy('cancelOrder').and.returnValue(new Subject())
+            cancelOrder: jasmine.createSpy('cancelOrders').and.returnValue(new Subject())
           }
         },
         {

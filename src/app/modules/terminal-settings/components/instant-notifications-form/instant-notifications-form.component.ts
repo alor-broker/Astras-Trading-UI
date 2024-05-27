@@ -29,7 +29,8 @@ extends ControlValueAccessorBaseComponent<InstantNotificationsSettings>
 implements OnInit {
   private readonly nonSwitchableNotifications = [
     OrdersInstantNotificationType.OrderSubmitFailed,
-    OrdersInstantNotificationType.OrderUpdateFailed
+    OrdersInstantNotificationType.OrderUpdateFailed,
+    OrdersInstantNotificationType.OrderCancelFailed
   ];
 
   editableNotificationTypes: { value: OrdersInstantNotificationType, enabled: boolean }[] = [];
