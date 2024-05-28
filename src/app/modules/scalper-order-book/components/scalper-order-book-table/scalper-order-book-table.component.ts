@@ -133,9 +133,11 @@ export class ScalperOrderBookTableComponent implements OnInit {
     e.preventDefault();
     e.stopPropagation();
 
-    if (orders.length > 0) {
+    const filteredOrders = orders.filter(o => !o.isDirty);
+
+    if (filteredOrders.length > 0) {
       this.cancelOrdersCommand.execute({
-        ordersToCancel: orders.map(x => ({
+        ordersToCancel: filteredOrders.map(x => ({
           orderId: x.orderId,
           exchange: x.exchange,
           portfolio: x.portfolio,
@@ -167,6 +169,10 @@ export class ScalperOrderBookTableComponent implements OnInit {
 
   isAllOrdersHaveSide(orders: CurrentOrderDisplay[], side: Side): boolean {
     return orders.length > 0 && orders.every(o => o.side === side);
+  }
+
+  hasDirtyOrders(orders: CurrentOrderDisplay[]): boolean {
+    return orders.some(o => o.isDirty);
   }
 
   getPriceDecimalSymbolsCount(settings: ScalperOrderBookExtendedSettings): number | null {

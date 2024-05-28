@@ -154,16 +154,20 @@
               <span (click)="cancelOrders($event, orders.orders)"
                     (mousedown)="$event.stopPropagation()"
                     class="orders-indicator limit-order fw-bold px-1 position-relative z-2"
+                    *ngrxLet="hasDirtyOrders(orders.orders) as isDirty"
                     [ngClass]="{
                     'bid': isAllOrdersHaveSide(orders.orders, ordersSides.Buy),
                     'ask': isAllOrdersHaveSide(orders.orders, ordersSides.Sell),
-                    'multiple': orders.orders.length > 1
+                    'multiple': orders.orders.length > 1,
+                    'dirty': isDirty
                     }"
                     [nz-tooltip]="t('scalperOrderBookScalperOrderBookTable.limitOrderTooltip')"
                     [nzTooltipMouseEnterDelay]="1"
                     [nzTooltipPlacement]="['right', 'left']"
+                    [nzTooltipTrigger]="isDirty ? null : 'hover'"
                     cdkDrag
                     [cdkDragData]="orders.orders"
+                    [cdkDragDisabled]="isDirty"
                     cdkDragBoundary=".orders-drag-boundary"
               >{{orders.volume}}</span>
             </ng-container>
@@ -174,16 +178,20 @@
               <span (click)="cancelOrders($event, orders.orders)"
                     (mousedown)="$event.stopPropagation()"
                     class="orders-indicator pl-2 position-relative z-2"
+                    *ngrxLet="hasDirtyOrders(orders.orders) as isDirty"
                     [ngClass]="{
                     'bid': isAllOrdersHaveSide(orders.orders, ordersSides.Buy),
                     'ask': isAllOrdersHaveSide(orders.orders, ordersSides.Sell),
-                    'multiple': orders.orders.length > 1
+                    'multiple': orders.orders.length > 1,
+                    'dirty': isDirty
                     }"
                     [nz-tooltip]="t('scalperOrderBookScalperOrderBookTable.' + tooltipKey)"
                     [nzTooltipMouseEnterDelay]="1"
                     [nzTooltipPlacement]="['right', 'left']"
+                    [nzTooltipTrigger]="isDirty ? null : 'hover'"
                     cdkDrag
                     [cdkDragData]="orders.orders"
+                    [cdkDragDisabled]="isDirty"
                     cdkDragBoundary=".orders-drag-boundary"
               >{{orderSymbol}}({{orders.volume}})</span>
             </ng-container>

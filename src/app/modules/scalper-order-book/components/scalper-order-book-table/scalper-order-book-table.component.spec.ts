@@ -70,6 +70,9 @@ describe('ScalperOrderBookTableComponent', () => {
       displayRange$: new Subject(),
       workingVolume$: new Subject(),
       scaleFactor$: new BehaviorSubject(1),
+      addLocalOrder: order => {},
+      removeLocalOrder: orderId => {},
+      destroy: () => {}
     } as ScalperOrderBookDataContext;
 
     fixture.detectChanges();

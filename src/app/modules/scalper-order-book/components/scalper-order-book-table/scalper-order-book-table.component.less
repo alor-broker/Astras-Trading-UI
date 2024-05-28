@@ -90,15 +90,23 @@
             color: @sell-color-accent;
           }
 
+          &.dirty {
+            color: @disabled-color;
+          }
+
           &.limit-order {
             color: @text-max-contrast-color;
 
             &.bid {
-              background-color: fade(@buy-color, 60%);;
+              background-color: fade(@buy-color, 60%);
             }
 
-            &.ask{
-              background-color: fade(@sell-color, 60%);;
+            &.ask {
+              background-color: fade(@sell-color, 60%);
+            }
+
+            &.dirty {
+              background-color: @disabled-color;
             }
           }
 
