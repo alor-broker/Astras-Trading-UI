@@ -11,6 +11,7 @@ import { NumberDisplayFormat } from '../../../../shared/models/enums/number-disp
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { NzMarks } from "ng-zorro-antd/slider";
 
 @Component({
   selector: 'ats-orderbook-settings',
@@ -21,7 +22,7 @@ export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<Orde
   readonly validationOptions = {
     depth: {
       min: 1,
-      max: 20
+      max: 50
     }
   };
   columnsOrderEnum = ColumnsOrder;
@@ -115,6 +116,13 @@ export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<Orde
   instrumentSelected(instrument: InstrumentKey | null): void {
     this.form!.controls.exchange.setValue(instrument?.exchange ?? null);
     this.form!.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+  }
+
+  getSliderMarks(minValue: number, maxValue: number): NzMarks {
+    return {
+      [minValue]: minValue.toString(),
+      [maxValue]: maxValue.toString(),
+    };
   }
 
   protected getUpdatedSettings(initialSettings: OrderbookSettings): Partial<OrderbookSettings> {

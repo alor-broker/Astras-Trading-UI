@@ -20,8 +20,6 @@
   "intervalError": "Value should be from {{min}} to {{max}}",
   "instrumentGroupError": "Select trading mode",
 
-  "intervalPlaceholder": "Value from {{min}} to {{max}}",
-
   "useOrderWidgetPopover": "When clicking on a price from the orderbook, an order pop-up will not appear, but the information in the order submit widget will change",
 
   "columnOrders": {

@@ -14,6 +14,7 @@ import { ScalperOrderBookModule } from '../scalper-order-book/scalper-order-book
 import { OrderbookTableVolumesAtTheEdgesComponent } from './components/orderbook-tables/orderbook-table-volumes-at-the-edges/orderbook-table-volumes-at-the-edges.component';
 import { OrderbookTableVolumesAtTheMiddleComponent } from './components/orderbook-tables/orderbook-table-volumes-at-the-middle/orderbook-table-volumes-at-the-middle.component';
 import { BaseChartDirective } from "ng2-charts";
+import { NzSliderModule } from "ng-zorro-antd/slider";
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { BaseChartDirective } from "ng2-charts";
         DragDropModule,
         NzResizeObserverModule,
         ScalperOrderBookModule,
-        BaseChartDirective
+        BaseChartDirective,
+        NzSliderModule
     ],
   exports: [
     OrderbookWidgetComponent
