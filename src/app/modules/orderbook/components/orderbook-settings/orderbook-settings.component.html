@@ -37,20 +37,17 @@
             <nz-collapse-panel [nzHeader]="t('orderbookSettings.viewSettingsHeader')" [nzActive]="deviceInfo.isMobile">
               <nz-form-item>
                 <nz-form-label nzRequired nzFor="depth">
-                  {{t('orderbookSettings.depthLabel')}}&nbsp;
-                  <span
-                    nz-typography
-                    nzType="warning"
-                    nz-tooltip
-                    [nzTooltipTitle]="depthWarning"
-                  >
-                    <i nz-icon nzTheme="outline" nzType="exclamation-circle"></i>
-                  </span>
-
-                  <ng-template #depthWarning>
-                    <span nz-typography nzType="warning">{{t('form.orderbookDepthWarning')}}</span>
-                  </ng-template>
+                  {{t('orderbookSettings.depthLabel')}}
                 </nz-form-label>
+
+                <span
+                  *ngIf="form.controls.depth.value > 20"
+                  nz-typography
+                  nzType="warning"
+                >
+                  {{t('form.orderbookDepthWarning')}}
+                </span>
+
                 <nz-form-control>
                   <nz-slider
                     [nzMin]="validationOptions.depth.min"
