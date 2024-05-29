@@ -16,6 +16,7 @@ import { ScalperMouseActionsFormComponent } from './components/scalper-mouse-act
 import { HotKeyInputComponent } from './components/hot-key-input/hot-key-input.component';
 import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
 import { DragDropModule } from "@angular/cdk/drag-drop";
+import { BadgesSettingsComponent } from "./components/badges-settings/badges-settings.component";
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
     PortfoliosCurrencyFormComponent,
     GeneralSettingsFormComponent,
     ScalperMouseActionsFormComponent,
-    HotKeyInputComponent
+    HotKeyInputComponent,
+    BadgesSettingsComponent
   ],
     imports: [
         SharedModule,
