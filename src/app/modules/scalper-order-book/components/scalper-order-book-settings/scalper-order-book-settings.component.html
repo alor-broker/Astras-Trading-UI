@@ -37,7 +37,21 @@
           </nz-collapse-panel>
           <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.displaySettingsHeader')">
             <nz-form-item>
-              <nz-form-label nzFor="depth" nzRequired>{{t('scalperOrderBookSettings.depthLabel')}}</nz-form-label>
+              <nz-form-label nzFor="depth" nzRequired>
+                {{t('scalperOrderBookSettings.depthLabel')}}&nbsp;
+                <span
+                  nz-typography
+                  nzType="warning"
+                  nz-tooltip
+                  [nzTooltipTitle]="depthWarning"
+                >
+                  <i nz-icon nzTheme="outline" nzType="exclamation-circle"></i>
+                </span>
+
+                <ng-template #depthWarning>
+                  <span nz-typography nzType="warning">{{t('form.orderbookDepthWarning')}}</span>
+                </ng-template>
+              </nz-form-label>
               <nz-form-control>
                 <nz-slider
                   [nzMin]="validationOptions.depth.min"
