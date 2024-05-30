@@ -31,6 +31,7 @@ import { Evaluation } from "../../../../shared/models/evaluation.model";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { toInstrumentKey } from "../../../../shared/utils/instruments";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { ScalperOrderBookWidgetSettings } from "../../models/scalper-order-book-settings.model";
 
 @Component({
   selector: 'ats-short-long-indicator',
@@ -46,6 +47,8 @@ export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
 
   shortLongValues$ = new BehaviorSubject<{ short: number, long: number } | null>(null);
 
+  widgetSettings$!: Observable<ScalperOrderBookWidgetSettings>;
+
   constructor(
     private readonly evaluationService: EvaluationService,
     private readonly destroyRef: DestroyRef
@@ -57,19 +60,19 @@ export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const widgetSettings$ = this.dataContext.extendedSettings$.pipe(
+    this.widgetSettings$ = this.dataContext.extendedSettings$.pipe(
       map(s => s.widgetSettings),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    const instrumentKey$ = widgetSettings$.pipe(
+    const instrumentKey$ = this.widgetSettings$.pipe(
       map(s => toInstrumentKey(s)),
       distinctUntilChanged((prev, curr) => isInstrumentEqual(prev, curr)),
       tap(() => this.shortLongValues$.next(null)),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    const updateInterval$ = widgetSettings$.pipe(
+    const updateInterval$ = this.widgetSettings$.pipe(
       map(s => s.shortLongIndicatorsUpdateIntervalSec ?? 60),
       distinct(),
       shareReplay({ bufferSize: 1, refCount: true })

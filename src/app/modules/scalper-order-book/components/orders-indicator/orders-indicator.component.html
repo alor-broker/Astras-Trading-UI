@@ -3,7 +3,9 @@
     *ngIf="visible"
     [nzType]="direction === 'up' ? 'up-square' : 'down-square'"
     nz-icon nzTheme="outline"
-    [nz-tooltip]="direction === 'up' ? t('scalperOrderBookOrdersIndicator.upTooltip') : t('scalperOrderBookOrdersIndicator.downTooltip')"
+    [nz-tooltip]="hideTooltip
+      ? null
+      : direction === 'up' ? t('scalperOrderBookOrdersIndicator.upTooltip') : t('scalperOrderBookOrdersIndicator.downTooltip')"
   >
   </span>
 </ng-container>

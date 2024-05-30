@@ -113,6 +113,7 @@
            [atsHoverItemData]="{price: row.price}"
       >
         <div
+          *ngrxLet="dataContext.extendedSettings$ | async as es"
           [ngClass]="getOrdersCellClasses(row)"
           class="table-cell"
           cdkDropList
@@ -159,7 +160,7 @@
                     'ask': isAllOrdersHaveSide(orders.orders, ordersSides.Sell),
                     'multiple': orders.orders.length > 1
                     }"
-                    [nz-tooltip]="t('scalperOrderBookScalperOrderBookTable.limitOrderTooltip')"
+                    [nz-tooltip]="es?.widgetSettings?.hideTooltips ? null : t('scalperOrderBookScalperOrderBookTable.limitOrderTooltip')"
                     [nzTooltipMouseEnterDelay]="1"
                     [nzTooltipPlacement]="['right', 'left']"
                     cdkDrag
@@ -179,7 +180,7 @@
                     'ask': isAllOrdersHaveSide(orders.orders, ordersSides.Sell),
                     'multiple': orders.orders.length > 1
                     }"
-                    [nz-tooltip]="t('scalperOrderBookScalperOrderBookTable.' + tooltipKey)"
+                    [nz-tooltip]="es?.widgetSettings?.hideTooltips ? null : t('scalperOrderBookScalperOrderBookTable.' + tooltipKey)"
                     [nzTooltipMouseEnterDelay]="1"
                     [nzTooltipPlacement]="['right', 'left']"
                     cdkDrag

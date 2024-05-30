@@ -85,12 +85,18 @@
           </div>
 
           <div class="position-absolute top-0 end-0">
-            <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.up ?? false"
-                                  direction="up"></ats-orders-indicator>
+            <ats-orders-indicator
+              [visible]="(hiddenOrdersIndicators$ | async)?.up ?? false"
+              [hideTooltip]="settings.widgetSettings.hideTooltips ?? false"
+              direction="up"
+            ></ats-orders-indicator>
           </div>
           <div class="position-absolute bottom-0 end-0">
-            <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.down ?? false"
-                                  direction="down"></ats-orders-indicator>
+            <ats-orders-indicator
+              [visible]="(hiddenOrdersIndicators$ | async)?.down ?? false"
+              [hideTooltip]="settings.widgetSettings.hideTooltips ?? false"
+              direction="down"
+            ></ats-orders-indicator>
           </div>
 
           <div

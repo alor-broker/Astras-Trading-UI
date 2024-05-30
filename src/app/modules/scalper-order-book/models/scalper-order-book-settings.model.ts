@@ -92,6 +92,7 @@ export interface ScalperOrderBookWidgetSettings extends WidgetSettings, Instrume
   shortLongIndicatorsPanelSlot?: PanelSlots.BottomFloatingPanel | PanelSlots.TopPanel;
   shortLongIndicatorsUpdateIntervalSec?: number;
   showLimitOrdersVolumeIndicators?: boolean;
+  hideTooltips?: boolean;
   rowHeight?: number;
   fontSize?: number;
   instrumentLinkedSettings?: {
