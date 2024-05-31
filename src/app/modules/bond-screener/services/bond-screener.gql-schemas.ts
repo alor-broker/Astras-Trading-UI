@@ -7,6 +7,7 @@
   CouponSchema,
   FinancialAttributesSchema,
   OfferSchema,
+  PageInfoSchema,
   TradingDetailsSchema,
 } from "../../../../generated/graphql.schemas";
 import {
@@ -158,7 +159,8 @@ export function getBondScreenerResponseSchema(columnIds: string[]): ZodObject<Zo
     >;
 
   const GetBondScreenerBondsConnectionSchema: ZodObject<ZodPropertiesOf<GetBondScreenerBondsConnection>> = object({
-    edges: GetBondScreenerEdgeConnectionSchema.array()
+    edges: GetBondScreenerEdgeConnectionSchema.array(),
+    pageInfo: PageInfoSchema()
   });
 
   type GetBondScreenerBondQuery = Modify<

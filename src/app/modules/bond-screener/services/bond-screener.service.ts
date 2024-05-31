@@ -72,6 +72,7 @@ export class BondScreenerService {
       bondScreenerResponseSchema,
       {
         first: args.first,
+        after: args.after,
         where: { value: args.where, type: 'BondFilterInput' },
         order: { value: args.order, type: '[BondSortInput!]' },
       },
