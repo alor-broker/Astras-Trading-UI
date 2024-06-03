@@ -20,7 +20,7 @@
   "intervalError": "Value should be from {{min}} to {{max}}",
   "instrumentGroupError": "Select trading mode",
 
-  "useOrderWidgetPopover": "When clicking on a price from the orderbook, an order pop-up will not appear, but the information in the order submit widget will change",
+  "useOrderWidgetPopover": "The order pop-up will not appear when clicking on the price from the orderbook, but the information in the order submit widget will change",
 
   "columnOrders": {
     "volumesAtTheEdges":  "Volumes at the edges",
