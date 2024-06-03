@@ -68,6 +68,9 @@ export class ScalperOrderBookTableComponent implements OnInit {
   dataContext!: ScalperOrderBookDataContext;
 
   @Input()
+  hideTooltips = false;
+
+  @Input()
   isActive = false;
 
   readonly hoveredRow$ = new Subject<{ price: number } | null>();

@@ -9,7 +9,7 @@
           }"
           class="fw-bold"
           nz-tooltip
-          [nzTooltipTitle]="vm.settings.hideTooltips ? null : t('scalperOrderBookTopFloatingPanel.priceDayChangePercentTooltip')"
+          [nzTooltipTitle]="hideTooltips ? null : t('scalperOrderBookTopFloatingPanel.priceDayChangePercentTooltip')"
           [nzTooltipMouseEnterDelay]="1"
         >
           {{ priceDayChangePercent }}%
@@ -21,7 +21,7 @@
       class="lh-1"
       *ngIf="currentScaleFactor$ | async as currentScaleFactor"
       nz-tooltip
-      [nzTooltipTitle]="vm.settings.hideTooltips ? null : t('scalperOrderBookTopFloatingPanel.scaleFactorTooltip')"
+      [nzTooltipTitle]="hideTooltips ? null : t('scalperOrderBookTopFloatingPanel.scaleFactorTooltip')"
       [nzTooltipMouseEnterDelay]="1"
     >
       <span class="fw-bold">x{{currentScaleFactor}}</span>

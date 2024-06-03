@@ -14,6 +14,7 @@ import {
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 import { map } from "rxjs/operators";
+import { ScalperOrderBookWidgetSettings } from "../../models/scalper-order-book-settings.model";
 
 export interface ScalperOrderBookSharedContext {
   readonly workingVolume$: Observable<number | null>;
@@ -50,6 +51,8 @@ export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext,
 
   gridSettings$!: Observable<{ rowHeight: number, fontSize: number }>;
 
+  hideTooltips$!: Observable<boolean>;
+
   constructor(private readonly widgetSettingsService: WidgetSettingsService) {
   }
 
@@ -67,6 +70,11 @@ export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext,
       distinctUntilChanged((prev, curr) => prev.fontSize === curr.fontSize && prev.rowHeight === curr.rowHeight),
       shareReplay({ bufferSize: 1, refCount: true })
     );
+
+    this.hideTooltips$ = this.widgetSettingsService.getSettings<ScalperOrderBookWidgetSettings>(this.guid)
+      .pipe(
+        map(s => s.hideTooltips ?? false)
+      );
   }
 
   setWorkingVolume(value: number): void {

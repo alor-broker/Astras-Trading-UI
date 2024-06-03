@@ -14,7 +14,6 @@ import { map } from 'rxjs/operators';
 import { MathHelper } from '../../../../shared/utils/math-helper';
 import { ScalperOrderBookPositionState } from '../../models/scalper-order-book.model';
 import { ScalperOrderBookDataContextService } from '../../services/scalper-order-book-data-context.service';
-import { ScalperOrderBookExtendedSettings } from "../../models/scalper-order-book-data-context.model";
 
 @Component({
   selector: 'ats-current-position-panel',
@@ -25,13 +24,16 @@ export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
   @Input({required: true})
   guid!: string;
 
+  @Input()
+  hideTooltips = false;
+
   orderBookPosition$!: Observable<ScalperOrderBookPositionState | null>;
 
   lossOrProfitDisplayType$ = new BehaviorSubject<'points' | 'percentage'>('points');
 
-  settings$!: Observable<ScalperOrderBookExtendedSettings>;
-
-  constructor(private readonly dataContextService: ScalperOrderBookDataContextService) {
+  constructor(
+    private readonly dataContextService: ScalperOrderBookDataContextService
+  ) {
   }
 
   changeLossOrProfitDisplayType(): void {
@@ -43,7 +45,6 @@ export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.dataContextService.getSettingsStream(this.guid);
     this.orderBookPosition$ = this.getPositionStateStream();
   }
 
@@ -52,10 +53,12 @@ export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
   }
 
   private getPositionStateStream(): Observable<ScalperOrderBookPositionState | null> {
+    const settings$ = this.dataContextService.getSettingsStream(this.guid);
+
     return combineLatest([
-      this.settings$,
-      this.dataContextService.getOrderBookStream(this.settings$),
-      this.dataContextService.getOrderBookPositionStream(this.settings$, this.dataContextService.getOrderBookPortfolio())
+      settings$,
+      this.dataContextService.getOrderBookStream(settings$),
+      this.dataContextService.getOrderBookPositionStream(settings$, this.dataContextService.getOrderBookPortfolio())
     ]).pipe(
       map(([settings, orderBook, position]) => {
         if (!position || position.qtyTFuture === 0 || orderBook.rows.a.length === 0 || orderBook.rows.b.length === 0) {

@@ -20,6 +20,8 @@ export class LimitOrdersVolumeIndicatorComponent implements OnInit {
   side!: Side;
   @Input({ required: true })
   dataContext!: ScalperOrderBookDataContext;
+  @Input()
+  hideTooltips = false;
 
   ordersVolume$!: Observable<number>;
 

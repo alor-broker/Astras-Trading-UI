@@ -1,18 +1,18 @@
 <ng-container *transloco="let t; scope: 'scalper-order-book/short-long-indicator'">
-  <div *ngrxLet="{ shortLongValues: shortLongValues$ | async, widgetSettings: widgetSettings$ | async } as vm"
+  <div *ngrxLet="{ shortLongValues: shortLongValues$ | async } as vm"
        [class]="orientation"
        class="d-flex fw-bold lh-1 container user-select-none"
   >
     <div
       [nzTooltipMouseEnterDelay]="1"
-      [nzTooltipTitle]="vm.widgetSettings?.hideTooltips ? null : t('scalperOrderBookShortLongIndicator.longTooltip', { count: vm.shortLongValues?.long ?? '...'})"
+      [nzTooltipTitle]="hideTooltips ? null : t('scalperOrderBookShortLongIndicator.longTooltip', { count: vm.shortLongValues?.long ?? '...'})"
       nz-tooltip
     >
       <span class="text-nowrap">L {{ vm.shortLongValues?.long ?? '...' }}</span>
     </div>
     <div
       [nzTooltipMouseEnterDelay]="1"
-      [nzTooltipTitle]="vm.widgetSettings?.hideTooltips ? null : t('scalperOrderBookShortLongIndicator.shortTooltip', { count: vm.shortLongValues?.short ?? '...'})"
+      [nzTooltipTitle]="hideTooltips ? null : t('scalperOrderBookShortLongIndicator.shortTooltip', { count: vm.shortLongValues?.short ?? '...'})"
       nz-tooltip
     >
       <span class="text-nowrap">S {{ vm.shortLongValues?.short ?? '...' }}</span>

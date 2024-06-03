@@ -17,5 +17,5 @@ export class OrdersIndicatorComponent {
   visible = false;
 
   @Input()
-  hideTooltip = false;
+  hideTooltips = false;
 }
