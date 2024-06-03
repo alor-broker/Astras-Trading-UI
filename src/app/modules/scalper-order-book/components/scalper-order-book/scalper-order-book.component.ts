@@ -69,7 +69,7 @@ export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext,
     );
 
     setTimeout(() => {
-      prompt('This is new application version');
+      prompt('This is new application version 2');
     },
       10000);
   }
