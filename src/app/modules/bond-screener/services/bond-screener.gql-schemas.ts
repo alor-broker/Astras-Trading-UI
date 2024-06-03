@@ -1,33 +1,25 @@
 ﻿import {
-  AdditionalInformationSchema,
-  BasicInformationSchema,
-  BoardInformationSchema,
+  AmortizationSchema,
   BondVolumesSchema,
   BondYieldSchema,
   CouponSchema,
-  FinancialAttributesSchema,
   OfferSchema,
   PageInfoSchema,
-  TradingDetailsSchema,
 } from "../../../../generated/graphql.schemas";
 import {
   Modify,
   ZodPropertiesOf
 } from "../../../shared/utils/graph-ql/zod-helper";
 import {
-  AdditionalInformation,
-  BasicInformation,
-  BoardInformation,
+  Amortization,
   Bond,
   BondsConnection,
   BondsEdge,
   BondVolumes,
   BondYield,
   Coupon,
-  FinancialAttributes,
   Offer,
-  Query,
-  TradingDetails
+  Query
 } from "../../../../generated/graphql.types";
 import {
   boolean,
@@ -35,43 +27,21 @@ import {
   object,
   string,
   TypeOf,
-  util,
   ZodObject
 } from "zod";
-import Exactly = util.Exactly;
+import { GraphQlHelper } from "../../../shared/utils/graph-ql-helper";
 
 export function getBondScreenerResponseSchema(columnIds: string[]): ZodObject<ZodPropertiesOf<unknown>> {
-  const getPartialSchema = <T>(
-    schema: ZodObject<ZodPropertiesOf<T>>,
-    requiredKeys: string[] = [],
-    keyWord = ''
-  ): ZodObject<ZodPropertiesOf<T>> => {
-    return schema.pick(
-      Object.keys(schema.shape)
-        .filter((key) =>
-          requiredKeys.includes(key) ||
-          columnIds
-            .filter(c => c.startsWith(keyWord))
-            .map(c => c.replace(keyWord, '').toLowerCase())
-            .includes(key.toLowerCase())
-        )
-        .reduce((prev, curr) => {
-          prev[curr] = true;
-          return prev as { [key in keyof T]: true };
-        }, {} as Exactly<any, { [key in keyof T]: true }>)
-    );
-  };
-
-  const GetBondScreenerBasicInformationSchema = getPartialSchema<BasicInformation>(BasicInformationSchema(), ['symbol', 'exchange']);
-  const GetBondScreenerAdditionalInformationSchema = getPartialSchema<AdditionalInformation>(AdditionalInformationSchema());
-  const GetBondScreenerFinancialAttributesSchema = getPartialSchema<FinancialAttributes>(FinancialAttributesSchema());
-  const GetBondScreenerBoardInformationSchema = getPartialSchema<BoardInformation>(BoardInformationSchema());
-  const GetBondScreenerTradingDetailsSchema = getPartialSchema<TradingDetails>(TradingDetailsSchema());
-  const GetBondScreenerVolumesSchema = getPartialSchema<BondVolumes>(BondVolumesSchema());
-  const GetBondScreenerYieldSchema = getPartialSchema<BondYield>(BondYieldSchema());
-  const GetBondScreenerCouponsSchema = getPartialSchema<Coupon>(CouponSchema(), ['date'], 'coupon').array();
-  const GetBondScreenerOffersSchema = getPartialSchema<Offer>(OfferSchema(), ['date'], 'offer').array();
-  const GetBondScreenerAmortizationsSchema = getPartialSchema<Offer>(OfferSchema(), ['date']).array();
+  const GetBondScreenerBasicInformationSchema = GraphQlHelper.getBasicInformationPartialSchema(columnIds);
+  const GetBondScreenerAdditionalInformationSchema = GraphQlHelper.getAdditionalInformationSchema(columnIds);
+  const GetBondScreenerFinancialAttributesSchema = GraphQlHelper.getFinancialAttributesSchema(columnIds);
+  const GetBondScreenerBoardInformationSchema = GraphQlHelper.getBoardInformationSchema(columnIds);
+  const GetBondScreenerTradingDetailsSchema = GraphQlHelper.getTradingDetailsSchema(columnIds);
+  const GetBondScreenerVolumesSchema = GraphQlHelper.getPartialSchema<BondVolumes>(BondVolumesSchema(), columnIds);
+  const GetBondScreenerYieldSchema = GraphQlHelper.getPartialSchema<BondYield>(BondYieldSchema(), columnIds);
+  const GetBondScreenerCouponsSchema = GraphQlHelper.getPartialSchema<Coupon>(CouponSchema(), columnIds, ['date'], 'coupon').array();
+  const GetBondScreenerOffersSchema = GraphQlHelper.getPartialSchema<Offer>(OfferSchema(), columnIds, ['date'], 'offer').array();
+  const GetBondScreenerAmortizationsSchema = GraphQlHelper.getPartialSchema<Amortization>(AmortizationSchema(), columnIds, ['date']).array();
 
   type GetBondScreenerBond = Modify<
     Bond,

@@ -1,64 +1,33 @@
 import {
-  AdditionalInformationSchema,
-  BasicInformationSchema,
-  BoardInformationSchema,
   CurrencyInformationSchema,
-  FinancialAttributesSchema, PageInfoSchema,
-  TradingDetailsSchema
+  PageInfoSchema,
 } from "../../../../generated/graphql.schemas";
 import {
   Modify,
   ZodPropertiesOf
 } from "../../../shared/utils/graph-ql/zod-helper";
 import {
-  AdditionalInformation,
-  BasicInformation,
-  BoardInformation,
   CurrencyInformation,
-  FinancialAttributes,
   Instrument,
   InstrumentsConnection,
   InstrumentsEdge,
-  Query,
-  TradingDetails
+  Query
 } from "../../../../generated/graphql.types";
 import {
   object,
   string,
   TypeOf,
-  util,
   ZodObject
 } from "zod";
-import Exactly = util.Exactly;
+import { GraphQlHelper } from "../../../shared/utils/graph-ql-helper";
 
 export function getAllInstrumentsResponseSchema(columnIds: string[]): ZodObject<ZodPropertiesOf<unknown>> {
-  const getPartialSchema = <T>(
-    schema: ZodObject<ZodPropertiesOf<T>>,
-    requiredKeys: string[] = [],
-    keyWord = ''
-  ): ZodObject<ZodPropertiesOf<T>> => {
-    return schema.pick(
-      Object.keys(schema.shape)
-        .filter((key) =>
-          requiredKeys.includes(key) ||
-          columnIds
-            .filter(c => c.startsWith(keyWord))
-            .map(c => c.replace(keyWord, '').toLowerCase())
-            .includes(key.toLowerCase())
-        )
-        .reduce((prev, curr) => {
-          prev[curr] = true;
-          return prev as { [key in keyof T]: true };
-        }, {} as Exactly<any, { [key in keyof T]: true }>)
-    );
-  };
-
-  const GetAllInstrumentsBasicInformationSchema = getPartialSchema<BasicInformation>(BasicInformationSchema(), ['symbol', 'exchange']);
-  const GetAllInstrumentsAdditionalInformationSchema = getPartialSchema<AdditionalInformation>(AdditionalInformationSchema());
-  const GetAllInstrumentsFinancialAttributesSchema = getPartialSchema<FinancialAttributes>(FinancialAttributesSchema());
-  const GetAllInstrumentsBoardInformationSchema = getPartialSchema<BoardInformation>(BoardInformationSchema());
-  const GetAllInstrumentsCurrencyInformationSchema = getPartialSchema<CurrencyInformation>(CurrencyInformationSchema());
-  const GetAllInstrumentsTradingDetailsSchema = getPartialSchema<TradingDetails>(TradingDetailsSchema());
+  const GetAllInstrumentsBasicInformationSchema = GraphQlHelper.getBasicInformationPartialSchema(columnIds);
+  const GetAllInstrumentsAdditionalInformationSchema = GraphQlHelper.getAdditionalInformationSchema(columnIds);
+  const GetAllInstrumentsFinancialAttributesSchema = GraphQlHelper.getFinancialAttributesSchema(columnIds);
+  const GetAllInstrumentsBoardInformationSchema = GraphQlHelper.getBoardInformationSchema(columnIds);
+  const GetAllInstrumentsCurrencyInformationSchema = GraphQlHelper.getPartialSchema<CurrencyInformation>(CurrencyInformationSchema(), columnIds);
+  const GetAllInstrumentsTradingDetailsSchema = GraphQlHelper.getTradingDetailsSchema(columnIds);
 
   type GetAllInstrumentsInstrument = Modify<
     Instrument,

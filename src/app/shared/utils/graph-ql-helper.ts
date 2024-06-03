@@ -1,20 +1,32 @@
 import { DefaultTableFilters } from "../models/settings/table-settings.model";
 import {
+  AdditionalInformation,
+  BasicInformation,
+  BoardInformation,
   BooleanOperationFilterInput,
   DateTimeOperationFilterInput,
   DecimalOperationFilterInput,
+  FinancialAttributes,
   InputMaybe,
   IntOperationFilterInput,
-  StringOperationFilterInput
+  StringOperationFilterInput,
+  TradingDetails
 } from "../../../generated/graphql.types";
-import { ZodArray, ZodLazy, ZodNullable, ZodObject, ZodOptional, ZodRawShape, ZodTypeAny } from "zod";
+import { util, ZodArray, ZodLazy, ZodNullable, ZodObject, ZodOptional, ZodRawShape, ZodTypeAny } from "zod";
 import {
+  AdditionalInformationSchema,
+  BasicInformationSchema,
+  BoardInformationSchema,
   BooleanOperationFilterInputSchema,
   DateTimeOperationFilterInputSchema,
   DecimalOperationFilterInputSchema,
+  FinancialAttributesSchema,
   IntOperationFilterInputSchema,
-  StringOperationFilterInputSchema
+  StringOperationFilterInputSchema,
+  TradingDetailsSchema
 } from "../../../generated/graphql.schemas";
+import { ZodPropertiesOf } from "./graph-ql/zod-helper";
+import Exactly = util.Exactly;
 
 enum FilterType {
   String = 'string',
@@ -62,6 +74,44 @@ const BOOLEAN_FILTER_SCHEMA_STRING = JSON.stringify(BooleanOperationFilterInputS
 const DATE_FILTER_SCHEMA_STRING = JSON.stringify(DateTimeOperationFilterInputSchema().shape);
 
 export class GraphQlHelper {
+  static getPartialSchema<T>(
+    schema: ZodObject<ZodPropertiesOf<T>>,
+    keysToInclude: string[],
+    requiredKeys: string[] = [],
+    keyWord = ''
+  ): ZodObject<ZodPropertiesOf<T>> {
+    return schema.pick(
+      Object.keys(schema.shape)
+        .filter((key) =>
+          requiredKeys.includes(key) ||
+          keysToInclude
+            .filter(c => c.startsWith(keyWord))
+            .map(c => c.replace(keyWord, '').toLowerCase())
+            .includes(key.toLowerCase())
+        )
+        .reduce((prev, curr) => {
+          prev[curr] = true;
+          return prev as { [key in keyof T]: true };
+        }, {} as Exactly<any, { [key in keyof T]: true }>)
+    );
+  }
+
+  static getBasicInformationPartialSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<BasicInformation>> {
+    return this.getPartialSchema<BasicInformation>(BasicInformationSchema(), keysToInclude, ['symbol', 'exchange']);
+  }
+  static getAdditionalInformationSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<AdditionalInformation>> {
+    return this.getPartialSchema<AdditionalInformation>(AdditionalInformationSchema(), keysToInclude);
+  }
+  static getFinancialAttributesSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<FinancialAttributes>> {
+    return this.getPartialSchema<FinancialAttributes>(FinancialAttributesSchema(), keysToInclude);
+  }
+  static getBoardInformationSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<BoardInformation>> {
+    return this.getPartialSchema<BoardInformation>(BoardInformationSchema(), keysToInclude);
+  }
+  static getTradingDetailsSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<TradingDetails>> {
+    return this.getPartialSchema<TradingDetails>(TradingDetailsSchema(), keysToInclude);
+  }
+
   static parseToGqlFiltersIntersection<T extends { and?: InputMaybe<T[]> }>(filters: DefaultTableFilters, schema: ZodObject<ZodRawShape>): T {
     const schemaKeys = this.zodKeys(schema);
 
