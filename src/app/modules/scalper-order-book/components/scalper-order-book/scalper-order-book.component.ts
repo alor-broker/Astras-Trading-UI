@@ -67,11 +67,6 @@ export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext,
       distinctUntilChanged((prev, curr) => prev.fontSize === curr.fontSize && prev.rowHeight === curr.rowHeight),
       shareReplay({ bufferSize: 1, refCount: true })
     );
-
-    setTimeout(() => {
-      prompt('This is new application version 2');
-    },
-      10000);
   }
 
   setWorkingVolume(value: number): void {
