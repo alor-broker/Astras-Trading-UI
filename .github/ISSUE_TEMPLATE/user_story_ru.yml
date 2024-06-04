@@ -7,8 +7,11 @@ labels:
 body:
   - type: textarea
     id: user_story
+    validations:
+      required: true
     attributes:
-      label: UserStory
+      label: Пользовательская история
+      render: multiline
       description: |
         Опишите вашу фичу в формате User Story.
         Формат:
@@ -16,20 +19,11 @@ body:
         КОГДА: [действие или событие]
         ТОГДА: [ожидаемый результат или реакция]
         ПРИ ЭТОМ: [Дополнительные данные]
-        Пример:
+      placeholder: |
         ДАНО: Я клиент Астраса
         КОГДА: Я создаю виджет Блоттер
         ТОГДА: Он должен появлятся на доске Астраса
         ПРИ ЭТОМ: Он должен быть стандартного размера.
-      placeholder: |
-        ДАНО: [контекст или пользователь]
-        КОГДА: [действие или событие]
-        ТОГДА: [ожидаемый результат или реакция]
-        ПРИ ЭТОМ: [Дополнительные данные]
-    validations:
-      required: true
-    attributes:
-      render: multiline
   - type: checkboxes
     id: terms
     attributes:
