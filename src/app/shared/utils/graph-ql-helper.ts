@@ -1,25 +1,32 @@
 import { DefaultTableFilters } from "../models/settings/table-settings.model";
-import { GraphQlFilter, GraphQlFilters } from "../models/graph-ql.model";
 import {
+  AdditionalInformation,
+  BasicInformation,
+  BoardInformation,
   BooleanOperationFilterInput,
   DateTimeOperationFilterInput,
   DecimalOperationFilterInput,
+  FinancialAttributes,
   InputMaybe,
   IntOperationFilterInput,
-  StringOperationFilterInput
+  StringOperationFilterInput,
+  TradingDetails
 } from "../../../generated/graphql.types";
-import { ZodArray, ZodLazy, ZodNullable, ZodObject, ZodOptional, ZodRawShape, ZodTypeAny } from "zod";
+import { util, ZodArray, ZodLazy, ZodNullable, ZodObject, ZodOptional, ZodRawShape, ZodTypeAny } from "zod";
 import {
+  AdditionalInformationSchema,
+  BasicInformationSchema,
+  BoardInformationSchema,
   BooleanOperationFilterInputSchema,
   DateTimeOperationFilterInputSchema,
   DecimalOperationFilterInputSchema,
+  FinancialAttributesSchema,
   IntOperationFilterInputSchema,
-  StringOperationFilterInputSchema
+  StringOperationFilterInputSchema,
+  TradingDetailsSchema
 } from "../../../generated/graphql.schemas";
-
-interface FieldsMapping {
-  [parentField: string]: string[];
-}
+import { ZodPropertiesOf } from "./graph-ql/zod-helper";
+import Exactly = util.Exactly;
 
 enum FilterType {
   String = 'string',
@@ -67,6 +74,44 @@ const BOOLEAN_FILTER_SCHEMA_STRING = JSON.stringify(BooleanOperationFilterInputS
 const DATE_FILTER_SCHEMA_STRING = JSON.stringify(DateTimeOperationFilterInputSchema().shape);
 
 export class GraphQlHelper {
+  static getPartialSchema<T>(
+    schema: ZodObject<ZodPropertiesOf<T>>,
+    keysToInclude: string[],
+    requiredKeys: string[] = [],
+    keyWord = ''
+  ): ZodObject<ZodPropertiesOf<T>> {
+    return schema.pick(
+      Object.keys(schema.shape)
+        .filter((key) =>
+          requiredKeys.includes(key) ||
+          keysToInclude
+            .filter(c => c.startsWith(keyWord))
+            .map(c => c.replace(keyWord, '').toLowerCase())
+            .includes(key.toLowerCase())
+        )
+        .reduce((prev, curr) => {
+          prev[curr] = true;
+          return prev as { [key in keyof T]: true };
+        }, {} as Exactly<any, { [key in keyof T]: true }>)
+    );
+  }
+
+  static getBasicInformationPartialSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<BasicInformation>> {
+    return this.getPartialSchema<BasicInformation>(BasicInformationSchema(), keysToInclude, ['symbol', 'exchange']);
+  }
+  static getAdditionalInformationSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<AdditionalInformation>> {
+    return this.getPartialSchema<AdditionalInformation>(AdditionalInformationSchema(), keysToInclude);
+  }
+  static getFinancialAttributesSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<FinancialAttributes>> {
+    return this.getPartialSchema<FinancialAttributes>(FinancialAttributesSchema(), keysToInclude);
+  }
+  static getBoardInformationSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<BoardInformation>> {
+    return this.getPartialSchema<BoardInformation>(BoardInformationSchema(), keysToInclude);
+  }
+  static getTradingDetailsSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<TradingDetails>> {
+    return this.getPartialSchema<TradingDetails>(TradingDetailsSchema(), keysToInclude);
+  }
+
   static parseToGqlFiltersIntersection<T extends { and?: InputMaybe<T[]> }>(filters: DefaultTableFilters, schema: ZodObject<ZodRawShape>): T {
     const schemaKeys = this.zodKeys(schema);
 
@@ -91,96 +136,6 @@ export class GraphQlHelper {
       ));
 
     return { and: reqFilters } as T;
-  }
-
-  // Parse applied filters to graphQL filters
-  static parseFilters(filters: DefaultTableFilters, nestedFields: FieldsMapping, filterTypes: FieldsMapping): GraphQlFilters {
-    const parsedFilters = Object.keys(filters)
-      .filter(key =>
-        filters[key] != null &&
-        (
-          (typeof filters[key] === 'number') ||
-          (typeof filters[key] === 'boolean') ||
-          (filters[key] as string | string[]).length > 0
-        )
-      )
-      .reduce((acc, key) => {
-        const parentField = Object.keys(nestedFields)
-          .find(k =>
-            key.endsWith('From')
-              ? nestedFields[k].includes(key.replace('From', ''))
-              : key.endsWith('To')
-                ? nestedFields[k].includes(key.replace('To', ''))
-                : nestedFields[k].includes(key)
-          );
-
-        if (parentField == null) {
-          return acc;
-        }
-
-        const filterValue = this.getFilterValue(filterTypes, key, filters[key]!);
-
-        if (filterValue == null) {
-          return acc;
-        }
-
-        if (parentField === 'rootFields') {
-          acc.push(filterValue);
-        } else {
-          acc.push({
-            [parentField]: filterValue
-          });
-        }
-
-        return acc;
-      }, [] as (GraphQlFilter | GraphQlFilters)[]);
-
-    return {
-      and: parsedFilters
-    };
-  }
-
-  private static getFilterValue(
-    fieldTypes: FieldsMapping,
-    filterName: string,
-    filterValue: string | string[] | boolean | number
-  ): GraphQlFilter | GraphQlFilters | null {
-    const filterType = Object.keys(fieldTypes).find(key => fieldTypes[key].includes(filterName));
-
-    if (filterType === 'multiSelect') {
-      return {
-        or: (filterValue as string[]).map(value => ({ [filterName]: { eq: value } }))
-      };
-    }
-
-    if (filterType === 'interval') {
-      if (filterName.includes('From')) {
-        return { [filterName.replace('From', '')]: { gte: Number(filterValue) } };
-      }
-      return { [filterName.replace('To', '')]: { lte: Number(filterValue) } };
-    }
-
-    if (filterType === 'bool') {
-      return { [filterName]: { eq: filterValue }};
-    }
-
-    if (filterType === 'date') {
-      const [day, month, year] = (filterValue as string).split('.').map(d => +d);
-      const filterDate = new Date(year, month - 1, day);
-
-      if (isNaN(filterDate.getTime())) {
-        return null;
-      }
-
-      const parsedDate = filterDate.toISOString();
-
-      if (filterName.includes('From')) {
-        return { [filterName.replace('From', '')]: { gte: parsedDate } };
-      }
-      return { [filterName.replace('To', '')]: { lte: parsedDate } };
-    }
-
-    return { [filterName]: { contains: filterValue }};
   }
 
   // get zod object keys recursively

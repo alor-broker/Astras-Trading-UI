@@ -20,10 +20,6 @@ import {
   withLatestFrom
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  AllInstrumentsNode,
-  AllInstrumentsResponse
-} from "../../model/all-instruments.model";
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.model";
 import { mapWith } from '../../../../shared/utils/observable-helper';
@@ -56,15 +52,16 @@ import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import {
   LazyLoadingBaseTableComponent
 } from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
-import {
-  GraphQlEdge,
-  GraphQlPageInfo,
-  GraphQlSort,
-  GraphQlSortType
-} from "../../../../shared/models/graph-ql.model";
 import { BoardsService } from "../../services/boards.service";
+import {
+  Instrument,
+  InstrumentModelSortInput,
+  InstrumentsEdge,
+  PageInfo,
+  SortEnumType
+} from "../../../../../generated/graphql.types";
 
-interface AllInstrumentsNodeDisplay extends AllInstrumentsNode {
+interface AllInstrumentsNodeDisplay extends Instrument {
   id: string;
 }
 
@@ -76,8 +73,8 @@ interface AllInstrumentsNodeDisplay extends AllInstrumentsNode {
 export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
   AllInstrumentsNodeDisplay,
   DefaultTableFilters,
-  GraphQlPageInfo,
-  GraphQlSort
+  PageInfo,
+  InstrumentModelSortInput
 >
 implements OnInit, OnDestroy {
   @Input({ required: true }) guid!: string;
@@ -89,7 +86,7 @@ implements OnInit, OnDestroy {
       displayName: 'Тикер',
       width: 80,
       minWidth: 80,
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.symbol!,
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.symbol,
       sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'symbol'], dir),
       filterData: {
         filterName: 'symbol',
@@ -100,7 +97,7 @@ implements OnInit, OnDestroy {
     {
       id: 'shortName',
       displayName: 'Название',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.shortName!,
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.shortName ?? '',
       sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'shortName'], dir),
       filterData: {
         filterName: 'shortName',
@@ -113,7 +110,7 @@ implements OnInit, OnDestroy {
       id: 'currency',
       sourceField: 'nominal',
       displayName: 'Валюта',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.currencyInformation!.nominal!,
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.currencyInformation!.nominal ?? '',
       sortChangeFn: (dir): void => this.sortChange(['currencyInformation', 'nominal'], dir),
       filterData: {
         filterName: 'nominal',
@@ -125,8 +122,10 @@ implements OnInit, OnDestroy {
     {
       id: 'dailyGrowth',
       displayName: 'Рост за сегодня',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.dailyGrowth!.toString(),
-      classFn: (data): 'sell' | 'buy' => data.tradingDetails!.dailyGrowth! < 0 ? 'sell' : 'buy',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.dailyGrowth?.toString() ?? '',
+      classFn: (data): 'sell' | 'buy' | null => data.tradingDetails!.dailyGrowth == null
+        ? null
+        : data.tradingDetails!.dailyGrowth < 0 ? 'sell' : 'buy',
       width: 100,
       minWidth: 100,
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'dailyGrowth'], dir),
@@ -141,8 +140,10 @@ implements OnInit, OnDestroy {
     {
       id: 'dailyGrowthPercent',
       displayName: 'Рост за сегодня, %',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.dailyGrowthPercent!.toString(),
-      classFn: (data): 'sell' | 'buy' => data.tradingDetails!.dailyGrowthPercent! < 0 ? 'sell' : 'buy',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.dailyGrowthPercent?.toString() ?? '',
+      classFn: (data): 'sell' | 'buy' | null => data.tradingDetails!.dailyGrowthPercent == null
+        ? null
+        : data.tradingDetails!.dailyGrowthPercent < 0 ? 'sell' : 'buy',
       width: 100,
       minWidth: 100,
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'dailyGrowthPercent'], dir),
@@ -159,7 +160,7 @@ implements OnInit, OnDestroy {
       displayName: 'Объём торгов',
       width: 80,
       minWidth: 80,
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.tradeVolume!.toString(),
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.tradeVolume?.toString() ?? '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'tradeVolume'], dir),
       filterData: {
         filterName: 'tradeVolume',
@@ -172,7 +173,7 @@ implements OnInit, OnDestroy {
     {
       id: 'exchange',
       displayName: 'Биржа',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.exchange!,
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.exchange,
       width: 90,
       minWidth: 90,
       sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'exchange'], dir),
@@ -191,7 +192,7 @@ implements OnInit, OnDestroy {
       displayName: 'Режим торгов',
       width: 90,
       minWidth: 90,
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.boardInformation!.board!,
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.boardInformation!.board ?? '',
       sortChangeFn: (dir): void => this.sortChange(['boardInformation', 'board'], dir),
       filterData: {
         filterName: 'board',
@@ -206,7 +207,7 @@ implements OnInit, OnDestroy {
       displayName: 'Рынок',
       width: 90,
       minWidth: 90,
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.market!,
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.market ?? '',
       sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'market'], dir),
       filterData: {
         filterName: 'market',
@@ -223,7 +224,7 @@ implements OnInit, OnDestroy {
     {
       id: 'lotSize',
       displayName: 'Лотность',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.lotSize!.toString(),
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.lotSize?.toString() ?? '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'lotSize'], dir),
       filterData: {
         filterName: 'lotSize',
@@ -238,7 +239,7 @@ implements OnInit, OnDestroy {
     {
       id: 'price',
       displayName: 'Цена',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.price!.toString(),
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.price?.toString() ?? '',
       width: 80,
       minWidth: 80,
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'price'], dir),
@@ -253,7 +254,7 @@ implements OnInit, OnDestroy {
     {
       id: 'priceMax',
       displayName: 'Макс. цена',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceMax!.toString(),
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceMax?.toString() ?? '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceMax'], dir),
       filterData: {
         filterName: 'priceMax',
@@ -268,7 +269,7 @@ implements OnInit, OnDestroy {
     {
       id: 'priceMin',
       displayName: 'Мин. цена',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceMin!.toString(),
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceMin?.toString() ?? '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceMin'], dir),
       filterData: {
         filterName: 'priceMin',
@@ -284,7 +285,7 @@ implements OnInit, OnDestroy {
       id: 'priceScale',
       sourceField: 'minStep',
       displayName: 'Шаг цены',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.minStep!.toString(),
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.minStep?.toString() ?? '',
       filterData: {
         filterName: 'minStep',
         filterType: FilterType.Interval,
@@ -299,7 +300,7 @@ implements OnInit, OnDestroy {
     {
       id: 'priceStep',
       displayName: 'Стоимость шага цены',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceStep!.toString(),
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceStep?.toString() ?? '',
       filterData: {
         filterName: 'priceStep',
         filterType: FilterType.Interval,
@@ -463,8 +464,8 @@ implements OnInit, OnDestroy {
             avalableWatchlists[0].id,
             [
               {
-                symbol: row.basicInformation!.symbol!,
-                exchange: row.basicInformation!.exchange!
+                symbol: row.basicInformation!.symbol,
+                exchange: row.basicInformation!.exchange
               }
             ]);
         }
@@ -478,8 +479,8 @@ implements OnInit, OnDestroy {
           clickFn: (row: AllInstrumentsNodeDisplay): void => {
             this.watchlistCollectionService.addItemsToList(list.id, [
               {
-                symbol: row.basicInformation!.symbol!,
-                exchange: row.basicInformation!.exchange!
+                symbol: row.basicInformation!.symbol,
+                exchange: row.basicInformation!.exchange
               }
             ]);
           }
@@ -520,22 +521,25 @@ implements OnInit, OnDestroy {
               {
                 first: this.loadingChunkSize,
                 after: this.pagination?.endCursor,
-                sort
+                sort: sort == null ? null : [sort]
               }
             );
           }),
-        filter((i): i is AllInstrumentsResponse => i != null),
         tap(() => this.isLoading$.next(false)),
         takeUntilDestroyed(this.destroyRef)
       ).subscribe(res => {
-        const newInstruments = res!.instruments.edges.map((ie: GraphQlEdge<AllInstrumentsNode>) => ({
+        if (res == null) {
+          return;
+        }
+
+        const newInstruments = res.edges?.map((ie: InstrumentsEdge) => ({
           ...ie.node,
           id: ie.cursor
-        } as AllInstrumentsNodeDisplay));
+        } as AllInstrumentsNodeDisplay)) ?? [];
 
         if (this.pagination == null) {
           this.instrumentsList$.next(newInstruments);
-          this.pagination = res!.instruments.pageInfo ?? null;
+          this.pagination = res.pageInfo ?? null;
           this.subscribeToUpdates();
           return;
         }
@@ -543,7 +547,7 @@ implements OnInit, OnDestroy {
         this.instrumentsList$.pipe(take(1))
           .subscribe(instruments => {
             this.instrumentsList$.next([...instruments, ...newInstruments]);
-            this.pagination = res!.instruments.pageInfo ?? null;
+            this.pagination = res.pageInfo ?? null;
             this.subscribeToUpdates();
           });
     });
@@ -563,7 +567,7 @@ implements OnInit, OnDestroy {
       badges: Object.keys(availableBadges)
         .filter(key =>
           instr.basicInformation!.symbol === availableBadges[key]!.symbol &&
-          instr.basicInformation!.exchange === availableBadges[key]!.exchange
+          instr.basicInformation!.exchange as string === availableBadges[key]!.exchange
         )
     }));
   }
@@ -590,15 +594,19 @@ implements OnInit, OnDestroy {
             filters,
             {
               first: instrumentsList.length,
-              sort
+              sort: sort == null ? null : [sort]
             });
         }),
         filter(i => i != null)
       ).subscribe(res => {
-        const updatedInstruments = res!.instruments.edges.map(ie => ({
+        if (res == null) {
+          return;
+        }
+
+        const updatedInstruments = res.edges?.map(ie => ({
           ...ie.node,
           id: ie.cursor
-        } as AllInstrumentsNodeDisplay));
+        } as AllInstrumentsNodeDisplay)) ?? [];
 
         this.instrumentsList$.next(updatedInstruments!);
       });
@@ -614,10 +622,10 @@ implements OnInit, OnDestroy {
 
     const sortObj = fields.reduceRight((acc, curr, index) => {
       if (index === fields.length - 1) {
-        return { [curr]: sort === 'descend' ? GraphQlSortType.DESC : GraphQlSortType.ASC };
+        return { [curr]: sort === 'descend' ? SortEnumType.Desc : SortEnumType.Asc };
       }
       return { [curr]: acc };
-    }, {} as GraphQlSort);
+    }, {} as InstrumentModelSortInput);
 
     this.sort$.next(sortObj);
   }

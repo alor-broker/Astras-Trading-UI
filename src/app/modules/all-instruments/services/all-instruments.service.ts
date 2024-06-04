@@ -1,50 +1,19 @@
 import { Injectable } from '@angular/core';
-import { Observable } from "rxjs";
-import { AllInstrumentsResponse } from "../model/all-instruments.model";
+import { Observable, take } from "rxjs";
 import { FetchPolicy, GraphQlService } from "../../../shared/services/graph-ql.service";
 import { DefaultTableFilters } from "../../../shared/models/settings/table-settings.model";
 import { GraphQlHelper } from "../../../shared/utils/graph-ql-helper";
-import { GraphQlSort } from "../../../shared/models/graph-ql.model";
-
-const ALL_INSTRUMENTS_NESTED_FIELDS: { [fieldName: string]: string[] } = {
-  basicInformation: ['symbol', 'shortName', 'exchange', 'market'],
-  financialAttributes: ['tradingStatusInfo'],
-  additionalInformation: ['cancellation', 'priceMultiplier'],
-  boardInformation: ['board'],
-  tradingDetails: ['lotSize', 'minStep', 'priceMax', 'priceMin', 'priceStep', 'rating', 'dailyGrowth', 'dailyGrowthPercent', 'price', 'tradeVolume'],
-  currencyInformation: ['nominal']
-};
-
-const ALL_INSTRUMENTS_FILTER_TYPES: { [fieldName: string]: string[] } = {
-  search: ['symbol', 'shortName', 'nominal'],
-  multiSelect: ['exchange', 'market', 'board'],
-  interval: [
-    'priceMultiplierFrom',
-    'priceMultiplierTo',
-    'lotSizeFrom',
-    'lotSizeTo',
-    'minStepFrom',
-    'minStepTo',
-    'priceMaxFrom',
-    'priceMaxTo',
-    'priceMinFrom',
-    'priceMinTo',
-    'priceStepFrom',
-    'priceStepTo',
-    'dailyGrowthFrom',
-    'dailyGrowthTo',
-    'dailyGrowthPercentFrom',
-    'dailyGrowthPercentTo',
-    'tradeVolumeFrom',
-    'tradeVolumeTo',
-    'priceFrom',
-    'priceTo'
-  ],
-  date: [
-    'cancellationTo',
-    'cancellationFrom',
-  ]
-};
+import { getAllInstrumentsResponseSchema } from "./all-instruments.gql-schemas";
+import {
+  InstrumentModelFilterInput,
+  InstrumentModelSortInput,
+  InstrumentsConnection,
+  Query,
+  QueryInstrumentsArgs
+} from "../../../../generated/graphql.types";
+import { InstrumentModelFilterInputSchema } from "../../../../generated/graphql.schemas";
+import { TypeOf } from "zod";
+import { map } from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -58,66 +27,30 @@ export class AllInstrumentsService {
   getInstruments(
     columnIds: string[],
     filters: DefaultTableFilters,
-    params: { first: number, after?: string, sort: GraphQlSort | null }
-  ): Observable<AllInstrumentsResponse | null> {
-    return this.graphQlService.watchQuery(
-      this.getAllInstrumentsRequestQuery(columnIds),
+    params: { first: number, after?: string | null, sort: InstrumentModelSortInput[] | null }
+  ): Observable<InstrumentsConnection | null> {
+    const allInstrumentsResponseSchema = getAllInstrumentsResponseSchema(columnIds);
+    const parsedFilters = GraphQlHelper.parseToGqlFiltersIntersection<InstrumentModelFilterInput>(filters, InstrumentModelFilterInputSchema());
+
+    const args: QueryInstrumentsArgs = {
+      first: params.first,
+      after: params.after,
+      order: params.sort,
+      where: parsedFilters
+    };
+
+    return this.graphQlService.watchQueryForSchema<TypeOf<typeof allInstrumentsResponseSchema>>(
+      allInstrumentsResponseSchema,
       {
-        ...params,
-        filters: GraphQlHelper.parseFilters(filters, ALL_INSTRUMENTS_NESTED_FIELDS, ALL_INSTRUMENTS_FILTER_TYPES)
+        first: args.first,
+        after: args.after,
+        where: { value: args.where, type: 'InstrumentModelFilterInput' },
+        order: { value: args.order, type: '[InstrumentModelSortInput!]' },
       },
       { fetchPolicy: FetchPolicy.NoCache }
+    ).pipe(
+      take(1),
+      map(q => (q as Query)?.instruments ?? null)
     );
-  }
-
-  private getAllInstrumentsRequestQuery(columnIds: string[]): string {
-    const basicInformationFields = ALL_INSTRUMENTS_NESTED_FIELDS.basicInformation.filter(f => columnIds.includes(f) || f === 'symbol' || f === 'exchange');
-    const additionalInformationFields = ALL_INSTRUMENTS_NESTED_FIELDS.additionalInformation.filter(f => columnIds.includes(f));
-    const financialAttributesFields = ALL_INSTRUMENTS_NESTED_FIELDS.financialAttributes.filter(f => columnIds.includes(f));
-    const boardInformationFields = ALL_INSTRUMENTS_NESTED_FIELDS.boardInformation.filter(f => columnIds.includes(f));
-    const tradingDetailsFields = ALL_INSTRUMENTS_NESTED_FIELDS.tradingDetails.filter(f => columnIds.includes(f));
-    const currencyInformationFields = ALL_INSTRUMENTS_NESTED_FIELDS.currencyInformation.filter(f => columnIds.includes(f));
-
-    return `
-      query GET_INSTRUMENTS($first: Int, $after: String, $filters: InstrumentModelFilterInput, $sort: [InstrumentModelSortInput!]) {
-        instruments(
-          first: $first
-          after: $after,
-          where: $filters,
-          order: $sort
-        ) {
-          edges {
-            node {
-              basicInformation { ${basicInformationFields.join(' ')} }
-              ${additionalInformationFields.length > 0
-                ? 'additionalInformation {' + additionalInformationFields.join(' ') + '}'
-                : ''
-              }
-              ${financialAttributesFields.length > 0
-                ? 'financialAttributes {' + financialAttributesFields.join(' ') + '}'
-                : ''
-              }
-              ${boardInformationFields.length > 0
-                ? 'boardInformation {' + boardInformationFields.join(' ') + '}'
-                : ''
-              }
-              ${tradingDetailsFields.length > 0
-                ? 'tradingDetails {' + tradingDetailsFields.join(' ') + '}'
-                : ''
-              }
-              ${currencyInformationFields.length > 0
-                ? 'currencyInformation {' + currencyInformationFields.join(' ') + '}'
-                : ''
-              }
-            }
-            cursor
-          }
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-        }
-      }
-    `;
   }
 }
