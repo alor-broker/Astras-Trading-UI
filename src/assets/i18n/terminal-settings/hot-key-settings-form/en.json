@@ -2,6 +2,8 @@
   "extraHotkeysLabel": "Ignore keyboard layout",
   "extraHotkeysTooltip": "Keypress will be emitted regardless of the selected keyboard layout",
   "allOrderbooksHeader": "Common for all open orderbooks",
+  "cancelOrdersAll": "Remove all orders",
+  "cancelOrdersAndClosePositionsByMarketAll": "Remove all orders and Close all positions by market",
   "cancelOrdersKey": "Remove limit orders",
   "cancelOrderbookOrders": "Remove limit orders",
   "cancelStopOrdersCurrent": "Remove stop orders",
@@ -22,5 +24,6 @@
   "selectWorkingVolume": "Select working volume",
 
   "notUniqueError": "Selected key is already assigned to another action",
-  "emptyFieldError": "Input value"
+  "emptyFieldError": "Input value",
+  "hotKeyPlaceholder": "Not selected"
 }

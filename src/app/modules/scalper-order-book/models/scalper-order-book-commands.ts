@@ -1,5 +1,7 @@
 export enum ScalperOrderBookCommands {
   centerOrderBook = 'centerOrderbook',
+  cancelOrdersAll = 'cancelOrdersAll',
+  cancelOrdersAndClosePositionsByMarketAll = 'cancelOrdersAndClosePositionsByMarketAll',
   cancelLimitOrdersAll = 'cancelLimitOrdersAll',
   closePositionsByMarketAll = 'closePositionsByMarketAll',
   cancelLimitOrdersCurrent = 'cancelLimitOrdersCurrent',

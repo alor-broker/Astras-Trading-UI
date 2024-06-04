@@ -12,7 +12,7 @@ import {
   ValidatorFn,
   Validators
 } from '@angular/forms';
-import { HotKeysSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import { HotKeyMeta, HotKeysSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import {
   distinctUntilChanged
 } from 'rxjs';
@@ -71,6 +71,8 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
 
   ngOnInit(): void {
     this.form = new UntypedFormGroup({
+      cancelOrdersAll: new UntypedFormControl(null, this.isKeyUniqueValidator()),
+      cancelOrdersAndClosePositionsByMarketAll: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       cancelOrdersKey: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       closePositionsKey: new UntypedFormControl(null, this.isKeyUniqueValidator()),
       centerOrderbookKey: new UntypedFormControl(null, this.isKeyUniqueValidator()),
@@ -156,7 +158,7 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
       }
 
       const existedKeys = this.getAllKeys(this.form!.getRawValue());
-      if (existedKeys.filter(x => x === control.value).length > 1) {
+      if (existedKeys.filter(x => JSON.stringify(x) === JSON.stringify(control.value)).length > 1) {
         return {
           notUnique: true
         };
@@ -178,8 +180,8 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
     return this.form.touched;
   }
 
-  private getAllKeys(formValue: { [keyName: string]: string | string[] | null }): string[] {
-    const keys: string[] = [];
+  private getAllKeys(formValue: { [keyName: string]: HotKeyMeta | string | string[] | null }): (string | HotKeyMeta)[] {
+    const keys: (string | HotKeyMeta)[] = [];
     for (const property in formValue) {
       const value = formValue[property];
       if (value == null) {
