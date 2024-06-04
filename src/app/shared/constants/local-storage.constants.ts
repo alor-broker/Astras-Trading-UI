@@ -18,6 +18,7 @@ export class LocalStorageMobileConstants {
 
 export class LocalStorageLoggingConstants {
   static UserLoginStorageKey = 'log.login';
+  static ClientIdStorageKey = 'log.clientId';
   static AppVersionStorageKey = 'log.version';
   static DeviceStorageKey = 'log.device';
   static BrowserStorageKey = 'log.browser';
