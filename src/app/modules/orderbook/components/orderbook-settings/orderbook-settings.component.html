@@ -36,9 +36,27 @@
             </nz-collapse-panel>
             <nz-collapse-panel [nzHeader]="t('orderbookSettings.viewSettingsHeader')" [nzActive]="deviceInfo.isMobile">
               <nz-form-item>
-                <nz-form-label nzRequired nzFor="depth">{{t('orderbookSettings.depthLabel')}}</nz-form-label>
-                <nz-form-control [nzErrorTip]="t('orderbookSettings.intervalError', { min: validationOptions.depth.min, max: validationOptions.depth.max })">
-                  <ats-input-number formControlName="depth" [placeholder]="t('orderbookSettings.intervalPlaceholder', { min: validationOptions.depth.min, max: validationOptions.depth.max })"></ats-input-number>
+                <nz-form-label nzRequired nzFor="depth">
+                  {{t('orderbookSettings.depthLabel')}}
+                </nz-form-label>
+
+                <span
+                  *ngIf="form.controls.depth.value > 20"
+                  nz-typography
+                  nzType="warning"
+                >
+                  {{t('form.orderbookDepthWarning')}}
+                </span>
+
+                <nz-form-control>
+                  <nz-slider
+                    [nzMin]="validationOptions.depth.min"
+                    [nzMax]="validationOptions.depth.max"
+                    [nzStep]="1"
+                    [nzMarks]="getSliderMarks(validationOptions.depth.min, validationOptions.depth.max)"
+                    formControlName="depth"
+                  >
+                  </nz-slider>
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item>

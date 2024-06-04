@@ -20,8 +20,6 @@
   "intervalError": "Значение должно быть от {{min}} до {{max}}",
   "instrumentGroupError": "Выберите режим торгов",
 
-  "intervalPlaceholder": "Значение от {{min}} до {{max}}",
-
   "useOrderWidgetPopover": "При клике по цене из стакана не будет появляться всплывающее окно заявки, а будет меняться информация в виджете выставления заявки",
 
   "columnOrders": {

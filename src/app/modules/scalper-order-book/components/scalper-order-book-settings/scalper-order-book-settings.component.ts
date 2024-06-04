@@ -43,7 +43,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
   readonly validationOptions = {
     depth: {
       min: 1,
-      max: 20
+      max: 50
     },
     workingVolume: {
       min: 1,
