@@ -8,7 +8,7 @@ body:
   - type: textarea
     id: user_story
     attributes:
-      label: Пользовательская история
+      label: UserStory
       description: |
         Опишите вашу фичу в формате User Story.
         Формат:
