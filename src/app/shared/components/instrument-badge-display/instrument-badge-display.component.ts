@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import { Component, DestroyRef, Input, OnInit } from '@angular/core';
 import {InstrumentKey} from "../../models/instruments/instrument-key.model";
 import {combineLatest, Observable, shareReplay} from "rxjs";
 import {InstrumentGroups} from "../../models/dashboard/dashboard.model";
@@ -6,6 +6,7 @@ import {map} from "rxjs/operators";
 import { defaultBadgeColor, instrumentsBadges } from "../../utils/instruments";
 import {DashboardContextService} from "../../services/dashboard-context.service";
 import {TerminalSettingsService} from "../../services/terminal-settings.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-instrument-badge-display',
@@ -17,10 +18,12 @@ export class InstrumentBadgeDisplayComponent implements OnInit {
   instrumentKey!: InstrumentKey;
 
   selectedInstruments$!: Observable<InstrumentGroups>;
+  badgesColors$!: Observable<string[]>;
 
   constructor(
     private readonly currentDashboardService: DashboardContextService,
     private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -45,11 +48,17 @@ export class InstrumentBadgeDisplayComponent implements OnInit {
         }),
         shareReplay(1)
       );
+
+    this.badgesColors$ = this.terminalSettingsService.getSettings()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        map(s => s.badgesColors ?? instrumentsBadges)
+      );
   }
 
-  getApplicableBadges(selectedGroups: InstrumentGroups): string[] {
+  getApplicableBadges(selectedGroups: InstrumentGroups, badgesColors: string[]): string[] {
     return Object.entries(selectedGroups)
-      .filter(([key]) => instrumentsBadges.includes(key))
+      .filter(([key]) => badgesColors.includes(key))
       .filter(([, value]) => this.isBadgeApplicable(value!))
       .map(([key]) => key);
   }

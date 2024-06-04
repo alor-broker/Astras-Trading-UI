@@ -104,5 +104,9 @@
       </ng-template>
     </nz-form-item>
 
+    <ats-badges-settings
+      *ngIf="form.controls.badgesBind.value"
+      formControlName="badgesColors"
+    ></ats-badges-settings>
   </form>
 </ng-container>

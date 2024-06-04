@@ -11,6 +11,8 @@ import { InstrumentKey } from "../../models/instruments/instrument-key.model";
 import { map } from "rxjs/operators";
 import { EnvironmentService } from "../../services/environment.service";
 import { HelpService } from "../../services/help.service";
+import { mapWith } from "../../utils/observable-helper";
+import { TerminalSettingsService } from "../../services/terminal-settings.service";
 
 @Component({
   selector: 'ats-widget-header',
@@ -64,41 +66,47 @@ export class WidgetHeaderComponent implements OnInit {
     private readonly manageDashboardService: ManageDashboardsService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly translatorService: TranslatorService,
-    private readonly helpService: HelpService
+    private readonly helpService: HelpService,
+    private readonly terminalSettingsService: TerminalSettingsService
   ) {
   }
 
   ngOnInit(): void {
-    this.badgeOptions$ = this.dashboardContextService.instrumentsSelection$.pipe(
-      map(currentSelection => {
-        const symbolGroups = Object.values(currentSelection)
-          .reduce(
-            (prev, cur) => {
-              prev[cur!.symbol] = (prev[cur!.symbol] ?? 0) + 1;
-              return prev;
+    this.badgeOptions$ = this.dashboardContextService.instrumentsSelection$
+      .pipe(
+        mapWith(
+          () => this.terminalSettingsService.getSettings().pipe(map(s => s.badgesColors ?? instrumentsBadges)),
+          (currentSelection, badgesColors) => ({ currentSelection, badgesColors })
+        ),
+        map(({ currentSelection, badgesColors }) => {
+          const symbolGroups = Object.values(currentSelection)
+            .reduce(
+              (prev, cur) => {
+                prev[cur!.symbol] = (prev[cur!.symbol] ?? 0) + 1;
+                return prev;
+              }
+              , {} as { [key: string]: number | undefined }
+            );
+
+          return badgesColors.map(b => {
+              const assignedInstrument = currentSelection[b] as InstrumentKey | undefined;
+
+              return {
+                color: b,
+                assignedInstrument: !!assignedInstrument
+                  ? {
+                    ...currentSelection[b]!,
+                    instrumentGroup: symbolGroups[assignedInstrument.symbol]! > 1
+                      ? assignedInstrument.instrumentGroup
+                      : null
+                  }
+                  : null
+              };
             }
-            , {} as { [key: string]: number | undefined }
           );
-
-        return instrumentsBadges.map(b => {
-            const assignedInstrument = currentSelection[b] as InstrumentKey | undefined;
-
-            return {
-              color: b,
-              assignedInstrument: !!assignedInstrument
-                ? {
-                  ...currentSelection[b]!,
-                  instrumentGroup: symbolGroups[assignedInstrument.symbol]! > 1
-                    ? assignedInstrument.instrumentGroup
-                    : null
-                }
-                : null
-            };
-          }
-        );
-      }),
-      shareReplay(1)
-    );
+        }),
+        shareReplay(1)
+      );
 
     this.titleText = !!this.widgetMeta
       ? WidgetsHelper.getWidgetName(this.widgetMeta.widgetName, this.translatorService.getActiveLang())

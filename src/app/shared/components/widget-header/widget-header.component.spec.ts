@@ -8,9 +8,10 @@ import { ManageDashboardsService } from '../../services/manage-dashboards.servic
 import { ngZorroMockComponents } from '../../utils/testing';
 import {TranslatorService} from "../../services/translator.service";
 import {DashboardContextService} from "../../services/dashboard-context.service";
-import {Subject} from "rxjs";
+import { of, Subject } from "rxjs";
 import { EnvironmentService } from "../../services/environment.service";
 import { HelpService } from "../../services/help.service";
+import { TerminalSettingsService } from "../../services/terminal-settings.service";
 
 
 describe('WidgetHeaderComponent', () => {
@@ -61,6 +62,12 @@ describe('WidgetHeaderComponent', () => {
           provide: HelpService,
           useValue: {
             getHelpLink: jasmine.createSpy('getHelpLink').and.returnValue('')
+          }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({}))
           }
         }
       ]

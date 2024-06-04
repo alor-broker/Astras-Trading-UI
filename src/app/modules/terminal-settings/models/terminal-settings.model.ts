@@ -16,5 +16,6 @@ export interface GeneralSettings {
   userIdleDurationMin?: number;
   language?: 'en' | 'ru' | null;
   badgesBind?: boolean;
+  badgesColors?: string[];
   tableRowHeight?: TableRowHeight;
 }
