@@ -1,0 +1,51 @@
+name: User Story RU
+description: Предложить идею. Если у вас проблема с другими сервисами Алора, напишите нам на support@alor.ru. Github issues только для багов и фич по Astras.
+title: 'Feature request RU: '
+labels: 
+  - enhancement
+  - recently reported
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Описание:**
+        Предложить идею. Если у вас проблема с сервисами Алора, напишите нам на support@alor.ru. Github issues только для багов и фич по Astras.
+
+        **Пример User Story:**
+        ДАНО: Я клиент Астраса
+        КОГДА: Я создаю виджет Блоттер
+        ТОГДА: Он должен появлятся на доске Астраса
+        ПРИ ЭТОМ: Он должен быть стандартного размера.
+  - type: textarea
+    id: user_story
+    attributes:
+      label: User Story
+      description: |
+        Опишите вашу фичу в формате User Story.
+        Формат:
+        ДАНО: [контекст или пользователь]
+        КОГДА: [действие или событие]
+        ТОГДА: [ожидаемый результат или реакция]
+        ПРИ ЭТОМ: [Дополнительные данные]
+        Пример:
+        ДАНО: Я клиент Астраса
+        КОГДА: Я создаю виджет Блоттер
+        ТОГДА: Он должен появлятся на доске Астраса
+        ПРИ ЭТОМ: Он должен быть стандартного размера.
+    placeholder: |
+        ДАНО: [контекст или пользователь]
+        КОГДА: [действие или событие]
+        ТОГДА: [ожидаемый результат или реакция]
+        ПРИ ЭТОМ: [Дополнительные данные]
+    validations:
+      required: true
+    attributes:
+      render: multiline
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/alor-broker/.github/blob/default/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
