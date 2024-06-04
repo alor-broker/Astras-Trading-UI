@@ -43,7 +43,7 @@ describe('HotKeyCommandService', () => {
       service.commands$.subscribe();
 
       const hotKeysSettings = {
-        cancelLimitOrdersKey: 'a',
+        cancelOrdersKey: 'a',
         closePositionsKey: 'b',
         centerOrderbookKey: 'c',
         cancelOrderbookOrders: 'd',
@@ -60,7 +60,7 @@ describe('HotKeyCommandService', () => {
       } as TerminalSettings);
 
       const cases: { key: string, expectedCommandCode: string }[] = [
-        { key: hotKeysSettings.cancelLimitOrdersKey, expectedCommandCode: 'cancelLimitOrdersAll' },
+        { key: hotKeysSettings.cancelOrdersKey, expectedCommandCode: 'cancelLimitOrdersAll' },
         { key: hotKeysSettings.closePositionsKey, expectedCommandCode: 'closePositionsByMarketAll' },
         { key: hotKeysSettings.centerOrderbookKey, expectedCommandCode: 'centerOrderbook' },
         { key: hotKeysSettings.cancelOrderbookOrders, expectedCommandCode: 'cancelLimitOrdersCurrent' },

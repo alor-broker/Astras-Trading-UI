@@ -38,12 +38,9 @@ export class HotKeyCommandService {
   }
 
   private static mapToCommandType(settingCode: string): string {
+    // Needs to map old commands names to new more informative
     switch (settingCode) {
-      case 'cancelAllOrdersKey':
-        return 'cancelOrdersAll';
-      case 'cancelAllOrdersAndClosePositionsKey':
-        return 'cancelOrdersAndClosePositionsByMarketAll';
-      case 'cancelLimitOrdersKey':
+      case 'cancelOrdersKey':
         return 'cancelLimitOrdersAll';
       case 'closePositionsKey':
         return 'closePositionsByMarketAll';

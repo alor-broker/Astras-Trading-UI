@@ -111,14 +111,12 @@ export class ScalperCommandProcessorService {
 
   private handleAllCommands(command: TerminalCommand, dataContext: ScalperOrderBookDataContext): boolean {
     if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.cancelOrdersAll) {
-      this.cancelLimitOrders(dataContext);
-      this.cancelStopOrders(dataContext);
+      this.cancelAllOrders(dataContext);
       return true;
     }
 
     if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.cancelOrdersAndClosePositionsByMarketAll) {
-      this.cancelLimitOrders(dataContext);
-      this.cancelStopOrders(dataContext);
+      this.cancelAllOrders(dataContext);
       this.closePositionsByMarket(dataContext);
       return true;
     }
@@ -266,6 +264,10 @@ export class ScalperCommandProcessorService {
 
   private cancelStopOrders(dataContext: ScalperOrderBookDataContext): void {
     this.cancelOrdersOfType([OrderType.StopMarket, OrderType.StopLimit], dataContext);
+  }
+
+  private cancelAllOrders(dataContext: ScalperOrderBookDataContext): void {
+    this.cancelOrdersOfType([OrderType.Limit, OrderType.StopMarket, OrderType.StopLimit], dataContext);
   }
 
   private cancelOrdersOfType(types: OrderType[], dataContext: ScalperOrderBookDataContext): void {
