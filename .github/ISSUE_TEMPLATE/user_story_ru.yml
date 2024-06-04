@@ -16,7 +16,7 @@ body:
         ТОГДА: [ожидаемый результат или реакция]
         ПРИ ЭТОМ: [Дополнительные данные]
   - type: textarea
-    id: user_story
+    id: user_story2
     attributes:
       label: UserStory
       description: |
