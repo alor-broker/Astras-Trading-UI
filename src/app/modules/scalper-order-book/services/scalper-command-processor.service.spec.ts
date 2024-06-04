@@ -220,7 +220,8 @@ describe('ScalperCommandProcessorService', () => {
           portfolio: 'D1234',
           price: 100,
           side: Side.Buy,
-          displayVolume: 100
+          displayVolume: 100,
+          isDirty: false
         };
 
         cancelOrdersCommandSpy.execute.and.callFake((args: CancelOrdersCommandArgs) => {
@@ -278,7 +279,8 @@ describe('ScalperCommandProcessorService', () => {
           portfolio: 'D1234',
           price: 100,
           side: Side.Buy,
-          displayVolume: 100
+          displayVolume: 100,
+          isDirty: false
         };
 
         const secondOrder: CurrentOrderDisplay = {
@@ -290,7 +292,8 @@ describe('ScalperCommandProcessorService', () => {
           price: 100,
           triggerPrice: 99,
           side: Side.Buy,
-          displayVolume: 100
+          displayVolume: 100,
+          isDirty: false
         };
 
         cancelOrdersCommandSpy.execute.and.callFake((args: CancelOrdersCommandArgs) => {
@@ -327,7 +330,8 @@ describe('ScalperCommandProcessorService', () => {
           portfolio: 'D1234',
           triggerPrice: 100,
           side: Side.Buy,
-          displayVolume: 100
+          displayVolume: 100,
+          isDirty: false
         };
 
         const secondOrder: CurrentOrderDisplay = {
@@ -337,7 +341,8 @@ describe('ScalperCommandProcessorService', () => {
           exchange: orderBookDefaultSettings.exchange,
           portfolio: 'D1234',
           side: Side.Buy,
-          displayVolume: 100
+          displayVolume: 100,
+          isDirty: false
         };
 
         cancelOrdersCommandSpy.execute.and.callFake((args: CancelOrdersCommandArgs) => {

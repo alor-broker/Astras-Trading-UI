@@ -8,12 +8,21 @@ import { Side } from "../../../shared/models/enums/side.model";
 import { NewStopMarketOrder } from "../../../shared/models/orders/new-order.model";
 import { LessMore } from "../../../shared/models/enums/less-more.model";
 import { OrderFormType } from "../../../shared/models/orders/orders-dialog.model";
+import { LocalOrderTracker } from "./local-order-tracker";
+import { GuidGenerator } from "../../../shared/utils/guid";
+import { take } from "rxjs";
+
+export interface StopMarketOrderTracker extends LocalOrderTracker<NewStopMarketOrder> {
+  beforeOrderCreated: (order: NewStopMarketOrder) => void;
+  orderProcessed: (localId: string, isSuccess: boolean) => void;
+}
 
 export interface SetStopLossCommandArgs {
   currentPosition: Position | null;
   targetInstrumentBoard: string | null;
   triggerPrice: number;
   silent: boolean;
+  orderTracker?: StopMarketOrderTracker;
 }
 
 @Injectable({
@@ -45,11 +54,23 @@ export class SetStopLossCommand extends CommandBase<SetStopLossCommandArgs> {
         instrumentGroup: args.targetInstrumentBoard
       },
       triggerPrice: args.triggerPrice,
-      condition: side === Side.Sell ? LessMore.LessOrEqual : LessMore.MoreOrEqual
+      condition: side === Side.Sell ? LessMore.LessOrEqual : LessMore.MoreOrEqual,
+      meta: {
+        trackId: GuidGenerator.newGuid()
+      }
     };
 
     if (args.silent) {
-      this.wsOrdersService.submitStopMarketOrder(order, args.currentPosition.portfolio).subscribe();
+      args.orderTracker?.beforeOrderCreated(order);
+
+      this.wsOrdersService.submitStopMarketOrder(order, args.currentPosition.portfolio).pipe(
+        take(1)
+      ).subscribe(result => {
+        if (order.meta?.trackId != null) {
+          args.orderTracker?.orderProcessed(order.meta.trackId, result.isSuccess);
+        }
+      });
+
     } else {
       this.ordersDialogService.openNewOrderDialog({
         instrumentKey: order.instrument,

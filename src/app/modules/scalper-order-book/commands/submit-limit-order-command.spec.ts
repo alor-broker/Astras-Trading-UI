@@ -100,12 +100,12 @@ describe('SubmitLimitOrderCommand', () => {
       expect(orderServiceSpy.submitLimitOrder)
         .withContext('Sell')
         .toHaveBeenCalledOnceWith(
-          {
+          jasmine.objectContaining({
             side: Side.Sell,
             quantity,
             price: price,
             instrument: toInstrumentKey(testInstrumentKey)
-          } as NewLimitOrder,
+          } as NewLimitOrder),
           portfolioKey.portfolio
         );
 
@@ -126,7 +126,7 @@ describe('SubmitLimitOrderCommand', () => {
       expect(ordersDialogServiceSpy.openNewOrderDialog)
         .withContext('Buy')
         .toHaveBeenCalledOnceWith(
-          {
+          jasmine.objectContaining({
             instrumentKey: toInstrumentKey(testInstrumentKey),
             initialValues: {
               orderType: OrderFormType.Limit,
@@ -134,7 +134,7 @@ describe('SubmitLimitOrderCommand', () => {
               price: price,
               bracket: {}
             }
-          } as OrderDialogParams
+          } as OrderDialogParams)
         );
     })
   );
@@ -187,10 +187,11 @@ describe('SubmitLimitOrderCommand', () => {
 
     expect(ordersGroupServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
       [
-        {
-          ...expectedLimitOrder,
-          type: OrderType.Limit
-        },
+        jasmine.objectContaining(
+          {
+            ...expectedLimitOrder,
+            type: OrderType.Limit
+          }),
         {
           ...expectedLimitOrder,
           type: OrderType.StopLimit,
@@ -263,10 +264,10 @@ describe('SubmitLimitOrderCommand', () => {
 
     expect(ordersGroupServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
       [
-        {
+        jasmine.objectContaining({
           ...expectedLimitOrder,
           type: OrderType.Limit
-        },
+        }),
         {
           ...expectedLimitOrder,
           type: OrderType.StopLimit,

@@ -3,6 +3,7 @@ import { InstrumentKey } from "../../../shared/models/instruments/instrument-key
 import { Side } from "../../../shared/models/enums/side.model";
 import {
   BracketOptions,
+  LimitOrderTracker,
   SubmitLimitOrderCommand
 } from "./submit-limit-order-command";
 import { OrderbookData } from "../../orderbook/models/orderbook-data.model";
@@ -17,6 +18,7 @@ export interface SubmitBestPriceOrderCommandArgs {
   orderBook: OrderbookData;
   bracketOptions: BracketOptions | null;
   priceStep: number;
+  orderTracker?: LimitOrderTracker;
 }
 
 @Injectable({
@@ -71,7 +73,8 @@ export class SubmitBestPriceOrderCommand extends CommandBase<SubmitBestPriceOrde
       targetPortfolio: args.targetPortfolio,
       bracketOptions: args.bracketOptions,
       priceStep: args.priceStep,
-      silent: true
+      silent: true,
+      orderTracker: args.orderTracker
     });
   }
 }

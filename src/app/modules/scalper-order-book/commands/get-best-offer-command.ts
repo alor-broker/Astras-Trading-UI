@@ -4,6 +4,7 @@ import { Side } from "../../../shared/models/enums/side.model";
 import { OrderbookData } from "../../orderbook/models/orderbook-data.model";
 import {
   BracketOptions,
+  LimitOrderTracker,
   SubmitLimitOrderCommand
 } from "./submit-limit-order-command";
 import { CommandBase } from "./command-base";
@@ -16,6 +17,7 @@ export interface GetBestOfferCommandArgs {
   orderBook: OrderbookData;
   bracketOptions: BracketOptions | null;
   priceStep: number;
+  orderTracker?: LimitOrderTracker;
 }
 
 @Injectable({
@@ -53,7 +55,8 @@ export class GetBestOfferCommand extends CommandBase<GetBestOfferCommandArgs> {
       targetPortfolio: args.targetPortfolio,
       bracketOptions: args.bracketOptions,
       priceStep: args.priceStep,
-      silent: true
+      silent: true,
+      orderTracker: args.orderTracker
     });
   }
 }

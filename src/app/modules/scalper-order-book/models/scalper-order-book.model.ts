@@ -2,10 +2,7 @@ import { Side } from '../../../shared/models/enums/side.model';
 import { Range } from "../../../shared/models/common.model";
 import { LessMore } from "../../../shared/models/enums/less-more.model";
 import { OrderType } from "../../../shared/models/orders/order.model";
-
-export interface OrderMeta {
-  draftId?: string;
-}
+import { OrderMeta } from "../../../shared/models/orders/new-order.model";
 
 export interface CurrentOrderDisplay {
   orderId: string;
@@ -20,6 +17,11 @@ export interface CurrentOrderDisplay {
   displayVolume: number;
   condition?: LessMore;
   meta?: OrderMeta;
+  isDirty: boolean;
+}
+
+export interface LocalOrder extends Omit<CurrentOrderDisplay, 'meta'> {
+  instrumentGroup?: string | null;
 }
 
 export interface PriceRow {
