@@ -9,6 +9,14 @@ import { NewStopLimitOrder } from "../../../shared/models/orders/new-order.model
 import { LessMore } from "../../../shared/models/enums/less-more.model";
 import { toInstrumentKey } from "../../../shared/utils/instruments";
 import { OrderFormType } from "../../../shared/models/orders/orders-dialog.model";
+import { LocalOrderTracker } from "./local-order-tracker";
+import { GuidGenerator } from "../../../shared/utils/guid";
+import { take } from "rxjs";
+
+export interface StopLimitOrderTracker extends LocalOrderTracker<NewStopLimitOrder> {
+  beforeOrderCreated: (order: NewStopLimitOrder) => void;
+  orderProcessed: (localId: string, isSuccess: boolean) => void;
+}
 
 export interface SubmitStopLimitOrderCommandArgs {
   instrumentKey: InstrumentKey;
@@ -21,6 +29,7 @@ export interface SubmitStopLimitOrderCommandArgs {
   quantity: number;
   targetPortfolio: string;
   silent: boolean;
+  orderTracker?: StopLimitOrderTracker;
 }
 
 @Injectable({
@@ -50,10 +59,21 @@ export class SubmitStopLimitOrderCommand extends CommandBase<SubmitStopLimitOrde
       triggerPrice: args.triggerPrice,
       price: orderPrice,
       condition: args.side === Side.Buy ? LessMore.MoreOrEqual : LessMore.LessOrEqual,
+      meta: {
+        trackId: GuidGenerator.newGuid()
+      }
     };
 
     if (args.silent) {
-      this.wsOrdersService.submitStopLimitOrder(order, args.targetPortfolio).subscribe();
+      args.orderTracker?.beforeOrderCreated(order);
+
+      this.wsOrdersService.submitStopLimitOrder(order, args.targetPortfolio).pipe(
+        take(1)
+      ).subscribe(result => {
+        if (order.meta?.trackId != null) {
+          args.orderTracker?.orderProcessed(order.meta.trackId, result.isSuccess);
+        }
+      });
     } else {
       this.ordersDialogService.openNewOrderDialog({
         instrumentKey: toInstrumentKey(order.instrument),

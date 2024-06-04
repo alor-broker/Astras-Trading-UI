@@ -175,6 +175,7 @@ export class WsOrdersService {
     };
 
     delete clone.instrument;
+    delete clone.meta;
 
     return {
       opcode: `create:${type}`,
@@ -186,7 +187,10 @@ export class WsOrdersService {
       board: baseRequest.instrument.instrumentGroup,
       user: {
         portfolio
-      }
+      },
+      comment: baseRequest.meta != null
+        ? JSON.stringify({ meta: baseRequest.meta })
+        : undefined
     };
   }
 

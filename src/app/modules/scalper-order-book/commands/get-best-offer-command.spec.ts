@@ -103,7 +103,8 @@ describe('GetBestOfferCommand', () => {
             priceStep: args.priceStep,
             targetPortfolio: args.targetPortfolio,
             bracketOptions: args.bracketOptions,
-            silent: true
+            silent: true,
+            orderTracker: undefined
           } as SubmitLimitOrderCommandArgs
         );
     })
@@ -147,7 +148,7 @@ describe('GetBestOfferCommand', () => {
           lossPriceRatio: 2,
           orderPriceUnits: PriceUnits.Points,
           currentPosition: null,
-          applyBracketOnClosing: false
+          applyBracketOnClosing: false,
         },
         priceStep: 1
       };
@@ -166,7 +167,8 @@ describe('GetBestOfferCommand', () => {
             priceStep: args.priceStep,
             targetPortfolio: args.targetPortfolio,
             bracketOptions: args.bracketOptions,
-            silent: true
+            silent: true,
+            orderTracker: undefined
           } as SubmitLimitOrderCommandArgs
         );
     })

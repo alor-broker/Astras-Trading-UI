@@ -5,7 +5,8 @@ import { Position } from '../../../shared/models/positions/position.model';
 import { ListRange } from '@angular/cdk/collections';
 import {
   BodyRow,
-  CurrentOrderDisplay
+  CurrentOrderDisplay,
+  LocalOrder
 } from './scalper-order-book.model';
 import { ScalperOrderBookWidgetSettings } from './scalper-order-book-settings.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
@@ -22,6 +23,7 @@ export interface OrderBook {
   rows: OrderbookData;
 }
 
+
 export interface ScalperOrderBookDataContext {
   readonly extendedSettings$: Observable<ScalperOrderBookExtendedSettings>;
   readonly currentPortfolio$: Observable<PortfolioKey>;
@@ -33,4 +35,9 @@ export interface ScalperOrderBookDataContext {
   readonly workingVolume$: Observable<number>;
   readonly scaleFactor$: Observable<number>;
   displayRange$: Observable<ListRange | null>;
+
+  addLocalOrder(order: LocalOrder): void;
+  removeLocalOrder(orderId: string): void;
+
+  destroy(): void;
 }

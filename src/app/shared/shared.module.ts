@@ -72,6 +72,7 @@ import { PriceDiffComponent } from './components/price-diff/price-diff.component
 import { TableRowHeightDirective } from './directives/table-row-height.directive';
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { GraphQlErrorHandlerService } from "./services/handle-error/graph-ql-error-handler.service";
+import { LetDirective } from "@ngrx/component";
 
 @NgModule({
   declarations: [
@@ -141,6 +142,7 @@ import { GraphQlErrorHandlerService } from "./services/handle-error/graph-ql-err
     NzResizeObserverModule,
     NzColorPickerModule,
     DragDropModule,
+    LetDirective
   ],
   exports: [
     // Ng zorro

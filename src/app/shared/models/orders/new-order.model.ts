@@ -6,11 +6,15 @@ import {
   TimeInForce
 } from "./order.model";
 
+export interface OrderMeta {
+  trackId?: string;
+}
+
 export interface NewOrderBase {
   side: Side;
   instrument: InstrumentKey;
   quantity: number;
-  comment?: string;
+  meta?: OrderMeta;
 }
 
 export interface NewMarketOrder extends NewOrderBase {
@@ -40,7 +44,7 @@ export interface NewStopLimitOrder extends NewStopMarketOrder {
 
 export interface SubmitOrderResponse {
   message: string;
-  // # of successfully places order
+  // # of successfully placed order
   orderNumber?: string;
   // Error code if something went wrong
   code?: string;

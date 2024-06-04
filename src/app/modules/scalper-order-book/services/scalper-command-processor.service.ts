@@ -3,12 +3,28 @@ import { TerminalCommand } from '../../../shared/models/terminal-command';
 import { ScalperOrderBookDataContext } from '../models/scalper-order-book-data-context.model';
 import { HotKeyCommandService } from '../../../shared/services/hot-key-command.service';
 import { Side } from '../../../shared/models/enums/side.model';
-import { BodyRow, CurrentOrderDisplay } from '../models/scalper-order-book.model';
-import { combineLatest, filter, iif, Observable, shareReplay, take } from 'rxjs';
+import {
+  BodyRow,
+  CurrentOrderDisplay
+} from '../models/scalper-order-book.model';
+import {
+  combineLatest,
+  filter,
+  iif,
+  Observable,
+  shareReplay,
+  take
+} from 'rxjs';
 import { Instrument } from '../../../shared/models/instruments/instrument.model';
-import { map, switchMap } from 'rxjs/operators';
+import {
+  map,
+  switchMap
+} from 'rxjs/operators';
 import { ScalperOrderBookCommands } from '../models/scalper-order-book-commands';
-import { PriceUnits, ScalperOrderBookWidgetSettings } from '../models/scalper-order-book-settings.model';
+import {
+  PriceUnits,
+  ScalperOrderBookWidgetSettings
+} from '../models/scalper-order-book-settings.model';
 import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { PortfolioKey } from '../../../shared/models/portfolio-key.model';
 import { Position } from '../../../shared/models/positions/position.model';
@@ -23,9 +39,19 @@ import { CancelOrdersCommand } from "../commands/cancel-orders-command";
 import { ClosePositionByMarketCommand } from "../commands/close-position-by-market-command";
 import { SubmitMarketOrderCommand } from "../commands/submit-market-order-command";
 import { ReversePositionByMarketCommand } from "../commands/reverse-position-by-market-command";
-import { SubmitStopLimitOrderCommand } from "../commands/submit-stop-limit-order-command";
-import { SetStopLossCommand } from "../commands/set-stop-loss-command";
-import { BracketOptions, SubmitLimitOrderCommand } from "../commands/submit-limit-order-command";
+import {
+  StopLimitOrderTracker,
+  SubmitStopLimitOrderCommand
+} from "../commands/submit-stop-limit-order-command";
+import {
+  SetStopLossCommand,
+  StopMarketOrderTracker
+} from "../commands/set-stop-loss-command";
+import {
+  BracketOptions,
+  LimitOrderTracker,
+  SubmitLimitOrderCommand
+} from "../commands/submit-limit-order-command";
 import { SubmitBestPriceOrderCommand } from "../commands/submit-best-price-order-command";
 import { GetBestOfferCommand } from "../commands/get-best-offer-command";
 import { UpdateOrdersCommand } from "../commands/update-orders-command";
@@ -182,7 +208,8 @@ export class ScalperCommandProcessorService {
                           orderBook,
                           targetPortfolio: portfolioKey.portfolio,
                           bracketOptions: this.getBracketOptions(settings.widgetSettings, position),
-                          priceStep: settings.instrument.minstep
+                          priceStep: settings.instrument.minstep,
+                          orderTracker: this.getLimitOrderTracker(dataContext, portfolioKey.portfolio)
                         })
                       );
                     }
@@ -216,7 +243,8 @@ export class ScalperCommandProcessorService {
                           orderBook,
                           targetPortfolio: portfolioKey.portfolio,
                           bracketOptions: this.getBracketOptions(settings.widgetSettings, position),
-                          priceStep: settings.instrument.minstep
+                          priceStep: settings.instrument.minstep,
+                          orderTracker: this.getLimitOrderTracker(dataContext, portfolioKey.portfolio)
                         })
                       );
                     }
@@ -326,7 +354,8 @@ export class ScalperCommandProcessorService {
                         targetPortfolio: portfolioKey.portfolio,
                         orderBook,
                         priceStep: settings.instrument.minstep,
-                        bracketOptions: this.getBracketOptions(settings.widgetSettings, position)
+                        bracketOptions: this.getBracketOptions(settings.widgetSettings, position),
+                        orderTracker: this.getLimitOrderTracker(dataContext, portfolioKey.portfolio)
                       })
                     );
                   }
@@ -492,12 +521,82 @@ export class ScalperCommandProcessorService {
                     priceStep: settings.instrument.minstep
                   },
                   targetPortfolio: portfolioKey.portfolio,
-                  silent: settings.widgetSettings.enableMouseClickSilentOrders
+                  silent: settings.widgetSettings.enableMouseClickSilentOrders,
+                  orderTracker: this.getStopLimitOrderTracker(dataContext, portfolioKey.portfolio)
                 });
               }
             );
           });
       });
+  }
+
+  private getLimitOrderTracker(dataContext: ScalperOrderBookDataContext, portfolio: string): LimitOrderTracker {
+    return {
+      beforeOrderCreated: (order): void => {
+        if(order.meta?.trackId != null) {
+          dataContext.addLocalOrder({
+            orderId: order.meta!.trackId!,
+            type: OrderType.Limit,
+            side: order.side,
+            displayVolume: order.quantity,
+            price: order.price,
+            symbol: order.instrument.symbol,
+            exchange: order.instrument.exchange,
+            instrumentGroup: order.instrument.instrumentGroup,
+            portfolio,
+            isDirty: true
+          });
+        }
+      },
+      orderProcessed: localId => dataContext.removeLocalOrder(localId)
+    };
+  }
+
+  private getStopLimitOrderTracker(dataContext: ScalperOrderBookDataContext, portfolio: string): StopLimitOrderTracker {
+    return {
+      beforeOrderCreated: (order): void => {
+        if(order.meta?.trackId != null) {
+          dataContext.addLocalOrder({
+            orderId: order.meta!.trackId!,
+            type: OrderType.StopLimit,
+            side: order.side,
+            displayVolume: order.quantity,
+            price: order.price,
+            triggerPrice: order.triggerPrice,
+            condition: order.condition,
+            symbol: order.instrument.symbol,
+            exchange: order.instrument.exchange,
+            instrumentGroup: order.instrument.instrumentGroup,
+            portfolio,
+            isDirty: true
+          });
+        }
+      },
+      orderProcessed: localId => dataContext.removeLocalOrder(localId)
+    };
+  }
+
+  private getStopMarketOrderTracker(dataContext: ScalperOrderBookDataContext, portfolio: string): StopMarketOrderTracker {
+    return {
+      beforeOrderCreated: (order): void => {
+        if(order.meta?.trackId != null) {
+          dataContext.addLocalOrder({
+            orderId: order.meta!.trackId!,
+            type: OrderType.StopMarket,
+            side: order.side,
+            displayVolume: order.quantity,
+            triggerPrice: order.triggerPrice,
+            condition: order.condition,
+            symbol: order.instrument.symbol,
+            exchange: order.instrument.exchange,
+            instrumentGroup: order.instrument.instrumentGroup,
+            portfolio,
+            isDirty: true
+          });
+        }
+      },
+      orderProcessed: localId => dataContext.removeLocalOrder(localId)
+    };
   }
 
   private stopLossAction(row: { price: number }, dataContext: ScalperOrderBookDataContext): void {
@@ -511,7 +610,8 @@ export class ScalperCommandProcessorService {
               currentPosition: position,
               triggerPrice: row.price,
               targetInstrumentBoard: settings.widgetSettings.instrumentGroup ?? null,
-              silent: settings.widgetSettings.enableMouseClickSilentOrders
+              silent: settings.widgetSettings.enableMouseClickSilentOrders,
+              orderTracker: this.getStopMarketOrderTracker(dataContext, position!.portfolio)
             });
           }
         );
@@ -545,7 +645,8 @@ export class ScalperCommandProcessorService {
                         position
                       ),
                       priceStep: settings.instrument.minstep,
-                      silent: settings.widgetSettings.enableMouseClickSilentOrders
+                      silent: settings.widgetSettings.enableMouseClickSilentOrders,
+                      orderTracker: this.getLimitOrderTracker(dataContext, portfolioKey.portfolio)
                     });
                   }
                 );

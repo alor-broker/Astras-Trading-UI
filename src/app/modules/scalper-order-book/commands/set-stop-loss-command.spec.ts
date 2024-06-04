@@ -121,13 +121,13 @@ describe('SetStopLossCommand', () => {
 
       tick(10000);
       expect(orderServiceSpy.submitStopMarketOrder).toHaveBeenCalledOnceWith(
-        {
+        jasmine.objectContaining({
           side: Side.Sell,
           quantity: position.qtyTFutureBatch,
           triggerPrice: expectedPrice,
           condition: LessMore.LessOrEqual,
-          instrument: testInstrumentKey
-        } as NewStopMarketOrder,
+          instrument: testInstrumentKey,
+        } as NewStopMarketOrder),
         portfolio
       );
 
@@ -144,13 +144,13 @@ describe('SetStopLossCommand', () => {
 
       tick(10000);
       expect(orderServiceSpy.submitStopMarketOrder).toHaveBeenCalledOnceWith(
-        {
+        jasmine.objectContaining({
           side: Side.Buy,
           quantity: Math.abs(position.qtyTFutureBatch),
           triggerPrice: expectedPrice,
           condition: LessMore.MoreOrEqual,
           instrument: testInstrumentKey
-        } as NewStopMarketOrder,
+        } as NewStopMarketOrder),
         portfolio
       );
     })

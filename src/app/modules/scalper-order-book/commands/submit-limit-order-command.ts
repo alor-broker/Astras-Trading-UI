@@ -21,6 +21,14 @@ import {
 } from "../../../shared/models/orders/orders-dialog.model";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { LessMore } from "../../../shared/models/enums/less-more.model";
+import { GuidGenerator } from "../../../shared/utils/guid";
+import { take } from "rxjs";
+import { LocalOrderTracker } from "./local-order-tracker";
+
+export interface LimitOrderTracker extends LocalOrderTracker<NewLimitOrder>{
+  beforeOrderCreated: (order: NewLimitOrder) => void;
+  orderProcessed: (localId: string, isSuccess: boolean) => void;
+}
 
 export interface BracketOptions {
   profitPriceRatio: number | null;
@@ -39,6 +47,7 @@ export interface SubmitLimitOrderCommandArgs {
   bracketOptions: BracketOptions | null;
   priceStep: number;
   silent: boolean;
+  orderTracker?: LimitOrderTracker;
 }
 
 @Injectable({
@@ -55,6 +64,7 @@ export class SubmitLimitOrderCommand extends CommandBase<SubmitLimitOrderCommand
 
   execute(args: SubmitLimitOrderCommandArgs): void {
     const limitOrder = this.prepareLimitOrder(args);
+
     let getProfitOrder: NewStopLimitOrder | null = null;
     let stopLossOrder: NewStopLimitOrder | null = null;
 
@@ -86,7 +96,10 @@ export class SubmitLimitOrderCommand extends CommandBase<SubmitLimitOrderCommand
       instrument: toInstrumentKey(args.instrumentKey),
       price: args.price,
       quantity: args.quantity,
-      side: args.side
+      side: args.side,
+      meta: {
+        trackId: GuidGenerator.newGuid()
+      }
     };
   }
 
@@ -258,6 +271,8 @@ export class SubmitLimitOrderCommand extends CommandBase<SubmitLimitOrderCommand
     stopLossOrder: NewStopLimitOrder | null,
     args: SubmitLimitOrderCommandArgs
   ): void {
+    args.orderTracker?.beforeOrderCreated(limitOrder);
+
     if (getProfitOrder != null || stopLossOrder != null) {
       const orders: NewLinkedOrder[] = [
         {
@@ -280,9 +295,22 @@ export class SubmitLimitOrderCommand extends CommandBase<SubmitLimitOrderCommand
         });
       }
 
-      this.ordersGroupService.submitOrdersGroup(orders, args.targetPortfolio, ExecutionPolicy.TriggerBracketOrders).subscribe();
+      this.ordersGroupService.submitOrdersGroup(orders, args.targetPortfolio, ExecutionPolicy.TriggerBracketOrders).pipe(
+        take(1)
+      ).subscribe(result => {
+        if (limitOrder.meta?.trackId != null) {
+          args.orderTracker?.orderProcessed(limitOrder.meta.trackId, result != null);
+        }
+      });
+
     } else {
-      this.wsOrdersService.submitLimitOrder(limitOrder, args.targetPortfolio).subscribe();
+      this.wsOrdersService.submitLimitOrder(limitOrder, args.targetPortfolio).pipe(
+        take(1)
+      ).subscribe(result => {
+        if (limitOrder.meta?.trackId != null) {
+          args.orderTracker?.orderProcessed(limitOrder.meta.trackId, result.isSuccess);
+        }
+      });
     }
   }
 }

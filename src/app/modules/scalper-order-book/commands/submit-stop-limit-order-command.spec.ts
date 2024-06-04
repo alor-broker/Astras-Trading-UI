@@ -93,14 +93,14 @@ describe('SubmitStopLimitOrderCommand', () => {
       expect(orderServiceSpy.submitStopLimitOrder)
         .withContext('Sell. Silent')
         .toHaveBeenCalledOnceWith(
-          {
+          jasmine.objectContaining({
             side: Side.Sell,
             quantity: quantity,
             price: MathHelper.roundPrice(price - distance * minstep, minstep),
             instrument: toInstrumentKey(testInstrumentKey),
             triggerPrice: price,
             condition: LessMore.LessOrEqual
-          } as NewStopLimitOrder,
+          } as NewStopLimitOrder),
           portfolioKey.portfolio
         );
 
@@ -123,14 +123,14 @@ describe('SubmitStopLimitOrderCommand', () => {
       expect(orderServiceSpy.submitStopLimitOrder)
         .withContext('Buy. Silent')
         .toHaveBeenCalledOnceWith(
-          {
+          jasmine.objectContaining({
             side: Side.Buy,
             quantity: quantity,
             price: MathHelper.roundPrice(price + distance * minstep, minstep),
             instrument: toInstrumentKey(testInstrumentKey),
             triggerPrice: price,
             condition: LessMore.MoreOrEqual
-          } as NewStopLimitOrder,
+          } as NewStopLimitOrder),
           portfolioKey.portfolio
         );
 

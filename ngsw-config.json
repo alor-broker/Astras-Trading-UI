@@ -7,23 +7,7 @@
       "installMode": "prefetch",
       "resources": {
         "files": [
-          "/assets/custom_icons/logo.svg",
-          "/index.html",
-          "/manifest.webmanifest",
-          "/*.css",
-          "/*.js",
-          "/assets/*config.json"
-        ]
-      }
-    },
-    {
-      "name": "assets",
-      "installMode": "lazy",
-      "updateMode": "prefetch",
-      "resources": {
-        "files": [
-          "/assets/**",
-          "/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
+          "/manifest.webmanifest"
         ]
       }
     }

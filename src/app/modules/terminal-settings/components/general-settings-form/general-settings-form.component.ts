@@ -94,6 +94,7 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
           ]),
         language: new UntypedFormControl(''),
         badgesBind: new UntypedFormControl(null),
+        badgesColors: new UntypedFormControl([]),
         tableRowHeight: new UntypedFormControl(TableRowHeight.Medium)
       }
     );
@@ -143,5 +144,4 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
       handler(property, value![property as keyof T], control);
     }
   }
-
 }

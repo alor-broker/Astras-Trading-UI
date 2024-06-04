@@ -1,0 +1,34 @@
+name: User Story RU
+description: Предложить идею. Если у вас проблема с другими сервисами Алора, напишите нам на support@alor.ru. Github issues только для багов и фич по Astras.
+title: '[FEATURE]: '
+labels: 
+  - enhancement
+  - recently reported
+body:
+  - type: textarea
+    id: user_story
+    validations:
+      required: true
+    attributes:
+      label: Пользовательская история
+      render: multiline
+      description: |
+        Опишите вашу фичу в формате User Story.
+        Формат:
+        ДАНО: [контекст или пользователь]
+        КОГДА: [действие или событие]
+        ТОГДА: [ожидаемый результат или реакция]
+        ПРИ ЭТОМ: [Дополнительные данные]
+      placeholder: |
+        ДАНО: Я клиент Астраса
+        КОГДА: Я создаю виджет Блоттер
+        ТОГДА: Он должен появлятся на доске Астраса
+        ПРИ ЭТОМ: Он должен быть стандартного размера.
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Правила
+      description: Отправляя, вы соглашаетесь с [Code of Conduct](https://github.com/alor-broker/.github/blob/master/CODE_OF_CONDUCT.md) и [Contribution guideline](https://github.com/alor-broker/Astras-Trading-UI/blob/master/CONTRIBUTING.md)
+      options:
+        - label: Я согласен следовать правилам
+          required: true

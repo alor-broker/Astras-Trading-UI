@@ -60,7 +60,10 @@ describe('TradeClustersPanelComponent', () => {
       orderBookBody$: new Subject(),
       displayRange$: new Subject(),
       workingVolume$: new Subject(),
-      scaleFactor$: new BehaviorSubject(1)
+      scaleFactor$: new BehaviorSubject(1),
+      addLocalOrder: order => {},
+      removeLocalOrder: orderId => {},
+      destroy: () => {}
     } as ScalperOrderBookDataContext;
 
     fixture.detectChanges();

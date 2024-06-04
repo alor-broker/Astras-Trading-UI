@@ -107,7 +107,8 @@ describe('SubmitBestPriceOrderCommand', () => {
             priceStep: args.priceStep,
             targetPortfolio: args.targetPortfolio,
             bracketOptions: args.bracketOptions,
-            silent: true
+            silent: true,
+            orderTracker: undefined
           } as SubmitLimitOrderCommandArgs
         );
 
@@ -128,7 +129,8 @@ describe('SubmitBestPriceOrderCommand', () => {
             priceStep: args.priceStep,
             targetPortfolio: args.targetPortfolio,
             bracketOptions: args.bracketOptions,
-            silent: true
+            silent: true,
+            orderTracker: undefined
           } as SubmitLimitOrderCommandArgs
         );
 
@@ -163,7 +165,8 @@ describe('SubmitBestPriceOrderCommand', () => {
             priceStep: args.priceStep,
             targetPortfolio: args.targetPortfolio,
             bracketOptions: args.bracketOptions,
-            silent: true
+            silent: true,
+            orderTracker: undefined
           } as SubmitLimitOrderCommandArgs
         );
 
@@ -184,7 +187,8 @@ describe('SubmitBestPriceOrderCommand', () => {
             priceStep: args.priceStep,
             targetPortfolio: args.targetPortfolio,
             bracketOptions: args.bracketOptions,
-            silent: true
+            silent: true,
+            orderTracker: undefined
           } as SubmitLimitOrderCommandArgs
         );
     })

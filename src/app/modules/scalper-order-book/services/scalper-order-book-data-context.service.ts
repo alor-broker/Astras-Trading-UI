@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
   filter,
@@ -31,7 +32,7 @@ import { SubscriptionsDataFeedService } from '../../../shared/services/subscript
 import {
   BodyRow,
   CurrentOrderDisplay,
-  OrderMeta,
+  LocalOrder,
   PriceRow,
   ScalperOrderBookRowType
 } from '../models/scalper-order-book.model';
@@ -59,6 +60,7 @@ import { MathHelper } from "../../../shared/utils/math-helper";
 import { ScalperOrderBookConstants } from "../constants/scalper-order-book.constants";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { Order } from "../../../shared/models/orders/order.model";
+import { OrderMeta } from "../../../shared/models/orders/new-order.model";
 
 
 export interface ContextGetters {
@@ -100,6 +102,7 @@ export class ScalperOrderBookDataContextService {
     const currentPortfolio$ = this.getOrderBookPortfolio();
     const position$ = this.getOrderBookPositionStream(settings$, currentPortfolio$);
     const orderBook$ = this.getOrderBookStream(settings$);
+    const localOrders$ = new BehaviorSubject<Map<string, LocalOrder>>(new Map());
 
     return {
       extendedSettings$: settings$,
@@ -117,9 +120,32 @@ export class ScalperOrderBookDataContextService {
         getters,
         actions
       ),
-      currentOrders$: this.getCurrentOrdersStream(settings$, currentPortfolio$),
+      currentOrders$: this.getCurrentOrdersStream(settings$, currentPortfolio$, localOrders$),
       trades$: this.getInstrumentTradesStream(settings$),
-      scaleFactor$
+      scaleFactor$,
+
+      //---------------------------------------------------
+      addLocalOrder(order: LocalOrder): void {
+        localOrders$.pipe(
+          take(1)
+        ).subscribe(x => {
+          const copy = new Map(x);
+          copy.set(order.orderId, order);
+          localOrders$.next(copy);
+        });
+      },
+      removeLocalOrder(orderId: string): void {
+        localOrders$.pipe(
+          take(1)
+        ).subscribe(x => {
+          const copy = new Map(x);
+          copy.delete(orderId);
+          localOrders$.next(copy);
+        });
+      },
+      destroy(): void {
+        localOrders$.complete();
+      }
     };
   }
 
@@ -229,7 +255,11 @@ export class ScalperOrderBookDataContextService {
     );
   }
 
-  private getCurrentOrdersStream(settings$: Observable<ScalperOrderBookExtendedSettings>, currentPortfolio$: Observable<PortfolioKey>): Observable<CurrentOrderDisplay[]> {
+  private getCurrentOrdersStream(
+    settings$: Observable<ScalperOrderBookExtendedSettings>,
+    currentPortfolio$: Observable<PortfolioKey>,
+    localOrders$: Observable<Map<string, LocalOrder>>
+  ): Observable<CurrentOrderDisplay[]> {
     const limitOrders$ = settings$.pipe(
       mapWith(() => currentPortfolio$, (s, p) => ({ s, p })),
       mapWith(
@@ -249,7 +279,8 @@ export class ScalperOrderBookDataContextService {
         side: x.side,
         price: x.price,
         displayVolume: x.qty - (x.filledQtyBatch ?? 0),
-        meta: this.getOrderMeta(x)
+        meta: this.getOrderMeta(x),
+        isDirty: false
       } as CurrentOrderDisplay))),
       shareReplay({ bufferSize: 1, refCount: true })
     );
@@ -275,16 +306,50 @@ export class ScalperOrderBookDataContextService {
         price: x.price,
         condition: x.conditionType,
         displayVolume: x.qty - (x.filledQtyBatch ?? 0),
-        meta: this.getOrderMeta(x)
+        meta: this.getOrderMeta(x),
+        isDirty: false
       } as CurrentOrderDisplay))),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    return combineLatest([
-      limitOrders$,
-      stopOrders$
-    ]).pipe(
-      map(([limitOrders, stopOrders]) => [...limitOrders, ...stopOrders]),
+    const currentInstrumentLocalOrders$ = settings$.pipe(
+      mapWith(() => currentPortfolio$, (s, p) => ({ s, p })),
+      mapWith(
+        () => localOrders$,
+        (source, output) => ({... source, localOrders: output})
+      ),
+      map(x => {
+        return Array.from(x.localOrders.values())
+          .filter(o => {
+            return isInstrumentEqual(o, x.s.widgetSettings)
+              && o.portfolio === x.p.portfolio;
+          });
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+    return combineLatest({
+      limitOrders: limitOrders$,
+      stopOrders: stopOrders$,
+      localOrders: currentInstrumentLocalOrders$
+    }).pipe(
+      map(x => {
+        const actualOrders = [...x.limitOrders, ...x.stopOrders];
+
+        const metas = new Set<string>();
+        for (const actualOrder of actualOrders) {
+          if(actualOrder.meta?.trackId != null) {
+            metas.add(actualOrder.meta.trackId);
+          }
+        }
+
+        const filteredLocalOrders = x.localOrders.filter(o => !metas.has(o.orderId));
+
+        return [
+          ...actualOrders,
+          ...filteredLocalOrders
+        ];
+      }),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
