@@ -24,6 +24,7 @@ interface LogEntry {
   stack?: string;
   sessionId: string;
   login: string;
+  clientId: string;
   device: string;
   browser: string;
   version: string;
@@ -97,6 +98,7 @@ export class RemoteLogger extends LoggerBase {
       stack: stack ?? '',
       sessionId: this.guid,
       login: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.UserLoginStorageKey) ?? '',
+      clientId: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.ClientIdStorageKey) ?? '',
       version: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.AppVersionStorageKey) ?? '',
       device: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.DeviceStorageKey) ?? '',
       browser: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.BrowserStorageKey) ?? '',
