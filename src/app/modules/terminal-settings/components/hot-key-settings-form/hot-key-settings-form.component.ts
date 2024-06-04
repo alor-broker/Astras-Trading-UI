@@ -158,7 +158,7 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
       }
 
       const existedKeys = this.getAllKeys(this.form!.getRawValue());
-      if (existedKeys.filter(x => x === control.value).length > 1) {
+      if (existedKeys.filter(x => JSON.stringify(x) === JSON.stringify(control.value)).length > 1) {
         return {
           notUnique: true
         };
