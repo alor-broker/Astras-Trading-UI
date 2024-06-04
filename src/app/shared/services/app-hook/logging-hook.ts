@@ -39,6 +39,7 @@ export class LoggingHook implements AppHook {
     this.tearDown.add(
       currentUser$.subscribe(user => {
         this.localStorageService.setItem(LocalStorageLoggingConstants.UserLoginStorageKey, user.login);
+        this.localStorageService.setItem(LocalStorageLoggingConstants.ClientIdStorageKey, user.clientId);
       })
     );
 
