@@ -7,8 +7,11 @@ labels:
 body:
   - type: textarea
     id: user_story
+    validations:
+      required: true
     attributes:
       label: Пользовательская история
+      render: multiline
       description: |
         Опишите вашу фичу в формате User Story.
         Формат:
