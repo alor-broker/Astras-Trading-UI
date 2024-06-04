@@ -1,6 +1,6 @@
 name: User Story RU
 description: Предложить идею. Если у вас проблема с другими сервисами Алора, напишите нам на support@alor.ru. Github issues только для багов и фич по Astras.
-title: 'Feature request RU: '
+title: 'User Story RU: '
 labels: 
   - enhancement
   - recently reported
@@ -33,8 +33,8 @@ body:
   - type: checkboxes
     id: terms
     attributes:
-      label: Code of Conduct
-      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/alor-broker/.github/blob/default/CODE_OF_CONDUCT.md)
+      label: Правила
+      description: Отправляя, вы соглашаетесь с [Code of Conduct](https://github.com/alor-broker/.github/blob/master/CODE_OF_CONDUCT.md) и [Contribution guideline](https://github.com/alor-broker/Astras-Trading-UI/blob/master/CONTRIBUTING.md)
       options:
-        - label: I agree to follow this project's Code of Conduct
+        - label: Я согласен следовать правилам
           required: true
