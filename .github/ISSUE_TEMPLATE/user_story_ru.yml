@@ -1,6 +1,6 @@
 name: User Story RU
 description: Предложить идею. Если у вас проблема с другими сервисами Алора, напишите нам на support@alor.ru. Github issues только для багов и фич по Astras.
-title: 'User Story RU: '
+title: '[FEATURE]: '
 labels: 
   - enhancement
   - recently reported
