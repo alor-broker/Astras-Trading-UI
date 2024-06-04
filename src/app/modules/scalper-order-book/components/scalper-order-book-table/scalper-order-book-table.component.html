@@ -161,7 +161,7 @@
                     'multiple': orders.orders.length > 1,
                     'dirty': isDirty
                     }"
-                    [nz-tooltip]="t('scalperOrderBookScalperOrderBookTable.limitOrderTooltip')"
+                    [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookScalperOrderBookTable.limitOrderTooltip')"
                     [nzTooltipMouseEnterDelay]="1"
                     [nzTooltipPlacement]="['right', 'left']"
                     [nzTooltipTrigger]="isDirty ? null : 'hover'"
@@ -185,7 +185,7 @@
                     'multiple': orders.orders.length > 1,
                     'dirty': isDirty
                     }"
-                    [nz-tooltip]="t('scalperOrderBookScalperOrderBookTable.' + tooltipKey)"
+                    [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookScalperOrderBookTable.' + tooltipKey)"
                     [nzTooltipMouseEnterDelay]="1"
                     [nzTooltipPlacement]="['right', 'left']"
                     [nzTooltipTrigger]="isDirty ? null : 'hover'"

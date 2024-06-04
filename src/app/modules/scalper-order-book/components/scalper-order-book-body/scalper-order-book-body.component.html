@@ -62,11 +62,13 @@
                     [minWidthPx]="75"
                     [defaultWidthPercent]="50"
                   >
-                    <ats-scalper-order-book-table [dataContext]="dataContext"
-                                                  [isActive]="isActive"
-                                                  [rowHeight]="shared.rowHeight"
-                                                  (mouseenter)="isTableHovered$.next(true)"
-                                                  (mouseleave)="isTableHovered$.next(false)"
+                    <ats-scalper-order-book-table
+                      [dataContext]="dataContext"
+                      [isActive]="isActive"
+                      [rowHeight]="shared.rowHeight"
+                      [hideTooltips]="vm.extendedSettings.widgetSettings.hideTooltips ?? false"
+                      (mouseenter)="isTableHovered$.next(true)"
+                      (mouseleave)="isTableHovered$.next(false)"
                     >
                     </ats-scalper-order-book-table>
                   </ats-panel>
@@ -78,19 +80,33 @@
 
         <ng-container *ngrxLet="dataContext.extendedSettings$ as settings">
           <div class="position-absolute top-0 start-50 translate-middle-x lh-1" *ngIf="settings.widgetSettings.showLimitOrdersVolumeIndicators">
-            <ats-limit-orders-volume-indicator [dataContext]="dataContext" [side]="sides.Sell"></ats-limit-orders-volume-indicator>
+            <ats-limit-orders-volume-indicator
+              [dataContext]="dataContext"
+              [side]="sides.Sell"
+              [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
+            ></ats-limit-orders-volume-indicator>
           </div>
           <div class="position-absolute bottom-0 start-50 translate-middle-x lh-1" *ngIf="settings.widgetSettings.showLimitOrdersVolumeIndicators">
-            <ats-limit-orders-volume-indicator [dataContext]="dataContext" [side]="sides.Buy"></ats-limit-orders-volume-indicator>
+            <ats-limit-orders-volume-indicator
+              [dataContext]="dataContext"
+              [side]="sides.Buy"
+              [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
+            ></ats-limit-orders-volume-indicator>
           </div>
 
           <div class="position-absolute top-0 end-0">
-            <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.up ?? false"
-                                  direction="up"></ats-orders-indicator>
+            <ats-orders-indicator
+              [visible]="(hiddenOrdersIndicators$ | async)?.up ?? false"
+              [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
+              direction="up"
+            ></ats-orders-indicator>
           </div>
           <div class="position-absolute bottom-0 end-0">
-            <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.down ?? false"
-                                  direction="down"></ats-orders-indicator>
+            <ats-orders-indicator
+              [visible]="(hiddenOrdersIndicators$ | async)?.down ?? false"
+              [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
+              direction="down"
+            ></ats-orders-indicator>
           </div>
 
           <div
@@ -101,7 +117,10 @@
             (cdkDragEnded)="saveFloatingPanelPosition($event, topFloatingPanelPositionStateKey)"
             #topFloatingPanelContainer
           >
-            <ats-top-floating-panel [guid]="guid"></ats-top-floating-panel>
+            <ats-top-floating-panel
+              [guid]="guid"
+              [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
+            ></ats-top-floating-panel>
           </div>
 
           <div

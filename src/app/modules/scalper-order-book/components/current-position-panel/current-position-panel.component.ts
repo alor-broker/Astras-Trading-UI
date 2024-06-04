@@ -24,11 +24,16 @@ export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
   @Input({required: true})
   guid!: string;
 
+  @Input()
+  hideTooltips = false;
+
   orderBookPosition$!: Observable<ScalperOrderBookPositionState | null>;
 
   lossOrProfitDisplayType$ = new BehaviorSubject<'points' | 'percentage'>('points');
 
-  constructor(private readonly dataContextService: ScalperOrderBookDataContextService) {
+  constructor(
+    private readonly dataContextService: ScalperOrderBookDataContextService
+  ) {
   }
 
   changeLossOrProfitDisplayType(): void {
@@ -74,7 +79,8 @@ export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
           qty: position!.qtyTFutureBatch,
           price: MathHelper.round(position!.avgPrice, minStepDigitsAfterPoint),
           lossOrProfitPoints: rowsDifference,
-          lossOrProfitPercent: rowsDifferencePercent
+          lossOrProfitPercent: rowsDifferencePercent,
+          hideTooltips: settings.widgetSettings.hideTooltips ?? false
         };
       })
     );

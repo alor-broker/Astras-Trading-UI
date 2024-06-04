@@ -3,7 +3,7 @@
     <span
       *ngIf="ordersVolume > 0"
       [nzTooltipMouseEnterDelay]="1"
-      [nzTooltipTitle]="t('scalperOrderBookLimitOrdersVolumeIndicator.tooltip', {side})"
+      [nzTooltipTitle]="hideTooltips ? null : t('scalperOrderBookLimitOrdersVolumeIndicator.tooltip', {side})"
       class="d-inline-block lh-1 fw-bold text-center px-3 user-select-none volume-item"
       nz-tooltip
     >

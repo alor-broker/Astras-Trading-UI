@@ -1,10 +1,13 @@
 <ng-container *transloco="let t; scope: 'scalper-order-book/current-position-state'">
   <div
-    *ngrxLet="{ orderBookPosition: orderBookPosition$, lossOrProfitDisplayType: lossOrProfitDisplayType$} as vm"
+    *ngrxLet="{
+      orderBookPosition: orderBookPosition$,
+      lossOrProfitDisplayType: lossOrProfitDisplayType$
+    } as vm"
     class="container lh-1"
   >
     <div
-      [nz-tooltip]="t('scalperOrderBookCurrentPositionState.avgPositionPriceTooltip')"
+      [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookCurrentPositionState.avgPositionPriceTooltip')"
       [nzTooltipMouseEnterDelay]="1"
       class="p-2"
     >
@@ -15,7 +18,7 @@
         'positive': (vm.orderBookPosition?.qty ?? 0) > 0,
         'negative': (vm.orderBookPosition?.qty ?? 0) < 0
         }"
-         [nz-tooltip]="t('scalperOrderBookCurrentPositionState.lotsQtyTooltip')"
+         [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookCurrentPositionState.lotsQtyTooltip')"
          [nzTooltipMouseEnterDelay]="1"
          class="p-2"
     >
@@ -26,7 +29,7 @@
         'positive': (vm.orderBookPosition?.lossOrProfitPoints ?? 0) > 0,
         'negative': (vm.orderBookPosition?.lossOrProfitPoints ?? 0) < 0
         }"
-         [nz-tooltip]="t('scalperOrderBookCurrentPositionState.lossOrProfitTooltip')"
+         [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookCurrentPositionState.lossOrProfitTooltip')"
          [nzTooltipMouseEnterDelay]="1"
          (click)="changeLossOrProfitDisplayType()"
          class="p-2"

@@ -29,6 +29,9 @@ export class TopFloatingPanelComponent implements OnInit {
   @Input({ required: true })
   guid!: string;
 
+  @Input()
+  hideTooltips = false;
+
   settings$!: Observable<ScalperOrderBookWidgetSettings>;
   priceDayChangePercent$!: Observable<number>;
   currentScaleFactor$!: Observable<number | null>;

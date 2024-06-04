@@ -7,7 +7,7 @@
       <ats-scalper-order-book-body [guid]="guid" [isActive]="isActive"></ats-scalper-order-book-body>
     </div>
     <div>
-      <ats-current-position-panel [guid]="guid"></ats-current-position-panel>
+      <ats-current-position-panel [guid]="guid" [hideTooltips]="(hideTooltips$ | async) ?? false"></ats-current-position-panel>
     </div>
   </div>
 </ng-container>

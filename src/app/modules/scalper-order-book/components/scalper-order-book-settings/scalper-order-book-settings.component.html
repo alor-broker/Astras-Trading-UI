@@ -155,6 +155,12 @@
                 <nz-switch formControlName='showPriceWithZeroPadding'></nz-switch>
               </nz-form-control>
             </nz-form-item>
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="hideTooltips">{{t('scalperOrderBookSettings.hideTooltipsLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName="hideTooltips"></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
           </nz-collapse-panel>
 
           <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.gridSettingsLabel')">

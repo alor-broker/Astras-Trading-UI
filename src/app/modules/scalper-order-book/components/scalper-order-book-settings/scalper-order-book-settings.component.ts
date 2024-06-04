@@ -163,6 +163,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       ]
     ),
     showPriceWithZeroPadding: this.formBuilder.nonNullable.control(false),
+    hideTooltips: this.formBuilder.nonNullable.control(false),
     fontSize: this.formBuilder.nonNullable.control(
       12,
       [
@@ -475,6 +476,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     this.form.controls.shortLongIndicatorsPanelSlot.setValue(settings.shortLongIndicatorsPanelSlot ?? PanelSlots.BottomFloatingPanel);
     this.form.controls.shortLongIndicatorsUpdateIntervalSec.setValue(settings.shortLongIndicatorsUpdateIntervalSec ?? 60);
     this.form.controls.showLimitOrdersVolumeIndicators.setValue(settings.showLimitOrdersVolumeIndicators ?? false);
+    this.form.controls.hideTooltips.setValue(settings.hideTooltips ?? false);
 
     this.form.controls.volumeDisplayFormat.setValue(settings.volumeDisplayFormat ?? NumberDisplayFormat.Default);
 
