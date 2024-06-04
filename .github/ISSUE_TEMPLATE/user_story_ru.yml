@@ -6,6 +6,13 @@ labels:
   - recently reported
 body:
   - type: textarea
+    id: formulation
+    attributes:
+      label: Опишите проблему, которую решает ваша фича
+      description: Краткое и понятное описание сути проблемы, которую решает фича.
+      placeholder: |
+        Я испытываю трудности когда [...]
+  - type: textarea
     id: user_story
     attributes:
       label: UserStory
