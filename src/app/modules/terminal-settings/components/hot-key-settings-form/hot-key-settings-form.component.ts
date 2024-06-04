@@ -12,7 +12,7 @@ import {
   ValidatorFn,
   Validators
 } from '@angular/forms';
-import { HotKeysSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import { HotKeyMeta, HotKeysSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import {
   distinctUntilChanged
 } from 'rxjs';
@@ -180,8 +180,8 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
     return this.form.touched;
   }
 
-  private getAllKeys(formValue: { [keyName: string]: string | string[] | null }): string[] {
-    const keys: string[] = [];
+  private getAllKeys(formValue: { [keyName: string]: HotKeyMeta | string | string[] | null }): (string | HotKeyMeta)[] {
+    const keys: (string | HotKeyMeta)[] = [];
     for (const property in formValue) {
       const value = formValue[property];
       if (value == null) {
