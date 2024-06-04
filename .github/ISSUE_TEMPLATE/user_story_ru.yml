@@ -6,12 +6,15 @@ labels:
   - recently reported
 body:
   - type: textarea
-    id: formulation
+    id: user_story
     attributes:
-      label: Опишите проблему, которую решает ваша фича
+      label: Пользовательская история
       description: Краткое и понятное описание сути проблемы, которую решает фича.
       placeholder: |
-        Я испытываю трудности когда [...]
+        ДАНО: [контекст или пользователь]
+        КОГДА: [действие или событие]
+        ТОГДА: [ожидаемый результат или реакция]
+        ПРИ ЭТОМ: [Дополнительные данные]
   - type: textarea
     id: user_story
     attributes:
