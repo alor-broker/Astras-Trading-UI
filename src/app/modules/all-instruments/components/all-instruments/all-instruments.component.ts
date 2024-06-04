@@ -520,7 +520,7 @@ implements OnInit, OnDestroy {
               filters,
               {
                 first: this.loadingChunkSize,
-                after: this.pagination?.endCursor ?? undefined,
+                after: this.pagination?.endCursor,
                 sort: sort == null ? null : [sort]
               }
             );

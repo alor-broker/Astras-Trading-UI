@@ -27,7 +27,7 @@ export class AllInstrumentsService {
   getInstruments(
     columnIds: string[],
     filters: DefaultTableFilters,
-    params: { first: number, after?: string, sort: InstrumentModelSortInput[] | null }
+    params: { first: number, after?: string | null, sort: InstrumentModelSortInput[] | null }
   ): Observable<InstrumentsConnection | null> {
     const allInstrumentsResponseSchema = getAllInstrumentsResponseSchema(columnIds);
     const parsedFilters = GraphQlHelper.parseToGqlFiltersIntersection<InstrumentModelFilterInput>(filters, InstrumentModelFilterInputSchema());
