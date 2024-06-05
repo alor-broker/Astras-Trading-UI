@@ -18,7 +18,7 @@ import {
 } from 'rxjs';
 import { ControlValueAccessorBaseComponent } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
 import { TerminalSettingsHelper } from "../../../../shared/utils/terminal-settings-helper";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-hot-key-settings-form',
@@ -34,6 +34,29 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 })
 export class HotKeySettingsFormComponent extends ControlValueAccessorBaseComponent<HotKeysSettings> implements OnInit {
   form?: UntypedFormGroup;
+
+  allOrderbooksHotKeysTypes = [
+    'cancelOrdersAll',
+    'cancelOrdersAndClosePositionsByMarketAll',
+    'cancelOrdersKey',
+    'closePositionsKey',
+    'centerOrderbookKey'
+  ];
+
+  activeOrderbookHotKeysTypes = [
+    'cancelOrderbookOrders',
+    'cancelStopOrdersCurrent',
+    'closeOrderbookPositions',
+    'reverseOrderbookPositions',
+    'buyMarket',
+    'sellMarket',
+    'sellBestOrder',
+    'buyBestOrder',
+    'buyBestAsk',
+    'sellBestBid',
+    'increaseScale',
+    'decreaseScale'
+  ];
 
   constructor(private readonly destroyRef: DestroyRef) {
     super();
@@ -70,24 +93,15 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
   }
 
   ngOnInit(): void {
+    const hotKeysControlsOBj = [ ...this.allOrderbooksHotKeysTypes, ...this.activeOrderbookHotKeysTypes]
+      .reduce((acc, curr) => {
+        acc[curr] = new UntypedFormControl(null, this.isKeyUniqueValidator());
+
+        return acc;
+      }, {} as { [hotkeyType: string]: UntypedFormControl });
+
     this.form = new UntypedFormGroup({
-      cancelOrdersAll: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      cancelOrdersAndClosePositionsByMarketAll: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      cancelOrdersKey: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      closePositionsKey: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      centerOrderbookKey: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      cancelOrderbookOrders: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      cancelStopOrdersCurrent: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      closeOrderbookPositions: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      reverseOrderbookPositions: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      buyMarket: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      sellMarket: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      sellBestOrder: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      buyBestOrder: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      buyBestAsk: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      sellBestBid: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      increaseScale: new UntypedFormControl(null, this.isKeyUniqueValidator()),
-      decreaseScale: new UntypedFormControl(null, this.isKeyUniqueValidator()),
+      ...hotKeysControlsOBj,
       workingVolumes: new UntypedFormArray([]),
       extraHotKeys: new UntypedFormControl(false)
     });
