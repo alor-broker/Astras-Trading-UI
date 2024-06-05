@@ -164,7 +164,6 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
 
         return x.data.map(b => {
           let duration = b.duration;
-          let yieldValue = b.yield.currentYield;
 
           if (x.parameters.durationType === DurationType.MacaulayDuration) {
             duration = b.durationMacaulay / 365;
@@ -172,16 +171,12 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
             duration = (b.maturityDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24 * 365);
           }
 
-          if (x.parameters.yieldType === YieldType.YieldToMaturity) {
-            yieldValue = b.yield.yieldToMaturity;
-          }
-
           return {
             symbol: b.basicInformation.symbol,
             exchange: b.basicInformation.exchange,
             title: b.basicInformation.shortName,
             durationYears: MathHelper.round(duration, 2),
-            yield: MathHelper.round(yieldValue * 100, 2)
+            yield: b.yield[x.parameters.yieldType]
           } as BondDisplay;
         });
       })
