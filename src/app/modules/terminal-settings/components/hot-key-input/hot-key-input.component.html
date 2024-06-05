@@ -11,7 +11,13 @@
     />
     <ng-template #controlError>
       <span *ngIf="control.errors?.required">{{t('terminalSettingsHotKeySettingsForm.emptyFieldError')}}</span>
-      <span *ngIf="control.errors?.notUnique">{{t('terminalSettingsHotKeySettingsForm.notUniqueError')}}</span>
     </ng-template>
+    <span
+      *ngIf="isNotUniqueError"
+      nz-typography
+      nzType="danger"
+    >
+      {{t('terminalSettingsHotKeySettingsForm.notUniqueError')}}
+    </span>
   </nz-form-control>
 </nz-form-item>
