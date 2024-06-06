@@ -31,7 +31,7 @@ export interface ExternalLinksConfig {
   reports: string;
   releases: string;
   support: string;
-  issueReport: string;
+  issuesList: string;
   help: string;
   officialSite: string;
   riskRate: string;

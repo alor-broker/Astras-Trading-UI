@@ -163,10 +163,10 @@
             <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.support')}"></ng-container>
           </span>
         </li>
-        <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink(externalLinks.issueReport)">
+        <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink(externalLinks.issuesList)">
           <span>
             <i nz-icon nzType="bulb" nzTheme="outline"></i>
-            <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.issueReport')}"></ng-container>
+            <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.issuesList')}"></ng-container>
           </span>
         </li>
         <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink(externalLinks.videoTutorial)">
