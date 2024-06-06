@@ -3,6 +3,10 @@
 .themeMixin({
   :host {
     color: @heading-color;
+
+    .title-text {
+      font-weight: @font-weight-bold;
+    }
   }
 });
 
@@ -12,7 +16,6 @@
 }
 
 .title-text {
-  font-weight: 600;
   text-overflow: ellipsis;
   line-height: 23px;
 }
