@@ -147,7 +147,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'currentYield',
       displayName: 'Доходность, %',
-      transformFn: (d: BondDisplay): string => d.yield!.currentYield?.toString()  ?? '',
+      transformFn: (d: BondDisplay): string => d.yield?.currentYield == null ? '' : MathHelper.round(d.yield.currentYield, 2).toString(),
       sortChangeFn: (dir): void => this.sortChange(['yield', 'currentYield'], dir),
       width: 120,
       filterData: {
