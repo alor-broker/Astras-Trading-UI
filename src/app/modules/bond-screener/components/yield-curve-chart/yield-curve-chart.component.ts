@@ -176,7 +176,7 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
             exchange: b.basicInformation.exchange,
             title: b.basicInformation.shortName,
             durationYears: MathHelper.round(duration, 2),
-            yield: b.yield[x.parameters.yieldType]
+            yield: MathHelper.round(b.yield[x.parameters.yieldType], 2)
           } as BondDisplay;
         });
       })
