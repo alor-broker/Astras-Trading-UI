@@ -35,6 +35,7 @@ export const environment = {
     reports: 'https://lk.alor.ru/reports/broker',
     releases: 'https://warp.alor.dev/ru/releases/astras',
     support: 'https://t.me/+oM0i9QbtD4cwMzNi',
+    issuesList: 'https://github.com/alor-broker/Astras-Trading-UI/issues',
     help: 'https://alor.teamly.ru/space/5e0d0c41-20c0-4eef-a55d-782bda40e507/article',
     officialSite: 'https://www.alorbroker.ru',
     riskRate: 'https://www.alorbroker.ru/trading/leverage',
