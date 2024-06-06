@@ -16,22 +16,40 @@
     </div>
     <nz-divider></nz-divider>
     <h3>{{t('terminalSettingsHotKeySettingsForm.allOrderbooksHeader')}}</h3>
-    <ats-hot-key-input
-      *ngFor="let keyType of allOrderbooksHotKeysTypes"
-      [isNotUniqueError]="form.controls[keyType]!.hasError('notUnique')"
-      [actionName]="keyType"
-      [formControlName]="keyType"
-    ></ats-hot-key-input>
+    <ng-container *ngFor="let keyType of allOrderbooksHotKeysTypes">
+      <ats-hot-key-input
+        [actionName]="keyType"
+        [formControlName]="keyType"
+      ></ats-hot-key-input>
+
+      <div
+        *ngIf="form.controls[keyType]!.hasError('notUnique')"
+        class="mb-10"
+        nz-typography
+        nzType="danger"
+      >
+        {{t('terminalSettingsHotKeySettingsForm.notUniqueError')}}
+      </div>
+    </ng-container>
 
     <nz-divider></nz-divider>
 
     <h3>{{t('terminalSettingsHotKeySettingsForm.mouseHoverOrderbookHeader')}}</h3>
-    <ats-hot-key-input
-      *ngFor="let keyType of activeOrderbookHotKeysTypes"
-      [isNotUniqueError]="form.controls[keyType]!.hasError('notUnique')"
-      [actionName]="keyType"
-      [formControlName]="keyType"
-    ></ats-hot-key-input>
+    <ng-container *ngFor="let keyType of activeOrderbookHotKeysTypes">
+      <ats-hot-key-input
+        [actionName]="keyType"
+        [formControlName]="keyType"
+      ></ats-hot-key-input>
+
+      <div
+        *ngIf="form.controls[keyType]!.hasError('notUnique')"
+        class="mb-10"
+        nz-typography
+        nzType="danger"
+      >
+        {{t('terminalSettingsHotKeySettingsForm.notUniqueError')}}
+      </div>
+    </ng-container>
 
     <nz-divider></nz-divider>
 

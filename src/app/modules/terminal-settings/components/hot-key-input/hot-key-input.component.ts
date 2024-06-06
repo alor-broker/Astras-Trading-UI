@@ -22,9 +22,6 @@ export class HotKeyInputComponent extends ControlValueAccessorBaseComponent<HotK
   @Input({required: true})
   actionName!: string;
 
-  @Input()
-  isNotUniqueError = false;
-
   control = new UntypedFormControl(null);
 
   value: HotKeyMeta | null = null;
