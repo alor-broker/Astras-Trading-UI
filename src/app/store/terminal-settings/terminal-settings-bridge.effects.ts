@@ -9,6 +9,7 @@ import { ApplicationMetaService } from "../../shared/services/application-meta.s
 import { tap } from "rxjs";
 import { LocalStorageService } from "../../shared/services/local-storage.service";
 import {
+  DesignSettingsConstants,
   LocalStorageCommonConstants,
   LocalStorageDesktopConstants
 } from "../../shared/constants/local-storage.constants";
@@ -25,7 +26,8 @@ export class TerminalSettingsBridgeEffects {
 
         this.localStorageService.removeItem(LocalStorageDesktopConstants.ProfileStorageKey);
         this.localStorageService.removeItem(LocalStorageCommonConstants.FeedbackStorageKey);
-        this.localStorageService.removeItem(LocalStorageCommonConstants.LastThemeStorageKey);
+        this.localStorageService.removeItem(DesignSettingsConstants.LastThemeStorageKey);
+        this.localStorageService.removeItem(DesignSettingsConstants.LastFontStorageKey);
       }),
       map(() => DashboardsManageActions.removeAll())
     );

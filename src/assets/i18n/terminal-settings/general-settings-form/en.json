@@ -1,6 +1,8 @@
 ﻿{
   "langLabel": "Language",
   "themeLabel": "Theme",
+  "fontFamilyLabel": "Font",
+  "fontFamilyPlaceholder": "Select your preferred font",
   "gridTypeLabel": "Widgets grid behavior",
   "timezoneLabel": "Displaying time timezone",
   "userIdleDurationLabel": "User idle duration, min.",

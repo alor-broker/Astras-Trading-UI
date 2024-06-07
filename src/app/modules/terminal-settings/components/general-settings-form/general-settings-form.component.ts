@@ -17,6 +17,7 @@ import {
 import { validationSettings } from '../../utils/validation-settings';
 import {
   DesignSettings,
+  FontFamilies,
   GridType
 } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
@@ -48,6 +49,8 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
   themeTypes = ThemeType;
 
   gridTypes = GridType;
+
+  readonly availableFontFamilies = Object.values(FontFamilies);
 
   form?: UntypedFormGroup;
 
@@ -82,6 +85,7 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
       {
         designSettings: new UntypedFormGroup({
           theme: new UntypedFormControl(null),
+          fontFamily: new UntypedFormControl(null),
           gridType: new UntypedFormControl(null),
         }),
         timezoneDisplayOption: new UntypedFormControl(null, Validators.required),
