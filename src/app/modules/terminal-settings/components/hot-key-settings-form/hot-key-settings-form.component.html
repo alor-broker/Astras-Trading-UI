@@ -15,30 +15,42 @@
       </div>
     </div>
     <nz-divider></nz-divider>
-    <ng-container>
-      <h3>{{t('terminalSettingsHotKeySettingsForm.allOrderbooksHeader')}}</h3>
-      <ats-hot-key-input actionName="cancelOrdersAll" formControlName="cancelOrdersAll"></ats-hot-key-input>
-      <ats-hot-key-input actionName="cancelOrdersAndClosePositionsByMarketAll" formControlName="cancelOrdersAndClosePositionsByMarketAll"></ats-hot-key-input>
-      <ats-hot-key-input actionName="cancelOrdersKey" formControlName="cancelOrdersKey"></ats-hot-key-input>
-      <ats-hot-key-input actionName="closePositionsKey" formControlName="closePositionsKey"></ats-hot-key-input>
-      <ats-hot-key-input actionName="centerOrderbookKey" formControlName="centerOrderbookKey"></ats-hot-key-input>
+    <h3>{{t('terminalSettingsHotKeySettingsForm.allOrderbooksHeader')}}</h3>
+    <ng-container *ngFor="let keyType of allOrderbooksHotKeysTypes">
+      <ats-hot-key-input
+        [actionName]="keyType"
+        [formControlName]="keyType"
+      ></ats-hot-key-input>
+
+      <div
+        *ngIf="form.controls[keyType]!.hasError('notUnique')"
+        class="mb-10"
+        nz-typography
+        nzType="danger"
+      >
+        {{t('terminalSettingsHotKeySettingsForm.notUniqueError')}}
+      </div>
     </ng-container>
+
     <nz-divider></nz-divider>
-    <ng-container>
-      <h3>{{t('terminalSettingsHotKeySettingsForm.mouseHoverOrderbookHeader')}}</h3>
-      <ats-hot-key-input actionName="cancelOrderbookOrders" formControlName="cancelOrderbookOrders"></ats-hot-key-input>
-      <ats-hot-key-input actionName="cancelStopOrdersCurrent" formControlName="cancelStopOrdersCurrent"></ats-hot-key-input>
-      <ats-hot-key-input actionName="closeOrderbookPositions" formControlName="closeOrderbookPositions"></ats-hot-key-input>
-      <ats-hot-key-input actionName="reverseOrderbookPositions" formControlName="reverseOrderbookPositions"></ats-hot-key-input>
-      <ats-hot-key-input actionName="buyMarket" formControlName="buyMarket"></ats-hot-key-input>
-      <ats-hot-key-input actionName="sellMarket" formControlName="sellMarket"></ats-hot-key-input>
-      <ats-hot-key-input actionName="sellBestOrder" formControlName="sellBestOrder"></ats-hot-key-input>
-      <ats-hot-key-input actionName="buyBestOrder" formControlName="buyBestOrder"></ats-hot-key-input>
-      <ats-hot-key-input actionName="sellBestBid" formControlName="sellBestBid"></ats-hot-key-input>
-      <ats-hot-key-input actionName="buyBestAsk" formControlName="buyBestAsk"></ats-hot-key-input>
-      <ats-hot-key-input actionName="increaseScale" formControlName="increaseScale"></ats-hot-key-input>
-      <ats-hot-key-input actionName="decreaseScale" formControlName="decreaseScale"></ats-hot-key-input>
+
+    <h3>{{t('terminalSettingsHotKeySettingsForm.mouseHoverOrderbookHeader')}}</h3>
+    <ng-container *ngFor="let keyType of activeOrderbookHotKeysTypes">
+      <ats-hot-key-input
+        [actionName]="keyType"
+        [formControlName]="keyType"
+      ></ats-hot-key-input>
+
+      <div
+        *ngIf="form.controls[keyType]!.hasError('notUnique')"
+        class="mb-10"
+        nz-typography
+        nzType="danger"
+      >
+        {{t('terminalSettingsHotKeySettingsForm.notUniqueError')}}
+      </div>
     </ng-container>
+
     <nz-divider></nz-divider>
 
     <ng-container *ngIf="workingVolumes">
