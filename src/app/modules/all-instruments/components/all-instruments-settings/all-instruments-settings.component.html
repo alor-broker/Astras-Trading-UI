@@ -7,7 +7,7 @@
 >
   <ng-container *transloco="let t">
   <div>
-    <form *ngIf="form" nz-form [nzLayout]="'horizontal'" [formGroup]="form">
+    <form nz-form [nzLayout]="'horizontal'" [formGroup]="form">
       <nz-form-item class="compact" *transloco="let tSettings; scope: 'all-instruments/all-instruments-settings'">
         <nz-form-control [nzErrorTip]="tSettings('allInstrumentsAllInstrumentsSettings.selectColumnsError')">
           <nz-form-label nzRequired nzFor="allInstrumentsColumns">{{tSettings('allInstrumentsAllInstrumentsSettings.selectColumnLabel')}}</nz-form-label>

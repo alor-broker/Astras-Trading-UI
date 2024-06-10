@@ -28,14 +28,14 @@
     </div>
 
     <ng-container *ngIf="settings.showTable">
-      <ng-container *ngIf="(settings.columnsOrder ?? columnsOrderEnum.volumesAtTheEdges) as columnsOrder">
+      <ng-container *ngIf="(settings.columnsOrder ?? columnsOrderEnum.VolumesAtTheEdges) as columnsOrder">
         <ats-orderbook-table-volumes-at-the-edges
-          *ngIf="columnsOrder === columnsOrderEnum.volumesAtTheEdges"
+          *ngIf="columnsOrder === columnsOrderEnum.VolumesAtTheEdges"
           [guid]="guid"
           [ob]="ob"
         ></ats-orderbook-table-volumes-at-the-edges>
         <ats-orderbook-table-volumes-at-the-middle
-          *ngIf="columnsOrder === columnsOrderEnum.volumesAtTheMiddle"
+          *ngIf="columnsOrder === columnsOrderEnum.VolumesAtTheMiddle"
           [guid]="guid"
           [ob]="ob"
         ></ats-orderbook-table-volumes-at-the-middle>

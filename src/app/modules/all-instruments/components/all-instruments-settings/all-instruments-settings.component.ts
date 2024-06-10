@@ -4,8 +4,7 @@ import {
   OnInit,
 } from '@angular/core';
 import {
-  UntypedFormControl,
-  UntypedFormGroup,
+  FormBuilder,
   Validators
 } from "@angular/forms";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -13,8 +12,10 @@ import {
   allInstrumentsColumns,
   AllInstrumentsSettings
 } from '../../model/all-instruments-settings.model';
-import { BaseColumnId, TableDisplaySettings } from "../../../../shared/models/settings/table-settings.model";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {
+  BaseColumnId,
+  TableDisplaySettings
+} from "../../../../shared/models/settings/table-settings.model";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { Observable } from "rxjs";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
@@ -26,7 +27,10 @@ import { TableSettingHelper } from "../../../../shared/utils/table-setting.helpe
   styleUrls: ['./all-instruments-settings.component.less']
 })
 export class AllInstrumentsSettingsComponent extends WidgetSettingsBaseComponent<AllInstrumentsSettings> implements OnInit {
-  form?: UntypedFormGroup;
+  readonly form = this.formBuilder.group({
+    allInstrumentsColumns: this.formBuilder.nonNullable.control<string[]>([], Validators.required),
+  });
+
   allInstrumentsColumns: BaseColumnId[] = allInstrumentsColumns;
 
   protected settings$!: Observable<AllInstrumentsSettings>;
@@ -34,9 +38,10 @@ export class AllInstrumentsSettingsComponent extends WidgetSettingsBaseComponent
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     protected readonly manageDashboardsService: ManageDashboardsService,
-    private readonly destroyRef: DestroyRef
+    protected readonly destroyRef: DestroyRef,
+    private readonly formBuilder: FormBuilder
   ) {
-    super(settingsService, manageDashboardsService);
+    super(settingsService, manageDashboardsService, destroyRef);
   }
 
   get showCopy(): boolean {
@@ -44,27 +49,16 @@ export class AllInstrumentsSettingsComponent extends WidgetSettingsBaseComponent
   }
 
   get canSave(): boolean {
-    return this.form?.valid ?? false;
+    return this.form.valid;
   }
 
   ngOnInit(): void {
-    this.initSettingsStream();
-
-    this.settings$.pipe(
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe(settings => {
-      this.form = new UntypedFormGroup({
-        allInstrumentsColumns: new UntypedFormControl(
-          TableSettingHelper.toTableDisplaySettings(settings.allInstrumentsTable, settings.allInstrumentsColumns ?? [])?.columns.map(c => c.columnId),
-          Validators.required
-        ),
-      });
-    });
+    super.ngOnInit();
   }
 
   protected getUpdatedSettings(initialSettings: AllInstrumentsSettings): Partial<AllInstrumentsSettings> {
     const newSettings = {
-      ...this.form!.value,
+      ...this.form.value,
     } as Partial<AllInstrumentsSettings>;
 
     newSettings.allInstrumentsTable = this.updateTableSettings(newSettings.allInstrumentsColumns ?? [], initialSettings.allInstrumentsTable);
@@ -73,6 +67,15 @@ export class AllInstrumentsSettingsComponent extends WidgetSettingsBaseComponent
     return newSettings;
   }
 
+  protected setCurrentFormValues(settings: AllInstrumentsSettings): void {
+    this.form.reset();
+
+    this.form.controls.allInstrumentsColumns.setValue(TableSettingHelper.toTableDisplaySettings(
+      settings.allInstrumentsTable,
+      settings.allInstrumentsColumns ?? []
+    )?.columns.map(c => c.columnId) ?? []
+    );
+  }
 
   private updateTableSettings(columnIds: string[], currentSettings?: TableDisplaySettings): TableDisplaySettings {
     const newSettings = TableSettingHelper.toTableDisplaySettings(null, columnIds)!;

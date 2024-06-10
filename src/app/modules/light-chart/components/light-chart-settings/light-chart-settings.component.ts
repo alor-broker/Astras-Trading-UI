@@ -4,8 +4,7 @@ import {
   OnInit
 } from '@angular/core';
 import {
-  UntypedFormControl,
-  UntypedFormGroup,
+  FormBuilder,
   Validators
 } from '@angular/forms';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -20,7 +19,6 @@ import {
   TimeFrameDisplayMode
 } from '../../models/light-chart-settings.model';
 import { DeviceService } from "../../../../shared/services/device.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { TimeframeValue } from "../../models/light-chart.models";
@@ -31,7 +29,14 @@ import { TimeframeValue } from "../../models/light-chart.models";
   styleUrls: ['./light-chart-settings.component.less']
 })
 export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<LightChartSettings> implements OnInit {
-  form?: UntypedFormGroup;
+  readonly form = this.formBuilder.group({
+    instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
+    timeFrame: this.formBuilder.nonNullable.control(TimeframeValue.Day, Validators.required),
+    timeFrameDisplayMode: this.formBuilder.nonNullable.control(TimeFrameDisplayMode.Buttons, Validators.required),
+    instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null),
+    availableTimeFrames: this.formBuilder.nonNullable.control<TimeframeValue[]>([], Validators.required)
+  });
+
   readonly allTimeFrames = Object.values(TimeframeValue);
   timeFrameDisplayModes = TimeFrameDisplayMode;
   deviceInfo$!: Observable<any>;
@@ -40,10 +45,11 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     protected readonly manageDashboardsService: ManageDashboardsService,
+    protected readonly destroyRef: DestroyRef,
     private readonly deviceService: DeviceService,
-    private readonly destroyRef: DestroyRef
+    private readonly formBuilder: FormBuilder
   ) {
-    super(settingsService, manageDashboardsService);
+    super(settingsService, manageDashboardsService, destroyRef);
   }
 
   get showCopy(): boolean {
@@ -51,52 +57,31 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
   }
 
   get canSave(): boolean {
-    return this.form?.valid ?? false;
+    return this.form.valid;
   }
 
   ngOnInit(): void {
-    this.initSettingsStream();
+    super.ngOnInit();
 
     this.deviceInfo$ = this.deviceService.deviceInfo$
       .pipe(
         take(1)
       );
-
-    this.settings$.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(settings => {
-      this.form = new UntypedFormGroup({
-        instrument: new UntypedFormControl({
-          symbol: settings.symbol,
-          exchange: settings.exchange,
-          instrumentGroup: settings.instrumentGroup
-        } as InstrumentKey, Validators.required),
-        exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
-        timeFrame: new UntypedFormControl(settings.timeFrame, Validators.required),
-        timeFrameDisplayMode: new UntypedFormControl(settings.timeFrameDisplayMode ?? TimeFrameDisplayMode.Buttons, Validators.required),
-        instrumentGroup: new UntypedFormControl(settings.instrumentGroup),
-        availableTimeFrames: new UntypedFormControl(
-          settings.availableTimeFrames ?? this.allTimeFrames,
-          Validators.required
-        )
-      });
-    });
   }
 
   instrumentSelected(instrument: InstrumentKey | null): void {
-    this.form!.controls.exchange.setValue(instrument?.exchange ?? null);
-    this.form!.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
   checkCurrentTimeFrame(): void {
-    const availableTimeFrames = this.sortTimeFrames(this.form!.controls.availableTimeFrames.value as TimeframeValue[]);
-    if (availableTimeFrames.length > 0 && !availableTimeFrames.includes(this.form!.controls.timeFrame.value)) {
-      this.form!.controls.timeFrame.setValue(availableTimeFrames[availableTimeFrames.length - 1]);
+    const availableTimeFrames = this.sortTimeFrames(this.form.controls.availableTimeFrames.value);
+    if (availableTimeFrames.length > 0 && !availableTimeFrames.includes(this.form.controls.timeFrame.value)) {
+      this.form.controls.timeFrame.setValue(availableTimeFrames[availableTimeFrames.length - 1]);
     }
   }
 
   protected getUpdatedSettings(initialSettings: LightChartSettings): Partial<LightChartSettings> {
-    const formValue = this.form!.value as Partial<LightChartSettings & { instrument: InstrumentKey}>;
+    const formValue = this.form.value as Partial<LightChartSettings & { instrument: InstrumentKey }>;
     const newSettings = {
       ...formValue,
       symbol: formValue.instrument?.symbol,
@@ -110,6 +95,21 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
     newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings, newSettings);
 
     return newSettings;
+  }
+
+  protected setCurrentFormValues(settings: LightChartSettings): void {
+    this.form.reset();
+
+    this.form.controls.instrument.setValue({
+      symbol: settings.symbol,
+      exchange: settings.exchange,
+      instrumentGroup: settings.instrumentGroup ?? null
+    });
+    this.form.controls.instrumentGroup.setValue(settings.instrumentGroup ?? null);
+
+    this.form.controls.timeFrame.setValue(settings.timeFrame);
+    this.form.controls.timeFrameDisplayMode.setValue(settings.timeFrameDisplayMode ?? TimeFrameDisplayMode.Buttons);
+    this.form.controls.availableTimeFrames.setValue(settings.availableTimeFrames ?? this.allTimeFrames);
   }
 
   private sortTimeFrames(selectedTimeFrames: TimeframeValue[]): TimeframeValue[] {

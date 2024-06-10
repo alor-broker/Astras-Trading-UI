@@ -7,7 +7,7 @@
 >
   <ng-container *transloco="let t; scope: 'orderbook/settings'">
     <div *ngIf="deviceInfo$ | async as deviceInfo">
-      <form *ngIf="form" nz-form [nzLayout]="'vertical'" [formGroup]="form">
+      <form nz-form [nzLayout]="'vertical'" [formGroup]="form">
         <nz-form-item>
           <nz-collapse [nzBordered]="false" nzGhost>
             <nz-collapse-panel [nzHeader]="t('orderbookSettings.instrumentHeader')" nzActive="true" *ngIf="!deviceInfo.isMobile">
@@ -20,14 +20,14 @@
               <nz-form-item>
                 <nz-form-label nzRequired nzFor="exchange">{{t('orderbookSettings.exchangeLabel')}}</nz-form-label>
                 <nz-form-control>
-                  <input formControlName='exchange' nz-input>
+                  <input nz-input type="text" [value]="form.value.instrument?.exchange" disabled/>
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item>
                 <nz-form-label nzFor="instrumentGroup">{{t('orderbookSettings.instrumentGroupLabel')}}</nz-form-label>
                 <nz-form-control [nzErrorTip]="t('orderbookSettings.instrumentGroupError')">
                   <ats-instrument-board-select
-                    [instrument]="form.value?.instrument ?? null"
+                    [instrument]="form.value.instrument ?? null"
                     [placeholder]="t('orderbookSettings.instrumentGroupLabel')"
                     formControlName="instrumentGroup">
                   </ats-instrument-board-select>
@@ -63,8 +63,8 @@
                 <nz-form-label nzRequired nzFor="columnsOrder">{{t('orderbookSettings.columnsOrderLabel')}}</nz-form-label>
                 <nz-form-control>
                   <nz-select formControlName="columnsOrder">
-                    <nz-option [nzValue]="columnsOrderEnum.volumesAtTheEdges" [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheEdges')"></nz-option>
-                    <nz-option [nzValue]="columnsOrderEnum.volumesAtTheMiddle" [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheMiddle')"></nz-option>
+                    <nz-option [nzValue]="columnsOrderEnum.VolumesAtTheEdges" [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheEdges')"></nz-option>
+                    <nz-option [nzValue]="columnsOrderEnum.VolumesAtTheMiddle" [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheMiddle')"></nz-option>
                   </nz-select>
                 </nz-form-control>
               </nz-form-item>

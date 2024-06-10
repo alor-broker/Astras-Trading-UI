@@ -284,10 +284,10 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     protected readonly manageDashboardsService: ManageDashboardsService,
+    protected readonly destroyRef: DestroyRef,
     private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, manageDashboardsService);
+    super(settingsService, manageDashboardsService, destroyRef);
   }
 
   get showCopy(): boolean {
@@ -303,13 +303,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
   }
 
   ngOnInit(): void {
-    this.initSettingsStream();
-
-    this.settings$.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(settings => {
-      this.setCurrentFormValues(settings);
-    });
+    super.ngOnInit();
 
     this.initCheckFieldsAvailability();
   }
@@ -366,6 +360,13 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     workingVolumeControl.push(this.createWorkingVolumeControl((defaultValue ?? 0) ? defaultValue! * 10 : 1));
   }
 
+  getSliderMarks(minValue: number, maxValue: number): NzMarks {
+    return {
+      [minValue]: minValue.toString(),
+      [maxValue]: maxValue.toString(),
+    };
+  }
+
   protected initSettingsStream(): void {
     this.settings$ = ScalperSettingsHelper.getSettingsStream(this.guid, this.settingsService);
   }
@@ -419,7 +420,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       };
     }
 
-    if((formValue.workingVolumes?.length ?? 0) > 0) {
+    if ((formValue.workingVolumes?.length ?? 0) > 0) {
       newSettings.workingVolumes = formValue.workingVolumes!.map(wv => Number(wv));
     } else {
       newSettings.workingVolumes = [1];
@@ -451,14 +452,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     return newSettings;
   }
 
-  getSliderMarks(minValue: number, maxValue: number): NzMarks {
-    return {
-      [minValue]: minValue.toString(),
-      [maxValue]: maxValue.toString(),
-    };
-  }
-
-  private setCurrentFormValues(settings: ScalperOrderBookWidgetSettings): void {
+  protected setCurrentFormValues(settings: ScalperOrderBookWidgetSettings): void {
     this.form.reset();
 
     this.form.controls.instrument.setValue({
@@ -500,7 +494,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     this.form.controls.stopLimitOrdersDistance.setValue(settings.stopLimitOrdersDistance ?? 0);
 
     this.form.controls.showTradesPanel.setValue(settings.showTradesPanel ?? false);
-    if(settings.tradesPanelSettings) {
+    if (settings.tradesPanelSettings) {
       this.form.controls.tradesPanelSettings.setValue({
         minTradeVolumeFilter: settings.tradesPanelSettings.minTradeVolumeFilter,
         hideFilteredTrades: settings.tradesPanelSettings.hideFilteredTrades,
@@ -512,7 +506,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
 
     this.form.controls.showWorkingVolumesPanel.setValue(settings.showWorkingVolumesPanel ?? true);
     this.form.controls.workingVolumesPanelSlot.setValue(settings.workingVolumesPanelSlot ?? PanelSlots.BottomFloatingPanel);
-    if(settings.workingVolumes.length > 0) {
+    if (settings.workingVolumes.length > 0) {
       this.form.controls.workingVolumes.clear();
       settings.workingVolumes.forEach(volume => {
         this.form.controls.workingVolumes.push(this.createWorkingVolumeControl(volume));
@@ -522,7 +516,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     this.form.controls.volumeHighlightMode.setValue(settings.volumeHighlightMode ?? VolumeHighlightMode.Off);
     this.form.controls.volumeHighlightFullness.setValue(settings.volumeHighlightFullness ?? 1000);
 
-    if(settings.volumeHighlightOptions.length > 0) {
+    if (settings.volumeHighlightOptions.length > 0) {
       this.form.controls.volumeHighlightOptions.clear();
 
       [...settings.volumeHighlightOptions]
