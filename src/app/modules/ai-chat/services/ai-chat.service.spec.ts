@@ -4,6 +4,8 @@ import { AiChatService } from './ai-chat.service';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
+import { Subject } from "rxjs";
 
 describe('AiChatService', () => {
   let service: AiChatService;
@@ -26,6 +28,12 @@ describe('AiChatService', () => {
             get apiUrl(): string {
               return '';
             }
+          }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            selectedDashboard$: new Subject()
           }
         }
       ]
