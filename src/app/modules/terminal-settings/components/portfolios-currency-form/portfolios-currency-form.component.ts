@@ -1,16 +1,13 @@
 import {
   Component,
-  OnDestroy,
+  DestroyRef,
   OnInit
 } from '@angular/core';
 import { ControlValueAccessorBaseComponent } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
 import { PortfolioCurrencySettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import {
-  AbstractControl,
+  FormBuilder,
   NG_VALUE_ACCESSOR,
-  UntypedFormArray,
-  UntypedFormControl,
-  UntypedFormGroup,
   Validators
 } from '@angular/forms';
 import {
@@ -18,19 +15,17 @@ import {
   forkJoin,
   Observable,
   of,
-  Subscription,
   switchMap,
   take
 } from 'rxjs';
-import {
-  map
-} from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { MarketService } from '../../../../shared/services/market.service';
 import {
   CurrencyPair,
   ExchangeRateService
 } from '../../../../shared/services/exchange-rate.service';
-import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
+import { UserPortfoliosService } from "../../../../shared/services/user-portfolios.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-portfolios-currency-form',
@@ -44,22 +39,28 @@ import {UserPortfoliosService} from "../../../../shared/services/user-portfolios
     }
   ]
 })
-export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseComponent<PortfolioCurrencySettings[]> implements OnInit, OnDestroy {
-  form?: UntypedFormArray;
+export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseComponent<PortfolioCurrencySettings[]> implements OnInit {
+  readonly form = this.formBuilder.array([
+    this.formBuilder.group({
+      portfolio: this.formBuilder.nonNullable.control({ portfolio: '', exchange: '' }),
+      currency: this.formBuilder.nonNullable.control(''),
+    })
+  ]);
+
   currencies$!: Observable<CurrencyPair[]>;
 
-  private formSubscriptions?: Subscription;
-
   constructor(
+    private readonly formBuilder: FormBuilder,
     private readonly marketService: MarketService,
     private readonly exchangeRateService: ExchangeRateService,
-    private readonly userPortfoliosService: UserPortfoliosService
+    private readonly userPortfoliosService: UserPortfoliosService,
+    private readonly destroyRef: DestroyRef
   ) {
     super();
   }
 
   writeValue(value: PortfolioCurrencySettings[] | null): void {
-    this.initForm(value);
+    this.setFormValue(value);
   }
 
   ngOnInit(): void {
@@ -69,67 +70,49 @@ export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseCom
         marketSettings: this.marketService.getMarketSettings()
       }
     ).pipe(
-        map(x => ([
-          ...x.allCurrencies.filter(c => c.secondCode === x.marketSettings.currencies.baseCurrency),
-          {
-            firstCode: x.marketSettings.currencies.baseCurrency,
-            secondCode: x.marketSettings.currencies.baseCurrency,
-            symbolTom: x.marketSettings.currencies.baseCurrency
-          }
-        ]))
+      map(x => ([
+        ...x.allCurrencies.filter(c => c.secondCode === x.marketSettings.currencies.baseCurrency),
+        {
+          firstCode: x.marketSettings.currencies.baseCurrency,
+          secondCode: x.marketSettings.currencies.baseCurrency,
+          symbolTom: x.marketSettings.currencies.baseCurrency
+        }
+      ]))
+    );
+
+    this.form.valueChanges.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => {
+      this.checkIfTouched();
+      this.emitValue(
+        this.form.valid
+          ? (this.form.value ?? []) as PortfolioCurrencySettings[]
+          : null
       );
+    });
 
-    this.initForm(null);
-  }
-
-  ngOnDestroy(): void {
-    this.formSubscriptions?.unsubscribe();
-  }
-
-  asFormGroup(ctrl: AbstractControl): UntypedFormGroup {
-    return ctrl as UntypedFormGroup;
-  }
-
-  asControl(ctrl: AbstractControl): UntypedFormControl {
-    return ctrl as UntypedFormControl;
+    this.setFormValue(null);
   }
 
   protected needMarkTouched(): boolean {
-    if (!this.form) {
-      return false;
-    }
-
     return this.form.touched;
   }
 
-  private initForm(currentValue: PortfolioCurrencySettings[] | null): void {
+  private setFormValue(currentValue: PortfolioCurrencySettings[] | null): void {
     this.getPortfolioCurrencies(currentValue ?? []).pipe(
       take(1)
     ).subscribe(portfolios => {
-      this.form = new UntypedFormArray(
-        portfolios
-          .sort((a, b) => a.portfolio.exchange.localeCompare(b.portfolio.exchange) || a.portfolio.portfolio.localeCompare(b.portfolio.portfolio))
-          .map(p => new UntypedFormGroup({
-          currency: new UntypedFormControl(p.currency, Validators.required),
-          portfolio: new UntypedFormControl(p.portfolio)
-        }))
-      );
+      this.form.clear();
 
-      const emit = (): void => {
-        this.emitValue(
-          this.form!.valid
-            ? (this.form!.value ?? []) as PortfolioCurrencySettings[]
-            : null
-        );
-      };
+      const sortedPortfolios = portfolios
+        .sort((a, b) => a.portfolio.exchange.localeCompare(b.portfolio.exchange) || a.portfolio.portfolio.localeCompare(b.portfolio.portfolio));
 
-      this.formSubscriptions?.unsubscribe();
-      this.formSubscriptions = this.form.valueChanges.subscribe(() => {
-        this.checkIfTouched();
-        emit();
-      });
-
-      emit();
+      for (const portfolio of sortedPortfolios) {
+        this.form.push(this.formBuilder.nonNullable.group({
+          portfolio: this.formBuilder.nonNullable.control(portfolio.portfolio),
+          currency: this.formBuilder.nonNullable.control(portfolio.currency, Validators.required),
+        }));
+      }
     });
   }
 

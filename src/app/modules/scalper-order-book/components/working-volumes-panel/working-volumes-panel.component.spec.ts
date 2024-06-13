@@ -3,10 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { WorkingVolumesPanelComponent } from './working-volumes-panel.component';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { Subject } from 'rxjs';
-import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
 import { SCALPER_ORDERBOOK_SHARED_CONTEXT } from "../scalper-order-book/scalper-order-book.component";
 import { LetDirective } from "@ngrx/component";
+import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
 
 describe('WorkingVolumesPanelComponent', () => {
   let component: WorkingVolumesPanelComponent;
@@ -24,7 +24,7 @@ describe('WorkingVolumesPanelComponent', () => {
           }
         },
         {
-          provide: HotKeyCommandService,
+          provide: ScalperHotKeyCommandService,
           useValue: {
             commands$: new Subject()
           }

@@ -19,7 +19,6 @@ import {
 } from 'rxjs';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { map } from 'rxjs/operators';
-import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
@@ -35,6 +34,7 @@ import {
   ScalperOrderBookSharedContext
 } from "../scalper-order-book/scalper-order-book.component";
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
+import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
 
 interface SelectedWorkingVolumeState extends RecordContent {
   lastSelectedVolume?: {
@@ -80,7 +80,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly hotKeyCommandService: HotKeyCommandService,
+    private readonly hotKeyCommandService: ScalperHotKeyCommandService,
     @Inject(SCALPER_ORDERBOOK_SHARED_CONTEXT)
     @SkipSelf()
     private readonly scalperOrderBookSharedContext: ScalperOrderBookSharedContext,

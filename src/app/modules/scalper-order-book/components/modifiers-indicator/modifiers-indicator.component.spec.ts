@@ -4,8 +4,8 @@ import {
 } from '@angular/core/testing';
 
 import { ModifiersIndicatorComponent } from './modifiers-indicator.component';
-import { HotKeyCommandService } from "../../../../shared/services/hot-key-command.service";
 import { Subject } from "rxjs";
+import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
 
 describe('ModifiersIndicatorComponent', () => {
   let component: ModifiersIndicatorComponent;
@@ -16,7 +16,7 @@ describe('ModifiersIndicatorComponent', () => {
       declarations: [ModifiersIndicatorComponent],
       providers: [
         {
-          provide: HotKeyCommandService,
+          provide: ScalperHotKeyCommandService,
           useValue: {
             command$: new Subject(),
             modifiers$: new Subject()

@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { additionalInstrumentsBadges, instrumentsBadges, defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { CdkDrag, CdkDragEnter, CdkDragStart } from "@angular/cdk/drag-drop";
-import { NG_VALUE_ACCESSOR, UntypedFormControl } from "@angular/forms";
+import {
+  FormBuilder,
+  NG_VALUE_ACCESSOR,
+} from "@angular/forms";
 import {
   ControlValueAccessorBaseComponent
 } from "../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component";
@@ -19,12 +22,17 @@ import {
   ]
 })
 export class BadgesSettingsComponent extends ControlValueAccessorBaseComponent<string[]> {
-  newBadgeColorControl = new UntypedFormControl(null);
+  newBadgeColorControl = this.formBuilder.nonNullable.control<string>('');
+
   defaultBadgeColor = defaultBadgeColor;
 
   draggedBadge: string | null = null;
 
   badgesColors: string[] = [];
+
+  constructor(private readonly formBuilder: FormBuilder) {
+    super();
+  }
 
   protected needMarkTouched(): boolean {
     return false;
@@ -45,14 +53,14 @@ export class BadgesSettingsComponent extends ControlValueAccessorBaseComponent<s
     }
 
     if (
-      (this.newBadgeColorControl.value ?? '').length === 0 ||
+      this.newBadgeColorControl.value.length === 0 ||
       this.badgesColors.includes(this.newBadgeColorControl.value)) {
       return;
     }
 
     this.badgesColors = [
       ...this.badgesColors,
-      this.newBadgeColorControl.value as string
+      this.newBadgeColorControl.value
     ];
 
     this.newBadgeColorControl.reset();

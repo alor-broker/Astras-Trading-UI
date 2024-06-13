@@ -17,10 +17,10 @@
 
         <nz-tab (nzSelect)="tabChange.emit(tabNames.main)" *ngIf="settingsForm"
                 [nzTitle]="t('terminalSettings.generalSettingsTabTitle')">
-          <ng-container *ngIf="getFormControl('generalSettings') as generalSettings">
+          <ng-container *ngIf="settingsForm.controls.generalSettings as generalSettings">
             <ats-general-settings-form [excludedSettings]="hiddenSections" [formControl]="generalSettings"></ats-general-settings-form>
           </ng-container>
-          <ng-container *ngIf="getFormControl('portfoliosCurrency') as portfoliosCurrency">
+          <ng-container *ngIf="settingsForm.controls.portfoliosCurrency as portfoliosCurrency">
             <h3>{{t('terminalSettings.defaultCurrencyHeader')}}</h3>
             <ats-portfolios-currency-form [formControl]="portfoliosCurrency"></ats-portfolios-currency-form>
           </ng-container>
@@ -33,11 +33,11 @@
 
         <nz-tab
           (nzSelect)="tabChange.emit(tabNames.hotKeys)"
-          *ngIf="!hiddenSections.includes('hotKeysSettings') && getFormControl('hotKeysSettings') as hotKeysSettings"
+          *ngIf="!hiddenSections.includes('hotKeysSettings') && settingsForm.controls.hotKeysSettings as hotKeysSettings"
           [nzTitle]="t('terminalSettings.hotkeysTabTitle')">
           <ats-hot-key-settings-form [formControl]="hotKeysSettings"></ats-hot-key-settings-form>
 
-          <ng-container *ngIf="getFormControl('scalperOrderBookMouseActions') as scalperOrderBookMouseActions">
+          <ng-container *ngIf="settingsForm.controls.scalperOrderBookMouseActions as scalperOrderBookMouseActions">
             <nz-divider></nz-divider>
             <h3>{{t('terminalSettings.scalperMouseActionsHeader')}}</h3>
             <ats-scalper-mouse-actions-form [formControl]="scalperOrderBookMouseActions"></ats-scalper-mouse-actions-form>
@@ -46,7 +46,7 @@
 
         <nz-tab
           (nzSelect)="tabChange.emit(tabNames.notifications)"
-          *ngIf="getFormControl('instantNotificationsSettings') as instantNotificationsSettings"
+          *ngIf="settingsForm.controls.instantNotificationsSettings as instantNotificationsSettings"
           [nzTitle]="t('terminalSettings.notificationsTabTitle')">
           <ats-instant-notifications-form [formControl]="instantNotificationsSettings"></ats-instant-notifications-form>
         </nz-tab>

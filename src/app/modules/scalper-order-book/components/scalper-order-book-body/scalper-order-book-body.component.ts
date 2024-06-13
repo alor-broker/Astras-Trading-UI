@@ -33,8 +33,6 @@ import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.
 import { ListRange } from '@angular/cdk/collections';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 import { ScalperOrderBookDataContextService } from '../../services/scalper-order-book-data-context.service';
-import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
-import { ScalperOrderBookCommands } from '../../models/scalper-order-book-commands';
 import {
   PriceRow,
   ScalperOrderBookRowType
@@ -57,6 +55,11 @@ import { Side } from "../../../../shared/models/enums/side.model";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { toInstrumentKey } from "../../../../shared/utils/instruments";
+import {
+  ActiveOrderBookHotKeysTypes,
+  AllOrderBooksHotKeysTypes
+} from "../../../../shared/models/terminal-settings/terminal-settings.model";
+import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
 
 export interface ScalperOrderBookBodyRef {
   getElement(): ElementRef<HTMLElement>;
@@ -120,7 +123,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     private readonly scalperOrderBookSharedContext: ScalperOrderBookSharedContext,
     private readonly scalperOrderBookDataContextService: ScalperOrderBookDataContextService,
     private readonly priceRowsStore: PriceRowsStore,
-    private readonly hotkeysService: HotKeyCommandService,
+    private readonly hotkeysService: ScalperHotKeyCommandService,
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly widgetLocalStateService: WidgetLocalStateService,
     private readonly ref: ElementRef<HTMLElement>,
@@ -211,7 +214,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     this.hotkeysService.commands$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(command => {
-      if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.centerOrderBook) {
+      if (command.type === AllOrderBooksHotKeysTypes.centerOrderbookKey) {
         this.alignTable();
       }
     });
@@ -336,13 +339,13 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
       withLatestFrom(this.scalperOrderBookSharedContext.scaleFactor$, instrumentKey$),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(([command, scaleFactor, instrumentKey]) => {
-      if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.increaseScale && scaleFactor < this.maxScaleFactor) {
+      if (command.type === ActiveOrderBookHotKeysTypes.increaseScale && scaleFactor < this.maxScaleFactor) {
         const newScaleFactor = scaleFactor + 1;
         setScaleFactor(newScaleFactor, instrumentKey);
         return;
       }
 
-      if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.decreaseScale && scaleFactor > 1) {
+      if (command.type === ActiveOrderBookHotKeysTypes.decreaseScale && scaleFactor > 1) {
         const newScaleFactor = scaleFactor - 1;
         setScaleFactor(newScaleFactor, instrumentKey);
         return;
