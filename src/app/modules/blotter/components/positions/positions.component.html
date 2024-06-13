@@ -117,7 +117,7 @@
               </a>
             </td>
             <ng-container *ngFor='let column of td.tableConfig.columns'>
-              <td *ngIf='column.id === "symbol"' class='bold'>
+              <td *ngIf='column.id === "symbol"' class='fw-bold'>
                 <span class="symbol-name">{{ pos.symbol }}</span>
                 <ats-instrument-badge-display [instrumentKey]="pos"></ats-instrument-badge-display>
               </td>

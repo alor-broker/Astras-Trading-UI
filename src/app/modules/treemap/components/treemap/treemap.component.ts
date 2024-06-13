@@ -195,7 +195,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                   formatter: (t: any) => [t.raw._data.symbol, `${t.raw._data.children[0]?.dayChange}%`] as string[],
                   overflow: 'fit',
                   color: themeColors.textColor,
-                  font: [{ weight: '600' }, { weight: '400' }]
+                  font: [{ weight: '500' }, { weight: '400' }]
                 },
                 backgroundColor: (t: any) => {
                   if (t.raw?._data.label === t.raw?._data.sector) {

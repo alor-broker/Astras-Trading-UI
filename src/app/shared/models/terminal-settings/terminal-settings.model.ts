@@ -68,9 +68,19 @@ export enum GridType {
   HorizontalFixed = 'horizontalFixed'
 }
 
+export enum FontFamilies {
+  NotoSans = 'Noto Sans',
+  Roboto = 'Roboto',
+  OpenSans = 'Open Sans',
+  SourceSans3 = 'Source Sans 3',
+  NotoSerif = 'Noto Serif',
+  Caveat = 'Caveat'
+}
+
 export interface DesignSettings {
   theme?: ThemeType;
   gridType?: GridType;
+  fontFamily?: FontFamilies;
 }
 
 export interface PortfolioCurrencySettings {

@@ -117,7 +117,7 @@
             </td>
             <ng-container *ngFor='let column of td.tableConfig.columns'>
               <td *ngIf='column.id === "id"'>{{ ord.id }}</td>
-              <td *ngIf='column.id === "symbol"' class='bold'>
+              <td *ngIf='column.id === "symbol"' class='fw-bold'>
                 <span class="symbol-name">{{ ord.symbol }}</span>
                 <ats-instrument-badge-display [instrumentKey]="ord"></ats-instrument-badge-display>
               </td>
@@ -132,7 +132,7 @@
               <td *ngIf='column.id === "triggerPrice"'>{{ ord.triggerPrice | number : '0.0-10' }}</td>
               <td *ngIf='column.id === "status"' [class]='ord.status.toString() === "filled"
               ? (ord.status.toString() === "sell" ? "sell" : "buy") :
-              (ord.status.toString() === "canceled" ? "cancelled" : "bold" )'>
+              (ord.status.toString() === "canceled" ? "cancelled" : "fw-bold" )'>
                 <span
                   *ngIf="ord.status === 'rejected'; else simpleText"
                   nz-tooltip=""
