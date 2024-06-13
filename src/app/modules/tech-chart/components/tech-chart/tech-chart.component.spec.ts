@@ -38,6 +38,7 @@ import { SyntheticInstrumentsService } from "../../services/synthetic-instrument
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
+import { InstrumentSearchService } from "../../services/instrument-search.service";
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -184,6 +185,13 @@ describe('TechChartComponent', () => {
             removeItem: jasmine.createSpy('removeItem').and.callThrough(),
             getStringItem: jasmine.createSpy('getStringItem').and.returnValue(''),
             getItem: jasmine.createSpy('getItem').and.returnValue(undefined)
+          }
+        },
+        {
+          provide: InstrumentSearchService,
+          useValue: {
+            openModal: jasmine.createSpy('openModal').and.callThrough(),
+            modalData$: of(null)
           }
         },
         {

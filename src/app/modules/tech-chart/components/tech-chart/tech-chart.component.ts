@@ -51,11 +51,7 @@ import {
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { TechChartDatafeedService } from '../../services/tech-chart-datafeed.service';
 import { ThemeService } from '../../../../shared/services/theme.service';
-import {
-  ThemeColors,
-  ThemeSettings,
-  ThemeType
-} from '../../../../shared/models/settings/theme-settings.model';
+import { ThemeColors, ThemeSettings, ThemeType } from '../../../../shared/models/settings/theme-settings.model';
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { SelectedPriceData } from '../../../../shared/models/orders/selected-order-price.model';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
@@ -64,23 +60,12 @@ import { MathHelper } from '../../../../shared/utils/math-helper';
 import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
 import { PortfolioKey } from '../../../../shared/models/portfolio-key.model';
 import { Position } from '../../../../shared/models/positions/position.model';
-import {
-  debounceTime,
-  map,
-  startWith
-} from 'rxjs/operators';
+import { debounceTime, map, startWith } from 'rxjs/operators';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import {
-  Order,
-  OrderType,
-  StopOrder
-} from '../../../../shared/models/orders/order.model';
+import { Order, OrderType, StopOrder } from '../../../../shared/models/orders/order.model';
 import { Side } from '../../../../shared/models/enums/side.model';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import {
-  LineMarkerPosition,
-  TechChartSettings
-} from '../../models/tech-chart-settings.model';
+import { LineMarkerPosition, TechChartSettings } from '../../models/tech-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { HashMap } from "@ngneat/transloco/lib/types";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
@@ -88,28 +73,16 @@ import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-display-option";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
-import {
-  defaultBadgeColor,
-  toInstrumentKey
-} from "../../../../shared/utils/instruments";
-import {
-  EditOrderDialogParams,
-  OrderFormType
-} from "../../../../shared/models/orders/orders-dialog.model";
+import { defaultBadgeColor, toInstrumentKey } from "../../../../shared/utils/instruments";
+import { EditOrderDialogParams, OrderFormType } from "../../../../shared/models/orders/orders-dialog.model";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 import { Trade } from "../../../../shared/models/trades/trade.model";
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
 import { addSeconds } from "../../../../shared/utils/datetime";
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
-import {
-  getConditionSign,
-  getConditionTypeByString
-} from "../../../../shared/utils/order-conditions-helper";
+import { getConditionSign, getConditionTypeByString } from "../../../../shared/utils/order-conditions-helper";
 import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
-import {
-  RegularInstrumentKey,
-  SyntheticInstrumentKey
-} from "../../models/synthetic-instruments.model";
+import { RegularInstrumentKey, SyntheticInstrumentKey } from "../../models/synthetic-instruments.model";
 import { SyntheticInstrumentsService } from "../../services/synthetic-instruments.service";
 import { MarketService } from "../../../../shared/services/market.service";
 import { MarketExchange } from "../../../../shared/models/market-settings.model";
@@ -117,11 +90,10 @@ import { DeviceService } from "../../../../shared/services/device.service";
 import { DeviceInfo } from "../../../../shared/models/device-info.model";
 import { ChartTemplatesSettingsBrokerService } from "../../services/chart-templates-settings-broker.service";
 import { LocalStorageService } from "../../../../shared/services/local-storage.service";
-import {
-  ACTIONS_CONTEXT,
-  ActionsContext
-} from "../../../../shared/services/actions-context";
+import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
 import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
+import { InstrumentSearchService } from "../../services/instrument-search.service";
+import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -289,6 +261,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly localStorageService: LocalStorageService,
     @Inject(ACTIONS_CONTEXT)
     private readonly actionsContext: ActionsContext,
+    private readonly instrumentSearchService: InstrumentSearchService,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -463,7 +436,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.localStorageService.removeItem('tradingview.current_theme.name');
 
-    const features = this.getFeatures(settings, deviceInfo);
+    const features = this.getFeatures(settings);
 
     this.techChartDatafeedService.setExchangeSettings(exchanges);
     const config: ChartingLibraryWidgetOptions = {
@@ -525,6 +498,10 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       );
 
+      if (!deviceInfo.isMobile) {
+        chartWidget.headerReady().then(() => this.createSearchButton(theme.theme));
+      }
+
       this.intervalChangeSub = new Subscription();
       this.symbolChangeSub = new Subscription();
 
@@ -540,6 +517,65 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         this.chartState!.widget.activeChart().executeActionById("symbolSearch");
       });
     });
+  }
+
+  private createSearchButton(themeType: ThemeType): void {
+    const searchBtn = this.chartState!.widget!.createButton({
+      align: 'left',
+      useTradingViewStyle: false
+    });
+
+    searchBtn.innerText = 'Search';
+    searchBtn.style.maxWidth = '100px';
+    searchBtn.style.padding = '8px 8px 9px 8px';
+    searchBtn.style.borderRadius = '4px';
+    searchBtn.style.fontWeight = '600';
+    searchBtn.style.overflow = 'hidden';
+    searchBtn.style.textOverflow = 'ellipsis';
+    searchBtn.style.cursor = 'pointer';
+
+
+    searchBtn.addEventListener('click', () => {
+      this.instrumentSearchService.openModal(this.chartState!.widget.activeChart().symbol() ?? null);
+    });
+
+    searchBtn.addEventListener('mouseenter', () => {
+      searchBtn.style.backgroundColor = themeType === ThemeType.dark ? '#2a2e39' : '#f0f3fa';
+    });
+
+    searchBtn.addEventListener('mouseleave', () => {
+      searchBtn.style.backgroundColor = 'transparent';
+    });
+
+    const searchBtnParentEl = searchBtn.parentElement!.parentElement!;
+    searchBtnParentEl.nextElementSibling!.remove();
+    searchBtnParentEl.parentElement!.prepend(searchBtnParentEl);
+
+    this.instrumentSearchService.modalData$.pipe(
+      filter(i => i != null),
+      takeUntilDestroyed(this.destroyRef)
+    )
+      .subscribe(i => {
+          if (i == null) {
+            return;
+          }
+          this.chartState!.widget.activeChart().setSymbol(i);
+        }
+      );
+
+    this.settings$.pipe(
+      map(s => s.instrument),
+      distinctUntilChanged((prev, curr) => isInstrumentEqual(prev, curr)),
+      takeUntilDestroyed(this.destroyRef)
+    )
+      .subscribe(instrument => {
+        const instrumentStr = SyntheticInstrumentsHelper.isSyntheticInstrument(instrument.symbol)
+          ? instrument.symbol
+          : this.toTvSymbol(instrument);
+
+        searchBtn.innerText = instrumentStr;
+        searchBtn.setAttribute('data-tooltip', instrumentStr);
+      });
   }
 
   private readonly intervalChangeCallback: (interval: ResolutionString, timeFrameParameters: { timeframe?: TimeFrameValue }) => void =
@@ -1233,7 +1269,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     };
   }
 
-  private getFeatures(settings: TechChartSettings, deviceInfo: DeviceInfo): { enabled: ChartingLibraryFeatureset[], disabled: ChartingLibraryFeatureset[] } {
+  private getFeatures(settings: TechChartSettings): { enabled: ChartingLibraryFeatureset[], disabled: ChartingLibraryFeatureset[] } {
     const enabled = new Set<ChartingLibraryFeatureset>([
       'side_toolbar_in_fullscreen_mode',
       'chart_crosshair_menu' as ChartingLibraryFeatureset,
@@ -1248,12 +1284,12 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         'display_market_status',
         'save_shortcut',
         'header_quick_search',
-        'header_saveload'
+        'header_saveload',
+        'header_symbol_search'
       ]
     );
 
     this.switchChartFeature('header_widget', settings.panels?.header ?? true, enabled, disabled);
-    this.switchChartFeature('header_symbol_search', !deviceInfo.isMobile && (settings.panels?.headerSymbolSearch ?? true), enabled, disabled);
     this.switchChartFeature('header_chart_type', settings.panels?.headerChartType ?? true, enabled, disabled);
     this.switchChartFeature('header_compare', settings.panels?.headerCompare ?? true, enabled, disabled);
     this.switchChartFeature('header_resolutions', settings.panels?.headerResolutions ?? true, enabled, disabled);

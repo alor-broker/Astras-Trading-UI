@@ -11,25 +11,31 @@ import { NzInputModule } from "ng-zorro-antd/input";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { SharedModule } from '../../shared/shared.module';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
+import { InstrumentSearchModalComponent } from "./widgets/instrument-search-modal/instrument-search-modal.component";
+import { InstrumentSearchService } from "./services/instrument-search.service";
 
 
 @NgModule({
   declarations: [
     TechChartWidgetComponent,
     TechChartComponent,
-    TechChartSettingsComponent
+    TechChartSettingsComponent,
+    InstrumentSearchModalComponent
   ],
-    imports: [
-        CommonModule,
-        NzFormModule,
-        ReactiveFormsModule,
-        NzCollapseModule,
-        NzButtonModule,
-        NzInputModule,
-        NzSelectModule,
-        SharedModule,
-        NzResizeObserverModule
-    ],
+  imports: [
+    CommonModule,
+    NzFormModule,
+    ReactiveFormsModule,
+    NzCollapseModule,
+    NzButtonModule,
+    NzInputModule,
+    NzSelectModule,
+    SharedModule,
+    NzResizeObserverModule
+  ],
+  providers: [
+    InstrumentSearchService
+  ],
   exports: [
     TechChartWidgetComponent
   ]

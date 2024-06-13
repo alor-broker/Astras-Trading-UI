@@ -251,7 +251,7 @@ describe('TechChartDatafeedService', () => {
       {
         symbol: instrumentDetails.symbol,
         exchange: instrumentDetails.exchange,
-        ticker: `${instrumentDetails.exchange}:${instrumentDetails.symbol}`,
+        ticker: `[${instrumentDetails.exchange}:${instrumentDetails.symbol}]`,
         description: instrumentDetails.description,
         full_name: `${instrumentDetails.exchange}:${instrumentDetails.symbol}`,
         type: ''

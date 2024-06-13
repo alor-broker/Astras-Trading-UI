@@ -1,0 +1,64 @@
+<nz-modal
+  *transloco="let t; scope: 'tech-chart/instrument-search-modal'"
+  [nzTitle]="t('techChartInstrumentSearchModal.title')"
+  [nzVisible]='isVisible$ | async'
+  (nzOnCancel)="handleCancel()"
+  nzClassName="instrument-search-modal"
+>
+  <ng-container *nzModalContent>
+    <nz-input-group [nzAddOnAfter]="spreadOperators">
+      <input #searchInput
+             (mousedown)="$event.stopPropagation()"
+             (keyup)="filterChanged()"
+             [nzAutocomplete]="auto"
+             class='ant-input'
+             nz-input
+             [formControl]="searchControl"
+             [placeholder]="t('sharedInstrumentSearch.searchPlaceholder')"
+      />
+
+      <nz-autocomplete
+        #auto
+        [nzWidth]="searchInput.clientWidth"
+      >
+        <nz-auto-option
+          *ngFor="let option of filteredInstruments$ | async"
+          [nzLabel]="option.symbol"
+          [nzValue]="option.symbol"
+          (selectionChange)="onSelect($event, option)"
+        >
+        <span class='search-row'>
+          <nz-tag>{{ option.symbol }}</nz-tag>
+          <span class='row-center'>{{ option.shortName }}&nbsp;</span>
+          <nz-tag *ngIf='option.instrumentGroup'>{{ option.instrumentGroup }}</nz-tag>
+          <nz-tag>{{ option.exchange }}</nz-tag>
+        </span>
+        </nz-auto-option>
+      </nz-autocomplete>
+
+      <ng-template #spreadOperators>
+        <button nz-button (click)="addSpreadOperator('+')">
+          +
+        </button>
+        <button nz-button (click)="addSpreadOperator('&minus;')">
+          -
+        </button>
+        <button nz-button (click)="addSpreadOperator('*')">
+          ∗
+        </button>
+        <button nz-button (click)="addSpreadOperator('/')">
+          /
+        </button>
+      </ng-template>
+    </nz-input-group>
+  </ng-container>
+
+  <div *nzModalFooter>
+    <button nz-button (click)="handleCancel()">{{t('cancelBtnText')}}</button>
+    <button
+      nz-button
+      nzType="primary"
+      (click)="handleOk()"
+    >{{t('okBtnText')}}</button>
+  </div>
+</nz-modal>

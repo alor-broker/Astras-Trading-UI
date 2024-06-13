@@ -31,6 +31,7 @@ describe('TechChartWidgetComponent', () => {
           selector: 'ats-tech-chart-settings',
           inputs: ['guid']
         }),
+        mockComponent({ selector: 'ats-instrument-search-modal' }),
         widgetSkeletonMock
       ],
       providers: [
