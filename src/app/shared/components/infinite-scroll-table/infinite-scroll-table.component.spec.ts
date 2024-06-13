@@ -10,7 +10,13 @@ import { UntypedFormControl } from "@angular/forms";
 import { TableConfig } from '../../models/table-config.model';
 import { BaseColumnSettings, FilterType } from "../../models/settings/table-settings.model";
 import { ResizeColumnDirective } from "../../directives/resize-column.directive";
-import { getTranslocoModule } from "../../utils/testing";
+import {
+  commonTestProviders,
+  getTranslocoModule,
+  ngZorroMockComponents,
+  sharedModuleImportForTests
+} from "../../utils/testing";
+import { NzToolTipModule } from "ng-zorro-antd/tooltip";
 
 @Component({
   template: `
@@ -83,8 +89,10 @@ describe('InfiniteScrollTableComponent', () => {
         NoopAnimationsModule,
         NzTableModule,
         NzDropDownModule,
+        ...sharedModuleImportForTests,
         getTranslocoModule()
-      ]
+      ],
+      providers: [ ...commonTestProviders ]
     })
     .compileComponents();
   });
