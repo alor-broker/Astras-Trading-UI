@@ -17,13 +17,16 @@ import {
 import { NzTableComponent } from "ng-zorro-antd/table";
 import { filter, Observable, pairwise, shareReplay, switchMap, take } from "rxjs";
 import { ITEM_HEIGHT } from "../../../modules/all-trades/utils/all-trades.utils";
-import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
 import { debounceTime, map, startWith } from "rxjs/operators";
 import { ContextMenu } from "../../models/infinite-scroll-table.model";
 import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
 import { TableConfig } from '../../models/table-config.model';
 import { BaseColumnSettings, FilterData, FilterType, InputFieldType } from "../../models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {
+  FormControl,
+  FormGroup
+} from "@angular/forms";
 
 interface TableDataRow {
   id: string | number;
@@ -83,7 +86,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   inputFieldType = InputFieldType;
   itemHeight = ITEM_HEIGHT;
   scrollHeight = 0;
-  filtersForm = new UntypedFormGroup({});
+  readonly filtersForm = new FormGroup({});
   activeFilterName = '';
   sortedColumnId = '';
   sortedColumnOrder: string | null = '';
@@ -109,7 +112,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
           }
 
           if (prev == null) {
-            const filtersLength = Object.values(curr).filter((f: any) => (f?.length ?? 0) > 0).length;
+            const filtersLength = Object.values(curr as any).filter((f: any) => (f?.length ?? 0) > 0).length;
 
             return filtersLength > 0;
           }
@@ -136,12 +139,12 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
         .map(col => col.filterData!)
         .forEach(filter => {
           if (filter.filterType === FilterType.Interval) {
-            this.filtersForm.addControl(filter.intervalStartName!, new UntypedFormControl(''));
-            this.filtersForm.addControl(filter.intervalEndName!, new UntypedFormControl(''));
+            this.filtersForm.addControl(filter.intervalStartName!, new FormControl(''));
+            this.filtersForm.addControl(filter.intervalEndName!, new FormControl(''));
           } else if (filter.filterType === FilterType.MultipleAutocomplete) {
-            this.filtersForm.addControl(filter.filterName, new UntypedFormControl([]));
+            this.filtersForm.addControl(filter.filterName,  new FormControl([]));
           } else {
-            this.filtersForm.addControl(filter.filterName, new UntypedFormControl(''));
+            this.filtersForm.addControl(filter.filterName, new FormControl(''));
 
           }
         });
@@ -178,8 +181,8 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
     return (this.tableConfig?.columns ?? []).map(col => (col.width ?? 0) ? `${col.width}px` : 'auto');
   }
 
-  public getFilterControl(filterName: string): UntypedFormControl | null {
-    return this.filtersForm.get(filterName) as UntypedFormControl;
+  public getFilterControl(filterName: string): FormControl | null {
+    return this.filtersForm.get(filterName) as FormControl;
   }
 
   public resetFilter(filterData: FilterData): void {

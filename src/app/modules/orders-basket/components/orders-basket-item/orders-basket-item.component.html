@@ -1,5 +1,5 @@
 <div [ngClass]="displayMode$ | async" class="container">
-  <ng-container *ngIf="form">
+  <ng-container>
     <ng-container *transloco="let t; scope: 'orders-basket/orders-basket-item'">
       <form [formGroup]="form" nz-form nzLayout="vertical">
         <nz-form-item>

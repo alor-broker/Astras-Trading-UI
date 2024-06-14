@@ -56,7 +56,7 @@
               nz-input
               class="portfolio-search"
               [placeholder]="t('dashboardNavbarCommon.searchPortfolioPlaceholder')"
-              [formControl]="searchControl"
+              [formControl]="portfolioSearchControl"
             />
           </li>
           <ng-container *ngFor="let kvp of portfolios | keyvalue; trackBy: portfolioGroupsTrackByFn">
@@ -178,6 +178,6 @@
   </div>
 
   <div>
-    <ats-instrument-search [formControl]="instrumentControl" (instrumentSelected)="changeInstrument($event)"></ats-instrument-search>
+    <ats-instrument-search [formControl]="instrumentSearchControl" (instrumentSelected)="changeInstrument($event)"></ats-instrument-search>
   </div>
 </nz-header>

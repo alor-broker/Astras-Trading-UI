@@ -8,7 +8,7 @@ export enum PushSubscriptionType {
 export interface PriceChangeRequest {
   exchange: string;
   priceCondition: LessMore;
-  price: string;
+  price: number;
   instrument: string;
   board: string;
 }
