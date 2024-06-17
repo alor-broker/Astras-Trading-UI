@@ -11,6 +11,8 @@ export interface HotKeyMeta {
   altKey?: boolean;
 }
 
+// only deprecated format has type 'string'
+// all new hotkeys must have type 'HotKeyMeta'
 export type DeprecatedHotKey = HotKeyMeta | string;
 
 export enum AllOrderBooksHotKeysTypes {

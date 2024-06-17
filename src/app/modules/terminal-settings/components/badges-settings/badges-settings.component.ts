@@ -22,7 +22,7 @@ import {
   ]
 })
 export class BadgesSettingsComponent extends ControlValueAccessorBaseComponent<string[]> {
-  newBadgeColorControl = this.formBuilder.nonNullable.control<string>('');
+  newBadgeColorControl = this.formBuilder.nonNullable.control('');
 
   defaultBadgeColor = defaultBadgeColor;
 
