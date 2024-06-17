@@ -15,12 +15,12 @@ import {
   mockDirective,
   ngZorroMockComponents
 } from '../../../../shared/utils/testing';
-import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { LetDirective } from "@ngrx/component";
 import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
 import { SCALPER_ORDERBOOK_SHARED_CONTEXT } from "../scalper-order-book/scalper-order-book.component";
+import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
 
 describe('ScalperOrderBookBodyComponent', () => {
   let component: ScalperOrderBookBodyComponent;
@@ -73,7 +73,7 @@ describe('ScalperOrderBookBodyComponent', () => {
           }
         },
         {
-          provide: HotKeyCommandService,
+          provide: ScalperHotKeyCommandService,
           useValue: {
             commands$: new Subject()
           }

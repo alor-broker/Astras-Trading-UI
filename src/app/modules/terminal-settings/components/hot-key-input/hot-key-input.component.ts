@@ -1,9 +1,13 @@
-import { Component, Input } from '@angular/core';
 import {
-  ControlValueAccessorBaseComponent
-} from "../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component";
+  Component,
+  Input
+} from '@angular/core';
+import { ControlValueAccessorBaseComponent } from "../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component";
 import { HotKeyMeta } from "../../../../shared/models/terminal-settings/terminal-settings.model";
-import { NG_VALUE_ACCESSOR, UntypedFormControl } from "@angular/forms";
+import {
+  FormBuilder,
+  NG_VALUE_ACCESSOR
+} from "@angular/forms";
 
 @Component({
   selector: 'ats-hot-key-input',
@@ -19,29 +23,24 @@ import { NG_VALUE_ACCESSOR, UntypedFormControl } from "@angular/forms";
 })
 export class HotKeyInputComponent extends ControlValueAccessorBaseComponent<HotKeyMeta> {
 
-  @Input({required: true})
+  @Input({ required: true })
   actionName!: string;
 
-  control = new UntypedFormControl(null);
-
+  readonly control = this.formBuilder.nonNullable.control<string | null>(null);
   value: HotKeyMeta | null = null;
 
-  writeValue(value: HotKeyMeta | string | null): void {
-    if (value != null && value !== '') {
-      if (typeof value === 'string') {
-        this.control.setValue(value);
-        this.value = {
-          key: value,
-          code: '',
-          shiftKey: true
-        };
-      } else {
-        this.control.setValue(value.key);
-        this.value = value;
-      }
-    } else {
-      this.control.reset();
+  constructor(private readonly formBuilder: FormBuilder) {
+    super();
+  }
+
+  writeValue(value: HotKeyMeta | null): void {
+    this.control.reset();
+
+    if (value != null) {
+      this.control.setValue(value.key);
     }
+
+    this.value = value;
   }
 
   hotkeyChange(e: KeyboardEvent): void {
@@ -51,11 +50,21 @@ export class HotKeyInputComponent extends ControlValueAccessorBaseComponent<HotK
     } else {
       this.value = {
         key: e.key,
-        code: e.code,
-        shiftKey: e.shiftKey,
-        ctrlKey: e.ctrlKey || e.metaKey,
-        altKey: e.altKey
+        code: e.code
       };
+
+      if (e.shiftKey) {
+        this.value.shiftKey = true;
+      }
+
+      if (e.ctrlKey || e.metaKey) {
+        this.value.ctrlKey = true;
+      }
+
+      if (e.altKey) {
+        this.value.altKey = true;
+      }
+
       this.control.setValue(e.key);
     }
 

@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TerminalCommand } from '../../../shared/models/terminal-command';
 import { ScalperOrderBookDataContext } from '../models/scalper-order-book-data-context.model';
-import { HotKeyCommandService } from '../../../shared/services/hot-key-command.service';
 import { Side } from '../../../shared/models/enums/side.model';
 import {
   BodyRow,
@@ -20,7 +18,6 @@ import {
   map,
   switchMap
 } from 'rxjs/operators';
-import { ScalperOrderBookCommands } from '../models/scalper-order-book-commands';
 import {
   PriceUnits,
   ScalperOrderBookWidgetSettings
@@ -29,6 +26,8 @@ import { OrderbookData } from '../../orderbook/models/orderbook-data.model';
 import { PortfolioKey } from '../../../shared/models/portfolio-key.model';
 import { Position } from '../../../shared/models/positions/position.model';
 import {
+  ActiveOrderBookHotKeysTypes,
+  AllOrderBooksHotKeysTypes,
   ScalperOrderBookMouseAction,
   ScalperOrderBookMouseActionsMap
 } from '../../../shared/models/terminal-settings/terminal-settings.model';
@@ -55,6 +54,8 @@ import {
 import { SubmitBestPriceOrderCommand } from "../commands/submit-best-price-order-command";
 import { GetBestOfferCommand } from "../commands/get-best-offer-command";
 import { UpdateOrdersCommand } from "../commands/update-orders-command";
+import { ScalperCommand } from "../models/scalper-command";
+import { ScalperHotKeyCommandService } from "./scalper-hot-key-command.service";
 
 @Injectable({
   providedIn: 'root'
@@ -63,7 +64,7 @@ export class ScalperCommandProcessorService {
   private mouseActionsMap$: Observable<ScalperOrderBookMouseActionsMap> | null = null;
 
   constructor(
-    private readonly hotkeysService: HotKeyCommandService,
+    private readonly hotkeysService: ScalperHotKeyCommandService,
     private readonly terminalSettingsService: TerminalSettingsService,
     // commands
     private readonly cancelOrdersCommand: CancelOrdersCommand,
@@ -87,7 +88,7 @@ export class ScalperCommandProcessorService {
     this.processClick('right', e, row, dataContext);
   }
 
-  processHotkeyPress(command: TerminalCommand, isActive: boolean, dataContext: ScalperOrderBookDataContext): void {
+  processHotkeyPress(command: ScalperCommand, isActive: boolean, dataContext: ScalperOrderBookDataContext): void {
     if (this.handleAllCommands(command, dataContext)) {
       return;
     }
@@ -135,24 +136,25 @@ export class ScalperCommandProcessorService {
     );
   }
 
-  private handleAllCommands(command: TerminalCommand, dataContext: ScalperOrderBookDataContext): boolean {
-    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.cancelOrdersAll) {
+  private handleAllCommands(command: ScalperCommand, dataContext: ScalperOrderBookDataContext): boolean {
+    const commandType = command.type;
+    if (commandType === AllOrderBooksHotKeysTypes.cancelOrdersAll) {
       this.cancelAllOrders(dataContext);
       return true;
     }
 
-    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.cancelOrdersAndClosePositionsByMarketAll) {
+    if (commandType === AllOrderBooksHotKeysTypes.cancelOrdersAndClosePositionsByMarketAll) {
       this.cancelAllOrders(dataContext);
       this.closePositionsByMarket(dataContext);
       return true;
     }
 
-    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.cancelLimitOrdersAll) {
+    if (commandType === AllOrderBooksHotKeysTypes.cancelOrdersKey) {
       this.cancelLimitOrders(dataContext);
       return true;
     }
 
-    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.closePositionsByMarketAll) {
+    if (commandType === AllOrderBooksHotKeysTypes.closePositionsKey) {
       this.closePositionsByMarket(dataContext);
       return true;
     }
@@ -160,33 +162,35 @@ export class ScalperCommandProcessorService {
     return false;
   }
 
-  private handleCurrentOrderBookCommands(command: TerminalCommand, dataContext: ScalperOrderBookDataContext): void {
-    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.cancelLimitOrdersCurrent) {
+  private handleCurrentOrderBookCommands(command: ScalperCommand, dataContext: ScalperOrderBookDataContext): void {
+    const commandType = command.type;
+
+    if (commandType === ActiveOrderBookHotKeysTypes.cancelOrderbookOrders) {
       this.cancelLimitOrders(dataContext);
       return;
     }
 
-    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.cancelStopOrdersCurrent) {
+    if (commandType === ActiveOrderBookHotKeysTypes.cancelStopOrdersCurrent) {
       this.cancelStopOrders(dataContext);
       return;
     }
 
-    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.closePositionsByMarketCurrent) {
+    if (commandType === ActiveOrderBookHotKeysTypes.closeOrderbookPositions) {
       this.closePositionsByMarket(dataContext);
       return;
     }
 
-    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.sellBestOrder) {
+    if (commandType === ActiveOrderBookHotKeysTypes.sellBestOrder) {
       this.placeBestOrder(dataContext, Side.Sell);
       return;
     }
 
-    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.buyBestOrder) {
+    if (commandType === ActiveOrderBookHotKeysTypes.buyBestOrder) {
       this.placeBestOrder(dataContext, Side.Buy);
       return;
     }
 
-    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.sellBestBid) {
+    if (commandType === ActiveOrderBookHotKeysTypes.sellBestBid) {
       this.callWithSettings(
         dataContext,
         settings => {
@@ -221,7 +225,7 @@ export class ScalperCommandProcessorService {
       return;
     }
 
-    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.buyBestAsk) {
+    if (commandType === ActiveOrderBookHotKeysTypes.buyBestAsk) {
       this.callWithSettings(
         dataContext,
         settings => {
@@ -256,17 +260,17 @@ export class ScalperCommandProcessorService {
       return;
     }
 
-    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.sellMarket) {
+    if (commandType === ActiveOrderBookHotKeysTypes.sellMarket) {
       this.placeMarketOrderSilent(dataContext, Side.Sell);
       return;
     }
 
-    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.buyMarket) {
+    if (commandType === ActiveOrderBookHotKeysTypes.buyMarket) {
       this.placeMarketOrderSilent(dataContext, Side.Buy);
       return;
     }
 
-    if (command.type as ScalperOrderBookCommands === ScalperOrderBookCommands.reversePositionsByMarketCurrent) {
+    if (commandType === ActiveOrderBookHotKeysTypes.reverseOrderbookPositions) {
       this.callWithSettings(
         dataContext,
         settings => {

@@ -6,11 +6,11 @@ import { NzDropDownModule } from "ng-zorro-antd/dropdown";
 import { By } from "@angular/platform-browser";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { UntypedFormControl } from "@angular/forms";
 import { TableConfig } from '../../models/table-config.model';
 import { BaseColumnSettings, FilterType } from "../../models/settings/table-settings.model";
 import { ResizeColumnDirective } from "../../directives/resize-column.directive";
 import { getTranslocoModule } from "../../utils/testing";
+import { FormControl } from "@angular/forms";
 
 @Component({
   template: `
@@ -134,7 +134,7 @@ describe('InfiniteScrollTableComponent', () => {
   });
 
   it('should return filter control', () => {
-    expect(component.getFilterControl('name1')).toEqual(component.filtersForm.get('name1') as UntypedFormControl);
+    expect(component.getFilterControl('name1')).toEqual(component.filtersForm.get('name1') as unknown as FormControl);
     expect(component.getFilterControl('notExistingName')).toBeFalsy();
   });
 

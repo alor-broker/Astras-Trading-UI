@@ -10,10 +10,10 @@ import {
   Subject
 } from 'rxjs';
 import { ScalperCommandProcessorService } from '../../services/scalper-command-processor.service';
-import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 import { getTranslocoModule } from '../../../../shared/utils/testing';
 import { CancelOrdersCommand } from "../../commands/cancel-orders-command";
+import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
 
 describe('ScalperOrderBookTableComponent', () => {
   let component: ScalperOrderBookTableComponent;
@@ -42,7 +42,7 @@ describe('ScalperOrderBookTableComponent', () => {
           )
         },
         {
-          provide: HotKeyCommandService,
+          provide: ScalperHotKeyCommandService,
           useValue: {
             commands$: new Subject()
           }

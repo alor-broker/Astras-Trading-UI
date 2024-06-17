@@ -1,6 +1,6 @@
 <div *transloco="let t; scope: 'instruments/settings'">
   <nz-list *ngIf="collection$ | async as collection" [nzBordered]="true">
-    <nz-list-item *ngIf="newListForm">
+    <nz-list-item>
         <form [formGroup]="newListForm" [nzLayout]="'inline'" nz-form>
           <nz-form-item>
             <nz-form-control [nzErrorTip]="t('instrumentsSettings.watchListError')">

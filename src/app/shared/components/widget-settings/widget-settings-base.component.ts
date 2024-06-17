@@ -8,15 +8,18 @@ import { WidgetSettingsService } from "../../services/widget-settings.service";
 import { ManageDashboardsService } from "../../services/manage-dashboards.service";
 import {
   Component,
+  DestroyRef,
   EventEmitter,
   Input,
+  OnInit,
   Output
 } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   template: ''
 })
-export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> {
+export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> implements OnInit {
   @Input({ required: true })
   guid!: string;
 
@@ -27,7 +30,8 @@ export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> {
 
   protected constructor(
     protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService
+    protected readonly manageDashboardsService: ManageDashboardsService,
+    protected readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -37,6 +41,16 @@ export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> {
 
   get canCopy(): boolean {
     return this.canSave;
+  }
+
+  ngOnInit(): void {
+    this.initSettingsStream();
+
+    this.settings$.pipe(
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(settings => {
+      this.setCurrentFormValues(settings);
+    });
   }
 
   updateSettings(): void {
@@ -70,4 +84,6 @@ export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> {
       shareReplay(1)
     );
   }
+
+  protected abstract setCurrentFormValues(settings: T): void;
 }

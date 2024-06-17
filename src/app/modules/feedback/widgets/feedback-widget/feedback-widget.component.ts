@@ -10,8 +10,7 @@ import {
 } from 'rxjs';
 import { ModalService } from '../../../../shared/services/modal.service';
 import {
-  UntypedFormControl,
-  UntypedFormGroup,
+  FormBuilder,
   Validators
 } from '@angular/forms';
 import { FeedbackService } from '../../services/feedback.service';
@@ -33,7 +32,11 @@ export class FeedbackWidgetComponent implements OnInit {
   readonly commentMaxLength = 5000;
   readonly maxStarsCount = 5;
   askComment = false;
-  form?: UntypedFormGroup;
+  readonly form = this.formBuilder.group({
+    rating: this.formBuilder.nonNullable.control<number | null>(null, Validators.required),
+    comment: this.formBuilder.nonNullable.control('', [Validators.maxLength(this.commentMaxLength)]),
+    code: this.formBuilder.nonNullable.control('')
+  });
 
   voteParams$!: Observable<NewFeedback>;
 
@@ -41,6 +44,7 @@ export class FeedbackWidgetComponent implements OnInit {
     private readonly modalService: ModalService,
     private readonly feedbackService: FeedbackService,
     private readonly notificationService: NzNotificationService,
+    private readonly formBuilder: FormBuilder,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -66,15 +70,13 @@ export class FeedbackWidgetComponent implements OnInit {
 
   initForm(params: NewFeedback): void {
     this.askComment = false;
-    this.form = new UntypedFormGroup({
-      rating: new UntypedFormControl(null, Validators.required),
-      comment: new UntypedFormControl(null, [Validators.maxLength(this.commentMaxLength)]),
-      code: new UntypedFormControl(params.code)
-    });
+    this.form.reset();
+
+    this.form.controls.code.setValue(params.code);
   }
 
   submitFeedback(): void {
-    if (!(this.form?.valid ?? false)) {
+    if (!this.form.valid) {
       return;
     }
 
@@ -85,7 +87,11 @@ export class FeedbackWidgetComponent implements OnInit {
       }
     }
 
-    this.feedbackService.submitFeedback(this.form!.value!).pipe(
+    this.feedbackService.submitFeedback({
+      code: this.form.value.code ?? '',
+      rating: this.form.value.rating!,
+      comment: this.form.value.comment ?? ''
+    }).pipe(
       finalize(() => {
         this.modalService.closeVoteModal();
       })
@@ -96,6 +102,8 @@ export class FeedbackWidgetComponent implements OnInit {
   }
 
   checkAskComment(): void {
-    this.askComment = this.form?.value.rating < this.maxStarsCount && (this.form?.value.comment ?? '').length === 0;
+    this.askComment = this.form.value.rating != null
+      && this.form.value.rating < this.maxStarsCount
+      && (this.form.value.comment ?? '').length === 0;
   }
 }

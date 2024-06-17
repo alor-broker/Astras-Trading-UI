@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Observable, shareReplay, take } from "rxjs";
 import { PortfolioExtended } from "../../../../shared/models/user/portfolio-extended.model";
 import { Dashboard } from "../../../../shared/models/dashboard/dashboard.model";
-import { FormControl, UntypedFormControl } from "@angular/forms";
+import { FormControl } from "@angular/forms";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { Store } from "@ngrx/store";
@@ -30,9 +30,8 @@ export class MobileNavbarComponent implements OnInit {
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
   selectedDashboard$!: Observable<Dashboard>;
-  searchControl = new FormControl('');
-
-  instrumentControl = new UntypedFormControl('');
+  portfolioSearchControl = new FormControl('');
+  instrumentSearchControl = new FormControl('');
 
   private activeInstrument$!: Observable<InstrumentKey | null>;
 
@@ -94,7 +93,7 @@ export class MobileNavbarComponent implements OnInit {
   }
 
   isFindedPortfolio(portfolio: PortfolioExtended): boolean {
-    const { value } = this.searchControl;
+    const { value } = this.portfolioSearchControl;
     return value == null || (`${portfolio.market} ${portfolio.portfolio}`).toUpperCase().includes((value).toUpperCase());
   }
 
@@ -113,7 +112,7 @@ export class MobileNavbarComponent implements OnInit {
   changeInstrument(instrument: InstrumentKey | null): void {
     if (instrument) {
       this.dashboardContextService.selectDashboardInstrument(instrument, defaultBadgeColor);
-      this.instrumentControl.setValue(null);
+      this.instrumentSearchControl.setValue(null);
     }
   }
 

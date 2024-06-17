@@ -6,14 +6,12 @@ import {
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { Observable } from "rxjs";
 import {
-  UntypedFormControl,
-  UntypedFormGroup,
+  FormBuilder,
   Validators
 } from "@angular/forms";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { OptionBoardSettings } from "../../models/option-board-settings.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
@@ -23,15 +21,20 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
   styleUrls: ['./option-board-settings.component.less']
 })
 export class OptionBoardSettingsComponent extends WidgetSettingsBaseComponent<OptionBoardSettings> implements OnInit {
-  form?: UntypedFormGroup;
+  readonly form = this.formBuilder.group({
+    instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
+    instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null),
+  });
+
   protected settings$!: Observable<OptionBoardSettings>;
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     protected readonly manageDashboardsService: ManageDashboardsService,
-    private readonly destroyRef: DestroyRef
+    protected readonly destroyRef: DestroyRef,
+    private readonly formBuilder: FormBuilder,
   ) {
-    super(settingsService, manageDashboardsService);
+    super(settingsService, manageDashboardsService, destroyRef);
   }
 
   get showCopy(): boolean {
@@ -39,34 +42,19 @@ export class OptionBoardSettingsComponent extends WidgetSettingsBaseComponent<Op
   }
 
   get canSave(): boolean {
-    return this.form?.valid ?? false;
+    return this.form.valid;
   }
 
   ngOnInit(): void {
-    this.initSettingsStream();
-
-    this.settings$.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(settings => {
-      this.form = new UntypedFormGroup({
-        instrument: new UntypedFormControl({
-          symbol: settings.symbol,
-          exchange: settings.exchange,
-          instrumentGroup: settings.instrumentGroup
-        } as InstrumentKey, Validators.required),
-        exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
-        instrumentGroup: new UntypedFormControl(settings.instrumentGroup)
-      });
-    });
+    super.ngOnInit();
   }
 
   instrumentSelected(instrument: InstrumentKey | null): void {
-    this.form!.controls.exchange.setValue(instrument?.exchange ?? null);
-    this.form!.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
   protected getUpdatedSettings(initialSettings: OptionBoardSettings): Partial<OptionBoardSettings> {
-    const formValue = this.form!.value as Partial<InstrumentKey & { instrument: InstrumentKey }>;
+    const formValue = this.form.value as Partial<InstrumentKey & { instrument: InstrumentKey }>;
 
     const newSettings: any = {
       ...formValue,
@@ -78,5 +66,16 @@ export class OptionBoardSettingsComponent extends WidgetSettingsBaseComponent<Op
     newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings, newSettings);
 
     return newSettings as Partial<OptionBoardSettings>;
+  }
+
+  protected setCurrentFormValues(settings: OptionBoardSettings): void {
+    this.form.reset();
+
+    this.form.controls.instrument.setValue({
+      symbol: settings.symbol,
+      exchange: settings.exchange,
+      instrumentGroup: settings.instrumentGroup ?? null
+    });
+    this.form.controls.instrumentGroup.setValue(settings.instrumentGroup ?? null);
   }
 }

@@ -4,14 +4,12 @@ import {
   Input,
   OnInit
 } from '@angular/core';
-import {
-  ControlValueAccessorBaseComponent
-} from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
+import { ControlValueAccessorBaseComponent } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
 import {
   AbstractControl,
+  FormBuilder,
+  FormGroup,
   NG_VALUE_ACCESSOR,
-  UntypedFormControl,
-  UntypedFormGroup,
   Validators
 } from '@angular/forms';
 import { validationSettings } from '../../utils/validation-settings';
@@ -49,23 +47,46 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
   themeTypes = ThemeType;
 
   gridTypes = GridType;
-
   readonly availableFontFamilies = Object.values(FontFamilies);
 
-  form?: UntypedFormGroup;
+  readonly form = this.formBuilder.group({
+    designSettings: this.formBuilder.nonNullable.group({
+      theme: this.formBuilder.nonNullable.control(ThemeType.dark),
+      fontFamily: this.formBuilder.nonNullable.control<FontFamilies | null>(null),
+      gridType: this.formBuilder.nonNullable.control(GridType.Fit)
+    }),
+    timezoneDisplayOption: this.formBuilder.nonNullable.control(TimezoneDisplayOption.MskTime),
+    userIdleDurationMin: this.formBuilder.nonNullable.control(
+      15,
+      [
+        Validators.required,
+        Validators.min(validationSettings.userIdleDurationMin.min),
+        Validators.max(validationSettings.userIdleDurationMin.max)
+      ]
+    ),
+    language: this.formBuilder.nonNullable.control(''),
+    badgesBind: this.formBuilder.nonNullable.control(false),
+    badgesColors: this.formBuilder.nonNullable.control<string[]>([]),
+    tableRowHeight: this.formBuilder.nonNullable.control(TableRowHeight.Medium)
+  });
 
-  constructor(private readonly destroyRef: DestroyRef) {
+  constructor(
+    private readonly formBuilder: FormBuilder,
+    private readonly destroyRef: DestroyRef
+  ) {
     super();
   }
 
   writeValue(value: GeneralSettings | null): void {
+    this.form.reset();
+
     this.setControlValueInGroup(
       this.form,
       value,
       (key, itemsValue, control) => {
         if (key === 'designSettings') {
           this.setControlValueInGroup(
-            control as UntypedFormGroup,
+            control as FormGroup,
             itemsValue as DesignSettings,
             (k, v, c) => {
               c.setValue(v);
@@ -81,56 +102,26 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
   }
 
   ngOnInit(): void {
-    this.form = new UntypedFormGroup(
-      {
-        designSettings: new UntypedFormGroup({
-          theme: new UntypedFormControl(null),
-          fontFamily: new UntypedFormControl(null),
-          gridType: new UntypedFormControl(null),
-        }),
-        timezoneDisplayOption: new UntypedFormControl(null, Validators.required),
-        userIdleDurationMin: new UntypedFormControl(
-          null,
-          [
-            Validators.required,
-            Validators.min(validationSettings.userIdleDurationMin.min),
-            Validators.max(validationSettings.userIdleDurationMin.max)
-          ]),
-        language: new UntypedFormControl(''),
-        badgesBind: new UntypedFormControl(null),
-        badgesColors: new UntypedFormControl([]),
-        tableRowHeight: new UntypedFormControl(TableRowHeight.Medium)
-      }
-    );
-
     this.form.valueChanges.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       {
         this.checkIfTouched();
         this.emitValue(
-          this.form!.valid
-            ? this.form!.value as GeneralSettings
+          this.form.valid
+            ? this.form.value as GeneralSettings
             : null
         );
       }
     });
   }
 
-  asFormGroup(ctrl: AbstractControl): UntypedFormGroup {
-    return ctrl as UntypedFormGroup;
-  }
-
   protected needMarkTouched(): boolean {
-    if (!this.form) {
-      return false;
-    }
-
     return this.form.touched;
   }
 
   private setControlValueInGroup<T>(
-    group: UntypedFormGroup | null | undefined,
+    group: FormGroup | null | undefined,
     value: T | null,
     handler: (key: string, value: any, control: AbstractControl) => void
   ): void {
