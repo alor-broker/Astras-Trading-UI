@@ -15,6 +15,7 @@ import {
 import { validationSettings } from '../../utils/validation-settings';
 import {
   DesignSettings,
+  FontFamilies,
   GridType
 } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
@@ -46,10 +47,12 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
   themeTypes = ThemeType;
 
   gridTypes = GridType;
+  readonly availableFontFamilies = Object.values(FontFamilies);
 
   readonly form = this.formBuilder.group({
     designSettings: this.formBuilder.nonNullable.group({
       theme: this.formBuilder.nonNullable.control(ThemeType.dark),
+      fontFamily: this.formBuilder.nonNullable.control<FontFamilies | null>(null),
       gridType: this.formBuilder.nonNullable.control(GridType.Fit)
     }),
     timezoneDisplayOption: this.formBuilder.nonNullable.control(TimezoneDisplayOption.MskTime),

@@ -20,6 +20,16 @@
           </nz-select>
         </nz-form-control>
       </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="fontFamily">{{t('terminalSettingsGeneralSettingsForm.fontFamilyLabel')}}</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName='fontFamily' [nzPlaceHolder]="t('terminalSettingsGeneralSettingsForm.fontFamilyPlaceholder')">
+            <ng-container *ngFor="let fontFamily of availableFontFamilies">
+              <nz-option [nzLabel]="fontFamily" [nzValue]="fontFamily"></nz-option>
+            </ng-container>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
       <nz-form-item *ngIf="!excludedSettings.includes('gridType')">
         <nz-form-label nzFor="gridType">{{t('terminalSettingsGeneralSettingsForm.gridTypeLabel')}}</nz-form-label>
         <nz-form-control>

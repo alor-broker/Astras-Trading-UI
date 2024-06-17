@@ -81,7 +81,7 @@
               <ng-container *ngFor='let column of td.tableConfig.columns'>
                 <td *ngIf='column.id === "id"'>{{ trd.id }}</td>
                 <td *ngIf='column.id === "orderno"'>{{ trd.orderno }}</td>
-                <td *ngIf='column.id === "symbol"' class='bold'>{{ trd.symbol }}</td>
+                <td *ngIf='column.id === "symbol"' class='fw-bold'>{{ trd.symbol }}</td>
                 <td *ngIf='column.id === "shortName"'>{{ trd.shortName }}</td>
                 <td *ngIf='column.id === "side"' [class]='trd.side.toString() === "sell" ? "sell" : "buy"'>{{ trd.side }}</td>
                 <td *ngIf='column.id === "qty"'>{{ trd.qty | number }}</td>

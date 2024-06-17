@@ -34,7 +34,6 @@ import {
 } from "@ngneat/transloco";
 import { APP_HOOK } from "./shared/services/app-hook/app-hook-token";
 import { AppSessionTrackHook } from "./shared/services/session/app-session-track-hook";
-import { ThemeChangesHook } from "./shared/services/app-hook/theme-changes-hook";
 import { TranslationHook } from "./shared/services/app-hook/translation-hook";
 import { LOGGER } from './shared/services/logging/logger-base';
 import { ConsoleLogger } from './shared/services/logging/console-logger';
@@ -57,6 +56,7 @@ import {
 } from 'ng2-charts';
 import { SwEventsLoggingHook } from "./shared/services/app-hook/sw-events-logging-hook";
 import { TitleHook } from "./shared/services/app-hook/title-hook.service";
+import { ApplyDesignSettingsHook } from "./shared/services/app-hook/apply-design-settings-hook.service";
 
 class CustomHandler implements TranslocoMissingHandler {
   handle(key: string, config: TranslocoConfig, params?: HashMap): string {
@@ -126,7 +126,7 @@ registerLocaleData(ru);
     },
     {
       provide: APP_HOOK,
-      useClass: ThemeChangesHook,
+      useClass: ApplyDesignSettingsHook,
       multi: true
     },
     {

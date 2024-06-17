@@ -502,7 +502,7 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
       chartAreaPosition,
       (data, tooltip) => {
         tooltip.append('div')
-          .style('font-weight', 'bold')
+          .style('font-weight', '500')
           .text(data.title);
 
         tooltip
