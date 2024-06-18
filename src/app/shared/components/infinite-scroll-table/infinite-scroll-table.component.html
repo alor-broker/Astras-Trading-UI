@@ -187,7 +187,7 @@
         <li
           *ngIf="!m.subMenu?.length; else subMenu"
           nz-menu-item
-          (click)="m.clickFn(selectedRow)"
+          (click)="m.clickFn?.(selectedRow)"
         >
           {{m.title}}
         </li>
@@ -196,13 +196,13 @@
           <li
             nz-submenu
             [nzTitle]="m.title"
-            (click)="m.clickFn(selectedRow)"
+            (click)="m.clickFn?.(selectedRow)"
           >
             <ul>
               <li
                 nz-menu-item
                 *ngFor="let subM of m.subMenu"
-                (click)="subM.clickFn(selectedRow)"
+                (click)="subM.clickFn?.(selectedRow)"
               >
                 {{subM.title}}
               </li>

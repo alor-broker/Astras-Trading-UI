@@ -15,5 +15,6 @@
     [isLoading]="(isLoading$ | async) ?? false"
     [tableContainerHeight]="(contentSize$ | async)?.height || 0"
     [tableContainerWidth]="(contentSize$ | async)?.width || 0"
+    [contextMenu]="(contextMenu$ | async) ?? []"
   ></ats-infinite-scroll-table>
 </div>

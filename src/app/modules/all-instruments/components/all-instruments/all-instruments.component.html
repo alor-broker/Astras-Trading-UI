@@ -10,7 +10,7 @@
     (scrolled)="scrolled()"
     (orderColumnChange)="changeColumnOrder($event)"
     (columnWidthChange)="saveColumnWidth($event)"
-    [contextMenu]="contextMenu"
+    [contextMenu]="(contextMenu$ | async) ?? []"
     [tableConfig]="tableConfig"
     [data]="(tableData$ | async) ?? []"
     [isLoading]="(isLoading$ | async) ?? false"

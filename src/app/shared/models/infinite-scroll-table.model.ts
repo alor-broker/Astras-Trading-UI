@@ -1,7 +1,7 @@
 export interface ContextMenu {
   title: string;
   subMenu?: ContextMenu[];
-  clickFn: (...args: any) => void;
+  clickFn?: (...args: any) => void;
 }
 
 export interface Filter {

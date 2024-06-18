@@ -100,5 +100,7 @@
   "numberDisplayFormatOptions": {
     "default": "Стандартный",
     "letterSuffix": "Сокращенный"
-  }
+  },
+
+  "addToList": "Добавить в список"
 }
