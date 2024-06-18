@@ -1,6 +1,8 @@
 ﻿{
   "langLabel": "Язык",
   "themeLabel": "Тема",
+  "fontFamilyLabel": "Шрифт",
+  "fontFamilyPlaceholder": "Выберите предпочитаемый шрифт",
   "gridTypeLabel": "Поведение сетки виджетов",
   "timezoneLabel": "Часовой пояс отображения времени",
   "userIdleDurationLabel": "Время бездействия до приостановки сеанса, мин.",

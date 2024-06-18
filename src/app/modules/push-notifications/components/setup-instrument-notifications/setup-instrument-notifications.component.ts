@@ -17,7 +17,10 @@ import { PushNotificationsService } from "../../services/push-notifications.serv
 import { PriceSparkSubscription, PushSubscriptionType } from "../../models/push-notifications.model";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
-import { FormControl, UntypedFormGroup, Validators } from "@angular/forms";
+import {
+  FormBuilder,
+  Validators
+} from "@angular/forms";
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import {
   filter,
@@ -37,7 +40,19 @@ import { QuotesService } from "../../../../shared/services/quotes.service";
 export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy {
   isNotificationsAllowed$!: Observable<boolean>;
   currentInstrumentSubscriptions$!: Observable<PriceSparkSubscription[]>;
-  newPriceChangeSubscriptionForm?: UntypedFormGroup;
+
+  readonly newPriceChangeSubscriptionForm = this.formBuilder.group({
+    price: this.formBuilder.nonNullable.control<number | null>(
+      null,
+      [
+        Validators.required,
+        Validators.min(inputNumberValidation.min),
+        Validators.max(inputNumberValidation.max)
+      ]
+    ),
+    priceCondition: this.formBuilder.nonNullable.control<LessMore | null>(null, Validators.required)
+  });
+
   readonly isLoading$ = new BehaviorSubject(false);
   readonly lessMore = LessMore;
   instrument$!: Observable<Instrument>;
@@ -49,6 +64,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
     private readonly commonParametersService: CommonParametersService,
     private readonly quoteService: QuotesService,
     private readonly instrumentService: InstrumentsService,
+    private readonly formBuilder: FormBuilder,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -79,7 +95,6 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
     this.initInstrument();
     this.initNotificationStatusCheck();
     this.initCurrentInstrumentSubscriptions();
-    this.initNewPriceChangeSubscriptionForm();
     this.initNotificationsUpdateSubscription();
 
     this.pushNotificationsService.subscriptionsUpdated$.pipe(
@@ -112,8 +127,8 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
       ),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe(({ selectedPrice, lastPrice }) => {
-        this.newPriceChangeSubscriptionForm!.controls.price.setValue(selectedPrice);
-        this.newPriceChangeSubscriptionForm!.controls.priceCondition.setValue((selectedPrice != null && selectedPrice > lastPrice)
+        this.newPriceChangeSubscriptionForm.controls.price.setValue(selectedPrice ?? 0);
+        this.newPriceChangeSubscriptionForm.controls.priceCondition.setValue((selectedPrice != null && selectedPrice > lastPrice)
           ? LessMore.More
           : LessMore.Less
         );
@@ -133,24 +148,24 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
       take(1),
       filter((x): x is InstrumentKey => !!x),
       switchMap((instrumentKey: InstrumentKey) => {
-        if (!(this.newPriceChangeSubscriptionForm?.valid ?? false)) {
+        if (!this.newPriceChangeSubscriptionForm.valid) {
           return NEVER;
         }
 
-        const subscriptionParams = this.newPriceChangeSubscriptionForm!.value as { price: string, priceCondition: LessMore };
+        const subscriptionParams = this.newPriceChangeSubscriptionForm.value;
 
         this.isLoading$.next(true);
         return this.pushNotificationsService.subscribeToPriceChange({
           instrument: instrumentKey.symbol,
           exchange: instrumentKey.exchange,
           board: instrumentKey.instrumentGroup ?? '',
-          price: subscriptionParams.price,
-          priceCondition: subscriptionParams.priceCondition
+          price: subscriptionParams.price!,
+          priceCondition: subscriptionParams.priceCondition!
         });
       }),
       take(1)
     ).subscribe(() => {
-      this.newPriceChangeSubscriptionForm?.reset();
+      this.newPriceChangeSubscriptionForm.reset();
       this.refresh$.next(null);
     });
   }
@@ -210,22 +225,6 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
     }
 
     return priceCompare;
-  }
-
-  private initNewPriceChangeSubscriptionForm(): void {
-    this.newPriceChangeSubscriptionForm = new UntypedFormGroup({
-      price: new FormControl(
-        null,
-        [
-          Validators.required,
-          Validators.min(inputNumberValidation.min),
-          Validators.max(inputNumberValidation.max)]
-      ),
-      priceCondition: new FormControl(
-        null,
-        Validators.required
-      )
-    });
   }
 
   private initNotificationsUpdateSubscription(): void {

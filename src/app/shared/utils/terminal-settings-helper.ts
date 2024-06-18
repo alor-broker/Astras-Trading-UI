@@ -1,4 +1,5 @@
 ﻿import {
+  FontFamilies,
   GridType,
   HotKeysSettings,
   InstantNotificationsSettings,
@@ -24,6 +25,7 @@ export class TerminalSettingsHelper {
       scalperOrderBookMouseActions: this.getScalperOrderBookMouseActionsScheme1(),
       designSettings: {
         theme: ThemeType.dark,
+        fontFamily: FontFamilies.NotoSans,
         gridType: GridType.Fit
       },
       instantNotificationsSettings: this.getDefaultInstantNotificationsSettings()
@@ -35,6 +37,7 @@ export class TerminalSettingsHelper {
       cancelOrdersKey: {
         key: '~',
         code: 'Backquote',
+        shiftKey: true
       },
       closePositionsKey: {
         key: 'Delete',
@@ -68,7 +71,6 @@ export class TerminalSettingsHelper {
         key: 'a',
         code: 'KeyA',
       },
-      workingVolumes: ['1', '2', '3', '4'],
       sellBestOrder: {
         key: 'w',
         code: 'KeyW',
@@ -93,6 +95,7 @@ export class TerminalSettingsHelper {
         key: '-',
         code: 'NumpadSubtract'
       },
+      workingVolumes: ['1', '2', '3', '4'],
       extraHotKeys: true
     };
   }

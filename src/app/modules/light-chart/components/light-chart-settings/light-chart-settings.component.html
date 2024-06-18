@@ -8,7 +8,7 @@
   <ng-container *transloco="let t; scope: 'light-chart/settings'">
     <ng-container *transloco="let tChart; scope: 'light-chart'">
       <ng-container *ngIf="deviceInfo$ | async as deviceInfo">
-        <form *ngIf="form" nz-form [nzLayout]="'horizontal'" [formGroup]="form">
+        <form nz-form [nzLayout]="'horizontal'" [formGroup]="form">
           <nz-form-item *ngIf="!deviceInfo.isMobile">
             <nz-form-control [nzErrorTip]="t('lightChartSettings.tickerError')">
               <nz-form-label nzRequired nzFor="instrument">{{t('lightChartSettings.tickerLabel')}}</nz-form-label>
@@ -18,7 +18,7 @@
           <nz-form-item *ngIf="!deviceInfo.isMobile">
             <nz-form-control>
               <nz-form-label nzRequired nzFor="exchange">{{t('lightChartSettings.exchangeLabel')}}</nz-form-label>
-              <input formControlName='exchange' nz-input>
+              <input nz-input type="text" [value]="form.value.instrument?.exchange" disabled/>
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
@@ -44,7 +44,7 @@
               <nz-form-label nzRequired nzFor="timeFrame">{{t('lightChartSettings.timeframeLabel')}}</nz-form-label>
               <nz-select formControlName='timeFrame'>
                 <nz-option
-                  *ngFor='let tf of this.form.controls?.availableTimeFrames?.value ?? []'
+                  *ngFor='let tf of this.form.controls.availableTimeFrames.value ?? []'
                   [nzValue]="tf"
                   [nzLabel]="tChart('lightChart.timeframes.' + tf)">
                 </nz-option>
@@ -67,7 +67,7 @@
                 <nz-form-control [nzErrorTip]="t('lightChartSettings.instrumentGroupError')">
                   <nz-form-label nzFor="instrumentGroup">{{t('lightChartSettings.instrumentGroupLabel')}}</nz-form-label>
                   <ats-instrument-board-select
-                    [instrument]="form.value?.instrument ?? null"
+                    [instrument]="form.value.instrument ?? null"
                     [placeholder]="t('lightChartSettings.instrumentGroupLabel')"
                     formControlName="instrumentGroup">
                   </ats-instrument-board-select>

@@ -11,8 +11,7 @@ import {
   Subject
 } from 'rxjs';
 import {
-  UntypedFormControl,
-  UntypedFormGroup,
+  FormBuilder,
   Validators
 } from '@angular/forms';
 import {
@@ -35,14 +34,26 @@ export class WatchlistCollectionEditComponent implements OnInit {
   readonly exportDialogParams$ = new Subject<ExportDialogParams | null>();
   readonly importDialogParams$ = new Subject<ImportDialogParams | null>();
 
-  newListForm!: UntypedFormGroup;
+  readonly newListForm = this.formBuilder.group({
+    title: this.formBuilder.nonNullable.control<string>(
+      '',
+      [
+        Validators.required,
+        Validators.maxLength(100)
+      ]
+    )
+  });
+
   collection$?: Observable<Watchlist[]>;
   presetCollection$?: Observable<PresetWatchlist[]>;
   selectedPresetWatchlist?: PresetWatchlist | null = null;
 
   getTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
 
-  constructor(private readonly watchlistCollectionService: WatchlistCollectionService) {
+  constructor(
+    private readonly watchlistCollectionService: WatchlistCollectionService,
+    private readonly formBuilder: FormBuilder
+  ) {
   }
 
   ngOnInit(): void {
@@ -58,8 +69,6 @@ export class WatchlistCollectionEditComponent implements OnInit {
         map(x => x.filter(list => (list.papers as PresetWatchlistItem[] | undefined ?? []).length > 0)),
         shareReplay()
       );
-
-    this.buildNewListForm();
   }
 
   changeListTitle(newTitle: string, targetList: Watchlist): void {
@@ -73,7 +82,7 @@ export class WatchlistCollectionEditComponent implements OnInit {
       return;
     }
 
-    this.watchlistCollectionService.createNewList(this.newListForm.value.title, []);
+    this.watchlistCollectionService.createNewList(this.newListForm.value.title!, []);
     this.newListForm.reset();
   }
 
@@ -106,11 +115,5 @@ export class WatchlistCollectionEditComponent implements OnInit {
 
   canImport(list: Watchlist): boolean {
     return list.type !== WatchlistType.HistoryList;
-  }
-
-  private buildNewListForm(): void {
-    this.newListForm = new UntypedFormGroup({
-      title: new UntypedFormControl(null, [Validators.required, Validators.maxLength(100)])
-    });
   }
 }

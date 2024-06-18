@@ -24,7 +24,7 @@ import { TerminalSettingsService } from "./terminal-settings.service";
 import { HttpClient } from "@angular/common/http";
 import { mapWith } from "../utils/observable-helper";
 import { LocalStorageService } from "./local-storage.service";
-import { LocalStorageCommonConstants } from "../constants/local-storage.constants";
+import { DesignSettingsConstants } from "../constants/local-storage.constants";
 
 @Injectable({
   providedIn: 'root',
@@ -44,11 +44,11 @@ export class ThemeService {
   subscribeToThemeChanges(): Subscription {
     return this.getThemeSettings().pipe(
       map(s => s.theme),
-      startWith(this.localStorageService.getStringItem(LocalStorageCommonConstants.LastThemeStorageKey) as ThemeType ?? ThemeType.dark)
+      startWith(this.localStorageService.getStringItem(DesignSettingsConstants.LastThemeStorageKey) as ThemeType ?? ThemeType.dark)
     )
       .subscribe(theme => {
         this.setTheme(theme);
-        this.localStorageService.setStringItem(LocalStorageCommonConstants.LastThemeStorageKey, theme);
+        this.localStorageService.setStringItem(DesignSettingsConstants.LastThemeStorageKey, theme);
       });
   }
 

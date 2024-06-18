@@ -1,5 +1,5 @@
 <div *ngIf="settings$ | async as settings">
-  <ng-container *ngIf="form">
+  <ng-container>
     <ng-container *transloco="let t; scope: 'orders-basket/orders-basket'">
       <div *ngIf="settings.showPresetsPanel" class="mb-5">
         <ats-presets
@@ -14,13 +14,13 @@
       </div>
       <form [formGroup]="form" nz-form nzLayout="vertical">
         <div class="basket-items-container" nzResizeObserver (nzResizeObserve)="itemsContainerWidthChanged($event)">
-          <div *ngFor="let itemControl of asFormArray(form.controls.items).controls; index as i" class="basket-item">
+          <div *ngFor="let itemControl of form.controls.items.controls; index as i" class="basket-item">
             <div class="item-control">
               <ats-orders-basket-item
-                (delete)="asFormArray(form.controls.items).removeAt(i)"
-                [enableDelete]="asFormArray(form.controls.items).controls.length > 1"
+                (delete)="form.controls.items.removeAt(i)"
+                [enableDelete]="form.controls.items.controls.length > 1"
                 [exchange]="settings.exchange"
-                [formControl]="asFormControl(itemControl)"
+                [formControl]="itemControl"
                 [itemIndex]="i"
                 [width]="itemsContainerWidth$ | async"
               ></ats-orders-basket-item>
@@ -30,7 +30,7 @@
           {{t('ordersBasketOrdersBasket.moreThan100Percents')}} ({{form.controls.items.errors?.max100Percent.actual}})
         </span>
           <div>
-            <button (click)="addItemDraft(asFormArray(form.controls.items))"
+            <button (click)="addItemDraft(form.controls.items)"
                     id="add-item-btn"
                     nz-button
                     nzBlock

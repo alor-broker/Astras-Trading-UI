@@ -1,5 +1,5 @@
 <ng-container *transloco="let t; scope: 'terminal-settings/general-settings-form'">
-  <form *ngIf="form" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
+  <form [formGroup]="form" [nzLayout]="'vertical'" nz-form>
     <nz-form-item>
       <nz-form-label nzFor="language" nzRequired>{{t('terminalSettingsGeneralSettingsForm.langLabel')}}</nz-form-label>
       <nz-form-control>
@@ -10,13 +10,23 @@
         </nz-select>
       </nz-form-control>
     </nz-form-item>
-    <ng-container [formGroup]="asFormGroup(form.controls.designSettings)">
+    <ng-container [formGroup]="form.controls.designSettings">
       <nz-form-item>
         <nz-form-label nzFor="theme" nzRequired>{{t('terminalSettingsGeneralSettingsForm.themeLabel')}}</nz-form-label>
         <nz-form-control>
           <nz-select formControlName='theme'>
             <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.darkThemeOption')" [nzValue]="themeTypes.dark"></nz-option>
             <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.lightThemeOption')" [nzValue]="themeTypes.default"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="fontFamily">{{t('terminalSettingsGeneralSettingsForm.fontFamilyLabel')}}</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName='fontFamily' [nzPlaceHolder]="t('terminalSettingsGeneralSettingsForm.fontFamilyPlaceholder')">
+            <ng-container *ngFor="let fontFamily of availableFontFamilies">
+              <nz-option [nzLabel]="fontFamily" [nzValue]="fontFamily"></nz-option>
+            </ng-container>
           </nz-select>
         </nz-form-control>
       </nz-form-item>

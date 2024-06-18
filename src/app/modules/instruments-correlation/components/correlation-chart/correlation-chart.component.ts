@@ -310,7 +310,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
           containerSize,
           (data, tooltip) => {
             tooltip.append('div')
-              .style('font-weight', 'bold')
+              .style('font-weight', '500')
               .text(`${this.getSymbol(data.rowInstrument)} - ${this.getSymbol(data.colInstrument)}`);
 
             const correlationPercent = MathHelper.round(data.cellValue.correlation * 100, 1);
@@ -320,7 +320,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
               .text(`${translator(['correlationLabel'])}: `);
 
             secondLine.append('span')
-              .style('font-weight', 'bold')
+              .style('font-weight', '500')
               .style('color',
                 () => {
                   if (correlationPercent > 0) {

@@ -1,12 +1,21 @@
-import { Component, DestroyRef, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from "@angular/forms";
+import {
+  Component,
+  DestroyRef,
+  OnInit
+} from '@angular/core';
+import {
+  FormBuilder,
+  Validators
+} from "@angular/forms";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   AllTradesSettings,
   allTradesWidgetColumns
 } from '../../models/all-trades-settings.model';
-import { BaseColumnId, TableDisplaySettings } from "../../../../shared/models/settings/table-settings.model";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {
+  BaseColumnId,
+  TableDisplaySettings
+} from "../../../../shared/models/settings/table-settings.model";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { Observable } from "rxjs";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
@@ -18,16 +27,22 @@ import { TableSettingHelper } from "../../../../shared/utils/table-setting.helpe
   styleUrls: ['./all-trades-settings.component.less']
 })
 export class AllTradesSettingsComponent extends WidgetSettingsBaseComponent<AllTradesSettings> implements OnInit {
-  form?: UntypedFormGroup;
+  readonly form = this.formBuilder.group({
+    allTradesColumns: this.formBuilder.nonNullable.control<string[]>([], Validators.required),
+    highlightRowsBySide: this.formBuilder.nonNullable.control(false)
+  });
+
   allTradesColumns: BaseColumnId[] = allTradesWidgetColumns;
 
   protected settings$!: Observable<AllTradesSettings>;
+
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     protected readonly manageDashboardsService: ManageDashboardsService,
-    private readonly destroyRef: DestroyRef
+    protected readonly destroyRef: DestroyRef,
+    private readonly formBuilder: FormBuilder,
   ) {
-    super(settingsService, manageDashboardsService);
+    super(settingsService, manageDashboardsService, destroyRef);
   }
 
   get showCopy(): boolean {
@@ -35,34 +50,34 @@ export class AllTradesSettingsComponent extends WidgetSettingsBaseComponent<AllT
   }
 
   get canSave(): boolean {
-    return this.form?.valid ?? false;
+    return this.form.valid;
   }
 
   ngOnInit(): void {
-    this.initSettingsStream();
-
-    this.settings$.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(settings => {
-      this.form = new UntypedFormGroup({
-        allTradesColumns: new UntypedFormControl(
-          TableSettingHelper.toTableDisplaySettings(settings.allTradesTable, settings.allTradesColumns ?? [])?.columns.map(c => c.columnId),
-          Validators.required
-        ),
-        highlightRowsBySide: new UntypedFormControl(settings.highlightRowsBySide ?? false, Validators.required)
-      });
-    });
+    super.ngOnInit();
   }
 
   protected getUpdatedSettings(initialSettings: AllTradesSettings): Partial<AllTradesSettings> {
     const newSettings = {
-      ...this.form!.value,
+      ...this.form.value,
     } as Partial<AllTradesSettings>;
 
     newSettings.allTradesTable = this.updateTableSettings(newSettings.allTradesColumns ?? [], initialSettings.allTradesTable);
     delete newSettings.allTradesColumns;
 
     return newSettings;
+  }
+
+  protected setCurrentFormValues(settings: AllTradesSettings): void {
+    this.form.reset();
+
+    this.form.controls.allTradesColumns.setValue(TableSettingHelper.toTableDisplaySettings(
+      settings.allTradesTable,
+      settings.allTradesColumns ?? []
+    )?.columns.map(c => c.columnId) ?? []
+    );
+
+    this.form.controls.highlightRowsBySide.setValue(settings.highlightRowsBySide ?? false);
   }
 
   private updateTableSettings(columnIds: string[], currentSettings?: TableDisplaySettings): TableDisplaySettings {

@@ -12,7 +12,6 @@ import { Observable } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { FormBuilder } from "@angular/forms";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-orders-basket-settings',
@@ -22,21 +21,23 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 export class OrdersBasketSettingsComponent extends WidgetSettingsBaseComponent<OrdersBasketSettings> implements OnInit {
   @Input({ required: true })
   guid!: string;
+
   @Output()
   settingsChange = new EventEmitter<void>();
 
   readonly form = this.formBuilder.group({
     showPresetsPanel: this.formBuilder.nonNullable.control<boolean | null>(false)
   });
+
   protected settings$!: Observable<OrdersBasketSettings>;
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     protected readonly manageDashboardsService: ManageDashboardsService,
+    protected readonly destroyRef: DestroyRef,
     private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, manageDashboardsService);
+    super(settingsService, manageDashboardsService, destroyRef);
   }
 
   get canSave(): boolean {
@@ -48,15 +49,13 @@ export class OrdersBasketSettingsComponent extends WidgetSettingsBaseComponent<O
   }
 
   ngOnInit(): void {
-    this.initSettingsStream();
+    super.ngOnInit();
+  }
 
-    this.settings$.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(s => {
-      this.form.reset();
+  protected setCurrentFormValues(settings: OrdersBasketSettings): void {
+    this.form.reset();
 
-      this.form.controls.showPresetsPanel.setValue(s.showPresetsPanel ?? false);
-    });
+    this.form.controls.showPresetsPanel.setValue(settings.showPresetsPanel ?? false);
   }
 
   protected getUpdatedSettings(): Partial<OrdersBasketSettings> {

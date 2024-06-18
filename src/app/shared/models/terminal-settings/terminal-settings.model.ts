@@ -11,25 +11,41 @@ export interface HotKeyMeta {
   altKey?: boolean;
 }
 
-export interface HotKeysSettings {
-  cancelOrdersAll?: HotKeyMeta | string;
-  cancelOrdersAndClosePositionsByMarketAll?: HotKeyMeta | string;
-  cancelOrdersKey?: HotKeyMeta | string;
-  closePositionsKey?: HotKeyMeta | string;
-  centerOrderbookKey?: HotKeyMeta | string;
-  cancelOrderbookOrders?: HotKeyMeta | string;
-  cancelStopOrdersCurrent?: HotKeyMeta;
-  closeOrderbookPositions?: HotKeyMeta | string;
-  reverseOrderbookPositions?: HotKeyMeta | string;
-  buyMarket?: HotKeyMeta | string;
-  sellMarket?: HotKeyMeta | string;
+// only deprecated format has type 'string'
+// all new hotkeys must have type 'HotKeyMeta'
+export type DeprecatedHotKey = HotKeyMeta | string;
+
+export enum AllOrderBooksHotKeysTypes {
+  cancelOrdersAll =  'cancelOrdersAll',
+  cancelOrdersAndClosePositionsByMarketAll = 'cancelOrdersAndClosePositionsByMarketAll',
+  cancelOrdersKey = 'cancelOrdersKey',
+  closePositionsKey = 'closePositionsKey',
+  centerOrderbookKey = 'centerOrderbookKey'
+}
+
+export enum ActiveOrderBookHotKeysTypes {
+  cancelOrderbookOrders = 'cancelOrderbookOrders',
+  cancelStopOrdersCurrent = 'cancelStopOrdersCurrent',
+  closeOrderbookPositions = 'closeOrderbookPositions',
+  reverseOrderbookPositions = 'reverseOrderbookPositions',
+  buyMarket = 'buyMarket',
+  sellMarket = 'sellMarket',
+  sellBestOrder = 'sellBestOrder',
+  buyBestOrder = 'buyBestOrder',
+  buyBestAsk = 'buyBestAsk',
+  sellBestBid = 'sellBestBid',
+  increaseScale = 'increaseScale',
+  decreaseScale = 'decreaseScale'
+};
+
+export type AllOrderBookHotKeyTypes = AllOrderBooksHotKeysTypes | ActiveOrderBookHotKeysTypes;
+
+export type HotKeysMap = {
+  [K in AllOrderBookHotKeyTypes]?: DeprecatedHotKey;
+};
+
+export interface HotKeysSettings extends HotKeysMap {
   workingVolumes?: string[];
-  sellBestOrder?: HotKeyMeta | string;
-  buyBestOrder?: HotKeyMeta | string;
-  buyBestAsk?: HotKeyMeta | string;
-  sellBestBid?: HotKeyMeta | string;
-  increaseScale?: HotKeyMeta;
-  decreaseScale?: HotKeyMeta;
   extraHotKeys?: boolean;
 }
 
@@ -68,9 +84,19 @@ export enum GridType {
   HorizontalFixed = 'horizontalFixed'
 }
 
+export enum FontFamilies {
+  NotoSans = 'Noto Sans',
+  Roboto = 'Roboto',
+  OpenSans = 'Open Sans',
+  SourceSans3 = 'Source Sans 3',
+  NotoSerif = 'Noto Serif',
+  Caveat = 'Caveat'
+}
+
 export interface DesignSettings {
   theme?: ThemeType;
   gridType?: GridType;
+  fontFamily?: FontFamilies;
 }
 
 export interface PortfolioCurrencySettings {

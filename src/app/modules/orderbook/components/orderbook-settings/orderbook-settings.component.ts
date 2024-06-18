@@ -1,14 +1,29 @@
-import {Component, DestroyRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import { FormControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  Component,
+  DestroyRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
+import {
+  FormBuilder,
+  Validators
+} from '@angular/forms';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { Observable, take } from "rxjs";
+import {
+  Observable,
+  take
+} from "rxjs";
 import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import { ColumnsOrder, OrderbookSettings } from '../../models/orderbook-settings.model';
+import {
+  ColumnsOrder,
+  OrderbookSettings
+} from '../../models/orderbook-settings.model';
 import { DeviceService } from "../../../../shared/services/device.service";
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { NzMarks } from "ng-zorro-antd/slider";
@@ -29,93 +44,65 @@ export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<Orde
 
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
 
-  @Input({required: true})
+  @Input({ required: true })
   guid!: string;
   @Output()
   settingsChange = new EventEmitter<void>();
-  form?: UntypedFormGroup;
+  readonly form = this.formBuilder.group({
+    instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
+    instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null),
+    depth: this.formBuilder.nonNullable.control(
+      17,
+      [
+        Validators.required,
+        Validators.min(this.validationOptions.depth.min),
+        Validators.max(this.validationOptions.depth.max)
+      ]
+    ),
+    showChart: this.formBuilder.nonNullable.control(true),
+    showTable: this.formBuilder.nonNullable.control(true),
+    showYieldForBonds: this.formBuilder.nonNullable.control(false),
+    useOrderWidget: this.formBuilder.nonNullable.control(false),
+    showVolume: this.formBuilder.nonNullable.control(false),
+    columnsOrder: this.formBuilder.nonNullable.control(ColumnsOrder.VolumesAtTheEdges),
+    volumeDisplayFormat: this.formBuilder.nonNullable.control(NumberDisplayFormat.Default),
+    showPriceWithZeroPadding: this.formBuilder.nonNullable.control(false),
+  });
+
   exchanges: string[] = exchangesList;
   deviceInfo$!: Observable<any>;
 
   protected settings$!: Observable<OrderbookSettings>;
+
+  constructor(
+    protected readonly settingsService: WidgetSettingsService,
+    protected readonly manageDashboardsService: ManageDashboardsService,
+    protected readonly destroyRef: DestroyRef,
+    private readonly deviceService: DeviceService,
+    private readonly formBuilder: FormBuilder,
+  ) {
+    super(settingsService, manageDashboardsService, destroyRef);
+  }
 
   get showCopy(): boolean {
     return true;
   }
 
   get canSave(): boolean {
-    return this.form?.valid ?? false;
-  }
-
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    private readonly deviceService: DeviceService,
-    private readonly destroyRef: DestroyRef
-  ) {
-    super(settingsService, manageDashboardsService);
+    return this.form.valid;
   }
 
   ngOnInit(): void {
-    this.initSettingsStream();
+    super.ngOnInit();
 
     this.deviceInfo$ = this.deviceService.deviceInfo$
       .pipe(
         take(1)
       );
-
-    this.settings$.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(settings => {
-      this.form = new UntypedFormGroup({
-        instrument: new UntypedFormControl({
-          symbol: settings.symbol,
-          exchange: settings.exchange,
-          instrumentGroup: settings.instrumentGroup
-        } as InstrumentKey, Validators.required),
-        exchange: new UntypedFormControl({ value: settings.exchange, disabled: true }, Validators.required),
-        depth: new FormControl(
-          settings.depth ?? 17,
-          [
-            Validators.required,
-            Validators.min(this.validationOptions.depth.min),
-            Validators.max(this.validationOptions.depth.max)
-          ]),
-        instrumentGroup: new FormControl(settings.instrumentGroup ?? ''),
-        showChart: new FormControl(settings.showChart),
-        showTable: new FormControl(settings.showTable),
-        showYieldForBonds: new FormControl(settings.showYieldForBonds),
-        useOrderWidget: new FormControl(settings.useOrderWidget ?? false),
-        showVolume: new FormControl(settings.showVolume ?? false),
-        columnsOrder: new FormControl(settings.columnsOrder ?? ColumnsOrder.volumesAtTheEdges),
-        volumeDisplayFormat: new UntypedFormControl(settings.volumeDisplayFormat ?? NumberDisplayFormat.Default),
-        showPriceWithZeroPadding: new UntypedFormControl(settings.showPriceWithZeroPadding ?? false),
-      });
-    });
-  }
-
-  submitForm(): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(initialSettings => {
-      const formValue = this.form!.getRawValue() as Partial<OrderbookSettings & { instrument: InstrumentKey}>;
-
-      const newSettings = {
-        ...formValue,
-        depth: Number(this.form!.value.depth!),
-        symbol: formValue.instrument?.symbol,
-        exchange: formValue.instrument?.exchange
-      } as OrderbookSettings;
-
-      newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings, newSettings);
-      this.settingsService.updateSettings<OrderbookSettings>(this.guid, newSettings);
-      this.settingsChange.emit();
-    });
   }
 
   instrumentSelected(instrument: InstrumentKey | null): void {
-    this.form!.controls.exchange.setValue(instrument?.exchange ?? null);
-    this.form!.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
+    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
   getSliderMarks(minValue: number, maxValue: number): NzMarks {
@@ -126,11 +113,11 @@ export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<Orde
   }
 
   protected getUpdatedSettings(initialSettings: OrderbookSettings): Partial<OrderbookSettings> {
-    const formValue = this.form!.getRawValue() as Partial<OrderbookSettings & { instrument: InstrumentKey}>;
+    const formValue = this.form.getRawValue() as Partial<OrderbookSettings & { instrument: InstrumentKey }>;
 
     const newSettings = {
       ...formValue,
-      depth: Number(this.form!.value.depth!),
+      depth: Number(this.form.value.depth!),
       symbol: formValue.instrument?.symbol,
       exchange: formValue.instrument?.exchange
     } as OrderbookSettings;
@@ -138,5 +125,26 @@ export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<Orde
     newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings, newSettings);
 
     return newSettings;
+  }
+
+  protected setCurrentFormValues(settings: OrderbookSettings): void {
+    this.form.reset();
+
+    this.form.controls.instrument.setValue({
+      symbol: settings.symbol,
+      exchange: settings.exchange,
+      instrumentGroup: settings.instrumentGroup ?? null
+    });
+    this.form.controls.instrumentGroup.setValue(settings.instrumentGroup ?? null);
+
+    this.form.controls.depth.setValue(settings.depth ?? 17);
+    this.form.controls.showChart.setValue(settings.showChart);
+    this.form.controls.showTable.setValue(settings.showTable);
+    this.form.controls.showYieldForBonds.setValue(settings.showYieldForBonds);
+    this.form.controls.useOrderWidget.setValue(settings.useOrderWidget ?? false);
+    this.form.controls.showVolume.setValue(settings.showVolume ?? false);
+    this.form.controls.columnsOrder.setValue(settings.columnsOrder ?? ColumnsOrder.VolumesAtTheEdges);
+    this.form.controls.volumeDisplayFormat.setValue(settings.volumeDisplayFormat ?? NumberDisplayFormat.Default);
+    this.form.controls.showPriceWithZeroPadding.setValue(settings.showPriceWithZeroPadding ?? false);
   }
 }

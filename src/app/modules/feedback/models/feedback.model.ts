@@ -6,7 +6,7 @@
 export interface SendFeedBackRequest {
   rating: number;
   comment: string;
-  feedbackCode: string;
+  code: string;
 }
 
 export interface SendFeedBackResponse {

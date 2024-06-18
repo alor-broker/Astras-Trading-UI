@@ -34,7 +34,7 @@
     <tbody>
         <tr *ngFor="let spread of nzTable.data!; let i = index; trackBy: trackByFn">
           <ng-container *ngFor='let column of listOfColumns'>
-            <td *ngIf='column.id === "symbols"' class='bold'>
+            <td *ngIf='column.id === "symbols"' class='fw-bold'>
               <div class="symbol-name" [class.mr-8]="!!spread.firstLeg.positionsCount">
                 <span
                   *ngIf="!!spread.firstLeg.positionsCount"

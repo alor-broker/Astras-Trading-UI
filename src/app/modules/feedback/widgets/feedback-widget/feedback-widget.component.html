@@ -8,7 +8,7 @@
   >
     <ng-container *nzModalContent>
       <div>
-        <form *ngIf="form" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
+        <form [formGroup]="form" [nzLayout]="'vertical'" nz-form>
           <nz-form-item>
             <nz-form-label nzFor="rating">{{voteParams.description}}</nz-form-label>
             <nz-form-control>
@@ -29,7 +29,7 @@
         <div class="submit-button-container">
           <button
             (click)="submitFeedback()"
-            [disabled]="!form?.valid"
+            [disabled]="!form.valid"
             class="ant-btn ant-btn-primary">
             {{t('feedback.sendBtnText')}}
           </button>

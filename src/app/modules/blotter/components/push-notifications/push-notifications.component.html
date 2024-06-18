@@ -93,7 +93,7 @@
                   <td *ngIf='column.id === "id"'>{{ notification.id }}</td>
                   <td
                     *ngIf='column.id === "subscriptionType"'>{{t('blotterNotifications.columns.subscriptionType.listOfFilter.' + notification.subscriptionType, {fallback: notification.subscriptionType}) }}</td>
-                  <td *ngIf='column.id === "instrument"' class='bold'>
+                  <td *ngIf='column.id === "instrument"' class='fw-bold'>
                     <span class="symbol-name">{{ notification.instrument }}</span>
                     <ats-instrument-badge-display [instrumentKey]="{symbol: notification.instrument, exchange: notification.exchange}"></ats-instrument-badge-display>
                   </td>
