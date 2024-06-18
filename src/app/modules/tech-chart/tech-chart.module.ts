@@ -12,7 +12,6 @@ import { NzSelectModule } from "ng-zorro-antd/select";
 import { SharedModule } from '../../shared/shared.module';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 import { InstrumentSearchModalComponent } from "./widgets/instrument-search-modal/instrument-search-modal.component";
-import { InstrumentSearchService } from "./services/instrument-search.service";
 
 
 @NgModule({
@@ -32,9 +31,6 @@ import { InstrumentSearchService } from "./services/instrument-search.service";
     NzSelectModule,
     SharedModule,
     NzResizeObserverModule
-  ],
-  providers: [
-    InstrumentSearchService
   ],
   exports: [
     TechChartWidgetComponent

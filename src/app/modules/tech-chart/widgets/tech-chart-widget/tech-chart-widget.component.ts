@@ -18,11 +18,15 @@ import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 import { map } from "rxjs/operators";
 import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { InstrumentSearchService } from "../../services/instrument-search.service";
 
 @Component({
   selector: 'ats-tech-chart-widget',
   templateUrl: './tech-chart-widget.component.html',
-  styleUrls: ['./tech-chart-widget.component.less']
+  styleUrls: ['./tech-chart-widget.component.less'],
+  providers: [
+    InstrumentSearchService
+  ],
 })
 export class TechChartWidgetComponent implements OnInit {
   shouldShowSettings = false;

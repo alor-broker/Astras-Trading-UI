@@ -498,7 +498,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       );
 
-      if (!deviceInfo.isMobile) {
+      if (!deviceInfo.isMobile && (settings.panels?.headerSymbolSearch ?? true)) {
         chartWidget.headerReady().then(() => this.createSearchButton(theme.theme));
       }
 
@@ -525,7 +525,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       useTradingViewStyle: false
     });
 
-    searchBtn.innerText = 'Search';
     searchBtn.style.maxWidth = '100px';
     searchBtn.style.padding = '8px 8px 9px 8px';
     searchBtn.style.borderRadius = '4px';
@@ -571,7 +570,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(instrument => {
         const instrumentStr = SyntheticInstrumentsHelper.isSyntheticInstrument(instrument.symbol)
           ? instrument.symbol
-          : this.toTvSymbol(instrument);
+          : instrument.shortName;
 
         searchBtn.innerText = instrumentStr;
         searchBtn.setAttribute('data-tooltip', instrumentStr);
@@ -1273,7 +1272,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     const enabled = new Set<ChartingLibraryFeatureset>([
       'side_toolbar_in_fullscreen_mode',
       'chart_crosshair_menu' as ChartingLibraryFeatureset,
-      'show_spread_operators',
       'seconds_resolution',
       'chart_template_storage'
     ]);
@@ -1285,7 +1283,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         'save_shortcut',
         'header_quick_search',
         'header_saveload',
-        'header_symbol_search'
+        'header_symbol_search',
+        'symbol_search_hot_key'
       ]
     );
 

@@ -1,37 +1,58 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { InstrumentSearchModalComponent } from './instrument-search-modal.component';
 import { InstrumentSearchService } from "../../services/instrument-search.service";
-import { of } from "rxjs";
+import { BehaviorSubject, of } from "rxjs";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import { getTranslocoModule, ngZorroMockComponents } from "../../../../shared/utils/testing";
+import {
+  commonTestProviders,
+  getTranslocoModule,
+  mockComponent,
+  sharedModuleImportForTests
+} from "../../../../shared/utils/testing";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
-describe('InstrumentSearchModalComponent', () => {
+fdescribe('InstrumentSearchModalComponent', () => {
   let component: InstrumentSearchModalComponent;
   let fixture: ComponentFixture<InstrumentSearchModalComponent>;
 
+  const minusSign = '−';
+  const modalOpened$ = new BehaviorSubject(false);
+  const modalParams$ = new BehaviorSubject('123');
+
+  let instrumentsServiceSpy: any;
+  let instrumentSearchServiceSpy: any;
+
   beforeEach(async () => {
+    instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstruments']);
+    instrumentSearchServiceSpy = jasmine.createSpyObj(
+      'InstrumentSearchService',
+      ['closeModal'],
+      { isModalOpened$: modalOpened$, modalParams$: modalParams$ }
+    );
+
     await TestBed.configureTestingModule({
       declarations: [
         InstrumentSearchModalComponent,
-        ...ngZorroMockComponents
+        mockComponent({
+          template: ''
+        })
       ],
-      imports: [ getTranslocoModule() ],
+      imports: [
+        BrowserAnimationsModule,
+        getTranslocoModule(),
+        ...sharedModuleImportForTests
+      ],
       providers: [
         {
           provide: InstrumentSearchService,
-          useValue: {
-            isModalOpened$: of(false),
-            modalParams$: of(null),
-            closeModal: jasmine.createSpy('closeModal').and.callThrough()
-          }
+          useValue: instrumentSearchServiceSpy
         },
         {
           provide: InstrumentsService,
-          useValue: {
-            getInstruments: jasmine.createSpy('getInstruments').and.returnValue(of([]))
-          }
-        }
+          useValue: instrumentsServiceSpy
+        },
+        ...commonTestProviders
       ]
     })
     .compileComponents();
@@ -42,6 +63,109 @@ describe('InstrumentSearchModalComponent', () => {
   });
 
   it('should create', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
+
+  it('should correctly validate search field', () => {
+    const validValues = [
+      'SBER',
+      'MOEX:SBER',
+      'MOEX:SBER:TQBR',
+      '[MOEX:SBER:TQBR]',
+      `[MOEX:SBER:TQBR]${minusSign}[MOEX:SBERP:TQBR]`
+    ];
+
+    const invalidValues = [
+      null,
+      '',
+      `[MOEX:SBER]${minusSign}`,
+      '[MOEX:SBER][MOEX:SBERP]'
+    ];
+
+    validValues.forEach(v => {
+      component.searchControl.setValue(v);
+      expect(component.searchControl.valid).toBeTrue();
+    });
+
+    invalidValues.forEach(v => {
+      component.searchControl.setValue(v);
+      expect(component.searchControl.invalid).toBeTrue();
+    });
+  });
+
+  it('should correctly pass filters for search', fakeAsync(() => {
+    component.searchInput = { nativeElement: document.createElement('input') };
+    component.searchInput.nativeElement.addEventListener('keyup', () => component.filterChanged());
+
+    instrumentsServiceSpy.getInstruments.and.returnValue(of([]));
+
+    const baseFilter = { limit: 20 };
+
+    const testCases = [
+      {
+        inputValue: 'SBER',
+        caretPos: 4,
+        expected: { query: 'SBER' }
+      },
+      {
+        inputValue: '[MOEX:SBER]',
+        caretPos: 10,
+        expected: { query: 'SBER', exchange: 'MOEX', instrumentGroup: '' }
+      },
+      {
+        inputValue: '[MOEX:SBER:TQBR]',
+        caretPos: 15,
+        expected: { query: 'SBER', exchange: 'MOEX', instrumentGroup: 'TQBR' }
+      },
+      {
+        inputValue: `[MOEX:SBER:TQBR]${minusSign}`,
+        caretPos: 17,
+        expected: { query: '' }
+      },
+      {
+        inputValue: `[MOEX:SBER:TQBR]${minusSign}astr`,
+        caretPos: 21,
+        expected: { query: 'astr' }
+      },
+      {
+        inputValue: `[MOEX:SBER:TQBR]${minusSign}[MOEX:ASTR]`,
+        caretPos: 9,
+        expected: { query: 'SBE', exchange: 'MOEX', instrumentGroup: '' }
+      },
+      {
+        inputValue: `si-6.24-9.`,
+        caretPos: 10,
+        expected: { query: 'si-6.24-9.' }
+      },
+      {
+        inputValue: `[MOEX:si-9.24]${minusSign}si-6.24`,
+        caretPos: 22,
+        expected: { query: 'si-6.24' }
+      },
+      {
+        inputValue: `[MOEX:si-9.24]${minusSign}[MOEX:si-6.24]`,
+        caretPos: 28,
+        expected: { query: 'si-6.24', exchange: 'MOEX', instrumentGroup: '' }
+      }
+    ];
+
+    const event = new KeyboardEvent('keyup');
+
+    const instrumentsSub = component.filteredInstruments$.subscribe();
+
+    testCases.forEach(testCase => {
+      component.searchControl.setValue(testCase.inputValue);
+      component.searchInput.nativeElement.value = testCase.inputValue;
+      component.searchInput.nativeElement.selectionStart = testCase.caretPos;
+      component.searchInput.nativeElement.dispatchEvent(event);
+      fixture.detectChanges();
+
+      tick(200);
+
+      expect(instrumentsServiceSpy.getInstruments).toHaveBeenCalledWith({ ...baseFilter, ...testCase.expected });
+    });
+
+    instrumentsSub.unsubscribe();
+  }));
 });

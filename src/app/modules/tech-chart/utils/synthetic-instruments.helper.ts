@@ -143,4 +143,27 @@ export class SyntheticInstrumentsHelper {
       volume: 0,
     } as Candle;
   }
+
+  static isSyntheticInstrumentValid(searchString: string): boolean {
+    const syntheticInstrument = this.getRegularOrSyntheticInstrumentKey(searchString);
+    if (!syntheticInstrument.isSynthetic) {
+      return true;
+    }
+
+    const expressionStr = syntheticInstrument.parts.reduce((acc, curr) => {
+      if (curr.isSpreadOperator) {
+        return acc + curr.value;
+      }
+
+      return acc + '0.1';
+    }, '');
+
+    try {
+      eval(expressionStr);
+    } catch (err) {
+      return false;
+    }
+
+    return true;
+  }
 }

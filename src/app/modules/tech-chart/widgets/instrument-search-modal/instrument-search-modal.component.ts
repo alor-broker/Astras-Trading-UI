@@ -1,7 +1,7 @@
 import { Component, DestroyRef, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { InstrumentSearchService } from "../../services/instrument-search.service";
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { FormControl } from "@angular/forms";
+import { AbstractControl, FormControl, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { debounceTime, switchMap } from "rxjs/operators";
@@ -9,6 +9,7 @@ import { SearchFilter } from "../../../instruments/models/search-filter.model";
 import { NzOptionSelectionChange } from "ng-zorro-antd/auto-complete";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
 
 @Component({
   selector: 'ats-instrument-search-modal',
@@ -17,11 +18,20 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 })
 export class InstrumentSearchModalComponent implements OnInit {
 
-  private readonly specialSymbols = ['+', '*', '−', '[', ']'];
+  private readonly minusSign = '−'; // This is not character that on keyboard
+  private readonly specialSymbols = ['+', '*', '/', '[', ']', this.minusSign];
 
   isVisible$!: Observable<boolean>;
 
-  searchControl = new FormControl('');
+  private readonly expressionValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    if (SyntheticInstrumentsHelper.isSyntheticInstrumentValid((control.value ?? '').replace(this.minusSign, '-'))) {
+      return null;
+    }
+
+    return { expressionInvalid: true };
+  };
+
+  searchControl = new FormControl('', [ Validators.required, this.expressionValidator ]);
 
   filteredInstruments$!: Observable<Instrument[] | null>;
 
@@ -62,12 +72,15 @@ export class InstrumentSearchModalComponent implements OnInit {
   }
 
   handleOk(): void {
-    // Needs to replace 'minus' character to 'hyphen' character
-    this.service.closeModal(this.searchInput.nativeElement.value.replace('−', '-'));
+    if (this.searchControl.invalid) {
+      return;
+    }
+
+    this.service.closeModal(this.searchControl.value!.replace(this.minusSign, '-'));
   }
 
   filterChanged(): void {
-    const inputVal = this.searchInput.nativeElement.value;
+    const inputVal = this.searchControl.value ?? '';
     const caretPos = this.searchInput.nativeElement.selectionStart ?? 0;
 
     const strBeforeCaret = inputVal.slice(0, caretPos);
@@ -101,7 +114,7 @@ export class InstrumentSearchModalComponent implements OnInit {
 
   onSelect(event: NzOptionSelectionChange, val: InstrumentKey): void {
     if (event.isUserInput) {
-      const inputVal = this.searchInput.nativeElement.value;
+      const inputVal = this.searchControl.value ?? '';
       const caretPos = this.searchInput.nativeElement.selectionStart ?? 0;
 
       setTimeout(() => {
@@ -119,22 +132,21 @@ export class InstrumentSearchModalComponent implements OnInit {
           cutStrEnd++;
         }
 
-        this.searchInput.nativeElement.value = [
-          strBeforeCaret.slice(0, cutStrStart),
-          `[${val.exchange}:${val.symbol}${val.instrumentGroup == null ? '' : ':' + val.instrumentGroup}]`,
-          strAfterCaret.slice(cutStrEnd),
-        ]
-          .join('');
-
+        this.searchControl.setValue([
+            strBeforeCaret.slice(0, cutStrStart),
+            `[${val.exchange}:${val.symbol}${val.instrumentGroup == null ? '' : ':' + val.instrumentGroup}]`,
+            strAfterCaret.slice(cutStrEnd),
+          ]
+            .join('')
+        );
       }, 0);
 
     }
   }
 
   addSpreadOperator(operator: string): void {
-    const inputEl = this.searchInput.nativeElement;
-    inputEl.value = inputEl.value + operator;
-    inputEl.focus();
+    this.searchControl.setValue(this.searchControl.value + operator);
+    this.searchInput.nativeElement.focus();
   }
 
   private getLastSpecialSymbolIndex(str: string): number {

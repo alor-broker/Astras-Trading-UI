@@ -6,51 +6,59 @@
   nzClassName="instrument-search-modal"
 >
   <ng-container *nzModalContent>
-    <nz-input-group [nzAddOnAfter]="spreadOperators">
-      <input #searchInput
-             (mousedown)="$event.stopPropagation()"
-             (keyup)="filterChanged()"
-             [nzAutocomplete]="auto"
-             class='ant-input'
-             nz-input
-             [formControl]="searchControl"
-             [placeholder]="t('sharedInstrumentSearch.searchPlaceholder')"
-      />
+    <nz-form-item>
+      <nz-form-control [nzErrorTip]="searchError">
+        <nz-input-group [nzAddOnAfter]="spreadOperators">
+          <input #searchInput
+                 (mousedown)="$event.stopPropagation()"
+                 (keyup)="filterChanged()"
+                 [nzAutocomplete]="auto"
+                 class='ant-input'
+                 nz-input
+                 [formControl]="searchControl"
+          />
 
-      <nz-autocomplete
-        #auto
-        [nzWidth]="searchInput.clientWidth"
-      >
-        <nz-auto-option
-          *ngFor="let option of filteredInstruments$ | async"
-          [nzLabel]="option.symbol"
-          [nzValue]="option.symbol"
-          (selectionChange)="onSelect($event, option)"
-        >
-        <span class='search-row'>
-          <nz-tag>{{ option.symbol }}</nz-tag>
-          <span class='row-center'>{{ option.shortName }}&nbsp;</span>
-          <nz-tag *ngIf='option.instrumentGroup'>{{ option.instrumentGroup }}</nz-tag>
-          <nz-tag>{{ option.exchange }}</nz-tag>
-        </span>
-        </nz-auto-option>
-      </nz-autocomplete>
+          <nz-autocomplete
+            #auto
+            [nzWidth]="searchInput.clientWidth"
+          >
+            <nz-auto-option
+              *ngFor="let option of filteredInstruments$ | async"
+              [nzLabel]="option.symbol"
+              [nzValue]="option.symbol"
+              (selectionChange)="onSelect($event, option)"
+            >
+            <span class='search-row'>
+              <nz-tag>{{ option.symbol }}</nz-tag>
+              <span class='row-center'>{{ option.shortName }}&nbsp;</span>
+              <nz-tag *ngIf='option.instrumentGroup'>{{ option.instrumentGroup }}</nz-tag>
+              <nz-tag>{{ option.exchange }}</nz-tag>
+            </span>
+            </nz-auto-option>
+          </nz-autocomplete>
 
-      <ng-template #spreadOperators>
-        <button nz-button (click)="addSpreadOperator('+')">
-          +
-        </button>
-        <button nz-button (click)="addSpreadOperator('&minus;')">
-          -
-        </button>
-        <button nz-button (click)="addSpreadOperator('*')">
-          ∗
-        </button>
-        <button nz-button (click)="addSpreadOperator('/')">
-          /
-        </button>
-      </ng-template>
-    </nz-input-group>
+          <ng-template #spreadOperators>
+            <button class="spread-operator-btn" nz-button (click)="addSpreadOperator('+')">
+              +
+            </button>
+            <button class="spread-operator-btn" nz-button (click)="addSpreadOperator('&minus;')">
+              -
+            </button>
+            <button class="spread-operator-btn" nz-button (click)="addSpreadOperator('*')">
+              ∗
+            </button>
+            <button class="spread-operator-btn" nz-button (click)="addSpreadOperator('/')">
+              /
+            </button>
+          </ng-template>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <ng-template #searchError>
+      <span *ngIf="searchControl.errors?.required">{{t('validationErrors.emptyFieldError')}}</span>
+      <span *ngIf="searchControl.errors?.expressionInvalid">{{t('techChartInstrumentSearchModal.expressionInvalid')}}</span>
+    </ng-template>
   </ng-container>
 
   <div *nzModalFooter>
@@ -58,6 +66,7 @@
     <button
       nz-button
       nzType="primary"
+      [disabled]="searchControl.invalid"
       (click)="handleOk()"
     >{{t('okBtnText')}}</button>
   </div>
