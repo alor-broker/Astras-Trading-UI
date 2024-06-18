@@ -2888,7 +2888,7 @@ packages:
       '@firebase/logger': 0.4.1
       '@firebase/util': 1.9.5
       '@firebase/webchannel-wrapper': 0.10.6
-      '@grpc/grpc-js': 1.9.14
+      '@grpc/grpc-js': 1.9.15
       '@grpc/proto-loader': 0.7.12
       tslib: 2.6.2
       undici: 5.28.3
@@ -3714,8 +3714,8 @@ packages:
     dependencies:
       graphql: 16.8.1
 
-  /@grpc/grpc-js@1.9.14:
-    resolution: {integrity: sha512-nOpuzZ2G3IuMFN+UPPpKrC6NsLmWsTqSsm66IRfnBt1D4pwTqE27lmbpcPM+l2Ua4gE7PfjRHI6uedAy7hoXUw==}
+  /@grpc/grpc-js@1.9.15:
+    resolution: {integrity: sha512-nqE7Hc0AzI+euzUwDAy0aY5hCp10r734gMGRdU+qOPX0XSceI2ULrcXB5U2xSc5VkWwalCj4M7GzCAygZl2KoQ==}
     engines: {node: ^8.13.0 || >=10.10.0}
     dependencies:
       '@grpc/proto-loader': 0.7.12
