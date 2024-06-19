@@ -41,10 +41,6 @@ import {
 } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import {
-  WatchlistCollection,
-  WatchlistType
-} from "../../../instruments/models/watchlist.model";
 import { ACTIONS_CONTEXT, ActionsContext } from 'src/app/shared/services/actions-context';
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 import { TableConfig } from "../../../../shared/models/table-config.model";
@@ -60,6 +56,7 @@ import {
   PageInfo,
   SortEnumType
 } from "../../../../../generated/graphql.types";
+import { AddToListContextMenu } from "../../../instruments/utils/add-to-list-context-menu";
 
 interface AllInstrumentsNodeDisplay extends Instrument {
   id: string;
@@ -313,7 +310,7 @@ implements OnInit, OnDestroy {
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceStep'], dir),
     }
   ];
-  public contextMenu: ContextMenu[] = [];
+  public contextMenu$!: Observable<ContextMenu[]>;
   private readonly instrumentsList$ = new BehaviorSubject<AllInstrumentsNodeDisplay[]>([]);
   private settings$!: Observable<AllInstrumentsSettings>;
 
@@ -346,11 +343,14 @@ implements OnInit, OnDestroy {
 
     super.ngOnInit();
 
-    this.watchlistCollectionService.getWatchlistCollection()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(collection => {
-        this.initContextMenu(collection);
-      });
+    this.contextMenu$ = AddToListContextMenu.getMenu<AllInstrumentsNodeDisplay>(
+      this.watchlistCollectionService,
+      this.translatorService,
+      item => ({
+        symbol: item.basicInformation!.symbol,
+        exchange:  item.basicInformation!.exchange
+      })
+    );
   }
 
   protected initTableConfigStream(): Observable<TableConfig<AllInstrumentsNodeDisplay>> {
@@ -447,45 +447,6 @@ implements OnInit, OnDestroy {
           instrumentGroup: row.boardInformation?.board
         }, s.badgeColor ?? defaultBadgeColor);
       });
-  }
-
-  initContextMenu(collection: WatchlistCollection): void {
-    const avalableWatchlists = collection.collection.filter(c => c.type != WatchlistType.HistoryList);
-
-    this.contextMenu = [
-      {
-        title: 'Добавить в список',
-        clickFn: (row: AllInstrumentsNodeDisplay) : void => {
-          if (avalableWatchlists.length > 1) {
-            return;
-          }
-
-          this.watchlistCollectionService.addItemsToList(
-            avalableWatchlists[0].id,
-            [
-              {
-                symbol: row.basicInformation!.symbol,
-                exchange: row.basicInformation!.exchange
-              }
-            ]);
-        }
-      }
-    ];
-
-    if (avalableWatchlists.length > 1) {
-      this.contextMenu[0].subMenu = avalableWatchlists
-        .map(list => ({
-          title: list.title,
-          clickFn: (row: AllInstrumentsNodeDisplay): void => {
-            this.watchlistCollectionService.addItemsToList(list.id, [
-              {
-                symbol: row.basicInformation!.symbol,
-                exchange: row.basicInformation!.exchange
-              }
-            ]);
-          }
-        }));
-    }
   }
 
   ngOnDestroy(): void {
