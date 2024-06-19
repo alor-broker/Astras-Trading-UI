@@ -23,7 +23,6 @@ import { Side } from '../../../../shared/models/enums/side.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
 import { ScalperCommandProcessorService } from '../../services/scalper-command-processor.service';
-import { HotKeyCommandService } from '../../../../shared/services/hot-key-command.service';
 import {
   ScalperOrderBookWidgetSettings,
   VolumeHighlightMode,
@@ -35,6 +34,7 @@ import { MathHelper } from "../../../../shared/utils/math-helper";
 import { color } from "d3";
 import { OrderType } from "../../../../shared/models/orders/order.model";
 import { CancelOrdersCommand } from "../../commands/cancel-orders-command";
+import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
 
 interface VolumeHighlightArguments {
   rowType: ScalperOrderBookRowType;
@@ -79,7 +79,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
     private readonly cancelOrdersCommand: CancelOrdersCommand,
     private readonly themeService: ThemeService,
     private readonly commandProcessorService: ScalperCommandProcessorService,
-    private readonly hotkeysService: HotKeyCommandService,
+    private readonly hotkeysService: ScalperHotKeyCommandService,
     private readonly destroyRef: DestroyRef
   ) {
   }

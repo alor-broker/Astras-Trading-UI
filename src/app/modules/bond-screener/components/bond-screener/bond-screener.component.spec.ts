@@ -8,6 +8,7 @@ import { getTranslocoModule } from "../../../../shared/utils/testing";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
+import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 
 describe('BondScreenerComponent', () => {
   let component: BondScreenerComponent;
@@ -46,6 +47,13 @@ describe('BondScreenerComponent', () => {
           provide: TerminalSettingsService,
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
+          }
+        },
+        {
+          provide: WatchlistCollectionService,
+          useValue: {
+            getWatchlistCollection: jasmine.createSpy('getWatchlistCollection').and.returnValue(of({})),
+            addItemsToList: jasmine.createSpy('addItemsToList').and.callThrough()
           }
         }
       ]

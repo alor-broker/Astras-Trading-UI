@@ -19,7 +19,7 @@
             <nz-divider></nz-divider>
           </ng-container>
           <ng-container>
-            <form *ngIf="newPriceChangeSubscriptionForm" [formGroup]="newPriceChangeSubscriptionForm"
+            <form [formGroup]="newPriceChangeSubscriptionForm"
                   [nzLayout]="'vertical'" nz-form>
               <div class="d-flex justify-content-between flex-gap-10">
                 <nz-form-item>
@@ -40,11 +40,11 @@
                   </nz-form-control>
                   <ng-template #priceError>
                   <span
-                    *ngIf="newPriceChangeSubscriptionForm.get('price')?.errors?.required">{{t('validationErrors.emptyFieldError')}}</span>
+                    *ngIf="newPriceChangeSubscriptionForm.controls.price.errors?.required">{{t('validationErrors.emptyFieldError')}}</span>
                     <span
-                      *ngIf="newPriceChangeSubscriptionForm.get('price')?.errors?.min">{{t('validationErrors.tooLittle')}}</span>
+                      *ngIf="newPriceChangeSubscriptionForm.controls.price.errors?.min">{{t('validationErrors.tooLittle')}}</span>
                     <span
-                      *ngIf="newPriceChangeSubscriptionForm.get('price')?.errors?.max">{{t('validationErrors.tooMuch')}}</span>
+                      *ngIf="newPriceChangeSubscriptionForm.controls.price.errors?.max">{{t('validationErrors.tooMuch')}}</span>
                   </ng-template>
                 </nz-form-item>
                 <button

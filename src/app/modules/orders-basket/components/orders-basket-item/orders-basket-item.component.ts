@@ -8,11 +8,10 @@ import {
 } from '@angular/core';
 import {
   ControlValueAccessor,
-  FormControl,
+  FormBuilder,
   FormGroup,
   NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
-  UntypedFormGroup,
   ValidationErrors,
   Validator,
   Validators
@@ -79,7 +78,36 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
       max: inputNumberValidation.max
     }
   };
-  form!: UntypedFormGroup;
+
+  readonly form = this.formBuilder.group({
+    instrumentKey: this.formBuilder.control<InstrumentKey | null>(null, Validators.required),
+    quota: this.formBuilder.control<number | null>(
+      null,
+      [
+        Validators.required,
+        Validators.min(this.validationOptions.quota.min),
+        Validators.max(this.validationOptions.quota.max)
+      ]
+    ),
+    quantity: this.formBuilder.nonNullable.control(
+      0,
+      [
+        Validators.required,
+        Validators.min(this.validationOptions.quantity.min),
+        Validators.max(this.validationOptions.quantity.max)
+      ]
+    ),
+    price: this.formBuilder.control<number | null>(
+      null,
+      [
+        Validators.required,
+        Validators.min(this.validationOptions.price.min),
+        Validators.max(this.validationOptions.price.max)
+      ]
+    ),
+    id: this.formBuilder.nonNullable.control("", Validators.required)
+  });
+
   itemsContainerWidth$ = new BehaviorSubject<number | null>(null);
   instrument$!: Observable<Instrument | null>;
   displayMode$?: Observable<'table-item' | 'compact' | 'ultra-compact'>;
@@ -91,6 +119,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
   constructor(
     private readonly instrumentsService: InstrumentsService,
     private readonly quotesService: QuotesService,
+    private readonly formBuilder: FormBuilder,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -129,7 +158,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
 
     const errors = { ...allErrors };
 
-    const controlErrors = this.form.controls[controlName].errors;
+    const controlErrors = (<FormGroup>this.form).controls[controlName].errors;
 
     if (controlErrors) {
       errors[controlName] = controlErrors;
@@ -140,7 +169,6 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
 
   ngOnInit(): void {
     this.initSizeDependedState();
-    this.initForm();
     this.initInstrumentUpdate();
     this.initPriceUpdate();
   }
@@ -175,9 +203,9 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
   writeValue(formValue: Partial<OrdersBasketItem>): void {
     Object.keys(formValue).forEach(key => {
       const newValue = formValue[key as keyof OrdersBasketItem];
-      const oldValue: unknown = this.form.controls[key].value;
+      const oldValue: unknown = (<FormGroup>this.form).controls[key].value;
       if (newValue !== oldValue) {
-        this.form.controls[key].setValue(newValue);
+        (<FormGroup>this.form).controls[key].setValue(newValue);
       }
     });
   }
@@ -256,36 +284,5 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
       .subscribe(() => {
         this.form.controls.price.updateValueAndValidity();
       });
-  }
-
-  private initForm(): void {
-    this.form = new FormGroup({
-      instrumentKey: new FormControl<InstrumentKey | null>(null, Validators.required),
-      quota: new FormControl(
-        null,
-        [
-          Validators.required,
-          Validators.min(this.validationOptions.quota.min),
-          Validators.max(this.validationOptions.quota.max)
-        ]
-      ),
-      quantity: new FormControl(
-        0,
-        [
-          Validators.required,
-          Validators.min(this.validationOptions.quantity.min),
-          Validators.max(this.validationOptions.quantity.max)
-        ]
-      ),
-      price: new FormControl(
-        null,
-        [
-          Validators.required,
-          Validators.min(this.validationOptions.price.min),
-          Validators.max(this.validationOptions.price.max)
-        ]
-      ),
-      id: new FormControl(null, Validators.required)
-    });
   }
 }

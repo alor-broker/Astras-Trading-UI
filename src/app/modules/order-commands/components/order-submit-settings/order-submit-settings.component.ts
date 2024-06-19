@@ -1,21 +1,23 @@
-import {Component, DestroyRef, OnInit} from "@angular/core";
 import {
-  AbstractControl,
-  FormArray,
+  Component,
+  DestroyRef,
+  OnInit
+} from "@angular/core";
+import {
+  FormBuilder,
   FormControl,
-  UntypedFormArray,
-  UntypedFormControl,
-  UntypedFormGroup,
   Validators
 } from "@angular/forms";
-import {Observable, shareReplay, take} from "rxjs";
-import {inputNumberValidation} from "../../../../shared/utils/validation-options";
-import {OrderSubmitSettings} from "../../models/order-submit-settings.model";
-import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
-import {DeviceService} from "../../../../shared/services/device.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
-import {isInstrumentEqual} from "../../../../shared/utils/settings-helper";
+import {
+  Observable,
+  take
+} from "rxjs";
+import { inputNumberValidation } from "../../../../shared/utils/validation-options";
+import { OrderSubmitSettings } from "../../models/order-submit-settings.model";
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { DeviceService } from "../../../../shared/services/device.service";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 
@@ -25,7 +27,15 @@ import { WidgetSettingsBaseComponent } from "../../../../shared/components/widge
   styleUrls: ['./order-submit-settings.component.less']
 })
 export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<OrderSubmitSettings> implements OnInit {
-  form?: UntypedFormGroup;
+  readonly form = this.formBuilder.group({
+    instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
+    instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null),
+    enableLimitOrdersFastEditing: this.formBuilder.nonNullable.control(false),
+    limitOrderPriceMoveSteps: this.formBuilder.nonNullable.array([]),
+    showVolumePanel: this.formBuilder.nonNullable.control(false),
+    workingVolumes: this.formBuilder.nonNullable.array([]),
+  });
+
   deviceInfo$!: Observable<any>;
 
   readonly validationOptions = {
@@ -44,10 +54,11 @@ export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<Or
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     protected readonly manageDashboardsService: ManageDashboardsService,
+    protected readonly destroyRef: DestroyRef,
     private readonly deviceService: DeviceService,
-    private readonly destroyRef: DestroyRef
+    private readonly formBuilder: FormBuilder,
   ) {
-    super(settingsService, manageDashboardsService);
+    super(settingsService, manageDashboardsService, destroyRef);
   }
 
   get showCopy(): boolean {
@@ -55,73 +66,34 @@ export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<Or
   }
 
   get canSave(): boolean {
-    return this.form?.valid ?? false;
+    return this.form.valid;
   }
 
   ngOnInit(): void {
+    super.ngOnInit();
+
     this.deviceInfo$ = this.deviceService.deviceInfo$
       .pipe(
         take(1)
       );
-
-    this.settings$ = this.settingsService.getSettings<OrderSubmitSettings>(this.guid).pipe(
-      shareReplay(1)
-    );
-
-    this.settings$.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(settings => {
-      this.form = new UntypedFormGroup({
-        instrument: new UntypedFormControl({
-          symbol: settings.symbol,
-          exchange: settings.exchange,
-          instrumentGroup: settings.instrumentGroup
-        } as InstrumentKey, Validators.required),
-        exchange: new UntypedFormControl({value: settings.exchange, disabled: true}, Validators.required),
-        instrumentGroup: new UntypedFormControl(settings.instrumentGroup),
-        enableLimitOrdersFastEditing: new UntypedFormControl(settings.enableLimitOrdersFastEditing ?? false),
-        limitOrderPriceMoveSteps: new FormArray(
-          [...((settings.limitOrderPriceMoveSteps as number[] | undefined) ?? [1])]
-            .sort((a, b) => a - b)
-            .map(x => this.createLimitOrderPriceMoveStepControl(x)
-            )
-        ),
-        showVolumePanel: new UntypedFormControl(settings.showVolumePanel ?? false),
-        workingVolumes: new FormArray(
-          [...((settings.workingVolumes as number[] | undefined) ?? [])]
-            .sort((a, b) => a - b)
-            .map(x => this.createWorkingVolumeControl(x)
-            )
-        )
-      });
-    });
   }
 
   instrumentSelected(instrument: InstrumentKey | null): void {
-    this.form!.controls.exchange.setValue(instrument?.exchange ?? null);
-    this.form!.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
-  }
-
-  asFormArray(control: AbstractControl): UntypedFormArray {
-    return control as UntypedFormArray;
-  }
-
-  asFormControl(control: AbstractControl): UntypedFormControl {
-    return control as UntypedFormControl;
+    this.form.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
   removeLimitOrderPriceMoveStep($event: MouseEvent, index: number): void {
     $event.preventDefault();
     $event.stopPropagation();
 
-    this.asFormArray(this.form!.controls.limitOrderPriceMoveSteps).removeAt(index);
+    this.form.controls.limitOrderPriceMoveSteps.removeAt(index);
   }
 
   addLimitOrderPriceMoveStep($event: MouseEvent): void {
     $event.preventDefault();
     $event.stopPropagation();
 
-    const stepsControl = this.asFormArray(this.form!.controls.limitOrderPriceMoveSteps);
+    const stepsControl = this.form.controls.limitOrderPriceMoveSteps;
     const defaultValue = stepsControl.controls[stepsControl.length - 1].value as number;
     stepsControl.push(this.createLimitOrderPriceMoveStepControl(defaultValue));
   }
@@ -129,21 +101,24 @@ export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<Or
   removeWorkingVolume($event: MouseEvent, index: number): void {
     $event.preventDefault();
     $event.stopPropagation();
-
-    this.asFormArray(this.form!.controls.workingVolumes).removeAt(index);
+    this.form.controls.workingVolumes.removeAt(index);
   }
 
   addWorkingVolume($event: MouseEvent): void {
     $event.preventDefault();
     $event.stopPropagation();
 
-    const workingVolumeControl = this.asFormArray(this.form!.controls.workingVolumes);
+    const workingVolumeControl = this.form.controls.workingVolumes;
     const defaultValue = workingVolumeControl.controls[workingVolumeControl.length - 1]?.value as number | undefined;
     workingVolumeControl.push(this.createWorkingVolumeControl(defaultValue ?? 1));
   }
 
   protected getUpdatedSettings(initialSettings: OrderSubmitSettings): Partial<OrderSubmitSettings> {
-    const formValue = this.form!.value as Partial<OrderSubmitSettings & { instrument: InstrumentKey, workingVolumes: number[], limitOrderPriceMoveSteps: number[] }>;
+    const formValue = this.form.value as Partial<OrderSubmitSettings & {
+      instrument: InstrumentKey;
+      workingVolumes: number[];
+      limitOrderPriceMoveSteps: number[];
+    }>;
 
     const newSettings = {
       ...formValue,
@@ -159,8 +134,32 @@ export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<Or
     return newSettings as Partial<OrderSubmitSettings>;
   }
 
+  protected setCurrentFormValues(settings: OrderSubmitSettings): void {
+    this.form.reset();
+
+    this.form.controls.instrument.setValue({
+      symbol: settings.symbol,
+      exchange: settings.exchange,
+      instrumentGroup: settings.instrumentGroup ?? null
+    });
+    this.form.controls.instrumentGroup.setValue(settings.instrumentGroup ?? null);
+
+    this.form.controls.enableLimitOrdersFastEditing.setValue(settings.enableLimitOrdersFastEditing ?? false);
+    const sortedSteps = [...settings.limitOrderPriceMoveSteps].sort((a, b) => a - b);
+    for (const step of sortedSteps) {
+      this.form.controls.limitOrderPriceMoveSteps.push(this.createLimitOrderPriceMoveStepControl(step));
+    }
+
+    this.form.controls.showVolumePanel.setValue(settings.showVolumePanel ?? false);
+    const sortedVolumes = [...settings.workingVolumes].sort((a, b) => a - b);
+    for (const step of sortedVolumes) {
+      this.form.controls.workingVolumes.push(this.createWorkingVolumeControl(step));
+    }
+
+  }
+
   private createLimitOrderPriceMoveStepControl(defaultValue: number): FormControl<number | null> {
-    return new FormControl(
+    return this.formBuilder.nonNullable.control(
       defaultValue,
       [
         Validators.required,
@@ -171,7 +170,7 @@ export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<Or
   }
 
   private createWorkingVolumeControl(defaultValue: number): FormControl<number | null> {
-    return new FormControl(
+    return this.formBuilder.nonNullable.control(
       defaultValue,
       [
         Validators.required,

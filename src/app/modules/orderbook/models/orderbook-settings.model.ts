@@ -3,8 +3,8 @@ import { InstrumentKey } from '../../../shared/models/instruments/instrument-key
 import { NumberDisplayFormat } from '../../../shared/models/enums/number-display-format';
 
 export enum ColumnsOrder {
-  volumesAtTheEdges = 'volumesAtTheEdges',
-  volumesAtTheMiddle = 'volumesAtTheMiddle'
+  VolumesAtTheEdges = 'volumesAtTheEdges',
+  VolumesAtTheMiddle = 'volumesAtTheMiddle'
 }
 
 export interface OrderbookSettings extends WidgetSettings, InstrumentKey {

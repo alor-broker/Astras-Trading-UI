@@ -1,12 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 
 import { ScalperCommandProcessorService } from './scalper-command-processor.service';
-import { HotKeyCommandService } from '../../../shared/services/hot-key-command.service';
 import {
   BehaviorSubject,
   of
 } from 'rxjs';
-import { ModifierKeys } from '../../../shared/models/modifier-keys.model';
 import {
   generateRandomString,
   getRandomInt
@@ -25,12 +23,14 @@ import {
   OrderBook,
   ScalperOrderBookExtendedSettings
 } from '../models/scalper-order-book-data-context.model';
-import { ScalperOrderBookCommands } from '../models/scalper-order-book-commands';
-import { TerminalCommand } from '../../../shared/models/terminal-command';
 import { Side } from '../../../shared/models/enums/side.model';
 import { PortfolioKey } from '../../../shared/models/portfolio-key.model';
 import { Position } from '../../../shared/models/positions/position.model';
-import { TerminalSettings } from '../../../shared/models/terminal-settings/terminal-settings.model';
+import {
+  ActiveOrderBookHotKeysTypes,
+  AllOrderBooksHotKeysTypes,
+  TerminalSettings
+} from '../../../shared/models/terminal-settings/terminal-settings.model';
 import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
 import { OrderType } from "../../../shared/models/orders/order.model";
 import {
@@ -70,6 +70,11 @@ import {
   GetBestOfferCommandArgs
 } from "../commands/get-best-offer-command";
 import { UpdateOrdersCommand } from "../commands/update-orders-command";
+import {
+  ModifierKeys,
+  ScalperCommand
+} from "../models/scalper-command";
+import { ScalperHotKeyCommandService } from "./scalper-hot-key-command.service";
 
 describe('ScalperCommandProcessorService', () => {
   let service: ScalperCommandProcessorService;
@@ -150,7 +155,7 @@ describe('ScalperCommandProcessorService', () => {
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: HotKeyCommandService,
+          provide: ScalperHotKeyCommandService,
           useValue: {
             modifiers$: modifiersMock$
           }
@@ -238,8 +243,8 @@ describe('ScalperCommandProcessorService', () => {
 
         service.processHotkeyPress(
           {
-            type: ScalperOrderBookCommands.cancelLimitOrdersAll
-          } as TerminalCommand,
+            type: AllOrderBooksHotKeysTypes.cancelOrdersAll
+          } as ScalperCommand,
           false,
           dataContextMock
         );
@@ -262,8 +267,8 @@ describe('ScalperCommandProcessorService', () => {
 
         service.processHotkeyPress(
           {
-            type: ScalperOrderBookCommands.closePositionsByMarketAll
-          } as TerminalCommand,
+            type:  AllOrderBooksHotKeysTypes.closePositionsKey
+          } as ScalperCommand,
           false,
           dataContextMock
         );
@@ -313,8 +318,8 @@ describe('ScalperCommandProcessorService', () => {
 
         service.processHotkeyPress(
           {
-            type: ScalperOrderBookCommands.cancelLimitOrdersCurrent
-          } as TerminalCommand,
+            type: ActiveOrderBookHotKeysTypes.cancelOrderbookOrders
+          } as ScalperCommand,
           true,
           dataContextMock
         );
@@ -362,8 +367,8 @@ describe('ScalperCommandProcessorService', () => {
 
         service.processHotkeyPress(
           {
-            type: ScalperOrderBookCommands.cancelStopOrdersCurrent
-          } as TerminalCommand,
+            type: ActiveOrderBookHotKeysTypes.cancelStopOrdersCurrent
+          } as ScalperCommand,
           true,
           dataContextMock
         );
@@ -386,8 +391,8 @@ describe('ScalperCommandProcessorService', () => {
 
         service.processHotkeyPress(
           {
-            type: ScalperOrderBookCommands.closePositionsByMarketCurrent
-          } as TerminalCommand,
+            type: ActiveOrderBookHotKeysTypes.closeOrderbookPositions
+          } as ScalperCommand,
           true,
           dataContextMock
         );
@@ -421,8 +426,8 @@ describe('ScalperCommandProcessorService', () => {
 
         service.processHotkeyPress(
           {
-            type: ScalperOrderBookCommands.sellBestOrder
-          } as TerminalCommand,
+            type: ActiveOrderBookHotKeysTypes.sellBestOrder
+          } as ScalperCommand,
           true,
           dataContextMock
         );
@@ -456,8 +461,8 @@ describe('ScalperCommandProcessorService', () => {
 
         service.processHotkeyPress(
           {
-            type: ScalperOrderBookCommands.buyBestOrder
-          } as TerminalCommand,
+            type: ActiveOrderBookHotKeysTypes.buyBestOrder
+          } as ScalperCommand,
           true,
           dataContextMock
         );
@@ -494,8 +499,8 @@ describe('ScalperCommandProcessorService', () => {
 
         service.processHotkeyPress(
           {
-            type: ScalperOrderBookCommands.sellBestBid
-          } as TerminalCommand,
+            type: ActiveOrderBookHotKeysTypes.sellBestBid
+          } as ScalperCommand,
           true,
           dataContextMock
         );
@@ -529,8 +534,8 @@ describe('ScalperCommandProcessorService', () => {
 
         service.processHotkeyPress(
           {
-            type: ScalperOrderBookCommands.buyBestAsk
-          } as TerminalCommand,
+            type: ActiveOrderBookHotKeysTypes.buyBestAsk
+          } as ScalperCommand,
           true,
           dataContextMock
         );
@@ -552,8 +557,8 @@ describe('ScalperCommandProcessorService', () => {
 
         service.processHotkeyPress(
           {
-            type: ScalperOrderBookCommands.sellMarket
-          } as TerminalCommand,
+            type: ActiveOrderBookHotKeysTypes.sellMarket
+          } as ScalperCommand,
           true,
           dataContextMock
         );
@@ -575,8 +580,8 @@ describe('ScalperCommandProcessorService', () => {
 
         service.processHotkeyPress(
           {
-            type: ScalperOrderBookCommands.buyMarket
-          } as TerminalCommand,
+            type: ActiveOrderBookHotKeysTypes.buyMarket
+          } as ScalperCommand,
           true,
           dataContextMock
         );
@@ -599,8 +604,8 @@ describe('ScalperCommandProcessorService', () => {
 
         service.processHotkeyPress(
           {
-            type: ScalperOrderBookCommands.reversePositionsByMarketCurrent
-          } as TerminalCommand,
+            type: ActiveOrderBookHotKeysTypes.reverseOrderbookPositions
+          } as ScalperCommand,
           true,
           dataContextMock
         );

@@ -62,7 +62,7 @@ export class OrderbookWidgetComponent implements OnInit {
         showYieldForBonds: getValueOrDefault(settings.showYieldForBonds, false),
         useOrderWidget: getValueOrDefault(settings.useOrderWidget, false),
         showVolume: getValueOrDefault(settings.showVolume, false),
-        columnsOrder: getValueOrDefault(settings.columnsOrder, ColumnsOrder.volumesAtTheEdges),
+        columnsOrder: getValueOrDefault(settings.columnsOrder, ColumnsOrder.VolumesAtTheEdges),
         volumeDisplayFormat: getValueOrDefault(settings.volumeDisplayFormat, NumberDisplayFormat.Default),
         showPriceWithZeroPadding: getValueOrDefault(settings.showPriceWithZeroPadding, true),
       }),

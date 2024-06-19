@@ -4,6 +4,8 @@ import {
   Component,
   Directive,
   EventEmitter,
+  forwardRef,
+  Input,
   ModuleWithProviders,
   Type
 } from '@angular/core';
@@ -15,6 +17,10 @@ import { TranslocoTestingModule, TranslocoTestingOptions } from "@ngneat/translo
 import ru from '../../../assets/i18n/ru.json';
 import { ErrorHandlerService } from '../services/handle-error/error-handler.service';
 import { LOGGER } from '../services/logging/logger-base';
+import {
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR
+} from "@angular/forms";
 
 /**
  * Create async observable that emits-once and completes  after a JS engine turn
@@ -299,4 +305,34 @@ export function getTranslocoModule(options: TranslocoTestingOptions = {}): Modul
     },
     preloadLangs: true,
   });
+}
+
+@Component({
+  selector: 'ats-instrument-search',
+  template: '',
+  providers: [{
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => InstrumentSearchMockComponent),
+    multi: true
+  }]
+})
+export class InstrumentSearchMockComponent implements ControlValueAccessor {
+  @Input() instrument: any;
+  @Input() placeholder: any;
+
+  registerOnChange(): void {
+    return;
+  }
+
+  registerOnTouched(): void {
+    return;
+  }
+
+  setDisabledState(): void {
+    return;
+  }
+
+  writeValue(): void {
+    return;
+  }
 }

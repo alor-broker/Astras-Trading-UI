@@ -7,6 +7,7 @@ import { LightChartSettingsComponent } from './light-chart-settings.component';
 import { of } from 'rxjs';
 import {
   getTranslocoModule,
+  InstrumentSearchMockComponent,
   mockComponent
 } from '../../../../shared/utils/testing';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -26,36 +27,6 @@ import {
 import { NzFormModule } from "ng-zorro-antd/form";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { TimeframeValue } from "../../models/light-chart.models";
-
-@Component({
-  selector: 'ats-instrument-search',
-  template: '',
-  providers: [{
-    provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => InstrumentSearchMockComponent),
-    multi: true
-  }]
-})
-class InstrumentSearchMockComponent implements ControlValueAccessor {
-  @Input() instrument: any;
-  @Input() placeholder: any;
-
-  registerOnChange(fn: any): void {
-    return;
-  }
-
-  registerOnTouched(fn: any): void {
-    return;
-  }
-
-  setDisabledState(isDisabled: boolean): void {
-    return;
-  }
-
-  writeValue(obj: any): void {
-    return;
-  }
-}
 
 describe('LightChartSettingsComponent', () => {
   let component: LightChartSettingsComponent;

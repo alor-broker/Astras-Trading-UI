@@ -8,9 +8,12 @@ import {
   SimpleChange,
   SimpleChanges
 } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import {Subscription} from "rxjs";
+import {
+  FormControl,
+  FormGroup
+} from "@angular/forms";
 
 @Component({
   selector: 'ats-table-filter',
@@ -18,8 +21,7 @@ import {Subscription} from "rxjs";
   styleUrls: ['./table-filter.component.less']
 })
 export class TableFilterComponent implements OnChanges, OnDestroy {
-
-  filtersForm?: UntypedFormGroup;
+  filtersForm?: FormGroup;
   private changesSubscription?: Subscription;
 
   @Input({required: true})
@@ -31,13 +33,13 @@ export class TableFilterComponent implements OnChanges, OnDestroy {
     if ((changes.columns as SimpleChange | undefined)) {
       this.changesSubscription?.unsubscribe();
 
-      this.filtersForm = new UntypedFormGroup(
+      this.filtersForm = new FormGroup(
         this.columns
           .filter(col => !!col.filterData)
           .reduce((acc, curr) => {
-          acc[curr.id] = new UntypedFormControl('');
+          acc[curr.id] = new FormControl('');
           return acc;
-        }, {} as { [controlName: string]: UntypedFormControl })
+        }, {} as { [controlName: string]: FormControl })
       );
 
       this.changesSubscription = this.filtersForm.valueChanges

@@ -51,7 +51,7 @@
           ></nz-color-picker>
 
           <ng-template #newBadgeTrigger>
-            <button nz-button class="badge-btn">
+            <button nz-button  class="badge-btn" [style.background-color]="newBadgeColorControl.value">
               <i nz-icon nzType="plus"></i>
             </button>
           </ng-template>

@@ -33,7 +33,7 @@ import { DeviceInfo } from "../../../../shared/models/device-info.model";
 export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<TechChartSettings> implements OnInit {
   readonly availableLineMarkerPositions = Object.values(LineMarkerPosition);
 
-  form = this.formBuilder.group({
+  readonly form = this.formBuilder.group({
     // instrument
     instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
     instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null),
@@ -44,7 +44,7 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
     showPosition: this.formBuilder.nonNullable.control(true),
     positionLineMarkerPosition: this.formBuilder.nonNullable.control(LineMarkerPosition.Right),
     panels: this.formBuilder.group({
-      header:this.formBuilder.nonNullable.control(true),
+      header: this.formBuilder.nonNullable.control(true),
       headerSymbolSearch: this.formBuilder.nonNullable.control(true),
       headerChartType: this.formBuilder.nonNullable.control(true),
       headerCompare: this.formBuilder.nonNullable.control(true),
@@ -66,11 +66,11 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     protected readonly manageDashboardsService: ManageDashboardsService,
+    protected readonly destroyRef: DestroyRef,
     private readonly formBuilder: FormBuilder,
     private readonly deviceService: DeviceService,
-    private readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, manageDashboardsService);
+    super(settingsService, manageDashboardsService, destroyRef);
   }
 
   get showCopy(): boolean {
@@ -78,7 +78,7 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
   }
 
   get canSave(): boolean {
-    return this.form?.valid ?? false;
+    return this.form.valid;
   }
 
   ngOnInit(): void {
@@ -115,7 +115,7 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
     return newSettings;
   }
 
-  private setCurrentFormValues(settings: TechChartSettings): void {
+  protected setCurrentFormValues(settings: TechChartSettings): void {
     this.form.reset();
 
     this.form.controls.instrument.setValue({

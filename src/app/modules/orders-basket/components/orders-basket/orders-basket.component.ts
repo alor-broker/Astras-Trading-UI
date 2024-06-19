@@ -1,16 +1,14 @@
 import {
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   Input,
   OnDestroy,
   OnInit
 } from '@angular/core';
 import {
-  AbstractControl,
   FormArray,
+  FormBuilder,
   FormControl,
-  UntypedFormArray,
-  UntypedFormControl,
-  UntypedFormGroup,
   ValidationErrors,
   Validators
 } from '@angular/forms';
@@ -49,8 +47,11 @@ import {
   DataPreset,
   OrdersBasketSettings
 } from '../../models/orders-basket-settings.model';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import { NewLimitOrder, OrderCommandResult } from "../../../../shared/models/orders/new-order.model";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {
+  NewLimitOrder,
+  OrderCommandResult
+} from "../../../../shared/models/orders/new-order.model";
 import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 
 @Component({
@@ -59,9 +60,30 @@ import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.se
   styleUrls: ['./orders-basket.component.less']
 })
 export class OrdersBasketComponent implements OnInit, OnDestroy {
-  @Input({required: true})
+  @Input({ required: true })
   guid!: string;
-  form?: UntypedFormGroup;
+
+  readonly form = this.formBuilder.group({
+    budget: this.formBuilder.control<number | null>(
+      null,
+      [
+        Validators.required,
+        Validators.min(inputNumberValidation.min),
+        Validators.max(inputNumberValidation.max)
+      ]
+    ),
+    items: this.formBuilder.array(
+      [
+        this.createItemDraftControl({ quota: 50 })
+      ],
+      [
+        Validators.required,
+        this.allItemsAreValidValidator,
+        this.max100PercentValidator
+      ]
+    )
+  });
+
   formSubscriptions?: Subscription;
   settings$!: Observable<OrdersBasketSettings>;
   canSubmit$ = new BehaviorSubject<boolean>(false);
@@ -78,6 +100,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly wsOrdersService: WsOrdersService,
     private readonly evaluationService: EvaluationService,
+    private readonly formBuilder: FormBuilder,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -117,13 +140,6 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     );
   }
 
-  asFormArray(control: AbstractControl): FormArray {
-    return control as UntypedFormArray;
-  }
-
-  asFormControl(control: AbstractControl): UntypedFormControl {
-    return control as UntypedFormControl;
-  }
 
   addItemDraft(target: FormArray): void {
     target.push(this.createItemDraftControl({}));
@@ -139,7 +155,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       switchMap(settings => {
         const orders: NewLimitOrder[] = [];
 
-        this.form?.value.items.forEach((item: any) => {
+        (this.form.value.items ?? []).forEach((item: any) => {
           orders.push({
             side: Side.Buy,
             instrument: item.instrumentKey as InstrumentKey,
@@ -148,7 +164,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
           });
         });
 
-        if(orders.length > 0) {
+        if (orders.length > 0) {
           return forkJoin([
               ...orders.map(o => this.wsOrdersService.submitLimitOrder(o, settings.portfolio).pipe(take(1)))
             ]
@@ -175,7 +191,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       take(1)
     ).subscribe(s => {
       const currentBasket = this.getCurrentBasket(false);
-      if(!currentBasket) {
+      if (!currentBasket) {
         return;
       }
 
@@ -187,7 +203,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
           exchange: s.exchange,
           portfolio: s.portfolio
         }
-        };
+      };
 
       this.widgetSettingsService.updateSettings<OrdersBasketSettings>(
         this.guid,
@@ -237,7 +253,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     }
 
     const currentBasket = this.getCurrentBasket(true);
-    if(!currentBasket) {
+    if (!currentBasket) {
       return;
     }
 
@@ -245,16 +261,12 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   }
 
   private getCurrentBasket(allowPartial: boolean): OrdersBasket | null {
-    if (!this.form) {
-      return null;
-    }
-
-    if(!this.form.valid && !allowPartial) {
+    if (!this.form.valid && !allowPartial) {
       return null;
     }
 
     const formValue = this.form.value as OrdersBasket;
-    return  {
+    return {
       ...formValue,
       budget: Number(formValue.budget),
       items: formValue.items
@@ -265,7 +277,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
 
     this.form?.controls.budget.setValue(savedBasket.budget);
 
-    const items = this.asFormArray(this.form?.controls.items!);
+    const items = this.form.controls.items;
     items.clear();
 
     savedBasket.items.forEach(savedItem => {
@@ -283,24 +295,10 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   private initForm(settings: OrdersBasketSettings): void {
     this.formSubscriptions?.unsubscribe();
 
-    this.form = new UntypedFormGroup({
-      budget: new FormControl<number | null>(
-        null,
-        [
-          Validators.required,
-          Validators.min(inputNumberValidation.min),
-          Validators.max(inputNumberValidation.max)
-        ]),
-      items: new FormArray([
-          this.createItemDraftControl({ quota: 50 }),
-          this.createItemDraftControl({ quota: 50 }),
-        ],
-        [
-          Validators.required,
-          this.allItemsAreValidValidator,
-          this.max100PercentValidator
-        ])
-    });
+    this.form.reset();
+    this.form.controls.items.clear();
+    this.form.controls.items.push(this.createItemDraftControl({ quota: 50 }));
+    this.form.controls.items.push(this.createItemDraftControl({ quota: 50 }));
 
     this.formSubscriptions = this.form.statusChanges.subscribe(status => {
       // submit button disabled status for some reason lagging behind by 1 status when updating budget
@@ -319,7 +317,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   }
 
   private initQuantityCalculation(settings: OrdersBasketSettings): Subscription {
-    return this.form!.valueChanges.pipe(
+    return this.form.valueChanges.pipe(
       debounceTime(500),
 
       map(formValue => {
@@ -351,9 +349,9 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       )
     ).subscribe(({ items, evaluation }) => {
       const setQuantity = (id: string, quantity: number): void => {
-        const itemsControl = this.asFormArray(this.form!.controls.items);
-        const targetControl = itemsControl.controls.find(c => c.value.id === id);
-        if (targetControl && targetControl.value.quantity !== quantity) {
+        const itemsControl = this.form.controls.items;
+        const targetControl = itemsControl.controls.find(c => c.value != null && c.value.id === id);
+        if (targetControl && targetControl.value!.quantity !== quantity) {
           targetControl.patchValue({ quantity: quantity });
         }
       };
@@ -370,10 +368,12 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   }
 
   private createItemDraftControl(item: Partial<OrdersBasketItem>): FormControl<Partial<OrdersBasketItem> | null> {
-    return new FormControl<Partial<OrdersBasketItem>>({
-      ...item,
-      id: GuidGenerator.newGuid()
-    });
+    return this.formBuilder.nonNullable.control<Partial<OrdersBasketItem> | null>(
+      {
+        ...item,
+        id: GuidGenerator.newGuid()
+      }
+    );
   }
 
   private allItemsAreValidValidator(itemsControl: FormArray<FormControl<Partial<OrdersBasketItem> | null>>): ValidationErrors | null {

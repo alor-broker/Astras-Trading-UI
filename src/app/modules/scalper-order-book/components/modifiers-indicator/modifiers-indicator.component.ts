@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit
+} from '@angular/core';
 import { Observable } from "rxjs";
-import { ModifierKeys } from "../../../../shared/models/modifier-keys.model";
-import { HotKeyCommandService } from "../../../../shared/services/hot-key-command.service";
+import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
+import { ModifierKeys } from "../../models/scalper-command";
 
 @Component({
   selector: 'ats-modifiers-indicator',
@@ -12,7 +15,7 @@ export class ModifiersIndicatorComponent implements OnInit {
   modifierKeyPressed$!: Observable<ModifierKeys>;
 
   constructor(
-    private readonly hotkeysService: HotKeyCommandService,
+    private readonly hotkeysService: ScalperHotKeyCommandService,
   ) {
   }
 

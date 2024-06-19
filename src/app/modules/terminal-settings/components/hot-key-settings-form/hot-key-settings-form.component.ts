@@ -1,21 +1,26 @@
 import {
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   OnInit
 } from '@angular/core';
 import {
   AbstractControl,
-  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
   NG_VALUE_ACCESSOR,
-  UntypedFormArray,
-  UntypedFormControl,
-  UntypedFormGroup,
   ValidatorFn,
   Validators
 } from '@angular/forms';
-import { HotKeyMeta, HotKeysSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import {
-  distinctUntilChanged
-} from 'rxjs';
+  ActiveOrderBookHotKeysTypes,
+  AllOrderBooksHotKeysTypes,
+  DeprecatedHotKey,
+  HotKeyMeta,
+  HotKeysMap,
+  HotKeysSettings
+} from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import { distinctUntilChanged } from 'rxjs';
 import { ControlValueAccessorBaseComponent } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
 import { TerminalSettingsHelper } from "../../../../shared/utils/terminal-settings-helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -33,93 +38,59 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
   ]
 })
 export class HotKeySettingsFormComponent extends ControlValueAccessorBaseComponent<HotKeysSettings> implements OnInit {
-  form?: UntypedFormGroup;
+  readonly form = this.formBuilder.group({
+    allOrderBooksHotKeys: this.formBuilder.nonNullable.array([this.createCommandHotKeyControl('', null)]),
+    activeOrderBookHotKeys: this.formBuilder.nonNullable.array([this.createCommandHotKeyControl('', null)]),
+    workingVolumes: this.formBuilder.array([this.createWorkingVolumeControl(null)]),
+    extraHotKeys: this.formBuilder.nonNullable.control(false)
+  });
 
-  allOrderbooksHotKeysTypes = [
-    'cancelOrdersAll',
-    'cancelOrdersAndClosePositionsByMarketAll',
-    'cancelOrdersKey',
-    'closePositionsKey',
-    'centerOrderbookKey'
-  ];
-
-  activeOrderbookHotKeysTypes = [
-    'cancelOrderbookOrders',
-    'cancelStopOrdersCurrent',
-    'closeOrderbookPositions',
-    'reverseOrderbookPositions',
-    'buyMarket',
-    'sellMarket',
-    'sellBestOrder',
-    'buyBestOrder',
-    'buyBestAsk',
-    'sellBestBid',
-    'increaseScale',
-    'decreaseScale'
-  ];
-
-  constructor(private readonly destroyRef: DestroyRef) {
+  constructor(
+    private readonly formBuilder: FormBuilder,
+    private readonly destroyRef: DestroyRef
+  ) {
     super();
   }
 
-  get workingVolumes(): UntypedFormArray {
-    return this.form!.get('workingVolumes') as UntypedFormArray;
-  }
-
   writeValue(value: HotKeysSettings | null): void {
-    if (!this.form || !value) {
+    if (value == null) {
       return;
     }
 
-    for (const property in value) {
-      const control = this.form.controls[property] as AbstractControl | undefined;
+    this.form.controls.extraHotKeys.setValue(value.extraHotKeys ?? false);
 
-      if (!control) {
+    this.form.controls.workingVolumes.clear();
+    for (const workingVolume of value.workingVolumes ?? []) {
+      this.form.controls.workingVolumes.push(this.createWorkingVolumeControl(workingVolume));
+    }
+
+    const hotKeyControls = [
+      ...this.form.controls.allOrderBooksHotKeys.controls,
+      ...this.form.controls.activeOrderBookHotKeys.controls
+    ];
+
+    for (const hotKeyControl of hotKeyControls) {
+      let currentValue = value[hotKeyControl.controls.action.value as keyof HotKeysMap];
+      if (currentValue == null) {
+        hotKeyControl.controls.hotKey.setValue(null);
         continue;
       }
 
-      if (property === 'workingVolumes') {
-        const workingVolumesControl = control as FormArray;
-        workingVolumesControl.clear();
-
-        const values = value[property] as string[] | undefined ?? [];
-        values.forEach(x => workingVolumesControl.push(this.createWorkingVolumeControl(x)));
-
-        continue;
+      if (typeof currentValue === 'string') {
+        // need migrate deprecated format
+        currentValue = {
+          key: currentValue,
+          code: '',
+          shiftKey: true
+        };
       }
 
-      control.setValue(value[property as keyof HotKeysSettings]);
+      hotKeyControl.controls.hotKey.setValue(currentValue);
     }
   }
 
   ngOnInit(): void {
-    const hotKeysControlsOBj = [ ...this.allOrderbooksHotKeysTypes, ...this.activeOrderbookHotKeysTypes]
-      .reduce((acc, curr) => {
-        acc[curr] = new UntypedFormControl(null, this.isKeyUniqueValidator());
-
-        return acc;
-      }, {} as { [hotkeyType: string]: UntypedFormControl });
-
-    this.form = new UntypedFormGroup({
-      ...hotKeysControlsOBj,
-      workingVolumes: new UntypedFormArray([]),
-      extraHotKeys: new UntypedFormControl(false)
-    });
-
-    this.form!.get('extraHotKeys')!.valueChanges
-      .pipe(
-        distinctUntilChanged(),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(() => {
-        const defaultHotKeys: HotKeysSettings = TerminalSettingsHelper.getDefaultHotkeys();
-
-        Object.entries(this.form!.controls).forEach(([key, control]) => {
-          if (typeof control.value === 'string') {
-            control.setValue(defaultHotKeys[<keyof HotKeysSettings>key]);
-          }
-        });
-      });
+    this.fillAvailableHotKeys();
 
     this.form.valueChanges.pipe(
       distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),
@@ -127,19 +98,18 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
     ).subscribe(() => {
       this.checkIfTouched();
       this.emitValue(
-        this.form!.valid
-          ? this.form!.value as HotKeysSettings
+        this.form.valid
+          ? this.formValueToSettings()
           : null
       );
     });
   }
 
-  hotkeyChange(e: KeyboardEvent, control: AbstractControl | null): void {
+  workingVolumeHotkeyChange(e: KeyboardEvent, control: AbstractControl | null): void {
     e.stopPropagation();
     if (e.key === 'Backspace') {
       control?.reset();
-    }
-    else {
+    } else {
       control?.setValue(e.key);
     }
 
@@ -151,28 +121,32 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
     e.preventDefault();
     e.stopPropagation();
 
-    this.workingVolumes.push(this.createWorkingVolumeControl(null));
+    this.form.controls.workingVolumes.push(this.createWorkingVolumeControl(null));
   }
 
   removeWorkingVolume(e: MouseEvent, index: number): void {
     e.preventDefault();
     e.stopPropagation();
 
-    this.workingVolumes.removeAt(index);
+    this.form.controls.workingVolumes.removeAt(index);
   }
 
   canRemoveWorkingVolume(): boolean {
-    return this.workingVolumes.length > 1;
+    return this.form.controls.workingVolumes.length > 1;
   }
 
-  isKeyUniqueValidator(): ValidatorFn {
+  protected needMarkTouched(): boolean {
+    return this.form.touched;
+  }
+
+  private isKeyUniqueValidator(): ValidatorFn {
     return control => {
       if (!control.value) {
         return null;
       }
 
-      const existedKeys = this.getAllKeys(this.form!.getRawValue());
-      if (existedKeys.filter(x => JSON.stringify(x) === JSON.stringify(control.value)).length > 1) {
+      const existedHotKeys = this.getCurrentFormHotKeys();
+      if (existedHotKeys.filter(x => JSON.stringify(x) === JSON.stringify(control.value)).length > 1) {
         return {
           notUnique: true
         };
@@ -182,38 +156,65 @@ export class HotKeySettingsFormComponent extends ControlValueAccessorBaseCompone
     };
   }
 
-  asFormControl(control: AbstractControl): UntypedFormControl {
-    return control as UntypedFormControl;
-  }
+  private formValueToSettings(): HotKeysSettings {
+    const hotKeyMap: HotKeysMap = {};
 
-  protected needMarkTouched(): boolean {
-    if (!this.form) {
-      return false;
+    const allHotKeys = [
+      ...this.form.value.allOrderBooksHotKeys ?? [],
+      ...this.form.value.activeOrderBookHotKeys ?? []
+    ];
+
+    for (const hotKey of allHotKeys) {
+      hotKeyMap[hotKey.action! as keyof HotKeysMap] = hotKey.hotKey!;
     }
 
-    return this.form.touched;
+    return {
+      ...hotKeyMap,
+      workingVolumes: this.form.value.workingVolumes!.map(x => x!),
+      extraHotKeys: this.form.value.extraHotKeys ?? false
+    };
   }
 
-  private getAllKeys(formValue: { [keyName: string]: HotKeyMeta | string | string[] | null }): (string | HotKeyMeta)[] {
-    const keys: (string | HotKeyMeta)[] = [];
-    for (const property in formValue) {
-      const value = formValue[property];
-      if (value == null) {
-        continue;
-      }
+  private fillAvailableHotKeys(): void {
+    const defaultHotKeys = TerminalSettingsHelper.getDefaultHotkeys();
 
-      if (Array.isArray(value)) {
-        keys.push(...(value as []));
-      }
-      else {
-        keys.push(value);
-      }
+    this.form.controls.allOrderBooksHotKeys.clear();
+    for (const hotKeyType of Object.keys(AllOrderBooksHotKeysTypes)) {
+      const defaultHotKey = defaultHotKeys[hotKeyType as keyof HotKeysSettings] as (HotKeyMeta | undefined);
+
+      this.form.controls.allOrderBooksHotKeys.push(this.createCommandHotKeyControl(hotKeyType, defaultHotKey ?? null));
     }
 
-    return keys;
+    this.form.controls.activeOrderBookHotKeys.clear();
+    for (const hotKeyType of Object.keys(ActiveOrderBookHotKeysTypes)) {
+      const defaultHotKey = defaultHotKeys[hotKeyType as keyof HotKeysSettings] as (HotKeyMeta | undefined);
+
+      this.form.controls.activeOrderBookHotKeys.push(this.createCommandHotKeyControl(hotKeyType, defaultHotKey ?? null));
+    }
   }
 
-  private createWorkingVolumeControl(value: string | null): UntypedFormControl {
-    return new UntypedFormControl(value, [Validators.required, this.isKeyUniqueValidator()]);
+  private getCurrentFormHotKeys(): DeprecatedHotKey[] {
+    const formValue = this.form.getRawValue();
+    const rawHotKeys = [
+      ...(formValue.allOrderBooksHotKeys ?? []).map(x => x.hotKey),
+      ...(formValue.activeOrderBookHotKeys ?? []).map(x => x.hotKey),
+      ...formValue.workingVolumes
+    ];
+
+    return rawHotKeys.filter((x): x is DeprecatedHotKey => x != null);
+  }
+
+  private createWorkingVolumeControl(value: string | null): FormControl<string | null> {
+    return this.formBuilder.nonNullable.control(value, [Validators.required, this.isKeyUniqueValidator()]);
+  }
+
+  private createCommandHotKeyControl(action: string, hotKey: HotKeyMeta | null): FormGroup<{
+    action: FormControl<string>;
+    hotKey: FormControl<HotKeyMeta | null>;
+  }> {
+    return this.formBuilder.nonNullable.group({
+      action: this.formBuilder.nonNullable.control(action),
+      hotKey: this.formBuilder.control<HotKeyMeta | null>(hotKey, this.isKeyUniqueValidator())
+    });
   }
 }

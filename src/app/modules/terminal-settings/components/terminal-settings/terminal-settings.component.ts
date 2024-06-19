@@ -1,6 +1,10 @@
 import {
-  Component, DestroyRef, ElementRef,
-  EventEmitter, Input, OnDestroy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
   OnInit,
   Output
 } from '@angular/core';
@@ -10,21 +14,29 @@ import {
   of,
   take
 } from 'rxjs';
-import {FullName} from '../../../../shared/models/user/full-name.model';
-import {TerminalSettings} from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import { FullName } from '../../../../shared/models/user/full-name.model';
 import {
-  UntypedFormControl,
-  UntypedFormGroup,
+  HotKeysSettings,
+  InstantNotificationsSettings,
+  PortfolioCurrencySettings,
+  ScalperOrderBookMouseActionsMap,
+  TerminalSettings
+} from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import {
+  FormBuilder,
   Validators
 } from '@angular/forms';
-import {ModalService} from "../../../../shared/services/modal.service";
-import {TranslatorService} from "../../../../shared/services/translator.service";
-import {AtsValidators} from '../../../../shared/utils/form-validators';
-import {TerminalSettingsHelper} from '../../../../shared/utils/terminal-settings-helper';
-import {AccountService} from "../../../../shared/services/account.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import {GeneralSettings, TabNames} from "../../models/terminal-settings.model";
+import { ModalService } from "../../../../shared/services/modal.service";
+import { TranslatorService } from "../../../../shared/services/translator.service";
+import { AtsValidators } from '../../../../shared/utils/form-validators';
+import { TerminalSettingsHelper } from '../../../../shared/utils/terminal-settings-helper';
+import { AccountService } from "../../../../shared/services/account.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
+import {
+  GeneralSettings,
+  TabNames
+} from "../../models/terminal-settings.model";
 
 @Component({
   selector: 'ats-terminal-settings',
@@ -38,7 +50,15 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   @Output() formChange = new EventEmitter<{ value: TerminalSettings | null, isInitial: boolean }>();
   @Output() tabChange = new EventEmitter<number>();
   tabNames = TabNames;
-  settingsForm?: UntypedFormGroup;
+
+  readonly settingsForm = this.formBuilder.group({
+    generalSettings: this.formBuilder.nonNullable.control<GeneralSettings>({}, Validators.required),
+    portfoliosCurrency: this.formBuilder.nonNullable.control<PortfolioCurrencySettings[]>([], AtsValidators.notNull),
+    hotKeysSettings: this.formBuilder.control<HotKeysSettings | null>(null, Validators.required),
+    instantNotificationsSettings: this.formBuilder.control<InstantNotificationsSettings | null>(null, Validators.required),
+    scalperOrderBookMouseActions: this.formBuilder.control<ScalperOrderBookMouseActionsMap | null>(null, Validators.required),
+  });
+
   fullName$: Observable<FullName> = of({
     firstName: '',
     lastName: '',
@@ -52,7 +72,8 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     private readonly modal: ModalService,
     private readonly translatorService: TranslatorService,
     private readonly destroyRef: DestroyRef,
-    private readonly elRef: ElementRef
+    private readonly elRef: ElementRef,
+    private readonly formBuilder: FormBuilder
   ) {
   }
 
@@ -97,16 +118,12 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
       });
   }
 
-  getFormControl(key: string): UntypedFormControl | null {
-    return this.settingsForm?.controls[key] as UntypedFormControl | undefined ?? null;
-  }
-
   private initForm(): void {
     this.terminalSettingsService.getSettings()
       .pipe(
         take(1)
       ).subscribe(settings => {
-      this.settingsForm = this.buildForm(settings);
+      this.setCurrentFormValues(settings);
 
       this.formChange.emit({value: this.formToModel(), isInitial: true});
 
@@ -116,7 +133,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
         )
         .subscribe(() => {
           this.formChange.emit({
-              value: (this.settingsForm?.valid ?? false)
+              value: (this.settingsForm.valid)
                 ? this.formToModel()!
                 : null,
               isInitial: false
@@ -127,7 +144,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   }
 
   private formToModel(): TerminalSettings | null {
-    const formValue = this.settingsForm?.value as Partial<TerminalSettings & { generalSettings: GeneralSettings}> | undefined;
+    const formValue = this.settingsForm.value as Partial<TerminalSettings & { generalSettings: GeneralSettings}> | undefined;
     if (!formValue) {
       return null;
     }
@@ -142,26 +159,25 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     return model as TerminalSettings;
   }
 
-  private buildForm(currentSettings: TerminalSettings): UntypedFormGroup {
-    return new UntypedFormGroup({
-        generalSettings: new UntypedFormControl({
-            designSettings: currentSettings.designSettings,
-            language: currentSettings.language,
-            timezoneDisplayOption: currentSettings.timezoneDisplayOption,
-            userIdleDurationMin: currentSettings.userIdleDurationMin,
-            badgesBind: currentSettings.badgesBind,
-            badgesColors: currentSettings.badgesColors,
-            tableRowHeight: currentSettings.tableRowHeight
-          } as GeneralSettings,
-          Validators.required),
-        portfoliosCurrency: new UntypedFormControl(currentSettings.portfoliosCurrency ?? [], AtsValidators.notNull),
-        hotKeysSettings: new UntypedFormControl(currentSettings.hotKeysSettings, Validators.required),
-        instantNotificationsSettings: new UntypedFormControl(currentSettings.instantNotificationsSettings, Validators.required),
-        scalperOrderBookMouseActions: new UntypedFormControl(
-          currentSettings.scalperOrderBookMouseActions ?? TerminalSettingsHelper.getScalperOrderBookMouseActionsScheme1(),
-          Validators.required
-        ),
-      }
-    );
+  private setCurrentFormValues(settings: TerminalSettings): void {
+    this.settingsForm.reset();
+
+    this.settingsForm.controls.generalSettings.setValue({
+      designSettings: settings.designSettings,
+      language: settings.language,
+      timezoneDisplayOption: settings.timezoneDisplayOption,
+      userIdleDurationMin: settings.userIdleDurationMin,
+      badgesBind: settings.badgesBind,
+      badgesColors: settings.badgesColors,
+      tableRowHeight: settings.tableRowHeight
+    });
+
+    this.settingsForm.controls.portfoliosCurrency.setValue(settings.portfoliosCurrency ?? []);
+
+    this.settingsForm.controls.hotKeysSettings.setValue(settings.hotKeysSettings ?? null);
+
+    this.settingsForm.controls.instantNotificationsSettings.setValue(settings.instantNotificationsSettings ?? null);
+
+    this.settingsForm.controls.scalperOrderBookMouseActions.setValue(settings.scalperOrderBookMouseActions ?? TerminalSettingsHelper.getScalperOrderBookMouseActionsScheme1());
   }
 }

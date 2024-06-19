@@ -16,54 +16,56 @@
     </div>
     <nz-divider></nz-divider>
     <h3>{{t('terminalSettingsHotKeySettingsForm.allOrderbooksHeader')}}</h3>
-    <ng-container *ngFor="let keyType of allOrderbooksHotKeysTypes">
-      <ats-hot-key-input
-        [actionName]="keyType"
-        [formControlName]="keyType"
-      ></ats-hot-key-input>
-
-      <div
-        *ngIf="form.controls[keyType]!.hasError('notUnique')"
-        class="mb-10"
-        nz-typography
-        nzType="danger"
-      >
-        {{t('terminalSettingsHotKeySettingsForm.notUniqueError')}}
-      </div>
+    <ng-container *ngFor="let hotKeyControl of form.controls.allOrderBooksHotKeys.controls">
+      <ng-container [formGroup]="hotKeyControl">
+        <ats-hot-key-input
+          [actionName]="hotKeyControl.controls.action.value"
+          [formControl]="hotKeyControl.controls.hotKey"
+        ></ats-hot-key-input>
+        <div
+          *ngIf="hotKeyControl.controls.hotKey.hasError('notUnique')"
+          class="mb-10"
+          nz-typography
+          nzType="danger"
+        >
+          {{t('terminalSettingsHotKeySettingsForm.notUniqueError')}}
+        </div>
+      </ng-container>
     </ng-container>
 
     <nz-divider></nz-divider>
 
     <h3>{{t('terminalSettingsHotKeySettingsForm.mouseHoverOrderbookHeader')}}</h3>
-    <ng-container *ngFor="let keyType of activeOrderbookHotKeysTypes">
-      <ats-hot-key-input
-        [actionName]="keyType"
-        [formControlName]="keyType"
-      ></ats-hot-key-input>
-
-      <div
-        *ngIf="form.controls[keyType]!.hasError('notUnique')"
-        class="mb-10"
-        nz-typography
-        nzType="danger"
-      >
-        {{t('terminalSettingsHotKeySettingsForm.notUniqueError')}}
-      </div>
+    <ng-container *ngFor="let hotKeyControl of form.controls.activeOrderBookHotKeys.controls">
+      <ng-container [formGroup]="hotKeyControl">
+        <ats-hot-key-input
+          [actionName]="hotKeyControl.controls.action.value"
+          [formControl]="hotKeyControl.controls.hotKey"
+        ></ats-hot-key-input>
+        <div
+          *ngIf="hotKeyControl.controls.hotKey.hasError('notUnique')"
+          class="mb-10"
+          nz-typography
+          nzType="danger"
+        >
+          {{t('terminalSettingsHotKeySettingsForm.notUniqueError')}}
+        </div>
+      </ng-container>
     </ng-container>
 
     <nz-divider></nz-divider>
 
-    <ng-container *ngIf="workingVolumes">
+    <ng-container>
       <h3>{{t('terminalSettingsHotKeySettingsForm.workingVolumesHeader')}}</h3>
 
-      <div *ngFor="let ctrl of workingVolumes.controls; let i = index" class="working-volume">
+      <div *ngFor="let ctrl of form.controls.workingVolumes.controls; let i = index" class="working-volume">
         <nz-form-item class="form-item">
           <nz-form-label nzRequired>{{t('terminalSettingsHotKeySettingsForm.selectWorkingVolume')}} {{i + 1}}</nz-form-label>
           <nz-form-control [nzErrorTip]="controlError">
             <input
-              (keydown)="hotkeyChange($event, ctrl)"
+              (keydown)="workingVolumeHotkeyChange($event, ctrl)"
               (mousedown)="$event.stopPropagation()"
-              [formControl]="asFormControl(ctrl)"
+              [formControl]="ctrl"
               nz-input
               readonly
             />
@@ -82,7 +84,7 @@
         </button>
       </div>
 
-      <button (click)="addWorkingVolume($event)" [disabled]="!workingVolumes.valid"
+      <button (click)="addWorkingVolume($event)" [disabled]="!form.controls.workingVolumes.valid"
               class="add-working-volume-btn" nz-button
               nzType="dashed">
         <i nz-icon nzType="plus"></i>

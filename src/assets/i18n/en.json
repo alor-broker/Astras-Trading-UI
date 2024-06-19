@@ -100,5 +100,7 @@
   "numberDisplayFormatOptions": {
     "default": "Default",
     "letterSuffix": "Abbreviated"
-  }
+  },
+
+  "addToList": "Add to list"
 }

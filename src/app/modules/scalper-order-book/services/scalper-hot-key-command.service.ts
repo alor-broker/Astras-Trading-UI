@@ -18,14 +18,19 @@ import {
   startWith,
   tap
 } from "rxjs/operators";
-import { HotKeyMeta, HotKeysSettings } from "../models/terminal-settings/terminal-settings.model";
-import { TerminalCommand } from "../models/terminal-command";
-import { ModifierKeys } from "../models/modifier-keys.model";
-import {TerminalSettingsService} from "./terminal-settings.service";
+import {
+  ModifierKeys,
+  ScalperCommand
+} from "../models/scalper-command";
+import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
+import {
+  HotKeyMeta,
+  HotKeysSettings
+} from "../../../shared/models/terminal-settings/terminal-settings.model";
 
 @Injectable({ providedIn: 'root' })
-export class HotKeyCommandService {
-  public readonly commands$: Observable<TerminalCommand>;
+export class ScalperHotKeyCommandService {
+  public readonly commands$: Observable<ScalperCommand>;
   public readonly modifiers$: Observable<ModifierKeys>;
   private readonly inputs = ['INPUT', 'TEXTAREA'];
 
@@ -37,27 +42,7 @@ export class HotKeyCommandService {
     this.modifiers$ = this.getModifierKeysStream();
   }
 
-  private static mapToCommandType(settingCode: string): string {
-    // Needs to map old commands names to new more informative
-    switch (settingCode) {
-      case 'cancelOrdersKey':
-        return 'cancelLimitOrdersAll';
-      case 'closePositionsKey':
-        return 'closePositionsByMarketAll';
-      case 'centerOrderbookKey':
-        return 'centerOrderbook';
-      case 'cancelOrderbookOrders':
-        return 'cancelLimitOrdersCurrent';
-      case 'closeOrderbookPositions':
-        return 'closePositionsByMarketCurrent';
-      case 'reverseOrderbookPositions':
-        return 'reversePositionsByMarketCurrent';
-      default:
-        return settingCode;
-    }
-  }
-
-  private getCommandsStream(): Observable<TerminalCommand> {
+  private getCommandsStream(): Observable<ScalperCommand> {
     return this.terminalSettingsService.getSettings().pipe(
       map(x => x.hotKeysSettings),
       filter((x): x is HotKeysSettings => !!x),
@@ -70,7 +55,7 @@ export class HotKeyCommandService {
             if (typeof key === 'string' || key instanceof String) {
               hotKeyMap.set(
                 key.toString(),
-                { commandType: HotKeyCommandService.mapToCommandType(command) }
+                { commandType: command }
               );
 
               return;
@@ -79,7 +64,7 @@ export class HotKeyCommandService {
             if ((key as HotKeyMeta).code && (key as HotKeyMeta).key) {
               hotKeyMap.set(
                 key as HotKeyMeta,
-                { commandType: HotKeyCommandService.mapToCommandType(command) }
+                { commandType: command }
               );
             }
 
@@ -88,7 +73,7 @@ export class HotKeyCommandService {
                 hotKeyMap.set(
                   value.toString(),
                   {
-                    commandType: HotKeyCommandService.mapToCommandType(command),
+                    commandType: command,
                     index
                   }
                 );
@@ -130,19 +115,18 @@ export class HotKeyCommandService {
               }
             });
 
-
             if (mappedCommand != null) {
               return {
                 key: x.key,
                 type: (mappedCommand as { commandType: string, index?: number }).commandType,
                 index: (mappedCommand as { commandType: string, index?: number }).index
-              } as TerminalCommand;
+              } as ScalperCommand;
             }
 
             return {
               key: x.key,
               type: x.key
-            } as TerminalCommand;
+            } as ScalperCommand;
           })
         );
       }),

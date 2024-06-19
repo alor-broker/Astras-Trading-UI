@@ -19,7 +19,7 @@
             <nz-form-item *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '')">
               <nz-form-label nzFor="exchange" nzRequired>{{t('techChartSettings.exchangeLabel')}}</nz-form-label>
               <nz-form-control>
-                <input nz-input type="text" [value]="form.value.instrument?.exchange" readonly/>
+                <input nz-input type="text" [value]="form.value.instrument?.exchange" disabled/>
               </nz-form-control>
             </nz-form-item>
             <nz-form-item *ngIf="form.value.instrument && !isSyntheticInstrument(form.value?.instrument?.symbol ?? '')">
