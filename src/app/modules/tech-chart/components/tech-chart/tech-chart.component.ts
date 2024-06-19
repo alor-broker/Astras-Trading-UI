@@ -514,7 +514,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       this.symbolChangeSub.add(() => this.chartState?.widget!.activeChart().onSymbolChanged().unsubscribe(null, this.symbolChangeCallback));
 
       this.chartState!.widget.onShortcut("ctrl+f", () => {
-        this.chartState!.widget.activeChart().executeActionById("symbolSearch");
+        this.instrumentSearchService.openModal(this.chartState!.widget.activeChart().symbol() ?? null);
       });
     });
   }

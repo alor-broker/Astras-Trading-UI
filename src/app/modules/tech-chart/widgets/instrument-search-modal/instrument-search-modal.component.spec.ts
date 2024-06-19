@@ -16,7 +16,7 @@ fdescribe('InstrumentSearchModalComponent', () => {
   let component: InstrumentSearchModalComponent;
   let fixture: ComponentFixture<InstrumentSearchModalComponent>;
 
-  const minusSign = '−';
+  const minusSign = '－';
   const modalOpened$ = new BehaviorSubject(false);
   const modalParams$ = new BehaviorSubject('123');
 

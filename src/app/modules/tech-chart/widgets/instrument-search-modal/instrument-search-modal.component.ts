@@ -1,6 +1,6 @@
 import { Component, DestroyRef, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { InstrumentSearchService } from "../../services/instrument-search.service";
-import { BehaviorSubject, Observable, of } from "rxjs";
+import { BehaviorSubject, Observable, of, tap } from "rxjs";
 import { AbstractControl, FormControl, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
@@ -18,7 +18,7 @@ import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.he
 })
 export class InstrumentSearchModalComponent implements OnInit {
 
-  private readonly minusSign = '−'; // This is not character that on keyboard
+  readonly minusSign = '－'; // This is not character that on keyboard
   private readonly specialSymbols = ['+', '*', '/', '[', ']', this.minusSign];
 
   isVisible$!: Observable<boolean>;
@@ -28,7 +28,7 @@ export class InstrumentSearchModalComponent implements OnInit {
       return null;
     }
 
-    return { expressionInvalid: true };
+    return { expressionInvalid: true, warning: true };
   };
 
   searchControl = new FormControl('', [ Validators.required, this.expressionValidator ]);
@@ -38,11 +38,12 @@ export class InstrumentSearchModalComponent implements OnInit {
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
   private readonly filter$ = new BehaviorSubject<SearchFilter | null>(null);
+  autocompleteLoading$ = new BehaviorSubject(false);
 
   constructor(
     private readonly service: InstrumentSearchService,
     private readonly instrumentsService: InstrumentsService,
-    private readonly destroyRef: DestroyRef
+    private readonly destroyRef: DestroyRef,
   ) {
   }
 
@@ -50,6 +51,7 @@ export class InstrumentSearchModalComponent implements OnInit {
     this.isVisible$ = this.service.isModalOpened$;
 
     this.filteredInstruments$ = this.filter$.pipe(
+      tap(() => this.autocompleteLoading$.next(true)),
       debounceTime(200),
       switchMap(filter => {
           if (!filter) {
@@ -57,7 +59,8 @@ export class InstrumentSearchModalComponent implements OnInit {
           }
           return this.instrumentsService.getInstruments(filter);
         }
-      )
+      ),
+      tap(() => this.autocompleteLoading$.next(false))
     );
 
     this.service.modalParams$
@@ -175,5 +178,13 @@ export class InstrumentSearchModalComponent implements OnInit {
     }
 
     return i;
+  }
+
+  modalOpened(): void {
+    setTimeout(() => {
+      this.searchInput.nativeElement.focus();
+      this.searchInput.nativeElement.selectionStart = 0;
+      this.searchInput.nativeElement.selectionEnd = this.searchControl.value?.length ?? 0;
+    }, 0);
   }
 }
