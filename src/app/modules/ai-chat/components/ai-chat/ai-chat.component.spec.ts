@@ -25,13 +25,15 @@ describe('AiChatComponent', () => {
         mockComponent({ selector: 'ats-chat-container' }),
         mockComponent({ selector: 'ats-chat-message-container', inputs: ['message'] }),
         mockComponent({ selector: 'ats-chat-status', inputs: ['status'] }),
-        mockComponent({ selector: 'ats-message-input', inputs: ['messagePlaceholder'] })
+        mockComponent({ selector: 'ats-message-input', inputs: ['messagePlaceholder'] }),
+        mockComponent({ selector: 'ats-chat-message-sample-container', inputs: ['sampleMessage'] })
       ],
       providers: [
         {
           provide: AiChatService,
           useValue: {
-            sendMessage: jasmine.createSpy('sendMessage').and.returnValue(new Subject())
+            sendMessage: jasmine.createSpy('sendMessage').and.returnValue(new Subject()),
+            getSamples: jasmine.createSpy('getSamples').and.returnValue(new Subject())
           }
         }
       ]

@@ -143,7 +143,8 @@ export const ngZorroMockComponents = [
       'nzWrapClassName',
       'nzTitle',
       'nzSize',
-      'nzContent'
+      'nzContent',
+      'nzExtra'
     ]
   }),
   mockComponent({

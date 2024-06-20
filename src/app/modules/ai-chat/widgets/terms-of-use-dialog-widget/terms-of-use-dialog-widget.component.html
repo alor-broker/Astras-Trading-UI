@@ -1,0 +1,18 @@
+<ng-container *transloco="let t; scope: 'ai-chat/terms-of-use-dialog-widget'">
+  <nz-modal
+    (nzOnCancel)="handleClose()"
+    [nzMaskClosable]='false'
+    [nzTitle]="t('aiChatTermsOfUseDialogWidget.title')"
+    [nzVisible]='atsVisible'
+    nzClosable="true"
+  >
+    <ng-container *nzModalContent>
+      <iframe [src]='getPreviewLink()' height='100%' width='100%'>
+      </iframe>
+    </ng-container>
+    <ng-container *nzModalFooter>
+      <button (click)="handleClose()" nz-button nzType="primary">{{ t('okBtnText') }}</button>
+    </ng-container>
+  </nz-modal>
+</ng-container>
+

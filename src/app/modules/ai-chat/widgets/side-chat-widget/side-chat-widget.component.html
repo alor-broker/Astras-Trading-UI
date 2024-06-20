@@ -7,13 +7,22 @@
     [nzTitle]="t('aiChatSideChatWidget.title')"
     [nzVisible]="atsVisible"
     [nzWrapClassName]="'ai-chat'"
+    [nzExtra]="extra"
     nzPlacement="right"
   >
   </nz-drawer>
   <ng-template #content>
     <ats-ai-chat></ats-ai-chat>
   </ng-template>
+
+  <ng-template #extra>
+    <span  nz-typography class="cursor-pointer" (click)="isTermOfUseDialogVisible = true">
+      <u>{{t('aiChatSideChatWidget.termsOfUseLink')}}</u>
+    </span>
+  </ng-template>
 </ng-container>
+
+<ats-terms-of-use-dialog-widget [(atsVisible)]="isTermOfUseDialogVisible"></ats-terms-of-use-dialog-widget>
 
 
 

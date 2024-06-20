@@ -4,6 +4,16 @@
   >
   </ats-chat-message-container>
 
+  <ng-container ngProjectAs="ats-chat-message-sample-container" *ngIf="showSamples">
+    <ats-chat-message-sample-container
+      *ngFor="let sample of (messageSamples$ | async) ?? []"
+      [sampleMessage]="sample"
+      (selected)="useSampleMessage($event)"
+    >
+    </ats-chat-message-sample-container>
+  </ng-container>
+
+
   <ats-chat-status [status]="chatStatus$ | async"></ats-chat-status>
 
   <ats-message-input

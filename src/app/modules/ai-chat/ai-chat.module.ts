@@ -14,6 +14,14 @@ import { FormsModule } from "@angular/forms";
 import { ChatMessageContainerComponent } from './components/chat-message-container/chat-message-container.component';
 import { TextMessageComponent } from './components/messages/text-message/text-message.component';
 import { NzAvatarModule } from "ng-zorro-antd/avatar";
+import { ChatMessageSampleContainerComponent } from "./components/chat-message-sample-container/chat-message-sample-container.component";
+import { NzTypographyComponent } from "ng-zorro-antd/typography";
+import { TermsOfUseDialogWidgetComponent } from "./widgets/terms-of-use-dialog-widget/terms-of-use-dialog-widget.component";
+import {
+  NzModalComponent,
+  NzModalContentDirective,
+  NzModalFooterDirective
+} from "ng-zorro-antd/modal";
 
 @NgModule({
   declarations: [
@@ -23,7 +31,9 @@ import { NzAvatarModule } from "ng-zorro-antd/avatar";
     AiChatComponent,
     ChatStatusComponent,
     ChatMessageContainerComponent,
-    TextMessageComponent
+    TextMessageComponent,
+    ChatMessageSampleContainerComponent,
+    TermsOfUseDialogWidgetComponent
   ],
   exports: [
     SideChatWidgetComponent
@@ -36,7 +46,11 @@ import { NzAvatarModule } from "ng-zorro-antd/avatar";
     NzInputModule,
     NzButtonModule,
     FormsModule,
-    NzAvatarModule
+    NzAvatarModule,
+    NzTypographyComponent,
+    NzModalComponent,
+    NzModalContentDirective,
+    NzModalFooterDirective
   ]
 })
 export class AiChatModule {

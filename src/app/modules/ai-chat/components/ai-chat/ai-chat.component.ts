@@ -22,6 +22,7 @@ import {
 } from "rxjs";
 import { DisplayStatus } from "../chat-status/chat-status.component";
 import { AiChatService } from "../../services/ai-chat.service";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: 'ats-ai-chat',
@@ -32,7 +33,10 @@ export class AiChatComponent implements OnInit, OnDestroy {
   readonly displayMessages: Message<any>[] = [];
 
   readonly chatStatus$ = new BehaviorSubject<DisplayStatus | null>(null);
+  messageSamples$!: Observable<TextMessageContent[]>;
   private translator$!: Observable<TranslatorFn>;
+
+  showSamples = true;
 
   constructor(
     private readonly translatorService: TranslatorService,
@@ -46,7 +50,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.translator$ = this.translatorService.getTranslator('ai-chat').pipe(
-      shareReplay({bufferSize: 1, refCount: true})
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
     this.translator$.pipe(
@@ -59,6 +63,17 @@ export class AiChatComponent implements OnInit, OnDestroy {
         }
       ));
     });
+
+    this.messageSamples$ = this.aiChatService.getSamples().pipe(
+      map(r => {
+        if (r == null) {
+          return [];
+        }
+
+        return r.samples
+          .sort((a, b) => a.text.length - b.text.length);
+      })
+    );
   }
 
   trackByMessage(index: number, item: Message<any>): string {
@@ -82,12 +97,14 @@ export class AiChatComponent implements OnInit, OnDestroy {
         text: translator(['messages', 'botThinking'])
       });
 
+      this.showSamples = false;
+
       this.aiChatService.sendMessage({
         text: message.text
       }).pipe(
         take(1)
       ).subscribe(response => {
-        if(!response) {
+        if (!response) {
           this.displayMessages.push(this.createBotMessage<TextMessageContent>(
             MessageType.Text,
             {
@@ -105,6 +122,12 @@ export class AiChatComponent implements OnInit, OnDestroy {
 
         this.chatStatus$.next(null);
       });
+    });
+  }
+
+  useSampleMessage(content: TextMessageContent): void {
+    this.sendMessage({
+      text: content.text
     });
   }
 

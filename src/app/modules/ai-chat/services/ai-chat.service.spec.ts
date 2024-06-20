@@ -2,10 +2,11 @@ import { TestBed } from '@angular/core/testing';
 
 import { AiChatService } from './ai-chat.service';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { EnvironmentService } from "../../../shared/services/environment.service";
 import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
 import { Subject } from "rxjs";
+import { LoggerService } from "../../../shared/services/logging/logger.service";
+import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
 
 describe('AiChatService', () => {
   let service: AiChatService;
@@ -17,9 +18,9 @@ describe('AiChatService', () => {
       ],
       providers: [
         {
-          provide: ErrorHandlerService,
+          provide: LoggerService,
           useValue: {
-            handleError: jasmine.createSpy('handleError').and.callThrough()
+            error: jasmine.createSpy('error').and.callThrough()
           }
         },
         {
@@ -34,6 +35,12 @@ describe('AiChatService', () => {
           provide: DashboardContextService,
           useValue: {
             selectedDashboard$: new Subject()
+          }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
           }
         }
       ]

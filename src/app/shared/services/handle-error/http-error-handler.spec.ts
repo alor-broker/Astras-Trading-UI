@@ -13,13 +13,7 @@ describe('HttpErrorHandler', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: NzNotificationService, useValue: notificationSpy },
-        HttpErrorHandler,
-        {
-          provide: LoggerService,
-          useValue: {
-            error: jasmine.createSpy('error').and.callThrough()
-          }
-        }
+        HttpErrorHandler
       ],
     });
     service = TestBed.inject(HttpErrorHandler);
