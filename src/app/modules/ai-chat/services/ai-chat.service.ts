@@ -82,6 +82,7 @@ export class AiChatService {
 
   getSuggestions(): Observable<SuggestionsResponse | null> {
     return this.httpClient.get<SuggestionsResponse>(`${this.baseUrl}/features`).pipe(
+      catchHttpError<SuggestionsResponse | null>(null, this.getErrorHandler()),
       take(1)
     );
   }

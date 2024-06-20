@@ -7,7 +7,7 @@ import { ChatSuggestedMessageContainerComponent } from './chat-suggested-message
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { mockComponent } from "../../../../shared/utils/testing";
 
-describe('ChatMessageSampleContainerComponent', () => {
+describe('ChatSuggestedMessageContainerComponent', () => {
   let component: ChatSuggestedMessageContainerComponent;
   let fixture: ComponentFixture<ChatSuggestedMessageContainerComponent>;
 
