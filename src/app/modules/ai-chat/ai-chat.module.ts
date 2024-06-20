@@ -14,7 +14,6 @@ import { FormsModule } from "@angular/forms";
 import { ChatMessageContainerComponent } from './components/chat-message-container/chat-message-container.component';
 import { TextMessageComponent } from './components/messages/text-message/text-message.component';
 import { NzAvatarModule } from "ng-zorro-antd/avatar";
-import { ChatMessageSampleContainerComponent } from "./components/chat-message-sample-container/chat-message-sample-container.component";
 import { NzTypographyComponent } from "ng-zorro-antd/typography";
 import { TermsOfUseDialogWidgetComponent } from "./widgets/terms-of-use-dialog-widget/terms-of-use-dialog-widget.component";
 import {
@@ -22,6 +21,7 @@ import {
   NzModalContentDirective,
   NzModalFooterDirective
 } from "ng-zorro-antd/modal";
+import { ChatSuggestedMessageContainerComponent } from "./components/chat-suggested-message-container/chat-suggested-message-container.component";
 
 @NgModule({
   declarations: [
@@ -32,8 +32,8 @@ import {
     ChatStatusComponent,
     ChatMessageContainerComponent,
     TextMessageComponent,
-    ChatMessageSampleContainerComponent,
-    TermsOfUseDialogWidgetComponent
+    TermsOfUseDialogWidgetComponent,
+    ChatSuggestedMessageContainerComponent
   ],
   exports: [
     SideChatWidgetComponent

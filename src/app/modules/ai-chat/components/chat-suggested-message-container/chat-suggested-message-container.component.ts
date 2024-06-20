@@ -15,9 +15,9 @@ import {
 } from "@angular/animations";
 
 @Component({
-  selector: 'ats-chat-message-sample-container',
-  templateUrl: './chat-message-sample-container.component.html',
-  styleUrl: './chat-message-sample-container.component.less',
+  selector: 'ats-chat-suggested-message-container',
+  templateUrl: './chat-suggested-message-container.component.html',
+  styleUrl: './chat-suggested-message-container.component.less',
   animations: [
     trigger('flyInOut', [
       state('in', style({transform: 'translateX(0)', opacity: 1})),
@@ -26,9 +26,9 @@ import {
     ]),
   ],
 })
-export class ChatMessageSampleContainerComponent {
+export class ChatSuggestedMessageContainerComponent {
   @Input({ required: true })
-  sampleMessage!: TextMessageContent;
+  suggestedMessage!: TextMessageContent;
 
   @Output()
   selected = new EventEmitter<TextMessageContent>();

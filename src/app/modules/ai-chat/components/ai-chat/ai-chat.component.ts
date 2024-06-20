@@ -33,10 +33,9 @@ export class AiChatComponent implements OnInit, OnDestroy {
   readonly displayMessages: Message<any>[] = [];
 
   readonly chatStatus$ = new BehaviorSubject<DisplayStatus | null>(null);
-  messageSamples$!: Observable<TextMessageContent[]>;
+  suggestedMessages$!: Observable<TextMessageContent[]>;
+  showSuggestedMessages = true;
   private translator$!: Observable<TranslatorFn>;
-
-  showSamples = true;
 
   constructor(
     private readonly translatorService: TranslatorService,
@@ -64,14 +63,15 @@ export class AiChatComponent implements OnInit, OnDestroy {
       ));
     });
 
-    this.messageSamples$ = this.aiChatService.getSamples().pipe(
+    this.suggestedMessages$ = this.aiChatService.getSuggestions().pipe(
       map(r => {
         if (r == null) {
           return [];
         }
 
-        return r.samples
-          .sort((a, b) => a.text.length - b.text.length);
+        return r.suggestions
+          .sort((a, b) => a.length - b.length)
+          .map(s => ({ text: s }));
       })
     );
   }
@@ -97,7 +97,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
         text: translator(['messages', 'botThinking'])
       });
 
-      this.showSamples = false;
+      this.showSuggestedMessages = false;
 
       this.aiChatService.sendMessage({
         text: message.text
@@ -125,7 +125,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
     });
   }
 
-  useSampleMessage(content: TextMessageContent): void {
+  useSuggestedMessage(content: TextMessageContent): void {
     this.sendMessage({
       text: content.text
     });

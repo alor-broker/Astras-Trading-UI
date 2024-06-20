@@ -6,15 +6,13 @@ import {
 import {
   NewMessageRequest,
   ReplyResponse,
-  SamplesResponse
+  SuggestionsResponse
 } from "../models/messages-http.model";
 import {
   combineLatest,
   Observable,
-  of,
   switchMap,
   take,
-  timer
 } from "rxjs";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { map } from "rxjs/operators";
@@ -82,23 +80,9 @@ export class AiChatService {
     );
   }
 
-  getSamples(): Observable<SamplesResponse | null> {
-    return timer(4000).pipe(
-      switchMap(() => {
-        return of({
-          samples: [
-            {
-              text: "ТОП-10 акций за вчерашний день"
-            },
-            {
-              text: "Отчет по портфелю"
-            },
-            {
-              text: "Комиссия за вчерашний день"
-            }
-          ]
-        });
-      })
+  getSuggestions(): Observable<SuggestionsResponse | null> {
+    return this.httpClient.get<SuggestionsResponse>(`${this.baseUrl}/features`).pipe(
+      take(1)
     );
   }
 
