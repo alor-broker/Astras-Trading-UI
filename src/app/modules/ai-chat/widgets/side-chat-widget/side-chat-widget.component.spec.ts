@@ -17,6 +17,7 @@ describe('SideChatWidgetComponent', () => {
       declarations: [
         SideChatWidgetComponent,
         mockComponent({selector: 'ats-ai-chat'}),
+        mockComponent({selector: 'ats-terms-of-use-dialog-widget', inputs: ['atsVisible']}),
         ...ngZorroMockComponents
       ]
     });

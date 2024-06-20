@@ -75,7 +75,8 @@
             "allowedCommonJsDependencies": [
               "flat",
               "json-patch",
-              "gql-query-builder"
+              "gql-query-builder",
+              "moment"
             ],
             "serviceWorker": true,
             "ngswConfigPath": "ngsw-config.json"

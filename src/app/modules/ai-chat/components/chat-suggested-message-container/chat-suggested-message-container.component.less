@@ -1,0 +1,33 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    ::ng-deep {
+      .content-body {
+        background-color: @btn-primary-bg;
+        border-color: @btn-default-border;
+        color: @btn-primary-color;
+      }
+    }
+  }
+});
+
+:host {
+  display: flex;
+  flex-direction: row-reverse;
+
+  ::ng-deep {
+    .content-body {
+      cursor: pointer;
+      opacity: 0.65;
+      border-radius: 8px 0 8px 8px;
+      border: 1px solid transparent;
+      padding: 5px;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+

@@ -4,6 +4,16 @@
   >
   </ats-chat-message-container>
 
+  <ng-container ngProjectAs="ats-chat-suggested-message-container" *ngIf="showSuggestedMessages">
+    <ats-chat-suggested-message-container
+      *ngFor="let suggestion of (suggestedMessages$ | async) ?? []"
+      [suggestedMessage]="suggestion"
+      (selected)="useSuggestedMessage($event)"
+    >
+    </ats-chat-suggested-message-container>
+  </ng-container>
+
+
   <ats-chat-status [status]="chatStatus$ | async"></ats-chat-status>
 
   <ats-message-input

@@ -17,6 +17,8 @@ export class SideChatWidgetComponent {
   @Output()
   atsVisibleChange = new EventEmitter<boolean>();
 
+  isTermOfUseDialogVisible = false;
+
   close(): void {
     this.atsVisible = false;
     this.atsVisibleChange.emit(this.atsVisible);
