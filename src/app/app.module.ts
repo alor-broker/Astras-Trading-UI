@@ -57,6 +57,7 @@ import {
 import { SwEventsLoggingHook } from "./shared/services/app-hook/sw-events-logging-hook";
 import { TitleHook } from "./shared/services/app-hook/title-hook.service";
 import { ApplyDesignSettingsHook } from "./shared/services/app-hook/apply-design-settings-hook.service";
+import { MarkdownModule } from "ngx-markdown";
 
 class CustomHandler implements TranslocoMissingHandler {
   handle(key: string, config: TranslocoConfig, params?: HashMap): string {
@@ -79,6 +80,7 @@ registerLocaleData(ru);
     HttpClientModule,
     StoreModule.forRoot({}),
     EffectsModule.forRoot(),
+    MarkdownModule.forRoot(),
     ...extModules,
     ApplicationMetaModule,
     TranslocoRootModule,

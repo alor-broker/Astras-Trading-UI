@@ -1,1 +1,7 @@
-<div class="content-body">{{ content.text }}</div>
+<div class="content-body">
+  <markdown
+    [data]="content.text"
+    [inline]="true"
+  >
+  </markdown>
+</div>

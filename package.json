@@ -50,6 +50,7 @@
     "ng2-charts": "^6.0.0",
     "ngx-device-info": "^3.0.6",
     "ngx-joyride": "^2.5.0",
+    "ngx-markdown": "^17.2.1",
     "rxjs": "^7.8.1",
     "tslib": "^2.4.0",
     "zod": "^3.22.4",

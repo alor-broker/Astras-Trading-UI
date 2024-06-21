@@ -22,6 +22,7 @@ import {
   NzModalFooterDirective
 } from "ng-zorro-antd/modal";
 import { ChatSuggestedMessageContainerComponent } from "./components/chat-suggested-message-container/chat-suggested-message-container.component";
+import { MarkdownModule } from "ngx-markdown";
 
 @NgModule({
   declarations: [
@@ -50,8 +51,9 @@ import { ChatSuggestedMessageContainerComponent } from "./components/chat-sugges
     NzTypographyComponent,
     NzModalComponent,
     NzModalContentDirective,
-    NzModalFooterDirective
-  ]
+    NzModalFooterDirective,
+    MarkdownModule
+  ],
 })
 export class AiChatModule {
 }
