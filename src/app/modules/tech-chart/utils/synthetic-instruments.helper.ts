@@ -112,10 +112,10 @@ export class SyntheticInstrumentsHelper {
       if (curr.isSpreadOperator) {
           return {
             ...acc,
-            close: acc.close + curr.value,
-            open: acc.open + curr.value,
-            high: acc.high + curr.value,
-            low: acc.low + curr.value,
+            close: acc.close + ' ' + curr.value + ' ',
+            open: acc.open + ' ' + curr.value + ' ',
+            high: acc.high + ' ' + curr.value + ' ',
+            low: acc.low + ' ' + curr.value + ' ',
           };
       } else {
         return {
