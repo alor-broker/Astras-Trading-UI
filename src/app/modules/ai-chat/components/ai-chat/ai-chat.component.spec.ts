@@ -26,7 +26,8 @@ describe('AiChatComponent', () => {
         mockComponent({ selector: 'ats-chat-message-container', inputs: ['message'] }),
         mockComponent({ selector: 'ats-chat-status', inputs: ['status'] }),
         mockComponent({ selector: 'ats-message-input', inputs: ['messagePlaceholder'] }),
-        mockComponent({ selector: 'ats-chat-suggested-message-container', inputs: ['suggestedMessage'] })
+        mockComponent({ selector: 'ats-chat-suggested-message-container', inputs: ['suggestedMessage'] }),
+        mockComponent({ selector: 'ats-start-new-conversation-button', inputs: ['atsDisabled'] })
       ],
       providers: [
         {

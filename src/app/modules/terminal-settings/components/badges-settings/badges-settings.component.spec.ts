@@ -1,6 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BadgesSettingsComponent } from './badges-settings.component';
+import {
+  commonTestProviders,
+  getTranslocoModule,
+  sharedModuleImportForTests
+} from "../../../../shared/utils/testing";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 describe('BadgesSettingsComponent', () => {
   let component: BadgesSettingsComponent;
@@ -8,7 +14,15 @@ describe('BadgesSettingsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [BadgesSettingsComponent]
+      declarations: [BadgesSettingsComponent],
+      imports: [
+        BrowserAnimationsModule,
+        getTranslocoModule(),
+        ...sharedModuleImportForTests
+      ],
+      providers: [
+        ...commonTestProviders
+      ]
     })
     .compileComponents();
 

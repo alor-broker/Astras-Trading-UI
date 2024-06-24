@@ -16,6 +16,7 @@ import {
 } from "../../../../shared/services/translator.service";
 import {
   BehaviorSubject,
+  delay,
   Observable,
   shareReplay,
   take
@@ -30,11 +31,12 @@ import { map } from "rxjs/operators";
   styleUrls: ['./ai-chat.component.less']
 })
 export class AiChatComponent implements OnInit, OnDestroy {
-  readonly displayMessages: Message<any>[] = [];
+  displayMessages: Message<any>[] = [];
 
   readonly chatStatus$ = new BehaviorSubject<DisplayStatus | null>(null);
   suggestedMessages$!: Observable<TextMessageContent[]>;
-  showSuggestedMessages = true;
+  showSuggestedMessages = false;
+  canRestartConversation = false;
   private translator$!: Observable<TranslatorFn>;
 
   constructor(
@@ -52,17 +54,6 @@ export class AiChatComponent implements OnInit, OnDestroy {
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    this.translator$.pipe(
-      take(1)
-    ).subscribe(translator => {
-      this.displayMessages.push(this.createBotMessage<TextMessageContent>(
-        MessageType.Text,
-        {
-          text: translator(['messages', 'botGreeting'])
-        }
-      ));
-    });
-
     this.suggestedMessages$ = this.aiChatService.getSuggestions().pipe(
       map(r => {
         if (r == null) {
@@ -74,6 +65,8 @@ export class AiChatComponent implements OnInit, OnDestroy {
           .map(s => ({ text: s }));
       })
     );
+
+    this.startNewConversation();
   }
 
   trackByMessage(index: number, item: Message<any>): string {
@@ -98,6 +91,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
       });
 
       this.showSuggestedMessages = false;
+      this.canRestartConversation = false;
 
       this.aiChatService.sendMessage({
         text: message.text
@@ -121,6 +115,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
         }
 
         this.chatStatus$.next(null);
+        this.canRestartConversation = true;
       });
     });
   }
@@ -130,6 +125,33 @@ export class AiChatComponent implements OnInit, OnDestroy {
       text: content.text
     });
   }
+
+  startNewConversation(): void {
+    // need delay on application loading because of language switching
+    // without delay default language message will be displayed
+    const greetingDelay = this.displayMessages.length > 0
+      ? 0
+      : 1000;
+
+    this.displayMessages = [];
+    this.chatStatus$.next(null);
+
+    this.translator$.pipe(
+      delay(greetingDelay),
+      take(1)
+    ).subscribe(translator => {
+      this.displayMessages.push(this.createBotMessage<TextMessageContent>(
+        MessageType.Text,
+        {
+          text: translator(['messages', 'botGreeting'])
+        }
+      ));
+    });
+
+    this.showSuggestedMessages = true;
+    this.canRestartConversation = false;
+  }
+
 
   private createBotMessage<T extends MessageContent>(messageType: MessageType, content: T): Message<T> {
     return {
