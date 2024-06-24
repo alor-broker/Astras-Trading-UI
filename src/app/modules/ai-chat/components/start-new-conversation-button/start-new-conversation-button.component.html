@@ -1,15 +1,14 @@
 <ng-container *transloco="let t; scope: 'ai-chat/start-new-conversation-button'">
-  <button
+  <a
     (click)="clicked.emit()"
-    nz-button
-    nzShape="round"
-    nzType="dashed"
-    nzSize="small"
+    [disabled]="atsDisabled"
     [nz-tooltip]="t('aiChatStartNewConversationButton.tooltip')"
     [nzTooltipMouseEnterDelay]="1"
-    [disabled]="atsDisabled"
+    nz-button
+    nzType="link"
   >
-    {{t('aiChatStartNewConversationButton.label')}}
-  </button>
+    <span nz-icon nzTheme="outline" nzType="edit"></span>
+    {{ t('aiChatStartNewConversationButton.label') }}
+  </a>
 </ng-container>
 

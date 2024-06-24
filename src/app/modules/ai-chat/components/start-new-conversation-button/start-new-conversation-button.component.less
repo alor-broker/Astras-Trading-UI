@@ -1,0 +1,12 @@
+@import "theme-mixin";
+@import 'scrollable-mixin';
+
+.themeMixin({
+  :host {
+    ::ng-deep {
+      .ant-btn-link:not([disabled]) {
+        color: @primary-color;
+      }
+    }
+  }
+});
