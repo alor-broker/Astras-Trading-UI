@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TextMessageComponent } from './text-message.component';
+import { mockComponent } from "../../../../../shared/utils/testing";
 
 describe('TextMessageComponent', () => {
   let component: TextMessageComponent;
@@ -8,7 +9,10 @@ describe('TextMessageComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TextMessageComponent]
+      declarations: [
+        TextMessageComponent,
+        mockComponent({ selector: 'markdown', inputs: ['data', 'inline'] })
+      ]
     });
     fixture = TestBed.createComponent(TextMessageComponent);
     component = fixture.componentInstance;
