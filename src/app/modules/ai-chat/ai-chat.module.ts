@@ -22,6 +22,8 @@ import {
   NzModalFooterDirective
 } from "ng-zorro-antd/modal";
 import { ChatSuggestedMessageContainerComponent } from "./components/chat-suggested-message-container/chat-suggested-message-container.component";
+import { StartNewConversationButtonComponent } from "./components/start-new-conversation-button/start-new-conversation-button.component";
+import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
 
 @NgModule({
   declarations: [
@@ -33,7 +35,8 @@ import { ChatSuggestedMessageContainerComponent } from "./components/chat-sugges
     ChatMessageContainerComponent,
     TextMessageComponent,
     TermsOfUseDialogWidgetComponent,
-    ChatSuggestedMessageContainerComponent
+    ChatSuggestedMessageContainerComponent,
+    StartNewConversationButtonComponent
   ],
   exports: [
     SideChatWidgetComponent
@@ -50,7 +53,8 @@ import { ChatSuggestedMessageContainerComponent } from "./components/chat-sugges
     NzTypographyComponent,
     NzModalComponent,
     NzModalContentDirective,
-    NzModalFooterDirective
+    NzModalFooterDirective,
+    NzTooltipDirective
   ]
 })
 export class AiChatModule {

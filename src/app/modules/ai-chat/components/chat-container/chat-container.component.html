@@ -1,4 +1,7 @@
 <div class="d-flex flex-column h-100">
+  <div class="d-flex justify-content-center mb-8">
+    <ng-content select="ats-start-new-conversation-button"></ng-content>
+  </div>
   <div class="flex-fill d-flex scrollable mb-10" #messagesContainer>
     <div class="messages w-100 d-flex flex-column flex-gap-10 pr-5">
       <ng-content select="ats-chat-message-container"></ng-content>
