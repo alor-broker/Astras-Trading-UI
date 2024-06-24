@@ -9,8 +9,12 @@ import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { TableConfig } from '../../models/table-config.model';
 import { BaseColumnSettings, FilterType } from "../../models/settings/table-settings.model";
 import { ResizeColumnDirective } from "../../directives/resize-column.directive";
-import { getTranslocoModule } from "../../utils/testing";
 import { FormControl } from "@angular/forms";
+import {
+  commonTestProviders,
+  getTranslocoModule,
+  sharedModuleImportForTests
+} from "../../utils/testing";
 
 @Component({
   template: `
@@ -83,8 +87,10 @@ describe('InfiniteScrollTableComponent', () => {
         NoopAnimationsModule,
         NzTableModule,
         NzDropDownModule,
+        ...sharedModuleImportForTests,
         getTranslocoModule()
-      ]
+      ],
+      providers: [ ...commonTestProviders ]
     })
     .compileComponents();
   });
