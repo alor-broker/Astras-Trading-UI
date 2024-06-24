@@ -24,6 +24,7 @@ import {
 import { ChatSuggestedMessageContainerComponent } from "./components/chat-suggested-message-container/chat-suggested-message-container.component";
 import { StartNewConversationButtonComponent } from "./components/start-new-conversation-button/start-new-conversation-button.component";
 import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
+import { MarkdownModule } from "ngx-markdown";
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
     NzModalComponent,
     NzModalContentDirective,
     NzModalFooterDirective,
-    NzTooltipDirective
+    NzTooltipDirective,
+    MarkdownModule
   ]
 })
 export class AiChatModule {
