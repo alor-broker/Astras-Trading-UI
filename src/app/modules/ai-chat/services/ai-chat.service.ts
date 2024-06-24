@@ -23,6 +23,7 @@ import { ApplicationErrorHandler } from "../../../shared/services/handle-error/e
 import moment from "moment";
 import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
 import { defaultBadgeColor } from "../../../shared/utils/instruments";
+import { GuidGenerator } from "../../../shared/utils/guid";
 
 interface PostMessageResponse {
   answer: string;
@@ -59,10 +60,11 @@ export class AiChatService {
         return this.httpClient.post<PostMessageResponse>(
           `${this.baseUrl}/messages`,
           {
-            threadId: 0,
+            threadId: Math.round(Math.random() * 1e10),
             sender: 'astras-ai-chart@mock.com',
             text: message.text,
-            meta: terminalContext
+            meta: terminalContext,
+            messageGuid: GuidGenerator.newGuid()
           }
         );
       }),
