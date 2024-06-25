@@ -8,7 +8,9 @@
       <nz-descriptions-item *ngIf="description.baseCurrency" [nzTitle]="t('infoDescription.baseCurrency')">{{description.baseCurrency}}</nz-descriptions-item>
       <nz-descriptions-item *ngIf="description.securityType" [nzTitle]="t('infoDescription.type')">{{description.securityType}}</nz-descriptions-item>
       <ng-container *ngIf="description.securityType === 'futures'">
-        <nz-descriptions-item *ngIf="getFutureType(description.cfiCode!) as futureType" [nzTitle]="t('infoDescription.futureType')">{{t('infoDescription.futureTypeValue.' + futureType)}}</nz-descriptions-item>
+        <nz-descriptions-item *ngIf="getFutureType(description.cfiCode!) as futureType" [nzTitle]="t('infoDescription.futureType')">
+          {{t('infoDescription.futureTypeValue.' + futureType)}}
+        </nz-descriptions-item>
         <nz-descriptions-item *ngIf="description.expirationDate" [nzTitle]="t('infoDescription.expirationDate')">
           {{description.expirationDate | date : 'dd.MM.yyyy'}}
         </nz-descriptions-item>

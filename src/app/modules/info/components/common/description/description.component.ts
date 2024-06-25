@@ -45,7 +45,7 @@ export class DescriptionComponent implements OnInit, OnDestroy {
     this.isActivated$.complete();
   }
 
-  getFutureType(symbolCfi: string): FutureType {
+  getFutureType(symbolCfi: string): FutureType | undefined {
     // FFXPSX - example CFI for future
     // see https://en.wikipedia.org/wiki/ISO_10962 for CFI code semantic.
     const futureTypeCode = symbolCfi[3];
@@ -58,6 +58,10 @@ export class DescriptionComponent implements OnInit, OnDestroy {
       return FutureType.Settlement;
     }
 
-    return FutureType.NonDeliverable;
+    if (futureTypeCode === 'N') {
+      return FutureType.NonDeliverable;
+    }
+
+    return undefined;
   }
 }
