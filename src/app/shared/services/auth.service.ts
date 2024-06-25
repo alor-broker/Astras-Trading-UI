@@ -145,8 +145,7 @@ export class AuthService {
         }
 
         return this.http.delete(`${this.accountUrl}/refresh/${userState?.ssoToken?.refreshToken}`);
-      }),
-      take(1)
+      })
     ).subscribe(() => {
       this.setCurrentUser({
         ssoToken: null,
