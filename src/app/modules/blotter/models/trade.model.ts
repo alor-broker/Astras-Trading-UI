@@ -2,7 +2,7 @@ import { Trade } from "../../../shared/models/trades/trade.model";
 
 export interface TradeFilter {
   id?: string;
-  orderno?: string;
+  orderNo?: string;
   symbol?: string;
   [key: string]: string | string[] | undefined;
 }

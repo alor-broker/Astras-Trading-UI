@@ -2,7 +2,7 @@ import { Side } from "../enums/side.model";
 
 export interface Trade {
   id: string; // 4205740801,
-  orderno: string; //  28452595240,
+  orderNo: string; //  28452595240,
   symbol: string;
   shortName: string;
   brokerSymbol: string;

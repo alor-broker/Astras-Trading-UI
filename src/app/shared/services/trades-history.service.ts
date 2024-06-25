@@ -24,7 +24,8 @@ export class TradesHistoryService {
     limit: number | null;
   }>): Observable<Trade[] | null> {
     let params: { [propName: string]: any } = {
-      descending: true
+      descending: true,
+      format: 'heavy'
     };
 
     if (options) {

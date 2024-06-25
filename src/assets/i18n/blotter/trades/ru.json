@@ -5,7 +5,7 @@
       "tooltip": "Идентификационный номер сделки",
       "searchDescription": "Поиск по Номеру"
     },
-    "orderno": {
+    "orderNo": {
       "name": "Заявка",
       "tooltip": "Номер заявки",
       "searchDescription": "Поиск по Заявке"

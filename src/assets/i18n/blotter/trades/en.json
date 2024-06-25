@@ -5,7 +5,7 @@
       "tooltip": "Trade identification number",
       "searchDescription": "Search by Id"
     },
-    "orderno": {
+    "orderNo": {
       "name": "Trade",
       "tooltip": "Trade number",
       "searchDescription": "Search by Trade"
