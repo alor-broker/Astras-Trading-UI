@@ -30,7 +30,10 @@ import {
   NzDropdownMenuComponent
 } from "ng-zorro-antd/dropdown";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { defaultBadgeColor, toInstrumentKey } from "../../../../shared/utils/instruments";
+import {
+  defaultBadgeColor,
+  toInstrumentKey
+} from "../../../../shared/utils/instruments";
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.service";
@@ -53,6 +56,15 @@ import { BaseTableComponent } from "../../../../shared/components/base-table/bas
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import {
+  CsvFormatter,
+  csvFormatterConfigDefaults,
+  ExportColumnMeta
+} from "../../../../shared/utils/file-export/csv-formatter";
+import {
+  FileSaver,
+  FileType
+} from "../../../../shared/utils/file-export/file-saver";
 
 interface DisplayInstrument extends WatchedInstrument {
   id: string;
@@ -75,16 +87,58 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
   collection$!: Observable<WatchlistCollection>;
 
   allColumns: BaseColumnSettings<WatchedInstrument>[] = [
-    { id: 'symbol', displayName: "Тикер", tooltip: 'Биржевой идентификатор ценной бумаги', minWidth: 55 },
-    { id: 'shortName', displayName: "Назв.", tooltip: 'Название тикера', minWidth: 60 },
-    { id: 'price', displayName: "Цена", tooltip: 'Цена последней сделки' },
-    { id: 'priceChange', displayName: "Изм. цены", tooltip: 'Изменение за указанный промежуток' },
-    { id: 'priceChangeRatio', displayName: "Изм. цены, %", tooltip: 'Изменение указанный промежуток в %' },
-    { id: 'maxPrice', displayName: "Д.макс.", tooltip: 'Максимальная цена за день' },
-    { id: 'minPrice', displayName: "Д.мин.", tooltip: 'Минимальная цена за день' },
-    { id: 'volume', displayName: "Объём", tooltip: 'Объём' },
-    { id: 'openPrice', displayName: "Откр.", tooltip: 'Цена на начало дня' },
-    { id: 'closePrice', displayName: "Закр.", tooltip: 'Цена на конец предыдущего дня' },
+    {
+      id: 'symbol',
+      displayName: "Тикер",
+      tooltip: 'Биржевой идентификатор ценной бумаги',
+      minWidth: 55
+    },
+    {
+      id: 'shortName',
+      displayName: "Назв.",
+      tooltip: 'Название тикера',
+      minWidth: 60
+    },
+    {
+      id: 'price',
+      displayName: "Цена",
+      tooltip: 'Цена последней сделки'
+    },
+    {
+      id: 'priceChange',
+      displayName: "Изм. цены",
+      tooltip: 'Изменение за указанный промежуток'
+    },
+    {
+      id: 'priceChangeRatio',
+      displayName: "Изм. цены, %",
+      tooltip: 'Изменение указанный промежуток в %'
+    },
+    {
+      id: 'maxPrice',
+      displayName: "Д.макс.",
+      tooltip: 'Максимальная цена за день'
+    },
+    {
+      id: 'minPrice',
+      displayName: "Д.мин.",
+      tooltip: 'Минимальная цена за день'
+    },
+    {
+      id: 'volume',
+      displayName: "Объём",
+      tooltip: 'Объём'
+    },
+    {
+      id: 'openPrice',
+      displayName: "Откр.",
+      tooltip: 'Цена на начало дня'
+    },
+    {
+      id: 'closePrice',
+      displayName: "Закр.",
+      tooltip: 'Цена на конец предыдущего дня'
+    },
   ];
 
   sortFns: { [keyName: string]: (a: InstrumentKey, b: InstrumentKey) => number } = {
@@ -330,6 +384,43 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
 
   saveColumnWidth(event: { columnId: string, width: number }): void {
     super.saveColumnWidth<InstrumentSelectSettings>(event, this.settings$);
+  }
+
+  exportToFile(): void {
+    combineLatest({
+      currentCollection: this.currentWatchlist$,
+      tableConfig: this.tableConfig$,
+      tableData: this.tableData$,
+      translator: this.translatorService.getTranslator('instruments/select')
+    }).pipe(
+      take(1)
+    ).subscribe(x => {
+      const valueTranslators = new Map<string, (item: DisplayInstrument) => string>([
+        ['symbol', (item): string => item.instrument.symbol],
+        ['shortName', (item): string => item.instrument.shortName],
+      ]);
+
+      const meta = x.tableConfig.columns.map(c => ({
+          title: x.translator(['columns', c.id, 'name']),
+          readFn: item => {
+            const valueTranslator = valueTranslators.get(c.id);
+            if (valueTranslator) {
+              return valueTranslator(item);
+            }
+
+            return item[c.id as keyof DisplayInstrument];
+          }
+        } as ExportColumnMeta<DisplayInstrument>)
+      );
+
+      const csv = CsvFormatter.toCsv(meta, x.tableData, csvFormatterConfigDefaults);
+
+      FileSaver.save({
+          fileType: FileType.Csv,
+          name: x.currentCollection.title
+        },
+        csv);
+    });
   }
 
   private getSortFn(propName: string): (a: InstrumentKey, b: InstrumentKey) => number {
