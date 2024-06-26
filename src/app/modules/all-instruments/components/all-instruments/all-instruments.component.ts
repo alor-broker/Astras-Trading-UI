@@ -57,6 +57,16 @@ import {
   SortEnumType
 } from "../../../../../generated/graphql.types";
 import { AddToListContextMenu } from "../../../instruments/utils/add-to-list-context-menu";
+import { ContentSize } from "../../../../shared/models/dashboard/dashboard-item.model";
+import {
+  CsvFormatter,
+  csvFormatterConfigDefaults,
+  ExportColumnMeta
+} from "../../../../shared/utils/file-export/csv-formatter";
+import {
+  FileSaver,
+  FileType
+} from "../../../../shared/utils/file-export/file-saver";
 
 interface AllInstrumentsNodeDisplay extends Instrument {
   id: string;
@@ -318,6 +328,8 @@ implements OnInit, OnDestroy {
   protected settingsTableName = 'allInstrumentsTable';
   protected settingsColumnsName = 'allInstrumentsColumns';
 
+  exportBtnSize$ = new BehaviorSubject<ContentSize | null>(null);
+
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     private readonly service: AllInstrumentsService,
@@ -351,6 +363,20 @@ implements OnInit, OnDestroy {
         exchange:  item.basicInformation!.exchange
       })
     );
+  }
+
+  protected initContentSize(): void {
+    this.contentSize$ = combineLatest([
+      this.containerSize$,
+      this.exportBtnSize$
+    ])
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        map(([containerSize, exportBtnSize]) => ({
+          width: containerSize?.width ?? exportBtnSize?.width ?? 0,
+          height: (containerSize?.height ?? 0) - (exportBtnSize?.height ?? 0)
+        }))
+      );
   }
 
   protected initTableConfigStream(): Observable<TableConfig<AllInstrumentsNodeDisplay>> {
@@ -462,6 +488,44 @@ implements OnInit, OnDestroy {
   saveColumnWidth(event: { columnId: string, width: number }): void {
     super.saveColumnWidth<AllInstrumentsSettings>(event, this.settings$);
   }
+
+  protected exportToFile(): void {
+    combineLatest({
+      t: this.translatorService.getTranslator('all-instruments/all-instruments'),
+      tableConfig: this.tableConfig$,
+      tableData: this.tableData$
+    })
+      .pipe(
+        take(1),
+      )
+      .subscribe(({t, tableConfig, tableData}) => {
+        const meta = tableConfig.columns.map(c => ({
+            title: t(['columns', c.id, 'name']),
+            readFn: item => {
+              return c.transformFn?.(item) ?? item[c.id as keyof AllInstrumentsNodeDisplay];
+            }
+          } as ExportColumnMeta<AllInstrumentsNodeDisplay>)
+        );
+
+        const csv = CsvFormatter.toCsv(meta, tableData, csvFormatterConfigDefaults);
+
+        FileSaver.save({
+            fileType: FileType.Csv,
+            name: this.translatorService.getActiveLang() === 'en' ? 'All Instruments' : 'Все инструменты'
+          },
+          csv);
+      });
+  }
+
+  exportBtnSizeChange(entries: ResizeObserverEntry[]): void {
+    entries.forEach(x => {
+      this.exportBtnSize$.next({
+        width: Math.floor(x.contentRect.width),
+        height: Math.floor(x.contentRect.height)
+      });
+    });
+  }
+
 
   private initInstruments(): void {
     combineLatest([

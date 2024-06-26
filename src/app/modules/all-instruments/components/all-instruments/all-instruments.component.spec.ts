@@ -14,6 +14,7 @@ import { TranslatorService } from '../../../../shared/services/translator.servic
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { BoardsService } from "../../services/boards.service";
+import { LetDirective } from "@ngrx/component";
 
 describe('AllInstrumentsComponent', () => {
   let component: AllInstrumentsComponent;
@@ -35,6 +36,9 @@ describe('AllInstrumentsComponent', () => {
           ]
         })
       ],
+      imports: [
+        LetDirective
+      ],
       providers: [
         {
           provide: WidgetSettingsService,
@@ -51,7 +55,7 @@ describe('AllInstrumentsComponent', () => {
         {
           provide: DashboardContextService,
           useValue: {
-            instrumentsSelection$: jasmine.createSpy('instrumentsSelection$').and.returnValue(new Subject()),
+            instrumentsSelection$: new Subject(),
           }
         },
         {
