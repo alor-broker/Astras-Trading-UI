@@ -51,7 +51,7 @@
     }
   },
 
-  "exportTooltip": "Сохранить в файл",
+  "exportTooltip": "Сохранить в CSV",
   "addToFavoritesTooltip": "Добавить в избранное",
   "removeFromFavoritesTooltip": "Удалить из избранного",
   "contextMenu": {
