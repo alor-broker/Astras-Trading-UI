@@ -1,6 +1,7 @@
 export enum FutureType {
   Settlement = 'settlement',
-  Deliverable = 'deliverable'
+  Deliverable = 'deliverable',
+  NonDeliverable = 'nonDeliverable'
 }
 
 export interface Description {

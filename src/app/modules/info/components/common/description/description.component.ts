@@ -16,7 +16,6 @@ export class DescriptionComponent implements OnInit, OnDestroy {
   description$?: Observable<Description | null>;
   isLoading$ = new BehaviorSubject<boolean>(true);
   private readonly isActivated$ = new Subject<boolean>();
-  private readonly cfiFutureTypeIndex = 4;
 
   constructor(private readonly service: InfoService) {
   }
@@ -46,13 +45,23 @@ export class DescriptionComponent implements OnInit, OnDestroy {
     this.isActivated$.complete();
   }
 
-  getFutureType(symbolCfi: string): FutureType {
-    const futureTypeCode = symbolCfi[this.cfiFutureTypeIndex];
+  getFutureType(symbolCfi: string): FutureType | undefined {
+    // FFXPSX - example CFI for future
+    // see https://en.wikipedia.org/wiki/ISO_10962 for CFI code semantic.
+    const futureTypeCode = symbolCfi[3];
 
     if (futureTypeCode === 'P') {
         return FutureType.Deliverable;
     }
 
-    return FutureType.Settlement;
+    if (futureTypeCode === 'C') {
+      return FutureType.Settlement;
+    }
+
+    if (futureTypeCode === 'N') {
+      return FutureType.NonDeliverable;
+    }
+
+    return undefined;
   }
 }

@@ -10,6 +10,9 @@
   "marginBuy": "ГО на покупку",
   "marginSell": "ГО на продажу",
   "futureType": "Тип фьючерса",
-  "deliverable":  "Поставочный",
-  "settlement": "Расчётный"
+  "futureTypeValue": {
+    "deliverable":  "Поставочный",
+    "settlement": "Расчётный",
+    "nonDeliverable": "Беспоставочный"
+  }
 }
