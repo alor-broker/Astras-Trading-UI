@@ -27,7 +27,7 @@ export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
   @Input()
   hideTooltips = false;
 
-  orderBookPosition$!: Observable<ScalperOrderBookPositionState | null>;
+  orderBookPosition$!: Observable<ScalperOrderBookPositionState>;
 
   lossOrProfitDisplayType$ = new BehaviorSubject<'points' | 'percentage'>('points');
 
@@ -52,7 +52,7 @@ export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
     this.lossOrProfitDisplayType$.complete();
   }
 
-  private getPositionStateStream(): Observable<ScalperOrderBookPositionState | null> {
+  private getPositionStateStream(): Observable<ScalperOrderBookPositionState> {
     const settings$ = this.dataContextService.getSettingsStream(this.guid);
 
     return combineLatest([
@@ -61,27 +61,28 @@ export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
       this.dataContextService.getOrderBookPositionStream(settings$, this.dataContextService.getOrderBookPortfolio())
     ]).pipe(
       map(([settings, orderBook, position]) => {
-        if (!position || position.qtyTFuture === 0 || orderBook.rows.a.length === 0 || orderBook.rows.b.length === 0) {
-          return null;
+        const state: ScalperOrderBookPositionState = {
+          qty: 0
+        };
+
+        if(position != null && position.qtyTFutureBatch !== 0) {
+          const minStepDigitsAfterPoint = MathHelper.getPrecision(settings.instrument.minstep);
+          state.qty = position.qtyTFutureBatch;
+          state.price = MathHelper.round(position.avgPrice, minStepDigitsAfterPoint);
+
+          const sign = position!.qtyTFuture > 0 ? 1 : -1;
+
+          const bestPrice = sign > 0
+            ? orderBook.rows.b[0]?.p ?? orderBook.rows.a[0]?.p
+            : orderBook.rows.a[0]?.p ?? orderBook.rows.b[0]?.p;
+
+          if(bestPrice != null) {
+            state.lossOrProfitPoints = Math.round((bestPrice - position!.avgPrice) / settings.instrument.minstep) * sign;
+            state.lossOrProfitPercent =  MathHelper.round(((bestPrice - position!.avgPrice) / position!.avgPrice) * 100 * sign, 3);
+          }
         }
 
-        const sign = position!.qtyTFuture > 0 ? 1 : -1;
-        const bestPrice = sign > 0
-          ? orderBook.rows.b[0].p
-          : orderBook.rows.a[0].p;
-
-        const rowsDifference = Math.round((bestPrice - position!.avgPrice) / settings.instrument.minstep) * sign;
-        const rowsDifferencePercent = MathHelper.round(((bestPrice - position!.avgPrice) / position!.avgPrice) * 100 * sign, 3);
-
-        const minStepDigitsAfterPoint = MathHelper.getPrecision(settings.instrument.minstep);
-
-        return {
-          qty: position!.qtyTFutureBatch,
-          price: MathHelper.round(position!.avgPrice, minStepDigitsAfterPoint),
-          lossOrProfitPoints: rowsDifference,
-          lossOrProfitPercent: rowsDifferencePercent,
-          hideTooltips: settings.widgetSettings.hideTooltips ?? false
-        };
+        return state;
       })
     );
   }

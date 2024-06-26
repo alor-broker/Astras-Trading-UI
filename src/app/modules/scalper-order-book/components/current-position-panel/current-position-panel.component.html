@@ -11,34 +11,34 @@
       [nzTooltipMouseEnterDelay]="1"
       class="p-2"
     >
-      {{vm.orderBookPosition?.price ?? '--'}}
+      {{vm.orderBookPosition.price ?? '--'}}
     </div>
     <div [ngClass]="{
         'qty': true,
-        'positive': (vm.orderBookPosition?.qty ?? 0) > 0,
-        'negative': (vm.orderBookPosition?.qty ?? 0) < 0
+        'positive': vm.orderBookPosition.qty > 0,
+        'negative': vm.orderBookPosition.qty < 0
         }"
          [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookCurrentPositionState.lotsQtyTooltip')"
          [nzTooltipMouseEnterDelay]="1"
          class="p-2"
     >
-      {{vm.orderBookPosition?.qty ?? 0}}{{t('scalperOrderBookCurrentPositionState.lots')}}.
+      {{vm.orderBookPosition.qty}}{{t('scalperOrderBookCurrentPositionState.lots')}}.
     </div>
     <div [ngClass]="{
         'loss-or-profit': true,
-        'positive': (vm.orderBookPosition?.lossOrProfitPoints ?? 0) > 0,
-        'negative': (vm.orderBookPosition?.lossOrProfitPoints ?? 0) < 0
+        'positive': (vm.orderBookPosition.lossOrProfitPoints ?? 0) > 0,
+        'negative': (vm.orderBookPosition.lossOrProfitPoints ?? 0) < 0
         }"
          [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookCurrentPositionState.lossOrProfitTooltip')"
          [nzTooltipMouseEnterDelay]="1"
          (click)="changeLossOrProfitDisplayType()"
          class="p-2"
     >
-      <ng-container *ngIf="vm.orderBookPosition">
+      <ng-container *ngIf="vm.orderBookPosition.lossOrProfitPoints">
         <span *ngIf="vm.lossOrProfitDisplayType === 'points'">{{vm.orderBookPosition.lossOrProfitPoints}}{{t('scalperOrderBookCurrentPositionState.positions')}}.</span>
         <span *ngIf="vm.lossOrProfitDisplayType === 'percentage'">{{vm.orderBookPosition.lossOrProfitPercent}}%</span>
       </ng-container>
-      <ng-container *ngIf="vm.orderBookPosition === null">
+      <ng-container *ngIf="vm.orderBookPosition.lossOrProfitPoints == null">
         <span>--</span>
       </ng-container>
     </div>
