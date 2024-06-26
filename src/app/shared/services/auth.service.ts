@@ -137,10 +137,21 @@ export class AuthService {
   }
 
   logout(): void {
-    this.setCurrentUser({
-      ssoToken: null,
-      user: null,
-      isExited: true
+    this.currentUserSub.pipe(
+      take(1),
+      switchMap(userState => {
+        if(userState?.ssoToken?.refreshToken == null) {
+          return of(false);
+        }
+
+        return this.http.delete(`${this.accountUrl}/refresh/${userState?.ssoToken?.refreshToken}`);
+      })
+    ).subscribe(() => {
+      this.setCurrentUser({
+        ssoToken: null,
+        user: null,
+        isExited: true
+      });
     });
   }
 
