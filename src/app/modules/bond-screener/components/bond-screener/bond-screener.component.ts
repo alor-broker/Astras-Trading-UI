@@ -193,6 +193,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'couponRate',
       displayName: 'Ставка купона',
+      transformFn: (d: BondDisplay): string => d.couponRate != null ? MathHelper.round(d.couponRate, 2).toString() : '',
       sortChangeFn: (dir): void => this.sortChange(['couponRate'], dir),
       width: 90,
       filterData: {
@@ -495,12 +496,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         )
       )
       .reduce((acc, curr) => {
-        if (curr === 'currentYieldFrom' || curr === 'currentYieldTo') {
-          acc[curr] = MathHelper.round((filters[curr] as number) / 100, 4);
-        } else {
-          acc[curr] = filters[curr];
-        }
-
+        acc[curr] = filters[curr];
         return acc;
       }, {} as DefaultTableFilters);
 
