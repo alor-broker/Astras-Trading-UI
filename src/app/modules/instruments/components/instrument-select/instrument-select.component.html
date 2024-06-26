@@ -34,7 +34,17 @@
         </nz-auto-option>
       </nz-autocomplete>
     </div>
-    <div *ngIf="(collection$ | async)as collection" class="watch-list-collection-select">
+    <div>
+      <button
+        nz-button
+        [nz-tooltip]="t('instrumentsSelect.exportTooltip')"
+        [nzTooltipMouseEnterDelay]="1"
+        (click)="table.exportToFile()"
+      >
+        <span nz-icon nzType="download" nzTheme="outline"></span>
+      </button>
+    </div>
+    <div *ngIf="(collection$ | async)as collection">
       <button *ngIf="collection.collection.length > 0" [nzDropdownMenu]="menu" nz-button nz-dropdown>
         <span nz-icon nzTheme="outline" nzType="menu"></span>
       </button>
@@ -48,6 +58,6 @@
     </div>
   </div>
   <div class="list">
-    <ats-watchlist-table [guid]="guid"></ats-watchlist-table>
+    <ats-watchlist-table [guid]="guid" #table></ats-watchlist-table>
   </div>
 </div>

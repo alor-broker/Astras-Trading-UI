@@ -51,6 +51,7 @@
     }
   },
 
+  "exportTooltip": "Export to CSV",
   "addToFavoritesTooltip": "Add to favorites",
   "removeFromFavoritesTooltip": "Remove from favorites",
   "contextMenu": {
