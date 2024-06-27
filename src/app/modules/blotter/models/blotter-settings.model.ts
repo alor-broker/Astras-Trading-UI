@@ -77,7 +77,7 @@ export const allPositionsColumns: BaseColumnId[] = [
 
 export const allTradesColumns: BaseColumnId[] = [
   { id: 'id', displayName: "Номер", isDefault: false },
-  { id: 'orderno', displayName: "Заявка", isDefault: false },
+  { id: 'orderNo', displayName: "Заявка", isDefault: false },
   { id: 'symbol', displayName: "Тикер", isDefault: true },
   { id: 'shortName', displayName: "Название", isDefault: true },
   { id: 'side', displayName: "Сторона", isDefault: false },
@@ -89,7 +89,7 @@ export const allTradesColumns: BaseColumnId[] = [
 
 export const allTradesHistoryColumns: BaseColumnId[] = [
   { id: 'id', displayName: "Номер", isDefault: false },
-  { id: 'orderno', displayName: "Заявка", isDefault: false },
+  { id: 'orderNo', displayName: "Заявка", isDefault: false },
   { id: 'symbol', displayName: "Тикер", isDefault: true },
   { id: 'shortName', displayName: "Название", isDefault: true },
   { id: 'side', displayName: "Сторона", isDefault: true },

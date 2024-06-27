@@ -59,12 +59,12 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
       tooltip: 'Идентификационный номер сделки'
     },
     {
-      id: 'orderno',
+      id: 'orderNo',
       displayName: 'Заявка',
       sortOrder: null,
-      sortFn: (a: DisplayTrade, b: DisplayTrade): number => Number(a.orderno) - Number(b.orderno),
+      sortFn: (a: DisplayTrade, b: DisplayTrade): number => Number(a.orderNo) - Number(b.orderNo),
       filterData: {
-        filterName: 'orderno',
+        filterName: 'orderNo',
         filterType: FilterType.Search
       },
       tooltip: 'Номер заявки',

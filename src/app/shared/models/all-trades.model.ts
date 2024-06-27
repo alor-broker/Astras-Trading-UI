@@ -12,7 +12,7 @@ export interface AllTradesItem {
   existing: boolean;
   id: number;
   oi: number;
-  orderno: number;
+  orderNo: number;
   price: number;
   qty: number;
   side: string;

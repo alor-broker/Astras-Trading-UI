@@ -95,7 +95,8 @@ export class BlotterService {
         startWith(0),
         switchMap(() => this.http.get<RepoTrade[]>(`${this.environmentService.apiUrl}/md/v2/Clients/${settings.exchange}/${settings.portfolio}/trades`, {
           params: {
-            withRepo: true
+            withRepo: true,
+            format: 'heavy'
           }
         })),
         map(trades => trades.filter(t => !!(t.repoSpecificFields as RepoSpecificFields | undefined))),

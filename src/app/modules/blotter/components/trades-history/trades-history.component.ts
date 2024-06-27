@@ -72,7 +72,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       tooltip: 'Идентификационный номер сделки'
     },
     {
-      id: 'orderno',
+      id: 'orderNo',
       displayName: 'Заявка',
       sortOrder: null,
       tooltip: 'Номер заявки',
