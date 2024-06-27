@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, DestroyRef, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { InstrumentSearchService } from "../../services/instrument-search.service";
 import { BehaviorSubject, Observable, of, tap } from "rxjs";
 import { AbstractControl, FormControl, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
@@ -16,10 +16,10 @@ import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.he
   templateUrl: './instrument-search-modal.component.html',
   styleUrl: './instrument-search-modal.component.less'
 })
-export class InstrumentSearchModalComponent implements OnInit {
+export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
 
   readonly minusSign = '－'; // This is not character that on keyboard
-  private readonly specialSymbols = ['+', '*', '/', '[', ']', this.minusSign];
+  private readonly specialSymbolsRegEx = new RegExp(`[${this.minusSign}+*/\\]\\[]`, 'g');
 
   isVisible$!: Observable<boolean>;
 
@@ -41,14 +41,14 @@ export class InstrumentSearchModalComponent implements OnInit {
   autocompleteLoading$ = new BehaviorSubject(false);
 
   constructor(
-    private readonly service: InstrumentSearchService,
+    private readonly instrumentSearchService: InstrumentSearchService,
     private readonly instrumentsService: InstrumentsService,
     private readonly destroyRef: DestroyRef,
   ) {
   }
 
   ngOnInit(): void {
-    this.isVisible$ = this.service.isModalOpened$;
+    this.isVisible$ = this.instrumentSearchService.isModalOpened$;
 
     this.filteredInstruments$ = this.filter$.pipe(
       tap(() => this.autocompleteLoading$.next(true)),
@@ -63,15 +63,20 @@ export class InstrumentSearchModalComponent implements OnInit {
       tap(() => this.autocompleteLoading$.next(false))
     );
 
-    this.service.modalParams$
+    this.instrumentSearchService.modalParams$
       .pipe(
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(params => this.searchControl.setValue(params));
   }
 
+  ngOnDestroy(): void {
+    this.filter$.complete();
+    this.autocompleteLoading$.complete();
+  }
+
   handleCancel(): void {
-    this.service.closeModal(null);
+    this.instrumentSearchService.closeModal(null);
   }
 
   handleOk(): void {
@@ -79,10 +84,11 @@ export class InstrumentSearchModalComponent implements OnInit {
       return;
     }
 
-    this.service.closeModal(this.searchControl.value!.replace(this.minusSign, '-'));
+    this.instrumentSearchService.closeModal(this.searchControl.value!.replace(this.minusSign, '-'));
   }
 
   filterChanged(): void {
+    // Get part of the search string from first special symbol to left from caret to first special symbol to right from caret
     const inputVal = this.searchControl.value ?? '';
     const caretPos = this.searchInput.nativeElement.selectionStart ?? 0;
 
@@ -90,7 +96,7 @@ export class InstrumentSearchModalComponent implements OnInit {
     const strAfterCaret = inputVal.slice(caretPos);
 
     const cutStrStart = this.getLastSpecialSymbolIndex(strBeforeCaret);
-    const cutStrEnd = this.getFirstSpacialSymbolIndex(strAfterCaret);
+    const cutStrEnd = this.getFirstSpecialSymbolIndex(strAfterCaret);
 
     const searchVal = strBeforeCaret.slice(cutStrStart, caretPos) + strAfterCaret.slice(caretPos, cutStrEnd);
 
@@ -121,11 +127,12 @@ export class InstrumentSearchModalComponent implements OnInit {
       const caretPos = this.searchInput.nativeElement.selectionStart ?? 0;
 
       setTimeout(() => {
+        // Get string part that will be replaced by new instrument
         const strBeforeCaret = inputVal.slice(0, caretPos);
         const strAfterCaret = inputVal.slice(caretPos);
 
         let cutStrStart = this.getLastSpecialSymbolIndex(strBeforeCaret);
-        let cutStrEnd = this.getFirstSpacialSymbolIndex(strAfterCaret);
+        let cutStrEnd = this.getFirstSpecialSymbolIndex(strAfterCaret);
 
         if (strBeforeCaret[cutStrStart - 1] === '[') {
           cutStrStart--;
@@ -153,31 +160,24 @@ export class InstrumentSearchModalComponent implements OnInit {
   }
 
   private getLastSpecialSymbolIndex(str: string): number {
-    let i = str.length - 1;
+    const i = str.split('').reverse().findIndex(c => this.specialSymbolsRegEx.test(c));
 
-    while(i >= 0) {
-      if (this.specialSymbols.includes(str[i])) {
-        return i + 1;
-      }
-
-      i--;
+    if (i === -1) {
+      return 0;
     }
 
-    return 0;
+    return str.length - i;
+
   }
 
-  private getFirstSpacialSymbolIndex(str: string): number {
-    let i = 0;
+  private getFirstSpecialSymbolIndex(str: string): number {
+    const i = str.split('').findIndex(c => this.specialSymbolsRegEx.test(c));
 
-    while(i <= str.length) {
-      if (this.specialSymbols.includes(str[i])) {
-        return i;
-      }
+     if (i === -1) {
+       return str.length - 1;
+     }
 
-      i++;
-    }
-
-    return i;
+     return i;
   }
 
   modalOpened(): void {

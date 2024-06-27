@@ -94,6 +94,7 @@ import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/act
 import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 import { InstrumentSearchService } from "../../services/instrument-search.service";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
+import { SearchButtonHelper } from "../../utils/search-button.helper";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -499,7 +500,17 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       );
 
       if (!deviceInfo.isMobile && (settings.panels?.headerSymbolSearch ?? true)) {
-        chartWidget.headerReady().then(() => this.createSearchButton(theme.theme));
+        chartWidget.headerReady().then(() => SearchButtonHelper.create(
+          this.chartState!.widget,
+          this.instrumentSearchService,
+          this.settings$.pipe(
+            map(s => s.instrument),
+            distinctUntilChanged((prev, curr) => isInstrumentEqual(prev, curr)),
+            takeUntilDestroyed(this.destroyRef)
+          ),
+          theme.theme,
+          this.destroyRef
+        ));
       }
 
       this.intervalChangeSub = new Subscription();
@@ -517,64 +528,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         this.instrumentSearchService.openModal(this.chartState!.widget.activeChart().symbol() ?? null);
       });
     });
-  }
-
-  private createSearchButton(themeType: ThemeType): void {
-    const searchBtn = this.chartState!.widget!.createButton({
-      align: 'left',
-      useTradingViewStyle: false
-    });
-
-    searchBtn.style.maxWidth = '100px';
-    searchBtn.style.padding = '8px 8px 9px 8px';
-    searchBtn.style.borderRadius = '4px';
-    searchBtn.style.fontWeight = '600';
-    searchBtn.style.overflow = 'hidden';
-    searchBtn.style.textOverflow = 'ellipsis';
-    searchBtn.style.cursor = 'pointer';
-
-
-    searchBtn.addEventListener('click', () => {
-      this.instrumentSearchService.openModal(this.chartState!.widget.activeChart().symbol() ?? null);
-    });
-
-    searchBtn.addEventListener('mouseenter', () => {
-      searchBtn.style.backgroundColor = themeType === ThemeType.dark ? '#2a2e39' : '#f0f3fa';
-    });
-
-    searchBtn.addEventListener('mouseleave', () => {
-      searchBtn.style.backgroundColor = 'transparent';
-    });
-
-    const searchBtnParentEl = searchBtn.parentElement!.parentElement!;
-    searchBtnParentEl.nextElementSibling!.remove();
-    searchBtnParentEl.parentElement!.prepend(searchBtnParentEl);
-
-    this.instrumentSearchService.modalData$.pipe(
-      filter(i => i != null),
-      takeUntilDestroyed(this.destroyRef)
-    )
-      .subscribe(i => {
-          if (i == null) {
-            return;
-          }
-          this.chartState!.widget.activeChart().setSymbol(i);
-        }
-      );
-
-    this.settings$.pipe(
-      map(s => s.instrument),
-      distinctUntilChanged((prev, curr) => isInstrumentEqual(prev, curr)),
-      takeUntilDestroyed(this.destroyRef)
-    )
-      .subscribe(instrument => {
-        const instrumentStr = SyntheticInstrumentsHelper.isSyntheticInstrument(instrument.symbol)
-          ? instrument.symbol
-          : instrument.shortName;
-
-        searchBtn.innerText = instrumentStr;
-        searchBtn.setAttribute('data-tooltip', instrumentStr);
-      });
   }
 
   private readonly intervalChangeCallback: (interval: ResolutionString, timeFrameParameters: { timeframe?: TimeFrameValue }) => void =

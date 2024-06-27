@@ -12,7 +12,7 @@ import {
 } from "../../../../shared/utils/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
-fdescribe('InstrumentSearchModalComponent', () => {
+describe('InstrumentSearchModalComponent', () => {
   let component: InstrumentSearchModalComponent;
   let fixture: ComponentFixture<InstrumentSearchModalComponent>;
 
@@ -70,9 +70,18 @@ fdescribe('InstrumentSearchModalComponent', () => {
   it('should correctly validate search field', () => {
     const validValues = [
       'SBER',
+      'si-9.24',
+      'si-6.24-9.24',
       'MOEX:SBER',
+      'MOEX:si-9.24',
+      'MOEX:si-6.24-9.24',
       'MOEX:SBER:TQBR',
+      'MOEX:si-9.24:TQBR',
+      'MOEX:si-6.24-9.24:TQBR',
       '[MOEX:SBER:TQBR]',
+      '[MOEX:CNY-9.24:TQBR]',
+      '[MOEX:NG-7.24-8.24:TQBR]',
+      `[MOEX:SI-9.24:TQBR]${minusSign}[MOEX:SI-6.24:TQBR]`,
       `[MOEX:SBER:TQBR]${minusSign}[MOEX:SBERP:TQBR]`
     ];
 
