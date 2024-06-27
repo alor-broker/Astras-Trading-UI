@@ -15,7 +15,6 @@ import { ChatMessageContainerComponent } from './components/chat-message-contain
 import { TextMessageComponent } from './components/messages/text-message/text-message.component';
 import { NzAvatarModule } from "ng-zorro-antd/avatar";
 import { NzTypographyComponent } from "ng-zorro-antd/typography";
-import { TermsOfUseDialogWidgetComponent } from "./widgets/terms-of-use-dialog-widget/terms-of-use-dialog-widget.component";
 import {
   NzModalComponent,
   NzModalContentDirective,
@@ -25,6 +24,9 @@ import { ChatSuggestedMessageContainerComponent } from "./components/chat-sugges
 import { StartNewConversationButtonComponent } from "./components/start-new-conversation-button/start-new-conversation-button.component";
 import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
 import { MarkdownModule } from "ngx-markdown";
+import { TermsOfUseDialogComponent } from "./components/terms-of-use-dialog/terms-of-use-dialog.component";
+import { UsageDisclaimerComponent } from "./components/usage-disclaimer/usage-disclaimer.component";
+import { NzAlertComponent } from "ng-zorro-antd/alert";
 
 @NgModule({
   declarations: [
@@ -35,9 +37,11 @@ import { MarkdownModule } from "ngx-markdown";
     ChatStatusComponent,
     ChatMessageContainerComponent,
     TextMessageComponent,
-    TermsOfUseDialogWidgetComponent,
     ChatSuggestedMessageContainerComponent,
-    StartNewConversationButtonComponent
+    StartNewConversationButtonComponent,
+    TermsOfUseDialogComponent,
+    UsageDisclaimerComponent
+
   ],
   exports: [
     SideChatWidgetComponent
@@ -56,7 +60,8 @@ import { MarkdownModule } from "ngx-markdown";
     NzModalContentDirective,
     NzModalFooterDirective,
     NzTooltipDirective,
-    MarkdownModule
+    MarkdownModule,
+    NzAlertComponent
   ]
 })
 export class AiChatModule {

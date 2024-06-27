@@ -12,7 +12,7 @@
   >
   </nz-drawer>
   <ng-template #content>
-    <ats-ai-chat></ats-ai-chat>
+    <ats-ai-chat [atsDisabled]="isChatDisabled"></ats-ai-chat>
   </ng-template>
 
   <ng-template #extra>
@@ -22,7 +22,7 @@
   </ng-template>
 </ng-container>
 
-<ats-terms-of-use-dialog-widget [(atsVisible)]="isTermOfUseDialogVisible"></ats-terms-of-use-dialog-widget>
+<ats-terms-of-use-dialog [(atsVisible)]="isTermOfUseDialogVisible" (confirmed)="setTermsOfUseAgreement($event)"></ats-terms-of-use-dialog>
 
 
 

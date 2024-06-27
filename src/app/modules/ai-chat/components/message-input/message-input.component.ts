@@ -21,6 +21,9 @@ export class MessageInputComponent {
   inputElement!: ElementRef<HTMLInputElement>;
 
   @Input()
+  atsDisabled = false;
+
+  @Input()
   text = '';
 
   @Input()

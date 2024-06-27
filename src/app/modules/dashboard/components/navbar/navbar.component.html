@@ -114,14 +114,14 @@
     </div>
 
     <div class="right contrast-icon">
-      <div (auxclick)="checkAiChatBtnVisibility($event)">
+      <div>
         <ats-network-indicator></ats-network-indicator>
       </div>
       <div class="notifications">
         <ats-notification-button></ats-notification-button>
       </div>
       <div>
-        <button nz-button [nzType]="'text'" (click)="aiChatVisible = true" *ngIf="showAiChatIcon">
+        <button nz-button [nzType]="'text'" (click)="aiChatVisible = true">
           <i nz-icon nzType="comment"></i>
         </button>
       </div>

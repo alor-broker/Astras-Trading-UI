@@ -1,4 +1,6 @@
 <ats-chat-container>
+  <ats-usage-disclaimer></ats-usage-disclaimer>
+
   <ats-start-new-conversation-button
     (clicked)="startNewConversation()"
     [atsDisabled]="!canRestartConversation"
@@ -21,8 +23,11 @@
   <ats-chat-status [status]="chatStatus$ | async"></ats-chat-status>
 
   <ats-message-input
+    [atsDisabled]="atsDisabled"
     (send)="sendMessage($event)"
     *transloco="let t; scope: 'ai-chat/message-input'"
     [messagePlaceholder]="t('aiChatMessageInput.textPlaceholder')"
   ></ats-message-input>
 </ats-chat-container>
+
+

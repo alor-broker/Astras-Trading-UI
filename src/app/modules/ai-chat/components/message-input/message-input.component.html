@@ -5,6 +5,7 @@
     (ngModelChange)="onTextChange($event)"
     [ngModel]="text"
     [placeholder]="messagePlaceholder"
+    [disabled]="atsDisabled"
     nz-input
     type="text"
   />
@@ -16,6 +17,7 @@
     nzSearch
     nzSize="large"
     nzType="primary"
+    [disabled]="atsDisabled"
   >
     <span nz-icon nzType="send"></span>
   </button>
