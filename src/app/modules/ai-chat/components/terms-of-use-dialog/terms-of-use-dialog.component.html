@@ -1,8 +1,8 @@
-<ng-container *transloco="let t; scope: 'ai-chat/terms-of-use-dialog-widget'">
+<ng-container *transloco="let t; scope: 'ai-chat/terms-of-use-dialog'">
   <nz-modal
-    (nzOnCancel)="handleClose()"
+    (nzOnCancel)="handleCancel()"
     [nzMaskClosable]='false'
-    [nzTitle]="t('aiChatTermsOfUseDialogWidget.title')"
+    [nzTitle]="t('aiChatTermsOfUseDialog.title')"
     [nzVisible]='atsVisible'
     nzClassName="ai-chat-terms-of-use"
     nzClosable="true"
@@ -85,7 +85,7 @@
       </p>
     </ng-container>
     <ng-container *nzModalFooter>
-      <button (click)="handleClose()" nz-button nzType="primary">{{ t('okBtnText') }}</button>
+      <button (click)="handleOk()" nz-button nzType="primary">{{ t('aiChatTermsOfUseDialog.agreeBtnText') }}</button>
     </ng-container>
   </nz-modal>
 </ng-container>

@@ -200,6 +200,7 @@ export const ngZorroMockComponents = [
   mockComponent({selector: 'nz-switch'}),
   mockComponent({selector: 'nz-segmented', inputs: ['nzLabelTemplate', 'nzOptions', 'ngModel']}),
   mockComponent({selector: 'nz-button-group'}),
+  mockComponent({selector: 'nz-alert', inputs: ['nzType', 'nzDescription', 'nzCloseable']}),
   mockDirective({selector: '[nzGutter]', inputs: ['nzGutter']}),
   mockDirective({selector: '[text]', inputs: ['text']}),
   mockDirective({selector: '[nzLayout]', inputs: ['nzLayout']}),
@@ -207,7 +208,7 @@ export const ngZorroMockComponents = [
   mockDirective({selector: '[nzPopoverTitle]', inputs: ['nzPopoverTitle']}),
   mockDirective({
     selector: '[nz-button]',
-    inputs: ['nzDropdownMenu', 'title', 'text', 'nzLoading', 'nzType', 'nzClickHide', 'nzVisible']
+    inputs: ['nzDropdownMenu', 'title', 'text', 'nzLoading', 'nzType', 'nzClickHide', 'nzVisible', 'disabled']
   }),
   mockDirective({
     selector: '[nz-icon]',

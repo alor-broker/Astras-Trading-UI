@@ -32,7 +32,9 @@ export class ChatContainerComponent implements AfterViewInit {
       startWith(0),
       takeUntilDestroyed(this.DestroyRef)
     ).subscribe(() => {
-      this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+      setTimeout(() => {
+        this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+      });
     });
   }
 }

@@ -6,6 +6,9 @@ import {
   mockComponent,
   ngZorroMockComponents
 } from "../../../../shared/utils/testing";
+import { LocalStorageService } from "../../../../shared/services/local-storage.service";
+import { AuthService } from "../../../../shared/services/auth.service";
+import { Subject } from "rxjs";
 
 describe('SideChatWidgetComponent', () => {
   let component: SideChatWidgetComponent;
@@ -17,8 +20,23 @@ describe('SideChatWidgetComponent', () => {
       declarations: [
         SideChatWidgetComponent,
         mockComponent({selector: 'ats-ai-chat'}),
-        mockComponent({selector: 'ats-terms-of-use-dialog-widget', inputs: ['atsVisible']}),
+        mockComponent({selector: 'ats-terms-of-use-dialog', inputs: ['atsVisible']}),
         ...ngZorroMockComponents
+      ],
+      providers:[
+        {
+          provide: LocalStorageService,
+          useValue: {
+            getStringItem: jasmine.createSpy('getStringItem').and.returnValue(undefined),
+            setItem: jasmine.createSpy('setItem').and.callThrough()
+          }
+        },
+        {
+          provide: AuthService,
+          useValue: {
+            currentUser$: new Subject()
+          }
+        }
       ]
     });
     fixture = TestBed.createComponent(SideChatWidgetComponent);

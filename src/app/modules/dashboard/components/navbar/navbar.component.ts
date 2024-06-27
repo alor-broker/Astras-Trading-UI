@@ -49,7 +49,6 @@ export class NavbarComponent implements OnInit {
   helpLink$!: Observable<string | null>;
   galleryVisible = false;
   aiChatVisible = false;
-  showAiChatIcon = false;
 
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
@@ -194,12 +193,6 @@ export class NavbarComponent implements OnInit {
 
   portfoliosTrackByFn(index: number, item: PortfolioExtended): string {
     return item.market + item.portfolio;
-  }
-
-  checkAiChatBtnVisibility(event: MouseEvent): void {
-    if(event.button === 1) {
-      this.showAiChatIcon = true;
-    }
   }
 
   private initWidgetsGallery(): void{
