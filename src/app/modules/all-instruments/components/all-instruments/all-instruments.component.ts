@@ -67,6 +67,7 @@ import {
   FileSaver,
   FileType
 } from "../../../../shared/utils/file-export/file-saver";
+import { NzModalService } from "ng-zorro-antd/modal";
 
 interface AllInstrumentsNodeDisplay extends Instrument {
   id: string;
@@ -323,6 +324,7 @@ implements OnInit, OnDestroy {
   public contextMenu$!: Observable<ContextMenu[]>;
   private readonly instrumentsList$ = new BehaviorSubject<AllInstrumentsNodeDisplay[]>([]);
   private settings$!: Observable<AllInstrumentsSettings>;
+  private readonly maxLoadingChunkSize = 1000;
 
   private updatesSub?: Subscription;
   protected settingsTableName = 'allInstrumentsTable';
@@ -340,6 +342,7 @@ implements OnInit, OnDestroy {
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly translatorService: TranslatorService,
+    private readonly modalService: NzModalService,
     protected readonly destroyRef: DestroyRef
   ) {
     super(settingsService, destroyRef);
@@ -491,29 +494,64 @@ implements OnInit, OnDestroy {
 
   protected exportToFile(): void {
     combineLatest({
-      t: this.translatorService.getTranslator('all-instruments/all-instruments'),
+      filters: this.filters$,
+      sort: this.sort$,
       tableConfig: this.tableConfig$,
-      tableData: this.tableData$
+      t: this.translatorService.getTranslator('all-instruments/all-instruments'),
     })
       .pipe(
-        take(1),
-      )
-      .subscribe(({t, tableConfig, tableData}) => {
-        const meta = tableConfig.columns.map(c => ({
-            title: t(['columns', c.id, 'name']),
-            readFn: item => {
-              return c.transformFn?.(item) ?? item[c.id as keyof AllInstrumentsNodeDisplay];
-            }
-          } as ExportColumnMeta<AllInstrumentsNodeDisplay>)
-        );
+        mapWith(
+          ({ filters, sort, tableConfig }) => {
+            const columnIds = tableConfig.columns.map(c => c.sourceField ?? c.id);
 
-        const csv = CsvFormatter.toCsv(meta, tableData, csvFormatterConfigDefaults);
-
-        FileSaver.save({
-            fileType: FileType.Csv,
-            name: this.translatorService.getActiveLang() === 'en' ? 'All Instruments' : 'Все инструменты'
+            return this.service.getInstruments(
+              columnIds,
+              filters,
+              {
+                first: this.maxLoadingChunkSize,
+                sort: sort == null ? null : [sort]
+              }
+            );
           },
-          csv);
+          ({ tableConfig, t }, res) => ({ tableConfig, t, res })
+        ),
+        take(1)
+      )
+      .subscribe(({ t, tableConfig, res }) => {
+        if (res?.edges == null) {
+          return;
+        }
+
+        const saveCsv = (): void => {
+          const meta = tableConfig.columns.map(c => ({
+              title: t(['columns', c.id, 'name']),
+              readFn: item => {
+                return c.transformFn?.(item) ?? item[c.id as keyof Instrument];
+              }
+            } as ExportColumnMeta<Instrument>)
+          );
+
+          const csv = CsvFormatter.toCsv(meta, res.edges!.map(i => i.node), csvFormatterConfigDefaults);
+
+          FileSaver.save({
+              fileType: FileType.Csv,
+              name: t(['csvFileTitle'])
+            },
+            csv);
+        };
+
+        if (res.pageInfo.hasNextPage) {
+          this.modalService.warning({
+            nzTitle: t(['warningModal', 'title']),
+            nzContent: t(['warningModal', 'content']),
+            nzOkText: t(['saveBtnText']),
+            nzOkType: 'primary',
+            nzCancelText: t(['cancelBtnText']),
+            nzOnOk: saveCsv
+          });
+        } else {
+          saveCsv();
+        }
       });
   }
 
