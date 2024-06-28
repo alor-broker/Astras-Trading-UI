@@ -68,6 +68,6 @@
   "csvFileTitle": "All Instruments",
   "warningModal": {
     "title": "Warning",
-    "content": "Only the first 1000 instruments are saved to the file. You can use table filters to reduce the total number of instruments.",
+    "content": "Only the first 1000 instruments are saved to the file. You can use table filters to reduce the total number of instruments."
   }
 }
