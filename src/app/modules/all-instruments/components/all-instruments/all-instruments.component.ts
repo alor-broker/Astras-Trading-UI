@@ -482,6 +482,7 @@ implements OnInit, OnDestroy {
     super.ngOnDestroy();
     this.updatesSub?.unsubscribe();
     this.instrumentsList$.complete();
+    this.exportBtnSize$.complete();
   }
 
   changeColumnOrder(event: CdkDragDrop<any>): void {
