@@ -112,10 +112,10 @@ export class SyntheticInstrumentsHelper {
       if (curr.isSpreadOperator) {
           return {
             ...acc,
-            close: acc.close + curr.value,
-            open: acc.open + curr.value,
-            high: acc.high + curr.value,
-            low: acc.low + curr.value,
+            close: acc.close + ' ' + curr.value + ' ',
+            open: acc.open + ' ' + curr.value + ' ',
+            high: acc.high + ' ' + curr.value + ' ',
+            low: acc.low + ' ' + curr.value + ' ',
           };
       } else {
         return {
@@ -142,5 +142,28 @@ export class SyntheticInstrumentsHelper {
       low: eval(candle.low) as number,
       volume: 0,
     } as Candle;
+  }
+
+  static isSyntheticInstrumentValid(searchString: string): boolean {
+    const syntheticInstrument = this.getRegularOrSyntheticInstrumentKey(searchString);
+    if (!syntheticInstrument.isSynthetic) {
+      return true;
+    }
+
+    const expressionStr = syntheticInstrument.parts.reduce((acc, curr) => {
+      if (curr.isSpreadOperator) {
+        return acc + curr.value;
+      }
+
+      return acc + '0.1';
+    }, '');
+
+    try {
+      eval(expressionStr);
+    } catch (err) {
+      return false;
+    }
+
+    return true;
   }
 }

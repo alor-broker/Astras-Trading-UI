@@ -1,0 +1,91 @@
+<nz-modal
+  *transloco="let t; scope: 'tech-chart/instrument-search-modal'"
+  [nzTitle]="t('techChartInstrumentSearchModal.title')"
+  [nzVisible]='isVisible$ | async'
+  (nzOnCancel)="handleCancel()"
+  (nzAfterOpen)="modalOpened()"
+  nzClassName="instrument-search-modal"
+>
+  <ng-container *nzModalContent>
+    <nz-form-item>
+      <nz-form-control
+        [nzErrorTip]="searchError"
+        [nzWarningTip]="searchWarning"
+      >
+        <nz-input-group [nzAddOnAfter]="spreadOperators" [nzSuffix]="loadingIndicator">
+          <input #searchInput
+                 [nzBorderless]="false"
+                 (mousedown)="$event.stopPropagation()"
+                 (keyup)="filterChanged()"
+                 [nzAutocomplete]="autoComplete"
+                 class='ant-input'
+                 nz-input
+                 [formControl]="searchControl"
+          />
+
+          <nz-autocomplete
+            #autoComplete
+            [nzWidth]="searchInput.clientWidth"
+          >
+            <nz-auto-option
+              *ngFor="let option of filteredInstruments$ | async"
+              [nzLabel]="option.symbol"
+              [nzValue]="option.symbol"
+              (selectionChange)="onSelect($event, option)"
+            >
+            <span class='search-row'>
+              <nz-tag>{{ option.symbol }}</nz-tag>
+              <span class='row-center'>{{ option.shortName }}&nbsp;</span>
+              <nz-tag *ngIf='option.instrumentGroup'>{{ option.instrumentGroup }}</nz-tag>
+              <nz-tag>{{ option.exchange }}</nz-tag>
+            </span>
+            </nz-auto-option>
+          </nz-autocomplete>
+
+          <ng-template #loadingIndicator>
+            <ats-loading-indicator
+              [isLoading]="autocompleteLoading$ | async"
+              className="autocomplete-loader"
+            ></ats-loading-indicator>
+          </ng-template>
+
+          <ng-template #spreadOperators>
+            <button class="spread-operator-btn" nz-button (click)="addSpreadOperator('+')">
+              +
+            </button>
+            <button class="spread-operator-btn" nz-button (click)="addSpreadOperator(minusSign)">
+              －
+            </button>
+            <button class="spread-operator-btn" nz-button (click)="addSpreadOperator('*')">
+              ∗
+            </button>
+            <button class="spread-operator-btn" nz-button (click)="addSpreadOperator('/')">
+              /
+            </button>
+          </ng-template>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <ng-template #searchError>
+      <span *ngIf="searchControl.errors?.required">{{t('validationErrors.emptyFieldError')}}</span>
+    </ng-template>
+    <ng-template #searchWarning>
+      <span *ngIf="searchControl.errors?.expressionInvalid">{{t('techChartInstrumentSearchModal.expressionInvalid')}}</span>
+    </ng-template>
+
+    <p>{{t('techChartInstrumentSearchModal.simpleInstrumentSearchInstruction')}}</p>
+    <p>{{t('techChartInstrumentSearchModal.syntheticInstrumentSearchInstruction')}}</p>
+    <p>{{t('techChartInstrumentSearchModal.additionalInfo')}}</p>
+  </ng-container>
+
+  <div *nzModalFooter>
+    <button nz-button (click)="handleCancel()">{{t('cancelBtnText')}}</button>
+    <button
+      nz-button
+      nzType="primary"
+      [disabled]="searchControl.invalid"
+      (click)="handleOk()"
+    >{{t('okBtnText')}}</button>
+  </div>
+</nz-modal>

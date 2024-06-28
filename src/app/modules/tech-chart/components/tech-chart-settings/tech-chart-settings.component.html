@@ -102,7 +102,7 @@
                 {{t('techChartSettings.headerLabel')}}
               </nz-form-label>
             </nz-form-item>
-            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header && !deviceInfo.isMobile">
               <nz-form-control>
                 <nz-switch formControlName='headerSymbolSearch'></nz-switch>
               </nz-form-control>

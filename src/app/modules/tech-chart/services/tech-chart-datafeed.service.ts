@@ -99,7 +99,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
       return onResult(results.map(x => ({
         symbol: x.symbol,
         exchange: x.exchange,
-        ticker: `${x.exchange}:${x.symbol}`,
+        ticker: `[${x.exchange}:${x.symbol}]`,
         description: x.description,
         full_name: `${x.exchange}:${x.symbol}`,
         type: ''

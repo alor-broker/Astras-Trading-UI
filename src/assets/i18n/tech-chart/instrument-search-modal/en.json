@@ -1,0 +1,7 @@
+{
+  "title": "Instruments search",
+  "expressionInvalid": "The expression is not completed",
+  "simpleInstrumentSearchInstruction": "Like in a 'Instrument select' widget, start type text for instrument search. Click on the desired instrument in dropdown.",
+  "syntheticInstrumentSearchInstruction": "To create synthetic instrument, click on the desired mathematical sign after instrument selected, and then start to type text for next instrument search.",
+  "additionalInfo": "Like in mathematical expression you can also add numbers, brackets etc. in your expression."
+}

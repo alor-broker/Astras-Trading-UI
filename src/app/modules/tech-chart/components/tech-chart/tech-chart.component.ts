@@ -51,11 +51,7 @@ import {
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { TechChartDatafeedService } from '../../services/tech-chart-datafeed.service';
 import { ThemeService } from '../../../../shared/services/theme.service';
-import {
-  ThemeColors,
-  ThemeSettings,
-  ThemeType
-} from '../../../../shared/models/settings/theme-settings.model';
+import { ThemeColors, ThemeSettings, ThemeType } from '../../../../shared/models/settings/theme-settings.model';
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { SelectedPriceData } from '../../../../shared/models/orders/selected-order-price.model';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
@@ -64,23 +60,12 @@ import { MathHelper } from '../../../../shared/utils/math-helper';
 import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
 import { PortfolioKey } from '../../../../shared/models/portfolio-key.model';
 import { Position } from '../../../../shared/models/positions/position.model';
-import {
-  debounceTime,
-  map,
-  startWith
-} from 'rxjs/operators';
+import { debounceTime, map, startWith } from 'rxjs/operators';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import {
-  Order,
-  OrderType,
-  StopOrder
-} from '../../../../shared/models/orders/order.model';
+import { Order, OrderType, StopOrder } from '../../../../shared/models/orders/order.model';
 import { Side } from '../../../../shared/models/enums/side.model';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import {
-  LineMarkerPosition,
-  TechChartSettings
-} from '../../models/tech-chart-settings.model';
+import { LineMarkerPosition, TechChartSettings } from '../../models/tech-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { HashMap } from "@ngneat/transloco/lib/types";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
@@ -88,28 +73,16 @@ import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-display-option";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
-import {
-  defaultBadgeColor,
-  toInstrumentKey
-} from "../../../../shared/utils/instruments";
-import {
-  EditOrderDialogParams,
-  OrderFormType
-} from "../../../../shared/models/orders/orders-dialog.model";
+import { defaultBadgeColor, toInstrumentKey } from "../../../../shared/utils/instruments";
+import { EditOrderDialogParams, OrderFormType } from "../../../../shared/models/orders/orders-dialog.model";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 import { Trade } from "../../../../shared/models/trades/trade.model";
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
 import { addSeconds } from "../../../../shared/utils/datetime";
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
-import {
-  getConditionSign,
-  getConditionTypeByString
-} from "../../../../shared/utils/order-conditions-helper";
+import { getConditionSign, getConditionTypeByString } from "../../../../shared/utils/order-conditions-helper";
 import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
-import {
-  RegularInstrumentKey,
-  SyntheticInstrumentKey
-} from "../../models/synthetic-instruments.model";
+import { RegularInstrumentKey, SyntheticInstrumentKey } from "../../models/synthetic-instruments.model";
 import { SyntheticInstrumentsService } from "../../services/synthetic-instruments.service";
 import { MarketService } from "../../../../shared/services/market.service";
 import { MarketExchange } from "../../../../shared/models/market-settings.model";
@@ -117,11 +90,11 @@ import { DeviceService } from "../../../../shared/services/device.service";
 import { DeviceInfo } from "../../../../shared/models/device-info.model";
 import { ChartTemplatesSettingsBrokerService } from "../../services/chart-templates-settings-broker.service";
 import { LocalStorageService } from "../../../../shared/services/local-storage.service";
-import {
-  ACTIONS_CONTEXT,
-  ActionsContext
-} from "../../../../shared/services/actions-context";
+import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
 import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
+import { InstrumentSearchService } from "../../services/instrument-search.service";
+import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
+import { SearchButtonHelper } from "../../utils/search-button.helper";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -289,6 +262,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly localStorageService: LocalStorageService,
     @Inject(ACTIONS_CONTEXT)
     private readonly actionsContext: ActionsContext,
+    private readonly instrumentSearchService: InstrumentSearchService,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -463,7 +437,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.localStorageService.removeItem('tradingview.current_theme.name');
 
-    const features = this.getFeatures(settings, deviceInfo);
+    const features = this.getFeatures(settings);
 
     this.techChartDatafeedService.setExchangeSettings(exchanges);
     const config: ChartingLibraryWidgetOptions = {
@@ -525,6 +499,20 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       );
 
+      if (!deviceInfo.isMobile && (settings.panels?.headerSymbolSearch ?? true)) {
+        chartWidget.headerReady().then(() => SearchButtonHelper.create(
+          this.chartState!.widget,
+          this.instrumentSearchService,
+          this.settings$.pipe(
+            map(s => s.instrument),
+            distinctUntilChanged((prev, curr) => isInstrumentEqual(prev, curr)),
+            takeUntilDestroyed(this.destroyRef)
+          ),
+          theme.theme,
+          this.destroyRef
+        ));
+      }
+
       this.intervalChangeSub = new Subscription();
       this.symbolChangeSub = new Subscription();
 
@@ -537,7 +525,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       this.symbolChangeSub.add(() => this.chartState?.widget!.activeChart().onSymbolChanged().unsubscribe(null, this.symbolChangeCallback));
 
       this.chartState!.widget.onShortcut("ctrl+f", () => {
-        this.chartState!.widget.activeChart().executeActionById("symbolSearch");
+        this.instrumentSearchService.openModal(this.chartState!.widget.activeChart().symbol() ?? null);
       });
     });
   }
@@ -1233,11 +1221,10 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     };
   }
 
-  private getFeatures(settings: TechChartSettings, deviceInfo: DeviceInfo): { enabled: ChartingLibraryFeatureset[], disabled: ChartingLibraryFeatureset[] } {
+  private getFeatures(settings: TechChartSettings): { enabled: ChartingLibraryFeatureset[], disabled: ChartingLibraryFeatureset[] } {
     const enabled = new Set<ChartingLibraryFeatureset>([
       'side_toolbar_in_fullscreen_mode',
       'chart_crosshair_menu' as ChartingLibraryFeatureset,
-      'show_spread_operators',
       'seconds_resolution',
       'chart_template_storage'
     ]);
@@ -1248,12 +1235,13 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         'display_market_status',
         'save_shortcut',
         'header_quick_search',
-        'header_saveload'
+        'header_saveload',
+        'header_symbol_search',
+        'symbol_search_hot_key'
       ]
     );
 
     this.switchChartFeature('header_widget', settings.panels?.header ?? true, enabled, disabled);
-    this.switchChartFeature('header_symbol_search', !deviceInfo.isMobile && (settings.panels?.headerSymbolSearch ?? true), enabled, disabled);
     this.switchChartFeature('header_chart_type', settings.panels?.headerChartType ?? true, enabled, disabled);
     this.switchChartFeature('header_compare', settings.panels?.headerCompare ?? true, enabled, disabled);
     this.switchChartFeature('header_resolutions', settings.panels?.headerResolutions ?? true, enabled, disabled);
