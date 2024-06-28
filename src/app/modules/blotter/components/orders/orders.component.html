@@ -150,13 +150,12 @@
         <ng-template #footer>
           <div
             class="export-button-container"
-            *transloco="let tCommon; scope: 'blotter/blotter-common'"
             (nzResizeObserve)="footerSizeChanged($event)"
             nzResizeObserver
           >
             <button nz-button nzType="link" *ngIf="canExport(td.orders)" (click)="exportToFile(td.orders)">
               <i nz-icon nzType="download"></i>
-              {{tCommon('blotterBlotterCommon.exportToFile')}}
+              {{t('exportToFile')}}
             </button>
           </div>
         </ng-template>

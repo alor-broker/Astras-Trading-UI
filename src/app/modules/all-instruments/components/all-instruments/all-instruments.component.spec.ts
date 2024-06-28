@@ -14,6 +14,8 @@ import { TranslatorService } from '../../../../shared/services/translator.servic
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { BoardsService } from "../../services/boards.service";
+import { LetDirective } from "@ngrx/component";
+import { NzModalService } from "ng-zorro-antd/modal";
 
 describe('AllInstrumentsComponent', () => {
   let component: AllInstrumentsComponent;
@@ -35,6 +37,9 @@ describe('AllInstrumentsComponent', () => {
           ]
         })
       ],
+      imports: [
+        LetDirective
+      ],
       providers: [
         {
           provide: WidgetSettingsService,
@@ -51,7 +56,7 @@ describe('AllInstrumentsComponent', () => {
         {
           provide: DashboardContextService,
           useValue: {
-            instrumentsSelection$: jasmine.createSpy('instrumentsSelection$').and.returnValue(new Subject()),
+            instrumentsSelection$: new Subject(),
           }
         },
         {
@@ -84,6 +89,12 @@ describe('AllInstrumentsComponent', () => {
           provide: BoardsService,
           useValue: {
             getAllBoards: jasmine.createSpy('getAllBoards').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: NzModalService,
+          useValue: {
+            warning: jasmine.createSpy('warning').and.callThrough()
           }
         },
         ...commonTestProviders

@@ -57,6 +57,17 @@ import {
   SortEnumType
 } from "../../../../../generated/graphql.types";
 import { AddToListContextMenu } from "../../../instruments/utils/add-to-list-context-menu";
+import { ContentSize } from "../../../../shared/models/dashboard/dashboard-item.model";
+import {
+  CsvFormatter,
+  csvFormatterConfigDefaults,
+  ExportColumnMeta
+} from "../../../../shared/utils/file-export/csv-formatter";
+import {
+  FileSaver,
+  FileType
+} from "../../../../shared/utils/file-export/file-saver";
+import { NzModalService } from "ng-zorro-antd/modal";
 
 interface AllInstrumentsNodeDisplay extends Instrument {
   id: string;
@@ -313,10 +324,13 @@ implements OnInit, OnDestroy {
   public contextMenu$!: Observable<ContextMenu[]>;
   private readonly instrumentsList$ = new BehaviorSubject<AllInstrumentsNodeDisplay[]>([]);
   private settings$!: Observable<AllInstrumentsSettings>;
+  private readonly maxLoadingChunkSize = 1000;
 
   private updatesSub?: Subscription;
   protected settingsTableName = 'allInstrumentsTable';
   protected settingsColumnsName = 'allInstrumentsColumns';
+
+  exportBtnSize$ = new BehaviorSubject<ContentSize | null>(null);
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,
@@ -328,6 +342,7 @@ implements OnInit, OnDestroy {
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly translatorService: TranslatorService,
+    private readonly modalService: NzModalService,
     protected readonly destroyRef: DestroyRef
   ) {
     super(settingsService, destroyRef);
@@ -351,6 +366,20 @@ implements OnInit, OnDestroy {
         exchange:  item.basicInformation!.exchange
       })
     );
+  }
+
+  protected initContentSize(): void {
+    this.contentSize$ = combineLatest([
+      this.containerSize$,
+      this.exportBtnSize$
+    ])
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        map(([containerSize, exportBtnSize]) => ({
+          width: containerSize?.width ?? exportBtnSize?.width ?? 0,
+          height: (containerSize?.height ?? 0) - (exportBtnSize?.height ?? 0)
+        }))
+      );
   }
 
   protected initTableConfigStream(): Observable<TableConfig<AllInstrumentsNodeDisplay>> {
@@ -453,6 +482,7 @@ implements OnInit, OnDestroy {
     super.ngOnDestroy();
     this.updatesSub?.unsubscribe();
     this.instrumentsList$.complete();
+    this.exportBtnSize$.complete();
   }
 
   changeColumnOrder(event: CdkDragDrop<any>): void {
@@ -462,6 +492,79 @@ implements OnInit, OnDestroy {
   saveColumnWidth(event: { columnId: string, width: number }): void {
     super.saveColumnWidth<AllInstrumentsSettings>(event, this.settings$);
   }
+
+  protected exportToFile(): void {
+    combineLatest({
+      filters: this.filters$,
+      sort: this.sort$,
+      tableConfig: this.tableConfig$,
+      t: this.translatorService.getTranslator('all-instruments/all-instruments'),
+    })
+      .pipe(
+        mapWith(
+          ({ filters, sort, tableConfig }) => {
+            const columnIds = tableConfig.columns.map(c => c.sourceField ?? c.id);
+
+            return this.service.getInstruments(
+              columnIds,
+              filters,
+              {
+                first: this.maxLoadingChunkSize,
+                sort: sort == null ? null : [sort]
+              }
+            );
+          },
+          ({ tableConfig, t }, res) => ({ tableConfig, t, res })
+        ),
+        take(1)
+      )
+      .subscribe(({ t, tableConfig, res }) => {
+        if (res?.edges == null) {
+          return;
+        }
+
+        const saveCsv = (): void => {
+          const meta = tableConfig.columns.map(c => ({
+              title: t(['columns', c.id, 'name']),
+              readFn: item => {
+                return c.transformFn?.(item) ?? item[c.id as keyof Instrument];
+              }
+            } as ExportColumnMeta<Instrument>)
+          );
+
+          const csv = CsvFormatter.toCsv(meta, res.edges!.map(i => i.node), csvFormatterConfigDefaults);
+
+          FileSaver.save({
+              fileType: FileType.Csv,
+              name: t(['csvFileTitle'])
+            },
+            csv);
+        };
+
+        if (res.pageInfo.hasNextPage) {
+          this.modalService.warning({
+            nzTitle: t(['warningModal', 'title']),
+            nzContent: t(['warningModal', 'content']),
+            nzOkText: t(['saveBtnText']),
+            nzOkType: 'primary',
+            nzCancelText: t(['cancelBtnText']),
+            nzOnOk: saveCsv
+          });
+        } else {
+          saveCsv();
+        }
+      });
+  }
+
+  exportBtnSizeChange(entries: ResizeObserverEntry[]): void {
+    entries.forEach(x => {
+      this.exportBtnSize$.next({
+        width: Math.floor(x.contentRect.width),
+        height: Math.floor(x.contentRect.height)
+      });
+    });
+  }
+
 
   private initInstruments(): void {
     combineLatest([
