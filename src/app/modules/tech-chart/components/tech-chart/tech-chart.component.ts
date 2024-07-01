@@ -14,6 +14,7 @@ import {
   distinctUntilChanged,
   filter,
   firstValueFrom,
+  fromEvent,
   Observable,
   pairwise,
   shareReplay,
@@ -95,6 +96,7 @@ import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.se
 import { InstrumentSearchService } from "../../services/instrument-search.service";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { SearchButtonHelper } from "../../utils/search-button.helper";
+import { DOCUMENT } from "@angular/common";
 
 type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
 
@@ -241,6 +243,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private intervalChangeSub?: Subscription;
   private timezoneChangeSub?: Subscription;
   private symbolChangeSub?: Subscription;
+  private isChartFocused = false;
 
   constructor(
     private readonly settingsService: WidgetSettingsService,
@@ -263,6 +266,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     @Inject(ACTIONS_CONTEXT)
     private readonly actionsContext: ActionsContext,
     private readonly instrumentSearchService: InstrumentSearchService,
+    @Inject(DOCUMENT) private readonly document: Document,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -511,6 +515,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
           theme.theme,
           this.destroyRef
         ));
+
+        this.initSearchShortcuts();
       }
 
       this.intervalChangeSub = new Subscription();
@@ -523,11 +529,47 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       this.chartState!.widget.activeChart().onSymbolChanged()
         .subscribe(null, this.symbolChangeCallback);
       this.symbolChangeSub.add(() => this.chartState?.widget!.activeChart().onSymbolChanged().unsubscribe(null, this.symbolChangeCallback));
-
-      this.chartState!.widget.onShortcut("ctrl+f", () => {
-        this.instrumentSearchService.openModal(this.chartState!.widget.activeChart().symbol() ?? null);
-      });
     });
+  }
+
+  private initSearchShortcuts(): void {
+    this.chartState!.widget.onShortcut("ctrl+f", () => {
+      this.instrumentSearchService.openModal({ value: this.chartState!.widget.activeChart().symbol() ?? null });
+    });
+
+    const validKeyCodeRegExp = new RegExp('^Key[A-Z]$');
+
+    fromEvent<MouseEvent>(this.chartContainer!.nativeElement, 'mouseenter')
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(() => this.isChartFocused = true);
+
+    fromEvent<MouseEvent>(this.chartContainer!.nativeElement, 'mouseleave')
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(() => this.isChartFocused = false);
+
+    fromEvent<KeyboardEvent>(this.document.body, 'keydown')
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        filter((e) =>
+          this.isChartFocused &&
+          !e.ctrlKey &&
+          !e.shiftKey &&
+          !e.metaKey &&
+          !e.altKey &&
+          validKeyCodeRegExp.test(e.code)
+        ),
+        withLatestFrom(this.instrumentSearchService.isModalOpened$
+          .pipe(
+            filter(isOpened => !isOpened)
+          ))
+      )
+      .subscribe(([key]) => {
+        this.instrumentSearchService.openModal({ value: key.key, needTextSelection: false });
+      });
   }
 
   private readonly intervalChangeCallback: (interval: ResolutionString, timeFrameParameters: { timeframe?: TimeFrameValue }) => void =
