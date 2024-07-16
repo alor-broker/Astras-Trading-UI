@@ -91,10 +91,12 @@ describe('BlotterBaseTableComponent', () => {
       providers: [
         {
           provide: BlotterService,
-          useValue: blotterServiceSpy },
+          useValue: blotterServiceSpy
+        },
         {
           provide: WidgetSettingsService,
-          useValue: settingsServiceSpy },
+          useValue: settingsServiceSpy
+        },
         {
           provide: NzContextMenuService,
           useValue: {
