@@ -181,6 +181,7 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
         this.searchControl.setValue(params?.value ?? null);
         setTimeout(() => {
           this.searchInput.nativeElement.focus();
+          this.filterChanged();
           if (params?.needTextSelection ?? true) {
             this.searchInput.nativeElement.selectionStart = 0;
             this.searchInput.nativeElement.selectionEnd = this.searchControl.value?.length ?? 0;
