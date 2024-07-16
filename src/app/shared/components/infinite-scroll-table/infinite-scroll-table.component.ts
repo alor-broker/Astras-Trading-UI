@@ -18,7 +18,6 @@ import { NzTableComponent } from "ng-zorro-antd/table";
 import { filter, Observable, pairwise, shareReplay, switchMap, take } from "rxjs";
 import { ITEM_HEIGHT } from "../../../modules/all-trades/utils/all-trades.utils";
 import { debounceTime, map, startWith } from "rxjs/operators";
-import { ContextMenu } from "../../models/infinite-scroll-table.model";
 import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
 import { TableConfig } from '../../models/table-config.model';
 import { BaseColumnSettings, FilterData, FilterType, InputFieldType } from "../../models/settings/table-settings.model";
@@ -28,7 +27,7 @@ import {
   FormGroup
 } from "@angular/forms";
 
-interface TableDataRow {
+export interface TableDataRow {
   id: string | number;
   [propName: string]: any;
 }
@@ -46,7 +45,6 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   @Input() tableContainerWidth = 100;
   @Input() isLoading = false;
   @Input({required: true}) tableConfig: TableConfig<any> | null = null;
-  @Input() public contextMenu: ContextMenu[] = [];
 
   @Input() public set data(value: TableDataRow[] ){
     if(this.tableData.length > value.length) {
@@ -72,6 +70,9 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   orderColumnChange = new EventEmitter();
   @Output()
   columnWidthChange = new EventEmitter();
+
+  @Output()
+  rowContextMenu = new EventEmitter<{ event: MouseEvent, row: TableDataRow}>();
 
   @ViewChildren('dataTable')
   dataTableQuery!: QueryList<NzTableComponent<TableDataRow>>;

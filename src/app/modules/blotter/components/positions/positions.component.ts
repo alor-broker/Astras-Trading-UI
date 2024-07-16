@@ -27,6 +27,8 @@ import { PortfolioSubscriptionsService } from "../../../../shared/services/portf
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 
 interface PositionDisplay extends Position {
   id: string;
@@ -180,10 +182,16 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
     protected readonly settingsService: WidgetSettingsService,
     protected readonly translatorService: TranslatorService,
     protected readonly wsOrdersService: WsOrdersService,
+    protected readonly nzContextMenuService: NzContextMenuService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef);
+    super(
+      settingsService,
+      translatorService,
+      nzContextMenuService,
+      destroyRef
+    );
   }
 
   ngOnInit(): void {
@@ -316,5 +324,9 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
 
   canReversePosition(position: PositionDisplay): boolean {
     return this.canClosePosition(position);
+  }
+
+  protected rowToInstrumentKey(row: PositionDisplay): Observable<InstrumentKey | null> {
+    return this.service.getInstrumentToSelect(row.symbol, row.exchange, null);
   }
 }

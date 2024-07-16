@@ -20,8 +20,6 @@ import {
   withLatestFrom
 } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
-import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.model";
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import {
   filter,
@@ -56,7 +54,6 @@ import {
   PageInfo,
   SortEnumType
 } from "../../../../../generated/graphql.types";
-import { AddToListContextMenu } from "../../../instruments/utils/add-to-list-context-menu";
 import { ContentSize } from "../../../../shared/models/dashboard/dashboard-item.model";
 import {
   CsvFormatter,
@@ -68,6 +65,9 @@ import {
   FileType
 } from "../../../../shared/utils/file-export/file-saver";
 import { NzModalService } from "ng-zorro-antd/modal";
+import { AddToWatchlistMenuComponent } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
+import { TableDataRow } from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 
 interface AllInstrumentsNodeDisplay extends Instrument {
   id: string;
@@ -321,7 +321,7 @@ implements OnInit, OnDestroy {
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceStep'], dir),
     }
   ];
-  public contextMenu$!: Observable<ContextMenu[]>;
+
   private readonly instrumentsList$ = new BehaviorSubject<AllInstrumentsNodeDisplay[]>([]);
   private settings$!: Observable<AllInstrumentsSettings>;
   private readonly maxLoadingChunkSize = 1000;
@@ -339,7 +339,7 @@ implements OnInit, OnDestroy {
     private readonly dashboardContextService: DashboardContextService,
     @Inject(ACTIONS_CONTEXT)
     protected readonly actionsContext: ActionsContext,
-    private readonly watchlistCollectionService: WatchlistCollectionService,
+    private readonly nzContextMenuService: NzContextMenuService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly translatorService: TranslatorService,
     private readonly modalService: NzModalService,
@@ -357,15 +357,20 @@ implements OnInit, OnDestroy {
       );
 
     super.ngOnInit();
+  }
 
-    this.contextMenu$ = AddToListContextMenu.getMenu<AllInstrumentsNodeDisplay>(
-      this.watchlistCollectionService,
-      this.translatorService,
-      item => ({
-        symbol: item.basicInformation!.symbol,
-        exchange:  item.basicInformation!.exchange
-      })
-    );
+  openContextMenu($event: MouseEvent, menu: AddToWatchlistMenuComponent, selectedRow: TableDataRow): void {
+    this.nzContextMenuService.close(true);
+
+    const row = selectedRow as AllInstrumentsNodeDisplay;
+    if(menu.menuRef != null) {
+      menu.itemToAdd = {
+        symbol: row.basicInformation!.symbol,
+        exchange:  row.basicInformation!.exchange
+      };
+
+      this.nzContextMenuService.create($event, menu.menuRef);
+    }
   }
 
   protected initContentSize(): void {

@@ -19,6 +19,7 @@ import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-display-option";
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
 import { LetDirective } from "@ngrx/component";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 
 describe('TradesHistoryComponent', () => {
   let component: TradesHistoryComponent;
@@ -36,7 +37,10 @@ describe('TradesHistoryComponent', () => {
       declarations: [
         TradesHistoryComponent,
         ...ngZorroMockComponents,
-        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] })
+        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
+        mockComponent({
+          selector: 'ats-add-to-watchlist-menu'
+        })
       ],
       providers: [
         {
@@ -55,6 +59,13 @@ describe('TradesHistoryComponent', () => {
           provide: TradesHistoryService,
           useValue: {
             getTradesHistoryForPortfolio: jasmine.createSpy('getTradesHistoryForPortfolio').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: NzContextMenuService,
+          useValue: {
+            create: jasmine.createSpy('create').and.callThrough(),
+            close: jasmine.createSpy('close').and.callThrough()
           }
         }
       ],

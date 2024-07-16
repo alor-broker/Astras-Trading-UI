@@ -1,5 +1,11 @@
 import { Component, DestroyRef, EventEmitter, OnInit, Output } from '@angular/core';
-import { combineLatest, distinctUntilChanged, Observable, switchMap, take, } from 'rxjs';
+import {
+  combineLatest,
+  distinctUntilChanged,
+  Observable,
+  switchMap,
+  take,
+} from 'rxjs';
 import { debounceTime, map,startWith, tap } from 'rxjs/operators';
 import { OrderFilter } from '../../models/order-filter.model';
 import { BlotterService } from '../../services/blotter.service';
@@ -29,6 +35,8 @@ import { LessMore } from "../../../../shared/models/enums/less-more.model";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 
 interface DisplayOrder extends StopOrder {
   residue: string;
@@ -224,10 +232,16 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
     private readonly ordersDialogService: OrdersDialogService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
+    protected readonly nzContextMenuService: NzContextMenuService,
     private readonly ordersGroupService: OrdersGroupService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef);
+    super(
+      settingsService,
+      translatorService,
+      nzContextMenuService,
+      destroyRef
+    );
   }
 
   ngOnInit(): void {
@@ -374,6 +388,10 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
 
   getConditionSign(condition: string): string {
     return getConditionSign(getConditionTypeByString(condition)!) ?? '';
+  }
+
+  protected rowToInstrumentKey(row: DisplayOrder): Observable<InstrumentKey | null> {
+    return this.service.getInstrumentToSelect(row.symbol, row.exchange, row.board);
   }
 
   private sortOrders(a: DisplayOrder, b: DisplayOrder): number {

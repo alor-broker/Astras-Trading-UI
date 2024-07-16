@@ -1,0 +1,33 @@
+<ng-container *ngIf="menuItems$ | async as menuItems">
+  <nz-dropdown-menu>
+    <ul nz-menu>
+      <ng-container *ngFor="let item of menuItems">
+        <li
+          *ngIf="item.subItems.length === 0; else subMenu"
+          nz-menu-item
+          (click)="selectItem(item)"
+        >
+          {{item.title}}
+        </li>
+
+        <ng-template #subMenu>
+          <li
+            nz-submenu
+            [nzTitle]="item.title"
+            (click)="selectItem(item)"
+          >
+            <ul>
+              <li
+                nz-menu-item
+                *ngFor="let subItem of item.subItems"
+                (click)="selectItem(subItem)"
+              >
+                {{subItem.title}}
+              </li>
+            </ul>
+          </li>
+        </ng-template>
+      </ng-container>
+    </ul>
+  </nz-dropdown-menu>
+</ng-container>

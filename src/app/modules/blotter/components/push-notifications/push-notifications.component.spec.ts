@@ -5,9 +5,13 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { Subject } from "rxjs";
 import { BlotterService } from "../../services/blotter.service";
 import { PushNotificationsService } from "../../../push-notifications/services/push-notifications.service";
-import { getTranslocoModule } from "../../../../shared/utils/testing";
+import {
+  getTranslocoModule,
+  mockComponent
+} from "../../../../shared/utils/testing";
 import { LetDirective } from "@ngrx/component";
 import { ErrorHandlerService } from "../../../../shared/services/handle-error/error-handler.service";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 
 describe('PushNotificationsComponent', () => {
   let component: PushNotificationsComponent;
@@ -19,7 +23,12 @@ describe('PushNotificationsComponent', () => {
         getTranslocoModule(),
         LetDirective
       ],
-      declarations: [ PushNotificationsComponent ],
+      declarations: [
+        PushNotificationsComponent,
+        mockComponent({
+          selector: 'ats-add-to-watchlist-menu'
+        })
+      ],
       providers: [
         {
           provide: WidgetSettingsService,
@@ -49,6 +58,13 @@ describe('PushNotificationsComponent', () => {
           provide: ErrorHandlerService,
           useValue: {
             handleError: jasmine.createSpy('handleError').and.callThrough()
+          }
+        },
+        {
+          provide: NzContextMenuService,
+          useValue: {
+            create: jasmine.createSpy('create').and.callThrough(),
+            close: jasmine.createSpy('close').and.callThrough()
           }
         }
       ]

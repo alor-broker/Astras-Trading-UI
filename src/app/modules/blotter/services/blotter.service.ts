@@ -49,34 +49,39 @@ export class BlotterService {
   }
 
   selectNewInstrument(symbol: string, exchange: string, board: string | null, badgeColor: string): void {
-    this.marketService.getMarketSettings().pipe(
-      take(1)
-    ).subscribe(marketSettings => {
-      if(symbol === marketSettings.currencies.baseCurrency) {
-        return;
-      }
-
-      const mappedCurrency = marketSettings.currencies.portfolioCurrencies.find(c => c.positionSymbol === symbol);
-      if(mappedCurrency != null) {
-        if (mappedCurrency.exchangeInstrument == null) {
+    this.getInstrumentToSelect(symbol, exchange, board)
+      .subscribe(instrument => {
+        if(instrument == null) {
           return;
         }
 
-        this.actionsContext.instrumentSelected(
-          {
+        this.actionsContext.instrumentSelected(instrument, badgeColor);
+      });
+  }
+
+  getInstrumentToSelect(symbol: string, exchange: string, board: string | null): Observable<InstrumentKey | null> {
+    return this.marketService.getMarketSettings().pipe(
+      take(1),
+      map(marketSettings => {
+        if (symbol === marketSettings.currencies.baseCurrency) {
+          return null;
+        }
+
+        const mappedCurrency = marketSettings.currencies.portfolioCurrencies.find(c => c.positionSymbol === symbol);
+        if (mappedCurrency != null) {
+          if (mappedCurrency.exchangeInstrument == null) {
+            return null;
+          }
+
+          return {
             symbol: mappedCurrency.exchangeInstrument.symbol,
             exchange: mappedCurrency.exchangeInstrument.exchange ?? marketSettings.currencies.defaultCurrencyExchange
-          },
-          badgeColor
-        );
+          };
+        }
 
-        return;
-      }
-
-      const instrument: InstrumentKey = { symbol, exchange, instrumentGroup: board };
-
-      this.actionsContext.instrumentSelected(instrument, badgeColor);
-    });
+        return { symbol, exchange, instrumentGroup: board };
+      })
+    );
   }
 
   getPositions(settings: BlotterSettings): Observable<Position[]> {

@@ -54,6 +54,8 @@ import { TradesHistoryService } from "../../../../shared/services/trades-history
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { BlotterService } from "../../services/blotter.service";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 
 @Component({
   selector: 'ats-trades-history',
@@ -159,10 +161,16 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     private readonly service: BlotterService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
+    protected readonly nzContextMenuService: NzContextMenuService,
     private readonly tradesHistoryService: TradesHistoryService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef);
+    super(
+      settingsService,
+      translatorService,
+      nzContextMenuService,
+      destroyRef
+    );
   }
 
   ngAfterViewInit(): void {
@@ -361,5 +369,9 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
         row.board,
         s.badgeColor ?? defaultBadgeColor
       ));
+  }
+
+  protected rowToInstrumentKey(row: DisplayTrade): Observable<InstrumentKey | null> {
+    return this.service.getInstrumentToSelect(row.symbol, row.exchange, row.board);
   }
 }

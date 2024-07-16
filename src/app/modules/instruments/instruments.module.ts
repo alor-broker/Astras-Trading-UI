@@ -16,6 +16,7 @@ import { ImportWatchlistDialogComponent } from './components/import-watchlist-di
 import { NzSpinModule } from "ng-zorro-antd/spin";
 import { NzUploadModule } from "ng-zorro-antd/upload";
 import { DragDropModule } from "@angular/cdk/drag-drop";
+import { AddToWatchlistMenuComponent } from "./widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
     WatchlistTableComponent,
     WatchlistCollectionEditComponent,
     ExportWatchlistDialogComponent,
-    ImportWatchlistDialogComponent
+    ImportWatchlistDialogComponent,
+    AddToWatchlistMenuComponent
   ],
   imports: [
     SharedModule,
@@ -40,7 +42,8 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
     DragDropModule
   ],
   exports: [
-    InstrumentSelectWidgetComponent
+    InstrumentSelectWidgetComponent,
+    AddToWatchlistMenuComponent
   ]
 })
 export class InstrumentsModule { }
