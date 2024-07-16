@@ -14,6 +14,9 @@ import { TranslatorService } from '../../../../shared/services/translator.servic
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { BoardsService } from "../../services/boards.service";
+import { LetDirective } from "@ngrx/component";
+import { NzModalService } from "ng-zorro-antd/modal";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 
 describe('AllInstrumentsComponent', () => {
   let component: AllInstrumentsComponent;
@@ -33,7 +36,13 @@ describe('AllInstrumentsComponent', () => {
             'data',
             'isLoading'
           ]
+        }),
+        mockComponent({
+          selector: 'ats-add-to-watchlist-menu'
         })
+      ],
+      imports: [
+        LetDirective
       ],
       providers: [
         {
@@ -51,7 +60,7 @@ describe('AllInstrumentsComponent', () => {
         {
           provide: DashboardContextService,
           useValue: {
-            instrumentsSelection$: jasmine.createSpy('instrumentsSelection$').and.returnValue(new Subject()),
+            instrumentsSelection$: new Subject(),
           }
         },
         {
@@ -61,11 +70,10 @@ describe('AllInstrumentsComponent', () => {
           }
         },
         {
-          provide: WatchlistCollectionService,
+          provide: NzContextMenuService,
           useValue: {
-            collectionChanged$: new Subject(),
-            getWatchlistCollection: jasmine.createSpy('getWatchlistCollection').and.returnValue(new BehaviorSubject({collection: []})),
-            addItemsToList: jasmine.createSpy('addItemsToList').and.callThrough()
+            create: jasmine.createSpy('create').and.callThrough(),
+            close: jasmine.createSpy('close').and.callThrough()
           }
         },
         {
@@ -84,6 +92,12 @@ describe('AllInstrumentsComponent', () => {
           provide: BoardsService,
           useValue: {
             getAllBoards: jasmine.createSpy('getAllBoards').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: NzModalService,
+          useValue: {
+            warning: jasmine.createSpy('warning').and.callThrough()
           }
         },
         ...commonTestProviders

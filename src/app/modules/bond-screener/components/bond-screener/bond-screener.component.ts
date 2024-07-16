@@ -35,9 +35,9 @@ import {
   PageInfo,
   SortEnumType
 } from "../../../../../generated/graphql.types";
-import { ContextMenu } from "../../../../shared/models/infinite-scroll-table.model";
-import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
-import { AddToListContextMenu } from "../../../instruments/utils/add-to-list-context-menu";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { AddToWatchlistMenuComponent } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
+import { TableDataRow } from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
 
 interface BondDisplay extends Omit<Bond, 'coupons' | 'offers' | 'amortizations'>  {
   id: string;
@@ -449,8 +449,6 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
 
   settingsTableName = 'bondScreenerTable';
 
-  contextMenu$!: Observable<ContextMenu[]>;
-
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     private readonly service: BondScreenerService,
@@ -458,7 +456,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     @Inject(ACTIONS_CONTEXT) private readonly actionsContext: ActionsContext,
     private readonly dashboardContextService: DashboardContextService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly watchlistCollectionService: WatchlistCollectionService,
+    private readonly nzContextMenuService: NzContextMenuService,
     protected readonly destroyRef: DestroyRef
   ) {
     super(settingsService, destroyRef);
@@ -469,15 +467,6 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       .pipe(shareReplay(1));
 
     super.ngOnInit();
-
-    this.contextMenu$ = AddToListContextMenu.getMenu<BondDisplay>(
-      this.watchlistCollectionService,
-      this.translatorService,
-      item => ({
-        symbol: item.basicInformation!.symbol,
-        exchange:  item.basicInformation!.exchange
-      })
-    );
   }
 
   ngOnDestroy(): void {
@@ -528,6 +517,20 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
 
   saveColumnWidth(event: { columnId: string, width: number }): void {
     super.saveColumnWidth<BondScreenerSettings>(event, this.settings$);
+  }
+
+  openContextMenu($event: MouseEvent, menu: AddToWatchlistMenuComponent, selectedRow: TableDataRow): void {
+    this.nzContextMenuService.close(true);
+
+    const row = selectedRow as BondDisplay;
+    if(menu.menuRef != null) {
+      menu.itemToAdd = {
+        symbol: row.basicInformation!.symbol,
+        exchange:  row.basicInformation!.exchange
+      };
+
+      this.nzContextMenuService.create($event, menu.menuRef);
+    }
   }
 
   protected initTableConfigStream(): Observable<TableConfig<BondDisplay>> {

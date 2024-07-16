@@ -23,6 +23,10 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
   isVisible$!: Observable<boolean>;
 
   private readonly expressionValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    if ((control.value?.length ?? 0) === 0) {
+      return null;
+    }
+
     if (SyntheticInstrumentsHelper.isSyntheticInstrumentValid((control.value ?? '').replace(this.minusSign, '-'))) {
       return null;
     }

@@ -1,20 +1,34 @@
 <div
+  *ngrxLet="{ tableConfig: tableConfig$, tableData: tableData$, contentSize: contentSize$ } as td"
   class="container"
   (nzResizeObserve)="containerSizeChanged($event)"
   nzResizeObserver
 >
   <ats-infinite-scroll-table
-    *ngIf="tableConfig$ | async as tableConfig"
     (filterApplied)="applyFilter($event)"
     (rowClick)="rowClick($event)"
     (scrolled)="scrolled()"
     (orderColumnChange)="changeColumnOrder($event)"
     (columnWidthChange)="saveColumnWidth($event)"
-    [contextMenu]="(contextMenu$ | async) ?? []"
-    [tableConfig]="tableConfig"
-    [data]="(tableData$ | async) ?? []"
+    [tableConfig]="td.tableConfig"
+    [data]="td.tableData"
     [isLoading]="(isLoading$ | async) ?? false"
-    [tableContainerHeight]="(contentSize$ | async)?.height || 0"
-    [tableContainerWidth]="(contentSize$ | async)?.width || 0"
+    [tableContainerHeight]="td.contentSize?.height || 0"
+    [tableContainerWidth]="td.contentSize?.width || 0"
+    (rowContextMenu)="openContextMenu($event.event, contextMenu, $event.row)"
   ></ats-infinite-scroll-table>
+
+  <div
+    class="export-button-container"
+    *transloco="let t"
+    (nzResizeObserve)="exportBtnSizeChange($event)"
+    nzResizeObserver
+  >
+    <button nz-button nzType="link" *ngIf="(td.tableData?.length ?? 0) > 0" (click)="exportToFile()">
+      <i nz-icon nzType="download"></i>
+      {{t('exportToFile')}}
+    </button>
+  </div>
+
+  <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>
 </div>

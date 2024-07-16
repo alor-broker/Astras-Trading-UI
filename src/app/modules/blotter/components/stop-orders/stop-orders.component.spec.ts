@@ -18,6 +18,7 @@ import { OrdersGroupService } from "../../../../shared/services/orders/orders-gr
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
 import { LetDirective } from "@ngrx/component";
 import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 
 describe('StopOrdersComponent', () => {
   let component: StopOrdersComponent;
@@ -68,12 +69,22 @@ describe('StopOrdersComponent', () => {
             openEditOrderDialog: jasmine.createSpy('openEditOrderDialog').and.callThrough()
           }
         },
+        {
+          provide: NzContextMenuService,
+          useValue: {
+            create: jasmine.createSpy('create').and.callThrough(),
+            close: jasmine.createSpy('close').and.callThrough()
+          }
+        },
         ...commonTestProviders
       ],
       declarations: [
         StopOrdersComponent,
         mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
-        mockComponent({ selector: 'ats-instrument-badge-display', inputs: ['columns'] })
+        mockComponent({ selector: 'ats-instrument-badge-display', inputs: ['columns'] }),
+        mockComponent({
+          selector: 'ats-add-to-watchlist-menu'
+        })
       ]
     }).compileComponents();
   });

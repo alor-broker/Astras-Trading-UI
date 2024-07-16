@@ -4,11 +4,15 @@ import { BondScreenerComponent } from './bond-screener.component';
 import { of, Subject } from "rxjs";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { BondScreenerService } from "../../services/bond-screener.service";
-import { getTranslocoModule } from "../../../../shared/utils/testing";
+import {
+  getTranslocoModule,
+  mockComponent
+} from "../../../../shared/utils/testing";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 
 describe('BondScreenerComponent', () => {
   let component: BondScreenerComponent;
@@ -16,7 +20,12 @@ describe('BondScreenerComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ BondScreenerComponent ],
+      declarations: [
+        BondScreenerComponent,
+        mockComponent({
+          selector: 'ats-add-to-watchlist-menu'
+        })
+      ],
       imports: [ getTranslocoModule() ],
       providers: [
         {
@@ -50,10 +59,11 @@ describe('BondScreenerComponent', () => {
           }
         },
         {
-          provide: WatchlistCollectionService,
+          provide: NzContextMenuService,
           useValue: {
-            getWatchlistCollection: jasmine.createSpy('getWatchlistCollection').and.returnValue(of({})),
-            addItemsToList: jasmine.createSpy('addItemsToList').and.callThrough()
+            collectionChanged$: new Subject(),
+            create: jasmine.createSpy('create').and.callThrough(),
+            close: jasmine.createSpy('close').and.callThrough()
           }
         }
       ]

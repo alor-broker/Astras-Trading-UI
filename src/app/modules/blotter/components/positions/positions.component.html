@@ -85,7 +85,10 @@
       </thead>
       <tbody>
         <ng-template let-pos nz-virtual-scroll>
-          <tr (click)="rowClick(pos)">
+          <tr
+            (click)="rowClick(pos)"
+            (contextmenu)="openContextMenu($event, contextMenu, pos)"
+          >
             <td *ngIf="showPositionActions(td.settings)">
               <a
                 *ngIf="canClosePosition(pos)"
@@ -159,13 +162,12 @@
       <ng-template #footer>
         <div
           class="export-button-container"
-          *transloco="let tCommon; scope: 'blotter/blotter-common'"
           (nzResizeObserve)="footerSizeChanged($event)"
           nzResizeObserver
         >
           <button nz-button nzType="link" *ngIf="canExport(td.positions)" (click)="exportToFile(td.positions)">
             <i nz-icon nzType="download"></i>
-            {{tCommon('blotterBlotterCommon.exportToFile')}}
+            {{t('exportToFile')}}
           </button>
         </div>
       </ng-template>
@@ -173,6 +175,8 @@
     <nz-dropdown-menu #searchMenu="nzDropdownMenu">
       <ats-table-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns"></ats-table-filter>
     </nz-dropdown-menu>
+
+    <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>
   </div>
 
 </div>

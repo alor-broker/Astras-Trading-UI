@@ -146,8 +146,13 @@ export class SyntheticInstrumentsHelper {
 
   static isSyntheticInstrumentValid(searchString: string): boolean {
     const syntheticInstrument = this.getRegularOrSyntheticInstrumentKey(searchString);
+
     if (!syntheticInstrument.isSynthetic) {
-      return true;
+      return syntheticInstrument.instrument.symbol?.length > 0;
+    }
+
+    if (syntheticInstrument.parts.filter(p => !p.isSpreadOperator).length === 0) {
+      return false;
     }
 
     const expressionStr = syntheticInstrument.parts.reduce((acc, curr) => {

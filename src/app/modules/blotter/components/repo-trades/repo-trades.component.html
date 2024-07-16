@@ -70,7 +70,7 @@
         </thead>
         <tbody>
           <ng-template let-trd nz-virtual-scroll>
-          <tr>
+          <tr (contextmenu)="openContextMenu($event, contextMenu, trd)">
             <td>
               <span [class]='trd.side.toString() === "sell" ? "bg-sell" : "bg-buy"'>&nbsp;</span>
             </td>
@@ -96,13 +96,12 @@
         <ng-template #footer>
           <div
             class="export-button-container"
-            *transloco="let tCommon; scope: 'blotter/blotter-common'"
             (nzResizeObserve)="footerSizeChanged($event)"
             nzResizeObserver
           >
             <button nz-button nzType="link" *ngIf="canExport(td.trades)" (click)="exportToFile(td.trades)">
               <i nz-icon nzType="download"></i>
-              {{tCommon('blotterBlotterCommon.exportToFile')}}
+              {{t('exportToFile')}}
             </button>
           </div>
         </ng-template>
@@ -112,5 +111,7 @@
     <nz-dropdown-menu #searchMenu="nzDropdownMenu">
       <ats-table-filter [columns]="td.tableConfig.columns" (filterChange)="filterChange($event)"></ats-table-filter>
     </nz-dropdown-menu>
+
+    <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>
   </ng-container>
 </div>

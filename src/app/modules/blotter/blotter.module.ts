@@ -22,6 +22,7 @@ import { NzTreeModule } from "ng-zorro-antd/tree";
 import { RepoTradesComponent } from './components/repo-trades/repo-trades.component';
 import { TradesHistoryComponent } from './components/trades-history/trades-history.component';
 import { LetDirective } from "@ngrx/component";
+import { InstrumentsModule } from "../instruments/instruments.module";
 
 
 @NgModule({
@@ -48,7 +49,8 @@ import { LetDirective } from "@ngrx/component";
     DragDropModule,
     NzResizeObserverModule,
     NzTreeModule,
-    LetDirective
+    LetDirective,
+    InstrumentsModule
   ],
   exports: [
     BlotterWidgetComponent

@@ -38,6 +38,8 @@ import { OrderFormType } from "../../../../shared/models/orders/orders-dialog.mo
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 
 interface DisplayOrder extends Order {
   residue: string;
@@ -205,11 +207,17 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
     private readonly wsOrdersService: WsOrdersService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
+    protected readonly nzContextMenuService: NzContextMenuService,
     private readonly ordersGroupService: OrdersGroupService,
     private readonly ordersDialogService: OrdersDialogService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef);
+    super(
+      settingsService,
+      translatorService,
+      nzContextMenuService,
+      destroyRef
+    );
   }
 
   ngOnInit(): void {
@@ -364,6 +372,10 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
     event.preventDefault();
     event.stopPropagation();
     this.service.openOrderGroupModal(groupId);
+  }
+
+  protected rowToInstrumentKey(row: DisplayOrder): Observable<InstrumentKey | null> {
+    return this.service.getInstrumentToSelect(row.symbol, row.exchange, row.board);
   }
 
   private sortOrders(a: DisplayOrder, b: DisplayOrder): number {

@@ -84,7 +84,10 @@
         </thead>
         <tbody>
           <ng-template let-ord nz-virtual-scroll>
-          <tr (click)="rowClick(ord)">
+          <tr
+            (click)="rowClick(ord)"
+            (contextmenu)="openContextMenu($event, contextMenu, ord)"
+          >
             <td>
               <span
                 [class.cancelled-status]="ord.status.toString() === 'canceled'"
@@ -161,7 +164,7 @@
           >
             <button nz-button nzType="link" *ngIf="canExport(td.orders)" (click)="exportToFile(td.orders)">
               <i nz-icon nzType="download"></i>
-              {{t('blotterBlotterCommon.exportToFile')}}
+              {{t('exportToFile')}}
             </button>
           </div>
         </ng-template>
@@ -171,6 +174,8 @@
     <nz-dropdown-menu #searchMenu="nzDropdownMenu">
       <ats-table-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns"></ats-table-filter>
     </nz-dropdown-menu>
+
+    <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>
 
   </div>
 </ng-container>
