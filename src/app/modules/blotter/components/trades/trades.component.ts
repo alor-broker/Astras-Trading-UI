@@ -37,6 +37,8 @@ import {
 } from '../../models/trade.model';
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 
 @Component({
   selector: 'ats-trades',
@@ -152,9 +154,15 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
     protected readonly service: BlotterService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
+    protected readonly nzContextMenuService: NzContextMenuService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef);
+    super(
+      settingsService,
+      translatorService,
+      nzContextMenuService,
+      destroyRef
+    );
   }
 
   ngOnInit(): void {
@@ -236,5 +244,9 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
         row.board,
         s.badgeColor ?? defaultBadgeColor
       ));
+  }
+
+  protected rowToInstrumentKey(row: DisplayTrade): Observable<InstrumentKey | null> {
+    return this.service.getInstrumentToSelect(row.symbol, row.exchange, row.board);
   }
 }

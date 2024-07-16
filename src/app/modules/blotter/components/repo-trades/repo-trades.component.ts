@@ -25,6 +25,8 @@ import { RepoTrade } from "../../../../shared/models/trades/trade.model";
 import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
 import { TradeFilter } from "../../models/trade.model";
 import { TableConfig } from "../../../../shared/models/table-config.model";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 
 @Component({
   selector: 'ats-repo-trades',
@@ -203,9 +205,15 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
     protected readonly service: BlotterService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
+    protected readonly nzContextMenuService: NzContextMenuService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef);
+    super(
+      settingsService,
+      translatorService,
+      nzContextMenuService,
+      destroyRef
+    );
   }
 
   protected initTableConfigStream(): Observable<TableConfig<RepoTrade>> {
@@ -289,6 +297,10 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
         map(f => trades.filter((t: RepoTrade) => this.justifyFilter(t, f)))
       ))
     );
+  }
+
+  protected rowToInstrumentKey(row: RepoTrade): Observable<InstrumentKey | null> {
+    return this.service.getInstrumentToSelect(row.symbol, row.exchange, row.board);
   }
 
   searchInItem(trade: RepoTrade, key: keyof RepoTrade | keyof RepoTrade['repoSpecificFields'], value?: string): boolean {

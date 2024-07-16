@@ -13,7 +13,13 @@ import {
   take,
   tap
 } from "rxjs";
-import { catchError, filter, map, startWith, switchMap } from "rxjs/operators";
+import {
+  catchError,
+  filter,
+  map,
+  startWith,
+  switchMap
+} from "rxjs/operators";
 import {
   OrderExecuteSubscription,
   PriceSparkSubscription,
@@ -29,7 +35,10 @@ import { BlotterService } from "../../services/blotter.service";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { isArrayEqual } from "../../../../shared/utils/collections";
 import { PushNotificationsService } from "../../../push-notifications/services/push-notifications.service";
-import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
+import {
+  BaseColumnSettings,
+  FilterType
+} from "../../../../shared/models/settings/table-settings.model";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
@@ -38,6 +47,7 @@ import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-ta
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { ErrorHandlerService } from "../../../../shared/services/handle-error/error-handler.service";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 
 interface NotificationFilter {
   id?: string;
@@ -107,10 +117,16 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
     protected readonly blotterService: BlotterService,
     private readonly pushNotificationsService: PushNotificationsService,
     protected readonly translatorService: TranslatorService,
+    protected readonly nzContextMenuService: NzContextMenuService,
     protected readonly destroyRef: DestroyRef,
     private readonly errorHandlerService: ErrorHandlerService
   ) {
-    super(widgetSettingsService, translatorService, destroyRef);
+    super(
+      widgetSettingsService,
+      translatorService,
+      nzContextMenuService,
+      destroyRef
+    );
   }
 
   protected initTableConfigStream(): Observable<TableConfig<DisplayNotification>> {
@@ -230,6 +246,18 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
         return of([]);
       })
     );
+  }
+
+  protected rowToInstrumentKey(row: DisplayNotification): Observable<InstrumentKey | null> {
+    if(row.instrument != null && row.exchange != null) {
+      return of({
+        symbol: row.instrument,
+        exchange: row.exchange,
+        instrumentGroup: row.board
+      });
+    }
+
+    return of(null);
   }
 
   rowClick(row: DisplayNotification): void {

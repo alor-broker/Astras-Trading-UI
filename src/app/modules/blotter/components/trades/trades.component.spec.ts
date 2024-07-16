@@ -13,6 +13,7 @@ import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { mockComponent, ngZorroMockComponents } from "../../../../shared/utils/testing";
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 
 describe('TradesComponent', () => {
   let component: TradesComponent;
@@ -44,12 +45,22 @@ describe('TradesComponent', () => {
           useValue: {
             getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
           }
+        },
+        {
+          provide: NzContextMenuService,
+          useValue: {
+            create: jasmine.createSpy('create').and.callThrough(),
+            close: jasmine.createSpy('close').and.callThrough()
+          }
         }
       ],
       declarations: [
         TradesComponent,
         ...ngZorroMockComponents,
-        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] })
+        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
+        mockComponent({
+          selector: 'ats-add-to-watchlist-menu'
+        })
       ]
     }).compileComponents();
   });

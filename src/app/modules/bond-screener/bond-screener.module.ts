@@ -9,6 +9,7 @@ import { YieldCurveChartComponent } from './components/yield-curve-chart/yield-c
 import { NzSpinModule } from "ng-zorro-antd/spin";
 import { LetDirective } from "@ngrx/component";
 import { YieldCurveChartParametersComponent } from './components/yield-curve-chart-parameters/yield-curve-chart-parameters.component';
+import { InstrumentsModule } from "../instruments/instruments.module";
 
 @NgModule({
   declarations: [
@@ -21,12 +22,13 @@ import { YieldCurveChartParametersComponent } from './components/yield-curve-cha
   exports: [
     BondScreenerWidgetComponent
   ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    NzResizeObserverModule,
-    NzSpinModule,
-    LetDirective
-  ]
+    imports: [
+        CommonModule,
+        SharedModule,
+        NzResizeObserverModule,
+        NzSpinModule,
+        LetDirective,
+        InstrumentsModule
+    ]
 })
 export class BondScreenerModule { }

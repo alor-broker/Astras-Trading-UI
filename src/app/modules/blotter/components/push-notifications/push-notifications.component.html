@@ -78,7 +78,10 @@
             </thead>
             <tbody>
             <ng-template let-notification nz-virtual-scroll>
-              <tr (click)="rowClick(notification)">
+              <tr
+                (click)="rowClick(notification)"
+                (contextmenu)="openContextMenu($event, contextMenu, notification)"
+              >
                 <td>
                   <a (click)="cancelSubscription(notification.id)"
                      *ngIf='notification.subscriptionType === subscriptionTypes.PriceSpark'
@@ -110,6 +113,8 @@
         <nz-dropdown-menu #searchMenu="nzDropdownMenu">
           <ats-table-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns"></ats-table-filter>
         </nz-dropdown-menu>
+
+        <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>
       </ng-container>
     </ng-container>
 

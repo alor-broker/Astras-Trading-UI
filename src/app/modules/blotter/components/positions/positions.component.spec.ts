@@ -17,6 +17,7 @@ import {
 import { LetDirective } from "@ngrx/component";
 import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
@@ -57,12 +58,22 @@ describe('PositionsComponent', () => {
             getSummariesSubscription: jasmine.createSpy('getSummariesSubscription').and.returnValue(new Subject()),
           }
         },
+        {
+          provide: NzContextMenuService,
+          useValue: {
+            create: jasmine.createSpy('create').and.callThrough(),
+            close: jasmine.createSpy('close').and.callThrough()
+          }
+        },
         ...commonTestProviders
       ],
       declarations: [
         PositionsComponent,
         mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
-        mockComponent({ selector: 'ats-instrument-badge-display', inputs: ['columns'] })
+        mockComponent({ selector: 'ats-instrument-badge-display', inputs: ['columns'] }),
+        mockComponent({
+          selector: 'ats-add-to-watchlist-menu'
+        })
       ]
     })
       .compileComponents();

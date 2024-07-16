@@ -13,6 +13,7 @@ import {
   ngZorroMockComponents
 } from "../../../../shared/utils/testing";
 import { LetDirective } from "@ngrx/component";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 
 describe('RepoTradesComponent', () => {
   let component: RepoTradesComponent;
@@ -28,7 +29,10 @@ describe('RepoTradesComponent', () => {
         RepoTradesComponent,
         ...ngZorroMockComponents,
         mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
-        mockComponent({ selector: 'nz-filter-trigger', inputs: ['nzActive', 'nzDropdownMenu', 'nzVisible'] })
+        mockComponent({ selector: 'nz-filter-trigger', inputs: ['nzActive', 'nzDropdownMenu', 'nzVisible'] }),
+        mockComponent({
+          selector: 'ats-add-to-watchlist-menu'
+        })
       ],
       providers: [
         {
@@ -46,6 +50,13 @@ describe('RepoTradesComponent', () => {
           provide: TranslatorService,
           useValue: {
             getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
+          }
+        },
+        {
+          provide: NzContextMenuService,
+          useValue: {
+            create: jasmine.createSpy('create').and.callThrough(),
+            close: jasmine.createSpy('close').and.callThrough()
           }
         }
       ],

@@ -14,6 +14,7 @@ import { TranslatorService } from '../../../../shared/services/translator.servic
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { BoardsService } from "../../services/boards.service";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 
 describe('AllInstrumentsComponent', () => {
   let component: AllInstrumentsComponent;
@@ -33,6 +34,9 @@ describe('AllInstrumentsComponent', () => {
             'data',
             'isLoading'
           ]
+        }),
+        mockComponent({
+          selector: 'ats-add-to-watchlist-menu'
         })
       ],
       providers: [
@@ -61,11 +65,10 @@ describe('AllInstrumentsComponent', () => {
           }
         },
         {
-          provide: WatchlistCollectionService,
+          provide: NzContextMenuService,
           useValue: {
-            collectionChanged$: new Subject(),
-            getWatchlistCollection: jasmine.createSpy('getWatchlistCollection').and.returnValue(new BehaviorSubject({collection: []})),
-            addItemsToList: jasmine.createSpy('addItemsToList').and.callThrough()
+            create: jasmine.createSpy('create').and.callThrough(),
+            close: jasmine.createSpy('close').and.callThrough()
           }
         },
         {

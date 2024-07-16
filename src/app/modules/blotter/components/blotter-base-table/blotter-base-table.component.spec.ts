@@ -21,6 +21,8 @@ import { TableNames } from "../../models/blotter-settings.model";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { FilterType } from "../../../../shared/models/settings/table-settings.model";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 
 @Component({
   selector: 'ats-test-comp',
@@ -31,15 +33,20 @@ import { FilterType } from "../../../../shared/models/settings/table-settings.mo
   `
 })
 class TestComponent extends BlotterBaseTableComponent<{ id: string }, object> {
+  protected rowToInstrumentKey(row: { id: string }): Observable<InstrumentKey | null> {
+      return of(null);
+  }
+
   settingsTableName = TableNames.OrdersTable;
 
   constructor(
     protected readonly service: BlotterService,
     protected readonly settingsService: WidgetSettingsService,
     protected readonly translatorService: TranslatorService,
+    protected readonly nzContextMenuService: NzContextMenuService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, destroyRef);
+    super(settingsService, translatorService, nzContextMenuService, destroyRef);
   }
 
   protected initTableConfigStream(): Observable<TableConfig<any>> {
@@ -82,8 +89,19 @@ describe('BlotterBaseTableComponent', () => {
         getTranslocoModule(),
       ],
       providers: [
-        { provide: BlotterService, useValue: blotterServiceSpy },
-        { provide: WidgetSettingsService, useValue: settingsServiceSpy }
+        {
+          provide: BlotterService,
+          useValue: blotterServiceSpy },
+        {
+          provide: WidgetSettingsService,
+          useValue: settingsServiceSpy },
+        {
+          provide: NzContextMenuService,
+          useValue: {
+            create: jasmine.createSpy('create').and.callThrough(),
+            close: jasmine.createSpy('close').and.callThrough()
+          }
+        }
       ]
     })
       .compileComponents();
@@ -129,17 +147,6 @@ describe('BlotterBaseTableComponent', () => {
     component.defaultFilterChange('testKey', ['testValue']);
     expect(filterChangeSpy).toHaveBeenCalledOnceWith({ testKey: ['testValue'] });
   });
-
-  it('should reset filter', fakeAsync(() => {
-    component.filterChange({ key1: 'val1'});
-    tick();
-    component.reset();
-    tick();
-
-    component.filters$
-      .pipe(take(1))
-      .subscribe((f: any) => expect(f).toEqual({}));
-  }));
 
   it('should correctly detect if filter applied', fakeAsync(() => {
     component.filters$.next({ key1: 'val1' });

@@ -14,6 +14,9 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { ContentSize } from "../../../../shared/models/dashboard/dashboard-item.model";
 import { map } from "rxjs/operators";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { AddToWatchlistMenuComponent } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 
 @Component({
   template: ''
@@ -34,6 +37,7 @@ implements OnInit {
   protected constructor(
     protected readonly settingsService: WidgetSettingsService,
     protected readonly translatorService: TranslatorService,
+    protected readonly nzContextMenuService: NzContextMenuService,
     protected readonly destroyRef: DestroyRef
   ) {
     super(settingsService, destroyRef);
@@ -53,10 +57,6 @@ implements OnInit {
       .subscribe(c => this.columns = c?.columns ?? []);
   }
 
-  protected reset(): void {
-    this.filters$.next(<F>{});
-  }
-
   changeColumnOrder(event: CdkDragDrop<any>): void {
     super.changeColumnOrder<BlotterSettings>(event, this.settings$);
   }
@@ -64,6 +64,23 @@ implements OnInit {
   saveColumnWidth(event: { columnId: string, width: number }): void {
     super.saveColumnWidth<BlotterSettings>(event, this.settings$);
   }
+
+  openContextMenu($event: MouseEvent, menu: AddToWatchlistMenuComponent, selectedRow: T): void {
+    this.nzContextMenuService.close(true);
+
+    this.rowToInstrumentKey(selectedRow)
+      .subscribe(instrument => {
+        if(instrument == null ||  menu.menuRef == null) {
+          $event.preventDefault();
+          return;
+        }
+
+        menu.itemToAdd = instrument;
+        this.nzContextMenuService.create($event, menu.menuRef);
+      });
+  }
+
+  protected abstract rowToInstrumentKey(row: T): Observable<InstrumentKey | null>;
 
   protected initContentSize(): void {
     this.contentSize$ = combineLatest([
