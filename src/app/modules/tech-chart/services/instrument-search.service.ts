@@ -1,19 +1,24 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from "rxjs";
 
+interface SearchInstrumentModalParams {
+  value: string;
+  needTextSelection?: boolean;
+}
+
 @Injectable()
 export class InstrumentSearchService {
 
   private readonly isModalOpened = new BehaviorSubject(false);
   isModalOpened$ = this.isModalOpened.asObservable();
 
-  private readonly modalParams = new BehaviorSubject<string | null>(null);
+  private readonly modalParams = new BehaviorSubject<SearchInstrumentModalParams | null>(null);
   modalParams$ = this.modalParams.asObservable();
 
   private readonly modalData = new BehaviorSubject<string | null>(null);
   modalData$ = this.modalData.asObservable();
 
-  openModal(params: string | null): void {
+  openModal(params: SearchInstrumentModalParams | null): void {
     this.modalParams.next(params);
     this.isModalOpened.next(true);
   }

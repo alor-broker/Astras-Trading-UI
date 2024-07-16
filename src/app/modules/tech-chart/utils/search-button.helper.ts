@@ -30,7 +30,7 @@ export class SearchButtonHelper {
     searchBtn.style.cursor = 'pointer';
 
     searchBtn.addEventListener('click', () => {
-      instrumentSearchService.openModal(chartWidget.activeChart().symbol() ?? null);
+      instrumentSearchService.openModal({ value: chartWidget.activeChart().symbol() ?? null });
     });
 
     searchBtn.addEventListener('mouseenter', () => {

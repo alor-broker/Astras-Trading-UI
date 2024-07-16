@@ -1,6 +1,6 @@
-import { Component, DestroyRef, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { InstrumentSearchService } from "../../services/instrument-search.service";
-import { BehaviorSubject, Observable, of, tap } from "rxjs";
+import { BehaviorSubject, Observable, of, take, tap } from "rxjs";
 import { AbstractControl, FormControl, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
@@ -8,7 +8,6 @@ import { debounceTime, switchMap } from "rxjs/operators";
 import { SearchFilter } from "../../../instruments/models/search-filter.model";
 import { NzOptionSelectionChange } from "ng-zorro-antd/auto-complete";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
 
 @Component({
@@ -42,8 +41,7 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly instrumentSearchService: InstrumentSearchService,
-    private readonly instrumentsService: InstrumentsService,
-    private readonly destroyRef: DestroyRef,
+    private readonly instrumentsService: InstrumentsService
   ) {
   }
 
@@ -62,12 +60,6 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
       ),
       tap(() => this.autocompleteLoading$.next(false))
     );
-
-    this.instrumentSearchService.modalParams$
-      .pipe(
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(params => this.searchControl.setValue(params));
   }
 
   ngOnDestroy(): void {
@@ -181,10 +173,20 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
   }
 
   modalOpened(): void {
-    setTimeout(() => {
-      this.searchInput.nativeElement.focus();
-      this.searchInput.nativeElement.selectionStart = 0;
-      this.searchInput.nativeElement.selectionEnd = this.searchControl.value?.length ?? 0;
-    }, 0);
+    this.instrumentSearchService.modalParams$
+      .pipe(
+        take(1)
+      )
+      .subscribe(params => {
+        this.searchControl.setValue(params?.value ?? null);
+        setTimeout(() => {
+          this.searchInput.nativeElement.focus();
+          if (params?.needTextSelection ?? true) {
+            this.searchInput.nativeElement.selectionStart = 0;
+            this.searchInput.nativeElement.selectionEnd = this.searchControl.value?.length ?? 0;
+          }
+        }, 0);
+
+      });
   }
 }
