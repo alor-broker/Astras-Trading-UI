@@ -2,11 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   Observable,
-  of,
   take
 } from 'rxjs';
 import { Position } from '../models/positions/position.model';
-import { catchError } from 'rxjs/operators';
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
 import { catchHttpError } from "../utils/observable-helper";
 import { EnvironmentService } from "./environment.service";
@@ -32,12 +30,6 @@ export class PositionsService {
     return this.http.get<Position[]>(`${this.url}/${exchange}/${portfolio}/positions`).pipe(
       catchHttpError<Position[] | null>(null, this.errorHandlerService),
       take(1)
-    );
-  }
-
-  getByPortfolio(portfolio: string, exchange: string, ticker: string) : Observable<Position | null> {
-    return this.http.get<Position>(`${this.url}/${exchange}/${portfolio}/positions/${ticker}`).pipe(
-      catchError(() => of(null))
     );
   }
 }

@@ -15,7 +15,6 @@ import {
   Observable,
   take
 } from "rxjs";
-import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import {
@@ -69,7 +68,6 @@ export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<Orde
     showPriceWithZeroPadding: this.formBuilder.nonNullable.control(false),
   });
 
-  exchanges: string[] = exchangesList;
   deviceInfo$!: Observable<any>;
 
   protected settings$!: Observable<OrderbookSettings>;

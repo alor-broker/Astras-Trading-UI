@@ -31,6 +31,14 @@
         "timezone": "Europe/Moscow",
         "defaultTradingSession": "0700-0000,0000-0200:1234567"
       }
+    },
+    {
+      "exchange": "UNITED",
+      "settings": {
+        "defaultPortfolioCurrencyInstrument": "RUB",
+        "timezone": "Europe/Moscow",
+        "defaultTradingSession": "0700-0000,0000-0200:1234567"
+      }
     }
   ],
 
@@ -73,7 +81,8 @@
         },
         "format": {
           "formatCode": "CHF",
-          "locale": "ch"
+          "locale": "ch",
+          "displaySymbol": "₣"
         }
       },
       {
@@ -113,7 +122,7 @@
         },
         "format": {
           "formatCode": "AMD",
-          "locale": "hy_AM"
+          "locale": "hy-AM"
         }
       },
       {
@@ -121,14 +130,22 @@
         "exchangeInstrument": {
           "symbol": "GLDRUB_TOM"
         },
-        "format": null
+        "format": {
+          "formatCode": "",
+          "locale": "",
+          "displaySymbol": "GLD"
+        }
       },
       {
         "positionSymbol": "SLV",
         "exchangeInstrument": {
           "symbol": "SLVRUB_TOM"
         },
-        "format": null
+        "format": {
+          "formatCode": "",
+          "locale": "",
+          "displaySymbol": "SLV"
+        }
       },
       {
         "positionSymbol": "KZT",
@@ -137,7 +154,17 @@
         },
         "format": {
           "formatCode": "KZT",
-          "locale": "kk_KZ"
+          "locale": "KZ"
+        }
+      },
+      {
+        "positionSymbol": "KGS",
+        "exchangeInstrument": {
+          "symbol": "KGSRUB_TOM"
+        },
+        "format": {
+          "formatCode": "KGS",
+          "locale": "KG"
         }
       }
     ]

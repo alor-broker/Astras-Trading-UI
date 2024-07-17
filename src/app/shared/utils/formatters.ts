@@ -16,8 +16,12 @@ export function formatCurrency(number: number, formatSettings: CurrencyFormat | 
     return MathHelper.round(number, maxFractionDigits).toString();
   }
 
-  if (formatSettings.locale === 'ch') {
-    return Intl.NumberFormat(formatSettings.locale).format(number) + ' ₣';
+  if (formatSettings.displaySymbol != null && formatSettings.displaySymbol.length > 0) {
+    if(formatSettings.locale.length == 0) {
+      return MathHelper.round(number, maxFractionDigits).toString() + ' ' + formatSettings.displaySymbol;
+    }
+
+    return Intl.NumberFormat(formatSettings.locale).format(number) + ' ' + formatSettings.displaySymbol;
   }
 
   return Intl.NumberFormat(formatSettings.locale, { style: 'currency', currency: formatSettings.formatCode, maximumFractionDigits: maxFractionDigits }).format(number);

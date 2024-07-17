@@ -13,6 +13,10 @@ export function getMarketTypeByPortfolio(portfolio: string): MarketType | undefi
     return MarketType.ForeignExchange;
   }
 
+  if (portfolio.startsWith('E')) {
+    return MarketType.United;
+  }
+
   if (/^\d/.test(portfolio)) {
     return MarketType.Forward;
   }

@@ -1,5 +1,11 @@
 import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
-import { BehaviorSubject, Observable, switchMap, map } from "rxjs";
+import {
+  BehaviorSubject,
+  Observable,
+  switchMap,
+  map,
+  shareReplay
+} from "rxjs";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
 import { Store } from "@ngrx/store";
 import { filter } from "rxjs/operators";
@@ -62,7 +68,8 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
             map(p => p ?? [])
           );
       }),
-      map(positions => positions.map(p => p.symbol))
+      map(positions => positions.map(p => p.symbol)),
+      shareReplay(1)
     );
   }
 
