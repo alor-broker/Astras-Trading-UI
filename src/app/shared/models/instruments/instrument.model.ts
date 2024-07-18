@@ -1,6 +1,7 @@
 import {
   InstrumentKey
 } from "./instrument-key.model";
+import { Market } from "../../../../generated/graphql.types";
 
 export interface Instrument extends InstrumentKey {
   shortName: string;
@@ -15,6 +16,7 @@ export interface Instrument extends InstrumentKey {
   marginsell?: number;
   expirationDate?: Date;
   tradingStatus?: TradingStatus;
+  market?: Market;
 }
 
 export enum TradingStatus {

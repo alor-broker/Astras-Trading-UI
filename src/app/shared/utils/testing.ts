@@ -1,4 +1,7 @@
-import { defer, Observable } from 'rxjs';
+import {
+  defer,
+  Observable
+} from 'rxjs';
 import { Instrument } from '../models/instruments/instrument.model';
 import {
   Component,
@@ -13,7 +16,10 @@ import { SharedModule } from '../shared.module';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { HttpClientModule } from '@angular/common/http';
-import { TranslocoTestingModule, TranslocoTestingOptions } from "@ngneat/transloco";
+import {
+  TranslocoTestingModule,
+  TranslocoTestingOptions
+} from "@ngneat/transloco";
 import ru from '../../../assets/i18n/ru.json';
 import { ErrorHandlerService } from '../services/handle-error/error-handler.service';
 import { LOGGER } from '../services/logging/logger-base';
@@ -21,6 +27,7 @@ import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR
 } from "@angular/forms";
+import { Market } from "../../../generated/graphql.types";
 
 /**
  * Create async observable that emits-once and completes  after a JS engine turn
@@ -45,7 +52,8 @@ export class TestData {
         description: 'AAPL',
         shortName: 'AAPL',
         currency: "RUB",
-        minstep: 0.01
+        minstep: 0.01,
+        market: Market.Fond
       },
       {
         symbol: 'DSKY',
@@ -55,7 +63,8 @@ export class TestData {
         description: 'DSKY',
         shortName: 'DSKY',
         currency: "RUB",
-        minstep: 0.01
+        minstep: 0.01,
+        market: Market.Fond
       },
       {
         symbol: 'SBER',
@@ -65,7 +74,8 @@ export class TestData {
         description: 'SBER',
         shortName: 'SBER',
         currency: "RUB",
-        minstep: 0.01
+        minstep: 0.01,
+        market: Market.Fond
       },
       {
         symbol: 'DVEC',
@@ -75,7 +85,8 @@ export class TestData {
         description: 'DVEC',
         shortName: 'DVEC',
         currency: "RUB",
-        minstep: 0.01
+        minstep: 0.01,
+        market: Market.Fond
       }
     ];
   }

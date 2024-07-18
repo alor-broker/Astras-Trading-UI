@@ -17,7 +17,7 @@ import {
 } from "../utils/portfolios";
 import { mapWith } from '../utils/observable-helper';
 import { EnvironmentService } from "./environment.service";
-import { UnitedExchange } from "../constants/exchange.constants";
+import { Exchange } from "../../../generated/graphql.types";
 
 @Injectable({
   providedIn: 'root',
@@ -67,7 +67,7 @@ export class AccountService {
           const portfolio = source.allPortfolios.find(p => p.portfolio === curr.portfolio);
           if (portfolio != null) {
             const exchange = portfolio.isVirtual
-              ? UnitedExchange
+              ? Exchange.United
               : curr.exchange;
 
             return [

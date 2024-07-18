@@ -9,7 +9,7 @@ import {InstrumentKey} from '../../models/instruments/instrument-key.model';
 import {Instrument} from '../../models/instruments/instrument.model';
 import {DeviceService} from "../../services/device.service";
 import { toInstrumentKey } from "../../utils/instruments";
-import { UnitedExchange } from "../../constants/exchange.constants";
+import { Exchange } from "../../../../generated/graphql.types";
 
 @Component({
   selector: 'ats-instrument-search',
@@ -103,7 +103,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   get isExchangeSpecified (): boolean {
     return this.exchange != null
     && this.exchange.length > 0
-    && this.exchange !== UnitedExchange;
+    && (this.exchange as Exchange) !== Exchange.United;
   }
 
   onSelect(event: NzOptionSelectionChange, val: InstrumentKey): void {

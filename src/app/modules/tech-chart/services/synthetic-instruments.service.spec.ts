@@ -7,6 +7,7 @@ import { of, take } from "rxjs";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { generateRandomString, getRandomInt } from "../../../shared/utils/testing";
 import { Instrument } from "../../../shared/models/instruments/instrument.model";
+import { Market } from "../../../../generated/graphql.types";
 
 describe('SyntheticInstrumentsService', () => {
   let service: SyntheticInstrumentsService;
@@ -74,6 +75,7 @@ describe('SyntheticInstrumentsService', () => {
         type: generateRandomString(5),
         shortName: generateRandomString(5),
         minstep: getRandomInt(1, 10),
+        market: Market.Fond
       };
 
       const instrumentKey2: InstrumentKey = {
@@ -91,6 +93,7 @@ describe('SyntheticInstrumentsService', () => {
         type: generateRandomString(5),
         shortName: generateRandomString(5),
         minstep: getRandomInt(1, 10),
+        market: Market.Fond
       };
 
       instrumentsServiceSpy.getInstrument.and.callFake((i: InstrumentKey) =>  of(i.symbol === instrumentKey1.symbol ? instrument1 : instrument2));

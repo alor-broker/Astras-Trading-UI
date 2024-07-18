@@ -1,4 +1,5 @@
 import { TradingStatus } from "./instrument.model";
+import { Market } from "../../../../generated/graphql.types";
 
 export interface InstrumentSearchResponse {
   symbol: string;
@@ -29,4 +30,5 @@ export interface InstrumentSearchResponse {
   tradingStatus?: TradingStatus;
   tradingStatusInfo?: string;
   complexProductCategory?: string;
+  market: Market;
 }

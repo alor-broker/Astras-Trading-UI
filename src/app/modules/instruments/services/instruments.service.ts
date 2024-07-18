@@ -51,7 +51,8 @@ export class InstrumentsService {
           marginbuy: r.marginbuy,
           marginsell: r.marginsell,
           expirationDate: r.cancellation,
-          tradingStatus: r.tradingStatus
+          tradingStatus: r.tradingStatus,
+          market: r.market
         };
         return selected;
       }),
@@ -81,7 +82,8 @@ export class InstrumentsService {
           instrumentGroup: r.board ?? r.primary_board,
           isin: r.ISIN,
           currency: r.currency,
-          minstep: r.minstep ?? 0.01
+          minstep: r.minstep ?? 0.01,
+          market: r.market
         }));
         return selects;
       })
