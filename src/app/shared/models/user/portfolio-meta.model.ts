@@ -3,4 +3,5 @@ export interface PortfolioMeta {
   tks: string;
   market: string;
   agreement: string;
+  isVirtual: boolean;
 }

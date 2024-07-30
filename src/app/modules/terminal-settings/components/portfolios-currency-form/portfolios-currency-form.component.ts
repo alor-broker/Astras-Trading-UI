@@ -70,14 +70,18 @@ export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseCom
         marketSettings: this.marketService.getMarketSettings()
       }
     ).pipe(
-      map(x => ([
-        ...x.allCurrencies.filter(c => c.secondCode === x.marketSettings.currencies.baseCurrency),
-        {
-          firstCode: x.marketSettings.currencies.baseCurrency,
-          secondCode: x.marketSettings.currencies.baseCurrency,
-          symbolTom: x.marketSettings.currencies.baseCurrency
-        }
-      ]))
+      map(x => {
+        const knownCurrencies = new Set(x.marketSettings.currencies.portfolioCurrencies.map(c => c.positionSymbol));
+
+        return [
+          ...x.allCurrencies.filter(c => c.secondCode === x.marketSettings.currencies.baseCurrency && knownCurrencies.has(c.firstCode)),
+          {
+            firstCode: x.marketSettings.currencies.baseCurrency,
+            secondCode: x.marketSettings.currencies.baseCurrency,
+            symbolTom: x.marketSettings.currencies.baseCurrency
+          }
+        ];
+      })
     );
 
     this.form.valueChanges.pipe(

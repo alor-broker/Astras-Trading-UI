@@ -26,6 +26,7 @@ export interface ExchangeSettings {
 export interface CurrencyFormat {
   formatCode: string;
   locale: string;
+  displaySymbol?: string;
 }
 
 export interface PortfolioCurrency {

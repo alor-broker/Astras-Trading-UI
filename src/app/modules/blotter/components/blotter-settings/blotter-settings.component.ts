@@ -12,7 +12,6 @@ import {
   Observable,
   take
 } from "rxjs";
-import { exchangesList } from "../../../../shared/models/enums/exchanges";
 import {
   BaseColumnId,
   TableDisplaySettings
@@ -76,7 +75,6 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
   allRepoTradesColumns: BaseColumnId[] = allRepoTradesColumns;
   allPositionsColumns: BaseColumnId[] = allPositionsColumns;
   allNotificationsColumns: BaseColumnId[] = allNotificationsColumns;
-  exchanges: string[] = exchangesList;
 
   availablePortfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   deviceInfo$!: Observable<any>;

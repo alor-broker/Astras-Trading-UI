@@ -4,7 +4,9 @@ export enum MarketType {
   /** валютный **/
   ForeignExchange = 'foreignExchange',
   /** фондовый **/
-  Stock = 'stock'
+  Stock = 'stock',
+  /** единый **/
+  United = 'united',
 }
 
 export interface PortfolioKey {

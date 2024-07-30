@@ -314,7 +314,8 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
             )
               .pipe(
                 map(([quote, tTreemap, tShortNumber, instrument, marketSettings]) => {
-                  const marketCapBase = getNumberAbbreviation(treemapNode.marketCap, true);const curencyFormat = getCurrencyFormat(instrument!.currency, marketSettings.currencies);
+                  const marketCapBase = getNumberAbbreviation(treemapNode.marketCap, true);
+                  const curencyFormat = getCurrencyFormat(instrument!.currency, marketSettings.currencies);
                   return {
                     title: treemapNode.symbol,
                     body: [

@@ -49,10 +49,7 @@ import {
 } from "../../../../../shared/models/orders/orders-group.model";
 import { BaseOrderFormComponent } from "../base-order-form.component";
 import { EvaluationBaseProperties } from "../../../../../shared/models/evaluation-base-properties.model";
-import {
-  MarketType,
-  PortfolioKey
-} from "../../../../../shared/models/portfolio-key.model";
+import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
 import { toInstrumentKey } from "../../../../../shared/utils/instruments";
 import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
 import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
@@ -65,6 +62,7 @@ import {
 import { MarketService } from "../../../../../shared/services/market.service";
 import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
 import { OrdersGroupService } from "../../../../../shared/services/orders/orders-group.service";
+import { Market } from "../../../../../../generated/graphql.types";
 
 @Component({
   selector: 'ats-limit-order-form',
@@ -190,7 +188,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     this.evaluationRequest$.complete();
   }
 
-  protected changeInstrument(instrument: Instrument, portfolioKey: PortfolioKey): void {
+  protected changeInstrument(instrument: Instrument): void {
     this.form.reset(undefined, {emitEvent: true});
 
     this.setPriceValidators(this.form.controls.price, instrument);
@@ -226,7 +224,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
 
     this.form.controls.instrumentGroup.setValue(instrument.instrumentGroup ?? '');
 
-    if(portfolioKey.marketType !== MarketType.Forward) {
+    if(instrument.market !== Market.Forts) {
       this.disableControl(this.form.controls.orderEndUnixTime);
     } else {
       this.enableControl(this.form.controls.orderEndUnixTime);

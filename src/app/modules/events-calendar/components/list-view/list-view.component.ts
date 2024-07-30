@@ -3,6 +3,7 @@ import {
   DestroyRef,
   Inject,
   Input,
+  OnDestroy,
   OnInit
 } from '@angular/core';
 import {
@@ -34,7 +35,7 @@ import {
   templateUrl: './list-view.component.html',
   styleUrls: ['./list-view.component.less']
 })
-export class ListViewComponent implements OnInit {
+export class ListViewComponent implements OnInit, OnDestroy {
   private readonly symbols$ = new BehaviorSubject<string[]>([]);
   @Input()
   set symbols(value: string[]) {
@@ -53,6 +54,11 @@ export class ListViewComponent implements OnInit {
     private readonly marketService: MarketService,
     private readonly destroyRef: DestroyRef
 ) {
+  }
+
+  ngOnDestroy(): void {
+    this.symbols$.complete();
+    this.events$.complete();
   }
 
   ngOnInit(): void {

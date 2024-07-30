@@ -1,7 +1,6 @@
 import { Component, DestroyRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   distinctUntilChanged,
-  iif,
   Observable,
   shareReplay,
   switchMap,
@@ -199,17 +198,19 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
 
     this.portfolioTotalCost$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
-      switchMap(s => iif(
-          () => this.marketType === MarketType.Forward,
-          this.portfolioSubscriptionsService.getSpectraRisksSubscription(s.portfolio, s.exchange)
+      switchMap(s => {
+        if(this.marketType === MarketType.Forward) {
+          return this.portfolioSubscriptionsService.getSpectraRisksSubscription(s.portfolio, s.exchange)
             .pipe(map(i => {
               return i.moneyAmount;
-            })),
-          this.portfolioSubscriptionsService.getSummariesSubscription(s.portfolio, s.exchange)
+            }));
+        } else {
+          return this.portfolioSubscriptionsService.getSummariesSubscription(s.portfolio, s.exchange)
             .pipe(map(i => {
               return i.portfolioLiquidationValue;
-            }))
-        )),
+            }));
+        }
+      }),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }

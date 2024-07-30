@@ -6,6 +6,7 @@ import { AccountService } from './account.service';
 import { of } from "rxjs";
 import { MarketType } from "../models/portfolio-key.model";
 import { EnvironmentService } from "./environment.service";
+import { PortfolioMeta } from "../models/user/portfolio-meta.model";
 
 describe('AccountService', () => {
   let service: AccountService;
@@ -78,38 +79,43 @@ describe('AccountService', () => {
   }));
 
   it('should get login portfolios', fakeAsync(() => {
-    const portfoliosMetaRes = [
+    const portfoliosMetaRes: PortfolioMeta[] = [
       {
         portfolio: 'DtestPortfolio1',
         tks: 'testTks1',
         market: 'test Market1',
         agreement: 'testAgreement1',
+        isVirtual: false
       },
       {
         portfolio: 'GtestPortfolio2',
         tks: 'testTks2',
         market: 'test Market2',
         agreement: 'testAgreement2',
+        isVirtual: false
       },
       {
         portfolio: '1234',
         tks: 'testTks3',
         market: 'test Market3',
         agreement: 'testAgreement3',
+        isVirtual: false
       },
       {
         portfolio: 'DtestPortfolio4',
         tks: 'testTks4',
         market: 'test Market4',
         agreement: 'testAgreement4',
+        isVirtual: false
       },
     ];
+
     spyAuth.currentUser$ = of({ clientId: 'testClientId' });
 
     const expectedPortfolios = [
-      {...portfoliosMetaRes[0], market: 'test', exchange: 'testExchange1', marketType: MarketType.Stock},
-      {...portfoliosMetaRes[1], market: 'test', exchange: 'testExchange2', marketType: MarketType.ForeignExchange},
-      {...portfoliosMetaRes[2], market: 'test', exchange: 'testExchange3', marketType: MarketType.Forward}
+      {...portfoliosMetaRes[0], market: 'test', exchange: 'testExchange1', marketType: MarketType.Stock },
+      {...portfoliosMetaRes[1], market: 'test', exchange: 'testExchange2', marketType: MarketType.ForeignExchange },
+      {...portfoliosMetaRes[2], market: 'test', exchange: 'testExchange3', marketType: MarketType.Forward }
     ];
 
     service.getLoginPortfolios()

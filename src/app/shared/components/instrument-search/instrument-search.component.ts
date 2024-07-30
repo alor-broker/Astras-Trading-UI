@@ -9,6 +9,7 @@ import {InstrumentKey} from '../../models/instruments/instrument-key.model';
 import {Instrument} from '../../models/instruments/instrument.model';
 import {DeviceService} from "../../services/device.service";
 import { toInstrumentKey } from "../../utils/instruments";
+import { Exchange } from "../../../../generated/graphql.types";
 
 @Component({
   selector: 'ats-instrument-search',
@@ -71,17 +72,20 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   filterChanged(value: string): void {
     this.markAsTouched();
 
-    const filter = {
-      limit: 20
-    } as SearchFilter;
+    const filter: SearchFilter = {
+      limit: 20,
+      query: ''
+    } ;
 
-    filter.exchange = this.exchange ?? '';
+    filter.exchange = this.isExchangeSpecified
+      ? this.exchange
+      : '';
 
     if (value.includes(':')) {
       const parts = value.split(':');
 
       let nextPartIndex = 0;
-      if (this.exchange == null || !this.exchange.length) {
+      if (filter.exchange == null || filter.exchange.length === 0) {
         filter.exchange = parts[nextPartIndex].toUpperCase();
         nextPartIndex++;
       }
@@ -94,6 +98,12 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     }
 
     this.filter$.next(filter);
+  }
+
+  get isExchangeSpecified (): boolean {
+    return this.exchange != null
+    && this.exchange.length > 0
+    && (this.exchange as Exchange) !== Exchange.United;
   }
 
   onSelect(event: NzOptionSelectionChange, val: InstrumentKey): void {

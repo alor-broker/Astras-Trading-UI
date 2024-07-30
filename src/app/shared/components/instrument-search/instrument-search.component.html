@@ -21,7 +21,7 @@
   <ng-template #searchHelp>
     <span>{{t('sharedInstrumentSearch.helpParagraph1')}}</span>
     <br/>
-    <ng-container *ngIf="!exchange">
+    <ng-container *ngIf="!isExchangeSpecified">
       <span>{{t('sharedInstrumentSearch.helpParagraph2')}}</span>
       <br/>
       <span nz-typography><code>[Exchange]:[Ticker]:[Board]</code></span>
@@ -34,7 +34,7 @@
       <br/>
       <span nz-typography>{{t('sharedInstrumentSearch.forExample')}} MOEX:SBER</span>
     </ng-container>
-    <ng-container *ngIf="exchange">
+    <ng-container *ngIf="isExchangeSpecified">
       <span>{{t('sharedInstrumentSearch.helpParagraph2')}}</span>
       <br/>
       <span nz-typography><code>[Ticker]:[Board]</code></span>

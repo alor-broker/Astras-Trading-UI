@@ -115,10 +115,10 @@ export abstract class BaseOrderFormComponent implements OnDestroy {
   protected initInstrumentChange(): void {
     this.getInstrumentWithPortfolio().pipe(
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(x => this.changeInstrument(x.instrument, x.portfolioKey));
+    ).subscribe(x => this.changeInstrument(x.instrument));
   }
 
-  protected abstract changeInstrument(instrument: Instrument, portfolioKey: PortfolioKey): void;
+  protected abstract changeInstrument(instrument: Instrument): void;
 
   protected enableControl(target: AbstractControl): void {
     target.enable({ emitEvent: false });
