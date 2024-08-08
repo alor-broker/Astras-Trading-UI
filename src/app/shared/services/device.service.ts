@@ -1,28 +1,27 @@
 import { Injectable } from '@angular/core';
-import { from, shareReplay, map, Observable } from "rxjs";
-import { NgxDeviceInfoService } from "ngx-device-info";
+import {
+  map,
+  Observable,
+  of,
+  shareReplay
+} from "rxjs";
 import { DeviceInfo } from "../models/device-info.model";
-
-interface NgxDeviceInfo {
-  isMobile: boolean;
-  isTablet: boolean;
-  userAgent?: string;
-}
+import { DeviceDetectorService } from "ngx-device-detector";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DeviceService {
-  constructor(private readonly deviceInfoService: NgxDeviceInfoService) {
-  }
+  deviceInfo$: Observable<DeviceInfo> = of(this.deviceDetectorService).pipe(
+    map(deviceDetectorService => {
+      return {
+        isMobile: deviceDetectorService.isMobile() || deviceDetectorService.isTablet(),
+        userAgent: deviceDetectorService.getDeviceInfo().userAgent ?? ''
+      };
+    }),
+    shareReplay(1)
+  );
 
-  deviceInfo$: Observable<DeviceInfo> = from<Promise<NgxDeviceInfo>>(this.deviceInfoService.getDeviceInfo())
-    .pipe(
-      map(info => (
-        {
-          isMobile: info.isMobile || info.isTablet ,
-          userAgent: info.userAgent ?? ''
-        })),
-      shareReplay(1)
-    );
+  constructor(private readonly deviceDetectorService: DeviceDetectorService) {
+  }
 }

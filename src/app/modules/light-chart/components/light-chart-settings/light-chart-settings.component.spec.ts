@@ -7,6 +7,7 @@ import { LightChartSettingsComponent } from './light-chart-settings.component';
 import { of } from 'rxjs';
 import {
   getTranslocoModule,
+  InstrumentBoardSelectMockComponent,
   InstrumentSearchMockComponent,
   mockComponent
 } from '../../../../shared/utils/testing';
@@ -18,6 +19,7 @@ import { NzCollapseModule } from "ng-zorro-antd/collapse";
 import { NzFormModule } from "ng-zorro-antd/form";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { TimeframeValue } from "../../models/light-chart.models";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 describe('LightChartSettingsComponent', () => {
   let component: LightChartSettingsComponent;
@@ -39,15 +41,16 @@ describe('LightChartSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         LightChartSettingsComponent,
-        InstrumentSearchMockComponent,
-        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['instrument', 'placeholder'] }),
         mockComponent({
           selector: 'ats-widget-settings',
           inputs: ['canSave', 'canCopy', 'showCopy']
         })
       ],
       imports: [
+        BrowserAnimationsModule,
         getTranslocoModule(),
+        InstrumentSearchMockComponent,
+        InstrumentBoardSelectMockComponent,
         ReactiveFormsModule,
         NzSelectModule,
         NzCollapseModule,

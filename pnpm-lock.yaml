@@ -104,9 +104,9 @@ importers:
       ng2-charts:
         specifier: ^6.0.0
         version: 6.0.0(@angular/cdk@18.1.3(@angular/common@18.1.3(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4))(rxjs@7.8.1))(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4))(rxjs@7.8.1))(@angular/common@18.1.3(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4))(rxjs@7.8.1))(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4))(@angular/platform-browser@18.1.3(@angular/animations@18.1.3(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4)))(@angular/common@18.1.3(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4))(rxjs@7.8.1))(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4)))(chart.js@4.4.3)(rxjs@7.8.1)
-      ngx-device-info:
-        specifier: ^3.0.0
-        version: 3.0.6(@angular/common@18.1.3(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4))(rxjs@7.8.1))(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4))
+      ngx-device-detector:
+        specifier: ^8.0.0
+        version: 8.0.0(@angular/common@18.1.3(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4))(rxjs@7.8.1))(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4))
       ngx-joyride:
         specifier: ^2.5.0
         version: 2.5.0(@angular/common@18.1.3(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4))(rxjs@7.8.1))(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4))
@@ -5152,11 +5152,11 @@ packages:
       chart.js: ^3.4.0 || ^4.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  ngx-device-info@3.0.6:
-    resolution: {integrity: sha512-nP0uzBe+3yYzMuf0lIJ2bZeALrDjDHQVFYPbBpLJkUUkGG/vI7b2nAYwRArBKyt9xbt6UjcVsuvzebKsAE3scA==}
+  ngx-device-detector@8.0.0:
+    resolution: {integrity: sha512-ik6EwUKnlN+xwoWHzyJp5+V+QRWYrmpTqAvRwa16xBnAVd7/i3jElN7MZjs/InwcYz7AW3XcSNeu+XRvtHgb9w==}
     peerDependencies:
-      '@angular/common': ^17.0.9
-      '@angular/core': ^17.0.9
+      '@angular/common': ^18.0.0
+      '@angular/core': ^18.0.0
 
   ngx-joyride@2.5.0:
     resolution: {integrity: sha512-C/J8C4uWZjKl9aMmRBt9egVjuIpwWFplJgBZDl1EfqNVTJkdEC51nt9DpAOuDwOgkbArhJ9sZIk3bZT4vkud/w==}
@@ -13013,7 +13013,7 @@ snapshots:
       rxjs: 7.8.1
       tslib: 2.6.3
 
-  ngx-device-info@3.0.6(@angular/common@18.1.3(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4))(rxjs@7.8.1))(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4)):
+  ngx-device-detector@8.0.0(@angular/common@18.1.3(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4))(rxjs@7.8.1))(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4)):
     dependencies:
       '@angular/common': 18.1.3(@angular/core@18.1.3(rxjs@7.8.1)(zone.js@0.14.4))(rxjs@7.8.1)
       '@angular/core': 18.1.3(rxjs@7.8.1)(zone.js@0.14.4)
