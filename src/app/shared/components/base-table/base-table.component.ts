@@ -1,5 +1,11 @@
 import { Component, DestroyRef, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, take, withLatestFrom } from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  take,
+  withLatestFrom
+} from "rxjs";
 import { ContentSize } from "../../models/dashboard/dashboard-item.model";
 import { BaseColumnSettings } from "../../models/settings/table-settings.model";
 import { TableConfig } from "../../models/table-config.model";
@@ -69,9 +75,10 @@ implements OnInit, OnDestroy {
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         map(([containerSize, headerSize]) => ({
-          width: containerSize?.width ?? headerSize?.width ?? 0,
-          height: (containerSize?.height ?? 0) - (headerSize?.height ?? 0)
-        }))
+            width: containerSize?.width ?? headerSize?.width ?? 5,
+            height: Math.max((containerSize?.height ?? 0) - (headerSize?.height ?? 0), 5)
+          })
+        )
       );
   }
 
