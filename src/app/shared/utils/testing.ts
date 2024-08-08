@@ -19,7 +19,7 @@ import { HttpClientModule } from '@angular/common/http';
 import {
   TranslocoTestingModule,
   TranslocoTestingOptions
-} from "@ngneat/transloco";
+} from "@jsverse/transloco";
 import ru from '../../../assets/i18n/ru.json';
 import { ErrorHandlerService } from '../services/handle-error/error-handler.service';
 import { LOGGER } from '../services/logging/logger-base';
@@ -92,16 +92,15 @@ export class TestData {
   }
 }
 
-
 /**
  *  function for adding event emitters in mock component outputs
  */
-function classWithOutputEmittersFactory(klass: any, outputs: string[]): { prototype: any, new: () => any} {
+function classWithOutputEmittersFactory(klass: any, outputs: string[]): { prototype: any, new: () => any } {
   outputs.forEach(output => {
     klass[output] = new EventEmitter();
   });
 
-  return klass as { prototype: any, new: () => any};
+  return klass as { prototype: any, new: () => any };
 }
 
 /**
@@ -109,7 +108,7 @@ function classWithOutputEmittersFactory(klass: any, outputs: string[]): { protot
  */
 export function mockComponent(options: Component, klass = (class {
 })): unknown {
-  let metadata: Component = {template: '<ng-content></ng-content>', ...options};
+  const metadata: Component = {template: '<ng-content></ng-content>', ...options};
   const classWithOutputs = classWithOutputEmittersFactory(klass, options.outputs ?? []);
 
   return Component(metadata)(classWithOutputs);
@@ -124,7 +123,7 @@ export function mockDirective(options: Directive, klass = (class {
  *  array of ng-zorro mock components
  */
 export const ngZorroMockComponents = [
-  mockComponent({selector: 'nz-header', inputs: [ 'stepContent' ]}),
+  mockComponent({selector: 'nz-header', inputs: ['stepContent']}),
   mockComponent({
     selector: 'nz-table',
     inputs: [
@@ -239,7 +238,6 @@ export const ngZorroMockComponents = [
   })
 ];
 
-
 /**
  *  ats-widget-skeleton mock
  */
@@ -280,7 +278,7 @@ export const commonTestProviders: any[] = [
  * @returns random string
  */
 export function generateRandomString(length: number): string {
-  let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
   let str = '';
   for (let i = 0; i < length; i++) {
@@ -299,7 +297,7 @@ export function generateRandomString(length: number): string {
 export function getRandomInt(min: number, max: number): number {
   min = Math.ceil(min);
   max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+  return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
 }
 
 /**

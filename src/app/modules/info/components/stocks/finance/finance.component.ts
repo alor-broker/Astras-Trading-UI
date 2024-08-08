@@ -12,6 +12,7 @@ import { distinct, map } from 'rxjs/operators';
 export class FinanceComponent implements OnInit, OnDestroy {
   @Input({required: true})
   guid!: string;
+
   columns = 1;
   finance$?: Observable<Finance | null>;
   isLoading$ = new BehaviorSubject<boolean>(true);

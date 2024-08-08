@@ -4,7 +4,6 @@ import { ArbitrageSpreadManageComponent } from './arbitrage-spread-manage.compon
 import {
   commonTestProviders,
   getTranslocoModule,
-  mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";

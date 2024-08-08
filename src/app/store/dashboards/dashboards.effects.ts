@@ -31,7 +31,6 @@ import { WatchlistCollectionService } from "../../modules/instruments/services/w
 import { DashboardsFeature } from "./dashboards.reducer";
 import { TerminalSettingsService } from "../../shared/services/terminal-settings.service";
 
-
 @Injectable()
 export class DashboardsEffects {
   initDashboards$ = createEffect(
@@ -85,7 +84,6 @@ export class DashboardsEffects {
             actions.push(DashboardFavoritesActions.add({dashboardGuid: guid}));
           }
         });
-
 
         actions.push(DashboardsInternalActions.initSuccess());
 

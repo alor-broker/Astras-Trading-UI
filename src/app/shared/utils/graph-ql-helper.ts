@@ -99,15 +99,19 @@ export class GraphQlHelper {
   static getBasicInformationPartialSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<BasicInformation>> {
     return this.getPartialSchema<BasicInformation>(BasicInformationSchema(), keysToInclude, ['symbol', 'exchange']);
   }
+
   static getAdditionalInformationSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<AdditionalInformation>> {
     return this.getPartialSchema<AdditionalInformation>(AdditionalInformationSchema(), keysToInclude);
   }
+
   static getFinancialAttributesSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<FinancialAttributes>> {
     return this.getPartialSchema<FinancialAttributes>(FinancialAttributesSchema(), keysToInclude);
   }
+
   static getBoardInformationSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<BoardInformation>> {
     return this.getPartialSchema<BoardInformation>(BoardInformationSchema(), keysToInclude);
   }
+
   static getTradingDetailsSchema(keysToInclude: string[]): ZodObject<ZodPropertiesOf<TradingDetails>> {
     return this.getPartialSchema<TradingDetails>(TradingDetailsSchema(), keysToInclude);
   }

@@ -1,4 +1,4 @@
-import { HttpClientTestingModule, } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { WatchInstrumentsService } from './watch-instruments.service';
@@ -14,6 +14,7 @@ import { GuidGenerator } from "../../../shared/utils/guid";
 import { TimeframeValue } from "../../light-chart/models/light-chart.models";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { CandlesService } from "./candles.service";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('WatchInstrumentsService', () => {
   let service: WatchInstrumentsService;
@@ -57,18 +58,18 @@ describe('WatchInstrumentsService', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-      ],
-      providers: [
+    imports: [],
+    providers: [
         WatchInstrumentsService,
-        {provide: HistoryService, useValue: historyServiceSpy},
-        {provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy},
-        {provide: InstrumentsService, useValue: instrumentsServiceSpy},
-        {provide: QuotesService, useValue: quotesServiceSpy},
-        {provide: CandlesService, useValue: candlesServiceSpy}
-      ]
-    });
+        { provide: HistoryService, useValue: historyServiceSpy },
+        { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy },
+        { provide: InstrumentsService, useValue: instrumentsServiceSpy },
+        { provide: QuotesService, useValue: quotesServiceSpy },
+        { provide: CandlesService, useValue: candlesServiceSpy },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
     service = TestBed.inject(WatchInstrumentsService);
   });
 
@@ -171,6 +172,7 @@ describe('WatchInstrumentsService', () => {
       history: historyRes
     }));
 
+    // eslint-disable-next-line prefer-const
     let newCandle;
     const newCandle$ = new Subject();
     candlesServiceSpy.getInstrumentLastCandle.and.returnValue(newCandle$);

@@ -1,40 +1,33 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { EvaluationService } from './evaluation.service';
-import {
-  commonTestProviders,
-  sharedModuleImportForTests
-} from '../utils/testing';
-import { ErrorHandlerService } from './handle-error/error-handler.service';
-import { DashboardContextService } from './dashboard-context.service';
-import { Subject } from 'rxjs';
+import { commonTestProviders } from '../utils/testing';
 import { EnvironmentService } from "./environment.service";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('EvaluationService', () => {
   let service: EvaluationService;
-  const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule
-      ],
-      providers: [
+    imports: [],
+    providers: [
         {
-          provide: EnvironmentService,
-          useValue: {
-            apiUrl: ''
-          }
+            provide: EnvironmentService,
+            useValue: {
+                apiUrl: ''
+            }
         },
         EvaluationService,
-        ...commonTestProviders
-      ]
-    });
+        ...commonTestProviders,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
 
     service = TestBed.inject(EvaluationService);
   });
-
 
   it('should be created', () => {
     expect(service).toBeTruthy();

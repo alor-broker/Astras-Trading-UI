@@ -18,6 +18,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 export class InstrumentsCorrelationWidgetComponent implements OnInit {
   @Input({ required: true })
   widgetInstance!: WidgetInstance;
+
   @Input({ required: true })
   isBlockWidget!: boolean;
 
@@ -42,6 +43,4 @@ export class InstrumentsCorrelationWidgetComponent implements OnInit {
 
     this.settings$ = this.widgetSettingsService.getSettings<InfoSettings>(this.guid);
   }
-
-
 }

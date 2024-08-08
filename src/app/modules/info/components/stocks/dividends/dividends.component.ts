@@ -12,6 +12,7 @@ import { distinct } from 'rxjs/operators';
 export class DividendsComponent implements OnInit, OnDestroy {
   @Input({required: true})
   guid!: string;
+
   dividends$?: Observable<Dividend[]>;
   isLoading$ = new BehaviorSubject<boolean>(true);
 

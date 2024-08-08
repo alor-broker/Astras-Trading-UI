@@ -36,7 +36,7 @@ export class TableAutoHeightBehavior {
 
         resizeObserver.disconnect();
       }),
-      map(x=> x=== 0 ? startHeight : x)
+      map(x => x === 0 ? startHeight : x)
     );
   }
 }

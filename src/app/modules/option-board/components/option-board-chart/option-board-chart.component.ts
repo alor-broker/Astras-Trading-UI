@@ -50,7 +50,6 @@ enum ChartType {
   ProfitLossByAssetPrice = 'profitLossByAssetPrice',
 }
 
-
 @Component({
   selector: 'ats-option-board-chart',
   templateUrl: './option-board-chart.component.html',
@@ -69,6 +68,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
 
   @Input({ required: true })
   dataContext!: OptionBoardDataContext;
+
   chartData$!: Observable<ChartData<'line', (number | null)[], number> | null>;
   chartOptions$!: Observable<ChartOptions<'line'>>;
 
@@ -249,7 +249,6 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
       .sort((a, b) => a.label - b.label);
 
     for (const datum of dataSet) {
-
       labels.push(datum.label);
 
       if (!isNaN(datum.value)) {

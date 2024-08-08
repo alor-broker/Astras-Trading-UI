@@ -94,5 +94,4 @@ export function getAllInstrumentsResponseSchema(columnIds: string[]): ZodObject<
   return object({
     instruments: GetAllInstrumentsInstrumentsConnectionSchema
   }) as ZodObject<ZodPropertiesOf<GetAllInstrumentsInstrumentsQuery>>;
-
 }

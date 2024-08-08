@@ -13,7 +13,6 @@ export interface ReversePositionByMarketCommandArgs {
   providedIn: 'root'
 })
 export class ReversePositionByMarketCommand extends CommandBase<ReversePositionByMarketCommandArgs> {
-
   constructor(private readonly wsOrdersService: WsOrdersService) {
     super();
   }
@@ -29,6 +28,4 @@ export class ReversePositionByMarketCommand extends CommandBase<ReversePositionB
       this.wsOrdersService
     );
   }
-
-
 }

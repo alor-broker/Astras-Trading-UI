@@ -16,7 +16,7 @@ type StatusColor = 'warning' | 'danger' | 'success';
 export class NetworkIndicatorComponent implements OnInit {
   statuses = NetworkStatus;
   networkStatus$!: Observable<NetworkStatus>;
-  lastDelay$!: Observable<{ delaySec: number, color: StatusColor}>;
+  lastDelay$!: Observable<{ delaySec: number, color: StatusColor }>;
 
   constructor(private readonly networkStatusService: NetworkStatusService) {
   }

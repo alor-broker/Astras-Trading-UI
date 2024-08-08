@@ -40,7 +40,7 @@ export class MobileInstrumentsHistoryComponent implements OnInit {
                   map(instr => ({
                     ...instrument,
                     showInstrumentGroup: instrument.instrumentGroup !== instr?.instrumentGroup
-                      || instruments!.filter(i => i.symbol === instrument.symbol).length > 1
+                    || instruments!.filter(i => i.symbol === instrument.symbol).length > 1
                   }))
                 )
             )

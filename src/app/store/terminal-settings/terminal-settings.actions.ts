@@ -28,10 +28,3 @@ export const TerminalSettingsEventsActions = createActionGroup({
     "Reset Success": emptyProps()
   }
 });
-
-
-
-
-
-
-

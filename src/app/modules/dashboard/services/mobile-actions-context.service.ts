@@ -7,7 +7,6 @@ import { InstrumentKey } from "../../../shared/models/instruments/instrument-key
 import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
 import { Subject } from "rxjs";
 
-
 @Injectable()
 export class MobileActionsContextService implements ActionsContext, OnDestroy {
   readonly actionEvents$ = new Subject<{ eventType: 'instrumentSelected' }>();

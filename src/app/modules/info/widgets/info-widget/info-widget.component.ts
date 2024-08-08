@@ -23,6 +23,7 @@ import {TerminalSettingsService} from "../../../../shared/services/terminal-sett
 export class InfoWidgetComponent implements OnInit {
   @Input({required: true})
   widgetInstance!: WidgetInstance;
+
   @Input({required: true})
   isBlockWidget!: boolean;
 

@@ -2,7 +2,6 @@ import { InstrumentKey } from "../models/instruments/instrument-key.model";
 import { InstrumentEqualityComparer } from "./instruments";
 
 describe('Instrument Utils', () => {
-
   describe('InstrumentEqualityComparer', () => {
     it('#equals', () => {
       const cases: { a: InstrumentKey | null, b: InstrumentKey | null, expectedValue: boolean }[] = [

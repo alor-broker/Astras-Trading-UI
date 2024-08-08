@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {Observable, take} from "rxjs";
 import {map} from "rxjs/operators";
 import {ErrorHandlerService} from "../handle-error/error-handler.service";
@@ -93,11 +93,11 @@ export class RemoteStorageService {
 
           return null;
         }
-
       }),
       take(1)
     );
   }
+
   setRecord(record: StorageRecord, groupKey?: string): Observable<boolean> {
     return this.httpClient.put(
       this.baseUrl,
@@ -152,5 +152,4 @@ export class RemoteStorageService {
       take(1)
     );
   }
-
 }

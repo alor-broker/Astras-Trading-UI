@@ -330,7 +330,7 @@ export class LightChartWrapper {
       case TimeframeValue.H4:
         return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth() - 1))).getTime();
       case TimeframeValue.H:
-        return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth(),  fromDate.getUTCDate() - 7))).getTime();
+        return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth(), fromDate.getUTCDate() - 7))).getTime();
       case TimeframeValue.M15:
         return (new Date(Date.UTC(fromDate.getUTCFullYear(), fromDate.getUTCMonth(), fromDate.getUTCDate() - 4))).getTime();
       case TimeframeValue.M5:

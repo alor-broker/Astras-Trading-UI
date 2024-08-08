@@ -91,7 +91,6 @@ export class WatchInstrumentsService {
         this.instrumentsToWatchState.removeItem(id);
       }
     });
-
   }
 
   private initInstrumentWatch(instrument: WatchlistItem, timeframe: TimeframeValue): void {
@@ -173,7 +172,7 @@ export class WatchInstrumentsService {
           openPrice: quote.open_price,
           price: quote.last_price,
           priceChange: (quote.last_price != null && lastCandle != null) ? MathHelper.round(quote.last_price - lastCandle.close, 4) : 0,
-          priceChangeRatio: (quote.last_price != null && lastCandle != null) ? MathHelper.round(((quote.last_price/lastCandle.close) - 1) * 100, 2) : 0,
+          priceChangeRatio: (quote.last_price != null && lastCandle != null) ? MathHelper.round(((quote.last_price / lastCandle.close) - 1) * 100, 2) : 0,
           minPrice: quote.low_price,
           maxPrice: quote.high_price,
           volume: quote.volume

@@ -3,13 +3,12 @@ import { BaseTableComponent, Sort } from "../base-table/base-table.component";
 import { WidgetSettingsService } from "../../services/widget-settings.service";
 import { BehaviorSubject } from "rxjs";
 
-
 @Component({
   template: ''
 })
 export abstract class LazyLoadingBaseTableComponent<
-  T extends { [propName: string]: any },
-  F extends { [propName: string]: any } = object,
+  T extends Record<string, any>,
+  F extends Record<string, any> = object,
   P = { limit: number, offset: number },
   S = Sort,
 > extends BaseTableComponent<T, F, S>

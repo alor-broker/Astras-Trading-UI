@@ -4,8 +4,6 @@ import {
   StopOrder
 } from "./order.model";
 
-
-
 export enum ExecutionPolicy {
   OnExecuteOrCancel = 'OnExecuteOrCancel',
   IgnoreCancel = 'IgnoreCancel',
@@ -18,7 +16,7 @@ export interface CreateOrderGroupReq {
     orderId: string;
     exchange: string;
     portfolio: string;
-    type: 'Limit' | 'Market' |'Stop' | 'StopLimit';
+    type: 'Limit' | 'Market' | 'Stop' | 'StopLimit';
   }[];
   executionPolicy: ExecutionPolicy;
 }

@@ -212,7 +212,6 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
              subscriptions,
              filter
            ]) => {
-
         const blotterSubscriptions = ((subscriptions as SubscriptionBase[] | null) ?? []).filter(s => {
           if (s.subscriptionType === PushSubscriptionType.OrderExecute) {
             const orderSubscription = <OrderExecuteSubscription>s;
@@ -233,7 +232,7 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
             price: s.subscriptionType !== PushSubscriptionType.PriceSpark ? undefined : (<PriceSparkSubscription>s).price
           } as DisplayNotification)
         ).filter(s => this.justifyFilter(s, filter))
-          .sort((a, b) =>  b.createdAt!.getTime() - a.createdAt!.getTime());
+          .sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime());
       }),
       tap(() => this.isLoading$.next(false))
     );

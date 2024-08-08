@@ -24,7 +24,6 @@ const numberBases = [
   }
 ];
 
-
 function tryFormatToBase(value: number, base: number, baseName: string, allowRounding: boolean, roundPrecision: number): NumberAbbreviation | null {
   if (allowRounding) {
     if (value! >= base) {
@@ -61,7 +60,7 @@ export function getNumberAbbreviation(value: number | null | undefined, allowRou
     };
   }
 
-  for (let base of numberBases) {
+  for (const base of numberBases) {
     const displayData = tryFormatToBase(
       value,
       base.base,

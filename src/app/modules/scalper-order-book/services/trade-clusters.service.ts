@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {InstrumentKey} from '../../../shared/models/instruments/instrument-key.model';
 import {ClusterTimeframe} from '../models/scalper-order-book-settings.model';
 import {Observable, take} from 'rxjs';

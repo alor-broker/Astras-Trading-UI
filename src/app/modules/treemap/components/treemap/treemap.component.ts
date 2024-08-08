@@ -90,6 +90,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('treemapWrapper') treemapWrapperEl?: ElementRef<HTMLDivElement>;
   @Input({ required: true })
   guid!: string;
+
   isCursorOnSector$ = new BehaviorSubject(false);
   // this widget works  with MOEX exchange only
   private readonly defaultExchange = 'MOEX';

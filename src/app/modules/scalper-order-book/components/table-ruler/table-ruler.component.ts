@@ -45,11 +45,14 @@ interface MarkerDisplay {
 export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('marker')
   markerElRef!: QueryList<ElementRef<HTMLElement>>;
+
   readonly priceUnits = PriceUnits;
   @Input({required: true})
   xAxisStep!: number;
+
   @Input({required: true})
   dataContext!: ScalperOrderBookDataContext;
+
   displayMarker$!: Observable<MarkerDisplay | null>;
   markerPosition$ = new BehaviorSubject<'left' | 'right'>('left');
   settings$!: Observable<ScalperOrderBookExtendedSettings>;

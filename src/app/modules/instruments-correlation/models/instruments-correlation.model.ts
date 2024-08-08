@@ -13,17 +13,9 @@ export interface InstrumentsCorrelationRequest {
 }
 
 export interface CorrelationMatrix {
-  correlation: {
-    [key: string]: {
-      [key: string]: number;
-    };
-  };
+  correlation: Record<string, Record<string, number>>;
 
-  cointegration: {
-    [key: string]: {
-      [key: string]: number;
-    };
-  };
+  cointegration: Record<string, Record<string, number>>;
 }
 
 export interface InstrumentsCorrelationResponse {

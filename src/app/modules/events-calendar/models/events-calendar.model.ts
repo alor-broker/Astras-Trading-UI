@@ -1,6 +1,4 @@
-export interface CalendarEvents {
-  [date: string]: CalendarEvent;
-}
+export type CalendarEvents = Record<string, CalendarEvent>;
 
 export interface CalendarEvent {
   dividendEvents: DividendEvent[] | null;

@@ -49,7 +49,6 @@ export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
 
   shortLongValues$ = new BehaviorSubject<{ short: number, long: number } | null>(null);
 
-
   constructor(
     private readonly evaluationService: EvaluationService,
     private readonly destroyRef: DestroyRef
@@ -107,7 +106,6 @@ export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
         take(1)
       );
     });
-
 
     refreshTrigger$.pipe(
       switchMap(() => dataStream$),

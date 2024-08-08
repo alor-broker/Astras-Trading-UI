@@ -56,4 +56,3 @@ export const MobileDashboardEventsActions = createActionGroup({
     "Instruments History Updated": props<{ instruments: InstrumentKey[] }>()
   }
 });
-

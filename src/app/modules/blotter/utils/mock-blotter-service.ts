@@ -22,7 +22,6 @@ export class MockServiceBlotter {
 
   getPositions(): Observable<Position[]> {
     return of([]);
-
   }
 
   getOrders(): Observable<Order[]> {

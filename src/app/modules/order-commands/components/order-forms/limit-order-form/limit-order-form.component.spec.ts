@@ -43,7 +43,7 @@ describe('LimitOrderFormComponent', () => {
   const timezoneConverter = new TimezoneConverter(TimezoneDisplayOption.MskTime);
   let timezoneConverterServiceSpy: any;
 
-  const getFormInputs = (): { [fieldName: string]: HTMLInputElement } => {
+  const getFormInputs = (): Record<string, HTMLInputElement> => {
     return {
       quantity: fixture.nativeElement.querySelector('[formcontrolname="quantity"]').querySelector('input') as HTMLInputElement,
       price: fixture.nativeElement.querySelector('[formcontrolname="price"]').querySelector('input') as HTMLInputElement,
@@ -198,8 +198,8 @@ describe('LimitOrderFormComponent', () => {
 
     const inputs = getFormInputs();
 
-    for (let testCase of cases) {
-      const control: HTMLInputElement = (<any>inputs)[testCase.control];
+    for (const testCase of cases) {
+      const control: HTMLInputElement = (inputs as any)[testCase.control];
       control.value = testCase.setValue();
       control.dispatchEvent(new Event('input'));
 

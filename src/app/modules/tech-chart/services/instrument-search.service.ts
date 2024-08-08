@@ -8,7 +8,6 @@ interface SearchInstrumentModalParams {
 
 @Injectable()
 export class InstrumentSearchService {
-
   private readonly isModalOpened = new BehaviorSubject(false);
   isModalOpened$ = this.isModalOpened.asObservable();
 

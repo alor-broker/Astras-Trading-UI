@@ -77,6 +77,7 @@ interface DetailsDisplay extends OptionKey {
 export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay> {
   @Input({required: true})
   dataContext!: OptionBoardDataContext;
+
   readonly minOptionTableWidth = 400;
   isLoading$ = new BehaviorSubject<boolean>(false);
 
@@ -216,12 +217,11 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
           );
         });
 
-
         return forkJoin(requests);
       }),
       map(x => x.filter(i => !!i)),
       map(x => x.map(i => {
-          if (!i) {
+          if (i == null) {
             return null;
           }
 

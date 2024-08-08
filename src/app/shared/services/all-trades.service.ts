@@ -33,8 +33,7 @@ export class AllTradesService {
     pagination?: AllTradesPagination,
     sort?: AllTradesSort
   ): Observable<AllTradesItem[]> {
-
-    const params: { [param: string]: string | number | boolean } = {
+    const params: Record<string, string | number | boolean> = {
       ...filters,
       ...pagination,
       ...sort
@@ -68,5 +67,4 @@ export class AllTradesService {
       request => `${request.opcode}_${request.code}_${request.exchange}_${request.instrumentGroup}_${depth ?? 1}`
     );
   }
-
 }

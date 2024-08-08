@@ -18,7 +18,6 @@ import {
 } from 'rxjs';
 import { isInstrumentEqual } from "../../utils/settings-helper";
 
-
 @Component({
   selector: 'ats-instrument-board-select',
   templateUrl: './instrument-board-select.component.html',
@@ -36,6 +35,7 @@ export class InstrumentBoardSelectComponent implements OnInit, OnDestroy, Contro
   availableBoards$!: Observable<string[]>;
   @Input()
   placeholder?: string;
+
   private readonly instrument$ = new BehaviorSubject<{ symbol: string, exchange: string } | null>(null);
 
   constructor(private readonly instrumentsService: InstrumentsService) {

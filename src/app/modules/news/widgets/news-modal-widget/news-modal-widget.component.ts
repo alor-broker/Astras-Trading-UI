@@ -9,7 +9,6 @@ import { NewsListItem } from "../../models/news.model";
   styleUrls: ['./news-modal-widget.component.less']
 })
 export class NewsModalWidgetComponent implements OnInit {
-
   isVisible$: Observable<boolean> = of(false);
   newsInfo$: Observable<NewsListItem | null> = of(null);
 

@@ -11,6 +11,7 @@ import {
 export class MergedBadgeComponent {
   @Input()
   colors: string[] = [];
+
   @Input()
   width = 10;
 

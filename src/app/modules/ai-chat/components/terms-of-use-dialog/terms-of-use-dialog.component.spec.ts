@@ -5,7 +5,6 @@ import {
   getTranslocoModule,
   ngZorroMockComponents
 } from "../../../../shared/utils/testing";
-import { LetDirective } from "@ngrx/component";
 
 describe('TermsOfUseDialogComponent', () => {
   let component: TermsOfUseDialogComponent;

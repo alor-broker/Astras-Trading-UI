@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SetupInstrumentNotificationsComponent } from './components/setup-instrument-notifications/setup-instrument-notifications.component';
 import {NzDividerModule} from "ng-zorro-antd/divider";
-import {TranslocoModule} from "@ngneat/transloco";
+import {TranslocoModule} from "@jsverse/transloco";
 import {NzButtonModule} from "ng-zorro-antd/button";
 import {NzIconModule} from "ng-zorro-antd/icon";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";

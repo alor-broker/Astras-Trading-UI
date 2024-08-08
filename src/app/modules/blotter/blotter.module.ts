@@ -24,7 +24,6 @@ import { TradesHistoryComponent } from './components/trades-history/trades-histo
 import { LetDirective } from "@ngrx/component";
 import { InstrumentsModule } from "../instruments/instruments.module";
 
-
 @NgModule({
   declarations: [
     BlotterWidgetComponent,

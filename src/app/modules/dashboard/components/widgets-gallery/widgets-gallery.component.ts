@@ -44,8 +44,10 @@ export class WidgetsGalleryComponent {
 
   @Output()
   selected = new EventEmitter<string>();
+
   @Output()
   resetDashboard = new EventEmitter<void>();
+
   @Output()
   atsVisibleChange = new EventEmitter<boolean>();
 

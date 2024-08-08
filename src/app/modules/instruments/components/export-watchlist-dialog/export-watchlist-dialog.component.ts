@@ -24,7 +24,6 @@ import {
 } from "../../../../shared/utils/file-export/file-saver";
 import { WatchListTitleHelper } from "../../utils/watch-list-title.helper";
 
-
 export interface ExportDialogParams {
   listId: string;
 }

@@ -12,18 +12,9 @@ import {
 } from '../../../../shared/utils/testing';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { LightChartSettings } from '../../models/light-chart-settings.model';
-import {
-  ControlValueAccessor,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule
-} from "@angular/forms";
+import { ReactiveFormsModule } from "@angular/forms";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzCollapseModule } from "ng-zorro-antd/collapse";
-import {
-  Component,
-  forwardRef,
-  Input
-} from "@angular/core";
 import { NzFormModule } from "ng-zorro-antd/form";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { TimeframeValue } from "../../models/light-chart.models";

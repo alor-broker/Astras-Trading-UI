@@ -14,7 +14,6 @@ import { SyntheticInstrumentsHelper } from "../utils/synthetic-instruments.helpe
   providedIn: 'root'
 })
 export class SyntheticInstrumentsService {
-
   constructor(
     private readonly instrumentsService: InstrumentsService,
     private readonly historyService: HistoryService
@@ -106,7 +105,7 @@ export class SyntheticInstrumentsService {
           }
 
           instrumentsHistories = instrumentsHistories.map((history, i) => {
-            let historyCopy = JSON.parse(JSON.stringify(history.history)) as Candle[];
+            const historyCopy = JSON.parse(JSON.stringify(history.history)) as Candle[];
 
             // Перебираются свечи по каждому инструменту, кроме текущего
             for (let j = 0; j < instrumentsHistories.length; j++) {
@@ -138,8 +137,8 @@ export class SyntheticInstrumentsService {
           // чтоб не брались свечи, которых нет в историях по некоторым инструментам
           const lastHistoryIndex = Math.min(...instrumentsHistories.map(h => h.history.length));
 
-          for (let i = 0; i < instrumentsHistories.length; i++) {
-            instrumentsHistories[i].history = instrumentsHistories[i].history.slice(-lastHistoryIndex);
+          for (const history of instrumentsHistories) {
+            history.history = history.history.slice(-lastHistoryIndex);
           }
 
           let historyIndex = 0;

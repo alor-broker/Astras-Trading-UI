@@ -5,8 +5,9 @@ import { TerminalSettings } from '../models/terminal-settings/terminal-settings.
 import { of } from 'rxjs';
 import { ThemeType } from '../models/settings/theme-settings.model';
 import {TerminalSettingsService} from "./terminal-settings.service";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { LocalStorageService } from "./local-storage.service";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('ThemeService', () => {
   let service: ThemeService;
@@ -24,21 +25,23 @@ describe('ThemeService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         {
-          provide: TerminalSettingsService,
-          useValue: terminalSettingsServiceSpy
+            provide: TerminalSettingsService,
+            useValue: terminalSettingsServiceSpy
         },
         {
-          provide: LocalStorageService,
-          useValue: {
-            getStringItem: jasmine.createSpy('getStringItem').and.returnValue(''),
-            setStringItem: jasmine.createSpy('setStringItem').and.callThrough()
-          }
-        }
-      ]
-    });
+            provide: LocalStorageService,
+            useValue: {
+                getStringItem: jasmine.createSpy('getStringItem').and.returnValue(''),
+                setStringItem: jasmine.createSpy('setStringItem').and.callThrough()
+            }
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
 
     service = TestBed.inject(ThemeService);
   });

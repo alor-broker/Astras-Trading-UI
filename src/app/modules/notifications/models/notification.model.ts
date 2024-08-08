@@ -6,5 +6,5 @@
   isRead: boolean;
   showDate: boolean;
   open?(): void;
-  markAsRead?() : void;
+  markAsRead?(): void;
 }

@@ -16,7 +16,7 @@ describe('ArbitrageSpreadModalWidgetComponent', () => {
         ArbitrageSpreadModalWidgetComponent,
         ...ngZorroMockComponents
       ],
-      imports: [ getTranslocoModule() ],
+      imports: [getTranslocoModule()],
       providers: [
         {
           provide: ModalService,

@@ -1,9 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { SelectedOptionsComponent } from './selected-options.component';
 import { Subject } from "rxjs";
 import {
-  OptionKey,
   OptionParameters,
   OptionSide
 } from "../../models/option-board.model";

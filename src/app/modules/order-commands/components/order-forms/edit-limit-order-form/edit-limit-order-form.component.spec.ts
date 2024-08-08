@@ -44,7 +44,7 @@ describe('EditLimitOrderFormComponent', () => {
   let instrumentsServiceSpy: any;
   let testTearDown: Subscription;
 
-  const getFormInputs = (): { [fieldName: string]: HTMLInputElement } => {
+  const getFormInputs = (): Record<string, HTMLInputElement> => {
     return {
       quantity: fixture.nativeElement.querySelector('[formcontrolname="quantity"]').querySelector('input') as HTMLInputElement,
       price: fixture.nativeElement.querySelector('[formcontrolname="price"]').querySelector('input') as HTMLInputElement,
@@ -197,8 +197,8 @@ describe('EditLimitOrderFormComponent', () => {
 
     const inputs = getFormInputs();
 
-    for (let testCase of cases) {
-      const control: HTMLInputElement = (<any>inputs)[testCase.control];
+    for (const testCase of cases) {
+      const control: HTMLInputElement = (inputs as any)[testCase.control];
       control.value = testCase.setValue();
       control.dispatchEvent(new Event('input'));
 
@@ -268,7 +268,6 @@ describe('EditLimitOrderFormComponent', () => {
       });
     }
   );
-
 
   it('should pass correct order to service', fakeAsync(() => {
       const instrument = getDefaultInstrument();

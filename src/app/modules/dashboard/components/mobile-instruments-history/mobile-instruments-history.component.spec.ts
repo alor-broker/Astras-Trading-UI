@@ -12,7 +12,7 @@ describe('MobileInstrumentsHistoryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MobileInstrumentsHistoryComponent ],
+      declarations: [MobileInstrumentsHistoryComponent],
       providers: [
         {
           provide: DashboardContextService,

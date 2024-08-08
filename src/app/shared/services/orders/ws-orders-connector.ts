@@ -26,6 +26,7 @@ import {
   WsOptions
 } from "../../constants/ws.constants";
 import {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   webSocket,
   WebSocketSubject
 } from "rxjs/webSocket";

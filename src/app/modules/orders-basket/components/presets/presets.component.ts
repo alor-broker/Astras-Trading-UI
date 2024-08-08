@@ -16,18 +16,24 @@ import { DataPreset } from "../../models/orders-basket-settings.model";
 export class PresetsComponent {
   @ViewChild('inputElement', { static: false })
   inputElement?: ElementRef<HTMLInputElement>;
+
   @Input({ required: true })
   guid!: string;
+
   @Input({ required: true })
   presets: DataPreset[] = [];
+
   @Input()
   canAddPreset = false;
+
   inputVisible = false;
   inputValue = '';
   @Output()
   presetSelected = new EventEmitter<DataPreset>();
+
   @Output()
   addPreset = new EventEmitter<{ title: string }>();
+
   @Output()
   removePreset = new EventEmitter<DataPreset>();
 

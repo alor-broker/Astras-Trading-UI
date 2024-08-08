@@ -30,7 +30,6 @@ import {
 
 @Injectable()
 export class BlotterService {
-
   private readonly shouldShowOrderGroupModal = new BehaviorSubject<boolean>(false);
   private readonly orderGroupParams = new BehaviorSubject<string | null>(null);
   shouldShowOrderGroupModal$ = this.shouldShowOrderGroupModal.asObservable();

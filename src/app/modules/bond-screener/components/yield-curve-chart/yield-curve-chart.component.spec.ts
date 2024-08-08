@@ -1,4 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { YieldCurveChartComponent } from './yield-curve-chart.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -9,10 +12,7 @@ import {
   mockComponent,
   ngZorroMockComponents
 } from "../../../../shared/utils/testing";
-import {
-  ACTIONS_CONTEXT,
-  ActionsContext
-} from "../../../../shared/services/actions-context";
+import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { LetDirective } from "@ngrx/component";
 import { GuidGenerator } from "../../../../shared/utils/guid";
 

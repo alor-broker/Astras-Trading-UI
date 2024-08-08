@@ -9,10 +9,9 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { ExternalLinkModule } from '../../shared/components/external-link/external-link.module';
-import { TranslocoModule } from "@ngneat/transloco";
+import { TranslocoModule } from "@jsverse/transloco";
 import { NzDividerModule } from "ng-zorro-antd/divider";
 import { NzCollapseModule } from "ng-zorro-antd/collapse";
-
 
 @NgModule({
   declarations: [

@@ -75,7 +75,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
   readonly sides = Side;
   timeInForceEnum = TimeInForce;
 
-  timezones$!: Observable<{ exchangeTimezone: string, displayTimezone: string}>;
+  timezones$!: Observable<{ exchangeTimezone: string, displayTimezone: string }>;
 
   disabledDate = (date: Date): boolean => {
     const today = startOfDay(new Date());
@@ -290,7 +290,6 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     });
   }
 
-
   private getLimitOrder(instrument: Instrument, side: Side, timezoneConverter: TimezoneConverter): NewLimitOrder {
     const formValue = this.form.value;
     const limitOrder = {
@@ -317,7 +316,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       selectedDate = addDays(selectedDate, 1);
       selectedDate = addSeconds(selectedDate, -1);
 
-      limitOrder.orderEndUnixTime = Math.ceil( selectedDate.getTime() / 1000);
+      limitOrder.orderEndUnixTime = Math.ceil(selectedDate.getTime() / 1000);
     }
 
     return limitOrder;

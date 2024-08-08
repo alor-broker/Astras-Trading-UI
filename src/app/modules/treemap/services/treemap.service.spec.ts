@@ -1,31 +1,34 @@
 import { TestBed } from '@angular/core/testing';
 
 import { TreemapService } from './treemap.service';
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('TreemapService', () => {
   let service: TreemapService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         {
-          provide: ErrorHandlerService,
-          useValue: {
-            handleError: jasmine.createSpy('handleError').and.callThrough()
-          }
+            provide: ErrorHandlerService,
+            useValue: {
+                handleError: jasmine.createSpy('handleError').and.callThrough()
+            }
         },
         {
-          provide: EnvironmentService,
-          useValue: {
-            apiUrl: ''
-          }
-        }
-      ]
-    });
+            provide: EnvironmentService,
+            useValue: {
+                apiUrl: ''
+            }
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
     service = TestBed.inject(TreemapService);
   });
 

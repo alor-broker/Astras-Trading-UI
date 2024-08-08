@@ -52,6 +52,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
   readonly orderTypes = OrderType;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
+
   isModalOpened = DomHelper.isModalOpen;
 
   allColumns: BaseColumnSettings<DisplayOrder>[] = [

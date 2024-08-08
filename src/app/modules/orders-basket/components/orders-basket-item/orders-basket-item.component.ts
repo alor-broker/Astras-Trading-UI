@@ -62,8 +62,10 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
 
   @Input()
   enableDelete = true;
+
   @Output()
   delete = new EventEmitter();
+
   readonly validationOptions = {
     quota: {
       min: 0.1,
@@ -144,7 +146,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
       return null;
     }
 
-    let errors: { [controlName: string]: ValidationErrors } = {};
+    let errors: Record<string, ValidationErrors> = {};
 
     errors = this.addControlErrors(errors, "instrumentKey");
     errors = this.addControlErrors(errors, "quota");
@@ -154,8 +156,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     return errors;
   }
 
-  addControlErrors(allErrors: { [controlName: string]: ValidationErrors }, controlName: string): { [controlName: string]: ValidationErrors } {
-
+  addControlErrors(allErrors: Record<string, ValidationErrors>, controlName: string): Record<string, ValidationErrors> {
     const errors = { ...allErrors };
 
     const controlErrors = (<FormGroup>this.form).controls[controlName].errors;
@@ -174,7 +175,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
   }
 
   ngOnDestroy(): void {
-    for (let sub of this.onChangeSubs) {
+    for (const sub of this.onChangeSubs) {
       sub.unsubscribe();
     }
 

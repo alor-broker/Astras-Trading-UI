@@ -1,4 +1,3 @@
-
 import {
   ConnectionPositionPair,
   Overlay,
@@ -41,7 +40,6 @@ export class ContextMenuService {
     $event: MouseEvent | { x: number, y: number },
     nzDropdownMenuComponent: NzDropdownMenuComponent,
     config: ContextMenuServiceConfig = ContextMenuServiceDefaultConfig): void {
-
     this.close(true);
     const { x, y } = $event;
 

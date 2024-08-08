@@ -16,7 +16,6 @@ interface AllEventsRequest {
   providedIn: 'root'
 })
 export class EventsCalendarService {
-
   baseUrl = this.environmentService.apiUrl + '/instruments/v1';
 
   constructor(

@@ -19,7 +19,7 @@ export function findUnique<T, P>(array: T[], selector: (element: T) => P): P[] {
 export function findUniqueElements<T>(
     array: T[],
     sorter: (e1: T, e2: T) => number,
-    comparer: (first: T, second: T) => boolean) : T[]
+    comparer: (first: T, second: T) => boolean): T[]
 {
   array.sort(sorter);
   let dupes = 0;

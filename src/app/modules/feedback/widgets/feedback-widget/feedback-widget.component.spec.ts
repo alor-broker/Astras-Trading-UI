@@ -13,7 +13,6 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
 import ruFeedback from '../../../../../assets/i18n/feedback/ru.json';
 import { getTranslocoModule } from "../../../../shared/utils/testing";
 
-
 describe('FeedbackWidgetComponent', () => {
   let component: FeedbackWidgetComponent;
   let fixture: ComponentFixture<FeedbackWidgetComponent>;

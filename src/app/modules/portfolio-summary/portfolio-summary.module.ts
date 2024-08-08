@@ -4,10 +4,9 @@ import {PortfolioSummaryWidgetComponent} from './widgets/portfolio-summary-widge
 import {NzIconModule} from "ng-zorro-antd/icon";
 import {NzButtonModule} from "ng-zorro-antd/button";
 import {PortfolioSummaryComponent} from './components/portfolio-summary/portfolio-summary.component';
-import {TranslocoModule} from "@ngneat/transloco";
+import {TranslocoModule} from "@jsverse/transloco";
 import {NzTypographyModule} from "ng-zorro-antd/typography";
 import {SharedModule} from "../../shared/shared.module";
-
 
 @NgModule({
   declarations: [

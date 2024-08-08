@@ -3,13 +3,11 @@ import { CommonModule } from '@angular/common';
 import { InstrumentsCorrelationWidgetComponent } from './widgets/instruments-correlation-widget/instruments-correlation-widget.component';
 import { CorrelationChartComponent } from './components/correlation-chart/correlation-chart.component';
 import { SharedModule } from "../../shared/shared.module";
-import { TranslocoModule } from "@ngneat/transloco";
+import { TranslocoModule } from "@jsverse/transloco";
 import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
 import { LetDirective } from "@ngrx/component";
 import { NzSpinModule } from "ng-zorro-antd/spin";
 import { ChartFiltersComponent } from './components/chart-filters/chart-filters.component';
-
-
 
 @NgModule({
   declarations: [

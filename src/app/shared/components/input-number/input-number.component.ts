@@ -31,12 +31,16 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   private readonly minus = '-';
   @Input()
   step = 1;
+
   @Input()
   placeholder = '';
+
   @Input()
   readonly = false;
+
   @Input()
   allowNegative = false;
+
   @Input()
   suffix: TemplateRef<any> | null = null;
 
@@ -62,6 +66,7 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
 
   @ViewChild('inputElement', {static: true})
   inputElement!: ElementRef<HTMLInputElement>;
+
   value?: number | null;
   displayValue?: string | null;
 
@@ -87,7 +92,6 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
       setTimeout(() => {
         this.inputElement?.nativeElement.select();
       });
-
     }
 
     this.cdr.markForCheck();

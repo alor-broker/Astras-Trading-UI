@@ -33,7 +33,5 @@ export class ChatMessageContainerComponent {
   readonly messageTypes = MessageType;
 
   @HostBinding('@flyIn')
-  get flyIn(): boolean {
-    return true;
-  }
+  readonly flyIn = true;
 }

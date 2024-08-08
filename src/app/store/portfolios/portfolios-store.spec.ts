@@ -10,7 +10,6 @@ import {
   of,
   take
 } from "rxjs";
-import { LocalStorageService } from '../../shared/services/local-storage.service';
 import { AccountService } from '../../shared/services/account.service';
 import { PortfolioExtended } from '../../shared/models/user/portfolio-extended.model';
 import { ErrorHandlerService } from '../../shared/services/handle-error/error-handler.service';
@@ -25,7 +24,7 @@ describe('Portfolios Store', () => {
   let accountServiceSpy: any;
   let errorHandlerServiceSpy: any;
 
-  let loginPortfoliosMock = new BehaviorSubject<PortfolioExtended[]>([]);
+  const loginPortfoliosMock = new BehaviorSubject<PortfolioExtended[]>([]);
 
   const spbxStockPortfolio = {
     portfolio: 'D1234',

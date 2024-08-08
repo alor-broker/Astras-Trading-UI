@@ -54,7 +54,6 @@ type GetBondsYieldCurveBondsConnection = Modify<
   }
 >;
 
-
 const GetBondsYieldCurveBondsConnectionSchema: ZodObject<ZodPropertiesOf<GetBondsYieldCurveBondsConnection>> = object({
   nodes: GetBondsYieldCurveBondSchema.array()
 });
@@ -72,4 +71,3 @@ export const GetBondsYieldCurveResponseSchema: ZodObject<ZodPropertiesOf<GetBond
 });
 
 export type GetBondsYieldCurveResponse = TypeOf<typeof GetBondsYieldCurveResponseSchema>;
-

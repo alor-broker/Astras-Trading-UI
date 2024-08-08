@@ -14,8 +14,10 @@ import {filter, map, startWith} from "rxjs/operators";
 export class CompactHeaderComponent implements OnInit, OnDestroy {
   @Output()
   priceSelected = new EventEmitter<number>();
+
   @Output()
   qtySelected = new EventEmitter<number>();
+
   priceData$!: Observable<{ bid: number, ask: number }>;
   positionInfo$!: Observable<{ abs: number, quantity: number } | null>;
 

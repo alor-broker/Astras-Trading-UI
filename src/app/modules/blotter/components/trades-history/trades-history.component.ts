@@ -66,6 +66,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
   readonly rowHeight = 20;
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
+
   allColumns: BaseColumnSettings<DisplayTrade>[] = [
     {
       id: 'id',
@@ -146,6 +147,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       minWidth: 60
     },
   ];
+
   isLoading$ = new BehaviorSubject<boolean>(false);
 
   settingsTableName = TableNames.TradesHistoryTable;

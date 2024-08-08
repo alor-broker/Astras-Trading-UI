@@ -17,7 +17,6 @@ describe('WidgetsSharedDataService', () => {
     expect(service).toBeTruthy();
   });
 
-
   it('should set providers value', fakeAsync(() => {
     const dataProviderName = 'anyName';
     const expectedValue = 'anyValue';

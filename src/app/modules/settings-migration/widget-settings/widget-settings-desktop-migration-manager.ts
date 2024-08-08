@@ -13,6 +13,7 @@ export class WidgetSettingsDesktopMigrationManager extends DesktopMigrationManag
   protected migrations = [
     inject(UpdateBadgesWidgetsSettingsMigration)
   ];
+
   constructor(protected readonly migrationsMetaService: MigrationsMetaService) {
     super(migrationsMetaService);
   }

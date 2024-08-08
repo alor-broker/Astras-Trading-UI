@@ -15,7 +15,7 @@ describe('MobileDashboardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MobileDashboardComponent ],
+      declarations: [MobileDashboardComponent],
       imports: [
         getTranslocoModule(),
         LetDirective

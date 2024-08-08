@@ -1,7 +1,4 @@
-import {
-  HttpClient,
-  HttpContext
-} from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
@@ -107,7 +104,6 @@ export class AuthService {
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly broadcastService: BroadcastService
   ) {
-
     const token = localStorage.getItem<SsoToken>(this.ssoTokenStorageKey);
     this.setCurrentUser({
       ssoToken: token ?? null,
@@ -183,7 +179,7 @@ export class AuthService {
       )
       .subscribe(response => {
         if (response) {
-          const jwt =  response.jwt;
+          const jwt = response.jwt;
           const jwtBody = this.decodeJwtBody(jwt);
           const user: User = {
             portfolios: (jwtBody.portfolios as string | undefined)?.split(' ') ?? [],

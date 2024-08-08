@@ -33,7 +33,7 @@ interface PortfolioRequestBase {
   providedIn: 'root'
 })
 export class PortfolioSubscriptionsService {
-  private readonly subscriptions = new Map<string, Observable<any>>;
+  private readonly subscriptions = new Map<string, Observable<any>>();
   private readonly baseUrl = this.environmentService.apiUrl + '/md/v2/Clients';
 
   constructor(
@@ -182,7 +182,7 @@ export class PortfolioSubscriptionsService {
               this.getCurrentSessionOrders(portfolio, exchange)
                 .pipe(startWith(null))
             ]),
-            (state, [subscriptionOrder, ordersHistory] ) => ({
+            (state, [subscriptionOrder, ordersHistory]) => ({
               state,
               subscriptionOrder,
               ordersHistory
@@ -252,7 +252,7 @@ export class PortfolioSubscriptionsService {
               this.getCurrentSessionStopOrders(portfolio, exchange)
                 .pipe(startWith(null))
             ]),
-            (state, [subscriptionOrder, ordersHistory] ) => ({
+            (state, [subscriptionOrder, ordersHistory]) => ({
               state,
               subscriptionOrder,
               ordersHistory
@@ -332,7 +332,6 @@ export class PortfolioSubscriptionsService {
       finalize(() => this.subscriptions.delete(subscriptionKey)),
       shareReplay({ bufferSize: 1, refCount: true })
     );
-
 
     this.subscriptions.set(subscriptionKey, newSubscription$);
 

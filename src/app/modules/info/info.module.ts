@@ -13,7 +13,6 @@ import { RisksComponent } from './components/common/risks/risks.component';
 import { LetDirective } from "@ngrx/component";
 import { BaseChartDirective } from "ng2-charts";
 
-
 @NgModule({
   declarations: [
     InfoWidgetComponent,

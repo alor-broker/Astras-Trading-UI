@@ -50,6 +50,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
 
   @Input({required: true})
   widgetInstance!: WidgetInstance;
+
   @Input({required: true})
   isBlockWidget!: boolean;
 

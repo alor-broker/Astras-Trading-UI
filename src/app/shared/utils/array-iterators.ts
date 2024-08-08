@@ -5,7 +5,6 @@
   [Symbol.iterator](): Iterator<T> {
     return this.factory();
   }
-
 }
 
 export class ArrayReverseIterator<T> implements Iterator<T> {

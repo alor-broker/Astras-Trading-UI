@@ -63,6 +63,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
   ordersSides = Side;
   @Input({required: true})
   rowHeight!: number;
+
   displayItems$!: Observable<DisplayRow[]>;
   @Input({required: true})
   dataContext!: ScalperOrderBookDataContext;
@@ -339,5 +340,4 @@ export class ScalperOrderBookTableComponent implements OnInit {
       .sort((a, b) => b.boundary - a.boundary)
       .find(x => volume >= x.boundary);
   }
-
 }

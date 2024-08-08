@@ -29,7 +29,6 @@ const initialState: State = adapter.getInitialState({
   status: EntityStatus.Initial
 });
 
-
 const reducer = createReducer(
   initialState,
 
@@ -136,4 +135,3 @@ export const WidgetSettingsFeature = createFeature({
   name: 'WidgetSettings',
   reducer
 });
-

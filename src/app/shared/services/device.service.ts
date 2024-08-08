@@ -13,7 +13,6 @@ interface NgxDeviceInfo {
   providedIn: 'root'
 })
 export class DeviceService {
-
   constructor(private readonly deviceInfoService: NgxDeviceInfoService) {
   }
 

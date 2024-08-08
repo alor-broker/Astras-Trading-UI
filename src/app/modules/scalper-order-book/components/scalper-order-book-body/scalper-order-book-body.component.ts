@@ -96,17 +96,20 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
 
   @ViewChild('topFloatingPanelContainer', { static: false })
   topFloatingPanelContainer?: ElementRef<HTMLDivElement>;
+
   @ViewChild('bottomFloatingPanelContainer', { static: false })
   bottomFloatingPanelContainer?: ElementRef<HTMLDivElement>;
 
   @Input({ required: true })
   guid!: string;
+
   @Input()
   isActive = false;
+
   readonly isLoading$ = new BehaviorSubject(false);
   dataContext!: ScalperOrderBookDataContext;
   hiddenOrdersIndicators$!: Observable<{ up: boolean, down: boolean }>;
-  panelWidths$!: Observable<{ [K: string]: number }>;
+  panelWidths$!: Observable<Record<string, number>>;
   topFloatingPanelPosition$!: Observable<Point>;
   bottomFloatingPanelPosition$!: Observable<Point>;
   readonly topFloatingPanelPositionStateKey = 'top-floating-panel-position';
@@ -185,7 +188,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     this.renderItemsRange$.complete();
   }
 
-  updatePanelWidths(widths: { [key: string]: number }): void {
+  updatePanelWidths(widths: Record<string, number>): void {
     this.widgetSettings$.pipe(
       take(1)
     ).subscribe(settings => {
@@ -295,7 +298,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   private initLayout(): void {
     this.panelWidths$ = this.dataContext.extendedSettings$.pipe(
       map(x => x.widgetSettings.layout?.widths
-        ?? {
+      ?? {
           [this.panelIds.ordersTable]: 50,
           [this.panelIds.currentTrades]: 25,
           [this.panelIds.tradeClusters]: 25,

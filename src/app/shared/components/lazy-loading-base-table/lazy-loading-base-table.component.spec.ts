@@ -11,7 +11,7 @@ import { By } from "@angular/platform-browser";
   selector: 'ats-test-comp',
   template: ''
 })
-class TestComponent extends LazyLoadingBaseTableComponent<any, any>{
+class TestComponent extends LazyLoadingBaseTableComponent<any, any> {
   protected initTableConfigStream(): Observable<TableConfig<any>> {
     return of({ columns: [] });
   }
@@ -27,7 +27,6 @@ class TestComponent extends LazyLoadingBaseTableComponent<any, any>{
 class TestWrapperComponent {}
 
 describe('LazyLoadingBaseTableComponent', () => {
-  let hostComponent: TestWrapperComponent;
   let component: TestComponent;
   let hostFixture: ComponentFixture<TestWrapperComponent>;
 
@@ -50,7 +49,6 @@ describe('LazyLoadingBaseTableComponent', () => {
     });
 
     hostFixture = TestBed.createComponent(TestWrapperComponent);
-    hostComponent = hostFixture.componentInstance;
     component = hostFixture.debugElement.query(By.directive(TestComponent)).componentInstance;
     hostFixture.detectChanges();
   });

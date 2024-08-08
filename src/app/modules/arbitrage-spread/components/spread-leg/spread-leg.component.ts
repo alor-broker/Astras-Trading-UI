@@ -56,6 +56,7 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
     portfolio: new FormControl<PortfolioKey | null>(null, Validators.required),
     side: new FormControl(Side.Sell)
   });
+
   isPortfoliosEqual = isPortfoliosEqual;
   sideEnum = Side;
 

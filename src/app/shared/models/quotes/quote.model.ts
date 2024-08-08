@@ -16,7 +16,7 @@ export interface Quote {
   ask: number; // 292.6,
   bid: number; // 292.5,
   ask_vol: number; // 90,
-  bid_vol: number; //355,
+  bid_vol: number; // 355,
   ob_ms_timestamp: number; // null,
   open_price: number; // 295.05,
   yield: number; // null,

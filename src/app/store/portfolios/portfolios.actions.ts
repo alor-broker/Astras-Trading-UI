@@ -12,7 +12,3 @@ export const PortfoliosInternalActions = createActionGroup({
     "Init Success": props<{ portfolios: PortfolioExtended[] }>()
   }
 });
-
-
-
-

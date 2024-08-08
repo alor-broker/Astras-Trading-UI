@@ -42,6 +42,6 @@ export class GlobalLoadingIndicatorService implements OnDestroy {
 
   private updateState(state: Set<string>): void {
     // use setTimout to prevent ExpressionChangedAfterItHasBeenCheckedError
-    setTimeout(() =>this.loadingState$.next(state), 0);
+    setTimeout(() => this.loadingState$.next(state), 0);
   }
 }

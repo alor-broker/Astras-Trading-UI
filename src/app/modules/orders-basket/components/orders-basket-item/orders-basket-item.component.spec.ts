@@ -68,7 +68,6 @@ describe('OrdersBasketItemComponent', () => {
     instrumentsServiceMock.getInstrument.and.returnValue(of(testInstrument));
     quotesServiceMock.getLastPrice.and.returnValue(of(5.432));
 
-
     component.form.controls.price.setValue(invalidPrice);
     expect(component.form.controls.price.invalid).toBeFalse();
 

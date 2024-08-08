@@ -2,7 +2,7 @@ import { OrderBookViewRow } from "./orderbook-view-row.model";
 
 export interface ChartPoint {
   x: number; // price
-  y: number;  // volume
+  y: number; // volume
 }
 
 export interface ChartData {

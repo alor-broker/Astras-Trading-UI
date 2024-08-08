@@ -40,7 +40,7 @@ import {
 
 interface CurrencyMatrix {
   currencies: string[];
-  rates: { [key: string]: RateValue | null };
+  rates: Record<string, RateValue | null>;
 }
 
 @Component({
@@ -133,7 +133,7 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
     rateProvider.updateRates(rateValues);
     const currencies = conversionMatrix.getCurrencies();
 
-    const rates: { [key: string]: RateValue | null } = {};
+    const rates: Record<string, RateValue | null> = {};
     for (const firstCurrency of currencies) {
       for (const secondCurrency of currencies) {
         rates[this.getCurrencyKey(firstCurrency, secondCurrency)] = conversionMatrix.getRate(firstCurrency, secondCurrency);

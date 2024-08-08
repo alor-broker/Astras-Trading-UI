@@ -16,11 +16,12 @@ import { ScalperOrderBookDataContext, } from "../../models/scalper-order-book-da
 export class TopPanelComponent {
   @Input({ required: true })
   guid!: string;
+
   @Input({ required: true })
   isActive!: boolean;
+
   @Input({ required: true })
   dataContext!: ScalperOrderBookDataContext;
-
 
   showWorkingVolumes(settings: ScalperOrderBookWidgetSettings): boolean {
     return (settings.showWorkingVolumesPanel ?? true)

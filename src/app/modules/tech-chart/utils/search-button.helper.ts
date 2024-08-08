@@ -8,7 +8,6 @@ import { SyntheticInstrumentsHelper } from "./synthetic-instruments.helper";
 import { DestroyRef } from "@angular/core";
 
 export class SearchButtonHelper {
-
   static create(
     chartWidget: IChartingLibraryWidget,
     instrumentSearchService: InstrumentSearchService,

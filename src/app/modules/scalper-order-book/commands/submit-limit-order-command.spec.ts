@@ -235,7 +235,6 @@ describe('SubmitLimitOrderCommand', () => {
       applyBracketOnClosing: false
     };
 
-
     ordersGroupServiceSpy.submitOrdersGroup.and.returnValue(of({}));
     const quantity = getRandomInt(1, 100);
     const price = getRandomInt(1, 1000);

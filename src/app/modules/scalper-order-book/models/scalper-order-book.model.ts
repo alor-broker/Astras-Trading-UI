@@ -60,4 +60,3 @@ export interface ScalperOrderBookPositionState {
   lossOrProfitPoints?: number;
   lossOrProfitPercent?: number;
 }
-

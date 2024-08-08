@@ -11,12 +11,11 @@ import { Side } from "../../../../shared/models/enums/side.model";
   styleUrls: ['./arbitrage-spread-table.component.less']
 })
 export class ArbitrageSpreadTableComponent implements OnInit {
-
   items$?: Observable<ArbitrageSpread[]>;
 
   tableInnerWidth = 1000;
 
-  volumes: {[spreadId: string]: number} = {};
+  volumes: Record<string, number> = {};
 
   listOfColumns: BaseColumnSettings<ArbitrageSpread>[] = [
     { id: 'symbols', displayName: 'Инструменты', width: 140 },
@@ -48,14 +47,14 @@ export class ArbitrageSpreadTableComponent implements OnInit {
   }
 
   buySpread(spread: ArbitrageSpread): void {
-    let volume = this.volumes[spread.id!];
+    const volume = this.volumes[spread.id!];
 
     this.service.buySpread(spread, volume)
       .subscribe();
   }
 
   sellSpread(spread: ArbitrageSpread): void {
-    let volume = this.volumes[spread.id!];
+    const volume = this.volumes[spread.id!];
 
     this.service.buySpread(spread, volume, Side.Sell)
       .subscribe();

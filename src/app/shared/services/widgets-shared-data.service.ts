@@ -18,7 +18,7 @@ import {
   providedIn: 'root'
 })
 export class WidgetsSharedDataService implements OnDestroy {
-  private readonly dataProviders$ = new BehaviorSubject<{ [key: string]: Subject<any> }>({});
+  private readonly dataProviders$ = new BehaviorSubject<Record<string, Subject<any>>>({});
 
   getDataProvideValues<T>(name: string): Observable<T> {
     this.addNewDataProvider(name);

@@ -12,7 +12,6 @@ import { LogLevel } from "../environment.service";
   providedIn: 'root'
 })
 export class LoggerService {
-
   constructor(
     @Inject(LOGGER)
     private readonly loggers: LoggerBase[]

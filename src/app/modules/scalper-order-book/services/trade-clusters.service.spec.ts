@@ -2,38 +2,41 @@ import { TestBed } from '@angular/core/testing';
 
 import { TradeClustersService } from './trade-clusters.service';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import {SubscriptionsDataFeedService} from "../../../shared/services/subscriptions-data-feed.service";
 import {Subject} from "rxjs";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('TradeClustersService', () => {
   let service: TradeClustersService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         {
-          provide: ErrorHandlerService,
-          useValue: {
-            handleError: jasmine.createSpy('handleError').and.callThrough()
-          }
+            provide: ErrorHandlerService,
+            useValue: {
+                handleError: jasmine.createSpy('handleError').and.callThrough()
+            }
         },
         {
-          provide: SubscriptionsDataFeedService,
-          useValue: {
-            subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
-          }
+            provide: SubscriptionsDataFeedService,
+            useValue: {
+                subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
+            }
         },
         {
-          provide: EnvironmentService,
-          useValue: {
-            apiUrl: ''
-          }
-        }
-      ]
-    });
+            provide: EnvironmentService,
+            useValue: {
+                apiUrl: ''
+            }
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
 
     service = TestBed.inject(TradeClustersService);
   });

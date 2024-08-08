@@ -49,7 +49,6 @@ describe('LightChartComponent', () => {
   const lightChartDatafeedFactoryService = jasmine.createSpyObj('LightChartDatafeedFactoryService', ['getDatafeed']);
   lightChartDatafeedFactoryService.getDatafeed.and.returnValue({});
 
-
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({

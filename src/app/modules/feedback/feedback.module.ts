@@ -11,8 +11,7 @@ import { NzRateModule } from 'ng-zorro-antd/rate';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
-import { TranslocoModule } from "@ngneat/transloco";
-
+import { TranslocoModule } from "@jsverse/transloco";
 
 @NgModule({
   declarations: [

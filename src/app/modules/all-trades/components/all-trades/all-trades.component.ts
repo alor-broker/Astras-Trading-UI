@@ -127,6 +127,7 @@ implements OnInit, OnDestroy {
       transformFn: (data: AllTradesItem): string => data.existing ? 'Да' : 'Нет'
     },
   ];
+
   private readonly fixedColumns: BaseColumnSettings<AllTradesItem>[] = [
     {
       id: 'side_indicator',
@@ -138,6 +139,7 @@ implements OnInit, OnDestroy {
       order: -1
     }
   ];
+
   private timezoneConverter?: TimezoneConverter;
   private readonly NEW_TRADES_PERIOD = 50;
 
@@ -145,7 +147,7 @@ implements OnInit, OnDestroy {
   protected settingsColumnsName = 'allTradesColumns';
 
   private get defaultPagination(): AllTradesPagination {
-    return  {
+    return {
       from: toUnixTimestampSeconds(startOfDay(new Date())),
       to: toUnixTimestampSeconds(new Date()),
       take: this.loadingChunkSize

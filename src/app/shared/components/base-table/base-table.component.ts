@@ -15,13 +15,12 @@ export interface Sort {
   orderBy: string;
 }
 
-
 @Component({
   template: ''
 })
 export abstract class BaseTableComponent<
-    T extends { [propName: string]: any },
-    F extends { [propName: string]: any } = object,
+    T extends Record<string, any>,
+    F extends Record<string, any> = object,
     S = Sort
   >
 implements OnInit, OnDestroy {
@@ -58,7 +57,7 @@ implements OnInit, OnDestroy {
     this.sort$.complete();
   }
 
-  protected abstract  initTableDataStream(): Observable<T[]>;
+  protected abstract initTableDataStream(): Observable<T[]>;
 
   protected abstract initTableConfigStream(): Observable<TableConfig<T>>;
 
@@ -136,7 +135,7 @@ implements OnInit, OnDestroy {
     });
   }
 
-  saveColumnWidth<T extends WidgetSettings>(event: {columnId: string, width: number}, settings$?: Observable<T>): void {
+  saveColumnWidth<T extends WidgetSettings>(event: { columnId: string, width: number }, settings$?: Observable<T>): void {
     settings$?.pipe(
       take(1)
     ).subscribe(settings => {

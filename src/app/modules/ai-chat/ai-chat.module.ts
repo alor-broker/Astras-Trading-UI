@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { SideChatWidgetComponent } from './widgets/side-chat-widget/side-chat-widget.component';
 import { NzDrawerModule } from "ng-zorro-antd/drawer";
 import { NzIconModule } from "ng-zorro-antd/icon";
-import { TranslocoModule } from "@ngneat/transloco";
+import { TranslocoModule } from "@jsverse/transloco";
 import { ChatContainerComponent } from './components/chat-container/chat-container.component';
 import { MessageInputComponent } from './components/message-input/message-input.component';
 import { AiChatComponent } from './components/ai-chat/ai-chat.component';
