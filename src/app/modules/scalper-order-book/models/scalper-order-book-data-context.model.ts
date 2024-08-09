@@ -23,7 +23,6 @@ export interface OrderBook {
   rows: OrderbookData;
 }
 
-
 export interface ScalperOrderBookDataContext {
   readonly extendedSettings$: Observable<ScalperOrderBookExtendedSettings>;
   readonly currentPortfolio$: Observable<PortfolioKey>;

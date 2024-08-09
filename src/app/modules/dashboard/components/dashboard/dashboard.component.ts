@@ -41,7 +41,7 @@ interface Safe extends GridsterConfig {
   pushDirections: PushDirections;
 }
 
-type WidgetItem = { instance: WidgetInstance, gridsterItem: GridsterItem };
+interface WidgetItem { instance: WidgetInstance, gridsterItem: GridsterItem }
 
 @Component({
   selector: 'ats-dashboard',
@@ -51,6 +51,7 @@ type WidgetItem = { instance: WidgetInstance, gridsterItem: GridsterItem };
 export class DashboardComponent implements OnInit {
   @ViewChild(GridsterComponent)
   gridster?: GridsterComponent;
+
   options$!: Observable<Safe>;
   items$?: Observable<WidgetItem[]>;
   isBlockWidget = false;
@@ -222,7 +223,7 @@ export class DashboardComponent implements OnInit {
           if (widgetMeta.desktopMeta?.addOptions.initialHeightPx != null && this.gridster?.curRowHeight != null) {
             const expectedHeight = widgetMeta.desktopMeta.addOptions.initialHeightPx;
             let rowsHeight: number;
-            if( this.gridster.curRowHeight > expectedHeight) {
+            if(this.gridster.curRowHeight > expectedHeight) {
               rowsHeight = 1;
             } else {
               rowsHeight = Math.ceil(expectedHeight / this.gridster.curRowHeight);
@@ -253,7 +254,7 @@ export class DashboardComponent implements OnInit {
                 });
             }
           } else if(widgetMeta.desktopMeta?.addOptions.initialPosition === "below" && this.gridster!.grid.length > 0) {
-            newPosition.y = Math.max(...this.gridster!.grid.map(x=> x.item.y + x.item.rows));
+            newPosition.y = Math.max(...this.gridster!.grid.map(x => x.item.y + x.item.rows));
           }
         }
 

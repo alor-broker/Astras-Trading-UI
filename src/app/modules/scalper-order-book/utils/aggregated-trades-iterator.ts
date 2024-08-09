@@ -41,7 +41,6 @@ export class AggregatedTradesIterator implements Iterator<AggregatedTrade | null
   constructor(
     private readonly orderedTrades: AllTradesItem[],
     private readonly tradesAggregationPeriodMs: number) {
-
     if (tradesAggregationPeriodMs === 0) {
       this.iterator = this.noAggregationIterator;
     } else {

@@ -54,6 +54,7 @@ export class OrderBookComponent implements OnInit {
 
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
+
   ob$: Observable<OrderBook | null> = of(null);
   spreadDiffData$: Observable<SpreadDiffData | null> = of(null);
   columnsOrderEnum = ColumnsOrder;
@@ -62,6 +63,7 @@ export class OrderBookComponent implements OnInit {
     width: '100%',
     height: '100%',
   });
+
   private readonly minSpreadDiffPercentForColorChange = 0.3;
   private readonly maxSpreadDiffPercentForColorChange = 1;
 
@@ -75,7 +77,6 @@ export class OrderBookComponent implements OnInit {
     this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
       shareReplay(1)
     );
-
 
     this.ob$ = this.settings$.pipe(
       switchMap(settings => this.service.getOrderBook(settings)),

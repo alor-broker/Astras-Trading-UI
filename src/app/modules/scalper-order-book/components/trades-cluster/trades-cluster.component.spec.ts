@@ -13,7 +13,7 @@ describe('TradesClusterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TradesClusterComponent ]
+      declarations: [TradesClusterComponent]
     })
     .compileComponents();
 
@@ -31,8 +31,8 @@ describe('TradesClusterComponent', () => {
       displayRange$: new Subject(),
       workingVolume$: new Subject(),
       scaleFactor$: new BehaviorSubject(1),
-      addLocalOrder: order => {},
-      removeLocalOrder: orderId => {},
+      addLocalOrder: () => {},
+      removeLocalOrder: () => {},
       destroy: () => {}
     } as ScalperOrderBookDataContext;
 

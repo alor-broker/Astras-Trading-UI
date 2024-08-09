@@ -39,14 +39,17 @@ export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<Orde
       max: 50
     }
   };
+
   columnsOrderEnum = ColumnsOrder;
 
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
 
   @Input({ required: true })
   guid!: string;
+
   @Output()
   settingsChange = new EventEmitter<void>();
+
   readonly form = this.formBuilder.group({
     instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
     instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null),

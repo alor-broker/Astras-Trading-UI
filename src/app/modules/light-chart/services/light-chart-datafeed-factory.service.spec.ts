@@ -7,12 +7,9 @@ import {Subject} from "rxjs";
 
 describe('LightChartDatafeedFactoryService', () => {
   let service: LightChartDatafeedFactoryService;
-
-  let subscriptionsDataFeedServiceSpy: any;
   let historyServiceSpy: any;
 
   beforeEach(() => {
-    subscriptionsDataFeedServiceSpy = jasmine.createSpy('SubscriptionsDataFeedService');
     historyServiceSpy = jasmine.createSpy('HistoryService');
   });
 

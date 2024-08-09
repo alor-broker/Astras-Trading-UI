@@ -33,7 +33,7 @@ import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.
   `
 })
 class TestComponent extends BlotterBaseTableComponent<{ id: string }, object> {
-  protected rowToInstrumentKey(row: { id: string }): Observable<InstrumentKey | null> {
+  protected rowToInstrumentKey(): Observable<InstrumentKey | null> {
       return of(null);
   }
 
@@ -66,7 +66,6 @@ class TestWrapperComponent {
 }
 
 describe('BlotterBaseTableComponent', () => {
-  let hostComponent: TestWrapperComponent;
   let component: any;
   let hostFixture: ComponentFixture<TestWrapperComponent>;
 
@@ -111,7 +110,6 @@ describe('BlotterBaseTableComponent', () => {
 
   beforeEach(() => {
     hostFixture = TestBed.createComponent(TestWrapperComponent);
-    hostComponent = hostFixture.componentInstance;
     component = hostFixture.debugElement.query(By.directive(TestComponent)).componentInstance;
     hostFixture.detectChanges();
   });
@@ -190,6 +188,5 @@ describe('BlotterBaseTableComponent', () => {
 
     result = component.justifyFilter({ id: 'testId1', someKey: 'someVal' }, { id: 'test', someKey: ['anotherVal'] });
     expect(result).toBeFalse();
-
   });
 });

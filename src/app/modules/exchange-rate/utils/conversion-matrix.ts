@@ -32,14 +32,11 @@ export class ConversionMatrix {
 
     const matrix: (RateGetter | null) [][] = [];
 
-    for (let i = 0; i < allCurrencies.length; i++) {
+    for (const firstCurrency of allCurrencies) {
       const matrixRow: (RateGetter | null)[] = [];
       matrix.push(matrixRow);
 
-      for (let j = 0; j < allCurrencies.length; j++) {
-        const firstCurrency = allCurrencies[i];
-        const secondCurrency = allCurrencies[j];
-
+      for (const secondCurrency of allCurrencies) {
         if (firstCurrency !== secondCurrency) {
           const directPair = pairs.get(this.getCurrencyKey(firstCurrency, secondCurrency));
           if (directPair != null) {

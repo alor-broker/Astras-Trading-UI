@@ -8,7 +8,7 @@ describe('ShortNumberComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ShortNumberComponent ]
+      declarations: [ShortNumberComponent]
     })
     .compileComponents();
 

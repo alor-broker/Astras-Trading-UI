@@ -43,8 +43,10 @@ export interface ResizedEvent {
 export class PanelsContainerComponent implements PanelsContainerContext, AfterViewInit, OnDestroy {
   @ContentChildren(PanelComponent, { emitDistinctChangesOnly: true })
   panelsQuery!: QueryList<PanelComponent>;
+
   @Output()
-  widthUpdated = new EventEmitter<{ [key: string]: number }>();
+  widthUpdated = new EventEmitter<Record<string, number>>();
+
   private lastAppliedWidths: Map<string, number> | null = null;
   private animationId = -1;
   private readonly panels = new ReplaySubject<PanelComponent[]>(1);
@@ -55,7 +57,7 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
   }
 
   @Input({ required: true })
-  set initialWidths(value: { [key: string]: number }) {
+  set initialWidths(value: Record<string, number>) {
     if (this.lastAppliedWidths === null) {
       this.panels.pipe(
         take(1)
@@ -148,7 +150,7 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
     return Math.floor(width * multiplier) / multiplier;
   }
 
-  private normalizeSavedWidths(rawWidths: { [key: string]: number }, panels: PanelComponent[]): Map<string, number> {
+  private normalizeSavedWidths(rawWidths: Record<string, number>, panels: PanelComponent[]): Map<string, number> {
     const mappedWidths = panels.map(p => ({
       panelId: p.id,
       width: (rawWidths[p.id] as number | undefined) ?? null,
@@ -194,7 +196,7 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
 
   private notifyWidthChanged(): void {
     if (this.lastAppliedWidths != null) {
-      const widths: { [key: string]: number } = {};
+      const widths: Record<string, number> = {};
       this.lastAppliedWidths.forEach((value, key) => widths[key] = this.roundWidth(value));
       this.widthUpdated.emit(widths);
     }

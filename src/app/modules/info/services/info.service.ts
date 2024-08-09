@@ -1,7 +1,4 @@
-import {
-  HttpClient,
-  HttpErrorResponse
-} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   map,
@@ -56,7 +53,7 @@ export class InfoService {
       return;
     }
 
-    const getExchangeInfo = (settings: InfoSettings): Observable<{settings: InfoSettings, info: ExchangeInfo}> => {
+    const getExchangeInfo = (settings: InfoSettings): Observable<{ settings: InfoSettings, info: ExchangeInfo }> => {
       return this.getExchangeInfoReq({
         symbol: settings.symbol,
         exchange: settings.exchange,

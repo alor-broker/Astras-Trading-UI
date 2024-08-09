@@ -10,7 +10,7 @@ describe('OrdersIndicatorComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [getTranslocoModule()],
-      declarations: [ OrdersIndicatorComponent ]
+      declarations: [OrdersIndicatorComponent]
     })
     .compileComponents();
 

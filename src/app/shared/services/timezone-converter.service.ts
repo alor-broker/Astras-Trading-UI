@@ -9,7 +9,6 @@ import {TerminalSettingsService} from "./terminal-settings.service";
   providedIn: 'root'
 })
 export class TimezoneConverterService {
-
   constructor(private readonly terminalSettingsService: TerminalSettingsService) {
   }
 

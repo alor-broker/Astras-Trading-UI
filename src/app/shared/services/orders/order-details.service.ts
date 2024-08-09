@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {Observable, take} from "rxjs";
 import {ErrorHandlerService} from "../handle-error/error-handler.service";
 import {Order, StopOrder, StopOrderResponse} from "../../models/orders/order.model";

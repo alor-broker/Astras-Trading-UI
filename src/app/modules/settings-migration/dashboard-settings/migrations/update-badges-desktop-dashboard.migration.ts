@@ -97,7 +97,7 @@ export class UpdateBadgesDesktopDashboardMigration extends MigrationBase {
 
     const currentBadges = Object.keys(currentSelection);
     if(currentBadges.length === instrumentsBadges.length
-    && currentBadges.every(c => instrumentsBadges.includes(c))) {
+      && currentBadges.every(c => instrumentsBadges.includes(c))) {
       return null;
     }
 

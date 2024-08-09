@@ -26,7 +26,7 @@ export class InstrumentsService {
   }
 
   getInstrument(instrument: InstrumentKey): Observable<Instrument | null> {
-    const params: { [param: string]: string } = {};
+    const params: Record<string, string> = {};
     if (instrument.instrumentGroup != null && instrument.instrumentGroup.length > 0) {
       params.instrumentGroup = instrument.instrumentGroup;
     }

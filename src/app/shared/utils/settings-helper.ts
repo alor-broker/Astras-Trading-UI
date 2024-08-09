@@ -76,7 +76,6 @@ export function isInstrumentEqual(settings1?: InstrumentKey | null, settings2?: 
     && settings1?.exchange == settings2?.exchange;
 }
 
-
 /**
  * Class with settings related functions
  */

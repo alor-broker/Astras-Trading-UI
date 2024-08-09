@@ -70,7 +70,7 @@ implements OnInit {
 
     this.rowToInstrumentKey(selectedRow)
       .subscribe(instrument => {
-        if(instrument == null ||  menu.menuRef == null) {
+        if(instrument == null || menu.menuRef == null) {
           $event.preventDefault();
           return;
         }
@@ -125,7 +125,7 @@ implements OnInit {
   }
 
   protected isFilterApplied(column: BaseColumnSettings<T>): boolean {
-    const filter = this.filters$.getValue() as { [filterName: string]: string | string[] | null | undefined };
+    const filter = this.filters$.getValue() as Record<string, string | string[] | null | undefined>;
     return column.id in filter
       && filter[column.id] != null
       && filter[column.id]!.length > 0;
@@ -173,8 +173,8 @@ implements OnInit {
       if ((filter[key as keyof F] as string | undefined) != null && !!(filter[key as keyof F] as string).length) {
         const column = this.columns.find(o => o.id == key);
         if (
-          column!.filterData!.filterType !== FilterType.DefaultMultiple && !this.searchInItem(item, <keyof T>key, <string>filter[<keyof F>key]) ||
-          column!.filterData!.filterType === FilterType.DefaultMultiple && ((<string | undefined>filter[<keyof F>key])?.length ?? 0) && !(<string>filter[<keyof F>key])!.includes(item[<keyof T>key]!.toString())
+          (column!.filterData!.filterType !== FilterType.DefaultMultiple && !this.searchInItem(item, <keyof T>key, <string>filter[<keyof F>key])) ||
+          (column!.filterData!.filterType === FilterType.DefaultMultiple && ((<string | undefined>filter[<keyof F>key])?.length ?? 0) && !(<string>filter[<keyof F>key])!.includes(item[<keyof T>key]!.toString()))
         ) {
           isFiltered = false;
         }

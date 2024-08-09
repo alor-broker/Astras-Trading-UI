@@ -20,7 +20,7 @@ export class OrderBookDataFeedHelper {
   public static getCurrentOrdersForItem(itemPrice: number, orders: Order[]): CurrentOrder[] {
     const currentOrders = orders.filter(
       (o) => o.price === itemPrice
-        && o.status === 'working'
+      && o.status === 'working'
     );
 
     return currentOrders.map(o => this.orderToCurrentOrder(o));

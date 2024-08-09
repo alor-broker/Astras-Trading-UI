@@ -93,7 +93,6 @@ describe('Widget Settings Store', () => {
     })
   );
 
-
   it('should correctly process addWidgetSettings action', fakeAsync(() => {
       const expectedSettings = getTestSettings(5);
       initSettings(expectedSettings);

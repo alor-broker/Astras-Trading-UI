@@ -73,21 +73,25 @@ export class ArbitrageSpreadService {
                 spread.secondLeg.portfolio.portfolio,
                 spread.secondLeg.portfolio.exchange
               ),
-              spread.isThirdLeg ? this.quotesService.getQuotes(
+              spread.isThirdLeg
+? this.quotesService.getQuotes(
                 spread.thirdLeg.instrument.symbol,
                 spread.thirdLeg.instrument.exchange,
                 spread.thirdLeg.instrument.instrumentGroup
-              ) : of(null),
-              spread.isThirdLeg ? this.portfolioSubscriptionsService.getAllPositionsSubscription(
+              )
+: of(null),
+              spread.isThirdLeg
+? this.portfolioSubscriptionsService.getAllPositionsSubscription(
                 spread.thirdLeg.portfolio.portfolio,
                 spread.thirdLeg.portfolio.exchange
-              ) : of([])
+              )
+: of([])
             ];
 
             return combineLatest(spreadLegsRequests)
               .pipe(
                 map(([firstLeg, firstLegPositions, secondLeg, secondLegPositions, thirdLeg, thirdLegPositions]) => {
-                  const thirdLegSpread: { thirdLeg?: SpreadLeg} = {};
+                  const thirdLegSpread: { thirdLeg?: SpreadLeg } = {};
 
                   let buySpread = (spread.calculationFormula ?? 'L1-L2')
                     .replace(/L1/g, (firstLeg!.ask * spread.firstLeg.quantity * spread.firstLeg.ratio).toString());

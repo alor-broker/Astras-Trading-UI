@@ -70,7 +70,6 @@ export class SetStopLossCommand extends CommandBase<SetStopLossCommandArgs> {
           args.orderTracker?.orderProcessed(order.meta.trackId, result.isSuccess);
         }
       });
-
     } else {
       this.ordersDialogService.openNewOrderDialog({
         instrumentKey: order.instrument,

@@ -8,10 +8,9 @@ import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
-import { TranslocoModule } from "@ngneat/transloco";
+import { TranslocoModule } from "@jsverse/transloco";
 import { SharedModule } from "../../shared/shared.module";
 import { NotificationsListComponent } from './components/notifications-list/notifications-list.component';
-
 
 @NgModule({
   declarations: [

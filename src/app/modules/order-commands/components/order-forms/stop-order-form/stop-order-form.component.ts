@@ -297,7 +297,6 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
         if (this.form.controls.linkedOrder.controls.quantity.value !== newQuantity) {
           this.form.controls.linkedOrder.controls.quantity.setValue(newQuantity);
         }
-
       }
 
       if (p.price != null) {
@@ -418,7 +417,6 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
       } else {
         this.disableControl(this.form.controls.linkedOrder.controls.price);
       }
-
     } else {
       this.disableControl(this.form.controls.linkedOrder);
     }
@@ -467,7 +465,6 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     ).subscribe(v => {
       this.form.controls.condition.setValue(((v.lastPrice ?? 0) < +(v.value ?? 0)) ? LessMore.More : LessMore.Less);
     });
-
   }
 
   private getCurrentPrice(): Observable<number | null> {

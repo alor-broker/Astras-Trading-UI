@@ -16,7 +16,6 @@ import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.he
   styleUrl: './instrument-search-modal.component.less'
 })
 export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
-
   readonly minusSign = '－'; // This is not character that on keyboard
   private readonly specialSymbolsRegEx = new RegExp(`[${this.minusSign}+*/\\]\\[]`, 'g');
 
@@ -34,7 +33,7 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
     return { expressionInvalid: true, warning: true };
   };
 
-  searchControl = new FormControl('', [ Validators.required, this.expressionValidator ]);
+  searchControl = new FormControl('', [Validators.required, this.expressionValidator]);
 
   filteredInstruments$!: Observable<Instrument[] | null>;
 
@@ -146,7 +145,6 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
             .join('')
         );
       }, 0);
-
     }
   }
 
@@ -163,7 +161,6 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
     }
 
     return str.length - i;
-
   }
 
   private getFirstSpecialSymbolIndex(str: string): number {
@@ -191,7 +188,6 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
             this.searchInput.nativeElement.selectionEnd = this.searchControl.value?.length ?? 0;
           }
         }, 0);
-
       });
   }
 }

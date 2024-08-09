@@ -55,7 +55,7 @@ export class WsOrdersService {
       .pipe(
         take(1),
         switchMap(instrument => {
-          const additionalParams = {} as { [paramName: string]: any };
+          const additionalParams = {} as Record<string, any>;
 
           if (
             instrument?.tradingStatus === TradingStatus.ClosingAuction ||

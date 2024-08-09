@@ -8,7 +8,7 @@ describe('WidgetSkeletonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ WidgetSkeletonComponent ]
+      declarations: [WidgetSkeletonComponent]
     })
     .compileComponents();
 

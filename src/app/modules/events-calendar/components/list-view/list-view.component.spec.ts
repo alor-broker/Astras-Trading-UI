@@ -1,4 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { ListViewComponent } from './list-view.component';
 import { EventsCalendarService } from "../../services/events-calendar.service";
@@ -6,7 +9,6 @@ import {
   of,
   Subject
 } from "rxjs";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { getTranslocoModule } from "../../../../shared/utils/testing";
 import { MarketService } from "../../../../shared/services/market.service";
 import { LetDirective } from "@ngrx/component";
@@ -18,7 +20,7 @@ describe('ListViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ListViewComponent ],
+      declarations: [ListViewComponent],
       imports: [
         getTranslocoModule(),
         LetDirective

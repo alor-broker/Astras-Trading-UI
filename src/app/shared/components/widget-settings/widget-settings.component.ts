@@ -18,7 +18,6 @@ import { map } from "rxjs/operators";
   styleUrls: ['./widget-settings.component.less']
 })
 export class WidgetSettingsComponent implements OnInit {
-
   @Input({ required: true })
   canSave = false;
 

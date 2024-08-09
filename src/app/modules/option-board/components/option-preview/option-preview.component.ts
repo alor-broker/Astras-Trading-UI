@@ -13,7 +13,6 @@ export class OptionPreviewComponent {
   @Input({required: true})
   option!: Option;
 
-
   formatNumberParameter(value: number, decimals = 2): number {
     return MathHelper.round(value, decimals);
   }

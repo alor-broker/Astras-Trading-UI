@@ -21,16 +21,14 @@ export interface Dashboard {
   favoritesOrder?: number;
 }
 
-export interface InstrumentGroups {
-  [groupKey: string]: InstrumentKey;
-}
+export type InstrumentGroups = Record<string, InstrumentKey>;
 
 export interface DefaultDashboardItem {
   widgetTypeId: string;
-  initialSettings?: { [propName: string]: any};
+  initialSettings?: Record<string, any>;
 }
 
-export interface DefaultDesktopDashboardItem extends DefaultDashboardItem{
+export interface DefaultDesktopDashboardItem extends DefaultDashboardItem {
   position: DashboardItemPosition;
 }
 

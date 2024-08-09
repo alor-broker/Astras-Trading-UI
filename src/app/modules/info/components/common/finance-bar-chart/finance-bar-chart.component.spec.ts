@@ -16,7 +16,7 @@ import { TranslatorService } from "../../../../../shared/services/translator.ser
 describe('FinanceBarChartComponent', () => {
   let component: FinanceBarChartComponent;
   let fixture: ComponentFixture<FinanceBarChartComponent>;
-  let finance = {
+  const finance = {
     sales: {
       year: [],
       quarter: []

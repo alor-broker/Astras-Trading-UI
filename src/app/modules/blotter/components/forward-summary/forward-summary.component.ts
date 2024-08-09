@@ -57,7 +57,6 @@ export class ForwardSummaryComponent implements OnInit {
       else {
         this.columns = 4;
       }
-
     });
   }
 }

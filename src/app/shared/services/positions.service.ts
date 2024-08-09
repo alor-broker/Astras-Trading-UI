@@ -22,11 +22,11 @@ export class PositionsService {
     this.url = this.environmentService.apiUrl + '/md/v2/clients';
   }
 
-  getAllByLogin(login: string) : Observable<Position[]> {
+  getAllByLogin(login: string): Observable<Position[]> {
     return this.http.get<Position[]>(`${this.url}/${login}/positions`);
   }
 
-  getAllByPortfolio(portfolio: string, exchange: string) : Observable<Position[] | null> {
+  getAllByPortfolio(portfolio: string, exchange: string): Observable<Position[] | null> {
     return this.http.get<Position[]>(`${this.url}/${exchange}/${portfolio}/positions`).pipe(
       catchHttpError<Position[] | null>(null, this.errorHandlerService),
       take(1)

@@ -6,8 +6,6 @@ import { SharedModule } from "../../shared/shared.module";
 import { AllTradesSettingsComponent } from './components/all-trades-settings/all-trades-settings.component';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 
-
-
 @NgModule({
     declarations: [
         AllTradesWidgetComponent,

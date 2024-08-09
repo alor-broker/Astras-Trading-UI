@@ -9,13 +9,13 @@ import {
   combineLatest,
   take
 } from "rxjs";
-import { ActionCreator } from "@ngrx/store/src/models";
+import { ActionCreator } from '@ngrx/store/src/models';
 import {
   Actions,
   ofType
 } from "@ngrx/effects";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { Store } from "@ngrx/store";
+import { Store } from '@ngrx/store';
 import { ManageDashboardsService } from "../../../shared/services/manage-dashboards.service";
 import { mergeArrays } from "../../../shared/utils/collections";
 import { TerminalSettingsBrokerService } from "../../../shared/services/settings-broker/terminal-settings-broker.service";

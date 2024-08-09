@@ -18,7 +18,6 @@ import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { BadgesSettingsComponent } from "./components/badges-settings/badges-settings.component";
 
-
 @NgModule({
   declarations: [
     TerminalSettingsWidgetComponent,

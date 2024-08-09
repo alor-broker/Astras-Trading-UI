@@ -570,7 +570,6 @@ implements OnInit, OnDestroy {
     });
   }
 
-
   private initInstruments(): void {
     combineLatest([
       this.tableConfig$,

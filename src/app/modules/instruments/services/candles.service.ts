@@ -10,7 +10,6 @@ import { SubscriptionsDataFeedService } from "../../../shared/services/subscript
   providedIn: 'root'
 })
 export class CandlesService {
-
   constructor(
     private readonly subscriptionDatafeedService: SubscriptionsDataFeedService
   ) { }

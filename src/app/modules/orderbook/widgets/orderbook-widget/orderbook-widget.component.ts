@@ -29,6 +29,7 @@ export class OrderbookWidgetComponent implements OnInit {
 
   @Input({required: true})
   widgetInstance!: WidgetInstance;
+
   @Input({required: true})
   isBlockWidget!: boolean;
 
@@ -73,5 +74,4 @@ export class OrderbookWidgetComponent implements OnInit {
     this.settings$ = this.widgetSettingsService.getSettings<OrderbookSettings>(this.guid);
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
   }
-
 }

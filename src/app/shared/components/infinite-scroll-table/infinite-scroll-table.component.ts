@@ -46,7 +46,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   @Input() isLoading = false;
   @Input({required: true}) tableConfig: TableConfig<any> | null = null;
 
-  @Input() public set data(value: TableDataRow[] ){
+  @Input() public set data(value: TableDataRow[]) {
     if(this.tableData.length > value.length) {
       this.tableRef$?.pipe(
         take(1)
@@ -62,17 +62,21 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
 
   @Output()
   rowClick = new EventEmitter();
+
   @Output()
   scrolled = new EventEmitter();
+
   @Output()
   filterApplied = new EventEmitter();
+
   @Output()
   orderColumnChange = new EventEmitter();
+
   @Output()
   columnWidthChange = new EventEmitter();
 
   @Output()
-  rowContextMenu = new EventEmitter<{ event: MouseEvent, row: TableDataRow}>();
+  rowContextMenu = new EventEmitter<{ event: MouseEvent, row: TableDataRow }>();
 
   @ViewChildren('dataTable')
   dataTableQuery!: QueryList<NzTableComponent<TableDataRow>>;
@@ -120,7 +124,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
 
           return true;
         }),
-        map(([, curr]) => curr as { [filterName: string]: string | string[] | null}),
+        map(([, curr]) => curr as Record<string, string | string[] | null>),
         debounceTime(300),
         takeUntilDestroyed(this.destroyRef)
       )
@@ -143,10 +147,9 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
             this.filtersForm.addControl(filter.intervalStartName!, new FormControl(''));
             this.filtersForm.addControl(filter.intervalEndName!, new FormControl(''));
           } else if (filter.filterType === FilterType.MultipleAutocomplete) {
-            this.filtersForm.addControl(filter.filterName,  new FormControl([]));
+            this.filtersForm.addControl(filter.filterName, new FormControl([]));
           } else {
             this.filtersForm.addControl(filter.filterName, new FormControl(''));
-
           }
         });
     }
@@ -175,7 +178,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
       startWith(this.headerRowEl.first),
       filter(x => !!x),
       take(1)
-    ).subscribe(()=> this.calculateScrollHeight());
+    ).subscribe(() => this.calculateScrollHeight());
   }
 
   public getWidthArr(): string[] {
@@ -218,7 +221,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
 
   private calculateScrollHeight(): void {
     this.scrollHeight = this.tableContainerHeight -
-      InfiniteScrollTableComponent.getElementHeight((this.headerRowEl as QueryList<ElementRef> | undefined)?.first.nativeElement);
+    InfiniteScrollTableComponent.getElementHeight((this.headerRowEl as QueryList<ElementRef> | undefined)?.first.nativeElement);
 
     this.visibleItemsCount = Math.ceil(this.scrollHeight / this.itemHeight);
   }

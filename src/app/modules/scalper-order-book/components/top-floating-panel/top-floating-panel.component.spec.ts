@@ -1,4 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { TopFloatingPanelComponent } from './top-floating-panel.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -6,10 +9,7 @@ import { Subject } from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { getTranslocoModule } from "../../../../shared/utils/testing";
 import { LetDirective } from "@ngrx/component";
-import {
-  SCALPER_ORDERBOOK_SHARED_CONTEXT,
-  ScalperOrderBookSharedContext
-} from "../scalper-order-book/scalper-order-book.component";
+import { SCALPER_ORDERBOOK_SHARED_CONTEXT } from "../scalper-order-book/scalper-order-book.component";
 
 describe('TopFloatingPanelComponent', () => {
   let component: TopFloatingPanelComponent;

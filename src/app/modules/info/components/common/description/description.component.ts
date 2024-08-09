@@ -12,6 +12,7 @@ import { distinct, map } from 'rxjs/operators';
 export class DescriptionComponent implements OnInit, OnDestroy {
   @Input({required: true})
   guid!: string;
+
   columns = 1;
   description$?: Observable<Description | null>;
   isLoading$ = new BehaviorSubject<boolean>(true);

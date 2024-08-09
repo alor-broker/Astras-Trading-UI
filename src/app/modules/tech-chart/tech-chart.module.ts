@@ -13,7 +13,6 @@ import { SharedModule } from '../../shared/shared.module';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 import { InstrumentSearchModalComponent } from "./widgets/instrument-search-modal/instrument-search-modal.component";
 
-
 @NgModule({
   declarations: [
     TechChartWidgetComponent,

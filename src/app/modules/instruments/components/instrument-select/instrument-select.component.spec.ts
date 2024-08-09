@@ -63,7 +63,6 @@ describe('InstrumentSelectComponent', () => {
         ...commonTestProviders
       ]
     }).compileComponents();
-
   });
 
   beforeEach(() => {

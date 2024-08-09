@@ -11,7 +11,6 @@ import { EnvironmentService } from "./environment.service";
   providedIn: 'root'
 })
 export class TradesHistoryService {
-
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly httpClient: HttpClient,
@@ -23,7 +22,7 @@ export class TradesHistoryService {
     from: string | null;
     limit: number | null;
   }>): Observable<Trade[] | null> {
-    let params: { [propName: string]: any } = {
+    const params: Record<string, any> = {
       descending: true,
       format: 'heavy'
     };
@@ -61,7 +60,7 @@ export class TradesHistoryService {
     from: string | null;
     limit: number | null;
   }>): Observable<Trade[] | null> {
-    let params: { [propName: string]: any } = {
+    const params: Record<string, any> = {
       descending: true
     };
 

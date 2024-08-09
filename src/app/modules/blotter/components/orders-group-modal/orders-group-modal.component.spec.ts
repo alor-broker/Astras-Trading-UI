@@ -17,7 +17,7 @@ describe('OrdersGroupModalComponent', () => {
         OrdersGroupModalComponent,
         ...ngZorroMockComponents
       ],
-      imports: [ getTranslocoModule() ],
+      imports: [getTranslocoModule()],
       providers: [
         {
           provide: OrdersGroupService,

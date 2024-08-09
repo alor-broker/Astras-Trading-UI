@@ -22,5 +22,4 @@ export class AtsPricePipe implements PipeTransform {
 
     return this.numberPipe.transform(value, `1.0-10`);
   }
-
 }

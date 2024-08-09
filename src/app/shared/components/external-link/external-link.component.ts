@@ -11,6 +11,7 @@ import {
 export class ExternalLinkComponent {
   @Input()
   klass?: string;
+
   @Input()
   target: '_self' | '_blank' = '_blank';
 

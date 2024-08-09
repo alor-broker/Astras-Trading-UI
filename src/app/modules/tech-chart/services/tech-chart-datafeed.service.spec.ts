@@ -7,10 +7,7 @@ import {
 import { TechChartDatafeedService } from './tech-chart-datafeed.service';
 import { InstrumentsService } from "../../instruments/services/instruments.service";
 import { HistoryService } from "../../../shared/services/history.service";
-import {
-  HttpClientTestingModule,
-  HttpTestingController
-} from "@angular/common/http/testing";
+import { HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
 import {
   DatafeedConfiguration,
   LibrarySymbolInfo,
@@ -32,6 +29,7 @@ import { getRandomInt } from "../../../shared/utils/testing";
 import { BarsRequest } from "../../light-chart/models/bars-request.model";
 import { EnvironmentService } from "../../../shared/services/environment.service";
 import { ExchangeSettings } from "../../../shared/models/market-settings.model";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('TechChartDatafeedService', () => {
   let service: TechChartDatafeedService;
@@ -53,35 +51,35 @@ describe('TechChartDatafeedService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-      ],
-      providers: [
+    imports: [],
+    providers: [
         TechChartDatafeedService,
         {
-          provide: SubscriptionsDataFeedService,
-          useValue: subscriptionsDataFeedServiceSpy
+            provide: SubscriptionsDataFeedService,
+            useValue: subscriptionsDataFeedServiceSpy
         },
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
         { provide: HistoryService, useValue: historyServiceSpy },
         {
-          provide: TranslatorService,
-          useValue: {
-            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => 'Московская Биржа'))
-          }
+            provide: TranslatorService,
+            useValue: {
+                getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => 'Московская Биржа'))
+            }
         },
         {
-          provide: SyntheticInstrumentsService,
-          useValue: syntheticInstrumentsServiceSpy
+            provide: SyntheticInstrumentsService,
+            useValue: syntheticInstrumentsServiceSpy
         },
         {
-          provide: EnvironmentService,
-          useValue: {
-            apiUrl
-          }
-        }
-      ]
-    });
+            provide: EnvironmentService,
+            useValue: {
+                apiUrl
+            }
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
 
     httpTestingController = TestBed.inject(HttpTestingController);
     service = TestBed.inject(TechChartDatafeedService);
@@ -489,4 +487,3 @@ describe('TechChartDatafeedService', () => {
     } as any);
   }));
 });
-

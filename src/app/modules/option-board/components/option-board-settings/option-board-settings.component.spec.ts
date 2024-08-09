@@ -6,6 +6,7 @@ import {
 import { OptionBoardSettingsComponent } from './option-board-settings.component';
 import {
   getTranslocoModule,
+  InstrumentBoardSelectMockComponent,
   InstrumentSearchMockComponent,
   mockComponent
 } from "../../../../shared/utils/testing";
@@ -16,6 +17,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzCollapseModule } from "ng-zorro-antd/collapse";
 import { NzFormModule } from "ng-zorro-antd/form";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 describe('OptionBoardSettingsComponent', () => {
   let component: OptionBoardSettingsComponent;
@@ -24,17 +26,17 @@ describe('OptionBoardSettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
+        BrowserAnimationsModule,
         getTranslocoModule(),
         ReactiveFormsModule,
         NzSelectModule,
         NzCollapseModule,
-        NzFormModule
+        NzFormModule,
+        InstrumentSearchMockComponent,
+        InstrumentBoardSelectMockComponent
       ],
       declarations: [
         OptionBoardSettingsComponent,
-        InstrumentSearchMockComponent,
-        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['instrument', 'placeholder'] }),
-        mockComponent({ selector: 'ats-instrument-search' }),
         mockComponent({
           selector: 'ats-widget-settings',
           inputs: ['canSave', 'canCopy', 'showCopy']

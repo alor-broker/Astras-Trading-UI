@@ -113,7 +113,7 @@ export class PriceRowsStore extends ComponentStore<PriceRowsState> {
 
       const rowsCount = Math.ceil(Math.max(priceRowsCountByRange + 5, directionRowsCountMin));
 
-      let topRows = this.generatePriceSequence(priceOptions.startPrice + priceOptions.scaledStep, priceOptions.scaledStep, rowsCount).reverse();
+      const topRows = this.generatePriceSequence(priceOptions.startPrice + priceOptions.scaledStep, priceOptions.scaledStep, rowsCount).reverse();
       const bottomRows = this.generatePriceSequence(priceOptions.startPrice - priceOptions.scaledStep, -priceOptions.scaledStep, rowsCount);
 
       const rows = [

@@ -106,6 +106,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       max: 100
     }
   };
+
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
   readonly workingVolumesPanelSlots = [PanelSlots.BottomFloatingPanel, PanelSlots.TopPanel];
   readonly shortLongPanelSlots = [PanelSlots.BottomFloatingPanel, PanelSlots.TopPanel];
@@ -116,6 +117,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     VolumeHighlightMode.BiggestVolume,
     VolumeHighlightMode.VolumeBoundsWithFixedValue,
   ];
+
   readonly form = this.formBuilder.group({
     // instrument
     instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
@@ -447,7 +449,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     newSettings.instrumentLinkedSettings = {
       ...initialSettings.instrumentLinkedSettings,
       [instrumentLinkedSettingsKey]: newInstrumentLinkedSettings
-    } as { [key: string]: InstrumentLinkedSettings };
+    } as Record<string, InstrumentLinkedSettings>;
 
     return newSettings;
   }

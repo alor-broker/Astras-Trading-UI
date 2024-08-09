@@ -216,7 +216,7 @@ describe('ScalperCommandProcessorService', () => {
   });
 
   describe('Hot keys', () => {
-    it('should process cancelLimitOrdersAll command', ((done) => {
+    it('should process cancelLimitOrdersAll command', (done) => {
         const expectedOrder: CurrentOrderDisplay = {
           orderId: generateRandomString(5),
           type: OrderType.Limit,
@@ -248,10 +248,10 @@ describe('ScalperCommandProcessorService', () => {
           false,
           dataContextMock
         );
-      })
+      }
     );
 
-    it('should process closePositionsByMarketAll command', ((done) => {
+    it('should process closePositionsByMarketAll command', (done) => {
         const expectedPosition = {
           symbol: orderBookDefaultSettings.symbol,
           exchange: orderBookDefaultSettings.exchange,
@@ -272,10 +272,10 @@ describe('ScalperCommandProcessorService', () => {
           false,
           dataContextMock
         );
-      })
+      }
     );
 
-    it('should process cancelLimitOrdersCurrent command', ((done) => {
+    it('should process cancelLimitOrdersCurrent command', (done) => {
         const expectedOrder: CurrentOrderDisplay = {
           orderId: generateRandomString(5),
           type: OrderType.Limit,
@@ -323,10 +323,10 @@ describe('ScalperCommandProcessorService', () => {
           true,
           dataContextMock
         );
-      })
+      }
     );
 
-    it('should process cancelStopOrdersCurrent command', ((done) => {
+    it('should process cancelStopOrdersCurrent command', (done) => {
         const expectedOrder: CurrentOrderDisplay = {
           orderId: generateRandomString(5),
           type: OrderType.StopMarket,
@@ -372,10 +372,10 @@ describe('ScalperCommandProcessorService', () => {
           true,
           dataContextMock
         );
-      })
+      }
     );
 
-    it('should process closePositionsByMarketCurrent command', ((done) => {
+    it('should process closePositionsByMarketCurrent command', (done) => {
         const expectedPosition = {
           symbol: orderBookDefaultSettings.symbol,
           exchange: orderBookDefaultSettings.exchange,
@@ -396,10 +396,10 @@ describe('ScalperCommandProcessorService', () => {
           true,
           dataContextMock
         );
-      })
+      }
     );
 
-    it('should process sellBestOrder command', ((done) => {
+    it('should process sellBestOrder command', (done) => {
         const workingVolume = getRandomInt(1, 100);
 
         dataContextMock.orderBook$.next({
@@ -431,10 +431,10 @@ describe('ScalperCommandProcessorService', () => {
           true,
           dataContextMock
         );
-      })
+      }
     );
 
-    it('should process buyBestOrder command', ((done) => {
+    it('should process buyBestOrder command', (done) => {
         const workingVolume = getRandomInt(1, 100);
 
         dataContextMock.orderBook$.next({
@@ -466,10 +466,10 @@ describe('ScalperCommandProcessorService', () => {
           true,
           dataContextMock
         );
-      })
+      }
     );
 
-    it('should process sellBestBid command', ((done) => {
+    it('should process sellBestBid command', (done) => {
         const workingVolume = getRandomInt(1, 100);
 
         dataContextMock.orderBook$.next({
@@ -504,10 +504,10 @@ describe('ScalperCommandProcessorService', () => {
           true,
           dataContextMock
         );
-      })
+      }
     );
 
-    it('should process buyBestAsk command', ((done) => {
+    it('should process buyBestAsk command', (done) => {
         const workingVolume = getRandomInt(1, 100);
 
         dataContextMock.orderBook$.next({
@@ -521,7 +521,6 @@ describe('ScalperCommandProcessorService', () => {
             b: [],
           }
         });
-
 
         dataContextMock.workingVolume$.next(workingVolume);
 
@@ -539,10 +538,10 @@ describe('ScalperCommandProcessorService', () => {
           true,
           dataContextMock
         );
-      })
+      }
     );
 
-    it('should process sellMarket command', ((done) => {
+    it('should process sellMarket command', (done) => {
         const workingVolume = getRandomInt(1, 100);
 
         dataContextMock.workingVolume$.next(workingVolume);
@@ -562,10 +561,10 @@ describe('ScalperCommandProcessorService', () => {
           true,
           dataContextMock
         );
-      })
+      }
     );
 
-    it('should process buyMarket command', ((done) => {
+    it('should process buyMarket command', (done) => {
         const workingVolume = getRandomInt(1, 100);
 
         dataContextMock.workingVolume$.next(workingVolume);
@@ -585,10 +584,10 @@ describe('ScalperCommandProcessorService', () => {
           true,
           dataContextMock
         );
-      })
+      }
     );
 
-    it('should process reversePositionsByMarketCurrent command', ((done) => {
+    it('should process reversePositionsByMarketCurrent command', (done) => {
         const expectedPosition = {
           symbol: orderBookDefaultSettings.symbol,
           exchange: orderBookDefaultSettings.exchange,
@@ -609,12 +608,12 @@ describe('ScalperCommandProcessorService', () => {
           true,
           dataContextMock
         );
-      })
+      }
     );
   });
 
   describe('Mouse click', () => {
-    it('should process Left click with Ctrl', (done => {
+    it('should process Left click with Ctrl', done => {
         const event = jasmine.createSpyObj(['preventDefault', 'stopPropagation']);
         event.ctrlKey = true;
 
@@ -645,10 +644,10 @@ describe('ScalperCommandProcessorService', () => {
         });
 
         service.processLeftMouseClick(event, testRow, dataContextMock);
-      })
+      }
     );
 
-    it('should process Left click with Shift', (done => {
+    it('should process Left click with Shift', done => {
         const event = jasmine.createSpyObj(['preventDefault', 'stopPropagation']);
         event.shiftKey = true;
 
@@ -684,10 +683,10 @@ describe('ScalperCommandProcessorService', () => {
         });
 
         service.processLeftMouseClick(event, testRow, dataContextMock);
-      })
+      }
     );
 
-    it('should process Left click WITHOUT Ctrl and Shift', (done => {
+    it('should process Left click WITHOUT Ctrl and Shift', done => {
         const event = jasmine.createSpyObj(['preventDefault', 'stopPropagation']);
 
         dataContextMock.extendedSettings$.next({
@@ -717,10 +716,10 @@ describe('ScalperCommandProcessorService', () => {
         });
 
         service.processLeftMouseClick(event, testRow, dataContextMock);
-      })
+      }
     );
 
-    it('should process Right click', (done => {
+    it('should process Right click', done => {
         const event = jasmine.createSpyObj(['preventDefault', 'stopPropagation']);
 
         dataContextMock.extendedSettings$.next({
@@ -748,7 +747,7 @@ describe('ScalperCommandProcessorService', () => {
         });
 
         service.processRightMouseClick(event, testRow, dataContextMock);
-      })
+      }
     );
 
     it('should call commands with position qty instead working volume when alt pressed', done => {
@@ -795,5 +794,4 @@ describe('ScalperCommandProcessorService', () => {
       service.processLeftMouseClick(event, testRow, dataContextMock);
     });
   });
-
 });

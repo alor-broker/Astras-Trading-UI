@@ -28,6 +28,7 @@ export class NewsWidgetComponent implements OnInit {
 
   @Input({required: true})
   widgetInstance!: WidgetInstance;
+
   @Input({required: true})
   isBlockWidget!: boolean;
 
@@ -67,7 +68,7 @@ export class NewsWidgetComponent implements OnInit {
 
     this.settings$ = this.widgetSettingsService.getSettings<NewsSettings>(this.guid);
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
-    this.titleText =  WidgetsHelper.getWidgetName(this.widgetInstance.widgetMeta.widgetName, this.translatorService.getActiveLang());
+    this.titleText = WidgetsHelper.getWidgetName(this.widgetInstance.widgetMeta.widgetName, this.translatorService.getActiveLang());
   }
 
   sectionChange(section: NewsSection): void {

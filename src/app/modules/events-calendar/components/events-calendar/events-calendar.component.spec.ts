@@ -8,6 +8,7 @@ import {
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import ruEventsCalendarTranslations from '../../../../../assets/i18n/events-calendar/ru.json';
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 
 describe('EventsCalendarComponent', () => {
   let component: EventsCalendarComponent;
@@ -25,6 +26,7 @@ describe('EventsCalendarComponent', () => {
         })
       ],
       imports: [
+        NoopAnimationsModule,
         ...sharedModuleImportForTests,
         getTranslocoModule({
           langs: {

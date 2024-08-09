@@ -13,7 +13,7 @@ describe('PossibleActionsPanelComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [getTranslocoModule()],
-      declarations: [ PossibleActionsPanelComponent ],
+      declarations: [PossibleActionsPanelComponent],
       providers: [
         {
           provide: ScalperCommandProcessorService,

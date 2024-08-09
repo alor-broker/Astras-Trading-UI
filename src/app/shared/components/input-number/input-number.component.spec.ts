@@ -19,6 +19,7 @@ describe('InputNumberComponent', () => {
 
   const inputValue = (value: string): void => {
     component.writeValue(null);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const symbol of value) {
       component.inputElement.nativeElement.value = value;
       component.inputElement.nativeElement.dispatchEvent(new Event('input'));

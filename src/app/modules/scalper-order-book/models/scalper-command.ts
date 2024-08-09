@@ -13,4 +13,3 @@ export interface ModifierKeys {
   ctrlKey: boolean;
   altKey: boolean;
 }
-

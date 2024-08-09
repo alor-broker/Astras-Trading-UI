@@ -11,7 +11,7 @@ import {
 describe('TerminalSettingsWidgetComponent', () => {
   let component: TerminalSettingsWidgetComponent;
   let fixture: ComponentFixture<TerminalSettingsWidgetComponent>;
-  let modalSpy = jasmine.createSpyObj('ModalService', ['openHelpModal']);
+  const modalSpy = jasmine.createSpyObj('ModalService', ['openHelpModal']);
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {

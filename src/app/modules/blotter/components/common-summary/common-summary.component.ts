@@ -31,6 +31,7 @@ export class CommonSummaryComponent implements OnInit {
 
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
+
   summary$: Observable<CommonSummaryView> = of();
   columns = 1;
 

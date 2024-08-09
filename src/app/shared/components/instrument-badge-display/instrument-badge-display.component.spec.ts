@@ -14,8 +14,8 @@ describe('InstrumentBadgeDisplayComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ InstrumentBadgeDisplayComponent ],
-      imports: [ LetDirective ],
+      declarations: [InstrumentBadgeDisplayComponent],
+      imports: [LetDirective],
       providers: [
         {
           provide: DashboardContextService,

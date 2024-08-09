@@ -6,6 +6,7 @@ import {SessionTrackService} from "./session-track.service";
 export class AppSessionTrackHook implements AppHook {
   constructor(private readonly sessionTrackService: SessionTrackService) {
   }
+
   onDestroy(): void {
     this.sessionTrackService.stopTracking();
   }
@@ -13,5 +14,4 @@ export class AppSessionTrackHook implements AppHook {
   onInit(): void {
     this.sessionTrackService.startTracking();
   }
-
 }

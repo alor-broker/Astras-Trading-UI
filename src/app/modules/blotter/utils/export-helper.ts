@@ -21,7 +21,7 @@ export class ExportHelper {
     const meta = columns.map(c => ({
         title: c.displayName,
         readFn: item => {
-          const value = (item as { [propName: string]: unknown})[c.id];
+          const value = (item as Record<string, unknown>)[c.id];
           const translator = valueTranslators?.get(c.id);
           if (translator && !!value) {
             return translator(value);

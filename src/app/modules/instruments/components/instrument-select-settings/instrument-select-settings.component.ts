@@ -48,6 +48,7 @@ export class InstrumentSelectSettingsComponent extends WidgetSettingsBaseCompone
     { name: 'W', value: TimeframeValue.W },
     { name: 'Month', value: TimeframeValue.Month }
   ];
+
   protected settings$!: Observable<InstrumentSelectSettings>;
 
   constructor(

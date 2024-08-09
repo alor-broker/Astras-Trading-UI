@@ -1,4 +1,4 @@
 ﻿export class ScalperOrderBookConstants {
   static defaultMajorLinesStep = 10;
-  static defaultMinorLinesStep =  5;
+  static defaultMinorLinesStep = 5;
 }

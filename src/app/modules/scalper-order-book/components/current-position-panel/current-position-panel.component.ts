@@ -78,7 +78,7 @@ export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
 
           if(bestPrice != null) {
             state.lossOrProfitPoints = Math.round((bestPrice - position!.avgPrice) / settings.instrument.minstep) * sign;
-            state.lossOrProfitPercent =  MathHelper.round(((bestPrice - position!.avgPrice) / position!.avgPrice) * 100 * sign, 3);
+            state.lossOrProfitPercent = MathHelper.round(((bestPrice - position!.avgPrice) / position!.avgPrice) * 100 * sign, 3);
           }
         }
 

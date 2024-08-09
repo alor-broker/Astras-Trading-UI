@@ -19,8 +19,6 @@ import { PresetsComponent } from './components/presets/presets.component';
 import { OrdersBasketSettingsComponent } from './components/orders-basket-settings/orders-basket-settings.component';
 import { NzNoAnimationModule } from "ng-zorro-antd/core/no-animation";
 
-
-
 @NgModule({
   declarations: [
     OrdersBasketComponent,

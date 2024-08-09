@@ -41,7 +41,7 @@ export class OrderBookScaleHelper {
 
   static scaledPriceToOriginal(scaledPrice: number, originalPriceStep: number, scaleFactor: number): Range {
     if(scaleFactor === 1) {
-      return  {
+      return {
         min: scaledPrice,
         max: scaledPrice
       };

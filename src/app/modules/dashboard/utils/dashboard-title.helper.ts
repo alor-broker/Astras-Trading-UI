@@ -8,7 +8,7 @@ export class DashboardTitleHelper {
       'Lite Dashboard'
     ];
 
-    for (let defaultTitle of defaultTitles) {
+    for (const defaultTitle of defaultTitles) {
       if (dashboard.title.startsWith(defaultTitle)) {
         return dashboard.title.replace(defaultTitle, translator(['defaultDashboardNames', defaultTitle], { fallback: defaultTitle }));
       }

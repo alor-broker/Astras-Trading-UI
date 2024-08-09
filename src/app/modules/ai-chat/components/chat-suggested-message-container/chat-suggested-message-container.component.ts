@@ -34,7 +34,5 @@ export class ChatSuggestedMessageContainerComponent {
   selected = new EventEmitter<TextMessageContent>();
 
   @HostBinding('@flyInOut')
-  get flyInOut(): boolean {
-    return true;
-  }
+  readonly flyInOut = true;
 }

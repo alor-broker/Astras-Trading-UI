@@ -3,10 +3,7 @@ import { Injectable } from '@angular/core';
 import { GuidGenerator } from '../../utils/guid';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import {
-  HttpClient,
-  HttpContext
-} from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { LocalStorageService } from '../local-storage.service';
 import {
   EnvironmentService,
@@ -88,7 +85,6 @@ export class RemoteLogger extends LoggerBase {
     message: string,
     stack?: string
   ): LogEntry {
-
     const entryDate = new Date();
     return {
       timestamp: entryDate.toISOString(),
@@ -128,7 +124,6 @@ export class RemoteLogger extends LoggerBase {
           },
           [] as (LogEntry | { index: { _index: string } })[]
         );
-
 
         this.httpClient.post(
           `${config.loggingServerUrl}/_bulk`,

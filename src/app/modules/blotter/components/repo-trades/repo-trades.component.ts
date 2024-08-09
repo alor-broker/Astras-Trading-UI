@@ -36,6 +36,7 @@ import { InstrumentKey } from "../../../../shared/models/instruments/instrument-
 export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, TradeFilter> {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
+
   allColumns: BaseColumnSettings<RepoTrade>[] = [
     {
       id: 'id',

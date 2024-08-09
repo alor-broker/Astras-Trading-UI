@@ -26,7 +26,7 @@ export interface TradesClusterPanelSettings {
 }
 
 export interface OrderBookLayoutSettings {
-  widths: {[K:string]: number};
+  widths: Record<string, number>;
 }
 
 export interface RulerSettings {
@@ -95,7 +95,5 @@ export interface ScalperOrderBookWidgetSettings extends WidgetSettings, Instrume
   hideTooltips?: boolean;
   rowHeight?: number;
   fontSize?: number;
-  instrumentLinkedSettings?: {
-    [key: string]: InstrumentLinkedSettings;
-  };
+  instrumentLinkedSettings?: Record<string, InstrumentLinkedSettings>;
 }

@@ -52,5 +52,4 @@ export class ApplyDesignSettingsHook implements AppHook {
       })
     );
   }
-
 }

@@ -3,4 +3,3 @@ export interface User {
   portfolios: string[];
   clientId: string;
 }
-

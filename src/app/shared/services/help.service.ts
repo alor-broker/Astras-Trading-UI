@@ -1,9 +1,6 @@
 import { DestroyRef, Injectable } from '@angular/core';
 import { environment } from "../../../environments/environment";
-import {
-  HttpClient,
-  HttpContext
-} from "@angular/common/http";
+import { HttpClient, HttpContext } from "@angular/common/http";
 import { map } from "rxjs/operators";
 import { Observable, shareReplay } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -33,7 +30,6 @@ interface HelpLinkInfo {
   providedIn: 'root'
 })
 export class HelpService {
-
   private readonly helpUrl = environment.externalLinks.help;
   private readonly teamlyDatabaseUrl = environment.teamlyDatabaseUrl;
   private teamlyData$!: Observable<HelpLinkInfo[]>;

@@ -51,7 +51,7 @@ export abstract class MigrationManagerBase {
 
   private getMigrationsToApply(appliedMigrations: MigrationMeta[]): MigrationBase[] {
     const migrationsToApply: MigrationBase[] = [];
-    for (let migration of this.migrations) {
+    for (const migration of this.migrations) {
       if (migration.applyOptions.strategy === ApplyStrategyType.ApplyOnce) {
         if (migration.applyOptions.expirationDate != null && migration.applyOptions.expirationDate.getTime() < Date.now()) {
           console.warn(`${migration.migrationId} is expired and can be removed`);
@@ -73,7 +73,7 @@ export abstract class MigrationManagerBase {
       appliedMigrations: []
     } as MigrationResult<R>);
 
-    for (let migration of migrations) {
+    for (const migration of migrations) {
       resultSequence$ = resultSequence$.pipe(
         mapWith(
           x => migration.getPatches(x.updatedData),

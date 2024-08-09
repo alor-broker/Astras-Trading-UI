@@ -491,14 +491,12 @@ describe('WsOrdersService', () => {
         order,
         result => {
           expect(result.isSuccess).toBeFalse();
-
         }
       );
 
       tick();
       expect(orderInstantTranslatableNotificationsServiceSpy.orderSubmitFailed).toHaveBeenCalled();
     }));
-
   });
 
   describe('#submitLimitOrderEdit', () => {
@@ -820,7 +818,6 @@ describe('WsOrdersService', () => {
       submitOrder(
         order,
         result => {
-
           expect(result.isSuccess).toBeFalse();
         }
       );

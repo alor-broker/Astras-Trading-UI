@@ -35,9 +35,9 @@ export interface Order {
   status: string; // working,
   transTime: Date; // 2021-12-28T06:40:46.0000000Z,
   endTime?: Date; // 2021-12-28T23:59:59.9990000,
-  qtyUnits: number; //10,
+  qtyUnits: number; // 10,
   qtyBatch: number; // 1,
-  qty: number; //1,
+  qty: number; // 1,
   filledQtyUnits: number; // 0,
   filledQtyBatch?: number; // 0,
   filled?: number; // 0

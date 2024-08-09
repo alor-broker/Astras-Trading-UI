@@ -35,7 +35,6 @@ import { WsOrdersService } from "../../../shared/services/orders/ws-orders.servi
 
 @Injectable()
 export class OrderbookService {
-
   constructor(
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
@@ -68,9 +67,9 @@ export class OrderbookService {
         )
       );
 
-    const obData$ = combineLatest([ ob$, lastQuote$ ])
+    const obData$ = combineLatest([ob$, lastQuote$])
       .pipe(
-      map(([ ob, quote ]) => this.toOrderBook(ob, quote))
+      map(([ob, quote]) => this.toOrderBook(ob, quote))
     );
 
     return combineLatest([obData$, this.getOrders(settings)]).pipe(

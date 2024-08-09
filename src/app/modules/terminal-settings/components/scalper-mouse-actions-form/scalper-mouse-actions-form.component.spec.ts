@@ -1,16 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { ScalperMouseActionsFormComponent } from './scalper-mouse-actions-form.component';
 import {
   commonTestProviders,
   getTranslocoModule,
-  ngZorroMockComponents,
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { TerminalSettingsModule } from '../../terminal-settings.module';
 
 describe('ScalperMouseActionsFormComponent', () => {
   let component: ScalperMouseActionsFormComponent;

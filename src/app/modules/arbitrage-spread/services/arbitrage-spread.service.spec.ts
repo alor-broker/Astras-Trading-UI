@@ -39,10 +39,10 @@ const quote = {
 
 describe('ArbitrageSpreadService', () => {
   let service: ArbitrageSpreadService;
-  let localStorageSpy = jasmine.createSpyObj('localStorageSpy', ['getItem', 'setItem']);
-  let orderServiceSpy = jasmine.createSpyObj('orderServiceSpy', ['submitMarketOrder']);
-  let quotesServiceSpy = jasmine.createSpyObj('quotesServiceSpy', ['getQuotes']);
-  let portfolioSubscriptionsServiceSpy = jasmine.createSpyObj('portfolioSubscriptionsServiceSpy', ['getAllPositionsSubscription']);
+  const localStorageSpy = jasmine.createSpyObj('localStorageSpy', ['getItem', 'setItem']);
+  const orderServiceSpy = jasmine.createSpyObj('orderServiceSpy', ['submitMarketOrder']);
+  const quotesServiceSpy = jasmine.createSpyObj('quotesServiceSpy', ['getQuotes']);
+  const portfolioSubscriptionsServiceSpy = jasmine.createSpyObj('portfolioSubscriptionsServiceSpy', ['getAllPositionsSubscription']);
 
   beforeEach(() => {
     localStorageSpy.getItem = jasmine.createSpy('getItem').and.returnValue([]);
@@ -101,7 +101,6 @@ describe('ArbitrageSpreadService', () => {
       }
     ]));
 
-
     service.getSpreadsSubscription()
       .pipe(
         take(1)
@@ -110,9 +109,9 @@ describe('ArbitrageSpreadService', () => {
         const spread = spreads[0];
 
         expect(spread.buySpread).toBe(quote.ask * spread.firstLeg.quantity * spread.firstLeg.quantity -
-          quote.bid * spread.secondLeg.quantity * spread.secondLeg.quantity);
+        quote.bid * spread.secondLeg.quantity * spread.secondLeg.quantity);
         expect(spread.sellSpread).toBe(quote.bid * spread.firstLeg.quantity * spread.firstLeg.quantity -
-          quote.ask * spread.secondLeg.quantity * spread.secondLeg.quantity);
+        quote.ask * spread.secondLeg.quantity * spread.secondLeg.quantity);
         expect(spread.firstLeg.positionsCount).toBe(expectedQuantity);
         expect(spread.secondLeg.positionsCount).toBe(0);
       });

@@ -10,10 +10,7 @@ import {
   of,
   take
 } from "rxjs";
-import {
-  HttpClient,
-  HttpErrorResponse
-} from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { map } from "rxjs/operators";
 import { EnvironmentService } from "../../../shared/services/environment.service";

@@ -11,7 +11,7 @@ import { Store } from '@ngrx/store';
 import {Dashboard, DefaultDashboardConfig} from '../models/dashboard/dashboard.model';
 import { GuidGenerator } from '../utils/guid';
 import { DashboardContextService } from './dashboard-context.service';
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {DashboardsStreams} from "../../store/dashboards/dashboards.streams";
 import { WidgetSettings } from "../models/widget-settings.model";
 import {
@@ -42,7 +42,7 @@ export class ManageDashboardsService {
     return DashboardsStreams.getAllDashboards(this.store);
   }
 
-  addWidget(widgetType: string, initialSettings?: { [propName: string]: any }): void {
+  addWidget(widgetType: string, initialSettings?: Record<string, any>): void {
     this.dashboardContextService.selectedDashboard$.pipe(
       take(1)
     ).subscribe(d => {
@@ -56,7 +56,6 @@ export class ManageDashboardsService {
         }
       ));
     });
-
   }
 
   copyWidget(sourceSettings: WidgetSettings): void {

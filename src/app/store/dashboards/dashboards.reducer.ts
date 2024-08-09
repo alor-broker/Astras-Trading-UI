@@ -279,7 +279,8 @@ const reducer = createReducer(
     return adapter.updateOne({
         id: props.dashboardGuid,
         changes: {
-          selectedPortfolio: props.portfolioKey ? {
+          selectedPortfolio: props.portfolioKey
+            ? {
               portfolio: props.portfolioKey.portfolio,
               exchange: props.portfolioKey.exchange,
               marketType: props.portfolioKey.marketType

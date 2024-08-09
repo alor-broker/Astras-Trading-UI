@@ -1,13 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { GeneralSettingsFormComponent } from './general-settings-form.component';
 import {
   commonTestProviders,
   getTranslocoModule,
-  ngZorroMockComponents,
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
-import { ReactiveFormsModule } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('GeneralSettingsFormComponent', () => {

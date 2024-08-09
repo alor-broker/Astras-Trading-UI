@@ -21,9 +21,7 @@ import {
   Variables
 } from "../utils/graph-ql/gql-query-builder";
 
-export interface GraphQlVariables {
-  [propName: string]: any;
-}
+export type GraphQlVariables = Record<string, any>;
 
 export enum FetchPolicy {
   Default = 'cache-first',
@@ -34,7 +32,6 @@ export enum FetchPolicy {
   providedIn: 'root'
 })
 export class GraphQlService {
-
   constructor(
     private readonly apollo: Apollo,
     private readonly errorHandlerService: ErrorHandlerService

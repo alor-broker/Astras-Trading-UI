@@ -4,7 +4,7 @@ import { OptionBoardWidgetComponent } from './widgets/option-board-widget/option
 import { OptionBoardComponent } from './components/option-board/option-board.component';
 import { OptionBoardSettingsComponent } from './components/option-board-settings/option-board-settings.component';
 import { SharedModule } from "../../shared/shared.module";
-import { TranslocoModule } from "@ngneat/transloco";
+import { TranslocoModule } from "@jsverse/transloco";
 import { NzSpinModule } from "ng-zorro-antd/spin";
 import { AllOptionsComponent } from './components/all-options/all-options.component';
 import { SelectedOptionsComponent } from './components/selected-options/selected-options.component';
@@ -20,7 +20,6 @@ import { OptionBoardChartsLayoutComponent } from "./components/option-board-char
 import { OptionBoardChartComponent } from "./components/option-board-chart/option-board-chart.component";
 import { BaseChartDirective } from "ng2-charts";
 import { NzAlertComponent } from "ng-zorro-antd/alert";
-
 
 @NgModule({
   declarations: [

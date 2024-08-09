@@ -160,7 +160,6 @@ export class AiChatComponent implements OnInit, OnDestroy {
     this.canRestartConversation = false;
   }
 
-
   private createBotMessage<T extends MessageContent>(messageType: MessageType, content: T): Message<T> {
     return {
       date: new Date(),

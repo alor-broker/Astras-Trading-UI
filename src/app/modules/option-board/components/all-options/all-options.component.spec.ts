@@ -1,11 +1,16 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-
-import {AllOptionsComponent} from './all-options.component';
-import {getTranslocoModule, ngZorroMockComponents} from "../../../../shared/utils/testing";
-import {OptionBoardService} from "../../services/option-board.service";
-import {Subject} from "rxjs";
 import {
-  OptionKey,
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
+
+import { AllOptionsComponent } from './all-options.component';
+import {
+  getTranslocoModule,
+  ngZorroMockComponents
+} from "../../../../shared/utils/testing";
+import { OptionBoardService } from "../../services/option-board.service";
+import { Subject } from "rxjs";
+import {
   OptionParameters,
   OptionSide
 } from "../../models/option-board.model";

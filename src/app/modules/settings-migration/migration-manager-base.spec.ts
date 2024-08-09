@@ -24,10 +24,9 @@ class MigrationManagerTest extends MigrationManagerBase {
     return of(this.appliedMigrations);
   }
 
-  protected saveAppliedMigrations(migrations: string[]): Observable<boolean> {
+  protected saveAppliedMigrations(): Observable<boolean> {
     return of(true);
   }
-
 }
 
 describe('MigrationManagerBase', () => {
@@ -44,7 +43,6 @@ describe('MigrationManagerBase', () => {
   });
 
   describe('ApplyOnce migrations', () => {
-
     it('should run valid migration', () => {
       const migration1Id = 'test1';
       const migration2Id = 'test2';
@@ -84,7 +82,7 @@ describe('MigrationManagerBase', () => {
         }
       ];
 
-      manager.applyMigrations<any>({}, migrated => of(true)).pipe(
+      manager.applyMigrations<any>({}, () => of(true)).pipe(
         take(1)
       ).subscribe(x => {
         expect(x.appliedMigrations).toEqual([migration1Id, migration2Id]);
@@ -132,7 +130,7 @@ describe('MigrationManagerBase', () => {
 
       manager.appliedMigrations = [{ id: migration1Id }];
 
-      manager.applyMigrations<any>({}, migrated => of(true)).pipe(
+      manager.applyMigrations<any>({}, () => of(true)).pipe(
         take(1)
       ).subscribe(x => {
         expect(x.appliedMigrations).toEqual([migration2Id]);
@@ -178,7 +176,7 @@ describe('MigrationManagerBase', () => {
         }
       ];
 
-      manager.applyMigrations<any>({}, migrated => of(true)).pipe(
+      manager.applyMigrations<any>({}, () => of(true)).pipe(
         take(1)
       ).subscribe(x => {
         expect(x.appliedMigrations).toEqual([migration1Id]);

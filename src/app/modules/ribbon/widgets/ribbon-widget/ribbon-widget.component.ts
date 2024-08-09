@@ -18,6 +18,7 @@ import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item
 export class RibbonWidgetComponent implements OnInit {
   @Input({required: true})
   widgetInstance!: WidgetInstance;
+
   @Input({required: true})
   isBlockWidget!: boolean;
 

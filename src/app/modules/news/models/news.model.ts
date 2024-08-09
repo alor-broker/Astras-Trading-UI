@@ -4,7 +4,7 @@ export interface NewsListItem {
   header: string;
   publishDate: string;
   newsType: number;
-  content:  string;
+  content: string;
   countryCodes: string[];
   rubricCodes: string[];
   symbols: string[];

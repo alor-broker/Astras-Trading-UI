@@ -10,7 +10,6 @@ import { LetDirective } from "@ngrx/component";
 import { NewsSettingsComponent } from "./components/news-settings/news-settings.component";
 import { NzSliderModule } from "ng-zorro-antd/slider";
 
-
 @NgModule({
   declarations: [
     NewsComponent,

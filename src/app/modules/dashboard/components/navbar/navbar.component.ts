@@ -105,8 +105,8 @@ export class NavbarComponent implements OnInit {
           return [...all.values()]
             .reduce((c, p) => [...p, ...c], [])
             .find(p => p.portfolio === selectedKey.portfolio
-              && p.exchange === selectedKey.exchange
-              && p.marketType === selectedKey.marketType
+            && p.exchange === selectedKey.exchange
+            && p.marketType === selectedKey.marketType
             ) ?? null;
         })
       );
@@ -195,7 +195,7 @@ export class NavbarComponent implements OnInit {
     return item.market + item.portfolio;
   }
 
-  private initWidgetsGallery(): void{
+  private initWidgetsGallery(): void {
     const orderedCategories = [
       WidgetCategory.All,
       WidgetCategory.ChartsAndOrderbooks,
@@ -210,7 +210,7 @@ export class NavbarComponent implements OnInit {
       ]
     ).pipe(
       map(([meta, lang]) => {
-          const groups = new Map<WidgetCategory, WidgetDisplay[]>;
+          const groups = new Map<WidgetCategory, WidgetDisplay[]>();
 
           const widgets = meta
             .filter(x => !!x.desktopMeta && x.desktopMeta.enabled)

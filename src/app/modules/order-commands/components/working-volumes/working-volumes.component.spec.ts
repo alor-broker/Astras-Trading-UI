@@ -1,11 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { WorkingVolumesComponent } from './working-volumes.component';
-import { getTranslocoModule, ngZorroMockComponents } from '../../../../shared/utils/testing';
-import {QuotesService} from "../../../../shared/services/quotes.service";
-import {Subject} from "rxjs";
-import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
-import {SubscriptionsDataFeedService} from "../../../../shared/services/subscriptions-data-feed.service";
+import {
+  getTranslocoModule,
+  ngZorroMockComponents
+} from '../../../../shared/utils/testing';
+import { Subject } from "rxjs";
+import { SubscriptionsDataFeedService } from "../../../../shared/services/subscriptions-data-feed.service";
 
 describe('WorkingVolumesComponent', () => {
   let component: WorkingVolumesComponent;

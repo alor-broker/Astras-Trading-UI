@@ -23,6 +23,7 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
   activeLimitOrders$!: Observable<Order[]>;
   @Input({required: true})
   steps: number[] = [];
+
   private readonly instrument$ = new BehaviorSubject<Instrument | null>(null);
   private readonly portfolioKey$ = new BehaviorSubject<PortfolioKey | null>(null);
 

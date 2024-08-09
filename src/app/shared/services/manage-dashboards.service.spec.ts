@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
 import { ManageDashboardsService } from './manage-dashboards.service';
-import { LocalStorageService } from "./local-storage.service";
 import { Subject } from "rxjs";
 import { DashboardContextService } from './dashboard-context.service';
 import {
@@ -15,7 +14,6 @@ describe('ManageDashboardsService', () => {
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
-
     TestBed.configureTestingModule({
       imports: [...sharedModuleImportForTests],
       providers:
@@ -38,7 +36,6 @@ describe('ManageDashboardsService', () => {
     });
 
     service = TestBed.inject(ManageDashboardsService);
-
   });
 
   it('should be created', () => {

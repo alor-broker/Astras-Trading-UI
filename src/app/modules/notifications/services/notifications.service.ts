@@ -27,9 +27,7 @@ export class NotificationsService {
     const allNotifications: Observable<NotificationMeta[]>[] = [];
 
     const allProviders = providers ?? [];
-    for (let i = 0; i < allProviders.length; i++) {
-      const provider = allProviders[i];
-
+    for (const provider of allProviders) {
       allNotifications.push(provider.getNotifications());
     }
 

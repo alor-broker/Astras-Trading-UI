@@ -12,7 +12,6 @@ import { WatchlistTableComponent } from './watchlist-table.component';
 import {
   commonTestProviders,
   getTranslocoModule,
-  mockDirective,
   sharedModuleImportForTests
 } from '../../../../shared/utils/testing';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';

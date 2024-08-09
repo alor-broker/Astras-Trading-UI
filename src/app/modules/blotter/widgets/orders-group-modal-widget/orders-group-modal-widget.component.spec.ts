@@ -15,7 +15,7 @@ describe('OrdersGroupModalWidgetComponent', () => {
         OrdersGroupModalWidgetComponent,
         ...ngZorroMockComponents
       ],
-      imports: [ getTranslocoModule() ],
+      imports: [getTranslocoModule()],
       providers: [
         {
           provide: BlotterService,

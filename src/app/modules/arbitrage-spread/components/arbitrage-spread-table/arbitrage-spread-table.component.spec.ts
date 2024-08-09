@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ArbitrageSpreadTableComponent } from './arbitrage-spread-table.component';
 import { ArbitrageSpreadService } from "../../services/arbitrage-spread.service";
 import { of } from "rxjs";
-import { ModalService } from "../../../../shared/services/modal.service";
 import { commonTestProviders, getTranslocoModule, sharedModuleImportForTests } from "../../../../shared/utils/testing";
 
 describe('ArbitrageSpreadTableComponent', () => {
@@ -12,7 +11,7 @@ describe('ArbitrageSpreadTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ArbitrageSpreadTableComponent ],
+      declarations: [ArbitrageSpreadTableComponent],
       imports: [...sharedModuleImportForTests, getTranslocoModule()],
       providers: [
         {

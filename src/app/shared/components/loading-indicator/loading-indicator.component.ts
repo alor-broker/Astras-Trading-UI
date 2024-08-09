@@ -8,6 +8,7 @@ import { Component, Input } from '@angular/core';
 export class LoadingIndicatorComponent {
   @Input()
   isLoading: boolean | null = false;
+
   @Input()
   className?: string | null;
 }

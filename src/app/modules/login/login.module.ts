@@ -5,7 +5,6 @@ import { LoginRoutingModule } from './login-routing.module';
 import { SsoCallbackComponent } from './components/sso-callback/sso-callback.component';
 import { ExternalLogoutComponent } from './components/external-logout/external-logout.component';
 
-
 @NgModule({
   declarations: [
     SsoCallbackComponent,

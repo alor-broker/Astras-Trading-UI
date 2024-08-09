@@ -9,7 +9,6 @@ import {
   styleUrls: ['./orders-indicator.component.less']
 })
 export class OrdersIndicatorComponent {
-
   @Input({required: true})
   direction: 'up' | 'down' = 'up';
 

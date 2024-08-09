@@ -1,13 +1,13 @@
 export interface Issue {
   facevalue: number;
   currentFaceValue: number; // после аморта номинал меняется
-  issueVol: number;  // объем выпуска, шт
-  issueVal: number;  // объем выпуска в валюте issueVol * facevalue
+  issueVol: number; // объем выпуска, шт
+  issueVal: number; // объем выпуска в валюте issueVol * facevalue
   issueDate: Date; // дата выпуска
-  maturityDate: Date;  // дата погашения
+  maturityDate: Date; // дата погашения
   marketVol: number; // объем в обращении может меняться при оффертах, шт
-  marketVal: number;  // объем выпуска в валюте, может меняться при офертах и амортах. marketVol * currentFaceValue
-  issuer: string; //"МСБ-Лизинг",
+  marketVal: number; // объем выпуска в валюте, может меняться при офертах и амортах. marketVol * currentFaceValue
+  issuer: string; // "МСБ-Лизинг",
   currentYield: number; // 0.0646,
   yieldToCall: number; // 0.07,
   yieldToPut: number; // 0.06,

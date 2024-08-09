@@ -1,7 +1,13 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { BondScreenerComponent } from './bond-screener.component';
-import { of, Subject } from "rxjs";
+import {
+  of,
+  Subject
+} from "rxjs";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { BondScreenerService } from "../../services/bond-screener.service";
 import {
@@ -11,7 +17,6 @@ import {
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 
 describe('BondScreenerComponent', () => {
@@ -26,7 +31,7 @@ describe('BondScreenerComponent', () => {
           selector: 'ats-add-to-watchlist-menu'
         })
       ],
-      imports: [ getTranslocoModule() ],
+      imports: [getTranslocoModule()],
       providers: [
         {
           provide: WidgetSettingsService,

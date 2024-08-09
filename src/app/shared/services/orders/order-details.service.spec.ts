@@ -1,31 +1,34 @@
 import {TestBed} from '@angular/core/testing';
 
 import {OrderDetailsService} from './order-details.service';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import {ErrorHandlerService} from "../handle-error/error-handler.service";
 import { EnvironmentService } from "../environment.service";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('OrderDetailsService', () => {
   let service: OrderDetailsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         {
-          provide: ErrorHandlerService,
-          useValue: {
-            handleError: jasmine.createSpy('handleError').and.callThrough()
-          }
+            provide: ErrorHandlerService,
+            useValue: {
+                handleError: jasmine.createSpy('handleError').and.callThrough()
+            }
         },
         {
-          provide: EnvironmentService,
-          useValue: {
-            apiUrl: ''
-          }
-        }
-      ]
-    });
+            provide: EnvironmentService,
+            useValue: {
+                apiUrl: ''
+            }
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
     service = TestBed.inject(OrderDetailsService);
   });
 

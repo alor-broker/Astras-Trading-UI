@@ -10,7 +10,6 @@ describe('OnboardingService', () => {
   let joyrideServiceSpy: any;
   let translatorServiceSpy: any;
 
-
   beforeAll(() => TestBed.resetTestingModule());
 
   beforeEach(() => {

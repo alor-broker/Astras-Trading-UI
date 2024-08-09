@@ -1,7 +1,6 @@
 import { ControlValueAccessor } from '@angular/forms';
 
 export abstract class ControlValueAccessorBaseComponent<T> implements ControlValueAccessor {
-
   registerOnChange(fn: (value: T | null) => void): void {
     this.onValueChanged = fn;
   }
@@ -29,5 +28,4 @@ export abstract class ControlValueAccessorBaseComponent<T> implements ControlVal
 
   private onTouched = (): void => {
   };
-
 }

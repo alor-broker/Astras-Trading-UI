@@ -18,7 +18,6 @@ import { OrdersGroupTreeNode } from "../../../../shared/models/orders/orders-gro
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { getConditionSign, getConditionTypeByString } from "../../../../shared/utils/order-conditions-helper";
 
-
 @Component({
   selector: 'ats-orders-group-modal',
   templateUrl: './orders-group-modal.component.html',

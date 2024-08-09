@@ -77,7 +77,7 @@ describe('SubmitBestPriceOrderCommand', () => {
         { p: testAsks[0].p - testInstrument.minstep * 4, v: 1, y: 0 }
       ];
 
-      let args: SubmitBestPriceOrderCommandArgs = {
+      const args: SubmitBestPriceOrderCommandArgs = {
         instrumentKey: testInstrument,
         quantity,
         side: Side.Buy,

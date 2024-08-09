@@ -197,8 +197,8 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
               .filter(x => x.subscriptionType === PushSubscriptionType.PriceSpark)
               .map(x => x as PriceSparkSubscription)
               .filter(x => x.instrument === instrumentKey?.symbol
-                && x.exchange === instrumentKey.exchange
-                && (!(instrumentKey.instrumentGroup ?? '') || instrumentKey.instrumentGroup === x.board))
+              && x.exchange === instrumentKey.exchange
+              && (!(instrumentKey.instrumentGroup ?? '') || instrumentKey.instrumentGroup === x.board))
               .sort((a, b) => this.sortSubscriptions(a, b));
           }
         ),

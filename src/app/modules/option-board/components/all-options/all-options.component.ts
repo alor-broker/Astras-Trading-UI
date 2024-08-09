@@ -58,6 +58,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChildren(CdkVirtualScrollViewport)
   bodyScrollContainerQuery!: QueryList<CdkVirtualScrollViewport>;
+
   @ViewChildren('header')
   headerContainerQuery!: QueryList<ElementRef<HTMLElement>>;
 
@@ -70,6 +71,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
     priceColumnWidth: 50,
     optionCellWidth: 50
   };
+
   readonly layoutSizes$ = new BehaviorSubject<LayoutSizes>(this.defaultLayoutSizes);
   private readonly optionDisplayParameterMap = new Map<OptionParameters, (option: Option) => string>([
     [OptionParameters.Price, (option: Option): string => option.calculations.price.toString()],
@@ -298,13 +300,13 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const dates = new Set<number>();
     const prices = new Set<number>();
-    const optionsMap = new Map<string, Option>;
+    const optionsMap = new Map<string, Option>();
     let maxPriceIndexLength = 0;
     let maxDisplayParameterLength = 0;
 
     const getMapKey = (price: number, date: number): string => `${price}:${date}`;
 
-    for (let option of options.options) {
+    for (const option of options.options) {
       prices.add(option.strikePrice);
 
       const date = option.expirationDate.getTime();
@@ -402,5 +404,4 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     });
   }
-
 }

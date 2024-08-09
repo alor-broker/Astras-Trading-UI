@@ -20,6 +20,7 @@ export class WorkingVolumesComponent implements OnInit {
 
   @Input()
   workingVolumes: number[] = [];
+
   @Output()
   itemSelected = new EventEmitter<{ volume: number, price?: number }>();
 

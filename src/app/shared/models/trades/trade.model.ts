@@ -14,7 +14,7 @@ export interface Trade {
   qty: number; // 1,
   price: number; // 270,
   side: Side; // buy,
-  existing: boolean; //true
+  existing: boolean; // true
   volume: number;
 }
 

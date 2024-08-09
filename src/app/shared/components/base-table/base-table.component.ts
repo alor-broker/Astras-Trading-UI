@@ -1,5 +1,11 @@
 import { Component, DestroyRef, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, take, withLatestFrom } from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  take,
+  withLatestFrom
+} from "rxjs";
 import { ContentSize } from "../../models/dashboard/dashboard-item.model";
 import { BaseColumnSettings } from "../../models/settings/table-settings.model";
 import { TableConfig } from "../../models/table-config.model";
@@ -15,13 +21,12 @@ export interface Sort {
   orderBy: string;
 }
 
-
 @Component({
   template: ''
 })
 export abstract class BaseTableComponent<
-    T extends { [propName: string]: any },
-    F extends { [propName: string]: any } = object,
+    T extends Record<string, any>,
+    F extends Record<string, any> = object,
     S = Sort
   >
 implements OnInit, OnDestroy {
@@ -58,7 +63,7 @@ implements OnInit, OnDestroy {
     this.sort$.complete();
   }
 
-  protected abstract  initTableDataStream(): Observable<T[]>;
+  protected abstract initTableDataStream(): Observable<T[]>;
 
   protected abstract initTableConfigStream(): Observable<TableConfig<T>>;
 
@@ -70,9 +75,10 @@ implements OnInit, OnDestroy {
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         map(([containerSize, headerSize]) => ({
-          width: containerSize?.width ?? headerSize?.width ?? 0,
-          height: (containerSize?.height ?? 0) - (headerSize?.height ?? 0)
-        }))
+            width: containerSize?.width ?? headerSize?.width ?? 5,
+            height: Math.max((containerSize?.height ?? 0) - (headerSize?.height ?? 0), 5)
+          })
+        )
       );
   }
 
@@ -136,7 +142,7 @@ implements OnInit, OnDestroy {
     });
   }
 
-  saveColumnWidth<T extends WidgetSettings>(event: {columnId: string, width: number}, settings$?: Observable<T>): void {
+  saveColumnWidth<T extends WidgetSettings>(event: { columnId: string, width: number }, settings$?: Observable<T>): void {
     settings$?.pipe(
       take(1)
     ).subscribe(settings => {

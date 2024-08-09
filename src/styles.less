@@ -34,6 +34,12 @@ html.mobile {
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
   }
+
+  .ant-popover {
+    .ant-popover-inner-content {
+      width: 100%;
+    }
+  }
 }
 
 .themeMixin(
@@ -162,5 +168,12 @@ html.mobile {
     .ant-table-cell {
       padding: 2px 4px;
     }
+  }
+}
+
+
+.cdk-drag-preview {
+  &.ant-table-cell {
+    overflow: hidden;
   }
 }

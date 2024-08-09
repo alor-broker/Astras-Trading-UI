@@ -11,7 +11,7 @@ export interface FileMeta {
 export class FileSaver {
   public static save(fileMeta: FileMeta, content: string): void {
     const blob = new Blob([content], { "type": "text/" + fileMeta.fileType + ";charset=utf8;" });
-    let link = document.createElement("a");
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
 
     link.setAttribute('visibility', 'hidden');

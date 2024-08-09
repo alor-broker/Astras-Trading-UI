@@ -10,7 +10,6 @@ import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 import { LetDirective } from "@ngrx/component";
 import { TimeframesPanelComponent } from './components/timeframes-panel/timeframes-panel.component';
 
-
 @NgModule({
   declarations: [
     LightChartComponent,

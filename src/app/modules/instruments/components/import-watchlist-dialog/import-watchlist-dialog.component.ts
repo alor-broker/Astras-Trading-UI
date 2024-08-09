@@ -97,7 +97,6 @@ export class ImportWatchlistDialogComponent implements OnInit, OnDestroy {
       take(1),
       filter(x => x != null)
     ).subscribe(defaultExchange => {
-
       const itemsToResolve = tickers.map(t => {
         const rawTicker = t.trim();
         if (!rawTicker.length) {

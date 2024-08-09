@@ -14,6 +14,7 @@ import {getDayChangePerPrice} from "../../../../shared/utils/price";
 export class RibbonComponent implements OnInit {
   @Input({required: true})
   guid!: string;
+
   indices$!: Observable<IndexDisplay[]>;
   private readonly displayIndices: { displayName: string, instrumentKey: InstrumentKey }[] = [
     {

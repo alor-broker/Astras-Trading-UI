@@ -8,7 +8,6 @@ import { CalendarViewComponent } from './components/calendar-view/calendar-view.
 import { ListViewComponent } from './components/list-view/list-view.component';
 import { LetDirective } from "@ngrx/component";
 
-
 @NgModule({
   declarations: [
     EventsCalendarWidgetComponent,

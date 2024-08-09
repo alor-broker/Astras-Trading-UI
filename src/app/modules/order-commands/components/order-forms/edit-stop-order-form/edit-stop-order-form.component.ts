@@ -109,7 +109,6 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     )
   });
 
-
   constructor(
     private readonly formBuilder: FormBuilder,
     private readonly orderDetailsService: OrderDetailsService,

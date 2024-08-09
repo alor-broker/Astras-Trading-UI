@@ -1,4 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { TreemapComponent } from './treemap.component';
 import { TreemapService } from "../../services/treemap.service";
@@ -10,7 +13,6 @@ import { ThemeService } from "../../../../shared/services/theme.service";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { MarketService } from "../../../../shared/services/market.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
@@ -21,7 +23,7 @@ describe('TreemapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TreemapComponent ],
+      declarations: [TreemapComponent],
       providers: [
         {
           provide: TreemapService,

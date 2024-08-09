@@ -28,6 +28,7 @@ export class WidgetSettingsService {
       map(x => <T | null>x)
     );
   }
+
   getAllSettings(): Observable<WidgetSettings[]> {
     return WidgetSettingsStreams.getAllSettings(this.store);
   }

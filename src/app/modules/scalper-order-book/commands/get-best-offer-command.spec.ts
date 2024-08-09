@@ -61,19 +61,19 @@ describe('GetBestOfferCommand', () => {
       submitLimitOrderCommandSpy.execute.and.callThrough();
       const quantity = getRandomInt(1, 100);
 
-      let testAsks: OrderbookDataRow[] = [
+      const testAsks: OrderbookDataRow[] = [
         { p: 6, v: 1, y: 0 },
         { p: 7, v: 1, y: 0 },
         { p: 8, v: 1, y: 0 },
       ];
 
-      let testBids: OrderbookDataRow[] = [
+      const testBids: OrderbookDataRow[] = [
         { p: testAsks[0].p - 1, v: 1, y: 0 },
         { p: testAsks[0].p - 2, v: 1, y: 0 },
         { p: testAsks[0].p - 3, v: 1, y: 0 }
       ];
 
-      let args: GetBestOfferCommandArgs = {
+      const args: GetBestOfferCommandArgs = {
         instrumentKey: testInstrumentKey,
         side: Side.Sell,
         quantity,
@@ -125,19 +125,19 @@ describe('GetBestOfferCommand', () => {
       submitLimitOrderCommandSpy.execute.and.callThrough();
       const quantity = getRandomInt(1, 100);
 
-      let testAsks: OrderbookDataRow[] = [
+      const testAsks: OrderbookDataRow[] = [
         { p: 6, v: 1, y: 0 },
         { p: 7, v: 1, y: 0 },
         { p: 8, v: 1, y: 0 },
       ];
 
-      let testBids: OrderbookDataRow[] = [
+      const testBids: OrderbookDataRow[] = [
         { p: testAsks[0].p - 1, v: 1, y: 0 },
         { p: testAsks[0].p - 2, v: 1, y: 0 },
         { p: testAsks[0].p - 3, v: 1, y: 0 }
       ];
 
-      let args: GetBestOfferCommandArgs = {
+      const args: GetBestOfferCommandArgs = {
         instrumentKey: testInstrumentKey,
         side: Side.Buy,
         quantity,

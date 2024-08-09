@@ -49,6 +49,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
 
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
+
   allColumns: BaseColumnSettings<PositionDisplay>[] = [
     {
       id: 'symbol',

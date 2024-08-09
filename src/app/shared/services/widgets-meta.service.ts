@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable, shareReplay} from "rxjs";
 import {WidgetMeta} from "../models/widget-meta.model";
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'

@@ -37,10 +37,13 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 export class OrderbookChartComponent implements OnInit, OnChanges {
   @Input({required: true})
   chartData!: ChartData;
+
   @Input({required: true})
   guid!: string;
+
   @ViewChild(BaseChartDirective)
   chart?: BaseChartDirective;
+
   shouldShowChart$?: Observable<boolean>;
   chartData$ = new BehaviorSubject<ChartDataset[]>([]);
   public chartOptions: ChartOptions = {
@@ -88,6 +91,7 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
       },
     },
   };
+
   private readonly initialData: ChartDataset[] = [
     {
       fill: {

@@ -45,7 +45,7 @@ import { FeedbackNotificationsProvider } from '../modules/feedback/services/feed
 import { InstrumentSearchComponent } from './components/instrument-search/instrument-search.component';
 import { NzDividerModule } from "ng-zorro-antd/divider";
 import { ResizeColumnDirective } from './directives/resize-column.directive';
-import { TranslocoModule } from "@ngneat/transloco";
+import { TranslocoModule } from "@jsverse/transloco";
 import { InstrumentBoardSelectComponent } from './components/instrument-board-select/instrument-board-select.component';
 import { EditableStringComponent } from './components/editable-string/editable-string.component';
 import { WidgetHeaderComponent } from './components/widget-header/widget-header.component';

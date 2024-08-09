@@ -1,4 +1,4 @@
 ﻿export enum NumberDisplayFormat {
-  Default= 'default',
+  Default = 'default',
   LetterSuffix = 'letterSuffix'
 }

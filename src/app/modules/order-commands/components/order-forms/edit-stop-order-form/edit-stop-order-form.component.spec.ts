@@ -58,7 +58,7 @@ describe('EditStopOrderFormComponent', () => {
   let timezoneConverterServiceSpy: any;
   let testTearDown: Subscription;
 
-  const getFormInputs = (): { [fieldName: string]: HTMLInputElement | HTMLSelectElement } => {
+  const getFormInputs = (): Record<string, HTMLInputElement | HTMLSelectElement> => {
     return {
       quantity: fixture.nativeElement.querySelector('[formcontrolname="quantity"]').querySelector('input') as HTMLInputElement,
       triggerPrice: fixture.nativeElement.querySelector('[formcontrolname="triggerPrice"]').querySelector('input') as HTMLInputElement,
@@ -221,8 +221,8 @@ describe('EditStopOrderFormComponent', () => {
 
     const inputs = getFormInputs();
 
-    for (let testCase of cases) {
-      const control: HTMLInputElement = (<any>inputs)[testCase.control];
+    for (const testCase of cases) {
+      const control: HTMLInputElement = (inputs as any)[testCase.control];
       control.value = testCase.setValue();
       control.dispatchEvent(new Event('input'));
 
@@ -303,7 +303,6 @@ describe('EditStopOrderFormComponent', () => {
       });
     }
   );
-
 
   it('should pass correct order to service (market)', fakeAsync(() => {
       const instrument = getDefaultInstrument();

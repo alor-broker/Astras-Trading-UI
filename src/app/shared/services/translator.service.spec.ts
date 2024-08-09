@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
 import { TranslatorService } from './translator.service';
-import { TranslocoTestingModule } from "@ngneat/transloco";
 import { getTranslocoModule } from "../utils/testing";
 
 describe('TranslatorService', () => {

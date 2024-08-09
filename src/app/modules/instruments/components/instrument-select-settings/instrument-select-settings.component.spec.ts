@@ -14,8 +14,6 @@ import {
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { NzSelectModule } from "ng-zorro-antd/select";
-import { ReactiveFormsModule } from "@angular/forms";
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { InstrumentsModule } from "../../instruments.module";

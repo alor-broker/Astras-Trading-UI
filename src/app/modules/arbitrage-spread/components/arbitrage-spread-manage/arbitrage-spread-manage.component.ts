@@ -101,7 +101,6 @@ export class ArbitrageSpreadManageComponent implements OnInit {
         });
       });
 
-
     this.isThirdLegControl.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value: boolean) => {

@@ -15,7 +15,6 @@ import { TerminalSettingsService } from "../../../../shared/services/terminal-se
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
-
 @Component({
   selector: 'ats-exchange-rate-widget',
   templateUrl: './exchange-rate-widget.component.html',
@@ -24,6 +23,7 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 export class ExchangeRateWidgetComponent implements OnInit {
   @Input({required: true})
   widgetInstance!: WidgetInstance;
+
   @Input({required: true})
   isBlockWidget!: boolean;
 

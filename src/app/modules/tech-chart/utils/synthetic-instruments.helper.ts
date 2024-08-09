@@ -39,7 +39,7 @@ export class SyntheticInstrumentsHelper {
           }
           return { isSpreadOperator: true, value: s } as OperatorPart;
         })
-      ?? [];
+        ?? [];
 
     if (parts.length < 2) {
       if ((parts[0] as InstrumentDataPart | undefined)?.value.symbol != null) {
@@ -165,7 +165,7 @@ export class SyntheticInstrumentsHelper {
 
     try {
       eval(expressionStr);
-    } catch (err) {
+    } catch {
       return false;
     }
 

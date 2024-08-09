@@ -13,7 +13,6 @@ interface RouterQueryParams extends Params {
 
 @Injectable()
 export class InitQueryParamsHook implements AppHook {
-
   destroy$ = new Subject<boolean>();
 
   constructor(

@@ -9,7 +9,6 @@
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
-    "downlevelIteration": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
@@ -22,8 +21,7 @@
     ],
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "useDefineForClassFields": false,
-    "allowSyntheticDefaultImports": true
+    "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

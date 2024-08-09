@@ -21,7 +21,6 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   selector: '[atsHoverItem]'
 })
 export class HoverItemDirective<T = any> implements OnInit {
-
   @Input()
   atsHoverItemData?: T;
 

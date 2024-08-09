@@ -55,6 +55,3 @@ export interface MarketSettings {
   exchanges: MarketExchange[];
   currencies: CurrencySettings;
 }
-
-
-

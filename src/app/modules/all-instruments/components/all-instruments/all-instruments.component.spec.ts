@@ -2,13 +2,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AllInstrumentsComponent } from './all-instruments.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {BehaviorSubject, of, Subject} from "rxjs";
+import {of, Subject} from "rxjs";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
 import {
   commonTestProviders,
   mockComponent
 } from "../../../../shared/utils/testing";
-import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { TranslatorService } from '../../../../shared/services/translator.service';
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";

@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { HttpErrorHandler } from "./http-error-handler";
-import { LoggerService } from '../logging/logger.service';
 
 describe('HttpErrorHandler', () => {
   let service: HttpErrorHandler;

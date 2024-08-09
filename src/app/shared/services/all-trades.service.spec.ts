@@ -1,42 +1,43 @@
 import { TestBed } from '@angular/core/testing';
 
 import { AllTradesService } from './all-trades.service';
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { ErrorHandlerService } from './handle-error/error-handler.service';
 import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service';
 import {Subject} from "rxjs";
 import { EnvironmentService } from "./environment.service";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AllTradesService', () => {
   let service: AllTradesService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule
-      ],
-      providers: [
+    imports: [],
+    providers: [
         AllTradesService,
         {
-          provide: ErrorHandlerService,
-          useValue: {
-            handleError: jasmine.createSpy('handleError').and.callThrough()
-          }
+            provide: ErrorHandlerService,
+            useValue: {
+                handleError: jasmine.createSpy('handleError').and.callThrough()
+            }
         },
         {
-          provide: SubscriptionsDataFeedService,
-          useValue: {
-            subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
-          }
+            provide: SubscriptionsDataFeedService,
+            useValue: {
+                subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
+            }
         },
         {
-          provide: EnvironmentService,
-          useValue: {
-            apiUrl: ''
-          }
-        }
-      ]
-    });
+            provide: EnvironmentService,
+            useValue: {
+                apiUrl: ''
+            }
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
     service = TestBed.inject(AllTradesService);
   });
 

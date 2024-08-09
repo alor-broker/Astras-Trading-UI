@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { WidgetSettingsService } from './widget-settings.service';
 import {
-  commonTestProviders,
   getTranslocoModule,
   sharedModuleImportForTests
 } from "../utils/testing";
@@ -35,4 +34,3 @@ describe('WidgetSettingsService', () => {
     expect(service).toBeTruthy();
   });
 });
-

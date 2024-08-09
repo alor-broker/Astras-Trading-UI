@@ -3,8 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { PortfolioSubscriptionsService } from './portfolio-subscriptions.service';
 import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service';
 import { Subject } from 'rxjs';
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('PortfolioSubscriptionsService', () => {
   let service: PortfolioSubscriptionsService;
@@ -18,20 +19,22 @@ describe('PortfolioSubscriptionsService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ HttpClientTestingModule ],
-      providers: [
+    imports: [],
+    providers: [
         {
-          provide: SubscriptionsDataFeedService,
-          useValue: subscriptionsDataFeedServiceSpy
+            provide: SubscriptionsDataFeedService,
+            useValue: subscriptionsDataFeedServiceSpy
         },
         {
-          provide: ErrorHandlerService,
-          useValue: {
-            handleError: jasmine.createSpy('handleError').and.callThrough()
-          }
-        }
-      ]
-    });
+            provide: ErrorHandlerService,
+            useValue: {
+                handleError: jasmine.createSpy('handleError').and.callThrough()
+            }
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
     service = TestBed.inject(PortfolioSubscriptionsService);
   });
 

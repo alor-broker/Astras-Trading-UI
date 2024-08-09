@@ -39,7 +39,7 @@ import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { AddToWatchlistMenuComponent } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
 import { TableDataRow } from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
 
-interface BondDisplay extends Omit<Bond, 'coupons' | 'offers' | 'amortizations'>  {
+interface BondDisplay extends Omit<Bond, 'coupons' | 'offers' | 'amortizations'> {
   id: string;
   closestCoupon?: Coupon;
   closestOffer?: Offer;
@@ -57,11 +57,10 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
   PageInfo,
   BondSortInput
 > implements OnInit, OnDestroy {
-
   @Input({required: true}) guid!: string;
 
   bondsList$ = new BehaviorSubject<BondDisplay[]>([]);
-  settings$!:Observable<BondScreenerSettings>;
+  settings$!: Observable<BondScreenerSettings>;
   allColumns: BaseColumnSettings<BondDisplay>[] = [
     {
       id: 'tradingStatusInfo',
@@ -489,7 +488,6 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         return acc;
       }, {} as DefaultTableFilters);
 
-
     this.pagination = null;
     this.filters$.next(cleanedFilters);
   }
@@ -561,7 +559,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
                 filterWarning: col.column.filterData.filterWarning == null ? null : translate(['couponsFilterWarning']),
                 filters: col.column.filterData.filters?.map(f => ({
                   text: translate(
-                    [ 'filters', col.column.id, f.value ],
+                    ['filters', col.column.id, f.value],
                     { fallback: f.text }
                   ),
                   value: f.value as string
@@ -586,7 +584,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     ])
       .pipe(
         filter(() => this.pagination == null || this.pagination.hasNextPage),
-        switchMap(([ tableConfig, settings, filters, sort ]) => {
+        switchMap(([tableConfig, settings, filters, sort]) => {
           this.isLoading$.next(true);
 
           const columnIds = tableConfig.columns.map(c => c.id);

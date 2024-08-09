@@ -6,9 +6,9 @@ import {
   WatchlistCollection,
   WatchlistType
 } from '../models/watchlist.model';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
-import { TranslocoTestingModule } from "@ngneat/transloco";
+import { TranslocoTestingModule } from "@jsverse/transloco";
 import { GuidGenerator } from "../../../shared/utils/guid";
 import { WatchlistCollectionBrokerService } from "./watchlist-collection-broker.service";
 import {
@@ -18,6 +18,7 @@ import {
 } from "rxjs";
 import { EnvironmentService } from "../../../shared/services/environment.service";
 import { InstrumentsService } from "./instruments.service";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('WatchListCollectionService', () => {
   const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);
@@ -37,8 +38,7 @@ describe('WatchListCollectionService', () => {
         title: 'Test List',
         isDefault: true,
         items: TestData.instruments.map(x => ({ ...x, recordId: GuidGenerator.newGuid() }))
-      }
-      ,
+      },
       {
         id: '456',
         title: 'Test List',
@@ -57,28 +57,27 @@ describe('WatchListCollectionService', () => {
     watchlistCollectionBrokerServiceSpy = jasmine.createSpyObj('WatchlistCollectionBrokerService', ['addOrUpdateLists', 'removeList', 'getCollection']);
 
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        TranslocoTestingModule
-      ],
-      providers: [
+    imports: [TranslocoTestingModule],
+    providers: [
         WatchlistCollectionService,
         { provide: WatchlistCollectionBrokerService, useValue: watchlistCollectionBrokerServiceSpy },
         { provide: ErrorHandlerService, useValue: errorHandlerSpy },
         {
-          provide: EnvironmentService,
-          useValue: {
-            apiUrl: ''
-          }
+            provide: EnvironmentService,
+            useValue: {
+                apiUrl: ''
+            }
         },
         {
-          provide: InstrumentsService,
-          useValue: {
-            getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of(null))
-          }
-        }
-      ]
-    });
+            provide: InstrumentsService,
+            useValue: {
+                getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of(null))
+            }
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
 
     service = TestBed.inject(WatchlistCollectionService);
   });

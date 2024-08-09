@@ -1,9 +1,5 @@
-﻿import {
-  inject,
-  Injectable
-} from "@angular/core";
+﻿import { Injectable } from "@angular/core";
 import { DesktopMigrationManagerBase } from "../desktop-migration-manager-base";
-import { UpdateBadgesDesktopDashboardMigration } from "./migrations/update-badges-desktop-dashboard.migration";
 import { MigrationsMetaService } from "../services/migrations-meta.service";
 
 @Injectable({
@@ -11,7 +7,8 @@ import { MigrationsMetaService } from "../services/migrations-meta.service";
 })
 export class DashboardSettingsDesktopMigrationManager extends DesktopMigrationManagerBase {
   protected migrations = [
-    inject(UpdateBadgesDesktopDashboardMigration)
+    // UpdateBadgesDesktopDashboardMigration is obsolete. Keep here just as example
+    // inject(UpdateBadgesDesktopDashboardMigration)
   ];
 
   constructor(protected readonly migrationsMetaService: MigrationsMetaService) {

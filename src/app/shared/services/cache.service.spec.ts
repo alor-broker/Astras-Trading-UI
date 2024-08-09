@@ -1,7 +1,6 @@
 import {
   discardPeriodicTasks,
   fakeAsync,
-  flush,
   TestBed
 } from '@angular/core/testing';
 
@@ -115,7 +114,6 @@ describe('CacheService', () => {
   );
 
   it('should call #loadData if previous data null', fakeAsync(() => {
-      const startDate = Date.now();
       const loadDataSpy = jasmine.createSpy('loadData').and.returnValue(of(null));
       const key = 'key1';
       const expirationTimeout = 15;

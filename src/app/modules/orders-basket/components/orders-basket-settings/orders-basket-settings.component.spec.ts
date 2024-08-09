@@ -1,10 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { OrdersBasketSettingsComponent } from './orders-basket-settings.component';
 import {
   commonTestProviders,
   getTranslocoModule,
-  mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";

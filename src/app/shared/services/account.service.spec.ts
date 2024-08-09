@@ -1,4 +1,4 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { AuthService } from './auth.service';
@@ -7,6 +7,7 @@ import { of } from "rxjs";
 import { MarketType } from "../models/portfolio-key.model";
 import { EnvironmentService } from "./environment.service";
 import { PortfolioMeta } from "../models/user/portfolio-meta.model";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AccountService', () => {
   let service: AccountService;
@@ -34,21 +35,21 @@ describe('AccountService', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule
-      ],
-      providers: [
+    imports: [],
+    providers: [
         AccountService,
         { provide: AuthService, useValue: spyAuth },
         { provide: PositionsService, useValue: spyPositions },
         {
-          provide: EnvironmentService,
-          useValue: {
-            clientDataUrl
-          }
-        }
-      ]
-    });
+            provide: EnvironmentService,
+            useValue: {
+                clientDataUrl
+            }
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
 
     service = TestBed.inject(AccountService);
     httpTestingController = TestBed.inject(HttpTestingController);

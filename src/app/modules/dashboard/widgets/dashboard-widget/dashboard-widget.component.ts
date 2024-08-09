@@ -47,7 +47,6 @@ export class DashboardWidgetComponent implements OnInit, ActionsContext {
 
         this.initDashboard();
       });
-
   }
 
   instrumentSelected(instrumentKey: InstrumentKey, groupKey: string): void {

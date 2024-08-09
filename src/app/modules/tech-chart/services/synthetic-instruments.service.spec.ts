@@ -12,8 +12,8 @@ import { Market } from "../../../../generated/graphql.types";
 describe('SyntheticInstrumentsService', () => {
   let service: SyntheticInstrumentsService;
 
-  let instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
-  let historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getHistory']);
+  const instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
+  const historyServiceSpy = jasmine.createSpyObj('HistoryService', ['getHistory']);
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -96,7 +96,7 @@ describe('SyntheticInstrumentsService', () => {
         market: Market.Fond
       };
 
-      instrumentsServiceSpy.getInstrument.and.callFake((i: InstrumentKey) =>  of(i.symbol === instrumentKey1.symbol ? instrument1 : instrument2));
+      instrumentsServiceSpy.getInstrument.and.callFake((i: InstrumentKey) => of(i.symbol === instrumentKey1.symbol ? instrument1 : instrument2));
 
       service.getInstrument([
         {

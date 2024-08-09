@@ -35,6 +35,7 @@ import {
 class TestWrapperComponent implements OnInit {
   constructor(private readonly cdr: ChangeDetectorRef) {
   }
+
   tableContainerHeight = 50;
   tableContainerWidth = 50;
   isLoading = true;
@@ -60,10 +61,13 @@ class TestWrapperComponent implements OnInit {
     {id1: 'testName1', id2: 'testName2', id: 3},
     {id1: 'testName1', id2: 'testName2', id: 4},
   ];
+
   trackByFn = (e: any): string => e.name as string;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   applyFilter(e: any): void { return; }
   scrolled(): void { return; }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   rowClick(e: any): void { return; }
 
   ngOnInit(): void {
@@ -90,7 +94,7 @@ describe('InfiniteScrollTableComponent', () => {
         ...sharedModuleImportForTests,
         getTranslocoModule()
       ],
-      providers: [ ...commonTestProviders ]
+      providers: [...commonTestProviders]
     })
     .compileComponents();
   });

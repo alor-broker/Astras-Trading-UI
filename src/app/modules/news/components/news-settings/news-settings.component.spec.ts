@@ -1,11 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { NewsSettingsComponent } from './news-settings.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  of,
-  Subject
-} from "rxjs";
+import { Subject } from "rxjs";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import {
   commonTestProviders,

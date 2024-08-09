@@ -16,7 +16,7 @@ import { instrumentsBadges } from "../../../../shared/utils/instruments";
 
 describe('UpdateBadgesDesktopDashboardMigration', () => {
   let migration: UpdateBadgesDesktopDashboardMigration;
-  let markerServiceSpy = jasmine.createSpyObj('MarketService', ['getAllExchanges']);
+  const markerServiceSpy = jasmine.createSpyObj('MarketService', ['getAllExchanges']);
 
   const defaultExchange = "MOEX";
   const defaultInstrument: {
@@ -59,7 +59,7 @@ describe('UpdateBadgesDesktopDashboardMigration', () => {
 
     patches$.pipe(
       take(1)
-    ).subscribe(x=> {
+    ).subscribe(x => {
       expect(x.length).toBe(0);
     });
   });
@@ -85,14 +85,14 @@ describe('UpdateBadgesDesktopDashboardMigration', () => {
 
     patches$.pipe(
       take(1)
-    ).subscribe(x=> {
+    ).subscribe(x => {
       expect(x.length).toBe(1);
 
-      const value = (<ReplacePatch>x[0]).value as InstrumentGroups;
+      const value = (x[0] as ReplacePatch).value as InstrumentGroups;
 
       expect(Object.keys(value).length).toBe(instrumentsBadges.length);
 
-      for (let oldKey of Object.keys(oldSelection)) {
+      for (const oldKey of Object.keys(oldSelection)) {
         const oldInstrumentKey = oldSelection[oldKey];
         const expectedNewBadge = UpdateBadgesDesktopDashboardMigration.OldToNewBadgesMap.find(x => x.oldColor === oldKey)!.newColor;
 
@@ -135,14 +135,14 @@ describe('UpdateBadgesDesktopDashboardMigration', () => {
 
     patches$.pipe(
       take(1)
-    ).subscribe(x=> {
+    ).subscribe(x => {
       expect(x.length).toBe(1);
 
-      const value = (<ReplacePatch>x[0]).value as InstrumentGroups;
+      const value = (x[0] as ReplacePatch).value as InstrumentGroups;
 
       expect(Object.keys(value).length).toBe(instrumentsBadges.length);
 
-      for (let newKey of Object.keys(value)) {
+      for (const newKey of Object.keys(value)) {
         expect(instrumentsBadges.includes(newKey)).toBeTrue();
 
         const newInstrumentKey = value[newKey];
@@ -171,7 +171,7 @@ describe('UpdateBadgesDesktopDashboardMigration', () => {
 
     patches$.pipe(
       take(1)
-    ).subscribe(x=> {
+    ).subscribe(x => {
       expect(x.length).toBe(0);
     });
   });

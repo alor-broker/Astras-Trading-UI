@@ -99,6 +99,7 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
   readonly loadingStatuses = LoadingStatus;
   @Input({ required: true })
   guid!: string;
+
   readonly chartParameters$ = new BehaviorSubject<ChartParameters>({
     durationType: DurationType.MaturityDateBased,
     yieldType: YieldType.CurrentYield
@@ -248,7 +249,6 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
 
     const dataArtifacts = this.prepareDataArtifacts(data);
 
-
     const yAxisPosition: ItemPosition = {
       xLeft: margins.left,
       xRight: chartAreaPosition.xLeft,
@@ -317,7 +317,6 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
     translator: TranslatorFn): {
     applyZoom: () => void;
   } {
-
     const g = root.append("g")
       .attr("class", "y-axis");
 
@@ -368,7 +367,6 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
     translator: TranslatorFn): {
     applyZoom: () => void;
   } {
-
     const g = root.append("g")
       .attr("class", "x-axis")
       .attr("transform", `translate(0,${axisPosition.yTop})`);

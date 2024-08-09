@@ -5,7 +5,6 @@ import { ExchangeRateWidgetComponent } from './widgets/exchange-rate-widget/exch
 import { SharedModule } from "../../shared/shared.module";
 import {NzResizeObserverModule} from "ng-zorro-antd/cdk/resize-observer";
 
-
 @NgModule({
   declarations: [
     ExchangeRateComponent,

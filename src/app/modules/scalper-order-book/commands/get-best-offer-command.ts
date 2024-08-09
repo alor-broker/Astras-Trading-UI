@@ -24,7 +24,6 @@ export interface GetBestOfferCommandArgs {
   providedIn: 'root'
 })
 export class GetBestOfferCommand extends CommandBase<GetBestOfferCommandArgs> {
-
   constructor(private readonly submitLimitOrderCommand: SubmitLimitOrderCommand) {
     super();
   }

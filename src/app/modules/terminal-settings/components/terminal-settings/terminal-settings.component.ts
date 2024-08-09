@@ -64,6 +64,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     lastName: '',
     secondName: ''
   });
+
   tabSetHeight$ = new BehaviorSubject(300);
 
   constructor(
@@ -144,7 +145,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   }
 
   private formToModel(): TerminalSettings | null {
-    const formValue = this.settingsForm.value as Partial<TerminalSettings & { generalSettings: GeneralSettings}> | undefined;
+    const formValue = this.settingsForm.value as Partial<TerminalSettings & { generalSettings: GeneralSettings }> | undefined;
     if (!formValue) {
       return null;
     }
@@ -152,7 +153,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     const model = {
       ...formValue,
       ...formValue.generalSettings
-    } as Partial<TerminalSettings & { generalSettings: GeneralSettings}>;
+    } as Partial<TerminalSettings & { generalSettings: GeneralSettings }>;
 
     delete model.generalSettings;
 

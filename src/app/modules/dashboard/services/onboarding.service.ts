@@ -13,7 +13,6 @@ interface Profile {
   providedIn: 'root'
 })
 export class OnboardingService {
-
   constructor(
     private readonly joyride: JoyrideService,
     private readonly localStorage: LocalStorageService,

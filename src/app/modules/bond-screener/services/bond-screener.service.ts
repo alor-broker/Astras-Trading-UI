@@ -33,12 +33,10 @@ import { TypeOf } from "zod";
 import { GraphQlHelper } from "../../../shared/utils/graph-ql-helper";
 import { BondFilterInputSchema } from "../../../../generated/graphql.schemas";
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class BondScreenerService {
-
   constructor(
     private readonly graphQlService: GraphQlService
   ) {
@@ -165,7 +163,6 @@ export class BondScreenerService {
       someFilters.push({ amount: { lte: Number(filters.couponAmountTo) } });
     }
 
-
     if (someFilters.length === 0 && noneFilters.length === 0) {
       return null;
     }
@@ -222,7 +219,7 @@ export class BondScreenerService {
   private getFiltersOfArrayByDate<T>(
     from: string | null,
     to: string | null,
-  ): { some: T[], none: T[]} {
+  ): { some: T[], none: T[] } {
     if (from == null && to == null) {
       return { some: [], none: [] };
     }

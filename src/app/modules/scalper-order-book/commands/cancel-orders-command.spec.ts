@@ -35,7 +35,7 @@ describe('CancelOrdersCommand', () => {
     expect(command).toBeTruthy();
   });
 
-  it('#execute should call service with appropriate data', (done => {
+  it('#execute should call service with appropriate data', done => {
         const commandArgs: CancelOrdersCommandArgs = {
           ordersToCancel: [
             {
@@ -71,6 +71,6 @@ describe('CancelOrdersCommand', () => {
 
         command.execute(commandArgs);
       }
-    )
+
   );
 });

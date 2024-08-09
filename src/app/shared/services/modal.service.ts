@@ -26,7 +26,7 @@ export class ModalService {
   private readonly shouldShowApplicationUpdatedModal = new BehaviorSubject<boolean>(false);
   private readonly applicationUpdatedParams = new BehaviorSubject<ReleaseMeta | null>(null);
   applicationUpdatedParams$ = this.applicationUpdatedParams.asObservable();
-  shouldShowApplicationUpdatedModal$  = this.shouldShowApplicationUpdatedModal.asObservable();
+  shouldShowApplicationUpdatedModal$ = this.shouldShowApplicationUpdatedModal.asObservable();
 
   private readonly shouldShowEmptyPortfoliosWarningModal = new BehaviorSubject<boolean>(false);
   shouldShowEmptyPortfoliosWarningModal$ = this.shouldShowEmptyPortfoliosWarningModal.asObservable();

@@ -140,7 +140,6 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     );
   }
 
-
   addItemDraft(target: FormArray): void {
     target.push(this.createItemDraftControl({}));
   }
@@ -274,7 +273,6 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   }
 
   private restoreFormValue(savedBasket: OrdersBasket): void {
-
     this.form?.controls.budget.setValue(savedBasket.budget);
 
     const items = this.form.controls.items;
