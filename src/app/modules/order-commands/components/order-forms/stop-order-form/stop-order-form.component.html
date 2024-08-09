@@ -2,7 +2,7 @@
   <ng-container *ngIf="formInstrument$ | async as formInstrument">
     <ng-container *ngIf="portfolioKey$ | async as portfolioKey">
       <div>
-        <form *ngIf="form" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
+        <form *ngIf="form" [formGroup]="form" [nzLayout]="'vertical'" nz-form class="overflow-x-hidden">
           <div [nzGutter]="12" nz-row>
             <div [nzSm]="12" [nzXs]="24" nz-col>
               <nz-form-item class="compact">
