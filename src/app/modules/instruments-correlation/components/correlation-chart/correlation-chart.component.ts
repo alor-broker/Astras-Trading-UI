@@ -96,9 +96,9 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
   readonly request$ = new BehaviorSubject<InstrumentsCorrelationRequest | null>(null);
   readonly loadingStatuses = LoadingStatus;
 
-
   @Input({ required: true })
   guid!: string;
+
   loadingError: LoadingError | null = null;
   protected readonly G = G;
   private readonly contentSize$ = new BehaviorSubject<ContentSize>({ width: 0, height: 0 });
@@ -291,7 +291,6 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
           .append('g')
           .attr('class', 'matrix-row');
       });
-
 
     matrixRows.selectAll('g')
       .data((datum, dIndex) => data!.matrix[dIndex].map((value, index) => ({
@@ -576,7 +575,6 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
         .attr("alignment-baseline", "central")
         .attr("fill", "currentColor")
         .text(`- ${translator(['cointegrationLegend'])}`);
-
     });
   }
 
@@ -650,13 +648,11 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
     const indexes = Object.keys(response.data.correlation).sort((a, b) => a.localeCompare(b));
 
     const matrix: MatrixCell[][] = [];
-    for (let i = 0; i < indexes.length; i++) {
+    for (const rowInstrument of indexes) {
       const matrixRow: MatrixCell[] = [];
       matrix.push(matrixRow);
-      const rowInstrument = indexes[i];
-      for (let j = 0; j < indexes.length; j++) {
-        const colInstrument = indexes[j];
 
+      for (const colInstrument of indexes) {
         matrixRow.push({
           correlation: response.data.correlation[rowInstrument][colInstrument],
           cointegration: response.data.cointegration[rowInstrument][colInstrument] === 1

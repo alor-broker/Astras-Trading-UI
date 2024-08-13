@@ -21,6 +21,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 export class ChatContainerComponent implements AfterViewInit {
   @ViewChild('messagesContainer')
   messagesContainer!: ElementRef<HTMLDivElement>;
+
   @ContentChildren(ChatMessageContainerComponent)
   messages!: QueryList<ChatMessageContainerComponent>;
 

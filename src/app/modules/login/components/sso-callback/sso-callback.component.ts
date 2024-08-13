@@ -8,7 +8,6 @@ import { AuthService } from 'src/app/shared/services/auth.service';
   styleUrls: ['./sso-callback.component.less']
 })
 export class SsoCallbackComponent implements OnInit {
-
   constructor(
     private readonly router: Router,
     private readonly route: ActivatedRoute,
@@ -21,5 +20,4 @@ export class SsoCallbackComponent implements OnInit {
       this.router.navigate(['/dashboard']);
     });
   }
-
 }

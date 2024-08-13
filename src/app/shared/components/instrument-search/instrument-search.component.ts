@@ -29,16 +29,18 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
 
   @Input()
   optionsBoxWidth?: number;
+
   @Input()
   exchange?: string;
+
   @Input()
   showHelpTooltip = true;
-
 
   filteredInstruments$: Observable<Instrument[]> = of([]);
   selectedValue?: InstrumentKey | null;
   @Output()
   instrumentSelected = new EventEmitter<InstrumentKey | null>();
+
   isMobile$!: Observable<boolean>;
   searchControl = new FormControl<string | null>(null);
   private readonly filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
@@ -49,7 +51,6 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     private readonly deviceService: DeviceService
   ) {
   }
-
 
   ngOnInit(): void {
     this.isMobile$ = this.deviceService.deviceInfo$
@@ -75,7 +76,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     const filter: SearchFilter = {
       limit: 20,
       query: ''
-    } ;
+    };
 
     filter.exchange = this.isExchangeSpecified
       ? this.exchange
@@ -100,10 +101,10 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
     this.filter$.next(filter);
   }
 
-  get isExchangeSpecified (): boolean {
+  get isExchangeSpecified(): boolean {
     return this.exchange != null
-    && this.exchange.length > 0
-    && (this.exchange as Exchange) !== Exchange.United;
+      && this.exchange.length > 0
+      && (this.exchange as Exchange) !== Exchange.United;
   }
 
   onSelect(event: NzOptionSelectionChange, val: InstrumentKey): void {

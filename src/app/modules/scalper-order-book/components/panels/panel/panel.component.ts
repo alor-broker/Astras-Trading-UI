@@ -19,7 +19,6 @@ import {
   PanelsContainerContext
 } from "../tokens";
 
-
 @Component({
   selector: 'ats-panel',
   templateUrl: './panel.component.html',
@@ -32,18 +31,23 @@ import {
   ]
 })
 export class PanelComponent implements PanelResizeContext, OnInit {
-  readonly resizeEndOutsideAngular$ = new Subject<void>;
+  readonly resizeEndOutsideAngular$ = new Subject<void>();
   @Input()
   canResize = false;
+
   @Input({ required: true })
   id!: string;
+
   @Input({ required: true })
   defaultWidthPercent!: number;
+
   @Input()
   minWidthPx = 5;
+
   @Input()
   expandable = false;
-  readonly resizedOutsideAngular$ = new Subject<ResizedEvent>;
+
+  readonly resizedOutsideAngular$ = new Subject<ResizedEvent>();
   private expanded = false;
 
   constructor(

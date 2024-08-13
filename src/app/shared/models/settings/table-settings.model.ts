@@ -61,6 +61,4 @@ export enum InputFieldType {
   Number = 'number'
 }
 
-export interface DefaultTableFilters {
-  [filterName: string]: string | string[] | number | boolean | null | undefined;
-}
+export type DefaultTableFilters = Record<string, string | string[] | number | boolean | null | undefined>;

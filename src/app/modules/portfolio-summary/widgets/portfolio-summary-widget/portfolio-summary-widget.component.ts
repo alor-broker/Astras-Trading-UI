@@ -16,6 +16,7 @@ import {DashboardContextService} from "../../../../shared/services/dashboard-con
 export class PortfolioSummaryWidgetComponent implements OnInit {
   @Input({required: true})
   widgetInstance!: WidgetInstance;
+
   @Input({required: true})
   isBlockWidget!: boolean;
 

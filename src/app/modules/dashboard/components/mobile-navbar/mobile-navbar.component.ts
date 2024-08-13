@@ -67,8 +67,8 @@ export class MobileNavbarComponent implements OnInit {
           return [...all.values()]
             .reduce((c, p) => [...p, ...c], [])
             .find(p => p.portfolio === selectedKey.portfolio
-              && p.exchange === selectedKey.exchange
-              && p.marketType === selectedKey.marketType
+            && p.exchange === selectedKey.exchange
+            && p.marketType === selectedKey.marketType
             ) ?? null;
         })
       );

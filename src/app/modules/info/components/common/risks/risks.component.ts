@@ -29,6 +29,7 @@ import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
 export class RisksComponent implements OnInit, OnDestroy {
   @Input({ required: true })
   guid!: string;
+
   risksInfo$!: Observable<RisksInfo | null>;
   currentPortfolio$!: Observable<PortfolioKey>;
   isLoading$ = new BehaviorSubject<boolean>(true);

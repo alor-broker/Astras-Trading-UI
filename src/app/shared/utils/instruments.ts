@@ -71,7 +71,6 @@ export function getTypeByCfi(cfi: string | undefined): InstrumentType {
   return InstrumentType.Other;
 }
 
-
 /**
  * Responsible for check instrument equality
  */

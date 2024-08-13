@@ -34,8 +34,10 @@ export class InstrumentInfoComponent implements OnInit, OnDestroy {
 
   @Output()
   priceSelected = new EventEmitter<number>();
+
   @Output()
   qtySelected = new EventEmitter<number>();
+
   private readonly instrumentKey$ = new BehaviorSubject<InstrumentKey | null>(null);
   private readonly portfolioKey$ = new BehaviorSubject<PortfolioKey | null>(null);
 

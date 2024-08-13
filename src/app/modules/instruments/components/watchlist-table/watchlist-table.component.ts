@@ -141,7 +141,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
     },
   ];
 
-  sortFns: { [keyName: string]: (a: InstrumentKey, b: InstrumentKey) => number } = {
+  sortFns: Record<string, (a: InstrumentKey, b: InstrumentKey) => number> = {
     symbol: this.getSortFn('instrument.symbol'),
     price: this.getSortFn('price'),
     priceChange: this.getSortFn('priceChange'),

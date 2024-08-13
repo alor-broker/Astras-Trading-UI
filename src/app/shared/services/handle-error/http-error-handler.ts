@@ -22,7 +22,7 @@ export class HttpErrorHandler implements ApplicationErrorHandler {
     }
 
     let errorMessage: string;
-    let errorTitle = 'Ошибка';
+    const errorTitle = 'Ошибка';
     if (error.error instanceof ErrorEvent) {
       // Other errors go here
       errorMessage = `Произошла ошибка: ${error.message}`;

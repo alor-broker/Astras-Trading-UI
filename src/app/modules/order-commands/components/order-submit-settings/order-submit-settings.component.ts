@@ -155,7 +155,6 @@ export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<Or
     for (const step of sortedVolumes) {
       this.form.controls.workingVolumes.push(this.createWorkingVolumeControl(step));
     }
-
   }
 
   private createLimitOrderPriceMoveStepControl(defaultValue: number): FormControl<number | null> {

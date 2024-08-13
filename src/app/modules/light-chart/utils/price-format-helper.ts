@@ -1,6 +1,6 @@
 import { MathHelper } from "../../../shared/utils/math-helper";
 
-type ShortPriceFormat = { minMove: number, precision: number };
+interface ShortPriceFormat { minMove: number, precision: number }
 
 export class PriceFormatHelper {
   /**

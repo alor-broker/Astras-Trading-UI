@@ -13,7 +13,6 @@ import { EnvironmentService } from "../../services/environment.service";
 import { HelpService } from "../../services/help.service";
 import { TerminalSettingsService } from "../../services/terminal-settings.service";
 
-
 describe('WidgetHeaderComponent', () => {
   let component: WidgetHeaderComponent;
   let fixture: ComponentFixture<WidgetHeaderComponent>;

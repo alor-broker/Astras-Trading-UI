@@ -124,7 +124,7 @@ export class WatchlistCollectionService {
       ).pipe(
         take(1)
       ).subscribe(items => {
-        const uniqueItems: { [key: string]: WatchlistItem | undefined } = {};
+        const uniqueItems: Record<string, WatchlistItem | undefined> = {};
         list.items.forEach(item => uniqueItems[this.getInstrumentKey(item)] = item);
 
         let newItemsAdded = false;
@@ -250,8 +250,6 @@ export class WatchlistCollectionService {
               type: WatchlistType.DefaultList,
               items: []
             });
-
-
           }
 
           if (!x.find(x => x.type === WatchlistType.HistoryList)) {
@@ -298,7 +296,7 @@ export class WatchlistCollectionService {
       } as WatchlistItem))
     ];
 
-    const uniqueItems: { [key: string]: WatchlistItem } = {};
+    const uniqueItems: Record<string, WatchlistItem> = {};
     allItems.forEach(item => {
       const itemKey = this.getInstrumentKey(item);
 

@@ -8,7 +8,7 @@ import { OrderEvaluationComponent } from './components/order-evaluation/order-ev
 import { LimitOrderFormComponent } from './components/order-forms/limit-order-form/limit-order-form.component';
 import { MarketOrderFormComponent } from './components/order-forms/market-order-form/market-order-form.component';
 import { StopOrderFormComponent } from './components/order-forms/stop-order-form/stop-order-form.component';
-import { TranslocoModule } from "@ngneat/transloco";
+import { TranslocoModule } from "@jsverse/transloco";
 import { NzModalModule } from "ng-zorro-antd/modal";
 import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzIconModule } from "ng-zorro-antd/icon";

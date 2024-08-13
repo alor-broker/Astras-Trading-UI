@@ -2,9 +2,10 @@ import { TestBed } from '@angular/core/testing';
 import { QuotesService } from './quotes.service';
 import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service';
 import { ErrorHandlerService } from './handle-error/error-handler.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import {Subject} from "rxjs";
 import { EnvironmentService } from "./environment.service";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('QuotesService', () => {
   let service: QuotesService;
@@ -13,29 +14,31 @@ describe('QuotesService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
+    imports: [],
+    providers: [
         {
-          provide: SubscriptionsDataFeedService,
-          useValue: {
-            subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
-          }
+            provide: SubscriptionsDataFeedService,
+            useValue: {
+                subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
+            }
         },
         {
-          provide: ErrorHandlerService,
-          useValue: {
-            handleError: jasmine.createSpy('handleError').and.callThrough()
-          }
+            provide: ErrorHandlerService,
+            useValue: {
+                handleError: jasmine.createSpy('handleError').and.callThrough()
+            }
         },
         {
-          provide: EnvironmentService,
-          useValue: {
-            apiUrl: ''
-          }
+            provide: EnvironmentService,
+            useValue: {
+                apiUrl: ''
+            }
         },
-        QuotesService
-      ],
-    });
+        QuotesService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
 
     service = TestBed.inject(QuotesService);
   });

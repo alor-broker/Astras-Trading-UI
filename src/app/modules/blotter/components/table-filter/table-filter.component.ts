@@ -26,6 +26,7 @@ export class TableFilterComponent implements OnChanges, OnDestroy {
 
   @Input({required: true})
   columns: BaseColumnSettings<any>[] = [];
+
   @Output()
   filterChange = new EventEmitter();
 
@@ -39,7 +40,7 @@ export class TableFilterComponent implements OnChanges, OnDestroy {
           .reduce((acc, curr) => {
           acc[curr.id] = new FormControl('');
           return acc;
-        }, {} as { [controlName: string]: FormControl })
+        }, {} as Record<string, FormControl>)
       );
 
       this.changesSubscription = this.filtersForm.valueChanges

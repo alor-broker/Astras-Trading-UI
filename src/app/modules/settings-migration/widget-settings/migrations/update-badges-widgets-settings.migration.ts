@@ -1,5 +1,4 @@
-﻿
-import {
+﻿import {
   OpPatch,
   ReplacePatch
 } from "json-patch";

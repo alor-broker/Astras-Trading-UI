@@ -53,6 +53,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
 
   @Input({required: true})
   xAxisStep!: number;
+
   @Input({required: true})
   dataContext!: ScalperOrderBookDataContext;
 
@@ -203,8 +204,8 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
     this.clusters$ = this.settings$.pipe(
       distinctUntilChanged((prev, curr) => {
         return isInstrumentEqual(prev, curr)
-        && prev.tradesClusterPanelSettings?.timeframe === curr.tradesClusterPanelSettings?.timeframe
-        && prev.tradesClusterPanelSettings?.displayIntervalsCount === curr.tradesClusterPanelSettings?.displayIntervalsCount;
+          && prev.tradesClusterPanelSettings?.timeframe === curr.tradesClusterPanelSettings?.timeframe
+          && prev.tradesClusterPanelSettings?.displayIntervalsCount === curr.tradesClusterPanelSettings?.displayIntervalsCount;
       }),
       mapWith(
         s => this.tradeClustersService.getHistory(
@@ -276,7 +277,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
       settings.displayIntervalsCount);
     const displayClusters: TradesCluster[] = [];
 
-    for (let interval of intervalsToDisplay) {
+    for (const interval of intervalsToDisplay) {
       const cluster = allClusters.find(c => c.timestamp === interval);
       displayClusters.push({
         ...cluster,
@@ -341,7 +342,6 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
 
         return;
       }
-
 
       this.widgetSettingsService.updateSettings<ScalperOrderBookWidgetSettings>(
         s.guid,

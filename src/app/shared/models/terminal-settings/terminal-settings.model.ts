@@ -16,7 +16,7 @@ export interface HotKeyMeta {
 export type DeprecatedHotKey = HotKeyMeta | string;
 
 export enum AllOrderBooksHotKeysTypes {
-  cancelOrdersAll =  'cancelOrdersAll',
+  cancelOrdersAll = 'cancelOrdersAll',
   cancelOrdersAndClosePositionsByMarketAll = 'cancelOrdersAndClosePositionsByMarketAll',
   cancelOrdersKey = 'cancelOrdersKey',
   closePositionsKey = 'closePositionsKey',

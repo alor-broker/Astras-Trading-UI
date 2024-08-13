@@ -1,4 +1,5 @@
 import { Inject, Injectable, OnDestroy } from '@angular/core';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { AuthService } from './auth.service';
 import {
@@ -149,7 +150,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
   }
 
   private createSubscription(request: WsRequestMessage, state: SocketState, enableConfirmResponse = false): Observable<WsResponseMessage> {
-    return  new Observable<WsResponseMessage>(observer => {
+    return new Observable<WsResponseMessage>(observer => {
       this.getCurrentAccessToken().pipe(
         take(1),
       ).subscribe(token => {
@@ -234,7 +235,6 @@ export class SubscriptionsDataFeedService implements OnDestroy {
       },
       closeObserver: {
         next: (event: CloseEvent) => {
-
           if (socketState.subscriptionsMap.size > 0) {
             this.logger.warn(
               this.toLoggerMessage('Connection closed with active subscriptions'),

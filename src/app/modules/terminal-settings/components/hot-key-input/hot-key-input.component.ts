@@ -22,7 +22,6 @@ import {
   ]
 })
 export class HotKeyInputComponent extends ControlValueAccessorBaseComponent<HotKeyMeta> {
-
   @Input({ required: true })
   actionName!: string;
 

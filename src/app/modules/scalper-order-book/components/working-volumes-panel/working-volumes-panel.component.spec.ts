@@ -15,7 +15,7 @@ describe('WorkingVolumesPanelComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports:[LetDirective],
-      declarations: [ WorkingVolumesPanelComponent ],
+      declarations: [WorkingVolumesPanelComponent],
       providers: [
         {
           provide: WidgetSettingsService,

@@ -26,10 +26,12 @@ export class TreemapSettingsComponent extends WidgetSettingsBaseComponent<Treema
       max: 600
     }
   };
+
   readonly marks: NzMarks = {
     [this.validation.refreshIntervalSec.min]: this.validation.refreshIntervalSec.min.toString(),
     [this.validation.refreshIntervalSec.max]: this.validation.refreshIntervalSec.max.toString(),
   };
+
   form = this.formBuilder.group({
     refreshIntervalSec: this.formBuilder.nonNullable.control(
       60,
@@ -42,6 +44,7 @@ export class TreemapSettingsComponent extends WidgetSettingsBaseComponent<Treema
       }
     )
   });
+
   protected settings$!: Observable<TreemapSettings>;
 
   constructor(
@@ -76,5 +79,4 @@ export class TreemapSettingsComponent extends WidgetSettingsBaseComponent<Treema
       refreshIntervalSec: this.form.value.refreshIntervalSec!
     };
   }
-
 }

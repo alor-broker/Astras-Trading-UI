@@ -116,20 +116,18 @@
           </nz-collapse-panel>
         </nz-collapse>
       </nz-form-item>
-      <nz-form-item *ngIf="!deviceInfo.isMobile">
-        <nz-collapse [nzBordered]="false" nzGhost>
-          <nz-collapse-panel [nzHeader]="t('orderCommandsOrderSubmitSettings.advancedHeader')">
-            <nz-form-label nzFor="instrumentGroup">{{t('orderCommandsOrderSubmitSettings.instrumentGroupLabel')}}</nz-form-label>
-            <nz-form-control [nzErrorTip]="t('orderCommandsOrderSubmitSettings.instrumentGroupError')">
-              <ats-instrument-board-select
-                [instrument]="form.value.instrument ?? null"
-                [placeholder]="t('orderCommandsOrderSubmitSettings.instrumentGroupLabel')"
-                formControlName="instrumentGroup">
-              </ats-instrument-board-select>
-            </nz-form-control>
-          </nz-collapse-panel>
-        </nz-collapse>
-      </nz-form-item>
+      <nz-collapse [nzBordered]="false" nzGhost *ngIf="!deviceInfo.isMobile">
+        <nz-collapse-panel [nzHeader]="t('orderCommandsOrderSubmitSettings.advancedHeader')">
+          <nz-form-label nzFor="instrumentGroup">{{t('orderCommandsOrderSubmitSettings.instrumentGroupLabel')}}</nz-form-label>
+          <nz-form-control [nzErrorTip]="t('orderCommandsOrderSubmitSettings.instrumentGroupError')">
+            <ats-instrument-board-select
+              [instrument]="form.value.instrument ?? null"
+              [placeholder]="t('orderCommandsOrderSubmitSettings.instrumentGroupLabel')"
+              formControlName="instrumentGroup">
+            </ats-instrument-board-select>
+          </nz-form-control>
+        </nz-collapse-panel>
+      </nz-collapse>
     </form>
 </ng-container>
 </ats-widget-settings>

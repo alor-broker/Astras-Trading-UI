@@ -1,4 +1,4 @@
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable, of, take} from 'rxjs';
 import {EvaluationBaseProperties, QuantityEvaluationProperties} from '../models/evaluation-base-properties.model';
@@ -34,7 +34,6 @@ export class EvaluationService {
       catchHttpError<Evaluation | null>(null, this.errorHandlerService)
     );
   }
-
 
   evaluateBatch(portfolio: string, items: QuantityEvaluationProperties[]): Observable<Evaluation[] | null> {
     if (items.length === 0) {

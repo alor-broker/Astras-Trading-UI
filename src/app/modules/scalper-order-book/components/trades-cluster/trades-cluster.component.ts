@@ -38,8 +38,10 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
 
   @Input({ required: true })
   xAxisStep!: number;
+
   @Input({ required: true })
   dataContext!: ScalperOrderBookDataContext;
+
   displayItems$!: Observable<(DisplayItem)[]>;
   settings$!: Observable<ScalperOrderBookExtendedSettings>;
   private readonly currentCluster$ = new BehaviorSubject<TradesCluster | null>(null);

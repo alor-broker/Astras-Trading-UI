@@ -21,7 +21,6 @@ import { WidgetsLocalStateServicesActions } from "../../store/widgets-local-stat
   providedIn: 'root'
 })
 export class WidgetLocalStateService {
-
   constructor(private readonly store: Store) {
   }
 

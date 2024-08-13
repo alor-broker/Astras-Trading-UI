@@ -3,7 +3,6 @@ import { UpdateOrdersCommand } from "./update-orders-command";
 import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 
-
 describe('UpdateOrdersCommand', () => {
   let command: UpdateOrdersCommand;
 

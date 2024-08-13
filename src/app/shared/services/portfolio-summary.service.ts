@@ -23,7 +23,6 @@ import { CurrencyFormat } from "../models/market-settings.model";
   providedIn: 'root'
 })
 export class PortfolioSummaryService {
-
   constructor(
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly terminalSettingsService: TerminalSettingsService,

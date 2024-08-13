@@ -1,10 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { OrderEvaluationComponent } from './order-evaluation.component';
-import {QuotesService} from "../../../../shared/services/quotes.service";
-import {Subject} from "rxjs";
-import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
-import {EvaluationService} from "../../../../shared/services/evaluation.service";
+import { Subject } from "rxjs";
+import { EvaluationService } from "../../../../shared/services/evaluation.service";
 
 describe('OrderEvaluationComponent', () => {
   let component: OrderEvaluationComponent;

@@ -13,7 +13,7 @@ export enum TimeframeValue {
   H = '3600',
   H4 = '14400',
   Day = 'D',
-  W= 'W',
+  W = 'W',
   Month = 'M'
 }
 

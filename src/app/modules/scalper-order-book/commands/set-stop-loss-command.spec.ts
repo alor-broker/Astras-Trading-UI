@@ -26,7 +26,6 @@ describe('SetStopLossCommand', () => {
   let ordersDialogServiceSpy: any;
   let notificationsServiceSpy: any;
 
-
   beforeEach(() => {
     orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['submitStopMarketOrder']);
     ordersDialogServiceSpy = jasmine.createSpyObj('OrdersDialogService', ['openNewOrderDialog']);
@@ -100,7 +99,7 @@ describe('SetStopLossCommand', () => {
 
       const avgPrice = 100;
       let expectedPrice = avgPrice - 1;
-      let position: Position =
+      const position: Position =
         {
           symbol: testInstrumentKey.symbol,
           exchange: testInstrumentKey.exchange,

@@ -4,7 +4,7 @@ import {
 } from '@angular/core/testing';
 
 import { AllTradesWidgetComponent } from './all-trades-widget.component';
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import {
   mockComponent,
   widgetSkeletonMock
@@ -15,6 +15,7 @@ import { DashboardContextService } from '../../../../shared/services/dashboard-c
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AllTradesWidgetComponent', () => {
   let component: AllTradesWidgetComponent;
@@ -22,42 +23,44 @@ describe('AllTradesWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      declarations: [
+    declarations: [
         AllTradesWidgetComponent,
         mockComponent({
-          selector: 'ats-all-trades',
-          inputs: ['guid']
+            selector: 'ats-all-trades',
+            inputs: ['guid']
         }),
         mockComponent({
-          selector: 'ats-all-trades-settings',
-          inputs: ['guid']
+            selector: 'ats-all-trades-settings',
+            inputs: ['guid']
         }),
         widgetSkeletonMock
-      ],
-      providers: [
+    ],
+    imports: [],
+    providers: [
         {
-          provide: WidgetSettingsService,
-          useValue: {
-            getSettingsOrNull: jasmine.createSpy('getSettingsOrNull').and.returnValue(of(null)),
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
-            addSettings: jasmine.createSpy('addSettings').and.callThrough()
-          }
+            provide: WidgetSettingsService,
+            useValue: {
+                getSettingsOrNull: jasmine.createSpy('getSettingsOrNull').and.returnValue(of(null)),
+                getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
+                addSettings: jasmine.createSpy('addSettings').and.callThrough()
+            }
         },
         {
-          provide: TerminalSettingsService,
-          useValue: {
-            terminalSettingsService: of({})
-          }
+            provide: TerminalSettingsService,
+            useValue: {
+                terminalSettingsService: of({})
+            }
         },
         {
-          provide: DashboardContextService,
-          useValue: {
-            instrumentsSelection$: of({})
-          }
-        }
-      ]
-    })
+            provide: DashboardContextService,
+            useValue: {
+                instrumentsSelection$: of({})
+            }
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+})
       .compileComponents();
   });
 

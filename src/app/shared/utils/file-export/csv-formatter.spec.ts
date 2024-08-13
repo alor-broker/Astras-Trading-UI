@@ -19,7 +19,6 @@ interface TestCase {
 
 describe('CsvFormatter', () => {
   it('#toCsv', () => {
-
     const cases: TestCase[] = [
       {
         meta: [

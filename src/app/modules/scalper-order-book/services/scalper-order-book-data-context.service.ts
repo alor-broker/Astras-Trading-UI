@@ -62,7 +62,6 @@ import { InstrumentKey } from "../../../shared/models/instruments/instrument-key
 import { Order } from "../../../shared/models/orders/order.model";
 import { OrderMeta } from "../../../shared/models/orders/new-order.model";
 
-
 export interface ContextGetters {
   getVisibleRowsCount: (rowHeight: number) => number;
   isFillingByHeightNeeded: (currentRows: PriceRow[], rowHeight: number) => boolean;
@@ -77,7 +76,6 @@ export interface ContextChangeActions {
   providedIn: 'root'
 })
 export class ScalperOrderBookDataContextService {
-
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly instrumentsService: InstrumentsService,
@@ -124,7 +122,7 @@ export class ScalperOrderBookDataContextService {
       trades$: this.getInstrumentTradesStream(settings$),
       scaleFactor$,
 
-      //---------------------------------------------------
+      // ---------------------------------------------------
       addLocalOrder(order: LocalOrder): void {
         localOrders$.pipe(
           take(1)
@@ -316,7 +314,7 @@ export class ScalperOrderBookDataContextService {
       mapWith(() => currentPortfolio$, (s, p) => ({ s, p })),
       mapWith(
         () => localOrders$,
-        (source, output) => ({... source, localOrders: output})
+        (source, output) => ({...source, localOrders: output})
       ),
       map(x => {
         return Array.from(x.localOrders.values())
@@ -438,7 +436,7 @@ export class ScalperOrderBookDataContextService {
     }
 
     // цены были сгенерированы без ордербука или изменен масштаб
-    if (rowsState.isDirty && (orderBook.rows.b.length > 0 || orderBook.rows.a.length > 0) || rowsState.priceOptions?.scaleFactor !== scaleFactor)
+    if ((rowsState.isDirty && (orderBook.rows.b.length > 0 || orderBook.rows.a.length > 0)) || rowsState.priceOptions?.scaleFactor !== scaleFactor)
      {
       return this.regenerateRowsForHeight(orderBook.rows, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor).pipe(
         map(() => [])
@@ -470,9 +468,9 @@ export class ScalperOrderBookDataContextService {
 
     const orderBookBounds = this.getOrderBookBounds(orderBook.rows);
     const rows: BodyRow[] = [];
-    for (let i = 0; i < rowsState.rows.length; i++) {
+    for (const row of rowsState.rows) {
       const mappedRow = this.mapPriceRowToOrderBook(
-        rowsState.rows[i],
+        row,
         rowsState.priceOptions.scaledStep,
         orderBook.rows,
         orderBookBounds,
@@ -555,7 +553,7 @@ export class ScalperOrderBookDataContextService {
     priceStep: number,
     scaleFactor: number,
     majorLinesStep: number
-  ) : PriceOptions | null {
+  ): PriceOptions | null {
     if(orderBookRange == null) {
       return null;
     }
@@ -664,8 +662,8 @@ export class ScalperOrderBookDataContextService {
       return resultRow;
     }
 
-    const matchRow = (targetRow: BodyRow, source: OrderbookDataRow[]): { volume: number, isBest: boolean} | null => {
-      const matchedRows: {row: OrderbookDataRow, index: number}[] = [];
+    const matchRow = (targetRow: BodyRow, source: OrderbookDataRow[]): { volume: number, isBest: boolean } | null => {
+      const matchedRows: { row: OrderbookDataRow, index: number }[] = [];
 
       for(let index = 0; index < source.length; index++) {
         const row = source[index];
@@ -681,7 +679,7 @@ export class ScalperOrderBookDataContextService {
       if(matchedRows.length > 0) {
         return {
           volume: matchedRows.reduce((total, curr) => Math.round(total + curr.row.v), 0),
-          isBest: matchedRows.some(r=> r.index === 0)
+          isBest: matchedRows.some(r => r.index === 0)
         };
       }
 
@@ -767,7 +765,7 @@ export class ScalperOrderBookDataContextService {
       const sign = position.qtyTFuture > 0 ? 1 : -1;
       const currentPositionRangeSign = (basePrice! - position.avgPrice) * sign;
 
-      const isCurrentPositionRange = targetRow.price <= basePrice! && targetRow.price >= position.avgPrice
+      const isCurrentPositionRange = (targetRow.price <= basePrice! && targetRow.price >= position.avgPrice)
         || (targetRow.price >= basePrice! && targetRow.price <= position.avgPrice);
 
       targetRow.currentPositionRangeSign = isCurrentPositionRange

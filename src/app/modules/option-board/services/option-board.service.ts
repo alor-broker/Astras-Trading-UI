@@ -82,7 +82,7 @@ export class OptionBoardService {
     instrumentKeys: { symbol: string, exchange: string, quantity: number }[];
     range?: number | null;
   }): Observable<OptionPlot | null> {
-    const body: { [key: string]: any } = {
+    const body: Record<string, any> = {
       instrumentKeys: parameters.instrumentKeys,
       range: parameters.range ?? 0.1
     };

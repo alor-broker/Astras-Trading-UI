@@ -65,7 +65,7 @@ export function isPortfoliosEqual(portfolio1: PortfolioKey | null, portfolio2?: 
 export function getDefaultPortfolio(allPortfolios: PortfolioKey[], defaultExchange: string | null): PortfolioKey | null {
   let suitablePortfolios = allPortfolios;
   if (defaultExchange != null) {
-    let exchangeFilteredPortfolios = suitablePortfolios.filter(x => x.exchange === defaultExchange);
+    const exchangeFilteredPortfolios = suitablePortfolios.filter(x => x.exchange === defaultExchange);
     if (exchangeFilteredPortfolios.length > 0) {
       suitablePortfolios = exchangeFilteredPortfolios;
     }

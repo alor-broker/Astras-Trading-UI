@@ -51,6 +51,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
 
   @Input()
   ob: OrderBook | null = null;
+
   settings$!: Observable<ExtendedOrderbookSettings>;
   shouldShowYield$: Observable<boolean> = of(false);
   private themeSettings?: ThemeSettings;
@@ -113,7 +114,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
   }
 
   updateOrderPrice(order: CurrentOrder, price: number): void {
-    if(order.type !== OrderType.Limit && order.type !== OrderType.StopMarket &&  order.type !== OrderType.StopLimit) {
+    if(order.type !== OrderType.Limit && order.type !== OrderType.StopMarket && order.type !== OrderType.StopLimit) {
       return;
     }
 
@@ -143,7 +144,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
     }
   }
 
-  getBidStyle(value: number): { [styleProp: string]: string } | null {
+  getBidStyle(value: number): Record<string, string> | null {
     if (!this.themeSettings || !this.ob) {
       return null;
     }
@@ -154,7 +155,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
     };
   }
 
-  getAskStyle(value: number): { [styleProp: string]: string } | null {
+  getAskStyle(value: number): Record<string, string> | null {
     if (!this.themeSettings || !this.ob) {
       return null;
     }

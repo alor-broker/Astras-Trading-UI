@@ -1,10 +1,9 @@
-import {HttpClient} from '@angular/common/http';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import {discardPeriodicTasks, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {AuthService} from './auth.service';
 import {LocalStorageService} from "./local-storage.service";
-import {User} from "../models/user/user.model";
 import {Subject, take} from "rxjs";
 import {ErrorHandlerService} from './handle-error/error-handler.service';
 import {BroadcastService} from './broadcast.service';
@@ -12,25 +11,16 @@ import { EnvironmentService } from "./environment.service";
 
 describe('AuthService', () => {
   let service: AuthService;
-  let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
 
   const clientDataUrl = 'clientDataUrl';
   const refreshUrl = clientDataUrl + '/auth/actions/refresh';
 
   let localStorageServiceSpy: any;
-  let windowAssignSpy = jasmine.createSpy('assign').and.callThrough();
-
-  let userMock: User;
+  const windowAssignSpy = jasmine.createSpy('assign').and.callThrough();
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
-    userMock = {
-      login: 'login',
-      clientId: '1',
-      portfolios: ['testPortfolio'],
-    };
-
     localStorageServiceSpy = {
       getItem: jasmine.createSpy('getItem').and.returnValue(undefined),
       setItem: jasmine.createSpy('setItem').and.callThrough(),
@@ -38,46 +28,45 @@ describe('AuthService', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-      ],
-      providers: [
+    imports: [],
+    providers: [
         AuthService,
         RouterTestingModule,
         {
-          provide: LocalStorageService,
-          useValue: localStorageServiceSpy
+            provide: LocalStorageService,
+            useValue: localStorageServiceSpy
         },
         {
-          provide: Window,
-          useValue: {
-            location: {
-              assign: windowAssignSpy
+            provide: Window,
+            useValue: {
+                location: {
+                    assign: windowAssignSpy
+                }
             }
-          }
         },
         {
-          provide: ErrorHandlerService,
-          useValue: {
-            handleError: jasmine.createSpy('handleError').and.callThrough()
-          }
+            provide: ErrorHandlerService,
+            useValue: {
+                handleError: jasmine.createSpy('handleError').and.callThrough()
+            }
         },
         {
-          provide: BroadcastService,
-          useValue: {
-            subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
-          }
+            provide: BroadcastService,
+            useValue: {
+                subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
+            }
         },
         {
-          provide: EnvironmentService,
-          useValue: {
-            clientDataUrl,
-            ssoUrl: ''
-          }
-        }
-      ]
-    });
-    httpClient = TestBed.inject(HttpClient);
+            provide: EnvironmentService,
+            useValue: {
+                clientDataUrl,
+                ssoUrl: ''
+            }
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
     httpTestingController = TestBed.inject(HttpTestingController);
     service = TestBed.inject(AuthService);
   });
@@ -106,7 +95,7 @@ describe('AuthService', () => {
   });
 
   it('should redirect to login if token expired', () => {
-    let expDate = new Date();
+    const expDate = new Date();
     expDate.setDate(expDate.getDate() - 1);
 
     service.setRefreshToken('refreshToken');
@@ -126,9 +115,9 @@ describe('AuthService', () => {
   });
 
   it('should refresh token after expiration', fakeAsync(() => {
-      let expDate = new Date();
+      const expDate = new Date();
       expDate.setMinutes(expDate.getMinutes() + 1);
-      let expTimestamp = expDate.getTime() / 1000;
+      const expTimestamp = expDate.getTime() / 1000;
 
       service.setRefreshToken('refreshToken');
       service.accessToken$.pipe(take(1)).subscribe();

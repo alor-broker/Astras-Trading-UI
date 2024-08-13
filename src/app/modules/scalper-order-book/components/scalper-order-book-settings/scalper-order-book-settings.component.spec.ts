@@ -9,7 +9,6 @@ import { of } from "rxjs";
 import {
   commonTestProviders,
   getTranslocoModule,
-  mockComponent,
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";

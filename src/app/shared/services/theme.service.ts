@@ -104,8 +104,8 @@ export class ThemeService {
     return this.themeSettings$;
   }
 
-  private getColorsMap(theme: ThemeType): Observable<{ [key: string]: string }> {
-    return this.httpClient.get<{ [key: string]: string }>(
+  private getColorsMap(theme: ThemeType): Observable<Record<string, string>> {
+    return this.httpClient.get<Record<string, string>>(
       `../../../assets/${theme}-shared-colors-config.json`,
       {
         headers: {

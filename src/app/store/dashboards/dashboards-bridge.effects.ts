@@ -1,5 +1,7 @@
 import {Injectable} from '@angular/core';
-import {Actions, concatLatestFrom, createEffect, ofType} from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { concatLatestFrom } from '@ngrx/operators';
+
 import {map, switchMap} from 'rxjs/operators';
 import {WidgetSettingsServiceActions} from '../widget-settings/widget-settings.actions';
 import {Store} from "@ngrx/store";
@@ -81,7 +83,7 @@ export class DashboardsBridgeEffects {
         actions.push(DashboardsManageActions.add({
           guid: GuidGenerator.newGuid(),
           sourceGuid: targetDashboard.guid,
-          title: `${targetDashboard.title } ${params.allDashboards.filter(d => d.sourceGuid === targetDashboard.guid).length + 1}`,
+          title: `${targetDashboard.title} ${params.allDashboards.filter(d => d.sourceGuid === targetDashboard.guid).length + 1}`,
           isSelected: true,
           existedItems: widgetsCopy,
           instrumentsSelection: {

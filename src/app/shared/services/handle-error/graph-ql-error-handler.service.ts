@@ -9,7 +9,6 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Injectable()
 export class GraphQlErrorHandlerService implements ApplicationErrorHandler {
-
   errorTranslator?: Observable<TranslatorFn>;
 
   constructor(
@@ -23,24 +22,24 @@ export class GraphQlErrorHandlerService implements ApplicationErrorHandler {
       return;
     }
 
-    if (error.extensions?.code === 'AUTH_NOT_AUTHORIZED') {                                           //
-      if (this.errorTranslator == null) {                                                             //
-        this.errorTranslator = this.translatorService.getTranslator('shared/graph-ql-error-handler')  //
-          .pipe(                                                                                      //
-            takeUntilDestroyed(this.destroyRef),                                                      //
-            shareReplay(1)                                                                            //
-          );                                                                                          //
-      }                                                                                               //
+    if (error.extensions?.code === 'AUTH_NOT_AUTHORIZED') { //
+      if (this.errorTranslator == null) { //
+        this.errorTranslator = this.translatorService.getTranslator('shared/graph-ql-error-handler') //
+          .pipe( //
+            takeUntilDestroyed(this.destroyRef), //
+            shareReplay(1) //
+          ); //
+      } //
                                                                                                       //  TODO: remove after release!!!
-      this.errorTranslator                                                                            //
-        .pipe(take(1))                                                                                //
-        .subscribe(t => this.notification.error(                                                      //
-            t(['authErrorTitle']),                                                                    //
-            t(['authErrorMessage'])                                                                   //
-          ));                                                                                         //
+      this.errorTranslator //
+        .pipe(take(1)) //
+        .subscribe(t => this.notification.error( //
+            t(['authErrorTitle']), //
+            t(['authErrorMessage']) //
+          )); //
                                                                                                       //
-      return;                                                                                         //
-    }                                                                                                 //
+      return; //
+    } //
 
     this.notification.error(error.name, error.message);
   }

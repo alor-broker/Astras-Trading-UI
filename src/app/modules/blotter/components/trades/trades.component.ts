@@ -48,6 +48,7 @@ import { InstrumentKey } from "../../../../shared/models/instruments/instrument-
 export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, TradeFilter> implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
+
   allColumns: BaseColumnSettings<DisplayTrade>[] = [
     {
       id: 'id',
@@ -183,7 +184,7 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
       map(({ s, t }) => {
         const tableSettings = TableSettingHelper.toTableDisplaySettings(s.tradesTable, s.tradesColumns);
 
-        return  {
+        return {
           columns: this.allColumns
             .map(c => ({column: c, columnSettings: tableSettings?.columns.find(x => x.columnId === c.id)}))
             .filter(c => !!c.columnSettings)

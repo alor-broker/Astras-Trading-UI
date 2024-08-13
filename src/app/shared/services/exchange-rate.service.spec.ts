@@ -1,26 +1,27 @@
 import { TestBed } from '@angular/core/testing';
 import { ExchangeRateService } from './exchange-rate.service';
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { EnvironmentService } from "./environment.service";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('ExchangeRateService', () => {
   let service: ExchangeRateService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule
-      ],
-      providers: [
+    imports: [],
+    providers: [
         {
-          provide: EnvironmentService,
-          useValue: {
-            apiUrl: ''
-          }
+            provide: EnvironmentService,
+            useValue: {
+                apiUrl: ''
+            }
         },
-        ExchangeRateService
-      ]
-    });
+        ExchangeRateService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
     service = TestBed.inject(ExchangeRateService);
   });
 

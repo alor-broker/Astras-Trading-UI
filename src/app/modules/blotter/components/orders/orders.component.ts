@@ -54,6 +54,7 @@ interface DisplayOrder extends Order {
 export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, OrderFilter> implements OnInit {
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
+
   isModalOpened = DomHelper.isModalOpen;
   allColumns: BaseColumnSettings<DisplayOrder>[] = [
     {

@@ -17,7 +17,7 @@ export class OrdersNotificationsService {
   }
 
   notificateAboutNewOrder(order: Order): void {
-    let secondsPassed = (new Date().getTime() - order.transTime.getTime()) / 1000;
+    const secondsPassed = (new Date().getTime() - order.transTime.getTime()) / 1000;
     if (order.status == 'filled' && secondsPassed < 5) {
       this.notify(
         `${OrdersInstantNotificationType.OrderFilled}_${order.id}`,

@@ -6,8 +6,6 @@ import { TerminalSettings } from "../../models/terminal-settings/terminal-settin
 import { map } from "rxjs/operators";
 import { ActivityTrackerService } from "./activity-tracker.service";
 import { AuthService } from "../auth.service";
-import { NzNotificationService } from "ng-zorro-antd/notification";
-import { NzNotificationRef } from "ng-zorro-antd/notification/typings";
 import {TerminalSettingsService} from "../terminal-settings.service";
 import { SessionInstantTranslatableNotificationsService } from "./session-instant-translatable-notifications.service";
 
@@ -17,7 +15,6 @@ describe('SessionTrackService', () => {
   let activityTrackerServiceSpy: any;
   let terminalSettingsServiceSpy: any;
   let authServiceSpy: any;
-  let notificationServiceSpy: any;
   let instantNotificationsServiceSpy: any;
   const userIdleDurationMinMock = new BehaviorSubject<number>(1 / 60);
   const lastActivityTimeMock = new BehaviorSubject<number | null>(null);

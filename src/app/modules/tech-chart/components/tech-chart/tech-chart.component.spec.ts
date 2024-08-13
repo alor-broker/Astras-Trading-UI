@@ -46,7 +46,7 @@ describe('TechChartComponent', () => {
 
   let widgetSettingsServiceSpy: any;
   let techChartDatafeedServiceSpy: any;
-  let themeServiceSpy:any;
+  let themeServiceSpy: any;
   let instrumentsServiceSpy: any;
   let widgetsSharedDataServiceSpy: any;
   let portfolioSubscriptionsServiceSpy: any;

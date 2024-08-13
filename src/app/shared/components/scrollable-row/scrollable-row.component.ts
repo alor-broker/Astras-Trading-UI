@@ -40,7 +40,7 @@ export class ScrollableRowComponent implements OnDestroy {
 
     const container = this.scrollContainer!.getElementRef().nativeElement;
     const containerBounds = container.getBoundingClientRect();
-    for (let child of this.items) {
+    for (const child of this.items) {
       const item = child.getElementRef().nativeElement;
       const itemBounds = item.getBoundingClientRect();
       const relativeRight = itemBounds.x - containerBounds.x + itemBounds.width;
@@ -63,7 +63,7 @@ export class ScrollableRowComponent implements OnDestroy {
 
     const container = this.scrollContainer!.getElementRef().nativeElement;
     const containerBounds = container.getBoundingClientRect();
-    for (let child of this.items.toArray().reverse()) {
+    for (const child of this.items.toArray().reverse()) {
       const item = child.getElementRef().nativeElement;
       const itemBounds = item.getBoundingClientRect();
 

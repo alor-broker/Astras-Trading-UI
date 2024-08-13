@@ -29,10 +29,13 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
 
   @ViewChild('orderTabs', {static: false})
   orderTabs?: NzTabSetComponent;
+
   @ViewChild('limitOrderTab', {static: false})
   limitOrderTab?: NzTabComponent;
+
   @ViewChild('marketOrderTab', {static: false})
   marketOrderTab?: NzTabComponent;
+
   @ViewChild('stopOrderTab', {static: false})
   stopOrderTab?: NzTabComponent;
 

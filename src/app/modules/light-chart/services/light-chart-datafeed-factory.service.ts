@@ -9,7 +9,6 @@ import { SubscriptionsDataFeedService } from '../../../shared/services/subscript
   providedIn: 'root'
 })
 export class LightChartDatafeedFactoryService {
-
   constructor(
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly historyService: HistoryService

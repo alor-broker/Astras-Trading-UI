@@ -38,7 +38,6 @@ interface MessagePayload extends firebase.default.messaging.MessagePayload {
   providedIn: 'root'
 })
 export class PushNotificationsService implements OnDestroy {
-
   private readonly baseUrl = this.environmentService.apiUrl + '/commandapi/observatory/subscriptions';
 
   private token$?: Observable<string | null>;
@@ -234,7 +233,6 @@ export class PushNotificationsService implements OnDestroy {
           const subsToDelete = subs
             .map(s => s.id)
             .map(id => this.cancelSubscription(id));
-
 
           return forkJoin(subsToDelete.length ? subsToDelete : [of(null)])
             .pipe(

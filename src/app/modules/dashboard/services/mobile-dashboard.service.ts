@@ -9,7 +9,6 @@ import { MobileDashboardItemsActions } from "../../../store/mobile-dashboard/mob
   providedIn: 'root'
 })
 export class MobileDashboardService {
-
   constructor(
     private readonly store: Store
   ) {

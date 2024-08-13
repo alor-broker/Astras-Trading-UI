@@ -151,4 +151,3 @@ export class SessionTrackService {
     this.instantNotificationService.endOfSession();
   }
 }
-

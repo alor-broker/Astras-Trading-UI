@@ -13,6 +13,7 @@ export class ParentWidgetComponent implements OnDestroy {
 
   @Input({required: true})
   widgetInstance!: WidgetInstance;
+
   @Input({required: true})
   isBlockWidget!: boolean;
 

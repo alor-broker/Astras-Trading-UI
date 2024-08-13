@@ -8,7 +8,7 @@ describe('ExternalLinkComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ExternalLinkComponent ]
+      declarations: [ExternalLinkComponent]
     })
     .compileComponents();
 

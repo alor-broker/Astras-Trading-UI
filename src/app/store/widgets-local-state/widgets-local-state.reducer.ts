@@ -50,7 +50,6 @@ const reducer = createReducer(
   ),
   on(WidgetsLocalStateInternalActions.removeForWidgets,
     (state, action) => {
-
       const allRecords = adapter.getSelectors()
         .selectIds(state)
         .map((id) => ({

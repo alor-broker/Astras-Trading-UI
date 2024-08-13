@@ -28,7 +28,6 @@ import { GalleryDisplay, WidgetDisplay, WidgetGroup } from "../widgets-gallery/w
 import { MobileDashboardService } from "../../services/mobile-dashboard.service";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 
-
 @Component({
   selector: 'ats-mobile-dashboard',
   templateUrl: './mobile-dashboard.component.html',
@@ -148,7 +147,7 @@ export class MobileDashboardComponent implements OnInit {
     ])
       .pipe(
         map(([meta, lang]) => {
-          const groups = new Map<WidgetCategory, WidgetDisplay[]>;
+          const groups = new Map<WidgetCategory, WidgetDisplay[]>();
 
           const widgets = meta
             .filter(x => !!x.mobileMeta && x.mobileMeta.enabled && !this.defaultWidgetNames.includes(x.typeId))

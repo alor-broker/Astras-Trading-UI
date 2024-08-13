@@ -114,7 +114,6 @@ export class OptionBoardDataContextFactory {
         selectedOptions: currentSelectionForInstrument?.selectedOptions ?? []
       };
 
-
       const currentOptionSelection = currentSelectionForInstrument.selectedOptions.find(x => x.symbol === option.symbol);
       if (!!currentOptionSelection) {
         currentSelectionForInstrument.selectedOptions = [
@@ -149,7 +148,6 @@ export class OptionBoardDataContextFactory {
 
       context.selectionParameters$.next(currentParameters);
     });
-
   }
 
   private removeItemFromSelection(symbol: string, context: OptionBoardDataContext): void {
@@ -159,7 +157,6 @@ export class OptionBoardDataContextFactory {
     ]).pipe(
       take(1)
     ).subscribe(([settings, selection]) => {
-
       const currentSelectionForInstrument = selection.find(x => this.filterSelection(x, settings))!;
 
       currentSelectionForInstrument.selectedOptions = currentSelectionForInstrument.selectedOptions.filter(x => x.symbol !== symbol);

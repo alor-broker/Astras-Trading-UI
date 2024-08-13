@@ -22,6 +22,7 @@ import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 export class OrdersBasketWidgetComponent implements OnInit {
   @Input({required: true})
   widgetInstance!: WidgetInstance;
+
   @Input({required: true})
   isBlockWidget!: boolean;
 

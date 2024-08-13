@@ -104,7 +104,6 @@ export class ScalperHotKeyCommandService {
               if (keyMeta.key && keyMeta.code) {
                 if (hotKeysSettings.extraHotKeys ?? false) {
                   if (x.code === keyMeta.code && this.checkPressedModifierKeys(x, keyMeta)) {
-
                     mappedCommand = value;
                   }
                 } else {

@@ -16,8 +16,10 @@ import {
 export class BottomFloatingPanelComponent {
   @Input({ required: true })
   guid!: string;
+
   @Input({ required: true })
   isActive!: boolean;
+
   @Input({ required: true })
   dataContext!: ScalperOrderBookDataContext;
 

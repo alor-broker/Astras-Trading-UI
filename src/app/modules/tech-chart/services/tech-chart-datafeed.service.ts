@@ -210,7 +210,6 @@ export class TechChartDatafeedService implements IBasicDataFeed {
         );
       }
 
-
       const nextTime = periodParams.firstDataRequest ? history.next : history.prev;
       onResult(
         history.history.map(x => ({

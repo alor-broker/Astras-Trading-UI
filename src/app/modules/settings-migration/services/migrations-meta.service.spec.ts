@@ -7,10 +7,7 @@ import {
   Subject
 } from "rxjs";
 import { ApplicationMetaService } from "../../../shared/services/application-meta.service";
-import {
-  CacheOptions,
-  CacheService
-} from "../../../shared/services/cache.service";
+import { CacheService } from "../../../shared/services/cache.service";
 
 describe('MigrationsMetaService', () => {
   let service: MigrationsMetaService;
@@ -35,7 +32,7 @@ describe('MigrationsMetaService', () => {
         {
           provide: CacheService,
           useValue: {
-            wrap: jasmine.createSpy('getMeta').and.returnValue((getKey: () => string, loadData: () => Observable<any>, options: CacheOptions) => loadData())
+            wrap: jasmine.createSpy('getMeta').and.returnValue((getKey: () => string, loadData: () => Observable<any>) => loadData())
           }
         }
       ]

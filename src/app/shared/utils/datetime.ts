@@ -4,7 +4,7 @@
  * @param {Date} date date
  * @return {number} unixtime in seconds
  */
-export function toUnixTime(date: Date) : number {
+export function toUnixTime(date: Date): number {
   return Math.floor(date.getTime() / 1000);
 }
 
@@ -67,7 +67,7 @@ export function addDays(date: Date, days: number): Date {
  * @param {number} hours number of hours, negative if you need to substract
  * @return {Date} updated date
  */
-export function addHours(date: Date, hours: number) : Date {
+export function addHours(date: Date, hours: number): Date {
   return new Date(date.setHours(date.getHours() + hours));
 }
 
@@ -78,7 +78,7 @@ export function addHours(date: Date, hours: number) : Date {
  * @param {number} minutes number of minutes, negative if you need to substract
  * @return {Date} updated date
  */
-export function addMinutes(date: Date, minutes: number) : Date {
+export function addMinutes(date: Date, minutes: number): Date {
   return new Date(date.setMinutes(date.getMinutes() + minutes));
 }
 
@@ -89,7 +89,7 @@ export function addMinutes(date: Date, minutes: number) : Date {
  * @param {number} seconds number of seconds, negative if you need to substract
  * @return {Date} updated date
  */
-export function addSeconds(date: Date, seconds: number) : Date {
+export function addSeconds(date: Date, seconds: number): Date {
   return new Date(date.setSeconds(date.getSeconds() + seconds));
 }
 
@@ -124,7 +124,7 @@ export function addHoursUnix(date: Date, hours: number): number {
  * @param {Date} date date to convert
  * @return {number} unixtime in seconds
  */
-export function toUnixTimestampSeconds(date: Date) : number {
+export function toUnixTimestampSeconds(date: Date): number {
   return Number((Number(date) / 1000).toFixed(0));
 }
 
@@ -134,7 +134,7 @@ export function toUnixTimestampSeconds(date: Date) : number {
  * @param {Date} date date to convert
  * @return {number} unixtime in millies
  */
-export function toUnixTimestampMillies(date: Date) : number {
+export function toUnixTimestampMillies(date: Date): number {
   return Number(date);
 }
 
@@ -174,7 +174,7 @@ export function endOfMonth(date: Date): Date {
  * @param {number} date date in unixtime
  * @return {Date} Date as JS entity
  */
-export function fromUnixTime(date: number) : Date {
+export function fromUnixTime(date: number): Date {
   return new Date(date * 1000);
 }
 
@@ -195,8 +195,6 @@ export function getUtcNow(): Date {
 export function getISOStringDate(date: Date): string {
   return date.toISOString().split('T')[0];
 }
-
-
 
 /**
  * A function to get dates difference in days

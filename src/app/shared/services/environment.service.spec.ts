@@ -29,7 +29,7 @@ describe('EnvironmentService', () => {
   });
 
   it('should return overridden values', () => {
-    const overriddenValues  = [
+    const overriddenValues = [
       "apiUrl",
       "wsUrl",
       "clientDataUrl",

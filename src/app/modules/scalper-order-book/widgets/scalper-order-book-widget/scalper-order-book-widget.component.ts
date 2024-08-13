@@ -31,6 +31,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
 
   @Input({required: true})
   widgetInstance!: WidgetInstance;
+
   @Input({required: true})
   isBlockWidget!: boolean;
 

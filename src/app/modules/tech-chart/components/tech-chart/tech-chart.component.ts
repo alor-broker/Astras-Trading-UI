@@ -68,7 +68,7 @@ import { Side } from '../../../../shared/models/enums/side.model';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { LineMarkerPosition, TechChartSettings } from '../../models/tech-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { HashMap } from "@ngneat/transloco/lib/types";
+import { HashMap } from "@jsverse/transloco/lib/types";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-display-option";
@@ -98,7 +98,7 @@ import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { SearchButtonHelper } from "../../utils/search-button.helper";
 import { DOCUMENT } from "@angular/common";
 
-type ExtendedSettings = { widgetSettings: TechChartSettings, instrument: Instrument };
+interface ExtendedSettings { widgetSettings: TechChartSettings, instrument: Instrument }
 
 interface IRemovableChartItem {
   remove(): void;
@@ -482,7 +482,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       symbol_search_request_delay: 2000,
       // for some reasons TV stringifies this field. So service cannot be passed directly
       save_load_adapter: this.createSaveLoadAdapter(),
-      //features
+      // features
       disabled_features: features.disabled,
       enabled_features: features.enabled
     };
@@ -817,7 +817,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     this.chartState!.tradesState = new TradesState(tearDown, settings as InstrumentKey);
 
     const currentPortfolio$ = this.getCurrentPortfolio().pipe(
-      tap( () => this.chartState?.tradesState?.clear()),
+      tap(() => this.chartState?.tradesState?.clear()),
       shareReplay(1)
     );
 
@@ -838,7 +838,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       })
     );
 
-    //setup history trades
+    // setup history trades
     const visibleRangeChange$ = new Subject();
     const checkHistoryCallback = (): void => visibleRangeChange$.next({});
 
@@ -867,7 +867,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     if(!(this.chartState.tradesState.isTradeDrawn(trade))) {
-
       const currentVisibleRange = this.chartState.widget.activeChart().getVisibleRange();
       const tradeTime = Math.round(trade.date.getTime() / 1000);
 
@@ -1026,7 +1025,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
           if (order.status !== 'working') {
             if (existingOrderLine) {
               removeItem(order.id);
-
             }
 
             return;

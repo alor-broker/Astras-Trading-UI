@@ -144,5 +144,4 @@ export function getBondScreenerResponseSchema(columnIds: string[]): ZodObject<Zo
   return object({
     bonds: GetBondScreenerBondsConnectionSchema
   }) as ZodObject<ZodPropertiesOf<GetBondScreenerBondQuery>>;
-
 }

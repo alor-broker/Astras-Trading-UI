@@ -19,7 +19,6 @@ import { map } from "rxjs/operators";
   providedIn: 'root'
 })
 export class AllInstrumentsService {
-
   constructor(
     private readonly graphQlService: GraphQlService
   ) {}

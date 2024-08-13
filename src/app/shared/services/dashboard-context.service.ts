@@ -35,7 +35,7 @@ export class DashboardContextService {
     return this.selectedDashboard$.pipe(
       map(d => d.selectedPortfolio),
       filter((p): p is PortfolioKey => !!p),
-      distinctUntilChanged((prev, curr) => isPortfoliosEqual(prev, curr ))
+      distinctUntilChanged((prev, curr) => isPortfoliosEqual(prev, curr))
     );
   }
 

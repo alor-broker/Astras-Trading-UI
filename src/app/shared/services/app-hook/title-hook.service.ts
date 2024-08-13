@@ -7,7 +7,6 @@ import { filter } from "rxjs/operators";
 
 @Injectable()
 export class TitleHook implements AppHook {
-
   private titleChangeSub?: Subscription | null = null;
 
   constructor(

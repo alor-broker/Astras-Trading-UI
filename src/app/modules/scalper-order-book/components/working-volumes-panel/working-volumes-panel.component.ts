@@ -37,9 +37,7 @@ import { inputNumberValidation } from "../../../../shared/utils/validation-optio
 import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
 
 interface SelectedWorkingVolumeState extends RecordContent {
-  lastSelectedVolume?: {
-    [key: string]: number;
-  };
+  lastSelectedVolume?: Record<string, number>;
 }
 
 @Component({
@@ -54,8 +52,10 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
       max: inputNumberValidation.max
     }
   };
+
   @Input()
   isActive = false;
+
   @Input({ required: true })
   guid!: string;
 

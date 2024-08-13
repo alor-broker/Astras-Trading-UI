@@ -111,6 +111,3 @@ export const DashboardsEventsActions = createActionGroup({
     "Updated": props<{ dashboards: Dashboard[] }>(),
   }
 });
-
-
-

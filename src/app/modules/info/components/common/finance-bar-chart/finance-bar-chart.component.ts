@@ -6,7 +6,7 @@ import { ThemeService } from '../../../../../shared/services/theme.service';
 import { ThemeSettings } from '../../../../../shared/models/settings/theme-settings.model';
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../../shared/services/translator.service";
-import { HashMap } from "@ngneat/transloco/lib/types";
+import { HashMap } from "@jsverse/transloco/lib/types";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
@@ -100,7 +100,7 @@ export class FinanceBarChartComponent implements OnInit {
 
   private getPlotData(period: 'year' | 'quarter', theme: ThemeSettings, t: (key: string[], params?: HashMap) => string): ChartData<'bar'> {
     let labels: string[] = [];
-    let datasets: ChartDataset<'bar'>[] = [];
+    const datasets: ChartDataset<'bar'>[] = [];
     if ((this.finance.sales as DataOverTime | undefined | null) != null) {
       labels = period == 'quarter' ?
         this.finance.sales.quarter.map(q => `${q.year} q${q.quarter}`) as string[] :

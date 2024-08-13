@@ -3,10 +3,10 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ApplicationMetaService } from './application-meta.service';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
 import { take } from 'rxjs';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { EnvironmentService } from "../../../shared/services/environment.service";
-
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('ApplicationMetaService', () => {
   let service: ApplicationMetaService;
@@ -24,26 +24,26 @@ describe('ApplicationMetaService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule
-      ],
-      providers: [
+    imports: [],
+    providers: [
         {
-          provide: LocalStorageService,
-          useValue: localStorageServiceSpy
+            provide: LocalStorageService,
+            useValue: localStorageServiceSpy
         },
         {
-          provide: ErrorHandlerService,
-          useValue: errorHandlerServiceSpy
+            provide: ErrorHandlerService,
+            useValue: errorHandlerServiceSpy
         },
         {
-          provide: EnvironmentService,
-          useValue: {
-            warpUrl
-          }
-        }
-      ]
-    });
+            provide: EnvironmentService,
+            useValue: {
+                warpUrl
+            }
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
     service = TestBed.inject(ApplicationMetaService);
 
     httpTestingController = TestBed.inject(HttpTestingController);

@@ -1,17 +1,14 @@
 ﻿import { MobileMigrationManagerBase } from "../mobile-migration-manager-base";
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
-import {
-  inject,
-  Injectable
-} from "@angular/core";
-import { UpdateBadgesMobileDashboardMigration } from "./migrations/update-badges-mobile-dashboard.migration";
+import { Injectable } from "@angular/core";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardSettingsMobileMigrationManager extends MobileMigrationManagerBase {
   protected migrations = [
-    inject(UpdateBadgesMobileDashboardMigration)
+    // UpdateBadgesMobileDashboardMigration is obsolete. Keep here just as example
+    // inject(UpdateBadgesMobileDashboardMigration)
   ];
 
   constructor(protected readonly localStorageService: LocalStorageService) {

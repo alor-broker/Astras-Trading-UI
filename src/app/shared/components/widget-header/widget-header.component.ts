@@ -20,7 +20,6 @@ import { TerminalSettingsService } from "../../services/terminal-settings.servic
   styleUrls: ['./widget-header.component.less']
 })
 export class WidgetHeaderComponent implements OnInit {
-
   @Input({required: true})
   guid!: string;
 
@@ -85,7 +84,7 @@ export class WidgetHeaderComponent implements OnInit {
                 prev[cur!.symbol] = (prev[cur!.symbol] ?? 0) + 1;
                 return prev;
               }
-              , {} as { [key: string]: number | undefined }
+              , {} as Record<string, number | undefined>
             );
 
           return badgesColors.map(b => {

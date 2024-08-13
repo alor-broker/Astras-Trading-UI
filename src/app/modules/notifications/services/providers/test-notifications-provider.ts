@@ -78,5 +78,4 @@ export class TestNotificationsProvider implements NotificationsProvider {
       }
     ]);
   }
-
 }

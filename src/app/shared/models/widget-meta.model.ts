@@ -1,8 +1,6 @@
 ﻿export interface WidgetName {
   default: string;
-  translations?: {
-    [key: string]: string;
-  };
+  translations?: Record<string, string>;
 }
 
 export enum WidgetCategory {

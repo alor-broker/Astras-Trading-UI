@@ -33,13 +33,13 @@ describe('StopOrderFormComponent', () => {
   let component: StopOrderFormComponent;
   let fixture: ComponentFixture<StopOrderFormComponent>;
 
-  let lastPrice = 25;
+  const lastPrice = 25;
   let orderServiceSpy: any;
   let orderGroupServiceSpy: any;
   const timezoneConverter = new TimezoneConverter(TimezoneDisplayOption.MskTime);
   let timezoneConverterServiceSpy: any;
 
-  const getFormInputs = (): { [fieldName: string]: HTMLInputElement | HTMLSelectElement } => {
+  const getFormInputs = (): Record<string, HTMLInputElement | HTMLSelectElement> => {
     return {
       quantity: fixture.nativeElement.querySelector('[formcontrolname="quantity"]').querySelector('input') as HTMLInputElement,
       triggerPrice: fixture.nativeElement.querySelector('[formcontrolname="triggerPrice"]').querySelector('input') as HTMLInputElement,
@@ -186,8 +186,8 @@ describe('StopOrderFormComponent', () => {
 
     const inputs = getFormInputs();
 
-    for (let testCase of cases) {
-      const control: HTMLInputElement = (<any>inputs)[testCase.control];
+    for (const testCase of cases) {
+      const control: HTMLInputElement = (inputs as any)[testCase.control];
       control.value = testCase.setValue();
       control.dispatchEvent(new Event('input'));
 

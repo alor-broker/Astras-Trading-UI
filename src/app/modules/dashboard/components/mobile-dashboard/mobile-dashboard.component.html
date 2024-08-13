@@ -31,7 +31,7 @@
 
     <div class="widgets-menu d-flex justify-content-around p-10 flex-gap-10 overflow-auto">
       <div
-        class="d-flex flex-column"
+        class="d-flex flex-column align-items-center"
         [class.active-widget]="!defaultWidgetNames.includes(vm.selectedWidget?.instance?.widgetType ?? '')"
         (click)="galleryVisible = true"
       >
@@ -51,7 +51,7 @@
         ></nz-divider>
 
         <div
-          class="d-flex flex-column"
+          class="d-flex flex-column align-items-center"
           [class.active-widget]="widget.instance.widgetType === vm.selectedWidget?.instance?.widgetType"
           (click)="selectedWidget$.next(widget)"
         >

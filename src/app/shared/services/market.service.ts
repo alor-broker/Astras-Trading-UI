@@ -18,7 +18,6 @@ import {
   providedIn: 'root'
 })
 export class MarketService {
-
   private settings$?: Observable<MarketSettings>;
 
   constructor(

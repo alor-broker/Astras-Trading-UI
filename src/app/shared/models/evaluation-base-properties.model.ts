@@ -13,4 +13,3 @@ export interface QuantityEvaluationProperties {
   budget: number;
   price?: number;
 }
-

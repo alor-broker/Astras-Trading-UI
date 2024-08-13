@@ -25,7 +25,7 @@ import { GuidGenerator } from "../../../shared/utils/guid";
 import { take } from "rxjs";
 import { LocalOrderTracker } from "./local-order-tracker";
 
-export interface LimitOrderTracker extends LocalOrderTracker<NewLimitOrder>{
+export interface LimitOrderTracker extends LocalOrderTracker<NewLimitOrder> {
   beforeOrderCreated: (order: NewLimitOrder) => void;
   orderProcessed: (localId: string, isSuccess: boolean) => void;
 }
@@ -196,7 +196,6 @@ export class SubmitLimitOrderCommand extends CommandBase<SubmitLimitOrderCommand
     priceStep: number,
     priceUnits: PriceUnits
   ): number {
-
     if (priceUnits === PriceUnits.Points) {
       return MathHelper.roundPrice(
         basePrice + (priceRatio * priceStep),
@@ -213,7 +212,6 @@ export class SubmitLimitOrderCommand extends CommandBase<SubmitLimitOrderCommand
   private buildStopOrder(
     limitOrder: NewLimitOrder,
     optionsCalc: () => ({ triggerPrice: number, condition: LessMore })): NewStopLimitOrder {
-
     const options = optionsCalc();
 
     return {
@@ -302,7 +300,6 @@ export class SubmitLimitOrderCommand extends CommandBase<SubmitLimitOrderCommand
           args.orderTracker?.orderProcessed(limitOrder.meta.trackId, result != null);
         }
       });
-
     } else {
       this.wsOrdersService.submitLimitOrder(limitOrder, args.targetPortfolio).pipe(
         take(1)

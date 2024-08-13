@@ -32,6 +32,7 @@ export class HoverItemsGroupDirective<T = any> implements HoverItemsGroup<T>, On
 
   @Output()
   hoveredItemChanged = new EventEmitter<{ item: HoverItemDirective<T> } | null>();
+
   private readonly hoveredItem$ = new BehaviorSubject<{ item: HoverItemDirective<T> } | null>(null);
 
   constructor(private readonly destroyRef: DestroyRef) {

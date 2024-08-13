@@ -20,20 +20,18 @@
         <input nz-input type="text" [value]="form.value.instrument?.exchange" disabled/>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item>
-      <nz-collapse [nzBordered]="false" nzGhost>
-        <nz-collapse-panel [nzHeader]="t('advancedHeader')">
-          <nz-form-label nzFor="instrumentGroup">{{t('form.instrumentGroup.label')}}</nz-form-label>
-          <nz-form-control [nzErrorTip]="t('form.instrumentGroup.commonError')">
-            <ats-instrument-board-select
-              [instrument]="form.value.instrument ?? null"
-              [placeholder]="t('form.ticker.label')"
-              formControlName="instrumentGroup">
-            </ats-instrument-board-select>
-          </nz-form-control>
-        </nz-collapse-panel>
-      </nz-collapse>
-    </nz-form-item>
+    <nz-collapse [nzBordered]="false" nzGhost>
+      <nz-collapse-panel [nzHeader]="t('advancedHeader')">
+        <nz-form-label nzFor="instrumentGroup">{{t('form.instrumentGroup.label')}}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('form.instrumentGroup.commonError')">
+          <ats-instrument-board-select
+            [instrument]="form.value.instrument ?? null"
+            [placeholder]="t('form.ticker.label')"
+            formControlName="instrumentGroup">
+          </ats-instrument-board-select>
+        </nz-form-control>
+      </nz-collapse-panel>
+    </nz-collapse>
   </form>
 </ng-container>
 </ats-widget-settings>

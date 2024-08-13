@@ -17,7 +17,7 @@ describe('NewsModalWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NewsModalWidgetComponent ],
+      declarations: [NewsModalWidgetComponent],
       providers: [
         {
           provide: NewsService,

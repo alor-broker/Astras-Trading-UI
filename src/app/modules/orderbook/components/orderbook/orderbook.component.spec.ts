@@ -18,7 +18,6 @@ import {
   ThemeSettings,
   ThemeType
 } from '../../../../shared/models/settings/theme-settings.model';
-import { ThemeService } from '../../../../shared/services/theme.service';
 
 describe('OrderBookComponent', () => {
   let component: OrderBookComponent;

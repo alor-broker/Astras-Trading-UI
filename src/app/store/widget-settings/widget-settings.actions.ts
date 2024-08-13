@@ -30,10 +30,6 @@ export const WidgetSettingsServiceActions = createActionGroup({
 export const WidgetSettingsEventsActions = createActionGroup({
   source: 'WidgetSettings/Events',
   events: {
-    "Updated": props<{ settings: WidgetSettings[] }>()
+    Updated: props<{ settings: WidgetSettings[] }>()
   }
 });
-
-
-
-
