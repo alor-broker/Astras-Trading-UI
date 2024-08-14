@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   Inject,
   Input,
   NgZone,
@@ -9,7 +10,7 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import {ScalperOrderBookDataContext,} from '../../models/scalper-order-book-data-context.model';
+import { ScalperOrderBookDataContext, } from '../../models/scalper-order-book-data-context.model';
 import {
   BehaviorSubject,
   bufferCount,
@@ -22,23 +23,29 @@ import {
   takeUntil,
   timer,
 } from 'rxjs';
-import {TradesCluster} from '../../models/trades-clusters.model';
-import {finalize, map, startWith, switchMap, tap} from 'rxjs/operators';
-import {NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import { TradesCluster } from '../../models/trades-clusters.model';
+import {
+  finalize,
+  map,
+  startWith,
+  switchMap,
+  tap
+} from 'rxjs/operators';
+import { NzDropdownMenuComponent } from 'ng-zorro-antd/dropdown';
 import {
   ClusterTimeframe,
   ScalperOrderBookWidgetSettings,
   TradesClusterPanelSettings
 } from '../../models/scalper-order-book-settings.model';
-import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
-import {CdkScrollable} from '@angular/cdk/overlay';
-import {DOCUMENT} from '@angular/common';
-import {ContextMenuService} from '../../../../shared/services/context-menu.service';
-import {TradeClustersService} from '../../services/trade-clusters.service';
-import {toUnixTime} from '../../../../shared/utils/datetime';
-import {mapWith} from "../../../../shared/utils/observable-helper";
-import {NumberDisplayFormat} from "../../../../shared/models/enums/number-display-format";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import { CdkScrollable } from '@angular/cdk/overlay';
+import { DOCUMENT } from '@angular/common';
+import { ContextMenuService } from '../../../../shared/services/context-menu.service';
+import { TradeClustersService } from '../../services/trade-clusters.service';
+import { toUnixTime } from '../../../../shared/utils/datetime';
+import { mapWith } from "../../../../shared/utils/observable-helper";
+import { NumberDisplayFormat } from "../../../../shared/models/enums/number-display-format";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 
@@ -65,6 +72,12 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
 
   readonly availableTimeframes: number[] = Object.values(ClusterTimeframe).filter((v): v is number => !isNaN(Number(v)));
   readonly availableIntervalsCount = [1, 2, 5];
+
+  readonly defaultSettings: Required<TradesClusterPanelSettings> = {
+    timeframe: ClusterTimeframe.M1,
+    displayIntervalsCount: 5,
+    volumeDisplayFormat: NumberDisplayFormat.LetterSuffix
+  };
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
@@ -189,11 +202,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
 
         return {
           ...settings,
-          tradesClusterPanelSettings: {
-            timeframe: ClusterTimeframe.M1,
-            displayIntervalsCount: 5,
-            volumeDisplayFormat: NumberDisplayFormat.LetterSuffix
-          }
+          tradesClusterPanelSettings: {...this.defaultSettings}
         };
       }),
       shareReplay(1)
@@ -210,8 +219,8 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
       mapWith(
         s => this.tradeClustersService.getHistory(
           s,
-          s.tradesClusterPanelSettings!.timeframe,
-          s.tradesClusterPanelSettings!.displayIntervalsCount,
+          s.tradesClusterPanelSettings?.timeframe ?? this.defaultSettings.timeframe,
+          s.tradesClusterPanelSettings?.displayIntervalsCount ?? this.defaultSettings.displayIntervalsCount,
         ),
         (settings, history) => ({settings, history})
       ),
