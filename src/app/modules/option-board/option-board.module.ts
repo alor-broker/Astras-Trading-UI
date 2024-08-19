@@ -20,6 +20,7 @@ import { OptionBoardChartsLayoutComponent } from "./components/option-board-char
 import { OptionBoardChartComponent } from "./components/option-board-chart/option-board-chart.component";
 import { BaseChartDirective } from "ng2-charts";
 import { NzAlertComponent } from "ng-zorro-antd/alert";
+import { InstrumentsModule } from "../instruments/instruments.module";
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { NzAlertComponent } from "ng-zorro-antd/alert";
         CdkDropList,
         LetDirective,
         BaseChartDirective,
-        NzAlertComponent
+        NzAlertComponent,
+        InstrumentsModule
     ],
   exports: [
     OptionBoardWidgetComponent

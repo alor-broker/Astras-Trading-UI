@@ -1,33 +1,82 @@
-<ng-container *ngIf="menuItems$ | async as menuItems">
-  <nz-dropdown-menu>
-    <ul nz-menu>
-      <ng-container *ngFor="let item of menuItems">
-        <li
-          *ngIf="item.subItems.length === 0; else subMenu"
-          nz-menu-item
-          (click)="selectItem(item)"
-        >
-          {{item.title}}
-        </li>
-
-        <ng-template #subMenu>
+<ng-container *transloco="let t; scope: 'instruments/settings'">
+  <ng-container *ngIf="menuItems$ | async as menuItems">
+    <nz-dropdown-menu>
+      <ul nz-menu>
+        <ng-container *ngFor="let item of menuItems">
           <li
-            nz-submenu
-            [nzTitle]="item.title"
-            (click)="selectItem(item)"
+            (click)="item.selectItem(item)"
+            *ngIf="item.subItems.length === 0; else subMenu"
+            nz-menu-item
           >
-            <ul>
-              <li
-                nz-menu-item
-                *ngFor="let subItem of item.subItems"
-                (click)="selectItem(subItem)"
-              >
-                {{subItem.title}}
-              </li>
-            </ul>
+            {{ item.title }}
           </li>
-        </ng-template>
+
+          <ng-template #subMenu>
+            <li
+              (click)="item.selectItem(item)"
+              [nzTitle]="item.title"
+              nz-submenu
+            >
+              <ul>
+                <li
+                  *ngFor="let subItem of item.subItems"
+                  (click)="subItem.selectItem(subItem)"
+                  nz-menu-item
+                >
+                  {{ subItem.title }}
+                </li>
+              </ul>
+            </li>
+          </ng-template>
+        </ng-container>
+      </ul>
+    </nz-dropdown-menu>
+
+    <nz-modal
+      (nzAfterOpen)="afterNewListDialogOpen()"
+      (nzOnCancel)="showNewListDialog = false"
+      [nzFooter]="null"
+      [nzOkDisabled]="!newListForm.valid"
+      [nzTitle]="t('instrumentsSettings.watchListPlaceholder')"
+      [nzVisible]="showNewListDialog"
+      [nzWidth]="300"
+      nzCentered
+      nzDraggable
+    >
+      <ng-container *nzModalContent>
+        <form [formGroup]="newListForm" [nzLayout]="'inline'" class="flex-nowrap" nz-form>
+          <nz-form-item class="flex-fill mr-5 mb-0">
+            <nz-form-control [nzErrorTip]="titleError">
+              <input
+                #titleInput
+                (keydown.enter)="addItemToNewList()"
+                [placeholder]="t('instrumentsSettings.watchListPlaceholder')"
+                class="flex-fill"
+                formControlName="title"
+                nz-input
+                type="text"/>
+
+              <ng-template #titleError>
+                <span *ngIf="newListForm.controls.title.errors?.existing; else commonError">{{ t('instrumentsSettings.watchListExistingError') }}</span>
+                <ng-template #commonError>
+                  <span *ngIf="newListForm.controls.title.errors;">{{ t('instrumentsSettings.watchListError') }}</span>
+                </ng-template>
+              </ng-template>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item class="mr-0">
+            <button
+              (click)="addItemToNewList()"
+              [disabled]="!newListForm.valid"
+              nz-button
+              nzType="primary"
+            >
+              <span nz-icon nzTheme="outline" nzType="check"></span>
+            </button>
+          </nz-form-item>
+        </form>
       </ng-container>
-    </ul>
-  </nz-dropdown-menu>
+    </nz-modal>
+  </ng-container>
 </ng-container>
+
