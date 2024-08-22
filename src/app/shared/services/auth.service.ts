@@ -26,6 +26,7 @@ import { ErrorHandlerService } from './handle-error/error-handler.service';
 import { BroadcastService } from './broadcast.service';
 import { EnvironmentService } from "./environment.service";
 import { HttpContextTokens } from "../constants/http.constants";
+import { LocalStorageSsoConstants } from "../constants/local-storage.constants";
 
 export const ForceLogoutMessageType = 'forceLogout';
 
@@ -44,7 +45,7 @@ interface UserState {
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly ssoTokenStorageKey = 'sso';
+  private readonly ssoTokenStorageKey = LocalStorageSsoConstants.TokenStorageKey;
   private readonly accountUrl = this.environmentService.clientDataUrl + '/auth/actions';
   private readonly ssoUrl = this.environmentService.ssoUrl;
   private readonly currentUserSub = new BehaviorSubject<UserState | null>(null);
