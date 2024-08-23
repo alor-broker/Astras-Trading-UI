@@ -230,6 +230,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
             Validators.max(this.validationOptions.tradesPanelSettings.tradesAggregationPeriodMs.max)
           ]
         ),
+        showOwnTrades: this.formBuilder.nonNullable.control(false),
       },
       { validators: Validators.required }
     ),
@@ -418,7 +419,8 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       newSettings.tradesPanelSettings = {
         minTradeVolumeFilter: Number(formValue.tradesPanelSettings!.minTradeVolumeFilter),
         hideFilteredTrades: formValue.tradesPanelSettings?.hideFilteredTrades!,
-        tradesAggregationPeriodMs: Number(formValue.tradesPanelSettings!.tradesAggregationPeriodMs)
+        tradesAggregationPeriodMs: Number(formValue.tradesPanelSettings!.tradesAggregationPeriodMs),
+        showOwnTrades: formValue.tradesPanelSettings?.showOwnTrades!,
       };
     }
 
@@ -500,7 +502,8 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       this.form.controls.tradesPanelSettings.setValue({
         minTradeVolumeFilter: settings.tradesPanelSettings.minTradeVolumeFilter,
         hideFilteredTrades: settings.tradesPanelSettings.hideFilteredTrades,
-        tradesAggregationPeriodMs: settings.tradesPanelSettings.tradesAggregationPeriodMs
+        tradesAggregationPeriodMs: settings.tradesPanelSettings.tradesAggregationPeriodMs,
+        showOwnTrades: settings.tradesPanelSettings.showOwnTrades ?? false
       });
     }
 
