@@ -44,7 +44,6 @@ export interface TradesPanelSettings {
   minTradeVolumeFilter: number;
   hideFilteredTrades: boolean;
   tradesAggregationPeriodMs: number;
-  showOwnTrades?: boolean;
 }
 
 export enum VolumeHighlightMode {

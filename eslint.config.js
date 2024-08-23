@@ -1,4 +1,5 @@
 // @ts-check
+const eslint = require("@eslint/js");
 const tseslint = require("typescript-eslint");
 const angular = require("angular-eslint");
 const stylistic = require("@stylistic/eslint-plugin")

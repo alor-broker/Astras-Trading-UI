@@ -61,7 +61,6 @@ import { ScalperOrderBookConstants } from "../constants/scalper-order-book.const
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { Order } from "../../../shared/models/orders/order.model";
 import { OrderMeta } from "../../../shared/models/orders/new-order.model";
-import { Trade } from "../../../shared/models/trades/trade.model";
 
 export interface ContextGetters {
   getVisibleRowsCount: (rowHeight: number) => number;
@@ -121,7 +120,6 @@ export class ScalperOrderBookDataContextService {
       ),
       currentOrders$: this.getCurrentOrdersStream(settings$, currentPortfolio$, localOrders$),
       trades$: this.getInstrumentTradesStream(settings$),
-      ownTrades$: this.getOwnTradesStream(settings$, currentPortfolio$),
       scaleFactor$,
 
       // ---------------------------------------------------
@@ -251,24 +249,6 @@ export class ScalperOrderBookDataContextService {
         return results;
       }),
       startWith([]),
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
-  }
-
-  private getOwnTradesStream(
-    settings$: Observable<ScalperOrderBookExtendedSettings>,
-    currentPortfolio$: Observable<PortfolioKey>
-  ): Observable<Trade[]> {
-    const getInstrumentTrades = (portfolioKey: PortfolioKey, instrumentKey: InstrumentKey): Observable<Trade[]> => {
-      return this.portfolioSubscriptionsService.getTradesSubscription(portfolioKey.portfolio, portfolioKey.exchange).pipe(
-        map(t => t.filter(i => i.symbol === instrumentKey.symbol && i.exchange === instrumentKey.exchange))
-      );
-    };
-
-    return settings$.pipe(
-      distinctUntilChanged((prev, curr) => isInstrumentEqual(prev.widgetSettings, curr.widgetSettings)),
-      mapWith(() => currentPortfolio$, (s, p) => ({ s, p })),
-      switchMap(x => getInstrumentTrades(x.p, x.s.widgetSettings)),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }

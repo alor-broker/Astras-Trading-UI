@@ -18,7 +18,6 @@
   "minTradeVolumeFilterLabel": "Show trades with volume from",
   "hideFilteredTradesLabel": "Hide filtered trades",
   "tradesAggregationPeriodMsLabel": "Accumulate trades over a period, msec.",
-  "showOwnTradesLabel": "Show own trades",
 
   "showTradesClustersPanelLabel": "Show clusters panel",
 

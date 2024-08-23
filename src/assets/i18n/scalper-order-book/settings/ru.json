@@ -18,7 +18,6 @@
   "minTradeVolumeFilterLabel": "Показывать сделки с объемом от",
   "hideFilteredTradesLabel": "Скрывать отфильтрованные сделки",
   "tradesAggregationPeriodMsLabel": "Складывать сделки за период, мсек.",
-  "showOwnTradesLabel": "Показывать свои сделки",
 
   "showTradesClustersPanelLabel": "Показывать панель кластеров",
 

@@ -37,8 +37,6 @@ import {
   AggregatedTradesIterator
 } from "../../utils/aggregated-trades-iterator";
 import { Side } from "../../../../shared/models/enums/side.model";
-import { Trade } from "../../../../shared/models/trades/trade.model";
-import { Position } from "../../../../shared/models/positions/position.model";
 
 interface LayerDrawer {
   zIndex: number;
@@ -84,9 +82,8 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly zIndexes = {
     gridLines: 0,
-    item: 15,
-    itemsConnector: 10,
-    ownTrade: 5,
+    item: 10,
+    itemsConnector: 5
   };
 
   private readonly tradeItemFontSettings = {
@@ -126,32 +123,28 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     );
 
-    combineLatest({
-      size: this.contentSize$,
-      priceItems: this.displayPriceItems$,
-      allTrades: this.dataContext.trades$,
-      ownTrades: this.dataContext.ownTrades$,
-      position: this.dataContext.position$,
-      panelSettings: panelSettings$,
-      themeSettings: this.themeService.getThemeSettings()
-    }).pipe(
+    combineLatest([
+      this.contentSize$,
+      this.displayPriceItems$,
+      this.dataContext.trades$,
+      panelSettings$,
+      this.themeService.getThemeSettings()
+    ]).pipe(
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(x => {
+    ).subscribe(([size, priceItems, trades, panelSettings, themeSettings]) => {
       const canvas = this.canvas?.nativeElement!;
       const context = canvas.getContext('2d')!;
 
       context.clearRect(0, 0, canvas.width, canvas.height);
-      canvas.width = x.size!.width;
-      canvas.height = x.priceItems.length * this.xAxisStep;
+      canvas.width = size!.width;
+      canvas.height = priceItems.length * this.xAxisStep;
 
       this.draw(
         canvas,
-        x.themeSettings,
-        x.panelSettings,
-        x.priceItems,
-        x.allTrades,
-        x.ownTrades,
-        x.position
+        themeSettings,
+        panelSettings,
+        priceItems,
+        trades
       );
     });
   }
@@ -188,9 +181,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     themeSettings: ThemeSettings,
     panelSettings: TradesPanelSettings,
     priceItems: BodyRow[],
-    allTrades: AllTradesItem[],
-    ownTrades: Trade[],
-    position: Position | null
+    orderedTrades: AllTradesItem[]
   ): void {
     const context = canvas.getContext('2d')!;
     const xScale = scaleLinear([0, canvas.width])
@@ -198,27 +189,13 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     const yScale = scaleLinear([0, canvas.height])
       .domain([0, priceItems.length]);
 
-    let layers: LayerDrawer[] = [
-      this.drawGridLines(priceItems, xScale, yScale, context, themeSettings.themeColors)
-    ];
+    let layers: LayerDrawer[] = [];
 
-    if(panelSettings.showOwnTrades ?? false) {
-      layers = [
-        ...layers,
-        ...this.drawOwnTrades(
-          priceItems,
-          this.filterOwnTrades(ownTrades, position),
-          xScale,
-          yScale,
-          context,
-          themeSettings.themeColors
-        )
-      ];
-    }
+    layers.push(this.drawGridLines(priceItems, xScale, yScale, context, themeSettings.themeColors));
 
     const itemsDraws: LayerDrawer[] = [];
     let prevItem: DrewItemMeta | null = null;
-    for (const trade of new CustomIteratorWrapper(() => new AggregatedTradesIterator(allTrades, panelSettings.tradesAggregationPeriodMs))) {
+    for (const trade of new CustomIteratorWrapper(() => new AggregatedTradesIterator(orderedTrades, panelSettings.tradesAggregationPeriodMs))) {
       if (trade == null) {
         continue;
       }
@@ -407,7 +384,6 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     return {
       zIndex: this.zIndexes.itemsConnector,
       draw: (): void => {
-        this.resetContext(context);
         context.beginPath();
         context.moveTo(this.getMetaCenterX(item1Meta)!, this.getMetaCenterY(item1Meta)!);
         context.lineTo(this.getMetaCenterX(item2Meta)!, this.getMetaCenterY(item2Meta)!);
@@ -456,7 +432,6 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     const yRadius = Math.max(xRadius, Math.ceil((yBottom - yTop) / 2));
 
     const draw = (): void => {
-      this.resetContext(context);
       context.beginPath();
       context.ellipse(xCenter, yCenter, xRadius, yRadius, 0, 0, 2 * Math.PI);
       context.fillStyle = isGhostTrade
@@ -504,12 +479,12 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     const rowMinIndex = item.rowMinIndex >= 0 ? item.rowMinIndex : item.rowMaxIndex;
     const rowMaxIndex = item.rowMaxIndex >= 0 ? item.rowMaxIndex : item.rowMinIndex;
 
-    const prevLeftX = prevItemMeta?.xLeft ?? (xScale(xScale.domain()[1]) - 1);
+    const prevLeftX = prevItemMeta?.xLeft ?? xScale(xScale.domain()[1]);
     const yTop = yScale(rowMaxIndex);
     const yBottom = yScale(rowMinIndex) + this.xAxisStep;
 
     const itemWidth = Math.max(4, Math.round(this.xAxisStep / 2));
-    const xLeft = Math.floor(prevLeftX - itemWidth);
+    const xLeft = Math.ceil(prevLeftX - itemWidth);
     const itemHeight = rowMinIndex === rowMaxIndex
       ? itemWidth
       : Math.floor(yBottom - yTop);
@@ -522,15 +497,8 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       if (isHidden) {
         return;
       }
-      this.resetContext(context);
-      context.beginPath();
-      context.roundRect(
-        this.getCanvasPx(xLeft),
-        this.getCanvasPx(itemTopY),
-        Math.floor(itemWidth),
-        Math.floor(itemHeight),
-        [2]
-      );
+
+      this.drawRoundedRect(xLeft, itemTopY, itemWidth, itemHeight, 2, context);
 
       context.fillStyle = isGhostTrade
         ? themeColors.componentBackground
@@ -558,18 +526,14 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     };
   }
 
-  private getCanvasPx(value: number, needBlurCorrection = true): number {
-    const rounded = Math.round(value);
-    if(!needBlurCorrection) {
-      return rounded;
-    }
-
-    // https://usefulangle.com/post/17/html5-canvas-drawing-1px-crisp-straight-lines
-    const correction = rounded > Math.floor(value)
-      ? -0.5
-      : 0.5;
-
-    return rounded + correction;
+  private drawRoundedRect(x: number, y: number, width: number, height: number, radius: number, context: CanvasRenderingContext2D): void {
+    context.beginPath();
+    context.moveTo(x + radius, y);
+    context.arcTo(x + width, y, x + width, y + height, radius);
+    context.arcTo(x + width, y + height, x, y + height, radius);
+    context.arcTo(x, y + height, x, y, radius);
+    context.arcTo(x, y, x + width, y, radius);
+    context.closePath();
   }
 
   private drawOuterItem(
@@ -593,7 +557,6 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     const yRadius = Math.max(xRadius, Math.ceil((yBottom - yTop) / 2));
 
     const draw = (): void => {
-      this.resetContext(context);
       context.beginPath();
       context.ellipse(xCenter, yCenter, xRadius, yRadius, 0, 0, 2 * Math.PI);
       context.strokeStyle = item.color === 'green' ? themeColors.buyColorBackground : themeColors.sellColorBackground;
@@ -627,10 +590,9 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       for (let i = 0; i < priceItems.length; i++) {
         const priceRow = priceItems[i];
         if(priceRow.isMinorLinePrice || priceRow.isMajorLinePrice) {
-          this.resetContext(context);
           context.beginPath();
           // plus 0.5 to fix line width. See https://stackoverflow.com/a/13879402
-          const y = this.getCanvasPx(yScale(i) + yRowOffset, !priceRow.isMajorLinePrice);
+          const y = Math.ceil(yScale(i) + yRowOffset) + 0.5;
           context.moveTo(xScale(0), y);
           context.lineTo(xScale(xScale.domain()[1]), y);
           context.strokeStyle = themeColors.tableGridColor;
@@ -664,99 +626,5 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private getCenter(start: number, end: number): number {
     return start + (end - start) / 2;
-  }
-
-  private drawOwnTrades(
-    priceItems: BodyRow[],
-    trades: Trade[],
-    xScale: ScaleLinear<number, number>,
-    yScale: ScaleLinear<number, number>,
-    context: CanvasRenderingContext2D,
-    themeColors: ThemeColors
-  ): LayerDrawer[] {
-    const drawers: LayerDrawer[] = [];
-
-    for (const trade of this.getAggregatedTrades(trades, priceItems)) {
-      drawers.push({
-        draw: () => {
-          const yTop = yScale(trade.priceIndex);
-          const itemText = trade.volume.toString();
-          context.textBaseline = 'middle';
-          context.font = `${this.tradeItemFontSettings.fontSize}px ${this.tradeItemFontSettings.fontFace}`;
-          const textMetrics = context.measureText(itemText);
-          const textWidth = Math.ceil(textMetrics.width);
-          const textMargins = this.margins.tradePoint.text.left + this.margins.tradePoint.text.right;
-          const itemWidth = Math.max(textWidth + textMargins, textMetrics.fontBoundingBoxAscent + textMetrics.fontBoundingBoxDescent, this.xAxisStep);
-          const xRight = xScale(xScale.domain()[1]) - 1;
-          const xLeft = Math.floor(xRight - itemWidth);
-          const itemHeight = Math.floor(this.xAxisStep);
-
-          this.resetContext(context);
-          context.beginPath();
-          context.roundRect(
-            this.getCanvasPx(xLeft),
-            this.getCanvasPx(yTop),
-            Math.round(itemWidth),
-            Math.round(itemHeight),
-            [2]
-          );
-
-          context.fillStyle = themeColors.componentBackground;
-          context.fill();
-
-          context.strokeStyle = themeColors.textColor;
-          context.stroke();
-
-          context.fillStyle = themeColors.textMaxContrastColor;
-          context.textAlign = 'center';
-          context.fillText(itemText, this.getCenter(xLeft, xRight), this.getCenter(yTop, yTop + itemHeight));
-        },
-        zIndex: this.zIndexes.ownTrade
-      });
-    }
-
-    return drawers;
-  }
-
-  private filterOwnTrades(trades: Trade[], position: Position | null): Trade[] {
-    if(position == null) {
-      return [];
-    }
-
-    return position.qtyTFuture > 0
-      ? trades.filter(t => t.side === Side.Buy)
-      : trades.filter(t => t.side === Side.Sell);
-  }
-
-  private getAggregatedTrades(trades: Trade[], priceItems: BodyRow[]): { priceIndex: number, volume: number }[] {
-    const aggregatedTrades = new Map<number, number>();
-
-    for (const trade of trades) {
-      let priceIndex = priceItems.findIndex(p => trade.price >= p.baseRange.min && trade.price <= p.baseRange.max);
-
-      if (priceIndex === -1) {
-        if (trade.price < priceItems[0].baseRange.max && trade.price > priceItems[priceItems.length - 1].baseRange.min) {
-          priceIndex = this.getNearestPriceIndex(trade.price, priceItems);
-        } else {
-          continue;
-        }
-      }
-
-      aggregatedTrades.set(
-        priceIndex,
-        (aggregatedTrades.get(priceIndex) ?? 0) + trade.qtyBatch
-      );
-    }
-
-    return Array.from(aggregatedTrades)
-      .map(([key, value]) => ({
-        priceIndex: key,
-        volume: value
-      }));
-  }
-
-  private resetContext(context: CanvasRenderingContext2D): void {
-    context.closePath();
-    context.lineWidth = 1;
   }
 }
