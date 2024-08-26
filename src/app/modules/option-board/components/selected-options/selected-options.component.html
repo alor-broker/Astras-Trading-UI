@@ -56,7 +56,10 @@
         </thead>
         <tbody>
         <ng-template nz-virtual-scroll let-option>
-          <tr (click)="rowClick(option, $event)" class="cursor-pointer">
+          <tr
+            (click)="rowClick(option, $event)"
+            (contextmenu)="openContextMenu($event, contextMenu, option)"
+            class="cursor-pointer">
             <td nzLeft>
               <a (click)="unselectOption($event, option)"
                  [nzTooltipMouseEnterDelay]="0.5"
@@ -106,6 +109,7 @@
             [nzColumn]="5"
             nzSize="small"
             nzLayout="vertical"
+            (contextmenu)="openContextMenu($event, contextMenu, option)"
           >
             <nz-descriptions-item
               [nzSpan]="2"
@@ -201,6 +205,8 @@
           </nz-descriptions>
         </div>
       </ng-template>
+
+      <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>
     </ng-container>
   </div>
 </ng-container>

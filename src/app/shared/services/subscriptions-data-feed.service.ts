@@ -1,5 +1,4 @@
 import { Inject, Injectable, OnDestroy } from '@angular/core';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { AuthService } from './auth.service';
 import {
