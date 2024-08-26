@@ -18,7 +18,7 @@ export interface OutcomingMessage {
 })
 export class MessageInputComponent {
   @ViewChild('inputElement', { static: true })
-  inputElement!: ElementRef<HTMLInputElement>;
+  inputElement!: ElementRef<HTMLTextAreaElement>;
 
   @Input()
   atsDisabled = false;
@@ -56,5 +56,8 @@ export class MessageInputComponent {
     if (this.inputElement.nativeElement.value !== this.text) {
       this.inputElement.nativeElement.value = this.text;
     }
+
+    this.inputElement.nativeElement.style.height = 'auto';
+    this.inputElement.nativeElement.style.height = this.inputElement.nativeElement.scrollHeight + 'px';
   }
 }

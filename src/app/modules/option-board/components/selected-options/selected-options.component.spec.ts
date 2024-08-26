@@ -22,6 +22,7 @@ import { OptionBoardService } from "../../services/option-board.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { LetDirective } from "@ngrx/component";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 
 describe('SelectedOptionsComponent', () => {
   let component: SelectedOptionsComponent;
@@ -38,6 +39,9 @@ describe('SelectedOptionsComponent', () => {
         mockComponent({
           selector: 'ats-input-number',
           inputs: ['step', 'allowNegative', 'allowDecimal', 'initialValue']
+        }),
+        mockComponent({
+          selector: 'ats-add-to-watchlist-menu'
         })
       ],
       providers: [
@@ -57,6 +61,13 @@ describe('SelectedOptionsComponent', () => {
           provide: ACTIONS_CONTEXT,
           useValue: {
             instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
+          }
+        },
+        {
+          provide: NzContextMenuService,
+          useValue: {
+            create: jasmine.createSpy('create').and.callThrough(),
+            close: jasmine.createSpy('close').and.callThrough()
           }
         },
       ]

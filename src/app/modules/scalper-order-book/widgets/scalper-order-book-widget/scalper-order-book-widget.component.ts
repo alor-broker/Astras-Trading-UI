@@ -112,6 +112,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
           minTradeVolumeFilter: getValueOrDefault(settings.tradesPanelSettings?.minTradeVolumeFilter ?? null, 0),
           hideFilteredTrades: getValueOrDefault(settings.tradesPanelSettings?.hideFilteredTrades ?? null, false),
           tradesAggregationPeriodMs: getValueOrDefault(settings.tradesPanelSettings?.tradesAggregationPeriodMs ?? null, 0),
+          showOwnTrades: getValueOrDefault(settings.tradesPanelSettings?.showOwnTrades ?? null, true),
         }
       }),
       this.dashboardContextService,

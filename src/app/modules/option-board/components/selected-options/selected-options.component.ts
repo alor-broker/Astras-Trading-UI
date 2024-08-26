@@ -4,7 +4,10 @@ import {
   Inject,
   Input
 } from '@angular/core';
-import { OptionBoardDataContext, OptionsSelection } from "../../models/option-board-data-context.model";
+import {
+  OptionBoardDataContext,
+  OptionsSelection
+} from "../../models/option-board-data-context.model";
 import { OptionBoardService } from "../../services/option-board.service";
 import {
   BehaviorSubject,
@@ -18,13 +21,19 @@ import {
   tap,
   timer,
 } from "rxjs";
-import { OptionKey, OptionSide } from "../../models/option-board.model";
+import {
+  OptionKey,
+  OptionSide
+} from "../../models/option-board.model";
 import {
   debounceTime,
   map
 } from "rxjs/operators";
 import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
-import { TranslatorFn, TranslatorService } from "../../../../shared/services/translator.service";
+import {
+  TranslatorFn,
+  TranslatorService
+} from "../../../../shared/services/translator.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -35,6 +44,8 @@ import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { OptionBoardDataContextFactory } from "../../utils/option-board-data-context-factory";
+import { AddToWatchlistMenuComponent } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
+import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 
 interface OptionTranscription {
   ticker: string;
@@ -166,6 +177,7 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
     protected readonly widgetSettingsService: WidgetSettingsService,
     @Inject(ACTIONS_CONTEXT)
     protected readonly actionsContext: ActionsContext,
+    protected readonly nzContextMenuService: NzContextMenuService,
     protected readonly destroyRef: DestroyRef
   ) {
     super(widgetSettingsService, destroyRef);
@@ -286,6 +298,21 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
         this.dataContext.setParameters(targetOption, { quantity: quantity ?? 1 });
       }
     });
+  }
+
+  openContextMenu($event: MouseEvent, menu: AddToWatchlistMenuComponent, selectedRow: DetailsDisplay): void {
+    if(menu.menuRef == null) {
+      $event.preventDefault();
+      return;
+    }
+
+    this.nzContextMenuService.close(true);
+    menu.itemToAdd = {
+      symbol: selectedRow.symbol,
+      exchange: selectedRow.exchange
+    };
+
+    this.nzContextMenuService.create($event, menu.menuRef);
   }
 
   private getOptionTranscription(optionTicker: string, baseTicker: string): OptionTranscription {

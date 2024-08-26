@@ -5,6 +5,7 @@
   "selectColumnsLabel": "Колонки инструментов",
   "selectColumnsPlaceholder": "Выберите...",
   "watchListError": "Введите название списка не более 100 символов",
+  "watchListExistingError": "Список с таким названием уже существует",
   "watchListPlaceholder": "Название нового списка",
   "addWatchlistBtnTooltip": "Добавить новый список",
   "standardListPlaceholder": "Выберите стандартный список",
