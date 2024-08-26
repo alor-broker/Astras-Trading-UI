@@ -2,8 +2,8 @@ import {
   Component,
   OnInit
 } from '@angular/core';
-import { BroadcastService } from '../../../../shared/services/broadcast.service';
-import { ForceLogoutMessageType } from '../../../../shared/services/auth.service';
+import { LocalStorageService } from "../../../../shared/services/local-storage.service";
+import { LocalStorageSsoConstants } from "../../../../shared/constants/local-storage.constants";
 
 @Component({
   selector: 'ats-external-logout',
@@ -11,29 +11,12 @@ import { ForceLogoutMessageType } from '../../../../shared/services/auth.service
   styleUrls: ['./external-logout.component.less']
 })
 export class ExternalLogoutComponent implements OnInit {
-  constructor(private readonly broadcastService: BroadcastService) {
+  constructor(private readonly localStorageService: LocalStorageService) {
   }
 
   ngOnInit(): void {
-    const eventListener = (e: any): void => {
-      try {
-        const json = JSON.parse(e.data) as { source: string } | undefined;
-        const origins = [
-          'localhost:8001',
-          'login.dev.alor.ru',
-          'login-dev.alor.ru',
-          'login.alor.ru',
-        ];
-
-        const currentOrigin = new URL(e.origin);
-        if (origins.includes(currentOrigin.host) && json?.source === 'sso') {
-          this.broadcastService.publish({ messageType: ForceLogoutMessageType });
-          window.removeEventListener('message', eventListener);
-        }
-      } catch {
-      }
-    };
-
-    window.addEventListener('message', eventListener);
+    // This component is activated from sso page. It should end current session when user send logout in other browser tab.
+    // Logout logic is implemented in AuthService based on localStorage event.
+    this.localStorageService.removeItem(LocalStorageSsoConstants.TokenStorageKey);
   }
 }

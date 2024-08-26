@@ -4,6 +4,7 @@ import { BoardsService } from './boards.service';
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { EnvironmentService } from "../../../shared/services/environment.service";
 
 describe('BoardsService', () => {
   let service: BoardsService;
@@ -16,7 +17,13 @@ describe('BoardsService', () => {
             provide: ErrorHandlerService,
             useValue: {
                 handleError: jasmine.createSpy('handleError').and.callThrough()
-            }
+            },
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
+          }
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
