@@ -1,0 +1,21 @@
+@import 'theme-mixin';
+
+.themeMixin({
+  :host {
+    .input {
+      textarea {
+        min-height: @height-lg;
+      }
+    }
+  }
+});
+
+
+.input {
+  textarea {
+    height:auto;
+    resize: none;
+    overflow-y:hidden;
+  }
+}
+
