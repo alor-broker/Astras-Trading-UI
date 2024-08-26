@@ -58,6 +58,7 @@ describe('ScalperOrderBookBodyComponent', () => {
               currentOrders$: new Subject(),
               currentPortfolio$: new Subject(),
               trades$: new Subject(),
+              ownTrades$: new Subject(),
               orderBookBody$: new Subject(),
               displayRange$: new Subject(),
               workingVolume$: new Subject(),
