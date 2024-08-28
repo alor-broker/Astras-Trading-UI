@@ -49,6 +49,7 @@ import { WidgetsGalleryComponent } from './components/widgets-gallery/widgets-ga
 import { NzDividerModule } from "ng-zorro-antd/divider";
 import { BondScreenerModule } from "../bond-screener/bond-screener.module";
 import { AiChatModule } from "../ai-chat/ai-chat.module";
+import { SettingsLoadErrorDialogComponent } from "./components/settings-load-error-dialog/settings-load-error-dialog.component";
 
 @NgModule({
   declarations: [
@@ -66,45 +67,46 @@ import { AiChatModule } from "../ai-chat/ai-chat.module";
     EmptyPortfoliosWarningModalWidgetComponent,
     WidgetsGalleryComponent
   ],
-  imports: [
-    DashboardRoutingModule,
-    SharedModule,
-    OrderbookModule,
-    LightChartModule,
-    InstrumentsModule,
-    BlotterModule,
-    InfoModule,
-    TerminalSettingsModule,
-    JoyrideModule.forRoot(),
-    AllTradesModule,
-    NewsModule,
-    ExchangeRateModule,
-    TechChartModule,
-    AllInstrumentsModule,
-    NotificationsModule,
-    FeedbackModule,
-    ApplicationMetaModule,
-    NzInputModule,
-    ExternalLinkModule,
-    OrdersBasketModule,
-    ScalperOrderBookModule,
-    NzDrawerModule,
-    TreemapModule,
-    RibbonModule,
-    EventsCalendarModule,
-    OptionBoardModule,
-    ArbitrageSpreadModule,
-    PortfolioSummaryModule,
-    NzSegmentedModule,
-    DragDropModule,
-    OrderCommandsModule,
-    InstrumentsCorrelationModule,
-    LetDirective,
-    NzDividerModule,
-    BondScreenerModule,
-    AiChatModule
-    // components
-  ],
+    imports: [
+        DashboardRoutingModule,
+        SharedModule,
+        OrderbookModule,
+        LightChartModule,
+        InstrumentsModule,
+        BlotterModule,
+        InfoModule,
+        TerminalSettingsModule,
+        JoyrideModule.forRoot(),
+        AllTradesModule,
+        NewsModule,
+        ExchangeRateModule,
+        TechChartModule,
+        AllInstrumentsModule,
+        NotificationsModule,
+        FeedbackModule,
+        ApplicationMetaModule,
+        NzInputModule,
+        ExternalLinkModule,
+        OrdersBasketModule,
+        ScalperOrderBookModule,
+        NzDrawerModule,
+        TreemapModule,
+        RibbonModule,
+        EventsCalendarModule,
+        OptionBoardModule,
+        ArbitrageSpreadModule,
+        PortfolioSummaryModule,
+        NzSegmentedModule,
+        DragDropModule,
+        OrderCommandsModule,
+        InstrumentsCorrelationModule,
+        LetDirective,
+        NzDividerModule,
+        BondScreenerModule,
+        AiChatModule,
+        // components
+        SettingsLoadErrorDialogComponent,
+    ],
   providers: [
     OnboardingService
   ]

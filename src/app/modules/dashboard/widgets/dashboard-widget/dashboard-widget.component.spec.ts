@@ -31,7 +31,8 @@ describe('DashboardWidgetComponent', () => {
         mockComponent({ selector: 'ats-news-modal-widget' }),
         mockComponent({ selector: 'ats-feedback-widget' }),
         mockComponent({ selector: 'ats-application-updated-widget' }),
-        mockComponent({ selector: 'ats-empty-portfolios-warning-modal-widget' })
+        mockComponent({ selector: 'ats-empty-portfolios-warning-modal-widget' }),
+        mockComponent({ selector: 'ats-settings-load-error-dialog', inputs:['visible'] })
       ],
       providers: [
         { provide: OnboardingService, useValue: spyOnboarding },

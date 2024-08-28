@@ -50,16 +50,20 @@ export class WidgetsSettingsBrokerService {
       settings$
     ]).pipe(
       switchMap(([meta, settings]) => {
+        if(settings == null) {
+          return of(null);
+        }
+
         if (meta.lastResetTimestamp != null) {
-          if (!!settings && settings.some(s => meta.lastResetTimestamp! > s.meta.timestamp)) {
+          if (settings.some(s => meta.lastResetTimestamp! > s.meta.timestamp)) {
             // clean settings after reset
             return this.remoteStorageService.removeGroup(this.groupKey).pipe(
-              map(() => null)
+              map(() => [])
             );
           }
         }
 
-        if (!!settings && settings.length > 0) {
+        if (settings.length > 0) {
           return this.widgetSettingsDesktopMigrationManager.applyMigrations<WidgetSettings[]>(
             settings.map(x => x.value as WidgetSettings[]),
             migrated => this.saveSettings(migrated)
@@ -68,7 +72,7 @@ export class WidgetsSettingsBrokerService {
           );
         }
 
-        return of(null);
+        return of([]);
       }),
       take(1)
     );

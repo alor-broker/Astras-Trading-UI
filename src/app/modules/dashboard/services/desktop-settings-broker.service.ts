@@ -37,6 +37,10 @@ import { WidgetsLocalStateInternalActions } from "../../../store/widgets-local-s
 import { GlobalLoadingIndicatorService } from "../../../shared/services/global-loading-indicator.service";
 import { GuidGenerator } from "../../../shared/utils/guid";
 
+export interface InitSettingsBrokersOptions {
+  onSettingsReadError: () => void;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -55,15 +59,15 @@ export class DesktopSettingsBrokerService {
   ) {
   }
 
-  initSettingsBrokers(): void {
-    this.initTerminalSettingsBroker();
-    this.initWidgetSettingsBroker();
-    this.initDashboardSettingsBroker();
+  initSettingsBrokers(options: InitSettingsBrokersOptions): void {
+    this.initTerminalSettingsBroker(options);
+    this.initWidgetSettingsBroker(options);
+    this.initDashboardSettingsBroker(options);
 
     this.checkDirtyWidgetSettings();
   }
 
-  private initDashboardSettingsBroker(): void {
+  private initDashboardSettingsBroker(options: InitSettingsBrokersOptions): void {
     this.addActionSubscription(
       DashboardsEventsActions.updated,
       action => {
@@ -77,12 +81,17 @@ export class DesktopSettingsBrokerService {
     this.dashboardSettingsBrokerService.readSettings().pipe(
       take(1)
     ).subscribe(dashboards => {
-      this.store.dispatch(DashboardsInternalActions.init({ dashboards: dashboards ?? [] }));
+      if(dashboards == null) {
+        options.onSettingsReadError();
+      } else {
+        this.store.dispatch(DashboardsInternalActions.init({ dashboards: dashboards.settings}));
+      }
+
       this.globalLoadingIndicatorService.releaseLoading(loadingId);
     });
   }
 
-  private initWidgetSettingsBroker(): void {
+  private initWidgetSettingsBroker(options: InitSettingsBrokersOptions): void {
     this.addActionSubscription(
       WidgetSettingsServiceActions.remove,
       action => this.widgetsSettingsBrokerService.removeSettings(action.settingGuids).subscribe()
@@ -119,12 +128,17 @@ export class DesktopSettingsBrokerService {
     this.widgetsSettingsBrokerService.readSettings().pipe(
       take(1)
     ).subscribe(settings => {
-      this.store.dispatch(WidgetSettingsInternalActions.init({ settings: settings ?? [] }));
+      if(settings == null) {
+        options.onSettingsReadError();
+      } else {
+        this.store.dispatch(WidgetSettingsInternalActions.init({ settings: settings }));
+      }
+
       this.globalLoadingIndicatorService.releaseLoading(loadingId);
     });
   }
 
-  private initTerminalSettingsBroker(): void {
+  private initTerminalSettingsBroker(options: InitSettingsBrokersOptions): void {
     this.addActionSubscription(
       TerminalSettingsServicesActions.update,
       () => {
@@ -155,7 +169,12 @@ export class DesktopSettingsBrokerService {
     this.terminalSettingsBrokerService.readSettings().pipe(
       take(1)
     ).subscribe(settings => {
-      this.store.dispatch(TerminalSettingsInternalActions.init({ settings }));
+      if(settings == null) {
+        options.onSettingsReadError();
+      } else {
+        this.store.dispatch(TerminalSettingsInternalActions.init({ settings: settings.settings }));
+      }
+
       this.globalLoadingIndicatorService.releaseLoading(loadingId);
     });
   }

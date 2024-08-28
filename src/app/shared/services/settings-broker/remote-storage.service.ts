@@ -1,10 +1,16 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import {Observable, take} from "rxjs";
-import {map} from "rxjs/operators";
-import {ErrorHandlerService} from "../handle-error/error-handler.service";
-import {catchHttpError} from "../../utils/observable-helper";
 import {
+  Observable,
+  retry,
+  take
+} from "rxjs";
+import { map } from "rxjs/operators";
+import { ErrorHandlerService } from "../handle-error/error-handler.service";
+import { catchHttpError } from "../../utils/observable-helper";
+import {
+  GetRecordResult,
+  GetRecordStatus,
   RecordMeta,
   StorageRecord
 } from "../../models/settings-broker.model";
@@ -35,7 +41,7 @@ export class RemoteStorageService {
   ) {
   }
 
-  getRecord(key: string): Observable<StorageRecord | null> {
+  getRecord(key: string, retryCount = 3): Observable<GetRecordResult> {
     return this.httpClient.get<RemoteStorageItem>(
       this.baseUrl,
       {
@@ -45,29 +51,46 @@ export class RemoteStorageService {
         }
       }
     ).pipe(
+      retry({count: retryCount, delay: 500}),
       catchHttpError<RemoteStorageItem | null>(null, this.errorHandlerService),
       map(r => {
-        if (!!r && !!r.UserSettings) {
-          try {
-            return {
+        if(r == null) {
+          return {
+            status: GetRecordStatus.Error,
+            record: null
+          };
+        }
+
+        if(r.UserSettings == null) {
+          return {
+            status: GetRecordStatus.NotFound,
+            record: null
+          };
+        }
+
+        try {
+          return {
+            status: GetRecordStatus.Success,
+            record: {
               key: r.UserSettings.Key,
               meta: JSON.parse(r.UserSettings.Description) as RecordMeta,
               value: JSON.parse(r.UserSettings.Content) as unknown
-            };
-          } catch (e: any) {
-            this.errorHandlerService.handleError(e);
+            }
+          };
+        } catch (e: any) {
+          this.errorHandlerService.handleError(e);
 
-            return null;
-          }
+          return {
+            status: GetRecordStatus.Error,
+            record: null
+          };
         }
-
-        return null;
       }),
       take(1)
     );
   }
 
-  getGroup(groupKey: string): Observable<StorageRecord[] | null> {
+  getGroup(groupKey: string, retryCount = 3): Observable<StorageRecord[] | null> {
     return this.httpClient.get<UserSettings[]>(
       `${this.baseUrl}/group/${groupKey}`,
       {
@@ -76,6 +99,7 @@ export class RemoteStorageService {
         }
       }
     ).pipe(
+      retry({count: retryCount, delay: 500}),
       catchHttpError<UserSettings[] | null>(null, this.errorHandlerService),
       map(r => {
         if (!r) {

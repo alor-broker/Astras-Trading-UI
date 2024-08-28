@@ -26,6 +26,8 @@ import { InstrumentKey } from "../../../../shared/models/instruments/instrument-
   ]
 })
 export class DashboardWidgetComponent implements OnInit, ActionsContext {
+  showSettingsLoadDialog = false;
+
   constructor(
     private readonly store: Store,
     private readonly onboarding: OnboardingService,
@@ -54,7 +56,10 @@ export class DashboardWidgetComponent implements OnInit, ActionsContext {
   }
 
   private initDashboard(): void {
-    this.desktopSettingsBrokerService.initSettingsBrokers();
+    this.desktopSettingsBrokerService.initSettingsBrokers({
+      onSettingsReadError: () => this.showSettingsLoadDialog = true
+    });
+
     this.store.dispatch(PortfoliosInternalActions.init());
     this.store.dispatch(WidgetsLocalStateInternalActions.init());
     this.onboarding.start();

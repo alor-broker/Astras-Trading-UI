@@ -16,6 +16,11 @@ import {
   map
 } from "rxjs/operators";
 import { TerminalSettingsDesktopMigrationManager } from "../../../modules/settings-migration/terminal-settings/terminal-settings-desktop-migration-manager";
+import { GetRecordStatus } from "../../models/settings-broker.model";
+
+export interface ReadTerminalSettingsResult {
+  settings: TerminalSettings | null;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -35,20 +40,29 @@ export class TerminalSettingsBrokerService {
     return 'terminal-settings';
   }
 
-  readSettings(): Observable<TerminalSettings | null> {
+  readSettings(): Observable<ReadTerminalSettingsResult | null> {
     return this.remoteStorageService.getRecord(this.settingsKey).pipe(
       take(1),
       switchMap(settings => {
-        if (!!settings) {
-          return this.terminalSettingsDesktopMigrationManager.applyMigrations<TerminalSettings>(
-            settings.value,
-            migrated => this.saveSettings(migrated)
-          ).pipe(
-            map(x => x.updatedData)
-          );
+        if (settings.status === GetRecordStatus.Error) {
+          return of(null);
         }
 
-        return of(null);
+        if (settings.status === GetRecordStatus.NotFound || settings.record == null) {
+          return of({
+            settings: null
+          });
+        }
+
+        return this.terminalSettingsDesktopMigrationManager.applyMigrations<TerminalSettings>(
+          settings.record.value,
+          migrated => this.saveSettings(migrated)
+        ).pipe(
+          map(x => ({
+              settings: x.updatedData
+            })
+          )
+        );
       }),
       take(1)
     );
