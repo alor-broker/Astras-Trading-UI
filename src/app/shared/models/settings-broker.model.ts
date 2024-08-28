@@ -7,3 +7,14 @@ export interface StorageRecord {
   meta: RecordMeta;
   value: any;
 }
+
+export enum GetRecordStatus {
+  Success = 'success',
+  NotFound = 'notFound',
+  Error = 'error'
+}
+
+export interface GetRecordResult {
+  status: GetRecordStatus;
+  record: StorageRecord | null;
+}

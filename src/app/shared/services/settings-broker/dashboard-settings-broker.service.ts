@@ -18,6 +18,11 @@ import {
 } from "rxjs/operators";
 import { ApplicationMetaService } from "../application-meta.service";
 import { DashboardSettingsDesktopMigrationManager } from "../../../modules/settings-migration/dashboard-settings/dashboard-settings-desktop-migration-manager";
+import { GetRecordStatus } from "../../models/settings-broker.model";
+
+export interface ReadDashboardSettingsResult {
+  settings: Dashboard[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +43,7 @@ export class DashboardSettingsBrokerService {
     return 'dashboards-collection';
   }
 
-  readSettings(): Observable<Dashboard[] | null> {
+  readSettings(): Observable<ReadDashboardSettingsResult | null> {
     const settings$ = this.remoteStorageService.getRecord(this.settingsKey).pipe(
       take(1)
     );
@@ -48,22 +53,32 @@ export class DashboardSettingsBrokerService {
       settings$
     ]).pipe(
       switchMap(([meta, settings]) => {
+        if (settings.status === GetRecordStatus.Error) {
+          return of(null);
+        }
+
+        if (settings.status === GetRecordStatus.NotFound || settings.record == null) {
+          return of({
+            settings: []
+          });
+        }
+
         if (meta.lastResetTimestamp != null) {
-          if (!!settings && meta.lastResetTimestamp > settings.meta.timestamp) {
-            return of(null);
+          if (meta.lastResetTimestamp > settings.record.meta.timestamp) {
+            return of({
+              settings: []
+            });
           }
         }
 
-        if (!!settings) {
-          return this.dashboardSettingsMigrationManager.applyMigrations<Dashboard[]>(
-            settings.value,
-            migrated => this.saveSettings(migrated)
-          ).pipe(
-            map(x => x.updatedData)
-          );
-        }
-
-        return of(null);
+        return this.dashboardSettingsMigrationManager.applyMigrations<Dashboard[]>(
+          settings.record.value,
+          migrated => this.saveSettings(migrated)
+        ).pipe(
+          map(x => ({
+            settings: x.updatedData
+          }))
+        );
       }),
       take(1)
     );
