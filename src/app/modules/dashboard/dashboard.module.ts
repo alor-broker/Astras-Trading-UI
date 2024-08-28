@@ -104,8 +104,8 @@ import { SettingsLoadErrorDialogComponent } from "./components/settings-load-err
         NzDividerModule,
         BondScreenerModule,
         AiChatModule,
-        SettingsLoadErrorDialogComponent,
         // components
+        SettingsLoadErrorDialogComponent,
     ],
   providers: [
     OnboardingService
