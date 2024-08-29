@@ -4,6 +4,7 @@ import { InstrumentInfoComponent } from './instrument-info.component';
 import {QuotesService} from "../../../../shared/services/quotes.service";
 import {Subject} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
+import { EnvironmentService } from "../../../../shared/services/environment.service";
 
 describe('InstrumentInfoComponent', () => {
   let component: InstrumentInfoComponent;
@@ -24,7 +25,13 @@ describe('InstrumentInfoComponent', () => {
           useValue: {
             getInstrumentPositionSubscription: jasmine.createSpy('getInstrumentPositionSubscription').and.returnValue(new Subject())
           }
-        }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            alorIconsStorageUrl: ''
+          }
+        },
       ]
     });
     fixture = TestBed.createComponent(InstrumentInfoComponent);

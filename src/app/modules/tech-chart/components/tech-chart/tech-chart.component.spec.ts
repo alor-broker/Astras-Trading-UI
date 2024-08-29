@@ -184,7 +184,8 @@ describe('TechChartComponent', () => {
           useValue: {
             removeItem: jasmine.createSpy('removeItem').and.callThrough(),
             getStringItem: jasmine.createSpy('getStringItem').and.returnValue(''),
-            getItem: jasmine.createSpy('getItem').and.returnValue(undefined)
+            getItem: jasmine.createSpy('getItem').and.returnValue(undefined),
+            onOuterChange: jasmine.createSpy('onOuterChange').and.returnValue(new Subject())
           }
         },
         {

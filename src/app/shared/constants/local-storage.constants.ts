@@ -27,3 +27,7 @@ export class LocalStorageLoggingConstants {
   static DeviceStorageKey = 'log.device';
   static BrowserStorageKey = 'log.browser';
 }
+
+export class LocalStorageSsoConstants {
+  static TokenStorageKey = 'sso';
+}

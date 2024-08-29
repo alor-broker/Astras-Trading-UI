@@ -12,6 +12,11 @@ const routes: Routes = [
     path: 'logout',
     component: ExternalLogoutComponent,
     pathMatch: 'full'
+  },
+  {
+    path: 'logout2',
+    redirectTo: 'logout',
+    pathMatch: 'full'
   }
 ];
 

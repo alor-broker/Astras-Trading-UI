@@ -4,7 +4,7 @@ import {
 } from '@angular/core/testing';
 
 import { ExternalLogoutComponent } from './external-logout.component';
-import { BroadcastService } from '../../../../shared/services/broadcast.service';
+import { LocalStorageService } from "../../../../shared/services/local-storage.service";
 
 describe('ExternalLogoutComponent', () => {
   let component: ExternalLogoutComponent;
@@ -15,9 +15,9 @@ describe('ExternalLogoutComponent', () => {
       declarations: [ExternalLogoutComponent],
       providers: [
         {
-          provide: BroadcastService,
+          provide: LocalStorageService,
           useValue: {
-            publish: jasmine.createSpy('publish').and.callThrough()
+            removeItem: jasmine.createSpy('removeItem').and.callThrough()
           }
         }
       ]

@@ -1,9 +1,20 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {Observable, Subject} from "rxjs";
+import {
+  fromEvent,
+  Observable,
+  shareReplay,
+  Subject
+} from "rxjs";
 import {filter, map, startWith} from "rxjs/operators";
 
 export interface LocalStorageChanges {
   key: string;
+}
+
+export interface OuterChanges {
+  key: string | null;
+  oldValue: string | null;
+  newValue: string | null;
 }
 
 @Injectable({
@@ -11,6 +22,7 @@ export interface LocalStorageChanges {
 })
 export class LocalStorageService implements OnDestroy {
   private readonly changes = new Subject<LocalStorageChanges>();
+  private outerChanges?: Observable<OuterChanges>;
 
   ngOnDestroy(): void {
     this.changes.complete();
@@ -51,6 +63,24 @@ export class LocalStorageService implements OnDestroy {
       map(changes => this.getItem<T>(changes.key)),
       startWith(this.getItem<T>(key))
     );
+  }
+
+  public onOuterChange(): Observable<OuterChanges> {
+    if(this.outerChanges == null) {
+      this.outerChanges = fromEvent(window, 'storage').pipe(
+        map(event => {
+          const e = event as StorageEvent;
+          return {
+            key: e.key,
+            newValue: e.newValue,
+            oldValue: e.oldValue
+          };
+        }),
+        shareReplay({bufferSize: 1, refCount: true})
+      );
+    }
+
+    return this.outerChanges;
   }
 
   public removeItem(key: string): void {

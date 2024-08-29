@@ -4,9 +4,11 @@ import {discardPeriodicTasks, fakeAsync, TestBed, tick} from '@angular/core/test
 import {RouterTestingModule} from '@angular/router/testing';
 import {AuthService} from './auth.service';
 import {LocalStorageService} from "./local-storage.service";
-import {Subject, take} from "rxjs";
+import {
+  Subject,
+  take
+} from "rxjs";
 import {ErrorHandlerService} from './handle-error/error-handler.service';
-import {BroadcastService} from './broadcast.service';
 import { EnvironmentService } from "./environment.service";
 
 describe('AuthService', () => {
@@ -24,10 +26,11 @@ describe('AuthService', () => {
     localStorageServiceSpy = {
       getItem: jasmine.createSpy('getItem').and.returnValue(undefined),
       setItem: jasmine.createSpy('setItem').and.callThrough(),
-      removeItem: jasmine.createSpy('removeItem').and.callThrough()
+      removeItem: jasmine.createSpy('removeItem').and.callThrough(),
+      onOuterChange: jasmine.createSpy('onOuterChange').and.returnValue(new Subject()),
     };
 
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
     imports: [],
     providers: [
         AuthService,
@@ -48,12 +51,6 @@ describe('AuthService', () => {
             provide: ErrorHandlerService,
             useValue: {
                 handleError: jasmine.createSpy('handleError').and.callThrough()
-            }
-        },
-        {
-            provide: BroadcastService,
-            useValue: {
-                subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
             }
         },
         {

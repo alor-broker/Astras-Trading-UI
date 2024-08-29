@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { EnvironmentService } from "./environment.service";
 
 describe('PortfolioSubscriptionsService', () => {
   let service: PortfolioSubscriptionsService;
@@ -30,6 +31,12 @@ describe('PortfolioSubscriptionsService', () => {
             useValue: {
                 handleError: jasmine.createSpy('handleError').and.callThrough()
             }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
+          }
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()

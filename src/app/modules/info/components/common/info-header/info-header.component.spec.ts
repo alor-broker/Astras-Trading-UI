@@ -3,6 +3,7 @@ import { ExchangeInfo } from '../../../models/exchange-info.model';
 
 import { InfoHeaderComponent } from './info-header.component';
 import { ngZorroMockComponents } from "../../../../../shared/utils/testing";
+import { EnvironmentService } from "../../../../../shared/services/environment.service";
 
 describe('InfoHeaderComponent', () => {
   let component: InfoHeaderComponent;
@@ -27,6 +28,14 @@ describe('InfoHeaderComponent', () => {
       declarations: [
         InfoHeaderComponent,
         ...ngZorroMockComponents
+      ],
+      providers: [
+        {
+          provide: EnvironmentService,
+          useValue: {
+            alorIconsStorageUrl: ''
+          }
+        }
       ]
     })
     .compileComponents();

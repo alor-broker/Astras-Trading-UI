@@ -21,6 +21,7 @@ describe('MobileSettingsBrokerService', () => {
             setItem: jasmine.createSpy('setItem').and.callThrough(),
             getItem: jasmine.createSpy('getItem').and.returnValue(undefined),
             removeItem: jasmine.createSpy('removeItem').and.callThrough(),
+            onOuterChange: jasmine.createSpy('onOuterChange').and.returnValue(new Subject()),
           }
         },
         {

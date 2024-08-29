@@ -23,11 +23,9 @@ import {
   mapWith
 } from '../utils/observable-helper';
 import { ErrorHandlerService } from './handle-error/error-handler.service';
-import { BroadcastService } from './broadcast.service';
 import { EnvironmentService } from "./environment.service";
 import { HttpContextTokens } from "../constants/http.constants";
-
-export const ForceLogoutMessageType = 'forceLogout';
+import { LocalStorageSsoConstants } from "../constants/local-storage.constants";
 
 interface SsoToken {
   refreshToken: string;
@@ -44,7 +42,7 @@ interface UserState {
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly ssoTokenStorageKey = 'sso';
+  private readonly ssoTokenStorageKey = LocalStorageSsoConstants.TokenStorageKey;
   private readonly accountUrl = this.environmentService.clientDataUrl + '/auth/actions';
   private readonly ssoUrl = this.environmentService.ssoUrl;
   private readonly currentUserSub = new BehaviorSubject<UserState | null>(null);
@@ -101,8 +99,7 @@ export class AuthService {
     private readonly http: HttpClient,
     private readonly localStorage: LocalStorageService,
     private readonly window: Window,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly broadcastService: BroadcastService
+    private readonly errorHandlerService: ErrorHandlerService
   ) {
     const token = localStorage.getItem<SsoToken>(this.ssoTokenStorageKey);
     this.setCurrentUser({
@@ -111,7 +108,14 @@ export class AuthService {
       isExited: false
     });
 
-    broadcastService.subscribe(ForceLogoutMessageType).subscribe(() => {
+    this.localStorage.onOuterChange().pipe(
+      filter(e =>
+        // when token has been removed
+        e.key === this.ssoTokenStorageKey
+        && e.newValue == null
+        && e.oldValue != null
+      )
+    ).subscribe(() => {
       this.setCurrentUser({
         ssoToken: null,
         user: null,
