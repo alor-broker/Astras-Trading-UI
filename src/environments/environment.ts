@@ -47,6 +47,9 @@ export const environment = {
     bankroll: 'https://lk.alor.ru/operations/money',
     services: 'https://lk.alor.ru/products/services',
     videoTutorial: 'https://www.youtube.com/watch?v=Jn0rLQlcAE0&list=PLMmnmN5fr5OQdclMyRVqIzL6RG7-LlqG3'
+  },
+  features: {
+    aiChat: true
   }
 };
 

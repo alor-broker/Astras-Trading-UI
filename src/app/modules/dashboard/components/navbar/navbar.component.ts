@@ -49,6 +49,7 @@ export class NavbarComponent implements OnInit {
   helpLink$!: Observable<string | null>;
   galleryVisible = false;
   aiChatVisible = false;
+  aiChatAvailable = this.environmentService.features.aiChat;
 
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;

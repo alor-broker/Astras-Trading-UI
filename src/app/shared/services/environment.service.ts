@@ -88,6 +88,10 @@ export class EnvironmentService {
     return environment.externalLinks;
   }
 
+  get features(): Record<string, boolean> {
+    return environment.features;
+  }
+
   private getDebugStringRecord(key: string): string | null {
     return this.localStorageService.getStringItem(`debug.${key}`);
   }

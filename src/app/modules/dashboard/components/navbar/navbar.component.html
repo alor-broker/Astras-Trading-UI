@@ -120,7 +120,7 @@
       <div class="notifications">
         <ats-notification-button></ats-notification-button>
       </div>
-      <div>
+      <div *ngIf="aiChatAvailable">
         <button
           nz-button
           [nzType]="'text'"
