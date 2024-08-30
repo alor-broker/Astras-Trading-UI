@@ -95,6 +95,9 @@ describe('NavbarComponent', () => {
               releases: '',
               support: '',
               help: ''
+            },
+            features: {
+              aiChat: true
             }
           }
         },
