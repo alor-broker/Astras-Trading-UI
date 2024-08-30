@@ -17,6 +17,7 @@ describe('InfoHeaderComponent', () => {
     currency: '',
     type: '',
     lotsize: 1,
+    minStep: 1,
     priceStep: 1,
     expirationDate: null,
     cfiCode: null

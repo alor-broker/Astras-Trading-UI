@@ -11,6 +11,7 @@ export interface ExchangeInfo {
   type: string;
   lotsize: number;
   priceStep: number;
+  minStep: number;
   marginbuy?: number;
   marginsell?: number;
   exchangeSettings?: ExchangeSettings;

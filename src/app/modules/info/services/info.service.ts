@@ -127,6 +127,7 @@ export class InfoService {
         if(d.securityType !== 'stock' && d.securityType !== 'bond') {
           return {
             ...d,
+            minStep: exchangeInfo.minStep,
             priceStep: exchangeInfo.priceStep,
             expirationDate: exchangeInfo.expirationDate,
             marginbuy: exchangeInfo.marginbuy,
@@ -135,7 +136,11 @@ export class InfoService {
           };
         }
 
-        return d;
+        return {
+          ...d,
+          minStep: exchangeInfo.minStep,
+          priceStep: exchangeInfo.priceStep
+        };
       }),
     catchError(() => of(null)),
   );
@@ -211,6 +216,7 @@ export class InfoService {
             type: getTypeByCfi(r.cfiCode),
             lotsize: r.lotsize ?? 1,
             priceStep: r.pricestep ?? 0,
+            minStep: r.minstep ?? 0,
             marginbuy: r.marginbuy,
             marginsell: r.marginsell,
             expirationDate: r.expirationDate ?? null,
