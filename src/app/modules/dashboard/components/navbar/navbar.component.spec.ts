@@ -97,7 +97,7 @@ describe('NavbarComponent', () => {
               help: ''
             },
             features: {
-              iaChat: true
+              aiChat: true
             }
           }
         },
