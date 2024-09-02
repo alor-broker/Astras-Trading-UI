@@ -51,6 +51,8 @@ export function getBondScreenerResponseSchema(columnIds: string[]): ZodObject<Zo
     'boardInformation' |
     'tradingDetails' |
     'volumes' |
+    'faceValue' |
+    'currentFaceValue' |
     'yield' |
     'coupons' |
     'offers' |
@@ -100,6 +102,8 @@ export function getBondScreenerResponseSchema(columnIds: string[]): ZodObject<Zo
     duration: number(),
     durationMacaulay: number(),
     couponRate: number(),
+    faceValue: number(),
+    currentFaceValue: number(),
     couponType: string(),
     guaranteed: boolean(),
     hasOffer: boolean(),

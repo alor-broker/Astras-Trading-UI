@@ -64,6 +64,8 @@ export interface Amortization {
   date: Scalars['DateTime']['output'];
   /** Дата фиксации владельцев для участия в событии */
   fixDate?: Maybe<Scalars['DateTime']['output']>;
+  /** Признак наличия ближайшего события */
+  isClosest: Scalars['Boolean']['output'];
   /** Процент погашения */
   parFraction: Scalars['Decimal']['output'];
   /** Ставка купона, доля номинала, цена выкупа или коэффициент конвертации */
@@ -82,6 +84,8 @@ export interface AmortizationFilterInput {
   date?: InputMaybe<DateTimeOperationFilterInput>;
   /** Дата фиксации владельцев для участия в событии */
   fixDate?: InputMaybe<DateTimeOperationFilterInput>;
+  /** Признак наличия ближайшего события */
+  isClosest?: InputMaybe<BooleanOperationFilterInput>;
   or?: InputMaybe<Array<AmortizationFilterInput>>;
   /** Процент погашения */
   parFraction?: InputMaybe<DecimalOperationFilterInput>;
@@ -96,6 +100,8 @@ export enum ApplyPolicy {
 }
 
 export interface BasicInformation {
+  /** Требуемая категория для осуществления торговли инструментом */
+  complexProductCategory: Scalars['String']['output'];
   /** Краткое описание инструмента */
   description: Scalars['String']['output'];
   /** Биржа */
@@ -112,6 +118,8 @@ export interface BasicInformation {
 
 export interface BasicInformationFilterInput {
   and?: InputMaybe<Array<BasicInformationFilterInput>>;
+  /** Требуемая категория для осуществления торговли инструментом */
+  complexProductCategory?: InputMaybe<StringOperationFilterInput>;
   /** Краткое описание инструмента */
   description?: InputMaybe<StringOperationFilterInput>;
   /** Биржа */
@@ -128,6 +136,8 @@ export interface BasicInformationFilterInput {
 }
 
 export interface BasicInformationSortInput {
+  /** Требуемая категория для осуществления торговли инструментом */
+  complexProductCategory?: InputMaybe<SortEnumType>;
   /** Краткое описание инструмента */
   description?: InputMaybe<SortEnumType>;
   /** Биржа */
@@ -172,25 +182,31 @@ export interface BoardInformationSortInput {
 }
 
 export interface Bond extends Instrument {
-  additionalInformation?: Maybe<AdditionalInformation>;
+  additionalInformation: AdditionalInformation;
   /** События погашений выпусков */
   amortizations?: Maybe<Array<Amortization>>;
-  basicInformation?: Maybe<BasicInformation>;
-  boardInformation?: Maybe<BoardInformation>;
+  basicInformation: BasicInformation;
+  boardInformation: BoardInformation;
   /** Ставка купона, процентов годовых */
   couponRate?: Maybe<Scalars['Decimal']['output']>;
   /** Тип купона */
   couponType?: Maybe<CouponType>;
   /** События выплат купонов */
   coupons?: Maybe<Array<Coupon>>;
-  currencyInformation?: Maybe<CurrencyInformation>;
+  currencyInformation: CurrencyInformation;
+  /** Остаточный номинал */
+  currentFaceValue: Scalars['Decimal']['output'];
   /** Дюрация модифицированная, % */
   duration?: Maybe<Scalars['Decimal']['output']>;
   /** Дюрация по Маколею, дней */
   durationMacaulay?: Maybe<Scalars['Int']['output']>;
-  financialAttributes?: Maybe<FinancialAttributes>;
+  /** Номинал */
+  faceValue: Scalars['Decimal']['output'];
+  financialAttributes: FinancialAttributes;
   /** Признак наличия по выпуску гарантии */
   guaranteed: Scalars['Boolean']['output'];
+  /** Признак наличия по погашениям выпусков */
+  hasAmortization: Scalars['Boolean']['output'];
   /** Признак наличия по выпуску возможности досрочного выкупа или погашения */
   hasOffer: Scalars['Boolean']['output'];
   /** Дата погашения */
@@ -201,7 +217,7 @@ export interface Bond extends Instrument {
   placementEndDate?: Maybe<Scalars['DateTime']['output']>;
   /** Признак наличия по продаже и залогу активов */
   pledged: Scalars['Boolean']['output'];
-  tradingDetails?: Maybe<TradingDetails>;
+  tradingDetails: TradingDetails;
   /** Объемы */
   volumes?: Maybe<BondVolumes>;
   /** Доходность */
@@ -236,13 +252,19 @@ export interface BondFilterInput {
   /** События выплат купонов */
   coupons?: InputMaybe<ListFilterInputTypeOfCouponFilterInput>;
   currencyInformation?: InputMaybe<CurrencyInformationFilterInput>;
+  /** Остаточный номинал */
+  currentFaceValue?: InputMaybe<DecimalOperationFilterInput>;
   /** Дюрация модифицированная, % */
   duration?: InputMaybe<DecimalOperationFilterInput>;
   /** Дюрация по Маколею, дней */
   durationMacaulay?: InputMaybe<IntOperationFilterInput>;
+  /** Номинал */
+  faceValue?: InputMaybe<DecimalOperationFilterInput>;
   financialAttributes?: InputMaybe<FinancialAttributesFilterInput>;
   /** Признак наличия по выпуску гарантии */
   guaranteed?: InputMaybe<BooleanOperationFilterInput>;
+  /** Признак наличия по погашениям выпусков */
+  hasAmortization?: InputMaybe<BooleanOperationFilterInput>;
   /** Признак наличия по выпуску возможности досрочного выкупа или погашения */
   hasOffer?: InputMaybe<BooleanOperationFilterInput>;
   /** Дата погашения */
@@ -270,13 +292,19 @@ export interface BondSortInput {
   /** Тип купона */
   couponType?: InputMaybe<SortEnumType>;
   currencyInformation?: InputMaybe<CurrencyInformationSortInput>;
+  /** Остаточный номинал */
+  currentFaceValue?: InputMaybe<SortEnumType>;
   /** Дюрация модифицированная, % */
   duration?: InputMaybe<SortEnumType>;
   /** Дюрация по Маколею, дней */
   durationMacaulay?: InputMaybe<SortEnumType>;
+  /** Номинал */
+  faceValue?: InputMaybe<SortEnumType>;
   financialAttributes?: InputMaybe<FinancialAttributesSortInput>;
   /** Признак наличия по выпуску гарантии */
   guaranteed?: InputMaybe<SortEnumType>;
+  /** Признак наличия по погашениям выпусков */
+  hasAmortization?: InputMaybe<SortEnumType>;
   /** Признак наличия по выпуску возможности досрочного выкупа или погашения */
   hasOffer?: InputMaybe<SortEnumType>;
   /** Дата погашения */
@@ -328,25 +356,25 @@ export interface BondVolumesSortInput {
 }
 
 export interface BondYield {
-  /** Текущая доходность по последней цене */
+  /** Текущая доходность по последней цене, % */
   currentYield: Scalars['Decimal']['output'];
-  /** Доходность к погашению */
+  /** Доходность к погашению, % */
   yieldToMaturity: Scalars['Decimal']['output'];
 }
 
 export interface BondYieldFilterInput {
   and?: InputMaybe<Array<BondYieldFilterInput>>;
-  /** Текущая доходность по последней цене */
+  /** Текущая доходность по последней цене, % */
   currentYield?: InputMaybe<DecimalOperationFilterInput>;
   or?: InputMaybe<Array<BondYieldFilterInput>>;
-  /** Доходность к погашению */
+  /** Доходность к погашению, % */
   yieldToMaturity?: InputMaybe<DecimalOperationFilterInput>;
 }
 
 export interface BondYieldSortInput {
-  /** Текущая доходность по последней цене */
+  /** Текущая доходность по последней цене, % */
   currentYield?: InputMaybe<SortEnumType>;
-  /** Доходность к погашению */
+  /** Доходность к погашению, % */
   yieldToMaturity?: InputMaybe<SortEnumType>;
 }
 
@@ -421,6 +449,8 @@ export interface Coupon {
   fixDate?: Maybe<Scalars['DateTime']['output']>;
   /** Интервал между выплатами */
   intervalInDays: Scalars['Decimal']['output'];
+  /** Признак наличия ближайшего события */
+  isClosest: Scalars['Boolean']['output'];
   /** Ставка купона, доля номинала, цена выкупа или коэффициент конвертации */
   value?: Maybe<Scalars['Decimal']['output']>;
 }
@@ -443,6 +473,8 @@ export interface CouponFilterInput {
   fixDate?: InputMaybe<DateTimeOperationFilterInput>;
   /** Интервал между выплатами */
   intervalInDays?: InputMaybe<DecimalOperationFilterInput>;
+  /** Признак наличия ближайшего события */
+  isClosest?: InputMaybe<BooleanOperationFilterInput>;
   or?: InputMaybe<Array<CouponFilterInput>>;
   /** Ставка купона, доля номинала, цена выкупа или коэффициент конвертации */
   value?: InputMaybe<DecimalOperationFilterInput>;
@@ -459,6 +491,46 @@ export interface CouponTypeOperationFilterInput {
   in?: InputMaybe<Array<CouponType>>;
   neq?: InputMaybe<CouponType>;
   nin?: InputMaybe<Array<CouponType>>;
+}
+
+/** A connection to a list of items. */
+export interface CurrenciesConnection {
+  /** A list of edges. */
+  edges?: Maybe<Array<CurrenciesEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Currency>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+}
+
+/** An edge in a connection. */
+export interface CurrenciesEdge {
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Currency;
+}
+
+export interface Currency extends Instrument {
+  additionalInformation: AdditionalInformation;
+  basicInformation: BasicInformation;
+  boardInformation: BoardInformation;
+  currencyInformation: CurrencyInformation;
+  financialAttributes: FinancialAttributes;
+  tradingDetails: TradingDetails;
+}
+
+export interface CurrencyFilterInput {
+  additionalInformation?: InputMaybe<AdditionalInformationFilterInput>;
+  and?: InputMaybe<Array<CurrencyFilterInput>>;
+  basicInformation?: InputMaybe<BasicInformationFilterInput>;
+  boardInformation?: InputMaybe<BoardInformationFilterInput>;
+  currencyInformation?: InputMaybe<CurrencyInformationFilterInput>;
+  financialAttributes?: InputMaybe<FinancialAttributesFilterInput>;
+  or?: InputMaybe<Array<CurrencyFilterInput>>;
+  tradingDetails?: InputMaybe<TradingDetailsFilterInput>;
 }
 
 export interface CurrencyInformation {
@@ -482,6 +554,15 @@ export interface CurrencyInformationSortInput {
   nominal?: InputMaybe<SortEnumType>;
   /** Валюта расчета */
   settlement?: InputMaybe<SortEnumType>;
+}
+
+export interface CurrencySortInput {
+  additionalInformation?: InputMaybe<AdditionalInformationSortInput>;
+  basicInformation?: InputMaybe<BasicInformationSortInput>;
+  boardInformation?: InputMaybe<BoardInformationSortInput>;
+  currencyInformation?: InputMaybe<CurrencyInformationSortInput>;
+  financialAttributes?: InputMaybe<FinancialAttributesSortInput>;
+  tradingDetails?: InputMaybe<TradingDetailsSortInput>;
 }
 
 export interface DateTimeOperationFilterInput {
@@ -515,11 +596,11 @@ export interface DecimalOperationFilterInput {
 }
 
 export interface Derivative extends Instrument {
-  additionalInformation?: Maybe<AdditionalInformation>;
-  basicInformation?: Maybe<BasicInformation>;
-  boardInformation?: Maybe<BoardInformation>;
-  currencyInformation?: Maybe<CurrencyInformation>;
-  financialAttributes?: Maybe<FinancialAttributes>;
+  additionalInformation: AdditionalInformation;
+  basicInformation: BasicInformation;
+  boardInformation: BoardInformation;
+  currencyInformation: CurrencyInformation;
+  financialAttributes: FinancialAttributes;
   /** Цена маржинальной покупки (заемные средства) */
   marginBuy?: Maybe<Scalars['Decimal']['output']>;
   /** Отношение цены маржинальной покупки к цене последней сделки */
@@ -530,7 +611,7 @@ export interface Derivative extends Instrument {
   theorPrice: Scalars['Decimal']['output'];
   /** Теоретическая цена опциона с учетом лимитов */
   theorPriceLimit: Scalars['Decimal']['output'];
-  tradingDetails?: Maybe<TradingDetails>;
+  tradingDetails: TradingDetails;
   /** Валюта */
   underlyingCurrency?: Maybe<Scalars['String']['output']>;
   /** Волатильность */
@@ -679,6 +760,7 @@ export enum Exchange {
   Moex = 'MOEX',
   None = 'NONE',
   Spbx = 'SPBX',
+  Terex = 'TEREX',
   United = 'UNITED'
 }
 
@@ -731,12 +813,12 @@ export interface FinancialAttributesSortInput {
 }
 
 export interface Instrument {
-  additionalInformation?: Maybe<AdditionalInformation>;
-  basicInformation?: Maybe<BasicInformation>;
-  boardInformation?: Maybe<BoardInformation>;
-  currencyInformation?: Maybe<CurrencyInformation>;
-  financialAttributes?: Maybe<FinancialAttributes>;
-  tradingDetails?: Maybe<TradingDetails>;
+  additionalInformation: AdditionalInformation;
+  basicInformation: BasicInformation;
+  boardInformation: BoardInformation;
+  currencyInformation: CurrencyInformation;
+  financialAttributes: FinancialAttributes;
+  tradingDetails: TradingDetails;
 }
 
 export interface InstrumentModelFilterInput {
@@ -882,6 +964,7 @@ export enum Market {
   Info = 'INFO',
   Its = 'ITS',
   Spbx = 'SPBX',
+  Terex = 'TEREX',
   United = 'UNITED'
 }
 
@@ -928,6 +1011,8 @@ export interface Offer {
   endOrder?: Maybe<Scalars['DateTime']['output']>;
   /** Дата фиксации владельцев для участия в событии */
   fixDate?: Maybe<Scalars['DateTime']['output']>;
+  /** Признак наличия ближайшего события */
+  isClosest: Scalars['Boolean']['output'];
   /** Ставка купона, доля номинала, цена выкупа или коэффициент конвертации */
   value?: Maybe<Scalars['Decimal']['output']>;
 }
@@ -950,6 +1035,8 @@ export interface OfferFilterInput {
   endOrder?: InputMaybe<DateTimeOperationFilterInput>;
   /** Дата фиксации владельцев для участия в событии */
   fixDate?: InputMaybe<DateTimeOperationFilterInput>;
+  /** Признак наличия ближайшего события */
+  isClosest?: InputMaybe<BooleanOperationFilterInput>;
   or?: InputMaybe<Array<OfferFilterInput>>;
   /** Ставка купона, доля номинала, цена выкупа или коэффициент конвертации */
   value?: InputMaybe<DecimalOperationFilterInput>;
@@ -999,12 +1086,16 @@ export interface ProfitabilitySortInput {
 export interface Query {
   bond?: Maybe<Bond>;
   bonds?: Maybe<BondsConnection>;
+  currencies?: Maybe<CurrenciesConnection>;
+  currency?: Maybe<Currency>;
   derivative?: Maybe<Derivative>;
   derivatives?: Maybe<DerivativesConnection>;
   instrument?: Maybe<Instrument>;
   instruments?: Maybe<InstrumentsConnection>;
   stock?: Maybe<Stock>;
   stocks?: Maybe<StocksConnection>;
+  swap?: Maybe<Swap>;
+  swaps?: Maybe<SwapsConnection>;
 }
 
 
@@ -1024,6 +1115,25 @@ export interface QueryBondsArgs {
   last?: InputMaybe<Scalars['Int']['input']>;
   order?: InputMaybe<Array<BondSortInput>>;
   where?: InputMaybe<BondFilterInput>;
+}
+
+
+export interface QueryCurrenciesArgs {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeNonBaseBoards?: Scalars['Boolean']['input'];
+  includeOld?: Scalars['Boolean']['input'];
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<CurrencySortInput>>;
+  where?: InputMaybe<CurrencyFilterInput>;
+}
+
+
+export interface QueryCurrencyArgs {
+  board: Scalars['String']['input'];
+  exchange: Scalars['String']['input'];
+  symbol: Scalars['String']['input'];
 }
 
 
@@ -1083,6 +1193,25 @@ export interface QueryStocksArgs {
   where?: InputMaybe<StockFilterInput>;
 }
 
+
+export interface QuerySwapArgs {
+  board: Scalars['String']['input'];
+  exchange: Scalars['String']['input'];
+  symbol: Scalars['String']['input'];
+}
+
+
+export interface QuerySwapsArgs {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeNonBaseBoards?: Scalars['Boolean']['input'];
+  includeOld?: Scalars['Boolean']['input'];
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Array<SwapSortInput>>;
+  where?: InputMaybe<SwapFilterInput>;
+}
+
 export interface Sales {
   /** Данные за квартал */
   quarter?: Maybe<Array<ValuePerQuarter>>;
@@ -1105,17 +1234,17 @@ export enum SortEnumType {
 }
 
 export interface Stock extends Instrument {
-  additionalInformation?: Maybe<AdditionalInformation>;
-  basicInformation?: Maybe<BasicInformation>;
-  boardInformation?: Maybe<BoardInformation>;
+  additionalInformation: AdditionalInformation;
+  basicInformation: BasicInformation;
+  boardInformation: BoardInformation;
   /** Данные об оценке стоимости компании */
   costEstimate?: Maybe<CostEstimate>;
-  currencyInformation?: Maybe<CurrencyInformation>;
+  currencyInformation: CurrencyInformation;
   /** Данные о выплате дивидендов (если инструмент является акцией) */
   dividends: Array<Dividend>;
   /** Данные о выплате дивидендов компанией */
   dividendsAggregateInfo?: Maybe<DividendsAggregateInfo>;
-  financialAttributes?: Maybe<FinancialAttributes>;
+  financialAttributes: FinancialAttributes;
   /** Основные показатели компании */
   mainIndicators?: Maybe<MainIndicators>;
   /** Данные о чистой прибыли компании */
@@ -1126,7 +1255,7 @@ export interface Stock extends Instrument {
   sales?: Maybe<Sales>;
   /** Торговые данные компании */
   trading?: Maybe<Trading>;
-  tradingDetails?: Maybe<TradingDetails>;
+  tradingDetails: TradingDetails;
 }
 
 export interface StockFilterInput {
@@ -1208,6 +1337,61 @@ export interface StringOperationFilterInput {
   nstartsWith?: InputMaybe<Scalars['String']['input']>;
   or?: InputMaybe<Array<StringOperationFilterInput>>;
   startsWith?: InputMaybe<Scalars['String']['input']>;
+}
+
+export interface Swap extends Instrument {
+  additionalInformation: AdditionalInformation;
+  /** Базовый курс при торговле СВОП инструментом. */
+  baseSwapPrice: Scalars['Decimal']['output'];
+  basicInformation: BasicInformation;
+  boardInformation: BoardInformation;
+  currencyInformation: CurrencyInformation;
+  financialAttributes: FinancialAttributes;
+  tradingDetails: TradingDetails;
+}
+
+export interface SwapFilterInput {
+  additionalInformation?: InputMaybe<AdditionalInformationFilterInput>;
+  and?: InputMaybe<Array<SwapFilterInput>>;
+  /** Базовый курс при торговле СВОП инструментом. */
+  baseSwapPrice?: InputMaybe<DecimalOperationFilterInput>;
+  basicInformation?: InputMaybe<BasicInformationFilterInput>;
+  boardInformation?: InputMaybe<BoardInformationFilterInput>;
+  currencyInformation?: InputMaybe<CurrencyInformationFilterInput>;
+  financialAttributes?: InputMaybe<FinancialAttributesFilterInput>;
+  or?: InputMaybe<Array<SwapFilterInput>>;
+  tradingDetails?: InputMaybe<TradingDetailsFilterInput>;
+}
+
+export interface SwapSortInput {
+  additionalInformation?: InputMaybe<AdditionalInformationSortInput>;
+  /** Базовый курс при торговле СВОП инструментом. */
+  baseSwapPrice?: InputMaybe<SortEnumType>;
+  basicInformation?: InputMaybe<BasicInformationSortInput>;
+  boardInformation?: InputMaybe<BoardInformationSortInput>;
+  currencyInformation?: InputMaybe<CurrencyInformationSortInput>;
+  financialAttributes?: InputMaybe<FinancialAttributesSortInput>;
+  tradingDetails?: InputMaybe<TradingDetailsSortInput>;
+}
+
+/** A connection to a list of items. */
+export interface SwapsConnection {
+  /** A list of edges. */
+  edges?: Maybe<Array<SwapsEdge>>;
+  /** A flattened list of the nodes. */
+  nodes?: Maybe<Array<Swap>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+}
+
+/** An edge in a connection. */
+export interface SwapsEdge {
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node: Swap;
 }
 
 export interface Trading {
