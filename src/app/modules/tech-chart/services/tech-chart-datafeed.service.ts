@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   DatafeedConfiguration,
-  ErrorCallback,
+  DatafeedErrorCallback,
   HistoryCallback,
   IBasicDataFeed,
   LibrarySymbolInfo,
@@ -101,13 +101,12 @@ export class TechChartDatafeedService implements IBasicDataFeed {
         exchange: x.exchange,
         ticker: `[${x.exchange}:${x.symbol}]`,
         description: x.description,
-        full_name: `${x.exchange}:${x.symbol}`,
         type: ''
       })));
     });
   }
 
-  resolveSymbol(symbolName: string, onResolve: ResolveCallback, onError: ErrorCallback): void {
+  resolveSymbol(symbolName: string, onResolve: ResolveCallback, onError: DatafeedErrorCallback): void {
     const instrumentsData = SyntheticInstrumentsHelper.getRegularOrSyntheticInstrumentKey(symbolName);
 
     let request: Observable<Instrument | null>;
@@ -163,7 +162,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     });
   }
 
-  getBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, periodParams: PeriodParams, onResult: HistoryCallback, onError: ErrorCallback): void {
+  getBars(symbolInfo: LibrarySymbolInfo, resolution: ResolutionString, periodParams: PeriodParams, onResult: HistoryCallback, onError: DatafeedErrorCallback): void {
     const instrumentsData = SyntheticInstrumentsHelper.getRegularOrSyntheticInstrumentKey(symbolInfo.ticker!);
     const lastBarPointKey = this.getLastBarPointKey(symbolInfo.ticker!, resolution);
     if (periodParams.firstDataRequest) {
