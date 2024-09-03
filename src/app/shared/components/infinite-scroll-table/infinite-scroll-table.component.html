@@ -22,7 +22,6 @@
     >
       <th
         *ngFor="let column of tableConfig.columns"
-        class="table-cell"
         cdkDrag
         cdkDragLockAxis="x"
         [nzWidth]="column.width ? column.width + 'px' : null"
@@ -83,12 +82,20 @@
         (contextmenu)="rowContextMenu.emit({ event: $event, row: data})"
         [class]="tableConfig.rowConfig?.rowClass && tableConfig.rowConfig?.rowClass(data)"
       >
-        <td *ngFor="let column of tableConfig.columns" class="table-cell" [class]="column.classFn && column.classFn(data)">
-          <span>{{column.transformFn && column.transformFn(data) || data[column.id]}}</span>
-          <ng-container *ngIf="data['badges']?.length && column.showBadges">
-            <span>&nbsp;</span>
-            <ats-merged-badge [colors]="data['badges']"></ats-merged-badge>
-          </ng-container>
+        <td *ngFor="let column of tableConfig.columns" [class]="column.classFn && column.classFn(data)">
+          <div
+            class="table-cell"
+            [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+            [nzTooltipTitle]="column.transformFn ? column.transformFn(data) : data[column.id]"
+            nz-tooltip
+            [nzTooltipMouseEnterDelay]="1"
+          >
+            <span>{{ column.transformFn ? column.transformFn(data) : data[column.id] }}</span>
+            <ng-container *ngIf="data['badges']?.length && column.showBadges">
+              <span>&nbsp;</span>
+              <ats-merged-badge [colors]="data['badges']"></ats-merged-badge>
+            </ng-container>
+          </div>
         </td>
       </tr>
     </ng-template>

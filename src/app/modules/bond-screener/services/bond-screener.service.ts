@@ -167,6 +167,10 @@ export class BondScreenerService {
       return null;
     }
 
+    someFilters.push({
+      isClosest: { eq: true }
+    });
+
     if (noneFilters.length === 0) {
       return {
         some: { and: someFilters }
@@ -192,9 +196,13 @@ export class BondScreenerService {
       return null;
     }
 
+    someFilters.push({
+      isClosest: { eq: true }
+    });
+
     if (noneFilters.length === 0) {
       return {
-        some: { and: noneFilters }
+        some: { and: someFilters }
       };
     }
 

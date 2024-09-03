@@ -26,6 +26,7 @@ import {
 } from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import {
+  BasicInformation,
   Bond,
   BondsConnection,
   BondsEdge,
@@ -43,7 +44,6 @@ interface BondDisplay extends Omit<Bond, 'coupons' | 'offers' | 'amortizations'>
   id: string;
   closestCoupon?: Coupon;
   closestOffer?: Offer;
-  hasAmortization?: boolean;
 }
 
 @Component({
@@ -104,6 +104,38 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         filters: [
           { value: 'MOEX', text: 'MOEX' },
           { value: 'SPBX', text: 'SPBX' }
+        ]
+      }
+    },
+    {
+      id: 'complexProductCategory',
+      displayName: 'Категория для торговли',
+      transformFn: (d: BondDisplay): string => d.basicInformation.complexProductCategory,
+      sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'complexProductCategory'], dir),
+      width: 110,
+      filterData: {
+        filterName: 'complexProductCategory',
+        filterType: FilterType.DefaultMultiple,
+        filters: [
+          { value: '', text: 'Нет ограничений' },
+          { value: '0', text: 'Инструменты, предназначенные для КИ' },
+          { value: '1', text: 'Необеспеченные сделки' },
+          { value: '2', text: 'Производные финансовые инструменты' },
+          { value: '3', text: 'Договоры репо, требующие тестирования' },
+          { value: '4', text: 'Структурные облигации, не предназначенные для КИ' },
+          { value: '5', text: 'ЗПИФ, не предназначенные для КИ' },
+          { value: '6', text: 'Облигации российских эмитентов без рейтинга' },
+          { value: '7', text: 'Облигации иностранных эмитентов, исполнение по которым обеспечивается за счет юридического лица РФ без рейтинга' },
+          { value: '8', text: 'Облигации со структурным доходом' },
+          { value: '9', text: 'Акции, не включенные в котировальные списки' },
+          { value: '10', text: 'Иностранные акции, требующие проведения тестирования' },
+          { value: '11', text: 'Паи/акции ETF, не включенные в котировальные списки и допущенные к организованным торгам при наличии договора организатора торговли с \'ответственным\' лицом' },
+          { value: '12', text: 'Паи/акции ETF, не включенные в котировальные списки и допущенные к организованным торгам при отсутствии договора организатора торговли с \'ответственным\' лицом' },
+          { value: '13', text: 'Облигации российских или иностранных эмитентов, конвертируемых в иные ценные бумаги' },
+          { value: '14', text: 'Облигации российских эмитентов с \'юрисдикцией\' выпуска вне рамок разрешенных' },
+          { value: '15', text: 'Облигации иностранных эмитентов с \'юрисдикцией\' эмитента вне рамок разрешенных' },
+          { value: '16', text: 'Резерв' },
+          { value: '17', text: 'Все бумаги, не попадающие под тесты из Базового стандарта. Ценные бумаги без листинга на Санкт-Петербургской бирже, возникшие в результате корпоративных событий' },
         ]
       }
     },
@@ -175,6 +207,34 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
       }
     },
     {
+      id: 'faceValue',
+      displayName: 'Номинал',
+      transformFn: (d: BondDisplay): string => d.faceValue != null ? MathHelper.round(d.faceValue, 2).toString() : '',
+      sortChangeFn: (dir): void => this.sortChange(['faceValue'], dir),
+      width: 100,
+      filterData: {
+        filterName: 'faceValue',
+        filterType: FilterType.Interval,
+        intervalStartName: 'faceValueFrom',
+        intervalEndName: 'faceValueTo',
+        inputFieldType: InputFieldType.Number
+      }
+    },
+    {
+      id: 'currentFaceValue',
+      displayName: 'Ост. номинал',
+      transformFn: (d: BondDisplay): string => d.currentFaceValue != null ? MathHelper.round(d.currentFaceValue, 2).toString() : '',
+      sortChangeFn: (dir): void => this.sortChange(['currentFaceValue'], dir),
+      width: 100,
+      filterData: {
+        filterName: 'currentFaceValue',
+        filterType: FilterType.Interval,
+        intervalStartName: 'currentFaceValueFrom',
+        intervalEndName: 'currentFaceValueTo',
+        inputFieldType: InputFieldType.Number
+      }
+    },
+    {
       id: 'couponType',
       displayName: 'Тип купона',
       sortChangeFn: (dir): void => this.sortChange(['couponType'], dir),
@@ -211,8 +271,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         filterName: 'couponAccruedInterest',
         filterType: FilterType.Interval,
         intervalStartName: 'couponAccruedInterestFrom',
-        intervalEndName: 'couponAccruedInterestTo',
-        filterWarning: 'По данному фильтру будут показываться облигации, имеющие хотя бы один купон, удовлетворяющий условиям (не обязательно ближайший)'
+        intervalEndName: 'couponAccruedInterestTo'
       },
       width: 90,
     },
@@ -237,7 +296,6 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         filterType: FilterType.Interval,
         intervalStartName: 'couponIntervalInDaysFrom',
         intervalEndName: 'couponIntervalInDaysTo',
-        filterWarning: 'По данному фильтру будут показываться облигации, имеющие хотя бы один купон, удовлетворяющий условиям (не обязательно ближайший)'
       },
       width: 90,
     },
@@ -249,8 +307,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
         filterName: 'couponAmount',
         filterType: FilterType.Interval,
         intervalStartName: 'couponAmountFrom',
-        intervalEndName: 'couponAmountTo',
-        filterWarning: 'По данному фильтру будут показываться облигации, имеющие хотя бы один купон, удовлетворяющий условиям (не обязательно ближайший)'
+        intervalEndName: 'couponAmountTo'
       },
       width: 90,
     },
@@ -548,18 +605,24 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
                 ['columns', col.column.id],
                 { fallback: col.column.displayName }
               ),
-              transformFn: ['couponType', 'hasOffer', 'guaranteed', 'hasAmortization'].includes(col.column.id)
-                ? (data: BondDisplay): string => translate(
-                  ['filters', col.column.id, data[col.column.id as keyof BondDisplay]?.toString() ?? ''],
-                  {fallback: data[col.column.id as keyof BondDisplay] as string}
-                )
-                : col.column.transformFn,
+              transformFn: ['couponType', 'hasOffer', 'guaranteed', 'hasAmortization', 'complexProductCategory']
+                .includes(col.column.id)
+                  ? (data: BondDisplay): string => {
+                    let columnValue = data[col.column.id as keyof BondDisplay]?.toString() ?? '';
+                    columnValue = columnValue.length > 0 ? columnValue : data.basicInformation[col.column.id as keyof BasicInformation]?.toString() ?? '';
+                    columnValue = columnValue.length > 0 ? columnValue : 'null';
+
+                    return translate(
+                      ['filters', col.column.id, columnValue],
+                      { fallback: data[col.column.id as keyof BondDisplay] as string }
+                    );
+                  }
+                  : col.column.transformFn,
               filterData: col.column.filterData && {
                 ...col.column.filterData,
-                filterWarning: col.column.filterData.filterWarning == null ? null : translate(['couponsFilterWarning']),
                 filters: col.column.filterData.filters?.map(f => ({
                   text: translate(
-                    ['filters', col.column.id, f.value],
+                    ['filters', col.column.id, f.value.length > 0 ? f.value : 'null'],
                     { fallback: f.text }
                   ),
                   value: f.value as string
@@ -614,13 +677,9 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
                     node: {
                       ...edge.node,
                       closestCoupon: ([...(edge.node.coupons ?? [])] as Coupon[])
-                        .sort((a: Coupon, b: Coupon) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                        .find((node: Coupon) => new Date(node.date).getTime() > new Date().getTime()),
+                        .find((coupon: Coupon) => coupon.isClosest),
                       closestOffer: ([...(edge.node.offers ?? [])] as Offer[])
-                        .sort((a: Offer, b: Offer) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                        .find((node: Offer) => new Date(node.date).getTime() > new Date().getTime()),
-                      hasAmortization: [...(edge.node.amortizations ?? [])]
-                        .some(a => (new Date(a.date).getTime()) > (new Date().getTime())),
+                        .find((offer: Offer) => offer.isClosest)
                     },
                   }))
                 })

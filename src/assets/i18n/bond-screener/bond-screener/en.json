@@ -4,10 +4,13 @@
     "symbol": "Ticker",
     "shortName": "Name",
     "exchange": "Exchange",
+    "complexProductCategory": "Category for trading",
     "maturityDate": "Maturity date",
     "placementEndDate": "Placement end date",
     "cancellation": "Cancellation date",
     "issueValue": "Emission",
+    "faceValue": "Face value",
+    "currentFaceValue": "Curr. face value",
     "couponType": "Coupon type",
     "couponRate": "Coupon rate, %",
     "couponAccruedInterest": "Accrued interest",
@@ -31,7 +34,6 @@
     "priceStep": "Price step",
     "currentYield": "Yield, %"
   },
-
   "filters": {
     "couponType": {
       "FIXED": "Fixed",
@@ -49,7 +51,27 @@
     "guaranteed": {
       "true": "Yes",
       "false": "No"
+    },
+    "complexProductCategory": {
+      "null": "No restrictions",
+      "0": "Instruments for QI",
+      "1": "Unsecured transactions",
+      "2": "Derivatives",
+      "3": "Repurchase agreements requiring testing",
+      "4": "Structured bonds not intended for QI",
+      "5": "Closed mutual funds not intended for QI",
+      "6": "Bonds of unrated Russian issuers",
+      "7": "Bonds of foreign issuers, the execution of which is ensured at the expense of a unrated legal entity of the Russian Federation",
+      "8": "Structured Income Bonds",
+      "9": "Stocks not included in quotation lists",
+      "10": "Foreign stocks requiring testing",
+      "11": "ETF units/stocks not included in the quotation lists and admitted to organized trading in the presence of an agreement between the trade organizer and the 'responsible' person",
+      "12": "ETF units/stocks not included in quotation lists and admitted to organized trading in the absence of an agreement between the trading organizer and the 'responsible' person",
+      "13": "Bonds of Russian or foreign issuers convertible into other securities",
+      "14": "Bonds of Russian issuers with 'jurisdiction' of issue outside the permitted scope",
+      "15": "Bonds of foreign issuers with the issuer's 'jurisdiction' outside the permitted scope",
+      "16": "Reserve",
+      "17": "All securities not subject to tests from the Basic Standard. Securities not listed on the St. Petersburg Exchange arising as a result of corporate events"
     }
-  },
-  "couponsFilterWarning": "This filter will show bonds that have at least one coupon that meets the conditions (not necessarily the closest one)"
+  }
 }
