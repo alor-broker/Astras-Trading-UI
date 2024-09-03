@@ -7,6 +7,7 @@
   "lotSize": "Lot size",
   "minStep": "Price step",
   "priceStep": "Price step coast",
+  "priceStepCurrency": "Price step coast currency",
   "expirationDate": "Expiration date",
   "marginBuy": "Margin buy",
   "marginSell": "Margin sell",

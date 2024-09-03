@@ -9,6 +9,7 @@ export interface Description {
   sector: string; // "Финансы",
   isin: string; // "RU0009029540",
   baseCurrency: string; // "RUB",
+  currency: string; // "RUB",
   securityType: string; // "stock"
   lotsize: number; // "10"
   minStep: number;
