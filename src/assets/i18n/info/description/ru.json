@@ -7,6 +7,7 @@
   "lotSize": "Размер лота",
   "minStep": "Шаг цены",
   "priceStep": "Стоимость шага цены",
+  "priceStepCurrency": "Валюта стоимости шага цены",
   "expirationDate": "Дата исполнения",
   "marginBuy": "ГО на покупку",
   "marginSell": "ГО на продажу",

@@ -132,14 +132,16 @@ export class InfoService {
             expirationDate: exchangeInfo.expirationDate,
             marginbuy: exchangeInfo.marginbuy,
             marginsell: exchangeInfo.marginsell,
-            cfiCode: exchangeInfo.cfiCode
+            cfiCode: exchangeInfo.cfiCode,
+            currency: exchangeInfo.currency
           };
         }
 
         return {
           ...d,
           minStep: exchangeInfo.minStep,
-          priceStep: exchangeInfo.priceStep
+          priceStep: exchangeInfo.priceStep,
+          currency: exchangeInfo.currency
         };
       }),
     catchError(() => of(null)),
