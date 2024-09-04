@@ -5,7 +5,11 @@ import {
 
 import { TechChartSettingsComponent } from './tech-chart-settings.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {of, Subject} from "rxjs";
+import {
+  EMPTY,
+  of,
+  Subject
+} from "rxjs";
 import { TechChartModule } from "../../tech-chart.module";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import {
@@ -17,6 +21,7 @@ import {
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { ThemeService } from "../../../../shared/services/theme.service";
 
 describe('TechChartSettingsComponent', () => {
   let component: TechChartSettingsComponent;
@@ -55,6 +60,12 @@ describe('TechChartSettingsComponent', () => {
           provide: ManageDashboardsService,
           useValue: {
             copyWidget: jasmine.createSpy('copyWidget').and.callThrough(),
+          }
+        },
+        {
+          provide: ThemeService,
+          useValue: {
+            getThemeSettings: jasmine.createSpy('getThemeSettings').and.returnValue(EMPTY),
           }
         },
         ...commonTestProviders

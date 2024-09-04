@@ -16,7 +16,8 @@ import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import {
   LineMarkerPosition,
-  TechChartSettings
+  TechChartSettings,
+  TradeDisplayMarker
 } from '../../models/tech-chart-settings.model';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
@@ -24,6 +25,9 @@ import { WidgetSettingsBaseComponent } from "../../../../shared/components/widge
 import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
 import { DeviceService } from "../../../../shared/services/device.service";
 import { DeviceInfo } from "../../../../shared/models/device-info.model";
+import { ThemeService } from "../../../../shared/services/theme.service";
+import { map } from "rxjs/operators";
+import { NzMarks } from "ng-zorro-antd/slider";
 
 @Component({
   selector: 'ats-tech-chart-settings',
@@ -32,6 +36,14 @@ import { DeviceInfo } from "../../../../shared/models/device-info.model";
 })
 export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<TechChartSettings> implements OnInit {
   readonly availableLineMarkerPositions = Object.values(LineMarkerPosition);
+  readonly TradeDisplayMarkers = TradeDisplayMarker;
+
+  readonly validationOptions = {
+    markerSize: {
+      min: 10,
+      max: 50
+    }
+  };
 
   readonly form = this.formBuilder.group({
     // instrument
@@ -56,6 +68,12 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
       headerFullscreenButton: this.formBuilder.nonNullable.control(true),
       drawingsToolbar: this.formBuilder.nonNullable.control(true),
       timeframesBottomToolbar: this.formBuilder.nonNullable.control(true),
+    }),
+    trades: this.formBuilder.group({
+      marker: this.formBuilder.nonNullable.control(TradeDisplayMarker.Note),
+      markerSize: this.formBuilder.nonNullable.control(20, Validators.required),
+      buyTradeColor: this.formBuilder.nonNullable.control('', Validators.required),
+      sellTradeColor: this.formBuilder.nonNullable.control('', Validators.required),
     })
   });
 
@@ -69,6 +87,7 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
     protected readonly destroyRef: DestroyRef,
     private readonly formBuilder: FormBuilder,
     private readonly deviceService: DeviceService,
+    private readonly themeService: ThemeService
   ) {
     super(settingsService, manageDashboardsService, destroyRef);
   }
@@ -100,6 +119,13 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
     this.form!.controls.instrumentGroup.setValue(instrument?.instrumentGroup ?? null);
   }
 
+  getSliderMarks(minValue: number, maxValue: number): NzMarks {
+    return {
+      [minValue]: minValue.toString(),
+      [maxValue]: maxValue.toString(),
+    };
+  }
+
   protected getUpdatedSettings(initialSettings: TechChartSettings): Partial<TechChartSettings> {
     const formValue = this.form!.value as Partial<TechChartSettings & { instrument: InstrumentKey }>;
     const newSettings = {
@@ -116,34 +142,46 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
   }
 
   protected setCurrentFormValues(settings: TechChartSettings): void {
-    this.form.reset();
+    this.themeService.getThemeSettings().pipe(
+      map(s => s.themeColors),
+      take(1)
+    ).subscribe(colors => {
+      this.form.reset();
 
-    this.form.controls.instrument.setValue({
-      symbol: settings.symbol,
-      exchange: settings.exchange ?? '',
-      instrumentGroup: settings.instrumentGroup ?? null
-    });
-    this.form.controls.instrumentGroup.setValue(settings.instrumentGroup ?? null);
+      this.form.controls.instrument.setValue({
+        symbol: settings.symbol,
+        exchange: settings.exchange ?? '',
+        instrumentGroup: settings.instrumentGroup ?? null
+      });
+      this.form.controls.instrumentGroup.setValue(settings.instrumentGroup ?? null);
 
-    this.form.controls.showTrades.setValue(settings.showTrades ?? false);
-    this.form.controls.showOrders.setValue(settings.showOrders ?? true);
-    this.form.controls.ordersLineMarkerPosition.setValue(settings.ordersLineMarkerPosition ?? LineMarkerPosition.Right);
-    this.form.controls.showPosition.setValue(settings.showPosition ?? true);
-    this.form.controls.positionLineMarkerPosition.setValue(settings.positionLineMarkerPosition ?? LineMarkerPosition.Right);
+      this.form.controls.showTrades.setValue(settings.showTrades ?? false);
+      this.form.controls.showOrders.setValue(settings.showOrders ?? true);
+      this.form.controls.ordersLineMarkerPosition.setValue(settings.ordersLineMarkerPosition ?? LineMarkerPosition.Right);
+      this.form.controls.showPosition.setValue(settings.showPosition ?? true);
+      this.form.controls.positionLineMarkerPosition.setValue(settings.positionLineMarkerPosition ?? LineMarkerPosition.Right);
 
-    this.form.controls.panels.setValue({
-      header: settings.panels?.header ?? true,
-      headerSymbolSearch: settings.panels?.headerSymbolSearch ?? true,
-      headerCompare: settings.panels?.headerCompare ?? true,
-      headerResolutions: settings.panels?.headerResolutions ?? true,
-      headerChartType: settings.panels?.headerChartType ?? true,
-      headerIndicators: settings.panels?.headerIndicators ?? true,
-      headerScreenshot: settings.panels?.headerScreenshot ?? true,
-      headerSettings: settings.panels?.headerSettings ?? true,
-      headerUndoRedo: settings.panels?.headerUndoRedo ?? true,
-      headerFullscreenButton: settings.panels?.headerFullscreenButton ?? true,
-      drawingsToolbar: settings.panels?.drawingsToolbar ?? true,
-      timeframesBottomToolbar: settings.panels?.timeframesBottomToolbar ?? true,
+      this.form.controls.panels.setValue({
+        header: settings.panels?.header ?? true,
+        headerSymbolSearch: settings.panels?.headerSymbolSearch ?? true,
+        headerCompare: settings.panels?.headerCompare ?? true,
+        headerResolutions: settings.panels?.headerResolutions ?? true,
+        headerChartType: settings.panels?.headerChartType ?? true,
+        headerIndicators: settings.panels?.headerIndicators ?? true,
+        headerScreenshot: settings.panels?.headerScreenshot ?? true,
+        headerSettings: settings.panels?.headerSettings ?? true,
+        headerUndoRedo: settings.panels?.headerUndoRedo ?? true,
+        headerFullscreenButton: settings.panels?.headerFullscreenButton ?? true,
+        drawingsToolbar: settings.panels?.drawingsToolbar ?? true,
+        timeframesBottomToolbar: settings.panels?.timeframesBottomToolbar ?? true,
+      });
+
+      this.form.controls.trades.setValue({
+        marker: settings.trades?.marker ?? TradeDisplayMarker.Note,
+        buyTradeColor: settings.trades?.buyTradeColor ?? colors.buyColorAccent,
+        sellTradeColor: settings.trades?.sellTradeColor ?? colors.sellColorAccent,
+        markerSize: settings.trades?.markerSize ?? 20
+      });
     });
   }
 }

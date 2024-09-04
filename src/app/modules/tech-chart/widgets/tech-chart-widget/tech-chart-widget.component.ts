@@ -7,10 +7,14 @@ import { WidgetSettingsService } from '../../../../shared/services/widget-settin
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
-import { Observable } from 'rxjs';
+import {
+  Observable,
+  take
+} from 'rxjs';
 import {
   LineMarkerPosition,
-  TechChartSettings
+  TechChartSettings,
+  TradeDisplayMarker
 } from '../../models/tech-chart-settings.model';
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
 import { TerminalSettingsService } from 'src/app/shared/services/terminal-settings.service';
@@ -19,6 +23,7 @@ import { map } from "rxjs/operators";
 import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { InstrumentSearchService } from "../../services/instrument-search.service";
+import { ThemeService } from "../../../../shared/services/theme.service";
 
 @Component({
   selector: 'ats-tech-chart-widget',
@@ -44,7 +49,8 @@ export class TechChartWidgetComponent implements OnInit {
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly themeService: ThemeService,
   ) {
   }
 
@@ -57,37 +63,50 @@ export class TechChartWidgetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<TechChartSettings & InstrumentKey>(
-      this.widgetInstance,
-      'TechChartSettings',
-      settings => ({
-        ...settings,
-        showTrades: getValueOrDefault(settings.showTrades, false),
-        showOrders: getValueOrDefault(settings.showOrders, true),
-        ordersLineMarkerPosition: getValueOrDefault(settings.ordersLineMarkerPosition, LineMarkerPosition.Middle),
-        showPosition: getValueOrDefault(settings.showPosition, true),
-        positionLineMarkerPosition: getValueOrDefault(settings.positionLineMarkerPosition, LineMarkerPosition.Middle),
-        panels: getValueOrDefault(
-          settings.panels,
-          {
-            timeframesBottomToolbar: true,
-            drawingsToolbar: true,
-            header: true,
-            headerSymbolSearch: true,
-            headerChartType: true,
-            headerCompare: true,
-            headerResolutions: true,
-            headerIndicators: true,
-            headerScreenshot: true,
-            headerSettings: true,
-            headerUndoRedo: true,
-            headerFullscreenButton: true
-          }
-        )
-      }),
-      this.dashboardContextService,
-      this.widgetSettingsService
-    );
+    this.themeService.getThemeSettings().pipe(
+      take(1)
+    ).subscribe(theme => {
+      WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<TechChartSettings & InstrumentKey>(
+        this.widgetInstance,
+        'TechChartSettings',
+        settings => ({
+          ...settings,
+          showTrades: getValueOrDefault(settings.showTrades, false),
+          showOrders: getValueOrDefault(settings.showOrders, true),
+          ordersLineMarkerPosition: getValueOrDefault(settings.ordersLineMarkerPosition, LineMarkerPosition.Middle),
+          showPosition: getValueOrDefault(settings.showPosition, true),
+          positionLineMarkerPosition: getValueOrDefault(settings.positionLineMarkerPosition, LineMarkerPosition.Middle),
+          panels: getValueOrDefault(
+            settings.panels,
+            {
+              timeframesBottomToolbar: true,
+              drawingsToolbar: true,
+              header: true,
+              headerSymbolSearch: true,
+              headerChartType: true,
+              headerCompare: true,
+              headerResolutions: true,
+              headerIndicators: true,
+              headerScreenshot: true,
+              headerSettings: true,
+              headerUndoRedo: true,
+              headerFullscreenButton: true
+            }
+          ),
+          trades: getValueOrDefault(
+            settings.trades,
+            {
+              marker: TradeDisplayMarker.Note,
+              buyTradeColor: theme.themeColors.buyColorAccent,
+              sellTradeColor:theme.themeColors.sellColorAccent,
+              markerSize: 20
+            }
+          )
+        }),
+        this.dashboardContextService,
+        this.widgetSettingsService
+      );
+    });
 
     this.settings$ = this.widgetSettingsService.getSettings<TechChartSettings>(this.guid);
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);

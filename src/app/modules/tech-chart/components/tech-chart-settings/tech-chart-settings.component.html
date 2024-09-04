@@ -38,7 +38,7 @@
         <ng-container *ngIf="!isSyntheticInstrument(form.value?.instrument?.symbol ?? '')">
           <nz-collapse [nzBordered]="false" nzGhost>
             <nz-collapse-panel [nzHeader]="t('techChartSettings.portfolioSettingsGroupLabel')">
-              <nz-form-item class="switch-row">
+              <nz-form-item class="one-row">
                 <nz-form-control>
                   <nz-switch formControlName='showOrders'></nz-switch>
                 </nz-form-control>
@@ -59,7 +59,7 @@
                 </nz-form-control>
               </nz-form-item>
 
-              <nz-form-item class="switch-row">
+              <nz-form-item class="one-row">
                 <nz-form-control>
                   <nz-switch formControlName='showPosition'></nz-switch>
                 </nz-form-control>
@@ -80,7 +80,7 @@
                 </nz-form-control>
               </nz-form-item>
 
-              <nz-form-item  class="switch-row">
+              <nz-form-item  class="one-row">
                 <nz-form-control>
                   <nz-switch formControlName='showTrades'></nz-switch>
                 </nz-form-control>
@@ -88,13 +88,88 @@
                   {{t('techChartSettings.showTradesLabel')}}
                 </nz-form-label>
               </nz-form-item>
+
+              <ng-container  *ngIf="form.controls.showTrades.value" [formGroup]="form.controls.trades">
+                <nz-form-item>
+                  <nz-form-control>
+                    <nz-form-label nzFor="marker">{{t('techChartSettings.tradeMarkerLabel')}}</nz-form-label>
+                    <nz-select formControlName='marker'>
+                      <ng-container *ngIf="t('techChartSettings.tradeDisplayMarkerOptions.' + TradeDisplayMarkers.Note, { fallback: TradeDisplayMarkers.Note }) as label">
+                        <nz-option
+                          nzCustomContent
+                          [nzLabel]="label"
+                          [nzValue]="TradeDisplayMarkers.Note">
+                          <span nz-icon nzType="environment" nzTheme="outline"></span>
+                          <span> {{label}}</span>
+                        </nz-option>
+                      </ng-container>
+
+                      <ng-container *ngIf="t('techChartSettings.tradeDisplayMarkerOptions.' + TradeDisplayMarkers.Arrows, { fallback: TradeDisplayMarkers.Arrows }) as label">
+                        <nz-option
+                          nzCustomContent
+                          [nzLabel]="label"
+                          [nzValue]="TradeDisplayMarkers.Arrows">
+                          <span nz-icon nzType="arrow-up" nzTheme="outline"></span>
+                          <span nz-icon nzType="arrow-down" nzTheme="outline"></span>
+                          <span> {{label}}</span>
+                        </nz-option>
+                      </ng-container>
+
+                      <ng-container *ngIf="t('techChartSettings.tradeDisplayMarkerOptions.' + TradeDisplayMarkers.Carets, { fallback: TradeDisplayMarkers.Carets }) as label">
+                        <nz-option
+                          nzCustomContent
+                          [nzLabel]="label"
+                          [nzValue]="TradeDisplayMarkers.Carets">
+                          <span nz-icon nzType="caret-up" nzTheme="outline"></span>
+                          <span nz-icon nzType="caret-down" nzTheme="outline"></span>
+                          <span> {{label}}</span>
+                        </nz-option>
+                      </ng-container>
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item *ngIf="form.controls.trades.controls.marker.value !== TradeDisplayMarkers.Note">
+                  <nz-form-control>
+                    <nz-form-label nzFor="markerSize">
+                      {{t('techChartSettings.sellTradeMarkerColorLabel')}}
+                    </nz-form-label>
+                    <nz-slider
+                      [nzMin]="validationOptions.markerSize.min"
+                      [nzMax]="validationOptions.markerSize.max"
+                      [nzStep]="1"
+                      [nzMarks]="getSliderMarks(validationOptions.markerSize.min, validationOptions.markerSize.max)"
+                      formControlName="markerSize"
+                    >
+                    </nz-slider>
+                  </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item class="one-row">
+                  <nz-form-label nzFor="buyTradeColor">
+                    {{t('techChartSettings.buyTradeMarkerColorLabel')}}:
+                  </nz-form-label>
+                  <nz-form-control>
+                    <nz-color-picker formControlName='buyTradeColor'></nz-color-picker>
+                  </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item class="one-row">
+                  <nz-form-label nzFor="sellTradeColor">
+                    {{t('techChartSettings.sellTradeMarkerColorLabel')}}:
+                  </nz-form-label>
+                  <nz-form-control>
+                    <nz-color-picker formControlName='sellTradeColor'></nz-color-picker>
+                  </nz-form-control>
+                </nz-form-item>
+              </ng-container>
             </nz-collapse-panel>
           </nz-collapse>
         </ng-container>
 
         <nz-collapse [nzBordered]="false" nzGhost>
           <nz-collapse-panel [nzHeader]="t('techChartSettings.chartElementsGroupLabel')" [formGroup]="form.controls.panels">
-            <nz-form-item class="switch-row">
+            <nz-form-item class="one-row">
               <nz-form-control>
                 <nz-switch formControlName='header'></nz-switch>
               </nz-form-control>
@@ -102,7 +177,7 @@
                 {{t('techChartSettings.headerLabel')}}
               </nz-form-label>
             </nz-form-item>
-            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header && !deviceInfo.isMobile">
+            <nz-form-item class="one-row" *ngIf="form.value.panels?.header && !deviceInfo.isMobile">
               <nz-form-control>
                 <nz-switch formControlName='headerSymbolSearch'></nz-switch>
               </nz-form-control>
@@ -110,7 +185,7 @@
                 {{t('techChartSettings.headerSymbolSearchLabel')}}
               </nz-form-label>
             </nz-form-item>
-            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+            <nz-form-item class="one-row" *ngIf="form.value.panels?.header">
               <nz-form-control>
                 <nz-switch formControlName='headerCompare'></nz-switch>
               </nz-form-control>
@@ -118,7 +193,7 @@
                 {{t('techChartSettings.headerCompareLabel')}}
               </nz-form-label>
             </nz-form-item>
-            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+            <nz-form-item class="one-row" *ngIf="form.value.panels?.header">
               <nz-form-control>
                 <nz-switch formControlName='headerResolutions'></nz-switch>
               </nz-form-control>
@@ -126,7 +201,7 @@
                 {{t('techChartSettings.headerResolutionsLabel')}}
               </nz-form-label>
             </nz-form-item>
-            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+            <nz-form-item class="one-row" *ngIf="form.value.panels?.header">
               <nz-form-control>
                 <nz-switch formControlName='headerChartType'></nz-switch>
               </nz-form-control>
@@ -134,7 +209,7 @@
                 {{t('techChartSettings.headerChartTypeLabel')}}
               </nz-form-label>
             </nz-form-item>
-            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+            <nz-form-item class="one-row" *ngIf="form.value.panels?.header">
               <nz-form-control>
                 <nz-switch formControlName='headerIndicators'></nz-switch>
               </nz-form-control>
@@ -142,7 +217,7 @@
                 {{t('techChartSettings.headerIndicatorsLabel')}}
               </nz-form-label>
             </nz-form-item>
-            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+            <nz-form-item class="one-row" *ngIf="form.value.panels?.header">
               <nz-form-control>
                 <nz-switch formControlName='headerUndoRedo'></nz-switch>
               </nz-form-control>
@@ -150,7 +225,7 @@
                 {{t('techChartSettings.headerUndoRedoLabel')}}
               </nz-form-label>
             </nz-form-item>
-            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+            <nz-form-item class="one-row" *ngIf="form.value.panels?.header">
               <nz-form-control>
                 <nz-switch formControlName='headerSettings'></nz-switch>
               </nz-form-control>
@@ -158,7 +233,7 @@
                 {{t('techChartSettings.headerSettingsLabel')}}
               </nz-form-label>
             </nz-form-item>
-            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+            <nz-form-item class="one-row" *ngIf="form.value.panels?.header">
               <nz-form-control>
                 <nz-switch formControlName='headerFullscreenButton'></nz-switch>
               </nz-form-control>
@@ -166,7 +241,7 @@
                 {{t('techChartSettings.headerFullscreenButtonLabel')}}
               </nz-form-label>
             </nz-form-item>
-            <nz-form-item class="switch-row" *ngIf="form.value.panels?.header">
+            <nz-form-item class="one-row" *ngIf="form.value.panels?.header">
               <nz-form-control>
                 <nz-switch formControlName='headerScreenshot'></nz-switch>
               </nz-form-control>
@@ -174,7 +249,7 @@
                 {{t('techChartSettings.headerScreenshotLabel')}}
               </nz-form-label>
             </nz-form-item>
-            <nz-form-item class="switch-row">
+            <nz-form-item class="one-row">
               <nz-form-control>
                 <nz-switch formControlName='drawingsToolbar'></nz-switch>
               </nz-form-control>
@@ -182,7 +257,7 @@
                 {{t('techChartSettings.drawingsToolbarLabel')}}
               </nz-form-label>
             </nz-form-item>
-            <nz-form-item class="switch-row">
+            <nz-form-item class="one-row">
               <nz-form-control>
                 <nz-switch formControlName='timeframesBottomToolbar'></nz-switch>
               </nz-form-control>
