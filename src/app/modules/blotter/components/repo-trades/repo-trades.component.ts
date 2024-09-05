@@ -8,7 +8,8 @@ import {
   combineLatest,
   distinctUntilChanged,
   Observable,
-  switchMap
+  switchMap,
+  take
 } from "rxjs";
 import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
 import { allRepoTradesColumns, TableNames } from "../../models/blotter-settings.model";
@@ -27,6 +28,7 @@ import { TradeFilter } from "../../models/trade.model";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { ExportHelper } from "../../utils/export-helper";
 
 @Component({
   selector: 'ats-repo-trades',
@@ -302,6 +304,32 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
 
   protected rowToInstrumentKey(row: RepoTrade): Observable<InstrumentKey | null> {
     return this.service.getInstrumentToSelect(row.symbol, row.exchange, row.board);
+  }
+
+  protected exportToFile(data?: RepoTrade[]): void {
+    combineLatest({
+      tBlotter: this.translatorService.getTranslator('blotter'),
+      settings: this.settings$,
+      tableConfig: this.tableConfig$
+    })
+      .pipe(
+        take(1),
+      )
+      .subscribe(({tBlotter, settings, tableConfig}) => {
+        const valueTranslators = new Map<string, (value: any) => string>([
+          ['date', (value): string => this.formatDate(value)]
+        ]);
+
+        const exportedData = (data ?? []).map(trade => ({ ...trade, ...trade.repoSpecificFields }));
+
+        ExportHelper.exportToCsv(
+          tBlotter(['repoTradesTab']),
+          settings,
+          [...exportedData],
+          tableConfig.columns,
+          valueTranslators
+        );
+      });
   }
 
   searchInItem(trade: RepoTrade, key: keyof RepoTrade | keyof RepoTrade['repoSpecificFields'], value?: string): boolean {
