@@ -10,7 +10,8 @@ import {
   Subscription,
   switchMap,
   take,
-  tap
+  tap,
+  TeardownLogic
 } from "rxjs";
 import { Injectable } from "@angular/core";
 import { Trade } from "../../../shared/models/trades/trade.model";
@@ -49,10 +50,10 @@ class TradesState {
   private readonly drawnTrades = new Map<string, IRemovableChartItem>();
   private readonly loadedData = new Map<string, Trade>();
   private oldestTrade: Trade | null = null;
+  private readonly tearDown = new Subscription();
 
-  constructor(
-    private readonly tearDown: Subscription,
-    public readonly instrument: InstrumentKey) {
+  constructor(public readonly instrument: InstrumentKey) {
+    this.tearDown.add(() => this.clear());
   }
 
   addLoadedItem(item: Trade): void {
@@ -84,10 +85,6 @@ class TradesState {
   }
 
   destroy(): void {
-    this.tearDown.add(() => {
-      this.clear();
-    });
-
     this.tearDown.unsubscribe();
   }
 
@@ -103,12 +100,16 @@ class TradesState {
     this.loadedData.clear();
     this.oldestTrade = null;
   }
+
+  onDestroy(teardown: TeardownLogic): void {
+    this.tearDown.add(teardown);
+  }
 }
 
 @Injectable()
 export class TradesDisplayExtension extends BaseExtension {
-  private tearDown: Subscription = new Subscription();
   private tradesState: TradesState | null = null;
+  private initTimezoneChangeSub: Subscription | null = null;
 
   constructor(
     private readonly currentDashboardService: DashboardContextService,
@@ -125,13 +126,12 @@ export class TradesDisplayExtension extends BaseExtension {
   }
 
   destroyState(): void {
-    this.clear();
+    this.initTimezoneChangeSub?.unsubscribe();
+    this.tradesState?.destroy();
   }
 
   apply(context: ChartContext): void {
-    this.clear();
-    this.tearDown = new Subscription();
-
+    this.tradesState?.destroy();
     if (!(context.settings.showTrades ?? false)) {
       return;
     }
@@ -140,18 +140,11 @@ export class TradesDisplayExtension extends BaseExtension {
     this.initTimezoneChangeHandler(context);
   }
 
-  private clear(): void {
-    if (!this.tearDown.closed) {
-      this.tearDown.unsubscribe();
-    }
-
-    this.tradesState?.destroy();
-  }
-
   private initTradesDisplay(context: ChartContext): void {
-    const settings = context.settings;
+    this.tradesState?.destroy();
+    this.tradesState = new TradesState(context.settings as InstrumentKey);
 
-    this.tradesState = new TradesState(this.tearDown, settings as InstrumentKey);
+    const settings = context.settings;
 
     this.getCommonData().subscribe(x => {
       const currentPortfolio$ = this.currentDashboardService.selectedPortfolio$.pipe(
@@ -160,7 +153,7 @@ export class TradesDisplayExtension extends BaseExtension {
       );
 
       // setup today trades
-      this.tearDown.add(
+      this.tradesState?.onDestroy(
         currentPortfolio$.pipe(
           switchMap(portfolio => this.portfolioSubscriptionsService.getTradesSubscription(portfolio.portfolio, portfolio.exchange)),
           map(trades => trades.filter(t => t.symbol === settings.symbol && t.exchange === settings.exchange))
@@ -183,7 +176,7 @@ export class TradesDisplayExtension extends BaseExtension {
       this.getChartApi(context).onVisibleRangeChanged()
         .subscribe(null, checkHistoryHandler);
 
-      this.tearDown.add(() => {
+      this.tradesState?.onDestroy(() => {
         visibleRangeChange$.complete();
         this.getChartApi(context).onVisibleRangeChanged().unsubscribe(null, checkHistoryHandler);
       });
@@ -194,13 +187,14 @@ export class TradesDisplayExtension extends BaseExtension {
         this.fillTradesHistoryCurrentRange(context, currentPortfolio$, x.exchanges, x.translator);
       });
 
-      this.tearDown.add(historyFillingSub);
+      this.tradesState?.onDestroy(historyFillingSub);
 
       this.fillTradesHistoryCurrentRange(context, currentPortfolio$, x.exchanges, x.translator);
     });
   }
 
   private initTimezoneChangeHandler(context: ChartContext): void {
+    this.initTimezoneChangeSub?.unsubscribe();
     const timezoneChangedHandler = (): void => this.initTradesDisplay(context);
 
     const timezoneApi = this.getChartApi(context).getTimezoneApi();
@@ -208,12 +202,10 @@ export class TradesDisplayExtension extends BaseExtension {
     timezoneApi.onTimezoneChanged()
       .subscribe(null, timezoneChangedHandler);
 
-    this.tearDown?.add(
-      () => {
-        timezoneApi.onTimezoneChanged()
-          .unsubscribe(null, timezoneChangedHandler);
-      }
-    );
+    this.initTimezoneChangeSub = new Subscription(() => {
+      timezoneApi.onTimezoneChanged()
+        .unsubscribe(null, timezoneChangedHandler);
+    });
   }
 
   private drawTrade(

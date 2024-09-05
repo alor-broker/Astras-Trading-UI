@@ -34,7 +34,6 @@ import {
   IChartingLibraryWidget,
   IExternalSaveLoadAdapter,
   IOrderLineAdapter,
-  IPositionLineAdapter,
   LanguageCode,
   LineToolsAndGroupsState,
   PlusClickParams,
@@ -94,25 +93,9 @@ import { SearchButtonHelper } from "../../utils/search-button.helper";
 import { DOCUMENT } from "@angular/common";
 import { TradesDisplayExtension } from "../../extensions/trades-display.extension";
 import { ChartContext } from "../../extensions/base.extension";
+import { PositionDisplayExtension } from "../../extensions/position-display.extension";
 
 interface ExtendedSettings { widgetSettings: TechChartSettings, instrument: Instrument }
-
-class PositionState {
-  positionLine: IPositionLineAdapter | null = null;
-
-  constructor(private readonly tearDown: Subscription) {
-    tearDown.add(() => {
-      try {
-        this.positionLine?.remove();
-      } catch {
-      }
-    });
-  }
-
-  destroy(): void {
-    this.tearDown.unsubscribe();
-  }
-}
 
 class OrdersState {
   readonly limitOrders = new Map<string, IOrderLineAdapter>();
@@ -148,7 +131,6 @@ class OrdersState {
 
 interface ChartState {
   widget: IChartingLibraryWidget;
-  positionState?: PositionState;
   ordersState?: OrdersState;
 }
 
@@ -158,6 +140,7 @@ interface ChartState {
   styleUrls: ['./tech-chart.component.less'],
   providers: [
     TechChartDatafeedService,
+    PositionDisplayExtension,
     TradesDisplayExtension
   ]
 })
@@ -199,6 +182,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly chartTemplatesSettingsBrokerService: ChartTemplatesSettingsBrokerService,
     private readonly localStorageService: LocalStorageService,
     private readonly tradesDisplayExtension: TradesDisplayExtension,
+    private readonly positionDisplayExtension: PositionDisplayExtension,
     @Inject(ACTIONS_CONTEXT)
     private readonly actionsContext: ActionsContext,
     private readonly instrumentSearchService: InstrumentSearchService,
@@ -216,9 +200,9 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.chartState) {
       this.clearChartEventsSubscription(this.chartState.widget);
       this.chartState.ordersState?.destroy();
-      this.chartState.positionState?.destroy();
       this.intervalChangeSub?.unsubscribe();
       this.symbolChangeSub?.unsubscribe();
+      this.positionDisplayExtension.destroyState();
       this.tradesDisplayExtension.destroyState();
       this.chartState.widget.remove();
     }
@@ -346,9 +330,11 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         this.chartState.widget.activeChart().setSymbol(
           SyntheticInstrumentsHelper.isSyntheticInstrument(settings.symbol) ? settings.symbol : this.toTvSymbol(settings as InstrumentKey),
           () => {
-            this.initPositionDisplay(settings, theme.themeColors);
             this.initOrdersDisplay(settings, theme.themeColors);
-            this.tradesDisplayExtension.update(this.createExtensionContext(settings, theme));
+
+            const extensionsContext = this.createExtensionContext(settings, theme);
+            this.positionDisplayExtension.update(extensionsContext);
+            this.tradesDisplayExtension.update(extensionsContext);
           }
         );
 
@@ -430,9 +416,10 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     chartWidget.onChartReady(() => {
       this.chartState?.widget!.activeChart().dataReady(() => {
-          this.initPositionDisplay(settings, theme.themeColors);
           this.initOrdersDisplay(settings, theme.themeColors);
-          this.tradesDisplayExtension.apply(this.createExtensionContext(settings, theme));
+          const extensionsContext = this.createExtensionContext(settings, theme);
+          this.positionDisplayExtension.apply(extensionsContext);
+          this.tradesDisplayExtension.apply(extensionsContext);
         }
       );
 
@@ -637,71 +624,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.currentDashboardService.selectedPortfolio$;
   }
 
-  private initPositionDisplay(settings: TechChartSettings, themeColors: ThemeColors): void {
-    this.chartState!.positionState?.destroy();
-    if(!(settings.showPosition ?? true)) {
-      return;
-    }
-
-    const tearDown = new Subscription();
-    this.chartState!.positionState = new PositionState(tearDown);
-
-    const subscription = this.allActivePositions$!.pipe(
-      map(x => x.find(p => p.symbol === settings.symbol && p.exchange === settings.exchange)),
-      distinctUntilChanged((p, c) => p?.avgPrice === c?.avgPrice && p?.qtyTFutureBatch === c?.qtyTFutureBatch),
-    ).subscribe(position => {
-      const positionState = this.chartState!.positionState!;
-      if (!position) {
-        positionState.positionLine?.remove();
-        positionState.positionLine = null;
-        return;
-      }
-
-      if (!positionState.positionLine) {
-        try {
-          positionState.positionLine = this.chartState!.widget.activeChart()
-            .createPositionLine()
-            .setText(this.translateFn(['position']));
-        } catch {
-          return;
-        }
-      }
-
-      const color = position.qtyTFutureBatch >= 0
-        ? themeColors.buyColor
-        : themeColors.sellColor;
-
-      const backgroundColor = position.qtyTFutureBatch >= 0
-        ? themeColors.buyColorBackground
-        : themeColors.sellColorBackground;
-
-      positionState.positionLine
-        .setQuantity(position.qtyTFutureBatch.toString())
-        .setPrice(position.avgPrice)
-        .setLineColor(color)
-        .setBodyBackgroundColor(themeColors.componentBackground)
-        .setBodyBorderColor(color)
-        .setQuantityBackgroundColor(color)
-        .setQuantityBorderColor(backgroundColor)
-        .setQuantityTextColor(themeColors.chartPrimaryTextColor)
-        .setBodyTextColor(themeColors.chartPrimaryTextColor)
-        .setLineLength(this.getMarkerLineLengthPercent(settings.positionLineMarkerPosition), "percentage");
-    });
-
-    tearDown.add(subscription);
-  }
-
-  private getMarkerLineLengthPercent(position: LineMarkerPosition | undefined): number {
-    switch (position) {
-      case LineMarkerPosition.Left:
-        return 90;
-      case LineMarkerPosition.Middle:
-        return 40;
-      default:
-        return 10;
-    }
-  }
-
   private initOrdersDisplay(settings: TechChartSettings, themeColors: ThemeColors): void {
     this.chartState!.ordersState?.destroy();
     if(!(settings.showOrders ?? true)) {
@@ -807,6 +729,17 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       .setBodyTextColor(order.side === Side.Buy ? themeColors.buyColor : themeColors.sellColor)
       .setLineLength(this.getMarkerLineLengthPercent(position), "percentage")
     ;
+  }
+
+  private getMarkerLineLengthPercent(position: LineMarkerPosition | undefined): number {
+    switch (position) {
+      case LineMarkerPosition.Left:
+        return 90;
+      case LineMarkerPosition.Middle:
+        return 40;
+      default:
+        return 10;
+    }
   }
 
   private fillLimitOrder(order: Order, orderLineAdapter: IOrderLineAdapter): void {
