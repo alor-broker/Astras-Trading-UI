@@ -41,14 +41,6 @@
                 {{t('scalperOrderBookSettings.depthLabel')}}
               </nz-form-label>
 
-              <span
-                *ngIf="form.controls.depth.value > 20"
-                nz-typography
-                nzType="warning"
-              >
-                {{t('form.orderbookDepthWarning')}}
-              </span>
-
               <nz-form-control>
                 <nz-slider
                   [nzMin]="validationOptions.depth.min"
