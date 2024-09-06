@@ -110,13 +110,14 @@ class TradesState {
 export class TradesDisplayExtension extends BaseExtension {
   private tradesState: TradesState | null = null;
   private initTimezoneChangeSub: Subscription | null = null;
+  private initTradesDisplaySub: Subscription | null = null;
 
   constructor(
     private readonly currentDashboardService: DashboardContextService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly tradesHistoryService: TradesHistoryService,
     private readonly translatorService: TranslatorService,
-    private readonly marketService: MarketService,
+    private readonly marketService: MarketService
   ) {
     super();
   }
@@ -127,6 +128,7 @@ export class TradesDisplayExtension extends BaseExtension {
 
   destroyState(): void {
     this.initTimezoneChangeSub?.unsubscribe();
+    this.initTradesDisplaySub?.unsubscribe();
     this.tradesState?.destroy();
   }
 
@@ -141,12 +143,13 @@ export class TradesDisplayExtension extends BaseExtension {
   }
 
   private initTradesDisplay(context: ChartContext): void {
-    this.tradesState?.destroy();
-    this.tradesState = new TradesState(context.settings as InstrumentKey);
-
     const settings = context.settings;
 
-    this.getCommonData().subscribe(x => {
+    this.initTradesDisplaySub?.unsubscribe();
+    this.initTradesDisplaySub = this.getCommonData().subscribe(x => {
+      this.tradesState?.destroy();
+      this.tradesState = new TradesState(context.settings as InstrumentKey);
+
       const currentPortfolio$ = this.currentDashboardService.selectedPortfolio$.pipe(
         tap(() => this.tradesState?.clear()),
         shareReplay(1)
@@ -439,7 +442,6 @@ export class TradesDisplayExtension extends BaseExtension {
       exchanges: this.marketService.getAllExchanges(),
       translator: this.translatorService.getTranslator('tech-chart/tech-chart')
     }).pipe(
-      take(1),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }

@@ -22,7 +22,6 @@ import {
   sharedModuleImportForTests,
   TestData
 } from '../../../../shared/utils/testing';
-import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
@@ -37,7 +36,6 @@ import { LocalStorageService } from "../../../../shared/services/local-storage.s
 import { SyntheticInstrumentsService } from "../../services/synthetic-instruments.service";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
-import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 import { InstrumentSearchService } from "../../services/instrument-search.service";
 
 describe('TechChartComponent', () => {
@@ -49,7 +47,6 @@ describe('TechChartComponent', () => {
   let themeServiceSpy: any;
   let instrumentsServiceSpy: any;
   let widgetsSharedDataServiceSpy: any;
-  let portfolioSubscriptionsServiceSpy: any;
 
   beforeEach(() => {
     widgetSettingsServiceSpy = jasmine.createSpyObj(
@@ -96,18 +93,6 @@ describe('TechChartComponent', () => {
     instrumentsServiceSpy.getInstrument.and.returnValue(of(TestData.instruments[0]));
 
     widgetsSharedDataServiceSpy = jasmine.createSpyObj('WidgetsSharedDataService', ['setDataProviderValue']);
-
-    portfolioSubscriptionsServiceSpy = jasmine.createSpyObj(
-      'PortfolioSubscriptionsService',
-      [
-        'getAllPositionsSubscription',
-        'getOrdersSubscription',
-        'getStopOrdersSubscription'
-      ]);
-
-    portfolioSubscriptionsServiceSpy.getAllPositionsSubscription.and.returnValue(new Subject());
-    portfolioSubscriptionsServiceSpy.getOrdersSubscription.and.returnValue(new Subject());
-    portfolioSubscriptionsServiceSpy.getStopOrdersSubscription.and.returnValue(new Subject());
   });
 
   beforeEach(async () => {
@@ -132,18 +117,11 @@ describe('TechChartComponent', () => {
             openNewOrderDialog: jasmine.createSpy('openNewOrderDialog').and.callThrough()
           }
         },
-        { provide: PortfolioSubscriptionsService, useValue: portfolioSubscriptionsServiceSpy },
         {
           provide: DashboardContextService,
           useValue: {
             selectedDashboard$: new Subject(),
             selectedPortfolio$: new Subject()
-          }
-        },
-        {
-          provide: WsOrdersService,
-          useValue: {
-            cancelOrder: jasmine.createSpy('cancelOrders').and.returnValue(new Subject())
           }
         },
         {

@@ -81,7 +81,7 @@ export class PositionDisplayExtension extends BaseExtension {
     this.positionState?.destroy();
   }
 
-  private drawPosition(context: ChartContext): Subscription {
+  private drawPosition(context: ChartContext): TeardownLogic {
     return combineLatest({
       position: this.getCurrentPosition(context.settings),
       translator: this.translatorService.getTranslator('tech-chart/tech-chart')
