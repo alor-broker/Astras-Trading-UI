@@ -368,9 +368,11 @@ export class TradesDisplayExtension extends BaseExtension {
         disableSave: true,
         disableUndo: true,
         shape: "icon",
+        // Full list of icons https://www.tradingview.com/charting-library-docs/latest/ui_elements/drawings/Drawings-List#icons
         icon: trade.side === Side.Buy ? icons.buy : icons.sell,
         zOrder: 'top',
         overrides: {
+          // https://www.tradingview.com/charting-library-docs/latest/api/modules/Charting_Library/#drawingoverrides
           color: trade.side === Side.Buy ? settings.buyTradeColor : settings.sellTradeColor,
           size: settings.markerSize
         }
