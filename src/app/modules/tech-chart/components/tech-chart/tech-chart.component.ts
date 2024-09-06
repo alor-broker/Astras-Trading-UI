@@ -18,11 +18,8 @@ import {
   Observable,
   pairwise,
   shareReplay,
-  Subject,
   Subscription,
-  switchMap,
   take,
-  tap,
   withLatestFrom
 } from 'rxjs';
 import {
@@ -35,8 +32,6 @@ import {
   GmtTimezoneId,
   IChartingLibraryWidget,
   IExternalSaveLoadAdapter,
-  IOrderLineAdapter,
-  IPositionLineAdapter,
   LanguageCode,
   LineToolsAndGroupsState,
   PlusClickParams,
@@ -46,27 +41,21 @@ import {
   TimeFrameType,
   TimeFrameValue,
   Timezone,
-  TimezoneInfo,
   widget
 } from '../../../../../assets/charting_library';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { TechChartDatafeedService } from '../../services/tech-chart-datafeed.service';
 import { ThemeService } from '../../../../shared/services/theme.service';
-import { ThemeColors, ThemeSettings, ThemeType } from '../../../../shared/models/settings/theme-settings.model';
+import { ThemeSettings, ThemeType } from '../../../../shared/models/settings/theme-settings.model';
 import { mapWith } from '../../../../shared/utils/observable-helper';
 import { SelectedPriceData } from '../../../../shared/models/orders/selected-order-price.model';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { MathHelper } from '../../../../shared/utils/math-helper';
-import { PortfolioSubscriptionsService } from '../../../../shared/services/portfolio-subscriptions.service';
-import { PortfolioKey } from '../../../../shared/models/portfolio-key.model';
-import { Position } from '../../../../shared/models/positions/position.model';
-import { debounceTime, map, startWith } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import { Order, OrderType, StopOrder } from '../../../../shared/models/orders/order.model';
-import { Side } from '../../../../shared/models/enums/side.model';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { LineMarkerPosition, TechChartSettings } from '../../models/tech-chart-settings.model';
+import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { HashMap } from "@jsverse/transloco/lib/types";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
@@ -75,13 +64,9 @@ import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
 import { defaultBadgeColor, toInstrumentKey } from "../../../../shared/utils/instruments";
-import { EditOrderDialogParams, OrderFormType } from "../../../../shared/models/orders/orders-dialog.model";
+import { OrderFormType } from "../../../../shared/models/orders/orders-dialog.model";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
-import { Trade } from "../../../../shared/models/trades/trade.model";
-import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
 import { addSeconds } from "../../../../shared/utils/datetime";
-import { LessMore } from "../../../../shared/models/enums/less-more.model";
-import { getConditionSign, getConditionTypeByString } from "../../../../shared/utils/order-conditions-helper";
 import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
 import { RegularInstrumentKey, SyntheticInstrumentKey } from "../../models/synthetic-instruments.model";
 import { SyntheticInstrumentsService } from "../../services/synthetic-instruments.service";
@@ -92,137 +77,31 @@ import { DeviceInfo } from "../../../../shared/models/device-info.model";
 import { ChartTemplatesSettingsBrokerService } from "../../services/chart-templates-settings-broker.service";
 import { LocalStorageService } from "../../../../shared/services/local-storage.service";
 import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/actions-context";
-import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 import { InstrumentSearchService } from "../../services/instrument-search.service";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { SearchButtonHelper } from "../../utils/search-button.helper";
 import { DOCUMENT } from "@angular/common";
+import { TradesDisplayExtension } from "../../extensions/trades-display.extension";
+import { ChartContext } from "../../extensions/base.extension";
+import { PositionDisplayExtension } from "../../extensions/position-display.extension";
+import { OrdersDisplayExtension } from "../../extensions/orders-display.extension";
 
 interface ExtendedSettings { widgetSettings: TechChartSettings, instrument: Instrument }
 
-interface IRemovableChartItem {
-  remove(): void;
-}
-
-class PositionState {
-  positionLine: IPositionLineAdapter | null = null;
-
-  constructor(private readonly tearDown: Subscription) {
-    tearDown.add(() => {
-      try {
-        this.positionLine?.remove();
-      } catch {
-      }
-    });
-  }
-
-  destroy(): void {
-    this.tearDown.unsubscribe();
-  }
-}
-
-class OrdersState {
-  readonly limitOrders = new Map<string, IOrderLineAdapter>();
-  readonly stopOrders = new Map<string, IOrderLineAdapter>();
-
-  constructor(private readonly tearDown: Subscription) {
-  }
-
-  destroy(): void {
-    this.tearDown.add(() => {
-      this.clear();
-    });
-
-    this.tearDown.unsubscribe();
-  }
-
-  clear(): void {
-    this.clearOrders(this.limitOrders);
-    this.clearOrders(this.stopOrders);
-  }
-
-  private clearOrders(orders: Map<string, IOrderLineAdapter>): void {
-    orders.forEach(value => {
-      try {
-        value.remove();
-      } catch {
-      }
-    });
-
-    orders.clear();
-  }
-}
-
-class TradesState {
-  private readonly drawnTrades = new Map<string, IRemovableChartItem>();
-  private readonly loadedData = new Map<string, Trade>();
-  private oldestTrade: Trade | null = null;
-
-  constructor(private readonly tearDown: Subscription, public readonly instrument: InstrumentKey) {
-  }
-
-  addLoadedItem(item: Trade): void {
-    this.loadedData.set(item.id, item);
-
-    if(!this.oldestTrade || this.oldestTrade.date.getTime() > item.date.getTime()) {
-      this.oldestTrade = item;
-    }
-  }
-
-  isTradeDrawn(trade: Trade): boolean {
-    return this.drawnTrades.has(trade.id);
-  }
-
-  markTradeDrawn(trade: Trade, removableItem: IRemovableChartItem): void {
-    this.drawnTrades.set(trade.id, removableItem);
-  }
-
-  getOldestTrade(): Trade | null {
-    return this.oldestTrade;
-  }
-
-  getTradesForRange(fromSec: number, toSec: number): Trade[] {
-    return Array.from(this.loadedData.values())
-      .filter(t => {
-        const tradeTime = Math.round(t.date.getTime() / 1000);
-        return tradeTime >= fromSec && tradeTime <= toSec;
-      });
-  }
-
-  destroy(): void {
-    this.tearDown.add(() => {
-      this.clear();
-    });
-
-    this.tearDown.unsubscribe();
-  }
-
-  clear(): void {
-    this.drawnTrades.forEach(t => {
-      try {
-        t.remove();
-      } catch {
-      }
-    });
-
-    this.drawnTrades.clear();
-    this.loadedData.clear();
-    this.oldestTrade = null;
-  }
-}
-
 interface ChartState {
   widget: IChartingLibraryWidget;
-  positionState?: PositionState;
-  ordersState?: OrdersState;
-  tradesState?: TradesState;
 }
 
 @Component({
   selector: 'ats-tech-chart',
   templateUrl: './tech-chart.component.html',
   styleUrls: ['./tech-chart.component.less'],
-  providers: [TechChartDatafeedService]
+  providers: [
+    TechChartDatafeedService,
+    PositionDisplayExtension,
+    OrdersDisplayExtension,
+    TradesDisplayExtension
+  ]
 })
 export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input({required: true})
@@ -234,14 +113,12 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly selectedPriceProviderName = 'selectedPrice';
   private chartState?: ChartState;
   private settings$!: Observable<ExtendedSettings>;
-  private allActivePositions$?: Observable<Position[]>;
   private chartEventSubscriptions: { event: (keyof SubscribeEventsMap), callback: SubscribeEventsMap[keyof SubscribeEventsMap] }[] = [];
   private lastTheme?: ThemeSettings;
   private lastLang?: string;
   private lastTimezone?: TimezoneDisplayOption;
   private translateFn!: (key: string[], params?: HashMap) => string;
   private intervalChangeSub?: Subscription;
-  private timezoneChangeSub?: Subscription;
   private symbolChangeSub?: Subscription;
   private isChartFocused = false;
 
@@ -253,38 +130,36 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly syntheticInstrumentsService: SyntheticInstrumentsService,
     private readonly widgetsSharedDataService: WidgetsSharedDataService,
     private readonly ordersDialogService: OrdersDialogService,
-    private readonly wsOrdersService: WsOrdersService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly currentDashboardService: DashboardContextService,
     private readonly translatorService: TranslatorService,
     private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly tradesHistoryService: TradesHistoryService,
     private readonly marketService: MarketService,
     private readonly deviceService: DeviceService,
     private readonly chartTemplatesSettingsBrokerService: ChartTemplatesSettingsBrokerService,
     private readonly localStorageService: LocalStorageService,
+    private readonly tradesDisplayExtension: TradesDisplayExtension,
+    private readonly positionDisplayExtension: PositionDisplayExtension,
+    private readonly ordersDisplayExtension: OrdersDisplayExtension,
     @Inject(ACTIONS_CONTEXT)
     private readonly actionsContext: ActionsContext,
     private readonly instrumentSearchService: InstrumentSearchService,
     @Inject(DOCUMENT) private readonly document: Document,
-    private readonly destroyRef: DestroyRef
+    private readonly destroyRef: DestroyRef,
   ) {
   }
 
   ngOnInit(): void {
     this.initSettingsStream();
-    this.initPositionStream();
   }
 
   ngOnDestroy(): void {
     if (this.chartState) {
       this.clearChartEventsSubscription(this.chartState.widget);
-      this.chartState.ordersState?.destroy();
-      this.chartState.positionState?.destroy();
-      this.chartState.tradesState?.destroy();
       this.intervalChangeSub?.unsubscribe();
-      this.timezoneChangeSub?.unsubscribe();
       this.symbolChangeSub?.unsubscribe();
+      this.ordersDisplayExtension.destroyState();
+      this.positionDisplayExtension.destroyState();
+      this.tradesDisplayExtension.destroyState();
       this.chartState.widget.remove();
     }
 
@@ -386,14 +261,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     } else return false;
   }
 
-  private initPositionStream(): void {
-    this.allActivePositions$ = this.getCurrentPortfolio().pipe(
-      switchMap(portfolio => this.portfolioSubscriptionsService.getAllPositionsSubscription(portfolio.portfolio, portfolio.exchange)),
-      map((positions => positions.filter(p => p.avgPrice && p.qtyTFutureBatch))),
-      startWith([])
-    );
-  }
-
   private createChart(
     settings: TechChartSettings,
     theme: ThemeSettings,
@@ -411,10 +278,10 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         this.chartState.widget.activeChart().setSymbol(
           SyntheticInstrumentsHelper.isSyntheticInstrument(settings.symbol) ? settings.symbol : this.toTvSymbol(settings as InstrumentKey),
           () => {
-            this.initPositionDisplay(settings, theme.themeColors);
-            this.initOrdersDisplay(settings, theme.themeColors);
-            this.initTradesDisplay(settings, theme.themeColors, exchanges);
-            this.initTimezoneChangeStream(settings, theme.themeColors, exchanges);
+            const extensionsContext = this.createExtensionContext(settings, theme);
+            this.positionDisplayExtension.update(extensionsContext);
+            this.ordersDisplayExtension.update(extensionsContext);
+            this.tradesDisplayExtension.update(extensionsContext);
           }
         );
 
@@ -496,10 +363,10 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     chartWidget.onChartReady(() => {
       this.chartState?.widget!.activeChart().dataReady(() => {
-          this.initPositionDisplay(settings, theme.themeColors);
-          this.initOrdersDisplay(settings, theme.themeColors);
-          this.initTradesDisplay(settings, theme.themeColors, exchanges);
-          this.initTimezoneChangeStream(settings, theme.themeColors, exchanges);
+          const extensionsContext = this.createExtensionContext(settings, theme);
+          this.positionDisplayExtension.apply(extensionsContext);
+          this.ordersDisplayExtension.apply(extensionsContext);
+          this.tradesDisplayExtension.apply(extensionsContext);
         }
       );
 
@@ -700,482 +567,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private getCurrentPortfolio(): Observable<PortfolioKey> {
-    return this.currentDashboardService.selectedPortfolio$;
-  }
-
-  private initPositionDisplay(settings: TechChartSettings, themeColors: ThemeColors): void {
-    this.chartState!.positionState?.destroy();
-    if(!(settings.showPosition ?? true)) {
-      return;
-    }
-
-    const tearDown = new Subscription();
-    this.chartState!.positionState = new PositionState(tearDown);
-
-    const subscription = this.allActivePositions$!.pipe(
-      map(x => x.find(p => p.symbol === settings.symbol && p.exchange === settings.exchange)),
-      distinctUntilChanged((p, c) => p?.avgPrice === c?.avgPrice && p?.qtyTFutureBatch === c?.qtyTFutureBatch),
-    ).subscribe(position => {
-      const positionState = this.chartState!.positionState!;
-      if (!position) {
-        positionState.positionLine?.remove();
-        positionState.positionLine = null;
-        return;
-      }
-
-      if (!positionState.positionLine) {
-        try {
-          positionState.positionLine = this.chartState!.widget.activeChart()
-            .createPositionLine()
-            .setText(this.translateFn(['position']));
-        } catch {
-          return;
-        }
-      }
-
-      const color = position.qtyTFutureBatch >= 0
-        ? themeColors.buyColor
-        : themeColors.sellColor;
-
-      const backgroundColor = position.qtyTFutureBatch >= 0
-        ? themeColors.buyColorBackground
-        : themeColors.sellColorBackground;
-
-      positionState.positionLine
-        .setQuantity(position.qtyTFutureBatch.toString())
-        .setPrice(position.avgPrice)
-        .setLineColor(color)
-        .setBodyBackgroundColor(themeColors.componentBackground)
-        .setBodyBorderColor(color)
-        .setQuantityBackgroundColor(color)
-        .setQuantityBorderColor(backgroundColor)
-        .setQuantityTextColor(themeColors.chartPrimaryTextColor)
-        .setBodyTextColor(themeColors.chartPrimaryTextColor)
-        .setLineLength(this.getMarkerLineLengthPercent(settings.positionLineMarkerPosition), "percentage");
-    });
-
-    tearDown.add(subscription);
-  }
-
-  private getMarkerLineLengthPercent(position: LineMarkerPosition | undefined): number {
-    switch (position) {
-      case LineMarkerPosition.Left:
-        return 90;
-      case LineMarkerPosition.Middle:
-        return 40;
-      default:
-        return 10;
-    }
-  }
-
-  private initOrdersDisplay(settings: TechChartSettings, themeColors: ThemeColors): void {
-    this.chartState!.ordersState?.destroy();
-    if(!(settings.showOrders ?? true)) {
-      return;
-    }
-
-    const tearDown = new Subscription();
-    this.chartState!.ordersState = new OrdersState(tearDown);
-
-    tearDown.add(this.setupOrdersUpdate(
-      this.getLimitOrdersStream(settings as InstrumentKey),
-      this.chartState!.ordersState.limitOrders,
-      (order, orderLineAdapter) => {
-        this.fillOrderBaseParameters(order, orderLineAdapter, themeColors, settings.ordersLineMarkerPosition ?? LineMarkerPosition.Right);
-        this.fillLimitOrder(order, orderLineAdapter);
-      }
-    ));
-
-    tearDown.add(this.setupOrdersUpdate(
-      this.getStopOrdersStream(settings as InstrumentKey),
-      this.chartState!.ordersState.stopOrders,
-      (order, orderLineAdapter) => {
-        this.fillOrderBaseParameters(order, orderLineAdapter, themeColors, settings.ordersLineMarkerPosition ?? LineMarkerPosition.Right);
-        this.fillStopOrder(order, orderLineAdapter);
-      }
-    ));
-  }
-
-  private initTimezoneChangeStream(settings: TechChartSettings, themeColors: ThemeColors, exchanges: MarketExchange[]): void {
-    this.timezoneChangeSub?.unsubscribe();
-    this.timezoneChangeSub = new Subscription();
-
-    const timezoneChangeCallback = (): void => this.initTradesDisplay(settings, themeColors, exchanges);
-    this.chartState?.widget.activeChart().getTimezoneApi().onTimezoneChanged().subscribe(null, timezoneChangeCallback);
-    this.timezoneChangeSub.add(() => this.chartState?.widget.activeChart().getTimezoneApi().onTimezoneChanged().unsubscribe(null, timezoneChangeCallback));
-  }
-
-  private initTradesDisplay(settings: TechChartSettings, themeColors: ThemeColors, exchanges: MarketExchange[]): void {
-    if(!(settings.showTrades ?? false)) {
-      return;
-    }
-
-    this.chartState!.tradesState?.destroy();
-
-    const tearDown = new Subscription();
-    this.chartState!.tradesState = new TradesState(tearDown, settings as InstrumentKey);
-
-    const currentPortfolio$ = this.getCurrentPortfolio().pipe(
-      tap(() => this.chartState?.tradesState?.clear()),
-      shareReplay(1)
-    );
-
-    // setup today trades
-    tearDown.add(
-      currentPortfolio$.pipe(
-        switchMap(portfolio => this.portfolioSubscriptionsService.getTradesSubscription(portfolio.portfolio, portfolio.exchange)),
-        map(trades => trades.filter(t => t.symbol === settings.symbol && t.exchange === settings.exchange))
-      ).subscribe(trades => {
-        if(trades.length === 0) {
-          return;
-        }
-
-        trades.forEach(trade => {
-          this.chartState?.tradesState?.addLoadedItem(trade);
-          this.drawTrade(trade, themeColors, exchanges);
-        });
-      })
-    );
-
-    // setup history trades
-    const visibleRangeChange$ = new Subject();
-    const checkHistoryCallback = (): void => visibleRangeChange$.next({});
-
-    this.chartState?.widget.activeChart().onVisibleRangeChanged().subscribe(null, checkHistoryCallback);
-    tearDown.add(() => visibleRangeChange$.complete());
-    tearDown.add(() => this.chartState?.widget.activeChart().onVisibleRangeChanged().unsubscribe(null, checkHistoryCallback));
-
-    visibleRangeChange$.pipe(
-      debounceTime(500),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      this.fillTradesHistoryCurrentRange(settings as InstrumentKey, currentPortfolio$, themeColors, exchanges);
-    });
-
-    this.fillTradesHistoryCurrentRange(settings as InstrumentKey, currentPortfolio$, themeColors, exchanges);
-  }
-
-  private drawTrade(trade: Trade, themeColors: ThemeColors, exchanges: MarketExchange[]): void {
-    if(!this.chartState?.tradesState) {
-      return;
-    }
-
-    if(this.chartState.tradesState.instrument.exchange !== trade.exchange
-      || this.chartState.tradesState.instrument.symbol !== trade.symbol) {
-      return;
-    }
-
-    if(!(this.chartState.tradesState.isTradeDrawn(trade))) {
-      const currentVisibleRange = this.chartState.widget.activeChart().getVisibleRange();
-      const tradeTime = Math.round(trade.date.getTime() / 1000);
-
-      if(tradeTime < currentVisibleRange.from || tradeTime > currentVisibleRange.to) {
-        return;
-      }
-
-      let chartSelectedTimezone: string | undefined = (this.chartState.widget.activeChart().getTimezoneApi().getTimezone() as TimezoneInfo | undefined)?.id;
-      if ((chartSelectedTimezone ?? 'exchange') === 'exchange') {
-        const exchange = exchanges.find(x => x.exchange === trade.exchange);
-        chartSelectedTimezone = exchange?.settings.timezone;
-      }
-
-      const text = `${this.translateFn(['sideLabel'])}: ${trade.side},
-      ${this.translateFn(['priceLabel'])}: ${trade.price},
-      ${this.translateFn(['qtyLabel'])}: ${trade.qtyBatch}
-      ${this.translateFn(['timeLabel'])}: ${
-        trade.date.toLocaleDateString(
-          'RU-ru',
-          {
-            timeZone: chartSelectedTimezone
-          }
-        )
-      } ${
-        trade.date.toLocaleTimeString(
-          'RU-ru',
-          {
-            hour: '2-digit',
-            minute: '2-digit',
-            timeZone: chartSelectedTimezone
-          }
-        )
-      }`;
-
-      const shapeId = this.chartState.widget.activeChart().createMultipointShape(
-        [
-          {
-            time: tradeTime,
-            price: trade.price
-          }
-        ],
-        {
-          lock: true,
-          disableSelection: false,
-          disableSave: true,
-          disableUndo: true,
-          shape: "note",
-          text: text,
-          zOrder: 'top',
-          overrides: {
-            markerColor: trade.side === Side.Buy ? themeColors.buyColorAccent : themeColors.sellColorAccent,
-            backgroundColor: themeColors.primaryColor,
-            fontsize: 10
-          }
-        }
-      );
-
-      if(!!shapeId) {
-        this.chartState.tradesState.markTradeDrawn(
-          trade,
-          {
-            remove: () => {
-              this.chartState?.widget.activeChart()?.removeEntity(shapeId);
-            }
-          }
-        );
-      }
-    }
-  }
-
-  private fillTradesHistoryCurrentRange(
-    instrument: InstrumentKey,
-    portfolioKey$: Observable<PortfolioKey>,
-    themeColors: ThemeColors,
-    exchanges: MarketExchange[]
-  ): void {
-    const visibleRange = this.chartState?.widget.activeChart().getVisibleRange();
-    if(!visibleRange) {
-      return;
-    }
-
-    let startTradeId: string | null = null;
-    const drawTrades = (): void => {
-      this.chartState?.tradesState?.getTradesForRange(visibleRange.from, visibleRange.to).forEach(t => {
-        this.drawTrade(t, themeColors, exchanges);
-      });
-    };
-
-    const oldestLoadedTrade = this.chartState?.tradesState?.getOldestTrade();
-    if(oldestLoadedTrade) {
-      if(visibleRange.from * 1000 < oldestLoadedTrade.date.getTime()) {
-        startTradeId = oldestLoadedTrade.id;
-      } else {
-        drawTrades();
-        return;
-      }
-    }
-
-    portfolioKey$.pipe(
-      switchMap(p => this.tradesHistoryService.getTradesHistoryForSymbol(
-          p.exchange,
-          p.portfolio,
-          instrument.symbol,
-          {
-            from: startTradeId,
-            limit: 50
-          }
-        )
-      ),
-      take(1)
-    ).subscribe(historyTrades => {
-      if(!historyTrades) {
-        return;
-      }
-
-      if(historyTrades.length > 0) {
-        const trades = historyTrades.filter(t => t.id !== startTradeId);
-        if(trades.length === 0) {
-          return;
-        }
-
-        trades.forEach(trade => {
-          this.chartState?.tradesState?.addLoadedItem(trade);
-        });
-
-        drawTrades();
-
-        this.fillTradesHistoryCurrentRange(instrument, portfolioKey$, themeColors, exchanges);
-      }
-    });
-  }
-
-  private setupOrdersUpdate<T extends Order>(
-    data$: Observable<T[]>,
-    state: Map<string, IOrderLineAdapter>,
-    fillOrderLine: (order: T, orderLineAdapter: IOrderLineAdapter) => void): Subscription {
-    const removeItem = (itemKey: string): void => {
-      try {
-        state.get(itemKey)?.remove();
-      } catch {
-      }
-
-      state.delete(itemKey);
-    };
-
-    return data$.subscribe(
-      orders => {
-        Array.from(state.keys()).forEach(orderId => {
-          if (!orders.find(o => o.id === orderId)) {
-            removeItem(orderId);
-          }
-        });
-
-        orders.forEach(order => {
-          const existingOrderLine = state.get(order.id);
-          if (order.status !== 'working') {
-            if (existingOrderLine) {
-              removeItem(order.id);
-            }
-
-            return;
-          }
-
-          if (!existingOrderLine) {
-            const orderLine = this.chartState!.widget.activeChart().createOrderLine();
-            fillOrderLine(order, orderLine);
-            state.set(order.id, orderLine);
-          }
-        });
-      }
-    );
-  }
-
-  private getLimitOrdersStream(instrumentKey: InstrumentKey): Observable<Order[]> {
-    return this.getCurrentPortfolio().pipe(
-      switchMap(portfolio => this.portfolioSubscriptionsService.getOrdersSubscription(portfolio.portfolio, portfolio.exchange)),
-      map(orders => orders.allOrders.filter(o => o.type === OrderType.Limit)),
-      debounceTime(100),
-      map(orders => orders.filter(o => o.symbol === instrumentKey.symbol && o.exchange === instrumentKey.exchange)),
-      startWith([])
-    );
-  }
-
-  private getStopOrdersStream(instrumentKey: InstrumentKey): Observable<StopOrder[]> {
-    return this.getCurrentPortfolio().pipe(
-      switchMap(portfolio => this.portfolioSubscriptionsService.getStopOrdersSubscription(portfolio.portfolio, portfolio.exchange)),
-      map(orders => orders.allOrders),
-      debounceTime(100),
-      map(orders => orders.filter(o => o.symbol === instrumentKey.symbol && o.exchange === instrumentKey.exchange)),
-      startWith([])
-    );
-  }
-
-  private fillOrderBaseParameters(order: Order, orderLineAdapter: IOrderLineAdapter, themeColors: ThemeColors, position: LineMarkerPosition): void {
-    orderLineAdapter
-      .setQuantity((order.qtyBatch - (order.filledQtyBatch ?? 0)).toString())
-      .setQuantityBackgroundColor(themeColors.componentBackground)
-      .setQuantityTextColor(themeColors.chartPrimaryTextColor)
-      .setQuantityBorderColor(themeColors.primaryColor)
-      .setBodyBorderColor(themeColors.primaryColor)
-      .setBodyBackgroundColor(themeColors.componentBackground)
-      .setLineStyle(2)
-      .setLineColor(themeColors.primaryColor)
-      .setCancelButtonBackgroundColor(themeColors.componentBackground)
-      .setCancelButtonBorderColor('transparent')
-      .setCancelButtonIconColor(themeColors.primaryColor)
-      .setBodyTextColor(order.side === Side.Buy ? themeColors.buyColor : themeColors.sellColor)
-      .setLineLength(this.getMarkerLineLengthPercent(position), "percentage")
-    ;
-  }
-
-  private fillLimitOrder(order: Order, orderLineAdapter: IOrderLineAdapter): void {
-    const getEditCommand = (): EditOrderDialogParams => ({
-      orderId: order.id,
-      orderType: OrderFormType.Limit,
-      instrumentKey: {
-        symbol: order.symbol,
-        exchange: order.exchange
-      },
-      portfolioKey: {
-        portfolio: order.portfolio,
-        exchange: order.exchange
-      },
-      initialValues: {}
-    } as EditOrderDialogParams);
-
-    orderLineAdapter.setText('L')
-      .setTooltip(`${this.translateFn([order.side === Side.Buy ? 'buy' : 'sell'])} ${this.translateFn(['limit'])}`)
-      .setPrice(order.price)
-      .onCancel(() => this.wsOrdersService.cancelOrders([{
-          orderId: order.id,
-          portfolio: order.portfolio,
-          exchange: order.exchange,
-          orderType: order.type
-        }]).subscribe()
-      )
-      .onModify(() => this.ordersDialogService.openEditOrderDialog(getEditCommand()))
-      .onMove(() => {
-          const params = {
-            ...getEditCommand(),
-            cancelCallback: (): IOrderLineAdapter => orderLineAdapter.setPrice(order.price)
-          };
-
-          params.initialValues = {
-            ...params.initialValues,
-            price: orderLineAdapter.getPrice(),
-            hasPriceChanged: orderLineAdapter.getPrice() !== order.price
-          };
-          this.ordersDialogService.openEditOrderDialog(params);
-        }
-      );
-  }
-
-  private fillStopOrder(order: StopOrder, orderLineAdapter: IOrderLineAdapter): void {
-    const conditionType: LessMore = getConditionTypeByString(order.conditionType)!;
-    const orderText = 'S'
-      + (order.type === OrderType.StopLimit ? 'L' : 'M')
-      + ' '
-      + (getConditionSign(conditionType) as string);
-
-    const orderTooltip = this.translateFn([order.side === Side.Buy ? 'buy' : 'sell'])
-      + ' '
-      + this.translateFn([order.type === OrderType.StopLimit ? 'stopLimit' : 'stopMarket'])
-      + ' ('
-      + this.translateFn([(conditionType as LessMore | null) ?? ''])
-      + ')';
-
-    const getEditCommand = (): EditOrderDialogParams => ({
-      orderId: order.id,
-      orderType: OrderFormType.Stop,
-      instrumentKey: {
-        symbol: order.symbol,
-        exchange: order.exchange
-      },
-      portfolioKey: {
-        portfolio: order.portfolio,
-        exchange: order.exchange
-      },
-      initialValues: {}
-    } as EditOrderDialogParams);
-
-    orderLineAdapter
-      .setText(orderText)
-      .setTooltip(orderTooltip)
-      .setPrice(order.triggerPrice)
-      .onCancel(() => this.wsOrdersService.cancelOrders([{
-          orderId: order.id,
-          portfolio: order.portfolio,
-          exchange: order.exchange,
-          orderType: order.type
-        }]).subscribe()
-      )
-      .onModify(() => this.ordersDialogService.openEditOrderDialog(getEditCommand()))
-      .onMove(() => {
-        const params = {
-          ...getEditCommand(),
-          cancelCallback: (): IOrderLineAdapter => orderLineAdapter.setPrice(order.triggerPrice)
-        };
-
-        params.initialValues = {
-          ...params.initialValues,
-          price: orderLineAdapter.getPrice(),
-          hasPriceChanged: orderLineAdapter.getPrice() !== order.price
-        };
-        this.ordersDialogService.openEditOrderDialog(params);
-      }
-    );
-  }
-
   private createSaveLoadAdapter(): IExternalSaveLoadAdapter {
     const service = this.chartTemplatesSettingsBrokerService;
     return {
@@ -1309,5 +700,15 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       disabledSet.add(feature);
     }
+  }
+
+  private createExtensionContext(
+    settings: TechChartSettings,
+    theme: ThemeSettings): ChartContext {
+    return {
+      settings,
+      theme,
+      host: this.chartState!.widget
+    };
   }
 }

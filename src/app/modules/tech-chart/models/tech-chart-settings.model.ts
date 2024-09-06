@@ -21,6 +21,19 @@ export interface ChartPanels {
   headerFullscreenButton: boolean;
 }
 
+export enum TradeDisplayMarker {
+  Note = 'note',
+  Arrows = 'arrows',
+  Carets = 'carets'
+}
+
+export interface TechChartTradesDisplaySettings {
+  marker: TradeDisplayMarker;
+  buyTradeColor: string;
+  sellTradeColor: string;
+  markerSize: number;
+}
+
 export interface TechChartSettings extends WidgetSettings {
   chartLayout?: object;
   showTrades?: boolean;
@@ -33,4 +46,5 @@ export interface TechChartSettings extends WidgetSettings {
   instrumentGroup?: string;
   isin?: string;
   panels?: ChartPanels;
+  trades?: TechChartTradesDisplaySettings;
 }

@@ -13,6 +13,10 @@
   "showPositionLabel": "Show position",
   "positionLineMarkerPositionLabel": "Position marker position",
   "showTradesLabel": "Show trades",
+  "tradeMarkerLabel": "Trade marker",
+  "buyTradeMarkerColorLabel": "Buy trade marker color",
+  "sellTradeMarkerColorLabel": "Sell trade marker color",
+  "markerSizeLabel": "Marker size",
 
   "chartElementsGroupLabel": "Chart elements",
   "headerLabel": "Top panel",
@@ -33,5 +37,11 @@
     "right": "Right",
     "middle": "Middle",
     "left": "Left"
+  },
+
+  "tradeDisplayMarkerOptions": {
+    "note": "Note",
+    "arrows": "Arrows",
+    "carets": "Carets"
   }
 }

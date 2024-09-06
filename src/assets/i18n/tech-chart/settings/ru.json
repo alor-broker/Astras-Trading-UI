@@ -13,6 +13,10 @@
   "showPositionLabel": "Отображать позицию",
   "positionLineMarkerPositionLabel": "Положение маркера позиции",
   "showTradesLabel": "Отображать сделки",
+  "tradeMarkerLabel": "Маркер сделки",
+  "buyTradeMarkerColorLabel": "Цвет маркера на покупку",
+  "sellTradeMarkerColorLabel": "Цвет маркера на продажу",
+  "markerSizeLabel": "Размер маркера",
 
   "chartElementsGroupLabel": "Элементы графика",
   "headerLabel": "Верхняя панель",
@@ -33,5 +37,11 @@
     "right": "Справа",
     "middle": "По центру",
     "left": "Слева"
+  },
+
+  "tradeDisplayMarkerOptions": {
+    "note": "Заметка",
+    "arrows": "Стрелки",
+    "carets": "Каретки"
   }
 }

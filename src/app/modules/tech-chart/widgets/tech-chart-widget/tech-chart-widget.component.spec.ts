@@ -9,11 +9,15 @@ import {
   widgetSkeletonMock
 } from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { of } from 'rxjs';
+import {
+  EMPTY,
+  of
+} from 'rxjs';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { ThemeService } from "../../../../shared/services/theme.service";
 
 describe('TechChartWidgetComponent', () => {
   let component: TechChartWidgetComponent;
@@ -53,6 +57,12 @@ describe('TechChartWidgetComponent', () => {
           provide: DashboardContextService,
           useValue: {
             instrumentsSelection$: of({})
+          }
+        },
+        {
+          provide: ThemeService,
+          useValue: {
+            getThemeSettings: jasmine.createSpy('getThemeSettings').and.returnValue(EMPTY)
           }
         }
       ]
