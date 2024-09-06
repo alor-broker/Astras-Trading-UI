@@ -80,8 +80,7 @@
     },
     "tableColumns": {
       "selectColumnLabel": "Table columns"
-    },
-    "orderbookDepthWarning": "The orderbook will be updating no more than 2 times per second when choosing a depth greater than 20. This is a temporary measure until the extended orderbooks are fully put into exploitation."
+    }
   },
 
   "validationErrors": {
