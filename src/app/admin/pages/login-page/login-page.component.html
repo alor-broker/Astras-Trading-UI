@@ -1,0 +1,55 @@
+<ng-container *transloco="let t; scope: 'admin/login-page'">
+  <div class="form-box p-15">
+    <h2 class="text-center">{{ t('adminLoginPage.title') }}</h2>
+    <form [formGroup]="loginForm" nz-form>
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="t('validationErrors.emptyFieldError')">
+          <nz-input-group nzPrefixIcon="user">
+            <input
+              #userNameControl
+              [placeholder]="t('adminLoginPage.userNameLabel')"
+              formControlName="userName"
+              nz-input
+              type="text"/>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="t('validationErrors.emptyFieldError')">
+          <nz-input-group nzPrefixIcon="lock">
+            <input
+              [placeholder]="t('adminLoginPage.passwordLabel')"
+              formControlName="password"
+              nz-input
+              type="password"/>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <ng-container *ngrxLet="isLoading$ as isLoading">
+        <button
+          (click)="submit()"
+          [disabled]="loginForm.invalid || isLoading"
+          [nzLoading]="isLoading"
+          nz-button
+          nzBlock
+          nzType="primary"
+        >
+          {{ t('adminLoginPage.submitBtnLabel') }}
+        </button>
+      </ng-container>
+
+      <div *ngIf="loginError$ | async as loginError" class="text-center mt-10">
+        <span nz-typography nzType="danger" [ngSwitch]="loginError">
+          <ng-container *ngSwitchCase="LoginErrorCodes.WrongCredentials">
+            {{ t('adminLoginPage.errors.wrongCredentials') }}
+          </ng-container>
+          <ng-container *ngSwitchDefault>
+            {{ t('adminLoginPage.errors.common') }}
+          </ng-container>
+        </span>
+      </div>
+
+
+    </form>
+  </div>
+</ng-container>
