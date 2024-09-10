@@ -28,11 +28,7 @@ import { InstrumentsService } from '../../services/instruments.service';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  Watchlist,
-  WatchlistCollection,
-  WatchlistType
-} from '../../models/watchlist.model';
+import { WatchlistCollection } from '../../models/watchlist.model';
 import { DOCUMENT } from '@angular/common';
 import { InstrumentSelectSettings, WatchlistMeta } from '../../models/instrument-select-settings.model';
 import { DomHelper } from "../../../../shared/utils/dom-helper";
@@ -51,8 +47,6 @@ import { WatchInstrumentsService } from "../../services/watch-instruments.servic
   styleUrls: ['./instrument-select.component.less']
 })
 export class InstrumentSelectComponent implements OnInit {
-  readonly watchlistTypes = WatchlistType;
-
   @ViewChild('inputEl') inputEl!: ElementRef<HTMLInputElement>;
 
   @Input({ required: true })
@@ -63,7 +57,6 @@ export class InstrumentSelectComponent implements OnInit {
   inputValue?: string;
   collection$!: Observable<WatchlistCollection>;
   settings$!: Observable<InstrumentSelectSettings>;
-  currentWatchlist$!: Observable<Watchlist>;
   getTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
   private readonly filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
 

@@ -10,7 +10,6 @@
              class='whole'
              nz-input
              [placeholder]="t('instrumentsSelect.searchPlaceHolder')"
-             [disabled]="(currentWatchlist$ | async)?.type === watchlistTypes.HistoryList"
       />
       <nz-autocomplete
         #auto
