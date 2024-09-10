@@ -19,6 +19,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { WatchlistCollection } from '../../models/watchlist.model';
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
+import { WatchInstrumentsService } from "../../services/watch-instruments.service";
 
 describe('InstrumentSelectComponent', () => {
   let component: InstrumentSelectComponent;
@@ -58,6 +59,12 @@ describe('InstrumentSelectComponent', () => {
           provide: ACTIONS_CONTEXT,
           useValue: {
             instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
+          }
+        },
+        {
+          provide: WatchInstrumentsService,
+          useValue: {
+            clear: jasmine.createSpy('instrumentSelected').and.callThrough()
           }
         },
         ...commonTestProviders

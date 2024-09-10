@@ -2,8 +2,13 @@ import { WidgetSettings } from '../../../shared/models/widget-settings.model';
 import { BaseColumnId, TableDisplaySettings } from "../../../shared/models/settings/table-settings.model";
 import { TimeframeValue } from "../../light-chart/models/light-chart.models";
 
+export interface WatchlistMeta {
+  id: string;
+  isExpanded: boolean;
+}
+
 export interface InstrumentSelectSettings extends WidgetSettings {
-  activeListId?: string;
+  activeWatchlistMetas?: WatchlistMeta[];
   showFavorites?: boolean;
   priceChangeTimeframe?: TimeframeValue;
   instrumentTable: TableDisplaySettings;

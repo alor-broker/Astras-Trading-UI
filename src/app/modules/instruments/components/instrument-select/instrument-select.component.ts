@@ -20,7 +20,6 @@ import {
 import {
   debounceTime,
   filter,
-  map,
   switchMap
 } from 'rxjs/operators';
 import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
@@ -35,7 +34,7 @@ import {
   WatchlistType
 } from '../../models/watchlist.model';
 import { DOCUMENT } from '@angular/common';
-import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
+import { InstrumentSelectSettings, WatchlistMeta } from '../../models/instrument-select-settings.model';
 import { DomHelper } from "../../../../shared/utils/dom-helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { WatchListTitleHelper } from "../../utils/watch-list-title.helper";
@@ -44,6 +43,7 @@ import {
   ActionsContext
 } from 'src/app/shared/services/actions-context';
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { WatchInstrumentsService } from "../../services/watch-instruments.service";
 
 @Component({
   selector: 'ats-instrument-select',
@@ -71,6 +71,7 @@ export class InstrumentSelectComponent implements OnInit {
     private readonly service: InstrumentsService,
     private readonly settingsService: WidgetSettingsService,
     private readonly watchlistCollectionService: WatchlistCollectionService,
+    private readonly watchInstrumentsService: WatchInstrumentsService,
     @Inject(ACTIONS_CONTEXT)
     private readonly actionsContext: ActionsContext,
     @Inject(DOCUMENT) private readonly document: Document,
@@ -136,15 +137,6 @@ export class InstrumentSelectComponent implements OnInit {
       shareReplay(1)
     );
 
-    this.currentWatchlist$ = combineLatest({
-      settings: this.settings$,
-      collection: this.collection$
-    }).pipe(
-      map(x => x.collection.collection.find(wl => wl.id === x.settings.activeListId)),
-      filter((wl): wl is Watchlist => !!wl),
-      shareReplay(1)
-    );
-
     this.setDefaultWatchList();
 
     fromEvent<KeyboardEvent>(this.document.body, 'keydown').pipe(
@@ -160,19 +152,52 @@ export class InstrumentSelectComponent implements OnInit {
   }
 
   watch(instrument: InstrumentKey): void {
-    combineLatest({
-      watchlist: this.currentWatchlist$,
-      settings: this.settings$
-    }).pipe(
+    this.settings$.pipe(
       take(1)
-    ).subscribe(x => {
-      this.watchlistCollectionService.addItemsToList(x.watchlist.id, [instrument]);
-      this.actionsContext.instrumentSelected(instrument, x.settings.badgeColor ?? defaultBadgeColor);
+    ).subscribe(settings => {
+      if ((settings.activeWatchlistMetas?.length ?? 0) === 0) {
+        return;
+      }
+
+      this.watchlistCollectionService.addItemsToList(settings.activeWatchlistMetas![0].id, [instrument]);
+      this.actionsContext.instrumentSelected(instrument, settings.badgeColor ?? defaultBadgeColor);
     });
   }
 
   selectCollection(listId: string): void {
-    this.settingsService.updateSettings(this.guid, { activeListId: listId });
+    this.settings$
+      .pipe(
+        take(1)
+      )
+      .subscribe(settings => {
+        const isRemoveWatchlist = (settings.activeWatchlistMetas ?? [])
+          .map(wm => wm.id)
+          .includes(listId);
+
+        if (isRemoveWatchlist) {
+          this.watchInstrumentsService.clear(listId);
+
+          this.settingsService.updateSettings(
+            this.guid,
+            {
+              activeWatchlistMetas: settings.activeWatchlistMetas?.filter((meta) => meta.id !== listId) ?? []
+            }
+          );
+        } else {
+          this.settingsService.updateSettings(
+            this.guid,
+            {
+              activeWatchlistMetas: [{ id: listId, isExpanded: true }, ...(settings.activeWatchlistMetas ?? [])]
+            }
+          );
+        }
+      });
+  }
+
+  isSelectedWatchlist(listId: string, activeLists: WatchlistMeta[]): boolean {
+    return activeLists
+      .map(l => l.id)
+      .includes(listId);
   }
 
   getAutocompleteLeftPosition(): string {
@@ -195,15 +220,16 @@ export class InstrumentSelectComponent implements OnInit {
     ).pipe(
       take(1)
     ).subscribe(([settings, collection]) => {
-      if (settings.activeListId != null) {
-        if (collection.collection.find(w => w.id === settings.activeListId)) {
+      if (settings.activeWatchlistMetas != null) {
+        if (collection.collection.find(w => settings.activeWatchlistMetas!.map(wm => wm.id).includes(w.id))) {
           return;
         }
       }
 
       const defaultList = collection.collection.find(x => x.isDefault);
+
       if (defaultList) {
-        this.settingsService.updateSettings(this.guid, { activeListId: defaultList.id });
+        this.settingsService.updateSettings(this.guid, { activeWatchlistMetas: [{ id: defaultList.id, isExpanded: true }] });
       }
     });
   }

@@ -1,4 +1,4 @@
-import { DestroyRef, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { combineLatest, Observable, pairwise, Subscription, switchMap, take } from 'rxjs';
 import { filter, map, startWith } from 'rxjs/operators';
 import { HistoryService } from 'src/app/shared/services/history.service';
@@ -15,12 +15,15 @@ import { TimeframeValue } from "../../light-chart/models/light-chart.models";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { CandlesService } from "./candles.service";
 
+interface WatchlistMeta {
+  watchlistUpdatesState: WatchlistUpdatesState;
+  instrumentsToWatchState: InstrumentsToWatchState;
+  collectionChangeSubscription: Subscription;
+}
+
 @Injectable()
 export class WatchInstrumentsService {
-  private readonly watchlistUpdatesState = new WatchlistUpdatesState();
-  private readonly instrumentsToWatchState = new InstrumentsToWatchState();
-
-  private collectionChangeSubscription?: Subscription;
+  private readonly watchlistMetaMap = new Map<string, WatchlistMeta>();
 
   constructor(
     private readonly history: HistoryService,
@@ -28,26 +31,38 @@ export class WatchInstrumentsService {
     private readonly instrumentsService: InstrumentsService,
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly candlesService: CandlesService,
-    destroyRef: DestroyRef) {
-    destroyRef.onDestroy(() => this.clear());
-    destroyRef.onDestroy(() => this.watchlistUpdatesState.destroy());
+  ) {}
+
+  clear(listId: string): void {
+    const watchlistMeta = this.watchlistMetaMap.get(listId)!;
+
+    watchlistMeta.watchlistUpdatesState.removeAll();
+    watchlistMeta.watchlistUpdatesState.destroy();
+    watchlistMeta.instrumentsToWatchState.removeAll();
+    watchlistMeta.collectionChangeSubscription.unsubscribe();
+
+    this.watchlistMetaMap.delete(listId);
   }
 
-  clear(): void {
-    this.watchlistUpdatesState.removeAll();
-    this.instrumentsToWatchState.removeAll();
-
-    this.collectionChangeSubscription?.unsubscribe();
+  clearAll(): void {
+    this.watchlistMetaMap.forEach((v, k) => this.clear(k));
   }
 
   getWatched(listId: string, timeframe: TimeframeValue): Observable<WatchedInstrument[]> {
-    this.clear();
+    if (this.watchlistMetaMap.has(listId)) {
+      return this.watchlistMetaMap.get(listId)!.watchlistUpdatesState.updates$;
+    }
 
-    this.collectionChangeSubscription = this.watchlistCollectionService.getWatchlistCollection().pipe(
+    const watchlistUpdatesState = new WatchlistUpdatesState();
+    const instrumentsToWatchState = new InstrumentsToWatchState();
+
+     const collectionChangeSubscription = this.watchlistCollectionService.getWatchlistCollection().pipe(
       map(currentCollection => currentCollection.collection.find(x => x.id === listId)),
       filter(x => !!x)
     ).subscribe(currentList => {
       this.refreshWatchItems(
+        watchlistUpdatesState,
+        instrumentsToWatchState,
         currentList!.items.map(item => ({
             ...item,
             recordId: item.recordId ?? GuidGenerator.newGuid(),
@@ -57,27 +72,46 @@ export class WatchInstrumentsService {
       );
     });
 
-    return this.watchlistUpdatesState.updates$.pipe(
+    this.watchlistMetaMap.set(
+      listId,
+      {
+        watchlistUpdatesState,
+        instrumentsToWatchState,
+        collectionChangeSubscription
+      }
+    );
+
+    return watchlistUpdatesState.updates$.pipe(
       map(u => [...u])
     );
   }
 
-  private refreshWatchItems(items: WatchlistItem[], timeframe: TimeframeValue): void {
-    const previousIds = new Set(this.instrumentsToWatchState.getCurrentItemIds());
+  private refreshWatchItems(
+    watchlistUpdatesState: WatchlistUpdatesState,
+    instrumentsToWatchState: InstrumentsToWatchState,
+    items: WatchlistItem[],
+    timeframe: TimeframeValue
+  ): void {
+    const previousIds = new Set(instrumentsToWatchState.getCurrentItemIds());
     const currentIds = new Set<string>();
 
     items.forEach(item => {
       const currentRecordId = item.recordId!;
       currentIds.add(currentRecordId);
       if (!previousIds.has(currentRecordId)) {
-        this.instrumentsToWatchState.addItem(
+        instrumentsToWatchState.addItem(
           item,
-          () => this.watchlistUpdatesState.removeItem(currentRecordId)
+          () => watchlistUpdatesState.removeItem(currentRecordId)
         );
 
-        this.initInstrumentWatch(item, timeframe);
+        this.initInstrumentWatch(
+          watchlistUpdatesState,
+          instrumentsToWatchState,
+          item,
+          timeframe
+        );
       } else {
-        this.watchlistUpdatesState.updateItem(
+        watchlistUpdatesState.updateItem(
           currentRecordId,
           {
             favoriteOrder: item.favoriteOrder
@@ -88,12 +122,17 @@ export class WatchInstrumentsService {
 
     previousIds.forEach(id => {
       if (!currentIds.has(id)) {
-        this.instrumentsToWatchState.removeItem(id);
+        instrumentsToWatchState.removeItem(id);
       }
     });
   }
 
-  private initInstrumentWatch(instrument: WatchlistItem, timeframe: TimeframeValue): void {
+  private initInstrumentWatch(
+    watchlistUpdatesState: WatchlistUpdatesState,
+    instrumentsToWatchState: InstrumentsToWatchState,
+    instrument: WatchlistItem,
+    timeframe: TimeframeValue
+  ): void {
     this.instrumentsService.getInstrument(instrument).pipe(
       take(1),
       filter((x): x is Instrument => !!x),
@@ -119,12 +158,22 @@ export class WatchInstrumentsService {
           );
       })
     ).subscribe(wi => {
-      this.watchlistUpdatesState.addItem(wi);
-      this.setupInstrumentUpdatesSubscription(wi, timeframe);
+      watchlistUpdatesState.addItem(wi);
+      this.setupInstrumentUpdatesSubscription(
+        watchlistUpdatesState,
+        instrumentsToWatchState,
+        wi,
+        timeframe
+      );
     });
   }
 
-  private setupInstrumentUpdatesSubscription(wi: WatchedInstrument, timeframe: TimeframeValue): void {
+  private setupInstrumentUpdatesSubscription(
+    watchlistUpdatesState: WatchlistUpdatesState,
+    instrumentsToWatchState: InstrumentsToWatchState,
+    wi: WatchedInstrument,
+    timeframe: TimeframeValue
+  ): void {
     const lastCandleStream = this.history.getHistory({
       symbol: wi.instrument.symbol,
       exchange: wi.instrument.exchange,
@@ -178,10 +227,10 @@ export class WatchInstrumentsService {
           volume: quote.volume
         };
 
-        this.watchlistUpdatesState.updateItem(wi.recordId, update);
+        watchlistUpdatesState.updateItem(wi.recordId, update);
       });
 
-    this.instrumentsToWatchState.setUpdatesSubscription(wi.recordId, sub);
+    instrumentsToWatchState.setUpdatesSubscription(wi.recordId, sub);
   }
 
   getHistoryFromTime(timeframe: TimeframeValue): number {

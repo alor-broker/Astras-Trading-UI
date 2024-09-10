@@ -12,15 +12,13 @@ import {
   Observable,
   shareReplay,
   switchMap,
-  take,
-  tap
+  take
 } from 'rxjs';
 import { WatchedInstrument } from '../../models/watched-instrument.model';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import {
-  filter,
   map
 } from 'rxjs/operators';
 import { getPropertyFromPath } from "../../../../shared/utils/object-helper";
@@ -70,23 +68,29 @@ interface DisplayInstrument extends WatchedInstrument {
   id: string;
 }
 
+interface DisplayWatchlist extends Omit<Watchlist, 'items'> {
+  items: DisplayInstrument[];
+}
+
 @Component({
   selector: 'ats-watchlist-table',
   templateUrl: './watchlist-table.component.html',
-  styleUrls: ['./watchlist-table.component.less'],
-  providers: [WatchInstrumentsService]
+  styleUrls: ['./watchlist-table.component.less']
 })
-export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrument>
+export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist>
   implements OnInit, OnDestroy {
   @Input({ required: true }) guid!: string;
+
+  private isDragStarted = false;
+  private watchlistToDrop: string | null = null;
 
   readonly listTypes = WatchlistType;
   settings$!: Observable<InstrumentSelectSettings>;
 
-  currentWatchlist$!: Observable<Watchlist>;
+  currentWatchlist$!: Observable<Watchlist[]>;
   collection$!: Observable<WatchlistCollection>;
 
-  allColumns: BaseColumnSettings<WatchedInstrument>[] = [
+  allColumns: BaseColumnSettings<DisplayWatchlist>[] = [
     {
       id: 'symbol',
       displayName: "Тикер",
@@ -141,6 +145,8 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
     },
   ];
 
+  openedLists$!: Observable<string[]>;
+
   sortFns: Record<string, (a: InstrumentKey, b: InstrumentKey) => number> = {
     symbol: this.getSortFn('instrument.symbol'),
     price: this.getSortFn('price'),
@@ -160,8 +166,8 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
   }[]>;
 
   getListTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
-  selectedItem: WatchedInstrument | null = null;
-  private defaultSortFn?: (a: WatchedInstrument, b: WatchedInstrument) => number;
+  selectedItem: { listId: string, instrument: WatchedInstrument } | null = null;
+  private readonly defaultSortFn?: (a: WatchedInstrument, b: WatchedInstrument) => number;
 
   protected settingsTableName = 'instrumentTable';
   protected settingsColumnsName = 'instrumentColumns';
@@ -197,10 +203,18 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
         takeUntilDestroyed(this.destroyRef)
       );
 
+    this.openedLists$ = this.settings$
+      .pipe(
+        map(s => (s.activeWatchlistMetas ?? [])
+          .filter(w => w.isExpanded)
+          .map(w => w.id)
+        ),
+      );
+
     super.ngOnInit();
   }
 
-  protected initTableConfigStream(): Observable<TableConfig<DisplayInstrument>> {
+  protected initTableConfigStream(): Observable<TableConfig<DisplayWatchlist>> {
     return this.settings$
       .pipe(
         map(settings => {
@@ -221,30 +235,32 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
       );
   }
 
-  protected initTableDataStream(): Observable<DisplayInstrument[]> {
+  protected initTableDataStream(): Observable<DisplayWatchlist[]> {
     this.collection$ = this.watchlistCollectionService.getWatchlistCollection().pipe(
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
     const filteredSettings$ = this.settings$.pipe(
-      distinctUntilChanged((prev, curr) => prev.activeListId === curr.activeListId)
+      distinctUntilChanged((prev, curr) =>
+        JSON.stringify(prev.activeWatchlistMetas) === JSON.stringify(curr.activeWatchlistMetas)
+      )
     );
 
     this.currentWatchlist$ = filteredSettings$.pipe(
-      filter(s => s.activeListId != null && s.activeListId.length > 0),
       mapWith(
         () => this.collection$,
-        (settings, collection) => collection.collection.find(x => x.id === settings.activeListId)
-      ),
-      filter((x): x is Watchlist => !!x),
-      distinctUntilChanged((prev, curr) => prev.id === curr.id),
-      tap(list => {
-        if (list.type === WatchlistType.HistoryList) {
-          this.defaultSortFn = (a, b): number => b.addTime - a.addTime;
-        } else {
-          this.defaultSortFn = (a, b): number => a.instrument.symbol.localeCompare(b.instrument.symbol);
+        (settings, collection) => {
+          const watchlistIds = (settings.activeWatchlistMetas ?? []).map(wm => wm.id);
+          const list = collection.collection.filter(x => watchlistIds.includes(x.id));
+
+          if (list.length > 0) {
+            return list;
+          }
+
+          return [collection.collection.find(c => c.isDefault)!];
         }
-      }),
+      ),
+      distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
@@ -271,30 +287,35 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
 
     return this.currentWatchlist$.pipe(
       mapWith(
-        () => filteredSettings$.pipe(
-          distinctUntilChanged((prev, curr) => prev.activeListId !== curr.activeListId),
-        ),
-        (watchlist, settings) => ({ watchlist, settings })
+        () => filteredSettings$,
+        (watchLists, settings) => ({ watchLists, settings })
       ),
-      switchMap(({ watchlist, settings }) => this.watchInstrumentsService.getWatched(watchlist.id, settings.priceChangeTimeframe ?? TimeframeValue.Day)),
-      map(updates => updates.map(u => ({ ...u, id: u.recordId }))),
-      map(updates => {
-        if (this.defaultSortFn) {
-          return updates.sort(this.defaultSortFn);
-        }
-
-        return updates;
-      }),
+      switchMap(({ watchLists, settings }) =>
+        combineLatest(
+          watchLists.map(watchlist =>
+            this.watchInstrumentsService.getWatched(watchlist.id, settings.priceChangeTimeframe ?? TimeframeValue.Day)
+              .pipe(
+                map(instruments => {
+                  return {
+                    ...watchlist,
+                    items: instruments.map(i => ({ ...i, id: i.recordId }))
+                      .sort((a, b) => this.defaultSortFn?.(a, b) ?? 0)
+                  };
+                })
+              )
+          )
+        )
+      ),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
   ngOnDestroy(): void {
     super.ngOnDestroy();
-    this.watchInstrumentsService.clear();
+    this.watchInstrumentsService.clearAll();
   }
 
-  rowClick(row: DisplayInstrument): void {
+  onRowClick(row: DisplayInstrument): void {
     this.settings$.pipe(
       take(1)
     ).subscribe(s => {
@@ -302,22 +323,12 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
     });
   }
 
-  remove(itemId: string): void {
-    this.settings$.pipe(
-      map(s => s.activeListId),
-      filter((id): id is string => id != null && id.length > 0),
-      take(1)
-    ).subscribe(activeListId => {
-      this.watchlistCollectionService.removeItemsFromList(activeListId, [itemId]);
-    });
+  remove(listId: string, itemId: string): void {
+    this.watchlistCollectionService.removeItemsFromList(listId, [itemId]);
   }
 
-  getTrackKey(index: number, item: WatchedInstrument): string {
-    return item.recordId;
-  }
-
-  contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent, selectedInstrument: WatchedInstrument): void {
-    this.selectedItem = selectedInstrument;
+  contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent, instrument: WatchedInstrument, listId: string): void {
+    this.selectedItem = { listId, instrument };
     this.nzContextMenuService.create($event, menu);
   }
 
@@ -326,7 +337,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
       type,
       {
         linkToActive: false,
-        ...toInstrumentKey(this.selectedItem?.instrument!)
+        ...toInstrumentKey(this.selectedItem?.instrument.instrument!)
       }
     );
   }
@@ -367,7 +378,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
       return;
     }
 
-    this.watchlistCollectionService.addItemsToList(targetList.id, [this.selectedItem.instrument], false);
+    this.watchlistCollectionService.addItemsToList(targetList.id, [this.selectedItem.instrument.instrument], false);
   }
 
   moveItem(fromList: Watchlist, toList: Watchlist): void {
@@ -375,7 +386,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
       return;
     }
 
-    this.watchlistCollectionService.moveItem(this.selectedItem.recordId, fromList.id, toList.id);
+    this.watchlistCollectionService.moveItem(this.selectedItem.instrument.recordId, fromList.id, toList.id);
   }
 
   changeColumnOrder(event: CdkDragDrop<any>): void {
@@ -386,9 +397,41 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
     super.saveColumnWidth<InstrumentSelectSettings>(event, this.settings$);
   }
 
-  exportToFile(): void {
+  expandListChange(isExpanded: boolean, listId: string): void {
+    this.settings$
+      .pipe(
+        take(1)
+      )
+      .subscribe(settings => this.settingsService.updateSettings(
+          this.guid,
+          {
+            activeWatchlistMetas: (settings.activeWatchlistMetas ?? [])
+              .map(wm => wm.id === listId ? { ...wm, isExpanded } : wm)
+          }
+        )
+      );
+  }
+
+  onDragDropped(e: CdkDragDrop<any>): void {
+    this.watchlistCollectionService.moveItem(e.item.data.recordId, e.item.data.listId, this.watchlistToDrop!);
+    this.isDragStarted = false;
+    this.watchlistToDrop = null;
+  }
+
+  onDragStarted(): void {
+    this.isDragStarted = true;
+  }
+
+  setWatchlistToDrop(listId: string): void {
+    if (!this.isDragStarted) {
+      return;
+    }
+
+    this.watchlistToDrop = listId;
+  }
+
+  exportToFile(listId: string): void {
     combineLatest({
-      currentCollection: this.currentWatchlist$,
       tableConfig: this.tableConfig$,
       tableData: this.tableData$,
       translator: this.translatorService.getTranslator('instruments/select')
@@ -413,11 +456,19 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
         } as ExportColumnMeta<DisplayInstrument>)
       );
 
-      const csv = CsvFormatter.toCsv(meta, x.tableData, csvFormatterConfigDefaults);
+      const selectedWatchlist = x.tableData.find(w => w.id === listId);
+
+      if (selectedWatchlist == null) {
+        return;
+      }
+
+      const tableData = selectedWatchlist.items;
+
+      const csv = CsvFormatter.toCsv(meta, tableData, csvFormatterConfigDefaults);
 
       FileSaver.save({
           fileType: FileType.Csv,
-          name: x.currentCollection.title
+          name: selectedWatchlist.title
         },
         csv);
     });
