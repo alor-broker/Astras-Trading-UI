@@ -37,32 +37,47 @@
 
     @if (collection$ | async; as collection) {
       <div>
-        <button
-          nz-button
-          nz-dropdown
-          [nzDropdownMenu]="exportMenu"
-          [nz-tooltip]="t('instrumentsSelect.exportTooltip')"
-          [nzTooltipMouseEnterDelay]="1"
-        >
-          <span nz-icon nzType="download" nzTheme="outline"></span>
-        </button>
+        @if ((settings.activeWatchlistMetas?.length ?? 0) > 1) {
+          <button
+            nz-button
+            nz-dropdown
+            [nzDropdownMenu]="exportMenu"
+            [nz-tooltip]="t('instrumentsSelect.exportTooltip')"
+            [nzTooltipMouseEnterDelay]="1"
+          >
+            <span nz-icon nzType="download" nzTheme="outline"></span>
+          </button>
 
-        <nz-dropdown-menu #exportMenu="nzDropdownMenu">
-          <ul nz-menu nzSelectable>
-            @for (list of collection.collection; track list.id) {
-              @if (isSelectedWatchlist(list.id, settings.activeWatchlistMetas ?? [])) {
-                <li
-                  nz-menu-item
-                  (click)="table.exportToFile(list.id)"
-                >
-                  <span *transloco="let tTitle; scope: 'instruments'">
-                    {{ tTitle('instruments.' + getTitleTranslationKey(list), {fallback: list.title})}}
-                  </span>
-                </li>
+          <nz-dropdown-menu #exportMenu="nzDropdownMenu">
+            <ul nz-menu nzSelectable>
+              @for (list of collection.collection; track list.id) {
+                @if (isSelectedWatchlist(list.id, settings.activeWatchlistMetas ?? [])) {
+                  <li
+                    nz-menu-item
+                    (click)="table.exportToFile(list.id)"
+                  >
+                    <span *transloco="let tTitle; scope: 'instruments'">
+                      {{ tTitle('instruments.' + getTitleTranslationKey(list), {fallback: list.title})}}
+                    </span>
+                  </li>
+                }
               }
-            }
-          </ul>
-        </nz-dropdown-menu>
+            </ul>
+          </nz-dropdown-menu>
+        } @else if ((settings.activeWatchlistMetas?.length ?? 0) === 1) {
+          <button
+            nz-button
+            [nz-tooltip]="t('instrumentsSelect.exportTooltip')"
+            [nzTooltipMouseEnterDelay]="1"
+            (click)="table.exportToFile(settings.activeWatchlistMetas![0].id)"
+          >
+            <span
+              nz-icon
+              nzType="download"
+              nzTheme="outline"
+            ></span>
+          </button>
+        }
       </div>
       <div>
         <button

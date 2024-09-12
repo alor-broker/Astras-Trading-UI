@@ -1,5 +1,6 @@
 <ng-container *transloco="let t; scope: 'instruments/select'">
   <div
+    #tableContainer
     class="table-container"
     (nzResizeObserve)="containerSizeChanged($event)"
     nzResizeObserver
@@ -13,6 +14,7 @@
     } as vm"
   >
     <nz-table
+      #tableCmp
       [nzData]="vm.updates"
       [nzFrontPagination]="false"
       [nzScroll]="{ y: (vm.contentSize?.height ?? 0) + 'px', x: (vm.contentSize?.width ?? 0) + 'px' }"
@@ -85,17 +87,19 @@
       <tbody cdkDropList (cdkDropListDropped)="onDragDropped($event)">
         <ng-template let-watchlist nz-virtual-scroll>
           @if (openedLists$ | async; as openedLists) {
-            <tr (mouseenter)="setWatchlistToDrop(watchlist.id)">
-              <td
-                [colSpan]="1000"
-                [nzIndentSize]="0"
-                [nzShowExpand]="true"
-                [nzExpand]="openedLists?.includes(watchlist.id)"
-                [nzExpandIcon]="expandIcon"
-              >
-                {{ watchlist.title }}
-              </td>
-            </tr>
+            @if (vm.updates.length > 1) {
+              <tr (mouseenter)="setWatchlistToDrop(watchlist.id)">
+                <td
+                  [colSpan]="1000"
+                  [nzIndentSize]="0"
+                  [nzShowExpand]="true"
+                  [nzExpand]="openedLists?.includes(watchlist.id)"
+                  [nzExpandIcon]="expandIcon"
+                >
+                  {{ watchlist.title }}
+                </td>
+              </tr>
+            }
 
             <ng-template #expandIcon>
               @if (openedLists?.includes(watchlist.id)) {

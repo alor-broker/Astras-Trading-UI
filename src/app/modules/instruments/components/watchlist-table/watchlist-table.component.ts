@@ -1,14 +1,16 @@
 import {
   Component,
-  DestroyRef,
+  DestroyRef, ElementRef,
   Inject,
   Input,
   OnDestroy,
-  OnInit
+  OnInit, ViewChild
 } from '@angular/core';
 import {
   combineLatest,
   distinctUntilChanged,
+  filter,
+  fromEvent,
   Observable,
   shareReplay,
   switchMap,
@@ -63,6 +65,7 @@ import {
   FileSaver,
   FileType
 } from "../../../../shared/utils/file-export/file-saver";
+import { NzTableComponent } from "ng-zorro-antd/table";
 
 interface DisplayInstrument extends WatchedInstrument {
   id: string;
@@ -81,7 +84,11 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
   implements OnInit, OnDestroy {
   @Input({ required: true }) guid!: string;
 
+  @ViewChild('tableContainer') tableContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('tableCmp') tableCmp!: NzTableComponent<DisplayWatchlist>;
+
   private isDragStarted = false;
+  private scrollIntervalId: number | null = null;
   private watchlistToDrop: string | null = null;
 
   readonly listTypes = WatchlistType;
@@ -211,6 +218,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
         ),
       );
 
+    this.initScrollNeed();
     super.ngOnInit();
   }
 
@@ -412,10 +420,55 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
       );
   }
 
+  initScrollNeed(): void {
+    let isScrollingUp = false;
+    let isScrollingDown = false;
+
+    fromEvent<MouseEvent>(document, 'mousemove')
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        filter(() => this.isDragStarted)
+      )
+      .subscribe(e => {
+        const tableContainerRect = this.tableContainer.nativeElement.getBoundingClientRect();
+
+        const upperTrigger = tableContainerRect.top;
+        const lowerTrigger = tableContainerRect.bottom;
+
+        if (isScrollingUp && e.clientY > upperTrigger) {
+          isScrollingUp = false;
+
+          this.stopScroll();
+        }
+
+        if (isScrollingDown && e.clientY < lowerTrigger) {
+          isScrollingDown = false;
+
+          this.stopScroll();
+        }
+
+        if (!isScrollingUp && e.clientY < upperTrigger) {
+          isScrollingUp = true;
+
+          this.scrollIntervalId = setInterval(() => this.startScroll(-1),10);
+        }
+
+        if (!isScrollingDown && e.clientY > lowerTrigger) {
+          isScrollingDown = true;
+
+          this.scrollIntervalId = setInterval(() => this.startScroll(1), 10);
+        }
+      });
+  }
+
   onDragDropped(e: CdkDragDrop<any>): void {
-    this.watchlistCollectionService.moveItem(e.item.data.recordId, e.item.data.listId, this.watchlistToDrop!);
+    if (e.item.data.listId !== this.watchlistToDrop) {
+      this.watchlistCollectionService.moveItem(e.item.data.recordId, e.item.data.listId, this.watchlistToDrop!);
+    }
+
     this.isDragStarted = false;
     this.watchlistToDrop = null;
+    this.stopScroll();
   }
 
   onDragStarted(): void {
@@ -479,4 +532,16 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
       return getPropertyFromPath(a, propName) > getPropertyFromPath(b, propName) ? 1 : -1;
     };
   };
+
+  private startScroll(multiplier: number): void {
+    const initialScroll = this.tableCmp.cdkVirtualScrollViewport?.measureScrollOffset('top') ?? 0;
+
+    this.tableCmp.cdkVirtualScrollViewport?.scrollTo({ top: initialScroll + (10 * multiplier) });
+  }
+
+  private stopScroll(): void {
+    if (this.scrollIntervalId != null) {
+      clearInterval(this.scrollIntervalId);
+    }
+  }
 }
