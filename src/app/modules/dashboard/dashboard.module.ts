@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { NavbarComponent } from './components/navbar/navbar.component';
@@ -50,6 +49,7 @@ import { NzDividerModule } from "ng-zorro-antd/divider";
 import { BondScreenerModule } from "../bond-screener/bond-screener.module";
 import { AiChatModule } from "../ai-chat/ai-chat.module";
 import { SettingsLoadErrorDialogComponent } from "./components/settings-load-error-dialog/settings-load-error-dialog.component";
+import { RouterLink } from "@angular/router";
 
 @NgModule({
   declarations: [
@@ -67,46 +67,46 @@ import { SettingsLoadErrorDialogComponent } from "./components/settings-load-err
     EmptyPortfoliosWarningModalWidgetComponent,
     WidgetsGalleryComponent
   ],
-    imports: [
-        DashboardRoutingModule,
-        SharedModule,
-        OrderbookModule,
-        LightChartModule,
-        InstrumentsModule,
-        BlotterModule,
-        InfoModule,
-        TerminalSettingsModule,
-        JoyrideModule.forRoot(),
-        AllTradesModule,
-        NewsModule,
-        ExchangeRateModule,
-        TechChartModule,
-        AllInstrumentsModule,
-        NotificationsModule,
-        FeedbackModule,
-        ApplicationMetaModule,
-        NzInputModule,
-        ExternalLinkModule,
-        OrdersBasketModule,
-        ScalperOrderBookModule,
-        NzDrawerModule,
-        TreemapModule,
-        RibbonModule,
-        EventsCalendarModule,
-        OptionBoardModule,
-        ArbitrageSpreadModule,
-        PortfolioSummaryModule,
-        NzSegmentedModule,
-        DragDropModule,
-        OrderCommandsModule,
-        InstrumentsCorrelationModule,
-        LetDirective,
-        NzDividerModule,
-        BondScreenerModule,
-        AiChatModule,
-        // components
-        SettingsLoadErrorDialogComponent,
-    ],
+  imports: [
+    SharedModule,
+    OrderbookModule,
+    LightChartModule,
+    InstrumentsModule,
+    BlotterModule,
+    InfoModule,
+    TerminalSettingsModule,
+    JoyrideModule.forRoot(),
+    AllTradesModule,
+    NewsModule,
+    ExchangeRateModule,
+    TechChartModule,
+    AllInstrumentsModule,
+    NotificationsModule,
+    FeedbackModule,
+    ApplicationMetaModule,
+    NzInputModule,
+    ExternalLinkModule,
+    OrdersBasketModule,
+    ScalperOrderBookModule,
+    NzDrawerModule,
+    TreemapModule,
+    RibbonModule,
+    EventsCalendarModule,
+    OptionBoardModule,
+    ArbitrageSpreadModule,
+    PortfolioSummaryModule,
+    NzSegmentedModule,
+    DragDropModule,
+    OrderCommandsModule,
+    InstrumentsCorrelationModule,
+    LetDirective,
+    NzDividerModule,
+    BondScreenerModule,
+    AiChatModule,
+    // components
+    SettingsLoadErrorDialogComponent,
+    RouterLink,
+  ],
   providers: [
     OnboardingService
   ]

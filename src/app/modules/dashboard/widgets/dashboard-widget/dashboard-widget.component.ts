@@ -43,7 +43,7 @@ export class DashboardWidgetComponent implements OnInit, ActionsContext {
       .pipe(take(1))
       .subscribe(info => {
         if (info.isMobile) {
-          this.router.navigate(['mobile']);
+          this.router.navigate(['./mobile']);
           return;
         }
 

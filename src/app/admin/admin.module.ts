@@ -6,17 +6,27 @@ import {
 } from "@angular/router";
 import { LoginPageComponent } from "./pages/login-page/login-page.component";
 import { AdminDashboardComponent } from "./pages/admin-dashboard/admin-dashboard.component";
+import { AdminAreaShellComponent } from './admin-area-shell/admin-area-shell.component';
 
 const routes: Routes = [
-  { path: 'login', component: LoginPageComponent },
-  { path: '', component: AdminDashboardComponent }
+  {
+    path: '',
+    component: AdminAreaShellComponent,
+    children: [
+      { path: 'login', component: LoginPageComponent },
+      { path: '', component: AdminDashboardComponent }
+    ]
+  }
 ];
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    AdminAreaShellComponent
+  ],
   imports: [
     RouterModule.forChild(routes),
     CommonModule
   ]
 })
-export class AdminModule { }
+export class AdminModule {
+}

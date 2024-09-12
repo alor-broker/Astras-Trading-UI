@@ -3,26 +3,38 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: 'auth',
-    loadChildren: () => import('./modules/login/login.module').then(m => m.LoginModule)
-  },
-  {
-    path: 'dashboard',
-    loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule)
-  },
-  {
     path: 'admin',
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
   },
   {
+    path: 'dashboard',
+    loadChildren: () => import('./client/client.module').then(m => m.ClientModule)
+  },
+  {
+    path: 'auth',
+    pathMatch: "prefix",
+    redirectTo: 'dashboard/auth'
+  },
+  {
+    path: 'mobile',
+    pathMatch: "prefix",
+    redirectTo: 'dashboard/mobile'
+  },
+  {
     path: '',
-    loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule)
+    pathMatch: "full",
+    redirectTo: 'dashboard'
   }
 ];
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes)
+    RouterModule.forRoot(
+      routes,
+      {
+        bindToComponentInputs: true
+      }
+    )
   ],
   exports: [RouterModule],
 })
