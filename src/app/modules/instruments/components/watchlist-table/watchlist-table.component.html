@@ -90,7 +90,7 @@
             @if (vm.updates.length > 1) {
               <tr (mouseenter)="setWatchlistToDrop(watchlist.id)">
                 <td
-                  [colSpan]="1000"
+                  [colSpan]="vm.tableConfig.columns.length + ((vm.settings.showFavorites ?? false) ? 2 : 1)"
                   [nzIndentSize]="0"
                   [nzShowExpand]="true"
                   [nzExpand]="openedLists?.includes(watchlist.id)"
@@ -131,8 +131,8 @@
                 >
                   <td *ngIf="vm.settings.showFavorites ?? false" class="favorites">
                     <span
-                      (click)="updateFavorites(inst); $event.preventDefault(); $event.stopPropagation();"
-                      *ngIf="vm.list[0].type !== listTypes.HistoryList"
+                      (click)="updateFavorites(watchlist.id, inst); $event.preventDefault(); $event.stopPropagation();"
+                      *ngIf="watchlist.type !== listTypes.HistoryList"
                       [ngClass]="{
                       'btn': true,
                       'active': (inst.favoriteOrder ?? -1) >= 0

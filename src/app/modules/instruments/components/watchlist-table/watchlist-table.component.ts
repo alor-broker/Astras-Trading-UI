@@ -350,24 +350,16 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
     );
   }
 
-  updateFavorites(item: WatchedInstrument): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(s => {
-      if (s.activeListId == null) {
-        return;
+  updateFavorites(listId: string, item: WatchedInstrument): void {
+    this.watchlistCollectionService.updateListItem(
+      listId,
+      item.recordId,
+      {
+        favoriteOrder: item.favoriteOrder != null
+          ? null
+          : 1
       }
-
-      this.watchlistCollectionService.updateListItem(
-        s.activeListId,
-        item.recordId,
-        {
-          favoriteOrder: item.favoriteOrder != null
-            ? null
-            : 1
-        }
-      );
-    });
+    );
   }
 
   canMoveItem(currentList: Watchlist): boolean {
