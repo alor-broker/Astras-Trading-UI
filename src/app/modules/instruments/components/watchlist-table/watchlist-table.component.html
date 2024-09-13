@@ -10,7 +10,8 @@
       contentSize: contentSize$,
       collection: collection$,
       list: currentWatchlist$,
-      updates: tableData$
+      updates: tableData$,
+      sort: sort$
     } as vm"
   >
     <nz-table
@@ -39,18 +40,17 @@
             #col
             *ngIf="vm.settings.showFavorites ?? false"
             [nzShowSort]="vm.list.length > 1 || vm.list[0].type !== listTypes.HistoryList"
-            [nzSortDirections]="['descend', null]"
-            [nzSortFn]="sortFavorites"
+            [nzSortDirections]="['ascend', null]"
+            (nzSortOrderChange)="sortChange($event, 'favorites')"
             [nzTooltipTitle]="t('instrumentsSelect.columns.favorites.tooltip')"
             class="favorites"
             nz-tooltip
-            nzSortOrder="descend"
             nzWidth='15px'
           >
             <span
               [ngClass]="{
               'btn': true,
-              'active': col.sortOrder === 'descend',
+              'active': vm.sort == null || vm.sort.orderBy === 'favorites',
               'disabled': vm.list.length <= 1 && vm.list[0].type === listTypes.HistoryList
               }" nz-icon
               nzTheme="outline"
@@ -61,7 +61,9 @@
             <th
               [atsResizeColumn]
               (atsWidthChanged)="saveColumnWidth({ columnId: col.id, width: $event })"
-              [nzSortFn]="sortFns[col.id]"
+              [nzShowSort]="sortFns[col.id] != null"
+              [nzSortOrder]="vm.sort?.orderBy !== col.id ? null : vm.sort!.descending ? 'descend' : 'ascend' "
+              (nzSortOrderChange)="sortChange($event, col.id)"
               [nzWidth]="col.width ? col.width + 'px' : null"
               [minWidth]="col.minWidth ?? 50"
               cdkDrag
@@ -119,7 +121,7 @@
               }
             </ng-template>
 
-            @if (openedLists?.includes(watchlist.id)) {
+            @if (openedLists?.includes(watchlist.id) || vm.updates.length === 1) {
               @for (inst of watchlist.items; track inst.recordId) {
                 <tr
                   cdkDrag

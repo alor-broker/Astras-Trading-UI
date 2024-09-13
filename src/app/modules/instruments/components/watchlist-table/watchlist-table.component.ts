@@ -7,6 +7,7 @@ import {
   OnInit, ViewChild
 } from '@angular/core';
 import {
+  BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
   filter,
@@ -18,7 +19,6 @@ import {
 } from 'rxjs';
 import { WatchedInstrument } from '../../models/watched-instrument.model';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
-import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import {
   map
@@ -52,7 +52,7 @@ import {
 } from "../../../../shared/services/actions-context";
 import { TimeframeValue } from "../../../light-chart/models/light-chart.models";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
+import { BaseTableComponent, Sort } from "../../../../shared/components/base-table/base-table.component";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
@@ -74,6 +74,8 @@ interface DisplayInstrument extends WatchedInstrument {
 interface DisplayWatchlist extends Omit<Watchlist, 'items'> {
   items: DisplayInstrument[];
 }
+
+type SortFn = (a: WatchedInstrument, b: WatchedInstrument) => number;
 
 @Component({
   selector: 'ats-watchlist-table',
@@ -154,7 +156,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
 
   openedLists$!: Observable<string[]>;
 
-  sortFns: Record<string, (a: InstrumentKey, b: InstrumentKey) => number> = {
+  sortFns: Record<string, SortFn> = {
     symbol: this.getSortFn('instrument.symbol'),
     price: this.getSortFn('price'),
     priceChange: this.getSortFn('priceChange'),
@@ -164,7 +166,12 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
     volume: this.getSortFn('volume'),
     openPrice: this.getSortFn('openPrice'),
     closePrice: this.getSortFn('closePrice'),
+    favorites: (a, b): number => {
+      return (b.favoriteOrder ?? -1) - (a.favoriteOrder ?? -1);
+    }
   };
+
+  sort$ = new BehaviorSubject<Sort | null>({ descending: false, orderBy: 'favorites' });
 
   menuWidgets$!: Observable<{
     typeId: string;
@@ -174,7 +181,6 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
 
   getListTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
   selectedItem: { listId: string, instrument: WatchedInstrument } | null = null;
-  private readonly defaultSortFn?: (a: WatchedInstrument, b: WatchedInstrument) => number;
 
   protected settingsTableName = 'instrumentTable';
   protected settingsColumnsName = 'instrumentColumns';
@@ -193,15 +199,6 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
   ) {
     super(settingsService, destroyRef);
   }
-
-  sortFavorites = (a: WatchedInstrument, b: WatchedInstrument): number => {
-    const res = (a.favoriteOrder ?? -1) - (b.favoriteOrder ?? -1);
-    if (res === 0 && this.defaultSortFn) {
-      return this.defaultSortFn(b, a);
-    }
-
-    return res;
-  };
 
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid)
@@ -298,7 +295,11 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
         () => filteredSettings$,
         (watchLists, settings) => ({ watchLists, settings })
       ),
-      switchMap(({ watchLists, settings }) =>
+      mapWith(
+        () => this.sort$,
+        ({ watchLists, settings }, sort) => ({ watchLists, settings, sort})
+      ),
+      switchMap(({ watchLists, settings, sort }) =>
         combineLatest(
           watchLists.map(watchlist =>
             this.watchInstrumentsService.getWatched(watchlist.id, settings.priceChangeTimeframe ?? TimeframeValue.Day)
@@ -306,8 +307,15 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
                 map(instruments => {
                   return {
                     ...watchlist,
-                    items: instruments.map(i => ({ ...i, id: i.recordId }))
-                      .sort((a, b) => this.defaultSortFn?.(a, b) ?? 0)
+                    items: instruments
+                      .map(i => ({ ...i, id: i.recordId }))
+                      .sort((a, b) => {
+                        if (sort == null) {
+                          return this.sortFns.favorites(a, b);
+                        }
+
+                        return sort.descending ? -this.sortFns[sort.orderBy](a, b) : this.sortFns[sort.orderBy](a, b);
+                      })
                   };
                 })
               )
@@ -321,6 +329,15 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
   ngOnDestroy(): void {
     super.ngOnDestroy();
     this.watchInstrumentsService.clearAll();
+  }
+
+  sortChange(dir: string | null, colId: string): void {
+    if (dir == null) {
+      this.sort$.next(null);
+      return;
+    }
+
+    this.sort$.next({ descending: dir === 'descend', orderBy: colId });
   }
 
   onRowClick(row: DisplayInstrument): void {
@@ -519,7 +536,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
     });
   }
 
-  private getSortFn(propName: string): (a: InstrumentKey, b: InstrumentKey) => number {
+  private getSortFn(propName: string): SortFn {
     return (a: any, b: any) => {
       return getPropertyFromPath(a, propName) > getPropertyFromPath(b, propName) ? 1 : -1;
     };
