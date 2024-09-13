@@ -46,6 +46,7 @@ import {
 } from "@angular/common";
 import { NzTypographyComponent } from "ng-zorro-antd/typography";
 import { AdminAuthContextService } from "../../services/auth/admin-auth-context.service";
+import { Router } from "@angular/router";
 
 enum LoginErrorCode {
   Unknown = 'unknown',
@@ -101,7 +102,8 @@ export class LoginPageComponent implements OnDestroy, AfterViewInit {
   constructor(
     private readonly formBuilder: FormBuilder,
     private readonly adminIdentityService: AdminIdentityService,
-    private readonly adminAuthContextService: AdminAuthContextService
+    private readonly adminAuthContextService: AdminAuthContextService,
+    private readonly router: Router
   ) {
   }
 
@@ -144,6 +146,7 @@ export class LoginPageComponent implements OnDestroy, AfterViewInit {
     ).subscribe(r => {
       if (r?.result != null) {
         this.adminAuthContextService.setJwt(r.result.refreshToken, r.result.jwt);
+        this.router.navigate(['/admin']);
         return;
       }
 
