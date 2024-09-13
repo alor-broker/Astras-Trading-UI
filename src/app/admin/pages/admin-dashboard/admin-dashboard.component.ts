@@ -11,11 +11,14 @@ import {
   map,
   Observable
 } from "rxjs";
+import { AsyncPipe } from "@angular/common";
 
 @Component({
   selector: 'ats-admin-dashboard',
   standalone: true,
-  imports: [],
+  imports: [
+    AsyncPipe
+  ],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.less'
 })
