@@ -29,5 +29,6 @@ export class LocalStorageLoggingConstants {
 }
 
 export class LocalStorageSsoConstants {
-  static TokenStorageKey = 'sso';
+  static ClientTokenStorageKey = 'sso';
+  static AdminTokenStorageKey = 'admin.sso';
 }

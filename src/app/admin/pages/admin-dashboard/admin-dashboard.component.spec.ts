@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AdminDashboardComponent } from './admin-dashboard.component';
+import { USER_CONTEXT } from "../../../shared/services/auth/user-context";
+import { NEVER } from "rxjs";
 
 describe('AdminDashboardComponent', () => {
   let component: AdminDashboardComponent;
@@ -8,7 +10,15 @@ describe('AdminDashboardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AdminDashboardComponent]
+      imports: [AdminDashboardComponent],
+      providers:[
+        {
+          provide: USER_CONTEXT,
+          useValue: {
+            getUser: jasmine.createSpy('getUser').and.returnValue(NEVER)
+          }
+        }
+      ]
     })
     .compileComponents();
 

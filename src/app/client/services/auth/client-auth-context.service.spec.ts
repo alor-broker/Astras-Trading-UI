@@ -3,10 +3,10 @@ import { TestBed } from '@angular/core/testing';
 import { ClientAuthContextService } from './client-auth-context.service';
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { provideHttpClient } from "@angular/common/http";
-import { EnvironmentService } from "../../shared/services/environment.service";
-import { ErrorHandlerService } from "../../shared/services/handle-error/error-handler.service";
-import { LocalStorageService } from "../../shared/services/local-storage.service";
 import { NEVER } from "rxjs";
+import { EnvironmentService } from "../../../shared/services/environment.service";
+import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
+import { LocalStorageService } from "../../../shared/services/local-storage.service";
 
 describe('ClientAuthContextService', () => {
   let service: ClientAuthContextService;

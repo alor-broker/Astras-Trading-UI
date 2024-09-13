@@ -1,4 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpContext
+} from '@angular/common/http';
 import {
   provideTransloco,
   Translation,
@@ -15,6 +18,7 @@ import {
 import { environment } from '../environments/environment';
 import { Observable } from "rxjs";
 import { HashMap } from "@jsverse/transloco/lib/types";
+import { HttpContextTokens } from "./shared/constants/http.constants";
 
 @Injectable({ providedIn: 'root' })
 export class TranslocoHttpLoader implements TranslocoLoader {
@@ -29,6 +33,7 @@ export class TranslocoHttpLoader implements TranslocoLoader {
     return this.http.get<Translation>(
       `/assets/i18n/${path}.json`,
       {
+        context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true),
         headers: {
           "Cache-Control": "no-cache",
           "Pragma": "no-cache"

@@ -2,7 +2,7 @@ import {
   Component,
   OnInit
 } from '@angular/core';
-import { ClientAuthContextService } from "../../services/client-auth-context.service";
+import { ClientAuthContextService } from "../../services/auth/client-auth-context.service";
 
 @Component({
   selector: 'ats-external-logout-page',

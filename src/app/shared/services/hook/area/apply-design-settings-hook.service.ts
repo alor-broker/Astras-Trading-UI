@@ -1,5 +1,4 @@
 ﻿import {
-  Inject,
   Injectable
 } from "@angular/core";
 import { Subscription } from "rxjs";
@@ -7,7 +6,6 @@ import {
   map,
   startWith
 } from "rxjs/operators";
-import { DOCUMENT } from "@angular/common";
 import { AreaHook } from "./area-hook-token";
 import { ThemeService } from "../../theme.service";
 import { TerminalSettingsService } from "../../terminal-settings.service";
@@ -22,8 +20,7 @@ export class ApplyDesignSettingsHook implements AreaHook {
   constructor(
     private readonly themeService: ThemeService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly localStorageService: LocalStorageService,
-    @Inject(DOCUMENT) private readonly document: Document
+    private readonly localStorageService: LocalStorageService
   ) {
   }
 

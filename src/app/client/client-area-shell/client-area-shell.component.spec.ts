@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ClientAreaShellComponent } from './client-area-shell.component';
-import { ClientAuthContextService } from "../services/client-auth-context.service";
 import { NEVER } from "rxjs";
 import { RouterModule } from "@angular/router";
+import { ClientAuthContextService } from "../services/auth/client-auth-context.service";
 
 describe('ClientAreaShellComponent', () => {
   let component: ClientAreaShellComponent;

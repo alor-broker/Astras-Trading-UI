@@ -4,7 +4,7 @@ import {
   TestBed
 } from '@angular/core/testing';
 import { provideRouter } from "@angular/router";
-import { ClientAuthContextService } from "../../services/client-auth-context.service";
+import { ClientAuthContextService } from "../../services/auth/client-auth-context.service";
 
 describe('SsoCallbackPageComponent', () => {
   let component: SsoCallbackPageComponent;

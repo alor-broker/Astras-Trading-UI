@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AdminAreaShellComponent } from './admin-area-shell.component';
 import { RouterModule } from "@angular/router";
+import { AdminAuthContextService } from "../services/auth/admin-auth-context.service";
 
 describe('AdminAreaShellComponent', () => {
   let component: AdminAreaShellComponent;
@@ -12,7 +13,15 @@ describe('AdminAreaShellComponent', () => {
       imports:[
         RouterModule.forChild([]),
       ],
-      declarations: [AdminAreaShellComponent]
+      declarations: [AdminAreaShellComponent],
+      providers: [
+        {
+          provide: AdminAuthContextService,
+          useValue: {
+            checkAccess: jasmine.createSpy('checkAccess').and.callThrough()
+          }
+        }
+      ]
     })
     .compileComponents();
 

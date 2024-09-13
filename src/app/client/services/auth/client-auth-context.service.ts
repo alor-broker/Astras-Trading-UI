@@ -2,8 +2,6 @@ import {
   Injectable,
   OnDestroy
 } from '@angular/core';
-import { UserContext } from "../../shared/services/auth/user-context";
-import { SessionContext } from "../../shared/services/auth/session-context";
 import {
   Observable,
   of,
@@ -21,15 +19,17 @@ import {
   HttpClient,
   HttpContext
 } from "@angular/common/http";
-import { EnvironmentService } from "../../shared/services/environment.service";
-import { HttpContextTokens } from "../../shared/constants/http.constants";
-import { ErrorHandlerService } from "../../shared/services/handle-error/error-handler.service";
-import { catchHttpError } from "../../shared/utils/observable-helper";
-import { JwtHelper } from "../../shared/utils/jwt-helper";
-import { LocalStorageService } from "../../shared/services/local-storage.service";
-import { LocalStorageSsoConstants } from "../../shared/constants/local-storage.constants";
-import { ApiTokenProviderService } from "../../shared/services/auth/api-token-provider.service";
 import { ComponentStore } from "@ngrx/component-store";
+import { UserContext } from "../../../shared/services/auth/user-context";
+import { SessionContext } from "../../../shared/services/auth/session-context";
+import { LocalStorageSsoConstants } from "../../../shared/constants/local-storage.constants";
+import { EnvironmentService } from "../../../shared/services/environment.service";
+import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
+import { LocalStorageService } from "../../../shared/services/local-storage.service";
+import { ApiTokenProviderService } from "../../../shared/services/auth/api-token-provider.service";
+import { HttpContextTokens } from "../../../shared/constants/http.constants";
+import { JwtHelper } from "../../../shared/utils/jwt-helper";
+import { catchHttpError } from "../../../shared/utils/observable-helper";
 
 enum AuthStateStatus {
   Initial = 'initial',
@@ -60,7 +60,7 @@ export class ClientAuthContextService implements UserContext, SessionContext, On
     state: null
   });
 
-  private readonly ssoTokenStorageKey = LocalStorageSsoConstants.TokenStorageKey;
+  private readonly ssoTokenStorageKey = LocalStorageSsoConstants.ClientTokenStorageKey;
 
   private readonly user$ = this.state.select(s => s)
     .pipe(

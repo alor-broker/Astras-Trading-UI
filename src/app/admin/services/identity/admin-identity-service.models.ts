@@ -18,3 +18,8 @@ export interface LoginResponse {
   result: LoginResult | null;
   status: LoginStatus;
 }
+
+export interface RefreshResponse {
+  jwt: string;
+  refreshExpiresAt: string;
+}

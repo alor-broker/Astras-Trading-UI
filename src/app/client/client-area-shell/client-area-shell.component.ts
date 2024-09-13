@@ -5,11 +5,11 @@ import {
   OnInit,
   Optional
 } from '@angular/core';
-import { ClientAuthContextService } from "../services/client-auth-context.service";
 import {
   AREA_HOOK,
   AreaHook
 } from "../../shared/services/hook/area/area-hook-token";
+import { ClientAuthContextService } from "../services/auth/client-auth-context.service";
 
 @Component({
   selector: 'ats-client-area-shell',

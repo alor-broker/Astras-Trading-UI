@@ -11,10 +11,10 @@ import { MobileDashboardWidgetComponent } from "../modules/dashboard/widgets/mob
 import { DashboardWidgetComponent } from "../modules/dashboard/widgets/dashboard-widget/dashboard-widget.component";
 import { DashboardModule } from "../modules/dashboard/dashboard.module";
 import { USER_CONTEXT } from "../shared/services/auth/user-context";
-import { ClientAuthContextService } from "./services/client-auth-context.service";
 import { SESSION_CONTEXT } from "../shared/services/auth/session-context";
 import { AtsStoreModule } from "../store/ats-store.module";
 import { AREA_HOOKS } from "./area-hooks";
+import { ClientAuthContextService } from "./services/auth/client-auth-context.service";
 
 const routes: Routes = [
   {

@@ -7,6 +7,12 @@ import {
 import { LoginPageComponent } from "./pages/login-page/login-page.component";
 import { AdminDashboardComponent } from "./pages/admin-dashboard/admin-dashboard.component";
 import { AdminAreaShellComponent } from './admin-area-shell/admin-area-shell.component';
+import { DashboardModule } from "../modules/dashboard/dashboard.module";
+import { AtsStoreModule } from "../store/ats-store.module";
+import { USER_CONTEXT } from "../shared/services/auth/user-context";
+import { SESSION_CONTEXT } from "../shared/services/auth/session-context";
+import { AREA_HOOKS } from "../client/area-hooks";
+import { AdminAuthContextService } from "./services/auth/admin-auth-context.service";
 
 const routes: Routes = [
   {
@@ -24,8 +30,22 @@ const routes: Routes = [
     AdminAreaShellComponent
   ],
   imports: [
+    CommonModule,
+    DashboardModule,
     RouterModule.forChild(routes),
-    CommonModule
+    AtsStoreModule,
+  ],
+  providers: [
+    AdminAuthContextService,
+    {
+      provide: USER_CONTEXT,
+      useExisting: AdminAuthContextService
+    },
+    {
+      provide: SESSION_CONTEXT,
+      useExisting: AdminAuthContextService
+    },
+    ...AREA_HOOKS
   ]
 })
 export class AdminModule {

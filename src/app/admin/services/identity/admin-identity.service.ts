@@ -8,7 +8,8 @@ import {
   LoginRequest,
   LoginResponse,
   LoginResult,
-  LoginStatus
+  LoginStatus,
+  RefreshResponse
 } from "./admin-identity-service.models";
 import {
   Observable,
@@ -55,7 +56,7 @@ export class AdminIdentityService {
       })),
       catchError(err => {
         if (err instanceof HttpErrorResponse) {
-          if(err.status === 403) {
+          if (err.status === 403) {
             return of({
               status: LoginStatus.WrongCredentials,
               result: null
@@ -65,6 +66,22 @@ export class AdminIdentityService {
 
         return of(null);
       }),
+      take(1)
+    );
+  }
+
+  refresh(refreshToken: string, oldJwt: string): Observable<RefreshResponse | null> {
+    return this.httpClient.post<RefreshResponse>(
+      `${this.baseUrl}/identity/v5/users/employee/refresh`,
+      {
+        refreshToken,
+        oldJwt
+      },
+      {
+        context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true)
+      }
+    ).pipe(
+      catchError(() => of(null)),
       take(1)
     );
   }

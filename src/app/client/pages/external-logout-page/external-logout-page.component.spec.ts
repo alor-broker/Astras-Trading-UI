@@ -4,7 +4,7 @@ import {
 } from '@angular/core/testing';
 
 import { ExternalLogoutPageComponent } from './external-logout-page.component';
-import { ClientAuthContextService } from "../../services/client-auth-context.service";
+import { ClientAuthContextService } from "../../services/auth/client-auth-context.service";
 
 describe('ExternalLogoutPageComponent', () => {
   let component: ExternalLogoutPageComponent;

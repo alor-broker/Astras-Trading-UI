@@ -4,7 +4,7 @@ import {
   OnInit
 } from '@angular/core';
 import { Router } from "@angular/router";
-import { ClientAuthContextService } from "../../services/client-auth-context.service";
+import { ClientAuthContextService } from "../../services/auth/client-auth-context.service";
 
 @Component({
   selector: 'ats-sso-callback-page',
