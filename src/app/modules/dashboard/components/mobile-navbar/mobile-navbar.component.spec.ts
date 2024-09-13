@@ -10,6 +10,7 @@ import {
   sharedModuleImportForTests
 } from "../../../../shared/utils/testing";
 import { ModalService } from "../../../../shared/services/modal.service";
+import { SESSION_CONTEXT } from "../../../../shared/services/auth/session-context";
 
 describe('MobileNavbarComponent', () => {
   let component: MobileNavbarComponent;
@@ -40,6 +41,12 @@ describe('MobileNavbarComponent', () => {
           provide: ModalService,
           useValue: {
             openTerminalSettingsModal: jasmine.createSpy('openTerminalSettingsModal').and.callThrough()
+          }
+        },
+        {
+          provide: SESSION_CONTEXT,
+          useValue: {
+            logout: jasmine.createSpy('logout').and.callThrough()
           }
         },
         ...commonTestProviders

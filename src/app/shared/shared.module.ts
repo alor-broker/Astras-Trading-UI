@@ -31,7 +31,6 @@ import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { HttpErrorHandler } from './services/handle-error/http-error-handler';
 import { LogErrorHandler } from './services/handle-error/log-error-handler';
 import { ERROR_HANDLER } from './services/handle-error/error-handler';
-import { AtsStoreModule } from '../store/ats-store.module';
 import { LoadingIndicatorComponent } from './components/loading-indicator/loading-indicator.component';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
@@ -130,7 +129,6 @@ import { LetDirective } from "@ngrx/component";
     NzCheckboxModule,
     NzDatePickerModule,
     ScrollingModule,
-    AtsStoreModule,
     NzSpinModule,
     NzTypographyModule,
     NzRadioModule,

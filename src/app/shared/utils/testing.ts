@@ -28,6 +28,12 @@ import {
   NG_VALUE_ACCESSOR
 } from "@angular/forms";
 import { Market } from "../../../generated/graphql.types";
+import { PortfoliosFeature } from "../../store/portfolios/portfolios.reducer";
+import { TerminalSettingsFeature } from "../../store/terminal-settings/terminal-settings.reducer";
+import { WidgetSettingsFeature } from "../../store/widget-settings/widget-settings.reducer";
+import { WidgetsLocalStatesFeature } from "../../store/widgets-local-state/widgets-local-state.reducer";
+import { DashboardsFeature } from "../../store/dashboards/dashboards.reducer";
+import { MobileDashboardFeature } from "../../store/mobile-dashboard/mobile-dashboard.reducer";
 
 /**
  * Create async observable that emits-once and completes  after a JS engine turn
@@ -108,7 +114,7 @@ function classWithOutputEmittersFactory(klass: any, outputs: string[]): { protot
  */
 export function mockComponent(options: Component, klass = (class {
 })): unknown {
-  const metadata: Component = {template: '<ng-content></ng-content>', ...options};
+  const metadata: Component = { template: '<ng-content></ng-content>', ...options };
   const classWithOutputs = classWithOutputEmittersFactory(klass, options.outputs ?? []);
 
   return Component(metadata)(classWithOutputs);
@@ -123,7 +129,7 @@ export function mockDirective(options: Directive, klass = (class {
  *  array of ng-zorro mock components
  */
 export const ngZorroMockComponents = [
-  mockComponent({selector: 'nz-header', inputs: ['stepContent']}),
+  mockComponent({ selector: 'nz-header', inputs: ['stepContent'] }),
   mockComponent({
     selector: 'nz-table',
     inputs: [
@@ -161,10 +167,10 @@ export const ngZorroMockComponents = [
     selector: 'nz-tabset',
     inputs: ['nzSelectedIndex', 'nzAnimated']
   }),
-  mockComponent({selector: 'nz-tab', inputs: ['nzTitle']}),
-  mockComponent({selector: 'nz-layout'}),
-  mockComponent({selector: 'nz-empty'}),
-  mockComponent({selector: 'nz-content'}),
+  mockComponent({ selector: 'nz-tab', inputs: ['nzTitle'] }),
+  mockComponent({ selector: 'nz-layout' }),
+  mockComponent({ selector: 'nz-empty' }),
+  mockComponent({ selector: 'nz-content' }),
   mockComponent({
     selector: 'nz-spin',
     inputs: ['nzSpinning', 'nzIndicator', 'nzTip']
@@ -173,11 +179,11 @@ export const ngZorroMockComponents = [
     selector: 'nz-form-control',
     inputs: ['nzErrorTip', 'nzValidateStatus']
   }),
-  mockComponent({selector: 'nz-collapse', inputs: ['nzBordered']}),
-  mockComponent({selector: 'nz-collapse-panel', inputs: ['nzHeader']}),
-  mockComponent({selector: 'nz-form-item'}),
-  mockComponent({selector: 'nz-form-label', inputs: ['nzFor']}),
-  mockComponent({selector: 'nz-input-group'}),
+  mockComponent({ selector: 'nz-collapse', inputs: ['nzBordered'] }),
+  mockComponent({ selector: 'nz-collapse-panel', inputs: ['nzHeader'] }),
+  mockComponent({ selector: 'nz-form-item' }),
+  mockComponent({ selector: 'nz-form-label', inputs: ['nzFor'] }),
+  mockComponent({ selector: 'nz-input-group' }),
   mockComponent({
     selector: 'nz-dropdown-menu',
     exportAs: 'nzDropdownMenu',
@@ -202,20 +208,20 @@ export const ngZorroMockComponents = [
       return;
     }
   }),
-  mockComponent({selector: 'nz-tag', inputs: ['nzColor', 'nz-tooltip', 'nzTooltipMouseEnterDelay']}),
-  mockComponent({selector: 'nz-select', inputs: ['ngModel', 'nzMaxTagCount']}),
-  mockComponent({selector: 'nz-option', inputs: ['nzValue', 'nzLabel']}),
-  mockComponent({selector: 'nz-divider'}),
-  mockComponent({selector: 'nz-tree', inputs: ['nzData', 'nzTreeTemplate']}),
-  mockComponent({selector: 'nz-switch'}),
-  mockComponent({selector: 'nz-segmented', inputs: ['nzLabelTemplate', 'nzOptions', 'ngModel']}),
-  mockComponent({selector: 'nz-button-group'}),
-  mockComponent({selector: 'nz-alert', inputs: ['nzType', 'nzDescription', 'nzCloseable']}),
-  mockDirective({selector: '[nzGutter]', inputs: ['nzGutter']}),
-  mockDirective({selector: '[text]', inputs: ['text']}),
-  mockDirective({selector: '[nzLayout]', inputs: ['nzLayout']}),
-  mockDirective({selector: '[nzPopoverContent]', inputs: ['nzPopoverContent']}),
-  mockDirective({selector: '[nzPopoverTitle]', inputs: ['nzPopoverTitle']}),
+  mockComponent({ selector: 'nz-tag', inputs: ['nzColor', 'nz-tooltip', 'nzTooltipMouseEnterDelay'] }),
+  mockComponent({ selector: 'nz-select', inputs: ['ngModel', 'nzMaxTagCount'] }),
+  mockComponent({ selector: 'nz-option', inputs: ['nzValue', 'nzLabel'] }),
+  mockComponent({ selector: 'nz-divider' }),
+  mockComponent({ selector: 'nz-tree', inputs: ['nzData', 'nzTreeTemplate'] }),
+  mockComponent({ selector: 'nz-switch' }),
+  mockComponent({ selector: 'nz-segmented', inputs: ['nzLabelTemplate', 'nzOptions', 'ngModel'] }),
+  mockComponent({ selector: 'nz-button-group' }),
+  mockComponent({ selector: 'nz-alert', inputs: ['nzType', 'nzDescription', 'nzCloseable'] }),
+  mockDirective({ selector: '[nzGutter]', inputs: ['nzGutter'] }),
+  mockDirective({ selector: '[text]', inputs: ['text'] }),
+  mockDirective({ selector: '[nzLayout]', inputs: ['nzLayout'] }),
+  mockDirective({ selector: '[nzPopoverContent]', inputs: ['nzPopoverContent'] }),
+  mockDirective({ selector: '[nzPopoverTitle]', inputs: ['nzPopoverTitle'] }),
   mockDirective({
     selector: '[nz-button]',
     inputs: ['nzDropdownMenu', 'title', 'text', 'nzLoading', 'nzType', 'nzClickHide', 'nzVisible', 'disabled']
@@ -252,8 +258,14 @@ export const widgetSkeletonMock = mockComponent({
 export const sharedModuleImportForTests: (Type<any> | ModuleWithProviders<object> | any[])[] = [
   StoreModule.forRoot({}),
   EffectsModule.forRoot(),
+  StoreModule.forFeature(PortfoliosFeature),
+  StoreModule.forFeature(TerminalSettingsFeature),
+  StoreModule.forFeature(WidgetSettingsFeature),
+  StoreModule.forFeature(WidgetsLocalStatesFeature),
+  StoreModule.forFeature(DashboardsFeature),
+  StoreModule.forFeature(MobileDashboardFeature),
   SharedModule,
-  HttpClientModule
+  HttpClientModule,
 ];
 
 /**
@@ -306,10 +318,10 @@ export function getRandomInt(min: number, max: number): number {
  * @returns the value is no lower than min (or the next integer greater than min if min isn't an integer), and is less than (but not equal to) max
  */
 export function getTranslocoModule(options: TranslocoTestingOptions = {}): ModuleWithProviders<TranslocoTestingModule> {
-  const {langs} = options;
+  const { langs } = options;
 
   return TranslocoTestingModule.forRoot({
-    langs: {ru, ...langs},
+    langs: { ru, ...langs },
     translocoConfig: {
       availableLangs: ['ru'],
       defaultLang: 'ru',

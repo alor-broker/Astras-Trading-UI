@@ -1,26 +1,33 @@
-﻿import { Injectable } from "@angular/core";
-import { AppHook } from "./app-hook-token";
-import { AuthService } from "../auth.service";
+﻿import {
+  Inject,
+  Injectable
+} from "@angular/core";
 import {
   shareReplay,
   Subscription
 } from "rxjs";
-import { LocalStorageService } from "../local-storage.service";
-import { LocalStorageLoggingConstants } from "../../constants/local-storage.constants";
-import { ApplicationMetaService } from "../../../modules/application-meta/services/application-meta.service";
 import {
   filter,
   switchMap
 } from "rxjs/operators";
-import { ReleaseMeta } from "../../../modules/application-meta/models/application-release.model";
-import { DeviceService } from "../device.service";
+import {
+  USER_CONTEXT,
+  UserContext
+} from "../../auth/user-context";
+import { DeviceService } from "../../device.service";
+import { LocalStorageService } from "../../local-storage.service";
+import { AreaHook } from "./area-hook-token";
+import { LocalStorageLoggingConstants } from "../../../constants/local-storage.constants";
+import { ReleaseMeta } from "../../../../modules/application-meta/models/application-release.model";
+import { ApplicationMetaService } from "../../../../modules/application-meta/services/application-meta.service";
 
 @Injectable()
-export class LoggingHook implements AppHook {
+export class LoggingHook implements AreaHook {
   private readonly tearDown = new Subscription();
 
   constructor(
-    private readonly authService: AuthService,
+    @Inject(USER_CONTEXT)
+    private readonly userContext: UserContext,
     private readonly applicationMetaService: ApplicationMetaService,
     private readonly deviceService: DeviceService,
     private readonly localStorageService: LocalStorageService,
@@ -32,7 +39,7 @@ export class LoggingHook implements AppHook {
   }
 
   onInit(): void {
-    const currentUser$ = this.authService.currentUser$.pipe(
+    const currentUser$ = this.userContext.getUser().pipe(
       shareReplay({ bufferSize: 1, refCount: true })
     );
 

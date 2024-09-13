@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AdminAreaShellComponent } from './admin-area-shell.component';
+import { RouterModule } from "@angular/router";
 
 describe('AdminAreaShellComponent', () => {
   let component: AdminAreaShellComponent;
@@ -8,6 +9,9 @@ describe('AdminAreaShellComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports:[
+        RouterModule.forChild([]),
+      ],
       declarations: [AdminAreaShellComponent]
     })
     .compileComponents();

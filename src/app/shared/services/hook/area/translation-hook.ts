@@ -1,14 +1,14 @@
-﻿import {AppHook} from "./app-hook-token";
-import {Injectable} from "@angular/core";
+﻿import {Injectable} from "@angular/core";
 import {filter, map} from "rxjs/operators";
-import {rusLangLocales} from "../../utils/translation-helper";
 import {en_US, NzI18nService, ru_RU} from "ng-zorro-antd/i18n";
 import {Subscription, tap} from "rxjs";
-import {TranslatorService} from "../translator.service";
-import {TerminalSettingsService} from "../terminal-settings.service";
+import { TerminalSettingsService } from "../../terminal-settings.service";
+import { TranslatorService } from "../../translator.service";
+import { rusLangLocales } from "../../../utils/translation-helper";
+import { AreaHook } from "./area-hook-token";
 
 @Injectable()
-export class TranslationHook implements AppHook {
+export class TranslationHook implements AreaHook {
   private langChangeSubscription?: Subscription;
 
   constructor(

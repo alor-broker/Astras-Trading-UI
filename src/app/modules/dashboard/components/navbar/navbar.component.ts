@@ -1,11 +1,15 @@
-import { Component, DestroyRef, OnInit } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  Inject,
+  OnInit
+} from '@angular/core';
 import {
   combineLatest,
   Observable,
   shareReplay,
   take
 } from 'rxjs';
-import { AuthService } from 'src/app/shared/services/auth.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { Store } from '@ngrx/store';
 import { PortfolioExtended } from 'src/app/shared/models/user/portfolio-extended.model';
@@ -38,6 +42,10 @@ import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.ser
 import { NewYearHelper } from "../../utils/new-year.helper";
 import { DashboardTitleHelper } from "../../utils/dashboard-title.helper";
 import { HelpService } from "../../../../shared/services/help.service";
+import {
+  SESSION_CONTEXT,
+  SessionContext
+} from "../../../../shared/services/auth/session-context";
 
 @Component({
   selector: 'ats-navbar',
@@ -66,7 +74,8 @@ export class NavbarComponent implements OnInit {
     private readonly manageDashboardsService: ManageDashboardsService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly store: Store,
-    private readonly auth: AuthService,
+    @Inject(SESSION_CONTEXT)
+    private readonly sessionContext: SessionContext,
     private readonly modal: ModalService,
     private readonly ordersDialogService: OrdersDialogService,
     private readonly themeService: ThemeService,
@@ -147,7 +156,7 @@ export class NavbarComponent implements OnInit {
   }
 
   logout(): void {
-    this.auth.logout();
+    this.sessionContext.logout();
   }
 
   changePortfolio(key: PortfolioExtended): void {

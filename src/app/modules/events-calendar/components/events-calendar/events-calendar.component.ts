@@ -1,4 +1,11 @@
-import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  Inject,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import {
   BehaviorSubject,
   Observable,
@@ -11,11 +18,14 @@ import { Store } from "@ngrx/store";
 import { filter } from "rxjs/operators";
 import { EntityStatus } from "../../../../shared/models/enums/entity-status";
 import { PositionsService } from "../../../../shared/services/positions.service";
-import { AuthService } from "../../../../shared/services/auth.service";
 import { MarketService } from "../../../../shared/services/market.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
+import {
+  USER_CONTEXT,
+  UserContext
+} from "../../../../shared/services/auth/user-context";
 
 @Component({
   selector: 'ats-events-calendar',
@@ -33,7 +43,8 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
   constructor(
     private readonly store: Store,
     private readonly positionsService: PositionsService,
-    private readonly authService: AuthService,
+    @Inject(USER_CONTEXT)
+    private readonly userContext: UserContext,
     private readonly marketService: MarketService,
     private readonly destroyRef: DestroyRef
   ) {
@@ -58,7 +69,7 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
     this.symbolsOfSelectedPortfolio$ = this.selectedPortfolio$.pipe(
       switchMap(p => {
         if (!p) {
-          return this.authService.currentUser$.pipe(
+          return this.userContext.getUser().pipe(
             switchMap(u => this.positionsService.getAllByLogin(u.login!))
           );
         }

@@ -1,12 +1,12 @@
 ﻿import {Inject, Injectable} from "@angular/core";
-import {AppHook} from "./app-hook-token";
 import {take} from "rxjs";
-import {DeviceService} from "../device.service";
 import {filter} from "rxjs/operators";
 import {DOCUMENT} from "@angular/common";
+import { AreaHook } from "./area-hook-token";
+import { DeviceService } from "../../device.service";
 
 @Injectable()
-export class MobileHook implements AppHook {
+export class MobileHook implements AreaHook {
   constructor(
     private readonly deviceService: DeviceService,
     @Inject(DOCUMENT) private readonly document: Document) {

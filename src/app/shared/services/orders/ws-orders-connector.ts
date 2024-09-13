@@ -19,7 +19,6 @@ import {
   timer
 } from "rxjs";
 import { EnvironmentService } from "../environment.service";
-import { AuthService } from "../auth.service";
 import { LoggerService } from "../logging/logger.service";
 import {
   RXJS_WEBSOCKET_CTOR,
@@ -37,6 +36,7 @@ import {
   takeWhile,
 } from "rxjs/operators";
 import { isOnline$ } from "../../utils/network";
+import { ApiTokenProviderService } from "../auth/api-token-provider.service";
 
 export interface CommandRequest {
   opcode: string;
@@ -85,7 +85,7 @@ export class WsOrdersConnector implements OnDestroy {
 
   constructor(
     private readonly environmentService: EnvironmentService,
-    private readonly accountService: AuthService,
+    private readonly apiTokenProviderService: ApiTokenProviderService,
     private readonly logger: LoggerService,
     @Inject(RXJS_WEBSOCKET_CTOR) private readonly webSocketFactory: typeof webSocket
   ) {
@@ -152,10 +152,7 @@ export class WsOrdersConnector implements OnDestroy {
   }
 
   private getCurrentAccessToken(): Observable<string> {
-    return this.accountService.accessToken$
-      .pipe(
-        filter(x => !!x)
-      );
+    return this.apiTokenProviderService.getToken();
   }
 
   private toLoggerMessage(message: string): string {

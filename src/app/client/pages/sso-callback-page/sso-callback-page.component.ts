@@ -4,7 +4,7 @@ import {
   OnInit
 } from '@angular/core';
 import { Router } from "@angular/router";
-import { AuthService } from "../../../shared/services/auth.service";
+import { ClientAuthContextService } from "../../services/client-auth-context.service";
 
 @Component({
   selector: 'ats-sso-callback-page',
@@ -17,12 +17,12 @@ export class SsoCallbackPageComponent implements OnInit {
 
   constructor(
     private readonly router: Router,
-    private readonly authService: AuthService
+    private readonly clientAuthContextService: ClientAuthContextService
   ) {
   }
 
   ngOnInit(): void {
-    this.authService.setRefreshToken((this.refreshToken ?? '').trim());
+    this.clientAuthContextService.setRefreshToken((this.refreshToken ?? '').trim());
     this.router.navigate(['/dashboard']);
   }
 }

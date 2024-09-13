@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
-import { AppHook } from "./app-hook-token";
 import { Subscription, switchMap } from "rxjs";
 import { Title } from "@angular/platform-browser";
-import { TranslatorService } from "../translator.service";
 import { filter } from "rxjs/operators";
+import { TranslatorService } from "../../translator.service";
+import { AppHook } from "./app-hook-token";
 
 @Injectable()
 export class TitleHook implements AppHook {

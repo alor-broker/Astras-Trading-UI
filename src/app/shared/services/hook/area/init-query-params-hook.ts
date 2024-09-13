@@ -1,18 +1,27 @@
-﻿import { AppHook } from "./app-hook-token";
-import { Injectable } from "@angular/core";
-import { DashboardContextService } from "../dashboard-context.service";
-import { ActivatedRoute, Params } from "@angular/router";
-import { Subject, takeUntil, filter, switchMap, map } from "rxjs";
-import { InstrumentsService } from "../../../modules/instruments/services/instruments.service";
-import { SearchFilter } from "../../../modules/instruments/models/search-filter.model";
-import { defaultBadgeColor } from "../../utils/instruments";
+﻿import { Injectable } from "@angular/core";
+import {
+  ActivatedRoute,
+  Params
+} from "@angular/router";
+import {
+  filter,
+  map,
+  Subject,
+  switchMap,
+  takeUntil
+} from "rxjs";
+import { AreaHook } from "./area-hook-token";
+import { DashboardContextService } from "../../dashboard-context.service";
+import { InstrumentsService } from "../../../../modules/instruments/services/instruments.service";
+import { SearchFilter } from "../../../../modules/instruments/models/search-filter.model";
+import { defaultBadgeColor } from "../../../utils/instruments";
 
 interface RouterQueryParams extends Params {
   ticker?: string;
 }
 
 @Injectable()
-export class InitQueryParamsHook implements AppHook {
+export class InitQueryParamsHook implements AreaHook {
   destroy$ = new Subject<boolean>();
 
   constructor(

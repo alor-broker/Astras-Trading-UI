@@ -7,8 +7,10 @@ import {
   ngZorroMockComponents
 } from "../../../../shared/utils/testing";
 import { LocalStorageService } from "../../../../shared/services/local-storage.service";
-import { AuthService } from "../../../../shared/services/auth.service";
-import { Subject } from "rxjs";
+import {
+  EMPTY,
+} from "rxjs";
+import { USER_CONTEXT } from "../../../../shared/services/auth/user-context";
 
 describe('SideChatWidgetComponent', () => {
   let component: SideChatWidgetComponent;
@@ -32,9 +34,9 @@ describe('SideChatWidgetComponent', () => {
           }
         },
         {
-          provide: AuthService,
+          provide: USER_CONTEXT,
           useValue: {
-            currentUser$: new Subject()
+            getUser: jasmine.createSpy('getUser').and.returnValue(EMPTY)
           }
         }
       ]

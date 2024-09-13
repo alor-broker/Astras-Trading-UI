@@ -9,6 +9,8 @@ import {
 } from "../../../../shared/utils/testing";
 import ruEventsCalendarTranslations from '../../../../../assets/i18n/events-calendar/ru.json';
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+import { USER_CONTEXT } from "../../../../shared/services/auth/user-context";
+import { NEVER } from "rxjs";
 
 describe('EventsCalendarComponent', () => {
   let component: EventsCalendarComponent;
@@ -34,7 +36,15 @@ describe('EventsCalendarComponent', () => {
           }
         })
       ],
-      providers: [...commonTestProviders]
+      providers: [
+        {
+          provide: USER_CONTEXT,
+          useValue: {
+            getUser: jasmine.createSpy('getUser').and.returnValue(NEVER)
+          }
+        },
+        ...commonTestProviders
+      ]
     })
     .compileComponents();
 

@@ -1,9 +1,11 @@
-import { Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable
+} from '@angular/core';
 import {
   map,
   switchMap
 } from 'rxjs/operators';
-import { AuthService } from 'src/app/shared/services/auth.service';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { findUnique } from 'src/app/shared/utils/collections';
 import { Observable } from 'rxjs';
@@ -18,23 +20,28 @@ import {
 import { mapWith } from '../utils/observable-helper';
 import { EnvironmentService } from "./environment.service";
 import { Exchange } from "../../../generated/graphql.types";
+import {
+  USER_CONTEXT,
+  UserContext
+} from "./auth/user-context";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'any',
 })
 export class AccountService {
   private readonly accountUrl = this.environmentService.clientDataUrl + '/client/v1.0';
 
   constructor(
     private readonly environmentService: EnvironmentService,
-    private readonly auth: AuthService,
+    @Inject(USER_CONTEXT)
+    private readonly userContext: UserContext,
     private readonly positionsService: PositionsService,
     private readonly http: HttpClient
   ) {
   }
 
   getFullName(): Observable<FullName> {
-    return this.auth.currentUser$.pipe(
+    return this.userContext.getUser().pipe(
       switchMap((u) =>
         this.http.get<FullName>(`${this.accountUrl}/users/${u.login}/full-name`)
       )
@@ -42,7 +49,7 @@ export class AccountService {
   }
 
   getLoginPortfolios(): Observable<PortfolioExtended[]> {
-    return this.auth.currentUser$.pipe(
+    return this.userContext.getUser().pipe(
       mapWith(
         userInfo => this.positionsService.getAllByLogin(userInfo.login!),
         (userInfo, positions) => ({ userInfo, positions })

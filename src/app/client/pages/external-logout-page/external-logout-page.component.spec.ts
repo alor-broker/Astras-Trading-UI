@@ -4,7 +4,7 @@ import {
 } from '@angular/core/testing';
 
 import { ExternalLogoutPageComponent } from './external-logout-page.component';
-import { LocalStorageService } from "../../../shared/services/local-storage.service";
+import { ClientAuthContextService } from "../../services/client-auth-context.service";
 
 describe('ExternalLogoutPageComponent', () => {
   let component: ExternalLogoutPageComponent;
@@ -15,9 +15,9 @@ describe('ExternalLogoutPageComponent', () => {
       declarations: [ExternalLogoutPageComponent],
       providers: [
         {
-          provide: LocalStorageService,
+          provide: ClientAuthContextService,
           useValue: {
-            removeItem: jasmine.createSpy('removeItem').and.callThrough()
+            forceLogout: jasmine.createSpy('forceLogout').and.callThrough()
           }
         }
       ]

@@ -9,7 +9,6 @@ import {
   of,
   Subject
 } from 'rxjs';
-import { AuthService } from 'src/app/shared/services/auth.service';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { Store } from "@ngrx/store";
 import {
@@ -31,12 +30,13 @@ import {OrdersDialogService} from "../../../../shared/services/orders/orders-dia
 import { EnvironmentService } from "../../../../shared/services/environment.service";
 import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.service";
 import { HelpService } from "../../../../shared/services/help.service";
+import { SESSION_CONTEXT } from "../../../../shared/services/auth/session-context";
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
   const spyDashboard = jasmine.createSpyObj('DashboardService', ['clearDashboard', 'addWidget']);
-  const spyAuth = jasmine.createSpyObj('AuthService', ['logout']);
+  const spySessionContext = jasmine.createSpyObj('SESSION_CONTEXT', ['logout']);
   const spyModal = jasmine.createSpyObj('ModalService', ['openTerminalSettingsModal', 'openCommandModal']);
   const themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemeSettings', 'getLangChanges']);
   themeServiceSpy.getThemeSettings.and.returnValue(of({
@@ -71,7 +71,7 @@ describe('NavbarComponent', () => {
       ],
       providers: [
         { provide: ManageDashboardsService, useValue: spyDashboard },
-        { provide: AuthService, useValue: spyAuth },
+        { provide: SESSION_CONTEXT, useValue: spySessionContext },
         { provide: ModalService, useValue: spyModal },
         {
           provide: Store,

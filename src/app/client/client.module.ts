@@ -10,30 +10,35 @@ import { ExternalLogoutPageComponent } from './pages/external-logout-page/extern
 import { MobileDashboardWidgetComponent } from "../modules/dashboard/widgets/mobile-dashboard-widget/mobile-dashboard-widget.component";
 import { DashboardWidgetComponent } from "../modules/dashboard/widgets/dashboard-widget/dashboard-widget.component";
 import { DashboardModule } from "../modules/dashboard/dashboard.module";
+import { USER_CONTEXT } from "../shared/services/auth/user-context";
+import { ClientAuthContextService } from "./services/client-auth-context.service";
+import { SESSION_CONTEXT } from "../shared/services/auth/session-context";
+import { AtsStoreModule } from "../store/ats-store.module";
+import { AREA_HOOKS } from "./area-hooks";
 
 const routes: Routes = [
+  {
+    path: 'auth',
+    children: [
+      {
+        path: 'sso',
+        component: SsoCallbackPageComponent
+      },
+      {
+        path: 'logout',
+        component: ExternalLogoutPageComponent
+      },
+      {
+        path: 'logout2',
+        pathMatch: "full",
+        redirectTo: 'logout'
+      },
+    ]
+  },
   {
     path: '',
     component: ClientAreaShellComponent,
     children: [
-      {
-        path: 'auth',
-        children: [
-          {
-            path: 'sso',
-            component: SsoCallbackPageComponent
-          },
-          {
-            path: 'logout',
-            component: ExternalLogoutPageComponent
-          },
-          {
-            path: 'logout2',
-            pathMatch: "full",
-            redirectTo: 'logout'
-          },
-        ]
-      },
       {
         path: 'mobile',
         component: MobileDashboardWidgetComponent
@@ -57,6 +62,19 @@ const routes: Routes = [
     CommonModule,
     DashboardModule,
     RouterModule.forChild(routes),
+    AtsStoreModule,
+  ],
+  providers: [
+    ClientAuthContextService,
+    {
+      provide: USER_CONTEXT,
+      useExisting: ClientAuthContextService
+    },
+    {
+      provide: SESSION_CONTEXT,
+      useExisting: ClientAuthContextService
+    },
+    ...AREA_HOOKS
   ]
 })
 export class ClientModule {

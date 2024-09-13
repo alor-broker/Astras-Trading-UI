@@ -1,17 +1,17 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { PositionsService } from 'src/app/shared/services/positions.service';
-import { AuthService } from './auth.service';
 import { AccountService } from './account.service';
 import { of } from "rxjs";
 import { MarketType } from "../models/portfolio-key.model";
 import { EnvironmentService } from "./environment.service";
 import { PortfolioMeta } from "../models/user/portfolio-meta.model";
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { USER_CONTEXT } from "./auth/user-context";
 
 describe('AccountService', () => {
   let service: AccountService;
-  const spyAuth = jasmine.createSpyObj('AuthService', ['currentUser$']);
+  const spyUserContext = jasmine.createSpyObj('USER_CONTEXT', ['getUser']);
   const spyPositions = {
     getAllByLogin: jasmine.createSpy('getAllByLogin').and.returnValue(of([
       {
@@ -38,7 +38,7 @@ describe('AccountService', () => {
     imports: [],
     providers: [
         AccountService,
-        { provide: AuthService, useValue: spyAuth },
+        { provide: USER_CONTEXT, useValue: spyUserContext },
         { provide: PositionsService, useValue: spyPositions },
         {
             provide: EnvironmentService,
@@ -60,7 +60,7 @@ describe('AccountService', () => {
   });
 
   it('should get full name', fakeAsync(() => {
-    spyAuth.currentUser$ = of({ login: 'testLogin' });
+    spyUserContext.getUser.and.returnValue(of({ login: 'testLogin' }));
 
     const fullNameRes = {
       firstName: 'firstNameTest',
@@ -111,7 +111,7 @@ describe('AccountService', () => {
       },
     ];
 
-    spyAuth.currentUser$ = of({ clientId: 'testClientId' });
+    spyUserContext.getUser.and.returnValue(of({ clientId: 'testClientId' }));
 
     const expectedPortfolios = [
       {...portfoliosMetaRes[0], market: 'test', exchange: 'testExchange1', marketType: MarketType.Stock },

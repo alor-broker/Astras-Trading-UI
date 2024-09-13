@@ -1,22 +1,21 @@
-import { Store } from "@ngrx/store";
+import {
+  Store,
+  StoreModule
+} from "@ngrx/store";
 import { MarketType } from "../../shared/models/portfolio-key.model";
 import { TestBed } from "@angular/core/testing";
 import {
-  commonTestProviders,
-  sharedModuleImportForTests
-} from "../../shared/utils/testing";
-import {
   BehaviorSubject,
-  of,
   take
 } from "rxjs";
 import { AccountService } from '../../shared/services/account.service';
 import { PortfolioExtended } from '../../shared/models/user/portfolio-extended.model';
 import { ErrorHandlerService } from '../../shared/services/handle-error/error-handler.service';
-import { MarketService } from "../../shared/services/market.service";
 import { PortfoliosInternalActions } from './portfolios.actions';
 import { PortfoliosFeature } from "./portfolios.reducer";
-import { EnvironmentService } from "../../shared/services/environment.service";
+import { GlobalLoadingIndicatorService } from "../../shared/services/global-loading-indicator.service";
+import { EffectsModule } from "@ngrx/effects";
+import { PortfoliosEffects } from "./portfolios.effects";
 
 describe('Portfolios Store', () => {
   let store: Store;
@@ -69,25 +68,23 @@ describe('Portfolios Store', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        ...sharedModuleImportForTests
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot(),
+        StoreModule.forFeature(PortfoliosFeature),
+        EffectsModule.forFeature([
+          PortfoliosEffects
+        ])
       ],
       providers: [
         { provide: AccountService, useValue: accountServiceSpy },
-        {
-          provide: EnvironmentService,
-          useValue: {
-            remoteSettingsStorageUrl : ''
-          }
-        },
         { provide: ErrorHandlerService, useValue: errorHandlerServiceSpy },
         {
-          provide: MarketService,
+          provide: GlobalLoadingIndicatorService,
           useValue: {
-            getExchangeSettings: jasmine.createSpy('getExchangeSettings')
-              .and.callFake(e => of(e === 'MOEX' ? { isDefault: true } : {}))
+            registerLoading: jasmine.createSpy('registerLoading').and.callThrough(),
+            releaseLoading: jasmine.createSpy('releaseLoading').and.callThrough()
           }
-        },
-        ...commonTestProviders
+        }
       ]
     });
 

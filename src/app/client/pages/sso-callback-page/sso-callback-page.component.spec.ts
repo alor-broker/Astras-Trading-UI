@@ -4,7 +4,7 @@ import {
   TestBed
 } from '@angular/core/testing';
 import { provideRouter } from "@angular/router";
-import { AuthService } from "../../../shared/services/auth.service";
+import { ClientAuthContextService } from "../../services/client-auth-context.service";
 
 describe('SsoCallbackPageComponent', () => {
   let component: SsoCallbackPageComponent;
@@ -16,7 +16,7 @@ describe('SsoCallbackPageComponent', () => {
       providers: [
         provideRouter([]),
         {
-          provide: AuthService,
+          provide: ClientAuthContextService,
           useValue: {
             setRefreshToken: jasmine.createSpy('setRefreshToken').and.callThrough()
           }

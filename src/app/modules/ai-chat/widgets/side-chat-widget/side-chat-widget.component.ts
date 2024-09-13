@@ -2,6 +2,7 @@ import {
   Component,
   DestroyRef,
   EventEmitter,
+  Inject,
   Input,
   OnChanges,
   OnInit,
@@ -9,10 +10,13 @@ import {
   SimpleChanges
 } from '@angular/core';
 import { LocalStorageService } from "../../../../shared/services/local-storage.service";
-import { AuthService } from "../../../../shared/services/auth.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "../../../../shared/models/user/user.model";
 import { take } from "rxjs";
+import {
+  USER_CONTEXT,
+  UserContext
+} from "../../../../shared/services/auth/user-context";
 
 @Component({
   selector: 'ats-side-chat-widget',
@@ -31,7 +35,8 @@ export class SideChatWidgetComponent implements OnInit, OnChanges {
 
   constructor(
     private readonly localStorageService: LocalStorageService,
-    private readonly authService: AuthService,
+    @Inject(USER_CONTEXT)
+    private readonly userContext: UserContext,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -49,7 +54,7 @@ export class SideChatWidgetComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.authService.currentUser$.pipe(
+    this.userContext.getUser().pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(user => {
       this.isChatDisabled = this.localStorageService.getStringItem(this.getTermsOfUseAgreementKey(user)) == null;
@@ -63,7 +68,7 @@ export class SideChatWidgetComponent implements OnInit, OnChanges {
 
   setTermsOfUseAgreement(isConfirmed: boolean): void {
     if (isConfirmed) {
-      this.authService.currentUser$.pipe(
+      this.userContext.getUser().pipe(
         take(1)
       ).subscribe(user => {
         this.localStorageService.setItem(this.getTermsOfUseAgreementKey(user), '');

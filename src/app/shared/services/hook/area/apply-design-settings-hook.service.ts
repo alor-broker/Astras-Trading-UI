@@ -1,22 +1,22 @@
-﻿import { AppHook } from "./app-hook-token";
-import {
+﻿import {
   Inject,
   Injectable
 } from "@angular/core";
-import { ThemeService } from "../theme.service";
 import { Subscription } from "rxjs";
 import {
   map,
   startWith
 } from "rxjs/operators";
-import { LocalStorageService } from "../local-storage.service";
-import { TerminalSettingsService } from "../terminal-settings.service";
-import { DesignSettingsConstants } from "../../constants/local-storage.constants";
-import { FontFamilies } from "../../models/terminal-settings/terminal-settings.model";
 import { DOCUMENT } from "@angular/common";
+import { AreaHook } from "./area-hook-token";
+import { ThemeService } from "../../theme.service";
+import { TerminalSettingsService } from "../../terminal-settings.service";
+import { LocalStorageService } from "../../local-storage.service";
+import { DesignSettingsConstants } from "../../../constants/local-storage.constants";
+import { FontFamilies } from "../../../models/terminal-settings/terminal-settings.model";
 
 @Injectable()
-export class ApplyDesignSettingsHook implements AppHook {
+export class ApplyDesignSettingsHook implements AreaHook {
   private changesSubscription?: Subscription;
 
   constructor(
@@ -39,7 +39,7 @@ export class ApplyDesignSettingsHook implements AppHook {
         map(s => s.designSettings?.fontFamily),
         startWith(this.localStorageService.getStringItem(DesignSettingsConstants.LastFontStorageKey) as FontFamilies ?? FontFamilies.NotoSans)
       ).subscribe(fontFamily => {
-        if(fontFamily == null) {
+        if (fontFamily == null) {
           return;
         }
 

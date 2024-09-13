@@ -2,7 +2,7 @@
 import { AppHook } from "./app-hook-token";
 import { Subscription } from "rxjs";
 import { SwUpdate } from "@angular/service-worker";
-import { LoggerService } from "../logging/logger.service";
+import { LoggerService } from "../../logging/logger.service";
 
 @Injectable()
 export class SwEventsLoggingHook implements AppHook {

@@ -1,9 +1,9 @@
-﻿import {AppHook} from "../app-hook/app-hook-token";
-import {Injectable} from "@angular/core";
-import {SessionTrackService} from "./session-track.service";
+﻿import { Injectable } from "@angular/core";
+import { SessionTrackService } from "./session-track.service";
+import { AreaHook } from "../hook/area/area-hook-token";
 
 @Injectable()
-export class AppSessionTrackHook implements AppHook {
+export class AppSessionTrackHook implements AreaHook {
   constructor(private readonly sessionTrackService: SessionTrackService) {
   }
 

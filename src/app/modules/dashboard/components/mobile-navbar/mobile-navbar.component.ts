@@ -1,4 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  Inject,
+  OnInit
+} from '@angular/core';
 import { Observable, shareReplay, take } from "rxjs";
 import { PortfolioExtended } from "../../../../shared/models/user/portfolio-extended.model";
 import { Dashboard } from "../../../../shared/models/dashboard/dashboard.model";
@@ -6,7 +10,6 @@ import { FormControl } from "@angular/forms";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { Store } from "@ngrx/store";
-import { AuthService } from "../../../../shared/services/auth.service";
 import { ModalService } from "../../../../shared/services/modal.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { filter, map } from "rxjs/operators";
@@ -17,6 +20,10 @@ import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reduc
 import { NewYearHelper } from "../../utils/new-year.helper";
 import { EnvironmentService } from "../../../../shared/services/environment.service";
 import { HelpService } from "../../../../shared/services/help.service";
+import {
+  SESSION_CONTEXT,
+  SessionContext
+} from "../../../../shared/services/auth/session-context";
 
 @Component({
   selector: 'ats-mobile-navbar',
@@ -33,13 +40,12 @@ export class MobileNavbarComponent implements OnInit {
   portfolioSearchControl = new FormControl('');
   instrumentSearchControl = new FormControl('');
 
-  private activeInstrument$!: Observable<InstrumentKey | null>;
-
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly store: Store,
-    private readonly auth: AuthService,
+    @Inject(SESSION_CONTEXT)
+    private readonly sessionContext: SessionContext,
     private readonly modal: ModalService,
     private readonly helpService: HelpService
   ) {
@@ -66,16 +72,14 @@ export class MobileNavbarComponent implements OnInit {
 
           return [...all.values()]
             .reduce((c, p) => [...p, ...c], [])
-            .find(p => p.portfolio === selectedKey.portfolio
-            && p.exchange === selectedKey.exchange
-            && p.marketType === selectedKey.marketType
+            .find(p => {
+                return p.portfolio === selectedKey.portfolio
+                  && p.exchange === selectedKey.exchange
+                  && p.marketType === selectedKey.marketType;
+              }
             ) ?? null;
         })
       );
-
-    this.activeInstrument$ = this.dashboardContextService.instrumentsSelection$.pipe(
-      map(selection => selection[defaultBadgeColor]!)
-    );
 
     this.portfolios$
       .pipe(
@@ -98,7 +102,7 @@ export class MobileNavbarComponent implements OnInit {
   }
 
   logout(): void {
-    this.auth.logout();
+    this.sessionContext.logout();
   }
 
   changePortfolio(key: PortfolioExtended): void {
