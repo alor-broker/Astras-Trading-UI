@@ -106,6 +106,7 @@ export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
 
   private isReloadNeeded(currentSettings: TerminalSettings, newSettings: TerminalSettings): boolean {
     return currentSettings.designSettings?.theme !== newSettings.designSettings?.theme
+      || currentSettings.isLogoutOnUserIdle !== newSettings.isLogoutOnUserIdle
       || currentSettings.designSettings?.fontFamily !== newSettings.designSettings?.fontFamily
       || currentSettings.designSettings?.gridType !== newSettings.designSettings?.gridType
       || currentSettings.language !== newSettings.language;

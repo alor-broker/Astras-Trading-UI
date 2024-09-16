@@ -13,6 +13,7 @@ export enum TabNames {
 export interface GeneralSettings {
   designSettings?: DesignSettings;
   timezoneDisplayOption?: TimezoneDisplayOption;
+  isLogoutOnUserIdle?: boolean;
   userIdleDurationMin?: number;
   language?: 'en' | 'ru' | null;
   badgesBind?: boolean;

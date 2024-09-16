@@ -17,6 +17,7 @@ export class TerminalSettingsHelper {
   static getDefaultSettings(): TerminalSettings {
     return {
       timezoneDisplayOption: TimezoneDisplayOption.MskTime,
+      isLogoutOnUserIdle: false,
       userIdleDurationMin: 15,
       badgesBind: false,
       badgesColors: instrumentsBadges,

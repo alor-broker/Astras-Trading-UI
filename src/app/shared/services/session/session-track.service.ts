@@ -36,10 +36,12 @@ export class SessionTrackService {
     this.stopTracking();
     this.activityTrackerService.startTracking();
 
-    const userIdleDuration$ = this.terminalSettingsService.getSettings().pipe(
-      map(settings => Math.round((settings.userIdleDurationMin ?? 15) * 60 * 1000)),
-      shareReplay()
-    );
+    const userIdleDuration$ = this.terminalSettingsService.getSettings()
+      .pipe(
+        filter(s => s.isLogoutOnUserIdle ?? false),
+        map(settings => Math.round((settings.userIdleDurationMin ?? 15) * 60 * 1000)),
+        shareReplay()
+      );
 
     this.trackingSubscription = this.setupSessionCheck(userIdleDuration$);
     this.trackingSubscription.add(this.setupWarningCheck(userIdleDuration$));

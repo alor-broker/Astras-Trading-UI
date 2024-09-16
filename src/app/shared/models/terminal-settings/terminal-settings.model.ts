@@ -142,6 +142,7 @@ export interface InstantNotificationsSettings {
 
 export interface TerminalSettings {
   timezoneDisplayOption?: TimezoneDisplayOption;
+  isLogoutOnUserIdle?: boolean;
   userIdleDurationMin?: number;
   language?: 'en' | 'ru' | null;
   tableRowHeight?: TableRowHeight;

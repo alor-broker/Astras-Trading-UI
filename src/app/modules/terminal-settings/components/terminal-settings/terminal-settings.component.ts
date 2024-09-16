@@ -167,6 +167,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
       designSettings: settings.designSettings,
       language: settings.language,
       timezoneDisplayOption: settings.timezoneDisplayOption,
+      isLogoutOnUserIdle: settings.isLogoutOnUserIdle,
       userIdleDurationMin: settings.userIdleDurationMin,
       badgesBind: settings.badgesBind,
       badgesColors: settings.badgesColors,
