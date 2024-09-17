@@ -580,10 +580,10 @@ export class ScalperCommandProcessorService {
     };
   }
 
-  private getStopMarketOrderTracker(dataContext: ScalperOrderBookDataContext, portfolio: string): StopMarketOrderTracker {
+  private getStopMarketOrderTracker(dataContext: ScalperOrderBookDataContext, portfolio?: string): StopMarketOrderTracker {
     return {
       beforeOrderCreated: (order): void => {
-        if(order.meta?.trackId != null) {
+        if(order.meta?.trackId != null && portfolio != null) {
           dataContext.addLocalOrder({
             orderId: order.meta!.trackId!,
             type: OrderType.StopMarket,
@@ -615,7 +615,7 @@ export class ScalperCommandProcessorService {
               triggerPrice: row.price,
               targetInstrumentBoard: settings.widgetSettings.instrumentGroup ?? null,
               silent: settings.widgetSettings.enableMouseClickSilentOrders,
-              orderTracker: this.getStopMarketOrderTracker(dataContext, position!.portfolio)
+              orderTracker: this.getStopMarketOrderTracker(dataContext, position?.portfolio)
             });
           }
         );
