@@ -13,6 +13,8 @@ export interface CommonSummaryView {
     portfolioLiquidationValue: string;
     /** начальная маржа **/
     initialMargin: string;
+    /** Скорректированная маржа **/
+    correctedMargin: string;
     /** НПР2 **/
     riskBeforeForcePositionClosing: string;
     /** Комиссия **/
