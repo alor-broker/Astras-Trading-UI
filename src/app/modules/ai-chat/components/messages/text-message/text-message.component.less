@@ -3,3 +3,13 @@
   white-space: pre-wrap;
   max-width: 100%;
 }
+
+:host ::ng-deep {
+  .markdown {
+    white-space: normal;
+
+    p {
+      margin: 0;
+    }
+  }
+}

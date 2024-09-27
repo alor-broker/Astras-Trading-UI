@@ -12,7 +12,8 @@ import { LocalStorageService } from "../../../../shared/services/local-storage.s
 import { AuthService } from "../../../../shared/services/auth.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "../../../../shared/models/user/user.model";
-import { take } from "rxjs";
+import { filter, fromEvent, Observable, Subscription, take } from "rxjs";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: 'ats-side-chat-widget',
@@ -25,6 +26,10 @@ export class SideChatWidgetComponent implements OnInit, OnChanges {
 
   @Output()
   atsVisibleChange = new EventEmitter<boolean>();
+
+  private mouseupSub?: Subscription;
+  isResizing = false;
+  drawerWidth$!: Observable<number>;
 
   isTermOfUseDialogVisible = false;
   isChatDisabled = true;
@@ -54,6 +59,8 @@ export class SideChatWidgetComponent implements OnInit, OnChanges {
     ).subscribe(user => {
       this.isChatDisabled = this.localStorageService.getStringItem(this.getTermsOfUseAgreementKey(user)) == null;
     });
+
+    this.initResize();
   }
 
   close(): void {
@@ -75,7 +82,36 @@ export class SideChatWidgetComponent implements OnInit, OnChanges {
     }
   }
 
+  isResizingChange(v: boolean): void {
+    this.isResizing = v;
+  }
+
+  drawerVisibleChange(isVisible: boolean): void {
+    if (isVisible) {
+      this.mouseupSub = fromEvent(document, 'mouseup')
+        .pipe(
+          filter(() => this.isResizing)
+        )
+        .subscribe(() => {
+          this.isResizingChange(false);
+        });
+    } else {
+      this.mouseupSub?.unsubscribe();
+    }
+  }
+
   private getTermsOfUseAgreementKey(user: User): string {
     return `ai_chat_tou_agreement_${user.clientId}`;
+  }
+
+  private initResize(): void {
+    this.drawerWidth$ = fromEvent<MouseEvent>(document, 'mousemove')
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        filter(() => this.isResizing),
+        map(e => {
+          return Math.max(375, document.body.clientWidth - e.clientX);
+        })
+      );
   }
 }
