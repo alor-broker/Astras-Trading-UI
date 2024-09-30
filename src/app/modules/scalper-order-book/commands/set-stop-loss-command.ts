@@ -38,7 +38,7 @@ export class SetStopLossCommand extends CommandBase<SetStopLossCommandArgs> {
   }
 
   execute(args: SetStopLossCommandArgs): void {
-    if (!args.currentPosition || args.currentPosition.qtyTFutureBatch === 0 || !args.currentPosition.avgPrice) {
+    if (args.currentPosition == null || args.currentPosition.qtyTFutureBatch === 0 || !args.currentPosition.avgPrice) {
       this.notification.emptyPositions();
       return;
     }
