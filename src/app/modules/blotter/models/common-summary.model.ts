@@ -16,6 +16,8 @@ export interface CommonSummaryModel {
   portfolioLiquidationValue: number;
   /** начальная маржа **/
   initialMargin: number;
+  /** Скорректированная маржа **/
+  correctedMargin: number;
   /** НПР2 **/
   riskBeforeForcePositionClosing: number;
   /** Комиссия **/

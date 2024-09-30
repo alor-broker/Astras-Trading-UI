@@ -5,6 +5,7 @@
   "profitRateTitle": "Daily profit rate, %",
   "buyingPowerAtMorningTitle": "Buying power at morning",
   "initialMarginTitle": "Initial margin",
+  "correctedMarginTitle": "Corrected margin",
   "riskBeforeForcePositionClosingTitle": "RCR2 (before closing)",
   "commissionTitle": "Commission",
   "buyingPowerTitle": "Buying power"
