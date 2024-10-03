@@ -20,16 +20,26 @@ import {
   OrderFormType
 } from "../../../shared/models/orders/orders-dialog.model";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
+import { OrdersGroupService } from "../../../shared/services/orders/orders-group.service";
+import { BracketOptions } from "./bracket-command";
+import { PriceUnits } from "../models/scalper-order-book-settings.model";
+import { OrderType } from "../../../shared/models/orders/order.model";
+import { LessMore } from "../../../shared/models/enums/less-more.model";
+import { MathHelper } from "../../../shared/utils/math-helper";
+import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
+import { OrderbookDataRow } from "../../orderbook/models/orderbook-data.model";
 
 describe('SubmitMarketOrderCommand', () => {
   let command: SubmitMarketOrderCommand;
 
   let orderServiceSpy: any;
   let ordersDialogServiceSpy: any;
+  let ordersGroupServiceSpy: any;
 
   beforeEach(() => {
     orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['submitMarketOrder']);
     ordersDialogServiceSpy = jasmine.createSpyObj('OrdersDialogService', ['openNewOrderDialog']);
+    ordersGroupServiceSpy = jasmine.createSpyObj('OrdersGroupService', ['submitOrdersGroup']);
   });
 
   beforeEach(() => {
@@ -42,6 +52,10 @@ describe('SubmitMarketOrderCommand', () => {
         {
           provide: OrdersDialogService,
           useValue: ordersDialogServiceSpy
+        },
+        {
+          provide: OrdersGroupService,
+          useValue: ordersGroupServiceSpy
         },
       ]
     });
@@ -71,7 +85,13 @@ describe('SubmitMarketOrderCommand', () => {
         side: Side.Sell,
         quantity,
         targetPortfolio: portfolioKey.portfolio,
-        silent: true
+        silent: true,
+        orderBook: {
+          b: [],
+          a: []
+        },
+        priceStep: 1,
+        bracketOptions: null
       });
 
       tick(10000);
@@ -91,7 +111,13 @@ describe('SubmitMarketOrderCommand', () => {
         side: Side.Buy,
         quantity,
         targetPortfolio: portfolioKey.portfolio,
-        silent: false
+        silent: false,
+        orderBook: {
+          b: [],
+          a: []
+        },
+        priceStep: 1,
+        bracketOptions: null
       });
 
       tick(10000);
@@ -108,4 +134,153 @@ describe('SubmitMarketOrderCommand', () => {
         );
     })
   );
+
+  it('#execute should create bracket', fakeAsync(() => {
+    const portfolioKey: PortfolioKey = {
+      exchange: generateRandomString(4),
+      portfolio: generateRandomString(5),
+    };
+
+    const testInstrumentKey: InstrumentKey = {
+      exchange: portfolioKey.exchange,
+      symbol: generateRandomString(4)
+    };
+
+    const bracketOptions: BracketOptions = {
+      profitPriceRatio: 1,
+      lossPriceRatio: 2,
+      orderPriceUnits: PriceUnits.Points,
+      currentPosition: null,
+      applyBracketOnClosing: false
+    };
+
+    ordersGroupServiceSpy.submitOrdersGroup.and.returnValue(of({}));
+    const quantity = getRandomInt(1, 100);
+    const bestAsk = 201;
+    const priceStep = 0.5;
+
+    command.execute(
+      {
+        instrumentKey: testInstrumentKey,
+        side: Side.Buy,
+        quantity,
+        targetPortfolio: portfolioKey.portfolio,
+        bracketOptions,
+        priceStep,
+        orderBook: {
+          a: [{p: bestAsk} as OrderbookDataRow],
+          b: []
+        },
+        silent: true
+      }
+    );
+
+    tick(10000);
+
+    const expectedMarketOrder = {
+      side: Side.Buy,
+      quantity,
+      instrument: toInstrumentKey(testInstrumentKey)
+    };
+
+    expect(ordersGroupServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+      [
+        jasmine.objectContaining(
+          {
+            ...expectedMarketOrder,
+            type: OrderType.Market
+          }),
+        {
+          ...expectedMarketOrder,
+          price: bestAsk,
+          type: OrderType.StopLimit,
+          condition: LessMore.MoreOrEqual,
+          triggerPrice: MathHelper.roundPrice(bestAsk + (bracketOptions.profitPriceRatio! * priceStep), priceStep),
+          side: Side.Sell,
+          activate: false
+        },
+        {
+          ...expectedMarketOrder,
+          price: bestAsk,
+          type: OrderType.StopLimit,
+          condition: LessMore.LessOrEqual,
+          triggerPrice: MathHelper.roundPrice(bestAsk - (bracketOptions.lossPriceRatio! * priceStep), priceStep),
+          side: Side.Sell,
+          activate: false
+        },
+      ],
+      portfolioKey.portfolio,
+      ExecutionPolicy.TriggerBracketOrders
+    );
+  }));
+
+  it('#execute should create bracket with percent price ratio settings', fakeAsync(() => {
+    const portfolioKey: PortfolioKey = {
+      exchange: generateRandomString(4),
+      portfolio: generateRandomString(5),
+    };
+
+    const testInstrumentKey: InstrumentKey = {
+      exchange: portfolioKey.exchange,
+      symbol: generateRandomString(4)
+    };
+
+    const priceStep = 0.5;
+
+    const bracketOptions: BracketOptions = {
+      profitPriceRatio: 1,
+      lossPriceRatio: null,
+      orderPriceUnits: PriceUnits.Percents,
+      currentPosition: null,
+      applyBracketOnClosing: false
+    };
+
+    ordersGroupServiceSpy.submitOrdersGroup.and.returnValue(of({}));
+    const quantity = getRandomInt(1, 100);
+    const bestAsk = 201;
+
+    command.execute(
+      {
+        instrumentKey: testInstrumentKey,
+        side: Side.Buy,
+        quantity,
+        targetPortfolio: portfolioKey.portfolio,
+        bracketOptions,
+        priceStep,
+        orderBook: {
+          a: [{p: bestAsk} as OrderbookDataRow],
+          b: []
+        },
+        silent: true
+      }
+    );
+
+    tick(10000);
+
+    const expectedMarketOrder = {
+      side: Side.Buy,
+      quantity,
+      instrument: toInstrumentKey(testInstrumentKey)
+    };
+
+    expect(ordersGroupServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+      [
+        jasmine.objectContaining({
+          ...expectedMarketOrder,
+          type: OrderType.Market
+        }),
+        {
+          ...expectedMarketOrder,
+          price: bestAsk,
+          type: OrderType.StopLimit,
+          condition: LessMore.MoreOrEqual,
+          triggerPrice: MathHelper.roundPrice((1 + bracketOptions.profitPriceRatio! * 0.01) * bestAsk, priceStep),
+          side: Side.Sell,
+          activate: false
+        }
+      ],
+      portfolioKey.portfolio,
+      ExecutionPolicy.TriggerBracketOrders
+    );
+  }));
 });

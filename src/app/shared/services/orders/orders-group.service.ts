@@ -25,6 +25,7 @@ import { EnvironmentService } from "../environment.service";
 import {
   NewLimitOrder,
   NewLinkedOrder,
+  NewMarketOrder,
   NewStopLimitOrder,
   NewStopMarketOrder,
   OrderCommandResult
@@ -116,6 +117,8 @@ export class OrdersGroupService implements OnDestroy {
       switch (o.type) {
         case OrderType.Limit:
           return toSubmitResult(this.wsOrdersService.submitLimitOrder(o as NewLimitOrder, portfolio), o);
+        case OrderType.Market:
+          return toSubmitResult(this.wsOrdersService.submitMarketOrder(o as NewMarketOrder, portfolio), o);
         case OrderType.StopMarket:
           return toSubmitResult(this.wsOrdersService.submitStopMarketOrder(o as NewStopMarketOrder, portfolio), o);
         case OrderType.StopLimit:

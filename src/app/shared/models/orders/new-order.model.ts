@@ -56,6 +56,6 @@ export interface OrderCommandResult {
   orderNumber?: string;
 }
 
-export type NewLinkedOrder = (NewLimitOrder | NewStopLimitOrder | NewStopMarketOrder) & {
-  type: OrderType.Limit | OrderType.StopMarket | OrderType.StopLimit;
+export type NewLinkedOrder = (NewLimitOrder | NewMarketOrder | NewStopLimitOrder | NewStopMarketOrder) & {
+  type: OrderType.Limit | OrderType.Market | OrderType.StopMarket | OrderType.StopLimit;
 };

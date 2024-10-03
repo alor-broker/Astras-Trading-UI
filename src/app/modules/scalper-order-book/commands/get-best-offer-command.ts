@@ -3,11 +3,11 @@ import { InstrumentKey } from "../../../shared/models/instruments/instrument-key
 import { Side } from "../../../shared/models/enums/side.model";
 import { OrderbookData } from "../../orderbook/models/orderbook-data.model";
 import {
-  BracketOptions,
   LimitOrderTracker,
   SubmitLimitOrderCommand
 } from "./submit-limit-order-command";
 import { CommandBase } from "./command-base";
+import { BracketOptions } from "./bracket-command";
 
 export interface GetBestOfferCommandArgs {
   instrumentKey: InstrumentKey;

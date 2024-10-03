@@ -4,7 +4,6 @@ import {
   tick
 } from '@angular/core/testing';
 import {
-  BracketOptions,
   SubmitLimitOrderCommand
 } from "./submit-limit-order-command";
 import { OrdersGroupService } from "../../../shared/services/orders/orders-group.service";
@@ -29,6 +28,7 @@ import { MathHelper } from "../../../shared/utils/math-helper";
 import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
 import { PriceUnits } from "../models/scalper-order-book-settings.model";
 import { toInstrumentKey } from "../../../shared/utils/instruments";
+import { BracketOptions } from "./bracket-command";
 
 describe('SubmitLimitOrderCommand', () => {
   let command: SubmitLimitOrderCommand;
