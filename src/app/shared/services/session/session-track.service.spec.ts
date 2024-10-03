@@ -28,7 +28,7 @@ describe('SessionTrackService', () => {
 
     terminalSettingsServiceSpy.getSettings.and.returnValue(
       userIdleDurationMinMock.pipe(
-        map(x => ({ userIdleDurationMin: x }) as TerminalSettings))
+        map(x => ({ userIdleDurationMin: x, isLogoutOnUserIdle: true }) as TerminalSettings))
     );
     activityTrackerServiceSpy.lastActivityUnixTime$ = lastActivityTimeMock;
 

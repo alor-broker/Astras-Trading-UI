@@ -56,6 +56,7 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
       gridType: this.formBuilder.nonNullable.control(GridType.Fit)
     }),
     timezoneDisplayOption: this.formBuilder.nonNullable.control(TimezoneDisplayOption.MskTime),
+    isLogoutOnUserIdle: this.formBuilder.nonNullable.control(false),
     userIdleDurationMin: this.formBuilder.nonNullable.control(
       15,
       [
