@@ -10,6 +10,7 @@
           [nzVisible]="(dialogParams$ | async) !== null"
           nzClosable="false"
           nzMaskClosable="false"
+          nzDraggable
         >
           <ng-container *nzModalContent>
             <ng-container *ngIf="dialogParams$ | async as dialogParams">
