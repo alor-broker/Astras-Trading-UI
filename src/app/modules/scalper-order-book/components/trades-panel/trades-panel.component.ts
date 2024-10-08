@@ -723,16 +723,16 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     for (const trade of this.getAggregatedTrades(trades, priceItems)) {
-      let prefLeft: number | null = null;
+      let prevLeft: number | null = null;
 
       drawers.push({
         draw: () => {
           if (trade.sellVolume !== 0) {
-            prefLeft = drawTrade(trade.priceIndex, trade.sellVolume, Side.Sell, null) - 2;
+            prevLeft = drawTrade(trade.priceIndex, trade.sellVolume, Side.Sell, null) - 2;
           }
 
           if (trade.buyVolume !== 0) {
-            drawTrade(trade.priceIndex, trade.buyVolume, Side.Buy, prefLeft);
+            drawTrade(trade.priceIndex, trade.buyVolume, Side.Buy, prevLeft);
           }
         },
         zIndex: this.zIndexes.ownTrade
