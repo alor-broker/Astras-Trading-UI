@@ -5,7 +5,6 @@ import {
   Inject,
   Input,
   OnInit,
-  Renderer2,
   SkipSelf
 } from '@angular/core';
 import {
@@ -25,7 +24,6 @@ export class HoverItemDirective<T = any> implements OnInit {
   atsHoverItemData?: T;
 
   constructor(
-    private readonly renderer: Renderer2,
     private readonly el: ElementRef,
     @Inject(HOVER_ITEMS_GROUP)
     @SkipSelf()

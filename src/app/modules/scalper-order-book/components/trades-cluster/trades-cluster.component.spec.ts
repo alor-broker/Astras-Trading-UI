@@ -6,6 +6,7 @@ import {
   Subject
 } from 'rxjs';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
+import { LetDirective } from "@ngrx/component";
 
 describe('TradesClusterComponent', () => {
   let component: TradesClusterComponent;
@@ -13,6 +14,7 @@ describe('TradesClusterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [LetDirective],
       declarations: [TradesClusterComponent]
     })
     .compileComponents();
