@@ -7,6 +7,7 @@ import { ScalperOrderBookTableComponent } from './scalper-order-book-table.compo
 import { ThemeService } from '../../../../shared/services/theme.service';
 import {
   BehaviorSubject,
+  EMPTY,
   Subject
 } from 'rxjs';
 import { ScalperCommandProcessorService } from '../../services/scalper-command-processor.service';
@@ -14,6 +15,7 @@ import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-dat
 import { getTranslocoModule } from '../../../../shared/utils/testing';
 import { CancelOrdersCommand } from "../../commands/cancel-orders-command";
 import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
+import { RULER_CONTEX } from "../scalper-order-book-body/scalper-order-book-body.component";
 
 describe('ScalperOrderBookTableComponent', () => {
   let component: ScalperOrderBookTableComponent;
@@ -51,6 +53,13 @@ describe('ScalperOrderBookTableComponent', () => {
           provide: CancelOrdersCommand,
           useValue: {
             execute: jasmine.createSpy('execute').and.callThrough()
+          }
+        },
+        {
+          provide: RULER_CONTEX,
+          useValue: {
+            hoveredRow$: EMPTY,
+            setHoveredRow: jasmine.createSpy('setHoveredRow').and.callThrough()
           }
         },
       ]

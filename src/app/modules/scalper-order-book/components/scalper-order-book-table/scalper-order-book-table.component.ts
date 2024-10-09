@@ -1,7 +1,10 @@
 import {
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
+  Inject,
   Input,
-  OnInit
+  OnInit,
+  SkipSelf
 } from '@angular/core';
 import {
   BodyRow,
@@ -11,7 +14,6 @@ import {
 import {
   combineLatest,
   Observable,
-  Subject
 } from 'rxjs';
 import {
   ScalperOrderBookDataContext,
@@ -35,6 +37,10 @@ import { color } from "d3";
 import { OrderType } from "../../../../shared/models/orders/order.model";
 import { CancelOrdersCommand } from "../../commands/cancel-orders-command";
 import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
+import {
+  RULER_CONTEX,
+  RulerContext,
+} from "../scalper-order-book-body/scalper-order-book-body.component";
 
 interface VolumeHighlightArguments {
   rowType: ScalperOrderBookRowType;
@@ -74,13 +80,16 @@ export class ScalperOrderBookTableComponent implements OnInit {
   @Input()
   isActive = false;
 
-  readonly hoveredRow$ = new Subject<{ price: number } | null>();
+  readonly hoveredRow$ = this.rulerContext.hoveredRow$;
 
   constructor(
     private readonly cancelOrdersCommand: CancelOrdersCommand,
     private readonly themeService: ThemeService,
     private readonly commandProcessorService: ScalperCommandProcessorService,
     private readonly hotkeysService: ScalperHotKeyCommandService,
+    @Inject(RULER_CONTEX)
+    @SkipSelf()
+    private readonly rulerContext: RulerContext,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -168,7 +177,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
   }
 
   updateHoveredItem(hoveredItem: { price: number } | null): void {
-    this.hoveredRow$.next(hoveredItem);
+    this.rulerContext.setHoveredRow(hoveredItem);
   }
 
   isAllOrdersHaveSide(orders: CurrentOrderDisplay[], side: Side): boolean {

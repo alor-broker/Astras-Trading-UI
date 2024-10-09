@@ -65,7 +65,13 @@ export interface ScalperOrderBookBodyRef {
   getElement(): ElementRef<HTMLElement>;
 }
 
+export interface RulerContext {
+  setHoveredRow(hoveredRow: { price: number } | null): void;
+  get hoveredRow$(): Observable<{ price: number } | null>;
+}
+
 export const SCALPER_ORDERBOOK_BODY_REF = new InjectionToken<ScalperOrderBookBodyRef>('ScalperOrderBookBodyRef');
+export const RULER_CONTEX = new InjectionToken<RulerContext>('RulerContext');
 
 interface ScaleState {
   scaleFactor: number;
@@ -77,10 +83,17 @@ interface ScaleState {
   styleUrls: ['./scalper-order-book-body.component.less'],
   providers: [
     PriceRowsStore,
-    { provide: SCALPER_ORDERBOOK_BODY_REF, useExisting: ScalperOrderBookBodyComponent }
+    { provide: SCALPER_ORDERBOOK_BODY_REF, useExisting: ScalperOrderBookBodyComponent },
+    { provide: RULER_CONTEX, useExisting: ScalperOrderBookBodyComponent }
   ]
 })
-export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnDestroy, ScalperOrderBookBodyRef {
+export class ScalperOrderBookBodyComponent implements
+  OnInit,
+  AfterViewInit,
+  OnDestroy,
+  ScalperOrderBookBodyRef,
+  RulerContext
+{
   readonly maxScaleFactor = 10;
   readonly sides = Side;
   readonly panelIds = {
@@ -117,6 +130,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
   readonly isTableHovered$ = new BehaviorSubject(false);
   private readonly renderItemsRange$ = new BehaviorSubject<ListRange | null>(null);
   private readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
+  private readonly hoveredPriceRow$ = new BehaviorSubject<{ price: number } | null>(null);
   private lastContainerHeight = 0;
   private widgetSettings$!: Observable<ScalperOrderBookWidgetSettings>;
 
@@ -131,6 +145,10 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     private readonly widgetLocalStateService: WidgetLocalStateService,
     private readonly ref: ElementRef<HTMLElement>,
     private readonly destroyRef: DestroyRef) {
+  }
+
+  setHoveredRow(hoveredRow: { price: number } | null): void {
+    this.hoveredPriceRow$.next(hoveredRow);
   }
 
   getElement(): ElementRef<HTMLElement> {
@@ -186,6 +204,7 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
     this.contentSize$.complete();
     this.isLoading$.complete();
     this.renderItemsRange$.complete();
+    this.hoveredPriceRow$.complete();
   }
 
   updatePanelWidths(widths: Record<string, number>): void {
@@ -211,6 +230,10 @@ export class ScalperOrderBookBodyComponent implements OnInit, AfterViewInit, OnD
       stateKey,
       position
     );
+  }
+
+  get hoveredRow$(): Observable<{ price: number } | null> {
+    return this.hoveredPriceRow$.asObservable();
   }
 
   private initManualAlign(): void {

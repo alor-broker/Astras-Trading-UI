@@ -1,8 +1,11 @@
 import {
   Component,
+  Inject,
   Input,
   OnDestroy,
-  OnInit
+  OnInit,
+  Optional,
+  SkipSelf
 } from '@angular/core';
 import {
   ClusterItem,
@@ -12,7 +15,8 @@ import {
   BehaviorSubject,
   combineLatest,
   filter,
-  Observable
+  Observable,
+  of
 } from 'rxjs';
 import {
   ScalperOrderBookDataContext,
@@ -20,12 +24,17 @@ import {
 } from '../../models/scalper-order-book-data-context.model';
 import { map } from 'rxjs/operators';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
+import {
+  RULER_CONTEX,
+  RulerContext
+} from "../scalper-order-book-body/scalper-order-book-body.component";
 
 interface DisplayItem {
   volume: number | null;
   isMaxVolume: boolean;
   isMajorLinePrice: boolean;
   isMinorLinePrice: boolean;
+  mappedPrice: number;
 }
 
 @Component({
@@ -45,6 +54,14 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
   displayItems$!: Observable<(DisplayItem)[]>;
   settings$!: Observable<ScalperOrderBookExtendedSettings>;
   private readonly currentCluster$ = new BehaviorSubject<TradesCluster | null>(null);
+  hoveredPriceRow$: Observable<{ price: number } | null> = this.rulerContext?.hoveredRow$ ?? of(null);
+
+  constructor(
+    @Inject(RULER_CONTEX)
+    @SkipSelf()
+    @Optional()
+    private readonly rulerContext?: RulerContext) {
+  }
 
   @Input()
   set cluster(value: TradesCluster) {
@@ -77,7 +94,8 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
             volume: null,
             isMaxVolume: false,
             isMajorLinePrice: r.isMajorLinePrice,
-            isMinorLinePrice: r.isMinorLinePrice
+            isMinorLinePrice: r.isMinorLinePrice,
+            mappedPrice: r.price
           };
 
           if (!currentCluster) {
@@ -111,5 +129,9 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
 
   trackBy(index: number): number {
     return index;
+  }
+
+  isRulerHovered(item: DisplayItem, hoveredPriceRow: { price: number } | null): boolean {
+    return item.mappedPrice === hoveredPriceRow?.price;
   }
 }
