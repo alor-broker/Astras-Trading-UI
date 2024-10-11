@@ -7,7 +7,7 @@ import { SelectDashboardMenuComponent } from './select-dashboard-menu.component'
 import { ManageDashboardsService } from '../../../../shared/services/manage-dashboards.service';
 import { Subject } from 'rxjs';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { getTranslocoModule } from '../../../../shared/utils/testing';
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('SelectDashboardMenuComponent', () => {
   let component: SelectDashboardMenuComponent;
@@ -15,7 +15,7 @@ describe('SelectDashboardMenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       declarations: [SelectDashboardMenuComponent],
       providers: [
         {

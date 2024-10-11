@@ -3,11 +3,6 @@ import {
   TestBed
 } from '@angular/core/testing';
 import { of } from 'rxjs';
-import {
-  commonTestProviders,
-  mockComponent,
-  sharedModuleImportForTests
-} from 'src/app/shared/utils/testing';
 import { OrderBook } from '../../models/orderbook.model';
 import { OrderbookService } from '../../services/orderbook.service';
 
@@ -18,6 +13,8 @@ import {
   ThemeSettings,
   ThemeType
 } from '../../../../shared/models/settings/theme-settings.model';
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
 
 describe('OrderBookComponent', () => {
   let component: OrderBookComponent;
@@ -54,15 +51,15 @@ describe('OrderBookComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         OrderBookComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-orderbook-chart',
           inputs: ['guid', 'chartData']
         }),
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-orderbook-table-volumes-at-the-edges',
           inputs: ['guid', 'ob']
         }),
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-orderbook-table-volumes-at-the-middle',
           inputs: ['guid', 'ob']
         }),
@@ -82,7 +79,6 @@ describe('OrderBookComponent', () => {
         ...commonTestProviders
       ],
       imports: [
-        ...sharedModuleImportForTests
       ]
     })
       .compileComponents();

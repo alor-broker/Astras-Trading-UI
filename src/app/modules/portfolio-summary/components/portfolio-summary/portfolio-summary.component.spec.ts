@@ -4,7 +4,8 @@ import {PortfolioSummaryComponent} from './portfolio-summary.component';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {Subject} from "rxjs";
 import {PortfolioSummaryService} from "../../../../shared/services/portfolio-summary.service";
-import {getTranslocoModule, mockComponent, mockDirective} from "../../../../shared/utils/testing";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('PortfolioSummaryComponent', () => {
   let component: PortfolioSummaryComponent;
@@ -12,13 +13,13 @@ describe('PortfolioSummaryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       declarations: [
         PortfolioSummaryComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-scrollable-row'
         }),
-        mockDirective({
+        ComponentHelpers.mockDirective({
           selector: '[atsScrollableItem]'
         })
       ],

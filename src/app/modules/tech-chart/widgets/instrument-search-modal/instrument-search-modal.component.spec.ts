@@ -4,13 +4,10 @@ import { InstrumentSearchModalComponent } from './instrument-search-modal.compon
 import { InstrumentSearchService } from "../../services/instrument-search.service";
 import { BehaviorSubject, of } from "rxjs";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  mockComponent,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
+import { NzModalModule } from "ng-zorro-antd/modal";
 
 describe('InstrumentSearchModalComponent', () => {
   let component: InstrumentSearchModalComponent;
@@ -34,14 +31,11 @@ describe('InstrumentSearchModalComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         InstrumentSearchModalComponent,
-        mockComponent({
-          template: ''
-        })
       ],
       imports: [
-        BrowserAnimationsModule,
-        getTranslocoModule(),
-        ...sharedModuleImportForTests
+        TranslocoTestsModule.getModule(),
+        ...FormsTesting.getTestingModules(),
+        NzModalModule
       ],
       providers: [
         {

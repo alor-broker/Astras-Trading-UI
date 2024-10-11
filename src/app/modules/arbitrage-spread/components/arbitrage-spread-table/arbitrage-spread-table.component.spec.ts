@@ -3,7 +3,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ArbitrageSpreadTableComponent } from './arbitrage-spread-table.component';
 import { ArbitrageSpreadService } from "../../services/arbitrage-spread.service";
 import { of } from "rxjs";
-import { commonTestProviders, getTranslocoModule, sharedModuleImportForTests } from "../../../../shared/utils/testing";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { NzTableModule } from "ng-zorro-antd/table";
+import { NzEmptyModule } from "ng-zorro-antd/empty";
+import { NzToolTipModule } from "ng-zorro-antd/tooltip";
 
 describe('ArbitrageSpreadTableComponent', () => {
   let component: ArbitrageSpreadTableComponent;
@@ -12,7 +16,12 @@ describe('ArbitrageSpreadTableComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ArbitrageSpreadTableComponent],
-      imports: [...sharedModuleImportForTests, getTranslocoModule()],
+      imports: [
+        TranslocoTestsModule.getModule(),
+        NzTableModule,
+        NzEmptyModule,
+        NzToolTipModule
+      ],
       providers: [
         {
           provide: ArbitrageSpreadService,

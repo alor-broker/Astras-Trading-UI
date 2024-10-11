@@ -4,12 +4,9 @@ import {
 } from '@angular/core/testing';
 
 import { ScalperMouseActionsFormComponent } from './scalper-mouse-actions-form.component';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  sharedModuleImportForTests
-} from '../../../../shared/utils/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
 
 describe('ScalperMouseActionsFormComponent', () => {
   let component: ScalperMouseActionsFormComponent;
@@ -18,9 +15,8 @@ describe('ScalperMouseActionsFormComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
-        ...sharedModuleImportForTests,
-        NoopAnimationsModule
+        TranslocoTestsModule.getModule(),
+        ...FormsTesting.getTestingModules()
       ],
       declarations: [
         ScalperMouseActionsFormComponent

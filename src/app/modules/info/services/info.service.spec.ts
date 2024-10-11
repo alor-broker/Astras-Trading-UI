@@ -6,7 +6,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { InfoService } from './info.service';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
-import { sharedModuleImportForTests } from '../../../shared/utils/testing';
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import { EnvironmentService } from "../../../shared/services/environment.service";
@@ -19,7 +18,6 @@ describe('InfoService', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [...sharedModuleImportForTests],
     providers: [
         {
             provide: WidgetSettingsService,

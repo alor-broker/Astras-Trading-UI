@@ -7,9 +7,9 @@ import { TopFloatingPanelComponent } from './top-floating-panel.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { Subject } from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
-import { getTranslocoModule } from "../../../../shared/utils/testing";
 import { LetDirective } from "@ngrx/component";
 import { SCALPER_ORDERBOOK_SHARED_CONTEXT } from "../scalper-order-book/scalper-order-book.component";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('TopFloatingPanelComponent', () => {
   let component: TopFloatingPanelComponent;
@@ -18,7 +18,7 @@ describe('TopFloatingPanelComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         LetDirective
       ],
       declarations: [TopFloatingPanelComponent],

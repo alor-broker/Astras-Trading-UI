@@ -7,14 +7,12 @@ import { YieldCurveChartComponent } from './yield-curve-chart.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { Subject } from "rxjs";
 import { BondScreenerService } from "../../services/bond-screener.service";
-import {
-  getTranslocoModule,
-  mockComponent,
-  ngZorroMockComponents
-} from "../../../../shared/utils/testing";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { LetDirective } from "@ngrx/component";
 import { GuidGenerator } from "../../../../shared/utils/guid";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('YieldCurveChartComponent', () => {
   let component: YieldCurveChartComponent;
@@ -23,12 +21,12 @@ describe('YieldCurveChartComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         LetDirective
       ],
       declarations: [
         YieldCurveChartComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-yield-curve-chart-parameters'
         }),
         ...ngZorroMockComponents

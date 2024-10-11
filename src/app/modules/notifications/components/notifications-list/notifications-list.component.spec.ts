@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NotificationsListComponent } from './notifications-list.component';
 import { NotificationsService } from "../../services/notifications.service";
 import { of } from "rxjs";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('NotificationsListComponent', () => {
   let component: NotificationsListComponent;

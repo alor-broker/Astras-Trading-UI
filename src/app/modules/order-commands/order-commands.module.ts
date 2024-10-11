@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OrdersDialogWidgetComponent } from './widgets/orders-dialog-widget/orders-dialog-widget.component';
-import { BuySellButtonsComponent } from './components/buy-sell-buttons/buy-sell-buttons.component';
 import { CompactHeaderComponent } from './components/compact-header/compact-header.component';
 import { InstrumentInfoComponent } from './components/instrument-info/instrument-info.component';
 import { OrderEvaluationComponent } from './components/order-evaluation/order-evaluation.component';
@@ -38,11 +37,14 @@ import {
 } from './components/order-forms/edit-stop-order-form/edit-stop-order-form.component';
 import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
 import { LetDirective } from "@ngrx/component";
+import { InputNumberComponent } from "../../shared/components/input-number/input-number.component";
+import { BuySellButtonsComponent } from "./components/buy-sell-buttons/buy-sell-buttons.component";
+import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
+import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
 
 @NgModule({
   declarations: [
     OrdersDialogWidgetComponent,
-    BuySellButtonsComponent,
     CompactHeaderComponent,
     InstrumentInfoComponent,
     OrderEvaluationComponent,
@@ -80,7 +82,11 @@ import { LetDirective } from "@ngrx/component";
     SharedModule,
     NzInputNumberModule,
     NzResizeObserverModule,
-    LetDirective
+    LetDirective,
+    InputNumberComponent,
+    BuySellButtonsComponent,
+    WidgetSettingsComponent,
+    InstrumentSearchComponent
   ]
 })
 export class OrderCommandsModule {

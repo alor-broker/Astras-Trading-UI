@@ -11,7 +11,7 @@ import { FeedbackModule } from '../../feedback.module';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import ruFeedback from '../../../../../assets/i18n/feedback/ru.json';
-import { getTranslocoModule } from "../../../../shared/utils/testing";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('FeedbackWidgetComponent', () => {
   let component: FeedbackWidgetComponent;
@@ -22,7 +22,7 @@ describe('FeedbackWidgetComponent', () => {
       imports: [
         FeedbackModule,
         NoopAnimationsModule,
-        getTranslocoModule({
+        TranslocoTestsModule.getModule({
           langs: {
             'feedback/ru': ruFeedback,
           }

@@ -4,9 +4,9 @@ import {
 } from '@angular/core/testing';
 
 import { WidgetSettingsComponent } from './widget-settings.component';
-import { getTranslocoModule } from "../../utils/testing";
 import { DeviceService } from "../../services/device.service";
 import { BehaviorSubject } from "rxjs";
+import { TranslocoTestsModule } from "../../utils/testing/translocoTestsModule";
 
 describe('WidgetSettingsComponent', () => {
   let component: WidgetSettingsComponent;
@@ -14,8 +14,10 @@ describe('WidgetSettingsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
-      declarations: [WidgetSettingsComponent],
+      imports: [
+        TranslocoTestsModule.getModule(),
+        WidgetSettingsComponent
+      ],
       providers: [
         {
           provide: DeviceService,

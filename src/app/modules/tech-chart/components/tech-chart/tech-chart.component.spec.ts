@@ -17,11 +17,6 @@ import {
 } from '../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
-import {
-  commonTestProviders,
-  sharedModuleImportForTests,
-  TestData
-} from '../../../../shared/utils/testing';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
@@ -37,6 +32,11 @@ import { SyntheticInstrumentsService } from "../../services/synthetic-instrument
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { InstrumentSearchService } from "../../services/instrument-search.service";
+import { PositionDisplayExtension } from "../../extensions/position-display.extension";
+import { OrdersDisplayExtension } from "../../extensions/orders-display.extension";
+import { TradesDisplayExtension } from "../../extensions/trades-display.extension";
+import { TestData } from "../../../../shared/utils/testing/test-data";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -97,11 +97,10 @@ describe('TechChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [...sharedModuleImportForTests],
+      imports: [],
       declarations: [TechChartComponent],
       providers: [
         { provide: WidgetSettingsService, useValue: widgetSettingsServiceSpy },
-        { provide: TechChartDatafeedService, useValue: techChartDatafeedServiceSpy },
         { provide: ThemeService, useValue: themeServiceSpy },
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
         {
@@ -182,6 +181,31 @@ describe('TechChartComponent', () => {
         ...commonTestProviders
       ]
     })
+      .overrideComponent(
+        TechChartComponent,
+        {
+          set: {
+            providers: [
+              {
+                provide: TechChartDatafeedService,
+                useValue: techChartDatafeedServiceSpy
+              },
+              {
+                provide: PositionDisplayExtension,
+                useValue: jasmine.createSpyObj('PositionDisplayExtension', ['apply', 'update', 'destroyState'])
+              },
+              {
+                provide: OrdersDisplayExtension,
+                useValue: jasmine.createSpyObj('OrdersDisplayExtension', ['apply', 'update', 'destroyState'])
+              },
+              {
+                provide: TradesDisplayExtension,
+                useValue: jasmine.createSpyObj('TradesDisplayExtension', ['apply', 'update', 'destroyState'])
+              }
+            ]
+          }
+        }
+      )
       .compileComponents();
   });
 

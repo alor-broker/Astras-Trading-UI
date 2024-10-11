@@ -5,13 +5,13 @@ import {
 import { WidgetHeaderComponent } from './widget-header.component';
 import { WidgetSettingsService } from '../../services/widget-settings.service';
 import { ManageDashboardsService } from '../../services/manage-dashboards.service';
-import { ngZorroMockComponents } from '../../utils/testing';
 import {TranslatorService} from "../../services/translator.service";
 import {DashboardContextService} from "../../services/dashboard-context.service";
 import { of, Subject } from "rxjs";
 import { EnvironmentService } from "../../services/environment.service";
 import { HelpService } from "../../services/help.service";
 import { TerminalSettingsService } from "../../services/terminal-settings.service";
+import { ngZorroMockComponents } from "../../utils/testing/ng-zorro-component-mocks";
 
 describe('WidgetHeaderComponent', () => {
   let component: WidgetHeaderComponent;

@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InstrumentBoardSelectComponent } from './instrument-board-select.component';
 import { InstrumentsService } from '../../../modules/instruments/services/instruments.service';
 import { Subject } from 'rxjs';
-import { mockComponent } from '../../utils/testing';
+import { ComponentHelpers } from "../../utils/testing/component-helpers";
 
 describe('InstrumentBoardSelectComponent', () => {
   let component: InstrumentBoardSelectComponent;
@@ -13,7 +13,7 @@ describe('InstrumentBoardSelectComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         InstrumentBoardSelectComponent,
-        mockComponent({ selector: 'nz-select', inputs: ['ngModel', 'nzPlaceHolder'] })
+        ComponentHelpers.mockComponent({ selector: 'nz-select', inputs: ['ngModel', 'nzPlaceHolder'] })
       ],
       providers: [
         {

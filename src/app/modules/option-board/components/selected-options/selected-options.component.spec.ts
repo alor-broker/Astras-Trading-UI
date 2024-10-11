@@ -14,15 +14,13 @@ import {
   OptionsSelection,
   SelectionParameters
 } from "../../models/option-board-data-context.model";
-import {
-  getTranslocoModule,
-  mockComponent
-} from "../../../../shared/utils/testing";
 import { OptionBoardService } from "../../services/option-board.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { LetDirective } from "@ngrx/component";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('SelectedOptionsComponent', () => {
   let component: SelectedOptionsComponent;
@@ -31,16 +29,16 @@ describe('SelectedOptionsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         LetDirective
       ],
       declarations: [
         SelectedOptionsComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-input-number',
           inputs: ['step', 'allowNegative', 'allowDecimal', 'initialValue']
         }),
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-add-to-watchlist-menu'
         })
       ],

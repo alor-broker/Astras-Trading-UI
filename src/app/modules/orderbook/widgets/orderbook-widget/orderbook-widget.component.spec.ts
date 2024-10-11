@@ -4,16 +4,14 @@ import {
 } from '@angular/core/testing';
 
 import { OrderbookWidgetComponent } from './orderbook-widget.component';
-import {
-  mockComponent,
-  widgetSkeletonMock
-} from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { of } from 'rxjs';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
 
 describe('OrderbookWidgetComponent', () => {
   let component: OrderbookWidgetComponent;
@@ -24,11 +22,11 @@ describe('OrderbookWidgetComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         OrderbookWidgetComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-order-book',
           inputs: ['guid']
         }),
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-orderbook-settings',
           inputs: ['guid']
         }),

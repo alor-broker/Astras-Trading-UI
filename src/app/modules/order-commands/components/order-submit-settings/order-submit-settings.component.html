@@ -8,21 +8,23 @@
   <ng-container *transloco="let t; scope: 'order-commands/order-submit-settings'">
     <form [formGroup]="form" [nzLayout]="'vertical'" nz-form *ngIf="deviceInfo$ | async as deviceInfo">
       <nz-form-item *ngIf="!deviceInfo.isMobile">
-        <nz-form-label nzFor="instrument" nzRequired>{{t('orderCommandsOrderSubmitSettings.tickerLabel')}}</nz-form-label>
+        <nz-form-label nzFor="instrument" nzRequired>{{ t('orderCommandsOrderSubmitSettings.tickerLabel') }}
+        </nz-form-label>
         <nz-form-control [nzErrorTip]="t('orderCommandsOrderSubmitSettings.tickerError')">
           <ats-instrument-search (instrumentSelected)="instrumentSelected($event)"
                                  formControlName="instrument"></ats-instrument-search>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item *ngIf="!deviceInfo.isMobile">
-        <nz-form-label nzFor="exchange" nzRequired>{{t('orderCommandsOrderSubmitSettings.exchangeLabel')}}</nz-form-label>
+        <nz-form-label nzFor="exchange" nzRequired>{{ t('orderCommandsOrderSubmitSettings.exchangeLabel') }}
+        </nz-form-label>
         <nz-form-control>
           <input nz-input type="text" [value]="form.value.instrument?.exchange" disabled/>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item class="one-row">
         <nz-form-label nzFor="enableLimitOrdersFastEditing">
-          {{t('orderCommandsOrderSubmitSettings.limitOrdersFastEditingLabel')}}
+          {{ t('orderCommandsOrderSubmitSettings.limitOrdersFastEditingLabel') }}
         </nz-form-label>
         <nz-form-control>
           <nz-switch formControlName='enableLimitOrdersFastEditing'></nz-switch>
@@ -34,13 +36,14 @@
                              [nzHeader]="t('orderCommandsOrderSubmitSettings.denominationSettings')">
             <nz-form-item>
               <span nz-typography nzType="secondary">
-                {{t('orderCommandsOrderSubmitSettings.denominationSettingsHint')}} <strong>2*0.1=0.2</strong>
+                {{ t('orderCommandsOrderSubmitSettings.denominationSettingsHint') }} <strong>2*0.1=0.2</strong>
               </span>
             </nz-form-item>
             <nz-form-item>
               <div *ngFor="let stepControl of form.controls.limitOrderPriceMoveSteps.controls; index as i"
                    class="price-move-step-option">
-                <nz-form-label>{{t('orderCommandsOrderSubmitSettings.denominationLabel')}} {{i + 1}}:</nz-form-label>
+                <nz-form-label>{{ t('orderCommandsOrderSubmitSettings.denominationLabel') }} {{ i + 1 }}:
+                </nz-form-label>
                 <nz-form-control
                   [nzErrorTip]="t('orderCommandsOrderSubmitSettings.intervalError', { min: validationOptions.limitOrderPriceMoveStep.min, max: validationOptions.limitOrderPriceMoveStep.max })">
                   <nz-input-number (mousedown)="$event.stopPropagation()" [formControl]="stepControl"
@@ -71,7 +74,7 @@
       </nz-form-item>
       <nz-form-item class="one-row">
         <nz-form-label nzFor="enableLimitOrdersFastEditing">
-          {{t('orderCommandsOrderSubmitSettings.showVolumePanel')}}
+          {{ t('orderCommandsOrderSubmitSettings.showVolumePanel') }}
         </nz-form-label>
         <nz-form-control>
           <nz-switch formControlName='showVolumePanel'></nz-switch>
@@ -79,16 +82,17 @@
       </nz-form-item>
       <nz-form-item *ngIf="form.getRawValue().showVolumePanel">
         <nz-collapse [nzBordered]="false" nzGhost>
-          <nz-collapse-panel [nzActive]="true" [nzDisabled]="!form.controls.workingVolumes.valid" [nzHeader]="t('orderCommandsOrderSubmitSettings.volumeSettings')">
+          <nz-collapse-panel [nzActive]="true" [nzDisabled]="!form.controls.workingVolumes.valid"
+                             [nzHeader]="t('orderCommandsOrderSubmitSettings.volumeSettings')">
             <nz-form-item>
               <span nz-typography nzType="secondary">
-                {{t('orderCommandsOrderSubmitSettings.volumeSettingsHint')}}
+                {{ t('orderCommandsOrderSubmitSettings.volumeSettingsHint') }}
               </span>
             </nz-form-item>
             <nz-form-item>
               <div *ngFor="let volumeControl of form.controls.workingVolumes.controls; index as i"
                    class="volume-option">
-                <nz-form-label>{{t('orderCommandsOrderSubmitSettings.volumeLabel')}} {{i + 1}}:</nz-form-label>
+                <nz-form-label>{{ t('orderCommandsOrderSubmitSettings.volumeLabel') }} {{ i + 1 }}:</nz-form-label>
                 <nz-form-control
                   [nzErrorTip]="t('orderCommandsOrderSubmitSettings.intervalError', { min: validationOptions.workingVolume.min, max: validationOptions.workingVolume.max})">
                   <nz-input-number (mousedown)="$event.stopPropagation()" [formControl]="volumeControl"
@@ -118,7 +122,8 @@
       </nz-form-item>
       <nz-collapse [nzBordered]="false" nzGhost *ngIf="!deviceInfo.isMobile">
         <nz-collapse-panel [nzHeader]="t('orderCommandsOrderSubmitSettings.advancedHeader')">
-          <nz-form-label nzFor="instrumentGroup">{{t('orderCommandsOrderSubmitSettings.instrumentGroupLabel')}}</nz-form-label>
+          <nz-form-label nzFor="instrumentGroup">{{ t('orderCommandsOrderSubmitSettings.instrumentGroupLabel') }}
+          </nz-form-label>
           <nz-form-control [nzErrorTip]="t('orderCommandsOrderSubmitSettings.instrumentGroupError')">
             <ats-instrument-board-select
               [instrument]="form.value.instrument ?? null"
@@ -129,5 +134,5 @@
         </nz-collapse-panel>
       </nz-collapse>
     </form>
-</ng-container>
+  </ng-container>
 </ats-widget-settings>

@@ -3,11 +3,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AllTradesComponent } from './all-trades.component';
 import { of } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { getTranslocoModule, mockComponent } from "../../../../shared/utils/testing";
 import { AllTradesService } from '../../../../shared/services/all-trades.service';
 import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
 import {TimezoneConverter} from "../../../../shared/utils/timezone-converter";
 import {TimezoneDisplayOption} from "../../../../shared/models/enums/timezone-display-option";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('AllTradesComponent', () => {
   let component: AllTradesComponent;
@@ -18,11 +19,11 @@ describe('AllTradesComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule()
+        TranslocoTestsModule.getModule()
       ],
       declarations: [
         AllTradesComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-infinite-scroll-table',
           inputs: ['tableContainerHeight', 'tableContainerWidth', 'data', 'isLoading', 'tableConfig']
         })

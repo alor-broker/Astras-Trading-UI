@@ -2,7 +2,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { WatchInstrumentsService } from './watch-instruments.service';
-import { TestData } from '../../../shared/utils/testing';
 import { WatchlistCollectionService } from './watchlist-collection.service';
 import { HistoryService } from '../../../shared/services/history.service';
 import { BehaviorSubject, of, skip, Subject, take } from 'rxjs';
@@ -15,6 +14,7 @@ import { TimeframeValue } from "../../light-chart/models/light-chart.models";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { CandlesService } from "./candles.service";
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { TestData } from "../../../shared/utils/testing/test-data";
 
 describe('WatchInstrumentsService', () => {
   let service: WatchInstrumentsService;

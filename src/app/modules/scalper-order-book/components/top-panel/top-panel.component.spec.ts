@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TopPanelComponent } from './top-panel.component';
-import { mockComponent } from "../../../../shared/utils/testing";
 import {
   BehaviorSubject,
   Subject
 } from "rxjs";
 import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-data-context.model";
 import { LetDirective } from "@ngrx/component";
+import { ComponentHelpers } from 'src/app/shared/utils/testing/component-helpers';
 
 describe('TopPanelComponent', () => {
   let component: TopPanelComponent;
@@ -18,9 +18,9 @@ describe('TopPanelComponent', () => {
       imports: [LetDirective],
       declarations: [
         TopPanelComponent,
-        mockComponent({ selector: 'ats-modifiers-indicator'}),
-        mockComponent({ selector: 'ats-working-volumes-panel', inputs: ['guid', 'isActive', 'orientation']}),
-        mockComponent({ selector: 'ats-short-long-indicator', inputs: ['dataContext', 'orientation']}),
+        ComponentHelpers.mockComponent({ selector: 'ats-modifiers-indicator'}),
+        ComponentHelpers.mockComponent({ selector: 'ats-working-volumes-panel', inputs: ['guid', 'isActive', 'orientation']}),
+        ComponentHelpers.mockComponent({ selector: 'ats-short-long-indicator', inputs: ['dataContext', 'orientation']}),
       ]
     });
     fixture = TestBed.createComponent(TopPanelComponent);

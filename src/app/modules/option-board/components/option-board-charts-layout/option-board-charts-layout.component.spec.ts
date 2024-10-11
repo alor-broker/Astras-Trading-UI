@@ -1,10 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { OptionBoardChartsLayoutComponent } from './option-board-charts-layout.component';
-import {
-  getTranslocoModule,
-  mockComponent
-} from "../../../../shared/utils/testing";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('OptionBoardChartsLayoutComponent', () => {
   let component: OptionBoardChartsLayoutComponent;
@@ -12,14 +10,14 @@ describe('OptionBoardChartsLayoutComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       declarations: [
         OptionBoardChartsLayoutComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-option-board-chart',
           inputs: ['dataContext']
         }),
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'nz-alert',
           inputs: ['nzType', 'nzCloseable', 'nzMessage']
         })

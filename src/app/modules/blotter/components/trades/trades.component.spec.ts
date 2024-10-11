@@ -11,9 +11,10 @@ import { of } from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { mockComponent, ngZorroMockComponents } from "../../../../shared/utils/testing";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('TradesComponent', () => {
   let component: TradesComponent;
@@ -57,8 +58,8 @@ describe('TradesComponent', () => {
       declarations: [
         TradesComponent,
         ...ngZorroMockComponents,
-        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
-        mockComponent({
+        ComponentHelpers.mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
+        ComponentHelpers.mockComponent({
           selector: 'ats-add-to-watchlist-menu'
         })
       ]

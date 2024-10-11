@@ -1,13 +1,12 @@
-import { Store } from "@ngrx/store";
+import {
+  Store,
+  StoreModule
+} from "@ngrx/store";
 import {
   fakeAsync,
   TestBed,
   tick
 } from "@angular/core/testing";
-import {
-  commonTestProviders,
-  sharedModuleImportForTests
-} from "../../shared/utils/testing";
 import { take } from "rxjs";
 import { EntityStatus } from "../../shared/models/enums/entity-status";
 import { GuidGenerator } from "../../shared/utils/guid";
@@ -20,6 +19,9 @@ import {
 } from "./widget-settings.actions";
 import { WidgetSettingsFeature } from "./widget-settings.reducer";
 import { EnvironmentService } from "../../shared/services/environment.service";
+import { EffectsModule } from "@ngrx/effects";
+import { WidgetSettingsEffects } from "./widget-settings.effects";
+import { commonTestProviders } from "../../shared/utils/testing/common-test-providers";
 
 describe('Widget Settings Store', () => {
   let store: Store;
@@ -52,7 +54,10 @@ describe('Widget Settings Store', () => {
 
     TestBed.configureTestingModule({
       imports: [
-        ...sharedModuleImportForTests
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot(),
+        StoreModule.forFeature(WidgetSettingsFeature),
+        EffectsModule.forFeature([WidgetSettingsEffects])
       ],
       providers: [
         {

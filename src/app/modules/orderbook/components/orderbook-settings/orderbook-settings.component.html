@@ -10,21 +10,23 @@
       <form nz-form [nzLayout]="'vertical'" [formGroup]="form">
         <nz-form-item>
           <nz-collapse [nzBordered]="false" nzGhost>
-            <nz-collapse-panel [nzHeader]="t('orderbookSettings.instrumentHeader')" nzActive="true" *ngIf="!deviceInfo.isMobile">
+            <nz-collapse-panel [nzHeader]="t('orderbookSettings.instrumentHeader')" nzActive="true"
+                               *ngIf="!deviceInfo.isMobile">
               <nz-form-item>
-                <nz-form-label nzRequired nzFor="instrument">{{t('orderbookSettings.tickerLabel')}}</nz-form-label>
+                <nz-form-label nzRequired nzFor="instrument">{{ t('orderbookSettings.tickerLabel') }}</nz-form-label>
                 <nz-form-control [nzErrorTip]="t('orderbookSettings.tickerError')">
-                  <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
+                  <ats-instrument-search formControlName="instrument"
+                                         (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item>
-                <nz-form-label nzRequired nzFor="exchange">{{t('orderbookSettings.exchangeLabel')}}</nz-form-label>
+                <nz-form-label nzRequired nzFor="exchange">{{ t('orderbookSettings.exchangeLabel') }}</nz-form-label>
                 <nz-form-control>
                   <input nz-input type="text" [value]="form.value.instrument?.exchange" disabled/>
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item>
-                <nz-form-label nzFor="instrumentGroup">{{t('orderbookSettings.instrumentGroupLabel')}}</nz-form-label>
+                <nz-form-label nzFor="instrumentGroup">{{ t('orderbookSettings.instrumentGroupLabel') }}</nz-form-label>
                 <nz-form-control [nzErrorTip]="t('orderbookSettings.instrumentGroupError')">
                   <ats-instrument-board-select
                     [instrument]="form.value.instrument ?? null"
@@ -37,7 +39,7 @@
             <nz-collapse-panel [nzHeader]="t('orderbookSettings.viewSettingsHeader')" [nzActive]="deviceInfo.isMobile">
               <nz-form-item>
                 <nz-form-label nzRequired nzFor="depth">
-                  {{t('orderbookSettings.depthLabel')}}
+                  {{ t('orderbookSettings.depthLabel') }}
                 </nz-form-label>
 
                 <nz-form-control>
@@ -52,16 +54,20 @@
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item>
-                <nz-form-label nzRequired nzFor="columnsOrder">{{t('orderbookSettings.columnsOrderLabel')}}</nz-form-label>
+                <nz-form-label nzRequired nzFor="columnsOrder">{{ t('orderbookSettings.columnsOrderLabel') }}
+                </nz-form-label>
                 <nz-form-control>
                   <nz-select formControlName="columnsOrder">
-                    <nz-option [nzValue]="columnsOrderEnum.VolumesAtTheEdges" [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheEdges')"></nz-option>
-                    <nz-option [nzValue]="columnsOrderEnum.VolumesAtTheMiddle" [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheMiddle')"></nz-option>
+                    <nz-option [nzValue]="columnsOrderEnum.VolumesAtTheEdges"
+                               [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheEdges')"></nz-option>
+                    <nz-option [nzValue]="columnsOrderEnum.VolumesAtTheMiddle"
+                               [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheMiddle')"></nz-option>
                   </nz-select>
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item>
-                <nz-form-label nzFor="volumeDisplayFormat">{{t('orderbookSettings.volumeFormatDisplayLabel')}}</nz-form-label>
+                <nz-form-label nzFor="volumeDisplayFormat">{{ t('orderbookSettings.volumeFormatDisplayLabel') }}
+                </nz-form-label>
                 <nz-form-control>
                   <nz-select formControlName='volumeDisplayFormat'>
                     <nz-option
@@ -73,19 +79,19 @@
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item class="one-row">
-                <nz-form-label nzFor="showChart">{{t('orderbookSettings.displayChartLabel')}}</nz-form-label>
+                <nz-form-label nzFor="showChart">{{ t('orderbookSettings.displayChartLabel') }}</nz-form-label>
                 <nz-form-control>
                   <nz-switch formControlName='showChart'></nz-switch>
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item class="one-row">
-                <nz-form-label nzFor="showTable">{{t('orderbookSettings.displayTableLabel')}}</nz-form-label>
+                <nz-form-label nzFor="showTable">{{ t('orderbookSettings.displayTableLabel') }}</nz-form-label>
                 <nz-form-control>
                   <nz-switch formControlName='showTable'></nz-switch>
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item class="one-row">
-                <nz-form-label nzFor="showVolume">{{t('orderbookSettings.displayVolumeLabel')}}</nz-form-label>
+                <nz-form-label nzFor="showVolume">{{ t('orderbookSettings.displayVolumeLabel') }}</nz-form-label>
                 <nz-form-control>
                   <nz-switch formControlName='showVolume'></nz-switch>
                 </nz-form-control>
@@ -93,22 +99,25 @@
               <nz-form-item class="one-row">
                 <nz-form-label
                   nzNoColon
-                  nzFor="showYieldForBonds">{{t('orderbookSettings.displayYieldForBondsLabel')}}</nz-form-label>
+                  nzFor="showYieldForBonds">{{ t('orderbookSettings.displayYieldForBondsLabel') }}
+                </nz-form-label>
                 <nz-form-control>
                   <nz-switch formControlName='showYieldForBonds'></nz-switch>
                 </nz-form-control>
               </nz-form-item>
               <nz-form-item class="one-row">
-                <nz-form-label nzFor="showPriceWithZeroPadding" nzNoColon>{{t('orderbookSettings.showPriceWithZeroPaddingLabel')}}</nz-form-label>
+                <nz-form-label nzFor="showPriceWithZeroPadding"
+                               nzNoColon>{{ t('orderbookSettings.showPriceWithZeroPaddingLabel') }}
+                </nz-form-label>
                 <nz-form-control>
                   <nz-switch formControlName='showPriceWithZeroPadding'></nz-switch>
                 </nz-form-control>
               </nz-form-item>
             </nz-collapse-panel>
-            <nz-collapse-panel [nzHeader]="t('orderbookSettings.ordersHeader')" *ngIf="!deviceInfo.isMobile" >
+            <nz-collapse-panel [nzHeader]="t('orderbookSettings.ordersHeader')" *ngIf="!deviceInfo.isMobile">
               <nz-form-item class="one-row">
                 <nz-form-label nzFor="useOrderWidget">
-                  {{t('orderbookSettings.useOrderWidgetLabel')}}
+                  {{ t('orderbookSettings.useOrderWidgetLabel') }}
                   <span
                     class="popover-hint"
                     nz-icon

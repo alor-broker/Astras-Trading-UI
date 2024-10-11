@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ExchangeInfo } from '../../../models/exchange-info.model';
 
 import { InfoHeaderComponent } from './info-header.component';
-import { ngZorroMockComponents } from "../../../../../shared/utils/testing";
 import { EnvironmentService } from "../../../../../shared/services/environment.service";
+import { ngZorroMockComponents } from "../../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('InfoHeaderComponent', () => {
   let component: InfoHeaderComponent;

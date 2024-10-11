@@ -8,7 +8,7 @@ import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { NzFormModule } from "ng-zorro-antd/form";
 import { ReactiveFormsModule } from "@angular/forms";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { mockComponent } from "../../../../shared/utils/testing";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('AllInstrumentsSettingsComponent', () => {
   let component: AllInstrumentsSettingsComponent;
@@ -18,7 +18,7 @@ describe('AllInstrumentsSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         AllInstrumentsSettingsComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-widget-settings',
           inputs: ['canSave', 'canCopy', 'showCopy']
         })

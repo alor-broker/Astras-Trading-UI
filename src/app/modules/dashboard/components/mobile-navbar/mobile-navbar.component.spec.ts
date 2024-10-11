@@ -1,15 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MobileNavbarComponent } from './mobile-navbar.component';
-import { of } from "rxjs";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import {
-  commonTestProviders,
-  getTranslocoModule,
-  mockComponent,
-  ngZorroMockComponents,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
+  EMPTY,
+  of
+} from "rxjs";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { ModalService } from "../../../../shared/services/modal.service";
+import { EffectsModule } from "@ngrx/effects";
+import { StoreModule } from "@ngrx/store";
+import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
+import { AuthService } from "../../../../shared/services/auth.service";
+import { HelpService } from "../../../../shared/services/help.service";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { InstrumentSearchMockComponent } from "../../../../shared/utils/testing/instrument-search-mock-component";
+import { FormsModule } from "@angular/forms";
 
 describe('MobileNavbarComponent', () => {
   let component: MobileNavbarComponent;
@@ -20,11 +27,16 @@ describe('MobileNavbarComponent', () => {
       declarations: [
         MobileNavbarComponent,
         ...ngZorroMockComponents,
-        mockComponent({selector: 'ats-notification-button'})
+        ComponentHelpers.mockComponent({selector: 'ats-notification-button'}),
+        ComponentHelpers.mockComponent({selector: 'ats-network-indicator'})
       ],
       imports: [
-        ...sharedModuleImportForTests,
-        getTranslocoModule()
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot(),
+        StoreModule.forFeature(PortfoliosFeature),
+        TranslocoTestsModule.getModule(),
+        InstrumentSearchMockComponent,
+        FormsModule
       ],
       providers: [
         {
@@ -40,6 +52,18 @@ describe('MobileNavbarComponent', () => {
           provide: ModalService,
           useValue: {
             openTerminalSettingsModal: jasmine.createSpy('openTerminalSettingsModal').and.callThrough()
+          }
+        },
+        {
+          provide: AuthService,
+          useValue: {
+            logout: jasmine.createSpy('logout').and.callThrough()
+          }
+        },
+        {
+          provide: HelpService,
+          useValue: {
+            getHelpLink: jasmine.createSpy('getHelpLink').and.returnValue(EMPTY)
           }
         },
         ...commonTestProviders

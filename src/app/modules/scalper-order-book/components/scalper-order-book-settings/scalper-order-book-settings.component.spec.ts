@@ -6,14 +6,14 @@ import {
 import { ScalperOrderBookSettingsComponent } from './scalper-order-book-settings.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { NzSliderModule } from "ng-zorro-antd/slider";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { InstrumentBoardSelectMockComponent } from "../../../../shared/utils/testing/instrument-board-select-mock-component";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { InputNumberComponent } from "../../../../shared/components/input-number/input-number.component";
+import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
+import { WidgetSettingsComponent } from "../../../../shared/components/widget-settings/widget-settings.component";
+import { InstrumentSearchMockComponent } from "../../../../shared/utils/testing/instrument-search-mock-component";
 
 describe('ScalperOrderBookSettingsComponent', () => {
   let component: ScalperOrderBookSettingsComponent;
@@ -22,13 +22,15 @@ describe('ScalperOrderBookSettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
-        ScalperOrderBookSettingsComponent
+        ScalperOrderBookSettingsComponent,
       ],
       imports: [
-        getTranslocoModule(),
-        NoopAnimationsModule,
-        NzSliderModule,
-        ...sharedModuleImportForTests
+        TranslocoTestsModule.getModule(),
+        WidgetSettingsComponent,
+        ...FormsTesting.getTestingModules(),
+        InstrumentBoardSelectMockComponent,
+        InstrumentSearchMockComponent,
+        InputNumberComponent
       ],
       providers: [
         {

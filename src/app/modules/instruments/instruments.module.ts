@@ -17,6 +17,7 @@ import { NzSpinModule } from "ng-zorro-antd/spin";
 import { NzUploadModule } from "ng-zorro-antd/upload";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { AddToWatchlistMenuComponent } from "./widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
+import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
 
 @NgModule({
   declarations: [
@@ -29,17 +30,18 @@ import { AddToWatchlistMenuComponent } from "./widgets/add-to-watchlist-menu/add
     ImportWatchlistDialogComponent,
     AddToWatchlistMenuComponent
   ],
-  imports: [
-    SharedModule,
-    InstrumentsRoutingModule,
-    NzListModule,
-    NzInputModule,
-    NzResizeObserverModule,
-    LetDirective,
-    NzSpinModule,
-    NzUploadModule,
-    DragDropModule
-  ],
+    imports: [
+        SharedModule,
+        InstrumentsRoutingModule,
+        NzListModule,
+        NzInputModule,
+        NzResizeObserverModule,
+        LetDirective,
+        NzSpinModule,
+        NzUploadModule,
+        DragDropModule,
+        WidgetSettingsComponent
+    ],
   exports: [
     InstrumentSelectWidgetComponent,
     AddToWatchlistMenuComponent

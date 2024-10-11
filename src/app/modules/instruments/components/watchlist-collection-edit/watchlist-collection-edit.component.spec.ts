@@ -9,10 +9,8 @@ import {
   of,
   Subject
 } from 'rxjs';
-import {
-  getTranslocoModule,
-  mockComponent
-} from "../../../../shared/utils/testing";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('WatchlistCollectionEditComponent', () => {
   let component: WatchlistCollectionEditComponent;
@@ -37,11 +35,11 @@ describe('WatchlistCollectionEditComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         WatchlistCollectionEditComponent,
-        mockComponent({ selector: 'ats-export-watchlist-dialog', inputs: ['dialogParams'] }),
-        mockComponent({ selector: 'ats-import-watchlist-dialog', inputs: ['dialogParams'] })
+        ComponentHelpers.mockComponent({ selector: 'ats-export-watchlist-dialog', inputs: ['dialogParams'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-import-watchlist-dialog', inputs: ['dialogParams'] })
       ],
       imports: [
-        getTranslocoModule()
+        TranslocoTestsModule.getModule()
       ],
       providers: [
         { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy }

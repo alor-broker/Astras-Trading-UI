@@ -40,6 +40,7 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
+    autoWatchBatchDelay: 5000,
     browsers: ['Chrome'],
     singleRun: false,
     restartOnFileChange: true

@@ -1,18 +1,9 @@
 import {ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  mockComponent,
-  sharedModuleImportForTests,
-  TestData
-} from "../../../../../shared/utils/testing";
 import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
 import {CommonParametersService} from "../../../services/common-parameters.service";
 import {BehaviorSubject, Subject, take} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
-import {OrderCommandsModule} from "../../../order-commands.module";
 import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
-import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 import orderCommandsOrderFormsRu from "../../../../../../assets/i18n/order-commands/order-forms/ru.json";
 import {Side} from "../../../../../shared/models/enums/side.model";
 import {EvaluationBaseProperties} from "../../../../../shared/models/evaluation-base-properties.model";
@@ -24,6 +15,14 @@ import {MarketOrderFormComponent} from "./market-order-form.component";
 import {QuotesService} from "../../../../../shared/services/quotes.service";
 import {EvaluationService} from "../../../../../shared/services/evaluation.service";
 import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
+import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
+import { TestData } from "../../../../../shared/utils/testing/test-data";
+import { InstrumentBoardSelectMockComponent } from "../../../../../shared/utils/testing/instrument-board-select-mock-component";
+import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
+import { commonTestProviders } from "../../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
+import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
+import { BuySellButtonsComponent } from "../../buy-sell-buttons/buy-sell-buttons.component";
 
 describe('MarketOrderFormComponent', () => {
   let component: MarketOrderFormComponent;
@@ -73,28 +72,21 @@ describe('MarketOrderFormComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        OrderCommandsModule,
-        NoopAnimationsModule,
-        getTranslocoModule({
+        TranslocoTestsModule.getModule({
           langs: {
             'order-commands/order-forms/ru': orderCommandsOrderFormsRu,
           }
         }),
-        ...sharedModuleImportForTests
+        ...FormsTesting.getTestingModules(),
+        InstrumentBoardSelectMockComponent,
+        InputNumberComponent,
+        BuySellButtonsComponent
       ],
       declarations: [
         MarketOrderFormComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-order-evaluation',
           inputs: ['evaluationProperties']
-        }),
-        mockComponent({
-          selector: 'ats-buy-sell-buttons',
-          inputs: ['buyBtnDisabled', 'buyBtnLoading', 'sellBtnDisabled', 'sellBtnLoading']
-        }),
-        mockComponent({
-          selector: 'ats-instrument-board-select',
-          inputs: ['instrument', 'placeholder']
         }),
       ],
       providers: [

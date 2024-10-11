@@ -3,12 +3,6 @@ import { BlotterService } from '../../services/blotter.service';
 import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { OrdersComponent } from './orders.component';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  mockComponent,
-  sharedModuleImportForTests
-} from '../../../../shared/utils/testing';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { of, Subject } from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
@@ -19,6 +13,9 @@ import { OrdersDialogService } from "../../../../shared/services/orders/orders-d
 import { LetDirective } from "@ngrx/component";
 import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('OrdersComponent', () => {
   let component: OrdersComponent;
@@ -39,8 +36,7 @@ describe('OrdersComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
-        ...sharedModuleImportForTests,
+        TranslocoTestsModule.getModule(),
         LetDirective
       ],
       providers: [
@@ -79,9 +75,9 @@ describe('OrdersComponent', () => {
       ],
       declarations: [
         OrdersComponent,
-        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
-        mockComponent({ selector: 'ats-instrument-badge-display', inputs: ['columns'] }),
-        mockComponent({
+        ComponentHelpers.mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-instrument-badge-display', inputs: ['columns'] }),
+        ComponentHelpers.mockComponent({
           selector: 'ats-add-to-watchlist-menu'
         })
       ]

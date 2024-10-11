@@ -5,7 +5,8 @@ import { OrdersGroupService } from "../../../../shared/services/orders/orders-gr
 import { of } from "rxjs";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { getTranslocoModule, ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('OrdersGroupModalComponent', () => {
   let component: OrdersGroupModalComponent;
@@ -17,7 +18,7 @@ describe('OrdersGroupModalComponent', () => {
         OrdersGroupModalComponent,
         ...ngZorroMockComponents
       ],
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       providers: [
         {
           provide: OrdersGroupService,

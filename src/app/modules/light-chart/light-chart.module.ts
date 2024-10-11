@@ -9,6 +9,8 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 import { LetDirective } from "@ngrx/component";
 import { TimeframesPanelComponent } from './components/timeframes-panel/timeframes-panel.component';
+import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
+import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
 
 @NgModule({
   declarations: [
@@ -22,7 +24,9 @@ import { TimeframesPanelComponent } from './components/timeframes-panel/timefram
         LightChartRoutingModule,
         NzInputModule,
         NzResizeObserverModule,
-        LetDirective
+        LetDirective,
+        WidgetSettingsComponent,
+        InstrumentSearchComponent
     ],
   exports: [
     LightChartWidgetComponent
