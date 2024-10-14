@@ -8,9 +8,9 @@ import {
   of,
   Subject
 } from "rxjs";
-import { ngZorroMockComponents } from "../../../../../shared/utils/testing";
 import { InstrumentsService } from '../../../../instruments/services/instruments.service';
 import { ThemeService } from '../../../../../shared/services/theme.service';
+import { ngZorroMockComponents } from "../../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('OrderbookTableVolumesAtTheMiddleComponent', () => {
   let component: OrderbookTableVolumesAtTheMiddleComponent;

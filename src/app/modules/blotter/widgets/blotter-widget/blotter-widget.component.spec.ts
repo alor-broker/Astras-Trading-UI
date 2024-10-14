@@ -6,18 +6,16 @@ import {
 import { BlotterWidgetComponent } from './blotter-widget.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import {
-  getTranslocoModule,
-  mockComponent,
-  ngZorroMockComponents,
-  widgetSkeletonMock
-} from "../../../../shared/utils/testing";
 import { Store } from "@ngrx/store";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { BlotterSettings } from '../../models/blotter-settings.model';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('BlotterWidgetComponent', () => {
   let component: BlotterWidgetComponent;
@@ -35,19 +33,19 @@ describe('BlotterWidgetComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         BlotterWidgetComponent,
-        mockComponent({ selector: 'ats-positions', inputs: ['guid'] }),
-        mockComponent({ selector: 'ats-orders', inputs: ['guid'] }),
-        mockComponent({ selector: 'ats-stop-orders', inputs: ['guid'] }),
-        mockComponent({ selector: 'ats-trades', inputs: ['guid'] }),
-        mockComponent({ selector: 'ats-trades-history', inputs: ['guid'] }),
-        mockComponent({ selector: 'ats-repo-trades', inputs: ['guid'] }),
-        mockComponent({ selector: 'ats-orders-group-modal-widget', inputs: ['guid'] }),
-        mockComponent({ selector: 'ats-push-notifications', inputs: ['guid'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-positions', inputs: ['guid'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-orders', inputs: ['guid'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-stop-orders', inputs: ['guid'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-trades', inputs: ['guid'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-trades-history', inputs: ['guid'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-repo-trades', inputs: ['guid'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-orders-group-modal-widget', inputs: ['guid'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-push-notifications', inputs: ['guid'] }),
         ...ngZorroMockComponents,
         widgetSkeletonMock
       ],
       imports: [
-        getTranslocoModule()
+        TranslocoTestsModule.getModule()
       ],
       providers: [
         {

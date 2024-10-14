@@ -4,22 +4,25 @@ import {
 } from '@angular/core/testing';
 import {
   BehaviorSubject,
+  EMPTY,
   of,
   Subject
 } from 'rxjs';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { WatchlistTableComponent } from './watchlist-table.component';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  sharedModuleImportForTests
-} from '../../../../shared/utils/testing';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 import { LetDirective } from "@ngrx/component";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
+import {
+  NzContextMenuServiceModule
+} from "ng-zorro-antd/dropdown";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.service";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
 
 describe('WatchlistTableComponent', () => {
   let component: WatchlistTableComponent;
@@ -43,9 +46,9 @@ describe('WatchlistTableComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        ...sharedModuleImportForTests,
         LetDirective,
-        getTranslocoModule()
+        TranslocoTestsModule.getModule(),
+        NzContextMenuServiceModule
       ],
       declarations: [
         WatchlistTableComponent,
@@ -55,8 +58,20 @@ describe('WatchlistTableComponent', () => {
           provide: WidgetSettingsService,
           useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(getSettingsMock) }
         },
-        { provide: WatchInstrumentsService, useValue: watchInstrumentsServiceSpy },
-        { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy },
+        {
+          provide: WatchInstrumentsService,
+          useValue: watchInstrumentsServiceSpy
+        },
+        {
+          provide: WatchlistCollectionService,
+          useValue: watchlistCollectionServiceSpy
+        },
+        {
+          provide: ManageDashboardsService,
+          useValue: {
+            addWidget: jasmine.createSpy('addWidget').and.callThrough()
+          }
+        },
         {
           provide: TranslatorService,
           useValue: {
@@ -67,6 +82,12 @@ describe('WatchlistTableComponent', () => {
           provide: ACTIONS_CONTEXT,
           useValue: {
             instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
+          }
+        },
+        {
+          provide: WidgetsMetaService,
+          useValue: {
+            getWidgetsMeta: jasmine.createSpy('getWidgetsMeta').and.returnValue(EMPTY)
           }
         },
         ...commonTestProviders

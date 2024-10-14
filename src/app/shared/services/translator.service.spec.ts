@@ -1,14 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 
 import { TranslatorService } from './translator.service';
-import { getTranslocoModule } from "../utils/testing";
+import { TranslocoTestsModule } from "../utils/testing/translocoTestsModule";
 
 describe('TranslatorService', () => {
   let service: TranslatorService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [getTranslocoModule()]
+      imports: [TranslocoTestsModule.getModule()]
     });
     service = TestBed.inject(TranslatorService);
   });

@@ -3,9 +3,10 @@ import {RibbonWidgetComponent} from './ribbon-widget.component';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {of} from "rxjs";
 import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
-import {mockComponent, ngZorroMockComponents} from "../../../../shared/utils/testing";
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('RibbonWidgetComponent', () => {
   let component: RibbonWidgetComponent;
@@ -15,8 +16,8 @@ describe('RibbonWidgetComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         RibbonWidgetComponent,
-        mockComponent({selector: 'ats-ribbon', inputs: ['guid']}),
-        mockComponent({selector: 'ats-ribbon-settings', inputs: ['guid']}),
+        ComponentHelpers.mockComponent({selector: 'ats-ribbon', inputs: ['guid']}),
+        ComponentHelpers.mockComponent({selector: 'ats-ribbon-settings', inputs: ['guid']}),
         ...ngZorroMockComponents
       ],
       providers: [

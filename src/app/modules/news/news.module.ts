@@ -9,6 +9,7 @@ import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 import { LetDirective } from "@ngrx/component";
 import { NewsSettingsComponent } from "./components/news-settings/news-settings.component";
 import { NzSliderModule } from "ng-zorro-antd/slider";
+import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
 
 @NgModule({
   declarations: [
@@ -21,14 +22,15 @@ import { NzSliderModule } from "ng-zorro-antd/slider";
     NewsWidgetComponent,
     NewsModalWidgetComponent
   ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    NzSpinModule,
-    NzResizeObserverModule,
-    LetDirective,
-    NzSliderModule,
-  ]
+    imports: [
+        CommonModule,
+        SharedModule,
+        NzSpinModule,
+        NzResizeObserverModule,
+        LetDirective,
+        NzSliderModule,
+        WidgetSettingsComponent,
+    ]
 })
 export class NewsModule {
 }

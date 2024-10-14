@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { OrdersIndicatorComponent } from './orders-indicator.component';
-import { getTranslocoModule } from '../../../../shared/utils/testing';
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('OrdersIndicatorComponent', () => {
   let component: OrdersIndicatorComponent;
@@ -9,7 +9,7 @@ describe('OrdersIndicatorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       declarations: [OrdersIndicatorComponent]
     })
     .compileComponents();

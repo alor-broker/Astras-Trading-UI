@@ -7,13 +7,10 @@ import { PortfoliosCurrencyFormComponent } from './portfolios-currency-form.comp
 import { MarketService } from '../../../../shared/services/market.service';
 import { Subject } from 'rxjs';
 import { ExchangeRateService } from '../../../../shared/services/exchange-rate.service';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  ngZorroMockComponents,
-  sharedModuleImportForTests
-} from '../../../../shared/utils/testing';
 import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
 
 describe('PortfoliosCurrencyFormComponent', () => {
   let component: PortfoliosCurrencyFormComponent;
@@ -22,8 +19,7 @@ describe('PortfoliosCurrencyFormComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        ...sharedModuleImportForTests,
-        getTranslocoModule()
+        TranslocoTestsModule.getModule()
       ],
       declarations: [
         PortfoliosCurrencyFormComponent,

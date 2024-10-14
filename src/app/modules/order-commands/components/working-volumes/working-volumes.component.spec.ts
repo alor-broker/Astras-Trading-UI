@@ -4,12 +4,10 @@ import {
 } from '@angular/core/testing';
 
 import { WorkingVolumesComponent } from './working-volumes.component';
-import {
-  getTranslocoModule,
-  ngZorroMockComponents
-} from '../../../../shared/utils/testing';
 import { Subject } from "rxjs";
 import { SubscriptionsDataFeedService } from "../../../../shared/services/subscriptions-data-feed.service";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('WorkingVolumesComponent', () => {
   let component: WorkingVolumesComponent;
@@ -22,7 +20,7 @@ describe('WorkingVolumesComponent', () => {
         WorkingVolumesComponent
       ],
       imports: [
-        getTranslocoModule()
+        TranslocoTestsModule.getModule()
       ],
       providers: [
         {
@@ -33,7 +31,7 @@ describe('WorkingVolumesComponent', () => {
         }
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(WorkingVolumesComponent);
     component = fixture.componentInstance;

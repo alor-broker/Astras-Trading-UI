@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AddToWatchlistMenuComponent } from './add-to-watchlist-menu.component';
-import { getTranslocoModule } from "../../../../shared/utils/testing";
 import { NzDropDownModule } from "ng-zorro-antd/dropdown";
 import { WatchlistCollectionService } from "../../services/watchlist-collection.service";
 import { Subject } from "rxjs";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('AddToWatchlistMenuComponent', () => {
   let component: AddToWatchlistMenuComponent;
@@ -13,7 +13,7 @@ describe('AddToWatchlistMenuComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         NzDropDownModule,
       ],
       declarations: [AddToWatchlistMenuComponent],

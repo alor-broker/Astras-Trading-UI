@@ -4,12 +4,10 @@ import {
 } from '@angular/core/testing';
 
 import { UsefulLinksComponent } from './useful-links.component';
-import {
-  getTranslocoModule,
-  mockComponent,
-  ngZorroMockComponents
-} from '../../../../shared/utils/testing';
 import { EnvironmentService } from "../../../../shared/services/environment.service";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('UsefulLinksComponent', () => {
   let component: UsefulLinksComponent;
@@ -17,11 +15,11 @@ describe('UsefulLinksComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       declarations: [
         UsefulLinksComponent,
         ...ngZorroMockComponents,
-        mockComponent({ selector: 'ats-external-link', inputs: ['href'] })
+        ComponentHelpers.mockComponent({ selector: 'ats-external-link', inputs: ['href'] })
       ],
       providers:[
         {

@@ -4,16 +4,14 @@ import { of } from 'rxjs';
 import { LightChartComponent } from './light-chart.component';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  mockComponent,
-  ngZorroMockComponents
-} from "../../../../shared/utils/testing";
 import { ThemeColors, ThemeSettings, ThemeType } from '../../../../shared/models/settings/theme-settings.model';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { Instrument } from '../../../../shared/models/instruments/instrument.model';
 import { LightChartDatafeedFactoryService } from '../../services/light-chart-datafeed-factory.service';
 import { TranslatorService } from "../../../../shared/services/translator.service";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('LightChartComponent', () => {
   let component: LightChartComponent;
@@ -54,7 +52,7 @@ describe('LightChartComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         LightChartComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-timeframes-panel',
           inputs: ['availableTimeframes', 'selectedTimeframe', 'displayMode']
         }),

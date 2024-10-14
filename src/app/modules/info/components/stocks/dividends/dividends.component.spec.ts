@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 import { InfoService } from '../../../services/info.service';
 
 import { DividendsComponent } from './dividends.component';
-import { mockComponent } from "../../../../../shared/utils/testing";
+import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
 
 describe('DividendsComponent', () => {
   let component: DividendsComponent;
@@ -18,7 +18,7 @@ describe('DividendsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         DividendsComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-loading-indicator',
           inputs: ['isLoading']
         })

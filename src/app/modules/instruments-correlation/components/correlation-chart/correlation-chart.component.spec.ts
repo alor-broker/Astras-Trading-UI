@@ -6,13 +6,11 @@ import {
 import { CorrelationChartComponent } from './correlation-chart.component';
 import { Subject } from "rxjs";
 import { InstrumentsCorrelationService } from "../../services/instruments-correlation.service";
-import {
-  getTranslocoModule,
-  mockComponent,
-  ngZorroMockComponents
-} from "../../../../shared/utils/testing";
 import { LetDirective } from "@ngrx/component";
 import { GuidGenerator } from "../../../../shared/utils/guid";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('CorrelationChartComponent', () => {
   let component: CorrelationChartComponent;
@@ -21,12 +19,12 @@ describe('CorrelationChartComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         LetDirective
       ],
       declarations: [
         CorrelationChartComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-chart-filters',
           inputs: ['guid']
         }),

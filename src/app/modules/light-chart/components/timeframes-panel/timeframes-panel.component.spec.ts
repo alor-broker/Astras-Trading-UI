@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TimeframesPanelComponent } from './timeframes-panel.component';
 import { LetDirective } from "@ngrx/component";
-import { getTranslocoModule } from "../../../../shared/utils/testing";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('TimeframesPanelComponent', () => {
   let component: TimeframesPanelComponent;
@@ -12,7 +12,7 @@ describe('TimeframesPanelComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         LetDirective,
-        getTranslocoModule()
+        TranslocoTestsModule.getModule()
       ],
       declarations: [TimeframesPanelComponent]
     });

@@ -1,10 +1,9 @@
-import { Store } from "@ngrx/store";
+import {
+  Store,
+  StoreModule
+} from "@ngrx/store";
 import { MarketType } from "../../shared/models/portfolio-key.model";
 import { TestBed } from "@angular/core/testing";
-import {
-  commonTestProviders,
-  sharedModuleImportForTests
-} from "../../shared/utils/testing";
 import {
   BehaviorSubject,
   of,
@@ -17,6 +16,9 @@ import { MarketService } from "../../shared/services/market.service";
 import { PortfoliosInternalActions } from './portfolios.actions';
 import { PortfoliosFeature } from "./portfolios.reducer";
 import { EnvironmentService } from "../../shared/services/environment.service";
+import { EffectsModule } from "@ngrx/effects";
+import { PortfoliosEffects } from "./portfolios.effects";
+import { commonTestProviders } from "../../shared/utils/testing/common-test-providers";
 
 describe('Portfolios Store', () => {
   let store: Store;
@@ -69,14 +71,17 @@ describe('Portfolios Store', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        ...sharedModuleImportForTests
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot(),
+        StoreModule.forFeature(PortfoliosFeature),
+        EffectsModule.forFeature([PortfoliosEffects])
       ],
       providers: [
         { provide: AccountService, useValue: accountServiceSpy },
         {
           provide: EnvironmentService,
           useValue: {
-            remoteSettingsStorageUrl : ''
+            remoteSettingsStorageUrl: ''
           }
         },
         { provide: ErrorHandlerService, useValue: errorHandlerServiceSpy },

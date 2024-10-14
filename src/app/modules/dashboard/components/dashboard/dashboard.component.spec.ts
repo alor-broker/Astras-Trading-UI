@@ -6,10 +6,10 @@ import { Subject } from 'rxjs';
 import { ManageDashboardsService } from 'src/app/shared/services/manage-dashboards.service';
 
 import { DashboardComponent } from './dashboard.component';
-import { mockComponent } from "../../../../shared/utils/testing";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import {WidgetsMetaService} from "../../../../shared/services/widgets-meta.service";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -20,7 +20,7 @@ describe('DashboardComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         DashboardComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'gridster',
           inputs: ['options']
         })

@@ -4,17 +4,18 @@ import {
 } from '@angular/core/testing';
 
 import { OrderbookSettingsComponent } from './orderbook-settings.component';
-import {of, Subject} from 'rxjs';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
-  commonTestProviders,
-  getTranslocoModule,
-  mockComponent,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import {DeviceService} from "../../../../shared/services/device.service";
+  of,
+  Subject
+} from 'rxjs';
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { DeviceService } from "../../../../shared/services/device.service";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { InstrumentBoardSelectMockComponent } from "../../../../shared/utils/testing/instrument-board-select-mock-component";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
+import { WidgetSettingsComponent } from "../../../../shared/components/widget-settings/widget-settings.component";
 
 describe('OrderbookSettingsComponent', () => {
   let component: OrderbookSettingsComponent;
@@ -25,12 +26,12 @@ describe('OrderbookSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         OrderbookSettingsComponent,
-        mockComponent({ selector: 'ats-instrument-board-select', inputs: ['instrument', 'placeholder'] })
       ],
       imports: [
-        NoopAnimationsModule,
-        ...sharedModuleImportForTests,
-        getTranslocoModule()
+        TranslocoTestsModule.getModule(),
+        ...FormsTesting.getTestingModules(),
+        WidgetSettingsComponent,
+        InstrumentBoardSelectMockComponent
       ],
       providers: [
         {

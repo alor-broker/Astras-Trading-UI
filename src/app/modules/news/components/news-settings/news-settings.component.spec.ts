@@ -7,12 +7,10 @@ import { NewsSettingsComponent } from './news-settings.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { Subject } from "rxjs";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
-import { NzSliderModule } from "ng-zorro-antd/slider";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
+import { WidgetSettingsComponent } from "../../../../shared/components/widget-settings/widget-settings.component";
 
 describe('NewsSettingsComponent', () => {
   let component: NewsSettingsComponent;
@@ -21,9 +19,9 @@ describe('NewsSettingsComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
-        NzSliderModule,
-        ...sharedModuleImportForTests
+        TranslocoTestsModule.getModule(),
+        ...FormsTesting.getTestingModules(),
+        WidgetSettingsComponent
       ],
       declarations: [NewsSettingsComponent],
       providers: [

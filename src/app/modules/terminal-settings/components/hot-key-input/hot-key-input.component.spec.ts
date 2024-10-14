@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HotKeyInputComponent } from './hot-key-input.component';
-import { getTranslocoModule, ngZorroMockComponents } from "../../../../shared/utils/testing";
 import { ReactiveFormsModule } from "@angular/forms";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('HotKeyInputComponent', () => {
   let component: HotKeyInputComponent;
@@ -16,7 +17,7 @@ describe('HotKeyInputComponent', () => {
       ],
       imports: [
         ReactiveFormsModule,
-        getTranslocoModule()
+        TranslocoTestsModule.getModule()
       ]
     })
     .compileComponents();

@@ -18,6 +18,9 @@ import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 import { PresetsComponent } from './components/presets/presets.component';
 import { OrdersBasketSettingsComponent } from './components/orders-basket-settings/orders-basket-settings.component';
 import { NzNoAnimationModule } from "ng-zorro-antd/core/no-animation";
+import { InputNumberComponent } from "../../shared/components/input-number/input-number.component";
+import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
+import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
 
 @NgModule({
   declarations: [
@@ -27,20 +30,23 @@ import { NzNoAnimationModule } from "ng-zorro-antd/core/no-animation";
     PresetsComponent,
     OrdersBasketSettingsComponent
   ],
-  imports: [
-    CommonModule,
-    NzEmptyModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NzButtonModule,
-    NzIconModule,
-    NzFormModule,
-    NzInputModule,
-    SharedModule,
-    NzInputNumberModule,
-    NzResizeObserverModule,
-    NzNoAnimationModule
-  ],
+    imports: [
+        CommonModule,
+        NzEmptyModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NzButtonModule,
+        NzIconModule,
+        NzFormModule,
+        NzInputModule,
+        SharedModule,
+        NzInputNumberModule,
+        NzResizeObserverModule,
+        NzNoAnimationModule,
+        InputNumberComponent,
+        WidgetSettingsComponent,
+        InstrumentSearchComponent
+    ],
   exports: [
     OrdersBasketWidgetComponent
   ]

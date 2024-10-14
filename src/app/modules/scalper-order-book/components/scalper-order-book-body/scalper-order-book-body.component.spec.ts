@@ -10,17 +10,14 @@ import {
   BehaviorSubject,
   Subject
 } from 'rxjs';
-import {
-  mockComponent,
-  mockDirective,
-  ngZorroMockComponents
-} from '../../../../shared/utils/testing';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { LetDirective } from "@ngrx/component";
 import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
 import { SCALPER_ORDERBOOK_SHARED_CONTEXT } from "../scalper-order-book/scalper-order-book.component";
 import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('ScalperOrderBookBodyComponent', () => {
   let component: ScalperOrderBookBodyComponent;
@@ -34,17 +31,17 @@ describe('ScalperOrderBookBodyComponent', () => {
       ],
       declarations: [
         ScalperOrderBookBodyComponent,
-        mockComponent({ selector: 'ats-trades-panel' }),
-        mockComponent({ selector: 'ats-scalper-order-book-table' }),
-        mockComponent({ selector: 'ats-orders-indicator', inputs: ['visible'] }),
-        mockComponent({ selector: 'ats-possible-actions-panel' }),
-        mockComponent({ selector: 'ats-panels-container', inputs: ['initialWidths'] }),
-        mockComponent({ selector: 'ats-panel', inputs: ['canResize', 'minWidthPx', 'defaultWidthPercent', 'expandable']}),
-        mockComponent({ selector: 'ats-top-floating-panel', inputs: ['guid', 'isActive']}),
-        mockComponent({ selector: 'ats-bottom-floating-panel', inputs: ['guid', 'isActive', 'dataContext']}),
-        mockComponent({ selector: 'ats-top-panel', inputs: ['guid', 'isActive', 'dataContext']}),
-        mockComponent({ selector: 'ats-limit-orders-volume-indicator', inputs: ['dataContext', 'side']}),
-        mockDirective({selector: '[cdkDrag]', inputs: ['cdkDragBoundary', 'cdkDragFreeDragPosition']}),
+        ComponentHelpers.mockComponent({ selector: 'ats-trades-panel' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-scalper-order-book-table' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-orders-indicator', inputs: ['visible'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-possible-actions-panel' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-panels-container', inputs: ['initialWidths'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-panel', inputs: ['canResize', 'minWidthPx', 'defaultWidthPercent', 'expandable']}),
+        ComponentHelpers.mockComponent({ selector: 'ats-top-floating-panel', inputs: ['guid', 'isActive']}),
+        ComponentHelpers.mockComponent({ selector: 'ats-bottom-floating-panel', inputs: ['guid', 'isActive', 'dataContext']}),
+        ComponentHelpers.mockComponent({ selector: 'ats-top-panel', inputs: ['guid', 'isActive', 'dataContext']}),
+        ComponentHelpers.mockComponent({ selector: 'ats-limit-orders-volume-indicator', inputs: ['dataContext', 'side']}),
+        ComponentHelpers.mockDirective({selector: '[cdkDrag]', inputs: ['cdkDragBoundary', 'cdkDragFreeDragPosition']}),
         ...ngZorroMockComponents
       ],
       providers: [

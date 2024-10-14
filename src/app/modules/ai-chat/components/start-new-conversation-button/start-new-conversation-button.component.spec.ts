@@ -1,10 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StartNewConversationButtonComponent } from './start-new-conversation-button.component';
-import {
-  getTranslocoModule,
-  ngZorroMockComponents
-} from "../../../../shared/utils/testing";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('StartNewConversationButtonComponent', () => {
   let component: StartNewConversationButtonComponent;
@@ -12,7 +10,7 @@ describe('StartNewConversationButtonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       declarations: [
         StartNewConversationButtonComponent,
         ...ngZorroMockComponents

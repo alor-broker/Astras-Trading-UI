@@ -4,12 +4,6 @@ import {
 } from '@angular/core/testing';
 import { InstrumentsService } from '../../services/instruments.service';
 import { InstrumentSelectComponent } from './instrument-select.component';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  mockComponent,
-  sharedModuleImportForTests
-} from '../../../../shared/utils/testing';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import {
   BehaviorSubject,
@@ -20,6 +14,12 @@ import { WatchlistCollection } from '../../models/watchlist.model';
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { WatchInstrumentsService } from "../../services/watch-instruments.service";
+import { NzDropDownModule } from "ng-zorro-antd/dropdown";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { NzAutocompleteModule } from "ng-zorro-antd/auto-complete";
+import { FormsModule } from "@angular/forms";
 
 describe('InstrumentSelectComponent', () => {
   let component: InstrumentSelectComponent;
@@ -35,12 +35,14 @@ describe('InstrumentSelectComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        ...sharedModuleImportForTests,
-        getTranslocoModule()
+        TranslocoTestsModule.getModule(),
+        NzDropDownModule,
+        NzAutocompleteModule,
+        FormsModule
       ],
       declarations: [
         InstrumentSelectComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-watchlist-table',
           inputs: ['guid']
         })

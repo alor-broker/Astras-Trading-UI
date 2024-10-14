@@ -2,16 +2,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ShortLongIndicatorComponent } from './short-long-indicator.component';
 import { LetDirective } from "@ngrx/component";
-import {
-  getTranslocoModule,
-  ngZorroMockComponents
-} from "../../../../shared/utils/testing";
 import { EvaluationService } from "../../../../shared/services/evaluation.service";
 import {
   BehaviorSubject,
   Subject
 } from "rxjs";
 import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-data-context.model";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('ShortLongIndicatorComponent', () => {
   let component: ShortLongIndicatorComponent;
@@ -21,7 +19,7 @@ describe('ShortLongIndicatorComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         LetDirective,
-        getTranslocoModule()
+        TranslocoTestsModule.getModule()
       ],
       declarations: [
         ShortLongIndicatorComponent,

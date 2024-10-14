@@ -9,10 +9,10 @@ import {
   of,
   Subject
 } from "rxjs";
-import { getTranslocoModule } from "../../../../shared/utils/testing";
 import { MarketService } from "../../../../shared/services/market.service";
 import { LetDirective } from "@ngrx/component";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('ListViewComponent', () => {
   let component: ListViewComponent;
@@ -22,7 +22,7 @@ describe('ListViewComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ListViewComponent],
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         LetDirective
       ],
       providers: [

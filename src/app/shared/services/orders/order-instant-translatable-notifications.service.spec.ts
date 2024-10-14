@@ -2,14 +2,14 @@ import { TestBed } from '@angular/core/testing';
 
 import { OrderInstantTranslatableNotificationsService } from './order-instant-translatable-notifications.service';
 import { InstantNotificationsService } from "../instant-notifications.service";
-import { getTranslocoModule } from "../../utils/testing";
+import { TranslocoTestsModule } from '../../utils/testing/translocoTestsModule';
 
 describe('OrderInstantTranslatableNotificationsService', () => {
   let service: OrderInstantTranslatableNotificationsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       providers: [
         {
           provide: InstantNotificationsService,

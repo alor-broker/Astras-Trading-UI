@@ -10,16 +10,14 @@ import { BlotterService } from "../../services/blotter.service";
 import { MockServiceBlotter } from "../../utils/mock-blotter-service";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import {
-  getTranslocoModule,
-  mockComponent,
-  ngZorroMockComponents
-} from "../../../../shared/utils/testing";
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-display-option";
 import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
 import { LetDirective } from "@ngrx/component";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('TradesHistoryComponent', () => {
   let component: TradesHistoryComponent;
@@ -31,14 +29,14 @@ describe('TradesHistoryComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         LetDirective
       ],
       declarations: [
         TradesHistoryComponent,
         ...ngZorroMockComponents,
-        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
-        mockComponent({
+        ComponentHelpers.mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
+        ComponentHelpers.mockComponent({
           selector: 'ats-add-to-watchlist-menu'
         })
       ],

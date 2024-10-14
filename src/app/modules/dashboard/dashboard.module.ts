@@ -50,6 +50,7 @@ import { NzDividerModule } from "ng-zorro-antd/divider";
 import { BondScreenerModule } from "../bond-screener/bond-screener.module";
 import { AiChatModule } from "../ai-chat/ai-chat.module";
 import { SettingsLoadErrorDialogComponent } from "./components/settings-load-error-dialog/settings-load-error-dialog.component";
+import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
 
 @NgModule({
   declarations: [
@@ -106,6 +107,7 @@ import { SettingsLoadErrorDialogComponent } from "./components/settings-load-err
         AiChatModule,
         // components
         SettingsLoadErrorDialogComponent,
+        InstrumentSearchComponent,
     ],
   providers: [
     OnboardingService

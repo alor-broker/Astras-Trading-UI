@@ -6,11 +6,9 @@ import {
 import { ScalperOrderBookComponent } from './scalper-order-book.component';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { Subject } from 'rxjs';
-import {
-  getTranslocoModule,
-  mockComponent
-} from '../../../../shared/utils/testing';
 import { LetDirective } from "@ngrx/component";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -19,15 +17,15 @@ describe('ScalperOrderBookComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports:[
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         LetDirective
       ],
       declarations: [
         ScalperOrderBookComponent,
-        mockComponent({ selector: 'ats-working-volumes-panel' }),
-        mockComponent({ selector: 'ats-modifiers-indicator' }),
-        mockComponent({ selector: 'ats-scalper-order-book-body' }),
-        mockComponent({ selector: 'ats-current-position-panel' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-working-volumes-panel' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-modifiers-indicator' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-scalper-order-book-body' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-current-position-panel' }),
       ],
       providers: [
         {

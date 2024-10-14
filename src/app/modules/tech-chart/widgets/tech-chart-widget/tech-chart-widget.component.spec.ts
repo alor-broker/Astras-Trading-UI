@@ -4,10 +4,6 @@ import {
 } from '@angular/core/testing';
 
 import { TechChartWidgetComponent } from './tech-chart-widget.component';
-import {
-  mockComponent,
-  widgetSkeletonMock
-} from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import {
   EMPTY,
@@ -18,6 +14,8 @@ import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 import { ThemeService } from "../../../../shared/services/theme.service";
+import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('TechChartWidgetComponent', () => {
   let component: TechChartWidgetComponent;
@@ -27,15 +25,15 @@ describe('TechChartWidgetComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         TechChartWidgetComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-tech-chart',
           inputs: ['guid']
         }),
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-tech-chart-settings',
           inputs: ['guid']
         }),
-        mockComponent({ selector: 'ats-instrument-search-modal' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-instrument-search-modal' }),
         widgetSkeletonMock
       ],
       providers: [

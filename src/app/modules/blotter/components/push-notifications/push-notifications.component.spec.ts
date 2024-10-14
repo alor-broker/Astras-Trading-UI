@@ -5,13 +5,11 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { Subject } from "rxjs";
 import { BlotterService } from "../../services/blotter.service";
 import { PushNotificationsService } from "../../../push-notifications/services/push-notifications.service";
-import {
-  getTranslocoModule,
-  mockComponent
-} from "../../../../shared/utils/testing";
 import { LetDirective } from "@ngrx/component";
 import { ErrorHandlerService } from "../../../../shared/services/handle-error/error-handler.service";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('PushNotificationsComponent', () => {
   let component: PushNotificationsComponent;
@@ -20,12 +18,12 @@ describe('PushNotificationsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports:[
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         LetDirective
       ],
       declarations: [
         PushNotificationsComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-add-to-watchlist-menu'
         })
       ],

@@ -1,10 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { WidgetSettingsService } from './widget-settings.service';
-import {
-  getTranslocoModule,
-  sharedModuleImportForTests
-} from "../utils/testing";
-import { LoggerService } from './logging/logger.service';
+import { StoreModule } from "@ngrx/store";
+import { EffectsModule } from "@ngrx/effects";
+import { WidgetSettingsFeature } from "../../store/widget-settings/widget-settings.reducer";
+import { commonTestProviders } from "../utils/testing/common-test-providers";
 
 describe('WidgetSettingsService', () => {
   let service: WidgetSettingsService;
@@ -13,17 +12,13 @@ describe('WidgetSettingsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        ...sharedModuleImportForTests,
-        getTranslocoModule()
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot(),
+        StoreModule.forFeature(WidgetSettingsFeature),
       ],
       providers: [
         WidgetSettingsService,
-        {
-          provide: LoggerService,
-          useValue: {
-            warn: jasmine.createSpy('warn').and.callThrough()
-          }
-        }
+        ...commonTestProviders
       ],
     });
 

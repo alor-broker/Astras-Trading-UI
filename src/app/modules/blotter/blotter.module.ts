@@ -23,6 +23,7 @@ import { RepoTradesComponent } from './components/repo-trades/repo-trades.compon
 import { TradesHistoryComponent } from './components/trades-history/trades-history.component';
 import { LetDirective } from "@ngrx/component";
 import { InstrumentsModule } from "../instruments/instruments.module";
+import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
 
 @NgModule({
   declarations: [
@@ -41,16 +42,17 @@ import { InstrumentsModule } from "../instruments/instruments.module";
     RepoTradesComponent,
     TradesHistoryComponent
   ],
-  imports: [
-    SharedModule,
-    BlotterRoutingModule,
-    NzInputModule,
-    DragDropModule,
-    NzResizeObserverModule,
-    NzTreeModule,
-    LetDirective,
-    InstrumentsModule
-  ],
+    imports: [
+        SharedModule,
+        BlotterRoutingModule,
+        NzInputModule,
+        DragDropModule,
+        NzResizeObserverModule,
+        NzTreeModule,
+        LetDirective,
+        InstrumentsModule,
+        WidgetSettingsComponent
+    ],
   exports: [
     BlotterWidgetComponent
   ]
