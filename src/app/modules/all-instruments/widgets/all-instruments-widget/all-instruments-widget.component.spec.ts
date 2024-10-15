@@ -1,12 +1,16 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
-import {AllInstrumentsWidgetComponent} from './all-instruments-widget.component';
-import {mockComponent, widgetSkeletonMock} from "../../../../shared/utils/testing";
-import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
-import {of} from 'rxjs';
-import {Widget} from "../../../../shared/models/dashboard/widget.model";
-import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
-import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { AllInstrumentsWidgetComponent } from './all-instruments-widget.component';
+import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import { of } from 'rxjs';
+import { Widget } from "../../../../shared/models/dashboard/widget.model";
+import { WidgetMeta } from "../../../../shared/models/widget-meta.model";
+import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
 
 describe('AllInstrumentsWidgetComponent', () => {
   let component: AllInstrumentsWidgetComponent;
@@ -16,11 +20,11 @@ describe('AllInstrumentsWidgetComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         AllInstrumentsWidgetComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-all-instruments',
           inputs: ['guid']
         }),
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-all-instruments-settings',
           inputs: ['guid']
         }),

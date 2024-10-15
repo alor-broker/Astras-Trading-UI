@@ -1,9 +1,13 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { OrdersGroupModalWidgetComponent } from './orders-group-modal-widget.component';
 import { BlotterService } from "../../services/blotter.service";
 import { BehaviorSubject } from "rxjs";
-import { getTranslocoModule, ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('OrdersGroupModalWidgetComponent', () => {
   let component: OrdersGroupModalWidgetComponent;
@@ -15,7 +19,7 @@ describe('OrdersGroupModalWidgetComponent', () => {
         OrdersGroupModalWidgetComponent,
         ...ngZorroMockComponents
       ],
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       providers: [
         {
           provide: BlotterService,

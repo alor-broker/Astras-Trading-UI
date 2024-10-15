@@ -6,13 +6,20 @@
     [nzSize]="'default'"
     [nzTitle]="t('aiChatSideChatWidget.title')"
     [nzVisible]="atsVisible"
-    [nzWrapClassName]="'ai-chat'"
+    [nzWrapClassName]="'ai-chat' + (isResizing ? ' resizing' : '')"
     [nzExtra]="extra"
     nzPlacement="right"
+    [nzNoAnimation]="isResizing"
+    [nzWidth]="(drawerWidth$ | async) ?? 375"
+    (nzVisibleChange)="drawerVisibleChange($event)"
   >
   </nz-drawer>
   <ng-template #content>
     <ats-ai-chat [atsDisabled]="isChatDisabled"></ats-ai-chat>
+    <div
+      class="resize-trigger"
+      (mousedown)="isResizingChange(true)"
+    ></div>
   </ng-template>
 
   <ng-template #extra>
@@ -23,7 +30,3 @@
 </ng-container>
 
 <ats-terms-of-use-dialog [(atsVisible)]="isTermOfUseDialogVisible" (confirmed)="setTermsOfUseAgreement($event)"></ats-terms-of-use-dialog>
-
-
-
-

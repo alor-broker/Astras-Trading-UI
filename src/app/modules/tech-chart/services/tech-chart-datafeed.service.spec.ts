@@ -25,11 +25,11 @@ import { Candle } from "../../../shared/models/history/candle.model";
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 import { TranslatorService } from "../../../shared/services/translator.service";
 import { SyntheticInstrumentsService } from "./synthetic-instruments.service";
-import { getRandomInt } from "../../../shared/utils/testing";
 import { BarsRequest } from "../../light-chart/models/bars-request.model";
 import { EnvironmentService } from "../../../shared/services/environment.service";
 import { ExchangeSettings } from "../../../shared/models/market-settings.model";
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
 
 describe('TechChartDatafeedService', () => {
   let service: TechChartDatafeedService;
@@ -394,11 +394,11 @@ describe('TechChartDatafeedService', () => {
       history: [
         {
           time: Math.round(Date.now() / 1000),
-          open: getRandomInt(100, 150),
-          close: getRandomInt(100, 150),
-          low: getRandomInt(100, 150),
-          high: getRandomInt(100, 150),
-          volume: getRandomInt(500, 1000)
+          open: TestingHelpers.getRandomInt(100, 150),
+          close: TestingHelpers.getRandomInt(100, 150),
+          low: TestingHelpers.getRandomInt(100, 150),
+          high: TestingHelpers.getRandomInt(100, 150),
+          volume: TestingHelpers.getRandomInt(500, 1000)
         }
       ],
       prev: 0,
@@ -407,20 +407,20 @@ describe('TechChartDatafeedService', () => {
 
     const sberNewBar = {
       time: Math.round(Date.now() / 1000),
-      open: getRandomInt(100, 150),
-      close: getRandomInt(100, 150),
-      low: getRandomInt(100, 150),
-      high: getRandomInt(100, 150),
-      volume: getRandomInt(500, 1000)
+      open: TestingHelpers.getRandomInt(100, 150),
+      close: TestingHelpers.getRandomInt(100, 150),
+      low: TestingHelpers.getRandomInt(100, 150),
+      high: TestingHelpers.getRandomInt(100, 150),
+      volume: TestingHelpers.getRandomInt(500, 1000)
     };
 
     const sberpNewBar = {
       time: Math.round(Date.now() / 1000),
-      open: getRandomInt(100, 150),
-      close: getRandomInt(100, 150),
-      low: getRandomInt(100, 150),
-      high: getRandomInt(100, 150),
-      volume: getRandomInt(500, 1000)
+      open: TestingHelpers.getRandomInt(100, 150),
+      close: TestingHelpers.getRandomInt(100, 150),
+      low: TestingHelpers.getRandomInt(100, 150),
+      high: TestingHelpers.getRandomInt(100, 150),
+      volume: TestingHelpers.getRandomInt(500, 1000)
     };
 
     syntheticInstrumentsServiceSpy.getHistory.and.returnValue(of(historyResponse));

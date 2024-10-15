@@ -71,20 +71,36 @@
         </nz-select>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item>
-      <nz-form-label nzFor="userIdleDurationMin"
-                     nzRequired>{{t('terminalSettingsGeneralSettingsForm.userIdleDurationLabel')}}</nz-form-label>
-      <nz-form-control
-        [nzErrorTip]="t(
-                'terminalSettingsGeneralSettingsForm.intervalError',
-                 {
-                  min: validationSettings.userIdleDurationMin.min,
-                  max: validationSettings.userIdleDurationMin.max
-                 })"
+
+    <nz-form-item class="mb-0">
+      <label
+        formControlName="isLogoutOnUserIdle"
+        nz-checkbox
       >
-        <ats-input-number formControlName="userIdleDurationMin"></ats-input-number>
-      </nz-form-control>
+        {{t('terminalSettingsGeneralSettingsForm.isLogoutOnUserIdleLabel')}}
+      </label>
     </nz-form-item>
+
+    <p nz-typography nzType="warning">
+      {{t('terminalSettingsGeneralSettingsForm.logoutDisclaimer')}}
+    </p>
+
+    @if (form.controls.isLogoutOnUserIdle.value) {
+      <nz-form-item>
+        <nz-form-label nzFor="userIdleDurationMin"
+                       nzRequired>{{t('terminalSettingsGeneralSettingsForm.userIdleDurationLabel')}}</nz-form-label>
+        <nz-form-control
+          [nzErrorTip]="t(
+                  'terminalSettingsGeneralSettingsForm.intervalError',
+                   {
+                    min: validationSettings.userIdleDurationMin.min,
+                    max: validationSettings.userIdleDurationMin.max
+                   })"
+        >
+          <ats-input-number formControlName="userIdleDurationMin"></ats-input-number>
+        </nz-form-control>
+      </nz-form-item>
+    }
 
     <nz-form-item *ngIf="!excludedSettings.includes('badgesBind')">
       <label

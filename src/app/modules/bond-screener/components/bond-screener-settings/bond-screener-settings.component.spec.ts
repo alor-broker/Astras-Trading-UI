@@ -4,8 +4,10 @@ import { BondScreenerSettingsComponent } from './bond-screener-settings.componen
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { commonTestProviders, getTranslocoModule, sharedModuleImportForTests } from "../../../../shared/utils/testing";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
+import { WidgetSettingsComponent } from "../../../../shared/components/widget-settings/widget-settings.component";
 
 describe('BondScreenerSettingsComponent', () => {
   let component: BondScreenerSettingsComponent;
@@ -15,9 +17,9 @@ describe('BondScreenerSettingsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [BondScreenerSettingsComponent],
       imports: [
-        NoopAnimationsModule,
-        getTranslocoModule(),
-        ...sharedModuleImportForTests,
+        TranslocoTestsModule.getModule(),
+        ...FormsTesting.getTestingModules(),
+        WidgetSettingsComponent
       ],
       providers: [
         {

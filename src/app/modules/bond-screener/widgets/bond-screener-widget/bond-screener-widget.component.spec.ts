@@ -3,10 +3,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BondScreenerWidgetComponent } from './bond-screener-widget.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import { getTranslocoModule, mockComponent, widgetSkeletonMock } from "../../../../shared/utils/testing";
 import { Widget } from "../../../../shared/models/dashboard/widget.model";
 import { WidgetMeta } from "../../../../shared/models/widget-meta.model";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('BondScreenerWidgetComponent', () => {
   let component: BondScreenerWidgetComponent;
@@ -16,22 +18,22 @@ describe('BondScreenerWidgetComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         BondScreenerWidgetComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-bond-screener',
           inputs: ['guid']
         }),
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-bond-screener-settings',
           inputs: ['guid']
         }),
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-yield-curve-chart',
           inputs: ['guid']
         }),
         widgetSkeletonMock
       ],
       imports: [
-        getTranslocoModule()
+        TranslocoTestsModule.getModule()
       ],
       providers: [
         {

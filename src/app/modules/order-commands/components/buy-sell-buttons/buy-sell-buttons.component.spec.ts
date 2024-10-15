@@ -1,10 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BuySellButtonsComponent } from './buy-sell-buttons.component';
-import {
-  getTranslocoModule,
-  ngZorroMockComponents
-} from "../../../../shared/utils/testing";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('BuySellButtonsComponent', () => {
   let component: BuySellButtonsComponent;
@@ -12,10 +9,9 @@ describe('BuySellButtonsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
-      declarations: [
-        BuySellButtonsComponent,
-        ...ngZorroMockComponents
+      imports: [
+        TranslocoTestsModule.getModule(),
+        BuySellButtonsComponent
       ]
     });
     fixture = TestBed.createComponent(BuySellButtonsComponent);

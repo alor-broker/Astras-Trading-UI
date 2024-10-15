@@ -41,7 +41,6 @@ import { NzInputModule } from "ng-zorro-antd/input";
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { NOTIFICATIONS_PROVIDER } from '../modules/notifications/services/notifications-provider';
 import { FeedbackNotificationsProvider } from '../modules/feedback/services/feedback-notifications-provider';
-import { InstrumentSearchComponent } from './components/instrument-search/instrument-search.component';
 import { NzDividerModule } from "ng-zorro-antd/divider";
 import { ResizeColumnDirective } from './directives/resize-column.directive';
 import { TranslocoModule } from "@jsverse/transloco";
@@ -55,7 +54,6 @@ import { ScrollableRowComponent } from './components/scrollable-row/scrollable-r
 import { ScrollableItemDirective } from "./directives/scrollable-item.directive";
 import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
 import { PushNotificationsProvider } from "../modules/push-notifications/services/push-notifications-provider";
-import { InputNumberComponent } from "./components/input-number/input-number.component";
 import {
   InstrumentBadgeDisplayComponent
 } from './components/instrument-badge-display/instrument-badge-display.component';
@@ -65,19 +63,19 @@ import {
   WidgetHeaderInstrumentSwitchComponent
 } from './components/widget-header-instrument-switch/widget-header-instrument-switch.component';
 import { RemoveSelectTitlesDirective } from './directives/remove-select-titles.directive';
-import { WidgetSettingsComponent } from './components/widget-settings/widget-settings.component';
 import { NzColorPickerModule } from "ng-zorro-antd/color-picker";
 import { PriceDiffComponent } from './components/price-diff/price-diff.component';
 import { TableRowHeightDirective } from './directives/table-row-height.directive';
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { GraphQlErrorHandlerService } from "./services/handle-error/graph-ql-error-handler.service";
 import { LetDirective } from "@ngrx/component";
+import { InputNumberComponent } from "./components/input-number/input-number.component";
+import { InstrumentSearchComponent } from "./components/instrument-search/instrument-search.component";
 
 @NgModule({
   declarations: [
     LoadingIndicatorComponent,
     InfiniteScrollTableComponent,
-    InstrumentSearchComponent,
     ResizeColumnDirective,
     InstrumentBoardSelectComponent,
     EditableStringComponent,
@@ -86,13 +84,11 @@ import { LetDirective } from "@ngrx/component";
     ShortNumberComponent,
     ScrollableRowComponent,
     ScrollableItemDirective,
-    InputNumberComponent,
     InstrumentBadgeDisplayComponent,
     MergedBadgeComponent,
     AtsPricePipe,
     WidgetHeaderInstrumentSwitchComponent,
     RemoveSelectTitlesDirective,
-    WidgetSettingsComponent,
     PriceDiffComponent,
     TableRowHeightDirective,
   ],
@@ -140,7 +136,9 @@ import { LetDirective } from "@ngrx/component";
     NzResizeObserverModule,
     NzColorPickerModule,
     DragDropModule,
-    LetDirective
+    LetDirective,
+    InputNumberComponent,
+    InstrumentSearchComponent
   ],
   exports: [
     // Ng zorro
@@ -185,17 +183,14 @@ import { LetDirective } from "@ngrx/component";
     // components
     LoadingIndicatorComponent,
     InfiniteScrollTableComponent,
-    InstrumentSearchComponent,
     InstrumentBoardSelectComponent,
     WidgetHeaderComponent,
     WidgetSkeletonComponent,
     EditableStringComponent,
     ShortNumberComponent,
     ScrollableRowComponent,
-    InputNumberComponent,
     InstrumentBadgeDisplayComponent,
     WidgetHeaderInstrumentSwitchComponent,
-    WidgetSettingsComponent,
     PriceDiffComponent,
     // directives
     ResizeColumnDirective,

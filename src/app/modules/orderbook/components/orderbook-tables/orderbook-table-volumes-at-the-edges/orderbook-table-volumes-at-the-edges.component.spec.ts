@@ -7,10 +7,10 @@ import {
   Subject
 } from "rxjs";
 import { OrderbookService } from "../../../services/orderbook.service";
-import { ngZorroMockComponents } from "../../../../../shared/utils/testing";
 import { InstrumentsService } from '../../../../instruments/services/instruments.service';
 import { ThemeService } from '../../../../../shared/services/theme.service';
 import {OrdersDialogService} from "../../../../../shared/services/orders/orders-dialog.service";
+import { ngZorroMockComponents } from "../../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('OrderbookTableVolumesAtTheEdgesComponent', () => {
   let component: OrderbookTableVolumesAtTheEdgesComponent;

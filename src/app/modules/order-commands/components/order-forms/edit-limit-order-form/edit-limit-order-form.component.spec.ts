@@ -4,13 +4,6 @@ import {
   TestBed,
   tick
 } from '@angular/core/testing';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  mockComponent,
-  sharedModuleImportForTests,
-  TestData
-} from "../../../../../shared/utils/testing";
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 import { CommonParametersService } from "../../../services/common-parameters.service";
 import {
@@ -20,12 +13,9 @@ import {
   take
 } from "rxjs";
 import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
-import { OrderCommandsModule } from "../../../order-commands.module";
 import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import orderCommandsOrderFormsRu from "../../../../../../assets/i18n/order-commands/order-forms/ru.json";
 import { filter } from "rxjs/operators";
-import { EvaluationService } from "../../../../../shared/services/evaluation.service";
 import { EditLimitOrderFormComponent } from "./edit-limit-order-form.component";
 import { OrderDetailsService } from "../../../../../shared/services/orders/order-details.service";
 import { Order } from "../../../../../shared/models/orders/order.model";
@@ -34,6 +24,12 @@ import { LimitOrderEdit } from "../../../../../shared/models/orders/edit-order.m
 import { OrderFormState } from "../../../models/order-form.model";
 import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
 import { Side } from "../../../../../shared/models/enums/side.model";
+import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
+import { TestData } from "../../../../../shared/utils/testing/test-data";
+import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
+import { commonTestProviders } from "../../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
+import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
 
 describe('EditLimitOrderFormComponent', () => {
   let component: EditLimitOrderFormComponent;
@@ -79,7 +75,7 @@ describe('EditLimitOrderFormComponent', () => {
 
   beforeEach(() => {
     orderServiceSpy = jasmine.createSpyObj('OrderService', ['submitLimitOrderEdit']);
-    orderServiceSpy.submitLimitOrderEdit.and.returnValue(new BehaviorSubject({isSuccess: true}));
+    orderServiceSpy.submitLimitOrderEdit.and.returnValue(new BehaviorSubject({ isSuccess: true }));
 
     orderDetailsServiceSpy = jasmine.createSpyObj('OrderDetailsService', ['getLimitOrderDetails']);
     orderDetailsServiceSpy.getLimitOrderDetails.and.returnValue(new Subject());
@@ -91,18 +87,17 @@ describe('EditLimitOrderFormComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        OrderCommandsModule,
-        NoopAnimationsModule,
-        getTranslocoModule({
+        TranslocoTestsModule.getModule({
           langs: {
             'order-commands/order-forms/ru': orderCommandsOrderFormsRu,
           }
         }),
-        ...sharedModuleImportForTests
+        ...FormsTesting.getTestingModules(),
+        InputNumberComponent
       ],
       declarations: [
         EditLimitOrderFormComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-order-evaluation',
           inputs: ['evaluationProperties']
         })
@@ -132,12 +127,6 @@ describe('EditLimitOrderFormComponent', () => {
         {
           provide: InstrumentsService,
           useValue: instrumentsServiceSpy
-        },
-        {
-          provide: EvaluationService,
-          useValue: {
-            evaluateOrder: jasmine.createSpy('evaluateOrder').and.returnValue(new Subject())
-          }
         },
         ...commonTestProviders
       ]
@@ -203,7 +192,7 @@ describe('EditLimitOrderFormComponent', () => {
       control.dispatchEvent(new Event('input'));
 
       (component.form!.controls as any)[testCase.control]!.markAsDirty();
-      (component.form!.controls as any)[testCase.control]!.updateValueAndValidity({onlySelf: false});
+      (component.form!.controls as any)[testCase.control]!.updateValueAndValidity({ onlySelf: false });
 
       fixture.detectChanges();
 

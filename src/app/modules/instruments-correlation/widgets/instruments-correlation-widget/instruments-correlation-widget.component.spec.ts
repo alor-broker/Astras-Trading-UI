@@ -6,12 +6,10 @@ import {
 import { InstrumentsCorrelationWidgetComponent } from './instruments-correlation-widget.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import {
-  mockComponent,
-  widgetSkeletonMock
-} from "../../../../shared/utils/testing";
 import { Widget } from "../../../../shared/models/dashboard/widget.model";
 import { WidgetMeta } from "../../../../shared/models/widget-meta.model";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
 
 describe('InstrumentsCorrelationWidgetComponent', () => {
   let component: InstrumentsCorrelationWidgetComponent;
@@ -21,7 +19,7 @@ describe('InstrumentsCorrelationWidgetComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         InstrumentsCorrelationWidgetComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-correlation-chart',
           inputs: ['guid']
         }),

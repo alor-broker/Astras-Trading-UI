@@ -4,10 +4,6 @@ import { AllInstrumentsComponent } from './all-instruments.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {of, Subject} from "rxjs";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
-import {
-  commonTestProviders,
-  mockComponent
-} from "../../../../shared/utils/testing";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { TranslatorService } from '../../../../shared/services/translator.service';
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
@@ -16,6 +12,8 @@ import { BoardsService } from "../../services/boards.service";
 import { LetDirective } from "@ngrx/component";
 import { NzModalService } from "ng-zorro-antd/modal";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
 
 describe('AllInstrumentsComponent', () => {
   let component: AllInstrumentsComponent;
@@ -25,7 +23,7 @@ describe('AllInstrumentsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         AllInstrumentsComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-infinite-scroll-table',
           inputs: [
             'contextMenu',
@@ -36,7 +34,7 @@ describe('AllInstrumentsComponent', () => {
             'isLoading'
           ]
         }),
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-add-to-watchlist-menu'
         })
       ],

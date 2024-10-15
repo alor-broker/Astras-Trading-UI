@@ -1,11 +1,19 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
-import {OptionBoardComponent} from './option-board.component';
-import {getTranslocoModule, mockComponent, ngZorroMockComponents} from "../../../../shared/utils/testing";
-import {OptionBoardDataContextFactory} from "../../utils/option-board-data-context-factory";
-import {Subject} from "rxjs";
-import {OptionParameters, OptionSide} from "../../models/option-board.model";
-import {OptionsSelection} from "../../models/option-board-data-context.model";
+import { OptionBoardComponent } from './option-board.component';
+import { OptionBoardDataContextFactory } from "../../utils/option-board-data-context-factory";
+import { Subject } from "rxjs";
+import {
+  OptionParameters,
+  OptionSide
+} from "../../models/option-board.model";
+import { OptionsSelection } from "../../models/option-board-data-context.model";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('OptionBoardComponent', () => {
   let component: OptionBoardComponent;
@@ -13,19 +21,19 @@ describe('OptionBoardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       declarations: [
         OptionBoardComponent,
         ...ngZorroMockComponents,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-all-options',
           inputs: ['dataContext']
         }),
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-selected-options',
           inputs: ['dataContext']
         }),
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-option-board-charts-layout',
           inputs: ['dataContext']
         })

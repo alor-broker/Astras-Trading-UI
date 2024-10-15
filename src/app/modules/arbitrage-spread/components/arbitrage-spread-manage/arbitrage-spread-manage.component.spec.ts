@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ArbitrageSpreadManageComponent } from './arbitrage-spread-manage.component';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
 import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
 import {Subject} from "rxjs";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { SpreadLegComponent } from "../spread-leg/spread-leg.component";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
+import { NzToolTipModule } from "ng-zorro-antd/tooltip";
+import { NzEmptyModule } from "ng-zorro-antd/empty";
+import { InstrumentSearchMockComponent } from "../../../../shared/utils/testing/instrument-search-mock-component";
+import { InputNumberComponent } from "../../../../shared/components/input-number/input-number.component";
 
 describe('ArbitrageSpreadManageComponent', () => {
   let component: ArbitrageSpreadManageComponent;
@@ -22,8 +23,12 @@ describe('ArbitrageSpreadManageComponent', () => {
         SpreadLegComponent
       ],
       imports: [
-        BrowserAnimationsModule,
-        ...sharedModuleImportForTests, getTranslocoModule()
+        TranslocoTestsModule.getModule(),
+        ...FormsTesting.getTestingModules(),
+        InstrumentSearchMockComponent,
+        InputNumberComponent,
+        NzToolTipModule,
+        NzEmptyModule
       ],
       providers: [
         {

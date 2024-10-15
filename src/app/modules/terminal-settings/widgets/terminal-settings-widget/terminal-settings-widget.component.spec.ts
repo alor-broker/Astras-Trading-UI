@@ -2,11 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalService } from 'src/app/shared/services/modal.service';
 
 import { TerminalSettingsWidgetComponent } from './terminal-settings-widget.component';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
+import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
+import { EMPTY } from "rxjs";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { NzModalModule } from "ng-zorro-antd/modal";
 
 describe('TerminalSettingsWidgetComponent', () => {
   let component: TerminalSettingsWidgetComponent;
@@ -20,11 +20,20 @@ describe('TerminalSettingsWidgetComponent', () => {
         TerminalSettingsWidgetComponent,
       ],
       imports: [
-        ...sharedModuleImportForTests,
-        getTranslocoModule()
+        TranslocoTestsModule.getModule(),
+        NzModalModule
       ],
       providers: [
-        { provide: ModalService, useValue: modalSpy },
+        {
+          provide: ModalService,
+          useValue: modalSpy
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(EMPTY)
+          }
+        },
         ...commonTestProviders
       ]
     }).compileComponents();

@@ -4,10 +4,10 @@ import {
   CancelOrdersCommand,
   CancelOrdersCommandArgs
 } from "./cancel-orders-command";
-import { generateRandomString } from "../../../shared/utils/testing";
 import { OrderType } from "../../../shared/models/orders/order.model";
 import { of } from "rxjs";
 import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
+import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
 
 describe('CancelOrdersCommand', () => {
   let command: CancelOrdersCommand;
@@ -39,9 +39,9 @@ describe('CancelOrdersCommand', () => {
         const commandArgs: CancelOrdersCommandArgs = {
           ordersToCancel: [
             {
-              orderId: generateRandomString(5),
-              exchange: generateRandomString(4),
-              portfolio: generateRandomString(5),
+              orderId: TestingHelpers.generateRandomString(5),
+              exchange: TestingHelpers.generateRandomString(4),
+              portfolio: TestingHelpers.generateRandomString(5),
               orderType: OrderType.Limit
             }
           ]

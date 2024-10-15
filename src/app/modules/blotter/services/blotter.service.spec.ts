@@ -2,15 +2,14 @@ import { TestBed } from '@angular/core/testing';
 import { BlotterService } from './blotter.service';
 import { OrdersNotificationsService } from 'src/app/shared/services/orders-notifications.service';
 import { QuotesService } from '../../../shared/services/quotes.service';
-import {
-  commonTestProviders,
-  sharedModuleImportForTests
-} from '../../../shared/utils/testing';
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { Subject } from 'rxjs';
 import { EnvironmentService } from "../../../shared/services/environment.service";
 import { MarketService } from "../../../shared/services/market.service";
 import { ACTIONS_CONTEXT } from "../../../shared/services/actions-context";
+import { provideHttpClient } from "@angular/common/http";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
+import { commonTestProviders } from "../../../shared/utils/testing/common-test-providers";
 
 describe('BlotterService', () => {
   let service: BlotterService;
@@ -38,7 +37,6 @@ describe('BlotterService', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [...sharedModuleImportForTests],
       providers: [
         { provide: PortfolioSubscriptionsService, useValue: portfolioSubscriptionsServiceSpy },
         { provide: OrdersNotificationsService, useValue: notificationSpy },
@@ -62,7 +60,9 @@ describe('BlotterService', () => {
           }
         },
         BlotterService,
-        ...commonTestProviders
+        ...commonTestProviders,
+        provideHttpClient(),
+        provideHttpClientTesting()
       ]
     });
 

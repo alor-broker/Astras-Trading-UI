@@ -1,26 +1,26 @@
 import {
   Component,
-  DestroyRef,
+  DestroyRef, ElementRef,
   Inject,
   Input,
   OnDestroy,
-  OnInit
+  OnInit, ViewChild
 } from '@angular/core';
 import {
+  BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
+  filter,
+  fromEvent,
   Observable,
   shareReplay,
   switchMap,
-  take,
-  tap
+  take
 } from 'rxjs';
 import { WatchedInstrument } from '../../models/watched-instrument.model';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
-import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import {
-  filter,
   map
 } from 'rxjs/operators';
 import { getPropertyFromPath } from "../../../../shared/utils/object-helper";
@@ -52,7 +52,7 @@ import {
 } from "../../../../shared/services/actions-context";
 import { TimeframeValue } from "../../../light-chart/models/light-chart.models";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
+import { BaseTableComponent, Sort } from "../../../../shared/components/base-table/base-table.component";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
@@ -65,28 +65,41 @@ import {
   FileSaver,
   FileType
 } from "../../../../shared/utils/file-export/file-saver";
+import { NzTableComponent } from "ng-zorro-antd/table";
 
 interface DisplayInstrument extends WatchedInstrument {
   id: string;
 }
 
+interface DisplayWatchlist extends Omit<Watchlist, 'items'> {
+  items: DisplayInstrument[];
+}
+
+type SortFn = (a: WatchedInstrument, b: WatchedInstrument) => number;
+
 @Component({
   selector: 'ats-watchlist-table',
   templateUrl: './watchlist-table.component.html',
-  styleUrls: ['./watchlist-table.component.less'],
-  providers: [WatchInstrumentsService]
+  styleUrls: ['./watchlist-table.component.less']
 })
-export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrument>
+export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist>
   implements OnInit, OnDestroy {
   @Input({ required: true }) guid!: string;
+
+  @ViewChild('tableContainer') tableContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('tableCmp') tableCmp!: NzTableComponent<DisplayWatchlist>;
+
+  private isDragStarted = false;
+  private scrollIntervalId: number | null = null;
+  private watchlistToDrop: string | null = null;
 
   readonly listTypes = WatchlistType;
   settings$!: Observable<InstrumentSelectSettings>;
 
-  currentWatchlist$!: Observable<Watchlist>;
+  currentWatchlist$!: Observable<Watchlist[]>;
   collection$!: Observable<WatchlistCollection>;
 
-  allColumns: BaseColumnSettings<WatchedInstrument>[] = [
+  allColumns: BaseColumnSettings<DisplayWatchlist>[] = [
     {
       id: 'symbol',
       displayName: "Тикер",
@@ -141,7 +154,9 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
     },
   ];
 
-  sortFns: Record<string, (a: InstrumentKey, b: InstrumentKey) => number> = {
+  openedLists$!: Observable<string[]>;
+
+  sortFns: Record<string, SortFn> = {
     symbol: this.getSortFn('instrument.symbol'),
     price: this.getSortFn('price'),
     priceChange: this.getSortFn('priceChange'),
@@ -151,7 +166,12 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
     volume: this.getSortFn('volume'),
     openPrice: this.getSortFn('openPrice'),
     closePrice: this.getSortFn('closePrice'),
+    favorites: (a, b): number => {
+      return (b.favoriteOrder ?? -1) - (a.favoriteOrder ?? -1);
+    }
   };
+
+  sort$ = new BehaviorSubject<Sort | null>({ descending: false, orderBy: 'favorites' });
 
   menuWidgets$!: Observable<{
     typeId: string;
@@ -160,8 +180,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
   }[]>;
 
   getListTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
-  selectedItem: WatchedInstrument | null = null;
-  private defaultSortFn?: (a: WatchedInstrument, b: WatchedInstrument) => number;
+  selectedItem: { listId: string, instrument: WatchedInstrument } | null = null;
 
   protected settingsTableName = 'instrumentTable';
   protected settingsColumnsName = 'instrumentColumns';
@@ -181,15 +200,6 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
     super(settingsService, destroyRef);
   }
 
-  sortFavorites = (a: WatchedInstrument, b: WatchedInstrument): number => {
-    const res = (a.favoriteOrder ?? -1) - (b.favoriteOrder ?? -1);
-    if (res === 0 && this.defaultSortFn) {
-      return this.defaultSortFn(b, a);
-    }
-
-    return res;
-  };
-
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid)
       .pipe(
@@ -197,10 +207,19 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
         takeUntilDestroyed(this.destroyRef)
       );
 
+    this.openedLists$ = this.settings$
+      .pipe(
+        map(s => (s.activeWatchlistMetas ?? [])
+          .filter(w => w.isExpanded)
+          .map(w => w.id)
+        ),
+      );
+
+    this.initScrollNeed();
     super.ngOnInit();
   }
 
-  protected initTableConfigStream(): Observable<TableConfig<DisplayInstrument>> {
+  protected initTableConfigStream(): Observable<TableConfig<DisplayWatchlist>> {
     return this.settings$
       .pipe(
         map(settings => {
@@ -221,30 +240,32 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
       );
   }
 
-  protected initTableDataStream(): Observable<DisplayInstrument[]> {
+  protected initTableDataStream(): Observable<DisplayWatchlist[]> {
     this.collection$ = this.watchlistCollectionService.getWatchlistCollection().pipe(
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
     const filteredSettings$ = this.settings$.pipe(
-      distinctUntilChanged((prev, curr) => prev.activeListId === curr.activeListId)
+      distinctUntilChanged((prev, curr) =>
+        JSON.stringify(prev.activeWatchlistMetas) === JSON.stringify(curr.activeWatchlistMetas)
+      )
     );
 
     this.currentWatchlist$ = filteredSettings$.pipe(
-      filter(s => s.activeListId != null && s.activeListId.length > 0),
       mapWith(
         () => this.collection$,
-        (settings, collection) => collection.collection.find(x => x.id === settings.activeListId)
-      ),
-      filter((x): x is Watchlist => !!x),
-      distinctUntilChanged((prev, curr) => prev.id === curr.id),
-      tap(list => {
-        if (list.type === WatchlistType.HistoryList) {
-          this.defaultSortFn = (a, b): number => b.addTime - a.addTime;
-        } else {
-          this.defaultSortFn = (a, b): number => a.instrument.symbol.localeCompare(b.instrument.symbol);
+        (settings, collection) => {
+          const watchlistIds = (settings.activeWatchlistMetas ?? []).map(wm => wm.id);
+          const list = collection.collection.filter(x => watchlistIds.includes(x.id));
+
+          if (list.length > 0) {
+            return list;
+          }
+
+          return [collection.collection.find(c => c.isDefault)!];
         }
-      }),
+      ),
+      distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
@@ -271,30 +292,55 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
 
     return this.currentWatchlist$.pipe(
       mapWith(
-        () => filteredSettings$.pipe(
-          distinctUntilChanged((prev, curr) => prev.activeListId !== curr.activeListId),
-        ),
-        (watchlist, settings) => ({ watchlist, settings })
+        () => filteredSettings$,
+        (watchLists, settings) => ({ watchLists, settings })
       ),
-      switchMap(({ watchlist, settings }) => this.watchInstrumentsService.getWatched(watchlist.id, settings.priceChangeTimeframe ?? TimeframeValue.Day)),
-      map(updates => updates.map(u => ({ ...u, id: u.recordId }))),
-      map(updates => {
-        if (this.defaultSortFn) {
-          return updates.sort(this.defaultSortFn);
-        }
+      mapWith(
+        () => this.sort$,
+        ({ watchLists, settings }, sort) => ({ watchLists, settings, sort})
+      ),
+      switchMap(({ watchLists, settings, sort }) =>
+        combineLatest(
+          watchLists.map(watchlist =>
+            this.watchInstrumentsService.getWatched(watchlist.id, settings.priceChangeTimeframe ?? TimeframeValue.Day)
+              .pipe(
+                map(instruments => {
+                  return {
+                    ...watchlist,
+                    items: instruments
+                      .map(i => ({ ...i, id: i.recordId }))
+                      .sort((a, b) => {
+                        if (sort == null) {
+                          return this.sortFns.favorites(a, b);
+                        }
 
-        return updates;
-      }),
+                        return sort.descending ? -this.sortFns[sort.orderBy](a, b) : this.sortFns[sort.orderBy](a, b);
+                      })
+                  };
+                })
+              )
+          )
+        )
+      ),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
   ngOnDestroy(): void {
     super.ngOnDestroy();
-    this.watchInstrumentsService.clear();
+    this.watchInstrumentsService.clearAll();
   }
 
-  rowClick(row: DisplayInstrument): void {
+  sortChange(dir: string | null, colId: string): void {
+    if (dir == null) {
+      this.sort$.next(null);
+      return;
+    }
+
+    this.sort$.next({ descending: dir === 'descend', orderBy: colId });
+  }
+
+  onRowClick(row: DisplayInstrument): void {
     this.settings$.pipe(
       take(1)
     ).subscribe(s => {
@@ -302,22 +348,12 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
     });
   }
 
-  remove(itemId: string): void {
-    this.settings$.pipe(
-      map(s => s.activeListId),
-      filter((id): id is string => id != null && id.length > 0),
-      take(1)
-    ).subscribe(activeListId => {
-      this.watchlistCollectionService.removeItemsFromList(activeListId, [itemId]);
-    });
+  remove(listId: string, itemId: string): void {
+    this.watchlistCollectionService.removeItemsFromList(listId, [itemId]);
   }
 
-  getTrackKey(index: number, item: WatchedInstrument): string {
-    return item.recordId;
-  }
-
-  contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent, selectedInstrument: WatchedInstrument): void {
-    this.selectedItem = selectedInstrument;
+  contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent, instrument: WatchedInstrument, listId: string): void {
+    this.selectedItem = { listId, instrument };
     this.nzContextMenuService.create($event, menu);
   }
 
@@ -326,29 +362,21 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
       type,
       {
         linkToActive: false,
-        ...toInstrumentKey(this.selectedItem?.instrument!)
+        ...toInstrumentKey(this.selectedItem?.instrument.instrument!)
       }
     );
   }
 
-  updateFavorites(item: WatchedInstrument): void {
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(s => {
-      if (s.activeListId == null) {
-        return;
+  updateFavorites(listId: string, item: WatchedInstrument): void {
+    this.watchlistCollectionService.updateListItem(
+      listId,
+      item.recordId,
+      {
+        favoriteOrder: item.favoriteOrder != null
+          ? null
+          : 1
       }
-
-      this.watchlistCollectionService.updateListItem(
-        s.activeListId,
-        item.recordId,
-        {
-          favoriteOrder: item.favoriteOrder != null
-            ? null
-            : 1
-        }
-      );
-    });
+    );
   }
 
   canMoveItem(currentList: Watchlist): boolean {
@@ -367,7 +395,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
       return;
     }
 
-    this.watchlistCollectionService.addItemsToList(targetList.id, [this.selectedItem.instrument], false);
+    this.watchlistCollectionService.addItemsToList(targetList.id, [this.selectedItem.instrument.instrument], false);
   }
 
   moveItem(fromList: Watchlist, toList: Watchlist): void {
@@ -375,7 +403,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
       return;
     }
 
-    this.watchlistCollectionService.moveItem(this.selectedItem.recordId, fromList.id, toList.id);
+    this.watchlistCollectionService.moveItem(this.selectedItem.instrument.recordId, fromList.id, toList.id);
   }
 
   changeColumnOrder(event: CdkDragDrop<any>): void {
@@ -386,9 +414,86 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
     super.saveColumnWidth<InstrumentSelectSettings>(event, this.settings$);
   }
 
-  exportToFile(): void {
+  expandListChange(isExpanded: boolean, listId: string): void {
+    this.settings$
+      .pipe(
+        take(1)
+      )
+      .subscribe(settings => this.settingsService.updateSettings(
+          this.guid,
+          {
+            activeWatchlistMetas: (settings.activeWatchlistMetas ?? [])
+              .map(wm => wm.id === listId ? { ...wm, isExpanded } : wm)
+          }
+        )
+      );
+  }
+
+  initScrollNeed(): void {
+    let isScrollingUp = false;
+    let isScrollingDown = false;
+
+    fromEvent<MouseEvent>(document, 'mousemove')
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        filter(() => this.isDragStarted)
+      )
+      .subscribe(e => {
+        const tableContainerRect = this.tableContainer.nativeElement.getBoundingClientRect();
+
+        const upperTrigger = tableContainerRect.top;
+        const lowerTrigger = tableContainerRect.bottom;
+
+        if (isScrollingUp && e.clientY > upperTrigger) {
+          isScrollingUp = false;
+
+          this.stopScroll();
+        }
+
+        if (isScrollingDown && e.clientY < lowerTrigger) {
+          isScrollingDown = false;
+
+          this.stopScroll();
+        }
+
+        if (!isScrollingUp && e.clientY < upperTrigger) {
+          isScrollingUp = true;
+
+          this.scrollIntervalId = setInterval(() => this.startScroll(-1),10);
+        }
+
+        if (!isScrollingDown && e.clientY > lowerTrigger) {
+          isScrollingDown = true;
+
+          this.scrollIntervalId = setInterval(() => this.startScroll(1), 10);
+        }
+      });
+  }
+
+  onDragDropped(e: CdkDragDrop<any>): void {
+    if (e.item.data.listId !== this.watchlistToDrop) {
+      this.watchlistCollectionService.moveItem(e.item.data.recordId, e.item.data.listId, this.watchlistToDrop!);
+    }
+
+    this.isDragStarted = false;
+    this.watchlistToDrop = null;
+    this.stopScroll();
+  }
+
+  onDragStarted(): void {
+    this.isDragStarted = true;
+  }
+
+  setWatchlistToDrop(listId: string): void {
+    if (!this.isDragStarted) {
+      return;
+    }
+
+    this.watchlistToDrop = listId;
+  }
+
+  exportToFile(listId: string): void {
     combineLatest({
-      currentCollection: this.currentWatchlist$,
       tableConfig: this.tableConfig$,
       tableData: this.tableData$,
       translator: this.translatorService.getTranslator('instruments/select')
@@ -413,19 +518,39 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayInstrumen
         } as ExportColumnMeta<DisplayInstrument>)
       );
 
-      const csv = CsvFormatter.toCsv(meta, x.tableData, csvFormatterConfigDefaults);
+      const selectedWatchlist = x.tableData.find(w => w.id === listId);
+
+      if (selectedWatchlist == null) {
+        return;
+      }
+
+      const tableData = selectedWatchlist.items;
+
+      const csv = CsvFormatter.toCsv(meta, tableData, csvFormatterConfigDefaults);
 
       FileSaver.save({
           fileType: FileType.Csv,
-          name: x.currentCollection.title
+          name: selectedWatchlist.title
         },
         csv);
     });
   }
 
-  private getSortFn(propName: string): (a: InstrumentKey, b: InstrumentKey) => number {
+  private getSortFn(propName: string): SortFn {
     return (a: any, b: any) => {
       return getPropertyFromPath(a, propName) > getPropertyFromPath(b, propName) ? 1 : -1;
     };
   };
+
+  private startScroll(multiplier: number): void {
+    const initialScroll = this.tableCmp.cdkVirtualScrollViewport?.measureScrollOffset('top') ?? 0;
+
+    this.tableCmp.cdkVirtualScrollViewport?.scrollTo({ top: initialScroll + (10 * multiplier) });
+  }
+
+  private stopScroll(): void {
+    if (this.scrollIntervalId != null) {
+      clearInterval(this.scrollIntervalId);
+    }
+  }
 }

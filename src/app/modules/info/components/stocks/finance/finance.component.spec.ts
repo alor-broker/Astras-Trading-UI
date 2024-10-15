@@ -1,9 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 import { of } from 'rxjs';
 import { InfoService } from '../../../services/info.service';
 
 import { FinanceComponent } from './finance.component';
-import { mockComponent } from "../../../../../shared/utils/testing";
+import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
 
 describe('FinanceComponent', () => {
   let component: FinanceComponent;
@@ -18,7 +21,7 @@ describe('FinanceComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         FinanceComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-loading-indicator',
           inputs: ['isLoading']
         })

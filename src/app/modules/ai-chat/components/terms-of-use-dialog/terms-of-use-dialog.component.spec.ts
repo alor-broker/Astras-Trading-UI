@@ -1,10 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TermsOfUseDialogComponent } from './terms-of-use-dialog.component';
-import {
-  getTranslocoModule,
-  ngZorroMockComponents
-} from "../../../../shared/utils/testing";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('TermsOfUseDialogComponent', () => {
   let component: TermsOfUseDialogComponent;
@@ -12,7 +10,7 @@ describe('TermsOfUseDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       declarations:[
         TermsOfUseDialogComponent,
         ...ngZorroMockComponents

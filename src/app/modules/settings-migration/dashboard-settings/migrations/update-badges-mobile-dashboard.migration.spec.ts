@@ -7,8 +7,8 @@ import {
 } from "../../../../shared/models/dashboard/dashboard.model";
 import { UpdateBadgesDesktopDashboardMigration } from "./update-badges-desktop-dashboard.migration";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { generateRandomString } from "../../../../shared/utils/testing";
 import { ReplacePatch } from "json-patch";
+import { TestingHelpers } from "../../../../shared/utils/testing/testing-helpers";
 
 describe('UpdateBadgesMobileDashboardMigration', () => {
   let migration: UpdateBadgesMobileDashboardMigration;
@@ -35,9 +35,9 @@ describe('UpdateBadgesMobileDashboardMigration', () => {
 
   it('should update old badges', () => {
     const oldInstrumentKey: InstrumentKey = {
-      symbol: generateRandomString(4),
-      instrumentGroup: generateRandomString(4),
-      exchange: generateRandomString(4)
+      symbol: TestingHelpers.generateRandomString(4),
+      instrumentGroup: TestingHelpers.generateRandomString(4),
+      exchange: TestingHelpers.generateRandomString(4)
     };
 
     const oldBadge = UpdateBadgesDesktopDashboardMigration.OldToNewBadgesMap[0];
@@ -65,9 +65,9 @@ describe('UpdateBadgesMobileDashboardMigration', () => {
 
   it('should skip if up to date', () => {
     const oldInstrumentKey: InstrumentKey = {
-      symbol: generateRandomString(4),
-      instrumentGroup: generateRandomString(4),
-      exchange: generateRandomString(4)
+      symbol: TestingHelpers.generateRandomString(4),
+      instrumentGroup: TestingHelpers.generateRandomString(4),
+      exchange: TestingHelpers.generateRandomString(4)
     };
 
     const oldBadge = UpdateBadgesDesktopDashboardMigration.OldToNewBadgesMap[0];

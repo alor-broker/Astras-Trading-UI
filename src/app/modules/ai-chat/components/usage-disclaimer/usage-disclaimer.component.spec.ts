@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UsageDisclaimerComponent } from './usage-disclaimer.component';
-import { ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('UsageDisclaimerComponent', () => {
   let component: UsageDisclaimerComponent;

@@ -4,7 +4,7 @@ import {CompactHeaderComponent} from './compact-header.component';
 import {QuotesService} from "../../../../shared/services/quotes.service";
 import {Subject} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
-import { getTranslocoModule } from "../../../../shared/utils/testing";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('CompactHeaderComponent', () => {
   let component: CompactHeaderComponent;
@@ -12,7 +12,7 @@ describe('CompactHeaderComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports:[getTranslocoModule()],
+      imports:[TranslocoTestsModule.getModule()],
       declarations: [CompactHeaderComponent],
       providers: [
         {

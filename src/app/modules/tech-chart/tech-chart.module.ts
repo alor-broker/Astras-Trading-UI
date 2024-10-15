@@ -13,6 +13,8 @@ import { SharedModule } from '../../shared/shared.module';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 import { InstrumentSearchModalComponent } from "./widgets/instrument-search-modal/instrument-search-modal.component";
 import { NzSliderComponent } from "ng-zorro-antd/slider";
+import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
+import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
 
 @NgModule({
   declarations: [
@@ -31,7 +33,9 @@ import { NzSliderComponent } from "ng-zorro-antd/slider";
         NzSelectModule,
         SharedModule,
         NzResizeObserverModule,
-        NzSliderComponent
+        NzSliderComponent,
+        WidgetSettingsComponent,
+        InstrumentSearchComponent
     ],
   exports: [
     TechChartWidgetComponent

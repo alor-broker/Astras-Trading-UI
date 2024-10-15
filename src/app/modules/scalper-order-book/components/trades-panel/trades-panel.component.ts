@@ -17,6 +17,7 @@ import {
 } from 'rxjs';
 import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
 import {
+  color,
   ScaleLinear,
   scaleLinear
 } from 'd3';
@@ -202,7 +203,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       this.drawGridLines(priceItems, xScale, yScale, context, themeSettings.themeColors)
     ];
 
-    if(panelSettings.showOwnTrades ?? false) {
+    if (panelSettings.showOwnTrades ?? false) {
       layers = [
         ...layers,
         ...this.drawOwnTrades(
@@ -560,7 +561,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private getCanvasPx(value: number, needBlurCorrection = true): number {
     const rounded = Math.round(value);
-    if(!needBlurCorrection) {
+    if (!needBlurCorrection) {
       return rounded;
     }
 
@@ -626,7 +627,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
       for (let i = 0; i < priceItems.length; i++) {
         const priceRow = priceItems[i];
-        if(priceRow.isMinorLinePrice || priceRow.isMajorLinePrice) {
+        if (priceRow.isMinorLinePrice || priceRow.isMajorLinePrice) {
           this.resetContext(context);
           context.beginPath();
           // plus 0.5 to fix line width. See https://stackoverflow.com/a/13879402
@@ -676,40 +677,63 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   ): LayerDrawer[] {
     const drawers: LayerDrawer[] = [];
 
+    const drawTrade = (priceIndex: number, volume: number, side: Side, right: number | null): number => {
+      const yTop = yScale(priceIndex);
+      const itemText = volume.toString();
+      context.textBaseline = 'middle';
+      context.font = `${this.tradeItemFontSettings.fontSize}px ${this.tradeItemFontSettings.fontFace}`;
+      const textMetrics = context.measureText(itemText);
+      const textWidth = Math.ceil(textMetrics.width);
+      const textMargins = this.margins.tradePoint.text.left + this.margins.tradePoint.text.right;
+      const itemWidth = Math.max(textWidth + textMargins, textMetrics.fontBoundingBoxAscent + textMetrics.fontBoundingBoxDescent, this.xAxisStep);
+      const xRight = right ?? (xScale(xScale.domain()[1]) - 1);
+      const xLeft = Math.floor(xRight - itemWidth);
+      const itemHeight = Math.floor(this.xAxisStep);
+
+      this.resetContext(context);
+      context.beginPath();
+      context.roundRect(
+        this.getCanvasPx(xLeft),
+        this.getCanvasPx(yTop),
+        Math.round(itemWidth),
+        Math.round(itemHeight),
+        [2]
+      );
+
+      const backgroundColor = color(side === Side.Buy
+        ? themeColors.buyColorAccent
+        : themeColors.sellColorAccent
+      );
+
+      if (!!backgroundColor) {
+        backgroundColor.opacity = 0.65;
+      }
+
+      context.fillStyle = backgroundColor?.formatRgb() ?? themeColors.componentBackground;
+      context.fill();
+
+      context.strokeStyle = themeColors.textColor;
+      context.stroke();
+
+      context.fillStyle = themeColors.textMaxContrastColor;
+      context.textAlign = 'center';
+      context.fillText(itemText, this.getCenter(xLeft, xRight), this.getCenter(yTop, yTop + itemHeight));
+
+      return xLeft;
+    };
+
     for (const trade of this.getAggregatedTrades(trades, priceItems)) {
+      let prevLeft: number | null = null;
+
       drawers.push({
         draw: () => {
-          const yTop = yScale(trade.priceIndex);
-          const itemText = trade.volume.toString();
-          context.textBaseline = 'middle';
-          context.font = `${this.tradeItemFontSettings.fontSize}px ${this.tradeItemFontSettings.fontFace}`;
-          const textMetrics = context.measureText(itemText);
-          const textWidth = Math.ceil(textMetrics.width);
-          const textMargins = this.margins.tradePoint.text.left + this.margins.tradePoint.text.right;
-          const itemWidth = Math.max(textWidth + textMargins, textMetrics.fontBoundingBoxAscent + textMetrics.fontBoundingBoxDescent, this.xAxisStep);
-          const xRight = xScale(xScale.domain()[1]) - 1;
-          const xLeft = Math.floor(xRight - itemWidth);
-          const itemHeight = Math.floor(this.xAxisStep);
+          if (trade.sellVolume !== 0) {
+            prevLeft = drawTrade(trade.priceIndex, trade.sellVolume, Side.Sell, null) - 2;
+          }
 
-          this.resetContext(context);
-          context.beginPath();
-          context.roundRect(
-            this.getCanvasPx(xLeft),
-            this.getCanvasPx(yTop),
-            Math.round(itemWidth),
-            Math.round(itemHeight),
-            [2]
-          );
-
-          context.fillStyle = themeColors.componentBackground;
-          context.fill();
-
-          context.strokeStyle = themeColors.textColor;
-          context.stroke();
-
-          context.fillStyle = themeColors.textMaxContrastColor;
-          context.textAlign = 'center';
-          context.fillText(itemText, this.getCenter(xLeft, xRight), this.getCenter(yTop, yTop + itemHeight));
+          if (trade.buyVolume !== 0) {
+            drawTrade(trade.priceIndex, trade.buyVolume, Side.Buy, prevLeft);
+          }
         },
         zIndex: this.zIndexes.ownTrade
       });
@@ -719,17 +743,35 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private filterOwnTrades(trades: Trade[], position: Position | null): Trade[] {
-    if(position == null) {
+    if (position == null) {
       return [];
     }
 
-    return position.qtyTFuture > 0
-      ? trades.filter(t => t.side === Side.Buy)
-      : trades.filter(t => t.side === Side.Sell);
+    const sortedTrades = [...trades].sort((a, b) => b.date.getTime() - a.date.getTime());
+    const filteredTrades: Trade[] = [];
+    let rest = position.qtyTFuture;
+    for (const trade of sortedTrades) {
+      const tradeQty = trade.side === Side.Buy
+        ? -trade.qty
+        : trade.qty;
+      rest += tradeQty;
+
+      filteredTrades.push(trade);
+
+      if (Math.round(rest) === 0) {
+        break;
+      }
+    }
+
+    return filteredTrades;
   }
 
-  private getAggregatedTrades(trades: Trade[], priceItems: BodyRow[]): { priceIndex: number, volume: number }[] {
-    const aggregatedTrades = new Map<number, number>();
+  private getAggregatedTrades(trades: Trade[], priceItems: BodyRow[]): {
+    priceIndex: number;
+    buyVolume: number;
+    sellVolume: number;
+  }[] {
+    const aggregatedTrades = new Map<number, { buyVolume: number, sellVolume: number }>();
 
     for (const trade of trades) {
       let priceIndex = priceItems.findIndex(p => trade.price >= p.baseRange.min && trade.price <= p.baseRange.max);
@@ -742,16 +784,27 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
 
+      const item = {
+        buyVolume: trade.side === Side.Buy ? trade.qtyBatch : 0,
+        sellVolume: trade.side === Side.Sell ? trade.qtyBatch : 0,
+      };
+
+      const existedItem = aggregatedTrades.get(priceIndex);
+
       aggregatedTrades.set(
         priceIndex,
-        (aggregatedTrades.get(priceIndex) ?? 0) + trade.qtyBatch
+        {
+          buyVolume: (existedItem?.buyVolume ?? 0) + item.buyVolume,
+          sellVolume: (existedItem?.sellVolume ?? 0) + item.sellVolume,
+        }
       );
     }
 
     return Array.from(aggregatedTrades)
       .map(([key, value]) => ({
         priceIndex: key,
-        volume: value
+        buyVolume: value.buyVolume,
+        sellVolume: value.sellVolume
       }));
   }
 

@@ -4,12 +4,6 @@ import {
   TestBed,
   tick
 } from '@angular/core/testing';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  sharedModuleImportForTests,
-  TestData
-} from "../../../../../shared/utils/testing";
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 import { CommonParametersService } from "../../../services/common-parameters.service";
 import {
@@ -20,9 +14,7 @@ import {
   take
 } from "rxjs";
 import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
-import { OrderCommandsModule } from "../../../order-commands.module";
 import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import orderCommandsOrderFormsRu from "../../../../../../assets/i18n/order-commands/order-forms/ru.json";
 import { filter } from "rxjs/operators";
 import { OrderDetailsService } from "../../../../../shared/services/orders/order-details.service";
@@ -46,6 +38,12 @@ import { TimezoneDisplayOption } from "../../../../../shared/models/enums/timezo
 import { registerLocaleData } from "@angular/common";
 import localeRu from '@angular/common/locales/ru';
 import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
+import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
+import { TestData } from "../../../../../shared/utils/testing/test-data";
+import { commonTestProviders } from "../../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
+import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
+import { NzDatePickerModule } from "ng-zorro-antd/date-picker";
 
 describe('EditStopOrderFormComponent', () => {
   let component: EditStopOrderFormComponent;
@@ -113,17 +111,17 @@ describe('EditStopOrderFormComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [
-        OrderCommandsModule,
-        NoopAnimationsModule,
-        getTranslocoModule({
+        TranslocoTestsModule.getModule({
           langs: {
             'order-commands/order-forms/ru': orderCommandsOrderFormsRu,
           }
         }),
-        ...sharedModuleImportForTests
+        ...FormsTesting.getTestingModules(),
+        NzDatePickerModule,
+        InputNumberComponent
       ],
       declarations: [
-        EditStopOrderFormComponent
+        EditStopOrderFormComponent,
       ],
       providers: [
         {provide: NZ_I18N, useValue: ru_RU},

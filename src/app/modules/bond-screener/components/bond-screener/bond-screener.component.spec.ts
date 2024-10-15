@@ -10,14 +10,12 @@ import {
 } from "rxjs";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { BondScreenerService } from "../../services/bond-screener.service";
-import {
-  getTranslocoModule,
-  mockComponent
-} from "../../../../shared/utils/testing";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('BondScreenerComponent', () => {
   let component: BondScreenerComponent;
@@ -27,11 +25,11 @@ describe('BondScreenerComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         BondScreenerComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-add-to-watchlist-menu'
         })
       ],
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       providers: [
         {
           provide: WidgetSettingsService,

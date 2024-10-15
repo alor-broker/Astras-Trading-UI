@@ -15,6 +15,7 @@
           [nzAutofocus]="(dialogParams?.initialValues?.hasPriceChanged ?? false) ? 'ok' : null"
           nzClosable="false"
           nzMaskClosable="false"
+          nzDraggable
         >
           <ng-container *nzModalContent>
             <ng-container *ngIf="dialogParams">

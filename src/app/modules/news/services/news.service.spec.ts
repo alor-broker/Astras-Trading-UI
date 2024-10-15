@@ -2,31 +2,29 @@ import { TestBed } from '@angular/core/testing';
 
 import { NewsService } from './news.service';
 import { provideHttpClientTesting } from "@angular/common/http/testing";
-import {
-  commonTestProviders,
-  sharedModuleImportForTests
-} from "../../../shared/utils/testing";
 import { EnvironmentService } from "../../../shared/services/environment.service";
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  provideHttpClient,
+} from '@angular/common/http';
+import { commonTestProviders } from "../../../shared/utils/testing/common-test-providers";
 
 describe('NewsService', () => {
   let service: NewsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [...sharedModuleImportForTests],
-    providers: [
+      providers: [
         {
-            provide: EnvironmentService,
-            useValue: {
-                apiUrl: ''
-            }
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
+          }
         },
         ...commonTestProviders,
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(),
         provideHttpClientTesting()
-    ]
-});
+      ]
+    });
     service = TestBed.inject(NewsService);
   });
 

@@ -5,16 +5,14 @@ import {
 import { InfoService } from '../../services/info.service';
 
 import { InfoWidgetComponent } from './info-widget.component';
-import {
-  getTranslocoModule,
-  widgetSkeletonMock
-} from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { of } from 'rxjs';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('InfoWidgetComponent', () => {
   let component: InfoWidgetComponent;
@@ -30,7 +28,7 @@ describe('InfoWidgetComponent', () => {
         widgetSkeletonMock
       ],
       imports: [
-        getTranslocoModule()
+        TranslocoTestsModule.getModule()
       ],
       providers: [
         {

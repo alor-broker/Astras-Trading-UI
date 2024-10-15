@@ -9,7 +9,6 @@ import { BlotterBaseTableComponent } from "./blotter-base-table.component";
 import { Component, DestroyRef } from "@angular/core";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { BlotterService } from "../../services/blotter.service";
-import { getTranslocoModule, ngZorroMockComponents } from "../../../../shared/utils/testing";
 import { By } from "@angular/platform-browser";
 import {
   Observable,
@@ -23,6 +22,8 @@ import { TableConfig } from "../../../../shared/models/table-config.model";
 import { FilterType } from "../../../../shared/models/settings/table-settings.model";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 @Component({
   selector: 'ats-test-comp',
@@ -85,7 +86,7 @@ describe('BlotterBaseTableComponent', () => {
         ...ngZorroMockComponents
       ],
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
       ],
       providers: [
         {

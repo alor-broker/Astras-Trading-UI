@@ -1,12 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { YieldCurveChartParametersComponent } from './yield-curve-chart-parameters.component';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  ngZorroMockComponents,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
+import { NzToolTipModule } from "ng-zorro-antd/tooltip";
 
 describe('YieldCurveChartParametersComponent', () => {
   let component: YieldCurveChartParametersComponent;
@@ -15,12 +13,12 @@ describe('YieldCurveChartParametersComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
-        sharedModuleImportForTests
+        TranslocoTestsModule.getModule(),
+        ...FormsTesting.getTestingModules(),
+        NzToolTipModule
       ],
       declarations: [
         YieldCurveChartParametersComponent,
-        ...ngZorroMockComponents,
       ],
       providers: [
         ...commonTestProviders

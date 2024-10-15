@@ -1,18 +1,9 @@
 import {ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick} from '@angular/core/testing';
-
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  sharedModuleImportForTests,
-  TestData
-} from "../../../../../shared/utils/testing";
 import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
 import {CommonParametersService} from "../../../services/common-parameters.service";
 import {BehaviorSubject, of, Subject} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
-import {OrderCommandsModule} from "../../../order-commands.module";
 import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
-import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 import orderCommandsOrderFormsRu from "../../../../../../assets/i18n/order-commands/order-forms/ru.json";
 import {Side} from "../../../../../shared/models/enums/side.model";
 import {NewStopLimitOrder, NewStopMarketOrder} from "../../../../../shared/models/orders/new-order.model";
@@ -28,6 +19,13 @@ import { registerLocaleData } from "@angular/common";
 import localeRu from '@angular/common/locales/ru';
 import { OrdersGroupService } from "../../../../../shared/services/orders/orders-group.service";
 import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
+import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
+import { TestData } from "../../../../../shared/utils/testing/test-data";
+import { commonTestProviders } from "../../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
+import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
+import { NzDatePickerModule } from "ng-zorro-antd/date-picker";
+import { BuySellButtonsComponent } from "../../buy-sell-buttons/buy-sell-buttons.component";
 
 describe('StopOrderFormComponent', () => {
   let component: StopOrderFormComponent;
@@ -91,14 +89,15 @@ describe('StopOrderFormComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [
-        OrderCommandsModule,
-        NoopAnimationsModule,
-        getTranslocoModule({
+        TranslocoTestsModule.getModule({
           langs: {
             'order-commands/order-forms/ru': orderCommandsOrderFormsRu,
           }
         }),
-        ...sharedModuleImportForTests
+        ...FormsTesting.getTestingModules(),
+        NzDatePickerModule,
+        InputNumberComponent,
+        BuySellButtonsComponent
       ],
       declarations: [
         StopOrderFormComponent

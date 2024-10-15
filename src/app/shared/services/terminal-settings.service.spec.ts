@@ -1,7 +1,12 @@
-import {TestBed} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
-import {TerminalSettingsService} from './terminal-settings.service';
-import {commonTestProviders, sharedModuleImportForTests} from "../utils/testing";
+import { TerminalSettingsService } from './terminal-settings.service';
+import { provideHttpClient } from "@angular/common/http";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
+import { StoreModule } from "@ngrx/store";
+import { EffectsModule } from "@ngrx/effects";
+import { commonTestProviders } from "../utils/testing/common-test-providers";
+import { TerminalSettingsFeature } from "../../store/terminal-settings/terminal-settings.reducer";
 
 describe('TerminalSettingsService', () => {
   let service: TerminalSettingsService;
@@ -9,9 +14,16 @@ describe('TerminalSettingsService', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [...sharedModuleImportForTests],
+      imports: [
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot(),
+        StoreModule.forFeature(TerminalSettingsFeature),
+      ],
       providers: [
         TerminalSettingsService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {provide: Window, useValue: window},
         ...commonTestProviders
       ]
     });

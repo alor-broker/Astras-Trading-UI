@@ -98,6 +98,7 @@ export class PortfolioSummaryService {
       portfolioEvaluation: formatCurrency(summary.portfolioEvaluation / exchangeRate, currencyFormat),
       portfolioLiquidationValue: formatCurrency(summary.portfolioLiquidationValue / exchangeRate, currencyFormat),
       initialMargin: formatCurrency(summary.initialMargin / exchangeRate, currencyFormat),
+      correctedMargin: formatCurrency(summary.correctedMargin / exchangeRate, currencyFormat),
       riskBeforeForcePositionClosing: formatCurrency(summary.riskBeforeForcePositionClosing / exchangeRate, currencyFormat),
       commission: formatCurrency(summary.commission / exchangeRate, currencyFormat),
     });

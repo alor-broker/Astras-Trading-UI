@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TextMessageComponent } from './text-message.component';
-import { mockComponent } from "../../../../../shared/utils/testing";
+import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
 
 describe('TextMessageComponent', () => {
   let component: TextMessageComponent;
@@ -11,7 +11,7 @@ describe('TextMessageComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         TextMessageComponent,
-        mockComponent({ selector: 'markdown', inputs: ['data', 'inline'] })
+        ComponentHelpers.mockComponent({ selector: 'markdown', inputs: ['data', 'inline'] })
       ]
     });
     fixture = TestBed.createComponent(TextMessageComponent);

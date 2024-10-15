@@ -5,12 +5,6 @@ import {
 
 import { LightChartSettingsComponent } from './light-chart-settings.component';
 import { of } from 'rxjs';
-import {
-  getTranslocoModule,
-  InstrumentBoardSelectMockComponent,
-  InstrumentSearchMockComponent,
-  mockComponent
-} from '../../../../shared/utils/testing';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { LightChartSettings } from '../../models/light-chart-settings.model';
 import { ReactiveFormsModule } from "@angular/forms";
@@ -20,6 +14,10 @@ import { NzFormModule } from "ng-zorro-antd/form";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { TimeframeValue } from "../../models/light-chart.models";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { InstrumentSearchMockComponent } from "../../../../shared/utils/testing/instrument-search-mock-component";
+import { InstrumentBoardSelectMockComponent } from "../../../../shared/utils/testing/instrument-board-select-mock-component";
 
 describe('LightChartSettingsComponent', () => {
   let component: LightChartSettingsComponent;
@@ -41,14 +39,14 @@ describe('LightChartSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         LightChartSettingsComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-widget-settings',
           inputs: ['canSave', 'canCopy', 'showCopy']
         })
       ],
       imports: [
         BrowserAnimationsModule,
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         InstrumentSearchMockComponent,
         InstrumentBoardSelectMockComponent,
         ReactiveFormsModule,

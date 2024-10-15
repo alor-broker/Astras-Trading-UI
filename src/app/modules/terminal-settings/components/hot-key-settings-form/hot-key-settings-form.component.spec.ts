@@ -1,14 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HotKeySettingsFormComponent } from './hot-key-settings-form.component';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  mockComponent,
-  sharedModuleImportForTests
-} from '../../../../shared/utils/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HotKeyInputComponent } from "../hot-key-input/hot-key-input.component";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
+import { NzToolTipModule } from "ng-zorro-antd/tooltip";
 
 describe('HotKeySettingsFormComponent', () => {
   let component: HotKeySettingsFormComponent;
@@ -17,13 +15,13 @@ describe('HotKeySettingsFormComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
-        NoopAnimationsModule,
-        ...sharedModuleImportForTests
+        TranslocoTestsModule.getModule(),
+        ...FormsTesting.getTestingModules(),
+        NzToolTipModule
       ],
       declarations: [
         HotKeySettingsFormComponent,
-        mockComponent({selector: 'nz-divider'}),
+        ComponentHelpers.mockComponent({selector: 'nz-divider'}),
         HotKeyInputComponent
       ],
       providers: [

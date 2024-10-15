@@ -20,6 +20,7 @@
 .table-container {
   height: 100%;
   min-height: 20px;
+  position: relative;
 
   .favorites {
     padding-left: 0;
@@ -53,6 +54,21 @@
   th.favorites {
     .btn {
       opacity: 1;
+    }
+  }
+
+  .scroll-trigger {
+    position: absolute;
+    height: 0;
+    width: 100%;
+    z-index: 100;
+
+    &.upper {
+      top: 0;
+    }
+
+    &.lower {
+      bottom: 0;
     }
   }
 }

@@ -10,6 +10,7 @@ import {NzFormModule} from "ng-zorro-antd/form";
 import {NzInputModule} from "ng-zorro-antd/input";
 import {SharedModule} from "../../shared/shared.module";
 import {NzSpinModule} from "ng-zorro-antd/spin";
+import { InputNumberComponent } from "../../shared/components/input-number/input-number.component";
 
 @NgModule({
     declarations: [
@@ -18,19 +19,20 @@ import {NzSpinModule} from "ng-zorro-antd/spin";
     exports: [
         SetupInstrumentNotificationsComponent
     ],
-  imports: [
-    CommonModule,
-    NzDividerModule,
-    TranslocoModule,
-    NzButtonModule,
-    NzIconModule,
-    FormsModule,
-    NzFormModule,
-    ReactiveFormsModule,
-    NzInputModule,
-    SharedModule,
-    NzSpinModule
-  ]
+    imports: [
+        CommonModule,
+        NzDividerModule,
+        TranslocoModule,
+        NzButtonModule,
+        NzIconModule,
+        FormsModule,
+        NzFormModule,
+        ReactiveFormsModule,
+        NzInputModule,
+        SharedModule,
+        NzSpinModule,
+        InputNumberComponent
+    ]
 })
 export class PushNotificationsModule {
 }

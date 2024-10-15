@@ -35,6 +35,9 @@ import { ShortLongIndicatorComponent } from './components/short-long-indicator/s
 import { NzSliderModule } from "ng-zorro-antd/slider";
 import { LimitOrdersVolumeIndicatorComponent } from './components/limit-orders-volume-indicator/limit-orders-volume-indicator.component';
 import { TopPanelComponent } from './components/top-panel/top-panel.component';
+import { InputNumberComponent } from "../../shared/components/input-number/input-number.component";
+import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
+import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
 
 @NgModule({
   declarations: [
@@ -63,18 +66,21 @@ import { TopPanelComponent } from './components/top-panel/top-panel.component';
     LimitOrdersVolumeIndicatorComponent,
     TopPanelComponent
   ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    NzResizeObserverModule,
-    NzInputModule,
-    NzSpinModule,
-    CdkDropListGroup,
-    CdkDropList,
-    CdkDrag,
-    LetDirective,
-    NzSliderModule
-  ],
+    imports: [
+        CommonModule,
+        SharedModule,
+        NzResizeObserverModule,
+        NzInputModule,
+        NzSpinModule,
+        CdkDropListGroup,
+        CdkDropList,
+        CdkDrag,
+        LetDirective,
+        NzSliderModule,
+        InputNumberComponent,
+        WidgetSettingsComponent,
+        InstrumentSearchComponent
+    ],
   exports: [
     ScalperOrderBookWidgetComponent
   ]

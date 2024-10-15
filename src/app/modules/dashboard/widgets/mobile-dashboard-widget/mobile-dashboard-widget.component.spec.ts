@@ -1,12 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MobileDashboardWidgetComponent } from './mobile-dashboard-widget.component';
-import {
-  commonTestProviders,
-  mockComponent,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
+import { StoreModule } from "@ngrx/store";
+import { EffectsModule } from "@ngrx/effects";
+import { MobileDashboardFeature } from "../../../../store/mobile-dashboard/mobile-dashboard.reducer";
+import { ComponentHelpers } from 'src/app/shared/utils/testing/component-helpers';
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { NzLayoutComponent } from "ng-zorro-antd/layout";
 
 describe('MobileDashboardWidgetComponent', () => {
   let component: MobileDashboardWidgetComponent;
@@ -14,19 +15,24 @@ describe('MobileDashboardWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [...sharedModuleImportForTests],
+      imports: [
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot(),
+        StoreModule.forFeature(MobileDashboardFeature),
+        NzLayoutComponent
+      ],
       declarations: [
         MobileDashboardWidgetComponent,
-        mockComponent({ selector: 'ats-mobile-navbar' }),
-        mockComponent({ selector: 'ats-mobile-instruments-history' }),
-        mockComponent({ selector: 'ats-mobile-dashboard' }),
-        mockComponent({ selector: 'ats-help-widget' }),
-        mockComponent({ selector: 'ats-terminal-settings-widget', inputs:['hiddenSections'] }),
-        mockComponent({ selector: 'ats-news-modal-widget' }),
-        mockComponent({ selector: 'ats-feedback-widget' }),
-        mockComponent({ selector: 'ats-application-updated-widget' }),
-        mockComponent({ selector: 'ats-edit-order-dialog-widget' }),
-        mockComponent({ selector: 'ats-empty-portfolios-warning-modal-widget' })
+        ComponentHelpers.mockComponent({ selector: 'ats-mobile-navbar' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-mobile-instruments-history' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-mobile-dashboard' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-help-widget' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-terminal-settings-widget', inputs:['hiddenSections'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-news-modal-widget' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-feedback-widget' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-application-updated-widget' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-edit-order-dialog-widget' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-empty-portfolios-warning-modal-widget' })
 
       ],
       providers: [

@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WidgetsGalleryComponent } from './widgets-gallery.component';
-import { getTranslocoModule } from "../../../../shared/utils/testing";
 import { NzDrawerModule } from "ng-zorro-antd/drawer";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('WidgetsGalleryComponent', () => {
   let component: WidgetsGalleryComponent;
@@ -11,7 +11,7 @@ describe('WidgetsGalleryComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         NzDrawerModule
       ],
       declarations: [WidgetsGalleryComponent]

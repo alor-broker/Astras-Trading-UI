@@ -11,11 +11,6 @@ import {
 } from 'rxjs';
 import { ModalService } from 'src/app/shared/services/modal.service';
 import { Store } from "@ngrx/store";
-import {
-  getTranslocoModule,
-  mockComponent,
-  ngZorroMockComponents
-} from "../../../../shared/utils/testing";
 import { RouterModule } from "@angular/router";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
@@ -30,6 +25,9 @@ import {OrdersDialogService} from "../../../../shared/services/orders/orders-dia
 import { EnvironmentService } from "../../../../shared/services/environment.service";
 import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.service";
 import { HelpService } from "../../../../shared/services/help.service";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { SESSION_CONTEXT } from "../../../../shared/services/auth/session-context";
 
 describe('NavbarComponent', () => {
@@ -61,13 +59,13 @@ describe('NavbarComponent', () => {
       declarations: [
         NavbarComponent,
         ...ngZorroMockComponents,
-        mockComponent({ selector: 'ats-widget-menu', inputs: ['showResetItem'] }),
-        mockComponent({ selector: 'ats-notification-button' }),
-        mockComponent({ selector: 'ats-select-dashboard-menu', inputs: ['visibilityChange']}),
-        mockComponent({ selector: 'ats-network-indicator'}),
-        mockComponent({ selector: 'ats-dashboards-panel', inputs: ['selectedDashboard'] }),
-        mockComponent({ selector: 'ats-widgets-gallery', inputs: ['gallery', 'atsVisible'] }),
-        mockComponent({ selector: 'ats-side-chat-widget', inputs: ['atsVisible'] })
+        ComponentHelpers.mockComponent({ selector: 'ats-widget-menu', inputs: ['showResetItem'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-notification-button' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-select-dashboard-menu', inputs: ['visibilityChange']}),
+        ComponentHelpers.mockComponent({ selector: 'ats-network-indicator'}),
+        ComponentHelpers.mockComponent({ selector: 'ats-dashboards-panel', inputs: ['selectedDashboard'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-widgets-gallery', inputs: ['gallery', 'atsVisible'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-side-chat-widget', inputs: ['atsVisible'] })
       ],
       providers: [
         { provide: ManageDashboardsService, useValue: spyDashboard },
@@ -119,7 +117,7 @@ describe('NavbarComponent', () => {
         RouterModule.forRoot([]),
         NzSelectModule,
         FormsModule,
-        getTranslocoModule()
+        TranslocoTestsModule.getModule()
       ]
     }).compileComponents();
   });

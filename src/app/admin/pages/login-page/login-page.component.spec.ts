@@ -3,8 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoginPageComponent } from './login-page.component';
 import { AdminIdentityService } from "../../services/identity/admin-identity.service";
 import { EMPTY } from "rxjs";
-import { getTranslocoModule } from "../../../shared/utils/testing";
 import { provideHttpClient } from "@angular/common/http";
+import { TranslocoTestsModule } from "../../../shared/utils/testing/translocoTestsModule";
 
 describe('LoginPageComponent', () => {
   let component: LoginPageComponent;
@@ -13,7 +13,7 @@ describe('LoginPageComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         LoginPageComponent
       ],
       providers: [

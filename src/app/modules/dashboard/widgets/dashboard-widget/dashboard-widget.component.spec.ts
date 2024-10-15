@@ -5,11 +5,13 @@ import {
 import { OnboardingService } from '../../services/onboarding.service';
 
 import { DashboardWidgetComponent } from './dashboard-widget.component';
-import {
-  commonTestProviders,
-  mockComponent,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
+import { StoreModule } from "@ngrx/store";
+import { DashboardsFeature } from "../../../../store/dashboards/dashboards.reducer";
+import { EffectsModule } from "@ngrx/effects";
+import { DesktopSettingsBrokerService } from "../../services/desktop-settings-broker.service";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { NzLayoutModule } from "ng-zorro-antd/layout";
 
 describe('DashboardWidgetComponent', () => {
   let component: DashboardWidgetComponent;
@@ -19,23 +21,37 @@ describe('DashboardWidgetComponent', () => {
   beforeEach(async () => {
     const spyOnboarding = jasmine.createSpyObj('OnboardingService', ['start']);
     await TestBed.configureTestingModule({
-      imports: [...sharedModuleImportForTests],
+      imports: [
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot(),
+        StoreModule.forFeature(DashboardsFeature),
+        NzLayoutModule
+      ],
       declarations: [
         DashboardWidgetComponent,
-        mockComponent({ selector: 'ats-dashboard' }),
-        mockComponent({ selector: 'ats-navbar' }),
-        mockComponent({ selector: 'ats-orders-dialog-widget' }),
-        mockComponent({ selector: 'ats-edit-order-dialog-widget' }),
-        mockComponent({ selector: 'ats-help-widget' }),
-        mockComponent({ selector: 'ats-terminal-settings-widget', inputs:['hiddenSections'] }),
-        mockComponent({ selector: 'ats-news-modal-widget' }),
-        mockComponent({ selector: 'ats-feedback-widget' }),
-        mockComponent({ selector: 'ats-application-updated-widget' }),
-        mockComponent({ selector: 'ats-empty-portfolios-warning-modal-widget' }),
-        mockComponent({ selector: 'ats-settings-load-error-dialog', inputs:['visible'] })
+        ComponentHelpers.mockComponent({ selector: 'ats-dashboard' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-navbar' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-orders-dialog-widget' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-edit-order-dialog-widget' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-help-widget' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-terminal-settings-widget', inputs:['hiddenSections'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-news-modal-widget' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-feedback-widget' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-application-updated-widget' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-empty-portfolios-warning-modal-widget' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-settings-load-error-dialog', inputs:['visible'] })
       ],
       providers: [
-        { provide: OnboardingService, useValue: spyOnboarding },
+        {
+          provide: OnboardingService,
+          useValue: spyOnboarding
+        },
+        {
+          provide: DesktopSettingsBrokerService,
+          useValue: {
+            initSettingsBrokers: jasmine.createSpy('initSettingsBrokers').and.callThrough()
+          }
+        },
         ...commonTestProviders
       ]
     }).compileComponents();

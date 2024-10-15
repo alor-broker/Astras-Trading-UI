@@ -6,16 +6,16 @@ import {
 import { BlotterSettingsComponent } from './blotter-settings.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
-import { ReactiveFormsModule } from "@angular/forms";
-import { NzSelectModule } from "ng-zorro-antd/select";
-import { NzSwitchModule } from "ng-zorro-antd/switch";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import { StoreModule } from "@ngrx/store";
+import { EffectsModule } from "@ngrx/effects";
+import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
+import { WidgetSettingsComponent } from "../../../../shared/components/widget-settings/widget-settings.component";
+import { NzToolTipModule } from "ng-zorro-antd/tooltip";
+import { RemoveSelectTitlesDirective } from "../../../../shared/directives/remove-select-titles.directive";
 
 describe('BlotterSettingsComponent', () => {
   let component: BlotterSettingsComponent;
@@ -33,15 +33,17 @@ describe('BlotterSettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
-        BlotterSettingsComponent
+        BlotterSettingsComponent,
+        RemoveSelectTitlesDirective
       ],
       imports: [
-        NoopAnimationsModule,
-        ReactiveFormsModule,
-        NzSelectModule,
-        NzSwitchModule,
-        ...sharedModuleImportForTests,
-        getTranslocoModule()
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot(),
+        StoreModule.forFeature(PortfoliosFeature),
+        TranslocoTestsModule.getModule(),
+        ...FormsTesting.getTestingModules(),
+        WidgetSettingsComponent,
+        NzToolTipModule
       ],
       providers: [
         {

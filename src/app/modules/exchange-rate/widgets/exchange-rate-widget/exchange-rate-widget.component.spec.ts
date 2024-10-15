@@ -4,15 +4,13 @@ import {
 } from '@angular/core/testing';
 
 import { ExchangeRateWidgetComponent } from './exchange-rate-widget.component';
-import {
-  mockComponent,
-  widgetSkeletonMock
-} from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { of } from 'rxjs';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
 
 describe('ExchangeRateWidgetComponent', () => {
   let component: ExchangeRateWidgetComponent;
@@ -22,7 +20,7 @@ describe('ExchangeRateWidgetComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         ExchangeRateWidgetComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-exchange-rate',
           inputs: ['guid']
         }),

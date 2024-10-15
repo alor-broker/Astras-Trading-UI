@@ -12,14 +12,11 @@ import {
   SubmitLimitOrderCommandArgs
 } from "./submit-limit-order-command";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
-import {
-  generateRandomString,
-  getRandomInt
-} from "../../../shared/utils/testing";
 import { OrderbookDataRow } from "../../orderbook/models/orderbook-data.model";
 import { Side } from "../../../shared/models/enums/side.model";
 import { PriceUnits } from "../models/scalper-order-book-settings.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
+import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
 
 describe('GetBestOfferCommand', () => {
   let command: GetBestOfferCommand;
@@ -48,18 +45,18 @@ describe('GetBestOfferCommand', () => {
 
   it('#sellBestBid should call service with appropriate data', fakeAsync(() => {
       const portfolioKey: PortfolioKey = {
-        exchange: generateRandomString(4),
-        portfolio: generateRandomString(5),
+        exchange: TestingHelpers.generateRandomString(4),
+        portfolio: TestingHelpers.generateRandomString(5),
       };
 
-      const symbol = generateRandomString(4);
+      const symbol = TestingHelpers.generateRandomString(4);
       const testInstrumentKey: InstrumentKey = {
         exchange: portfolioKey.exchange,
         symbol: symbol
       };
 
       submitLimitOrderCommandSpy.execute.and.callThrough();
-      const quantity = getRandomInt(1, 100);
+      const quantity = TestingHelpers.getRandomInt(1, 100);
 
       const testAsks: OrderbookDataRow[] = [
         { p: 6, v: 1, y: 0 },
@@ -112,18 +109,18 @@ describe('GetBestOfferCommand', () => {
 
   it('#buyBestAsk should call service with appropriate data', fakeAsync(() => {
       const portfolioKey: PortfolioKey = {
-        exchange: generateRandomString(4),
-        portfolio: generateRandomString(5),
+        exchange: TestingHelpers.generateRandomString(4),
+        portfolio: TestingHelpers.generateRandomString(5),
       };
 
-      const symbol = generateRandomString(4);
+      const symbol = TestingHelpers.generateRandomString(4);
       const testInstrumentKey: InstrumentKey = {
         exchange: portfolioKey.exchange,
         symbol: symbol
       };
 
       submitLimitOrderCommandSpy.execute.and.callThrough();
-      const quantity = getRandomInt(1, 100);
+      const quantity = TestingHelpers.getRandomInt(1, 100);
 
       const testAsks: OrderbookDataRow[] = [
         { p: 6, v: 1, y: 0 },

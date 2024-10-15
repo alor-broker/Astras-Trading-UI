@@ -9,10 +9,8 @@ import {
   MessageType,
   TextMessageContent
 } from "../../models/messages-display.model";
-import {
-  mockComponent,
-  ngZorroMockComponents
-} from "../../../../shared/utils/testing";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('ChatMessageContainerComponent', () => {
   let component: ChatMessageContainerComponent;
@@ -23,7 +21,7 @@ describe('ChatMessageContainerComponent', () => {
       imports: [BrowserAnimationsModule],
       declarations: [
         ChatMessageContainerComponent,
-        mockComponent({selector: 'ats-text-message', inputs: ['content']}),
+        ComponentHelpers.mockComponent({selector: 'ats-text-message', inputs: ['content']}),
         ...ngZorroMockComponents
       ]
     });

@@ -8,16 +8,13 @@ import {
   of,
   Subject
 } from "rxjs";
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  mockComponent,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
 import { LetDirective } from "@ngrx/component";
 import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
@@ -35,8 +32,7 @@ describe('PositionsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
-        ...sharedModuleImportForTests,
+        TranslocoTestsModule.getModule(),
         LetDirective
       ],
       providers: [
@@ -69,9 +65,9 @@ describe('PositionsComponent', () => {
       ],
       declarations: [
         PositionsComponent,
-        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
-        mockComponent({ selector: 'ats-instrument-badge-display', inputs: ['columns'] }),
-        mockComponent({
+        ComponentHelpers.mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-instrument-badge-display', inputs: ['columns'] }),
+        ComponentHelpers.mockComponent({
           selector: 'ats-add-to-watchlist-menu'
         })
       ]

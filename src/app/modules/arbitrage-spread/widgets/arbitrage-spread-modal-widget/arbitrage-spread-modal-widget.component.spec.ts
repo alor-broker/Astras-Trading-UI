@@ -1,10 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { ArbitrageSpreadModalWidgetComponent } from './arbitrage-spread-modal-widget.component';
 import { ModalService } from "../../../../shared/services/modal.service";
-import { BehaviorSubject, of } from "rxjs";
+import {
+  BehaviorSubject,
+  of
+} from "rxjs";
 import { ArbitrageSpreadService } from "../../services/arbitrage-spread.service";
-import { getTranslocoModule, ngZorroMockComponents } from "../../../../shared/utils/testing";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('ArbitrageSpreadModalWidgetComponent', () => {
   let component: ArbitrageSpreadModalWidgetComponent;
@@ -16,7 +23,7 @@ describe('ArbitrageSpreadModalWidgetComponent', () => {
         ArbitrageSpreadModalWidgetComponent,
         ...ngZorroMockComponents
       ],
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       providers: [
         {
           provide: ModalService,
@@ -35,7 +42,7 @@ describe('ArbitrageSpreadModalWidgetComponent', () => {
         }
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(ArbitrageSpreadModalWidgetComponent);
     component = fixture.componentInstance;

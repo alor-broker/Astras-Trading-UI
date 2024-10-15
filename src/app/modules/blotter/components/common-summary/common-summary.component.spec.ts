@@ -6,9 +6,9 @@ import { of } from 'rxjs';
 
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { CommonSummaryComponent } from './common-summary.component';
-import { getTranslocoModule } from "../../../../shared/utils/testing";
 import {PortfolioSummaryService} from "../../../../shared/services/portfolio-summary.service";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('CommonSummaryComponent', () => {
   let component: CommonSummaryComponent;
@@ -31,7 +31,7 @@ describe('CommonSummaryComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [CommonSummaryComponent],
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
       ],
       providers: [
         { provide: PortfolioSummaryService, useValue: spyPortfolioSummaryService },

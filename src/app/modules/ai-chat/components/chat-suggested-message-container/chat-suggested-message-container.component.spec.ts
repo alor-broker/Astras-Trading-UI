@@ -5,7 +5,7 @@ import {
 
 import { ChatSuggestedMessageContainerComponent } from './chat-suggested-message-container.component';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { mockComponent } from "../../../../shared/utils/testing";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('ChatSuggestedMessageContainerComponent', () => {
   let component: ChatSuggestedMessageContainerComponent;
@@ -16,7 +16,7 @@ describe('ChatSuggestedMessageContainerComponent', () => {
       imports: [BrowserAnimationsModule],
       declarations: [
         ChatSuggestedMessageContainerComponent,
-        mockComponent({selector: 'ats-text-message', inputs: ['content']}),
+        ComponentHelpers.mockComponent({selector: 'ats-text-message', inputs: ['content']}),
       ]
     })
       .compileComponents();

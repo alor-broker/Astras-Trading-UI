@@ -51,9 +51,7 @@ describe('Widget Settings Store', () => {
         StoreModule.forRoot({}),
         EffectsModule.forRoot(),
         StoreModule.forFeature(WidgetSettingsFeature),
-        EffectsModule.forFeature([
-          WidgetSettingsEffects
-        ])
+        EffectsModule.forFeature([WidgetSettingsEffects])
       ],
       providers: []
     });
