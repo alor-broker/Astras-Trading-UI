@@ -3,7 +3,6 @@ import { Position } from "../../../shared/models/positions/position.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { Side } from "../../../shared/models/enums/side.model";
 import { CommandBase } from "./command-base";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import {
   NewLimitOrder,
@@ -12,7 +11,6 @@ import {
 } from "../../../shared/models/orders/new-order.model";
 import { toInstrumentKey } from "../../../shared/utils/instruments";
 import { PriceUnits } from "../models/scalper-order-book-settings.model";
-import { OrdersGroupService } from "../../../shared/services/orders/orders-group.service";
 import { OrderType } from "../../../shared/models/orders/order.model";
 import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
 import {
@@ -24,6 +22,7 @@ import { LessMore } from "../../../shared/models/enums/less-more.model";
 import { GuidGenerator } from "../../../shared/utils/guid";
 import { take } from "rxjs";
 import { LocalOrderTracker } from "./local-order-tracker";
+import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
 
 export interface LimitOrderTracker extends LocalOrderTracker<NewLimitOrder> {
   beforeOrderCreated: (order: NewLimitOrder) => void;
@@ -55,9 +54,8 @@ export interface SubmitLimitOrderCommandArgs {
 })
 export class SubmitLimitOrderCommand extends CommandBase<SubmitLimitOrderCommandArgs> {
   constructor(
-    private readonly wsOrdersService: WsOrdersService,
-    private readonly ordersDialogService: OrdersDialogService,
-    private readonly ordersGroupService: OrdersGroupService
+    private readonly orderCommandService: OrderCommandService,
+    private readonly ordersDialogService: OrdersDialogService
   ) {
     super();
   }
@@ -293,7 +291,7 @@ export class SubmitLimitOrderCommand extends CommandBase<SubmitLimitOrderCommand
         });
       }
 
-      this.ordersGroupService.submitOrdersGroup(orders, args.targetPortfolio, ExecutionPolicy.TriggerBracketOrders).pipe(
+      this.orderCommandService.submitOrdersGroup(orders, args.targetPortfolio, ExecutionPolicy.TriggerBracketOrders).pipe(
         take(1)
       ).subscribe(result => {
         if (limitOrder.meta?.trackId != null) {
@@ -301,7 +299,7 @@ export class SubmitLimitOrderCommand extends CommandBase<SubmitLimitOrderCommand
         }
       });
     } else {
-      this.wsOrdersService.submitLimitOrder(limitOrder, args.targetPortfolio).pipe(
+      this.orderCommandService.submitLimitOrder(limitOrder, args.targetPortfolio).pipe(
         take(1)
       ).subscribe(result => {
         if (limitOrder.meta?.trackId != null) {

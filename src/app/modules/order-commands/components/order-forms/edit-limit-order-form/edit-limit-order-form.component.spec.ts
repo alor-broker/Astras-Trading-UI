@@ -22,7 +22,6 @@ import { Order } from "../../../../../shared/models/orders/order.model";
 import { InstrumentsService } from "../../../../instruments/services/instruments.service";
 import { LimitOrderEdit } from "../../../../../shared/models/orders/edit-order.model";
 import { OrderFormState } from "../../../models/order-form.model";
-import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
 import { Side } from "../../../../../shared/models/enums/side.model";
 import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
 import { TestData } from "../../../../../shared/utils/testing/test-data";
@@ -30,6 +29,7 @@ import { ComponentHelpers } from "../../../../../shared/utils/testing/component-
 import { commonTestProviders } from "../../../../../shared/utils/testing/common-test-providers";
 import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
 import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
+import { OrderCommandService } from "../../../../../shared/services/orders/order-command.service";
 
 describe('EditLimitOrderFormComponent', () => {
   let component: EditLimitOrderFormComponent;
@@ -74,7 +74,7 @@ describe('EditLimitOrderFormComponent', () => {
   };
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('OrderService', ['submitLimitOrderEdit']);
+    orderServiceSpy = jasmine.createSpyObj('OrderCommandService', ['submitLimitOrderEdit']);
     orderServiceSpy.submitLimitOrderEdit.and.returnValue(new BehaviorSubject({ isSuccess: true }));
 
     orderDetailsServiceSpy = jasmine.createSpyObj('OrderDetailsService', ['getLimitOrderDetails']);
@@ -117,7 +117,7 @@ describe('EditLimitOrderFormComponent', () => {
           }
         },
         {
-          provide: WsOrdersService,
+          provide: OrderCommandService,
           useValue: orderServiceSpy
         },
         {

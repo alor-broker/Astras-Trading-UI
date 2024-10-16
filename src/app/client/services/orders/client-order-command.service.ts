@@ -1,52 +1,72 @@
-import { Injectable } from '@angular/core';
-import {
-  NewLimitOrder,
-  NewMarketOrder,
-  NewOrderBase,
-  NewStopLimitOrder,
-  NewStopMarketOrder,
-  OrderCommandResult
-} from "../../models/orders/new-order.model";
-import {
-  forkJoin,
-  Observable,
-  switchMap,
-  take
-} from "rxjs";
-import {
-  LimitOrderEdit,
-  StopLimitOrderEdit,
-  StopMarketOrderEdit
-} from "../../models/orders/edit-order.model";
 import {
   CommandRequest,
   CommandResponse,
   WsOrdersConnector
 } from "./ws-orders-connector";
-import {
-  map,
-  tap
-} from "rxjs/operators";
 import { InstrumentsService } from "../../../modules/instruments/services/instruments.service";
-import { OrderInstantTranslatableNotificationsService } from "./order-instant-translatable-notifications.service";
-import { OptionalProperty } from "../../utils/types";
-import { toUnixTimestampSeconds } from "../../utils/datetime";
-import { TradingStatus } from "../../models/instruments/instrument.model";
+import { OrderInstantTranslatableNotificationsService } from "../../../shared/services/orders/order-instant-translatable-notifications.service";
+import {
+  NewLimitOrder,
+  NewLinkedOrder,
+  NewMarketOrder,
+  NewOrderBase,
+  NewStopLimitOrder,
+  NewStopMarketOrder,
+  OrderCommandResult
+} from "../../../shared/models/orders/new-order.model";
+import {
+  forkJoin,
+  Observable,
+  of,
+  switchMap,
+  take,
+  tap
+} from "rxjs";
 import {
   OrderType,
   TimeInForce
-} from "../../models/orders/order.model";
-import { InstrumentKey } from "../../models/instruments/instrument-key.model";
+} from "../../../shared/models/orders/order.model";
+import {
+  LimitOrderEdit,
+  StopLimitOrderEdit,
+  StopMarketOrderEdit
+} from "../../../shared/models/orders/edit-order.model";
+import { TradingStatus } from "../../../shared/models/instruments/instrument.model";
+import { map } from "rxjs/operators";
+import { OptionalProperty } from "../../../shared/utils/types";
+import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
+import { toUnixTimestampSeconds } from "../../../shared/utils/datetime";
+import { Injectable } from "@angular/core";
+import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  CreateOrderGroupReq,
+  ExecutionPolicy,
+  GroupCreatedEventKey,
+  SubmitGroupResult
+} from "../../../shared/models/orders/orders-group.model";
+import { catchHttpError } from "../../../shared/utils/observable-helper";
+import { HttpClient } from "@angular/common/http";
+import { EnvironmentService } from "../../../shared/services/environment.service";
+import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
+import { EventBusService } from "../../../shared/services/event-bus.service";
 
-@Injectable({
-  providedIn: 'root'
-})
-export class WsOrdersService {
+interface GroupItem {
+  result: OrderCommandResult;
+  sourceOrder: NewLinkedOrder;
+}
+
+@Injectable()
+export class ClientOrderCommandService extends OrderCommandService {
   constructor(
     private readonly ordersConnector: WsOrdersConnector,
     private readonly instrumentsService: InstrumentsService,
     private readonly instantNotificationsService: OrderInstantTranslatableNotificationsService,
+    private readonly httpClient: HttpClient,
+    private readonly environmentService: EnvironmentService,
+    private readonly errorHandlerService: ErrorHandlerService,
+    private readonly eventBusService: EventBusService
   ) {
+    super();
     ordersConnector.warmUp();
   }
 
@@ -165,6 +185,31 @@ export class WsOrdersService {
     return forkJoin(requests);
   }
 
+  submitOrdersGroup(orders: NewLinkedOrder[], portfolio: string, executionPolicy: ExecutionPolicy): Observable<SubmitGroupResult | null> {
+    const items = this.prepareGroupItems(orders, portfolio);
+
+    return forkJoin(items)
+      .pipe(
+        switchMap(ordersRes => {
+          if (!ordersRes.length) {
+            return of(null);
+          }
+
+          const failedOrders = ordersRes.filter(x => x.result.orderNumber == null);
+          if (failedOrders.length > 0) {
+            const cancelRequests = ordersRes.filter(x => x.result.orderNumber != null);
+            if (cancelRequests.length == 0) {
+              return of(null);
+            }
+
+            return this.rollbackItems(cancelRequests, portfolio);
+          }
+
+          return this.submitGroupRequest(ordersRes, portfolio, executionPolicy);
+        })
+      );
+  }
+
   private prepareOrderCreateCommand<T extends NewOrderBase>(
     type: OrderType,
     baseRequest: T,
@@ -265,5 +310,82 @@ export class WsOrdersService {
     }
 
     return toUnixTimestampSeconds(stopEndUnixTime);
+  }
+
+  private prepareGroupItems(orders: NewLinkedOrder[], portfolio: string): Observable<GroupItem>[] {
+    const toSubmitResult = (stream: Observable<OrderCommandResult>, sourceOrder: NewLinkedOrder): Observable<GroupItem> => {
+      return stream.pipe(
+        map(result => ({ result, sourceOrder }))
+      );
+    };
+
+    return orders.map(o => {
+      switch (o.type) {
+        case OrderType.Limit:
+          return toSubmitResult(this.submitLimitOrder(o as NewLimitOrder, portfolio), o);
+        case OrderType.StopMarket:
+          return toSubmitResult(this.submitStopMarketOrder(o as NewStopMarketOrder, portfolio), o);
+        case OrderType.StopLimit:
+          return toSubmitResult(this.submitStopLimitOrder(o as NewStopLimitOrder, portfolio), o);
+        default:
+          throw new Error(`Order type '${o.type}' is not supported`);
+      }
+    });
+  }
+
+  private rollbackItems(items: GroupItem[], portfolio: string): Observable<null> {
+    const cancelRequests = items.map(x => ({
+      orderId: x.result.orderNumber!,
+      portfolio: portfolio,
+      exchange: x.sourceOrder.instrument.exchange,
+      orderType: x.sourceOrder.type
+    }));
+
+    return this.cancelOrders(cancelRequests).pipe(
+      map(() => null)
+    );
+  }
+
+  private submitGroupRequest(items: GroupItem[], portfolio: string, executionPolicy: ExecutionPolicy): Observable<SubmitGroupResult | null> {
+    return this.httpClient.post<SubmitGroupResult>(
+      `${this.environmentService.apiUrl}/commandapi/api/orderGroups`,
+      {
+        orders: items.map(i => ({
+          orderId: i.result.orderNumber,
+          exchange: i.sourceOrder.instrument.exchange,
+          portfolio: portfolio,
+          type: this.toApiOrderType(i.sourceOrder.type)
+        })),
+        executionPolicy
+      } as CreateOrderGroupReq
+    ).pipe(
+      catchHttpError<SubmitGroupResult | null>(null, this.errorHandlerService),
+      tap(res => {
+        if (res != null && res.message === 'success') {
+          this.eventBusService.publish({ key: GroupCreatedEventKey});
+          setTimeout(() => this.instantNotificationsService.ordersGroupCreated(items.map(o => o.result.orderNumber).join(', ')));
+        } else {
+          this.rollbackItems(items, portfolio).pipe(
+            take(1)
+          ).subscribe();
+        }
+      }),
+      take(1)
+    );
+  }
+
+  private toApiOrderType(type: OrderType): string {
+    switch (type) {
+      case OrderType.Market:
+        return 'Market';
+      case OrderType.Limit:
+        return 'Limit';
+      case OrderType.StopMarket:
+        return 'Stop';
+      case OrderType.StopLimit:
+        return 'StopLimit';
+      default:
+        throw new Error(`Unsupported order type ${type}`);
+    }
   }
 }

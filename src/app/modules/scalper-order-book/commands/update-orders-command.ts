@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { CurrentOrderDisplay } from "../models/scalper-order-book.model";
 import { CommandBase } from "./command-base";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import { OrderType } from "../../../shared/models/orders/order.model";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { OrderFormType } from "../../../shared/models/orders/orders-dialog.model";
+import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
 
 export interface UpdateOrdersCommandArgs {
   ordersToUpdate: CurrentOrderDisplay[];
@@ -18,7 +18,7 @@ export interface UpdateOrdersCommandArgs {
 })
 export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
   constructor(
-    private readonly wsOrdersService: WsOrdersService,
+    private readonly orderCommandService: OrderCommandService,
     private readonly ordersDialogService: OrdersDialogService
   ) {
     super();
@@ -43,7 +43,7 @@ export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
 
         switch (order.type) {
           case OrderType.Limit:
-            this.wsOrdersService.submitLimitOrderEdit({
+            this.orderCommandService.submitLimitOrderEdit({
                 ...baseOrderEditData,
                 price: args.updates.price,
               },
@@ -51,7 +51,7 @@ export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
             ).subscribe();
             break;
           case OrderType.StopLimit:
-            this.wsOrdersService.submitStopLimitOrderEdit({
+            this.orderCommandService.submitStopLimitOrderEdit({
                 ...baseOrderEditData,
                 condition: order.condition!,
                 triggerPrice: args.updates.price,
@@ -69,7 +69,7 @@ export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
             ).subscribe();
             break;
           case OrderType.StopMarket:
-            this.wsOrdersService.submitStopMarketOrderEdit({
+            this.orderCommandService.submitStopMarketOrderEdit({
                 ...baseOrderEditData,
                 condition: order.condition!,
                 triggerPrice: args.updates.price,

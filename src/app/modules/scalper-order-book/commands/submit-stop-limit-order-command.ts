@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { Side } from "../../../shared/models/enums/side.model";
 import { CommandBase } from "./command-base";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { NewStopLimitOrder } from "../../../shared/models/orders/new-order.model";
@@ -12,6 +11,7 @@ import { OrderFormType } from "../../../shared/models/orders/orders-dialog.model
 import { LocalOrderTracker } from "./local-order-tracker";
 import { GuidGenerator } from "../../../shared/utils/guid";
 import { take } from "rxjs";
+import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
 
 export interface StopLimitOrderTracker extends LocalOrderTracker<NewStopLimitOrder> {
   beforeOrderCreated: (order: NewStopLimitOrder) => void;
@@ -37,7 +37,7 @@ export interface SubmitStopLimitOrderCommandArgs {
 })
 export class SubmitStopLimitOrderCommand extends CommandBase<SubmitStopLimitOrderCommandArgs> {
   constructor(
-    private readonly wsOrdersService: WsOrdersService,
+    private readonly orderCommandService: OrderCommandService,
     private readonly ordersDialogService: OrdersDialogService
   ) {
     super();
@@ -67,7 +67,7 @@ export class SubmitStopLimitOrderCommand extends CommandBase<SubmitStopLimitOrde
     if (args.silent) {
       args.orderTracker?.beforeOrderCreated(order);
 
-      this.wsOrdersService.submitStopLimitOrder(order, args.targetPortfolio).pipe(
+      this.orderCommandService.submitStopLimitOrder(order, args.targetPortfolio).pipe(
         take(1)
       ).subscribe(result => {
         if (order.meta?.trackId != null) {

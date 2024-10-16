@@ -18,25 +18,25 @@ import {
   tap,
   timer
 } from "rxjs";
-import { EnvironmentService } from "../environment.service";
-import { LoggerService } from "../logging/logger.service";
-import {
-  RXJS_WEBSOCKET_CTOR,
-  WsOptions
-} from "../../constants/ws.constants";
-import {
-  webSocket,
-  WebSocketSubject
-} from "rxjs/webSocket";
-import { GuidGenerator } from "../../utils/guid";
 import {
   catchError,
   finalize,
   map,
   takeWhile,
 } from "rxjs/operators";
-import { isOnline$ } from "../../utils/network";
-import { ApiTokenProviderService } from "../auth/api-token-provider.service";
+import {
+  webSocket,
+  WebSocketSubject
+} from "rxjs/webSocket";
+import {
+  RXJS_WEBSOCKET_CTOR,
+  WsOptions
+} from "../../../shared/constants/ws.constants";
+import { EnvironmentService } from "../../../shared/services/environment.service";
+import { ApiTokenProviderService } from "../../../shared/services/auth/api-token-provider.service";
+import { LoggerService } from "../../../shared/services/logging/logger.service";
+import { GuidGenerator } from "../../../shared/utils/guid";
+import { isOnline$ } from "../../../shared/utils/network";
 
 export interface CommandRequest {
   opcode: string;

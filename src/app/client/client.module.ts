@@ -15,6 +15,8 @@ import { SESSION_CONTEXT } from "../shared/services/auth/session-context";
 import { AtsStoreModule } from "../store/ats-store.module";
 import { AREA_HOOKS } from "./area-hooks";
 import { ClientAuthContextService } from "./services/auth/client-auth-context.service";
+import { OrderCommandService } from "../shared/services/orders/order-command.service";
+import { ClientOrderCommandService } from "./services/orders/client-order-command.service";
 
 const routes: Routes = [
   {
@@ -73,6 +75,10 @@ const routes: Routes = [
     {
       provide: SESSION_CONTEXT,
       useExisting: ClientAuthContextService
+    },
+    {
+      provide: OrderCommandService,
+      useClass: ClientOrderCommandService
     },
     ...AREA_HOOKS
   ]

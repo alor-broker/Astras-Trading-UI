@@ -49,3 +49,5 @@ export interface SubmitGroupResult {
   message: string;
   groupId: string;
 }
+
+export const GroupCreatedEventKey = 'OrdersGroupCreatedEvent';

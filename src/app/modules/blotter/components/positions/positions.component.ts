@@ -25,9 +25,9 @@ import { MarketType } from "../../../../shared/models/portfolio-key.model";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { OrderCommandService } from "../../../../shared/services/orders/order-command.service";
 
 interface PositionDisplay extends Position {
   id: string;
@@ -181,7 +181,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
     private readonly service: BlotterService,
     protected readonly settingsService: WidgetSettingsService,
     protected readonly translatorService: TranslatorService,
-    protected readonly wsOrdersService: WsOrdersService,
+    protected readonly orderCommandService: OrderCommandService,
     protected readonly nzContextMenuService: NzContextMenuService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     protected readonly destroyRef: DestroyRef
@@ -297,11 +297,11 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
   }
 
   closePosition(position: PositionDisplay): void {
-    CommonOrderCommands.closePositionByMarket(position, null, this.wsOrdersService);
+    CommonOrderCommands.closePositionByMarket(position, null, this.orderCommandService);
   }
 
   reversePosition(position: PositionDisplay): void {
-    CommonOrderCommands.reversePositionsByMarket(position, null, this.wsOrdersService);
+    CommonOrderCommands.reversePositionsByMarket(position, null, this.orderCommandService);
   }
 
   closeAllPositions(positions: readonly PositionDisplay[]): void {

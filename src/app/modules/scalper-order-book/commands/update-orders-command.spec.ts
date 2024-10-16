@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { UpdateOrdersCommand } from "./update-orders-command";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
+import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
 
 describe('UpdateOrdersCommand', () => {
   let command: UpdateOrdersCommand;
@@ -10,7 +10,14 @@ describe('UpdateOrdersCommand', () => {
   let ordersDialogServiceSpy: any;
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['submitStopLimitOrder']);
+    orderServiceSpy = jasmine.createSpyObj(
+      'OrderCommandService',
+      [
+        'submitLimitOrderEdit',
+        'submitStopLimitOrderEdit',
+        'submitStopMarketOrderEdit'
+      ]
+    );
     ordersDialogServiceSpy = jasmine.createSpyObj('OrdersDialogService', ['openNewOrderDialog']);
   });
 
@@ -18,7 +25,7 @@ describe('UpdateOrdersCommand', () => {
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: WsOrdersService,
+          provide: OrderCommandService,
           useValue: orderServiceSpy
         },
         {

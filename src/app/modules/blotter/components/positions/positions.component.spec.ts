@@ -9,12 +9,12 @@ import {
   Subject
 } from "rxjs";
 import { LetDirective } from "@ngrx/component";
-import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { OrderCommandService } from "../../../../shared/services/orders/order-command.service";
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
@@ -42,7 +42,7 @@ describe('PositionsComponent', () => {
         },
         { provide: BlotterService, useClass: MockServiceBlotter },
         {
-          provide: WsOrdersService,
+          provide: OrderCommandService,
           useValue: {
             submitMarketOrder: jasmine.createSpy('submitMarketOrder').and.callThrough()
           }

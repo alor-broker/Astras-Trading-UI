@@ -37,13 +37,13 @@ import { TimezoneConverter } from "../../../../../shared/utils/timezone-converte
 import { TimezoneDisplayOption } from "../../../../../shared/models/enums/timezone-display-option";
 import { registerLocaleData } from "@angular/common";
 import localeRu from '@angular/common/locales/ru';
-import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
 import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
 import { TestData } from "../../../../../shared/utils/testing/test-data";
 import { commonTestProviders } from "../../../../../shared/utils/testing/common-test-providers";
 import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
 import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
 import { NzDatePickerModule } from "ng-zorro-antd/date-picker";
+import { OrderCommandService } from "../../../../../shared/services/orders/order-command.service";
 
 describe('EditStopOrderFormComponent', () => {
   let component: EditStopOrderFormComponent;
@@ -92,7 +92,7 @@ describe('EditStopOrderFormComponent', () => {
   };
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('OrderService', ['submitStopLimitOrderEdit', 'submitStopMarketOrderEdit']);
+    orderServiceSpy = jasmine.createSpyObj('OrderCommandService', ['submitStopLimitOrderEdit', 'submitStopMarketOrderEdit']);
     orderServiceSpy.submitStopLimitOrderEdit.and.returnValue(new BehaviorSubject({isSuccess: true}));
     orderServiceSpy.submitStopMarketOrderEdit.and.returnValue(new BehaviorSubject({isSuccess: true}));
 
@@ -140,7 +140,7 @@ describe('EditStopOrderFormComponent', () => {
           }
         },
         {
-          provide: WsOrdersService,
+          provide: OrderCommandService,
           useValue: orderServiceSpy
         },
         {

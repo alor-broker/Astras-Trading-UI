@@ -31,7 +31,7 @@ import { DashboardContextService } from '../../../shared/services/dashboard-cont
 import { OrderbookSettings } from '../models/orderbook-settings.model';
 import { QuotesService } from "../../../shared/services/quotes.service";
 import { Quote } from "../../../shared/models/quotes/quote.model";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
+import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
 
 @Injectable()
 export class OrderbookService {
@@ -39,7 +39,7 @@ export class OrderbookService {
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly currentDashboardService: DashboardContextService,
-    private readonly wsOrdersService: WsOrdersService,
+    private readonly orderCommandService: OrderCommandService,
     private readonly quotesService: QuotesService
   ) {
   }
@@ -103,7 +103,7 @@ export class OrderbookService {
   }
 
   cancelOrder(order: CurrentOrder): void {
-    this.wsOrdersService.cancelOrders([{
+    this.orderCommandService.cancelOrders([{
       orderId: order.orderId,
       orderType: order.type,
       exchange: order.exchange,

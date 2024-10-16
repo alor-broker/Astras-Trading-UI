@@ -4,9 +4,9 @@ import { OrdersBasketComponent } from './orders-basket.component';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { Subject } from 'rxjs';
 import { EvaluationService } from '../../../../shared/services/evaluation.service';
-import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { OrderCommandService } from "../../../../shared/services/orders/order-command.service";
 
 describe('OrdersBasketComponent', () => {
   let component: OrdersBasketComponent;
@@ -29,7 +29,7 @@ describe('OrdersBasketComponent', () => {
           }
         },
         {
-          provide: WsOrdersService,
+          provide: OrderCommandService,
           useValue: {
             getSettings: jasmine.createSpy('submitLimitOrder').and.returnValue(new Subject())
           }

@@ -42,8 +42,8 @@ import {
   getConditionSign,
   getConditionTypeByString
 } from "../../../shared/utils/order-conditions-helper";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
+import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
 
 class OrdersState {
   readonly limitOrders = new Map<string, IOrderLineAdapter>();
@@ -87,7 +87,7 @@ export class OrdersDisplayExtension extends BaseExtension {
   constructor(
     private readonly currentDashboardService: DashboardContextService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly wsOrdersService: WsOrdersService,
+    private readonly orderCommandService: OrderCommandService,
     private readonly ordersDialogService: OrdersDialogService,
     private readonly translatorService: TranslatorService
   ) {
@@ -264,7 +264,7 @@ export class OrdersDisplayExtension extends BaseExtension {
     orderLineAdapter.setText('L')
       .setTooltip(`${translator([order.side === Side.Buy ? 'buy' : 'sell'])} ${translator(['limit'])}`)
       .setPrice(order.price)
-      .onCancel(() => this.wsOrdersService.cancelOrders([{
+      .onCancel(() => this.orderCommandService.cancelOrders([{
           orderId: order.id,
           portfolio: order.portfolio,
           exchange: order.exchange,
@@ -324,7 +324,7 @@ export class OrdersDisplayExtension extends BaseExtension {
       .setText(orderText)
       .setTooltip(orderTooltip)
       .setPrice(order.triggerPrice)
-      .onCancel(() => this.wsOrdersService.cancelOrders([{
+      .onCancel(() => this.orderCommandService.cancelOrders([{
           orderId: order.id,
           portfolio: order.portfolio,
           exchange: order.exchange,

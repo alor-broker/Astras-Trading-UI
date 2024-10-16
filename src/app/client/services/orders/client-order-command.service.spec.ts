@@ -1,39 +1,43 @@
-import {
-  fakeAsync,
-  TestBed,
-  tick
-} from '@angular/core/testing';
-
-import { WsOrdersService } from './ws-orders.service';
-import {
-  CommandResponse,
-  WsOrdersConnector
-} from "./ws-orders-connector";
+import { ClientOrderCommandService } from "./client-order-command.service";
 import {
   of,
   Subject
 } from "rxjs";
+import {
+  fakeAsync,
+  TestBed,
+  tick
+} from "@angular/core/testing";
+import {
+  CommandResponse,
+  WsOrdersConnector
+} from "./ws-orders-connector";
 import { InstrumentsService } from "../../../modules/instruments/services/instruments.service";
-import { OrderInstantTranslatableNotificationsService } from "./order-instant-translatable-notifications.service";
+import { OrderInstantTranslatableNotificationsService } from "../../../shared/services/orders/order-instant-translatable-notifications.service";
 import {
   NewLimitOrder,
   NewMarketOrder,
   NewStopLimitOrder,
   NewStopMarketOrder,
   OrderCommandResult
-} from "../../models/orders/new-order.model";
-import { Side } from "../../models/enums/side.model";
-import { LessMore } from "../../models/enums/less-more.model";
-import { toUnixTimestampSeconds } from "../../utils/datetime";
+} from "../../../shared/models/orders/new-order.model";
+import { Side } from "../../../shared/models/enums/side.model";
+import { LessMore } from "../../../shared/models/enums/less-more.model";
+import { toUnixTimestampSeconds } from "../../../shared/utils/datetime";
 import {
   LimitOrderEdit,
   StopLimitOrderEdit,
   StopMarketOrderEdit
-} from "../../models/orders/edit-order.model";
-import { OrderType } from "../../models/orders/order.model";
+} from "../../../shared/models/orders/edit-order.model";
+import { OrderType } from "../../../shared/models/orders/order.model";
+import { EnvironmentService } from "../../../shared/services/environment.service";
+import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
+import { provideHttpClient } from "@angular/common/http";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
+import { EventBusService } from "../../../shared/services/event-bus.service";
 
-describe('WsOrdersService', () => {
-  let service: WsOrdersService;
+describe('ClientOrderCommandService', () => {
+  let service: ClientOrderCommandService;
   let wsConnectorSpy: any;
   let instrumentsServiceSpy: any;
   let orderInstantTranslatableNotificationsServiceSpy: any;
@@ -62,6 +66,7 @@ describe('WsOrdersService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        ClientOrderCommandService,
         {
           provide: WsOrdersConnector,
           useValue: wsConnectorSpy
@@ -73,10 +78,30 @@ describe('WsOrdersService', () => {
         {
           provide: OrderInstantTranslatableNotificationsService,
           useValue: orderInstantTranslatableNotificationsServiceSpy
-        }
+        },
+        {
+          provide: EnvironmentService,
+          useValue: {
+            apiUrl: ''
+          }
+        },
+        {
+          provide: ErrorHandlerService,
+          useValue: {
+            handleError: jasmine.createSpy('handleError').and.callThrough()
+          }
+        },
+        {
+          provide: EventBusService,
+          useValue: {
+            publish: jasmine.createSpy('publish').and.callThrough()
+          }
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ]
     });
-    service = TestBed.inject(WsOrdersService);
+    service = TestBed.inject(ClientOrderCommandService);
   });
 
   describe('Common checks', () => {

@@ -7,7 +7,7 @@ import { of, filter, take, skip } from "rxjs";
 import { Side } from "../../../shared/models/enums/side.model";
 import { PortfolioSubscriptionsService } from "../../../shared/services/portfolio-subscriptions.service";
 import { ArbitrageSpread } from "../models/arbitrage-spread.model";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
+import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
 
 const spreadItem: ArbitrageSpread = {
   id: 'spreadId',
@@ -39,10 +39,10 @@ const quote = {
 
 describe('ArbitrageSpreadService', () => {
   let service: ArbitrageSpreadService;
-  const localStorageSpy = jasmine.createSpyObj('localStorageSpy', ['getItem', 'setItem']);
-  const orderServiceSpy = jasmine.createSpyObj('orderServiceSpy', ['submitMarketOrder']);
-  const quotesServiceSpy = jasmine.createSpyObj('quotesServiceSpy', ['getQuotes']);
-  const portfolioSubscriptionsServiceSpy = jasmine.createSpyObj('portfolioSubscriptionsServiceSpy', ['getAllPositionsSubscription']);
+  const localStorageSpy = jasmine.createSpyObj('LocalStorageService', ['getItem', 'setItem']);
+  const orderServiceSpy = jasmine.createSpyObj('OrderCommandService', ['submitMarketOrder']);
+  const quotesServiceSpy = jasmine.createSpyObj('QuotesService', ['getQuotes']);
+  const portfolioSubscriptionsServiceSpy = jasmine.createSpyObj('PortfolioSubscriptionsService', ['getAllPositionsSubscription']);
 
   beforeEach(() => {
     localStorageSpy.getItem = jasmine.createSpy('getItem').and.returnValue([]);
@@ -59,7 +59,7 @@ describe('ArbitrageSpreadService', () => {
           useValue: quotesServiceSpy
         },
         {
-          provide: WsOrdersService,
+          provide: OrderCommandService,
           useValue: orderServiceSpy
         },
         {

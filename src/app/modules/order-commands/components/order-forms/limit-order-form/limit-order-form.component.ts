@@ -60,9 +60,8 @@ import {
   toUnixTime
 } from "../../../../../shared/utils/datetime";
 import { MarketService } from "../../../../../shared/services/market.service";
-import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
-import { OrdersGroupService } from "../../../../../shared/services/orders/orders-group.service";
 import { Market } from "../../../../../../generated/graphql.types";
+import { OrderCommandService } from "../../../../../shared/services/orders/order-command.service";
 
 @Component({
   selector: 'ats-limit-order-form',
@@ -156,8 +155,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     private readonly formBuilder: FormBuilder,
     protected readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly wsOrdersService: WsOrdersService,
-    private readonly ordersGroupService: OrdersGroupService,
+    private readonly orderCommandService: OrderCommandService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly marketService: MarketService,
     protected readonly destroyRef: DestroyRef) {
@@ -246,9 +244,9 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
         const bracketOrders = this.getBracketOrders(limitOrder);
 
         if (bracketOrders.length === 0) {
-          return this.wsOrdersService.submitLimitOrder(limitOrder, portfolioKey.portfolio);
+          return this.orderCommandService.submitLimitOrder(limitOrder, portfolioKey.portfolio);
         } else {
-          return this.ordersGroupService.submitOrdersGroup([
+          return this.orderCommandService.submitOrdersGroup([
               {
                 ...limitOrder,
                 type: OrderType.Limit

@@ -57,8 +57,7 @@ import {
   ExecutionPolicy,
   SubmitGroupResult
 } from "../../../../../shared/models/orders/orders-group.model";
-import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
-import { OrdersGroupService } from "../../../../../shared/services/orders/orders-group.service";
+import { OrderCommandService } from "../../../../../shared/services/orders/order-command.service";
 
 @Component({
   selector: 'ats-stop-order-form',
@@ -150,8 +149,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     private readonly formBuilder: FormBuilder,
     protected readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly wsOrdersService: WsOrdersService,
-    private readonly ordersGroupService: OrdersGroupService,
+    private readonly orderCommandService: OrderCommandService,
     private readonly quotesService: QuotesService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly destroyRef: DestroyRef) {
@@ -259,7 +257,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
               type: OrderType.StopMarket
             };
 
-          return this.ordersGroupService.submitOrdersGroup(
+          return this.orderCommandService.submitOrdersGroup(
             [
               baseOrder,
               linkedOrder
@@ -269,12 +267,12 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
           );
         } else {
           if (formValue.withLimit === true) {
-            return this.wsOrdersService.submitStopLimitOrder(
+            return this.orderCommandService.submitStopLimitOrder(
               this.getStopLimitOrder(instrument, side, formValue, tc),
               portfolioKey.portfolio
             );
           } else {
-            return this.wsOrdersService.submitStopMarketOrder(
+            return this.orderCommandService.submitStopMarketOrder(
               this.getStopMarketOrder(instrument, side, formValue, tc),
               portfolioKey.portfolio
             );

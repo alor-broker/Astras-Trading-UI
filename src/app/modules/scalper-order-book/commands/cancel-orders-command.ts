@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CommandBase } from "./command-base";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrderType } from "../../../shared/models/orders/order.model";
+import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
 
 export interface CancelOrdersCommandArgs {
   ordersToCancel: {
@@ -16,11 +16,11 @@ export interface CancelOrdersCommandArgs {
   providedIn: 'root'
 })
 export class CancelOrdersCommand extends CommandBase<CancelOrdersCommandArgs> {
-  constructor(private readonly wsOrdersService: WsOrdersService) {
+  constructor(private readonly orderCommandService: OrderCommandService) {
     super();
   }
 
   execute(args: CancelOrdersCommandArgs): void {
-    this.wsOrdersService.cancelOrders(args.ordersToCancel).subscribe();
+    this.orderCommandService.cancelOrders(args.ordersToCancel).subscribe();
   }
 }
