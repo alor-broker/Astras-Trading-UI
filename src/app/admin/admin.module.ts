@@ -13,6 +13,8 @@ import { USER_CONTEXT } from "../shared/services/auth/user-context";
 import { SESSION_CONTEXT } from "../shared/services/auth/session-context";
 import { AREA_HOOKS } from "../client/area-hooks";
 import { AdminAuthContextService } from "./services/auth/admin-auth-context.service";
+import { OrderCommandService } from "../shared/services/orders/order-command.service";
+import { AdminOrderCommandService } from "./services/orders/admin-order-command.service";
 
 const routes: Routes = [
   {
@@ -44,6 +46,10 @@ const routes: Routes = [
     {
       provide: SESSION_CONTEXT,
       useExisting: AdminAuthContextService
+    },
+    {
+      provide: OrderCommandService,
+      useClass: AdminOrderCommandService
     },
     ...AREA_HOOKS
   ]

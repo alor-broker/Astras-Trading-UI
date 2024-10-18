@@ -42,14 +42,6 @@ export interface NewStopLimitOrder extends NewStopMarketOrder {
   timeInForce?: TimeInForce;
 }
 
-export interface SubmitOrderResponse {
-  message: string;
-  // # of successfully placed order
-  orderNumber?: string;
-  // Error code if something went wrong
-  code?: string;
-}
-
 export interface OrderCommandResult {
   isSuccess: boolean;
   message: string;
