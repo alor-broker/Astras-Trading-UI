@@ -63,12 +63,21 @@ export class AdminOrderCommandService extends OrderCommandService {
           message: `Order type ${r.orderType} is not supported`
         } as OrderCommandResult);
       } else {
-        stream$ = this.httpClient.delete<OrderCommandResult>(`${this.baseApiUrl}/${r.orderId}`,
+        stream$ = this.httpClient.request<OrderCommandResult>(
+          'DELETE',
+          `${this.baseApiUrl}/${r.orderId}`,
           {
+            body: {
+              user: {
+                portfolio: r.portfolio
+              },
+              exchange: r.exchange
+            },
             headers: {
               'X-ALOR-REQID': GuidGenerator.newGuid()
             }
-          }).pipe(
+          }
+        ).pipe(
           catchHttpError<OrderCommandResult>(
             (err: HttpErrorResponse) => {
               return {
@@ -77,7 +86,7 @@ export class AdminOrderCommandService extends OrderCommandService {
               };
             }
             , this.errorHandlerService),
-          take(1),
+          take(1)
         );
       }
 

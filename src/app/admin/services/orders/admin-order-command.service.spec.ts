@@ -62,7 +62,7 @@ describe('AdminOrderCommandService', () => {
       [
         'post',
         'put',
-        'delete'
+        'request'
       ]);
   });
 
@@ -338,9 +338,10 @@ describe('AdminOrderCommandService', () => {
         orderType: OrderType.Limit
       };
 
-      httpSpy.delete.and.callFake((url: string) => {
+      httpSpy.request.and.callFake((method: string, url: string) => {
         done();
 
+        expect(method).toBe('DELETE');
         expect(url).toBe(`${baseApiUrl}/${request.orderId}`);
 
         return of({ orderNumber: request.orderId } as OrderCommandResponse);
@@ -372,7 +373,7 @@ describe('AdminOrderCommandService', () => {
           orderType: OrderType.Limit
         };
 
-        httpSpy.delete.and.returnValue(of({
+        httpSpy.request.and.returnValue(of({
           isSuccess: true,
           message: '',
           orderNumber: request.orderId
@@ -393,7 +394,7 @@ describe('AdminOrderCommandService', () => {
         orderType: OrderType.Limit
       };
 
-      httpSpy.delete.and.returnValue(of(null));
+      httpSpy.request.and.returnValue(of(null));
 
       service.cancelOrders([request]).subscribe();
 
