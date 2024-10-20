@@ -1,6 +1,7 @@
 ﻿import { Side } from "src/app/shared/models/enums/side.model";
 import { AllTradesItem } from "../../../shared/models/all-trades.model";
 import { AggregatedTradesIterator } from "./aggregated-trades-iterator";
+import { CustomIteratorWrapper } from "../../../shared/utils/array-iterators";
 
 describe('AggregatedTradesIterator', () => {
   const createTrade = (price: number, side: Side, qty: number, timestamp: number): AllTradesItem => {
@@ -251,5 +252,68 @@ describe('AggregatedTradesIterator', () => {
           .toEqual(testCase.done);
       }
     });
+  });
+
+  it('should correctly apply aggregation when some deals are ahead of another', () => {
+    const timeframe = 52;
+    const tradesData = [
+      {
+        "id": 1892949987524967700,
+        "orderno": 0,
+        "symbol": "SI-12.24",
+        "board": "RFUD",
+        "qty": 1,
+        "price": 94971,
+        "time": "2024-10-18T11:24:57.6674490Z",
+        "timestamp": 1729250697667,
+        "oi": 5366242,
+        "existing": false,
+        "side": "sell"
+      },
+      {
+        "id": 1892949987524967700,
+        "orderno": 0,
+        "symbol": "SI-12.24",
+        "board": "RFUD",
+        "qty": 1,
+        "price": 94968,
+        "time": "2024-10-18T11:24:57.6684880Z",
+        "timestamp": 1729250697668,
+        "oi": 5366240,
+        "existing": false,
+        "side": "sell"
+      },
+      {
+        "id": 1892949987524967700,
+        "orderno": 0,
+        "symbol": "SI-12.24",
+        "board": "RFUD",
+        "qty": 2,
+        "price": 94971,
+        "time": "2024-10-18T11:24:57.6666920Z",
+        "timestamp": 1729250697666,
+        "oi": 5366242,
+        "existing": false,
+        "side": "sell"
+      }
+    ];
+
+    const trades: AllTradesItem[] = tradesData.map(x =>
+      createTrade(
+        x['price'],
+        x['side'] == 'buy' ? Side.Buy : Side.Sell,
+        x['qty'],
+        x['timestamp']
+      )
+    );
+
+    for (const trade of new CustomIteratorWrapper(() => new AggregatedTradesIterator(trades, timeframe))) {
+      expect(trade)
+        .not.toBeNull();
+
+      if (trade == null) {
+        break;
+      }
+    }
   });
 });

@@ -86,6 +86,11 @@ export class AggregatedTradesIterator implements Iterator<AggregatedTrade | null
       const tradeSide = currentTrade.side as Side;
       lastSide = lastSide ?? tradeSide;
 
+      if (currentTrade.timestamp > bounds.end) {
+        this.currentIndex--;
+        continue;
+      }
+
       if (currentTrade.timestamp >= bounds.start && currentTrade.timestamp <= bounds.end) {
         if (tradeSide === lastSide) {
           aggregatedTrades.push(currentTrade);
