@@ -1,11 +1,17 @@
-import { Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable
+} from '@angular/core';
 import { CurrentOrderDisplay } from "../models/scalper-order-book.model";
 import { CommandBase } from "./command-base";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import { OrderType } from "../../../shared/models/orders/order.model";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { OrderFormType } from "../../../shared/models/orders/orders-dialog.model";
-import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../shared/services/orders/order-command.service";
 
 export interface UpdateOrdersCommandArgs {
   ordersToUpdate: CurrentOrderDisplay[];
@@ -13,11 +19,10 @@ export interface UpdateOrdersCommandArgs {
   silent: boolean;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
   constructor(
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     private readonly orderCommandService: OrderCommandService,
     private readonly ordersDialogService: OrdersDialogService
   ) {

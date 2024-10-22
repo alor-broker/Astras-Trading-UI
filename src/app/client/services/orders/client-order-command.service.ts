@@ -49,6 +49,7 @@ import { HttpClient } from "@angular/common/http";
 import { EnvironmentService } from "../../../shared/services/environment.service";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { EventBusService } from "../../../shared/services/event-bus.service";
+import { OrdersConfig } from "../../../shared/models/orders/orders-config.model";
 
 interface GroupItem {
   result: OrderCommandResult;
@@ -56,7 +57,7 @@ interface GroupItem {
 }
 
 @Injectable()
-export class ClientOrderCommandService extends OrderCommandService {
+export class ClientOrderCommandService implements OrderCommandService {
   constructor(
     private readonly ordersConnector: WsOrdersConnector,
     private readonly instrumentsService: InstrumentsService,
@@ -66,7 +67,6 @@ export class ClientOrderCommandService extends OrderCommandService {
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly eventBusService: EventBusService
   ) {
-    super();
     ordersConnector.warmUp();
   }
 
@@ -208,6 +208,23 @@ export class ClientOrderCommandService extends OrderCommandService {
           return this.submitGroupRequest(ordersRes, portfolio, executionPolicy);
         })
       );
+  }
+
+  getOrdersConfig(): OrdersConfig {
+    return {
+      limitOrder: {
+        isSupported: true,
+        orderConfig: {
+          isBracketsSupported: true
+        }
+      },
+      marketOrder: {
+        isSupported: true
+      },
+      stopOrder: {
+        isSupported: true
+      }
+    };
   }
 
   private prepareOrderCreateCommand<T extends NewOrderBase>(
@@ -362,7 +379,7 @@ export class ClientOrderCommandService extends OrderCommandService {
       catchHttpError<SubmitGroupResult | null>(null, this.errorHandlerService),
       tap(res => {
         if (res != null && res.message === 'success') {
-          this.eventBusService.publish({ key: GroupCreatedEventKey});
+          this.eventBusService.publish({ key: GroupCreatedEventKey });
           setTimeout(() => this.instantNotificationsService.ordersGroupCreated(items.map(o => o.result.orderNumber).join(', ')));
         } else {
           this.rollbackItems(items, portfolio).pipe(

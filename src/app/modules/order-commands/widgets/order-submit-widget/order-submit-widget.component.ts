@@ -1,6 +1,7 @@
 import {
   Component,
   DestroyRef,
+  Inject,
   Input,
   OnInit
 } from '@angular/core';
@@ -33,6 +34,10 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 import { tap } from "rxjs/operators";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../../shared/services/orders/order-command.service";
 
 @Component({
   selector: 'ats-order-submit-widget',
@@ -54,6 +59,7 @@ export class OrderSubmitWidgetComponent implements OnInit {
 
   settings$!: Observable<OrderSubmitSettings>;
   showBadge$!: Observable<boolean>;
+  readonly ordersConfig = this.orderCommandService.getOrdersConfig();
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
@@ -62,6 +68,8 @@ export class OrderSubmitWidgetComponent implements OnInit {
     private readonly instrumentService: InstrumentsService,
     private readonly commonParametersService: CommonParametersService,
     private readonly widgetsSharedDataService: WidgetsSharedDataService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
+    private readonly orderCommandService: OrderCommandService,
     private readonly destroyRef: DestroyRef
   ) {
   }

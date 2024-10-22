@@ -14,7 +14,9 @@ import { NewStopMarketOrder } from "../../../shared/models/orders/new-order.mode
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import { ScalperOrderBookInstantTranslatableNotificationsService } from "../services/scalper-order-book-instant-translatable-notifications.service";
 import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
-import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('SetStopLossCommand', () => {
   let command: SetStopLossCommand;
@@ -32,8 +34,9 @@ describe('SetStopLossCommand', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        SetStopLossCommand,
         {
-          provide: OrderCommandService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
         {

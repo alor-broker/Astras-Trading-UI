@@ -27,50 +27,62 @@
 
                 <div>
                   <nz-tabset #orderTabs nzSize="small" nzTabPosition="top" [style.max-height]="(tabSetHeight$ | async) + 'px'">
-                    <nz-tab #limitOrderTab [nzTitle]="t('orderCommands.limitOrderTabTitle')">
-                      <ats-limit-order-form
-                        (submitted)="closeDialog()"
-                        [activated]="limitOrderTab.isActive"
-                        [initialValues]="dialogParams.initialValues"
-                        [instrument]="currentInstrument"
-                        [portfolioKey]="currentPortfolio"
-                      ></ats-limit-order-form>
-                    </nz-tab>
+                    <ng-container *ngIf="ordersConfig">
+                      <nz-tab
+                        *ngIf="ordersConfig.limitOrder.isSupported"
+                        #limitOrderTab
+                        [nzTitle]="t('orderCommands.limitOrderTabTitle')">
+                        <ats-limit-order-form
+                          (submitted)="closeDialog()"
+                          [activated]="limitOrderTab.isActive"
+                          [initialValues]="dialogParams.initialValues"
+                          [instrument]="currentInstrument"
+                          [portfolioKey]="currentPortfolio"
+                          [limitOrderConfig]="ordersConfig.limitOrder.orderConfig!"
+                        ></ats-limit-order-form>
+                      </nz-tab>
 
-                    <nz-tab #marketOrderTab [nzTitle]="t('orderCommands.marketOrderTabTitle')">
-                      <ats-market-order-form
-                        (submitted)="closeDialog()"
-                        [activated]="marketOrderTab.isActive"
-                        [instrument]="currentInstrument"
-                        [portfolioKey]="currentPortfolio"
-                        [initialValues]="dialogParams.initialValues"
-                      ></ats-market-order-form>
-                    </nz-tab>
+                      <nz-tab
+                        *ngIf="ordersConfig.marketOrder.isSupported"
+                        #marketOrderTab
+                        [nzTitle]="t('orderCommands.marketOrderTabTitle')">
+                        <ats-market-order-form
+                          (submitted)="closeDialog()"
+                          [activated]="marketOrderTab.isActive"
+                          [instrument]="currentInstrument"
+                          [portfolioKey]="currentPortfolio"
+                          [initialValues]="dialogParams.initialValues"
+                        ></ats-market-order-form>
+                      </nz-tab>
 
-                    <nz-tab #stopOrderTab [nzTitle]="t('orderCommands.stopOrderTabTitle')">
-                      <ats-stop-order-form
-                        (submitted)="closeDialog()"
-                        [activated]="stopOrderTab.isActive"
-                        [instrument]="currentInstrument"
-                        [portfolioKey]="currentPortfolio"
-                        [initialValues]="dialogParams.initialValues"
-                      ></ats-stop-order-form>
-                    </nz-tab>
+                      <nz-tab
+                        *ngIf="ordersConfig.stopOrder.isSupported"
+                        #stopOrderTab
+                        [nzTitle]="t('orderCommands.stopOrderTabTitle')">
+                        <ats-stop-order-form
+                          (submitted)="closeDialog()"
+                          [activated]="stopOrderTab.isActive"
+                          [instrument]="currentInstrument"
+                          [portfolioKey]="currentPortfolio"
+                          [initialValues]="dialogParams.initialValues"
+                        ></ats-stop-order-form>
+                      </nz-tab>
 
-                    <nz-tab #notificationsTab [nzTitle]="titleTemplate">
-                      <ng-template #titleTemplate>
-                    <span>
-                      <span nz-icon nzTheme="outline" nzType="bell"></span>
-                      <span class="pl-2">{{t('orderCommands.notificationsTabTitle')}}</span>
-                    </span>
-                      </ng-template>
-                      <ats-setup-instrument-notifications
-                        [active]="notificationsTab.isActive"
-                        [instrumentKey]="currentInstrument"
-                        [initialValues]="dialogParams.initialValues"
-                      >
-                      </ats-setup-instrument-notifications>
-                    </nz-tab>
+                      <nz-tab #notificationsTab [nzTitle]="titleTemplate">
+                        <ng-template #titleTemplate>
+                      <span>
+                        <span nz-icon nzTheme="outline" nzType="bell"></span>
+                        <span class="pl-2">{{t('orderCommands.notificationsTabTitle')}}</span>
+                      </span>
+                        </ng-template>
+                        <ats-setup-instrument-notifications
+                          [active]="notificationsTab.isActive"
+                          [instrumentKey]="currentInstrument"
+                          [initialValues]="dialogParams.initialValues"
+                        >
+                        </ats-setup-instrument-notifications>
+                      </nz-tab>
+                    </ng-container>
                   </nz-tabset>
                 </div>
               </div>

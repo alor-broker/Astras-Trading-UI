@@ -19,7 +19,9 @@ import {
 } from "../../../shared/models/orders/orders-dialog.model";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
-import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('SubmitStopLimitOrderCommand', () => {
   let command: SubmitStopLimitOrderCommand;
@@ -35,8 +37,9 @@ describe('SubmitStopLimitOrderCommand', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        SubmitStopLimitOrderCommand,
         {
-          provide: OrderCommandService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
         {

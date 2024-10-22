@@ -150,7 +150,7 @@
                   </nz-form-item>
                 </ng-container>
 
-                <div class="d-flex flex-gap-10">
+                <div class="d-flex flex-gap-10" *ngIf="limitOrderConfig.isBracketsSupported">
                   <nz-form-item class="compact flex-shrink-2 w-100">
                     <nz-form-label class="flex-fill" nzFor="topOrderPrice">
                       {{t('orderCommandsOrderForms.topOrderPriceLabel')}}
@@ -187,7 +187,7 @@
                   </nz-form-item>
                 </div>
 
-                <div class="d-flex flex-gap-10">
+                <div class="d-flex flex-gap-10" *ngIf="limitOrderConfig.isBracketsSupported">
                   <nz-form-item class="compact flex-shrink-2 w-100">
                     <nz-form-label class="flex-fill" nzFor="bottomOrderPrice">
                       {{t('orderCommandsOrderForms.bottomOrderPriceLabel')}}

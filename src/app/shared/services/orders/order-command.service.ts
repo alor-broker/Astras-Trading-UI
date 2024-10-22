@@ -17,32 +17,38 @@ import {
   ExecutionPolicy,
   SubmitGroupResult
 } from "../../models/orders/orders-group.model";
+import { OrdersConfig } from "../../models/orders/orders-config.model";
+import { InjectionToken } from "@angular/core";
 
-export abstract class OrderCommandService {
-  abstract submitMarketOrder(order: NewMarketOrder, portfolio: string): Observable<OrderCommandResult>;
+export const ORDER_COMMAND_SERVICE_TOKEN = new InjectionToken<OrderCommandService>('OrderCommandServiceToken');
 
-  abstract submitLimitOrder(order: NewLimitOrder, portfolio: string): Observable<OrderCommandResult>;
+export interface OrderCommandService {
+  submitMarketOrder(order: NewMarketOrder, portfolio: string): Observable<OrderCommandResult>;
 
-  abstract submitStopMarketOrder(order: NewStopMarketOrder, portfolio: string): Observable<OrderCommandResult>;
+  submitLimitOrder(order: NewLimitOrder, portfolio: string): Observable<OrderCommandResult>;
 
-  abstract submitStopLimitOrder(order: NewStopLimitOrder, portfolio: string): Observable<OrderCommandResult>;
+  submitStopMarketOrder(order: NewStopMarketOrder, portfolio: string): Observable<OrderCommandResult>;
 
-  abstract submitOrdersGroup(
+  submitStopLimitOrder(order: NewStopLimitOrder, portfolio: string): Observable<OrderCommandResult>;
+
+  submitOrdersGroup(
     orders: NewLinkedOrder[],
     portfolio: string,
     executionPolicy: ExecutionPolicy
   ): Observable<SubmitGroupResult | null>;
 
-  abstract submitLimitOrderEdit(orderEdit: LimitOrderEdit, portfolio: string): Observable<OrderCommandResult>;
+  submitLimitOrderEdit(orderEdit: LimitOrderEdit, portfolio: string): Observable<OrderCommandResult>;
 
-  abstract submitStopMarketOrderEdit(orderEdit: StopMarketOrderEdit, portfolio: string): Observable<OrderCommandResult>;
+  submitStopMarketOrderEdit(orderEdit: StopMarketOrderEdit, portfolio: string): Observable<OrderCommandResult>;
 
-  abstract submitStopLimitOrderEdit(orderEdit: StopLimitOrderEdit, portfolio: string): Observable<OrderCommandResult>;
+  submitStopLimitOrderEdit(orderEdit: StopLimitOrderEdit, portfolio: string): Observable<OrderCommandResult>;
 
-  abstract cancelOrders(cancelRequests: {
+  cancelOrders(cancelRequests: {
     orderId: string;
     portfolio: string;
     exchange: string;
     orderType: OrderType;
   }[]): Observable<OrderCommandResult[]>;
+
+  getOrdersConfig(): OrdersConfig;
 }

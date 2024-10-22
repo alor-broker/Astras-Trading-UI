@@ -5,7 +5,9 @@ import {Subject} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import { OrderCommandService } from "../../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../../shared/services/orders/order-command.service";
 
 describe('LimitOrderPriceChangeComponent', () => {
   let component: LimitOrderPriceChangeComponent;
@@ -26,7 +28,7 @@ describe('LimitOrderPriceChangeComponent', () => {
           }
         },
         {
-          provide: OrderCommandService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: {
             getInstrumentPositionSubscription: jasmine.createSpy('submitLimitOrderEdit').and.returnValue(new Subject())
           }

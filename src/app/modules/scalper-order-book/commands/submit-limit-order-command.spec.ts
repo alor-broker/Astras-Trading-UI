@@ -24,7 +24,9 @@ import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.mode
 import { PriceUnits } from "../models/scalper-order-book-settings.model";
 import { toInstrumentKey } from "../../../shared/utils/instruments";
 import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
-import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('SubmitLimitOrderCommand', () => {
   let command: SubmitLimitOrderCommand;
@@ -40,8 +42,9 @@ describe('SubmitLimitOrderCommand', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        SubmitLimitOrderCommand,
         {
-          provide: OrderCommandService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
         {

@@ -1,4 +1,12 @@
-import { Component, DestroyRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  EventEmitter,
+  Inject,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import {
   distinctUntilChanged,
   Observable,
@@ -27,7 +35,10 @@ import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { OrderCommandService } from "../../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../../shared/services/orders/order-command.service";
 
 interface PositionDisplay extends Position {
   id: string;
@@ -181,6 +192,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
     private readonly service: BlotterService,
     protected readonly settingsService: WidgetSettingsService,
     protected readonly translatorService: TranslatorService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     protected readonly orderCommandService: OrderCommandService,
     protected readonly nzContextMenuService: NzContextMenuService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,

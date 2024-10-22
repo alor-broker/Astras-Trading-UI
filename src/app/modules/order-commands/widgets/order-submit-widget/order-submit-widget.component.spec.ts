@@ -10,6 +10,7 @@ import {CommonParametersService} from "../../services/common-parameters.service"
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
+import { ORDER_COMMAND_SERVICE_TOKEN } from "../../../../shared/services/orders/order-command.service";
 
 describe('OrderSubmitWidgetComponent', () => {
   let component: OrderSubmitWidgetComponent;
@@ -54,6 +55,12 @@ describe('OrderSubmitWidgetComponent', () => {
           provide: WidgetsSharedDataService,
           useValue: {
             getDataProvideValues: jasmine.createSpy('getDataProvideValues').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
+          useValue: {
+            getOrdersConfig: jasmine.createSpy('getOrdersConfig').and.returnValue({ })
           }
         }
       ]

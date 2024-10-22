@@ -1,4 +1,7 @@
-import { Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable
+} from '@angular/core';
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { Side } from "../../../shared/models/enums/side.model";
 import { CommandBase } from "./command-base";
@@ -6,7 +9,10 @@ import { OrdersDialogService } from "../../../shared/services/orders/orders-dial
 import { NewMarketOrder } from "../../../shared/models/orders/new-order.model";
 import { toInstrumentKey } from "../../../shared/utils/instruments";
 import { OrderFormType } from "../../../shared/models/orders/orders-dialog.model";
-import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../shared/services/orders/order-command.service";
 
 export interface SubmitMarketOrderCommandArgs {
   instrumentKey: InstrumentKey;
@@ -16,11 +22,10 @@ export interface SubmitMarketOrderCommandArgs {
   silent: boolean;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class SubmitMarketOrderCommand extends CommandBase<SubmitMarketOrderCommandArgs> {
   constructor(
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     private readonly orderCommandService: OrderCommandService,
     private readonly ordersDialogService: OrdersDialogService
   ) {

@@ -28,6 +28,7 @@ import { ErrorHandlerService } from "../../../shared/services/handle-error/error
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { LimitOrderEdit } from "../../../shared/models/orders/edit-order.model";
 import { SubmitGroupResult } from "../../../shared/models/orders/orders-group.model";
+import { OrdersConfig } from "../../../shared/models/orders/orders-config.model";
 
 export interface OrderCommandResponse {
   message: string;
@@ -36,7 +37,7 @@ export interface OrderCommandResponse {
 }
 
 @Injectable()
-export class AdminOrderCommandService extends OrderCommandService {
+export class AdminOrderCommandService implements OrderCommandService {
   private readonly baseApiUrl = this.environmentService.apiUrl + '/commandapi/api/v2/admin/orders';
 
   constructor(
@@ -45,7 +46,6 @@ export class AdminOrderCommandService extends OrderCommandService {
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly instantNotificationsService: OrderInstantTranslatableNotificationsService,
   ) {
-    super();
   }
 
   cancelOrders(cancelRequests: {
@@ -158,6 +158,23 @@ export class AdminOrderCommandService extends OrderCommandService {
 
   submitStopMarketOrderEdit(): Observable<OrderCommandResult> {
     return this.createEditStreamWithUnsupportedError(OrderType.StopMarket);
+  }
+
+  getOrdersConfig(): OrdersConfig {
+    return {
+      limitOrder: {
+        isSupported: true,
+        orderConfig: {
+          isBracketsSupported: false
+        }
+      },
+      marketOrder: {
+        isSupported: false
+      },
+      stopOrder: {
+        isSupported: false
+      }
+    };
   }
 
   private createSubmitStreamWithUnsupportedError(orderType: OrderType): Observable<OrderCommandResult> {

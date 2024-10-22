@@ -1,4 +1,11 @@
-import { Component, DestroyRef, EventEmitter, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  EventEmitter,
+  Inject,
+  OnInit,
+  Output
+} from '@angular/core';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -36,7 +43,10 @@ import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { OrderCommandService } from "../../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../../shared/services/orders/order-command.service";
 
 interface DisplayOrder extends StopOrder {
   residue: string;
@@ -229,6 +239,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
   constructor(
     protected readonly service: BlotterService,
     protected readonly settingsService: WidgetSettingsService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     private readonly orderCommandService: OrderCommandService,
     private readonly ordersDialogService: OrdersDialogService,
     private readonly timezoneConverterService: TimezoneConverterService,

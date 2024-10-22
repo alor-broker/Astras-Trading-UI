@@ -151,6 +151,7 @@ describe('ScalperCommandProcessorService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        ScalperCommandProcessorService,
         {
           provide: ScalperHotKeyCommandService,
           useValue: {

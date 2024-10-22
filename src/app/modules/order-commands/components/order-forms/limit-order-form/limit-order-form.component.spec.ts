@@ -32,7 +32,9 @@ import { commonTestProviders } from "../../../../../shared/utils/testing/common-
 import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
 import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
 import { BuySellButtonsComponent } from "../../buy-sell-buttons/buy-sell-buttons.component";
-import { OrderCommandService } from "../../../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN
+} from "../../../../../shared/services/orders/order-command.service";
 
 describe('LimitOrderFormComponent', () => {
   let component: LimitOrderFormComponent;
@@ -118,7 +120,7 @@ describe('LimitOrderFormComponent', () => {
           }
         },
         {
-          provide: OrderCommandService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
         {
@@ -152,6 +154,10 @@ describe('LimitOrderFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LimitOrderFormComponent);
     component = fixture.componentInstance;
+    component.limitOrderConfig = {
+      isBracketsSupported: true
+    };
+
     fixture.detectChanges();
   });
 

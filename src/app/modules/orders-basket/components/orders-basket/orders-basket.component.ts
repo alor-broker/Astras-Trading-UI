@@ -1,6 +1,7 @@
 import {
   Component,
   DestroyRef,
+  Inject,
   Input,
   OnDestroy,
   OnInit
@@ -52,7 +53,10 @@ import {
   NewLimitOrder,
   OrderCommandResult
 } from "../../../../shared/models/orders/new-order.model";
-import { OrderCommandService } from "../../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../../shared/services/orders/order-command.service";
 
 @Component({
   selector: 'ats-orders-basket',
@@ -98,6 +102,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     private readonly orderCommandService: OrderCommandService,
     private readonly evaluationService: EvaluationService,
     private readonly formBuilder: FormBuilder,

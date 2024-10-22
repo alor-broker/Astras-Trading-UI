@@ -1,4 +1,7 @@
-import { Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable
+} from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable, of, switchMap, take, tap } from "rxjs";
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
 import { ArbitrageSpread, SpreadLeg } from "../models/arbitrage-spread.model";
@@ -9,11 +12,12 @@ import { PortfolioSubscriptionsService } from "../../../shared/services/portfoli
 import { OrderCommandResult } from "../../../shared/models/orders/new-order.model";
 import { Position } from "../../../shared/models/positions/position.model";
 import { Quote } from "../../../shared/models/quotes/quote.model";
-import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../shared/services/orders/order-command.service";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class ArbitrageSpreadService {
   private readonly spreadsKey = 'arbitration-spreads';
   private readonly spreads$ = new BehaviorSubject<ArbitrageSpread[]>([]);
@@ -26,6 +30,7 @@ export class ArbitrageSpreadService {
   constructor(
     private readonly localStorage: LocalStorageService,
     private readonly quotesService: QuotesService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     private readonly orderCommandService: OrderCommandService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService
   ) {

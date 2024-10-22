@@ -1,6 +1,7 @@
 import {
   Component,
   DestroyRef,
+  Inject,
   Input,
   OnDestroy,
   OnInit
@@ -61,7 +62,11 @@ import {
 } from "../../../../../shared/utils/datetime";
 import { MarketService } from "../../../../../shared/services/market.service";
 import { Market } from "../../../../../../generated/graphql.types";
-import { OrderCommandService } from "../../../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../../../shared/services/orders/order-command.service";
+import { LimitOrderConfig } from "../../../../../shared/models/orders/orders-config.model";
 
 @Component({
   selector: 'ats-limit-order-form',
@@ -151,10 +156,14 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     };
   } | null = null;
 
+  @Input({required: true})
+  limitOrderConfig!: LimitOrderConfig;
+
   constructor(
     private readonly formBuilder: FormBuilder,
     protected readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     private readonly orderCommandService: OrderCommandService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly marketService: MarketService,
@@ -428,6 +437,13 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       this.disableControl(this.form.controls.timeInForce);
     } else {
       this.enableControl(this.form.controls.timeInForce);
+    }
+
+    if(!this.limitOrderConfig.isBracketsSupported) {
+      this.disableControl(this.form.controls.topOrderPrice);
+      this.disableControl(this.form.controls.topOrderSide);
+      this.disableControl(this.form.controls.bottomOrderPrice);
+      this.disableControl(this.form.controls.bottomOrderSide);
     }
 
     this.form.updateValueAndValidity();

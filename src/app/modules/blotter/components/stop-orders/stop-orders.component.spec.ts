@@ -15,7 +15,9 @@ import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { OrderCommandService } from "../../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../../shared/services/orders/order-command.service";
 
 describe('StopOrdersComponent', () => {
   let component: StopOrdersComponent;
@@ -47,7 +49,7 @@ describe('StopOrdersComponent', () => {
         },
         { provide: BlotterService, useClass: MockServiceBlotter },
         {
-          provide: OrderCommandService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: {
             cancelOrders: jasmine.createSpy('cancelOrders').and.returnValue(new Subject())
           }

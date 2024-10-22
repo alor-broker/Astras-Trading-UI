@@ -1,4 +1,7 @@
-import { Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable
+} from '@angular/core';
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { Side } from "../../../shared/models/enums/side.model";
 import { CommandBase } from "./command-base";
@@ -11,7 +14,10 @@ import { OrderFormType } from "../../../shared/models/orders/orders-dialog.model
 import { LocalOrderTracker } from "./local-order-tracker";
 import { GuidGenerator } from "../../../shared/utils/guid";
 import { take } from "rxjs";
-import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../shared/services/orders/order-command.service";
 
 export interface StopLimitOrderTracker extends LocalOrderTracker<NewStopLimitOrder> {
   beforeOrderCreated: (order: NewStopLimitOrder) => void;
@@ -32,11 +38,10 @@ export interface SubmitStopLimitOrderCommandArgs {
   orderTracker?: StopLimitOrderTracker;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class SubmitStopLimitOrderCommand extends CommandBase<SubmitStopLimitOrderCommandArgs> {
   constructor(
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     private readonly orderCommandService: OrderCommandService,
     private readonly ordersDialogService: OrdersDialogService
   ) {

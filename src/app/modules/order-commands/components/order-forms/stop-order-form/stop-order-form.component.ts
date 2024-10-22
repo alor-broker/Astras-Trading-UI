@@ -1,6 +1,7 @@
 import {
   Component,
   DestroyRef,
+  Inject,
   Input,
   OnDestroy,
   OnInit
@@ -57,7 +58,10 @@ import {
   ExecutionPolicy,
   SubmitGroupResult
 } from "../../../../../shared/models/orders/orders-group.model";
-import { OrderCommandService } from "../../../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../../../shared/services/orders/order-command.service";
 
 @Component({
   selector: 'ats-stop-order-form',
@@ -149,6 +153,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     private readonly formBuilder: FormBuilder,
     protected readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     private readonly orderCommandService: OrderCommandService,
     private readonly quotesService: QuotesService,
     private readonly timezoneConverterService: TimezoneConverterService,

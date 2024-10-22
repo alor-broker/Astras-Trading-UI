@@ -10,7 +10,9 @@ import {
 import { QuotesService } from "../../../shared/services/quotes.service";
 import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
 import { commonTestProviders } from "../../../shared/utils/testing/common-test-providers";
-import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('OrderbookService', () => {
   let service: OrderbookService;
@@ -38,7 +40,7 @@ describe('OrderbookService', () => {
         },
         { provide: PortfolioSubscriptionsService, useValue: portfolioSubscriptionsServiceSpy },
         {
-          provide: OrderCommandService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: {
             cancelOrders: jasmine.createSpy('cancelOrders').and.returnValue(new Subject())
           }

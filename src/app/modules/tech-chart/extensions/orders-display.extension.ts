@@ -12,7 +12,10 @@ import {
   switchMap,
   TeardownLogic
 } from "rxjs";
-import { Injectable } from "@angular/core";
+import {
+  Inject,
+  Injectable
+} from "@angular/core";
 import {
   Order,
   OrderType,
@@ -43,7 +46,10 @@ import {
   getConditionTypeByString
 } from "../../../shared/utils/order-conditions-helper";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
-import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../shared/services/orders/order-command.service";
 
 class OrdersState {
   readonly limitOrders = new Map<string, IOrderLineAdapter>();
@@ -87,6 +93,7 @@ export class OrdersDisplayExtension extends BaseExtension {
   constructor(
     private readonly currentDashboardService: DashboardContextService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     private readonly orderCommandService: OrderCommandService,
     private readonly ordersDialogService: OrdersDialogService,
     private readonly translatorService: TranslatorService

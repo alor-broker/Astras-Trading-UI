@@ -38,6 +38,17 @@ import { TopPanelComponent } from './components/top-panel/top-panel.component';
 import { InputNumberComponent } from "../../shared/components/input-number/input-number.component";
 import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
 import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
+import { CancelOrdersCommand } from "./commands/cancel-orders-command";
+import { ScalperCommandProcessorService } from "./services/scalper-command-processor.service";
+import { ClosePositionByMarketCommand } from "./commands/close-position-by-market-command";
+import { GetBestOfferCommand } from "./commands/get-best-offer-command";
+import { ReversePositionByMarketCommand } from "./commands/reverse-position-by-market-command";
+import { SetStopLossCommand } from "./commands/set-stop-loss-command";
+import { SubmitBestPriceOrderCommand } from "./commands/submit-best-price-order-command";
+import { SubmitLimitOrderCommand } from "./commands/submit-limit-order-command";
+import { SubmitMarketOrderCommand } from "./commands/submit-market-order-command";
+import { SubmitStopLimitOrderCommand } from "./commands/submit-stop-limit-order-command";
+import { UpdateOrdersCommand } from "./commands/update-orders-command";
 
 @NgModule({
   declarations: [
@@ -66,23 +77,36 @@ import { InstrumentSearchComponent } from "../../shared/components/instrument-se
     LimitOrdersVolumeIndicatorComponent,
     TopPanelComponent
   ],
-    imports: [
-        CommonModule,
-        SharedModule,
-        NzResizeObserverModule,
-        NzInputModule,
-        NzSpinModule,
-        CdkDropListGroup,
-        CdkDropList,
-        CdkDrag,
-        LetDirective,
-        NzSliderModule,
-        InputNumberComponent,
-        WidgetSettingsComponent,
-        InstrumentSearchComponent
-    ],
+  imports: [
+    CommonModule,
+    SharedModule,
+    NzResizeObserverModule,
+    NzInputModule,
+    NzSpinModule,
+    CdkDropListGroup,
+    CdkDropList,
+    CdkDrag,
+    LetDirective,
+    NzSliderModule,
+    InputNumberComponent,
+    WidgetSettingsComponent,
+    InstrumentSearchComponent
+  ],
   exports: [
     ScalperOrderBookWidgetComponent
+  ],
+  providers: [
+    CancelOrdersCommand,
+    ClosePositionByMarketCommand,
+    GetBestOfferCommand,
+    ReversePositionByMarketCommand,
+    SetStopLossCommand,
+    SubmitBestPriceOrderCommand,
+    SubmitLimitOrderCommand,
+    SubmitMarketOrderCommand,
+    SubmitStopLimitOrderCommand,
+    UpdateOrdersCommand,
+    ScalperCommandProcessorService,
   ]
 })
 export class ScalperOrderBookModule {

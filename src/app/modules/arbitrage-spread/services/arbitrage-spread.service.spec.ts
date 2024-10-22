@@ -7,7 +7,9 @@ import { of, filter, take, skip } from "rxjs";
 import { Side } from "../../../shared/models/enums/side.model";
 import { PortfolioSubscriptionsService } from "../../../shared/services/portfolio-subscriptions.service";
 import { ArbitrageSpread } from "../models/arbitrage-spread.model";
-import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN
+} from "../../../shared/services/orders/order-command.service";
 
 const spreadItem: ArbitrageSpread = {
   id: 'spreadId',
@@ -50,6 +52,7 @@ describe('ArbitrageSpreadService', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        ArbitrageSpreadService,
         {
           provide: LocalStorageService,
           useValue: localStorageSpy
@@ -59,7 +62,7 @@ describe('ArbitrageSpreadService', () => {
           useValue: quotesServiceSpy
         },
         {
-          provide: OrderCommandService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
         {

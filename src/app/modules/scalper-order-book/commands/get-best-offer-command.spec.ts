@@ -30,6 +30,7 @@ describe('GetBestOfferCommand', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        GetBestOfferCommand,
         {
           provide: SubmitLimitOrderCommand,
           useValue: submitLimitOrderCommandSpy

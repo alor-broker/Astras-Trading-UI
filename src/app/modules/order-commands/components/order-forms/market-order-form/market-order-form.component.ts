@@ -1,6 +1,7 @@
 import {
   Component,
   DestroyRef,
+  Inject,
   Input,
   OnDestroy,
   OnInit
@@ -37,7 +38,10 @@ import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
 import { SubmitGroupResult } from "../../../../../shared/models/orders/orders-group.model";
 import { OrderCommandResult } from "../../../../../shared/models/orders/new-order.model";
 import { toInstrumentKey } from "../../../../../shared/utils/instruments";
-import { OrderCommandService } from "../../../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../../../shared/services/orders/order-command.service";
 
 @Component({
   selector: 'ats-market-order-form',
@@ -72,6 +76,7 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
     protected commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly quotesService: QuotesService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     private readonly orderCommandService: OrderCommandService,
     protected readonly destroyRef: DestroyRef) {
     super(commonParametersService, destroyRef);

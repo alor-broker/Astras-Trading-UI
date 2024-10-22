@@ -1,4 +1,10 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {
+  Component,
+  Inject,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, shareReplay, take, withLatestFrom} from "rxjs";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {
@@ -11,7 +17,10 @@ import {filter, map} from "rxjs/operators";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
-import { OrderCommandService } from "../../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../../shared/services/orders/order-command.service";
 
 @Component({
   selector: 'ats-limit-order-price-change',
@@ -29,6 +38,7 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     private readonly orderCommandService: OrderCommandService,
   ) {
   }

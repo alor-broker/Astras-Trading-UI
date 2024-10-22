@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { UpdateOrdersCommand } from "./update-orders-command";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
-import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('UpdateOrdersCommand', () => {
   let command: UpdateOrdersCommand;
@@ -24,8 +26,9 @@ describe('UpdateOrdersCommand', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        UpdateOrdersCommand,
         {
-          provide: OrderCommandService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
         {

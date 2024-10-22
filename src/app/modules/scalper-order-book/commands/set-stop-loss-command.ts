@@ -1,4 +1,7 @@
-import { Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable
+} from '@angular/core';
 import { Position } from "../../../shared/models/positions/position.model";
 import { CommandBase } from "./command-base";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
@@ -10,7 +13,10 @@ import { OrderFormType } from "../../../shared/models/orders/orders-dialog.model
 import { LocalOrderTracker } from "./local-order-tracker";
 import { GuidGenerator } from "../../../shared/utils/guid";
 import { take } from "rxjs";
-import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../shared/services/orders/order-command.service";
 
 export interface StopMarketOrderTracker extends LocalOrderTracker<NewStopMarketOrder> {
   beforeOrderCreated: (order: NewStopMarketOrder) => void;
@@ -25,11 +31,10 @@ export interface SetStopLossCommandArgs {
   orderTracker?: StopMarketOrderTracker;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class SetStopLossCommand extends CommandBase<SetStopLossCommandArgs> {
   constructor(
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     private readonly orderCommandService: OrderCommandService,
     private readonly ordersDialogService: OrdersDialogService,
     private readonly notification: ScalperOrderBookInstantTranslatableNotificationsService,

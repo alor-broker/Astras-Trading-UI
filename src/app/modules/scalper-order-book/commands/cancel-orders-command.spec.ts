@@ -7,7 +7,9 @@ import {
 import { OrderType } from "../../../shared/models/orders/order.model";
 import { of } from "rxjs";
 import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
-import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('CancelOrdersCommand', () => {
   let command: CancelOrdersCommand;
@@ -21,8 +23,9 @@ describe('CancelOrdersCommand', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        CancelOrdersCommand,
         {
-          provide: OrderCommandService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
       ]

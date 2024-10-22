@@ -1,4 +1,7 @@
-import { Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable
+} from '@angular/core';
 import {
   combineLatest,
   Observable
@@ -31,7 +34,10 @@ import { DashboardContextService } from '../../../shared/services/dashboard-cont
 import { OrderbookSettings } from '../models/orderbook-settings.model';
 import { QuotesService } from "../../../shared/services/quotes.service";
 import { Quote } from "../../../shared/models/quotes/quote.model";
-import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../shared/services/orders/order-command.service";
 
 @Injectable()
 export class OrderbookService {
@@ -39,6 +45,7 @@ export class OrderbookService {
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly currentDashboardService: DashboardContextService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     private readonly orderCommandService: OrderCommandService,
     private readonly quotesService: QuotesService
   ) {

@@ -11,7 +11,9 @@ import { of } from "rxjs";
 import { Side } from "../../../shared/models/enums/side.model";
 import { NewMarketOrder } from "../../../shared/models/orders/new-order.model";
 import { TestingHelpers } from 'src/app/shared/utils/testing/testing-helpers';
-import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('ReversePositionByMarketCommand', () => {
   let command: ReversePositionByMarketCommand;
@@ -24,8 +26,9 @@ describe('ReversePositionByMarketCommand', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        ReversePositionByMarketCommand,
         {
-          provide: OrderCommandService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
       ]

@@ -1,5 +1,20 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, distinctUntilChanged, filter, Observable, shareReplay, switchMap, take, tap } from "rxjs";
+import {
+  Component,
+  Inject,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+import {
+  BehaviorSubject,
+  distinctUntilChanged,
+  filter,
+  Observable,
+  shareReplay,
+  switchMap,
+  take,
+  tap
+} from "rxjs";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
 import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
@@ -10,6 +25,10 @@ import {CommonParameters, CommonParametersService} from "../../services/common-p
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import {OrderDialogParams, OrderFormType} from "../../../../shared/models/orders/orders-dialog.model";
 import { HelpService } from "../../../../shared/services/help.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../../shared/services/orders/order-command.service";
 
 @Component({
   selector: 'ats-orders-dialog-widget',
@@ -39,12 +58,16 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
   @ViewChild('stopOrderTab', {static: false})
   stopOrderTab?: NzTabComponent;
 
+  readonly ordersConfig = this.orderCommandService.getOrdersConfig();
+
   constructor(
     private readonly ordersDialogService: OrdersDialogService,
     private readonly currentDashboardService: DashboardContextService,
     private readonly instrumentService: InstrumentsService,
     private readonly commonParametersService: CommonParametersService,
-    private readonly helpService: HelpService
+    private readonly helpService: HelpService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
+    private readonly orderCommandService: OrderCommandService,
   ) {
   }
 
