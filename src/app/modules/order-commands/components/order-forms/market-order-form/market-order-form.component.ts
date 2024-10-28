@@ -164,7 +164,7 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
       switchMap(x => this.quotesService.getQuotes(x.instrument.symbol, x.instrument.exchange, (this.form.controls.instrumentGroup.value as string | undefined) ?? x.instrument.instrumentGroup)),
       map(q => q.last_price),
       distinctUntilChanged((prev, curr) => prev === curr),
-      shareReplay(1)
+      shareReplay({bufferSize: 1, refCount: true})
     );
 
     combineLatest([

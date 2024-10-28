@@ -33,8 +33,8 @@ describe('WatchlistTableComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
 
   beforeEach(() => {
-    watchInstrumentsServiceSpy = jasmine.createSpyObj('WatchInstrumentsService', ['getWatched', 'clear', 'clearAll']);
-    watchInstrumentsServiceSpy.getWatched.and.returnValue(of([]));
+    watchInstrumentsServiceSpy = jasmine.createSpyObj('WatchInstrumentsService', ['subscribeToListUpdates', 'unsubscribeFromList', 'clearSubscriptions']);
+    watchInstrumentsServiceSpy.subscribeToListUpdates.and.returnValue(of([]));
 
     watchlistCollectionServiceSpy = jasmine.createSpyObj('WatchlistCollectionService', ['removeItemsFromList', 'getWatchlistCollection']);
 

@@ -168,7 +168,7 @@ export class InstrumentSelectComponent implements OnInit {
           .includes(listId);
 
         if (isRemoveWatchlist) {
-          this.watchInstrumentsService.clear(listId);
+          this.watchInstrumentsService.unsubscribeFromList(listId);
 
           this.settingsService.updateSettings(
             this.guid,

@@ -3,7 +3,7 @@ import {
   Observable,
   of,
   OperatorFunction,
-  pipe
+  pipe,
 } from 'rxjs';
 import {
   catchError,

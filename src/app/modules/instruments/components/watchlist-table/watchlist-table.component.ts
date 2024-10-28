@@ -1,19 +1,22 @@
 import {
   Component,
-  DestroyRef, ElementRef,
+  DestroyRef,
+  ElementRef,
   Inject,
   Input,
   OnDestroy,
-  OnInit, ViewChild
+  OnInit,
+  ViewChild
 } from '@angular/core';
 import {
+  animationFrameScheduler,
   BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
-  filter,
   fromEvent,
   Observable,
   shareReplay,
+  subscribeOn,
   switchMap,
   take
 } from 'rxjs';
@@ -21,7 +24,9 @@ import { WatchedInstrument } from '../../models/watched-instrument.model';
 import { WatchInstrumentsService } from '../../services/watch-instruments.service';
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import {
-  map
+  filter,
+  map,
+  startWith
 } from 'rxjs/operators';
 import { getPropertyFromPath } from "../../../../shared/utils/object-helper";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -42,7 +47,9 @@ import {
   WatchlistCollection,
   WatchlistType
 } from "../../models/watchlist.model";
-import { mapWith } from "../../../../shared/utils/observable-helper";
+import {
+  mapWith,
+} from "../../../../shared/utils/observable-helper";
 import { WatchListTitleHelper } from "../../utils/watch-list-title.helper";
 import { WidgetsHelper } from "../../../../shared/utils/widgets";
 import { TranslatorService } from "../../../../shared/services/translator.service";
@@ -52,9 +59,11 @@ import {
 } from "../../../../shared/services/actions-context";
 import { TimeframeValue } from "../../../light-chart/models/light-chart.models";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import { BaseTableComponent, Sort } from "../../../../shared/components/base-table/base-table.component";
+import {
+  BaseTableComponent,
+  Sort
+} from "../../../../shared/components/base-table/base-table.component";
 import { TableConfig } from "../../../../shared/models/table-config.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import {
   CsvFormatter,
@@ -65,6 +74,7 @@ import {
   FileSaver,
   FileType
 } from "../../../../shared/utils/file-export/file-saver";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { NzTableComponent } from "ng-zorro-antd/table";
 
 interface DisplayInstrument extends WatchedInstrument {
@@ -80,7 +90,8 @@ type SortFn = (a: WatchedInstrument, b: WatchedInstrument) => number;
 @Component({
   selector: 'ats-watchlist-table',
   templateUrl: './watchlist-table.component.html',
-  styleUrls: ['./watchlist-table.component.less']
+  styleUrls: ['./watchlist-table.component.less'],
+
 })
 export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist>
   implements OnInit, OnDestroy {
@@ -204,7 +215,6 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
     this.settings$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid)
       .pipe(
         shareReplay(1),
-        takeUntilDestroyed(this.destroyRef)
       );
 
     this.openedLists$ = this.settings$
@@ -212,11 +222,11 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
         map(s => (s.activeWatchlistMetas ?? [])
           .filter(w => w.isExpanded)
           .map(w => w.id)
-        ),
+        )
       );
 
-    this.initScrollNeed();
     super.ngOnInit();
+    this.initScrollOnDrag();
   }
 
   protected initTableConfigStream(): Observable<TableConfig<DisplayWatchlist>> {
@@ -302,7 +312,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
       switchMap(({ watchLists, settings, sort }) =>
         combineLatest(
           watchLists.map(watchlist =>
-            this.watchInstrumentsService.getWatched(watchlist.id, settings.priceChangeTimeframe ?? TimeframeValue.Day)
+            this.watchInstrumentsService.subscribeToListUpdates(watchlist.id, settings.priceChangeTimeframe ?? TimeframeValue.Day)
               .pipe(
                 map(instruments => {
                   return {
@@ -317,18 +327,22 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
                         return sort.descending ? -this.sortFns[sort.orderBy](a, b) : this.sortFns[sort.orderBy](a, b);
                       })
                   };
+                }),
+                startWith({
+                  ...watchlist,
+                  items: []
                 })
               )
           )
-        )
+        ),
       ),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
   ngOnDestroy(): void {
+    this.watchInstrumentsService.clearSubscriptions();
     super.ngOnDestroy();
-    this.watchInstrumentsService.clearAll();
   }
 
   sortChange(dir: string | null, colId: string): void {
@@ -417,7 +431,8 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
   expandListChange(isExpanded: boolean, listId: string): void {
     this.settings$
       .pipe(
-        take(1)
+        take(1),
+        subscribeOn(animationFrameScheduler)
       )
       .subscribe(settings => this.settingsService.updateSettings(
           this.guid,
@@ -429,14 +444,15 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
       );
   }
 
-  initScrollNeed(): void {
+  initScrollOnDrag(): void {
     let isScrollingUp = false;
     let isScrollingDown = false;
 
     fromEvent<MouseEvent>(document, 'mousemove')
       .pipe(
+        filter(() => this.isDragStarted),
         takeUntilDestroyed(this.destroyRef),
-        filter(() => this.isDragStarted)
+        subscribeOn(animationFrameScheduler)
       )
       .subscribe(e => {
         const tableContainerRect = this.tableContainer.nativeElement.getBoundingClientRect();
@@ -459,13 +475,13 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
         if (!isScrollingUp && e.clientY < upperTrigger) {
           isScrollingUp = true;
 
-          this.scrollIntervalId = setInterval(() => this.startScroll(-1),10);
+          this.scrollIntervalId = setInterval(() => this.moveScroll(-1),10);
         }
 
         if (!isScrollingDown && e.clientY > lowerTrigger) {
           isScrollingDown = true;
 
-          this.scrollIntervalId = setInterval(() => this.startScroll(1), 10);
+          this.scrollIntervalId = setInterval(() => this.moveScroll(1), 10);
         }
       });
   }
@@ -542,7 +558,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
     };
   };
 
-  private startScroll(multiplier: number): void {
+  private moveScroll(multiplier: number): void {
     const initialScroll = this.tableCmp.cdkVirtualScrollViewport?.measureScrollOffset('top') ?? 0;
 
     this.tableCmp.cdkVirtualScrollViewport?.scrollTo({ top: initialScroll + (10 * multiplier) });
