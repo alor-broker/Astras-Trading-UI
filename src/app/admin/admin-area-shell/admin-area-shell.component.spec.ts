@@ -12,8 +12,8 @@ describe('AdminAreaShellComponent', () => {
     await TestBed.configureTestingModule({
       imports:[
         RouterModule.forChild([]),
+        AdminAreaShellComponent
       ],
-      declarations: [AdminAreaShellComponent],
       providers: [
         {
           provide: AdminAuthContextService,

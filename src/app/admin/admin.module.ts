@@ -30,9 +30,6 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    AdminAreaShellComponent
-  ],
   imports: [
     CommonModule,
     DashboardModule,

@@ -10,11 +10,16 @@ import {
   AreaHook
 } from "../../shared/services/hook/area/area-hook-token";
 import { AdminAuthContextService } from "../services/auth/admin-auth-context.service";
+import { RouterOutlet } from "@angular/router";
 
 @Component({
   selector: 'ats-admin-area-shell',
   templateUrl: './admin-area-shell.component.html',
-  styleUrl: './admin-area-shell.component.less'
+  styleUrl: './admin-area-shell.component.less',
+  imports: [
+    RouterOutlet
+  ],
+  standalone: true
 })
 export class AdminAreaShellComponent implements OnInit, OnDestroy {
   constructor(

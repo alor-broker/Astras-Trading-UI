@@ -12,12 +12,22 @@ import {
   Observable
 } from "rxjs";
 import { AsyncPipe } from "@angular/common";
+import {
+  NzContentComponent,
+  NzHeaderComponent,
+  NzLayoutComponent
+} from "ng-zorro-antd/layout";
+import { AdminNavbarComponent } from "../../components/admin-navbar/admin-navbar.component";
 
 @Component({
   selector: 'ats-admin-dashboard',
   standalone: true,
   imports: [
-    AsyncPipe
+    AsyncPipe,
+    NzLayoutComponent,
+    AdminNavbarComponent,
+    NzHeaderComponent,
+    NzContentComponent
   ],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.less'

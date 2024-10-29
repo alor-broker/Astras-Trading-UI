@@ -1,0 +1,21 @@
+<ng-container *transloco="let t; scope: 'admin/select-client-portfolio-btn'">
+  <ng-container *ngrxLet="{selectedPortfolio: selectedPortfolio$} as vm">
+    <button
+      (click)="isSearchDialogVisible = true"
+      nz-button
+      nzType="text"
+    >
+      @if (vm.selectedPortfolio == null) {
+        <span nz-typography nzType="danger">{{ t('adminSelectClientPortfolioBtn.selectPortfolioLabel') }}</span>
+      } @else {
+        <span>{{ vm.selectedPortfolio.exchange }} {{ vm.selectedPortfolio.portfolio }}</span>
+      }
+      <span nz-icon nzTheme="outline" nzType="search"></span>
+    </button>
+  </ng-container>
+</ng-container>
+
+<ats-search-client-portfolio-dialog
+  (selectedPortfolio)="selectClientPortfolio($event)"
+  [(atsVisible)]="isSearchDialogVisible"
+></ats-search-client-portfolio-dialog>
