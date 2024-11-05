@@ -12,6 +12,8 @@
   "orderUpdateFailedLabel": "Order update failed",
   "orderStatusChangedLabel": "Order status changed",
   "ordersGroupCreatedLabel": "Orders group created",
+  "ordersGroupUnsupportedLabel": "Orders group is not supported",
+  "ordersGroupUnsupportedContent": "Creation of an orders group is not available",
 
   "hiddenPortfoliosForNotificationsLabel": "Hide notifications for portfolios",
   "hiddenPortfoliosForNotificationsTooltip": "Applies only to completed orders of the selected portfolio",

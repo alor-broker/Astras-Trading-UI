@@ -54,6 +54,7 @@ describe('AdminOrderCommandService', () => {
       'orderUpdated',
       'orderCancelled',
       'orderCancelFailed',
+      'ordersGroupUnsupported',
     ]);
 
     errorHandlerServiceSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);

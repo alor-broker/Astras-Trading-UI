@@ -141,6 +141,7 @@ export class AdminOrderCommandService implements OrderCommandService {
   }
 
   submitOrdersGroup(): Observable<SubmitGroupResult | null> {
+    this.instantNotificationsService.ordersGroupUnsupported();
     return of(null);
   }
 
