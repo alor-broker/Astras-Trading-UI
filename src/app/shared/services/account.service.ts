@@ -55,7 +55,7 @@ export class AccountService {
         (userInfo, positions) => ({ userInfo, positions })
       ),
       mapWith(
-        source => this.getAllPortfolios(source.userInfo.clientId),
+        source => this.getAllPortfolios(source.userInfo.clientId ?? ''),
         (source, allPortfolios) => ({
           positions: source.positions,
           allPortfolios

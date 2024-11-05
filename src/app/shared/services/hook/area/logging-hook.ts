@@ -45,8 +45,8 @@ export class LoggingHook implements AreaHook {
 
     this.tearDown.add(
       currentUser$.subscribe(user => {
-        this.localStorageService.setItem(LocalStorageLoggingConstants.UserLoginStorageKey, user.login);
-        this.localStorageService.setItem(LocalStorageLoggingConstants.ClientIdStorageKey, user.clientId);
+        this.localStorageService.setItem(LocalStorageLoggingConstants.UserLoginStorageKey, user.login ?? '');
+        this.localStorageService.setItem(LocalStorageLoggingConstants.ClientIdStorageKey, user.clientId ?? '');
       })
     );
 

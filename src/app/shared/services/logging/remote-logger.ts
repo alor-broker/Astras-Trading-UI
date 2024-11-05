@@ -93,11 +93,11 @@ export class RemoteLogger extends LoggerBase {
       message: message,
       stack: stack ?? '',
       sessionId: this.guid,
-      login: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.UserLoginStorageKey) ?? '',
-      clientId: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.ClientIdStorageKey) ?? '',
-      version: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.AppVersionStorageKey) ?? '',
-      device: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.DeviceStorageKey) ?? '',
-      browser: this.localStorageService.getItem<string>(LocalStorageLoggingConstants.BrowserStorageKey) ?? '',
+      login: this.localStorageService.getStringItem(LocalStorageLoggingConstants.UserLoginStorageKey) ?? '',
+      clientId: this.localStorageService.getStringItem(LocalStorageLoggingConstants.ClientIdStorageKey) ?? '',
+      version: this.localStorageService.getStringItem(LocalStorageLoggingConstants.AppVersionStorageKey) ?? '',
+      device: this.localStorageService.getStringItem(LocalStorageLoggingConstants.DeviceStorageKey) ?? '',
+      browser: this.localStorageService.getStringItem(LocalStorageLoggingConstants.BrowserStorageKey) ?? '',
       environment: this.getConfig()!.environment
     };
   }
