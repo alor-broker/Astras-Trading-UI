@@ -54,7 +54,6 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    ClientAreaShellComponent,
     SsoCallbackPageComponent,
     ExternalLogoutPageComponent
   ],

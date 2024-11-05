@@ -10,11 +10,16 @@ import {
   AreaHook
 } from "../../shared/services/hook/area/area-hook-token";
 import { ClientAuthContextService } from "../services/auth/client-auth-context.service";
+import {RouterOutlet} from "@angular/router";
 
 @Component({
   selector: 'ats-client-area-shell',
   templateUrl: './client-area-shell.component.html',
-  styleUrl: './client-area-shell.component.less'
+  styleUrl: './client-area-shell.component.less',
+  imports: [
+    RouterOutlet
+  ],
+  standalone: true
 })
 export class ClientAreaShellComponent implements OnInit, OnDestroy {
   constructor(

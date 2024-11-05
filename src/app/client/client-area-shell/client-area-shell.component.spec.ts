@@ -12,9 +12,9 @@ describe('ClientAreaShellComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports:[
+        ClientAreaShellComponent,
         RouterModule.forChild([]),
       ],
-      declarations: [ClientAreaShellComponent],
       providers: [
         {
           provide: ClientAuthContextService,
