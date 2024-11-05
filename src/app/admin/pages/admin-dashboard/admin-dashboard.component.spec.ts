@@ -5,6 +5,9 @@ import {AdminSettingsBrokerService} from "../../services/settings/admin-settings
 import {MockComponents, MockProvider} from "ng-mocks";
 import {AdminNavbarComponent} from "../../components/admin-navbar/admin-navbar.component";
 import {DashboardContextService} from "../../../shared/services/dashboard-context.service";
+import {
+  WatchlistCollectionBrokerService
+} from "../../../modules/instruments/services/watchlist-collection-broker.service";
 
 describe('AdminDashboardComponent', () => {
   let component: AdminDashboardComponent;
@@ -20,7 +23,8 @@ describe('AdminDashboardComponent', () => {
       ],
       providers: [
         MockProvider(AdminSettingsBrokerService),
-        MockProvider(DashboardContextService)
+        MockProvider(DashboardContextService),
+        MockProvider(WatchlistCollectionBrokerService)
       ]
     })
       .compileComponents();

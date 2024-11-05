@@ -1,5 +1,5 @@
 import {DestroyRef, Injectable} from '@angular/core';
-import {combineLatest, forkJoin, Observable, of, shareReplay, take} from "rxjs";
+import {BehaviorSubject, combineLatest, forkJoin, Observable, of, shareReplay, switchMap, take} from "rxjs";
 import {Watchlist, WatchlistCollection} from "../models/watchlist.model";
 import {RemoteStorageService} from "../../../shared/services/settings-broker/remote-storage.service";
 import {LocalStorageService} from "../../../shared/services/local-storage.service";
@@ -23,6 +23,10 @@ class WatchlistCollectionStore extends ComponentStore<WatchlistCollectionState> 
   }
 }
 
+export interface WatchlistCollectionBrokerConfig {
+  enableStore: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -32,6 +36,7 @@ export class WatchlistCollectionBrokerService {
 
   private readonly groupKey = 'watchlist-collection';
   private readonly watchlistCollectionStorageKey = 'watchlistCollection';
+  private readonly config$ = new BehaviorSubject<WatchlistCollectionBrokerConfig | null>(null);
 
   constructor(
     private readonly remoteStorageService: RemoteStorageService,
@@ -41,7 +46,12 @@ export class WatchlistCollectionBrokerService {
   ) {
     destroyRef.onDestroy(() => {
       this.store.ngOnDestroy();
+      this.config$.complete();
     });
+  }
+
+  setConfig(config: WatchlistCollectionBrokerConfig): void {
+    this.config$.next(config);
   }
 
   getCollection(): Observable<Watchlist[]> {
@@ -55,53 +65,63 @@ export class WatchlistCollectionBrokerService {
       this.store.patchState({
         status: EntityStatus.Loading
       });
-
-      combineLatest([
-        this.applicationMetaService.getMeta(),
-        this.remoteStorageService.getGroup(this.groupKey)
-      ]).pipe(
+      this.getConfig().pipe(
         take(1)
-      ).subscribe(([meta, records]) => {
-        if (meta.lastResetTimestamp != null) {
-          if (!!records && records.some(s => meta.lastResetTimestamp! > s.meta.timestamp)) {
-            // clean settings after reset
-            this.remoteStorageService.removeGroup(this.groupKey).pipe(
-              map(() => null)
-            ).subscribe(() => {
+      ).subscribe(config => {
+        if(config.enableStore) {
+          combineLatest([
+            this.applicationMetaService.getMeta(),
+            this.remoteStorageService.getGroup(this.groupKey)
+          ]).pipe(
+            take(1)
+          ).subscribe(([meta, records]) => {
+            if (meta.lastResetTimestamp != null) {
+              if (!!records && records.some(s => meta.lastResetTimestamp! > s.meta.timestamp)) {
+                // clean settings after reset
+                this.remoteStorageService.removeGroup(this.groupKey).pipe(
+                  map(() => null)
+                ).subscribe(() => {
+                  this.store.patchState({
+                    status: EntityStatus.Success,
+                    collection: new Map<string, Watchlist>()
+                  });
+                });
+
+                return;
+              }
+            }
+
+            if (!!records && records.length > 0) {
+              this.store.patchState({
+                status: EntityStatus.Success,
+                collection: new Map<string, Watchlist>(records.map(r => [r.value.id, r.value]))
+              });
+            } else {
+              const localData = this.localStorageService.getItem<WatchlistCollection>(this.watchlistCollectionStorageKey);
+              if (!!localData) {
+                const items = localData.collection.map(r => this.updateObsoleteWatchlist(r));
+
+                this.store.patchState({
+                  status: EntityStatus.Success,
+                  collection: new Map<string, Watchlist>(items.map(r => [r.id, r]))
+                });
+
+                this.addOrUpdateLists(items).subscribe(r => {
+                  if (r) {
+                    this.localStorageService.removeItem(this.watchlistCollectionStorageKey);
+                  }
+                });
+
+                return;
+              }
+
               this.store.patchState({
                 status: EntityStatus.Success,
                 collection: new Map<string, Watchlist>()
               });
-            });
-
-            return;
-          }
-        }
-
-        if (!!records && records.length > 0) {
-          this.store.patchState({
-            status: EntityStatus.Success,
-            collection: new Map<string, Watchlist>(records.map(r => [r.value.id, r.value]))
+            }
           });
         } else {
-          const localData = this.localStorageService.getItem<WatchlistCollection>(this.watchlistCollectionStorageKey);
-          if (!!localData) {
-            const items = localData.collection.map(r => this.updateObsoleteWatchlist(r));
-
-            this.store.patchState({
-              status: EntityStatus.Success,
-              collection: new Map<string, Watchlist>(items.map(r => [r.id, r]))
-            });
-
-            this.addOrUpdateLists(items).subscribe(r => {
-              if (r) {
-                this.localStorageService.removeItem(this.watchlistCollectionStorageKey);
-              }
-            });
-
-            return;
-          }
-
           this.store.patchState({
             status: EntityStatus.Success,
             collection: new Map<string, Watchlist>()
@@ -136,20 +156,29 @@ export class WatchlistCollectionBrokerService {
       };
     });
 
-    return forkJoin(
-      lists.map(l => this.remoteStorageService.setRecord(
-        {
-          key: l.id,
-          meta: {
-            timestamp: this.getTimestamp()
-          },
-          value: l
-        },
-        this.groupKey)
-      )
-    ).pipe(
-      map(r => r.every(i => !!i)),
-      take(1)
+    return this.getConfig().pipe(
+      take(1),
+      switchMap(config => {
+        if(config.enableStore) {
+          return forkJoin(
+            lists.map(l => this.remoteStorageService.setRecord(
+              {
+                key: l.id,
+                meta: {
+                  timestamp: this.getTimestamp()
+                },
+                value: l
+              },
+              this.groupKey)
+            )
+          ).pipe(
+            map(r => r.every(i => !!i)),
+            take(1)
+          );
+        } else {
+          return of(true);
+        }
+      })
     );
   }
 
@@ -163,8 +192,17 @@ export class WatchlistCollectionBrokerService {
       };
     });
 
-    return this.remoteStorageService.removeRecord(id).pipe(
-      take(1)
+    return this.getConfig().pipe(
+      take(1),
+      switchMap(config => {
+        if(config.enableStore) {
+          return this.remoteStorageService.removeRecord(id).pipe(
+            take(1)
+          );
+        }
+
+        return of(true);
+      })
     );
   }
 
@@ -180,5 +218,11 @@ export class WatchlistCollectionBrokerService {
         recordId: (i.recordId as string | undefined) ?? GuidGenerator.newGuid()
       }))
     };
+  }
+
+  private getConfig(): Observable<WatchlistCollectionBrokerConfig> {
+    return this.config$.pipe(
+      filter(c => c != null)
+    );
   }
 }

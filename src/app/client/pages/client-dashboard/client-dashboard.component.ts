@@ -24,6 +24,9 @@ import {LocalStorageCommonConstants} from "../../../shared/constants/local-stora
 import {
   TerminalSettingsWidgetComponent
 } from "../../../modules/terminal-settings/widgets/terminal-settings-widget/terminal-settings-widget.component";
+import {
+  WatchlistCollectionBrokerService
+} from "../../../modules/instruments/services/watchlist-collection-broker.service";
 
 @Component({
   selector: 'ats-client-dashboard',
@@ -60,10 +63,15 @@ export class ClientDashboardComponent implements OnInit, ActionsContext {
     private readonly router: Router,
     private readonly desktopSettingsBrokerService: DesktopSettingsBrokerService,
     private readonly dashboardContextService: DashboardContextService,
+    private readonly watchlistCollectionBrokerService: WatchlistCollectionBrokerService
   ) {
   }
 
   ngOnInit(): void {
+    this.watchlistCollectionBrokerService.setConfig({
+      enableStore: true
+    });
+
     this.deviceService.deviceInfo$
       .pipe(take(1))
       .subscribe(info => {

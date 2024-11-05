@@ -9,6 +9,9 @@ import {InstrumentKey} from 'src/app/shared/models/instruments/instrument-key.mo
 import {DashboardContextService} from 'src/app/shared/services/dashboard-context.service';
 import {TerminalSettingsModule} from "../../../modules/terminal-settings/terminal-settings.module";
 import {OrderCommandsModule} from "../../../modules/order-commands/order-commands.module";
+import {
+  WatchlistCollectionBrokerService
+} from "../../../modules/instruments/services/watchlist-collection-broker.service";
 
 @Component({
   selector: 'ats-admin-dashboard',
@@ -35,12 +38,16 @@ import {OrderCommandsModule} from "../../../modules/order-commands/order-command
 export class AdminDashboardComponent implements OnInit, ActionsContext {
   constructor(
     private readonly adminSettingsBrokerService: AdminSettingsBrokerService,
-    private readonly dashboardContextService: DashboardContextService
+    private readonly dashboardContextService: DashboardContextService,
+    private readonly watchlistCollectionBrokerService: WatchlistCollectionBrokerService
   ) {
   }
 
   ngOnInit(): void {
     this.adminSettingsBrokerService.initSettingsBrokers();
+    this.watchlistCollectionBrokerService.setConfig({
+      enableStore: false
+    });
   }
 
   instrumentSelected(instrumentKey: InstrumentKey, groupKey: string): void {

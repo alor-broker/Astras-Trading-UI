@@ -8,7 +8,7 @@ import {OnboardingService} from "../../../modules/dashboard/services/onboarding.
 import {DesktopSettingsBrokerService} from "../../../modules/dashboard/services/desktop-settings-broker.service";
 import {commonTestProviders} from "../../../shared/utils/testing/common-test-providers";
 import {TranslocoTestsModule} from "../../../shared/utils/testing/translocoTestsModule";
-import {MockComponents} from "ng-mocks";
+import {MockComponents, MockProvider} from "ng-mocks";
 import {ClientNavbarComponent} from "../../components/client-navbar/client-navbar.component";
 import {
   SettingsLoadErrorDialogComponent
@@ -17,6 +17,9 @@ import {
   TerminalSettingsWidgetComponent
 } from "../../../modules/terminal-settings/widgets/terminal-settings-widget/terminal-settings-widget.component";
 import {RouterModule} from "@angular/router";
+import {
+  WatchlistCollectionBrokerService
+} from "../../../modules/instruments/services/watchlist-collection-broker.service";
 
 describe('ClientDashboardComponent', () => {
   let component: ClientDashboardComponent;
@@ -49,6 +52,7 @@ describe('ClientDashboardComponent', () => {
             initSettingsBrokers: jasmine.createSpy('initSettingsBrokers').and.callThrough()
           }
         },
+        MockProvider(WatchlistCollectionBrokerService),
         ...commonTestProviders
       ]
     })
