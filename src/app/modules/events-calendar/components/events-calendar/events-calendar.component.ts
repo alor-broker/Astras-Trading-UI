@@ -12,7 +12,7 @@ import {
   map,
   shareReplay,
   take,
-  forkJoin
+  forkJoin, combineLatest
 } from "rxjs";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
 import { Store } from "@ngrx/store";
@@ -21,7 +21,6 @@ import { EntityStatus } from "../../../../shared/models/enums/entity-status";
 import { PositionsService } from "../../../../shared/services/positions.service";
 import { MarketService } from "../../../../shared/services/market.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
 
 @Component({
@@ -33,7 +32,7 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
   @Input({required: true})
   guid!: string;
 
-  portfolios: PortfolioKey[] = [];
+  portfolios$!: Observable<PortfolioKey[]>;
   selectedPortfolio$ = new BehaviorSubject<PortfolioKey | null>(null);
   symbolsOfSelectedPortfolio$?: Observable<string[]>;
 
@@ -46,25 +45,28 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.select(PortfoliosFeature.selectPortfoliosState)
+    this.portfolios$ = this.store.select(PortfoliosFeature.selectPortfoliosState)
       .pipe(
         filter(p => p.status === EntityStatus.Success),
         mapWith(
           () => this.marketService.getDefaultExchange(),
           (portfolios, exchange) => ({ portfolios, exchange })
         ),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(({ portfolios, exchange }) => {
-        this.portfolios = Object.values(portfolios.entities)
-          .filter(p => p?.exchange === exchange)
-          .map(p => ({ portfolio: p!.portfolio, exchange: p!.exchange, marketType: p!.marketType }));
-      });
+        map(({ portfolios, exchange }) => {
+          return Object.values(portfolios.entities)
+            .filter(p => p?.exchange === exchange)
+            .map(p => ({ portfolio: p!.portfolio, exchange: p!.exchange, marketType: p!.marketType }));
+        }),
+        shareReplay(1)
+      );
 
-    this.symbolsOfSelectedPortfolio$ = this.selectedPortfolio$.pipe(
-      switchMap(p => {
-        if (!p) {
-          const portfolioRequests = this.portfolios.map(
+    this.symbolsOfSelectedPortfolio$ = combineLatest({
+      allPortfolios: this.portfolios$,
+      selectedPortfolio: this.selectedPortfolio$
+    }).pipe(
+      switchMap(x => {
+        if (x.selectedPortfolio == null) {
+          const portfolioRequests = x.allPortfolios.map(
             p => this.positionsService.getAllByPortfolio(p.portfolio, p.exchange).pipe(
               map(p => p ?? []),
               take(1)
@@ -78,7 +80,7 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
           );
         }
 
-        return this.positionsService.getAllByPortfolio(p.portfolio, p.exchange)
+        return this.positionsService.getAllByPortfolio(x.selectedPortfolio.portfolio, x.selectedPortfolio.exchange)
           .pipe(
             map(p => p ?? [])
           );
