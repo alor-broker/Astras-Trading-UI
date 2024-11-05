@@ -68,7 +68,11 @@
                         ></ats-stop-order-form>
                       </nz-tab>
 
-                      <nz-tab #notificationsTab [nzTitle]="titleTemplate">
+                      <nz-tab
+                        #notificationsTab
+                        [nzTitle]="titleTemplate"
+                        *ngIf="pushNotificationsConfig.priceChangeNotifications.isSupported"
+                      >
                         <ng-template #titleTemplate>
                       <span>
                         <span nz-icon nzTheme="outline" nzType="bell"></span>

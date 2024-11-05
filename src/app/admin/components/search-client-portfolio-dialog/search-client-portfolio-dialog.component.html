@@ -5,11 +5,13 @@
     [nzTitle]="t('adminSearchClientPortfolioDialog.title')"
     [nzVisible]='atsVisible'
     nzClosable="true"
+    nzMaskClosable="false"
+    nzClassName="search-client-portfolio-dialog"
   >
     <ng-container *nzModalContent>
       <form [formGroup]="searchForm"
-            [nzLayout]="'inline'"
             nz-form
+            class="d-flex flex-row flex-nowrap justify-content-between flex-gap-10"
       >
         <nz-form-item>
           <nz-form-control [nzErrorTip]="t('validationErrors.selectValueError')">
@@ -24,11 +26,15 @@
           </nz-form-control>
         </nz-form-item>
 
-        <nz-form-item>
+        <nz-form-item class="flex-fill">
           <nz-form-control
             [nzErrorTip]="t('validationErrors.stringInputLength', {min: validationOptions.portfolio.minLength, max: validationOptions.portfolio.maxLength} )"
           >
-            <input [formControl]="searchForm.controls.portfolio" type="text">
+            <input
+            nz-input
+            [placeholder]="t('form.portfolio.label')"
+            [formControl]="searchForm.controls.portfolio"
+            type="text">
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>

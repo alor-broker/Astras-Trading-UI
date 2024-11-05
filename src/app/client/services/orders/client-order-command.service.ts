@@ -215,7 +215,10 @@ export class ClientOrderCommandService implements OrderCommandService {
       limitOrder: {
         isSupported: true,
         orderConfig: {
-          isBracketsSupported: true
+          isBracketsSupported: true,
+          unsupportedFields: {
+            reason: true
+          }
         }
       },
       marketOrder: {

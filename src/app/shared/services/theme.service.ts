@@ -1,30 +1,14 @@
-import {
-  Inject,
-  Injectable
-} from '@angular/core';
-import { DOCUMENT } from '@angular/common';
-import {
-  BehaviorSubject,
-  distinctUntilChanged,
-  Observable,
-  shareReplay,
-  Subscription
-} from 'rxjs';
-import {
-  filter,
-  map,
-  startWith
-} from 'rxjs/operators';
-import {
-  ThemeColors,
-  ThemeSettings,
-  ThemeType
-} from '../models/settings/theme-settings.model';
-import { TerminalSettingsService } from "./terminal-settings.service";
-import { HttpClient } from "@angular/common/http";
-import { mapWith } from "../utils/observable-helper";
-import { LocalStorageService } from "./local-storage.service";
-import { DesignSettingsConstants } from "../constants/local-storage.constants";
+import {Inject, Injectable} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {BehaviorSubject, distinctUntilChanged, Observable, shareReplay, Subscription} from 'rxjs';
+import {filter, map, startWith} from 'rxjs/operators';
+import {ThemeColors, ThemeSettings, ThemeType} from '../models/settings/theme-settings.model';
+import {TerminalSettingsService} from "./terminal-settings.service";
+import {HttpClient, HttpContext} from "@angular/common/http";
+import {mapWith} from "../utils/observable-helper";
+import {LocalStorageService} from "./local-storage.service";
+import {DesignSettingsConstants} from "../constants/local-storage.constants";
+import {HttpContextTokens} from "../constants/http.constants";
 
 @Injectable({
   providedIn: 'root',
@@ -32,6 +16,7 @@ import { DesignSettingsConstants } from "../constants/local-storage.constants";
 export class ThemeService {
   private currentTheme?: ThemeType | null;
   private themeSettings$?: Observable<ThemeSettings>;
+  private readonly styleLinkClassName = 'theme';
 
   constructor(
     @Inject(DOCUMENT) private readonly document: Document,
@@ -97,7 +82,7 @@ export class ThemeService {
             };
           }
         ),
-        shareReplay({ bufferSize: 1, refCount: true })
+        shareReplay({bufferSize: 1, refCount: true})
       );
     }
 
@@ -111,7 +96,8 @@ export class ThemeService {
         headers: {
           "Cache-Control": "no-cache",
           "Pragma": "no-cache"
-        }
+        },
+        context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true),
       }
     ).pipe(
       shareReplay(1)
@@ -119,25 +105,31 @@ export class ThemeService {
   }
 
   private setTheme(theme: ThemeType): void {
+    const themeStyle = this.document.getElementById(theme);
+    if(themeStyle != null) {
+      return;
+    }
+
     this.loadCss(theme).pipe(
       filter(x => x ?? false)
     ).subscribe(() => {
-      this.removeUnusedTheme(this.currentTheme);
+      this.removeUnusedTheme(this.currentTheme ?? null, theme);
       this.currentTheme = theme;
       this.document.documentElement.classList.add(this.currentTheme);
     });
   }
 
-  private removeUnusedTheme(theme?: ThemeType | null): void {
-    if (theme == null) {
-      return;
+  private removeUnusedTheme(prevTheme: ThemeType | null, currentTheme: ThemeType): void {
+    if (prevTheme != null) {
+      this.document.documentElement.classList.remove(prevTheme);
     }
 
-    this.document.documentElement.classList.remove(theme);
-    const removedThemeStyle = this.document.getElementById(theme);
-    if (removedThemeStyle) {
-      this.document.head.removeChild(removedThemeStyle);
-    }
+    const themeStyles = this.document.getElementsByClassName(this.styleLinkClassName);
+    Array.from(themeStyles).forEach(s => {
+      if (s.id !== (currentTheme as string)) {
+        this.document.head.removeChild(s);
+      }
+    });
   }
 
   private loadCss(theme: ThemeType): Observable<boolean | null> {
@@ -147,6 +139,7 @@ export class ThemeService {
     style.rel = 'stylesheet';
     style.href = `${theme}.css`;
     style.id = theme;
+    style.className = this.styleLinkClassName;
 
     style.onload = (): void => {
       subj.next(true);

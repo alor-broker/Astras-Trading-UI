@@ -1,0 +1,67 @@
+<ng-container *transloco="let t; scope: 'dashboard/navbar/common'">
+  <ats-desktop-navbar
+    joyrideStep="step10"
+    [title]="t('joyride.step10.title')"
+    stepPosition="center"
+    [stepContent]="joyrideStep10Content"
+  >
+    <div class="left-side-item">
+      <ats-widgets-gallery-nav-btn
+        [atsDisabled]="(selectedDashboard$ | async ) == null"
+        joyrideStep="step2"
+        [title]="t('joyride.step2.title')"
+        [text]="t('joyride.step2.text')"
+      ></ats-widgets-gallery-nav-btn>
+    </div>
+
+    <div class="left-side-item">
+      <ats-open-orders-dialog-nav-btn
+        [atsDisabled]="(selectedDashboard$ | async )?.selectedPortfolio == null"
+        joyrideStep="step3"
+        [title]="t('joyride.step3.title')"
+        [text]="t('joyride.step3.text')"
+      ></ats-open-orders-dialog-nav-btn>
+    </div>
+
+    <div class="left-side-item">
+      <ats-select-portfolio-menu-nav-btn
+        joyrideStep="step1"
+        [title]="t('joyride.step1.title')"
+        [text]="t('joyride.step1.text')"
+      ></ats-select-portfolio-menu-nav-btn>
+    </div>
+
+    <div
+      class="left-side-item overflow-hidden"
+      joyrideStep="step4"
+      [title]="t('joyride.step4.title')"
+      [text]="t('joyride.step4.text')"
+    >
+      <ats-dashboards-panel></ats-dashboards-panel>
+    </div>
+
+
+    <div class="right-side-item">
+      <ats-network-indicator></ats-network-indicator>
+    </div>
+
+    <div class="right-side-item">
+      <ats-notification-button></ats-notification-button>
+    </div>
+
+    <div class="right-side-item">
+      <ats-ai-chat-nav-btn></ats-ai-chat-nav-btn>
+    </div>
+
+    <div class="right-side-item">
+      <ats-client-profile-menu-nav-btn></ats-client-profile-menu-nav-btn>
+    </div>
+  </ats-desktop-navbar>
+
+  <ng-template #joyrideStep10Content>
+    {{t('joyride.step10.text')}}
+    <ats-external-link [href]="externalLinks.videoTutorial">
+      {{t('joyride.step10.tutorialVideoText')}}
+    </ats-external-link>
+  </ng-template>
+</ng-container>

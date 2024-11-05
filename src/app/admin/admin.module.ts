@@ -17,6 +17,7 @@ import {
   ORDER_COMMAND_SERVICE_TOKEN
 } from "../shared/services/orders/order-command.service";
 import { AdminOrderCommandService } from "./services/orders/admin-order-command.service";
+import {PUSH_NOTIFICATIONS_CONFIG} from "../modules/push-notifications/services/push-notifications-config";
 
 const routes: Routes = [
   {
@@ -50,6 +51,17 @@ const routes: Routes = [
     {
       provide: ORDER_COMMAND_SERVICE_TOKEN,
       useExisting: AdminOrderCommandService
+    },
+    {
+      provide: PUSH_NOTIFICATIONS_CONFIG,
+      useValue: {
+        priceChangeNotifications: {
+          isSupported: false
+        },
+        portfolioOrdersExecuteNotifications: {
+          isSupported:false
+        }
+      }
     },
     ...AREA_HOOKS
   ]

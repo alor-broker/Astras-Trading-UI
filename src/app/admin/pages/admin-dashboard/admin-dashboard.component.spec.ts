@@ -1,8 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { AdminDashboardComponent } from './admin-dashboard.component';
-import { USER_CONTEXT } from "../../../shared/services/auth/user-context";
-import { NEVER } from "rxjs";
+import {AdminDashboardComponent} from './admin-dashboard.component';
+import {AdminSettingsBrokerService} from "../../services/settings/admin-settings-broker.service";
+import {MockComponents, MockProvider} from "ng-mocks";
+import {AdminNavbarComponent} from "../../components/admin-navbar/admin-navbar.component";
+import {DashboardContextService} from "../../../shared/services/dashboard-context.service";
 
 describe('AdminDashboardComponent', () => {
   let component: AdminDashboardComponent;
@@ -10,17 +12,18 @@ describe('AdminDashboardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AdminDashboardComponent],
-      providers:[
-        {
-          provide: USER_CONTEXT,
-          useValue: {
-            getUser: jasmine.createSpy('getUser').and.returnValue(NEVER)
-          }
-        }
+      imports: [
+        AdminDashboardComponent,
+        ...MockComponents(
+          AdminNavbarComponent
+        )
+      ],
+      providers: [
+        MockProvider(AdminSettingsBrokerService),
+        MockProvider(DashboardContextService)
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(AdminDashboardComponent);
     component = fixture.componentInstance;

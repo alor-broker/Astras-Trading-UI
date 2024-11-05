@@ -165,7 +165,8 @@ export class AdminOrderCommandService implements OrderCommandService {
       limitOrder: {
         isSupported: true,
         orderConfig: {
-          isBracketsSupported: false
+          isBracketsSupported: false,
+          unsupportedFields: {}
         }
       },
       marketOrder: {

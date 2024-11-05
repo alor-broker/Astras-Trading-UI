@@ -34,7 +34,7 @@ import {
 } from "rxjs/operators";
 import { PriceDiffHelper } from "../../../utils/price-diff.helper";
 import {
-  OrderType,
+  OrderType, Reason,
   TimeInForce
 } from "../../../../../shared/models/orders/order.model";
 import {
@@ -78,6 +78,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
   readonly evaluationRequest$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   readonly sides = Side;
   timeInForceEnum = TimeInForce;
+  reasonEnum = Reason;
 
   timezones$!: Observable<{ exchangeTimezone: string, displayTimezone: string }>;
 
@@ -139,7 +140,8 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
         ]
       }
     ),
-    bottomOrderSide: this.formBuilder.nonNullable.control(Side.Buy)
+    bottomOrderSide: this.formBuilder.nonNullable.control(Side.Buy),
+    reason: this.formBuilder.control<Reason | null>(null)
   });
 
   currentPriceDiffPercent$!: Observable<{ percent: number, sign: number } | null>;
@@ -326,6 +328,10 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       limitOrder.orderEndUnixTime = Math.ceil(selectedDate.getTime() / 1000);
     }
 
+    if(formValue.reason != null) {
+      limitOrder.reason = formValue.reason;
+    }
+
     return limitOrder;
   }
 
@@ -444,6 +450,10 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       this.disableControl(this.form.controls.topOrderSide);
       this.disableControl(this.form.controls.bottomOrderPrice);
       this.disableControl(this.form.controls.bottomOrderSide);
+    }
+
+    if(this.limitOrderConfig.unsupportedFields.reason) {
+      this.disableControl(this.form.controls.reason);
     }
 
     this.form.updateValueAndValidity();

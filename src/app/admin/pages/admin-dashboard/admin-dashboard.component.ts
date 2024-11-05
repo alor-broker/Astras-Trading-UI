@@ -1,49 +1,49 @@
-import {
-  Component,
-  Inject,
-  OnInit
-} from '@angular/core';
-import {
-  USER_CONTEXT,
-  UserContext
-} from "../../../shared/services/auth/user-context";
-import {
-  map,
-  Observable
-} from "rxjs";
-import { AsyncPipe } from "@angular/common";
-import {
-  NzContentComponent,
-  NzHeaderComponent,
-  NzLayoutComponent
-} from "ng-zorro-antd/layout";
-import { AdminNavbarComponent } from "../../components/admin-navbar/admin-navbar.component";
+import {Component, OnInit} from '@angular/core';
+import {AsyncPipe} from '@angular/common';
+import {NzContentComponent, NzHeaderComponent, NzLayoutComponent,} from 'ng-zorro-antd/layout';
+import {AdminNavbarComponent} from '../../components/admin-navbar/admin-navbar.component';
+import {AdminSettingsBrokerService} from '../../services/settings/admin-settings-broker.service';
+import {DashboardModule} from '../../../modules/dashboard/dashboard.module';
+import {ACTIONS_CONTEXT, ActionsContext,} from 'src/app/shared/services/actions-context';
+import {InstrumentKey} from 'src/app/shared/models/instruments/instrument-key.model';
+import {DashboardContextService} from 'src/app/shared/services/dashboard-context.service';
+import {TerminalSettingsModule} from "../../../modules/terminal-settings/terminal-settings.module";
+import {OrderCommandsModule} from "../../../modules/order-commands/order-commands.module";
 
 @Component({
   selector: 'ats-admin-dashboard',
   standalone: true,
-  imports: [
-    AsyncPipe,
-    NzLayoutComponent,
-    AdminNavbarComponent,
-    NzHeaderComponent,
-    NzContentComponent
-  ],
+    imports: [
+        AsyncPipe,
+        NzLayoutComponent,
+        AdminNavbarComponent,
+        NzHeaderComponent,
+        NzContentComponent,
+        DashboardModule,
+        TerminalSettingsModule,
+        OrderCommandsModule,
+    ],
   templateUrl: './admin-dashboard.component.html',
-  styleUrl: './admin-dashboard.component.less'
+  styleUrl: './admin-dashboard.component.less',
+  providers: [
+    {
+      provide: ACTIONS_CONTEXT,
+      useExisting: AdminDashboardComponent,
+    },
+  ],
 })
-export class AdminDashboardComponent implements OnInit {
-  userLogin$!: Observable<string>;
-
+export class AdminDashboardComponent implements OnInit, ActionsContext {
   constructor(
-    @Inject(USER_CONTEXT)
-    private readonly userContext: UserContext
+    private readonly adminSettingsBrokerService: AdminSettingsBrokerService,
+    private readonly dashboardContextService: DashboardContextService
   ) {
   }
 
   ngOnInit(): void {
-    this.userLogin$ = this.userContext.getUser().pipe(
-      map(x => x.login)
-    );
+    this.adminSettingsBrokerService.initSettingsBrokers();
+  }
+
+  instrumentSelected(instrumentKey: InstrumentKey, groupKey: string): void {
+    this.dashboardContextService.selectDashboardInstrument(instrumentKey, groupKey);
   }
 }

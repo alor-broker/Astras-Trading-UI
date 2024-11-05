@@ -37,7 +37,12 @@ export class AdminIdentityService {
   login(request: LoginRequest): Observable<LoginResponse | null> {
     const requiredServices = [
       'Identity',
-      'ServicesApi'
+      'ServicesApi',
+      'Warp',
+      'CommandApi',
+      'InstrumentApi',
+      'RiskApi',
+      'Hyperion'
     ];
 
     return this.httpClient.post<LoginResult>(

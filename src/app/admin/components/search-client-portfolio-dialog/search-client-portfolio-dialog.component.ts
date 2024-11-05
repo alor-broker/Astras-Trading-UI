@@ -40,6 +40,7 @@ import { mapWith } from "../../../shared/utils/observable-helper";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { NzTypographyComponent } from "ng-zorro-antd/typography";
+import { NzInputDirective } from 'ng-zorro-antd/input';
 
 @Component({
   selector: 'ats-search-client-portfolio-dialog',
@@ -56,7 +57,8 @@ import { NzTypographyComponent } from "ng-zorro-antd/typography";
     NzOptionComponent,
     NzFormControlComponent,
     NzButtonComponent,
-    NzTypographyComponent
+    NzTypographyComponent,
+    NzInputDirective
   ],
   templateUrl: './search-client-portfolio-dialog.component.html',
   styleUrl: './search-client-portfolio-dialog.component.less'
@@ -129,7 +131,7 @@ export class SearchClientPortfolioDialogComponent implements OnInit {
     const formValue = this.searchForm.value;
     const selectedPortfolio: PortfolioKey = {
       exchange: formValue.exchange!,
-      portfolio: formValue.portfolio!
+      portfolio: formValue.portfolio!.toUpperCase()
     };
 
     scheduled([selectedPortfolio], asyncScheduler).pipe(

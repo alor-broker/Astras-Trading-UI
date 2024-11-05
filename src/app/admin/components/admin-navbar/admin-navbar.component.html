@@ -1,7 +1,21 @@
-<ng-container *transloco="let t; scope: 'dashboard/navbar/common'">
-  <div  class="d-flex  flex-row flex-nowrap">
-    <div  class="d-flex flex-row flex-nowrap justify-content-start">
-      <ats-select-client-portfolio-btn></ats-select-client-portfolio-btn>
-    </div>
+<ats-desktop-navbar>
+  <div class="left-side-item">
+    <ats-widgets-gallery-nav-btn
+      [atsDisabled]="(isDashboardReady$ | async ) === false"></ats-widgets-gallery-nav-btn>
   </div>
-</ng-container>
+
+  <div class="left-side-item">
+    <ats-open-orders-dialog-nav-btn
+      [atsDisabled]="(isDashboardReady$ | async ) === false"></ats-open-orders-dialog-nav-btn>
+  </div>
+
+  <div class="left-side-item">
+    <ats-select-client-portfolio-btn></ats-select-client-portfolio-btn>
+  </div>
+
+
+  <div  class="right-side-item">
+    <ats-admin-profile-menu-nav-btn></ats-admin-profile-menu-nav-btn>
+  </div>
+</ats-desktop-navbar>
+

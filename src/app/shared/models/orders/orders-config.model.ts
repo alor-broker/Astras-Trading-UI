@@ -1,5 +1,6 @@
 ﻿export interface LimitOrderConfig {
   isBracketsSupported: boolean;
+  unsupportedFields: Record<string, boolean>;
 }
 
 export interface OrdersConfig {

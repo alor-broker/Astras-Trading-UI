@@ -17,6 +17,7 @@ import { HelpService } from "../../../../shared/services/help.service";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 import { ORDER_COMMAND_SERVICE_TOKEN } from "../../../../shared/services/orders/order-command.service";
+import {PUSH_NOTIFICATIONS_CONFIG} from "../../../push-notifications/services/push-notifications-config";
 
 describe('OrdersDialogWidgetComponent', () => {
   let component: OrdersDialogWidgetComponent;
@@ -80,6 +81,18 @@ describe('OrdersDialogWidgetComponent', () => {
           provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: {
             getOrdersConfig: jasmine.createSpy('getOrdersConfig').and.returnValue({ })
+          }
+        },
+        {
+          provide: PUSH_NOTIFICATIONS_CONFIG,
+          useValue: {
+            priceChangeNotifications: {
+              isSupported: true
+            },
+
+            portfolioOrdersExecuteNotifications: {
+              isSupported: true
+            }
           }
         }
       ]

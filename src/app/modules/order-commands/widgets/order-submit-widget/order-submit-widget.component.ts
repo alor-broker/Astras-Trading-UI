@@ -38,6 +38,10 @@ import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
 } from "../../../../shared/services/orders/order-command.service";
+import {
+  PUSH_NOTIFICATIONS_CONFIG,
+  PushNotificationsConfig
+} from "../../../push-notifications/services/push-notifications-config";
 
 @Component({
   selector: 'ats-order-submit-widget',
@@ -70,6 +74,8 @@ export class OrderSubmitWidgetComponent implements OnInit {
     private readonly widgetsSharedDataService: WidgetsSharedDataService,
     @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     private readonly orderCommandService: OrderCommandService,
+    @Inject(PUSH_NOTIFICATIONS_CONFIG)
+    readonly pushNotificationsConfig: PushNotificationsConfig,
     private readonly destroyRef: DestroyRef
   ) {
   }

@@ -85,6 +85,7 @@ export class DashboardsBridgeEffects {
           sourceGuid: targetDashboard.guid,
           title: `${targetDashboard.title} ${params.allDashboards.filter(d => d.sourceGuid === targetDashboard.guid).length + 1}`,
           isSelected: true,
+          isFavorite: false,
           existedItems: widgetsCopy,
           instrumentsSelection: {
             ...targetDashboard.instrumentsSelection

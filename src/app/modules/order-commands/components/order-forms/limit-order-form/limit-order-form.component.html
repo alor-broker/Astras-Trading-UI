@@ -58,6 +58,20 @@
             </div>
           </div>
           <div>
+            <div *ngIf="form.controls.reason.enabled">
+              <nz-form-item class="compact">
+                <nz-form-label nzFor="reason">{{t('orderCommandsOrderForms.reasonLabel')}}</nz-form-label>
+                <nz-form-control>
+                  <nz-select formControlName="reason" nzAllowClear>
+                    <nz-option
+                      *ngFor="let reason of reasonEnum | keyvalue"
+                      [nzLabel]="t('orderCommandsOrderForms.reasonOptions.' + reason.key)"
+                      [nzValue]="reason.value"
+                    ></nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
             <nz-collapse [nzBordered]="false" class="compact" nzGhost>
               <nz-collapse-panel [nzHeader]="t('orderCommandsOrderForms.advanced')" [nzActive]="expandAdvancedOptions">
                 <nz-form-item class="compact">

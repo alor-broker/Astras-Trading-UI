@@ -1,7 +1,6 @@
 import {
   Component,
   DestroyRef,
-  Inject,
   Input,
   OnDestroy,
   OnInit
@@ -11,7 +10,9 @@ import {
   Observable,
   switchMap,
   map,
-  shareReplay
+  shareReplay,
+  take,
+  forkJoin
 } from "rxjs";
 import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
 import { Store } from "@ngrx/store";
@@ -22,10 +23,6 @@ import { MarketService } from "../../../../shared/services/market.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
-import {
-  USER_CONTEXT,
-  UserContext
-} from "../../../../shared/services/auth/user-context";
 
 @Component({
   selector: 'ats-events-calendar',
@@ -43,8 +40,6 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
   constructor(
     private readonly store: Store,
     private readonly positionsService: PositionsService,
-    @Inject(USER_CONTEXT)
-    private readonly userContext: UserContext,
     private readonly marketService: MarketService,
     private readonly destroyRef: DestroyRef
   ) {
@@ -69,8 +64,17 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
     this.symbolsOfSelectedPortfolio$ = this.selectedPortfolio$.pipe(
       switchMap(p => {
         if (!p) {
-          return this.userContext.getUser().pipe(
-            switchMap(u => this.positionsService.getAllByLogin(u.login!))
+          const portfolioRequests = this.portfolios.map(
+            p => this.positionsService.getAllByPortfolio(p.portfolio, p.exchange).pipe(
+              map(p => p ?? []),
+              take(1)
+            )
+          );
+
+          return forkJoin(portfolioRequests).pipe(
+            map(responses => {
+              return responses.reduce((prev, curr) => [...prev, ...curr], []);
+            })
           );
         }
 

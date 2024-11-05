@@ -155,7 +155,8 @@ describe('LimitOrderFormComponent', () => {
     fixture = TestBed.createComponent(LimitOrderFormComponent);
     component = fixture.componentInstance;
     component.limitOrderConfig = {
-      isBracketsSupported: true
+      isBracketsSupported: true,
+      unsupportedFields: {}
     };
 
     fixture.detectChanges();

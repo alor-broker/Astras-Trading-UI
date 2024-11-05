@@ -48,16 +48,13 @@
                     #limitOrderTab
                     [nzTitle]="toc('orderCommands.limitOrderTabTitle')"
                   >
-                    <div class="mb-3">
-                      <ats-working-volumes
-                        (itemSelected)="setCommonParameters({price: $event.price, quantity: $event.volume})"
-                        [instrumentKey]="currentInstrument"
-                        [workingVolumes]="settings.workingVolumes"
-                      ></ats-working-volumes>
-                    </div>
-                    <ng-container>
-
-                    </ng-container>
+                  <div *ngIf="settings.showVolumePanel && (settings.workingVolumes ?? []).length > 0" class="mb-3">
+                    <ats-working-volumes
+                      (itemSelected)="setCommonParameters({price: $event.price, quantity: $event.volume})"
+                      [instrumentKey]="currentInstrument"
+                      [workingVolumes]="settings.workingVolumes"
+                    ></ats-working-volumes>
+                  </div>
                     <div>
                       <ats-limit-order-form
                         [activated]="limitOrderTab.isActive"
@@ -115,7 +112,11 @@
                     ></ats-stop-order-form>
                   </nz-tab>
 
-                  <nz-tab #notificationsTab [nzTitle]="titleTemplate">
+                  <nz-tab
+                    #notificationsTab
+                    [nzTitle]="titleTemplate"
+                    *ngIf="pushNotificationsConfig.priceChangeNotifications.isSupported"
+                  >
                     <ng-template #titleTemplate>
                   <span>
                     <span nz-icon nzTheme="outline" nzType="bell"></span>

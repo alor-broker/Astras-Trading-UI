@@ -206,7 +206,7 @@
           <nz-switch formControlName='showPositionActions'></nz-switch>
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item>
+      <nz-form-item *ngIf="isNotificationsSupported">
         <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
           <nz-form-label nzRequired nzFor="notificationsColumns">
             {{t('blotterSettings.notificationsColumnsLabel')}}

@@ -11,6 +11,7 @@ import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 import { ORDER_COMMAND_SERVICE_TOKEN } from "../../../../shared/services/orders/order-command.service";
+import {PUSH_NOTIFICATIONS_CONFIG} from "../../../push-notifications/services/push-notifications-config";
 
 describe('OrderSubmitWidgetComponent', () => {
   let component: OrderSubmitWidgetComponent;
@@ -61,6 +62,18 @@ describe('OrderSubmitWidgetComponent', () => {
           provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: {
             getOrdersConfig: jasmine.createSpy('getOrdersConfig').and.returnValue({ })
+          }
+        },
+        {
+          provide: PUSH_NOTIFICATIONS_CONFIG,
+          useValue: {
+            priceChangeNotifications: {
+              isSupported: true
+            },
+
+            portfolioOrdersExecuteNotifications: {
+              isSupported: true
+            }
           }
         }
       ]

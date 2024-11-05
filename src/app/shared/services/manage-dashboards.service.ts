@@ -11,7 +11,7 @@ import { Store } from '@ngrx/store';
 import {Dashboard, DefaultDashboardConfig} from '../models/dashboard/dashboard.model';
 import { GuidGenerator } from '../utils/guid';
 import { DashboardContextService } from './dashboard-context.service';
-import { HttpClient } from "@angular/common/http";
+import {HttpClient, HttpContext} from "@angular/common/http";
 import {DashboardsStreams} from "../../store/dashboards/dashboards.streams";
 import { WidgetSettings } from "../models/widget-settings.model";
 import {
@@ -24,6 +24,7 @@ import {
   DashboardsCurrentSelectionActions,
   DashboardsManageActions
 } from "../../store/dashboards/dashboards-actions";
+import {HttpContextTokens} from "../constants/http.constants";
 
 @Injectable({
   providedIn: 'root',
@@ -121,7 +122,20 @@ export class ManageDashboardsService {
       guid: GuidGenerator.newGuid(),
       title: title,
       isSelected: true,
+      isFavorite: false,
       existedItems: []
+    }));
+  }
+
+    addDashboardWithTemplate(template: Omit<Dashboard, 'guid' | 'version' | 'sourceGuid' | 'favoritesOrder'>): void {
+    this.store.dispatch(DashboardsManageActions.add({
+      guid: GuidGenerator.newGuid(),
+      ...template,
+      existedItems: template.items,
+      isSelected: template.isSelected ?? false,
+      isFavorite: template.isFavorite ?? false,
+      instrumentsSelection: template.instrumentsSelection ?? undefined,
+      selectedPortfolio: template.selectedPortfolio ?? undefined
     }));
   }
 
@@ -160,7 +174,8 @@ export class ManageDashboardsService {
         headers: {
           "Cache-Control": "no-cache",
           "Pragma": "no-cache"
-        }
+        },
+        context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true),
       }
     )
       .pipe(

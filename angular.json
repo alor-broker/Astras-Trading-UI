@@ -14,13 +14,13 @@
       "schematics": {
         "@schematics/angular:component": {
           "style": "less",
-          "standalone": false
+          "standalone": true
         },
         "@schematics/angular:directive": {
-          "standalone": false
+          "standalone": true
         },
         "@schematics/angular:pipe": {
-          "standalone": false
+          "standalone": true
         },
         "@schematics/angular:application": {
           "strict": true

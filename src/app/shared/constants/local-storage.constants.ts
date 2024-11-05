@@ -20,6 +20,13 @@ export class LocalStorageMobileConstants {
   static MigrationsSettingsStorageKey = 'migrations';
 }
 
+export class LocalStorageAdminConstants {
+  static WidgetsSettingsStorageKey = 'admin.widget-settings';
+  static DashboardsSettingsStorageKey = 'admin.dashboard';
+  static TerminalSettingsStorageKey = 'admin.terminalSettings';
+  static WidgetsLocalStateStorageKey = 'admin.widgets-local-state';
+}
+
 export class LocalStorageLoggingConstants {
   static UserLoginStorageKey = 'log.login';
   static ClientIdStorageKey = 'log.clientId';
