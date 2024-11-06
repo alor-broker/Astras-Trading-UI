@@ -89,6 +89,14 @@ export class ThemeService {
     return this.themeSettings$;
   }
 
+  attachDefaultStyles(): void {
+    const style = document.createElement('link');
+    style.rel = 'stylesheet';
+    style.href = `dark.css`;
+    style.className = this.styleLinkClassName;
+    document.head.prepend(style);
+  }
+
   private getColorsMap(theme: ThemeType): Observable<Record<string, string>> {
     return this.httpClient.get<Record<string, string>>(
       `../../../assets/${theme}-shared-colors-config.json`,
