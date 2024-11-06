@@ -25,6 +25,7 @@ import {
 import { DisplayStatus } from "../chat-status/chat-status.component";
 import { AiChatService } from "../../services/ai-chat.service";
 import { map } from "rxjs/operators";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 @Component({
   selector: 'ats-ai-chat',
@@ -39,6 +40,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
   showSuggestedMessages = false;
   canRestartConversation = false;
   private translator$!: Observable<TranslatorFn>;
+  private threadId: string | null = null;
 
   @Input()
   atsDisabled = false;
@@ -97,8 +99,11 @@ export class AiChatComponent implements OnInit, OnDestroy {
       this.showSuggestedMessages = false;
       this.canRestartConversation = false;
 
+      this.threadId = this.threadId ?? GuidGenerator.newGuid();
+
       this.aiChatService.sendMessage({
-        text: message.text
+        text: message.text,
+        threadId: this.threadId
       }).pipe(
         take(1)
       ).subscribe(response => {
@@ -141,6 +146,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
       ? 0
       : 1000;
 
+    this.threadId = GuidGenerator.newGuid();
     this.displayMessages = [];
     this.chatStatus$.next(null);
 
