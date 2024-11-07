@@ -5,13 +5,13 @@ import {
   take
 } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { AuthService } from '../services/auth.service';
 import { HttpContextTokens } from "../constants/http.constants";
+import { ApiTokenProviderService } from "../services/auth/api-token-provider.service";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   constructor(
-    private readonly authService: AuthService
+    private readonly apiTokenProviderService: ApiTokenProviderService
   ) {
   }
 
@@ -20,7 +20,7 @@ export class AuthInterceptor implements HttpInterceptor {
       return next.handle(req);
     }
 
-    return this.authService.accessToken$
+    return this.apiTokenProviderService.getToken()
       .pipe(
         take(1),
         switchMap(

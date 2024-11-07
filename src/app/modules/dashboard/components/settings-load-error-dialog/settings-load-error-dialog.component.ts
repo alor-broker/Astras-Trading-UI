@@ -9,7 +9,7 @@ import {
 import { TranslocoDirective } from "@jsverse/transloco";
 import { NzResultComponent } from "ng-zorro-antd/result";
 import { EnvironmentService } from "../../../../shared/services/environment.service";
-import { ExternalLinkModule } from "../../../../shared/components/external-link/external-link.module";
+import {ExternalLinkComponent} from "../../../../shared/components/external-link/external-link.component";
 
 @Component({
   selector: 'ats-settings-load-error-dialog',
@@ -19,7 +19,7 @@ import { ExternalLinkModule } from "../../../../shared/components/external-link/
     NzModalContentDirective,
     TranslocoDirective,
     NzResultComponent,
-    ExternalLinkModule
+    ExternalLinkComponent
   ],
   templateUrl: './settings-load-error-dialog.component.html',
   styleUrl: './settings-load-error-dialog.component.less'

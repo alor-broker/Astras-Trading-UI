@@ -21,8 +21,10 @@ export const DashboardsManageActions = createActionGroup({
       guid: string;
       title: string;
       isSelected: boolean;
+      isFavorite: boolean;
       existedItems: Widget[];
       instrumentsSelection?: InstrumentGroups;
+      selectedPortfolio?: PortfolioKey;
       sourceGuid?: string;
     }>(),
     "Reset": props<{

@@ -17,6 +17,7 @@ import {
 
 export interface State extends EntityState<WidgetStateRecord> {
   status: EntityStatus;
+  storageKey: string;
 }
 
 export const getRecordId = (record: { widgetGuid: string, recordKey: string }): string => {
@@ -28,15 +29,17 @@ export const adapter: EntityAdapter<WidgetStateRecord> = createEntityAdapter<Wid
 });
 
 export const initialState: State = adapter.getInitialState({
-  status: EntityStatus.Initial
+  status: EntityStatus.Initial,
+  storageKey: ''
 });
 
 const reducer = createReducer(
   initialState,
   on(WidgetsLocalStateInternalActions.init,
-    (state) => ({
+    (state, action) => ({
       ...state,
-      status: EntityStatus.Loading
+      status: EntityStatus.Loading,
+      storageKey: action.storageKey
     })
   ),
   on(WidgetsLocalStateServicesActions.setRecord,

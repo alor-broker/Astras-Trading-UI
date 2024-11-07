@@ -20,9 +20,7 @@ export interface GetBestOfferCommandArgs {
   orderTracker?: LimitOrderTracker;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class GetBestOfferCommand extends CommandBase<GetBestOfferCommandArgs> {
   constructor(private readonly submitLimitOrderCommand: SubmitLimitOrderCommand) {
     super();

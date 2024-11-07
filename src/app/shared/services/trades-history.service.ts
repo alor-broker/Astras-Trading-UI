@@ -37,7 +37,7 @@ export class TradesHistoryService {
       }
     }
     return this.httpClient.get<Trade[]>(
-      `${this.environmentService.apiUrl}/md/stats/${exchange}/${portfolio}/history/trades`,
+      `${this.environmentService.apiUrl}/md/v2/stats/${exchange}/${portfolio}/history/trades`,
       {
         params
       }

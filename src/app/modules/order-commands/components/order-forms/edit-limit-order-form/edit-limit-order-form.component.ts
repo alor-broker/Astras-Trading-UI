@@ -1,4 +1,11 @@
-import { Component, DestroyRef, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  Inject,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import { BaseEditOrderFormComponent } from "../base-edit-order-form.component";
 import { FormBuilder, Validators } from "@angular/forms";
 import { CommonParametersService } from "../../../services/common-parameters.service";
@@ -15,7 +22,10 @@ import { EvaluationBaseProperties } from "../../../../../shared/models/evaluatio
 import { PriceDiffHelper } from "../../../utils/price-diff.helper";
 import { LimitOrderEdit } from "../../../../../shared/models/orders/edit-order.model";
 import { toInstrumentKey } from "../../../../../shared/utils/instruments";
-import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../../../shared/services/orders/order-command.service";
 
 @Component({
   selector: 'ats-edit-limit-order-form',
@@ -75,7 +85,8 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
     protected readonly instrumentService: InstrumentsService,
     private readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly wsOrdersService: WsOrdersService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
+    private readonly orderCommandService: OrderCommandService,
     protected readonly destroyRef: DestroyRef) {
     super(instrumentService, destroyRef);
   }
@@ -307,7 +318,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
           portfolio: x.portfolioKey!.portfolio
         };
       }),
-      switchMap(x => this.wsOrdersService.submitLimitOrderEdit(x.updatedOrder, x.portfolio)),
+      switchMap(x => this.orderCommandService.submitLimitOrderEdit(x.updatedOrder, x.portfolio)),
       map(r => r.isSuccess),
       take(1)
     );

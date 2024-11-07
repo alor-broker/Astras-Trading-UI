@@ -15,6 +15,11 @@ export enum TimeInForce {
   GoodTillCancelled = 'goodtillcancelled'
 }
 
+export enum Reason {
+  ForceCloseOrder = 'ForceCloseOrder',
+  DebtLevy = 'DebtLevy'
+}
+
 export interface IcebergParameters {
   creationFixedQuantity?: number | null;
   creationVarianceQuantity?: number | null;

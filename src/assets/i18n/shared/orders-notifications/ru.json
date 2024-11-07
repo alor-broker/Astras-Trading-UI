@@ -13,6 +13,8 @@
   "orderStatusChangedLabel": "Статус заявки {{orderId}} изменился на {{orderStatus}}",
   "ordersGroupCreatedLabel": "Группа заявок создана",
   "ordersGroupCreatedContent": "Группа с заявками {{orderIds}} успешно создана",
+  "ordersGroupUnsupportedLabel": "Группы заявок не поддерживаются",
+  "ordersGroupUnsupportedContent": "Создание группы заявок недоступно",
 
   "orderCancelledTitle": "Заявка отменена",
   "orderCancelledContent": "Заявка {{orderId}} на {{exchange}} успешно отменена",

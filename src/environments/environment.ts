@@ -48,6 +48,9 @@ export const environment = {
     services: 'https://lk.alor.ru/products/services',
     videoTutorial: 'https://www.youtube.com/watch?v=Jn0rLQlcAE0&list=PLMmnmN5fr5OQdclMyRVqIzL6RG7-LlqG3'
   },
+  admin: {
+    identityUrl: "https://hub.dev.alor.ru/api"
+  },
   features: {
     aiChat: true
   }

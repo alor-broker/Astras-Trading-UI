@@ -58,6 +58,20 @@
             </div>
           </div>
           <div>
+            <div *ngIf="form.controls.reason.enabled">
+              <nz-form-item class="compact">
+                <nz-form-label nzFor="reason">{{t('orderCommandsOrderForms.reasonLabel')}}</nz-form-label>
+                <nz-form-control>
+                  <nz-select formControlName="reason" nzAllowClear>
+                    <nz-option
+                      *ngFor="let reason of reasonEnum | keyvalue"
+                      [nzLabel]="t('orderCommandsOrderForms.reasonOptions.' + reason.key)"
+                      [nzValue]="reason.value"
+                    ></nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
             <nz-collapse [nzBordered]="false" class="compact" nzGhost>
               <nz-collapse-panel [nzHeader]="t('orderCommandsOrderForms.advanced')" [nzActive]="expandAdvancedOptions">
                 <nz-form-item class="compact">
@@ -150,7 +164,7 @@
                   </nz-form-item>
                 </ng-container>
 
-                <div class="d-flex flex-gap-10">
+                <div class="d-flex flex-gap-10" *ngIf="limitOrderConfig.isBracketsSupported">
                   <nz-form-item class="compact flex-shrink-2 w-100">
                     <nz-form-label class="flex-fill" nzFor="topOrderPrice">
                       {{t('orderCommandsOrderForms.topOrderPriceLabel')}}
@@ -187,7 +201,7 @@
                   </nz-form-item>
                 </div>
 
-                <div class="d-flex flex-gap-10">
+                <div class="d-flex flex-gap-10" *ngIf="limitOrderConfig.isBracketsSupported">
                   <nz-form-item class="compact flex-shrink-2 w-100">
                     <nz-form-label class="flex-fill" nzFor="bottomOrderPrice">
                       {{t('orderCommandsOrderForms.bottomOrderPriceLabel')}}

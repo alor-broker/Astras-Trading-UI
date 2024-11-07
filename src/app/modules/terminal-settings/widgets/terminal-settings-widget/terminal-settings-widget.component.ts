@@ -6,11 +6,27 @@ import {TerminalSettingsService} from "../../../../shared/services/terminal-sett
 import { TabNames } from '../../models/terminal-settings.model';
 import { GlobalLoadingIndicatorService } from "../../../../shared/services/global-loading-indicator.service";
 import { GuidGenerator } from "../../../../shared/utils/guid";
+import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from "ng-zorro-antd/modal";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {TerminalSettingsModule} from "../../terminal-settings.module";
+import {AsyncPipe, NgIf} from "@angular/common";
+import {NzButtonComponent} from "ng-zorro-antd/button";
 
 @Component({
   selector: 'ats-terminal-settings-widget',
   templateUrl: './terminal-settings-widget.component.html',
-  styleUrls: ['./terminal-settings-widget.component.less']
+  styleUrls: ['./terminal-settings-widget.component.less'],
+  imports: [
+    NzModalComponent,
+    TranslocoDirective,
+    TerminalSettingsModule,
+    AsyncPipe,
+    NzModalFooterDirective,
+    NgIf,
+    NzModalContentDirective,
+    NzButtonComponent
+  ],
+  standalone: true
 })
 export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
   @Input()
@@ -23,9 +39,9 @@ export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
   private initialSettingsFormValue!: TerminalSettings;
 
   constructor(
-    private readonly modal: ModalService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly globalLoadingIndicatorService: GlobalLoadingIndicatorService
+    private readonly globalLoadingIndicatorService: GlobalLoadingIndicatorService,
+    private readonly modalService: ModalService
   ) {
   }
 
@@ -39,11 +55,11 @@ export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.isVisible$ = this.modal.shouldShowTerminalSettingsModal$;
+    this.isVisible$ = this.modalService.shouldShowTerminalSettingsModal$;
   }
 
   closeModal(): void {
-    this.modal.closeTerminalSettingsModal();
+    this.modalService.closeTerminalSettingsModal();
   }
 
   handleClose(): void {

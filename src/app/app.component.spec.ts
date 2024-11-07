@@ -4,9 +4,9 @@ import {
 } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
-import { APP_HOOK } from "./shared/services/app-hook/app-hook-token";
 import { GlobalLoadingIndicatorService } from "./shared/services/global-loading-indicator.service";
 import { Subject } from "rxjs";
+import { APP_HOOK } from "./shared/services/hook/app/app-hook-token";
 
 describe('AppComponent', () => {
   let component: AppComponent;

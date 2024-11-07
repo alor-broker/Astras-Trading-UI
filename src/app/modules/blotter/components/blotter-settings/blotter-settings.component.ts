@@ -1,6 +1,6 @@
 import {
   Component,
-  DestroyRef,
+  DestroyRef, Inject,
   OnInit,
 } from '@angular/core';
 import {
@@ -39,6 +39,10 @@ import { DeviceService } from "../../../../shared/services/device.service";
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
+import {
+  PUSH_NOTIFICATIONS_CONFIG,
+  PushNotificationsConfig
+} from "../../../push-notifications/services/push-notifications-config";
 
 @Component({
   selector: 'ats-blotter-settings',
@@ -87,7 +91,9 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
     protected readonly destroyRef: DestroyRef,
     private readonly store: Store,
     private readonly deviceService: DeviceService,
-    private readonly formBuilder: FormBuilder
+    private readonly formBuilder: FormBuilder,
+    @Inject(PUSH_NOTIFICATIONS_CONFIG)
+    readonly pushNotificationsConfig: PushNotificationsConfig
   ) {
     super(settingsService, manageDashboardsService, destroyRef);
   }
@@ -98,6 +104,11 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
 
   get canSave(): boolean {
     return this.form.valid;
+  }
+
+  get isNotificationsSupported(): boolean {
+    return this.pushNotificationsConfig.portfolioOrdersExecuteNotifications.isSupported
+      || this.pushNotificationsConfig.priceChangeNotifications.isSupported;
   }
 
   ngOnInit(): void {

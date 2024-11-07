@@ -115,7 +115,8 @@ export enum OrdersInstantNotificationType {
   OrderCancelFailed = 'orderCancelFailed',
   OrderUpdated = 'orderUpdated',
   OrderUpdateFailed = 'orderUpdateFailed',
-  OrdersGroupCreated = 'ordersGroupCreated'
+  OrdersGroupCreated = 'ordersGroupCreated',
+  OrdersGroupUnsupported = 'ordersGroupUnsupported'
 }
 
 export enum CommonInstantNotificationType {

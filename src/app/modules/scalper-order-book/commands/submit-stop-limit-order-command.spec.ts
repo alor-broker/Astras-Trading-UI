@@ -17,9 +17,11 @@ import {
   OrderDialogParams,
   OrderFormType
 } from "../../../shared/models/orders/orders-dialog.model";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('SubmitStopLimitOrderCommand', () => {
   let command: SubmitStopLimitOrderCommand;
@@ -28,15 +30,16 @@ describe('SubmitStopLimitOrderCommand', () => {
   let ordersDialogServiceSpy: any;
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['submitStopLimitOrder']);
+    orderServiceSpy = jasmine.createSpyObj('OrderCommandService', ['submitStopLimitOrder']);
     ordersDialogServiceSpy = jasmine.createSpyObj('OrdersDialogService', ['openNewOrderDialog']);
   });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        SubmitStopLimitOrderCommand,
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
         {

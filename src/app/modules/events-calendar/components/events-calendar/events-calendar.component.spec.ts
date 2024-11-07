@@ -1,4 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { EventsCalendarComponent } from './events-calendar.component';
 import ruEventsCalendarTranslations from '../../../../../assets/i18n/events-calendar/ru.json';
@@ -7,13 +10,16 @@ import { StoreModule } from "@ngrx/store";
 import { EffectsModule } from "@ngrx/effects";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
 import { PositionsService } from "../../../../shared/services/positions.service";
-import { EMPTY } from "rxjs";
-import { AuthService } from "../../../../shared/services/auth.service";
+import {
+  EMPTY,
+  NEVER
+} from "rxjs";
 import { MarketService } from "../../../../shared/services/market.service";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
 import { NzTabsModule } from "ng-zorro-antd/tabs";
+import { USER_CONTEXT } from "../../../../shared/services/auth/user-context";
 
 describe('EventsCalendarComponent', () => {
   let component: EventsCalendarComponent;
@@ -51,17 +57,17 @@ describe('EventsCalendarComponent', () => {
           }
         },
         {
-          provide: AuthService,
-          useValue:{
-            currentUser$: EMPTY
-          }
-        },
-        {
           provide: MarketService,
           useValue:{
             getDefaultExchange: jasmine.createSpy('getDefaultExchange').and.returnValue(EMPTY),
           }
-        },
+          },
+          {
+              provide: USER_CONTEXT,
+              useValue: {
+                  getUser: jasmine.createSpy('getUser').and.returnValue(NEVER)
+              }
+          },
         ...commonTestProviders
       ]
     })

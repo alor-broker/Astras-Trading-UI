@@ -82,7 +82,11 @@
               </ats-trades-history>
             </ng-template>
           </nz-tab>
-          <nz-tab [nzTitle]="titleTemplate" nzForceRender>
+          <nz-tab
+            [nzTitle]="titleTemplate"
+            nzForceRender
+            *ngIf="isNotificationsSupported"
+          >
             <ng-template nz-tab>
               <ats-push-notifications [guid]="guid">
               </ats-push-notifications>

@@ -11,10 +11,12 @@ import { of } from "rxjs";
 import { Side } from "../../../shared/models/enums/side.model";
 import { LessMore } from "../../../shared/models/enums/less-more.model";
 import { NewStopMarketOrder } from "../../../shared/models/orders/new-order.model";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import { ScalperOrderBookInstantTranslatableNotificationsService } from "../services/scalper-order-book-instant-translatable-notifications.service";
 import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('SetStopLossCommand', () => {
   let command: SetStopLossCommand;
@@ -24,7 +26,7 @@ describe('SetStopLossCommand', () => {
   let notificationsServiceSpy: any;
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['submitStopMarketOrder']);
+    orderServiceSpy = jasmine.createSpyObj('OrderCommandService', ['submitStopMarketOrder']);
     ordersDialogServiceSpy = jasmine.createSpyObj('OrdersDialogService', ['openNewOrderDialog']);
     notificationsServiceSpy = jasmine.createSpyObj('ScalperOrderBookInstantTranslatableNotificationsService', ['emptyPositions']);
   });
@@ -32,8 +34,9 @@ describe('SetStopLossCommand', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        SetStopLossCommand,
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
         {

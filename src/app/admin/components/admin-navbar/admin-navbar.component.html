@@ -1,0 +1,21 @@
+<ats-desktop-navbar>
+  <div class="left-side-item">
+    <ats-widgets-gallery-nav-btn
+      [atsDisabled]="(isDashboardReady$ | async ) === false"></ats-widgets-gallery-nav-btn>
+  </div>
+
+  <div class="left-side-item">
+    <ats-open-orders-dialog-nav-btn
+      [atsDisabled]="(isDashboardReady$ | async ) === false"></ats-open-orders-dialog-nav-btn>
+  </div>
+
+  <div class="left-side-item">
+    <ats-select-client-portfolio-btn></ats-select-client-portfolio-btn>
+  </div>
+
+
+  <div  class="right-side-item">
+    <ats-admin-profile-menu-nav-btn></ats-admin-profile-menu-nav-btn>
+  </div>
+</ats-desktop-navbar>
+

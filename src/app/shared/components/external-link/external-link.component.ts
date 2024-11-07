@@ -2,11 +2,16 @@ import {
   Component,
   Input
 } from '@angular/core';
+import {NzIconDirective} from "ng-zorro-antd/icon";
 
 @Component({
   selector: 'ats-external-link',
   templateUrl: './external-link.component.html',
-  styleUrls: ['./external-link.component.less']
+  styleUrls: ['./external-link.component.less'],
+  imports: [
+    NzIconDirective
+  ],
+  standalone: true
 })
 export class ExternalLinkComponent {
   @Input()

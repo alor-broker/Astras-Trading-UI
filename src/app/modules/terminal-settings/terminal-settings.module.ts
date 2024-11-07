@@ -1,10 +1,8 @@
 import { NgModule } from '@angular/core';
 
 import { TerminalSettingsRoutingModule } from './terminal-settings-routing.module';
-import { TerminalSettingsWidgetComponent } from './widgets/terminal-settings-widget/terminal-settings-widget.component';
 import { TerminalSettingsComponent } from './components/terminal-settings/terminal-settings.component';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { ExternalLinkModule } from '../../shared/components/external-link/external-link.module';
 import { NzInputModule } from "ng-zorro-antd/input";
 import { InstantNotificationsFormComponent } from './components/instant-notifications-form/instant-notifications-form.component';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
@@ -17,10 +15,11 @@ import { HotKeyInputComponent } from './components/hot-key-input/hot-key-input.c
 import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { BadgesSettingsComponent } from "./components/badges-settings/badges-settings.component";
+import {InputNumberComponent} from "../../shared/components/input-number/input-number.component";
+import {ExternalLinkComponent} from "../../shared/components/external-link/external-link.component";
 
 @NgModule({
   declarations: [
-    TerminalSettingsWidgetComponent,
     TerminalSettingsComponent,
     InstantNotificationsFormComponent,
     UsefulLinksComponent,
@@ -31,17 +30,18 @@ import { BadgesSettingsComponent } from "./components/badges-settings/badges-set
     HotKeyInputComponent,
     BadgesSettingsComponent
   ],
-    imports: [
-        SharedModule,
-        TerminalSettingsRoutingModule,
-        ExternalLinkModule,
-        NzInputModule,
-        NzDividerModule,
-        NzResizeObserverModule,
-        DragDropModule
-    ],
   exports: [
-    TerminalSettingsWidgetComponent
+    TerminalSettingsComponent
+  ],
+  imports: [
+    SharedModule,
+    TerminalSettingsRoutingModule,
+    NzInputModule,
+    NzDividerModule,
+    NzResizeObserverModule,
+    DragDropModule,
+    InputNumberComponent,
+    ExternalLinkComponent
   ]
 })
 export class TerminalSettingsModule {

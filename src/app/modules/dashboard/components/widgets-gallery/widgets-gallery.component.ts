@@ -6,6 +6,10 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { WidgetCategory } from "../../../../shared/models/widget-meta.model";
+import {NzDrawerComponent, NzDrawerContentDirective} from "ng-zorro-antd/drawer";
+import {NgForOf, NgIf, NgTemplateOutlet} from "@angular/common";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {TranslocoDirective} from "@jsverse/transloco";
 
 export interface WidgetDisplay {
   typeId: string;
@@ -27,7 +31,17 @@ export interface GalleryDisplay {
   selector: 'ats-widgets-gallery',
   templateUrl: './widgets-gallery.component.html',
   styleUrls: ['./widgets-gallery.component.less'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  imports: [
+    NzDrawerComponent,
+    NzDrawerContentDirective,
+    NgIf,
+    NgForOf,
+    NgTemplateOutlet,
+    NzIconDirective,
+    TranslocoDirective
+  ],
+  standalone: true
 })
 export class WidgetsGalleryComponent {
   @Input({ required: true })

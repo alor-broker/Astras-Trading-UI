@@ -3,9 +3,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LimitOrderPriceChangeComponent } from './limit-order-price-change.component';
 import {Subject} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
-import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../../shared/services/orders/order-command.service";
 
 describe('LimitOrderPriceChangeComponent', () => {
   let component: LimitOrderPriceChangeComponent;
@@ -26,7 +28,7 @@ describe('LimitOrderPriceChangeComponent', () => {
           }
         },
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: {
             getInstrumentPositionSubscription: jasmine.createSpy('submitLimitOrderEdit').and.returnValue(new Subject())
           }

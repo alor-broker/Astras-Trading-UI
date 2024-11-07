@@ -7,23 +7,23 @@ import {
   BehaviorSubject,
   take
 } from 'rxjs';
-import { AuthService } from './auth.service';
 import { LoggerService } from './logging/logger.service';
 import { EnvironmentService } from "./environment.service";
 import { RXJS_WEBSOCKET_CTOR } from "../constants/ws.constants";
+import { ApiTokenProviderService } from "./auth/api-token-provider.service";
 
 describe('SubscriptionsDataFeedService', () => {
   let service: SubscriptionsDataFeedService;
 
-  let authServiceSpy: any;
+  let apiTokenProviderServiceSpy: any;
   let loggerServiceSpy: any;
   let webSocketSubjectMock: any;
   let socketConstructorSpy: any;
 
   beforeEach(() => {
     loggerServiceSpy = jasmine.createSpyObj('LoggerService', ['trace', 'info', 'warn']);
-    authServiceSpy = {
-      accessToken$: new BehaviorSubject<string>('test_token')
+    apiTokenProviderServiceSpy = {
+      getToken: jasmine.createSpy('getToken').and.returnValue(new BehaviorSubject<string>('test_token'))
     };
 
     webSocketSubjectMock = jasmine.createSpyObj('WebSocketSubject', ['subscribe', 'complete'], ['closed']);
@@ -33,7 +33,7 @@ describe('SubscriptionsDataFeedService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        { provide: AuthService, useValue: authServiceSpy },
+        { provide: ApiTokenProviderService, useValue: apiTokenProviderServiceSpy },
         { provide: LoggerService, useValue: loggerServiceSpy },
         {
           provide: RXJS_WEBSOCKET_CTOR,

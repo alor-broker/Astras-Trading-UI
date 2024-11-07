@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Observable, shareReplay} from "rxjs";
 import {WidgetMeta} from "../models/widget-meta.model";
-import { HttpClient } from "@angular/common/http";
+import {HttpClient, HttpContext} from "@angular/common/http";
+import {HttpContextTokens} from "../constants/http.constants";
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,8 @@ export class WidgetsMetaService {
         headers: {
           "Cache-Control": "no-cache",
           "Pragma": "no-cache"
-        }
+        },
+        context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true),
       }
     )
       .pipe(

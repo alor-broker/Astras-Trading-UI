@@ -1,7 +1,9 @@
-import { Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable
+} from '@angular/core';
 import { Position } from "../../../shared/models/positions/position.model";
 import { CommandBase } from "./command-base";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import { ScalperOrderBookInstantTranslatableNotificationsService } from "../services/scalper-order-book-instant-translatable-notifications.service";
 import { Side } from "../../../shared/models/enums/side.model";
@@ -11,6 +13,10 @@ import { OrderFormType } from "../../../shared/models/orders/orders-dialog.model
 import { LocalOrderTracker } from "./local-order-tracker";
 import { GuidGenerator } from "../../../shared/utils/guid";
 import { take } from "rxjs";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../shared/services/orders/order-command.service";
 
 export interface StopMarketOrderTracker extends LocalOrderTracker<NewStopMarketOrder> {
   beforeOrderCreated: (order: NewStopMarketOrder) => void;
@@ -25,12 +31,11 @@ export interface SetStopLossCommandArgs {
   orderTracker?: StopMarketOrderTracker;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class SetStopLossCommand extends CommandBase<SetStopLossCommandArgs> {
   constructor(
-    private readonly wsOrdersService: WsOrdersService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
+    private readonly orderCommandService: OrderCommandService,
     private readonly ordersDialogService: OrdersDialogService,
     private readonly notification: ScalperOrderBookInstantTranslatableNotificationsService,
   ) {
@@ -63,7 +68,7 @@ export class SetStopLossCommand extends CommandBase<SetStopLossCommandArgs> {
     if (args.silent) {
       args.orderTracker?.beforeOrderCreated(order);
 
-      this.wsOrdersService.submitStopMarketOrder(order, args.currentPosition.portfolio).pipe(
+      this.orderCommandService.submitStopMarketOrder(order, args.currentPosition.portfolio).pipe(
         take(1)
       ).subscribe(result => {
         if (order.meta?.trackId != null) {

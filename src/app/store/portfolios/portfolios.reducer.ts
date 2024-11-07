@@ -32,6 +32,11 @@ const reducer = createReducer(
     status: EntityStatus.Loading
   })),
 
+  on(PortfoliosInternalActions.initWithList, (state) => ({
+    ...state,
+    status: EntityStatus.Loading
+  })),
+
   on(PortfoliosInternalActions.initSuccess, (state, { portfolios }) => {
       return adapter.addMany(
         portfolios,

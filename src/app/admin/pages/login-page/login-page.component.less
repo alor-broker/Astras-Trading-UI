@@ -1,0 +1,30 @@
+@import 'theme-mixin';
+
+.themeMixin({
+  :host {
+    .form-box {
+      border: @border-width-base solid @border-color-base;
+      border-radius: @border-radius-base;
+      background-color: @component-background;
+    }
+  }
+});
+
+:host{
+  position: relative;
+  top: 20%;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  user-select: none;
+}
+
+.form-box {
+  width: 275px;
+}
+
+.ant-form-item {
+  display: block;
+}

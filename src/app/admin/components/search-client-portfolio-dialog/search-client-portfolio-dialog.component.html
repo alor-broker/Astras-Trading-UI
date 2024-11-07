@@ -1,0 +1,58 @@
+<ng-container *transloco="let t; scope: 'admin/search-client-portfolio-dialog'">
+  <nz-modal
+    (nzOnCancel)="close()"
+    [nzFooter]="null"
+    [nzTitle]="t('adminSearchClientPortfolioDialog.title')"
+    [nzVisible]='atsVisible'
+    nzClosable="true"
+    nzMaskClosable="false"
+    nzClassName="search-client-portfolio-dialog"
+  >
+    <ng-container *nzModalContent>
+      <form [formGroup]="searchForm"
+            nz-form
+            class="d-flex flex-row flex-nowrap justify-content-between flex-gap-10"
+      >
+        <nz-form-item>
+          <nz-form-control [nzErrorTip]="t('validationErrors.selectValueError')">
+            <nz-select
+              [formControl]="searchForm.controls.exchange"
+              [nzPlaceHolder]="t('form.exchange.label')"
+            >
+              @for (exchange of allExchanges$ | async; track exchange) {
+                <nz-option [nzLabel]="exchange" [nzValue]="exchange"></nz-option>
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="flex-fill">
+          <nz-form-control
+            [nzErrorTip]="t('validationErrors.stringInputLength', {min: validationOptions.portfolio.minLength, max: validationOptions.portfolio.maxLength} )"
+          >
+            <input
+            nz-input
+            [placeholder]="t('form.portfolio.label')"
+            [formControl]="searchForm.controls.portfolio"
+            type="text">
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <button
+            (click)="selectPortfolio()"
+            [disabled]="searchForm.invalid"
+            [nzLoading]="isSearchInProgress"
+            nz-button
+            nzType="primary"
+          >
+            {{ t('adminSearchClientPortfolioDialog.selectBtnTitle') }}
+          </button>
+        </nz-form-item>
+      </form>
+
+      @if (showAccessError) {
+        <span nz-typography nzType="danger">{{ t('adminSearchClientPortfolioDialog.noAccessError') }}</span>
+      }
+    </ng-container>
+  </nz-modal>
+</ng-container>
