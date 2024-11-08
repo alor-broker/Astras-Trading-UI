@@ -14,7 +14,6 @@ import {toInstrumentKey} from "../../../../../shared/utils/instruments";
 import {MarketOrderFormComponent} from "./market-order-form.component";
 import {QuotesService} from "../../../../../shared/services/quotes.service";
 import {EvaluationService} from "../../../../../shared/services/evaluation.service";
-import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
 import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
 import { TestData } from "../../../../../shared/utils/testing/test-data";
 import { InstrumentBoardSelectMockComponent } from "../../../../../shared/utils/testing/instrument-board-select-mock-component";
@@ -23,6 +22,9 @@ import { commonTestProviders } from "../../../../../shared/utils/testing/common-
 import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
 import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
 import { BuySellButtonsComponent } from "../../buy-sell-buttons/buy-sell-buttons.component";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../../../shared/services/orders/order-command.service";
 
 describe('MarketOrderFormComponent', () => {
   let component: MarketOrderFormComponent;
@@ -64,7 +66,7 @@ describe('MarketOrderFormComponent', () => {
   };
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('OrderService', ['submitMarketOrder']);
+    orderServiceSpy = jasmine.createSpyObj('OrderCommandService', ['submitMarketOrder']);
 
     orderServiceSpy.submitMarketOrder.and.returnValue(new Subject());
   });
@@ -110,7 +112,7 @@ describe('MarketOrderFormComponent', () => {
           }
         },
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
         {

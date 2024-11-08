@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
 import { TerminalSettingsService } from './terminal-settings.service';
-import { AtsStoreModule } from "../../store/ats-store.module";
 import { provideHttpClient } from "@angular/common/http";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { StoreModule } from "@ngrx/store";
 import { EffectsModule } from "@ngrx/effects";
 import { commonTestProviders } from "../utils/testing/common-test-providers";
+import { TerminalSettingsFeature } from "../../store/terminal-settings/terminal-settings.reducer";
 
 describe('TerminalSettingsService', () => {
   let service: TerminalSettingsService;
@@ -17,7 +17,7 @@ describe('TerminalSettingsService', () => {
       imports: [
         StoreModule.forRoot({}),
         EffectsModule.forRoot(),
-        AtsStoreModule
+        StoreModule.forFeature(TerminalSettingsFeature),
       ],
       providers: [
         TerminalSettingsService,

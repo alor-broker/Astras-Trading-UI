@@ -16,6 +16,7 @@ import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
 import { WidgetSettingsComponent } from "../../../../shared/components/widget-settings/widget-settings.component";
 import { NzToolTipModule } from "ng-zorro-antd/tooltip";
 import { RemoveSelectTitlesDirective } from "../../../../shared/directives/remove-select-titles.directive";
+import {PUSH_NOTIFICATIONS_CONFIG} from "../../../push-notifications/services/push-notifications-config";
 
 describe('BlotterSettingsComponent', () => {
   let component: BlotterSettingsComponent;
@@ -57,6 +58,17 @@ describe('BlotterSettingsComponent', () => {
           provide: ManageDashboardsService,
           useValue: {
             copyWidget: jasmine.createSpy('copyWidget').and.callThrough(),
+          }
+        },
+        {
+          provide: PUSH_NOTIFICATIONS_CONFIG,
+          useValue: {
+            priceChangeNotifications: {
+              isSupported: true
+            },
+            portfolioOrdersExecuteNotifications: {
+              isSupported: true
+            }
           }
         },
         ...commonTestProviders

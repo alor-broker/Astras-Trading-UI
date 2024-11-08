@@ -1,4 +1,10 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {
+  Component,
+  Inject,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, shareReplay, take, withLatestFrom} from "rxjs";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {
@@ -11,7 +17,10 @@ import {filter, map} from "rxjs/operators";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
-import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../../shared/services/orders/order-command.service";
 
 @Component({
   selector: 'ats-limit-order-price-change',
@@ -29,7 +38,8 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly wsOrdersService: WsOrdersService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
+    private readonly orderCommandService: OrderCommandService,
   ) {
   }
 
@@ -81,7 +91,7 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
         const precision = MathHelper.getPrecision(selection.instrument.minstep);
 
         const newPrice = MathHelper.round(order.price + step * selection.instrument.minstep, precision);
-        this.wsOrdersService.submitLimitOrderEdit(
+        this.orderCommandService.submitLimitOrderEdit(
           {
             orderId: order.id,
             quantity: order.qtyBatch - (order.filledQtyBatch ?? 0),

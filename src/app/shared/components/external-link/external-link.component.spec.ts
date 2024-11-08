@@ -1,6 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ExternalLinkComponent } from './external-link.component';
+import {ExternalLinkComponent} from './external-link.component';
+import {MockDirective} from "ng-mocks";
+import {NzIconDirective} from "ng-zorro-antd/icon";
 
 describe('ExternalLinkComponent', () => {
   let component: ExternalLinkComponent;
@@ -8,9 +10,12 @@ describe('ExternalLinkComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ExternalLinkComponent]
+      imports: [
+        ExternalLinkComponent,
+        MockDirective(NzIconDirective)
+      ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(ExternalLinkComponent);
     component = fixture.componentInstance;

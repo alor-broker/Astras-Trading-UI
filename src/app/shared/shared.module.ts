@@ -31,7 +31,6 @@ import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { HttpErrorHandler } from './services/handle-error/http-error-handler';
 import { LogErrorHandler } from './services/handle-error/log-error-handler';
 import { ERROR_HANDLER } from './services/handle-error/error-handler';
-import { AtsStoreModule } from '../store/ats-store.module';
 import { LoadingIndicatorComponent } from './components/loading-indicator/loading-indicator.component';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
@@ -46,7 +45,6 @@ import { NzDividerModule } from "ng-zorro-antd/divider";
 import { ResizeColumnDirective } from './directives/resize-column.directive';
 import { TranslocoModule } from "@jsverse/transloco";
 import { InstrumentBoardSelectComponent } from './components/instrument-board-select/instrument-board-select.component';
-import { EditableStringComponent } from './components/editable-string/editable-string.component';
 import { WidgetHeaderComponent } from './components/widget-header/widget-header.component';
 import { WidgetSkeletonComponent } from './components/widget-skeleton/widget-skeleton.component';
 import { JoyrideModule } from 'ngx-joyride';
@@ -79,7 +77,6 @@ import { InstrumentSearchComponent } from "./components/instrument-search/instru
     InfiniteScrollTableComponent,
     ResizeColumnDirective,
     InstrumentBoardSelectComponent,
-    EditableStringComponent,
     WidgetHeaderComponent,
     WidgetSkeletonComponent,
     ShortNumberComponent,
@@ -126,7 +123,6 @@ import { InstrumentSearchComponent } from "./components/instrument-search/instru
     NzCheckboxModule,
     NzDatePickerModule,
     ScrollingModule,
-    AtsStoreModule,
     NzSpinModule,
     NzTypographyModule,
     NzRadioModule,
@@ -188,7 +184,6 @@ import { InstrumentSearchComponent } from "./components/instrument-search/instru
     InstrumentBoardSelectComponent,
     WidgetHeaderComponent,
     WidgetSkeletonComponent,
-    EditableStringComponent,
     ShortNumberComponent,
     ScrollableRowComponent,
     InstrumentBadgeDisplayComponent,

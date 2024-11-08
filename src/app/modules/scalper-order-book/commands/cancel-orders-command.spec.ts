@@ -6,8 +6,10 @@ import {
 } from "./cancel-orders-command";
 import { OrderType } from "../../../shared/models/orders/order.model";
 import { of } from "rxjs";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('CancelOrdersCommand', () => {
   let command: CancelOrdersCommand;
@@ -15,14 +17,15 @@ describe('CancelOrdersCommand', () => {
   let orderServiceSpy: any;
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['cancelOrders']);
+    orderServiceSpy = jasmine.createSpyObj('OrderCommandService', ['cancelOrders']);
   });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        CancelOrdersCommand,
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
       ]

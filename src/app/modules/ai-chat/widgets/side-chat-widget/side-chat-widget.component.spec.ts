@@ -2,11 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SideChatWidgetComponent } from './side-chat-widget.component';
 import { LocalStorageService } from "../../../../shared/services/local-storage.service";
-import { AuthService } from "../../../../shared/services/auth.service";
-import { Subject } from "rxjs";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 import { NzDrawerModule } from "ng-zorro-antd/drawer";
+import {
+  EMPTY,
+} from "rxjs";
+import { USER_CONTEXT } from "../../../../shared/services/auth/user-context";
 
 describe('SideChatWidgetComponent', () => {
   let component: SideChatWidgetComponent;
@@ -32,9 +34,9 @@ describe('SideChatWidgetComponent', () => {
           }
         },
         {
-          provide: AuthService,
+          provide: USER_CONTEXT,
           useValue: {
-            currentUser$: new Subject()
+            getUser: jasmine.createSpy('getUser').and.returnValue(EMPTY)
           }
         }
       ]

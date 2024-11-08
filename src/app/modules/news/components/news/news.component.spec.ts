@@ -17,6 +17,8 @@ import { LetDirective } from "@ngrx/component";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponent} from "ng-mocks";
+import {NewsDialogComponent} from "../news-dialog/news-dialog.component";
 
 describe('NewsComponent', () => {
   const testNewsItem = {
@@ -40,7 +42,8 @@ describe('NewsComponent', () => {
       ],
       imports: [
         TranslocoTestsModule.getModule(),
-        LetDirective
+        LetDirective,
+        MockComponent(NewsDialogComponent)
       ],
       providers: [
         {

@@ -6,7 +6,7 @@ import {
   of,
   Subject
 } from 'rxjs';
-import { WsOrdersConnector } from "./orders/ws-orders-connector";
+import { WsOrdersConnector } from 'src/app/client/services/orders/ws-orders-connector';
 
 describe('NetworkStatusService', () => {
   let service: NetworkStatusService;

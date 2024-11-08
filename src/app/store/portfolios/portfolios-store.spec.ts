@@ -6,19 +6,18 @@ import { MarketType } from "../../shared/models/portfolio-key.model";
 import { TestBed } from "@angular/core/testing";
 import {
   BehaviorSubject,
-  of,
   take
 } from "rxjs";
 import { AccountService } from '../../shared/services/account.service';
 import { PortfolioExtended } from '../../shared/models/user/portfolio-extended.model';
 import { ErrorHandlerService } from '../../shared/services/handle-error/error-handler.service';
-import { MarketService } from "../../shared/services/market.service";
 import { PortfoliosInternalActions } from './portfolios.actions';
 import { PortfoliosFeature } from "./portfolios.reducer";
 import { EnvironmentService } from "../../shared/services/environment.service";
 import { EffectsModule } from "@ngrx/effects";
 import { PortfoliosEffects } from "./portfolios.effects";
 import { commonTestProviders } from "../../shared/utils/testing/common-test-providers";
+import { GlobalLoadingIndicatorService } from "../../shared/services/global-loading-indicator.service";
 
 describe('Portfolios Store', () => {
   let store: Store;
@@ -78,18 +77,18 @@ describe('Portfolios Store', () => {
       ],
       providers: [
         { provide: AccountService, useValue: accountServiceSpy },
+        { provide: ErrorHandlerService, useValue: errorHandlerServiceSpy },
         {
           provide: EnvironmentService,
           useValue: {
             remoteSettingsStorageUrl: ''
           }
         },
-        { provide: ErrorHandlerService, useValue: errorHandlerServiceSpy },
         {
-          provide: MarketService,
+          provide: GlobalLoadingIndicatorService,
           useValue: {
-            getExchangeSettings: jasmine.createSpy('getExchangeSettings')
-              .and.callFake(e => of(e === 'MOEX' ? { isDefault: true } : {}))
+            registerLoading: jasmine.createSpy('registerLoading').and.callThrough(),
+            releaseLoading: jasmine.createSpy('releaseLoading').and.callThrough()
           }
         },
         ...commonTestProviders

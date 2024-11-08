@@ -1,6 +1,7 @@
 import {
   Component,
   DestroyRef,
+  Inject,
   Input,
   OnDestroy,
   OnInit
@@ -33,7 +34,7 @@ import {
 } from "rxjs/operators";
 import { PriceDiffHelper } from "../../../utils/price-diff.helper";
 import {
-  OrderType,
+  OrderType, Reason,
   TimeInForce
 } from "../../../../../shared/models/orders/order.model";
 import {
@@ -60,9 +61,12 @@ import {
   toUnixTime
 } from "../../../../../shared/utils/datetime";
 import { MarketService } from "../../../../../shared/services/market.service";
-import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
-import { OrdersGroupService } from "../../../../../shared/services/orders/orders-group.service";
 import { Market } from "../../../../../../generated/graphql.types";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../../../shared/services/orders/order-command.service";
+import { LimitOrderConfig } from "../../../../../shared/models/orders/orders-config.model";
 
 @Component({
   selector: 'ats-limit-order-form',
@@ -74,6 +78,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
   readonly evaluationRequest$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   readonly sides = Side;
   timeInForceEnum = TimeInForce;
+  reasonEnum = Reason;
 
   timezones$!: Observable<{ exchangeTimezone: string, displayTimezone: string }>;
 
@@ -135,7 +140,8 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
         ]
       }
     ),
-    bottomOrderSide: this.formBuilder.nonNullable.control(Side.Buy)
+    bottomOrderSide: this.formBuilder.nonNullable.control(Side.Buy),
+    reason: this.formBuilder.control<Reason | null>(null)
   });
 
   currentPriceDiffPercent$!: Observable<{ percent: number, sign: number } | null>;
@@ -152,12 +158,15 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     };
   } | null = null;
 
+  @Input({required: true})
+  limitOrderConfig!: LimitOrderConfig;
+
   constructor(
     private readonly formBuilder: FormBuilder,
     protected readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly wsOrdersService: WsOrdersService,
-    private readonly ordersGroupService: OrdersGroupService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
+    private readonly orderCommandService: OrderCommandService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly marketService: MarketService,
     protected readonly destroyRef: DestroyRef) {
@@ -246,9 +255,9 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
         const bracketOrders = this.getBracketOrders(limitOrder);
 
         if (bracketOrders.length === 0) {
-          return this.wsOrdersService.submitLimitOrder(limitOrder, portfolioKey.portfolio);
+          return this.orderCommandService.submitLimitOrder(limitOrder, portfolioKey.portfolio);
         } else {
-          return this.ordersGroupService.submitOrdersGroup([
+          return this.orderCommandService.submitOrdersGroup([
               {
                 ...limitOrder,
                 type: OrderType.Limit
@@ -317,6 +326,10 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       selectedDate = addSeconds(selectedDate, -1);
 
       limitOrder.orderEndUnixTime = Math.ceil(selectedDate.getTime() / 1000);
+    }
+
+    if(formValue.reason != null) {
+      limitOrder.reason = formValue.reason;
     }
 
     return limitOrder;
@@ -430,6 +443,17 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       this.disableControl(this.form.controls.timeInForce);
     } else {
       this.enableControl(this.form.controls.timeInForce);
+    }
+
+    if(!this.limitOrderConfig.isBracketsSupported) {
+      this.disableControl(this.form.controls.topOrderPrice);
+      this.disableControl(this.form.controls.topOrderSide);
+      this.disableControl(this.form.controls.bottomOrderPrice);
+      this.disableControl(this.form.controls.bottomOrderSide);
+    }
+
+    if(this.limitOrderConfig.unsupportedFields.reason) {
+      this.disableControl(this.form.controls.reason);
     }
 
     this.form.updateValueAndValidity();

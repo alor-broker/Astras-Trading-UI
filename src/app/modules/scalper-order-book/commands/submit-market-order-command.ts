@@ -1,12 +1,18 @@
-import { Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable
+} from '@angular/core';
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { Side } from "../../../shared/models/enums/side.model";
 import { CommandBase } from "./command-base";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import { NewMarketOrder } from "../../../shared/models/orders/new-order.model";
 import { toInstrumentKey } from "../../../shared/utils/instruments";
 import { OrderFormType } from "../../../shared/models/orders/orders-dialog.model";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../shared/services/orders/order-command.service";
 
 export interface SubmitMarketOrderCommandArgs {
   instrumentKey: InstrumentKey;
@@ -16,12 +22,11 @@ export interface SubmitMarketOrderCommandArgs {
   silent: boolean;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class SubmitMarketOrderCommand extends CommandBase<SubmitMarketOrderCommandArgs> {
   constructor(
-    private readonly wsOrdersService: WsOrdersService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
+    private readonly orderCommandService: OrderCommandService,
     private readonly ordersDialogService: OrdersDialogService
   ) {
     super();
@@ -35,7 +40,7 @@ export class SubmitMarketOrderCommand extends CommandBase<SubmitMarketOrderComma
     };
 
     if (args.silent) {
-      this.wsOrdersService.submitMarketOrder(order, args.targetPortfolio).subscribe();
+      this.orderCommandService.submitMarketOrder(order, args.targetPortfolio).subscribe();
     } else {
       this.ordersDialogService.openNewOrderDialog({
         instrumentKey: toInstrumentKey(order.instrument),

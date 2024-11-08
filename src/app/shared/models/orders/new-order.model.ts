@@ -2,7 +2,7 @@
 import {InstrumentKey} from "../instruments/instrument-key.model";
 import {LessMore} from "../enums/less-more.model";
 import {
-  OrderType,
+  OrderType, Reason,
   TimeInForce
 } from "./order.model";
 
@@ -26,6 +26,7 @@ export interface NewLimitOrder extends NewOrderBase {
   icebergVariance?: number;
   timeInForce?: TimeInForce;
   orderEndUnixTime?: number;
+  reason?: Reason;
 }
 
 export interface NewStopMarketOrder extends NewOrderBase {
@@ -40,14 +41,6 @@ export interface NewStopLimitOrder extends NewStopMarketOrder {
   icebergFixed?: number;
   icebergVariance?: number;
   timeInForce?: TimeInForce;
-}
-
-export interface SubmitOrderResponse {
-  message: string;
-  // # of successfully placed order
-  orderNumber?: string;
-  // Error code if something went wrong
-  code?: string;
 }
 
 export interface OrderCommandResult {

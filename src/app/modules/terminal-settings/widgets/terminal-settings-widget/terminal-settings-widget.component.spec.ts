@@ -4,9 +4,8 @@ import { ModalService } from 'src/app/shared/services/modal.service';
 import { TerminalSettingsWidgetComponent } from './terminal-settings-widget.component';
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import { EMPTY } from "rxjs";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
-import { NzModalModule } from "ng-zorro-antd/modal";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('TerminalSettingsWidgetComponent', () => {
   let component: TerminalSettingsWidgetComponent;
@@ -16,12 +15,9 @@ describe('TerminalSettingsWidgetComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        TerminalSettingsWidgetComponent,
-      ],
       imports: [
-        TranslocoTestsModule.getModule(),
-        NzModalModule
+        TerminalSettingsWidgetComponent,
+        TranslocoTestsModule.getModule()
       ],
       providers: [
         {

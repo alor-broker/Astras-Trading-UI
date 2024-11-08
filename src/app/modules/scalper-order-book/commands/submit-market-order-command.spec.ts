@@ -4,7 +4,6 @@ import {
   tick
 } from '@angular/core/testing';
 import { SubmitMarketOrderCommand } from "./submit-market-order-command";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { of } from "rxjs";
@@ -17,6 +16,9 @@ import {
 } from "../../../shared/models/orders/orders-dialog.model";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('SubmitMarketOrderCommand', () => {
   let command: SubmitMarketOrderCommand;
@@ -25,15 +27,16 @@ describe('SubmitMarketOrderCommand', () => {
   let ordersDialogServiceSpy: any;
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['submitMarketOrder']);
+    orderServiceSpy = jasmine.createSpyObj('OrderCommandService', ['submitMarketOrder']);
     ordersDialogServiceSpy = jasmine.createSpyObj('OrdersDialogService', ['openNewOrderDialog']);
   });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        SubmitMarketOrderCommand,
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
         {

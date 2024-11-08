@@ -7,8 +7,6 @@ import {
   BracketOptions,
   SubmitLimitOrderCommand
 } from "./submit-limit-order-command";
-import { OrdersGroupService } from "../../../shared/services/orders/orders-group.service";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
@@ -26,35 +24,33 @@ import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.mode
 import { PriceUnits } from "../models/scalper-order-book-settings.model";
 import { toInstrumentKey } from "../../../shared/utils/instruments";
 import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('SubmitLimitOrderCommand', () => {
   let command: SubmitLimitOrderCommand;
 
   let orderServiceSpy: any;
   let ordersDialogServiceSpy: any;
-  let ordersGroupServiceSpy: any;
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['submitLimitOrder']);
+    orderServiceSpy = jasmine.createSpyObj('OrderCommandService', ['submitLimitOrder', 'submitOrdersGroup']);
     ordersDialogServiceSpy = jasmine.createSpyObj('OrdersDialogService', ['openNewOrderDialog']);
-    ordersGroupServiceSpy = jasmine.createSpyObj('OrdersGroupService', ['submitOrdersGroup']);
   });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        SubmitLimitOrderCommand,
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
         {
           provide: OrdersDialogService,
           useValue: ordersDialogServiceSpy
-        },
-        {
-          provide: OrdersGroupService,
-          useValue: ordersGroupServiceSpy
-        },
+        }
       ]
     });
     command = TestBed.inject(SubmitLimitOrderCommand);
@@ -155,7 +151,7 @@ describe('SubmitLimitOrderCommand', () => {
       applyBracketOnClosing: false
     };
 
-    ordersGroupServiceSpy.submitOrdersGroup.and.returnValue(of({}));
+    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
     const quantity = TestingHelpers.getRandomInt(1, 100);
     const price = TestingHelpers.getRandomInt(1, 1000);
     const priceStep = 0.5;
@@ -182,7 +178,7 @@ describe('SubmitLimitOrderCommand', () => {
       instrument: toInstrumentKey(testInstrumentKey)
     };
 
-    expect(ordersGroupServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
       [
         jasmine.objectContaining(
           {
@@ -232,7 +228,7 @@ describe('SubmitLimitOrderCommand', () => {
       applyBracketOnClosing: false
     };
 
-    ordersGroupServiceSpy.submitOrdersGroup.and.returnValue(of({}));
+    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
     const quantity = TestingHelpers.getRandomInt(1, 100);
     const price = TestingHelpers.getRandomInt(1, 1000);
 
@@ -258,7 +254,7 @@ describe('SubmitLimitOrderCommand', () => {
       instrument: toInstrumentKey(testInstrumentKey)
     };
 
-    expect(ordersGroupServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
       [
         jasmine.objectContaining({
           ...expectedLimitOrder,

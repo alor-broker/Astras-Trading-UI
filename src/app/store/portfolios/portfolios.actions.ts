@@ -9,6 +9,7 @@ export const PortfoliosInternalActions = createActionGroup({
   source: "Portfolios/Internal",
   events: {
     "Init": emptyProps(),
+    "Init With List": props<{ portfolios: PortfolioExtended[] }>(),
     "Init Success": props<{ portfolios: PortfolioExtended[] }>()
   }
 });

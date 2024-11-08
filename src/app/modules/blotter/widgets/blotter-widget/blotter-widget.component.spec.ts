@@ -16,6 +16,7 @@ import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro
 import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {PUSH_NOTIFICATIONS_CONFIG} from "../../../push-notifications/services/push-notifications-config";
 
 describe('BlotterWidgetComponent', () => {
   let component: BlotterWidgetComponent;
@@ -68,6 +69,17 @@ describe('BlotterWidgetComponent', () => {
             selectedPortfolio$: of({})
           }
         },
+        {
+          provide: PUSH_NOTIFICATIONS_CONFIG,
+          useValue: {
+            priceChangeNotifications: {
+              isSupported: true
+            },
+            portfolioOrdersExecuteNotifications: {
+              isSupported: true
+            }
+          }
+        }
       ]
     }).compileComponents();
 

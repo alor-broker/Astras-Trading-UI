@@ -1,4 +1,6 @@
-import { Injectable } from '@angular/core';
+import {
+  Injectable,
+} from '@angular/core';
 import { ScalperOrderBookDataContext } from '../models/scalper-order-book-data-context.model';
 import { Side } from '../../../shared/models/enums/side.model';
 import {
@@ -57,9 +59,7 @@ import { UpdateOrdersCommand } from "../commands/update-orders-command";
 import { ScalperCommand } from "../models/scalper-command";
 import { ScalperHotKeyCommandService } from "./scalper-hot-key-command.service";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class ScalperCommandProcessorService {
   private mouseActionsMap$: Observable<ScalperOrderBookMouseActionsMap> | null = null;
 

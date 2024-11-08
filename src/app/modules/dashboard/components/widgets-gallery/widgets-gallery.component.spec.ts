@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { WidgetsGalleryComponent } from './widgets-gallery.component';
-import { NzDrawerModule } from "ng-zorro-antd/drawer";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockDirective} from "ng-mocks";
+import {NzIconDirective} from "ng-zorro-antd/icon";
 
 describe('WidgetsGalleryComponent', () => {
   let component: WidgetsGalleryComponent;
@@ -11,10 +12,10 @@ describe('WidgetsGalleryComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        WidgetsGalleryComponent,
         TranslocoTestsModule.getModule(),
-        NzDrawerModule
+        MockDirective(NzIconDirective)
       ],
-      declarations: [WidgetsGalleryComponent]
     });
     fixture = TestBed.createComponent(WidgetsGalleryComponent);
     component = fixture.componentInstance;

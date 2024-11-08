@@ -30,7 +30,8 @@ implements OnInit {
   private readonly nonSwitchableNotifications = [
     OrdersInstantNotificationType.OrderSubmitFailed,
     OrdersInstantNotificationType.OrderUpdateFailed,
-    OrdersInstantNotificationType.OrderCancelFailed
+    OrdersInstantNotificationType.OrderCancelFailed,
+    OrdersInstantNotificationType.OrdersGroupUnsupported
   ];
 
   editableNotificationTypes: { value: OrdersInstantNotificationType, enabled: boolean }[] = [];

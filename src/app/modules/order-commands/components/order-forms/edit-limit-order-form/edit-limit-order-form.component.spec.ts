@@ -1,35 +1,25 @@
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick
-} from '@angular/core/testing';
-import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
-import { CommonParametersService } from "../../../services/common-parameters.service";
-import {
-  BehaviorSubject,
-  Subject,
-  Subscription,
-  take
-} from "rxjs";
-import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
-import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
+import {CommonParametersService} from "../../../services/common-parameters.service";
+import {BehaviorSubject, Subject, Subscription, take} from "rxjs";
+import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
+import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
 import orderCommandsOrderFormsRu from "../../../../../../assets/i18n/order-commands/order-forms/ru.json";
-import { filter } from "rxjs/operators";
-import { EditLimitOrderFormComponent } from "./edit-limit-order-form.component";
-import { OrderDetailsService } from "../../../../../shared/services/orders/order-details.service";
-import { Order } from "../../../../../shared/models/orders/order.model";
-import { InstrumentsService } from "../../../../instruments/services/instruments.service";
-import { LimitOrderEdit } from "../../../../../shared/models/orders/edit-order.model";
-import { OrderFormState } from "../../../models/order-form.model";
-import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
-import { Side } from "../../../../../shared/models/enums/side.model";
-import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
-import { TestData } from "../../../../../shared/utils/testing/test-data";
-import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
-import { commonTestProviders } from "../../../../../shared/utils/testing/common-test-providers";
-import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
-import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
+import {filter} from "rxjs/operators";
+import {EditLimitOrderFormComponent} from "./edit-limit-order-form.component";
+import {OrderDetailsService} from "../../../../../shared/services/orders/order-details.service";
+import {Order} from "../../../../../shared/models/orders/order.model";
+import {InstrumentsService} from "../../../../instruments/services/instruments.service";
+import {LimitOrderEdit} from "../../../../../shared/models/orders/edit-order.model";
+import {OrderFormState} from "../../../models/order-form.model";
+import {Side} from "../../../../../shared/models/enums/side.model";
+import {TranslocoTestsModule} from "../../../../../shared/utils/testing/translocoTestsModule";
+import {TestData} from "../../../../../shared/utils/testing/test-data";
+import {ComponentHelpers} from "../../../../../shared/utils/testing/component-helpers";
+import {commonTestProviders} from "../../../../../shared/utils/testing/common-test-providers";
+import {FormsTesting} from "../../../../../shared/utils/testing/forms-testing";
+import {InputNumberComponent} from "../../../../../shared/components/input-number/input-number.component";
+import {ORDER_COMMAND_SERVICE_TOKEN,} from "../../../../../shared/services/orders/order-command.service";
 
 describe('EditLimitOrderFormComponent', () => {
   let component: EditLimitOrderFormComponent;
@@ -74,8 +64,8 @@ describe('EditLimitOrderFormComponent', () => {
   };
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('OrderService', ['submitLimitOrderEdit']);
-    orderServiceSpy.submitLimitOrderEdit.and.returnValue(new BehaviorSubject({ isSuccess: true }));
+    orderServiceSpy = jasmine.createSpyObj('OrderCommandService', ['submitLimitOrderEdit']);
+    orderServiceSpy.submitLimitOrderEdit.and.returnValue(new BehaviorSubject({isSuccess: true}));
 
     orderDetailsServiceSpy = jasmine.createSpyObj('OrderDetailsService', ['getLimitOrderDetails']);
     orderDetailsServiceSpy.getLimitOrderDetails.and.returnValue(new Subject());
@@ -117,7 +107,7 @@ describe('EditLimitOrderFormComponent', () => {
           }
         },
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
         {
@@ -149,16 +139,19 @@ describe('EditLimitOrderFormComponent', () => {
   });
 
   it('should show form errors', async () => {
+    const portfolio = getDefaultPortfolio();
+    const instrument = getDefaultInstrument();
+
     orderDetailsServiceSpy.getLimitOrderDetails.and.returnValue(new BehaviorSubject({
-        symbol: 'SBER',
-        exchange: 'MOEX',
+        targetInstrument: instrument,
+        ownedPortfolio: portfolio,
         price: 1,
         qty: 1
-      } as Order)
+      } as unknown as Order)
     );
 
     component.orderId = '111';
-    component.portfolioKey = getDefaultPortfolio();
+    component.portfolioKey = portfolio;
     fixture.detectChanges();
 
     const cases: { control: string, setValue: () => any, expectedError?: string }[] = [
@@ -192,7 +185,7 @@ describe('EditLimitOrderFormComponent', () => {
       control.dispatchEvent(new Event('input'));
 
       (component.form!.controls as any)[testCase.control]!.markAsDirty();
-      (component.form!.controls as any)[testCase.control]!.updateValueAndValidity({ onlySelf: false });
+      (component.form!.controls as any)[testCase.control]!.updateValueAndValidity({onlySelf: false});
 
       fixture.detectChanges();
 
@@ -209,16 +202,19 @@ describe('EditLimitOrderFormComponent', () => {
   });
 
   it('should disable submission', () => {
+      const portfolio = getDefaultPortfolio();
+      const instrument = getDefaultInstrument();
+
       orderDetailsServiceSpy.getLimitOrderDetails.and.returnValue(new BehaviorSubject({
-          symbol: 'SBER',
-          exchange: 'MOEX',
+          targetInstrument: instrument,
+          ownedPortfolio: portfolio,
           price: 1,
           qty: 1
-        } as Order)
+        } as unknown as Order)
       );
 
       component.orderId = '111';
-      component.portfolioKey = getDefaultPortfolio();
+      component.portfolioKey = portfolio;
 
       fixture.detectChanges();
 
@@ -234,17 +230,20 @@ describe('EditLimitOrderFormComponent', () => {
   );
 
   it('should set initial values', async () => {
+      const portfolio = getDefaultPortfolio();
+      const instrument = getDefaultInstrument();
+
       const order = {
-        symbol: 'SBER',
-        exchange: 'MOEX',
+        targetInstrument: instrument,
+        ownedPortfolio: portfolio,
         price: 1,
         qty: 1
-      } as Order;
+      } as unknown as Order;
 
       orderDetailsServiceSpy.getLimitOrderDetails.and.returnValue(new BehaviorSubject(order));
 
       component.orderId = '111';
-      component.portfolioKey = getDefaultPortfolio();
+      component.portfolioKey = portfolio;
       fixture.detectChanges();
 
       await fixture.whenStable().then(() => {
@@ -259,20 +258,23 @@ describe('EditLimitOrderFormComponent', () => {
   );
 
   it('should pass correct order to service', fakeAsync(() => {
+      const portfolio = getDefaultPortfolio();
       const instrument = getDefaultInstrument();
       const order = {
         id: '111',
-        symbol: instrument.symbol,
-        exchange: instrument.exchange,
-        board: instrument.instrumentGroup,
+        targetInstrument: {
+          symbol: instrument.symbol,
+          exchange: instrument.exchange,
+          instrumentGroup: instrument.instrumentGroup
+        },
+        ownedPortfolio: portfolio,
         price: 10,
         qty: 2,
         side: Side.Buy,
-      } as Order;
+      } as unknown as Order;
 
       orderDetailsServiceSpy.getLimitOrderDetails.and.returnValue(new BehaviorSubject(order));
       instrumentsServiceSpy.getInstrument.and.returnValue(new BehaviorSubject(instrument));
-      const portfolio = getDefaultPortfolio();
 
       component.orderId = order.id;
       component.portfolioKey = portfolio;

@@ -10,7 +10,6 @@ import { OrderbookChartComponent } from './components/orderbook-chart/orderbook-
 import { NzInputModule } from "ng-zorro-antd/input";
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
-import { ScalperOrderBookModule } from '../scalper-order-book/scalper-order-book.module';
 import { OrderbookTableVolumesAtTheEdgesComponent } from './components/orderbook-tables/orderbook-table-volumes-at-the-edges/orderbook-table-volumes-at-the-edges.component';
 import { OrderbookTableVolumesAtTheMiddleComponent } from './components/orderbook-tables/orderbook-table-volumes-at-the-middle/orderbook-table-volumes-at-the-middle.component';
 import { BaseChartDirective } from "ng2-charts";
@@ -34,7 +33,6 @@ import { InstrumentSearchComponent } from "../../shared/components/instrument-se
         NzInputModule,
         DragDropModule,
         NzResizeObserverModule,
-        ScalperOrderBookModule,
         BaseChartDirective,
         NzSliderModule,
         WidgetSettingsComponent,

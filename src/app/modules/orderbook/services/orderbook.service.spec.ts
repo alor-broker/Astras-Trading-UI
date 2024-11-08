@@ -8,9 +8,11 @@ import {
   Subject
 } from "rxjs";
 import { QuotesService } from "../../../shared/services/quotes.service";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
 import { commonTestProviders } from "../../../shared/utils/testing/common-test-providers";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('OrderbookService', () => {
   let service: OrderbookService;
@@ -38,7 +40,7 @@ describe('OrderbookService', () => {
         },
         { provide: PortfolioSubscriptionsService, useValue: portfolioSubscriptionsServiceSpy },
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: {
             cancelOrders: jasmine.createSpy('cancelOrders').and.returnValue(new Subject())
           }

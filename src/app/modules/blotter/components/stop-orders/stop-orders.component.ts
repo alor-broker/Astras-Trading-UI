@@ -1,4 +1,11 @@
-import { Component, DestroyRef, EventEmitter, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  EventEmitter,
+  Inject,
+  OnInit,
+  Output
+} from '@angular/core';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -34,9 +41,12 @@ import {
 import { LessMore } from "../../../../shared/models/enums/less-more.model";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../../shared/services/orders/order-command.service";
 
 interface DisplayOrder extends StopOrder {
   residue: string;
@@ -231,7 +241,8 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
   constructor(
     protected readonly service: BlotterService,
     protected readonly settingsService: WidgetSettingsService,
-    private readonly wsOrdersService: WsOrdersService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
+    private readonly orderCommandService: OrderCommandService,
     private readonly ordersDialogService: OrdersDialogService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
@@ -337,7 +348,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
   }
 
   cancelOrder(order: DisplayOrder): void {
-    this.wsOrdersService.cancelOrders([
+    this.orderCommandService.cancelOrders([
       {
         orderId: order.id,
         orderType: order.type,
@@ -370,7 +381,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
   cancelAllOrders(): void {
     const working = this.orders.filter(o => o.status == 'working');
     if(working.length > 0) {
-      this.wsOrdersService.cancelOrders(working.map(o => ({
+      this.orderCommandService.cancelOrders(working.map(o => ({
         orderId: o.id,
         orderType: o.type,
         exchange: o.targetInstrument.exchange,

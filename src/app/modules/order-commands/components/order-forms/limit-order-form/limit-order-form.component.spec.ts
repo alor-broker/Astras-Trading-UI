@@ -23,8 +23,6 @@ import {EvaluationService} from "../../../../../shared/services/evaluation.servi
 import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
 import { TimezoneDisplayOption } from "../../../../../shared/models/enums/timezone-display-option";
 import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
-import { WsOrdersService } from "../../../../../shared/services/orders/ws-orders.service";
-import { OrdersGroupService } from "../../../../../shared/services/orders/orders-group.service";
 import { MarketService } from "../../../../../shared/services/market.service";
 import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
 import { TestData } from "../../../../../shared/utils/testing/test-data";
@@ -34,13 +32,15 @@ import { commonTestProviders } from "../../../../../shared/utils/testing/common-
 import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
 import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
 import { BuySellButtonsComponent } from "../../buy-sell-buttons/buy-sell-buttons.component";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN
+} from "../../../../../shared/services/orders/order-command.service";
 
 describe('LimitOrderFormComponent', () => {
   let component: LimitOrderFormComponent;
   let fixture: ComponentFixture<LimitOrderFormComponent>;
 
   let orderServiceSpy: any;
-  let orderGroupServiceSpy: any;
   const timezoneConverter = new TimezoneConverter(TimezoneDisplayOption.MskTime);
   let timezoneConverterServiceSpy: any;
 
@@ -78,10 +78,8 @@ describe('LimitOrderFormComponent', () => {
   };
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['submitLimitOrder']);
+    orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['submitLimitOrder', 'submitOrdersGroup']);
     orderServiceSpy.submitLimitOrder.and.returnValue(new Subject());
-
-    orderGroupServiceSpy = jasmine.createSpyObj('OrdersGroupService', ['submitOrdersGroup']);
 
     timezoneConverterServiceSpy = jasmine.createSpyObj('TimezoneConverterService', ['getConverter']);
     timezoneConverterServiceSpy.getConverter.and.returnValue(of(timezoneConverter));
@@ -122,12 +120,8 @@ describe('LimitOrderFormComponent', () => {
           }
         },
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
-        },
-        {
-          provide: OrdersGroupService,
-          useValue: orderGroupServiceSpy
         },
         {
           provide: InstrumentsService,
@@ -160,6 +154,11 @@ describe('LimitOrderFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LimitOrderFormComponent);
     component = fixture.componentInstance;
+    component.limitOrderConfig = {
+      isBracketsSupported: true,
+      unsupportedFields: {}
+    };
+
     fixture.detectChanges();
   });
 

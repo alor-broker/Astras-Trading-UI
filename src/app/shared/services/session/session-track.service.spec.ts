@@ -5,16 +5,16 @@ import { BehaviorSubject } from "rxjs";
 import { TerminalSettings } from "../../models/terminal-settings/terminal-settings.model";
 import { map } from "rxjs/operators";
 import { ActivityTrackerService } from "./activity-tracker.service";
-import { AuthService } from "../auth.service";
 import {TerminalSettingsService} from "../terminal-settings.service";
 import { SessionInstantTranslatableNotificationsService } from "./session-instant-translatable-notifications.service";
+import { SESSION_CONTEXT } from "../auth/session-context";
 
 describe('SessionTrackService', () => {
   let service: SessionTrackService;
 
   let activityTrackerServiceSpy: any;
   let terminalSettingsServiceSpy: any;
-  let authServiceSpy: any;
+  let sessionContextSpy: any;
   let instantNotificationsServiceSpy: any;
   const userIdleDurationMinMock = new BehaviorSubject<number>(1 / 60);
   const lastActivityTimeMock = new BehaviorSubject<number | null>(null);
@@ -23,7 +23,7 @@ describe('SessionTrackService', () => {
   beforeEach(() => {
     activityTrackerServiceSpy = jasmine.createSpyObj('ActivityTrackerService', ['startTracking', 'stopTracking', 'lastActivityUnixTime$']);
     terminalSettingsServiceSpy = jasmine.createSpyObj('TerminalSettingsService', ['getSettings']);
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['logout']);
+    sessionContextSpy = jasmine.createSpyObj('SessionContext', ['fullLogout']);
     instantNotificationsServiceSpy = jasmine.createSpyObj('SessionInstantTranslatableNotificationsService', ['endOfSession', 'removeNotification']);
 
     terminalSettingsServiceSpy.getSettings.and.returnValue(
@@ -43,8 +43,8 @@ describe('SessionTrackService', () => {
           useValue: terminalSettingsServiceSpy
         },
         {
-          provide: AuthService,
-          useValue: authServiceSpy
+          provide: SESSION_CONTEXT,
+          useValue: sessionContextSpy
         },
         {
           provide: SessionInstantTranslatableNotificationsService,
@@ -80,7 +80,7 @@ describe('SessionTrackService', () => {
     service.startTracking();
     jasmine.clock().tick(usrIdleDurationMs);
 
-    expect(authServiceSpy.logout).not.toHaveBeenCalled();
+    expect(sessionContextSpy.fullLogout).not.toHaveBeenCalled();
   });
 
   it('should logout on inactivity', () => {
@@ -93,7 +93,7 @@ describe('SessionTrackService', () => {
     service.startTracking();
     jasmine.clock().tick(usrIdleDurationMs);
 
-    expect(authServiceSpy.logout).toHaveBeenCalled();
+    expect(sessionContextSpy.fullLogout).toHaveBeenCalled();
   });
 
   it('should NOT warning on activity', () => {

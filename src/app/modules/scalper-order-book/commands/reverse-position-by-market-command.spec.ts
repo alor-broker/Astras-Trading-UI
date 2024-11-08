@@ -4,7 +4,6 @@ import {
   tick
 } from '@angular/core/testing';
 import { ReversePositionByMarketCommand } from "./reverse-position-by-market-command";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { Position } from "../../../shared/models/positions/position.model";
@@ -12,20 +11,24 @@ import { of } from "rxjs";
 import { Side } from "../../../shared/models/enums/side.model";
 import { NewMarketOrder } from "../../../shared/models/orders/new-order.model";
 import { TestingHelpers } from 'src/app/shared/utils/testing/testing-helpers';
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('ReversePositionByMarketCommand', () => {
   let command: ReversePositionByMarketCommand;
   let orderServiceSpy: any;
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['submitMarketOrder']);
+    orderServiceSpy = jasmine.createSpyObj('OrderCommandService', ['submitMarketOrder']);
   });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        ReversePositionByMarketCommand,
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
       ]
@@ -50,11 +53,10 @@ describe('ReversePositionByMarketCommand', () => {
       };
 
       const position = {
-        symbol: testInstrumentKey.symbol,
-        exchange: testInstrumentKey.exchange,
+        targetInstrument: testInstrumentKey,
+        ownedPortfolio: portfolioKey,
         qtyTFuture: TestingHelpers.getRandomInt(1, 100),
         qtyTFutureBatch: TestingHelpers.getRandomInt(1, 10),
-        portfolio: portfolioKey.portfolio
       } as Position;
 
       orderServiceSpy.submitMarketOrder.and.returnValue(of({}));

@@ -1,0 +1,18 @@
+<ng-container *transloco="let tDesktop; scope: 'dashboard/navbar/desktop'">
+  <button
+    nz-button
+    nzType="text"
+    (click)="galleryVisible = true"
+    [disabled]="atsDisabled"
+  >
+    <i nz-icon nzType="appstore-add" nzTheme="outline" [nzRotate]="-90"></i>
+    {{ tDesktop("dashboardNavbarDesktop.widgetsLabel") }}
+  </button>
+</ng-container>
+
+<ats-widgets-gallery
+  [gallery]="widgetsGallery$ | async"
+  [(atsVisible)]="galleryVisible"
+  (selected)="addWidget($event)"
+  (resetDashboard)="resetDashboard()"
+></ats-widgets-gallery>

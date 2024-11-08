@@ -45,5 +45,10 @@
   "sideLabel": "Side",
   "buySideLabel": "Buy",
   "sellSideLabel": "Sell",
-  "allowLinkedOrderLabel": "Add linked order"
+  "allowLinkedOrderLabel": "Add linked order",
+  "reasonLabel": "Submit reason",
+  "reasonOptions": {
+    "ForceCloseOrder": "Forced closure",
+    "DebtLevy": "Debt write-off"
+  }
 }
