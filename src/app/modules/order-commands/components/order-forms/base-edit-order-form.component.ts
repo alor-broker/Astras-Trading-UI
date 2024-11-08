@@ -44,11 +44,7 @@ export abstract class BaseEditOrderFormComponent implements OnDestroy {
 
   protected initFormInstrument(order$: Observable<Order>): void {
     const instrumentKey$ = order$.pipe(
-      map(o => ({
-        symbol: o.symbol,
-        exchange: o.exchange,
-        instrumentGroup: o.board
-      }))
+      map(o => o.targetInstrument)
     );
 
     this.formInstrument$ = instrumentKey$.pipe(

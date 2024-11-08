@@ -209,7 +209,7 @@ export class OrdersDisplayExtension extends BaseExtension {
       switchMap(portfolio => this.portfolioSubscriptionsService.getOrdersSubscription(portfolio.portfolio, portfolio.exchange)),
       map(orders => orders.allOrders.filter(o => o.type === OrderType.Limit)),
       debounceTime(100),
-      map(orders => orders.filter(o => o.symbol === instrumentKey.symbol && o.exchange === instrumentKey.exchange)),
+      map(orders => orders.filter(o => o.targetInstrument.symbol === instrumentKey.symbol && o.targetInstrument.exchange === instrumentKey.exchange)),
       startWith([])
     );
   }
@@ -219,7 +219,7 @@ export class OrdersDisplayExtension extends BaseExtension {
       switchMap(portfolio => this.portfolioSubscriptionsService.getStopOrdersSubscription(portfolio.portfolio, portfolio.exchange)),
       map(orders => orders.allOrders),
       debounceTime(100),
-      map(orders => orders.filter(o => o.symbol === instrumentKey.symbol && o.exchange === instrumentKey.exchange)),
+      map(orders => orders.filter(o => o.targetInstrument.symbol === instrumentKey.symbol && o.targetInstrument.exchange === instrumentKey.exchange)),
       startWith([])
     );
   }
@@ -250,14 +250,8 @@ export class OrdersDisplayExtension extends BaseExtension {
     const getEditCommand = (): EditOrderDialogParams => ({
       orderId: order.id,
       orderType: OrderFormType.Limit,
-      instrumentKey: {
-        symbol: order.symbol,
-        exchange: order.exchange
-      },
-      portfolioKey: {
-        portfolio: order.portfolio,
-        exchange: order.exchange
-      },
+      instrumentKey: order.targetInstrument,
+      portfolioKey: order.ownedPortfolio,
       initialValues: {}
     } as EditOrderDialogParams);
 
@@ -266,8 +260,8 @@ export class OrdersDisplayExtension extends BaseExtension {
       .setPrice(order.price)
       .onCancel(() => this.wsOrdersService.cancelOrders([{
           orderId: order.id,
-          portfolio: order.portfolio,
-          exchange: order.exchange,
+          portfolio: order.ownedPortfolio.portfolio,
+          exchange: order.targetInstrument.exchange,
           orderType: order.type
         }]).subscribe()
       )
@@ -309,14 +303,8 @@ export class OrdersDisplayExtension extends BaseExtension {
     const getEditCommand = (): EditOrderDialogParams => ({
       orderId: order.id,
       orderType: OrderFormType.Stop,
-      instrumentKey: {
-        symbol: order.symbol,
-        exchange: order.exchange
-      },
-      portfolioKey: {
-        portfolio: order.portfolio,
-        exchange: order.exchange
-      },
+      instrumentKey: order.targetInstrument,
+      portfolioKey: order.ownedPortfolio,
       initialValues: {}
     } as EditOrderDialogParams);
 
@@ -326,8 +314,8 @@ export class OrdersDisplayExtension extends BaseExtension {
       .setPrice(order.triggerPrice)
       .onCancel(() => this.wsOrdersService.cancelOrders([{
           orderId: order.id,
-          portfolio: order.portfolio,
-          exchange: order.exchange,
+          portfolio: order.ownedPortfolio.portfolio,
+          exchange: order.targetInstrument.exchange,
           orderType: order.type
         }]).subscribe()
       )

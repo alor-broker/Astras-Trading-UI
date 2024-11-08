@@ -85,6 +85,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       id: 'symbol',
       displayName: 'Тикер',
       sortOrder: null,
+      transformFn: data => data.targetInstrument.symbol,
       filterData: {
         filterName: 'symbol',
         filterType: FilterType.Search,
@@ -96,7 +97,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       id: 'shortName',
       displayName: 'Название',
       sortOrder: null,
-      sortFn: (a: DisplayTrade, b: DisplayTrade): number => a.symbol.localeCompare(b.shortName),
+      sortFn: (a: DisplayTrade, b: DisplayTrade): number => a.shortName.localeCompare(b.shortName),
       filterData: {
         filterName: 'shortName',
         filterType: FilterType.Search
@@ -366,14 +367,18 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
         take(1)
       )
       .subscribe(s => this.service.selectNewInstrument(
-        row.symbol,
-        row.exchange,
-        row.board,
+        row.targetInstrument.symbol,
+        row.targetInstrument.exchange,
+        row.targetInstrument.instrumentGroup ?? null,
         s.badgeColor ?? defaultBadgeColor
       ));
   }
 
   protected rowToInstrumentKey(row: DisplayTrade): Observable<InstrumentKey | null> {
-    return this.service.getInstrumentToSelect(row.symbol, row.exchange, row.board);
+    return this.service.getInstrumentToSelect(
+      row.targetInstrument.symbol,
+      row.targetInstrument.exchange,
+      row.targetInstrument.instrumentGroup ?? null,
+    );
   }
 }

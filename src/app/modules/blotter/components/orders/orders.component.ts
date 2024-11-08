@@ -72,7 +72,8 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       id: 'symbol',
       displayName: 'Тикер',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.symbol.localeCompare(b.symbol),
+      transformFn: data => data.targetInstrument.symbol,
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.targetInstrument.symbol.localeCompare(b.targetInstrument.symbol),
       filterData: {
         filterName: 'symbol',
         filterType: FilterType.Search
@@ -158,7 +159,8 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       id: 'exchange',
       displayName: 'Биржа',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.exchange.localeCompare(a.exchange),
+      transformFn: data => data.targetInstrument.exchange,
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.targetInstrument.exchange.localeCompare(a.targetInstrument.exchange),
       filterData: {
         filterName: 'exchange',
         filterType: FilterType.DefaultMultiple,
@@ -303,9 +305,9 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
         take(1)
       )
       .subscribe(s => this.service.selectNewInstrument(
-        row.symbol,
-        row.exchange,
-        row.board,
+        row.targetInstrument.symbol,
+        row.targetInstrument.exchange,
+        row.targetInstrument.instrumentGroup ?? null,
         s.badgeColor ?? defaultBadgeColor
       ));
   }
@@ -315,8 +317,8 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       {
         orderId: order.id,
         orderType: order.type,
-        exchange: order.exchange,
-        portfolio: order.portfolio
+        exchange: order.targetInstrument.exchange,
+        portfolio: order.ownedPortfolio.portfolio
       }
     ]).subscribe();
   }
@@ -333,15 +335,10 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       take(1)
     ).subscribe(s => {
       this.ordersDialogService.openEditOrderDialog({
-        instrumentKey: {
-          symbol: order.symbol,
-          exchange: order.exchange,
-          instrumentGroup: order.board
-        },
+        instrumentKey: order.targetInstrument,
         portfolioKey: {
-          portfolio: s.portfolio,
-          exchange: s.exchange,
-          marketType: s.marketType
+          ...order.ownedPortfolio,
+          marketType: order.ownedPortfolio.marketType ?? s.marketType
         },
         orderId: order.id,
         orderType: OrderFormType.Limit,
@@ -359,8 +356,8 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       this.wsOrdersService.cancelOrders(working.map(o => ({
         orderId: o.id,
         orderType: o.type,
-        exchange: o.exchange,
-        portfolio: o.portfolio
+        exchange: o.targetInstrument.exchange,
+        portfolio: o.ownedPortfolio.portfolio
       }))).subscribe();
     }
   }
@@ -376,7 +373,11 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
   }
 
   protected rowToInstrumentKey(row: DisplayOrder): Observable<InstrumentKey | null> {
-    return this.service.getInstrumentToSelect(row.symbol, row.exchange, row.board);
+    return this.service.getInstrumentToSelect(
+      row.targetInstrument.symbol,
+      row.targetInstrument.exchange,
+      row.targetInstrument.instrumentGroup ?? null
+    );
   }
 
   private sortOrders(a: DisplayOrder, b: DisplayOrder): number {

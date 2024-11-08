@@ -59,16 +59,16 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
       switchMap(p => {
         if (!p) {
           return this.authService.currentUser$.pipe(
-            switchMap(u => this.positionsService.getAllByLogin(u.login!))
+            switchMap(u => this.positionsService.getAllByLogin(u.login!)),
+            map(positions => positions.map(p => p.symbol))
           );
         }
 
         return this.positionsService.getAllByPortfolio(p.portfolio, p.exchange)
           .pipe(
-            map(p => p ?? [])
+            map(p => (p ?? []).map(i => i.targetInstrument.symbol))
           );
       }),
-      map(positions => positions.map(p => p.symbol)),
       shareReplay(1)
     );
   }

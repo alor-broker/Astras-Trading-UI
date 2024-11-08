@@ -67,7 +67,8 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       id: 'symbol',
       displayName: 'Тикер',
       sortOrder: null,
-      sortFn: (a: RepoTrade, b: RepoTrade): number => a.symbol.localeCompare(b.symbol),
+      transformFn: data => data.targetInstrument.symbol,
+      sortFn: (a: RepoTrade, b: RepoTrade): number => a.targetInstrument.symbol.localeCompare(b.targetInstrument.symbol),
       filterData: {
         filterName: 'symbol',
         filterType: FilterType.Search
@@ -303,7 +304,11 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
   }
 
   protected rowToInstrumentKey(row: RepoTrade): Observable<InstrumentKey | null> {
-    return this.service.getInstrumentToSelect(row.symbol, row.exchange, row.board);
+    return this.service.getInstrumentToSelect(
+      row.targetInstrument.symbol,
+      row.targetInstrument.exchange,
+      row.targetInstrument.instrumentGroup ?? null
+    );
   }
 
   protected exportToFile(data?: RepoTrade[]): void {

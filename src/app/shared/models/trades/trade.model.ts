@@ -1,6 +1,8 @@
-import { Side } from "../enums/side.model";
+import {Side} from "../enums/side.model";
+import {PortfolioKey} from "../portfolio-key.model";
+import {InstrumentKey} from "../instruments/instrument-key.model";
 
-export interface Trade {
+export interface TradeResponse {
   id: string; // 4205740801,
   orderNo: string; //  28452595240,
   symbol: string;
@@ -16,6 +18,15 @@ export interface Trade {
   side: Side; // buy,
   existing: boolean; // true
   volume: number;
+}
+
+export interface Trade extends Omit<TradeResponse, 'symbol' | 'exchange' | 'board' | 'portfolio'> {
+  ownedPortfolio: PortfolioKey;
+  targetInstrument: InstrumentKey;
+}
+
+export interface RepoTradeResponse extends TradeResponse {
+  repoSpecificFields: RepoSpecificFields;
 }
 
 export interface RepoTrade extends Trade {

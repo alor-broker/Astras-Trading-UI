@@ -29,13 +29,12 @@ export class OrderBookDataFeedHelper {
   public static orderToCurrentOrder(order: Order): CurrentOrder {
     return {
       orderId: order.id,
-      exchange: order.exchange,
-      portfolio: order.portfolio,
+      targetInstrument: order.targetInstrument,
+      ownedPortfolio: order.ownedPortfolio,
       price: order.price,
       volume: order.qty - (order.filledQtyBatch ?? 0),
       type: order.type,
-      side: order.side,
-      symbol: order.symbol
+      side: order.side
     } as CurrentOrder;
   }
 

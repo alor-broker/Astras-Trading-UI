@@ -119,14 +119,8 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
     }
 
     this.ordersDialogService.openEditOrderDialog({
-      instrumentKey: {
-        symbol: order.symbol,
-        exchange: order.exchange
-      },
-      portfolioKey: {
-        portfolio: order.portfolio,
-        exchange: order.exchange
-      },
+      instrumentKey: order.targetInstrument,
+      portfolioKey: order.ownedPortfolio,
       orderId: order.orderId,
       orderType: order.type === OrderType.Limit ? OrderFormType.Limit : OrderFormType.Stop,
       initialValues: {

@@ -113,9 +113,9 @@ export class ArbitrageSpreadService {
                     thirdLegSpread.thirdLeg = {
                         ...spread.thirdLeg,
                         positionsCount: thirdLegPositions!.find(p =>
-                          p.exchange === spread.thirdLeg.portfolio.exchange &&
-                          p.portfolio === spread.thirdLeg.portfolio.portfolio &&
-                          p.symbol === spread.thirdLeg.instrument.symbol
+                          p.ownedPortfolio.exchange === spread.thirdLeg.portfolio.exchange &&
+                          p.ownedPortfolio.portfolio === spread.thirdLeg.portfolio.portfolio &&
+                          p.targetInstrument.symbol === spread.thirdLeg.instrument.symbol
                         )?.qtyTFutureBatch ?? 0
                     };
 
@@ -135,17 +135,17 @@ export class ArbitrageSpreadService {
                     firstLeg: {
                       ...spread.firstLeg,
                       positionsCount: firstLegPositions.find(p =>
-                        p.exchange === spread.firstLeg.portfolio.exchange &&
-                        p.portfolio === spread.firstLeg.portfolio.portfolio &&
-                        p.symbol === spread.firstLeg.instrument.symbol
+                        p.ownedPortfolio.exchange === spread.firstLeg.portfolio.exchange &&
+                        p.ownedPortfolio.portfolio === spread.firstLeg.portfolio.portfolio &&
+                        p.targetInstrument.symbol === spread.firstLeg.instrument.symbol
                       )?.qtyTFutureBatch ?? 0
                     },
                     secondLeg: {
                       ...spread.secondLeg,
                       positionsCount: secondLegPositions.find(p =>
-                        p.exchange === spread.secondLeg.portfolio.exchange &&
-                        p.portfolio === spread.secondLeg.portfolio.portfolio &&
-                        p.symbol === spread.secondLeg.instrument.symbol
+                        p.ownedPortfolio.exchange === spread.secondLeg.portfolio.exchange &&
+                        p.ownedPortfolio.portfolio === spread.secondLeg.portfolio.portfolio &&
+                        p.targetInstrument.symbol === spread.secondLeg.instrument.symbol
                       )?.qtyTFutureBatch ?? 0
                     },
                     ...thirdLegSpread,

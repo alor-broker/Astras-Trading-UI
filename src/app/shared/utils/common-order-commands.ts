@@ -5,7 +5,7 @@ import { WsOrdersService } from "../services/orders/ws-orders.service";
 export class CommonOrderCommands {
   static closePositionByMarket(
     position: Position,
-    instrumentGroup: string | null,
+    targetInstrumentBoard: string | null,
     wsOrdersService: WsOrdersService
   ): void {
     if (!position.qtyTFutureBatch) {
@@ -16,18 +16,17 @@ export class CommonOrderCommands {
         side: position.qtyTFutureBatch > 0 ? Side.Sell : Side.Buy,
         quantity: Math.abs(position.qtyTFutureBatch),
         instrument: {
-          symbol: position.symbol,
-          exchange: position.exchange,
-          instrumentGroup: instrumentGroup
+          ...position.targetInstrument,
+          instrumentGroup: targetInstrumentBoard
         },
       },
-      position.portfolio
+      position.ownedPortfolio.portfolio
     ).subscribe();
   }
 
   static reversePositionsByMarket(
     position: Position,
-    instrumentGroup: string | null,
+    targetInstrumentBoard: string | null,
     wsOrdersService: WsOrdersService
   ): void {
     if (!position.qtyTFutureBatch) {
@@ -38,12 +37,11 @@ export class CommonOrderCommands {
         side: position.qtyTFutureBatch > 0 ? Side.Sell : Side.Buy,
         quantity: Math.abs(position.qtyTFutureBatch * 2),
         instrument: {
-          symbol: position.symbol,
-          exchange: position.exchange,
-          instrumentGroup: instrumentGroup
+          ...position.targetInstrument,
+          instrumentGroup: targetInstrumentBoard
         },
       },
-      position.portfolio
+      position.ownedPortfolio.portfolio
     ).subscribe();
   }
 }

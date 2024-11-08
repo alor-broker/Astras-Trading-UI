@@ -3,12 +3,13 @@ import { Range } from "../../../shared/models/common.model";
 import { LessMore } from "../../../shared/models/enums/less-more.model";
 import { OrderType } from "../../../shared/models/orders/order.model";
 import { OrderMeta } from "../../../shared/models/orders/new-order.model";
+import {InstrumentKey} from "../../../shared/models/instruments/instrument-key.model";
+import {PortfolioKey} from "../../../shared/models/portfolio-key.model";
 
 export interface CurrentOrderDisplay {
   orderId: string;
-  symbol: string;
-  exchange: string;
-  portfolio: string;
+  targetInstrument: InstrumentKey;
+  ownedPortfolio: PortfolioKey;
   type: OrderType;
 
   side: Side;
@@ -21,7 +22,6 @@ export interface CurrentOrderDisplay {
 }
 
 export interface LocalOrder extends Omit<CurrentOrderDisplay, 'meta'> {
-  instrumentGroup?: string | null;
 }
 
 export interface PriceRow {

@@ -88,7 +88,7 @@ export class OrdersGroupModalComponent implements AfterViewInit {
                 group: {
                   id: group.id,
                   displayId: group.id.slice(-10),
-                  instruments: Array.from(new Set(groupOrders.map(o => o.symbol))).join('/'),
+                  instruments: Array.from(new Set(groupOrders.map(o => o.targetInstrument.symbol))).join('/'),
                   prices: groupOrderMaxPrice === groupOrderMinPrice
                     ? groupOrderMinPrice
                     : `${groupOrderMinPrice}-${groupOrderMaxPrice}`,

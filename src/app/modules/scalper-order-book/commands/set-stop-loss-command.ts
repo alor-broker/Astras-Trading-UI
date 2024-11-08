@@ -49,8 +49,8 @@ export class SetStopLossCommand extends CommandBase<SetStopLossCommandArgs> {
       side: side,
       quantity: Math.abs(args.currentPosition.qtyTFutureBatch),
       instrument: {
-        symbol: args.currentPosition.symbol,
-        exchange: args.currentPosition.exchange,
+        symbol: args.currentPosition.targetInstrument.symbol,
+        exchange: args.currentPosition.targetInstrument.exchange,
         instrumentGroup: args.targetInstrumentBoard
       },
       triggerPrice: args.triggerPrice,
@@ -63,7 +63,7 @@ export class SetStopLossCommand extends CommandBase<SetStopLossCommandArgs> {
     if (args.silent) {
       args.orderTracker?.beforeOrderCreated(order);
 
-      this.wsOrdersService.submitStopMarketOrder(order, args.currentPosition.portfolio).pipe(
+      this.wsOrdersService.submitStopMarketOrder(order, args.currentPosition.ownedPortfolio.portfolio).pipe(
         take(1)
       ).subscribe(result => {
         if (order.meta?.trackId != null) {

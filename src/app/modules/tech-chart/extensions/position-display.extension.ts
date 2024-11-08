@@ -130,7 +130,7 @@ export class PositionDisplayExtension extends BaseExtension {
       switchMap(portfolio => this.portfolioSubscriptionsService.getAllPositionsSubscription(portfolio.portfolio, portfolio.exchange)),
       map((positions => positions.filter(p => p.avgPrice && p.qtyTFutureBatch))),
       startWith([]),
-      map(x => x.find(p => p.symbol === settings.symbol && p.exchange === settings.exchange) ?? null),
+      map(x => x.find(p => p.targetInstrument.symbol === settings.symbol && p.targetInstrument.exchange === settings.exchange) ?? null),
       distinctUntilChanged((p, c) => p?.avgPrice === c?.avgPrice && p?.qtyTFutureBatch === c?.qtyTFutureBatch),
     );
   }

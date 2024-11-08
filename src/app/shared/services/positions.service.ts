@@ -4,10 +4,13 @@ import {
   Observable,
   take
 } from 'rxjs';
-import { Position } from '../models/positions/position.model';
+import {Position, PositionResponse} from '../models/positions/position.model';
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
 import { catchHttpError } from "../utils/observable-helper";
 import { EnvironmentService } from "./environment.service";
+import {map} from "rxjs/operators";
+import {PortfolioItemsModelHelper} from "../utils/portfolio-item-models-helper";
+import {PortfolioKey} from "../models/portfolio-key.model";
 
 @Injectable({
   providedIn: 'root'
@@ -22,13 +25,21 @@ export class PositionsService {
     this.url = this.environmentService.apiUrl + '/md/v2/clients';
   }
 
-  getAllByLogin(login: string): Observable<Position[]> {
-    return this.http.get<Position[]>(`${this.url}/${login}/positions`);
+  getAllByLogin(login: string): Observable<PositionResponse[]> {
+    return this.http.get<PositionResponse[]>(`${this.url}/${login}/positions`);
   }
 
   getAllByPortfolio(portfolio: string, exchange: string): Observable<Position[] | null> {
-    return this.http.get<Position[]>(`${this.url}/${exchange}/${portfolio}/positions`).pipe(
-      catchHttpError<Position[] | null>(null, this.errorHandlerService),
+    const ownedPortfolio: PortfolioKey = { portfolio, exchange };
+    return this.http.get<PositionResponse[]>(`${this.url}/${exchange}/${portfolio}/positions`).pipe(
+      catchHttpError<PositionResponse[] | null>(null, this.errorHandlerService),
+      map(r => {
+        if(r == null) {
+          return null;
+        }
+
+        return r.map(i => PortfolioItemsModelHelper.positionResponseToModel(i, ownedPortfolio));
+      }),
       take(1)
     );
   }

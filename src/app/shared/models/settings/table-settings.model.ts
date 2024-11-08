@@ -19,7 +19,7 @@ export interface TableDisplaySettings {
 
 export interface BaseColumnSettings<T> extends Omit<BaseColumnId, 'isDefault'> {
   sourceField?: string;
-  transformFn?: (data: any) => string | null;
+  transformFn?: (data: T) => string | null;
   classFn?: (data: T) => string | null;
   width?: number | null;
   filterData?: FilterData;

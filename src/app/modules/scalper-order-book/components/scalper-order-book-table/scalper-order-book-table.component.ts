@@ -152,8 +152,8 @@ export class ScalperOrderBookTableComponent implements OnInit {
       this.cancelOrdersCommand.execute({
         ordersToCancel: filteredOrders.map(x => ({
           orderId: x.orderId,
-          exchange: x.exchange,
-          portfolio: x.portfolio,
+          exchange: x.targetInstrument.exchange,
+          portfolio: x.ownedPortfolio.portfolio,
           orderType: x.type
         }))
       });
