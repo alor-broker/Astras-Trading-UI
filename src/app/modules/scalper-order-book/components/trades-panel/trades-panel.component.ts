@@ -15,31 +15,31 @@ import {
     filter,
     Observable,
 } from 'rxjs';
-import {ContentSize} from '../../../../shared/models/dashboard/dashboard-item.model';
+import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
 import {
     color,
     ScaleLinear,
     scaleLinear
 } from 'd3';
-import {ThemeService} from '../../../../shared/services/theme.service';
+import { ThemeService } from '../../../../shared/services/theme.service';
 import {
     ThemeColors,
     ThemeSettings
 } from '../../../../shared/models/settings/theme-settings.model';
-import {map} from 'rxjs/operators';
-import {AllTradesItem} from '../../../../shared/models/all-trades.model';
-import {ScalperOrderBookDataContext} from '../../models/scalper-order-book-data-context.model';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {CustomIteratorWrapper} from "../../../../shared/utils/array-iterators";
-import {BodyRow} from "../../models/scalper-order-book.model";
-import {TradesPanelSettings} from "../../models/scalper-order-book-settings.model";
+import { map } from 'rxjs/operators';
+import { AllTradesItem } from '../../../../shared/models/all-trades.model';
+import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { CustomIteratorWrapper } from "../../../../shared/utils/array-iterators";
+import { BodyRow } from "../../models/scalper-order-book.model";
+import { TradesPanelSettings } from "../../models/scalper-order-book-settings.model";
 import {
     AggregatedTrade,
     AggregatedTradesIterator
 } from "../../utils/aggregated-trades-iterator";
-import {Side} from "../../../../shared/models/enums/side.model";
-import {Trade} from "../../../../shared/models/trades/trade.model";
-import {Position} from "../../../../shared/models/positions/position.model";
+import { Side } from "../../../../shared/models/enums/side.model";
+import { Trade } from "../../../../shared/models/trades/trade.model";
+import { Position } from "../../../../shared/models/positions/position.model";
 
 interface LayerDrawer {
     zIndex: number;
