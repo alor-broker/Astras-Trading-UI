@@ -60,7 +60,7 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.activeLimitOrders$ = this.getInstrumentWithPortfolio().pipe(
       mapWith(
-        x => this.portfolioSubscriptionsService.getOrdersSubscription(x.portfolioKey!.portfolio, x.instrument!.exchange),
+        x => this.portfolioSubscriptionsService.getOrdersSubscription(x.portfolioKey!.portfolio, x.portfolioKey!.exchange),
         (source, orders) => ({instrument: source.instrument!, orders})
       ),
       map(s => s.orders.allOrders.filter(o => o.targetInstrument.symbol === s.instrument.symbol && o.type === OrderType.Limit && o.status === 'working')),

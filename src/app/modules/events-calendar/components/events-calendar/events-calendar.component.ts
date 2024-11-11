@@ -21,6 +21,7 @@ import { PositionsService } from "../../../../shared/services/positions.service"
 import { MarketService } from "../../../../shared/services/market.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
+import {Exchange} from "../../../../../generated/graphql.types";
 
 @Component({
   selector: 'ats-events-calendar',
@@ -52,7 +53,7 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
         ),
         map(({ portfolios, exchange }) => {
           return Object.values(portfolios.entities)
-            .filter(p => p?.exchange === exchange)
+            .filter(p => p?.exchange === exchange || (p?.exchange === Exchange.United as string))
             .map(p => ({ portfolio: p!.portfolio, exchange: p!.exchange, marketType: p!.marketType }));
         }),
         shareReplay(1)
@@ -83,7 +84,7 @@ export class EventsCalendarComponent implements OnInit, OnDestroy {
             map(p => p ?? [])
           );
       }),
-      map(positions => positions.map(p => p.targetInstrument.symbol)),
+      map(positions => [...new Set(positions.map(p => p.targetInstrument.symbol)).values()]),
       shareReplay(1)
     );
   }
