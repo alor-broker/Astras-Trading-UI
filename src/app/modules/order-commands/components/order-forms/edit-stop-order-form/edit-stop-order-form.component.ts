@@ -308,11 +308,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
 
         const updatedOrder = {
           orderId: x.currentOrder.id,
-          instrument: {
-            symbol: x.currentOrder.symbol,
-            exchange: x.currentOrder.exchange,
-            instrumentGroup: x.currentOrder.board
-          },
+          instrument: x.currentOrder.targetInstrument,
           quantity: Number(formValue.quantity),
           triggerPrice: Number(formValue.triggerPrice),
           condition: formValue.condition,

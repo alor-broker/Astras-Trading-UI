@@ -113,8 +113,8 @@ export class OrderbookService {
     this.orderCommandService.cancelOrders([{
       orderId: order.orderId,
       orderType: order.type,
-      exchange: order.exchange,
-      portfolio: order.portfolio
+      exchange: order.targetInstrument.exchange,
+      portfolio: order.ownedPortfolio.portfolio
     }]).subscribe();
   }
 
@@ -194,7 +194,7 @@ export class OrderbookService {
   private getOrders(instrument: InstrumentKey): Observable<Order[]> {
     return this.getCurrentPortfolio().pipe(
       switchMap(p => this.portfolioSubscriptionsService.getOrdersSubscription(p.portfolio, p.exchange)),
-      map(x => x.allOrders.filter(o => o.symbol === instrument.symbol && o.exchange === instrument.exchange)),
+      map(x => x.allOrders.filter(o => o.targetInstrument.symbol === instrument.symbol && o.targetInstrument.exchange === instrument.exchange)),
       startWith([])
     );
   }

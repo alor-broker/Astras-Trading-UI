@@ -60,10 +60,10 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.activeLimitOrders$ = this.getInstrumentWithPortfolio().pipe(
       mapWith(
-        x => this.portfolioSubscriptionsService.getOrdersSubscription(x.portfolioKey!.portfolio, x.instrument!.exchange),
+        x => this.portfolioSubscriptionsService.getOrdersSubscription(x.portfolioKey!.portfolio, x.portfolioKey!.exchange),
         (source, orders) => ({instrument: source.instrument!, orders})
       ),
-      map(s => s.orders.allOrders.filter(o => o.symbol === s.instrument.symbol && o.type === OrderType.Limit && o.status === 'working')),
+      map(s => s.orders.allOrders.filter(o => o.targetInstrument.symbol === s.instrument.symbol && o.type === OrderType.Limit && o.status === 'working')),
       shareReplay({bufferSize: 1, refCount: true})
     );
   }
@@ -96,10 +96,7 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
             orderId: order.id,
             quantity: order.qtyBatch - (order.filledQtyBatch ?? 0),
             price: newPrice,
-            instrument: {
-              symbol: order.symbol,
-              exchange: order.exchange
-            },
+            instrument: order.targetInstrument,
             side: order.side
           },
           selection.portfolioKey.portfolio

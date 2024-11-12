@@ -79,9 +79,14 @@ describe('ArbitrageSpreadService', () => {
     quotesServiceSpy.getQuotes = jasmine.createSpy('getQuotes').and.returnValue(of(quote));
     portfolioSubscriptionsServiceSpy.getAllPositionsSubscription = jasmine.createSpy('getAllPositionsSubscription').and.returnValue(of([
       {
-        exchange: spreadItem.firstLeg.portfolio.exchange,
-        portfolio: spreadItem.firstLeg.portfolio.portfolio,
-        symbol: spreadItem.firstLeg.instrument.symbol,
+        ownedPortfolio: {
+          portfolio: spreadItem.firstLeg.portfolio.portfolio,
+          exchange: spreadItem.firstLeg.portfolio.exchange
+        },
+        targetInstrument: {
+          symbol: spreadItem.firstLeg.instrument.symbol,
+          exchange: spreadItem.firstLeg.portfolio.exchange,
+        },
         qtyTFutureBatch: 5
       }
     ]));
@@ -97,9 +102,14 @@ describe('ArbitrageSpreadService', () => {
     quotesServiceSpy.getQuotes = jasmine.createSpy('getQuotes').and.returnValue(of(quote));
     portfolioSubscriptionsServiceSpy.getAllPositionsSubscription = jasmine.createSpy('getAllPositionsSubscription').and.returnValue(of([
       {
-        exchange: spreadItem.firstLeg.portfolio.exchange,
-        portfolio: spreadItem.firstLeg.portfolio.portfolio,
-        symbol: spreadItem.firstLeg.instrument.symbol,
+        ownedPortfolio: {
+          portfolio: spreadItem.firstLeg.portfolio.portfolio,
+          exchange: spreadItem.firstLeg.portfolio.exchange
+        },
+        targetInstrument: {
+          symbol: spreadItem.firstLeg.instrument.symbol,
+          exchange: spreadItem.firstLeg.portfolio.exchange,
+        },
         qtyTFutureBatch: expectedQuantity
       }
     ]));

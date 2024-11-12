@@ -194,7 +194,7 @@ export class ScalperOrderBookDataContextService {
         x => this.portfolioSubscriptionsService.getAllPositionsSubscription(x.portfolio.portfolio, x.portfolio.exchange),
         (source, positions) => ({ ...source, positions })
       ),
-      map(s => s.positions.find(p => p.symbol === s.settings.widgetSettings.symbol && p.exchange === s.settings.widgetSettings.exchange)),
+      map(s => s.positions.find(p => p.targetInstrument.symbol === s.settings.widgetSettings.symbol && p.targetInstrument.exchange === s.settings.widgetSettings.exchange)),
       map(p => (!p || !p.avgPrice ? null : p as Position)),
       startWith(null),
       shareReplay({ bufferSize: 1, refCount: true })
@@ -261,7 +261,7 @@ export class ScalperOrderBookDataContextService {
   ): Observable<Trade[]> {
     const getInstrumentTrades = (portfolioKey: PortfolioKey, instrumentKey: InstrumentKey): Observable<Trade[]> => {
       return this.portfolioSubscriptionsService.getTradesSubscription(portfolioKey.portfolio, portfolioKey.exchange).pipe(
-        map(t => t.filter(i => i.symbol === instrumentKey.symbol && i.exchange === instrumentKey.exchange))
+        map(t => t.filter(i => i.targetInstrument.symbol === instrumentKey.symbol && i.targetInstrument.exchange === instrumentKey.exchange))
       );
     };
 
@@ -283,16 +283,15 @@ export class ScalperOrderBookDataContextService {
       mapWith(
         ({ p }) => this.portfolioSubscriptionsService.getOrdersSubscription(p.portfolio, p.exchange),
         (source, orders) => {
-          return orders.allOrders.filter(o => o.symbol === source.s.widgetSettings.symbol
-            && o.exchange === source.s.widgetSettings.exchange
+          return orders.allOrders.filter(o => o.targetInstrument.symbol === source.s.widgetSettings.symbol
+            && o.targetInstrument.exchange === source.s.widgetSettings.exchange
             && o.status === 'working');
         }
       ),
       map(orders => orders.map(x => ({
         orderId: x.id,
-        symbol: x.symbol,
-        exchange: x.exchange,
-        portfolio: x.portfolio,
+        targetInstrument: x.targetInstrument,
+        ownedPortfolio: x.ownedPortfolio,
         type: x.type,
         side: x.side,
         price: x.price,
@@ -308,16 +307,15 @@ export class ScalperOrderBookDataContextService {
       mapWith(
         ({ p }) => this.portfolioSubscriptionsService.getStopOrdersSubscription(p.portfolio, p.exchange),
         (source, orders) => {
-          return orders.allOrders.filter(o => o.symbol === source.s.widgetSettings.symbol
-            && o.exchange === source.s.widgetSettings.exchange
+          return orders.allOrders.filter(o => o.targetInstrument.symbol === source.s.widgetSettings.symbol
+            && o.targetInstrument.exchange === source.s.widgetSettings.exchange
             && o.status === 'working');
         }
       ),
       map(orders => orders.map(x => ({
         orderId: x.id,
-        exchange: x.exchange,
-        symbol: x.symbol,
-        portfolio: x.portfolio,
+        targetInstrument: x.targetInstrument,
+        ownedPortfolio: x.ownedPortfolio,
         type: x.type,
         side: x.side,
         triggerPrice: x.triggerPrice,
@@ -339,8 +337,9 @@ export class ScalperOrderBookDataContextService {
       map(x => {
         return Array.from(x.localOrders.values())
           .filter(o => {
-            return isInstrumentEqual(o, x.s.widgetSettings)
-              && o.portfolio === x.p.portfolio;
+            return isInstrumentEqual(o.targetInstrument, x.s.widgetSettings)
+              && o.ownedPortfolio.portfolio === x.p.portfolio
+              && o.ownedPortfolio.exchange === x.p.exchange;
           });
       }),
       shareReplay({ bufferSize: 1, refCount: true })

@@ -40,10 +40,7 @@ export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
           orderId: order.orderId,
           side: order.side,
           quantity: order.displayVolume,
-          instrument: {
-            symbol: order.symbol,
-            exchange: order.exchange
-          }
+          instrument: order.targetInstrument
         };
 
         switch (order.type) {
@@ -52,7 +49,7 @@ export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
                 ...baseOrderEditData,
                 price: args.updates.price,
               },
-              order.portfolio
+              order.ownedPortfolio.portfolio
             ).subscribe();
             break;
           case OrderType.StopLimit:
@@ -70,7 +67,7 @@ export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
                 ),
                 side: order.side
               },
-              order.portfolio
+              order.ownedPortfolio.portfolio
             ).subscribe();
             break;
           case OrderType.StopMarket:
@@ -80,7 +77,7 @@ export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
                 triggerPrice: args.updates.price,
                 side: order.side
               },
-              order.portfolio
+              order.ownedPortfolio.portfolio
             ).subscribe();
             break;
           default:
@@ -90,14 +87,8 @@ export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
     } else {
       const order = args.ordersToUpdate[0];
       this.ordersDialogService.openEditOrderDialog({
-        instrumentKey: {
-          symbol: order.symbol,
-          exchange: order.exchange
-        },
-        portfolioKey: {
-          portfolio: order.portfolio,
-          exchange: order.exchange
-        },
+        instrumentKey: order.targetInstrument,
+        portfolioKey: order.ownedPortfolio,
         orderId: order.orderId,
         orderType: order.type === OrderType.Limit ? OrderFormType.Limit : OrderFormType.Stop,
         initialValues: {

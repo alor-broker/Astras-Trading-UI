@@ -66,7 +66,8 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
       id: 'symbol',
       displayName: 'Тикер',
       sortOrder: null,
-      sortFn: (a: PositionDisplay, b: PositionDisplay): number => a.symbol.localeCompare(b.symbol),
+      transformFn: data => data.targetInstrument.symbol,
+      sortFn: (a: PositionDisplay, b: PositionDisplay): number => a.targetInstrument.symbol.localeCompare(b.targetInstrument.symbol),
       filterData: {
         filterName: 'symbol',
         filterType: FilterType.Search
@@ -277,7 +278,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
           .pipe(
             map((positions) => positions.map(p => ({
               ...p,
-              id: `${p.symbol}_${p.exchange}`,
+              id: `${p.targetInstrument.symbol}_${p.targetInstrument.exchange}`,
               dailyUnrealisedPlRatio: p.dailyUnrealisedPl * 100 / Math.abs(p.volume),
               unrealisedPlRatio: p.unrealisedPl * 100 / Math.abs(p.volume)
             })))
@@ -301,8 +302,8 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
         take(1)
       )
       .subscribe(s => this.service.selectNewInstrument(
-        row.symbol,
-        row.exchange,
+        row.targetInstrument.symbol,
+        row.targetInstrument.exchange,
         null,
         s.badgeColor ?? defaultBadgeColor
       ));
@@ -341,6 +342,10 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
   }
 
   protected rowToInstrumentKey(row: PositionDisplay): Observable<InstrumentKey | null> {
-    return this.service.getInstrumentToSelect(row.symbol, row.exchange, null);
+    return this.service.getInstrumentToSelect(
+      row.targetInstrument.symbol,
+      row.targetInstrument.exchange,
+      null
+    );
   }
 }

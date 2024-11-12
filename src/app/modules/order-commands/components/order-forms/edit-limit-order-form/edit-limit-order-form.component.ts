@@ -291,11 +291,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
 
         const updatedOrder = {
           orderId: x.currentOrder.id,
-          instrument: {
-            symbol: x.currentOrder.symbol,
-            exchange: x.currentOrder.exchange,
-            instrumentGroup: x.currentOrder.board
-          },
+          instrument: x.currentOrder.targetInstrument,
           side:  x.currentOrder.side,
           price: Number(formValue.price),
           quantity: Number(formValue.quantity)

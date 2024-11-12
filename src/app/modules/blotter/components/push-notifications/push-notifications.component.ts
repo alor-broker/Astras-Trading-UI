@@ -175,10 +175,7 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
 
     const currentPositions$ = this.settings$.pipe(
       switchMap(s => this.blotterService.getPositions(s)),
-      map(p => p.map(p => ({
-          symbol: p.symbol,
-          exchange: p.exchange
-        } as InstrumentKey))
+      map(p => p.map(p => p.targetInstrument)
       ),
       distinctUntilChanged((prev, cur) => isArrayEqual(
         prev,

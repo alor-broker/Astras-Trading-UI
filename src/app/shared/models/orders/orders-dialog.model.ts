@@ -32,9 +32,10 @@ export interface OrderDialogParams {
 
 export interface EditOrderDialogParams {
   orderId: string;
-  orderType: OrderFormType;
   instrumentKey: InstrumentKey;
   portfolioKey: PortfolioKey;
+
+  orderType: OrderFormType;
   initialValues: {
     triggerPrice?: number;
     price?: number;

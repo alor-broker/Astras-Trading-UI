@@ -532,7 +532,10 @@ implements OnInit, OnDestroy {
           const meta = tableConfig.columns.map(c => ({
               title: t(['columns', c.id, 'name']),
               readFn: item => {
-                return c.transformFn?.(item) ?? item[c.id as keyof Instrument];
+                return c.transformFn?.({
+                  ...item,
+                  id: ''
+                }) ?? item[c.id as keyof Instrument];
               }
             } as ExportColumnMeta<Instrument>)
           );

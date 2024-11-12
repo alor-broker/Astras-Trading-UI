@@ -280,7 +280,7 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
             .pipe(
               switchMap(p => this.positionsService.getAllByPortfolio(p.portfolio, p.exchange)),
               map(p => ({
-                symbols: (p ?? []).map(i => i.symbol)
+                symbols: (p ?? []).map(i => i.targetInstrument.symbol)
               } as NewsFilter))
             );
         }

@@ -1,4 +1,7 @@
-export interface Position {
+import {PortfolioKey} from "../portfolio-key.model";
+import {InstrumentKey} from "../instruments/instrument-key.model";
+
+export interface PositionResponse {
   symbol: string; // SBER,
   brokerSymbol: string; // MOEX:SBER,
   portfolio: string; // D39004,
@@ -25,4 +28,9 @@ export interface Position {
   isCurrency: boolean; // false
   volume: number;
   currentVolume: number;
+}
+
+export interface Position extends Omit<PositionResponse, 'symbol' | 'exchange' | 'portfolio'> {
+  ownedPortfolio: PortfolioKey;
+  targetInstrument: InstrumentKey;
 }

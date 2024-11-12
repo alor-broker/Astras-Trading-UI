@@ -6,11 +6,12 @@ import {
   ViewChild
 } from '@angular/core';
 import {
+  asyncScheduler,
   BehaviorSubject,
   distinctUntilChanged,
   filter,
-  Observable,
-  shareReplay,
+  Observable, observeOn,
+  shareReplay, subscribeOn,
   switchMap,
   take,
   tap
@@ -79,6 +80,7 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.dialogParams$ = this.ordersDialogService.newOrderDialogParameters$.pipe(
+      observeOn(asyncScheduler),
       tap(() => this.commonParametersService.reset()),
       shareReplay(1)
     );
@@ -109,7 +111,8 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
   setInitialTab(): void {
     this.dialogParams$.pipe(
       filter((p): p is OrderDialogParams => !!p),
-      take(1)
+      take(1),
+      subscribeOn(asyncScheduler)
     ).subscribe(params => {
       if (params.initialValues.orderType == null) {
         return;

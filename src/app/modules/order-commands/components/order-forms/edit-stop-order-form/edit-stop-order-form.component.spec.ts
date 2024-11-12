@@ -174,10 +174,14 @@ describe('EditStopOrderFormComponent', () => {
   });
 
   it('should show form errors', async () => {
+    const portfolio = getDefaultPortfolio();
     const order = {
       id: '111',
-      symbol: 'SBER',
-      exchange: 'MOEX',
+      targetInstrument: {
+        symbol: 'SBER',
+        exchange: 'MOEX',
+      },
+      ownedPortfolio: portfolio,
       triggerPrice: 10,
       price: 8,
       qty: 2,
@@ -188,7 +192,7 @@ describe('EditStopOrderFormComponent', () => {
     orderDetailsServiceSpy.getStopOrderDetails.and.returnValue(new BehaviorSubject(order));
 
     component.orderId = order.id;
-    component.portfolioKey = getDefaultPortfolio();
+    component.portfolioKey = portfolio;
     fixture.detectChanges();
 
     const cases: { control: string, setValue: () => any, expectedError?: string }[] = [
@@ -244,10 +248,14 @@ describe('EditStopOrderFormComponent', () => {
   });
 
   it('should disable submission', () => {
+    const portfolio = getDefaultPortfolio();
       const order = {
         id: '111',
-        symbol: 'SBER',
-        exchange: 'MOEX',
+        targetInstrument: {
+          symbol: 'SBER',
+          exchange: 'MOEX'
+        },
+        ownedPortfolio: portfolio,
         triggerPrice: 10,
         price: 8,
         qtyBatch: 2,
@@ -258,7 +266,7 @@ describe('EditStopOrderFormComponent', () => {
       orderDetailsServiceSpy.getStopOrderDetails.and.returnValue(new BehaviorSubject(order));
 
       component.orderId = order.id;
-      component.portfolioKey = getDefaultPortfolio();
+      component.portfolioKey = portfolio;
 
       fixture.detectChanges();
 
@@ -274,10 +282,14 @@ describe('EditStopOrderFormComponent', () => {
   );
 
   it('should set initial values', async () => {
+    const portfolioKey = getDefaultPortfolio();
       const order = {
         id: '111',
-        symbol: 'SBER',
-        exchange: 'MOEX',
+        targetInstrument: {
+          symbol: 'SBER',
+          exchange: 'MOEX',
+        },
+        ownedPortfolio: portfolioKey,
         triggerPrice: 10,
         price: 8,
         qtyBatch: 2,
@@ -288,7 +300,7 @@ describe('EditStopOrderFormComponent', () => {
       orderDetailsServiceSpy.getStopOrderDetails.and.returnValue(of(order));
 
       component.orderId = order.id;
-      component.portfolioKey = getDefaultPortfolio();
+      component.portfolioKey = portfolioKey;
       fixture.detectChanges();
 
       await fixture.whenStable().then(() => {
@@ -306,10 +318,15 @@ describe('EditStopOrderFormComponent', () => {
 
   it('should pass correct order to service (market)', fakeAsync(() => {
       const instrument = getDefaultInstrument();
+      const portfolio = getDefaultPortfolio();
+
       const order = {
         id: '111',
-        symbol: 'SBER',
-        exchange: 'MOEX',
+        targetInstrument: {
+          symbol: 'SBER',
+          exchange: 'MOEX',
+        },
+        ownedPortfolio: portfolio,
         triggerPrice: 10,
         price: 8,
         qtyBatch: 2,
@@ -321,10 +338,9 @@ describe('EditStopOrderFormComponent', () => {
       orderDetailsServiceSpy.getStopOrderDetails.and.returnValue(of(order));
       instrumentsServiceSpy.getInstrument.and.returnValue(of({
         ...instrument,
-        symbol: order.symbol,
-        exchange: order.exchange
+        symbol: order.targetInstrument.symbol,
+        exchange: order.targetInstrument.exchange
       }));
-      const portfolio = getDefaultPortfolio();
 
       component.orderId = order.id;
       component.portfolioKey = portfolio;
@@ -337,11 +353,7 @@ describe('EditStopOrderFormComponent', () => {
         triggerPrice: Math.round(Math.random() * 1000),
         condition: LessMore.More,
         quantity: Math.round(Math.random() * 100),
-        instrument: {
-          symbol: order.symbol,
-          exchange: order.exchange,
-          instrumentGroup: order.board
-        },
+        instrument: order.targetInstrument,
         side: order.side
       };
 

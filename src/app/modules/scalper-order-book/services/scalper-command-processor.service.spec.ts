@@ -218,9 +218,14 @@ describe('ScalperCommandProcessorService', () => {
         const expectedOrder: CurrentOrderDisplay = {
           orderId: TestingHelpers.generateRandomString(5),
           type: OrderType.Limit,
-          symbol: 'TEST',
-          exchange: orderBookDefaultSettings.exchange,
-          portfolio: 'D1234',
+          targetInstrument: {
+            symbol: "TEST",
+            exchange: orderBookDefaultSettings.exchange,
+          },
+          ownedPortfolio: {
+            portfolio: 'D1234',
+            exchange: orderBookDefaultSettings.exchange
+          },
           price: 100,
           side: Side.Buy,
           displayVolume: 100,
@@ -231,8 +236,8 @@ describe('ScalperCommandProcessorService', () => {
           done();
           expect(args.ordersToCancel[0]).toEqual({
             orderId: expectedOrder.orderId,
-            exchange: expectedOrder.exchange,
-            portfolio: expectedOrder.portfolio,
+            exchange: expectedOrder.targetInstrument.exchange,
+            portfolio: expectedOrder.ownedPortfolio.portfolio,
             orderType: expectedOrder.type
           });
         });
@@ -251,8 +256,14 @@ describe('ScalperCommandProcessorService', () => {
 
     it('should process closePositionsByMarketAll command', (done) => {
         const expectedPosition = {
-          symbol: orderBookDefaultSettings.symbol,
-          exchange: orderBookDefaultSettings.exchange,
+          targetInstrument: {
+            symbol: orderBookDefaultSettings.symbol,
+            exchange: orderBookDefaultSettings.exchange,
+          },
+          ownedPortfolio: {
+            portfolio: 'D1234',
+            exchange: orderBookDefaultSettings.exchange
+          },
           qtyTFutureBatch: 0
         } as Position;
 
@@ -277,9 +288,14 @@ describe('ScalperCommandProcessorService', () => {
         const expectedOrder: CurrentOrderDisplay = {
           orderId: TestingHelpers.generateRandomString(5),
           type: OrderType.Limit,
-          symbol: 'TEST',
-          exchange: orderBookDefaultSettings.exchange,
-          portfolio: 'D1234',
+          targetInstrument: {
+            symbol: "TEST",
+            exchange: orderBookDefaultSettings.exchange,
+          },
+          ownedPortfolio: {
+            portfolio: 'D1234',
+            exchange: orderBookDefaultSettings.exchange
+          },
           price: 100,
           side: Side.Buy,
           displayVolume: 100,
@@ -289,9 +305,14 @@ describe('ScalperCommandProcessorService', () => {
         const secondOrder: CurrentOrderDisplay = {
           orderId: TestingHelpers.generateRandomString(5),
           type: OrderType.StopLimit,
-          symbol: 'TEST',
-          exchange: orderBookDefaultSettings.exchange,
-          portfolio: 'D1234',
+          targetInstrument: {
+            symbol: orderBookDefaultSettings.symbol,
+            exchange: orderBookDefaultSettings.exchange,
+          },
+          ownedPortfolio: {
+            portfolio: 'D1234',
+            exchange: orderBookDefaultSettings.exchange
+          },
           price: 100,
           triggerPrice: 99,
           side: Side.Buy,
@@ -306,8 +327,8 @@ describe('ScalperCommandProcessorService', () => {
 
           expect(args.ordersToCancel[0]).toEqual({
             orderId: expectedOrder.orderId,
-            exchange: expectedOrder.exchange,
-            portfolio: expectedOrder.portfolio,
+            exchange: expectedOrder.targetInstrument.exchange,
+            portfolio: expectedOrder.ownedPortfolio.portfolio,
             orderType: expectedOrder.type
           });
         });
@@ -328,9 +349,14 @@ describe('ScalperCommandProcessorService', () => {
         const expectedOrder: CurrentOrderDisplay = {
           orderId: TestingHelpers.generateRandomString(5),
           type: OrderType.StopMarket,
-          symbol: 'TEST',
-          exchange: orderBookDefaultSettings.exchange,
-          portfolio: 'D1234',
+          targetInstrument: {
+            symbol: "TEST",
+            exchange: orderBookDefaultSettings.exchange,
+          },
+          ownedPortfolio: {
+            portfolio: 'D1234',
+            exchange: orderBookDefaultSettings.exchange
+          },
           triggerPrice: 100,
           side: Side.Buy,
           displayVolume: 100,
@@ -340,9 +366,14 @@ describe('ScalperCommandProcessorService', () => {
         const secondOrder: CurrentOrderDisplay = {
           orderId: TestingHelpers.generateRandomString(5),
           type: OrderType.Limit,
-          symbol: 'TEST',
-          exchange: orderBookDefaultSettings.exchange,
-          portfolio: 'D1234',
+          targetInstrument: {
+            symbol: orderBookDefaultSettings.symbol,
+            exchange: orderBookDefaultSettings.exchange,
+          },
+          ownedPortfolio: {
+            portfolio: 'D1234',
+            exchange: orderBookDefaultSettings.exchange
+          },
           side: Side.Buy,
           displayVolume: 100,
           isDirty: false
@@ -355,8 +386,8 @@ describe('ScalperCommandProcessorService', () => {
 
           expect(args.ordersToCancel[0]).toEqual({
             orderId: expectedOrder.orderId,
-            exchange: expectedOrder.exchange,
-            portfolio: expectedOrder.portfolio,
+            exchange: expectedOrder.targetInstrument.exchange,
+            portfolio: expectedOrder.ownedPortfolio.portfolio,
             orderType: expectedOrder.type
           });
         });
@@ -375,8 +406,10 @@ describe('ScalperCommandProcessorService', () => {
 
     it('should process closePositionsByMarketCurrent command', (done) => {
         const expectedPosition = {
-          symbol: orderBookDefaultSettings.symbol,
-          exchange: orderBookDefaultSettings.exchange,
+          targetInstrument: {
+            symbol: orderBookDefaultSettings.symbol,
+            exchange: orderBookDefaultSettings.exchange,
+          },
           qtyTFutureBatch: 0
         } as Position;
 
@@ -587,8 +620,10 @@ describe('ScalperCommandProcessorService', () => {
 
     it('should process reversePositionsByMarketCurrent command', (done) => {
         const expectedPosition = {
-          symbol: orderBookDefaultSettings.symbol,
-          exchange: orderBookDefaultSettings.exchange,
+          targetInstrument: {
+            symbol: orderBookDefaultSettings.symbol,
+            exchange: orderBookDefaultSettings.exchange,
+          },
           qtyTFutureBatch: 0
         } as Position;
 
@@ -661,8 +696,10 @@ describe('ScalperCommandProcessorService', () => {
         dataContextMock.workingVolume$.next(workingVolume);
 
         const expectedPosition = {
-          symbol: orderBookDefaultSettings.symbol,
-          exchange: orderBookDefaultSettings.exchange,
+          targetInstrument: {
+            symbol: orderBookDefaultSettings.symbol,
+            exchange: orderBookDefaultSettings.exchange,
+          },
           qtyTFutureBatch: 0
         } as Position;
 
@@ -764,8 +801,10 @@ describe('ScalperCommandProcessorService', () => {
 
       const positionQty = 33;
       dataContextMock.position$.next({
-        symbol: orderBookDefaultSettings.symbol,
-        exchange: orderBookDefaultSettings.exchange,
+        targetInstrument: {
+          symbol: orderBookDefaultSettings.symbol,
+          exchange: orderBookDefaultSettings.exchange,
+        },
         qtyTFutureBatch: positionQty
       } as Position);
 

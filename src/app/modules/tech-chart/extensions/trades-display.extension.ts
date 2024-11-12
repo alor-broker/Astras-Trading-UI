@@ -159,7 +159,7 @@ export class TradesDisplayExtension extends BaseExtension {
       this.tradesState?.onDestroy(
         currentPortfolio$.pipe(
           switchMap(portfolio => this.portfolioSubscriptionsService.getTradesSubscription(portfolio.portfolio, portfolio.exchange)),
-          map(trades => trades.filter(t => t.symbol === settings.symbol && t.exchange === settings.exchange))
+          map(trades => trades.filter(t => t.targetInstrument.symbol === settings.symbol && t.targetInstrument.exchange === settings.exchange))
         ).subscribe(trades => {
           if (trades.length === 0) {
             return;
@@ -220,8 +220,8 @@ export class TradesDisplayExtension extends BaseExtension {
       return;
     }
 
-    if (this.tradesState.instrument.exchange !== trade.exchange
-      || this.tradesState.instrument.symbol !== trade.symbol) {
+    if (this.tradesState.instrument.exchange !== trade.targetInstrument.exchange
+      || this.tradesState.instrument.symbol !== trade.targetInstrument.symbol) {
       return;
     }
 
@@ -294,7 +294,7 @@ export class TradesDisplayExtension extends BaseExtension {
     translator: TranslatorFn): EntityId | null {
     let chartSelectedTimezone: string | undefined = (chartApi.getTimezoneApi().getTimezone() as TimezoneInfo | undefined)?.id;
     if ((chartSelectedTimezone ?? 'exchange') === 'exchange') {
-      const exchange = exchanges.find(x => x.exchange === trade.exchange);
+      const exchange = exchanges.find(x => x.exchange === trade.targetInstrument.exchange);
       chartSelectedTimezone = exchange?.settings.timezone;
     }
 

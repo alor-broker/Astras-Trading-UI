@@ -60,17 +60,15 @@ describe('ClosePositionByMarketCommand', () => {
       };
 
       const position1 = {
-        symbol: testInstrumentKey1.symbol,
-        exchange: testInstrumentKey1.exchange,
-        portfolio: portfolioKey.portfolio,
+        targetInstrument:testInstrumentKey1,
+        ownedPortfolio: portfolioKey,
         qtyTFuture: TestingHelpers.getRandomInt(1, 100),
         qtyTFutureBatch: TestingHelpers.getRandomInt(1, 10)
       } as Position;
 
       const position2 = {
-        symbol: testInstrumentKey2.symbol,
-        exchange: testInstrumentKey1.exchange,
-        portfolio: portfolioKey.portfolio,
+        targetInstrument:testInstrumentKey2,
+        ownedPortfolio: portfolioKey,
         qtyTFuture: TestingHelpers.getRandomInt(1, 100) * -1,
         qtyTFutureBatch: TestingHelpers.getRandomInt(1, 10) * -1
       } as Position;

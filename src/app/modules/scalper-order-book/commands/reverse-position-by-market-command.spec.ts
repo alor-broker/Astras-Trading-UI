@@ -53,11 +53,10 @@ describe('ReversePositionByMarketCommand', () => {
       };
 
       const position = {
-        symbol: testInstrumentKey.symbol,
-        exchange: testInstrumentKey.exchange,
+        targetInstrument: testInstrumentKey,
+        ownedPortfolio: portfolioKey,
         qtyTFuture: TestingHelpers.getRandomInt(1, 100),
         qtyTFutureBatch: TestingHelpers.getRandomInt(1, 10),
-        portfolio: portfolioKey.portfolio
       } as Position;
 
       orderServiceSpy.submitMarketOrder.and.returnValue(of({}));

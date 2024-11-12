@@ -70,7 +70,8 @@ describe('SetStopLossCommand', () => {
 
     const currentPortfolioPosition: Position =
       {
-        symbol: testInstrumentKey.symbol,
+        targetInstrument: testInstrumentKey,
+        ownedPortfolio: portfolioKey,
         qtyTFutureBatch: 0
       } as Position;
 
@@ -101,9 +102,11 @@ describe('SetStopLossCommand', () => {
       let expectedPrice = avgPrice - 1;
       const position: Position =
         {
-          symbol: testInstrumentKey.symbol,
-          exchange: testInstrumentKey.exchange,
-          portfolio,
+          targetInstrument: testInstrumentKey,
+          ownedPortfolio: {
+            portfolio,
+            exchange: testInstrumentKey.exchange
+          },
           qtyTFuture: 10,
           qtyTFutureBatch: 1,
           avgPrice: 100
