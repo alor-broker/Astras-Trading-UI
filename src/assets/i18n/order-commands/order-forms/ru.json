@@ -45,5 +45,10 @@
   "sideLabel": "Сторона",
   "buySideLabel": "Покупка",
   "sellSideLabel": "Продажа",
-  "allowLinkedOrderLabel": "Добавить связанную заявку"
+  "allowLinkedOrderLabel": "Добавить связанную заявку",
+  "reasonLabel": "Причина выставления",
+  "reasonOptions": {
+    "ForceCloseOrder": "Принудительное закрытие",
+    "DebtLevy": "Списание задолжности"
+  }
 }

@@ -33,13 +33,17 @@ export interface DefaultDesktopDashboardItem extends DefaultDashboardItem {
 }
 
 export interface DefaultDashboardConfig {
-  type: 'desktop' | 'mobile';
+  type: 'desktop' | 'mobile' | 'admin';
 }
 
 export interface DefaultDesktopDashboardConfig extends DefaultDashboardConfig {
   isStandard: boolean;
   isFavorite: boolean;
   name: string;
+  widgets: DefaultDesktopDashboardItem[];
+}
+
+export interface DefaultAdminDashboardConfig extends DefaultDashboardConfig {
   widgets: DefaultDesktopDashboardItem[];
 }
 

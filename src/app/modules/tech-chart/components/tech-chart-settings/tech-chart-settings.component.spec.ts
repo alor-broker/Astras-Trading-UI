@@ -10,18 +10,16 @@ import {
   of,
   Subject
 } from "rxjs";
-import { TechChartModule } from "../../tech-chart.module";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  mockComponent,
-  sharedModuleImportForTests
-} from '../../../../shared/utils/testing';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { ThemeService } from "../../../../shared/services/theme.service";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { InstrumentBoardSelectMockComponent } from "../../../../shared/utils/testing/instrument-board-select-mock-component";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
+import { WidgetSettingsComponent } from "../../../../shared/components/widget-settings/widget-settings.component";
+import { InstrumentSearchComponent } from "../../../../shared/components/instrument-search/instrument-search.component";
 
 describe('TechChartSettingsComponent', () => {
   let component: TechChartSettingsComponent;
@@ -31,16 +29,13 @@ describe('TechChartSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         TechChartSettingsComponent,
-        mockComponent({
-          selector: 'ats-widget-settings',
-          inputs: ['canSave', 'canCopy', 'showCopy']
-        })
       ],
       imports: [
-        TechChartModule,
-        BrowserAnimationsModule,
-        ...sharedModuleImportForTests,
-        getTranslocoModule()
+        TranslocoTestsModule.getModule(),
+        ...FormsTesting.getTestingModules(),
+        WidgetSettingsComponent,
+        InstrumentBoardSelectMockComponent,
+        InstrumentSearchComponent
       ],
       providers: [
         {

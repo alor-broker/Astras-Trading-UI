@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditableStringComponent } from './editable-string.component';
-import { getTranslocoModule } from '../../utils/testing';
+import {TranslocoTestsModule} from "../../utils/testing/translocoTestsModule";
 
 describe('EditableStringComponent', () => {
   let component: EditableStringComponent;
@@ -9,10 +9,10 @@ describe('EditableStringComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports:[getTranslocoModule()],
-      declarations: [
+      imports:[
         EditableStringComponent,
-      ]
+        TranslocoTestsModule.getModule()
+      ],
     })
     .compileComponents();
 

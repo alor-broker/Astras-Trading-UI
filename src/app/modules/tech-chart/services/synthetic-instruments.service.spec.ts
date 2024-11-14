@@ -5,9 +5,9 @@ import { InstrumentsService } from "../../instruments/services/instruments.servi
 import { HistoryService } from "../../../shared/services/history.service";
 import { of, take } from "rxjs";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
-import { generateRandomString, getRandomInt } from "../../../shared/utils/testing";
 import { Instrument } from "../../../shared/models/instruments/instrument.model";
 import { Market } from "../../../../generated/graphql.types";
+import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
 
 describe('SyntheticInstrumentsService', () => {
   let service: SyntheticInstrumentsService;
@@ -61,38 +61,38 @@ describe('SyntheticInstrumentsService', () => {
 
     it('should correctly assemble synthetic instrument info', fakeAsync(() => {
       const instrumentKey1: InstrumentKey = {
-        symbol: generateRandomString(5),
-        exchange: generateRandomString(5),
-        instrumentGroup: generateRandomString(5)
+        symbol: TestingHelpers.generateRandomString(5),
+        exchange: TestingHelpers.generateRandomString(5),
+        instrumentGroup: TestingHelpers.generateRandomString(5)
       };
 
       const instrument1: Instrument = {
         symbol: instrumentKey1.symbol,
-        description: generateRandomString(10),
+        description: TestingHelpers.generateRandomString(10),
         exchange: instrumentKey1.exchange,
         instrumentGroup: instrumentKey1.instrumentGroup,
         currency: 'RUB',
-        type: generateRandomString(5),
-        shortName: generateRandomString(5),
-        minstep: getRandomInt(1, 10),
+        type: TestingHelpers.generateRandomString(5),
+        shortName: TestingHelpers.generateRandomString(5),
+        minstep: TestingHelpers.getRandomInt(1, 10),
         market: Market.Fond
       };
 
       const instrumentKey2: InstrumentKey = {
-        symbol: generateRandomString(5),
-        exchange: generateRandomString(5),
-        instrumentGroup: generateRandomString(5)
+        symbol: TestingHelpers.generateRandomString(5),
+        exchange: TestingHelpers.generateRandomString(5),
+        instrumentGroup: TestingHelpers.generateRandomString(5)
       };
 
       const instrument2: Instrument = {
         symbol: instrumentKey2.symbol,
-        description: generateRandomString(10),
+        description: TestingHelpers.generateRandomString(10),
         exchange: instrumentKey2.exchange,
         instrumentGroup: instrumentKey2.instrumentGroup,
         currency: 'RUB',
-        type: generateRandomString(5),
-        shortName: generateRandomString(5),
-        minstep: getRandomInt(1, 10),
+        type: TestingHelpers.generateRandomString(5),
+        shortName: TestingHelpers.generateRandomString(5),
+        minstep: TestingHelpers.getRandomInt(1, 10),
         market: Market.Fond
       };
 
@@ -171,55 +171,55 @@ describe('SyntheticInstrumentsService', () => {
       it('should add missing candles', fakeAsync(() => {
         const candles1 = [
           {
-            close: getRandomInt(1, 50),
-            open: getRandomInt(1, 50),
-            high: getRandomInt(1, 50),
-            low: getRandomInt(1, 50),
+            close: TestingHelpers.getRandomInt(1, 50),
+            open: TestingHelpers.getRandomInt(1, 50),
+            high: TestingHelpers.getRandomInt(1, 50),
+            low: TestingHelpers.getRandomInt(1, 50),
             time: 1,
-            volume: getRandomInt(1, 50),
+            volume: TestingHelpers.getRandomInt(1, 50),
           },
           {
-            close: getRandomInt(1, 50),
-            open: getRandomInt(1, 50),
-            high: getRandomInt(1, 50),
-            low: getRandomInt(1, 50),
+            close: TestingHelpers.getRandomInt(1, 50),
+            open: TestingHelpers.getRandomInt(1, 50),
+            high: TestingHelpers.getRandomInt(1, 50),
+            low: TestingHelpers.getRandomInt(1, 50),
             time: 3,
-            volume: getRandomInt(1, 50),
+            volume: TestingHelpers.getRandomInt(1, 50),
           },
           {
-            close: getRandomInt(1, 50),
-            open: getRandomInt(1, 50),
-            high: getRandomInt(1, 50),
-            low: getRandomInt(1, 50),
+            close: TestingHelpers.getRandomInt(1, 50),
+            open: TestingHelpers.getRandomInt(1, 50),
+            high: TestingHelpers.getRandomInt(1, 50),
+            low: TestingHelpers.getRandomInt(1, 50),
             time: 4,
-            volume: getRandomInt(1, 50),
+            volume: TestingHelpers.getRandomInt(1, 50),
           },
         ];
 
         const candles2 = [
           {
-            close: getRandomInt(1, 50),
-            open: getRandomInt(1, 50),
-            high: getRandomInt(1, 50),
-            low: getRandomInt(1, 50),
+            close: TestingHelpers.getRandomInt(1, 50),
+            open: TestingHelpers.getRandomInt(1, 50),
+            high: TestingHelpers.getRandomInt(1, 50),
+            low: TestingHelpers.getRandomInt(1, 50),
             time: 2,
-            volume: getRandomInt(1, 50),
+            volume: TestingHelpers.getRandomInt(1, 50),
           },
           {
-            close: getRandomInt(1, 50),
-            open: getRandomInt(1, 50),
-            high: getRandomInt(1, 50),
-            low: getRandomInt(1, 50),
+            close: TestingHelpers.getRandomInt(1, 50),
+            open: TestingHelpers.getRandomInt(1, 50),
+            high: TestingHelpers.getRandomInt(1, 50),
+            low: TestingHelpers.getRandomInt(1, 50),
             time: 4,
-            volume: getRandomInt(1, 50),
+            volume: TestingHelpers.getRandomInt(1, 50),
           },
           {
-            close: getRandomInt(1, 50),
-            open: getRandomInt(1, 50),
-            high: getRandomInt(1, 50),
-            low: getRandomInt(1, 50),
+            close: TestingHelpers.getRandomInt(1, 50),
+            open: TestingHelpers.getRandomInt(1, 50),
+            high: TestingHelpers.getRandomInt(1, 50),
+            low: TestingHelpers.getRandomInt(1, 50),
             time: 5,
-            volume: getRandomInt(1, 50),
+            volume: TestingHelpers.getRandomInt(1, 50),
           }
         ];
 
@@ -293,23 +293,23 @@ describe('SyntheticInstrumentsService', () => {
       it('should correctly calculate candles sum', fakeAsync(() => {
         const candles1 = [
           {
-            close: getRandomInt(1, 50),
-            open: getRandomInt(1, 50),
-            high: getRandomInt(1, 50),
-            low: getRandomInt(1, 50),
+            close: TestingHelpers.getRandomInt(1, 50),
+            open: TestingHelpers.getRandomInt(1, 50),
+            high: TestingHelpers.getRandomInt(1, 50),
+            low: TestingHelpers.getRandomInt(1, 50),
             time: 1,
-            volume: getRandomInt(1, 50),
+            volume: TestingHelpers.getRandomInt(1, 50),
           },
         ];
 
         const candles2 = [
           {
-            close: getRandomInt(1, 50),
-            open: getRandomInt(1, 50),
-            high: getRandomInt(1, 50),
-            low: getRandomInt(1, 50),
+            close: TestingHelpers.getRandomInt(1, 50),
+            open: TestingHelpers.getRandomInt(1, 50),
+            high: TestingHelpers.getRandomInt(1, 50),
+            low: TestingHelpers.getRandomInt(1, 50),
             time: 1,
-            volume: getRandomInt(1, 50),
+            volume: TestingHelpers.getRandomInt(1, 50),
           },
         ];
 
@@ -359,23 +359,23 @@ describe('SyntheticInstrumentsService', () => {
       it('should correctly calculate candles division', fakeAsync(() => {
         const candles1 = [
           {
-            close: getRandomInt(1, 50),
-            open: getRandomInt(1, 50),
-            high: getRandomInt(1, 50),
-            low: getRandomInt(1, 50),
+            close: TestingHelpers.getRandomInt(1, 50),
+            open: TestingHelpers.getRandomInt(1, 50),
+            high: TestingHelpers.getRandomInt(1, 50),
+            low: TestingHelpers.getRandomInt(1, 50),
             time: 1,
-            volume: getRandomInt(1, 50),
+            volume: TestingHelpers.getRandomInt(1, 50),
           },
         ];
 
         const candles2 = [
           {
-            close: getRandomInt(1, 50),
-            open: getRandomInt(1, 50),
-            high: getRandomInt(1, 50),
-            low: getRandomInt(1, 50),
+            close: TestingHelpers.getRandomInt(1, 50),
+            open: TestingHelpers.getRandomInt(1, 50),
+            high: TestingHelpers.getRandomInt(1, 50),
+            low: TestingHelpers.getRandomInt(1, 50),
             time: 1,
-            volume: getRandomInt(1, 50),
+            volume: TestingHelpers.getRandomInt(1, 50),
           },
         ];
 
@@ -425,23 +425,23 @@ describe('SyntheticInstrumentsService', () => {
       it('should correctly calculate candles multiplication', fakeAsync(() => {
         const candles1 = [
           {
-            close: getRandomInt(1, 50),
-            open: getRandomInt(1, 50),
-            high: getRandomInt(1, 50),
-            low: getRandomInt(1, 50),
+            close: TestingHelpers.getRandomInt(1, 50),
+            open: TestingHelpers.getRandomInt(1, 50),
+            high: TestingHelpers.getRandomInt(1, 50),
+            low: TestingHelpers.getRandomInt(1, 50),
             time: 1,
-            volume: getRandomInt(1, 50),
+            volume: TestingHelpers.getRandomInt(1, 50),
           },
         ];
 
         const candles2 = [
           {
-            close: getRandomInt(1, 50),
-            open: getRandomInt(1, 50),
-            high: getRandomInt(1, 50),
-            low: getRandomInt(1, 50),
+            close: TestingHelpers.getRandomInt(1, 50),
+            open: TestingHelpers.getRandomInt(1, 50),
+            high: TestingHelpers.getRandomInt(1, 50),
+            low: TestingHelpers.getRandomInt(1, 50),
             time: 1,
-            volume: getRandomInt(1, 50),
+            volume: TestingHelpers.getRandomInt(1, 50),
           },
         ];
 
@@ -491,12 +491,12 @@ describe('SyntheticInstrumentsService', () => {
       it('should correctly calculate candle and number calculations', fakeAsync(() => {
         const candles1 = [
           {
-            close: getRandomInt(1, 50),
-            open: getRandomInt(1, 50),
-            high: getRandomInt(1, 50),
-            low: getRandomInt(1, 50),
+            close: TestingHelpers.getRandomInt(1, 50),
+            open: TestingHelpers.getRandomInt(1, 50),
+            high: TestingHelpers.getRandomInt(1, 50),
+            low: TestingHelpers.getRandomInt(1, 50),
             time: 1,
-            volume: getRandomInt(1, 50),
+            volume: TestingHelpers.getRandomInt(1, 50),
           },
         ];
 
@@ -546,23 +546,23 @@ describe('SyntheticInstrumentsService', () => {
       it('should correctly calculate brackets expressions', fakeAsync(() => {
         const candles1 = [
           {
-            close: getRandomInt(1, 50),
-            open: getRandomInt(1, 50),
-            high: getRandomInt(1, 50),
-            low: getRandomInt(1, 50),
+            close: TestingHelpers.getRandomInt(1, 50),
+            open: TestingHelpers.getRandomInt(1, 50),
+            high: TestingHelpers.getRandomInt(1, 50),
+            low: TestingHelpers.getRandomInt(1, 50),
             time: 1,
-            volume: getRandomInt(1, 50),
+            volume: TestingHelpers.getRandomInt(1, 50),
           },
         ];
 
         const candles2 = [
           {
-            close: getRandomInt(1, 50),
-            open: getRandomInt(1, 50),
-            high: getRandomInt(1, 50),
-            low: getRandomInt(1, 50),
+            close: TestingHelpers.getRandomInt(1, 50),
+            open: TestingHelpers.getRandomInt(1, 50),
+            high: TestingHelpers.getRandomInt(1, 50),
+            low: TestingHelpers.getRandomInt(1, 50),
             time: 1,
-            volume: getRandomInt(1, 50),
+            volume: TestingHelpers.getRandomInt(1, 50),
           },
         ];
 

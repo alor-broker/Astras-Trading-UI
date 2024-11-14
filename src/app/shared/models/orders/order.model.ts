@@ -1,4 +1,6 @@
 import {Side} from "src/app/shared/models/enums/side.model";
+import {PortfolioKey} from "../portfolio-key.model";
+import {InstrumentKey} from "../instruments/instrument-key.model";
 
 export enum OrderType {
   Market = 'market',
@@ -15,6 +17,11 @@ export enum TimeInForce {
   GoodTillCancelled = 'goodtillcancelled'
 }
 
+export enum Reason {
+  ForceCloseOrder = 'ForceCloseOrder',
+  DebtLevy = 'DebtLevy'
+}
+
 export interface IcebergParameters {
   creationFixedQuantity?: number | null;
   creationVarianceQuantity?: number | null;
@@ -24,7 +31,7 @@ export interface IcebergParameters {
   visibleFilledQuantityBatch?: number | null;
 }
 
-export interface Order {
+export interface OrderResponse {
   id: string; // 28452595240,
   symbol: string; // SBER,
   exchange: string; // MOEX,
@@ -49,12 +56,17 @@ export interface Order {
   comment?: string;
 }
 
+export interface Order extends Omit<OrderResponse, 'symbol' | 'exchange' | 'board' | 'portfolio'> {
+  ownedPortfolio: PortfolioKey;
+  targetInstrument: InstrumentKey;
+}
+
 export interface StopOrder extends Order {
   triggerPrice: number;
   conditionType: string;
 }
 
-export interface StopOrderResponse extends Omit<StopOrder, ('conditionType' | 'triggerPrice')> {
+export interface StopOrderResponse extends OrderResponse {
   stopPrice: number;
   condition: string;
 }

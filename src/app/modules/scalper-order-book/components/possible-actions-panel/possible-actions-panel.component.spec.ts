@@ -2,9 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PossibleActionsPanelComponent } from './possible-actions-panel.component';
 import { ScalperCommandProcessorService } from '../../services/scalper-command-processor.service';
-import { getTranslocoModule } from '../../../../shared/utils/testing';
 import { Subject } from 'rxjs';
 import { TranslatorService } from '../../../../shared/services/translator.service';
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('PossibleActionsPanelComponent', () => {
   let component: PossibleActionsPanelComponent;
@@ -12,7 +12,7 @@ describe('PossibleActionsPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       declarations: [PossibleActionsPanelComponent],
       providers: [
         {

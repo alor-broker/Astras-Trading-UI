@@ -1,14 +1,19 @@
-import { Injectable } from '@angular/core';
+import {
+  Injectable,
+  Optional
+} from '@angular/core';
 import {
   combineLatest,
+  NEVER,
   Observable,
+  of,
   shareReplay
 } from 'rxjs';
 import { NetworkStatus } from '../models/enums/network-status.model';
 import { isOnline$ } from '../utils/network';
 import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service';
 import { map } from 'rxjs/operators';
-import { WsOrdersConnector } from "./orders/ws-orders-connector";
+import { WsOrdersConnector } from "../../client/services/orders/ws-orders-connector";
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +23,8 @@ export class NetworkStatusService {
 
   constructor(
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
-    private readonly wsOrdersConnector: WsOrdersConnector
+    @Optional()
+    private readonly wsOrdersConnector?: WsOrdersConnector
   ) {
   }
 
@@ -27,7 +33,7 @@ export class NetworkStatusService {
       this.networkStatus$ = combineLatest([
         isOnline$(),
         this.subscriptionsDataFeedService.getConnectionStatus(),
-        this.wsOrdersConnector.getConnectionStatus()
+        this.wsOrdersConnector?.getConnectionStatus() ?? of(true)
       ]).pipe(
         map(([browserStatus, connectionStatus, wsOrdersConnectorStatus]) => {
           const isConnected = browserStatus && connectionStatus && wsOrdersConnectorStatus;
@@ -44,6 +50,6 @@ export class NetworkStatusService {
   }
 
   get lastOrderDelayMSec$(): Observable<number> {
-    return this.wsOrdersConnector.lastOrderDelayMSec$;
+    return this.wsOrdersConnector?.lastOrderDelayMSec$ ?? NEVER;
   }
 }

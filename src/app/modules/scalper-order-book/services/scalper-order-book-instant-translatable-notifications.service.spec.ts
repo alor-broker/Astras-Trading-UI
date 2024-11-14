@@ -2,14 +2,14 @@ import { TestBed } from '@angular/core/testing';
 
 import { ScalperOrderBookInstantTranslatableNotificationsService } from './scalper-order-book-instant-translatable-notifications.service';
 import { InstantNotificationsService } from "../../../shared/services/instant-notifications.service";
-import { getTranslocoModule } from "../../../shared/utils/testing";
+import { TranslocoTestsModule } from "../../../shared/utils/testing/translocoTestsModule";
 
 describe('ScalperOrderBookInstantTranslatableNotificationsService', () => {
   let service: ScalperOrderBookInstantTranslatableNotificationsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       providers: [
         {
           provide: InstantNotificationsService,

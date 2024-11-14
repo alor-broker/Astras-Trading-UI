@@ -11,10 +11,27 @@ import {
   shareReplay
 } from "rxjs";
 import { map } from "rxjs/operators";
+import { TranslocoDirective } from "@jsverse/transloco";
+import {
+  AsyncPipe,
+  NgIf
+} from "@angular/common";
+import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
+import { NzButtonComponent } from "ng-zorro-antd/button";
+import { NzIconDirective } from "ng-zorro-antd/icon";
 
 @Component({
   selector: 'ats-widget-settings',
   templateUrl: './widget-settings.component.html',
+  standalone: true,
+  imports: [
+    TranslocoDirective,
+    NgIf,
+    NzTooltipDirective,
+    NzButtonComponent,
+    NzIconDirective,
+    AsyncPipe
+  ],
   styleUrls: ['./widget-settings.component.less']
 })
 export class WidgetSettingsComponent implements OnInit {

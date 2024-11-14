@@ -8,16 +8,15 @@ import {
   of,
   Subject
 } from "rxjs";
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  mockComponent,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
 import { LetDirective } from "@ngrx/component";
-import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../../shared/services/orders/order-command.service";
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
@@ -35,8 +34,7 @@ describe('PositionsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
-        ...sharedModuleImportForTests,
+        TranslocoTestsModule.getModule(),
         LetDirective
       ],
       providers: [
@@ -46,7 +44,7 @@ describe('PositionsComponent', () => {
         },
         { provide: BlotterService, useClass: MockServiceBlotter },
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: {
             submitMarketOrder: jasmine.createSpy('submitMarketOrder').and.callThrough()
           }
@@ -69,9 +67,9 @@ describe('PositionsComponent', () => {
       ],
       declarations: [
         PositionsComponent,
-        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
-        mockComponent({ selector: 'ats-instrument-badge-display', inputs: ['columns'] }),
-        mockComponent({
+        ComponentHelpers.mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-instrument-badge-display', inputs: ['columns'] }),
+        ComponentHelpers.mockComponent({
           selector: 'ats-add-to-watchlist-menu'
         })
       ]

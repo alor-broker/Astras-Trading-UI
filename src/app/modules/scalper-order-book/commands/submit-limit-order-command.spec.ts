@@ -7,14 +7,8 @@ import {
   BracketOptions,
   SubmitLimitOrderCommand
 } from "./submit-limit-order-command";
-import { OrdersGroupService } from "../../../shared/services/orders/orders-group.service";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
-import {
-  generateRandomString,
-  getRandomInt
-} from "../../../shared/utils/testing";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { of } from "rxjs";
 import { Side } from "../../../shared/models/enums/side.model";
@@ -29,35 +23,34 @@ import { MathHelper } from "../../../shared/utils/math-helper";
 import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
 import { PriceUnits } from "../models/scalper-order-book-settings.model";
 import { toInstrumentKey } from "../../../shared/utils/instruments";
+import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('SubmitLimitOrderCommand', () => {
   let command: SubmitLimitOrderCommand;
 
   let orderServiceSpy: any;
   let ordersDialogServiceSpy: any;
-  let ordersGroupServiceSpy: any;
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['submitLimitOrder']);
+    orderServiceSpy = jasmine.createSpyObj('OrderCommandService', ['submitLimitOrder', 'submitOrdersGroup']);
     ordersDialogServiceSpy = jasmine.createSpyObj('OrdersDialogService', ['openNewOrderDialog']);
-    ordersGroupServiceSpy = jasmine.createSpyObj('OrdersGroupService', ['submitOrdersGroup']);
   });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        SubmitLimitOrderCommand,
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
         {
           provide: OrdersDialogService,
           useValue: ordersDialogServiceSpy
-        },
-        {
-          provide: OrdersGroupService,
-          useValue: ordersGroupServiceSpy
-        },
+        }
       ]
     });
     command = TestBed.inject(SubmitLimitOrderCommand);
@@ -69,19 +62,19 @@ describe('SubmitLimitOrderCommand', () => {
 
   it('#execute should call appropriate service with appropriate data', fakeAsync(() => {
       const portfolioKey: PortfolioKey = {
-        exchange: generateRandomString(4),
-        portfolio: generateRandomString(5),
+        exchange: TestingHelpers.generateRandomString(4),
+        portfolio: TestingHelpers.generateRandomString(5),
       };
 
       const testInstrumentKey: InstrumentKey = {
         exchange: portfolioKey.exchange,
-        symbol: generateRandomString(4)
+        symbol: TestingHelpers.generateRandomString(4)
       };
 
       orderServiceSpy.submitLimitOrder.and.returnValue(of({}));
 
-      const quantity = getRandomInt(1, 100);
-      const price = getRandomInt(1, 1000);
+      const quantity = TestingHelpers.getRandomInt(1, 100);
+      const price = TestingHelpers.getRandomInt(1, 1000);
 
       command.execute(
         {
@@ -141,13 +134,13 @@ describe('SubmitLimitOrderCommand', () => {
 
   it('#execute should create bracket', fakeAsync(() => {
     const portfolioKey: PortfolioKey = {
-      exchange: generateRandomString(4),
-      portfolio: generateRandomString(5),
+      exchange: TestingHelpers.generateRandomString(4),
+      portfolio: TestingHelpers.generateRandomString(5),
     };
 
     const testInstrumentKey: InstrumentKey = {
       exchange: portfolioKey.exchange,
-      symbol: generateRandomString(4)
+      symbol: TestingHelpers.generateRandomString(4)
     };
 
     const bracketOptions: BracketOptions = {
@@ -158,9 +151,9 @@ describe('SubmitLimitOrderCommand', () => {
       applyBracketOnClosing: false
     };
 
-    ordersGroupServiceSpy.submitOrdersGroup.and.returnValue(of({}));
-    const quantity = getRandomInt(1, 100);
-    const price = getRandomInt(1, 1000);
+    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
+    const quantity = TestingHelpers.getRandomInt(1, 100);
+    const price = TestingHelpers.getRandomInt(1, 1000);
     const priceStep = 0.5;
 
     command.execute(
@@ -185,7 +178,7 @@ describe('SubmitLimitOrderCommand', () => {
       instrument: toInstrumentKey(testInstrumentKey)
     };
 
-    expect(ordersGroupServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
       [
         jasmine.objectContaining(
           {
@@ -216,13 +209,13 @@ describe('SubmitLimitOrderCommand', () => {
 
   it('#execute should create bracket with percent price ratio settings', fakeAsync(() => {
     const portfolioKey: PortfolioKey = {
-      exchange: generateRandomString(4),
-      portfolio: generateRandomString(5),
+      exchange: TestingHelpers.generateRandomString(4),
+      portfolio: TestingHelpers.generateRandomString(5),
     };
 
     const testInstrumentKey: InstrumentKey = {
       exchange: portfolioKey.exchange,
-      symbol: generateRandomString(4)
+      symbol: TestingHelpers.generateRandomString(4)
     };
 
     const priceStep = 0.5;
@@ -235,9 +228,9 @@ describe('SubmitLimitOrderCommand', () => {
       applyBracketOnClosing: false
     };
 
-    ordersGroupServiceSpy.submitOrdersGroup.and.returnValue(of({}));
-    const quantity = getRandomInt(1, 100);
-    const price = getRandomInt(1, 1000);
+    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
+    const quantity = TestingHelpers.getRandomInt(1, 100);
+    const price = TestingHelpers.getRandomInt(1, 1000);
 
     command.execute(
       {
@@ -261,7 +254,7 @@ describe('SubmitLimitOrderCommand', () => {
       instrument: toInstrumentKey(testInstrumentKey)
     };
 
-    expect(ordersGroupServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
       [
         jasmine.objectContaining({
           ...expectedLimitOrder,

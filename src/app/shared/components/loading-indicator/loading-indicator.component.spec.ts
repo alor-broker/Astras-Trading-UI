@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LoadingIndicatorComponent } from './loading-indicator.component';
-import { ngZorroMockComponents } from "../../utils/testing";
+import { ngZorroMockComponents } from "../../utils/testing/ng-zorro-component-mocks";
 
 describe('LoadingIndicatorComponent', () => {
   let component: LoadingIndicatorComponent;

@@ -4,10 +4,6 @@ import {
 } from '@angular/core/testing';
 
 import { AllOptionsComponent } from './all-options.component';
-import {
-  getTranslocoModule,
-  ngZorroMockComponents
-} from "../../../../shared/utils/testing";
 import { OptionBoardService } from "../../services/option-board.service";
 import { Subject } from "rxjs";
 import {
@@ -19,6 +15,8 @@ import {
   OptionsSelection,
   SelectionParameters
 } from "../../models/option-board-data-context.model";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('AllOptionsComponent', () => {
   let component: AllOptionsComponent;
@@ -26,7 +24,7 @@ describe('AllOptionsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       declarations: [
         AllOptionsComponent,
         ...ngZorroMockComponents

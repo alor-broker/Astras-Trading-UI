@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {OptionPreviewComponent} from "./option-preview.component";
-import {getTranslocoModule} from "../../../../shared/utils/testing";
 import {Option} from "../../models/option-board.model";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('OptionPreviewComponent', () => {
   let component: OptionPreviewComponent;
@@ -9,7 +9,7 @@ describe('OptionPreviewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       declarations: [OptionPreviewComponent]
     })
       .compileComponents();

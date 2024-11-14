@@ -181,5 +181,58 @@
         "widgetTypeId": "option-board"
       }
     ]
+  },
+  {
+    "type": "admin",
+    "widgets": [
+      {
+        "widgetTypeId": "tech-chart",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "cols": 30,
+          "rows": 18
+        }
+      },
+      {
+        "widgetTypeId": "order-book",
+        "position": {
+          "x": 30,
+          "y": 0,
+          "cols": 10,
+          "rows": 18
+        }
+      },
+      {
+        "widgetTypeId": "instrument-info",
+        "position": {
+          "x": 40,
+          "y": 0,
+          "cols": 10,
+          "rows": 18
+        }
+      },
+      {
+        "widgetTypeId": "blotter",
+        "position": {
+          "x": 0,
+          "y": 18,
+          "cols": 40,
+          "rows": 12
+        },
+        "initialSettings": {
+          "activeTabIndex": 3
+        }
+      },
+      {
+        "widgetTypeId": "instrument-select",
+        "position": {
+          "x": 40,
+          "y": 18,
+          "cols": 10,
+          "rows": 12
+        }
+      }
+    ]
   }
 ]

@@ -1,15 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TreemapWidgetComponent } from './treemap-widget.component';
-import {
-  mockComponent,
-  widgetSkeletonMock
-} from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
 
 describe('TreemapWidgetComponent', () => {
   let component: TreemapWidgetComponent;
@@ -19,8 +17,8 @@ describe('TreemapWidgetComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         TreemapWidgetComponent,
-        mockComponent({ selector: 'ats-treemap', inputs: ['guid'] }),
-        mockComponent({ selector: 'ats-treemap-settings', inputs: ['guid'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-treemap', inputs: ['guid'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-treemap-settings', inputs: ['guid'] }),
         widgetSkeletonMock
       ],
       providers: [

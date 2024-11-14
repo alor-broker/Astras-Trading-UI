@@ -3,9 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ArbitrageSpreadWidgetComponent } from './arbitrage-spread-widget.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
-import { mockComponent, widgetSkeletonMock } from "../../../../shared/utils/testing";
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
 
 describe('ArbitrageSpreadWidgetComponent', () => {
   let component: ArbitrageSpreadWidgetComponent;
@@ -15,11 +16,11 @@ describe('ArbitrageSpreadWidgetComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         ArbitrageSpreadWidgetComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-arbitrage-spread',
           inputs: ['guid']
         }),
-        mockComponent({selector: 'ats-arbitrage-spread-modal-widget'}),
+        ComponentHelpers.mockComponent({selector: 'ats-arbitrage-spread-modal-widget'}),
         widgetSkeletonMock
       ],
       providers: [

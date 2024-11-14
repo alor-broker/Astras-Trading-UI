@@ -2,6 +2,7 @@ import {
   Component,
   DestroyRef,
   EventEmitter,
+  Inject,
   OnInit,
   Output,
 } from '@angular/core';
@@ -37,9 +38,12 @@ import { OrdersDialogService } from "../../../../shared/services/orders/orders-d
 import { OrderFormType } from "../../../../shared/models/orders/orders-dialog.model";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../../shared/services/orders/order-command.service";
 
 interface DisplayOrder extends Order {
   residue: string;
@@ -72,7 +76,8 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       id: 'symbol',
       displayName: 'Тикер',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.symbol.localeCompare(b.symbol),
+      transformFn: data => data.targetInstrument.symbol,
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => a.targetInstrument.symbol.localeCompare(b.targetInstrument.symbol),
       filterData: {
         filterName: 'symbol',
         filterType: FilterType.Search
@@ -158,7 +163,8 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       id: 'exchange',
       displayName: 'Биржа',
       sortOrder: null,
-      sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.exchange.localeCompare(a.exchange),
+      transformFn: data => data.targetInstrument.exchange,
+      sortFn: (a: DisplayOrder, b: DisplayOrder): number => b.targetInstrument.exchange.localeCompare(a.targetInstrument.exchange),
       filterData: {
         filterName: 'exchange',
         filterType: FilterType.DefaultMultiple,
@@ -205,7 +211,8 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     private readonly service: BlotterService,
-    private readonly wsOrdersService: WsOrdersService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
+    private readonly orderCommandService: OrderCommandService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
     protected readonly nzContextMenuService: NzContextMenuService,
@@ -303,20 +310,20 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
         take(1)
       )
       .subscribe(s => this.service.selectNewInstrument(
-        row.symbol,
-        row.exchange,
-        row.board,
+        row.targetInstrument.symbol,
+        row.targetInstrument.exchange,
+        row.targetInstrument.instrumentGroup ?? null,
         s.badgeColor ?? defaultBadgeColor
       ));
   }
 
   cancelOrder(order: DisplayOrder): void {
-    this.wsOrdersService.cancelOrders([
+    this.orderCommandService.cancelOrders([
       {
         orderId: order.id,
         orderType: order.type,
-        exchange: order.exchange,
-        portfolio: order.portfolio
+        exchange: order.targetInstrument.exchange,
+        portfolio: order.ownedPortfolio.portfolio
       }
     ]).subscribe();
   }
@@ -333,15 +340,10 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       take(1)
     ).subscribe(s => {
       this.ordersDialogService.openEditOrderDialog({
-        instrumentKey: {
-          symbol: order.symbol,
-          exchange: order.exchange,
-          instrumentGroup: order.board
-        },
+        instrumentKey: order.targetInstrument,
         portfolioKey: {
-          portfolio: s.portfolio,
-          exchange: s.exchange,
-          marketType: s.marketType
+          ...order.ownedPortfolio,
+          marketType: order.ownedPortfolio.marketType ?? s.marketType
         },
         orderId: order.id,
         orderType: OrderFormType.Limit,
@@ -356,11 +358,11 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
   cancelAllOrders(): void {
     const working = this.orders.filter(o => o.status == 'working');
     if(working.length > 0) {
-      this.wsOrdersService.cancelOrders(working.map(o => ({
+      this.orderCommandService.cancelOrders(working.map(o => ({
         orderId: o.id,
         orderType: o.type,
-        exchange: o.exchange,
-        portfolio: o.portfolio
+        exchange: o.targetInstrument.exchange,
+        portfolio: o.ownedPortfolio.portfolio
       }))).subscribe();
     }
   }
@@ -376,7 +378,11 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
   }
 
   protected rowToInstrumentKey(row: DisplayOrder): Observable<InstrumentKey | null> {
-    return this.service.getInstrumentToSelect(row.symbol, row.exchange, row.board);
+    return this.service.getInstrumentToSelect(
+      row.targetInstrument.symbol,
+      row.targetInstrument.exchange,
+      row.targetInstrument.instrumentGroup ?? null
+    );
   }
 
   private sortOrders(a: DisplayOrder, b: DisplayOrder): number {

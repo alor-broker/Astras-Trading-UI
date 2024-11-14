@@ -68,6 +68,8 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
   private readonly selectedSection$ = new BehaviorSubject<NewsSection>(NewsSection.All);
   private settings$!: Observable<NewsSettings>;
 
+  selectedNewsListItem: NewsListItem | null = null;
+
   constructor(
     private readonly newsService: NewsService,
     private readonly modalService: ModalService,
@@ -201,7 +203,7 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
   }
 
   rowClick(newsItem: NewsListItem): void {
-    this.modalService.openNewsModal(newsItem);
+    this.selectedNewsListItem = newsItem;
   }
 
   scrolled(): void {
@@ -278,7 +280,7 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
             .pipe(
               switchMap(p => this.positionsService.getAllByPortfolio(p.portfolio, p.exchange)),
               map(p => ({
-                symbols: (p ?? []).map(i => i.symbol)
+                symbols: (p ?? []).map(i => i.targetInstrument.symbol)
               } as NewsFilter))
             );
         }

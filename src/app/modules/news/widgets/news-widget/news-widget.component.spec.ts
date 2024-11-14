@@ -4,10 +4,6 @@ import {
 } from '@angular/core/testing';
 
 import { NewsWidgetComponent } from './news-widget.component';
-import {
-  mockComponent,
-  widgetSkeletonMock
-} from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { of } from 'rxjs';
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
@@ -16,6 +12,8 @@ import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import {TranslatorService} from "../../../../shared/services/translator.service";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('NewsWidgetComponent', () => {
   let component: NewsWidgetComponent;
@@ -25,11 +23,11 @@ describe('NewsWidgetComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         NewsWidgetComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-news',
           inputs: ['guid']
         }),
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-news-settings',
           inputs: ['guid']
         }),

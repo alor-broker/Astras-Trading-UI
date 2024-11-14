@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, Inject,
   Input,
   OnDestroy,
   OnInit
@@ -35,6 +35,10 @@ import {
 import {getMarketTypeByPortfolio} from "../../../../shared/utils/portfolios";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import {
+  PUSH_NOTIFICATIONS_CONFIG,
+  PushNotificationsConfig
+} from "../../../push-notifications/services/push-notifications-config";
 
 @Component({
   selector: 'ats-blotter-widget',
@@ -64,12 +68,19 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly terminalSettingsService: TerminalSettingsService,
+    @Inject(PUSH_NOTIFICATIONS_CONFIG)
+    readonly pushNotificationsConfig: PushNotificationsConfig
   ) {
   }
 
   get guid(): string {
     return this.widgetInstance.instance.guid;
+  }
+
+  get isNotificationsSupported(): boolean {
+    return this.pushNotificationsConfig.portfolioOrdersExecuteNotifications.isSupported
+      || this.pushNotificationsConfig.priceChangeNotifications.isSupported;
   }
 
   ngOnInit(): void {

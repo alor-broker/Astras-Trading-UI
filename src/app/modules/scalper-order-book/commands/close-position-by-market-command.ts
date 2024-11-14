@@ -1,19 +1,26 @@
-import { Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable
+} from '@angular/core';
 import { CommandBase } from "./command-base";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { Position } from "../../../shared/models/positions/position.model";
 import { CommonOrderCommands } from "../../../shared/utils/common-order-commands";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../shared/services/orders/order-command.service";
 
 export interface ClosePositionByMarketCommandArgs {
   currentPosition: Position | null;
   targetInstrumentBoard: string | null;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class ClosePositionByMarketCommand extends CommandBase<ClosePositionByMarketCommandArgs> {
-  constructor(private readonly wsOrdersService: WsOrdersService) {
+  constructor(
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
+    private readonly orderCommandService: OrderCommandService
+  ) {
     super();
   }
 
@@ -25,7 +32,7 @@ export class ClosePositionByMarketCommand extends CommandBase<ClosePositionByMar
     CommonOrderCommands.closePositionByMarket(
       args.currentPosition,
       args.targetInstrumentBoard,
-      this.wsOrdersService
+      this.orderCommandService
     );
   }
 }

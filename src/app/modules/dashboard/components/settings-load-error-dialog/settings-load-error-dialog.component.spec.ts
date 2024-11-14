@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SettingsLoadErrorDialogComponent } from './settings-load-error-dialog.component';
 import { EnvironmentService } from "../../../../shared/services/environment.service";
-import { getTranslocoModule } from "../../../../shared/utils/testing";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('SettingsLoadErrorDialogComponent', () => {
   let component: SettingsLoadErrorDialogComponent;
@@ -11,7 +11,7 @@ describe('SettingsLoadErrorDialogComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         SettingsLoadErrorDialogComponent
       ],
       providers: [

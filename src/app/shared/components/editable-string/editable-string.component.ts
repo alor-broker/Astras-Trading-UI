@@ -15,7 +15,7 @@ import {
   take,
 } from 'rxjs';
 import {
-  FormBuilder,
+  FormBuilder, ReactiveFormsModule,
   Validators
 } from '@angular/forms';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
@@ -23,11 +23,31 @@ import {
   map,
   startWith
 } from "rxjs/operators";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {AsyncPipe, NgIf} from "@angular/common";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent} from "ng-zorro-antd/form";
+import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
 
 @Component({
   selector: 'ats-editable-string',
   templateUrl: './editable-string.component.html',
-  styleUrls: ['./editable-string.component.less']
+  styleUrls: ['./editable-string.component.less'],
+  imports: [
+    TranslocoDirective,
+    AsyncPipe,
+    NgIf,
+    NzIconDirective,
+    ReactiveFormsModule,
+    NzButtonComponent,
+    NzFormDirective,
+    NzFormItemComponent,
+    NzInputGroupComponent,
+    NzFormControlComponent,
+    NzInputDirective
+  ],
+  standalone: true
 })
 export class EditableStringComponent implements OnInit, OnDestroy {
   @ViewChildren('editInput')

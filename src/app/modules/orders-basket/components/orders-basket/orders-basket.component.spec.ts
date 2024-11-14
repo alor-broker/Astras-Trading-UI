@@ -3,12 +3,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { OrdersBasketComponent } from './orders-basket.component';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { Subject } from 'rxjs';
-import {
-  getTranslocoModule,
-  mockComponent
-} from '../../../../shared/utils/testing';
 import { EvaluationService } from '../../../../shared/services/evaluation.service';
-import { WsOrdersService } from "../../../../shared/services/orders/ws-orders.service";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../../shared/services/orders/order-command.service";
 
 describe('OrdersBasketComponent', () => {
   let component: OrdersBasketComponent;
@@ -17,11 +17,11 @@ describe('OrdersBasketComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule()
+        TranslocoTestsModule.getModule()
       ],
       declarations: [
         OrdersBasketComponent,
-        mockComponent({ selector: 'ats-orders-basket-item', inputs: ['exchange', 'formControl', 'totalBudget', 'itemIndex', 'enableDelete'] })
+        ComponentHelpers.mockComponent({ selector: 'ats-orders-basket-item', inputs: ['exchange', 'formControl', 'totalBudget', 'itemIndex', 'enableDelete'] })
       ],
       providers: [
         {
@@ -31,7 +31,7 @@ describe('OrdersBasketComponent', () => {
           }
         },
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: {
             getSettings: jasmine.createSpy('submitLimitOrder').and.returnValue(new Subject())
           }

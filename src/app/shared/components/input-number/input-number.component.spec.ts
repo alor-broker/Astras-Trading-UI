@@ -1,9 +1,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {InputNumberComponent} from './input-number.component';
-import {FormsModule} from "@angular/forms";
 import {MathHelper} from "../../utils/math-helper";
-import { getRandomInt, mockComponent } from "../../utils/testing";
+import { TestingHelpers } from "../../utils/testing/testing-helpers";
 
 describe('InputNumberComponent', () => {
   let component: InputNumberComponent;
@@ -28,8 +27,9 @@ describe('InputNumberComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FormsModule],
-      declarations: [InputNumberComponent, mockComponent({ selector: 'nz-input-group', inputs: ['nzSuffix', 'nzCompact'] })]
+      imports: [
+        InputNumberComponent
+      ]
     })
       .compileComponents();
 
@@ -358,7 +358,7 @@ describe('InputNumberComponent', () => {
   });
 
   it('should not process mouse wheel when field is not focused', () => {
-    const initialValue = +(getRandomInt(1, 100).toString() + '.' + getRandomInt(100, 999).toString());
+    const initialValue = +(TestingHelpers.getRandomInt(1, 100).toString() + '.' + TestingHelpers.getRandomInt(100, 999).toString());
 
     component.step = 0.001;
     component.writeValue(initialValue);

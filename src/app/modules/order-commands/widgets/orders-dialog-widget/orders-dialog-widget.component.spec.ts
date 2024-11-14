@@ -1,17 +1,23 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-
-import {OrdersDialogWidgetComponent} from './orders-dialog-widget.component';
-import {BehaviorSubject, Subject} from "rxjs";
-import {ModalService} from "../../../../shared/services/modal.service";
-import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
-import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {
-  getTranslocoModule,
-  mockComponent
-} from "../../../../shared/utils/testing";
-import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
+
+import { OrdersDialogWidgetComponent } from './orders-dialog-widget.component';
+import {
+  BehaviorSubject,
+  Subject
+} from "rxjs";
+import { ModalService } from "../../../../shared/services/modal.service";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
 import { EnvironmentService } from "../../../../shared/services/environment.service";
 import { HelpService } from "../../../../shared/services/help.service";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { ORDER_COMMAND_SERVICE_TOKEN } from "../../../../shared/services/orders/order-command.service";
+import {PUSH_NOTIFICATIONS_CONFIG} from "../../../push-notifications/services/push-notifications-config";
 
 describe('OrdersDialogWidgetComponent', () => {
   let component: OrdersDialogWidgetComponent;
@@ -19,14 +25,14 @@ describe('OrdersDialogWidgetComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports:[getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       declarations: [
         OrdersDialogWidgetComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-instrument-info',
           inputs: ['currentPortfolio', 'instrumentKey']
         }),
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-setup-instrument-notifications',
           inputs: ['instrumentKey', 'active', 'priceChanges'],
         })
@@ -69,6 +75,24 @@ describe('OrdersDialogWidgetComponent', () => {
           provide: HelpService,
           useValue: {
             getHelpLink: jasmine.createSpy('getHelpLink').and.returnValue('')
+          }
+        },
+        {
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
+          useValue: {
+            getOrdersConfig: jasmine.createSpy('getOrdersConfig').and.returnValue({ })
+          }
+        },
+        {
+          provide: PUSH_NOTIFICATIONS_CONFIG,
+          useValue: {
+            priceChangeNotifications: {
+              isSupported: true
+            },
+
+            portfolioOrdersExecuteNotifications: {
+              isSupported: true
+            }
           }
         }
       ]

@@ -12,14 +12,11 @@ import {
   SubmitBestPriceOrderCommandArgs
 } from "./submit-best-price-order-command";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
-import {
-  generateRandomString,
-  getRandomInt
-} from "../../../shared/utils/testing";
 import { Instrument } from "../../../shared/models/instruments/instrument.model";
 import { OrderbookDataRow } from "../../orderbook/models/orderbook-data.model";
 import { Side } from "../../../shared/models/enums/side.model";
 import { PriceUnits } from "../models/scalper-order-book-settings.model";
+import { TestingHelpers } from 'src/app/shared/utils/testing/testing-helpers';
 
 describe('SubmitBestPriceOrderCommand', () => {
   let command: SubmitBestPriceOrderCommand;
@@ -33,6 +30,7 @@ describe('SubmitBestPriceOrderCommand', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        SubmitBestPriceOrderCommand,
         {
           provide: SubmitLimitOrderCommand,
           useValue: submitLimitOrderCommandSpy
@@ -48,11 +46,11 @@ describe('SubmitBestPriceOrderCommand', () => {
 
   it('#execute should call service with appropriate data', fakeAsync(() => {
       const portfolioKey: PortfolioKey = {
-        exchange: generateRandomString(4),
-        portfolio: generateRandomString(5),
+        exchange: TestingHelpers.generateRandomString(4),
+        portfolio: TestingHelpers.generateRandomString(5),
       };
 
-      const symbol = generateRandomString(4);
+      const symbol = TestingHelpers.generateRandomString(4);
       const testInstrument: Instrument = {
         exchange: portfolioKey.exchange,
         symbol: symbol,
@@ -63,7 +61,7 @@ describe('SubmitBestPriceOrderCommand', () => {
       };
 
       submitLimitOrderCommandSpy.execute.and.callThrough();
-      const quantity = getRandomInt(1, 100);
+      const quantity = TestingHelpers.getRandomInt(1, 100);
 
       let testAsks: OrderbookDataRow[] = [
         { p: 6, v: 1, y: 0 },

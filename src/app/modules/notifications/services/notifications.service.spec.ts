@@ -1,31 +1,20 @@
 import { TestBed } from '@angular/core/testing';
 
 import { NotificationsService } from './notifications.service';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  sharedModuleImportForTests
-} from '../../../shared/utils/testing';
-import { of, Subject } from "rxjs";
-import { PushNotificationsService } from "../../push-notifications/services/push-notifications.service";
+import { NOTIFICATIONS_PROVIDER } from "./notifications-provider";
+import { commonTestProviders } from "../../../shared/utils/testing/common-test-providers";
 
 describe('NotificationsService', () => {
   let service: NotificationsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports:[
-        ...sharedModuleImportForTests,
-        getTranslocoModule()
-      ],
-      providers:[
+      imports: [],
+      providers: [
         ...commonTestProviders,
         {
-          provide: PushNotificationsService,
-          useValue: {
-            subscribeToOrderExecute: jasmine.createSpy('subscribeToOrderExecute').and.returnValue(of({})),
-            getMessages: jasmine.createSpy('getMessages').and.returnValue(new Subject()),
-          }
+          provide: NOTIFICATIONS_PROVIDER,
+          useValue: []
         }
       ]
     });

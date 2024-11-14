@@ -2,11 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalService } from 'src/app/shared/services/modal.service';
 
 import { TerminalSettingsWidgetComponent } from './terminal-settings-widget.component';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
+import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
+import { EMPTY } from "rxjs";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('TerminalSettingsWidgetComponent', () => {
   let component: TerminalSettingsWidgetComponent;
@@ -16,15 +15,21 @@ describe('TerminalSettingsWidgetComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        TerminalSettingsWidgetComponent,
-      ],
       imports: [
-        ...sharedModuleImportForTests,
-        getTranslocoModule()
+        TerminalSettingsWidgetComponent,
+        TranslocoTestsModule.getModule()
       ],
       providers: [
-        { provide: ModalService, useValue: modalSpy },
+        {
+          provide: ModalService,
+          useValue: modalSpy
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(EMPTY)
+          }
+        },
         ...commonTestProviders
       ]
     }).compileComponents();

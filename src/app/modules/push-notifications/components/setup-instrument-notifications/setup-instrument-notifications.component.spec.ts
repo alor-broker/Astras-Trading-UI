@@ -1,15 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SetupInstrumentNotificationsComponent } from './setup-instrument-notifications.component';
-import {
-  commonTestProviders,
-  getTranslocoModule, mockComponent,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
 import { PushNotificationsService } from "../../services/push-notifications.service";
-import { of, Subject } from "rxjs";
+import {
+  EMPTY,
+  of,
+  Subject
+} from "rxjs";
 import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { CommonParametersService } from "../../../order-commands/services/common-parameters.service";
+import { QuotesService } from "../../../../shared/services/quotes.service";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
 
 describe('SetupInstrumentNotificationsComponent', () => {
   let component: SetupInstrumentNotificationsComponent;
@@ -18,13 +22,12 @@ describe('SetupInstrumentNotificationsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         NoopAnimationsModule,
-        ...sharedModuleImportForTests
       ],
       declarations: [
         SetupInstrumentNotificationsComponent,
-        mockComponent({selector: 'nz-spin', inputs:['nzSpinning']})
+        ComponentHelpers.mockComponent({selector: 'nz-spin', inputs:['nzSpinning']})
       ],
       providers: [
         {
@@ -42,6 +45,18 @@ describe('SetupInstrumentNotificationsComponent', () => {
           provide: CommonParametersService,
           useValue: {
             parameters$: of({})
+          }
+        },
+        {
+          provide: QuotesService,
+          useValue: {
+            getLastPrice: jasmine.createSpy('getLastPrice').and.returnValue(EMPTY)
+          }
+        },
+        {
+          provide: InstrumentsService,
+          useValue: {
+            getInstrument: jasmine.createSpy('getInstrument').and.returnValue(EMPTY)
           }
         },
         ...commonTestProviders

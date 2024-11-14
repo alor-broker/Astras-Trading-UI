@@ -77,10 +77,10 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('canvas')
   canvas?: ElementRef<HTMLCanvasElement>;
 
-  @Input({ required: true })
+  @Input({required: true})
   xAxisStep!: number;
 
-  @Input({ required: true })
+  @Input({required: true})
   dataContext!: ScalperOrderBookDataContext;
 
   private readonly zIndexes = {
@@ -104,7 +104,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   };
 
-  private readonly contentSize$ = new BehaviorSubject<ContentSize>({ width: 0, height: 0 });
+  private readonly contentSize$ = new BehaviorSubject<ContentSize>({width: 0, height: 0});
   private displayPriceItems$!: Observable<BodyRow[]>;
 
   constructor(
@@ -127,10 +127,17 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     );
 
+    const sortedTrades$ = this.dataContext.trades$.pipe(
+      map((trades) => {
+        // order may be disturbed. https://github.com/alor-broker/Astras-Trading-UI/issues/1833
+        return trades.sort((a, b) => a.timestamp - b.timestamp);
+      })
+    );
+
     combineLatest({
       size: this.contentSize$,
       priceItems: this.displayPriceItems$,
-      allTrades: this.dataContext.trades$,
+      allTrades: sortedTrades$,
       ownTrades: this.dataContext.ownTrades$,
       position: this.dataContext.position$,
       panelSettings: panelSettings$,

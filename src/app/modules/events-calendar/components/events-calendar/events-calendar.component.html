@@ -53,7 +53,7 @@
       <li nz-menu-item (click)="selectPortfolio(null)">
         {{t('eventsCalendar.allPortfolios')}}
       </li>
-      <li nz-menu-item *ngFor="let portfolio of portfolios; trackBy: portfolioTrackByFn" (click)="selectPortfolio(portfolio)">
+      <li nz-menu-item *ngFor="let portfolio of portfolios$ | async; trackBy: portfolioTrackByFn" (click)="selectPortfolio(portfolio)">
         {{ portfolio.portfolio }} ({{portfolio.exchange}})
       </li>
     </ul>

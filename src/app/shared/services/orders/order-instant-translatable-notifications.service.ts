@@ -126,6 +126,19 @@ export class OrderInstantTranslatableNotificationsService
     ));
   }
 
+  ordersGroupUnsupported(): void {
+    this.withTranslation(t => this.notificationsService.showNotification(
+      OrdersInstantNotificationType.OrdersGroupUnsupported,
+      'error',
+      t(['ordersGroupUnsupportedLabel'], { fallback: `Группы не поддерживаются` }),
+      t(
+        ['ordersGroupUnsupportedContent'],
+        {
+          fallback: `Создание группы заявок недоступно`
+        })
+    ));
+  }
+
   orderCancelled(orderId: string, exchange: string): void {
     this.withTranslation(t => this.notificationsService.showNotification(
       OrdersInstantNotificationType.OrderCancelled,

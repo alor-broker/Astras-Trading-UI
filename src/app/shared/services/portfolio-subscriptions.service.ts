@@ -8,20 +8,21 @@ import {
 } from 'rxjs';
 import { CommonSummaryModel } from '../../modules/blotter/models/common-summary.model';
 import { ForwardRisks } from '../../modules/blotter/models/forward-risks.model';
-import { Trade } from '../models/trades/trade.model';
+import {Trade, TradeResponse} from '../models/trades/trade.model';
 import {
   finalize,
   map,
   startWith
 } from 'rxjs/operators';
 import { catchHttpError, mapWith } from '../utils/observable-helper';
-import { Position } from '../models/positions/position.model';
-import {Order, StopOrder, StopOrderResponse} from '../models/orders/order.model';
+import {Position, PositionResponse} from '../models/positions/position.model';
+import {Order, OrderResponse, StopOrder, StopOrderResponse} from '../models/orders/order.model';
 import {PortfolioKey} from "../models/portfolio-key.model";
 import {InstrumentKey} from "../models/instruments/instrument-key.model";
 import { HttpClient } from "@angular/common/http";
 import { EnvironmentService } from "./environment.service";
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
+import {PortfolioItemsModelHelper} from "../utils/portfolio-item-models-helper";
 
 interface PortfolioRequestBase {
   opcode: string;
@@ -65,11 +66,7 @@ export class PortfolioSubscriptionsService {
   }
 
   getTradesSubscription(portfolio: string, exchange: string): Observable<Trade[]> {
-    const getTradeWithDates = (t: Trade): Trade => ({
-      ...t,
-      date: new Date(t.date)
-    });
-
+    const ownedPortfolio: PortfolioKey = { portfolio, exchange };
     return this.getOrCreateSubscription(
       {
         opcode: 'TradesGetAndSubscribeV2',
@@ -84,37 +81,37 @@ export class PortfolioSubscriptionsService {
       })
         .pipe(
           mapWith(
-            () => combineLatest([
-              this.subscriptionsDataFeedService.subscribe<any, Trade>(request, this.getSubscriptionKey)
+            () => combineLatest({
+              tradeUpdates: this.subscriptionsDataFeedService.subscribe<PortfolioRequestBase, TradeResponse>(request, this.getSubscriptionKey)
                 .pipe(
+                  map(t => PortfolioItemsModelHelper.tradeResponseToModel(t, ownedPortfolio)),
                   startWith(null)
                 ),
-              this.getCurrentSessionTrades(portfolio, exchange)
+              sessionTrades: this.getCurrentSessionTrades(portfolio, exchange)
                 .pipe(
                   startWith(null)
                 )
-            ]),
-            (state, [subscriptionTrade, tradesHistory]) => ({
+            }),
+            (state, output) => ({
               state,
-              subscriptionTrade,
-              tradesHistory
+              ...output
             })
           ),
-          map(({ state, subscriptionTrade, tradesHistory }) => {
-            if (!state.isHistoryFilled && (tradesHistory ?? []).length > 0) {
-              tradesHistory!.forEach(t => {
+          map(({ state, tradeUpdates, sessionTrades }) => {
+            if (!state.isHistoryFilled && (sessionTrades ?? []).length > 0) {
+              sessionTrades!.forEach(t => {
                 if (state.allTrades.get(t.id) != null) {
                   return;
                 }
 
-                state.allTrades.set(t.id, getTradeWithDates(t));
+                state.allTrades.set(t.id, t);
               });
 
               state.isHistoryFilled = true;
             }
 
-            if (subscriptionTrade != null) {
-              state.allTrades.set(subscriptionTrade.id, getTradeWithDates(subscriptionTrade));
+            if (tradeUpdates != null) {
+              state.allTrades.set(tradeUpdates.id, tradeUpdates);
             }
 
             return Array.from(state.allTrades.values());
@@ -124,6 +121,8 @@ export class PortfolioSubscriptionsService {
   }
 
   getAllPositionsSubscription(portfolio: string, exchange: string): Observable<Position[]> {
+    const ownedPortfolio: PortfolioKey = {portfolio, exchange};
+
     return this.getOrCreateSubscription(
       {
         opcode: 'PositionsGetAndSubscribeV2',
@@ -132,11 +131,12 @@ export class PortfolioSubscriptionsService {
       },
       request => of(new Map<string, Position>()).pipe(
         mapWith(
-          () => this.subscriptionsDataFeedService.subscribe<any, Position>(request, this.getSubscriptionKey),
-          (allPositions, position) => ({ allPositions, position })),
-        map(({ allPositions, position }) => {
-          if (!this.isEmptyPosition(position) || !!allPositions.get(position.symbol)) {
-            allPositions.set(position.symbol, position);
+          () => this.subscriptionsDataFeedService.subscribe<PortfolioRequestBase, PositionResponse>(request, this.getSubscriptionKey),
+          (allPositions, positionResponse) => ({ allPositions, positionResponse })),
+        map(({ allPositions, positionResponse }) => {
+          const position = PortfolioItemsModelHelper.positionResponseToModel(positionResponse, ownedPortfolio);
+          if (!this.isEmptyPosition(position) || !!allPositions.get(position.targetInstrument.symbol)) {
+            allPositions.set(position.targetInstrument.symbol, position);
           }
 
           return Array.from(allPositions.values());
@@ -148,20 +148,13 @@ export class PortfolioSubscriptionsService {
 
   getInstrumentPositionSubscription(portfolioKey: PortfolioKey, instrumentKey: InstrumentKey): Observable<Position | null> {
     return this.getAllPositionsSubscription(portfolioKey.portfolio, portfolioKey.exchange).pipe(
-      map(p => p.find(p => p.symbol === instrumentKey.symbol && p.exchange === instrumentKey.exchange)),
+      map(p => p.find(p => p.targetInstrument.symbol === instrumentKey.symbol && p.targetInstrument.exchange === instrumentKey.exchange)),
       map(p => (!p || !p.avgPrice ? null : p)),
     );
   }
 
   getOrdersSubscription(portfolio: string, exchange: string): Observable<{ allOrders: Order[], existingOrder?: Order, lastOrder?: Order }> {
-    const getOrderWithDates = (o: Order): Order => {
-      o.transTime = new Date(o.transTime);
-      if (o.endTime) {
-        o.endTime = new Date(o.endTime);
-      }
-
-      return o;
-    };
+    const ownedPortfolio: PortfolioKey = { portfolio, exchange };
 
     return this.getOrCreateSubscription(
       {
@@ -176,37 +169,41 @@ export class PortfolioSubscriptionsService {
       })
         .pipe(
           mapWith(
-            () => combineLatest([
-              this.subscriptionsDataFeedService.subscribe<any, Order>(request, this.getSubscriptionKey)
-                .pipe(startWith(null)),
-              this.getCurrentSessionOrders(portfolio, exchange)
-                .pipe(startWith(null))
-            ]),
-            (state, [subscriptionOrder, ordersHistory]) => ({
+            () => combineLatest({
+              orderUpdates: this.subscriptionsDataFeedService.subscribe<PortfolioRequestBase, OrderResponse>(request, this.getSubscriptionKey)
+                .pipe(
+                  map(o => PortfolioItemsModelHelper.orderResponseToModel(o, ownedPortfolio)),
+                  startWith(null)
+                ),
+              sessionOrders: this.getCurrentSessionOrders(portfolio, exchange)
+                .pipe(
+                  startWith(null)
+                )
+            }),
+            (state, output) => ({
               state,
-              subscriptionOrder,
-              ordersHistory
+              ...output
             })
           ),
-          map(({ state, subscriptionOrder, ordersHistory }) => {
-            if (!state.isHistoryFilled && (ordersHistory ?? []).length > 0) {
-              ordersHistory!.forEach(o => {
+          map(({ state, orderUpdates, sessionOrders }) => {
+            if (!state.isHistoryFilled && (sessionOrders ?? []).length > 0) {
+              sessionOrders!.forEach(o => {
                 if (state.allOrders.get(o.id) != null) {
                   return;
                 }
 
-                state.allOrders.set(o.id, getOrderWithDates(o));
+                state.allOrders.set(o.id, o);
               });
 
               state.isHistoryFilled = true;
             }
 
             let lastOrder: Order | undefined = undefined;
-            const existingOrder = state.allOrders.get(subscriptionOrder?.id ?? '');
+            const existingOrder = state.allOrders.get(orderUpdates?.id ?? '');
 
-            if (subscriptionOrder != null) {
-              state.allOrders.set(subscriptionOrder.id, getOrderWithDates(subscriptionOrder));
-              lastOrder = getOrderWithDates(subscriptionOrder);
+            if (orderUpdates != null) {
+              state.allOrders.set(orderUpdates.id, orderUpdates);
+              lastOrder = orderUpdates;
             }
 
             return {
@@ -220,18 +217,7 @@ export class PortfolioSubscriptionsService {
   }
 
   getStopOrdersSubscription(portfolio: string, exchange: string): Observable<{ allOrders: StopOrder[], existingOrder?: StopOrder, lastOrder?: StopOrder }> {
-    const getOrderWithDates = (o: StopOrderResponse): StopOrder => {
-      o.transTime = new Date(o.transTime);
-      o.endTime = new Date(o.endTime!);
-
-      return {
-        ...o,
-        transTime: new Date(o.transTime),
-        endTime: new Date(o.endTime!),
-        triggerPrice: o.stopPrice,
-        conditionType: o.condition
-      } as StopOrder;
-    };
+    const ownedPortfolio: PortfolioKey = { portfolio, exchange };
 
     return this.getOrCreateSubscription(
       {
@@ -246,37 +232,41 @@ export class PortfolioSubscriptionsService {
       })
         .pipe(
           mapWith(
-            () => combineLatest([
-              this.subscriptionsDataFeedService.subscribe<any, StopOrderResponse>(request, this.getSubscriptionKey)
-                .pipe(startWith(null)),
-              this.getCurrentSessionStopOrders(portfolio, exchange)
-                .pipe(startWith(null))
-            ]),
-            (state, [subscriptionOrder, ordersHistory]) => ({
+            () => combineLatest({
+              orderUpdates: this.subscriptionsDataFeedService.subscribe<PortfolioRequestBase, StopOrderResponse>(request, this.getSubscriptionKey)
+                .pipe(
+                  map(o => PortfolioItemsModelHelper.stopOrderResponseToModel(o, ownedPortfolio)),
+                  startWith(null)
+                ),
+              sessionOrders: this.getCurrentSessionStopOrders(portfolio, exchange)
+                .pipe(
+                  startWith(null)
+                )
+            }),
+            (state, output) => ({
               state,
-              subscriptionOrder,
-              ordersHistory
+              ...output
             })
           ),
-          map(({ state, subscriptionOrder, ordersHistory }) => {
-            if (!state.isHistoryFilled && (ordersHistory ?? []).length > 0) {
-              ordersHistory!.forEach(o => {
+          map(({ state, orderUpdates, sessionOrders }) => {
+            if (!state.isHistoryFilled && (sessionOrders ?? []).length > 0) {
+              sessionOrders!.forEach(o => {
                 if (state.allOrders.get(o.id) != null) {
                   return;
                 }
 
-                state.allOrders.set(o.id, getOrderWithDates(o));
+                state.allOrders.set(o.id, o);
               });
 
               state.isHistoryFilled = true;
             }
 
             let lastOrder: StopOrder | undefined = undefined;
-            const existingOrder = state.allOrders.get(subscriptionOrder?.id ?? '');
+            const existingOrder = state.allOrders.get(orderUpdates?.id ?? '');
 
-            if (subscriptionOrder != null) {
-              state.allOrders.set(subscriptionOrder.id, getOrderWithDates(subscriptionOrder));
-              lastOrder = getOrderWithDates(subscriptionOrder);
+            if (orderUpdates != null) {
+              state.allOrders.set(orderUpdates.id, orderUpdates);
+              lastOrder = orderUpdates;
             }
 
             return {
@@ -290,27 +280,48 @@ export class PortfolioSubscriptionsService {
   }
 
   private getCurrentSessionOrders(portfolio: string, exchange: string): Observable<Order[] | null> {
-    return this.http.get<Order[]>(`${this.baseUrl}/${exchange}/${portfolio}/orders`)
+    return this.http.get<OrderResponse[]>(`${this.baseUrl}/${exchange}/${portfolio}/orders`)
       .pipe(
-        catchHttpError<Order[] | null>(null, this.errorHandlerService)
+        catchHttpError<OrderResponse[] | null>(null, this.errorHandlerService),
+        map(r => {
+          if(r == null) {
+            return null;
+          }
+
+          return r.map(i => PortfolioItemsModelHelper.orderResponseToModel(i, {portfolio, exchange}));
+        })
       );
   }
 
-  private getCurrentSessionStopOrders(portfolio: string, exchange: string): Observable<StopOrderResponse[] | null> {
+  private getCurrentSessionStopOrders(portfolio: string, exchange: string): Observable<StopOrder[] | null> {
     return this.http.get<StopOrderResponse[]>(`${this.baseUrl}/${exchange}/${portfolio}/stoporders`)
       .pipe(
-        catchHttpError<StopOrderResponse[] | null>(null, this.errorHandlerService)
+        catchHttpError<StopOrderResponse[] | null>(null, this.errorHandlerService),
+        map(r => {
+          if(r == null) {
+            return null;
+          }
+
+          return r.map(i => PortfolioItemsModelHelper.stopOrderResponseToModel(i, {portfolio, exchange}));
+        })
       );
   }
 
   private getCurrentSessionTrades(portfolio: string, exchange: string): Observable<Trade[] | null> {
-    return this.http.get<Trade[]>(`${this.baseUrl}/${exchange}/${portfolio}/trades`, {
+    return this.http.get<TradeResponse[]>(`${this.baseUrl}/${exchange}/${portfolio}/trades`, {
       params: {
         format: 'heavy'
       }
     })
       .pipe(
-        catchHttpError<Trade[] | null>(null, this.errorHandlerService)
+        catchHttpError<TradeResponse[] | null>(null, this.errorHandlerService),
+        map(r => {
+          if(r == null) {
+            return null;
+          }
+
+          return r.map(i => PortfolioItemsModelHelper.tradeResponseToModel(i, {portfolio, exchange}));
+        })
       );
   }
 

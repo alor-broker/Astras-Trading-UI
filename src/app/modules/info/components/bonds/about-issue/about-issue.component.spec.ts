@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InfoService } from '../../../services/info.service';
 
 import { AboutIssueComponent } from './about-issue.component';
-import { mockComponent } from "../../../../../shared/utils/testing";
 import { of } from "rxjs";
+import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
 
 describe('AboutIssueComponent', () => {
   let component: AboutIssueComponent;
@@ -17,7 +17,7 @@ describe('AboutIssueComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         AboutIssueComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-loading-indicator',
           inputs: ['isLoading']
         })

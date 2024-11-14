@@ -4,12 +4,10 @@ import {
 } from '@angular/core/testing';
 
 import { GeneralSettingsFormComponent } from './general-settings-form.component';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  sharedModuleImportForTests
-} from '../../../../shared/utils/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
+import { NzPopoverModule } from "ng-zorro-antd/popover";
 
 describe('GeneralSettingsFormComponent', () => {
   let component: GeneralSettingsFormComponent;
@@ -18,9 +16,9 @@ describe('GeneralSettingsFormComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
-        NoopAnimationsModule,
-        ...sharedModuleImportForTests
+        TranslocoTestsModule.getModule(),
+        ...FormsTesting.getTestingModules(),
+        NzPopoverModule
       ],
       declarations: [
         GeneralSettingsFormComponent

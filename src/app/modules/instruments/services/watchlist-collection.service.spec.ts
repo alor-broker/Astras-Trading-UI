@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
 import { WatchlistCollectionService } from './watchlist-collection.service';
-import { TestData } from '../../../shared/utils/testing';
 import {
   WatchlistCollection,
   WatchlistType
@@ -19,6 +18,7 @@ import {
 import { EnvironmentService } from "../../../shared/services/environment.service";
 import { InstrumentsService } from "./instruments.service";
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { TestData } from "../../../shared/utils/testing/test-data";
 
 describe('WatchListCollectionService', () => {
   const errorHandlerSpy = jasmine.createSpyObj('ErrorHandlerService', ['handleError']);

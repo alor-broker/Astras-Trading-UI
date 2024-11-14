@@ -8,10 +8,8 @@ import { WatchlistCollectionService } from "../../services/watchlist-collection.
 import { Subject } from "rxjs";
 import { MarketService } from "../../../../shared/services/market.service";
 import { InstrumentsService } from "../../services/instruments.service";
-import {
-  getTranslocoModule,
-  ngZorroMockComponents
-} from "../../../../shared/utils/testing";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('ImportWatchlistDialogComponent', () => {
   let component: ImportWatchlistDialogComponent;
@@ -19,7 +17,7 @@ describe('ImportWatchlistDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       declarations: [
         ImportWatchlistDialogComponent,
         ...ngZorroMockComponents

@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InfoService } from '../../../services/info.service';
 
 import { CalendarComponent } from './calendar.component';
-import { mockComponent } from "../../../../../shared/utils/testing";
 import { of } from "rxjs";
+import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
 
 describe('CalendarComponent', () => {
   let component: CalendarComponent;
@@ -17,7 +17,7 @@ describe('CalendarComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         CalendarComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-loading-indicator',
           inputs: ['isLoading']
         })

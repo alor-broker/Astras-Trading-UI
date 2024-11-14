@@ -4,12 +4,14 @@ import {
 } from '@angular/core/testing';
 
 import { InstrumentSelectWidgetComponent } from './instrument-select-widget.component';
-import {getTranslocoModule, mockComponent, widgetSkeletonMock} from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { of } from 'rxjs';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('InstrumentSelectWidgetComponent', () => {
   let component: InstrumentSelectWidgetComponent;
@@ -18,14 +20,14 @@ describe('InstrumentSelectWidgetComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       declarations: [
         InstrumentSelectWidgetComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-instrument-select',
           inputs: ['guid']
         }),
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-instrument-select-settings',
           inputs: ['guid']
         }),

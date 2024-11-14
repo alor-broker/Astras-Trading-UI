@@ -1,4 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { RepoTradesComponent } from './repo-trades.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -7,13 +10,11 @@ import { BlotterService } from "../../services/blotter.service";
 import { MockServiceBlotter } from "../../utils/mock-blotter-service";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import {
-  getTranslocoModule,
-  mockComponent,
-  ngZorroMockComponents
-} from "../../../../shared/utils/testing";
 import { LetDirective } from "@ngrx/component";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('RepoTradesComponent', () => {
   let component: RepoTradesComponent;
@@ -22,15 +23,15 @@ describe('RepoTradesComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         LetDirective
       ],
       declarations: [
         RepoTradesComponent,
         ...ngZorroMockComponents,
-        mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
-        mockComponent({ selector: 'nz-filter-trigger', inputs: ['nzActive', 'nzDropdownMenu', 'nzVisible'] }),
-        mockComponent({
+        ComponentHelpers.mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
+        ComponentHelpers.mockComponent({ selector: 'nz-filter-trigger', inputs: ['nzActive', 'nzDropdownMenu', 'nzVisible'] }),
+        ComponentHelpers.mockComponent({
           selector: 'ats-add-to-watchlist-menu'
         })
       ],

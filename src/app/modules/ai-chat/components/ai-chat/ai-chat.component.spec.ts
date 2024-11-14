@@ -4,12 +4,10 @@ import {
 } from '@angular/core/testing';
 
 import { AiChatComponent } from './ai-chat.component';
-import {
-  getTranslocoModule,
-  mockComponent
-} from "../../../../shared/utils/testing";
 import { AiChatService } from "../../services/ai-chat.service";
 import { Subject } from "rxjs";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 
 describe('AiChatComponent', () => {
   let component: AiChatComponent;
@@ -18,17 +16,17 @@ describe('AiChatComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
       ],
       declarations: [
         AiChatComponent,
-        mockComponent({ selector: 'ats-chat-container' }),
-        mockComponent({ selector: 'ats-chat-message-container', inputs: ['message'] }),
-        mockComponent({ selector: 'ats-chat-status', inputs: ['status'] }),
-        mockComponent({ selector: 'ats-message-input', inputs: ['messagePlaceholder', 'atsDisabled'] }),
-        mockComponent({ selector: 'ats-chat-suggested-message-container', inputs: ['suggestedMessage'] }),
-        mockComponent({ selector: 'ats-start-new-conversation-button', inputs: ['atsDisabled'] }),
-        mockComponent({ selector: 'ats-usage-disclaimer'})
+        ComponentHelpers.mockComponent({ selector: 'ats-chat-container' }),
+        ComponentHelpers.mockComponent({ selector: 'ats-chat-message-container', inputs: ['message'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-chat-status', inputs: ['status'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-message-input', inputs: ['messagePlaceholder', 'atsDisabled'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-chat-suggested-message-container', inputs: ['suggestedMessage'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-start-new-conversation-button', inputs: ['atsDisabled'] }),
+        ComponentHelpers.mockComponent({ selector: 'ats-usage-disclaimer'})
       ],
       providers: [
         {

@@ -7,11 +7,9 @@ import { NetworkIndicatorComponent } from './network-indicator.component';
 import { NetworkStatusService } from '../../../../shared/services/network-status.service';
 import { BehaviorSubject, } from 'rxjs';
 import { NetworkStatus } from '../../../../shared/models/enums/network-status.model';
-import {
-  getTranslocoModule,
-  ngZorroMockComponents
-} from '../../../../shared/utils/testing';
-import { LetDirective } from "@ngrx/component";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {provideHttpClient} from "@angular/common/http";
 
 describe('NetworkIndicatorComponent', () => {
   let component: NetworkIndicatorComponent;
@@ -20,11 +18,10 @@ describe('NetworkIndicatorComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
-        LetDirective
+        NetworkIndicatorComponent,
+        TranslocoTestsModule.getModule()
       ],
       declarations: [
-        NetworkIndicatorComponent,
         ...ngZorroMockComponents
       ],
       providers: [
@@ -34,7 +31,8 @@ describe('NetworkIndicatorComponent', () => {
             status$: new BehaviorSubject(NetworkStatus.Online),
             lastOrderDelayMSec$: new BehaviorSubject(0)
           }
-        }
+        },
+        provideHttpClient()
       ]
     })
       .compileComponents();

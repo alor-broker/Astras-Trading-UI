@@ -4,7 +4,6 @@ import {
 } from '@angular/core/testing';
 
 import { TradeClustersPanelComponent } from './trade-clusters-panel.component';
-import { getTranslocoModule } from '../../../../shared/utils/testing';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { ContextMenuService } from '../../../../shared/services/context-menu.service';
 import {
@@ -13,6 +12,7 @@ import {
 } from 'rxjs';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 import { TradeClustersService } from '../../services/trade-clusters.service';
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('TradeClustersPanelComponent', () => {
   let component: TradeClustersPanelComponent;
@@ -20,7 +20,7 @@ describe('TradeClustersPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [getTranslocoModule()],
+      imports: [TranslocoTestsModule.getModule()],
       declarations: [TradeClustersPanelComponent],
       providers: [
         {

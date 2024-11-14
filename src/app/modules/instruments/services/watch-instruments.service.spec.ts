@@ -1,8 +1,11 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import {
+  fakeAsync,
+  TestBed,
+  tick
+} from '@angular/core/testing';
 
 import { WatchInstrumentsService } from './watch-instruments.service';
-import { TestData } from '../../../shared/utils/testing';
 import { WatchlistCollectionService } from './watchlist-collection.service';
 import { HistoryService } from '../../../shared/services/history.service';
 import {
@@ -21,8 +24,12 @@ import { GuidGenerator } from "../../../shared/utils/guid";
 import { TimeframeValue } from "../../light-chart/models/light-chart.models";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { CandlesService } from "./candles.service";
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi
+} from '@angular/common/http';
 import { filter } from "rxjs/operators";
+import { TestData } from "../../../shared/utils/testing/test-data";
 
 describe('WatchInstrumentsService', () => {
   let service: WatchInstrumentsService;
@@ -66,18 +73,18 @@ describe('WatchInstrumentsService', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [],
-    providers: [
+      imports: [],
+      providers: [
         WatchInstrumentsService,
-        { provide: HistoryService, useValue: historyServiceSpy },
-        { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy },
-        { provide: InstrumentsService, useValue: instrumentsServiceSpy },
-        { provide: QuotesService, useValue: quotesServiceSpy },
-        { provide: CandlesService, useValue: candlesServiceSpy },
+        {provide: HistoryService, useValue: historyServiceSpy},
+        {provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy},
+        {provide: InstrumentsService, useValue: instrumentsServiceSpy},
+        {provide: QuotesService, useValue: quotesServiceSpy},
+        {provide: CandlesService, useValue: candlesServiceSpy},
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
-    ]
-});
+      ]
+    });
     service = TestBed.inject(WatchInstrumentsService);
   });
 
@@ -109,9 +116,9 @@ describe('WatchInstrumentsService', () => {
 
     const nowDate = Math.round(new Date().getTime() / 1000);
     const historyRes = [
-      { time: nowDate - 3600 * 24 * 3, close: 1 },
-      { time: nowDate - 3600 * 24 * 2, close: 3 },
-      { time: nowDate - 3600 * 24, close: 5 },
+      {time: nowDate - 3600 * 24 * 3, close: 1},
+      {time: nowDate - 3600 * 24 * 2, close: 3},
+      {time: nowDate - 3600 * 24, close: 5},
     ];
 
     historyServiceSpy.getHistory.and.returnValue(of({

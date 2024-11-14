@@ -1,6 +1,7 @@
 import {
   Inject,
-  Injectable
+  Injectable,
+  Optional
 } from '@angular/core';
 import {
   NOTIFICATIONS_PROVIDER,
@@ -21,8 +22,8 @@ export class NotificationsService {
   private readonly notifications: Observable<NotificationMeta[]>;
 
   constructor(
-    @Inject(NOTIFICATIONS_PROVIDER)
-    private readonly providers?: NotificationsProvider[]
+    @Inject(NOTIFICATIONS_PROVIDER) @Optional()
+    private readonly providers: NotificationsProvider[] | null
   ) {
     const allNotifications: Observable<NotificationMeta[]>[] = [];
 

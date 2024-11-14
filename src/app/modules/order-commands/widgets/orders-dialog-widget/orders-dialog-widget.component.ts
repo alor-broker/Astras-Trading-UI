@@ -1,5 +1,21 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, distinctUntilChanged, filter, Observable, shareReplay, switchMap, take, tap } from "rxjs";
+import {
+  Component,
+  Inject,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+import {
+  asyncScheduler,
+  BehaviorSubject,
+  distinctUntilChanged,
+  filter,
+  Observable, observeOn,
+  shareReplay, subscribeOn,
+  switchMap,
+  take,
+  tap
+} from "rxjs";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
 import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
@@ -10,6 +26,14 @@ import {CommonParameters, CommonParametersService} from "../../services/common-p
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import {OrderDialogParams, OrderFormType} from "../../../../shared/models/orders/orders-dialog.model";
 import { HelpService } from "../../../../shared/services/help.service";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../../shared/services/orders/order-command.service";
+import {
+  PUSH_NOTIFICATIONS_CONFIG,
+  PushNotificationsConfig
+} from "../../../push-notifications/services/push-notifications-config";
 
 @Component({
   selector: 'ats-orders-dialog-widget',
@@ -39,17 +63,24 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
   @ViewChild('stopOrderTab', {static: false})
   stopOrderTab?: NzTabComponent;
 
+  readonly ordersConfig = this.orderCommandService.getOrdersConfig();
+
   constructor(
     private readonly ordersDialogService: OrdersDialogService,
     private readonly currentDashboardService: DashboardContextService,
     private readonly instrumentService: InstrumentsService,
     private readonly commonParametersService: CommonParametersService,
-    private readonly helpService: HelpService
+    private readonly helpService: HelpService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
+    private readonly orderCommandService: OrderCommandService,
+    @Inject(PUSH_NOTIFICATIONS_CONFIG)
+    readonly pushNotificationsConfig: PushNotificationsConfig
   ) {
   }
 
   ngOnInit(): void {
     this.dialogParams$ = this.ordersDialogService.newOrderDialogParameters$.pipe(
+      observeOn(asyncScheduler),
       tap(() => this.commonParametersService.reset()),
       shareReplay(1)
     );
@@ -80,7 +111,8 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
   setInitialTab(): void {
     this.dialogParams$.pipe(
       filter((p): p is OrderDialogParams => !!p),
-      take(1)
+      take(1),
+      subscribeOn(asyncScheduler)
     ).subscribe(params => {
       if (params.initialValues.orderType == null) {
         return;

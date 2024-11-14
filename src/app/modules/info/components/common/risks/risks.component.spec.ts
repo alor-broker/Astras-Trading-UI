@@ -6,12 +6,10 @@ import {
   of,
   Subject
 } from "rxjs";
-import {
-  getTranslocoModule,
-  mockComponent
-} from "../../../../../shared/utils/testing";
 import { DashboardContextService } from "../../../../../shared/services/dashboard-context.service";
 import { LetDirective } from "@ngrx/component";
+import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
+import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
 
 describe('RisksComponent', () => {
   let component: RisksComponent;
@@ -21,13 +19,13 @@ describe('RisksComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         RisksComponent,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-loading-indicator',
           inputs: ['isLoading']
         })
       ],
       imports: [
-        getTranslocoModule(),
+        TranslocoTestsModule.getModule(),
         LetDirective
       ],
       providers: [

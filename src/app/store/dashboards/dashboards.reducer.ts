@@ -76,6 +76,7 @@ const reducer = createReducer(
           isSelected: props.isSelected,
           items: props.existedItems.map(x => ({ ...x })),
           instrumentsSelection: props.instrumentsSelection ?? null,
+          selectedPortfolio: props.selectedPortfolio,
           sourceGuid: props.sourceGuid
         },
         updatedState);

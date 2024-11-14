@@ -21,6 +21,9 @@ import { OptionBoardChartComponent } from "./components/option-board-chart/optio
 import { BaseChartDirective } from "ng2-charts";
 import { NzAlertComponent } from "ng-zorro-antd/alert";
 import { InstrumentsModule } from "../instruments/instruments.module";
+import { InputNumberComponent } from "../../shared/components/input-number/input-number.component";
+import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
+import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
 
 @NgModule({
   declarations: [
@@ -44,7 +47,10 @@ import { InstrumentsModule } from "../instruments/instruments.module";
         LetDirective,
         BaseChartDirective,
         NzAlertComponent,
-        InstrumentsModule
+        InstrumentsModule,
+        InputNumberComponent,
+        WidgetSettingsComponent,
+        InstrumentSearchComponent
     ],
   exports: [
     OptionBoardWidgetComponent

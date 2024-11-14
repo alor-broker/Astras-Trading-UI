@@ -6,9 +6,9 @@ import {
   of,
   Subject
 } from "rxjs";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing";
 import { MarketService } from "../../../../shared/services/market.service";
 import { LetDirective } from "@ngrx/component";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 
 describe('CalendarViewComponent', () => {
   let component: CalendarViewComponent;

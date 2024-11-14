@@ -10,9 +10,9 @@ import {
   Dashboard,
   InstrumentGroups
 } from "../../../../shared/models/dashboard/dashboard.model";
-import { generateRandomString } from "../../../../shared/utils/testing";
 import { ReplacePatch } from "json-patch";
 import { instrumentsBadges } from "../../../../shared/utils/instruments";
+import { TestingHelpers } from "../../../../shared/utils/testing/testing-helpers";
 
 describe('UpdateBadgesDesktopDashboardMigration', () => {
   let migration: UpdateBadgesDesktopDashboardMigration;
@@ -70,8 +70,8 @@ describe('UpdateBadgesDesktopDashboardMigration', () => {
     UpdateBadgesDesktopDashboardMigration.OldToNewBadgesMap.forEach(x => {
       oldSelection[x.oldColor] = {
         exchange: "MOEX",
-        symbol: generateRandomString(4),
-        instrumentGroup: generateRandomString(4)
+        symbol: TestingHelpers.generateRandomString(4),
+        instrumentGroup: TestingHelpers.generateRandomString(4)
       };
     });
 
@@ -108,8 +108,8 @@ describe('UpdateBadgesDesktopDashboardMigration', () => {
     UpdateBadgesDesktopDashboardMigration.OldToNewBadgesMap.forEach(x => {
       oldSelection[x.oldColor] = {
         exchange: "MOEX",
-        symbol: generateRandomString(4),
-        instrumentGroup: generateRandomString(4)
+        symbol: TestingHelpers.generateRandomString(4),
+        instrumentGroup: TestingHelpers.generateRandomString(4)
       };
     });
 
@@ -117,8 +117,8 @@ describe('UpdateBadgesDesktopDashboardMigration', () => {
     instrumentsBadges.forEach(x => {
       newSelection[x] = {
         exchange: "MOEX",
-        symbol: generateRandomString(4),
-        instrumentGroup: generateRandomString(4)
+        symbol: TestingHelpers.generateRandomString(4),
+        instrumentGroup: TestingHelpers.generateRandomString(4)
       };
     });
 
@@ -156,8 +156,8 @@ describe('UpdateBadgesDesktopDashboardMigration', () => {
     instrumentsBadges.forEach(x => {
       newSelection[x] = {
         exchange: "MOEX",
-        symbol: generateRandomString(4),
-        instrumentGroup: generateRandomString(4)
+        symbol: TestingHelpers.generateRandomString(4),
+        instrumentGroup: TestingHelpers.generateRandomString(4)
       };
     });
 

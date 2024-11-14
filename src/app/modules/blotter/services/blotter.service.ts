@@ -16,7 +16,7 @@ import { PortfolioSubscriptionsService } from '../../../shared/services/portfoli
 import { BlotterSettings } from '../models/blotter-settings.model';
 import {Position} from "../../../shared/models/positions/position.model";
 import { HttpClient } from "@angular/common/http";
-import { RepoSpecificFields, RepoTrade, Trade } from "../../../shared/models/trades/trade.model";
+import {RepoSpecificFields, RepoTrade, RepoTradeResponse, Trade} from "../../../shared/models/trades/trade.model";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { Order, StopOrder } from "../../../shared/models/orders/order.model";
@@ -27,6 +27,8 @@ import {
   ACTIONS_CONTEXT,
   ActionsContext
 } from "../../../shared/services/actions-context";
+import {PortfolioItemsModelHelper} from "../../../shared/utils/portfolio-item-models-helper";
+import {PortfolioKey} from "../../../shared/models/portfolio-key.model";
 
 @Injectable()
 export class BlotterService {
@@ -94,17 +96,25 @@ export class BlotterService {
   }
 
   getRepoTrades(settings: BlotterSettings): Observable<RepoTrade[]> {
+    const ownedPortfolio: PortfolioKey = {
+      portfolio: settings.portfolio,
+      exchange: settings.exchange
+    };
+
     return interval(10_000)
       .pipe(
         startWith(0),
-        switchMap(() => this.http.get<RepoTrade[]>(`${this.environmentService.apiUrl}/md/v2/Clients/${settings.exchange}/${settings.portfolio}/trades`, {
+        switchMap(() => this.http.get<RepoTradeResponse[]>(`${this.environmentService.apiUrl}/md/v2/Clients/${ownedPortfolio.exchange}/${ownedPortfolio.portfolio}/trades`, {
           params: {
             withRepo: true,
             format: 'heavy'
           }
         })),
         map(trades => trades.filter(t => !!(t.repoSpecificFields as RepoSpecificFields | undefined))),
-        catchHttpError<RepoTrade[]>([], this.errorHandler)
+        catchHttpError<RepoTradeResponse[]>([], this.errorHandler),
+        map(trades => {
+          return trades.map(i => PortfolioItemsModelHelper.repoTradeResponseToModel(i, ownedPortfolio));
+        })
       );
   }
 

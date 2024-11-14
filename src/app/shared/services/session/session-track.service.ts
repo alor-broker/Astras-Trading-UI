@@ -1,4 +1,7 @@
-import { Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable
+} from '@angular/core';
 import { ActivityTrackerService } from "./activity-tracker.service";
 import {
   combineLatest,
@@ -13,13 +16,16 @@ import {
   withLatestFrom
 } from "rxjs";
 import { map } from "rxjs/operators";
-import { AuthService } from "../auth.service";
 import { mapWith } from "../../utils/observable-helper";
 import { TerminalSettingsService } from "../terminal-settings.service";
 import { SessionInstantTranslatableNotificationsService } from "./session-instant-translatable-notifications.service";
+import {
+  SESSION_CONTEXT,
+  SessionContext
+} from "../auth/session-context";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'any'
 })
 export class SessionTrackService {
   private trackingSubscription?: Subscription;
@@ -27,7 +33,8 @@ export class SessionTrackService {
   constructor(
     private readonly activityTrackerService: ActivityTrackerService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly authService: AuthService,
+    @Inject(SESSION_CONTEXT)
+    private readonly sessionContext: SessionContext,
     private readonly instantNotificationService: SessionInstantTranslatableNotificationsService
   ) {
   }
@@ -62,7 +69,7 @@ export class SessionTrackService {
       nextSessionCheckMoment$
     ).subscribe(track => {
       if (this.isNeedToCompleteSession(track.checkPeriod, track.lastActivityUnixTime)) {
-        this.authService.logout();
+        this.sessionContext.fullLogout();
         return;
       }
 

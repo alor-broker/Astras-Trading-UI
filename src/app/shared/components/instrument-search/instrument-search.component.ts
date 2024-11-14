@@ -1,20 +1,61 @@
 import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild,} from '@angular/core';
 import {SearchFilter} from '../../../modules/instruments/models/search-filter.model';
-import {NzOptionSelectionChange} from 'ng-zorro-antd/auto-complete';
+import {
+  NzAutocompleteComponent,
+  NzAutocompleteOptionComponent,
+  NzAutocompleteTriggerDirective,
+  NzOptionSelectionChange
+} from 'ng-zorro-antd/auto-complete';
 import {InstrumentsService} from '../../../modules/instruments/services/instruments.service';
 import {BehaviorSubject, Observable, of} from 'rxjs';
 import {debounceTime, map, switchMap} from 'rxjs/operators';
-import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormControl,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule
+} from '@angular/forms';
 import {InstrumentKey} from '../../models/instruments/instrument-key.model';
 import {Instrument} from '../../models/instruments/instrument.model';
 import {DeviceService} from "../../services/device.service";
 import { toInstrumentKey } from "../../utils/instruments";
 import { Exchange } from "../../../../generated/graphql.types";
+import { TranslocoDirective } from "@jsverse/transloco";
+import {
+  NzInputDirective,
+  NzInputGroupComponent
+} from "ng-zorro-antd/input";
+import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
+import {
+  AsyncPipe,
+  NgForOf,
+  NgIf
+} from "@angular/common";
+import { NzTypographyComponent } from "ng-zorro-antd/typography";
+import { NzTagComponent } from "ng-zorro-antd/tag";
+import { NzIconDirective } from "ng-zorro-antd/icon";
 
 @Component({
   selector: 'ats-instrument-search',
   templateUrl: './instrument-search.component.html',
   styleUrls: ['./instrument-search.component.less'],
+  standalone: true,
+  imports: [
+    TranslocoDirective,
+    NzInputGroupComponent,
+    NzInputDirective,
+    NzAutocompleteTriggerDirective,
+    ReactiveFormsModule,
+    NzTooltipDirective,
+    NgIf,
+    NzTypographyComponent,
+    NzAutocompleteComponent,
+    AsyncPipe,
+    NzAutocompleteOptionComponent,
+    NgForOf,
+    NzTagComponent,
+    NzIconDirective
+  ],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

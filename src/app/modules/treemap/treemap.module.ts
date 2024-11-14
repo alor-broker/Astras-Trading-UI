@@ -5,6 +5,7 @@ import { TreemapComponent } from './components/treemap/treemap.component';
 import { SharedModule } from "../../shared/shared.module";
 import { TreemapSettingsComponent } from './components/treemap-settings/treemap-settings.component';
 import { NzSliderModule } from "ng-zorro-antd/slider";
+import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
 
 @NgModule({
     declarations: [
@@ -18,7 +19,8 @@ import { NzSliderModule } from "ng-zorro-antd/slider";
   imports: [
     CommonModule,
     SharedModule,
-    NzSliderModule
+    NzSliderModule,
+    WidgetSettingsComponent
   ]
 })
 export class TreemapModule { }

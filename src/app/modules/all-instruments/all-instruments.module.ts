@@ -7,6 +7,7 @@ import { AllInstrumentsSettingsComponent } from './components/all-instruments-se
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 import { LetDirective } from "@ngrx/component";
 import { InstrumentsModule } from "../instruments/instruments.module";
+import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
 
 @NgModule({
   declarations: [
@@ -14,13 +15,14 @@ import { InstrumentsModule } from "../instruments/instruments.module";
     AllInstrumentsWidgetComponent,
     AllInstrumentsSettingsComponent,
   ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    NzResizeObserverModule,
-    LetDirective,
-    InstrumentsModule
-  ],
+    imports: [
+        CommonModule,
+        SharedModule,
+        NzResizeObserverModule,
+        LetDirective,
+        InstrumentsModule,
+        WidgetSettingsComponent
+    ],
   exports: [
     AllInstrumentsWidgetComponent
   ]

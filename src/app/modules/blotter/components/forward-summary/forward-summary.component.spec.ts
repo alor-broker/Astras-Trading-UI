@@ -6,9 +6,9 @@ import {
 import { ForwardSummaryComponent } from './forward-summary.component';
 import { of } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { getTranslocoModule } from "../../../../shared/utils/testing";
 import {PortfolioSummaryService} from "../../../../shared/services/portfolio-summary.service";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('ForwardSummaryComponent', () => {
   let component: ForwardSummaryComponent;
@@ -29,7 +29,7 @@ describe('ForwardSummaryComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ForwardSummaryComponent],
       imports: [
-        getTranslocoModule()
+        TranslocoTestsModule.getModule()
       ],
       providers: [
         { provide: PortfolioSummaryService, useValue: spyPortfolioSummaryService },

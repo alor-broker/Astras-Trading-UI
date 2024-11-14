@@ -5,7 +5,6 @@ import {
   OnDestroy
 } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { AuthService } from './auth.service';
 import {
   BehaviorSubject,
   filter,
@@ -37,6 +36,7 @@ import {
   RXJS_WEBSOCKET_CTOR,
   WsOptions
 } from "../constants/ws.constants";
+import { ApiTokenProviderService } from "./auth/api-token-provider.service";
 
 export interface SubscriptionRequest {
   opcode: string;
@@ -79,7 +79,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
 
   constructor(
     private readonly environmentService: EnvironmentService,
-    private readonly accountService: AuthService,
+    private readonly apiTokenProviderService: ApiTokenProviderService,
     private readonly logger: LoggerService,
     @Inject(RXJS_WEBSOCKET_CTOR) private readonly webSocketFactory: typeof webSocket,
     private readonly ngZone: NgZone
@@ -330,10 +330,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
   }
 
   private getCurrentAccessToken(): Observable<string> {
-    return this.accountService.accessToken$
-      .pipe(
-        filter(x => !!x)
-      );
+    return this.apiTokenProviderService.getToken();
   }
 
   private reconnect(socketState: SocketState): void {

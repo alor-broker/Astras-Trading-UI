@@ -1,17 +1,15 @@
-import { Store } from "@ngrx/store";
+import {
+  Store,
+  StoreModule
+} from "@ngrx/store";
 import {
   fakeAsync,
   TestBed,
   tick
 } from "@angular/core/testing";
-import {
-  commonTestProviders,
-  sharedModuleImportForTests
-} from "../../shared/utils/testing";
 import { take } from "rxjs";
 import { EntityStatus } from "../../shared/models/enums/entity-status";
 import { GuidGenerator } from "../../shared/utils/guid";
-import { InstrumentsService } from "../../modules/instruments/services/instruments.service";
 import { WidgetSettings } from '../../shared/models/widget-settings.model';
 import { defaultBadgeColor } from "../../shared/utils/instruments";
 import {
@@ -19,11 +17,11 @@ import {
   WidgetSettingsServiceActions
 } from "./widget-settings.actions";
 import { WidgetSettingsFeature } from "./widget-settings.reducer";
-import { EnvironmentService } from "../../shared/services/environment.service";
+import { EffectsModule } from "@ngrx/effects";
+import { WidgetSettingsEffects } from "./widget-settings.effects";
 
 describe('Widget Settings Store', () => {
   let store: Store;
-  let instrumentsServiceSpy: any;
 
   const getTestSettings = (length: number): WidgetSettings[] => {
     const settings: WidgetSettings[] = [];
@@ -42,28 +40,20 @@ describe('Widget Settings Store', () => {
   };
 
   const initSettings = (settings: WidgetSettings[]): void => {
-    store.dispatch(WidgetSettingsInternalActions.init({settings}));
+    store.dispatch(WidgetSettingsInternalActions.init({ settings }));
   };
 
   beforeAll(() => TestBed.resetTestingModule());
 
   beforeEach(() => {
-    instrumentsServiceSpy = jasmine.createSpyObj('InstrumentsService', ['getInstrument']);
-
     TestBed.configureTestingModule({
       imports: [
-        ...sharedModuleImportForTests
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot(),
+        StoreModule.forFeature(WidgetSettingsFeature),
+        EffectsModule.forFeature([WidgetSettingsEffects])
       ],
-      providers: [
-        {
-          provide: EnvironmentService,
-          useValue: {
-            clientDataUrl : ''
-          }
-        },
-        { provide: InstrumentsService, useValue: instrumentsServiceSpy },
-        ...commonTestProviders
-      ]
+      providers: []
     });
 
     store = TestBed.inject(Store);

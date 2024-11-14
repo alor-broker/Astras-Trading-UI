@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EventsCalendarWidgetComponent } from './events-calendar-widget.component';
-import { widgetSkeletonMock } from "../../../../shared/utils/testing";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
 
 describe('EventsCalendarWidgetComponent', () => {
   let component: EventsCalendarWidgetComponent;

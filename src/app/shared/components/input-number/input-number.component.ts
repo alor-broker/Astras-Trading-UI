@@ -9,16 +9,25 @@ import {
   TemplateRef,
   ViewChild
 } from '@angular/core';
-import { NG_VALUE_ACCESSOR } from "@angular/forms";
+import {
+  FormsModule,
+  NG_VALUE_ACCESSOR
+} from "@angular/forms";
 import {
   ControlValueAccessorBaseComponent
 } from "../control-value-accessor-base/control-value-accessor-base.component";
 import { MathHelper } from "../../utils/math-helper";
+import {
+  NzInputDirective,
+  NzInputGroupComponent
+} from "ng-zorro-antd/input";
+import { NgTemplateOutlet } from "@angular/common";
 
 @Component({
   selector: 'ats-input-number',
   templateUrl: './input-number.component.html',
   styleUrls: ['./input-number.component.less'],
+  standalone: true,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -26,6 +35,12 @@ import { MathHelper } from "../../utils/math-helper";
       multi: true
     }
   ],
+  imports: [
+    NzInputGroupComponent,
+    NzInputDirective,
+    FormsModule,
+    NgTemplateOutlet
+  ]
 })
 export class InputNumberComponent extends ControlValueAccessorBaseComponent<number> {
   private readonly minus = '-';

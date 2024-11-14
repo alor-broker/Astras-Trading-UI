@@ -6,10 +6,6 @@ import {
 } from '@angular/core/testing';
 import { SubmitStopLimitOrderCommand } from "./submit-stop-limit-order-command";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
-import {
-  generateRandomString,
-  getRandomInt
-} from "../../../shared/utils/testing";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { of } from "rxjs";
 import { Side } from "../../../shared/models/enums/side.model";
@@ -21,8 +17,11 @@ import {
   OrderDialogParams,
   OrderFormType
 } from "../../../shared/models/orders/orders-dialog.model";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
+import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('SubmitStopLimitOrderCommand', () => {
   let command: SubmitStopLimitOrderCommand;
@@ -31,15 +30,16 @@ describe('SubmitStopLimitOrderCommand', () => {
   let ordersDialogServiceSpy: any;
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['submitStopLimitOrder']);
+    orderServiceSpy = jasmine.createSpyObj('OrderCommandService', ['submitStopLimitOrder']);
     ordersDialogServiceSpy = jasmine.createSpyObj('OrdersDialogService', ['openNewOrderDialog']);
   });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        SubmitStopLimitOrderCommand,
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
         {
@@ -57,23 +57,23 @@ describe('SubmitStopLimitOrderCommand', () => {
 
   it('#execute should call appropriate service with appropriate data', fakeAsync(() => {
       const portfolioKey: PortfolioKey = {
-        exchange: generateRandomString(4),
-        portfolio: generateRandomString(5),
+        exchange: TestingHelpers.generateRandomString(4),
+        portfolio: TestingHelpers.generateRandomString(5),
       };
 
       flushMicrotasks();
 
       const testInstrumentKey: InstrumentKey = {
         exchange: portfolioKey.exchange,
-        symbol: generateRandomString(4)
+        symbol: TestingHelpers.generateRandomString(4)
       };
 
       const minstep = 0.5;
 
       orderServiceSpy.submitStopLimitOrder.and.returnValue(of({}));
 
-      const quantity = getRandomInt(1, 100);
-      const price = getRandomInt(1, 1000);
+      const quantity = TestingHelpers.getRandomInt(1, 100);
+      const price = TestingHelpers.getRandomInt(1, 1000);
       const distance = 7;
 
       command.execute({

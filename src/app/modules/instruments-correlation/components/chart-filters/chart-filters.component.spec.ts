@@ -7,13 +7,11 @@ import { ChartFiltersComponent } from './chart-filters.component';
 import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
 import { Subject } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  ngZorroMockComponents,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
 import { LetDirective } from "@ngrx/component";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
+import { NzToolTipModule } from "ng-zorro-antd/tooltip";
 
 describe('ChartFiltersComponent', () => {
   let component: ChartFiltersComponent;
@@ -22,13 +20,13 @@ describe('ChartFiltersComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        getTranslocoModule(),
-        sharedModuleImportForTests,
-        LetDirective
+        TranslocoTestsModule.getModule(),
+        LetDirective,
+        ...FormsTesting.getTestingModules(),
+        NzToolTipModule
       ],
       declarations: [
         ChartFiltersComponent,
-        ...ngZorroMockComponents,
       ],
       providers: [
         {

@@ -1,41 +1,32 @@
+import {DestroyRef, Injectable} from '@angular/core';
 import {
-  DestroyRef,
-  Injectable
-} from '@angular/core';
-import { DashboardSettingsBrokerService } from "../../../shared/services/settings-broker/dashboard-settings-broker.service";
-import { WidgetsSettingsBrokerService } from "../../../shared/services/settings-broker/widgets-settings-broker.service";
-import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
-import {
-  combineLatest,
-  take
-} from "rxjs";
-import { ActionCreator } from '@ngrx/store/src/models';
-import {
-  Actions,
-  ofType
-} from "@ngrx/effects";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { Store } from '@ngrx/store';
-import { ManageDashboardsService } from "../../../shared/services/manage-dashboards.service";
-import { mergeArrays } from "../../../shared/utils/collections";
-import { TerminalSettingsBrokerService } from "../../../shared/services/settings-broker/terminal-settings-broker.service";
-import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
+  DashboardSettingsBrokerService
+} from "../../../shared/services/settings-broker/dashboard-settings-broker.service";
+import {WidgetsSettingsBrokerService} from "../../../shared/services/settings-broker/widgets-settings-broker.service";
+import {WidgetSettingsService} from "../../../shared/services/widget-settings.service";
+import {combineLatest, take} from "rxjs";
+import {ActionCreator} from '@ngrx/store/src/models';
+import {Actions, ofType} from "@ngrx/effects";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {Store} from '@ngrx/store';
+import {ManageDashboardsService} from "../../../shared/services/manage-dashboards.service";
+import {mergeArrays} from "../../../shared/utils/collections";
+import {TerminalSettingsBrokerService} from "../../../shared/services/settings-broker/terminal-settings-broker.service";
+import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
 import {
   WidgetSettingsInternalActions,
   WidgetSettingsServiceActions
 } from "../../../store/widget-settings/widget-settings.actions";
-import {
-  DashboardsEventsActions,
-  DashboardsInternalActions
-} from "../../../store/dashboards/dashboards-actions";
+import {DashboardsEventsActions, DashboardsInternalActions} from "../../../store/dashboards/dashboards-actions";
 import {
   TerminalSettingsEventsActions,
   TerminalSettingsInternalActions,
   TerminalSettingsServicesActions
 } from "../../../store/terminal-settings/terminal-settings.actions";
-import { WidgetsLocalStateInternalActions } from "../../../store/widgets-local-state/widgets-local-state.actions";
-import { GlobalLoadingIndicatorService } from "../../../shared/services/global-loading-indicator.service";
-import { GuidGenerator } from "../../../shared/utils/guid";
+import {WidgetsLocalStateInternalActions} from "../../../store/widgets-local-state/widgets-local-state.actions";
+import {GlobalLoadingIndicatorService} from "../../../shared/services/global-loading-indicator.service";
+import {GuidGenerator} from "../../../shared/utils/guid";
+import {DefaultDesktopDashboardConfig} from "../../../shared/models/dashboard/dashboard.model";
 
 export interface InitSettingsBrokersOptions {
   onSettingsReadError: () => void;
@@ -81,13 +72,40 @@ export class DesktopSettingsBrokerService {
     this.dashboardSettingsBrokerService.readSettings().pipe(
       take(1)
     ).subscribe(dashboards => {
-      if(dashboards == null) {
+      if (dashboards == null) {
         options.onSettingsReadError();
       } else {
-        this.store.dispatch(DashboardsInternalActions.init({ dashboards: dashboards.settings}));
-      }
+        if (dashboards.settings.length > 0) {
+          this.store.dispatch(DashboardsInternalActions.init({dashboards: dashboards.settings}));
+          this.globalLoadingIndicatorService.releaseLoading(loadingId);
+        } else {
+          this.manageDashboardsService.getDefaultDashboardConfig().pipe(
+            take(1)
+          ).subscribe(config => {
+            this.store.dispatch(DashboardsInternalActions.init({dashboards: []}));
 
-      this.globalLoadingIndicatorService.releaseLoading(loadingId);
+            const defaultDashboardsConfig = config
+              .filter(d => d.type === 'desktop')
+              .map(d => d as DefaultDesktopDashboardConfig);
+
+            defaultDashboardsConfig.forEach((d, index) => {
+              this.manageDashboardsService.addDashboardWithTemplate({
+                title: d.name,
+                isSelected: index === 0,
+                items: d.widgets.map(w => ({
+                  guid: GuidGenerator.newGuid(),
+                  widgetType: w.widgetTypeId,
+                  position: w.position,
+                  initialSettings: w.initialSettings
+                })),
+                isFavorite: d.isFavorite
+              });
+            });
+
+            this.globalLoadingIndicatorService.releaseLoading(loadingId);
+          });
+        }
+      }
     });
   }
 
@@ -128,10 +146,10 @@ export class DesktopSettingsBrokerService {
     this.widgetsSettingsBrokerService.readSettings().pipe(
       take(1)
     ).subscribe(settings => {
-      if(settings == null) {
+      if (settings == null) {
         options.onSettingsReadError();
       } else {
-        this.store.dispatch(WidgetSettingsInternalActions.init({ settings: settings }));
+        this.store.dispatch(WidgetSettingsInternalActions.init({settings: settings}));
       }
 
       this.globalLoadingIndicatorService.releaseLoading(loadingId);
@@ -169,10 +187,10 @@ export class DesktopSettingsBrokerService {
     this.terminalSettingsBrokerService.readSettings().pipe(
       take(1)
     ).subscribe(settings => {
-      if(settings == null) {
+      if (settings == null) {
         options.onSettingsReadError();
       } else {
-        this.store.dispatch(TerminalSettingsInternalActions.init({ settings: settings.settings }));
+        this.store.dispatch(TerminalSettingsInternalActions.init({settings: settings.settings}));
       }
 
       this.globalLoadingIndicatorService.releaseLoading(loadingId);
@@ -201,7 +219,7 @@ export class DesktopSettingsBrokerService {
       }
 
       this.widgetsSettingsBrokerService.removeSettings(dirtySettings).subscribe();
-      this.store.dispatch(WidgetsLocalStateInternalActions.removeForWidgets({ widgetsGuids: dirtySettings }));
+      this.store.dispatch(WidgetsLocalStateInternalActions.removeForWidgets({widgetsGuids: dirtySettings}));
     });
   }
 

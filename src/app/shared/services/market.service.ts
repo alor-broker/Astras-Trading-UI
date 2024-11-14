@@ -4,7 +4,7 @@ import {
   MarketExchange,
   MarketSettings
 } from "../models/market-settings.model";
-import { HttpClient } from "@angular/common/http";
+import {HttpClient, HttpContext} from "@angular/common/http";
 import {
   Observable,
   shareReplay
@@ -13,6 +13,7 @@ import {
   filter,
   map
 } from "rxjs/operators";
+import {HttpContextTokens} from "../constants/http.constants";
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +34,8 @@ export class MarketService {
           headers: {
             "Cache-Control": "no-cache",
             "Pragma": "no-cache"
-          }
+          },
+          context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true),
         }
       )
         .pipe(

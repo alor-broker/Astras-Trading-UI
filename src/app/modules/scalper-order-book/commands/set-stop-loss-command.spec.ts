@@ -5,19 +5,18 @@ import {
 } from '@angular/core/testing';
 import { SetStopLossCommand } from "./set-stop-loss-command";
 import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
-import {
-  generateRandomString,
-  getRandomInt
-} from "../../../shared/utils/testing";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { Position } from "../../../shared/models/positions/position.model";
 import { of } from "rxjs";
 import { Side } from "../../../shared/models/enums/side.model";
 import { LessMore } from "../../../shared/models/enums/less-more.model";
 import { NewStopMarketOrder } from "../../../shared/models/orders/new-order.model";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import { ScalperOrderBookInstantTranslatableNotificationsService } from "../services/scalper-order-book-instant-translatable-notifications.service";
+import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+} from "../../../shared/services/orders/order-command.service";
 
 describe('SetStopLossCommand', () => {
   let command: SetStopLossCommand;
@@ -27,7 +26,7 @@ describe('SetStopLossCommand', () => {
   let notificationsServiceSpy: any;
 
   beforeEach(() => {
-    orderServiceSpy = jasmine.createSpyObj('WsOrdersService', ['submitStopMarketOrder']);
+    orderServiceSpy = jasmine.createSpyObj('OrderCommandService', ['submitStopMarketOrder']);
     ordersDialogServiceSpy = jasmine.createSpyObj('OrdersDialogService', ['openNewOrderDialog']);
     notificationsServiceSpy = jasmine.createSpyObj('ScalperOrderBookInstantTranslatableNotificationsService', ['emptyPositions']);
   });
@@ -35,8 +34,9 @@ describe('SetStopLossCommand', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        SetStopLossCommand,
         {
-          provide: WsOrdersService,
+          provide: ORDER_COMMAND_SERVICE_TOKEN,
           useValue: orderServiceSpy
         },
         {
@@ -58,26 +58,27 @@ describe('SetStopLossCommand', () => {
 
   it('#execute should notify if no positions', fakeAsync(() => {
     const portfolioKey: PortfolioKey = {
-      exchange: generateRandomString(4),
-      portfolio: generateRandomString(5),
+      exchange: TestingHelpers.generateRandomString(4),
+      portfolio: TestingHelpers.generateRandomString(5),
     };
 
     const testInstrumentKey: InstrumentKey = {
       exchange: portfolioKey.exchange,
-      symbol: generateRandomString(4),
-      instrumentGroup: generateRandomString(4)
+      symbol: TestingHelpers.generateRandomString(4),
+      instrumentGroup: TestingHelpers.generateRandomString(4)
     };
 
     const currentPortfolioPosition: Position =
       {
-        symbol: testInstrumentKey.symbol,
+        targetInstrument: testInstrumentKey,
+        ownedPortfolio: portfolioKey,
         qtyTFutureBatch: 0
       } as Position;
 
     command.execute({
       currentPosition: currentPortfolioPosition,
       targetInstrumentBoard: testInstrumentKey.instrumentGroup ?? null,
-      triggerPrice: getRandomInt(1, 1000),
+      triggerPrice: TestingHelpers.getRandomInt(1, 1000),
       silent: Math.random() < 0.5
     });
 
@@ -88,22 +89,24 @@ describe('SetStopLossCommand', () => {
   }));
 
   it('#execute should call appropriate service with appropriate data', fakeAsync(() => {
-      const exchange = generateRandomString(4);
-      const portfolio = generateRandomString(5);
+      const exchange = TestingHelpers.generateRandomString(4);
+      const portfolio = TestingHelpers.generateRandomString(5);
 
       const testInstrumentKey: InstrumentKey = {
         exchange: exchange,
-        symbol: generateRandomString(4),
-        instrumentGroup: generateRandomString(4)
+        symbol: TestingHelpers.generateRandomString(4),
+        instrumentGroup: TestingHelpers.generateRandomString(4)
       };
 
       const avgPrice = 100;
       let expectedPrice = avgPrice - 1;
       const position: Position =
         {
-          symbol: testInstrumentKey.symbol,
-          exchange: testInstrumentKey.exchange,
-          portfolio,
+          targetInstrument: testInstrumentKey,
+          ownedPortfolio: {
+            portfolio,
+            exchange: testInstrumentKey.exchange
+          },
           qtyTFuture: 10,
           qtyTFutureBatch: 1,
           avgPrice: 100

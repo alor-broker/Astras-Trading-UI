@@ -1,11 +1,17 @@
-import { Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable
+} from '@angular/core';
 import { CurrentOrderDisplay } from "../models/scalper-order-book.model";
 import { CommandBase } from "./command-base";
-import { WsOrdersService } from "../../../shared/services/orders/ws-orders.service";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import { OrderType } from "../../../shared/models/orders/order.model";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { OrderFormType } from "../../../shared/models/orders/orders-dialog.model";
+import {
+  ORDER_COMMAND_SERVICE_TOKEN,
+  OrderCommandService
+} from "../../../shared/services/orders/order-command.service";
 
 export interface UpdateOrdersCommandArgs {
   ordersToUpdate: CurrentOrderDisplay[];
@@ -13,12 +19,11 @@ export interface UpdateOrdersCommandArgs {
   silent: boolean;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
   constructor(
-    private readonly wsOrdersService: WsOrdersService,
+    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
+    private readonly orderCommandService: OrderCommandService,
     private readonly ordersDialogService: OrdersDialogService
   ) {
     super();
@@ -35,23 +40,20 @@ export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
           orderId: order.orderId,
           side: order.side,
           quantity: order.displayVolume,
-          instrument: {
-            symbol: order.symbol,
-            exchange: order.exchange
-          }
+          instrument: order.targetInstrument
         };
 
         switch (order.type) {
           case OrderType.Limit:
-            this.wsOrdersService.submitLimitOrderEdit({
+            this.orderCommandService.submitLimitOrderEdit({
                 ...baseOrderEditData,
                 price: args.updates.price,
               },
-              order.portfolio
+              order.ownedPortfolio.portfolio
             ).subscribe();
             break;
           case OrderType.StopLimit:
-            this.wsOrdersService.submitStopLimitOrderEdit({
+            this.orderCommandService.submitStopLimitOrderEdit({
                 ...baseOrderEditData,
                 condition: order.condition!,
                 triggerPrice: args.updates.price,
@@ -65,17 +67,17 @@ export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
                 ),
                 side: order.side
               },
-              order.portfolio
+              order.ownedPortfolio.portfolio
             ).subscribe();
             break;
           case OrderType.StopMarket:
-            this.wsOrdersService.submitStopMarketOrderEdit({
+            this.orderCommandService.submitStopMarketOrderEdit({
                 ...baseOrderEditData,
                 condition: order.condition!,
                 triggerPrice: args.updates.price,
                 side: order.side
               },
-              order.portfolio
+              order.ownedPortfolio.portfolio
             ).subscribe();
             break;
           default:
@@ -85,14 +87,8 @@ export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
     } else {
       const order = args.ordersToUpdate[0];
       this.ordersDialogService.openEditOrderDialog({
-        instrumentKey: {
-          symbol: order.symbol,
-          exchange: order.exchange
-        },
-        portfolioKey: {
-          portfolio: order.portfolio,
-          exchange: order.exchange
-        },
+        instrumentKey: order.targetInstrument,
+        portfolioKey: order.ownedPortfolio,
         orderId: order.orderId,
         orderType: order.type === OrderType.Limit ? OrderFormType.Limit : OrderFormType.Stop,
         initialValues: {

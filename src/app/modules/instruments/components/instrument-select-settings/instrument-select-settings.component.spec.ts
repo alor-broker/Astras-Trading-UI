@@ -6,17 +6,18 @@ import {
 import { InstrumentSelectSettingsComponent } from './instrument-select-settings.component';
 import { BehaviorSubject } from 'rxjs';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  mockComponent,
-  ngZorroMockComponents,
-  sharedModuleImportForTests
-} from "../../../../shared/utils/testing";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { InstrumentSelectSettings } from '../../models/instrument-select-settings.model';
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { InstrumentsModule } from "../../instruments.module";
+import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
+import { WidgetSettingsComponent } from "../../../../shared/components/widget-settings/widget-settings.component";
+import { NzToolTipModule } from "ng-zorro-antd/tooltip";
+import { RemoveSelectTitlesDirective } from "../../../../shared/directives/remove-select-titles.directive";
+import {
+  NzTabsModule
+} from "ng-zorro-antd/tabs";
 
 describe('InstrumentSelectSettingsComponent', () => {
   let component: InstrumentSelectSettingsComponent;
@@ -29,20 +30,17 @@ describe('InstrumentSelectSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         InstrumentSelectSettingsComponent,
-        ...ngZorroMockComponents,
-        mockComponent({
+        ComponentHelpers.mockComponent({
           selector: 'ats-watchlist-collection-edit'
         }),
-        mockComponent({
-          selector: 'ats-widget-settings',
-          inputs: ['canSave', 'canCopy', 'showCopy']
-        })
+        RemoveSelectTitlesDirective,
       ],
       imports: [
-        InstrumentsModule,
-        ...sharedModuleImportForTests,
-        NoopAnimationsModule,
-        getTranslocoModule()
+        TranslocoTestsModule.getModule(),
+        ...FormsTesting.getTestingModules(),
+        WidgetSettingsComponent,
+        NzToolTipModule,
+        NzTabsModule
       ],
       providers: [
         {

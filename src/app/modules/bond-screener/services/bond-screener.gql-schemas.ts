@@ -39,8 +39,8 @@ export function getBondScreenerResponseSchema(columnIds: string[]): ZodObject<Zo
   const GetBondScreenerTradingDetailsSchema = GraphQlHelper.getTradingDetailsSchema(columnIds);
   const GetBondScreenerVolumesSchema = GraphQlHelper.getPartialSchema<BondVolumes>(BondVolumesSchema(), columnIds);
   const GetBondScreenerYieldSchema = GraphQlHelper.getPartialSchema<BondYield>(BondYieldSchema(), columnIds);
-  const GetBondScreenerCouponsSchema = GraphQlHelper.getPartialSchema<Coupon>(CouponSchema(), columnIds, ['date'], 'coupon').array();
-  const GetBondScreenerOffersSchema = GraphQlHelper.getPartialSchema<Offer>(OfferSchema(), columnIds, ['date'], 'offer').array();
+  const GetBondScreenerCouponsSchema = GraphQlHelper.getPartialSchema<Coupon>(CouponSchema(), columnIds, ['date', 'isClosest'], 'coupon').array();
+  const GetBondScreenerOffersSchema = GraphQlHelper.getPartialSchema<Offer>(OfferSchema(), columnIds, ['date', 'isClosest'], 'offer').array();
   const GetBondScreenerAmortizationsSchema = GraphQlHelper.getPartialSchema<Amortization>(AmortizationSchema(), columnIds, ['date']).array();
 
   type GetBondScreenerBond = Modify<
@@ -64,6 +64,7 @@ export function getBondScreenerResponseSchema(columnIds: string[]): ZodObject<Zo
     'couponType' |
     'guaranteed' |
     'hasOffer' |
+    'hasAmortization' |
     'placementEndDate',
     {
       basicInformation: TypeOf<typeof GetBondScreenerBasicInformationSchema>;
@@ -82,6 +83,7 @@ export function getBondScreenerResponseSchema(columnIds: string[]): ZodObject<Zo
       couponRate: number;
       couponType: string;
       guaranteed: boolean;
+      hasAmortization: boolean;
       hasOffer: boolean;
       placementEndDate: string;
     }
@@ -106,6 +108,7 @@ export function getBondScreenerResponseSchema(columnIds: string[]): ZodObject<Zo
     currentFaceValue: number(),
     couponType: string(),
     guaranteed: boolean(),
+    hasAmortization: boolean(),
     hasOffer: boolean(),
     placementEndDate: string()
   }) as ZodObject<ZodPropertiesOf<GetBondScreenerBond>>;

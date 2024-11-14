@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Action, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { filter, map, switchMap } from 'rxjs/operators';
-import { GuidGenerator } from '../../shared/utils/guid';
 import {
   distinctUntilChanged,
   EMPTY,
@@ -37,9 +36,20 @@ export class DashboardsEffects {
     () => {
       return this.actions$.pipe(
         ofType(DashboardsInternalActions.init),
+        switchMap(() => {
+          return of(DashboardsInternalActions.initSuccess());
+        })
+      );
+    }
+  );
+
+  addToFavoritesNewItems$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(DashboardsManageActions.add),
         switchMap(action => {
-          if (action.dashboards.length > 0) {
-            return of(DashboardsInternalActions.initSuccess());
+          if(action.isFavorite) {
+            return of(DashboardFavoritesActions.add({dashboardGuid: action.guid}));
           }
 
           return EMPTY;
@@ -47,50 +57,6 @@ export class DashboardsEffects {
       );
     }
   );
-
-  createDefaultDashboard$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(DashboardsInternalActions.init),
-      filter(action => action.dashboards.length === 0),
-      mapWith(
-        () => this.dashboardService.getDefaultDashboardConfig(),
-        (source, defaultConfig) => defaultConfig
-      ),
-      switchMap(defaultConfig => {
-        const defaultDashboardsConfig = defaultConfig
-          .filter(d => d.type === 'desktop')
-          .map(d => d as DefaultDesktopDashboardConfig);
-
-        if(defaultDashboardsConfig.length === 0) {
-          return EMPTY;
-        }
-
-        const actions: Action[] = [];
-        defaultDashboardsConfig.forEach((d, index) => {
-          const guid = GuidGenerator.newGuid();
-          actions.push(DashboardsManageActions.add({
-            guid,
-            title: d.name,
-            isSelected: index === 0,
-            existedItems: d.widgets.map(w => ({
-              guid: GuidGenerator.newGuid(),
-              widgetType: w.widgetTypeId,
-              position: w.position,
-              initialSettings: w.initialSettings
-            }))
-          }));
-
-          if(d.isFavorite) {
-            actions.push(DashboardFavoritesActions.add({dashboardGuid: guid}));
-          }
-        });
-
-        actions.push(DashboardsInternalActions.initSuccess());
-
-        return of(...actions);
-      })
-    );
-  });
 
   resetDashboard$ = createEffect(() => {
     return this.actions$.pipe(

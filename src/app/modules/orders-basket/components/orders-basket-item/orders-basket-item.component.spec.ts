@@ -4,14 +4,12 @@ import { OrdersBasketItemComponent } from './orders-basket-item.component';
 import { InstrumentsService } from '../../../instruments/services/instruments.service';
 import { of } from 'rxjs';
 import { QuotesService } from '../../../../shared/services/quotes.service';
-import {
-  commonTestProviders,
-  getTranslocoModule,
-  mockComponent,
-  ngZorroMockComponents,
-  sharedModuleImportForTests
-} from '../../../../shared/utils/testing';
-import { OrdersBasketModule } from '../../orders-basket.module';
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
+import { InputNumberComponent } from "../../../../shared/components/input-number/input-number.component";
+import { InstrumentSearchComponent } from "../../../../shared/components/instrument-search/instrument-search.component";
 
 describe('OrdersBasketItemComponent', () => {
   let component: OrdersBasketItemComponent;
@@ -23,13 +21,13 @@ describe('OrdersBasketItemComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        OrdersBasketModule,
-        ...sharedModuleImportForTests,
-        getTranslocoModule()
+        TranslocoTestsModule.getModule(),
+        ...FormsTesting.getTestingModules(),
+        InputNumberComponent,
+        InstrumentSearchComponent
       ],
       declarations: [
         OrdersBasketItemComponent,
-        mockComponent({ selector: 'ats-instrument-search', inputs: ['exchange', 'optionsBoxWidth'] }),
         ...ngZorroMockComponents
       ],
       providers: [

@@ -6,10 +6,6 @@ import {
   of
 } from 'rxjs';
 import {
-  generateRandomString,
-  getRandomInt
-} from '../../../shared/utils/testing';
-import {
   ScalperOrderBookWidgetSettings,
   VolumeHighlightMode
 } from '../models/scalper-order-book-settings.model';
@@ -75,6 +71,7 @@ import {
   ScalperCommand
 } from "../models/scalper-command";
 import { ScalperHotKeyCommandService } from "./scalper-hot-key-command.service";
+import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
 
 describe('ScalperCommandProcessorService', () => {
   let service: ScalperCommandProcessorService;
@@ -93,7 +90,7 @@ describe('ScalperCommandProcessorService', () => {
   let updateOrdersCommandSpy: any;
 
   const orderBookDefaultSettings: ScalperOrderBookWidgetSettings = {
-    guid: generateRandomString(10),
+    guid: TestingHelpers.generateRandomString(10),
     symbol: 'SBER',
     exchange: 'MOEX',
     enableMouseClickSilentOrders: true,
@@ -154,6 +151,7 @@ describe('ScalperCommandProcessorService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        ScalperCommandProcessorService,
         {
           provide: ScalperHotKeyCommandService,
           useValue: {
@@ -218,11 +216,16 @@ describe('ScalperCommandProcessorService', () => {
   describe('Hot keys', () => {
     it('should process cancelLimitOrdersAll command', (done) => {
         const expectedOrder: CurrentOrderDisplay = {
-          orderId: generateRandomString(5),
+          orderId: TestingHelpers.generateRandomString(5),
           type: OrderType.Limit,
-          symbol: 'TEST',
-          exchange: orderBookDefaultSettings.exchange,
-          portfolio: 'D1234',
+          targetInstrument: {
+            symbol: "TEST",
+            exchange: orderBookDefaultSettings.exchange,
+          },
+          ownedPortfolio: {
+            portfolio: 'D1234',
+            exchange: orderBookDefaultSettings.exchange
+          },
           price: 100,
           side: Side.Buy,
           displayVolume: 100,
@@ -233,8 +236,8 @@ describe('ScalperCommandProcessorService', () => {
           done();
           expect(args.ordersToCancel[0]).toEqual({
             orderId: expectedOrder.orderId,
-            exchange: expectedOrder.exchange,
-            portfolio: expectedOrder.portfolio,
+            exchange: expectedOrder.targetInstrument.exchange,
+            portfolio: expectedOrder.ownedPortfolio.portfolio,
             orderType: expectedOrder.type
           });
         });
@@ -253,8 +256,14 @@ describe('ScalperCommandProcessorService', () => {
 
     it('should process closePositionsByMarketAll command', (done) => {
         const expectedPosition = {
-          symbol: orderBookDefaultSettings.symbol,
-          exchange: orderBookDefaultSettings.exchange,
+          targetInstrument: {
+            symbol: orderBookDefaultSettings.symbol,
+            exchange: orderBookDefaultSettings.exchange,
+          },
+          ownedPortfolio: {
+            portfolio: 'D1234',
+            exchange: orderBookDefaultSettings.exchange
+          },
           qtyTFutureBatch: 0
         } as Position;
 
@@ -277,11 +286,16 @@ describe('ScalperCommandProcessorService', () => {
 
     it('should process cancelLimitOrdersCurrent command', (done) => {
         const expectedOrder: CurrentOrderDisplay = {
-          orderId: generateRandomString(5),
+          orderId: TestingHelpers.generateRandomString(5),
           type: OrderType.Limit,
-          symbol: 'TEST',
-          exchange: orderBookDefaultSettings.exchange,
-          portfolio: 'D1234',
+          targetInstrument: {
+            symbol: "TEST",
+            exchange: orderBookDefaultSettings.exchange,
+          },
+          ownedPortfolio: {
+            portfolio: 'D1234',
+            exchange: orderBookDefaultSettings.exchange
+          },
           price: 100,
           side: Side.Buy,
           displayVolume: 100,
@@ -289,11 +303,16 @@ describe('ScalperCommandProcessorService', () => {
         };
 
         const secondOrder: CurrentOrderDisplay = {
-          orderId: generateRandomString(5),
+          orderId: TestingHelpers.generateRandomString(5),
           type: OrderType.StopLimit,
-          symbol: 'TEST',
-          exchange: orderBookDefaultSettings.exchange,
-          portfolio: 'D1234',
+          targetInstrument: {
+            symbol: orderBookDefaultSettings.symbol,
+            exchange: orderBookDefaultSettings.exchange,
+          },
+          ownedPortfolio: {
+            portfolio: 'D1234',
+            exchange: orderBookDefaultSettings.exchange
+          },
           price: 100,
           triggerPrice: 99,
           side: Side.Buy,
@@ -308,8 +327,8 @@ describe('ScalperCommandProcessorService', () => {
 
           expect(args.ordersToCancel[0]).toEqual({
             orderId: expectedOrder.orderId,
-            exchange: expectedOrder.exchange,
-            portfolio: expectedOrder.portfolio,
+            exchange: expectedOrder.targetInstrument.exchange,
+            portfolio: expectedOrder.ownedPortfolio.portfolio,
             orderType: expectedOrder.type
           });
         });
@@ -328,11 +347,16 @@ describe('ScalperCommandProcessorService', () => {
 
     it('should process cancelStopOrdersCurrent command', (done) => {
         const expectedOrder: CurrentOrderDisplay = {
-          orderId: generateRandomString(5),
+          orderId: TestingHelpers.generateRandomString(5),
           type: OrderType.StopMarket,
-          symbol: 'TEST',
-          exchange: orderBookDefaultSettings.exchange,
-          portfolio: 'D1234',
+          targetInstrument: {
+            symbol: "TEST",
+            exchange: orderBookDefaultSettings.exchange,
+          },
+          ownedPortfolio: {
+            portfolio: 'D1234',
+            exchange: orderBookDefaultSettings.exchange
+          },
           triggerPrice: 100,
           side: Side.Buy,
           displayVolume: 100,
@@ -340,11 +364,16 @@ describe('ScalperCommandProcessorService', () => {
         };
 
         const secondOrder: CurrentOrderDisplay = {
-          orderId: generateRandomString(5),
+          orderId: TestingHelpers.generateRandomString(5),
           type: OrderType.Limit,
-          symbol: 'TEST',
-          exchange: orderBookDefaultSettings.exchange,
-          portfolio: 'D1234',
+          targetInstrument: {
+            symbol: orderBookDefaultSettings.symbol,
+            exchange: orderBookDefaultSettings.exchange,
+          },
+          ownedPortfolio: {
+            portfolio: 'D1234',
+            exchange: orderBookDefaultSettings.exchange
+          },
           side: Side.Buy,
           displayVolume: 100,
           isDirty: false
@@ -357,8 +386,8 @@ describe('ScalperCommandProcessorService', () => {
 
           expect(args.ordersToCancel[0]).toEqual({
             orderId: expectedOrder.orderId,
-            exchange: expectedOrder.exchange,
-            portfolio: expectedOrder.portfolio,
+            exchange: expectedOrder.targetInstrument.exchange,
+            portfolio: expectedOrder.ownedPortfolio.portfolio,
             orderType: expectedOrder.type
           });
         });
@@ -377,8 +406,10 @@ describe('ScalperCommandProcessorService', () => {
 
     it('should process closePositionsByMarketCurrent command', (done) => {
         const expectedPosition = {
-          symbol: orderBookDefaultSettings.symbol,
-          exchange: orderBookDefaultSettings.exchange,
+          targetInstrument: {
+            symbol: orderBookDefaultSettings.symbol,
+            exchange: orderBookDefaultSettings.exchange,
+          },
           qtyTFutureBatch: 0
         } as Position;
 
@@ -400,14 +431,14 @@ describe('ScalperCommandProcessorService', () => {
     );
 
     it('should process sellBestOrder command', (done) => {
-        const workingVolume = getRandomInt(1, 100);
+        const workingVolume = TestingHelpers.getRandomInt(1, 100);
 
         dataContextMock.orderBook$.next({
           instrumentKey: defaultInstrumentInfo,
           rows: {
             a: [{
-              p: getRandomInt(1, 1000),
-              v: getRandomInt(1, 100),
+              p: TestingHelpers.getRandomInt(1, 1000),
+              v: TestingHelpers.getRandomInt(1, 100),
               y: 0
             }],
             b: [],
@@ -435,14 +466,14 @@ describe('ScalperCommandProcessorService', () => {
     );
 
     it('should process buyBestOrder command', (done) => {
-        const workingVolume = getRandomInt(1, 100);
+        const workingVolume = TestingHelpers.getRandomInt(1, 100);
 
         dataContextMock.orderBook$.next({
           instrumentKey: defaultInstrumentInfo,
           rows: {
             a: [{
-              p: getRandomInt(1, 1000),
-              v: getRandomInt(1, 100),
+              p: TestingHelpers.getRandomInt(1, 1000),
+              v: TestingHelpers.getRandomInt(1, 100),
               y: 0
             }],
             b: [],
@@ -470,19 +501,19 @@ describe('ScalperCommandProcessorService', () => {
     );
 
     it('should process sellBestBid command', (done) => {
-        const workingVolume = getRandomInt(1, 100);
+        const workingVolume = TestingHelpers.getRandomInt(1, 100);
 
         dataContextMock.orderBook$.next({
           instrumentKey: defaultInstrumentInfo,
           rows: {
             a: [{
-              p: getRandomInt(1, 1000),
-              v: getRandomInt(1, 100),
+              p: TestingHelpers.getRandomInt(1, 1000),
+              v: TestingHelpers.getRandomInt(1, 100),
               y: 0
             }],
             b: [{
-              p: getRandomInt(1, 1000),
-              v: getRandomInt(1, 100),
+              p: TestingHelpers.getRandomInt(1, 1000),
+              v: TestingHelpers.getRandomInt(1, 100),
               y: 0
             }],
           }
@@ -508,14 +539,14 @@ describe('ScalperCommandProcessorService', () => {
     );
 
     it('should process buyBestAsk command', (done) => {
-        const workingVolume = getRandomInt(1, 100);
+        const workingVolume = TestingHelpers.getRandomInt(1, 100);
 
         dataContextMock.orderBook$.next({
           instrumentKey: defaultInstrumentInfo,
           rows: {
             a: [{
-              p: getRandomInt(1, 1000),
-              v: getRandomInt(1, 100),
+              p: TestingHelpers.getRandomInt(1, 1000),
+              v: TestingHelpers.getRandomInt(1, 100),
               y: 0
             }],
             b: [],
@@ -542,7 +573,7 @@ describe('ScalperCommandProcessorService', () => {
     );
 
     it('should process sellMarket command', (done) => {
-        const workingVolume = getRandomInt(1, 100);
+        const workingVolume = TestingHelpers.getRandomInt(1, 100);
 
         dataContextMock.workingVolume$.next(workingVolume);
 
@@ -565,7 +596,7 @@ describe('ScalperCommandProcessorService', () => {
     );
 
     it('should process buyMarket command', (done) => {
-        const workingVolume = getRandomInt(1, 100);
+        const workingVolume = TestingHelpers.getRandomInt(1, 100);
 
         dataContextMock.workingVolume$.next(workingVolume);
 
@@ -589,8 +620,10 @@ describe('ScalperCommandProcessorService', () => {
 
     it('should process reversePositionsByMarketCurrent command', (done) => {
         const expectedPosition = {
-          symbol: orderBookDefaultSettings.symbol,
-          exchange: orderBookDefaultSettings.exchange,
+          targetInstrument: {
+            symbol: orderBookDefaultSettings.symbol,
+            exchange: orderBookDefaultSettings.exchange,
+          },
           qtyTFutureBatch: 0
         } as Position;
 
@@ -625,11 +658,11 @@ describe('ScalperCommandProcessorService', () => {
           }
         });
 
-        const workingVolume = getRandomInt(1, 100);
+        const workingVolume = TestingHelpers.getRandomInt(1, 100);
         dataContextMock.workingVolume$.next(workingVolume);
 
         const testRow = {
-          price: getRandomInt(1, 1000),
+          price: TestingHelpers.getRandomInt(1, 1000),
           rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
         } as BodyRow;
 
@@ -659,19 +692,21 @@ describe('ScalperCommandProcessorService', () => {
           }
         });
 
-        const workingVolume = getRandomInt(1, 100);
+        const workingVolume = TestingHelpers.getRandomInt(1, 100);
         dataContextMock.workingVolume$.next(workingVolume);
 
         const expectedPosition = {
-          symbol: orderBookDefaultSettings.symbol,
-          exchange: orderBookDefaultSettings.exchange,
+          targetInstrument: {
+            symbol: orderBookDefaultSettings.symbol,
+            exchange: orderBookDefaultSettings.exchange,
+          },
           qtyTFutureBatch: 0
         } as Position;
 
         dataContextMock.position$.next(expectedPosition);
 
         const testRow = {
-          price: getRandomInt(1, 1000),
+          price: TestingHelpers.getRandomInt(1, 1000),
           rowType: ScalperOrderBookRowType.Ask
         } as BodyRow;
 
@@ -697,11 +732,11 @@ describe('ScalperCommandProcessorService', () => {
           }
         });
 
-        const workingVolume = getRandomInt(1, 100);
+        const workingVolume = TestingHelpers.getRandomInt(1, 100);
         dataContextMock.workingVolume$.next(workingVolume);
 
         const testRow = {
-          price: getRandomInt(1, 1000),
+          price: TestingHelpers.getRandomInt(1, 1000),
           rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
         } as BodyRow;
 
@@ -730,11 +765,11 @@ describe('ScalperCommandProcessorService', () => {
           }
         });
 
-        const workingVolume = getRandomInt(1, 100);
+        const workingVolume = TestingHelpers.getRandomInt(1, 100);
         dataContextMock.workingVolume$.next(workingVolume);
 
         const testRow = {
-          price: getRandomInt(1, 1000),
+          price: TestingHelpers.getRandomInt(1, 1000),
           rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
         } as BodyRow;
 
@@ -766,8 +801,10 @@ describe('ScalperCommandProcessorService', () => {
 
       const positionQty = 33;
       dataContextMock.position$.next({
-        symbol: orderBookDefaultSettings.symbol,
-        exchange: orderBookDefaultSettings.exchange,
+        targetInstrument: {
+          symbol: orderBookDefaultSettings.symbol,
+          exchange: orderBookDefaultSettings.exchange,
+        },
         qtyTFutureBatch: positionQty
       } as Position);
 
@@ -778,7 +815,7 @@ describe('ScalperCommandProcessorService', () => {
       });
 
       const testRow = {
-        price: getRandomInt(1, 1000),
+        price: TestingHelpers.getRandomInt(1, 1000),
         rowType: Math.random() < 0.5 ? ScalperOrderBookRowType.Bid : ScalperOrderBookRowType.Ask
       } as BodyRow;
 

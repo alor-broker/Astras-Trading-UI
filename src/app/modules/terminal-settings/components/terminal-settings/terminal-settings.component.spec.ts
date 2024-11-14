@@ -1,15 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TerminalSettingsComponent } from './terminal-settings.component';
-import {
-  mockComponent,
-  commonTestProviders,
-  sharedModuleImportForTests,
-  getTranslocoModule
-} from '../../../../shared/utils/testing';
 import {Subject} from 'rxjs';
 import {AccountService} from "../../../../shared/services/account.service";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { ModalService } from "../../../../shared/services/modal.service";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { ComponentHelpers } from 'src/app/shared/utils/testing/component-helpers';
+import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
 
 describe('TerminalSettingsComponent', () => {
   let component: TerminalSettingsComponent;
@@ -19,16 +17,15 @@ describe('TerminalSettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        ...sharedModuleImportForTests,
-        getTranslocoModule()
+        TranslocoTestsModule.getModule()
       ],
       declarations: [
         TerminalSettingsComponent,
-        mockComponent({selector: 'ats-useful-links'}),
-        mockComponent({selector: 'ats-general-settings-form'}),
-        mockComponent({selector: 'ats-portfolios-currency-form'}),
-        mockComponent({selector: 'ats-hot-key-settings-form'}),
-        mockComponent({selector: 'ats-instant-notifications-form'}),
+        ComponentHelpers.mockComponent({selector: 'ats-useful-links'}),
+        ComponentHelpers.mockComponent({selector: 'ats-general-settings-form'}),
+        ComponentHelpers.mockComponent({selector: 'ats-portfolios-currency-form'}),
+        ComponentHelpers.mockComponent({selector: 'ats-hot-key-settings-form'}),
+        ComponentHelpers.mockComponent({selector: 'ats-instant-notifications-form'}),
       ],
       providers: [
         {
@@ -41,6 +38,12 @@ describe('TerminalSettingsComponent', () => {
           provide: TerminalSettingsService,
           useValue: {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: ModalService,
+          useValue: {
+            openConfirmModal: jasmine.createSpy('openConfirmModal').and.callThrough()
           }
         },
         ...commonTestProviders

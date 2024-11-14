@@ -17,6 +17,7 @@ import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
 import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
+import {Exchange} from "../../../../../generated/graphql.types";
 
 @Component({
   selector: 'ats-spread-leg',
@@ -83,7 +84,7 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
       return [];
     }
 
-    return this.portfolios.filter(p => p.exchange === selectedInstrument.exchange);
+    return this.portfolios.filter(p => p.exchange === selectedInstrument.exchange || (p.exchange === Exchange.United as string));
   }
 
   instrumentChange(): void {
