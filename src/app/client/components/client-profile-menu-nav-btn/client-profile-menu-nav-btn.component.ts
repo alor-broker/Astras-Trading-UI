@@ -1,4 +1,8 @@
-import {Component, Inject} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Inject
+} from '@angular/core';
 import {EnvironmentService} from "../../../shared/services/environment.service";
 import {HelpService} from "../../../shared/services/help.service";
 import {SESSION_CONTEXT, SessionContext} from "../../../shared/services/auth/session-context";
@@ -26,7 +30,8 @@ import {ModalService} from "../../../shared/services/modal.service";
     NgIf
   ],
   templateUrl: './client-profile-menu-nav-btn.component.html',
-  styleUrl: './client-profile-menu-nav-btn.component.less'
+  styleUrl: './client-profile-menu-nav-btn.component.less',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClientProfileMenuNavBtnComponent {
   readonly externalLinks = this.environmentService.externalLinks;

@@ -1,4 +1,7 @@
-import {Component} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component
+} from '@angular/core';
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {NzIconDirective} from "ng-zorro-antd/icon";
@@ -17,7 +20,8 @@ import {AiChatModule} from "../../ai-chat.module";
     AiChatModule
   ],
   templateUrl: './ai-chat-nav-btn.component.html',
-  styleUrl: './ai-chat-nav-btn.component.less'
+  styleUrl: './ai-chat-nav-btn.component.less',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AiChatNavBtnComponent {
   aiChatAvailable = this.environmentService.features.aiChat;

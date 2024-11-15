@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   OnInit
 } from '@angular/core';
@@ -9,7 +10,8 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'ats-notification-button',
   templateUrl: './notification-button.component.html',
-  styleUrls: ['./notification-button.component.less']
+  styleUrls: ['./notification-button.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NotificationButtonComponent implements OnInit {
   isTableVisible = false;

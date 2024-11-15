@@ -1,4 +1,9 @@
-import {Component, DestroyRef, OnInit} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit
+} from '@angular/core';
 import {Observable, shareReplay} from "rxjs";
 import {PortfolioExtended} from "../../../shared/models/user/portfolio-extended.model";
 import {PortfoliosFeature} from "../../../store/portfolios/portfolios.reducer";
@@ -54,7 +59,8 @@ import {ExternalLinkComponent} from "../../../shared/components/external-link/ex
     ExternalLinkComponent
   ],
   templateUrl: './select-portfolio-menu-nav-btn.component.html',
-  styleUrl: './select-portfolio-menu-nav-btn.component.less'
+  styleUrl: './select-portfolio-menu-nav-btn.component.less',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SelectPortfolioMenuNavBtnComponent implements OnInit {
   readonly externalLinks = this.environmentService.externalLinks;

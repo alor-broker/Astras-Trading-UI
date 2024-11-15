@@ -1,8 +1,9 @@
 import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
-import { Component } from '@angular/core';
-import { TranslocoDirective } from '@jsverse/transloco';
+import {
+  ChangeDetectionStrategy,
+  Component
+} from '@angular/core';
 import { SelectClientPortfolioBtnComponent } from '../select-client-portfolio-btn/select-client-portfolio-btn.component';
-import { NzIconDirective } from 'ng-zorro-antd/icon';
 import { DashboardModule } from '../../../modules/dashboard/dashboard.module';
 import { AsyncPipe } from '@angular/common';
 import { WidgetsGalleryNavBtnComponent } from "../../../modules/dashboard/components/widgets-gallery-nav-btn/widgets-gallery-nav-btn.component";
@@ -17,9 +18,7 @@ import {DesktopNavbarComponent} from "../../../modules/dashboard/components/desk
   selector: 'ats-admin-navbar',
   standalone: true,
   imports: [
-    TranslocoDirective,
     SelectClientPortfolioBtnComponent,
-    NzIconDirective,
     DashboardModule,
     AsyncPipe,
     WidgetsGalleryNavBtnComponent,
@@ -29,6 +28,7 @@ import {DesktopNavbarComponent} from "../../../modules/dashboard/components/desk
   ],
   templateUrl: './admin-navbar.component.html',
   styleUrl: './admin-navbar.component.less',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminNavbarComponent {
   readonly isDashboardReady$ = this.dashboardContextService.selectedPortfolio$.pipe(

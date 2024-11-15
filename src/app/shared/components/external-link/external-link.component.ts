@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   Input
 } from '@angular/core';
@@ -11,7 +12,8 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
   imports: [
     NzIconDirective
   ],
-  standalone: true
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExternalLinkComponent {
   @Input()
