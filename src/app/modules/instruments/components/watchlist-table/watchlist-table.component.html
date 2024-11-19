@@ -1,24 +1,25 @@
 <ng-container *transloco="let t; scope: 'instruments/select'">
   <div
     #tableContainer
-    class="table-container"
     (nzResizeObserve)="containerSizeChanged($event)"
-    nzResizeObserver
     *ngrxLet="{
       settings: settings$,
       tableConfig: tableConfig$,
       contentSize: contentSize$,
       collection: collection$,
-      list: currentWatchlist$,
+      currentList: currentWatchlist$,
       updates: tableData$,
+      openedLists: openedLists$,
       sort: sort$
     } as vm"
+    class="table-container"
+    nzResizeObserver
   >
     <nz-table
       #tableCmp
       [nzData]="vm.updates"
       [nzFrontPagination]="false"
-      [nzScroll]="{ y: (vm.contentSize?.height ?? 0) + 'px', x: (vm.contentSize?.width ?? 0) + 'px' }"
+      [nzScroll]="{ y: (vm.contentSize?.height ?? 0) + 'px', x: (vm.contentSize?.width ?? 0) - 5 + 'px' }"
       [nzShowPagination]="false"
       [nzVirtualItemSize]="20"
       [nzVirtualMaxBufferPx]="vm.contentSize?.height ?? 0"
@@ -29,17 +30,17 @@
       <thead
         *transloco="let t; scope: 'instruments/select'"
       >
-        <tr
-          (nzResizeObserve)="headerSizeChanged($event)"
-          nzResizeObserver
-          cdkDropList
-          cdkDropListOrientation="horizontal"
-          (cdkDropListDropped)="changeColumnOrder($event)"
-        >
+      <tr
+        (cdkDropListDropped)="changeColumnOrder($event)"
+        (nzResizeObserve)="headerSizeChanged($event)"
+        cdkDropList
+        cdkDropListOrientation="horizontal"
+        nzResizeObserver
+      >
+        @if (vm.settings.showFavorites ?? false) {
           <th
             #col
-            *ngIf="vm.settings.showFavorites ?? false"
-            [nzShowSort]="vm.list.length > 1 || vm.list[0].type !== listTypes.HistoryList"
+            [nzShowSort]="vm.currentList.length > 1 || vm.currentList[0].type !== listTypes.HistoryList"
             [nzSortDirections]="['ascend', null]"
             (nzSortOrderChange)="sortChange($event, 'favorites')"
             [nzTooltipTitle]="t('instrumentsSelect.columns.favorites.tooltip')"
@@ -51,141 +52,169 @@
               [ngClass]="{
               'btn': true,
               'active': vm.sort == null || vm.sort.orderBy === 'favorites',
-              'disabled': vm.list.length <= 1 && vm.list[0].type === listTypes.HistoryList
+              'disabled': vm.currentList.length <= 1 && vm.currentList[0].type === listTypes.HistoryList
               }" nz-icon
               nzTheme="outline"
               nzType="star"
             ></span>
           </th>
-          <ng-container *ngFor="let col of vm.tableConfig.columns">
-            <th
-              [atsResizeColumn]
-              (atsWidthChanged)="saveColumnWidth({ columnId: col.id, width: $event })"
-              [nzShowSort]="sortFns[col.id] != null"
-              [nzSortOrder]="vm.sort?.orderBy !== col.id ? null : vm.sort!.descending ? 'descend' : 'ascend' "
-              (nzSortOrderChange)="sortChange($event, col.id)"
-              [nzWidth]="col.width ? col.width + 'px' : null"
-              [minWidth]="col.minWidth ?? 50"
-              cdkDrag
-              cdkDragLockAxis="x"
-            >
+        }
+
+        @for (col of vm.tableConfig.columns; track col.id) {
+          <th
+            [atsResizeColumn]
+            (atsWidthChanged)="saveColumnWidth({ columnId: col.id, width: $event })"
+            [nzShowSort]="sortFns[col.id] != null"
+            [nzSortOrder]="vm.sort?.orderBy !== col.id ? null : vm.sort!.descending ? 'descend' : 'ascend' "
+            (nzSortOrderChange)="sortChange($event, col.id)"
+            [nzWidth]="col.width ? col.width + 'px' : null"
+            [minWidth]="col.minWidth ?? 50"
+            cdkDrag
+            cdkDragLockAxis="x"
+          >
               <span [nzTooltipTitle]="t('instrumentsSelect.columns.' + col.id + '.tooltip', { fallback: col.tooltip })"
                     nz-tooltip>
-                {{t('instrumentsSelect.columns.' + col.id + '.name', { fallback: col.displayName })}}
+                {{ t('instrumentsSelect.columns.' + col.id + '.name', { fallback: col.displayName }) }}
               </span>
-            </th>
-          </ng-container>
+          </th>
+        }
 
-          <th nzWidth="40px">
+        <th nzWidth="40px">
             <span
               [nzTooltipTitle]="t('instrumentsSelect.columns.remove.tooltip')"
               nz-tooltip
             >
-              {{t('instrumentsSelect.columns.remove.name')}}
+              {{ t('instrumentsSelect.columns.remove.name') }}
             </span>
-          </th>
-        </tr>
+        </th>
+      </tr>
       </thead>
-      <tbody cdkDropList (cdkDropListDropped)="onDragDropped($event)">
+      <tbody (cdkDropListDropped)="onDragDropped($event)" cdkDropList>
         <ng-template let-watchlist nz-virtual-scroll>
-          @if (openedLists$ | async; as openedLists) {
-            @if (vm.updates.length > 1) {
-              <tr (mouseenter)="setWatchlistToDrop(watchlist.id)">
-                <td
-                  [colSpan]="vm.tableConfig.columns.length + ((vm.settings.showFavorites ?? false) ? 2 : 1)"
-                  [nzIndentSize]="0"
-                  [nzShowExpand]="true"
-                  [nzExpand]="openedLists?.includes(watchlist.id)"
-                  [nzExpandIcon]="expandIcon"
-                >
-                  {{ watchlist.title }}
+          @if (vm.updates.length > 1) {
+            <tr (mouseenter)="setWatchlistToDrop(watchlist.id)">
+              <td
+                [colSpan]="vm.tableConfig.columns.length + ((vm.settings.showFavorites ?? false) ? 2 : 1)"
+                [nzIndentSize]="0"
+                [nzShowExpand]="true"
+                [nzExpand]="vm.openedLists.includes(watchlist.id)"
+                [nzExpandIcon]="expandIcon"
+              >
+                {{ watchlist.title }}
+              </td>
+            </tr>
+          }
+
+          <ng-template #expandIcon>
+            @if (vm.openedLists.includes(watchlist.id)) {
+              <span
+                nz-icon
+                nzType="down"
+                nzTheme="outline"
+                (click)="expandListChange(false, watchlist.id)"
+              ></span>
+            } @else {
+              <span
+                nz-icon
+                nzType="right"
+                nzTheme="outline"
+                (click)="expandListChange(true, watchlist.id)"
+              ></span>
+            }
+          </ng-template>
+
+          @if (vm.openedLists.includes(watchlist.id) || vm.updates.length === 1) {
+            @for (inst of watchlist.items; track inst.recordId) {
+              <tr
+                cdkDrag
+                (cdkDragStarted)="onDragStarted()"
+                [cdkDragData]="{ listId: watchlist.id, recordId: inst.recordId }"
+                (click)='onRowClick(inst)'
+                (mouseenter)="setWatchlistToDrop(watchlist.id)"
+                (contextmenu)="contextMenu($event, menu, inst, watchlist.id)"
+              >
+                @if (vm.settings.showFavorites ?? false) {
+                  <td class="favorites">
+                    @if (watchlist.type !== listTypes.HistoryList) {
+                      <span
+                        (click)="updateFavorites(watchlist.id, inst); $event.preventDefault(); $event.stopPropagation();"
+                        [ngClass]="{
+                          'btn': true,
+                          'active': (inst.favoriteOrder ?? -1) >= 0
+                          }"
+                        [title]="(inst.favoriteOrder ?? -1) >= 0 ? t('instrumentsSelect.removeFromFavoritesTooltip') : t('instrumentsSelect.addToFavoritesTooltip')"
+                        nz-icon
+                        nzTheme="outline"
+                        nzType="star"
+                      >
+
+                        </span>
+                    }
+                  </td>
+                }
+
+                @for (col of vm.tableConfig.columns; track col.id) {
+                  @switch (col.id) {
+                    @case ('symbol') {
+                      <td class="pl-15">
+                        <span class="ticker-name">{{ inst.instrument.symbol }}</span>
+                        <ats-instrument-badge-display [instrumentKey]="inst.instrument"></ats-instrument-badge-display>
+                      </td>
+                    }
+                    @case ('shortName') {
+                      <td>{{ inst.instrument.shortName }}</td>
+                    }
+                    @case ('price') {
+                      <td>
+                        @if ((inst.price ?? null) !== null && (inst.prevTickPrice ?? null) !== null) {
+                          <ats-price-diff
+                            [currentPrice]="inst.price!"
+                            [basePrice]="inst.prevTickPrice!"
+                            [showChangeForce]="false"
+                          >
+                          </ats-price-diff>
+                        }
+                      </td>
+                    }
+                    @case ('priceChange') {
+                      <td [ngClass]="inst.priceChange < 0 ? 'sellCell' : 'buyCell'">{{ inst.priceChange }}</td>
+                    }
+                    @case ('priceChangeRatio') {
+                      <td [ngClass]="inst.priceChangeRatio < 0 ? 'sellCell' : 'buyCell'">
+                        {{ inst.priceChangeRatio }}
+                      </td>
+                    }
+                    @case ('maxPrice') {
+                      <td>{{ inst.maxPrice }}</td>
+                    }
+                    @case ('minPrice') {
+                      <td>{{ inst.minPrice }}</td>
+                    }
+                    @case ('volume') {
+                      <td style="white-space: nowrap;">
+                        <ats-short-number [allowRounding]="true" [roundPrecision]="3"
+                                          [value]="inst.volume"></ats-short-number>
+                      </td>
+                    }
+                    @case ('openPrice') {
+                      <td>{{ inst.openPrice }}</td>
+                    }
+                    @case ('closePrice') {
+                      <td>{{ inst.closePrice }}</td>
+                    }
+                    @default {
+                      <td></td>
+                    }
+
+                  }
+                }
+                <td>
+                  <a
+                    (click)="remove(watchlist.id, inst.recordId); $event.preventDefault(); $event.stopPropagation();">
+                    <i nz-icon nzTheme="outline" nzType="close"></i>
+                  </a>
                 </td>
               </tr>
-            }
-
-            <ng-template #expandIcon>
-              @if (openedLists?.includes(watchlist.id)) {
-                <span
-                  nz-icon
-                  nzType="down"
-                  nzTheme="outline"
-                  (click)="expandListChange(false, watchlist.id)"
-                ></span>
-              } @else {
-                <span
-                  nz-icon
-                  nzType="right"
-                  nzTheme="outline"
-                  (click)="expandListChange(true, watchlist.id)"
-                ></span>
-              }
-            </ng-template>
-
-            @if (openedLists?.includes(watchlist.id) || vm.updates.length === 1) {
-              @for (inst of watchlist.items; track inst.recordId) {
-                <tr
-                  cdkDrag
-                  (cdkDragStarted)="onDragStarted()"
-                  [cdkDragData]="{ listId: watchlist.id, recordId: inst.recordId }"
-                  (click)='onRowClick(inst)'
-                  (mouseenter)="setWatchlistToDrop(watchlist.id)"
-                  (contextmenu)="contextMenu($event, menu, inst, watchlist.id)"
-                >
-                  <td *ngIf="vm.settings.showFavorites ?? false" class="favorites">
-                    <span
-                      (click)="updateFavorites(watchlist.id, inst); $event.preventDefault(); $event.stopPropagation();"
-                      *ngIf="watchlist.type !== listTypes.HistoryList"
-                      [ngClass]="{
-                      'btn': true,
-                      'active': (inst.favoriteOrder ?? -1) >= 0
-                      }"
-                      [title]="(inst.favoriteOrder ?? -1) >= 0 ? t('instrumentsSelect.removeFromFavoritesTooltip') : t('instrumentsSelect.addToFavoritesTooltip')"
-                      nz-icon
-                      nzTheme="outline"
-                      nzType="star"
-                    >
-                    </span>
-                  </td>
-
-                  <ng-container *ngFor="let col of vm.tableConfig.columns">
-                    <td *ngIf="col.id === 'symbol'" class="pl-15">
-                      <span class="ticker-name">{{ inst.instrument.symbol }}</span>
-                      <ats-instrument-badge-display [instrumentKey]="inst.instrument"></ats-instrument-badge-display>
-                    </td>
-
-                    <td *ngIf="col.id === 'shortName'">{{inst.instrument.shortName}}</td>
-
-                    <td *ngIf="col.id === 'price'">
-                      <ats-price-diff
-                        *ngIf="(inst.price ?? null) !== null && (inst.prevTickPrice ?? null) !== null"
-                        [currentPrice]="inst.price!"
-                        [basePrice]="inst.prevTickPrice!"
-                        [showChangeForce]="false"
-                      >
-                      </ats-price-diff>
-                    </td>
-
-                    <td *ngIf="col.id === 'priceChange'" [ngClass]="inst.priceChange < 0 ? 'sellCell' : 'buyCell'">{{ inst.priceChange }}</td>
-
-                    <td *ngIf="col.id === 'priceChangeRatio'" [ngClass]="inst.priceChangeRatio < 0 ? 'sellCell' : 'buyCell'">
-                      {{ inst.priceChangeRatio }}
-                    </td>
-                    <td *ngIf="col.id === 'maxPrice'">{{ inst.maxPrice }}</td>
-                    <td *ngIf="col.id === 'minPrice'">{{ inst.minPrice }}</td>
-                    <td *ngIf="col.id === 'volume'" style="white-space: nowrap;">
-                      <ats-short-number [allowRounding]="true" [roundPrecision]="3" [value]="inst.volume"></ats-short-number>
-                    </td>
-                    <td *ngIf="col.id === 'openPrice'">{{ inst.openPrice }}</td>
-                    <td *ngIf="col.id === 'closePrice'">{{ inst.closePrice }}</td>
-                  </ng-container>
-
-                  <td>
-                    <a (click)="remove(watchlist.id, inst.recordId); $event.preventDefault(); $event.stopPropagation();">
-                      <i nz-icon nzTheme="outline" nzType="close"></i>
-                    </a>
-                  </td>
-                </tr>
-              }
             }
           }
         </ng-template>
@@ -194,72 +223,71 @@
 
     <nz-dropdown-menu #menu="nzDropdownMenu">
       <ul nz-menu>
-        <ng-container *ngIf="getListsForCopyMove(vm.list[0], vm.collection) as lists">
+        @if (getListsForCopyMove(vm.currentList[0], vm.collection); as lists) {
           <ng-container *transloco="let tTitle; scope: 'instruments'">
+            @if (canMoveItem(vm.currentList[0])) {
+              <li
+                [nzTitle]="title"
+                nz-submenu
+                #submenu
+              >
+                <ng-template #title>
+                  <span><i nz-icon nzTheme="outline"
+                           nzType="arrow-right"></i><label>&nbsp;{{ t('instrumentsSelect.contextMenu.moveToItemLabel') }}</label></span>
+                </ng-template>
+                <ul>
+                  @for (wl of lists; track wl.id) {
+                    <li nz-menu-item (click)="moveItem(vm.currentList[0], wl); submenu.nzOpen = false">
+                      {{ tTitle('instruments.' + getListTitleTranslationKey(wl), { fallback: wl.title }) }}
+                    </li>
+                  }
+                </ul>
+              </li>
+            }
+
             <li
-              *ngIf="canMoveItem(vm.list[0])"
               [nzTitle]="title"
               nz-submenu
               #submenu
             >
               <ng-template #title>
-                <span><i nz-icon nzTheme="outline" nzType="arrow-right"></i><label>&nbsp;{{t('instrumentsSelect.contextMenu.moveToItemLabel')}}</label></span>
+                <span><i nz-icon nzTheme="outline"
+                         nzType="copy"></i>{{ t('instrumentsSelect.contextMenu.copyToItemLabel') }}</span>
               </ng-template>
               <ul>
-                <li *ngFor="let wl of lists"
-                    nz-menu-item
-                    (click)="moveItem(vm.list[0], wl); submenu.nzOpen = false"
-                >
-                  {{ tTitle('instruments.' + getListTitleTranslationKey(wl), { fallback: wl.title })}}</li>
-              </ul>
-            </li>
-            <li
-              [nzTitle]="title"
-              nz-submenu
-              #submenu
-            >
-              <ng-template #title>
-                <span><i nz-icon nzTheme="outline" nzType="copy"></i>{{t('instrumentsSelect.contextMenu.copyToItemLabel')}}</span>
-              </ng-template>
-              <ul>
-                <li
-                  *ngFor="let wl of lists"
-                  nz-menu-item
-                  (click)="copyItem(wl); submenu.nzOpen = false"
-                >
-                  {{ tTitle('instruments.' + getListTitleTranslationKey(wl), { fallback: wl.title })}}
-                </li>
+                @for (wl of lists; track wl.id) {
+                  <li nz-menu-item (click)="copyItem(wl); submenu.nzOpen = false">
+                    {{ tTitle('instruments.' + getListTitleTranslationKey(wl), { fallback: wl.title }) }}
+                  </li>
+                }
               </ul>
             </li>
           </ng-container>
-        </ng-container>
+        }
+
+        @if (menuWidgets$ | async; as menuWidgets) {
+          <li [nzTitle]="title" nz-submenu>
+            <ng-template #title>
+              <span><i nz-icon nzTheme="outline"
+                       nzType="appstore-add"></i>{{ t('instrumentsSelect.contextMenu.addWidgetItemLabel') }}</span>
+            </ng-template>
+            <ul>
+              @for (widget of menuWidgets; track widget.typeId) {
+                <li (click)="addWidget(widget.typeId)" nz-menu-item>
+                  <span><i [nzType]="widget.icon" nz-icon nzTheme="outline"></i>{{ widget.name }}</span>
+                </li>
+              }
+            </ul>
+          </li>
+        }
 
         <li
-          *ngIf="menuWidgets$ | async as menuWidgets"
-          [nzTitle]="title"
-          nz-submenu
-        >
-          <ng-template #title>
-            <span><i nz-icon nzTheme="outline" nzType="appstore-add"></i>{{t('instrumentsSelect.contextMenu.addWidgetItemLabel')}}</span>
-          </ng-template>
-          <ul>
-            <li
-              (click)="addWidget(widget.typeId)"
-              *ngFor="let widget of menuWidgets"
-              nz-menu-item
-            >
-              <span><i [nzType]="widget.icon" nz-icon nzTheme="outline"></i>{{widget.name}}</span>
-            </li>
-          </ul>
-        </li>
-
-        <li
-          nz-menu-item
           (click)="remove(selectedItem!.listId, selectedItem!.instrument.recordId)"
+          nz-menu-item
         >
           <span nz-typography nzType="danger">
             <i nz-icon nzTheme="outline" nzType="close"></i>
-            {{t('instrumentsSelect.contextMenu.remove')}}
+            {{ t('instrumentsSelect.contextMenu.remove') }}
           </span>
         </li>
       </ul>

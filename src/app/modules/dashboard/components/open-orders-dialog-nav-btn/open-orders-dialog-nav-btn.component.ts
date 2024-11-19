@@ -1,4 +1,8 @@
-import {Component, Input} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input
+} from '@angular/core';
 import {take} from "rxjs";
 import {defaultBadgeColor, toInstrumentKey} from "../../../../shared/utils/instruments";
 import {OrderFormType} from "../../../../shared/models/orders/orders-dialog.model";
@@ -18,7 +22,8 @@ import {filter, map} from "rxjs/operators";
     NzIconDirective
   ],
   templateUrl: './open-orders-dialog-nav-btn.component.html',
-  styleUrl: './open-orders-dialog-nav-btn.component.less'
+  styleUrl: './open-orders-dialog-nav-btn.component.less',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OpenOrdersDialogNavBtnComponent {
   @Input()

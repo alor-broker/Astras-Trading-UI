@@ -1,5 +1,10 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit
+} from '@angular/core';
 import { combineLatest, map, Observable, shareReplay } from 'rxjs';
 import {
   GalleryDisplay,
@@ -30,6 +35,7 @@ import {NzButtonComponent} from "ng-zorro-antd/button";
     NzButtonComponent,
     WidgetsGalleryComponent
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WidgetsGalleryNavBtnComponent implements OnInit {
   galleryVisible = false;

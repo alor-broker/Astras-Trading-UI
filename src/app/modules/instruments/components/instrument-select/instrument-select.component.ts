@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
@@ -44,7 +45,8 @@ import { WatchInstrumentsService } from "../../services/watch-instruments.servic
 @Component({
   selector: 'ats-instrument-select',
   templateUrl: './instrument-select.component.html',
-  styleUrls: ['./instrument-select.component.less']
+  styleUrls: ['./instrument-select.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InstrumentSelectComponent implements OnInit {
   @ViewChild('inputEl') inputEl!: ElementRef<HTMLInputElement>;
@@ -168,7 +170,7 @@ export class InstrumentSelectComponent implements OnInit {
           .includes(listId);
 
         if (isRemoveWatchlist) {
-          this.watchInstrumentsService.clear(listId);
+          this.watchInstrumentsService.unsubscribeFromList(listId);
 
           this.settingsService.updateSettings(
             this.guid,

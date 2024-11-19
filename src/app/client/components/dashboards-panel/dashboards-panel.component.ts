@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   OnDestroy,
@@ -58,7 +59,8 @@ type DashboardSegmentedOption = {
     NzDropdownMenuComponent,
     SelectDashboardMenuComponent
   ],
-  standalone: true
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardsPanelComponent implements OnInit, OnDestroy {
   options$!: Observable<DashboardSegmentedOption[]>;

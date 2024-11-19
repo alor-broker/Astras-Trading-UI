@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   OnInit
 } from '@angular/core';
@@ -29,7 +30,8 @@ type StatusColor = 'warning' | 'danger' | 'success';
     NgClass,
     NzIconDirective
   ],
-  standalone: true
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NetworkIndicatorComponent implements OnInit {
   statuses = NetworkStatus;

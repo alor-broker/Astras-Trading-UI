@@ -1,17 +1,31 @@
-import { Component, DestroyRef, Input, OnInit } from '@angular/core';
-import {InstrumentKey} from "../../models/instruments/instrument-key.model";
-import {combineLatest, Observable, shareReplay} from "rxjs";
-import {InstrumentGroups} from "../../models/dashboard/dashboard.model";
-import {map} from "rxjs/operators";
-import { defaultBadgeColor, instrumentsBadges } from "../../utils/instruments";
-import {DashboardContextService} from "../../services/dashboard-context.service";
-import {TerminalSettingsService} from "../../services/terminal-settings.service";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  Input,
+  OnInit
+} from '@angular/core';
+import { InstrumentKey } from "../../models/instruments/instrument-key.model";
+import {
+  combineLatest,
+  Observable,
+  shareReplay
+} from "rxjs";
+import { InstrumentGroups } from "../../models/dashboard/dashboard.model";
+import { map } from "rxjs/operators";
+import {
+  defaultBadgeColor,
+  instrumentsBadges
+} from "../../utils/instruments";
+import { DashboardContextService } from "../../services/dashboard-context.service";
+import { TerminalSettingsService } from "../../services/terminal-settings.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-instrument-badge-display',
   templateUrl: './instrument-badge-display.component.html',
-  styleUrls: ['./instrument-badge-display.component.less']
+  styleUrls: ['./instrument-badge-display.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InstrumentBadgeDisplayComponent implements OnInit {
   @Input({required: true})

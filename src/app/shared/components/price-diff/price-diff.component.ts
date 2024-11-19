@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   Inject,
   Input,
@@ -23,7 +24,8 @@ interface PriceDiff {
 @Component({
   selector: 'ats-price-diff',
   templateUrl: './price-diff.component.html',
-  styleUrls: ['./price-diff.component.less']
+  styleUrls: ['./price-diff.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PriceDiffComponent implements OnChanges {
   @Input({ required: true })

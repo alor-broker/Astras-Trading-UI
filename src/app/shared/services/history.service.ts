@@ -56,7 +56,8 @@ export class HistoryService {
 
   getHistory(request: HistoryRequest): Observable<HistoryResponse | null> {
     return this.http.get<HistoryResponse>(this.url, { params: { ...request } }).pipe(
-      catchHttpError<HistoryResponse | null>(null, this.errorHandler)
+      catchHttpError<HistoryResponse | null>(null, this.errorHandler),
+      take(1)
     );
   }
 }

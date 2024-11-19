@@ -1,4 +1,8 @@
-import {Component, Inject} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Inject
+} from '@angular/core';
 import {EnvironmentService} from "../../../shared/services/environment.service";
 import {HelpService} from "../../../shared/services/help.service";
 import {SESSION_CONTEXT, SessionContext} from "../../../shared/services/auth/session-context";
@@ -25,7 +29,8 @@ import {AsyncPipe, NgIf, NgTemplateOutlet} from "@angular/common";
     AsyncPipe,
     NgIf
   ],
-  styleUrl: './admin-profile-menu-nav-btn.component.less'
+  styleUrl: './admin-profile-menu-nav-btn.component.less',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminProfileMenuNavBtnComponent {
   readonly externalLinks = this.environmentService.externalLinks;

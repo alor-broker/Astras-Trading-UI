@@ -1,6 +1,11 @@
 import {DefaultAdminDashboardConfig} from './../../../shared/models/dashboard/dashboard.model';
 import {ManageDashboardsService} from 'src/app/shared/services/manage-dashboards.service';
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {BehaviorSubject, combineLatest, take} from 'rxjs';
@@ -31,6 +36,7 @@ import {Exchange} from "../../../../generated/graphql.types";
   ],
   templateUrl: './select-client-portfolio-btn.component.html',
   styleUrl: './select-client-portfolio-btn.component.less',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SelectClientPortfolioBtnComponent implements OnInit, OnDestroy {
   readonly selectedPortfolio$ = new BehaviorSubject<PortfolioKey | null>(null);

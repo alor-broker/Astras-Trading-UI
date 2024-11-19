@@ -1,4 +1,9 @@
-import { Inject, Injectable, OnDestroy } from '@angular/core';
+import {
+  Inject,
+  Injectable,
+  NgZone,
+  OnDestroy
+} from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import {
   BehaviorSubject,
@@ -76,7 +81,8 @@ export class SubscriptionsDataFeedService implements OnDestroy {
     private readonly environmentService: EnvironmentService,
     private readonly apiTokenProviderService: ApiTokenProviderService,
     private readonly logger: LoggerService,
-    @Inject(RXJS_WEBSOCKET_CTOR) private readonly webSocketFactory: typeof webSocket
+    @Inject(RXJS_WEBSOCKET_CTOR) private readonly webSocketFactory: typeof webSocket,
+    private readonly ngZone: NgZone
   ) {
   }
 
@@ -93,38 +99,40 @@ export class SubscriptionsDataFeedService implements OnDestroy {
   }
 
   public subscribe<T extends SubscriptionRequest, R>(request: T, getSubscriptionId: (request: T) => string): Observable<R> {
-    const socketState = this.getSocket();
-    const subscriptionId = getSubscriptionId(request);
+    return this.ngZone.runOutsideAngular(() => {
+      const socketState = this.getSocket();
+      const subscriptionId = getSubscriptionId(request);
 
-    const existingSubscription = socketState.subscriptionsMap.get(subscriptionId);
-    if (!!existingSubscription) {
-      return existingSubscription.sharedStream$ as Observable<R>;
-    }
+      const existingSubscription = socketState.subscriptionsMap.get(subscriptionId);
+      if (!!existingSubscription) {
+        return existingSubscription.sharedStream$ as Observable<R>;
+      }
 
-    const requestMessage: WsRequestMessage = {
-      ...request,
-      guid: GuidGenerator.newGuid()
-    };
+      const requestMessage: WsRequestMessage = {
+        ...request,
+        guid: GuidGenerator.newGuid()
+      };
 
-    const subject = new Subject<WsResponseMessage>();
-    const messageSubscription = this.subscribeToMessages(this.createSubscription(requestMessage, socketState), subject, subscriptionId);
+      const subject = new Subject<WsResponseMessage>();
+      const messageSubscription = this.subscribeToMessages(this.createSubscription(requestMessage, socketState), subject, subscriptionId);
 
-    const subscriptionState: SubscriptionState = {
-      request: requestMessage,
-      messageSource: subject,
-      sharedStream$: subject.pipe(
-        finalize(() => {
-          this.dropSubscription(socketState, subscriptionId);
-        }),
-        map(x => x.data as R),
-        shareReplay({bufferSize: Math.max(1, request.repeatCount ?? 1), refCount: true})
-      ),
-      subscription: messageSubscription
-    };
+      const subscriptionState: SubscriptionState = {
+        request: requestMessage,
+        messageSource: subject,
+        sharedStream$: subject.pipe(
+          finalize(() => {
+            this.dropSubscription(socketState, subscriptionId);
+          }),
+          map(x => x.data as R),
+          shareReplay({bufferSize: Math.max(1, request.repeatCount ?? 1), refCount: true}),
+        ),
+        subscription: messageSubscription
+      };
 
-    socketState.subscriptionsMap.set(subscriptionId, subscriptionState);
+      socketState.subscriptionsMap.set(subscriptionId, subscriptionState);
 
-    return subscriptionState.sharedStream$ as Observable<R>;
+      return subscriptionState.sharedStream$ as Observable<R>;
+    });
   }
 
   private subscribeToMessages(source: Observable<WsResponseMessage>, target: Subject<any>, subscriptionId: string): Subscription {
@@ -136,16 +144,18 @@ export class SubscriptionsDataFeedService implements OnDestroy {
   }
 
   private dropSubscription(socketState: SocketState, subscriptionId: string): void {
-    const state = socketState.subscriptionsMap.get(subscriptionId);
+    this.ngZone.runOutsideAngular(() => {
+      const state = socketState.subscriptionsMap.get(subscriptionId);
 
-    if (state) {
-      socketState.subscriptionsMap.delete(subscriptionId);
-      state.subscription.unsubscribe();
+      if (state) {
+        socketState.subscriptionsMap.delete(subscriptionId);
+        state.subscription.unsubscribe();
 
-      if (socketState.subscriptionsMap.size === 0) {
-        socketState.isClosing = true;
+        if (socketState.subscriptionsMap.size === 0) {
+          socketState.isClosing = true;
+        }
       }
-    }
+    });
   }
 
   private createSubscription(request: WsRequestMessage, state: SocketState, enableConfirmResponse = false): Observable<WsResponseMessage> {
@@ -199,28 +209,30 @@ export class SubscriptionsDataFeedService implements OnDestroy {
   }
 
   private getSocket(): SocketState {
-    if (!!this.socketState && this.isStateValid(this.socketState)) {
-      return this.socketState;
-    }
+    return this.ngZone.runOutsideAngular(() => {
+      if (!!this.socketState && this.isStateValid(this.socketState)) {
+        return this.socketState;
+      }
 
-    const socketState: SocketState = {
-      socketId: GuidGenerator.newGuid(),
-      isClosing: false,
-      subscriptionsMap: new Map<string, SubscriptionState>(),
-      webSocketSubject: null,
-      reconnectSub: null,
-      offlineSub: null,
-      pingPongSub: null
-    };
+      const socketState: SocketState = {
+        socketId: GuidGenerator.newGuid(),
+        isClosing: false,
+        subscriptionsMap: new Map<string, SubscriptionState>(),
+        webSocketSubject: null,
+        reconnectSub: null,
+        offlineSub: null,
+        pingPongSub: null
+      };
 
-    socketState.webSocketSubject = this.createWebSocketSubject(socketState);
+      socketState.webSocketSubject = this.createWebSocketSubject(socketState);
 
-    this.initReconnectOnDisconnection(socketState);
-    this.initPingPong(socketState);
+      this.initReconnectOnDisconnection(socketState);
+      this.initPingPong(socketState);
 
-    this.socketState = socketState;
+      this.socketState = socketState;
 
-    return socketState;
+      return socketState;
+    });
   }
 
   private createWebSocketSubject(socketState: SocketState): WebSocketSubject<WsResponseMessage> {

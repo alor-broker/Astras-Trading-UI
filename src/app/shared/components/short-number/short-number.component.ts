@@ -1,10 +1,19 @@
-import { Component, Input, OnChanges } from '@angular/core';
-import { getNumberAbbreviation, NumberAbbreviation } from "../../utils/number-abbreviation";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnChanges
+} from '@angular/core';
+import {
+  getNumberAbbreviation,
+  NumberAbbreviation
+} from "../../utils/number-abbreviation";
 
 @Component({
   selector: 'ats-short-number',
   templateUrl: './short-number.component.html',
-  styleUrls: ['./short-number.component.less']
+  styleUrls: ['./short-number.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ShortNumberComponent implements OnChanges {
   @Input() allowRounding = false;
