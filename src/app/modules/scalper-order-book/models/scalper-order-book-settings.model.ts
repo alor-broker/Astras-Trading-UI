@@ -74,7 +74,7 @@ export interface InstrumentLinkedSettings {
   stopLimitOrdersDistance?: number;
 }
 
-export interface ScalperOrderBookWidgetSettings extends WidgetSettings, InstrumentKey, InstrumentLinkedSettings {
+export interface ScalperOrderBookInstanceSettings extends InstrumentKey, WidgetSettings {
   disableHotkeys: boolean;
   enableMouseClickSilentOrders: boolean;
   autoAlignIntervalSec?: number;
@@ -96,5 +96,9 @@ export interface ScalperOrderBookWidgetSettings extends WidgetSettings, Instrume
   hideTooltips?: boolean;
   rowHeight?: number;
   fontSize?: number;
+  // @deprecated Use shared settings
   instrumentLinkedSettings?: Record<string, InstrumentLinkedSettings>;
+}
+
+export interface ScalperOrderBookWidgetSettings extends ScalperOrderBookInstanceSettings, InstrumentLinkedSettings {
 }

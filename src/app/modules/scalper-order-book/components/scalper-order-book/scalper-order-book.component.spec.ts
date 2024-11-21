@@ -4,11 +4,14 @@ import {
 } from '@angular/core/testing';
 
 import { ScalperOrderBookComponent } from './scalper-order-book.component';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { Subject } from 'rxjs';
+import {
+  NEVER,
+} from 'rxjs';
 import { LetDirective } from "@ngrx/component";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { ScalperOrderBookDataContextService } from "../../services/scalper-order-book-data-context.service";
+import { MockProvider } from "ng-mocks";
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -28,12 +31,12 @@ describe('ScalperOrderBookComponent', () => {
         ComponentHelpers.mockComponent({ selector: 'ats-current-position-panel' }),
       ],
       providers: [
-        {
-          provide: WidgetSettingsService,
-          useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
+        MockProvider(
+          ScalperOrderBookDataContextService,
+          {
+            getSettingsStream: () => NEVER
           }
-        }
+        )
       ]
     })
       .compileComponents();

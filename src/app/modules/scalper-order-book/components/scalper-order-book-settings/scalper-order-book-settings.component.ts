@@ -1,13 +1,17 @@
 import {
   Component,
   DestroyRef,
-  OnInit
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
 } from '@angular/core';
 import {
   distinctUntilChanged,
-  Observable
+  Observable,
+  shareReplay,
+  take
 } from "rxjs";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   FormBuilder,
   FormControl,
@@ -26,20 +30,29 @@ import {
 } from '../../models/scalper-order-book-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import { WidgetSettingsFormComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { NzMarks } from "ng-zorro-antd/slider";
 import { ScalperOrderBookConstants } from "../../constants/scalper-order-book.constants";
+import { ScalperOrderBookSettingsReadService } from "../../services/scalper-order-book-settings-read.service";
+import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: 'ats-scalper-order-book-settings',
   templateUrl: './scalper-order-book-settings.component.html',
   styleUrls: ['./scalper-order-book-settings.component.less']
 })
-export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseComponent<ScalperOrderBookWidgetSettings> implements OnInit {
+export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComponent, OnInit {
+  @Input({required: true})
+  guid!: string;
+
+  @Output()
+  settingsChange = new EventEmitter<void>();
+
   readonly volumeHighlightModes = VolumeHighlightMode;
+
   readonly validationOptions = {
     depth: {
       min: 1,
@@ -108,10 +121,13 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
   };
 
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
+
   readonly workingVolumesPanelSlots = [PanelSlots.BottomFloatingPanel, PanelSlots.TopPanel];
+
   readonly shortLongPanelSlots = [PanelSlots.BottomFloatingPanel, PanelSlots.TopPanel];
 
-  orderPriceUnits = PriceUnits;
+  readonly orderPriceUnits = PriceUnits;
+
   readonly availableVolumeHighlightModes: string[] = [
     VolumeHighlightMode.Off,
     VolumeHighlightMode.BiggestVolume,
@@ -232,7 +248,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
         ),
         showOwnTrades: this.formBuilder.nonNullable.control(false),
       },
-      { validators: Validators.required }
+      {validators: Validators.required}
     ),
     // working volumes
     showWorkingVolumesPanel: this.formBuilder.nonNullable.control(true),
@@ -252,7 +268,7 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       ]
     ),
     volumeHighlightOptions: this.formBuilder.nonNullable.array(
-      [this.createVolumeHighlightOptionsControl({ boundary: 1, color: 'red' })],
+      [this.createVolumeHighlightOptionsControl({boundary: 1, color: 'red'})],
       Validators.minLength(1)
     ),
     // automation
@@ -285,12 +301,16 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
   protected settings$!: Observable<ScalperOrderBookWidgetSettings>;
 
   constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
+    private readonly settingsReadService: ScalperOrderBookSettingsReadService,
+    private readonly settingsWriteService: ScalperOrderBookSettingsWriteService,
+    private readonly manageDashboardsService: ManageDashboardsService,
+    private readonly destroyRef: DestroyRef,
     private readonly formBuilder: FormBuilder,
   ) {
-    super(settingsService, manageDashboardsService, destroyRef);
+  }
+
+  get canCopy(): boolean {
+    return this.canSave;
   }
 
   get showCopy(): boolean {
@@ -306,9 +326,14 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
   }
 
   ngOnInit(): void {
-    super.ngOnInit();
-
+    this.initSettingsStream();
     this.initCheckFieldsAvailability();
+
+    this.settings$.pipe(
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(settings => {
+      this.setCurrentFormValues(settings);
+    });
   }
 
   addVolumeHighlightOption($event: MouseEvent): void {
@@ -370,11 +395,36 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
     };
   }
 
-  protected initSettingsStream(): void {
-    this.settings$ = ScalperSettingsHelper.getSettingsStream(this.guid, this.settingsService);
+  createWidgetCopy(): void {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(initialSettings => {
+      this.manageDashboardsService.copyWidget(this.getSettingsToCopy(initialSettings));
+    });
   }
 
-  protected getUpdatedSettings(initialSettings: ScalperOrderBookWidgetSettings): Partial<ScalperOrderBookWidgetSettings> {
+  updateSettings(): void {
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(initialSettings => {
+      const updatedSettings = this.getUpdatedSettings(initialSettings);
+      const instrumentKey: InstrumentKey = {
+        symbol: updatedSettings.widgetSettings.symbol!,
+        exchange: updatedSettings.widgetSettings.exchange!,
+        instrumentGroup: updatedSettings.widgetSettings.instrumentGroup!
+      };
+
+      this.settingsWriteService.updateInstrumentLinkedSettings(updatedSettings.instrumentLinkedSettings, instrumentKey);
+      this.settingsWriteService.updateWidgetSettings(updatedSettings.widgetSettings, this.guid);
+
+      this.settingsChange.emit();
+    });
+  }
+
+  protected getUpdatedSettings(initialSettings: ScalperOrderBookWidgetSettings): {
+    instrumentLinkedSettings: Partial<InstrumentLinkedSettings>;
+    widgetSettings: Partial<ScalperOrderBookWidgetSettings>;
+  } {
     const formValue = this.form.value!;
 
     const newSettings = {
@@ -432,8 +482,8 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
 
     newSettings.linkToActive = (initialSettings.linkToActive ?? false) && isInstrumentEqual(initialSettings, newSettings);
 
-    const instrumentLinkedSettingsKey = ScalperSettingsHelper.getInstrumentKey(newSettings);
-    const prevInstrumentLinkedSettings = initialSettings.instrumentLinkedSettings?.[instrumentLinkedSettingsKey];
+    const prevInstrumentLinkedSettings = initialSettings.instrumentLinkedSettings?.[ScalperOrderBookSettingsReadService.getObsoleteInstrumentKey(newSettings)];
+
     const newInstrumentLinkedSettings: InstrumentLinkedSettings = {
       ...prevInstrumentLinkedSettings,
       depth: newSettings.depth,
@@ -448,15 +498,23 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
       tradesPanelSettings: newSettings.tradesPanelSettings ?? prevInstrumentLinkedSettings?.tradesPanelSettings ?? initialSettings.tradesPanelSettings,
     };
 
-    newSettings.instrumentLinkedSettings = {
-      ...initialSettings.instrumentLinkedSettings,
-      [instrumentLinkedSettingsKey]: newInstrumentLinkedSettings
-    } as Record<string, InstrumentLinkedSettings>;
-
-    return newSettings;
+    return {
+      instrumentLinkedSettings: newInstrumentLinkedSettings,
+      widgetSettings: {
+        ...newSettings,
+        ...newInstrumentLinkedSettings
+      }
+    };
   }
 
-  protected setCurrentFormValues(settings: ScalperOrderBookWidgetSettings): void {
+  private initSettingsStream(): void {
+    this.settings$ = this.settingsReadService.readSettings(this.guid).pipe(
+      map(x => x.widgetSettings),
+      shareReplay(1)
+    );
+  }
+
+  private setCurrentFormValues(settings: ScalperOrderBookWidgetSettings): void {
     this.form.reset();
 
     this.form.controls.instrument.setValue({
@@ -623,5 +681,12 @@ export class ScalperOrderBookSettingsComponent extends WidgetSettingsBaseCompone
         Validators.max(this.validationOptions.workingVolume.max)
       ]
     );
+  }
+
+  private getSettingsToCopy(initialSettings: ScalperOrderBookWidgetSettings): ScalperOrderBookWidgetSettings {
+    return {
+      ...initialSettings,
+      ...this.getUpdatedSettings(initialSettings).widgetSettings
+    };
   }
 }

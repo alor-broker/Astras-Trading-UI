@@ -4,12 +4,13 @@ import {
 } from '@angular/core/testing';
 
 import { TopFloatingPanelComponent } from './top-floating-panel.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { Subject } from "rxjs";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { LetDirective } from "@ngrx/component";
 import { SCALPER_ORDERBOOK_SHARED_CONTEXT } from "../scalper-order-book/scalper-order-book.component";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { MockProvider } from "ng-mocks";
+import { ScalperOrderBookDataContextService } from "../../services/scalper-order-book-data-context.service";
 
 describe('TopFloatingPanelComponent', () => {
   let component: TopFloatingPanelComponent;
@@ -23,12 +24,12 @@ describe('TopFloatingPanelComponent', () => {
       ],
       declarations: [TopFloatingPanelComponent],
       providers: [
-        {
-          provide: WidgetSettingsService,
-          useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
+        MockProvider(
+          ScalperOrderBookDataContextService,
+          {
+            getSettingsStream: jasmine.createSpy('getSettings').and.returnValue(new Subject())
           }
-        },
+        ),
         {
           provide: QuotesService,
           useValue: {

@@ -4,7 +4,6 @@ import {
 } from '@angular/core/testing';
 
 import { ScalperOrderBookSettingsComponent } from './scalper-order-book-settings.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
@@ -14,6 +13,9 @@ import { InputNumberComponent } from "../../../../shared/components/input-number
 import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
 import { WidgetSettingsComponent } from "../../../../shared/components/widget-settings/widget-settings.component";
 import { InstrumentSearchMockComponent } from "../../../../shared/utils/testing/instrument-search-mock-component";
+import { MockProvider } from "ng-mocks";
+import { ScalperOrderBookSettingsReadService } from "../../services/scalper-order-book-settings-read.service";
+import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
 
 describe('ScalperOrderBookSettingsComponent', () => {
   let component: ScalperOrderBookSettingsComponent;
@@ -33,16 +35,16 @@ describe('ScalperOrderBookSettingsComponent', () => {
         InputNumberComponent
       ],
       providers: [
-        {
-          provide: WidgetSettingsService,
-          useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({
+        MockProvider(
+          ScalperOrderBookSettingsReadService,
+          {
+            readSettings: jasmine.createSpy('getSettings').and.returnValue(of({
               symbol: 'SBER',
               exchange: 'MOEX'
-            })),
-            updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
-          }
-        },
+            }))
+          },
+        ),
+        MockProvider(ScalperOrderBookSettingsWriteService),
         {
           provide: ManageDashboardsService,
           useValue: {

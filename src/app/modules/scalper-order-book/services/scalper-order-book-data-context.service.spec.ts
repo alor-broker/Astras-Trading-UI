@@ -1,14 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 
 import { ScalperOrderBookDataContextService } from './scalper-order-book-data-context.service';
-import { WidgetSettingsService } from '../../../shared/services/widget-settings.service';
-import { Subject } from 'rxjs';
-import { InstrumentsService } from '../../instruments/services/instruments.service';
+import {
+  NEVER,
+  Subject
+} from 'rxjs';
 import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
 import { AllTradesService } from '../../../shared/services/all-trades.service';
 import { QuotesService } from '../../../shared/services/quotes.service';
+import { ScalperOrderBookSettingsReadService } from "./scalper-order-book-settings-read.service";
+import { MockProvider } from "ng-mocks";
 
 describe('ScalperOrderBookDataContextService', () => {
   let service: ScalperOrderBookDataContextService;
@@ -16,51 +19,45 @@ describe('ScalperOrderBookDataContextService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        {
-          provide: WidgetSettingsService,
-          useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
+        MockProvider(
+          ScalperOrderBookSettingsReadService,
+          {
+            readSettings: jasmine.createSpy('readSettings').and.returnValue(NEVER)
           }
-        },
-        {
-          provide: InstrumentsService,
-          useValue: {
-            getInstrument: jasmine.createSpy('getInstrument').and.returnValue(new Subject())
-          }
-        },
-        {
-          provide: DashboardContextService,
-          useValue: {
+        ),
+        MockProvider(
+          DashboardContextService,
+          {
             selectedPortfolio$: new Subject()
           }
-        },
-        {
-          provide: PortfolioSubscriptionsService,
-          useValue: {
+        ),
+        MockProvider(
+          PortfolioSubscriptionsService,
+          {
             getAllPositionsSubscription: jasmine.createSpy('getAllPositionsSubscription').and.returnValue(new Subject()),
             getOrdersSubscription: jasmine.createSpy('getOrdersSubscription').and.returnValue(new Subject()),
             getStopOrdersSubscription: jasmine.createSpy('getStopOrdersSubscription').and.returnValue(new Subject()),
 
           }
-        },
-        {
-          provide: SubscriptionsDataFeedService,
-          useValue: {
+        ),
+        MockProvider(
+          SubscriptionsDataFeedService,
+          {
             subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
           }
-        },
-        {
-          provide: AllTradesService,
-          useValue: {
+        ),
+        MockProvider(
+          AllTradesService,
+          {
             getNewTradesSubscription: jasmine.createSpy('getNewTradesSubscription').and.returnValue(new Subject())
           }
-        },
-        {
-          provide: QuotesService,
-          useValue: {
+        ),
+        MockProvider(
+          QuotesService,
+          {
             getLastPrice: jasmine.createSpy('getLastPrice').and.returnValue(new Subject())
           }
-        },
+        )
       ]
     });
     service = TestBed.inject(ScalperOrderBookDataContextService);
