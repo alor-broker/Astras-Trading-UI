@@ -435,6 +435,8 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       fontSize: Number(formValue.fontSize),
       rowHeight: Number(formValue.rowHeight),
       stopLimitOrdersDistance: Number(formValue.stopLimitOrdersDistance),
+      minorLinesStep:Number(formValue.minorLinesStep),
+      majorLinesStep:Number(formValue.majorLinesStep),
     } as Partial<ScalperOrderBookWidgetSettings> & InstrumentKey;
 
     delete newSettings.instrument;
@@ -496,6 +498,9 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       tradesClusterPanelSettings: initialSettings.tradesClusterPanelSettings,
       bracketsSettings: newSettings.bracketsSettings ?? prevInstrumentLinkedSettings?.bracketsSettings ?? initialSettings.bracketsSettings,
       tradesPanelSettings: newSettings.tradesPanelSettings ?? prevInstrumentLinkedSettings?.tradesPanelSettings ?? initialSettings.tradesPanelSettings,
+      minorLinesStep: newSettings.minorLinesStep,
+      majorLinesStep: newSettings.majorLinesStep,
+      stopLimitOrdersDistance: newSettings.stopLimitOrdersDistance
     };
 
     return {

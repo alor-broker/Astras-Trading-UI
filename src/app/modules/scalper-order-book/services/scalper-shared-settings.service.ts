@@ -22,7 +22,7 @@ import {
   map
 } from "rxjs/operators";
 import { StorageRecord } from "../../../shared/models/settings-broker.model";
-import { GuidGenerator } from "../../../shared/utils/guid";
+import { StringHelper } from "../../../shared/utils/string-helper";
 
 export interface InstrumentId {
   symbol: string;
@@ -131,20 +131,21 @@ export class ScalperSharedSettingsService {
   }
 
   private getInstrumentRecordKey(instrumentId: InstrumentId): string {
-    return `${instrumentId.symbol}-${instrumentId.exchange}-${instrumentId.board}`;
+    return `${instrumentId.symbol}:${instrumentId.exchange}:${instrumentId.board}`;
   }
 
   private saveUpdates(instrumentId: InstrumentId, updates: Partial<InstrumentLinkedSettings>): void {
     this.ngZone.runOutsideAngular(() => {
+      const instrumentRecordKey = this.getInstrumentRecordKey(instrumentId);
       this.remoteStorageService.setRecord(
         {
-          key: GuidGenerator.newGuid(),
+          key: StringHelper.getSimpleHash(`ScalperOrderBook-${instrumentRecordKey}`),
           meta: {
             timestamp: Date.now()
           },
           value: {
             ...updates,
-            instrumentKey: this.getInstrumentRecordKey(instrumentId),
+            instrumentKey: instrumentRecordKey,
           } as InstrumentLinkedSettingsRecord,
         },
         this.groupKey
