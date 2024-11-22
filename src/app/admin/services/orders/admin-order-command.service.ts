@@ -78,11 +78,15 @@ export class AdminOrderCommandService implements OrderCommandService {
             }
           }
         ).pipe(
+          map(r => ({
+            ...r,
+            isSuccess: r != null && r.message === 'success',
+          })),
           catchHttpError<OrderCommandResult>(
             (err: HttpErrorResponse) => {
               return {
                 isSuccess: false,
-                message: err.message
+                message: err?.message
               };
             }
             , this.errorHandlerService),
