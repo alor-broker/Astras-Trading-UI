@@ -19,7 +19,8 @@ export enum TimeInForce {
 
 export enum Reason {
   ForceCloseOrder = 'ForceCloseOrder',
-  DebtLevy = 'DebtLevy'
+  DebtLevy = 'DebtLevy',
+  Voice = 'Voice'
 }
 
 export interface IcebergParameters {
