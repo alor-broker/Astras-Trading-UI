@@ -39,7 +39,7 @@ interface InstrumentLinkedSettingsRecord extends Partial<InstrumentLinkedSetting
 })
 export class ScalperSharedSettingsService {
   private readonly currentSettings$ = new BehaviorSubject<Map<string, Partial<InstrumentLinkedSettings>> | null>(null);
-  private initialSettings: Observable<StorageRecord[] | null> | null = null;
+  private initialSettings$: Observable<StorageRecord[] | null> | null = null;
 
   constructor(
     private readonly remoteStorageService: RemoteStorageService,
@@ -60,6 +60,7 @@ export class ScalperSharedSettingsService {
       filter(x => x != null),
       map(curr => curr.get(this.getInstrumentRecordKey(instrumentId)) ?? null),
       distinctUntilChanged((previous, current) => previous === current),
+      shareReplay(1)
     );
   }
 
@@ -89,8 +90,8 @@ export class ScalperSharedSettingsService {
   }
 
   private getInitialSettings(): Observable<StorageRecord[] | null> {
-    if (this.initialSettings == null) {
-      this.initialSettings = combineLatest({
+    if (this.initialSettings$ == null) {
+      this.initialSettings$ = combineLatest({
         meta: this.applicationMetaService.getMeta(),
         settings: this.remoteStorageService.getGroup(this.groupKey)
       }).pipe(
@@ -113,7 +114,7 @@ export class ScalperSharedSettingsService {
         shareReplay(1)
       );
 
-      this.initialSettings.pipe(
+      this.initialSettings$.pipe(
         take(1),
       ).subscribe(savedValues => {
         if (savedValues != null) {
@@ -127,7 +128,7 @@ export class ScalperSharedSettingsService {
       });
     }
 
-    return this.initialSettings;
+    return this.initialSettings$;
   }
 
   private getInstrumentRecordKey(instrumentId: InstrumentId): string {

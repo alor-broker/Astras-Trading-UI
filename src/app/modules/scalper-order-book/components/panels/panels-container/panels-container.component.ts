@@ -58,7 +58,7 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
 
   @Input({ required: true })
   set initialWidths(value: Record<string, number>) {
-    if (this.lastAppliedWidths === null) {
+    if (this.isWidthsChanged(value)) {
       this.panels.pipe(
         take(1)
       ).subscribe(panels => {
@@ -248,5 +248,17 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
     const containerWidth = panelsMap.reduce((prev, curr) => prev + curr.updatedWidth, 0);
 
     return new Map<string, number>(panelsMap.map(p => [p.id, (p.updatedWidth / containerWidth) * 100]));
+  }
+
+  private isWidthsChanged(newWidths: Record<string, number>): boolean {
+    if(this.lastAppliedWidths === null) {
+      return true;
+    }
+
+    return Object.getOwnPropertyNames(newWidths).some(panel => {
+      const newValue = newWidths[panel];
+      const existingRecordValue = this.lastAppliedWidths!.get(panel);
+      return existingRecordValue == null || this.roundWidth(existingRecordValue) !== this.roundWidth(newValue);
+    });
   }
 }

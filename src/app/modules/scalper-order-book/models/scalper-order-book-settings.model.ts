@@ -72,6 +72,7 @@ export interface InstrumentLinkedSettings {
   minorLinesStep?: number;
   majorLinesStep?: number;
   stopLimitOrdersDistance?: number;
+  layout?: OrderBookLayoutSettings;
 }
 
 export interface ScalperOrderBookInstanceSettings extends InstrumentKey, WidgetSettings {
@@ -83,7 +84,6 @@ export interface ScalperOrderBookInstanceSettings extends InstrumentKey, WidgetS
   showTradesClustersPanel?: boolean;
   volumeDisplayFormat?: NumberDisplayFormat;
   showPriceWithZeroPadding?: boolean;
-  layout?: OrderBookLayoutSettings;
   showRuler?: boolean;
   rulerSettings?: RulerSettings;
   showWorkingVolumesPanel?: boolean;

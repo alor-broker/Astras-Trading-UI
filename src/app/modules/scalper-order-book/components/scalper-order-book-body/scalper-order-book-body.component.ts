@@ -204,20 +204,21 @@ export class ScalperOrderBookBodyComponent implements
     this.isLoading$.complete();
     this.renderItemsRange$.complete();
     this.hoveredPriceRow$.complete();
+    this.dataContext.destroy();
   }
 
   updatePanelWidths(widths: Record<string, number>): void {
     this.widgetSettings$.pipe(
       take(1)
     ).subscribe(settings => {
-      this.settingsWriteService.updateWidgetSettings(
+      this.settingsWriteService.updateInstrumentLinkedSettings(
         {
           layout: {
             ...settings.layout,
             widths
           }
         },
-        settings.guid,
+        settings
       );
     });
   }

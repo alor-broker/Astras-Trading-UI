@@ -500,7 +500,8 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       tradesPanelSettings: newSettings.tradesPanelSettings ?? prevInstrumentLinkedSettings?.tradesPanelSettings ?? initialSettings.tradesPanelSettings,
       minorLinesStep: newSettings.minorLinesStep,
       majorLinesStep: newSettings.majorLinesStep,
-      stopLimitOrdersDistance: newSettings.stopLimitOrdersDistance
+      stopLimitOrdersDistance: newSettings.stopLimitOrdersDistance,
+      layout: initialSettings.layout
     };
 
     return {
