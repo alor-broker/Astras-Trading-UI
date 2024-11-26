@@ -376,7 +376,7 @@ describe('AdminOrderCommandService', () => {
 
         httpSpy.request.and.returnValue(of({
           isSuccess: true,
-          message: '',
+          message: 'success',
           orderNumber: request.orderId
         }));
 

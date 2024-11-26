@@ -1,4 +1,4 @@
-import {DefaultAdminDashboardConfig} from './../../../shared/models/dashboard/dashboard.model';
+import {DefaultAdminDashboardConfig} from '../../../shared/models/dashboard/dashboard.model';
 import {ManageDashboardsService} from 'src/app/shared/services/manage-dashboards.service';
 import {
   ChangeDetectionStrategy,
@@ -81,6 +81,23 @@ export class SelectClientPortfolioBtnComponent implements OnInit, OnDestroy {
           .map((d) => d as DefaultAdminDashboardConfig)[0];
 
         if (standardConfig != null) {
+          x.allDashboards.forEach((d) => {
+            this.manageDashboardsService.removeDashboard(d.guid);
+          });
+
+          this.store.dispatch(PortfoliosInternalActions.initWithList({
+            portfolios: [
+              {
+                exchange: selectedPortfolio.exchange,
+                portfolio: selectedPortfolio.portfolio,
+                agreement: '',
+                isVirtual: selectedPortfolio.exchange === (Exchange.United as string),
+                market: '',
+                tks: ''
+              }
+            ]
+          }));
+
           this.manageDashboardsService.addDashboardWithTemplate({
             title: dashboardTitle,
             items: standardConfig.widgets.map((w) => ({
@@ -92,24 +109,7 @@ export class SelectClientPortfolioBtnComponent implements OnInit, OnDestroy {
             selectedPortfolio,
             isSelected: true,
           });
-
-          x.allDashboards.forEach((d) => {
-            this.manageDashboardsService.removeDashboard(d.guid);
-          });
         }
-
-        this.store.dispatch(PortfoliosInternalActions.initWithList({
-          portfolios: [
-            {
-              exchange: selectedPortfolio.exchange,
-              portfolio: selectedPortfolio.portfolio,
-              agreement: '',
-              isVirtual: selectedPortfolio.exchange === (Exchange.United as string),
-              market: '',
-              tks: ''
-            }
-          ]
-        }));
       });
   }
 }

@@ -49,6 +49,7 @@
   "reasonLabel": "Submit reason",
   "reasonOptions": {
     "ForceCloseOrder": "Forced closure",
-    "DebtLevy": "Debt write-off"
+    "DebtLevy": "Debt write-off",
+    "Voice": "Submitting an order by voice"
   }
 }
