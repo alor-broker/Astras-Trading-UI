@@ -56,7 +56,7 @@ export class AiChatService {
         return this.httpClient.post<PostMessageResponse>(
           `${this.baseUrl}/messages`,
           {
-            threadId: Math.round(Math.random() * 1e10),
+            threadId: message.threadId,
             sender: 'astras-ai-chart@mock.com',
             text: message.text,
             meta: terminalContext,
