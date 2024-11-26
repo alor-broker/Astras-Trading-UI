@@ -61,7 +61,10 @@ export class InstrumentsService {
 
     return this.cacheService.wrap(
       () => `getInstrument_${instrument.exchange}_${instrument.symbol}_${instrument.instrumentGroup ?? ''}`,
-      () => stream$
+      () => stream$,
+      {
+        expirationTimeoutSec: 60
+      }
     );
   }
 

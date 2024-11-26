@@ -11,13 +11,14 @@ import {
   Subject
 } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { LetDirective } from "@ngrx/component";
 import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
 import { SCALPER_ORDERBOOK_SHARED_CONTEXT } from "../scalper-order-book/scalper-order-book.component";
 import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { MockProvider } from "ng-mocks";
+import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
 
 describe('ScalperOrderBookBodyComponent', () => {
   let component: ScalperOrderBookBodyComponent;
@@ -45,9 +46,9 @@ describe('ScalperOrderBookBodyComponent', () => {
         ...ngZorroMockComponents
       ],
       providers: [
-        {
-          provide: ScalperOrderBookDataContextService,
-          useValue: {
+        MockProvider(
+          ScalperOrderBookDataContextService,
+          {
             createContext: jasmine.createSpy('createContext').and.returnValue({
               extendedSettings$: new Subject(),
               orderBook$: new Subject(),
@@ -68,38 +69,34 @@ describe('ScalperOrderBookBodyComponent', () => {
               asksRange: null,
               bidsRange: null
             })
-          }
-        },
-        {
-          provide: ScalperHotKeyCommandService,
-          useValue: {
+          },
+          "useValue"
+        ),
+        MockProvider(
+          ScalperHotKeyCommandService,
+          {
             commands$: new Subject()
           }
-        },
-        {
-          provide: WidgetSettingsService,
-          useValue: {
-            updateSettings: jasmine.createSpy('updateSettings').and.callThrough(),
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
-          }
-        },
-        {
-          provide: WidgetLocalStateService,
-          useValue: {
+        ),
+        MockProvider(
+          WidgetLocalStateService,
+          {
             getStateRecord: jasmine.createSpy('getStateRecord').and.returnValue(new Subject()),
             setStateRecord: jasmine.createSpy('setStateRecord').and.callThrough()
           }
-        },
-        {
-          provide: SCALPER_ORDERBOOK_SHARED_CONTEXT,
-          useValue: {
+        ),
+        MockProvider(
+          SCALPER_ORDERBOOK_SHARED_CONTEXT,
+          {
             workingVolume$: new Subject(),
             gridSettings$: new BehaviorSubject({
               rowHeight: 18,
               fontSize: 12
             })
-          }
-        }
+          },
+          'useValue'
+        ),
+        MockProvider(ScalperOrderBookSettingsWriteService)
       ]
     })
       .compileComponents();

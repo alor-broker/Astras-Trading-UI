@@ -38,10 +38,8 @@ import {
   ScalperOrderBookRowType
 } from '../../models/scalper-order-book.model';
 import { ScalperOrderBookTableHelper } from '../../utils/scalper-order-book-table.helper';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { ScalperOrderBookWidgetSettings } from '../../models/scalper-order-book-settings.model';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 import {
   SCALPER_ORDERBOOK_SHARED_CONTEXT,
   ScalperOrderBookSharedContext
@@ -60,6 +58,7 @@ import {
   AllOrderBooksHotKeysTypes
 } from "../../../../shared/models/terminal-settings/terminal-settings.model";
 import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
+import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
 
 export interface ScalperOrderBookBodyRef {
   getElement(): ElementRef<HTMLElement>;
@@ -139,9 +138,9 @@ export class ScalperOrderBookBodyComponent implements
     @SkipSelf()
     private readonly scalperOrderBookSharedContext: ScalperOrderBookSharedContext,
     private readonly scalperOrderBookDataContextService: ScalperOrderBookDataContextService,
+    private readonly settingsWriteService: ScalperOrderBookSettingsWriteService,
     private readonly priceRowsStore: PriceRowsStore,
     private readonly hotkeysService: ScalperHotKeyCommandService,
-    private readonly widgetSettingsService: WidgetSettingsService,
     private readonly widgetLocalStateService: WidgetLocalStateService,
     private readonly ref: ElementRef<HTMLElement>,
     private readonly destroyRef: DestroyRef) {
@@ -169,8 +168,8 @@ export class ScalperOrderBookBodyComponent implements
       map(s => s.rowHeight)
     );
 
-    this.initWidgetSettings();
     this.initContext();
+    this.initWidgetSettings();
     this.initAutoAlign();
     this.initManualAlign();
     this.initHiddenOrdersIndicators();
@@ -205,20 +204,21 @@ export class ScalperOrderBookBodyComponent implements
     this.isLoading$.complete();
     this.renderItemsRange$.complete();
     this.hoveredPriceRow$.complete();
+    this.dataContext.destroy();
   }
 
   updatePanelWidths(widths: Record<string, number>): void {
     this.widgetSettings$.pipe(
       take(1)
     ).subscribe(settings => {
-      this.widgetSettingsService.updateSettings<ScalperOrderBookWidgetSettings>(
-        settings.guid,
+      this.settingsWriteService.updateInstrumentLinkedSettings(
         {
           layout: {
             ...settings.layout,
             widths
           }
-        }
+        },
+        settings
       );
     });
   }
@@ -247,7 +247,8 @@ export class ScalperOrderBookBodyComponent implements
   }
 
   private initWidgetSettings(): void {
-    this.widgetSettings$ = ScalperSettingsHelper.getSettingsStream(this.guid, this.widgetSettingsService).pipe(
+    this.widgetSettings$ = this.dataContext.extendedSettings$.pipe(
+      map(x => x.widgetSettings),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }

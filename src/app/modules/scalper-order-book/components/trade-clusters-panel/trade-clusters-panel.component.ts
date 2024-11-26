@@ -37,7 +37,6 @@ import {
   ScalperOrderBookWidgetSettings,
   TradesClusterPanelSettings
 } from '../../models/scalper-order-book-settings.model';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { CdkScrollable } from '@angular/cdk/overlay';
 import { DOCUMENT } from '@angular/common';
 import { ContextMenuService } from '../../../../shared/services/context-menu.service';
@@ -46,8 +45,8 @@ import { toUnixTime } from '../../../../shared/utils/datetime';
 import { mapWith } from "../../../../shared/utils/observable-helper";
 import { NumberDisplayFormat } from "../../../../shared/models/enums/number-display-format";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
+import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
 
 @Component({
   selector: 'ats-trade-clusters-panel',
@@ -80,7 +79,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   };
 
   constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly settingsWriteService: ScalperOrderBookSettingsWriteService,
     private readonly tradeClustersService: TradeClustersService,
     private readonly contextMenuService: ContextMenuService,
     @Inject(DOCUMENT)
@@ -330,36 +329,14 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
     this.settings$.pipe(
       take(1)
     ).subscribe(s => {
-      const instrumentKey = ScalperSettingsHelper.getInstrumentKey(s);
-      const instrumentSettings = s.instrumentLinkedSettings?.[instrumentKey];
-      if(!!instrumentSettings) {
-        this.widgetSettingsService.updateSettings<ScalperOrderBookWidgetSettings>(
-          s.guid,
-          {
-            instrumentLinkedSettings: {
-              ...s.instrumentLinkedSettings,
-              [instrumentKey]: {
-                ...instrumentSettings,
-                tradesClusterPanelSettings: {
-                  ...instrumentSettings.tradesClusterPanelSettings!,
-                  ...updates
-                }
-              }
-            }
-          }
-        );
-
-        return;
-      }
-
-      this.widgetSettingsService.updateSettings<ScalperOrderBookWidgetSettings>(
-        s.guid,
+      this.settingsWriteService.updateInstrumentLinkedSettings(
         {
           tradesClusterPanelSettings: {
             ...s.tradesClusterPanelSettings!,
             ...updates
           }
-        }
+        },
+        s
       );
     });
   }

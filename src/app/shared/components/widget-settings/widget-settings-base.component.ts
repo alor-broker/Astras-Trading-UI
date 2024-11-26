@@ -15,11 +15,19 @@ import {
   Output
 } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+export interface WidgetSettingsFormComponent {
+  guid: string;
+  readonly showCopy: boolean;
+  readonly canSave: boolean;
+  readonly canCopy: boolean;
+  updateSettings(): void;
+  createWidgetCopy(): void;
+}
 
 @Component({
   template: ''
 })
-export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> implements OnInit {
+export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> implements WidgetSettingsFormComponent, OnInit {
   @Input({ required: true })
   guid!: string;
 

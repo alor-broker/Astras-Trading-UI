@@ -5,7 +5,6 @@ import {
   OnInit,
   SkipSelf
 } from '@angular/core';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import {
   Observable,
@@ -13,12 +12,12 @@ import {
   switchMap
 } from "rxjs";
 import { ScalperOrderBookWidgetSettings } from "../../models/scalper-order-book-settings.model";
-import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 import { map } from "rxjs/operators";
 import {
   SCALPER_ORDERBOOK_SHARED_CONTEXT,
   ScalperOrderBookSharedContext
 } from "../scalper-order-book/scalper-order-book.component";
+import { ScalperOrderBookDataContextService } from "../../services/scalper-order-book-data-context.service";
 
 @Component({
   selector: 'ats-top-floating-panel',
@@ -37,7 +36,7 @@ export class TopFloatingPanelComponent implements OnInit {
   currentScaleFactor$!: Observable<number | null>;
 
   constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly dataContextService: ScalperOrderBookDataContextService,
     private readonly quotesService: QuotesService,
     @Inject(SCALPER_ORDERBOOK_SHARED_CONTEXT)
     @SkipSelf()
@@ -46,7 +45,8 @@ export class TopFloatingPanelComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.settings$ = ScalperSettingsHelper.getSettingsStream(this.guid, this.widgetSettingsService).pipe(
+    this.settings$ = this.dataContextService.getSettingsStream(this.guid).pipe(
+      map(x => x.widgetSettings),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 

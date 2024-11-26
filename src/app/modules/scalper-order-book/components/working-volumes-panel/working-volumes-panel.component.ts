@@ -17,10 +17,8 @@ import {
   take,
   withLatestFrom
 } from 'rxjs';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { map } from 'rxjs/operators';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
 import { RecordContent } from "../../../../store/widgets-local-state/widgets-local-state.model";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
@@ -35,6 +33,9 @@ import {
 } from "../scalper-order-book/scalper-order-book.component";
 import { inputNumberValidation } from "../../../../shared/utils/validation-options";
 import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
+import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-data-context.model";
 
 interface SelectedWorkingVolumeState extends RecordContent {
   lastSelectedVolume?: Record<string, number>;
@@ -62,6 +63,9 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
   @Input()
   orientation: 'vertical' | 'horizontal' = 'vertical';
 
+  @Input({ required: true })
+  dataContext!: ScalperOrderBookDataContext;
+
   workingVolumes$!: Observable<number[]>;
   readonly selectedVolume$ = new BehaviorSubject<{ index: number, value: number } | null>(null);
   changeVolumeConfirmVisibleIndex: null | number = null;
@@ -79,7 +83,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
   private settings$!: Observable<ScalperOrderBookWidgetSettings>;
 
   constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly settingsWriteService: ScalperOrderBookSettingsWriteService,
     private readonly hotKeyCommandService: ScalperHotKeyCommandService,
     @Inject(SCALPER_ORDERBOOK_SHARED_CONTEXT)
     @SkipSelf()
@@ -90,7 +94,8 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = ScalperSettingsHelper.getSettingsStream(this.guid, this.widgetSettingsService).pipe(
+    this.settings$ = this.dataContext.extendedSettings$.pipe(
+      map(x => x.widgetSettings),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
@@ -111,7 +116,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
       withLatestFrom(this.lastSelectedVolumeState$)
     ).subscribe(([settings, lastSelectedVolumeState]) => {
       const workingVolumes = settings.workingVolumes;
-      const lastSelectedVolume = lastSelectedVolumeState?.lastSelectedVolume?.[ScalperSettingsHelper.getInstrumentKey(settings)];
+      const lastSelectedVolume = lastSelectedVolumeState?.lastSelectedVolume?.[this.getSettingsInstrumentKey(settings)];
 
       if (lastSelectedVolume != null && !!lastSelectedVolume) {
         const targetVolumeIndex = workingVolumes.findIndex(v => v === lastSelectedVolume);
@@ -133,6 +138,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
     });
 
     this.initVolumeSwitchByHotKey();
+    this.initVolumeSwitchBySettingsChange();
   }
 
   ngOnDestroy(): void {
@@ -158,22 +164,16 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
           return;
         }
 
-        const instrumentKey = ScalperSettingsHelper.getInstrumentKey(s);
-        const newWorkingVolumes = (s.instrumentLinkedSettings?.[instrumentKey] ?? s).workingVolumes
+        const newWorkingVolumes = s.workingVolumes
           .map((v, i) => i === index ? Number(this.changeVolumeControl.value) : v);
 
-        this.widgetSettingsService.updateSettings(
-          this.guid,
+        this.settingsWriteService.updateInstrumentLinkedSettings(
           {
-            instrumentLinkedSettings: {
-              ...s.instrumentLinkedSettings,
-              [instrumentKey]: {
-                ...(s.instrumentLinkedSettings?.[instrumentKey] ?? {}),
-                workingVolumes: newWorkingVolumes
-              }
-            }
-          }
+            workingVolumes: newWorkingVolumes
+          },
+          s
         );
+
         this.selectedVolume$.next({ index, value: this.changeVolumeControl.value! });
         this.closeVolumeChange();
       });
@@ -209,7 +209,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
         {
           lastSelectedVolume: {
             ...x.currentState?.lastSelectedVolume,
-            [ScalperSettingsHelper.getInstrumentKey(x.settings)]: currentVolume
+            [this.getSettingsInstrumentKey(x.settings)]: currentVolume
           }
         }
       );
@@ -227,5 +227,30 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
         this.selectVolume(command.index);
       }
     });
+  }
+
+  private initVolumeSwitchBySettingsChange(): void {
+    this.workingVolumes$.pipe(
+      withLatestFrom(this.selectedVolume$),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(x => {
+      const workingVolumes = x[0];
+      const selectedVolume = x[1];
+
+      if(selectedVolume === null || workingVolumes.length === 0) {
+        return;
+      }
+
+      const volume = workingVolumes[selectedVolume.index] as number | undefined;
+      if (volume != null) {
+        this.selectVolume(selectedVolume.index);
+      } else {
+        this.selectVolume(0);
+      }
+    });
+  }
+
+  private getSettingsInstrumentKey(instrumentKey: InstrumentKey): string {
+    return `${instrumentKey.exchange}:${instrumentKey.symbol}:${instrumentKey.instrumentGroup}`;
   }
 }

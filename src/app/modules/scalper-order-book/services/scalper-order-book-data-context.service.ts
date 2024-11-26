@@ -3,7 +3,6 @@ import {
   BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
-  filter,
   Observable,
   of,
   shareReplay,
@@ -17,8 +16,6 @@ import {
   ScalperOrderBookExtendedSettings
 } from '../models/scalper-order-book-data-context.model';
 import { mapWith } from '../../../shared/utils/observable-helper';
-import { WidgetSettingsService } from '../../../shared/services/widget-settings.service';
-import { InstrumentsService } from '../../instruments/services/instruments.service';
 import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
 import { PortfolioKey } from '../../../shared/models/portfolio-key.model';
 import { Position } from '../../../shared/models/positions/position.model';
@@ -53,8 +50,6 @@ import {
 } from '../utils/price-rows-store';
 import { isInstrumentEqual } from '../../../shared/utils/settings-helper';
 import { QuotesService } from '../../../shared/services/quotes.service';
-import { ScalperSettingsHelper } from "../utils/scalper-settings.helper";
-import { Instrument } from "../../../shared/models/instruments/instrument.model";
 import { OrderBookScaleHelper } from "../utils/order-book-scale.helper";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { ScalperOrderBookConstants } from "../constants/scalper-order-book.constants";
@@ -62,6 +57,7 @@ import { InstrumentKey } from "../../../shared/models/instruments/instrument-key
 import { Order } from "../../../shared/models/orders/order.model";
 import { OrderMeta } from "../../../shared/models/orders/new-order.model";
 import { Trade } from "../../../shared/models/trades/trade.model";
+import { ScalperOrderBookSettingsReadService } from "./scalper-order-book-settings-read.service";
 
 export interface ContextGetters {
   getVisibleRowsCount: (rowHeight: number) => number;
@@ -78,8 +74,7 @@ export interface ContextChangeActions {
 })
 export class ScalperOrderBookDataContextService {
   constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly instrumentsService: InstrumentsService,
+    private readonly settingsReadService: ScalperOrderBookSettingsReadService,
     private readonly currentDashboardService: DashboardContextService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
@@ -174,12 +169,7 @@ export class ScalperOrderBookDataContextService {
   }
 
   public getSettingsStream(widgetGuid: string): Observable<ScalperOrderBookExtendedSettings> {
-    return ScalperSettingsHelper.getSettingsStream(widgetGuid, this.widgetSettingsService).pipe(
-      mapWith(
-        settings => this.instrumentsService.getInstrument(settings),
-        (widgetSettings, instrument) => ({ widgetSettings, instrument } as ScalperOrderBookExtendedSettings)
-      ),
-      filter(x => !!(x.instrument as Instrument | null)),
+    return this.settingsReadService.readSettings(widgetGuid).pipe(
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }

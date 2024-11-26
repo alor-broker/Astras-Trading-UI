@@ -4,7 +4,6 @@ import {
 } from '@angular/core/testing';
 
 import { TradeClustersPanelComponent } from './trade-clusters-panel.component';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { ContextMenuService } from '../../../../shared/services/context-menu.service';
 import {
   BehaviorSubject,
@@ -13,6 +12,8 @@ import {
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 import { TradeClustersService } from '../../services/trade-clusters.service';
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { MockProvider, } from "ng-mocks";
+import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
 
 describe('TradeClustersPanelComponent', () => {
   let component: TradeClustersPanelComponent;
@@ -23,26 +24,15 @@ describe('TradeClustersPanelComponent', () => {
       imports: [TranslocoTestsModule.getModule()],
       declarations: [TradeClustersPanelComponent],
       providers: [
-        {
-          provide: WidgetSettingsService,
-          useValue: {
-            updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
-          }
-        },
-        {
-          provide: TradeClustersService,
-          useValue: {
+        MockProvider(ScalperOrderBookSettingsWriteService),
+        MockProvider(
+          TradeClustersService,
+          {
             getHistory: jasmine.createSpy('getHistory').and.returnValue(new Subject()),
             getClustersSubscription: jasmine.createSpy('getClustersSubscription').and.returnValue(new Subject())
           }
-        },
-        {
-          provide: ContextMenuService,
-          useValue: {
-            create: jasmine.createSpy('create').and.callThrough(),
-            close: jasmine.createSpy('close').and.callThrough(),
-          }
-        }
+        ),
+        MockProvider(ContextMenuService)
       ]
     })
       .compileComponents();

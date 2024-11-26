@@ -11,10 +11,8 @@ import {
   Observable,
   shareReplay
 } from 'rxjs';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { ScalperSettingsHelper } from "../../utils/scalper-settings.helper";
 import { map } from "rxjs/operators";
-import { ScalperOrderBookWidgetSettings } from "../../models/scalper-order-book-settings.model";
+import { ScalperOrderBookDataContextService } from "../../services/scalper-order-book-data-context.service";
 
 export interface ScalperOrderBookSharedContext {
   readonly workingVolume$: Observable<number | null>;
@@ -40,7 +38,7 @@ export const SCALPER_ORDERBOOK_SHARED_CONTEXT = new InjectionToken<ScalperOrderB
   ]
 })
 export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext, OnInit, OnDestroy {
-  @Input({ required: true })
+  @Input({required: true})
   guid!: string;
 
   @Input()
@@ -53,7 +51,7 @@ export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext,
 
   hideTooltips$!: Observable<boolean>;
 
-  constructor(private readonly widgetSettingsService: WidgetSettingsService) {
+  constructor(private readonly dataContextService: ScalperOrderBookDataContextService) {
   }
 
   setScaleFactor(value: number): void {
@@ -61,17 +59,22 @@ export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext,
   }
 
   ngOnInit(): void {
-    this.gridSettings$ = ScalperSettingsHelper.getSettingsStream(this.guid, this.widgetSettingsService).pipe(
+    const settings$ = this.dataContextService.getSettingsStream(this.guid).pipe(
+      map(s => s.widgetSettings),
+      shareReplay({bufferSize: 1, refCount: true})
+    );
+
+    this.gridSettings$ = settings$.pipe(
       map(s => ({
           rowHeight: s.rowHeight ?? 18,
           fontSize: s.fontSize ?? 12
         })
       ),
       distinctUntilChanged((prev, curr) => prev.fontSize === curr.fontSize && prev.rowHeight === curr.rowHeight),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
 
-    this.hideTooltips$ = this.widgetSettingsService.getSettings<ScalperOrderBookWidgetSettings>(this.guid)
+    this.hideTooltips$ = settings$
       .pipe(
         map(s => s.hideTooltips ?? false)
       );

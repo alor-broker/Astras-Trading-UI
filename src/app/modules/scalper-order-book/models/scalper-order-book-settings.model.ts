@@ -72,9 +72,10 @@ export interface InstrumentLinkedSettings {
   minorLinesStep?: number;
   majorLinesStep?: number;
   stopLimitOrdersDistance?: number;
+  layout?: OrderBookLayoutSettings;
 }
 
-export interface ScalperOrderBookWidgetSettings extends WidgetSettings, InstrumentKey, InstrumentLinkedSettings {
+export interface ScalperOrderBookInstanceSettings extends InstrumentKey, WidgetSettings {
   disableHotkeys: boolean;
   enableMouseClickSilentOrders: boolean;
   autoAlignIntervalSec?: number;
@@ -83,7 +84,6 @@ export interface ScalperOrderBookWidgetSettings extends WidgetSettings, Instrume
   showTradesClustersPanel?: boolean;
   volumeDisplayFormat?: NumberDisplayFormat;
   showPriceWithZeroPadding?: boolean;
-  layout?: OrderBookLayoutSettings;
   showRuler?: boolean;
   rulerSettings?: RulerSettings;
   showWorkingVolumesPanel?: boolean;
@@ -96,5 +96,9 @@ export interface ScalperOrderBookWidgetSettings extends WidgetSettings, Instrume
   hideTooltips?: boolean;
   rowHeight?: number;
   fontSize?: number;
+  // @deprecated Use shared settings
   instrumentLinkedSettings?: Record<string, InstrumentLinkedSettings>;
+}
+
+export interface ScalperOrderBookWidgetSettings extends ScalperOrderBookInstanceSettings, InstrumentLinkedSettings {
 }

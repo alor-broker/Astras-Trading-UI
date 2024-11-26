@@ -2,12 +2,15 @@ import {
   Component,
   Inject,
   Input,
+  OnDestroy,
   OnInit,
   ViewChild
 } from '@angular/core';
 import { InstrumentsService } from "../../../modules/instruments/services/instruments.service";
 import { WidgetSettingsService } from "../../services/widget-settings.service";
 import {
+  BehaviorSubject,
+  combineLatest,
   Observable,
   of,
   shareReplay,
@@ -22,10 +25,7 @@ import {
   defaultBadgeColor,
   toInstrumentKey
 } from "../../utils/instruments";
-import {
-  debounceTime,
-  map
-} from "rxjs/operators";
+import { map } from "rxjs/operators";
 import {
   ACTIONS_CONTEXT,
   ActionsContext
@@ -36,12 +36,15 @@ import {
   templateUrl: './widget-header-instrument-switch.component.html',
   styleUrls: ['./widget-header-instrument-switch.component.less']
 })
-export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
+export class WidgetHeaderInstrumentSwitchComponent implements OnInit, OnDestroy {
+  private readonly explicitTitle$ = new BehaviorSubject<string | null>(null);
   @Input({ required: true })
   widgetGuid!: string;
 
   @Input()
-  customTitle?: string | null;
+  set customTitle(value: string | null) {
+    this.explicitTitle$.next(value);
+  }
 
   @ViewChild(InstrumentSearchComponent)
   searchInput?: InstrumentSearchComponent;
@@ -58,22 +61,28 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
   ) {
   }
 
+  ngOnDestroy(): void {
+    this.explicitTitle$.complete();
+  }
+
   ngOnInit(): void {
     this.settings$ = this.widgetSettingsService.getSettings<WidgetSettings & InstrumentKey>(this.widgetGuid).pipe(
       shareReplay(1)
     );
 
-    this.instrumentTitle$ = this.settings$.pipe(
-      debounceTime(300), // to prevent error when settings changed but customTitle not yet
-      switchMap(s => {
-        if (this.customTitle != null && !!this.customTitle.length) {
-          return of(this.customTitle!);
+    this.instrumentTitle$ = combineLatest({
+      explicitTitle: this.explicitTitle$,
+      settings: this.settings$
+    }).pipe(
+      switchMap(x => {
+        if (x.explicitTitle != null && !!x.explicitTitle.length) {
+          return of(x.explicitTitle);
         }
 
-        return this.instrumentService.getInstrument(s).pipe(
+        return this.instrumentService.getInstrument(x.settings).pipe(
           map(i => this.getTitle(i))
         );
-      }),
+      })
     );
   }
 
