@@ -22,7 +22,6 @@ import {
   Observable,
   shareReplay,
   take,
-  tap,
   withLatestFrom,
 } from 'rxjs';
 import { PriceRowsStore } from '../../utils/price-rows-store';
@@ -64,7 +63,6 @@ import { QuotesService } from "../../../../shared/services/quotes.service";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
 import { AllTradesService } from "../../../../shared/services/all-trades.service";
 import { DataContextBuilder } from "../../utils/data-context-builder";
-import { GuidGenerator } from "../../../../shared/utils/guid";
 
 export interface ScalperOrderBookBodyRef {
   getElement(): ElementRef<HTMLElement>;
@@ -122,8 +120,6 @@ export class ScalperOrderBookBodyComponent implements OnInit,
 
   @Input()
   isActive = false;
-
-  instanceId = GuidGenerator.newGuid();
 
   readonly isLoading$ = new BehaviorSubject(false);
   dataContext!: ScalperOrderBookDataContext;
@@ -334,7 +330,6 @@ export class ScalperOrderBookBodyComponent implements OnInit,
 
   private initLayout(): void {
     this.panelWidths$ = this.dataContext.extendedSettings$.pipe(
-      tap(() => console.log(this.guid, this.instanceId)),
       map(x => x.widgetSettings.layout?.widths
       ?? {
           [this.panelIds.ordersTable]: 50,
