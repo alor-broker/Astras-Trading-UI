@@ -22,6 +22,7 @@ import {
   Observable,
   shareReplay,
   take,
+  tap,
   withLatestFrom,
 } from 'rxjs';
 import { PriceRowsStore } from '../../utils/price-rows-store';
@@ -32,7 +33,7 @@ import {
 import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
 import { ListRange } from '@angular/cdk/collections';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
-import { ScalperOrderBookDataContextService } from '../../services/scalper-order-book-data-context.service';
+import { ScalperOrderBookDataProvider } from '../../services/scalper-order-book-data-provider.service';
 import {
   PriceRow,
   ScalperOrderBookRowType
@@ -59,6 +60,11 @@ import {
 } from "../../../../shared/models/terminal-settings/terminal-settings.model";
 import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
 import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
+import { QuotesService } from "../../../../shared/services/quotes.service";
+import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
+import { AllTradesService } from "../../../../shared/services/all-trades.service";
+import { DataContextBuilder } from "../../utils/data-context-builder";
+import { GuidGenerator } from "../../../../shared/utils/guid";
 
 export interface ScalperOrderBookBodyRef {
   getElement(): ElementRef<HTMLElement>;
@@ -66,6 +72,7 @@ export interface ScalperOrderBookBodyRef {
 
 export interface RulerContext {
   setHoveredRow(hoveredRow: { price: number } | null): void;
+
   get hoveredRow$(): Observable<{ price: number } | null>;
 }
 
@@ -82,17 +89,15 @@ interface ScaleState {
   styleUrls: ['./scalper-order-book-body.component.less'],
   providers: [
     PriceRowsStore,
-    { provide: SCALPER_ORDERBOOK_BODY_REF, useExisting: ScalperOrderBookBodyComponent },
-    { provide: RULER_CONTEX, useExisting: ScalperOrderBookBodyComponent }
+    {provide: SCALPER_ORDERBOOK_BODY_REF, useExisting: ScalperOrderBookBodyComponent},
+    {provide: RULER_CONTEX, useExisting: ScalperOrderBookBodyComponent}
   ]
 })
-export class ScalperOrderBookBodyComponent implements
-  OnInit,
+export class ScalperOrderBookBodyComponent implements OnInit,
   AfterViewInit,
   OnDestroy,
   ScalperOrderBookBodyRef,
-  RulerContext
-{
+  RulerContext {
   readonly maxScaleFactor = 10;
   readonly sides = Side;
   readonly panelIds = {
@@ -106,17 +111,19 @@ export class ScalperOrderBookBodyComponent implements
   @ViewChild(CdkVirtualScrollViewport)
   scrollContainer!: CdkVirtualScrollViewport;
 
-  @ViewChild('topFloatingPanelContainer', { static: false })
+  @ViewChild('topFloatingPanelContainer', {static: false})
   topFloatingPanelContainer?: ElementRef<HTMLDivElement>;
 
-  @ViewChild('bottomFloatingPanelContainer', { static: false })
+  @ViewChild('bottomFloatingPanelContainer', {static: false})
   bottomFloatingPanelContainer?: ElementRef<HTMLDivElement>;
 
-  @Input({ required: true })
+  @Input({required: true})
   guid!: string;
 
   @Input()
   isActive = false;
+
+  instanceId = GuidGenerator.newGuid();
 
   readonly isLoading$ = new BehaviorSubject(false);
   dataContext!: ScalperOrderBookDataContext;
@@ -137,13 +144,20 @@ export class ScalperOrderBookBodyComponent implements
     @Inject(SCALPER_ORDERBOOK_SHARED_CONTEXT)
     @SkipSelf()
     private readonly scalperOrderBookSharedContext: ScalperOrderBookSharedContext,
-    private readonly scalperOrderBookDataContextService: ScalperOrderBookDataContextService,
+    private readonly scalperOrderBookDataProvider: ScalperOrderBookDataProvider,
     private readonly settingsWriteService: ScalperOrderBookSettingsWriteService,
     private readonly priceRowsStore: PriceRowsStore,
+    private readonly quotesService: QuotesService,
+    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
+    private readonly allTradesService: AllTradesService,
     private readonly hotkeysService: ScalperHotKeyCommandService,
     private readonly widgetLocalStateService: WidgetLocalStateService,
     private readonly ref: ElementRef<HTMLElement>,
     private readonly destroyRef: DestroyRef) {
+  }
+
+  get hoveredRow$(): Observable<{ price: number } | null> {
+    return this.hoveredPriceRow$.asObservable();
   }
 
   setHoveredRow(hoveredRow: { price: number } | null): void {
@@ -200,11 +214,14 @@ export class ScalperOrderBookBodyComponent implements
   }
 
   ngOnDestroy(): void {
-    this.contentSize$.complete();
     this.isLoading$.complete();
+    this.isTableHovered$.complete();
     this.renderItemsRange$.complete();
+    this.contentSize$.complete();
     this.hoveredPriceRow$.complete();
+
     this.dataContext.destroy();
+    this.priceRowsStore.ngOnDestroy();
   }
 
   updatePanelWidths(widths: Record<string, number>): void {
@@ -232,10 +249,6 @@ export class ScalperOrderBookBodyComponent implements
     );
   }
 
-  get hoveredRow$(): Observable<{ price: number } | null> {
-    return this.hoveredPriceRow$.asObservable();
-  }
-
   private initManualAlign(): void {
     this.hotkeysService.commands$.pipe(
       takeUntilDestroyed(this.destroyRef)
@@ -249,7 +262,7 @@ export class ScalperOrderBookBodyComponent implements
   private initWidgetSettings(): void {
     this.widgetSettings$ = this.dataContext.extendedSettings$.pipe(
       map(x => x.widgetSettings),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
   }
 
@@ -276,7 +289,7 @@ export class ScalperOrderBookBodyComponent implements
       this.dataContext.displayRange$,
       this.rowHeight$
     ]).pipe(
-      map(([orderBookBody, currentOrders,, rowHeight]) => {
+      map(([orderBookBody, currentOrders, , rowHeight]) => {
         const topOffset = this.scrollContainer.measureScrollOffset('top');
         const bottomOffset = topOffset + this.scrollContainer.getViewportSize();
 
@@ -315,12 +328,13 @@ export class ScalperOrderBookBodyComponent implements
           }),
         };
       }),
-      shareReplay({ bufferSize: 1, refCount: true }),
+      shareReplay({bufferSize: 1, refCount: true}),
     );
   }
 
   private initLayout(): void {
     this.panelWidths$ = this.dataContext.extendedSettings$.pipe(
+      tap(() => console.log(this.guid, this.instanceId)),
       map(x => x.widgetSettings.layout?.widths
       ?? {
           [this.panelIds.ordersTable]: 50,
@@ -357,7 +371,7 @@ export class ScalperOrderBookBodyComponent implements
 
     this.isTableHovered$.pipe(
       switchMap(isHovered => {
-        if(isHovered) {
+        if (isHovered) {
           return this.hotkeysService.commands$;
         }
 
@@ -387,7 +401,7 @@ export class ScalperOrderBookBodyComponent implements
       this.widgetLocalStateService.getStateRecord<ScaleState>(this.guid, storageKey).pipe(
         take(1)
       ).subscribe(savedValue => {
-        if(savedValue != null) {
+        if (savedValue != null) {
           this.scalperOrderBookSharedContext.setScaleFactor(savedValue.scaleFactor);
         } else {
           this.scalperOrderBookSharedContext.setScaleFactor(1);
@@ -397,35 +411,41 @@ export class ScalperOrderBookBodyComponent implements
   }
 
   private initContext(): void {
-    const context = this.scalperOrderBookDataContextService.createContext(
-      this.guid,
-      this.priceRowsStore,
-      this.contentSize$,
-      this.rowHeight$,
-      this.scalperOrderBookSharedContext.scaleFactor$,
-      {
-        getVisibleRowsCount: (rowHeight: number) => this.getDisplayRowsCount(rowHeight),
-        isFillingByHeightNeeded: (currentRows: PriceRow[], rowHeight: number) => this.isFillingByHeightNeeded(currentRows, rowHeight)
+    this.dataContext = DataContextBuilder.buildContext({
+        widgetGuid: this.guid,
+        bodyStreams: {
+          contentSize$: this.contentSize$,
+          rowHeight$: this.rowHeight$,
+          scaleFactor$: this.scalperOrderBookSharedContext.scaleFactor$
+        },
+        contextStreams: {
+          displayRange$: this.renderItemsRange$.asObservable(),
+          workingVolume$: this.scalperOrderBookSharedContext.workingVolume$
+            .pipe(
+              filter(x => x != null && x > 0),
+              map(x => x!)
+            )
+        },
+        bodyParamsGetters: {
+          getVisibleRowsCount: (rowHeight: number) => this.getDisplayRowsCount(rowHeight),
+          isFillingByHeightNeeded: (currentRows: PriceRow[], rowHeight: number) => this.isFillingByHeightNeeded(currentRows, rowHeight)
+        },
+        changeNotifications: {
+          priceRowsRegenerationStarted: () => this.isLoading$.next(true),
+          priceRowsRegenerationCompleted: () => {
+            this.scrollContainer.checkViewportSize();
+            this.alignTable();
+            this.isLoading$.next(false);
+          }
+        }
       },
       {
-        priceRowsRegenerationStarted: () => this.isLoading$.next(true),
-        priceRowsRegenerationCompleted: () => {
-          this.scrollContainer.checkViewportSize();
-          this.alignTable();
-          this.isLoading$.next(false);
-        }
-      }
-    );
-
-    this.dataContext = {
-      ...context,
-      displayRange$: this.renderItemsRange$.asObservable(),
-      workingVolume$: this.scalperOrderBookSharedContext.workingVolume$
-        .pipe(
-          filter(x => x != null && x > 0),
-          map(x => x!)
-        )
-    };
+        priceRowsStore: this.priceRowsStore,
+        scalperOrderBookDataProvider: this.scalperOrderBookDataProvider,
+        quotesService: this.quotesService,
+        portfolioSubscriptionsService: this.portfolioSubscriptionsService,
+        allTradesService: this.allTradesService
+      });
   }
 
   private isFillingByHeightNeeded(currentRows: PriceRow[], rowHeight: number): boolean {
@@ -497,7 +517,7 @@ export class ScalperOrderBookBodyComponent implements
       map(([x,]) => x),
       withLatestFrom(this.priceRowsStore.state$.pipe(map(x => x.rows))),
       filter(([, priceRows]) => priceRows.length > 0),
-      map(([x, priceRows]) => ({ ...x, priceRows })),
+      map(([x, priceRows]) => ({...x, priceRows})),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
       const bufferItemsCount = 10;
@@ -531,7 +551,7 @@ export class ScalperOrderBookBodyComponent implements
 
   private initFloatingPanelPosition(stateKey: string, geContainerBounds: () => DOMRect | null): Observable<Point> {
     const savedPosition$ = this.widgetLocalStateService.getStateRecord<Point>(this.guid, stateKey).pipe(
-      map(p => p ?? { x: 0, y: 0 })
+      map(p => p ?? {x: 0, y: 0})
     );
 
     return combineLatest({
@@ -555,9 +575,9 @@ export class ScalperOrderBookBodyComponent implements
           y = 0;
         }
 
-        return { x, y };
+        return {x, y};
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
   }
 }

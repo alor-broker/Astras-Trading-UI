@@ -12,7 +12,7 @@ import {
   shareReplay
 } from 'rxjs';
 import { map } from "rxjs/operators";
-import { ScalperOrderBookDataContextService } from "../../services/scalper-order-book-data-context.service";
+import { ScalperOrderBookDataProvider } from "../../services/scalper-order-book-data-provider.service";
 
 export interface ScalperOrderBookSharedContext {
   readonly workingVolume$: Observable<number | null>;
@@ -51,7 +51,7 @@ export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext,
 
   hideTooltips$!: Observable<boolean>;
 
-  constructor(private readonly dataContextService: ScalperOrderBookDataContextService) {
+  constructor(private readonly dataContextService: ScalperOrderBookDataProvider) {
   }
 
   setScaleFactor(value: number): void {
@@ -86,5 +86,6 @@ export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext,
 
   ngOnDestroy(): void {
     this.workingVolume$.complete();
+    this.scaleFactor$.complete();
   }
 }

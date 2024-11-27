@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import {
+  distinctUntilChanged,
   Observable,
   shareReplay,
   switchMap
@@ -17,7 +18,8 @@ import {
   SCALPER_ORDERBOOK_SHARED_CONTEXT,
   ScalperOrderBookSharedContext
 } from "../scalper-order-book/scalper-order-book.component";
-import { ScalperOrderBookDataContextService } from "../../services/scalper-order-book-data-context.service";
+import { ScalperOrderBookDataProvider } from "../../services/scalper-order-book-data-provider.service";
+import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 
 @Component({
   selector: 'ats-top-floating-panel',
@@ -36,7 +38,7 @@ export class TopFloatingPanelComponent implements OnInit {
   currentScaleFactor$!: Observable<number | null>;
 
   constructor(
-    private readonly dataContextService: ScalperOrderBookDataContextService,
+    private readonly dataContextService: ScalperOrderBookDataProvider,
     private readonly quotesService: QuotesService,
     @Inject(SCALPER_ORDERBOOK_SHARED_CONTEXT)
     @SkipSelf()
@@ -51,6 +53,7 @@ export class TopFloatingPanelComponent implements OnInit {
     );
 
     this.priceDayChangePercent$ = this.settings$.pipe(
+      distinctUntilChanged((prev, curr) => isInstrumentEqual(prev.widgetSettings, curr.widgetSettings)),
       switchMap(s => this.quotesService.getQuotes(s.symbol, s.exchange, s.instrumentGroup)),
       map(q => q.change_percent ?? 0)
     );

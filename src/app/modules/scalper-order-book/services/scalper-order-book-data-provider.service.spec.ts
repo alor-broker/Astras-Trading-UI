@@ -1,6 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
-import { ScalperOrderBookDataContextService } from './scalper-order-book-data-context.service';
 import {
   NEVER,
   Subject
@@ -8,13 +6,12 @@ import {
 import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
 import { PortfolioSubscriptionsService } from '../../../shared/services/portfolio-subscriptions.service';
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
-import { AllTradesService } from '../../../shared/services/all-trades.service';
-import { QuotesService } from '../../../shared/services/quotes.service';
 import { ScalperOrderBookSettingsReadService } from "./scalper-order-book-settings-read.service";
 import { MockProvider } from "ng-mocks";
+import { ScalperOrderBookDataProvider } from "./scalper-order-book-data-provider.service";
 
-describe('ScalperOrderBookDataContextService', () => {
-  let service: ScalperOrderBookDataContextService;
+describe('ScalperOrderBookDataProvider', () => {
+  let service: ScalperOrderBookDataProvider;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -45,22 +42,10 @@ describe('ScalperOrderBookDataContextService', () => {
           {
             subscribe: jasmine.createSpy('subscribe').and.returnValue(new Subject())
           }
-        ),
-        MockProvider(
-          AllTradesService,
-          {
-            getNewTradesSubscription: jasmine.createSpy('getNewTradesSubscription').and.returnValue(new Subject())
-          }
-        ),
-        MockProvider(
-          QuotesService,
-          {
-            getLastPrice: jasmine.createSpy('getLastPrice').and.returnValue(new Subject())
-          }
         )
       ]
     });
-    service = TestBed.inject(ScalperOrderBookDataContextService);
+    service = TestBed.inject(ScalperOrderBookDataProvider);
   });
 
   it('should be created', () => {

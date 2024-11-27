@@ -39,6 +39,5 @@ export interface ScalperOrderBookDataContext {
 
   addLocalOrder(order: LocalOrder): void;
   removeLocalOrder(orderId: string): void;
-
   destroy(): void;
 }

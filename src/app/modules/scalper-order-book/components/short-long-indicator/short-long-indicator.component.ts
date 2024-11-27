@@ -62,12 +62,12 @@ export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const widgetSettings$ = this.dataContext.extendedSettings$.pipe(
       map(s => s.widgetSettings),
+      distinctUntilChanged((prev, curr) => isInstrumentEqual(prev, curr)),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
     const instrumentKey$ = widgetSettings$.pipe(
       map(s => toInstrumentKey(s)),
-      distinctUntilChanged((prev, curr) => isInstrumentEqual(prev, curr)),
       tap(() => this.shortLongValues$.next(null)),
       shareReplay({ bufferSize: 1, refCount: true })
     );
