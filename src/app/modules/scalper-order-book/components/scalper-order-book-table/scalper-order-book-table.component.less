@@ -175,6 +175,17 @@
 
       .volume {
         position: relative;
+        white-space: nowrap;
+
+        .growing-volume {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          right: 100%;
+          padding-right: 5px;
+          display: flex;
+          align-items: center;
+        }
       }
     }
   }
@@ -209,3 +220,4 @@
     }
   }
 }
+

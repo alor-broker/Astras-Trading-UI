@@ -96,6 +96,10 @@ export class TerminalSettingsHelper {
         key: '-',
         code: 'NumpadSubtract'
       },
+      toggleGrowingVolumeDisplay: {
+        key: 'v',
+        code: 'KeyV'
+      },
       workingVolumes: ['1', '2', '3', '4'],
       extraHotKeys: true
     };

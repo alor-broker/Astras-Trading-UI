@@ -47,6 +47,9 @@
               </ng-container>
 
               <ng-template #defaultVolumeDisplay>
+                <span class="growing-volume" *ngIf="showGrowingVolume && (row.growingVolume ?? 0) > 0">
+                  <ng-container [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.growingVolume}"></ng-container>
+                </span>
                 <ng-container [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.volume}"></ng-container>
               </ng-template>
             </span>
