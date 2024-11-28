@@ -11,4 +11,8 @@ export interface Widget {
   position?: DashboardItemPosition;
 
   initialSettings?: any;
+  initialSize?: {
+    cols: number;
+    rows: number;
+  };
 }

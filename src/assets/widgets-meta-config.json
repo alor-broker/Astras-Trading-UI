@@ -90,7 +90,7 @@
         "initialPosition": "auto",
         "isFullWidth": false,
         "initialHeight": 18,
-        "initialWidth": 10
+        "initialWidth": 6
       },
       "hasZeroPaddings": true,
       "galleryOrder": 3,

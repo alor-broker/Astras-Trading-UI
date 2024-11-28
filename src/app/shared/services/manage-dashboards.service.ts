@@ -43,7 +43,7 @@ export class ManageDashboardsService {
     return DashboardsStreams.getAllDashboards(this.store);
   }
 
-  addWidget(widgetType: string, initialSettings?: Record<string, any>): void {
+  addWidget(widgetType: string, initialSettings?: Record<string, any>, initialSize?: { cols: number, rows: number }): void {
     this.dashboardContextService.selectedDashboard$.pipe(
       take(1)
     ).subscribe(d => {
@@ -52,7 +52,8 @@ export class ManageDashboardsService {
           dashboardGuid: d.guid,
           widgets: [{
             widgetType: widgetType,
-            initialSettings: initialSettings
+            initialSettings: initialSettings,
+            initialSize
           }]
         }
       ));
@@ -71,7 +72,11 @@ export class ManageDashboardsService {
 
       this.addWidget(
         w.widgetType,
-        newSettings
+        newSettings,
+        {
+          cols: w.position?.cols ?? 5,
+          rows: w.position?.rows ?? 5,
+        }
       );
     });
   }
