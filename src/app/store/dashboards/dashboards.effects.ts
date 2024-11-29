@@ -184,7 +184,7 @@ export class DashboardsEffects {
                 groupKey: badge,
                 instrumentKey: dashboard.instrumentsSelection?.[badge] ?? {
                   ...exchangeSettings!.settings.defaultInstrument!,
-                  exchange: exchangeSettings!.exchange
+                  exchange: exchangeSettings!.settings.defaultInstrument!.exchange ?? exchangeSettings!.exchange
                 }
               }))
             }
