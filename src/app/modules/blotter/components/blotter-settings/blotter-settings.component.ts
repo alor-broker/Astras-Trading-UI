@@ -59,6 +59,14 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
       },
       Validators.required
     ),
+    showSummary: this.formBuilder.nonNullable.control(true),
+    showOrders: this.formBuilder.nonNullable.control(true),
+    showStopOrders: this.formBuilder.nonNullable.control(true),
+    showPositions: this.formBuilder.nonNullable.control(true),
+    showTrades: this.formBuilder.nonNullable.control(true),
+    showRepoTrades: this.formBuilder.nonNullable.control(false),
+    showHistoryTrades: this.formBuilder.nonNullable.control(true),
+    showNotifications: this.formBuilder.nonNullable.control(true),
     ordersColumns: this.formBuilder.nonNullable.control<string[]>([], Validators.required),
     stopOrdersColumns: this.formBuilder.nonNullable.control<string[]>([], Validators.required),
     positionsColumns: this.formBuilder.nonNullable.control<string[]>([], Validators.required),
@@ -69,7 +77,6 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
     isSoldPositionsHidden: this.formBuilder.nonNullable.control(false),
     cancelOrdersWithoutConfirmation: this.formBuilder.nonNullable.control(false),
     showPositionActions: this.formBuilder.nonNullable.control(false),
-    showRepoTrades: this.formBuilder.nonNullable.control(false),
   });
 
   allOrdersColumns: BaseColumnId[] = allOrdersColumns;
@@ -172,6 +179,15 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
 
     this.form.controls.portfolio.setValue(this.toPortfolioKey(settings));
     this.form.controls.exchange.setValue(settings.exchange);
+
+    this.form.controls.showSummary.setValue(settings.showSummary ?? true);
+    this.form.controls.showOrders.setValue(settings.showOrders ?? true);
+    this.form.controls.showStopOrders.setValue(settings.showStopOrders ?? true);
+    this.form.controls.showPositions.setValue(settings.showPositions ?? true);
+    this.form.controls.showTrades.setValue(settings.showTrades ?? true);
+    this.form.controls.showRepoTrades.setValue(settings.showRepoTrades ?? false);
+    this.form.controls.showHistoryTrades.setValue(settings.showHistoryTrades ?? true);
+    this.form.controls.showNotifications.setValue(settings.showNotifications ?? true);
 
     this.form.controls.ordersColumns.setValue(TableSettingHelper.toTableDisplaySettings(
       settings.ordersTable,
