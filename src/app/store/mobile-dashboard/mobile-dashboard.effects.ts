@@ -127,7 +127,7 @@ export class MobileDashboardEffects {
                 groupKey: defaultBadgeColor,
                 instrumentKey: {
                   ...exchangeSettings!.settings.defaultInstrument,
-                  exchange: exchangeSettings!.exchange
+                  exchange: exchangeSettings!.settings.defaultInstrument!.exchange ?? exchangeSettings!.exchange
                 }
               }
             }

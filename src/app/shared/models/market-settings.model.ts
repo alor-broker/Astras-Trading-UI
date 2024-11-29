@@ -16,6 +16,7 @@ export interface ExchangeSettings {
   defaultInstrument?: {
     symbol: string;
     instrumentGroup?: string;
+    exchange?: string;
   };
   // Exchange timezone. Used in TV chart to correctly display candle timestamps
   timezone: string;
