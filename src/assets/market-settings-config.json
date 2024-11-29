@@ -37,7 +37,11 @@
       "settings": {
         "defaultPortfolioCurrencyInstrument": "RUB",
         "timezone": "Europe/Moscow",
-        "defaultTradingSession": "0700-0000,0000-0200:1234567"
+        "defaultTradingSession": "0700-0000,0000-0200:1234567",
+        "defaultInstrument": {
+          "symbol": "SBER",
+          "instrumentGroup": "TQBR"
+        }
       }
     }
   ],
