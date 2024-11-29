@@ -16,7 +16,14 @@ export interface BlotterSettings extends WidgetSettings {
   notificationsTable?: TableDisplaySettings;
   isSoldPositionsHidden: boolean;
   cancelOrdersWithoutConfirmation?: boolean;
+  showSummary?: boolean;
+  showOrders?: boolean;
+  showStopOrders?: boolean;
+  showPositions?: boolean;
+  showTrades?: boolean;
   showRepoTrades?: boolean;
+  showHistoryTrades?: boolean;
+  showNotifications?: boolean;
   showPositionActions?: boolean;
 
   /**

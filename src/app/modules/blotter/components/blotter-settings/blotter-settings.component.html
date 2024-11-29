@@ -38,7 +38,25 @@
           </nz-form-control>
         </nz-form-control>
       </nz-form-item>
+      <nz-divider></nz-divider>
       <nz-form-item>
+        <nz-form-label nzFor="showSummary">
+          {{t('blotterSettings.showSummaryLabel')}}
+        </nz-form-label>
+        <nz-form-control>
+          <nz-switch formControlName='showSummary'></nz-switch>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-divider></nz-divider>
+      <nz-form-item>
+        <nz-form-label nzFor="showOrders">
+          {{t('blotterSettings.showOrdersLabel')}}
+        </nz-form-label>
+        <nz-form-control>
+          <nz-switch formControlName='showOrders'></nz-switch>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item *ngIf="form.value.showOrders">
         <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
           <nz-form-label nzRequired nzFor="ordersColumns">
             {{t('blotterSettings.ordersColumnsLabel')}}
@@ -71,6 +89,14 @@
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
+        <nz-form-label nzFor="showStopOrders">
+          {{t('blotterSettings.showStopOrdersLabel')}}
+        </nz-form-label>
+        <nz-form-control>
+          <nz-switch formControlName='showStopOrders'></nz-switch>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item *ngIf="form.value.showStopOrders">
         <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
           <nz-form-label nzRequired nzFor="stopOrdersColumns">
             {{t('blotterSettings.stopOrdersColumnsLabel')}}
@@ -103,6 +129,72 @@
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
+        <nz-form-label nzFor="cancelOrdersWithoutConfirmation">{{t('blotterSettings.cancelWithoutConfirmLabel')}}</nz-form-label>
+        <nz-switch formControlName='cancelOrdersWithoutConfirmation'></nz-switch>
+      </nz-form-item>
+      <nz-divider></nz-divider>
+      <nz-form-item>
+        <nz-form-label nzFor="showPositions">
+          {{t('blotterSettings.showPositionsLabel')}}
+        </nz-form-label>
+        <nz-form-control>
+          <nz-switch formControlName='showPositions'></nz-switch>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item *ngIf="form.value.showPositions">
+        <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
+          <nz-form-label nzRequired nzFor="positionsColumns">
+            {{t('blotterSettings.positionsColumnsLabel')}}
+          </nz-form-label>
+          <nz-select
+            *transloco="let tPositions; scope: 'blotter/positions'"
+            [nzMaxTagCount]="10"
+            [nzMaxTagPlaceholder]="tagPlaceHolder"
+            nzMode="multiple"
+            [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
+            formControlName="positionsColumns"
+            atsRemoveSelectTitles
+            [valueChanges]="form.controls.positionsColumns.valueChanges"
+          >
+            <nz-option
+              *ngFor="let item of allPositionsColumns"
+              nzCustomContent
+              [nzLabel]="tPositions('blotterPositions.columns.' + item.id + '.name')"
+              [nzValue]="item.id"
+            >
+              <div
+                nz-tooltip
+                [nzTooltipPlacement]="['topLeft', 'top', 'topRight']"
+                [nzTooltipTitle]="tPositions('blotterPositions.columns.' + item.id + '.tooltip')"
+              >
+                {{tPositions('blotterPositions.columns.' + item.id + '.name')}}
+              </div>
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item *ngIf="form.value.showPositions">
+        <nz-form-label nzFor="showPositionActions">
+          {{t('blotterSettings.showPositionActionsLabel')}}
+        </nz-form-label>
+        <nz-form-control>
+          <nz-switch formControlName='showPositionActions'></nz-switch>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item *ngIf="form.value.showPositions">
+        <nz-form-label nzFor="isSoldPositionsHidden">{{t('blotterSettings.hideSoldLabel')}}</nz-form-label>
+        <nz-switch formControlName='isSoldPositionsHidden'></nz-switch>
+      </nz-form-item>
+      <nz-divider></nz-divider>
+      <nz-form-item>
+        <nz-form-label nzFor="showTrades">
+          {{t('blotterSettings.showTradesLabel')}}
+        </nz-form-label>
+        <nz-form-control>
+          <nz-switch formControlName='showTrades'></nz-switch>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item *ngIf="form.value.showTrades">
         <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
           <nz-form-label nzRequired nzFor="tradesColumns">
             {{t('blotterSettings.tradesColumnsLabel')}}
@@ -135,120 +227,14 @@
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
-          <nz-form-label nzRequired nzFor="tradesHistoryColumns">
-            {{t('blotterSettings.tradesHistoryColumnsLabel')}}
-          </nz-form-label>
-          <nz-select
-            *transloco="let tTrades; scope: 'blotter/trades'"
-            [nzMaxTagCount]="10"
-            [nzMaxTagPlaceholder]="tagPlaceHolder"
-            nzMode="multiple"
-            [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
-            formControlName="tradesHistoryColumns"
-            atsRemoveSelectTitles
-            [valueChanges]="form.controls.tradesHistoryColumns.valueChanges"
-          >
-            <nz-option
-              *ngFor="let item of allTradesHistoryColumns"
-              nzCustomContent
-              [nzLabel]="tTrades('blotterTrades.columns.' + item.id + '.name')"
-              [nzValue]="item.id"
-            >
-              <div
-                nz-tooltip
-                [nzTooltipPlacement]="['topLeft', 'top', 'topRight']"
-                [nzTooltipTitle]="tTrades('blotterTrades.columns.' + item.id + '.tooltip')"
-              >
-                {{tTrades('blotterTrades.columns.' + item.id + '.name')}}
-              </div>
-            </nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
-          <nz-form-label nzRequired nzFor="positionsColumns">
-            {{t('blotterSettings.positionsColumnsLabel')}}
-          </nz-form-label>
-          <nz-select
-            *transloco="let tPositions; scope: 'blotter/positions'"
-            [nzMaxTagCount]="10"
-            [nzMaxTagPlaceholder]="tagPlaceHolder"
-            nzMode="multiple"
-            [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
-            formControlName="positionsColumns"
-            atsRemoveSelectTitles
-            [valueChanges]="form.controls.positionsColumns.valueChanges"
-          >
-            <nz-option
-              *ngFor="let item of allPositionsColumns"
-              nzCustomContent
-              [nzLabel]="tPositions('blotterPositions.columns.' + item.id + '.name')"
-              [nzValue]="item.id"
-            >
-              <div
-                nz-tooltip
-                [nzTooltipPlacement]="['topLeft', 'top', 'topRight']"
-                [nzTooltipTitle]="tPositions('blotterPositions.columns.' + item.id + '.tooltip')"
-              >
-                {{tPositions('blotterPositions.columns.' + item.id + '.name')}}
-              </div>
-            </nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzFor="showPositionActions">
-          {{t('blotterSettings.showPositionActionsLabel')}}
+        <nz-form-label nzFor="showRepoTrades">
+          {{t('blotterSettings.showRepoTradesLabel')}}
         </nz-form-label>
         <nz-form-control>
-          <nz-switch formControlName='showPositionActions'></nz-switch>
+          <nz-switch formControlName='showRepoTrades'></nz-switch>
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item *ngIf="isNotificationsSupported">
-        <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
-          <nz-form-label nzRequired nzFor="notificationsColumns">
-            {{t('blotterSettings.notificationsColumnsLabel')}}
-          </nz-form-label>
-          <nz-select
-            *transloco="let tNotifications; scope: 'blotter/notifications'"
-            [nzMaxTagCount]="10"
-            [nzMaxTagPlaceholder]="tagPlaceHolder"
-            nzMode="multiple"
-            [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
-            formControlName="notificationsColumns"
-            atsRemoveSelectTitles
-            [valueChanges]="form.controls.notificationsColumns.valueChanges"
-          >
-            <nz-option
-              *ngFor="let item of allNotificationsColumns"
-              nzCustomContent
-              [nzLabel]="tNotifications('blotterNotifications.columns.' + item.id + '.name')"
-              [nzValue]="item.id"
-            >
-              <div
-                nz-tooltip
-                [nzTooltipPlacement]="['topLeft', 'top', 'topRight']"
-                [nzTooltipTitle]="tNotifications('blotterNotifications.columns.' + item.id + '.tooltip')"
-              >
-                {{tNotifications('blotterNotifications.columns.' + item.id + '.name')}}
-              </div>
-            </nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-
       <ng-container *transloco="let tRepoTrades; scope: 'blotter/repo-trades'">
-        <nz-form-item>
-          <nz-form-label nzFor="showRepoTrades">
-            {{tRepoTrades('blotterRepoTrades.showRepoTradesLabel')}}
-          </nz-form-label>
-          <nz-form-control>
-            <nz-switch formControlName='showRepoTrades'></nz-switch>
-          </nz-form-control>
-        </nz-form-item>
-
         <nz-form-item *ngIf="form.controls.showRepoTrades.value">
           <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
             <nz-form-label nzRequired nzFor="repoTradesColumns">
@@ -282,24 +268,98 @@
                  )"
                 >
                   {{tTrades(
-                    'blotterTrades.columns.' + item.id + '.name',
-                    { fallback:  tRepoTrades('blotterRepoTrades.columns.' + item.id + '.name') }
-                  )}}
+                  'blotterTrades.columns.' + item.id + '.name',
+                  { fallback:  tRepoTrades('blotterRepoTrades.columns.' + item.id + '.name') }
+                )}}
                 </div>
               </nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
       </ng-container>
-
       <nz-form-item>
-        <nz-form-label nzFor="isSoldPositionsHidden">{{t('blotterSettings.hideSoldLabel')}}</nz-form-label>
-        <nz-switch formControlName='isSoldPositionsHidden'></nz-switch>
+        <nz-form-label nzFor="showHistoryTrades">
+          {{t('blotterSettings.showHistoryTradesLabel')}}
+        </nz-form-label>
+        <nz-form-control>
+          <nz-switch formControlName='showHistoryTrades'></nz-switch>
+        </nz-form-control>
       </nz-form-item>
-      <nz-form-item>
-        <nz-form-label nzFor="cancelOrdersWithoutConfirmation">{{t('blotterSettings.cancelWithoutConfirmLabel')}}</nz-form-label>
-        <nz-switch formControlName='cancelOrdersWithoutConfirmation'></nz-switch>
+      <nz-form-item *ngIf="form.value.showHistoryTrades">
+        <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
+          <nz-form-label nzRequired nzFor="tradesHistoryColumns">
+            {{t('blotterSettings.tradesHistoryColumnsLabel')}}
+          </nz-form-label>
+          <nz-select
+            *transloco="let tTrades; scope: 'blotter/trades'"
+            [nzMaxTagCount]="10"
+            [nzMaxTagPlaceholder]="tagPlaceHolder"
+            nzMode="multiple"
+            [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
+            formControlName="tradesHistoryColumns"
+            atsRemoveSelectTitles
+            [valueChanges]="form.controls.tradesHistoryColumns.valueChanges"
+          >
+            <nz-option
+              *ngFor="let item of allTradesHistoryColumns"
+              nzCustomContent
+              [nzLabel]="tTrades('blotterTrades.columns.' + item.id + '.name')"
+              [nzValue]="item.id"
+            >
+              <div
+                nz-tooltip
+                [nzTooltipPlacement]="['topLeft', 'top', 'topRight']"
+                [nzTooltipTitle]="tTrades('blotterTrades.columns.' + item.id + '.tooltip')"
+              >
+                {{tTrades('blotterTrades.columns.' + item.id + '.name')}}
+              </div>
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
       </nz-form-item>
+      <nz-divider></nz-divider>
+      <ng-container *ngIf="isNotificationsSupported">
+        <nz-form-item>
+          <nz-form-label nzFor="showNotifications">
+            {{t('blotterSettings.showNotificationsLabel')}}
+          </nz-form-label>
+          <nz-form-control>
+            <nz-switch formControlName='showNotifications'></nz-switch>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item *ngIf="form.value.showNotifications">
+          <nz-form-control [nzErrorTip]="t('blotterSettings.selectColumnsError')">
+            <nz-form-label nzRequired nzFor="notificationsColumns">
+              {{t('blotterSettings.notificationsColumnsLabel')}}
+            </nz-form-label>
+            <nz-select
+              *transloco="let tNotifications; scope: 'blotter/notifications'"
+              [nzMaxTagCount]="10"
+              [nzMaxTagPlaceholder]="tagPlaceHolder"
+              nzMode="multiple"
+              [nzPlaceHolder]="t('blotterSettings.selectPlaceholder')"
+              formControlName="notificationsColumns"
+              atsRemoveSelectTitles
+              [valueChanges]="form.controls.notificationsColumns.valueChanges"
+            >
+              <nz-option
+                *ngFor="let item of allNotificationsColumns"
+                nzCustomContent
+                [nzLabel]="tNotifications('blotterNotifications.columns.' + item.id + '.name')"
+                [nzValue]="item.id"
+              >
+                <div
+                  nz-tooltip
+                  [nzTooltipPlacement]="['topLeft', 'top', 'topRight']"
+                  [nzTooltipTitle]="tNotifications('blotterNotifications.columns.' + item.id + '.tooltip')"
+                >
+                  {{tNotifications('blotterNotifications.columns.' + item.id + '.name')}}
+                </div>
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </ng-container>
     </form>
   </div>
 
