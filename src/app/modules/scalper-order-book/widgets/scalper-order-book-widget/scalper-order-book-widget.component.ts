@@ -69,9 +69,9 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
         volumeHighlightOptions: getValueOrDefault(
           settings.volumeHighlightOptions,
           [
-            { boundary: 1000, color: '#71DB20' },
-            { boundary: 5000, color: '#ff0000' },
-            { boundary: 10000, color: '#ff00ff' }
+            { boundary: 1000, color: '#d1711b80' },
+            { boundary: 5000, color: '#1e45b780' },
+            { boundary: 10000, color: '#aa166480' }
           ]
           ),
         workingVolumes: getValueOrDefault(settings.workingVolumes, [1, 10, 100, 1000]),
