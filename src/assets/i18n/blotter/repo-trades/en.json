@@ -29,7 +29,6 @@
       "tooltip": "Yield based on trade price"
     }
   },
-  "showRepoTradesLabel": "Show REPO trades",
   "emptyTrades": "There are no REPO trades today",
   "emptyTradesWithFilters": "Nothing found with these filters"
 }

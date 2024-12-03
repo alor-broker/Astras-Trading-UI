@@ -17,6 +17,7 @@ import { WidgetSettingsComponent } from "../../../../shared/components/widget-se
 import { NzToolTipModule } from "ng-zorro-antd/tooltip";
 import { RemoveSelectTitlesDirective } from "../../../../shared/directives/remove-select-titles.directive";
 import {PUSH_NOTIFICATIONS_CONFIG} from "../../../push-notifications/services/push-notifications-config";
+import { NzDividerComponent } from "ng-zorro-antd/divider";
 
 describe('BlotterSettingsComponent', () => {
   let component: BlotterSettingsComponent;
@@ -44,7 +45,8 @@ describe('BlotterSettingsComponent', () => {
         TranslocoTestsModule.getModule(),
         ...FormsTesting.getTestingModules(),
         WidgetSettingsComponent,
-        NzToolTipModule
+        NzToolTipModule,
+        NzDividerComponent
       ],
       providers: [
         {

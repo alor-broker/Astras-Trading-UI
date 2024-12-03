@@ -89,6 +89,14 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
       'BlotterSettings',
       settings => ({
         ...settings,
+        showSummary: getValueOrDefault(settings.showSummary, true),
+        showOrders: getValueOrDefault(settings.showOrders, true),
+        showStopOrders: getValueOrDefault(settings.showStopOrders, true),
+        showPositions: getValueOrDefault(settings.showPositions, true),
+        showTrades: getValueOrDefault(settings.showTrades, true),
+        showRepoTrades: getValueOrDefault(settings.showRepoTrades, false),
+        showHistoryTrades: getValueOrDefault(settings.showHistoryTrades, true),
+        showNotifications: getValueOrDefault(settings.showNotifications, true),
         tradesTable: TableSettingHelper.toTableDisplaySettings(
           settings.tradesTable,
           allTradesColumns.filter(c => c.isDefault).map(c => c.id)

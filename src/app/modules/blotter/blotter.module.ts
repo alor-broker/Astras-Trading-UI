@@ -24,6 +24,7 @@ import { TradesHistoryComponent } from './components/trades-history/trades-histo
 import { LetDirective } from "@ngrx/component";
 import { InstrumentsModule } from "../instruments/instruments.module";
 import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
+import { NzDividerComponent } from "ng-zorro-antd/divider";
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { WidgetSettingsComponent } from "../../shared/components/widget-settings
         NzTreeModule,
         LetDirective,
         InstrumentsModule,
-        WidgetSettingsComponent
+        WidgetSettingsComponent,
+        NzDividerComponent
     ],
   exports: [
     BlotterWidgetComponent
