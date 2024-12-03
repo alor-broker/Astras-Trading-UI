@@ -4,10 +4,9 @@ import {
 } from '@angular/core/testing';
 
 import { ScalperOrderBookBodyComponent } from './scalper-order-book-body.component';
-import { ScalperOrderBookDataContextService } from '../../services/scalper-order-book-data-context.service';
-import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 import {
   BehaviorSubject,
+  NEVER,
   Subject
 } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
@@ -19,6 +18,10 @@ import { ComponentHelpers } from "../../../../shared/utils/testing/component-hel
 import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 import { MockProvider } from "ng-mocks";
 import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
+import { QuotesService } from "../../../../shared/services/quotes.service";
+import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
+import { AllTradesService } from "../../../../shared/services/all-trades.service";
+import { ScalperOrderBookDataProvider } from "../../services/scalper-order-book-data-provider.service";
 
 describe('ScalperOrderBookBodyComponent', () => {
   let component: ScalperOrderBookBodyComponent;
@@ -47,30 +50,33 @@ describe('ScalperOrderBookBodyComponent', () => {
       ],
       providers: [
         MockProvider(
-          ScalperOrderBookDataContextService,
+          ScalperOrderBookDataProvider,
           {
-            createContext: jasmine.createSpy('createContext').and.returnValue({
-              extendedSettings$: new Subject(),
-              orderBook$: new Subject(),
-              position$: new Subject(),
-              currentOrders$: new Subject(),
-              currentPortfolio$: new Subject(),
-              trades$: new Subject(),
-              ownTrades$: new Subject(),
-              orderBookBody$: new Subject(),
-              displayRange$: new Subject(),
-              workingVolume$: new Subject(),
-              scaleFactor$: new BehaviorSubject(1),
-              addLocalOrder: () => {},
-              removeLocalOrder: () => {},
-              destroy: () => {}
-            } as ScalperOrderBookDataContext),
-            getOrderBookBounds: jasmine.createSpy('getOrderBookBounds').and.returnValue({
-              asksRange: null,
-              bidsRange: null
-            })
-          },
-          "useValue"
+            getSettingsStream: () => NEVER,
+            getOrderBookPortfolio: () => NEVER,
+            getOrderBookPositionStream: () => NEVER,
+            getOrderBookStream: () => NEVER
+          }
+        ),
+        MockProvider(
+          QuotesService,
+          {
+            getLastPrice: () => NEVER
+          }
+        ),
+        MockProvider(
+          PortfolioSubscriptionsService,
+          {
+            getOrdersSubscription: () => NEVER,
+            getStopOrdersSubscription: () => NEVER,
+            getTradesSubscription: () => NEVER
+          }
+        ),
+        MockProvider(
+          AllTradesService,
+          {
+            getNewTradesSubscription: () => NEVER,
+          }
         ),
         MockProvider(
           ScalperHotKeyCommandService,
@@ -92,7 +98,8 @@ describe('ScalperOrderBookBodyComponent', () => {
             gridSettings$: new BehaviorSubject({
               rowHeight: 18,
               fontSize: 12
-            })
+            }),
+            scaleFactor$: new Subject()
           },
           'useValue'
         ),

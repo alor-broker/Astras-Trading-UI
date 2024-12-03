@@ -13,7 +13,7 @@ import {
 import { map } from 'rxjs/operators';
 import { MathHelper } from '../../../../shared/utils/math-helper';
 import { ScalperOrderBookPositionState } from '../../models/scalper-order-book.model';
-import { ScalperOrderBookDataContextService } from '../../services/scalper-order-book-data-context.service';
+import { ScalperOrderBookDataProvider } from '../../services/scalper-order-book-data-provider.service';
 
 @Component({
   selector: 'ats-current-position-panel',
@@ -32,7 +32,7 @@ export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
   lossOrProfitDisplayType$ = new BehaviorSubject<'points' | 'percentage'>('points');
 
   constructor(
-    private readonly dataContextService: ScalperOrderBookDataContextService
+    private readonly dataContextService: ScalperOrderBookDataProvider
   ) {
   }
 

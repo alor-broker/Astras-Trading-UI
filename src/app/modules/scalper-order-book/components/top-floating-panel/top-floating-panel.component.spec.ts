@@ -10,7 +10,7 @@ import { LetDirective } from "@ngrx/component";
 import { SCALPER_ORDERBOOK_SHARED_CONTEXT } from "../scalper-order-book/scalper-order-book.component";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { MockProvider } from "ng-mocks";
-import { ScalperOrderBookDataContextService } from "../../services/scalper-order-book-data-context.service";
+import { ScalperOrderBookDataProvider } from "../../services/scalper-order-book-data-provider.service";
 
 describe('TopFloatingPanelComponent', () => {
   let component: TopFloatingPanelComponent;
@@ -25,7 +25,7 @@ describe('TopFloatingPanelComponent', () => {
       declarations: [TopFloatingPanelComponent],
       providers: [
         MockProvider(
-          ScalperOrderBookDataContextService,
+          ScalperOrderBookDataProvider,
           {
             getSettingsStream: jasmine.createSpy('getSettings').and.returnValue(new Subject())
           }

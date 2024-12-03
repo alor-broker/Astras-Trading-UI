@@ -10,7 +10,7 @@ import {
 import { LetDirective } from "@ngrx/component";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { ScalperOrderBookDataContextService } from "../../services/scalper-order-book-data-context.service";
+import { ScalperOrderBookDataProvider } from "../../services/scalper-order-book-data-provider.service";
 import { MockProvider } from "ng-mocks";
 
 describe('ScalperOrderBookComponent', () => {
@@ -32,7 +32,7 @@ describe('ScalperOrderBookComponent', () => {
       ],
       providers: [
         MockProvider(
-          ScalperOrderBookDataContextService,
+          ScalperOrderBookDataProvider,
           {
             getSettingsStream: () => NEVER
           }

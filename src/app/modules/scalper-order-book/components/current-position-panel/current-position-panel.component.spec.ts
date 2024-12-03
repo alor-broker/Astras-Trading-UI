@@ -3,7 +3,7 @@ import {
   TestBed
 } from '@angular/core/testing';
 import { CurrentPositionPanelComponent } from './current-position-panel.component';
-import { ScalperOrderBookDataContextService } from '../../services/scalper-order-book-data-context.service';
+import { ScalperOrderBookDataProvider } from '../../services/scalper-order-book-data-provider.service';
 import { Subject } from 'rxjs';
 import { LetDirective } from "@ngrx/component";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
@@ -21,7 +21,7 @@ describe('CurrentPositionPanelComponent', () => {
       declarations: [CurrentPositionPanelComponent],
       providers: [
         {
-          provide: ScalperOrderBookDataContextService,
+          provide: ScalperOrderBookDataProvider,
           useValue: {
             getSettingsStream: jasmine.createSpy('getSettingsStream').and.returnValue(new Subject()),
             getOrderBookPortfolio: jasmine.createSpy('getOrderBookPortfolio').and.returnValue(new Subject()),

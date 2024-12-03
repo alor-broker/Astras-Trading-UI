@@ -5,6 +5,7 @@ import {
   HostListener,
   Inject,
   Input,
+  OnDestroy,
   OnInit,
   Renderer2,
   SkipSelf
@@ -30,7 +31,7 @@ import {
     }
   ]
 })
-export class PanelComponent implements PanelResizeContext, OnInit {
+export class PanelComponent implements PanelResizeContext, OnInit, OnDestroy {
   readonly resizeEndOutsideAngular$ = new Subject<void>();
   @Input()
   canResize = false;
@@ -58,6 +59,10 @@ export class PanelComponent implements PanelResizeContext, OnInit {
     private readonly renderer: Renderer2,
     private readonly destroyRef: DestroyRef
   ) {
+  }
+
+  ngOnDestroy(): void {
+    this.resizedOutsideAngular$.complete();
   }
 
   get isExpanded(): boolean {
