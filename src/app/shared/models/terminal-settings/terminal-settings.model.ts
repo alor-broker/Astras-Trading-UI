@@ -35,8 +35,9 @@ export enum ActiveOrderBookHotKeysTypes {
   buyBestAsk = 'buyBestAsk',
   sellBestBid = 'sellBestBid',
   increaseScale = 'increaseScale',
-  decreaseScale = 'decreaseScale'
-};
+  decreaseScale = 'decreaseScale',
+  toggleGrowingVolumeDisplay = 'toggleGrowingVolumeDisplay',
+}
 
 export type AllOrderBookHotKeyTypes = AllOrderBooksHotKeysTypes | ActiveOrderBookHotKeysTypes;
 

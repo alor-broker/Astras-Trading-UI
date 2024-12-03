@@ -22,6 +22,8 @@
   "decreaseScale": "Уменьшить шаг цены",
   "workingVolumesHeader": "Рабочие объёмы",
   "selectWorkingVolume": "Выбрать рабочий объём",
+  "toggleGrowingVolumeDisplay": "Показать/скрыть нарастающий объем",
+
   "notUniqueError": "Выбранная клавиша уже назначена на другое действие",
   "emptyFieldError": "Введите значение",
   "hotKeyPlaceholder": "Не выбрано"

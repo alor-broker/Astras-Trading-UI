@@ -41,6 +41,7 @@ import {
   RULER_CONTEX,
   RulerContext,
 } from "../scalper-order-book-body/scalper-order-book-body.component";
+import { ActiveOrderBookHotKeysTypes } from "../../../../shared/models/terminal-settings/terminal-settings.model";
 
 interface VolumeHighlightArguments {
   rowType: ScalperOrderBookRowType;
@@ -79,6 +80,8 @@ export class ScalperOrderBookTableComponent implements OnInit {
 
   @Input()
   isActive = false;
+
+  showGrowingVolume = false;
 
   readonly hoveredRow$ = this.rulerContext.hoveredRow$;
 
@@ -272,6 +275,14 @@ export class ScalperOrderBookTableComponent implements OnInit {
       ),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(({ settings, command }) => {
+      if(command.type === ActiveOrderBookHotKeysTypes.toggleGrowingVolumeDisplay) {
+        if(this.isActive) {
+          setTimeout(() => this.showGrowingVolume = !this.showGrowingVolume);
+        }
+
+        return;
+      }
+
       if (settings.widgetSettings.disableHotkeys) {
         return;
       }

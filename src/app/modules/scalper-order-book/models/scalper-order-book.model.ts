@@ -39,6 +39,7 @@ export enum ScalperOrderBookRowType {
 
 export interface BodyRow extends PriceRow {
   volume?: number | null;
+  growingVolume?: number | null;
   askVolume?: number | null;
   bidVolume?: number | null;
 

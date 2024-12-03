@@ -499,13 +499,26 @@ export class DataContextBuilder {
       return resultRow;
     }
 
-    const matchRow = (targetRow: BodyRow, source: OrderbookDataRow[]): { volume: number, isBest: boolean } | null => {
-      const matchedRows: { row: OrderbookDataRow, index: number }[] = [];
+    const matchRow = (targetRow: BodyRow, source: OrderbookDataRow[]):
+      {
+        volume: number;
+        isBest: boolean;
+        growingVolume: number;
+      } | null => {
+      const matchedRows: { row: OrderbookDataRow, index: number, growingVolume: number }[] = [];
+
+      let growingVolume = 0;
 
       for (let index = 0; index < source.length; index++) {
         const row = source[index];
+        growingVolume += row.v;
+
         if (row.p >= targetRow.baseRange.min && row.p <= targetRow.baseRange.max) {
-          matchedRows.push({row, index});
+          matchedRows.push({
+            row,
+            index,
+            growingVolume: (index === 0 ? 0 : growingVolume)}
+          );
 
           if (targetRow.baseRange.min === targetRow.baseRange.max) {
             break;
@@ -516,7 +529,8 @@ export class DataContextBuilder {
       if (matchedRows.length > 0) {
         return {
           volume: matchedRows.reduce((total, curr) => Math.round(total + curr.row.v), 0),
-          isBest: matchedRows.some(r => r.index === 0)
+          isBest: matchedRows.some(r => r.index === 0),
+          growingVolume: matchedRows.reduce((total, curr) => Math.round(total + curr.growingVolume), 0),
         };
       }
 
@@ -548,6 +562,7 @@ export class DataContextBuilder {
         } else {
           resultRow.volume = matched.volume;
           resultRow.askVolume = resultRow.volume;
+          resultRow.growingVolume = matched.growingVolume;
           resultRow.isBest = matched.isBest;
         }
       }
@@ -566,6 +581,7 @@ export class DataContextBuilder {
         } else {
           resultRow.volume = matched.volume;
           resultRow.bidVolume = resultRow.volume;
+          resultRow.growingVolume = matched.growingVolume;
           resultRow.isBest = matched.isBest;
         }
       }

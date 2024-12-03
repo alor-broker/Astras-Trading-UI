@@ -22,6 +22,7 @@
   "decreaseScale": "Decrease price step",
   "workingVolumesHeader": "Working volumes",
   "selectWorkingVolume": "Select working volume",
+  "toggleGrowingVolumeDisplay": "Show/hide growing volume",
 
   "notUniqueError": "Selected key is already assigned to another action",
   "emptyFieldError": "Input value",
