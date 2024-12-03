@@ -10,7 +10,7 @@
     <form [formGroup]="form" [nzLayout]="'vertical'" nz-form>
       <nz-form-item>
         <nz-collapse [nzBordered]="false" nzGhost>
-          <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.instrumentSelectionHeader')" nzActive="true">
+          <nz-collapse-panel [nzHeader]="t('scalperOrderBookSettings.instrumentSelectionHeader')">
             <nz-form-item>
               <nz-form-label nzRequired nzFor="instrument">{{t('scalperOrderBookSettings.tickerLabel')}}</nz-form-label>
               <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.tickerError')">
