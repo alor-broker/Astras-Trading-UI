@@ -276,7 +276,8 @@ export class WsOrdersConnector implements OnDestroy {
             {
               guid: GuidGenerator.newGuid(),
               opcode: 'authorize',
-              token: t
+              token: t,
+              originator: 'astras'
             },
             socketState.webSocketSubject
           )
