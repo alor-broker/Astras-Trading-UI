@@ -8,4 +8,10 @@ export class StringHelper {
     }
     return Math.abs(hash).toString();
   }
+
+  static getPascalCase(input: string): string {
+    return input.split(/[\s-]+/)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join('');
+  }
 }

@@ -20,12 +20,19 @@ import {
 import { DashboardContextService } from "../../services/dashboard-context.service";
 import { TerminalSettingsService } from "../../services/terminal-settings.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { MergedBadgeComponent } from "../merged-badge/merged-badge.component";
+import { LetDirective } from "@ngrx/component";
 
 @Component({
   selector: 'ats-instrument-badge-display',
   templateUrl: './instrument-badge-display.component.html',
   styleUrls: ['./instrument-badge-display.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    MergedBadgeComponent,
+    LetDirective
+  ],
+  standalone: true
 })
 export class InstrumentBadgeDisplayComponent implements OnInit {
   @Input({required: true})

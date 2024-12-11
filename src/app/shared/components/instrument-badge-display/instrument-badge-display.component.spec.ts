@@ -4,9 +4,6 @@ import { InstrumentBadgeDisplayComponent } from './instrument-badge-display.comp
 import {DashboardContextService} from "../../services/dashboard-context.service";
 import {Subject} from "rxjs";
 import {TerminalSettingsService} from "../../services/terminal-settings.service";
-import { LetDirective } from "@ngrx/component";
-
-;
 
 describe('InstrumentBadgeDisplayComponent', () => {
   let component: InstrumentBadgeDisplayComponent;
@@ -14,8 +11,7 @@ describe('InstrumentBadgeDisplayComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [InstrumentBadgeDisplayComponent],
-      imports: [LetDirective],
+      imports: [InstrumentBadgeDisplayComponent],
       providers: [
         {
           provide: DashboardContextService,

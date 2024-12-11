@@ -8,6 +8,7 @@ import {DashboardContextService} from "../../../shared/services/dashboard-contex
 import {
   WatchlistCollectionBrokerService
 } from "../../../modules/instruments/services/watchlist-collection-broker.service";
+import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instruments/widgets/instrument-select-dialog-widget/instrument-select-dialog-widget.component";
 
 describe('AdminDashboardComponent', () => {
   let component: AdminDashboardComponent;
@@ -18,7 +19,8 @@ describe('AdminDashboardComponent', () => {
       imports: [
         AdminDashboardComponent,
         ...MockComponents(
-          AdminNavbarComponent
+          AdminNavbarComponent,
+          InstrumentSelectDialogWidgetComponent
         )
       ],
       providers: [

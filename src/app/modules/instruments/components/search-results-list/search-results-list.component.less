@@ -1,0 +1,27 @@
+@import "theme-mixin";
+
+.themeMixin({
+  :host {
+    .item {
+      border-bottom: @border-color-base solid 1px;
+
+      &:hover {
+        background-color: @item-hover-bg;
+      }
+    }
+  }
+});
+
+.badges-menu {
+  .ant-dropdown-menu-item {
+    display: flex;
+    justify-content: center;
+
+    .badge {
+      width: 10px;
+      height: 10px;
+      display: inline-block;
+      border-radius: 50%;
+    }
+  }
+}

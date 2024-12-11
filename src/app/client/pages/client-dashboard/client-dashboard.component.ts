@@ -27,6 +27,7 @@ import {
 import {
   WatchlistCollectionBrokerService
 } from "../../../modules/instruments/services/watchlist-collection-broker.service";
+import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instruments/widgets/instrument-select-dialog-widget/instrument-select-dialog-widget.component";
 
 @Component({
   selector: 'ats-client-dashboard',
@@ -42,7 +43,8 @@ import {
     ApplicationMetaModule,
     OrderCommandsModule,
     SettingsLoadErrorDialogComponent,
-    TerminalSettingsWidgetComponent
+    TerminalSettingsWidgetComponent,
+    InstrumentSelectDialogWidgetComponent
   ],
   templateUrl: './client-dashboard.component.html',
   styleUrl: './client-dashboard.component.less',

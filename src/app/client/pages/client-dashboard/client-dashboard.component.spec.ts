@@ -20,6 +20,7 @@ import {RouterModule} from "@angular/router";
 import {
   WatchlistCollectionBrokerService
 } from "../../../modules/instruments/services/watchlist-collection-broker.service";
+import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instruments/widgets/instrument-select-dialog-widget/instrument-select-dialog-widget.component";
 
 describe('ClientDashboardComponent', () => {
   let component: ClientDashboardComponent;
@@ -38,7 +39,8 @@ describe('ClientDashboardComponent', () => {
         MockComponents(
           ClientNavbarComponent,
           SettingsLoadErrorDialogComponent,
-          TerminalSettingsWidgetComponent
+          TerminalSettingsWidgetComponent,
+          InstrumentSelectDialogWidgetComponent
         )
       ],
       providers: [
