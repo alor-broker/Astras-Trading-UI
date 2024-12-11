@@ -8,7 +8,7 @@ describe('MergedBadgeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MergedBadgeComponent]
+      imports: [MergedBadgeComponent]
     })
     .compileComponents();
 
