@@ -3,6 +3,7 @@ import {
   DestroyRef,
   ElementRef,
   EventEmitter,
+  Inject,
   Input,
   OnDestroy,
   OnInit,
@@ -37,6 +38,14 @@ import {
   GeneralSettings,
   TabNames
 } from "../../models/terminal-settings.model";
+import {
+  EXPORT_SETTINGS_SERVICE_TOKEN,
+  ExportSettingsService
+} from "../../../../shared/services/settings/export-settings.service";
+import {
+  FileSaver,
+  FileType
+} from "../../../../shared/utils/file-export/file-saver";
 
 @Component({
   selector: 'ats-terminal-settings',
@@ -66,12 +75,15 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   });
 
   tabSetHeight$ = new BehaviorSubject(300);
+  exportSettingsLoading$ = new BehaviorSubject<boolean>(false);
 
   constructor(
     private readonly accountService: AccountService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly modal: ModalService,
     private readonly translatorService: TranslatorService,
+    @Inject(EXPORT_SETTINGS_SERVICE_TOKEN)
+    private readonly exportSettingsService: ExportSettingsService,
     private readonly destroyRef: DestroyRef,
     private readonly elRef: ElementRef,
     private readonly formBuilder: FormBuilder
@@ -85,6 +97,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.tabSetHeight$.complete();
+    this.exportSettingsLoading$.complete();
   }
 
   calculateTabSetHeight(): void {
@@ -117,6 +130,25 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
           }
         });
       });
+  }
+
+  exportSettings(): void {
+    this.exportSettingsLoading$.next(true);
+    setTimeout(() => {
+      this.exportSettingsService.exportToFile().pipe(
+        take(1)
+      ).subscribe(result => {
+        FileSaver.save(
+          {
+            name: result.filename,
+            fileType: FileType.Json
+          },
+          result.content
+        );
+
+        this.exportSettingsLoading$.next(false);
+      });
+    });
   }
 
   private initForm(): void {

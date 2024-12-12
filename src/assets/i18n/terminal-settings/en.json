@@ -12,6 +12,7 @@
   "hardRebootBtnText": "Reset all settings",
   "hardRebootWarningTitle": "Are you sure you want to do a hard reset?",
   "hardRebootWarningDesc": "A hard reset will delete all your settings, watchlists, widgets, and so on.",
+  "exportSettingsBtnText": "Export settings",
   "yesBtnText": "Yes",
   "noBtnText": "No"
 }
