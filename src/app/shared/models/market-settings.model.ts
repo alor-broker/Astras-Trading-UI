@@ -22,6 +22,7 @@ export interface ExchangeSettings {
   timezone: string;
   // Trading session in format of TV chart. See https://www.tradingview.com/charting-library-docs/latest/connecting_data/Trading-Sessions
   defaultTradingSession: string;
+  hasInstruments?: boolean;
 }
 
 export interface CurrencyFormat {

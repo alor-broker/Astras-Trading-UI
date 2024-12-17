@@ -7,6 +7,7 @@
         "hasPayments": true,
         "hasFinance": true,
         "hasDividends": true,
+        "hasInstruments": true,
         "defaultPortfolioCurrencyInstrument": "RUB",
         "isDefault": true,
         "defaultInstrument": {
@@ -23,6 +24,7 @@
         "isInternational": true,
         "hasFinance": true,
         "hasDividends": true,
+        "hasInstruments": true,
         "defaultPortfolioCurrencyInstrument": "USD000UTSTOM",
         "defaultInstrument": {
           "symbol": "GAZP",
@@ -38,6 +40,7 @@
         "defaultPortfolioCurrencyInstrument": "RUB",
         "timezone": "Europe/Moscow",
         "defaultTradingSession": "0700-0000,0000-0200:1234567",
+        "hasInstruments": false,
         "defaultInstrument": {
           "symbol": "SBER",
           "instrumentGroup": "TQBR",
