@@ -20,14 +20,13 @@ import {
   MobileInstrumentsHistoryComponent
 } from "../../components/mobile-instruments-history/mobile-instruments-history.component";
 import {
-  EmptyPortfoliosWarningModalComponent
-} from "../../components/empty-portfolios-warning-modal/empty-portfolios-warning-modal.component";
-import {
   MobileDashboardContentComponent
 } from "../../components/mobile-dashboard-content/mobile-dashboard-content.component";
 import {
   TerminalSettingsWidgetComponent
 } from "../../../modules/terminal-settings/widgets/terminal-settings-widget/terminal-settings-widget.component";
+import { EXPORT_SETTINGS_SERVICE_TOKEN } from "../../../shared/services/settings/export-settings.service";
+import { ExportMobileSettingsService } from "../../../shared/services/settings/export-mobile-settings.service";
 
 @Component({
   selector: 'ats-mobile-dashboard',
@@ -43,7 +42,6 @@ import {
     OrderCommandsModule,
     MobileNavbarComponent,
     MobileInstrumentsHistoryComponent,
-    EmptyPortfoliosWarningModalComponent,
     MobileDashboardContentComponent,
     TerminalSettingsWidgetComponent
   ],
@@ -54,6 +52,10 @@ import {
     {
       provide: ACTIONS_CONTEXT,
       useExisting: MobileActionsContextService
+    },
+    {
+      provide: EXPORT_SETTINGS_SERVICE_TOKEN,
+      useClass: ExportMobileSettingsService
     }
   ]
 })

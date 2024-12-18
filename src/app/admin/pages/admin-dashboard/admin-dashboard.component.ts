@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {AsyncPipe} from '@angular/common';
 import {NzContentComponent, NzHeaderComponent, NzLayoutComponent,} from 'ng-zorro-antd/layout';
 import {AdminNavbarComponent} from '../../components/admin-navbar/admin-navbar.component';
 import {AdminSettingsBrokerService} from '../../services/settings/admin-settings-broker.service';
@@ -18,7 +17,6 @@ import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instrume
   selector: 'ats-admin-dashboard',
   standalone: true,
   imports: [
-    AsyncPipe,
     NzLayoutComponent,
     AdminNavbarComponent,
     NzHeaderComponent,

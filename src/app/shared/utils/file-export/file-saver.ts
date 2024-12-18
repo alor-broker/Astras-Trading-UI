@@ -1,6 +1,7 @@
 export enum FileType {
   Csv = 'csv',
-  Txt = 'txt'
+  Txt = 'txt',
+  Json = 'json',
 }
 
 export interface FileMeta {
@@ -26,6 +27,8 @@ export class FileSaver {
     switch (fileType) {
       case FileType.Csv:
         return 'csv';
+      case FileType.Json:
+        return 'json';
       default:
         return 'txt';
     }

@@ -8,6 +8,8 @@ import { ModalService } from "../../../../shared/services/modal.service";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { ComponentHelpers } from 'src/app/shared/utils/testing/component-helpers';
 import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { MockProvider } from "ng-mocks";
+import { EXPORT_SETTINGS_SERVICE_TOKEN } from "../../../../shared/services/settings/export-settings.service";
 
 describe('TerminalSettingsComponent', () => {
   let component: TerminalSettingsComponent;
@@ -28,24 +30,30 @@ describe('TerminalSettingsComponent', () => {
         ComponentHelpers.mockComponent({selector: 'ats-instant-notifications-form'}),
       ],
       providers: [
-        {
-          provide: AccountService,
-          useValue: {
+        MockProvider(
+          AccountService,
+          {
             getFullName: jasmine.createSpy('getFullName').and.returnValue(new Subject())
           }
-        },
-        {
-          provide: TerminalSettingsService,
-          useValue: {
+        ),
+        MockProvider(
+          TerminalSettingsService,
+          {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
           }
-        },
-        {
-          provide: ModalService,
-          useValue: {
+        ),
+        MockProvider(
+          ModalService,
+          {
             openConfirmModal: jasmine.createSpy('openConfirmModal').and.callThrough()
           }
-        },
+        ),
+        MockProvider(
+          EXPORT_SETTINGS_SERVICE_TOKEN,
+          {
+            exportToFile: jasmine.createSpy('exportToFile').and.callThrough()
+          }
+        ),
         ...commonTestProviders
       ]
     }).compileComponents();
