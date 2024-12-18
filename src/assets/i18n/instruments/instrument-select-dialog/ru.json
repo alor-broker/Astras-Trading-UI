@@ -1,0 +1,11 @@
+{
+  "dialogTitle": "Выбор инструмента",
+
+  "searchForm": {
+    "instrumentName": {
+      "placeholder": "Тикер или название инструмента"
+    }
+  },
+
+  "emptyResultsMessage": "Нет подходящих инструментов"
+}

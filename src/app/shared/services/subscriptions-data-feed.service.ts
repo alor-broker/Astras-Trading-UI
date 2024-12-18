@@ -4,7 +4,10 @@ import {
   NgZone,
   OnDestroy
 } from '@angular/core';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+import {
+  webSocket,
+  WebSocketSubject
+} from 'rxjs/webSocket';
 import {
   BehaviorSubject,
   filter,
