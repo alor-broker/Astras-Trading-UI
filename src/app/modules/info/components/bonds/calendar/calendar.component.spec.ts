@@ -1,37 +1,59 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { InfoService } from '../../../services/info.service';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { CalendarComponent } from './calendar.component';
-import { of } from "rxjs";
-import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
+import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
+import {
+  AdditionalInformation,
+  BasicInformation,
+  BoardInformation,
+  Bond,
+  CurrencyInformation,
+  FinancialAttributes,
+  TradingDetails
+} from "../../../../../../generated/graphql.types";
+import { MockDirective } from "ng-mocks";
+import { TableRowHeightDirective } from "../../../../../shared/directives/table-row-height.directive";
 
 describe('CalendarComponent', () => {
   let component: CalendarComponent;
   let fixture: ComponentFixture<CalendarComponent>;
-  const infoSpy = jasmine.createSpyObj('InfoService', ['getCalendar', 'getExchangeInfo']);
-  infoSpy.getCalendar.and.returnValue(null);
-  infoSpy.getExchangeInfo.and.returnValue(of({}));
-
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         CalendarComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-loading-indicator',
-          inputs: ['isLoading']
-        })
-      ],
-      providers: [
-        { provide: InfoService, useValue: infoSpy}
+        TranslocoTestsModule.getModule(),
+        MockDirective(TableRowHeightDirective)
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(CalendarComponent);
     component = fixture.componentInstance;
+
+    component.bond = {
+      basicInformation: {} as BasicInformation,
+      boardInformation: {} as BoardInformation,
+      currencyInformation: {} as CurrencyInformation,
+      financialAttributes: {} as FinancialAttributes,
+      additionalInformation: {} as AdditionalInformation,
+      tradingDetails: {} as TradingDetails,
+      coupons: [],
+      offers: [],
+      amortizations: [],
+      currentFaceValue: 1,
+      faceValue: 1,
+      guaranteed: true,
+      hasAmortization: false,
+      hasOffer: false,
+      pledged: false
+    } as Bond;
+
     fixture.detectChanges();
   });
 

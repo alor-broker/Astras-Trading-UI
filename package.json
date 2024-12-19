@@ -45,7 +45,7 @@
     "json-patch": "^0.7.0",
     "lightweight-charts": "^4.2.0",
     "moment": "^2.30.0",
-    "ng-zorro-antd": "18.0.1",
+    "ng-zorro-antd": "18.2.1",
     "ng2-charts": "^6.0.0",
     "ngx-device-detector": "^8.0.0",
     "ngx-joyride": "^2.5.0",

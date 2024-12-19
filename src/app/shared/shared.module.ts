@@ -64,12 +64,12 @@ import {
 import { RemoveSelectTitlesDirective } from './directives/remove-select-titles.directive';
 import { NzColorPickerModule } from "ng-zorro-antd/color-picker";
 import { PriceDiffComponent } from './components/price-diff/price-diff.component';
-import { TableRowHeightDirective } from './directives/table-row-height.directive';
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { GraphQlErrorHandlerService } from "./services/handle-error/graph-ql-error-handler.service";
 import { LetDirective } from "@ngrx/component";
 import { InputNumberComponent } from "./components/input-number/input-number.component";
 import { InstrumentSearchComponent } from "./components/instrument-search/instrument-search.component";
+import { TableRowHeightDirective } from "./directives/table-row-height.directive";
 
 @NgModule({
   declarations: [
@@ -87,8 +87,7 @@ import { InstrumentSearchComponent } from "./components/instrument-search/instru
     AtsPricePipe,
     WidgetHeaderInstrumentSwitchComponent,
     RemoveSelectTitlesDirective,
-    PriceDiffComponent,
-    TableRowHeightDirective,
+    PriceDiffComponent
   ],
   imports: [
     CommonModule,
@@ -136,7 +135,8 @@ import { InstrumentSearchComponent } from "./components/instrument-search/instru
     DragDropModule,
     LetDirective,
     InputNumberComponent,
-    InstrumentSearchComponent
+    InstrumentSearchComponent,
+    TableRowHeightDirective
   ],
   exports: [
     // Ng zorro
@@ -193,7 +193,6 @@ import { InstrumentSearchComponent } from "./components/instrument-search/instru
     ResizeColumnDirective,
     ScrollableItemDirective,
     RemoveSelectTitlesDirective,
-    TableRowHeightDirective,
     // pipes
     AtsPricePipe
   ],

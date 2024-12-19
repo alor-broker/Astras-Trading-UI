@@ -6,7 +6,8 @@ import { TableRowHeight } from "../models/enums/table-row-height";
 import { distinctUntilChanged } from "rxjs";
 
 @Directive({
-  selector: '[atsTableRowHeight]'
+  selector: '[atsTableRowHeight]',
+  standalone: true
 })
 export class TableRowHeightDirective implements AfterViewInit {
   private readonly targetElement: HTMLElement;

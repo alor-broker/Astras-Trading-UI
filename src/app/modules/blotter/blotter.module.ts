@@ -25,6 +25,7 @@ import { LetDirective } from "@ngrx/component";
 import { InstrumentsModule } from "../instruments/instruments.module";
 import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
 import { NzDividerComponent } from "ng-zorro-antd/divider";
+import { TableRowHeightDirective } from "../../shared/directives/table-row-height.directive";
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { NzDividerComponent } from "ng-zorro-antd/divider";
         LetDirective,
         InstrumentsModule,
         WidgetSettingsComponent,
-        NzDividerComponent
+        NzDividerComponent,
+        TableRowHeightDirective
     ],
   exports: [
     BlotterWidgetComponent

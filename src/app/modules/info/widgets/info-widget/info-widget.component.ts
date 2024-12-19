@@ -3,22 +3,28 @@ import {
   Input,
   OnInit
 } from '@angular/core';
-import { Observable } from 'rxjs';
-import { ExchangeInfo } from '../../models/exchange-info.model';
-import { InfoService } from '../../services/info.service';
+import {
+  Observable,
+  shareReplay,
+  switchMap
+} from 'rxjs';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import { InfoSettings } from '../../models/info-settings.model';
-import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
-import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
+import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { map } from "rxjs/operators";
+import { InstrumentSummary } from "../../models/instrument-summary.model";
+import { InstrumentType } from "../../../../shared/models/enums/instrument-type.model";
+import { getTypeByCfi } from "../../../../shared/utils/instruments";
 
 @Component({
   selector: 'ats-info-widget',
   templateUrl: './info-widget.component.html',
-  styleUrls: ['./info-widget.component.less'],
-  providers: [InfoService]
+  styleUrls: ['./info-widget.component.less']
 })
 export class InfoWidgetComponent implements OnInit {
   @Input({required: true})
@@ -27,18 +33,19 @@ export class InfoWidgetComponent implements OnInit {
   @Input({required: true})
   isBlockWidget!: boolean;
 
-  @Input()
-  isVisible = true;
-
   settings$!: Observable<InfoSettings>;
   showBadge$!: Observable<boolean>;
-  info$?: Observable<ExchangeInfo | null>;
+  instrumentSummary$!: Observable<InstrumentSummary | null>;
+
+  InstrumentTypes = InstrumentType;
+
+  isLoading = false;
 
   constructor(
-    private readonly service: InfoService,
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService
+    private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly instrumentService: InstrumentsService
   ) {
   }
 
@@ -57,10 +64,29 @@ export class InfoWidgetComponent implements OnInit {
       this.widgetSettingsService
     );
 
-    this.settings$ = this.widgetSettingsService.getSettings<InfoSettings>(this.guid);
+    this.settings$ = this.widgetSettingsService.getSettings<InfoSettings>(this.guid).pipe(
+      shareReplay(1)
+    );
+
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
 
-    this.service.init(this.guid);
-    this.info$ = this.service.getExchangeInfo();
+    this.instrumentSummary$ = this.settings$.pipe(
+      switchMap(settings => this.instrumentService.getInstrument(settings)),
+      map(i => {
+        if (i == null || i.instrumentGroup == null) {
+          return null;
+        }
+
+        return {
+          ...i,
+          board: i.instrumentGroup!,
+          typeByCfi: getTypeByCfi(i.cfiCode)
+        };
+      })
+    );
+  }
+
+  setLoading(value: boolean): void {
+    this.isLoading = value;
   }
 }

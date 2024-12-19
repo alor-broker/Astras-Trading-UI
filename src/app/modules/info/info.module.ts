@@ -1,38 +1,33 @@
 import { NgModule } from '@angular/core';
-import { InfoRoutingModule } from './info-routing.module';
 import { InfoWidgetComponent } from './widgets/info-widget/info-widget.component';
-import { DividendsComponent } from './components/stocks/dividends/dividends.component';
-import { CalendarComponent } from './components/bonds/calendar/calendar.component';
-import { DescriptionComponent } from './components/common/description/description.component';
-import { FinanceComponent } from './components/stocks/finance/finance.component';
-import { AboutIssueComponent } from './components/bonds/about-issue/about-issue.component';
-import { SharedModule } from 'src/app/shared/shared.module';
-import { InfoHeaderComponent } from './components/common/info-header/info-header.component';
-import { FinanceBarChartComponent } from './components/common/finance-bar-chart/finance-bar-chart.component';
-import { RisksComponent } from './components/common/risks/risks.component';
 import { LetDirective } from "@ngrx/component";
 import { BaseChartDirective } from "ng2-charts";
+import { StockInfoComponent } from "./components/stocks/stock-info/stock-info.component";
+import { BondInfoComponent } from "./components/bonds/bond-info/bond-info.component";
+import { DerivativeInfoComponent } from "./components/derivatives/derivative-info/derivative-info.component";
+import { CommonInfoComponent } from "./components/common/common-info/common-info.component";
+import { NzSpinComponent } from "ng-zorro-antd/spin";
+import { SharedModule } from "../../shared/shared.module";
+import { InfoHeaderComponent } from "./components/common/info-header/info-header.component";
 
 @NgModule({
   declarations: [
     InfoWidgetComponent,
-    DividendsComponent,
-    CalendarComponent,
-    DescriptionComponent,
-    FinanceComponent,
-    AboutIssueComponent,
-    InfoHeaderComponent,
-    FinanceBarChartComponent,
-    RisksComponent
   ],
-    imports: [
-        SharedModule,
-        InfoRoutingModule,
-        LetDirective,
-        BaseChartDirective
-    ],
+  imports: [
+    LetDirective,
+    BaseChartDirective,
+    StockInfoComponent,
+    BondInfoComponent,
+    DerivativeInfoComponent,
+    CommonInfoComponent,
+    NzSpinComponent,
+    SharedModule,
+    InfoHeaderComponent
+  ],
   exports: [
     InfoWidgetComponent
   ]
 })
-export class InfoModule { }
+export class InfoModule {
+}

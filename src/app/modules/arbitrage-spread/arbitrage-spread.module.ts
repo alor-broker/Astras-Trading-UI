@@ -17,6 +17,7 @@ import { SpreadLegComponent } from './components/spread-leg/spread-leg.component
 import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
 import { InputNumberComponent } from "../../shared/components/input-number/input-number.component";
 import { ArbitrageSpreadService } from "./services/arbitrage-spread.service";
+import { TableRowHeightDirective } from "../../shared/directives/table-row-height.directive";
 
 @NgModule({
   declarations: [
@@ -30,12 +31,13 @@ import { ArbitrageSpreadService } from "./services/arbitrage-spread.service";
     ArbitrageSpreadWidgetComponent,
     ArbitrageSpreadModalWidgetComponent
   ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    InstrumentSearchComponent,
-    InputNumberComponent
-  ],
+    imports: [
+        CommonModule,
+        SharedModule,
+        InstrumentSearchComponent,
+        InputNumberComponent,
+        TableRowHeightDirective
+    ],
   providers:[
     ArbitrageSpreadService
   ]

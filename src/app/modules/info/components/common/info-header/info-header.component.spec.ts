@@ -1,34 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ExchangeInfo } from '../../../models/exchange-info.model';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { InfoHeaderComponent } from './info-header.component';
 import { EnvironmentService } from "../../../../../shared/services/environment.service";
-import { ngZorroMockComponents } from "../../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { InstrumentType } from "../../../../../shared/models/enums/instrument-type.model";
 
 describe('InfoHeaderComponent', () => {
   let component: InfoHeaderComponent;
   let fixture: ComponentFixture<InfoHeaderComponent>;
-  const info: ExchangeInfo = {
-    symbol: '',
-    shortName: '',
-    exchange: '',
-    description: '',
-    isin: '',
-    currency: '',
-    type: '',
-    lotsize: 1,
-    minStep: 1,
-    priceStep: 1,
-    expirationDate: null,
-    cfiCode: null
-  };
 
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        InfoHeaderComponent,
-        ...ngZorroMockComponents
+      imports: [
+        InfoHeaderComponent
       ],
       providers: [
         {
@@ -39,13 +26,27 @@ describe('InfoHeaderComponent', () => {
         }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(InfoHeaderComponent);
     component = fixture.componentInstance;
-    component.info = info;
+    component.info = {
+      symbol: '',
+      shortName: '',
+      exchange: '',
+      board: "",
+      typeByCfi: InstrumentType.Stock,
+      description: '',
+      isin: '',
+      currency: '',
+      type: '',
+      lotsize: 1,
+      minstep: 1,
+      pricestep: 1
+    };
+
     fixture.detectChanges();
   });
 

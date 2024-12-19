@@ -1,33 +1,13 @@
 <ng-container *transloco="let t; scope: 'info/risks'">
-  <ng-container *ngrxLet="{risksInfo: risksInfo$, currentPortfolio: currentPortfolio$, isLoading: isLoading$} as vm">
-    <ng-container *ngIf="!vm.isLoading">
-      <nz-descriptions *ngIf="vm.risksInfo; else missingRisks" [nzColumn]="1" nzBordered nzSize="small">
-        <nz-descriptions-item [nzTitle]="t('infoRisks.isMarginal')">
-          {{t(vm.risksInfo.isMarginal ? 'yes' : 'no') }}
-        </nz-descriptions-item>
-        <nz-descriptions-item [nzTitle]="t('infoRisks.isShortSellPossible')">
-          {{t(vm.risksInfo.isShortSellPossible ? 'yes' : 'no') }}
-        </nz-descriptions-item>
-        <nz-descriptions-item [nzTitle]="t('infoRisks.longMultiplier')">
-          {{vm.risksInfo.longMultiplier | number: '0.0-6'}}
-        </nz-descriptions-item>
-        <nz-descriptions-item [nzTitle]="t('infoRisks.shortMultiplier')">
-          {{vm.risksInfo.shortMultiplier | number: '0.0-6'}}
-        </nz-descriptions-item>
-        <nz-descriptions-item [nzTitle]="t('infoRisks.currencyLongMultiplier')">
-          {{vm.risksInfo.currencyLongMultiplier | number: '0.0-6'}}
-        </nz-descriptions-item>
-        <nz-descriptions-item [nzTitle]="t('infoRisks.currencyShortMultiplier')">
-          {{vm.risksInfo.currencyShortMultiplier | number: '0.0-6'}}
-        </nz-descriptions-item>
-      </nz-descriptions>
-
-      <ng-template #missingRisks>
-      <span nz-typography
-            nzType="secondary">{{t('infoRisks.missingRiskInfoForPortfolio', { portfolio: vm.currentPortfolio.portfolio })}}</span>
-      </ng-template>
-    </ng-container>
-
-    <ats-loading-indicator [isLoading]="vm.isLoading"></ats-loading-indicator>
+  <ng-container
+    *ngrxLet="{descriptors: descriptors$, currentPortfolio: currentPortfolio$, isLoading: isLoading$} as vm">
+    <nz-spin [nzSpinning]="vm.isLoading">
+      @if (vm.descriptors == null) {
+        <span nz-typography
+              nzType="secondary">{{ t('infoRisks.missingRiskInfoForPortfolio', {portfolio: vm.currentPortfolio.portfolio}) }}</span>
+      } @else {
+        <ats-descriptors-list [descriptors]="[vm.descriptors]"></ats-descriptors-list>
+      }
+    </nz-spin>
   </ng-container>
 </ng-container>

@@ -1,96 +1,101 @@
-<ng-container *ngIf="calendar$ | async as calendar; else empty">
-  <div *ngIf="(isLoading$ | async) === false">
-    <ng-container *transloco="let t; scope: 'info/calendar'">
-      <nz-table
-        #couponsTable
-        [nzData]="calendar.coupons"
-        #nzTableComponent
-        nzTableLayout="fixed"
-        atsTableRowHeight
-        [nzFrontPagination]="false"
-        [nzShowPagination]="false"
-        [nzTitle]="t('infoCalendar.couponsTable')"
-      >
-        <thead>
-        <tr>
-          <th>{{t('infoCalendar.date')}}</th>
-          <th>{{t('infoCalendar.qty')}}</th>
-          <th>{{t('infoCalendar.couponType')}}</th>
-          <th>{{t('infoCalendar.accruedInterest')}}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let coupon of couponsTable.data">
-          <td>{{ coupon.date | date }}</td>
-          <td>{{ coupon.amount | currency: coupon.currency:'symbol-narrow'}}</td>
-          <td>{{ coupon.couponType }}</td>
-          <td>{{ coupon.accruedInterest | currency: coupon.currency:'symbol-narrow'}}</td>
-        </tr>
-        </tbody>
-      </nz-table>
-      <br/>
-      <nz-table
-        #amortizationsTable
-        [nzData]="calendar.amortizations"
-        #nzTableComponent
-        nzTableLayout="fixed"
-        atsTableRowHeight
-        [nzFrontPagination]="false"
-        [nzShowPagination]="false"
-        [nzTitle]="t('infoCalendar.amortizationTable')"
-      >
-        <thead>
-        <tr>
-          <th>{{t('infoCalendar.date')}}</th>
-          <th>{{t('infoCalendar.qty')}}</th>
-          <th>{{t('infoCalendar.parFraction')}}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let amort of amortizationsTable.data">
-          <td>{{ amort.date | date }}</td>
-          <td>{{ amort.amount | currency: amort.currency:'symbol-narrow'}}</td>
-          <td>{{ amort.parFraction }}</td>
-        </tr>
-        </tbody>
-      </nz-table>
-      <br/>
-      <nz-table
-        #offersTable
-        [nzData]="calendar.offers"
-        #nzTableComponent
-        nzTableLayout="fixed"
-        atsTableRowHeight
-        [nzFrontPagination]="false"
-        [nzShowPagination]="false"
-        [nzTitle]="t('infoCalendar.offersTable')"
-      >
-        <thead>
-        <tr>
-          <th>{{t('infoCalendar.date')}}</th>
-          <th>{{t('infoCalendar.type')}}</th>
-          <th>{{t('infoCalendar.description')}}</th>
-          <th>{{t('infoCalendar.accruedInterest')}}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let offer of offersTable.data">
-          <td>{{ offer.date | date }}</td>
-          <td>{{ offer.type }}</td>
-          <td>{{ offer.description }}</td>
-        </tr>
-        </tbody>
-      </nz-table>
-    </ng-container>
+<ng-container *transloco="let t; scope: 'info/calendar'">
+  @if (bond.coupons == null && bond.amortizations == null && bond.offers == null) {
+    <nz-empty nzNotFoundImage="simple"></nz-empty>
+  }
 
-  </div>
+  @if (bond.coupons != null) {
+    <h5 nz-typography>{{ t('infoCalendar.couponsTable') }}</h5>
+    <nz-table
+      #couponsTable
+      [nzData]="bond.coupons"
+      nzTableLayout="fixed"
+      atsTableRowHeight
+      [nzFrontPagination]="false"
+      [nzShowPagination]="false"
+      nzBordered
+    >
+      <thead>
+      <tr>
+        <th>{{ t('infoCalendar.date') }}</th>
+        <th>{{ t('infoCalendar.qty') }}</th>
+        <th>{{ t('infoCalendar.couponType') }}</th>
+        <th>{{ t('infoCalendar.accruedInterest') }}</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (coupon of couponsTable.data; track $index) {
+          <tr>
+            <td>{{ formatDate(coupon.date) }}</td>
+            <td>{{ coupon.amount | currency: (coupon.currency ?? "RUB") :'symbol-narrow' }}</td>
+            <td>{{ coupon.couponType }}</td>
+            <td>{{ coupon.accruedInterest | currency: (coupon.currency ?? "RUB"):'symbol-narrow' }}</td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+    <br/>
+  }
+
+  @if (bond.amortizations != null) {
+    <h5 nz-typography>{{ t('infoCalendar.amortizationTable') }}</h5>
+    <nz-table
+      #amortizationsTable
+      [nzData]="bond.amortizations"
+      nzTableLayout="fixed"
+      atsTableRowHeight
+      [nzFrontPagination]="false"
+      [nzShowPagination]="false"
+      nzBordered
+    >
+      <thead>
+      <tr>
+        <th>{{ t('infoCalendar.date') }}</th>
+        <th>{{ t('infoCalendar.qty') }}</th>
+        <th>{{ t('infoCalendar.parFraction') }}</th>
+      </tr>
+      </thead>
+      <tbody>
+
+        @for (amort of amortizationsTable.data; track $index) {
+          <tr>
+            <td>{{ formatDate(amort.date) }}</td>
+            <td>{{ amort.amount | currency: (amort.currency ?? 'RUB'):'symbol-narrow' }}</td>
+            <td>{{ amort.parFraction }}</td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+    <br/>
+  }
+
+  @if (bond.offers != null) {
+    <h5 nz-typography>{{ t('infoCalendar.offersTable') }}</h5>
+    <nz-table
+      #offersTable
+      [nzData]="bond.offers"
+      nzTableLayout="fixed"
+      atsTableRowHeight
+      [nzFrontPagination]="false"
+      [nzShowPagination]="false"
+      nzBordered
+    >
+      <thead>
+      <tr>
+        <th>{{ t('infoCalendar.date') }}</th>
+        <th>{{ t('infoCalendar.type') }}</th>
+        <th>{{ t('infoCalendar.description') }}</th>
+        <th>{{ t('infoCalendar.accruedInterest') }}</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (offer of offersTable.data; track $index) {
+          <tr>
+            <td>{{ formatDate(offer.date) }}</td>
+            <td>{{ offer.bondEventType }}</td>
+            <td>{{ offer.description }}</td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  }
 </ng-container>
-<ats-loading-indicator [isLoading]="isLoading$ | async"></ats-loading-indicator>
-
-<ng-template #empty>
-  <nz-empty
-    *ngIf="(isLoading$ | async) === false"
-    class="ant-list-empty-text"
-    nzNotFoundImage="simple"
-  ></nz-empty>
-</ng-template>

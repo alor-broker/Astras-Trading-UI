@@ -24,6 +24,7 @@ import { InstrumentsModule } from "../instruments/instruments.module";
 import { InputNumberComponent } from "../../shared/components/input-number/input-number.component";
 import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
 import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
+import { TableRowHeightDirective } from "../../shared/directives/table-row-height.directive";
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { InstrumentSearchComponent } from "../../shared/components/instrument-se
         InstrumentsModule,
         InputNumberComponent,
         WidgetSettingsComponent,
-        InstrumentSearchComponent
+        InstrumentSearchComponent,
+        TableRowHeightDirective
     ],
   exports: [
     OptionBoardWidgetComponent

@@ -6,7 +6,6 @@
     [isBlockWidget]="isBlockWidget"
     [showContentScroll]="true"
   >
-
     <ng-template #headerRef>
       <ats-widget-header
         [guid]="guid"
@@ -18,64 +17,35 @@
         [widgetMeta]="widgetInstance.widgetMeta"
       ></ats-widget-header>
       <ng-template #titleTemplate>
-        <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance.instance.guid"></ats-widget-header-instrument-switch>
+        <ats-widget-header-instrument-switch
+          [widgetGuid]="widgetInstance.instance.guid"></ats-widget-header-instrument-switch>
       </ng-template>
     </ng-template>
 
     <ng-template #contentRef>
-      <ng-container *transloco="let t; scope: 'info'">
-        <div *ngIf="info$ | async as info">
-          <ats-info-header [info]="info" [isVisible]="isVisible"></ats-info-header>
-          <nz-tabset
-            (mousedown)='$event.stopPropagation()'
-            *ngIf="info.type === 'bond'"
-            nzSize="small"
-            nzTabPosition="top"
-          >
-            <nz-tab #instrumentTab [nzTitle]="t('info.instrumentTab')">
-              <ats-description [activated]="instrumentTab.isActive" [guid]="guid"></ats-description>
-            </nz-tab>
-            <nz-tab #risksTab [nzTitle]="t('info.risksTab')">
-              <ats-risks [activated]="risksTab.isActive" [guid]="guid"></ats-risks>
-            </nz-tab>
-            <nz-tab #issueTab *ngIf="info.exchangeSettings?.hasIssue" [nzTitle]="t('info.issueTab')">
-              <ats-about-issue [activated]="issueTab.isActive" [guid]="guid"></ats-about-issue>
-            </nz-tab>
-            <nz-tab #paymentsTab *ngIf="info.exchangeSettings?.hasPayments" [nzTitle]="t('info.paymentsTab')">
-              <ats-calendar [activated]="paymentsTab.isActive" [guid]="guid"></ats-calendar>
-            </nz-tab>
-          </nz-tabset>
-          <nz-tabset
-            (mousedown)='$event.stopPropagation()'
-            *ngIf="info.type === 'stock'"
-            nzSize="small"
-            nzTabPosition="top"
-          >
-            <nz-tab #instrumentTab [nzTitle]="t('info.instrumentTab')">
-              <ats-description [activated]="instrumentTab.isActive" [guid]="guid"></ats-description>
-            </nz-tab>
-            <nz-tab #risksTab [nzTitle]="t('info.risksTab')">
-              <ats-risks [activated]="risksTab.isActive" [guid]="guid"></ats-risks>
-            </nz-tab>
-            <nz-tab #financeTab *ngIf="info.exchangeSettings?.hasFinance" [nzTitle]="t('info.financeTab')">
-              <ats-finance [activated]="financeTab.isActive" [guid]="guid"></ats-finance>
-            </nz-tab>
-            <nz-tab #dividendsTab *ngIf="info.exchangeSettings?.hasDividends" [nzTitle]="t('info.dividendsTab')">
-              <ats-dividends [activated]="dividendsTab.isActive" [guid]="guid"></ats-dividends>
-            </nz-tab>
-          </nz-tabset>
-          <nz-tabset
-            (mousedown)='$event.stopPropagation()'
-            *ngIf="info.type !== 'stock' && info.type !== 'bond'"
-            nzSize="small"
-            nzTabPosition="top"
-          >
-            <nz-tab #tab [nzTitle]="t('info.instrumentTab')">
-              <ats-description [activated]="tab.isActive" [guid]="guid"></ats-description>
-            </nz-tab>
-          </nz-tabset>
-        </div>
-      </ng-container>
+      @if (instrumentSummary$ | async; as instrumentSummary) {
+        <nz-spin [nzSpinning]="isLoading">
+          <ats-info-header [info]="instrumentSummary" [isVisible]="true"></ats-info-header>
+          @switch (instrumentSummary.typeByCfi) {
+            @case (InstrumentTypes.Stock) {
+              <ats-stock-info [instrumentKey]="instrumentSummary"
+                              (loadingChange)="setLoading($event)"></ats-stock-info>
+            }
+            @case (InstrumentTypes.Bond) {
+              <ats-bond-info [instrumentKey]="instrumentSummary"></ats-bond-info>
+            }
+            @case (InstrumentTypes.Futures) {
+              <ats-derivative-info [instrumentKey]="instrumentSummary"></ats-derivative-info>
+            }
+            @case (InstrumentTypes.Options) {
+              <ats-derivative-info [instrumentKey]="instrumentSummary"></ats-derivative-info>
+            }
+            @default {
+              <ats-common-info [instrumentKey]="instrumentSummary"></ats-common-info>
+            }
+          }
+        </nz-spin>
+      }
     </ng-template>
   </ats-widget-skeleton>
 </ng-container>

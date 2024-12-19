@@ -1,32 +1,4 @@
 {
-  "mainIndicators": "Основные",
-  "costEstimate": "Мультип. стоимости",
-  "profitability": "Рентабельность",
-  "dividends": "Дивиденды",
-  "trading": "Торговые",
-
-  "EBITDA": "EBITDA",
-  "capitalization": "Капитализация",
-
-  "priceToEarnings": "P/E",
-  "pricePerShare": "P/S",
-  "dilutedEarningsPerShare": "EPS dil.",
-
-  "returnOnEquity": "ROE",
-  "returnOnAssets": "ROA",
-  "debtPerEquity": "Долг к капиталу",
-
-  "payoutRation": "Коэф. выплаты",
-  "averageDividendFor5years": "Ср. за 5 лет",
-  "lastDividendYield": "Последний",
-
-  "closePrice": "Цена закрытия",
-  "maxFor52Weeks": "Макс. 52 недели",
-  "minFor52Weeks": "Мин. 52 недели",
-
-  "averageTurnoverPerDay": "Оборот за день",
-  "averageTurnoverPerMonth": "Оборот за месяц",
-
   "salesLabel": "Выручка",
   "incomeLabel": "Чистая прибыль"
 }

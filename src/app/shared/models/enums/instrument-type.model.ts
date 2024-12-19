@@ -6,3 +6,9 @@ export enum InstrumentType {
   Options = 'options',
   Other = 'other',
 }
+
+export enum FutureType {
+  Settlement = 'settlement',
+  Deliverable = 'deliverable',
+  NonDeliverable = 'nonDeliverable'
+}
