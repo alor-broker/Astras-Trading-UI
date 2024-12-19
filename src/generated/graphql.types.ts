@@ -755,8 +755,10 @@ export interface DividendsAggregateInfoSortInput {
 
 export enum Exchange {
   Be = 'BE',
+  Imex = 'IMEX',
   Info = 'INFO',
   Its = 'ITS',
+  Marex = 'MAREX',
   Moex = 'MOEX',
   None = 'NONE',
   Spbx = 'SPBX',
@@ -961,8 +963,10 @@ export enum Market {
   Curr = 'CURR',
   Fond = 'FOND',
   Forts = 'FORTS',
+  Imex = 'IMEX',
   Info = 'INFO',
   Its = 'ITS',
+  Marex = 'MAREX',
   Spbx = 'SPBX',
   Terex = 'TEREX',
   United = 'UNITED'
@@ -1040,6 +1044,15 @@ export interface OfferFilterInput {
   or?: InputMaybe<Array<OfferFilterInput>>;
   /** Ставка купона, доля номинала, цена выкупа или коэффициент конвертации */
   value?: InputMaybe<DecimalOperationFilterInput>;
+}
+
+export interface Other extends Instrument {
+  additionalInformation: AdditionalInformation;
+  basicInformation: BasicInformation;
+  boardInformation: BoardInformation;
+  currencyInformation: CurrencyInformation;
+  financialAttributes: FinancialAttributes;
+  tradingDetails: TradingDetails;
 }
 
 /** Information about pagination in a connection. */

@@ -18,6 +18,7 @@ import { NzUploadModule } from "ng-zorro-antd/upload";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { AddToWatchlistMenuComponent } from "./widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
 import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
+import { TableRowHeightDirective } from "../../shared/directives/table-row-height.directive";
 import { InstrumentBadgeDisplayComponent } from "../../shared/components/instrument-badge-display/instrument-badge-display.component";
 
 @NgModule({
@@ -42,6 +43,7 @@ import { InstrumentBadgeDisplayComponent } from "../../shared/components/instrum
         NzUploadModule,
         DragDropModule,
         WidgetSettingsComponent,
+        TableRowHeightDirective,
         InstrumentBadgeDisplayComponent
     ],
   exports: [

@@ -1,0 +1,32 @@
+<ng-container *transloco="let t; scope: 'info/descriptors-list'">
+  <table>
+    <tbody>
+      @for (group of descriptors; track $index) {
+        @if (group.items.length > 0) {
+          @if (group.title != null && group.title.length > 0) {
+            <tr class="group-title-row">
+              <td colspan="2"><strong>{{ group.title }}</strong></td>
+            </tr>
+          }
+
+          @for (descriptor of group.items; track $index) {
+            <tr class="descriptor-row">
+              <td class="descriptor-label">
+                <span>{{ t('infoDescriptorsList.descriptorTitles.' + (descriptor.translationKey ?? descriptor.id)) }}</span>
+              </td>
+              <td class="descriptor-content">
+                <span [ngStyle]="descriptor.customStyles">
+                  @if (descriptor.valueTranslationKey != null) {
+                    {{ t('infoDescriptorsList.' + descriptor.valueTranslationKey) }}
+                  } @else {
+                    {{ descriptor.formattedValue }}
+                  }
+                </span>
+              </td>
+            </tr>
+          }
+        }
+      }
+    </tbody>
+  </table>
+</ng-container>

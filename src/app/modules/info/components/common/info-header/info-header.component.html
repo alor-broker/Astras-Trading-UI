@@ -2,18 +2,17 @@
   <div class='left'>
     <nz-avatar
       #avatar
-      [nzText]="info.symbol"
-      [nzSize]="64" nzGap='4'
-      [nzSrc]="iconsUrl + info.symbol + '.png'">
+      [nzSize]="64"
+      [nzSrc]="iconsUrl + info.symbol + '.png'" [nzText]="info.symbol"
+      nzGap='4'>
     </nz-avatar>
   </div>
   <div class='middle'>
     <span class='identifier line'>
-      <p class='ticker'>{{info.shortName}}</p>
+      <p class='ticker'>{{ info.shortName }}</p>
       <div>
-        <p class='exchange'>{{info.exchange}}</p>
+        <p class='exchange'>{{ info.exchange }}</p>
       </div>
     </span>
-    <!-- <span><p class='price'>{{price.lastPrice}}</p></span> -->
   </div>
 </div>

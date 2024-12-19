@@ -1,9 +1,3 @@
 {
-  "isMarginal": "Available for margin",
-  "isShortSellPossible": "Available for short",
-  "longMultiplier":  "Downside risk rate",
-  "shortMultiplier": "Upward risk rate",
-  "currencyLongMultiplier":  "Trading currency downside risk rate",
-  "currencyShortMultiplier": "Trading currency upside risk rate",
   "missingRiskInfoForPortfolio": "For the current portfolio ({{portfolio}}) risks for the selected instrument are not available"
 }

@@ -60,12 +60,12 @@ import {
 import { RemoveSelectTitlesDirective } from './directives/remove-select-titles.directive';
 import { NzColorPickerModule } from "ng-zorro-antd/color-picker";
 import { PriceDiffComponent } from './components/price-diff/price-diff.component';
-import { TableRowHeightDirective } from './directives/table-row-height.directive';
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { GraphQlErrorHandlerService } from "./services/handle-error/graph-ql-error-handler.service";
 import { LetDirective } from "@ngrx/component";
 import { InputNumberComponent } from "./components/input-number/input-number.component";
 import { InstrumentSearchComponent } from "./components/instrument-search/instrument-search.component";
+import { TableRowHeightDirective } from "./directives/table-row-height.directive";
 import { MergedBadgeComponent } from "./components/merged-badge/merged-badge.component";
 
 @NgModule({
@@ -82,8 +82,7 @@ import { MergedBadgeComponent } from "./components/merged-badge/merged-badge.com
     AtsPricePipe,
     WidgetHeaderInstrumentSwitchComponent,
     RemoveSelectTitlesDirective,
-    PriceDiffComponent,
-    TableRowHeightDirective,
+    PriceDiffComponent
   ],
   imports: [
     CommonModule,
@@ -132,6 +131,7 @@ import { MergedBadgeComponent } from "./components/merged-badge/merged-badge.com
     LetDirective,
     InputNumberComponent,
     InstrumentSearchComponent,
+    TableRowHeightDirective,
     MergedBadgeComponent
   ],
   exports: [
@@ -188,7 +188,6 @@ import { MergedBadgeComponent } from "./components/merged-badge/merged-badge.com
     ResizeColumnDirective,
     ScrollableItemDirective,
     RemoveSelectTitlesDirective,
-    TableRowHeightDirective,
     // pipes
     AtsPricePipe
   ],

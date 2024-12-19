@@ -1,15 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { RisksComponent } from './risks.component';
-import { InfoService } from "../../../services/info.service";
-import {
-  of,
-  Subject
-} from "rxjs";
 import { DashboardContextService } from "../../../../../shared/services/dashboard-context.service";
-import { LetDirective } from "@ngrx/component";
-import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
 import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
+import { MockProvider } from "ng-mocks";
+import { RisksService } from "../../../services/risks.service";
+import { NEVER } from "rxjs";
 
 describe('RisksComponent', () => {
   let component: RisksComponent;
@@ -17,33 +16,26 @@ describe('RisksComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        RisksComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-loading-indicator',
-          inputs: ['isLoading']
-        })
-      ],
       imports: [
+        RisksComponent,
         TranslocoTestsModule.getModule(),
-        LetDirective
       ],
       providers: [
-        {
-          provide: InfoService,
-          useValue: {
-            getRisksInfo: jasmine.createSpy('getRisksInfo').and.returnValue(of({}))
+        MockProvider(
+          DashboardContextService,
+          {
+            selectedPortfolio$: NEVER
           }
-        },
-        {
-          provide: DashboardContextService,
-          useValue: {
-            selectedPortfolio$: new Subject()
+        ),
+        MockProvider(
+          RisksService,
+          {
+            getRisksInfo: () => NEVER
           }
-        }
+        ),
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(RisksComponent);
     component = fixture.componentInstance;

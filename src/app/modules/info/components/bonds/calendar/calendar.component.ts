@@ -1,47 +1,36 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, filter, Observable, Subject, switchMap, tap } from 'rxjs';
-import { Calendar } from '../../../models/calendar.model';
-import { InfoService } from '../../../services/info.service';
-import { distinct, map } from 'rxjs/operators';
+import {
+  Component,
+  Input
+} from '@angular/core';
+import { Bond } from "../../../../../../generated/graphql.types";
+import { NzTableModule } from "ng-zorro-antd/table";
+import { TranslocoDirective } from "@jsverse/transloco";
+import { NzEmptyComponent } from "ng-zorro-antd/empty";
+import { NzTypographyComponent } from "ng-zorro-antd/typography";
+import {
+  CurrencyPipe
+} from "@angular/common";
+import { TableRowHeightDirective } from "../../../../../shared/directives/table-row-height.directive";
 
 @Component({
   selector: 'ats-calendar',
   templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.less']
+  styleUrls: ['./calendar.component.less'],
+  standalone: true,
+  imports: [
+    NzTableModule,
+    TranslocoDirective,
+    NzEmptyComponent,
+    NzTypographyComponent,
+    CurrencyPipe,
+    TableRowHeightDirective
+  ]
 })
-export class CalendarComponent implements OnInit, OnDestroy {
+export class CalendarComponent {
   @Input({required: true})
-  guid!: string;
+  bond!: Bond;
 
-  calendar$?: Observable<Calendar | null>;
-  isLoading$ = new BehaviorSubject<boolean>(true);
-  private readonly isActivated$ = new Subject<boolean>();
-
-  constructor(private readonly service: InfoService) {
-  }
-
-  @Input()
-  set activated(value: boolean) {
-    this.isActivated$.next(value);
-  }
-
-  ngOnInit(): void {
-    this.calendar$ = combineLatest([
-        this.service.getExchangeInfo(),
-        this.isActivated$
-      ]
-    ).pipe(
-      filter(([, isActivated]) => isActivated),
-      map(([exchangeInfo,]) => exchangeInfo),
-      distinct(),
-      tap(() => this.isLoading$.next(true)),
-      switchMap(exchangeInfo => this.service.getCalendar(exchangeInfo)),
-      tap(() => this.isLoading$.next(false))
-    );
-  }
-
-  ngOnDestroy(): void {
-    this.isLoading$.complete();
-    this.isActivated$.complete();
+  formatDate(date: string): string {
+    return new Date(date).toLocaleDateString();
   }
 }

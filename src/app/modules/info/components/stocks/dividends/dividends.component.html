@@ -1,7 +1,7 @@
-<ng-container *ngIf="dividends$ | async as dividends">
+@if (dividends.length > 0) {
   <ng-container *transloco="let t; scope: 'info/dividends'">
     <nz-table
-      #nzTable *ngIf="(isLoading$ | async) === false"
+      #nzTable
       [nzData]="dividends"
       [nzFrontPagination]="false"
       [nzShowPagination]="false"
@@ -10,20 +10,25 @@
     >
       <thead>
       <tr>
-        <th>{{t('infoDividends.recordDate')}}</th>
-        <th>{{t('infoDividends.dividendPerShare')}}</th>
-        <th>{{t('infoDividends.dividendYield')}}</th>
+        <th>{{ t('infoDividends.recordDate') }}</th>
+        <th>{{ t('infoDividends.dividendPerShare') }}</th>
+        <th>{{ t('infoDividends.dividendYield') }}</th>
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let dividend of nzTable.data">
-        <td>{{ formatDate(dividend.recordDate) }}</td>
-        <td>{{ dividend.dividendPerShare | currency: dividend.currency:'symbol-narrow'}}</td>
-        <td>{{ dividend.dividendYield | percent:'1.1-2'}}</td>
-      </tr>
+        @for (dividend of nzTable.data; track $index) {
+          <tr>
+            <td>{{ formatDate(dividend.recordDate) }}</td>
+            <td>{{ dividend.dividendPerShare | currency: dividend.currency ?? 'RUB':'symbol-narrow' }}</td>
+            <td>{{ dividend.dividendYield | percent:'1.1-2' }}</td>
+          </tr>
+        }
       </tbody>
     </nz-table>
   </ng-container>
-</ng-container>
-<ats-loading-indicator [isLoading]="isLoading$ | async"></ats-loading-indicator>
+} @else {
+  <nz-empty nzNotFoundImage="simple"></nz-empty>
+}
+
+
 

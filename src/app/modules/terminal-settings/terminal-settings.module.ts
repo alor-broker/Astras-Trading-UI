@@ -17,6 +17,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
 import { BadgesSettingsComponent } from "./components/badges-settings/badges-settings.component";
 import {InputNumberComponent} from "../../shared/components/input-number/input-number.component";
 import {ExternalLinkComponent} from "../../shared/components/external-link/external-link.component";
+import { TableRowHeightDirective } from "../../shared/directives/table-row-height.directive";
 
 @NgModule({
   declarations: [
@@ -33,16 +34,17 @@ import {ExternalLinkComponent} from "../../shared/components/external-link/exter
   exports: [
     TerminalSettingsComponent
   ],
-  imports: [
-    SharedModule,
-    TerminalSettingsRoutingModule,
-    NzInputModule,
-    NzDividerModule,
-    NzResizeObserverModule,
-    DragDropModule,
-    InputNumberComponent,
-    ExternalLinkComponent
-  ]
+    imports: [
+        SharedModule,
+        TerminalSettingsRoutingModule,
+        NzInputModule,
+        NzDividerModule,
+        NzResizeObserverModule,
+        DragDropModule,
+        InputNumberComponent,
+        ExternalLinkComponent,
+        TableRowHeightDirective
+    ]
 })
 export class TerminalSettingsModule {
 }

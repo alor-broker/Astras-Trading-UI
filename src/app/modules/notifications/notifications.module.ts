@@ -11,6 +11,7 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { TranslocoModule } from "@jsverse/transloco";
 import { SharedModule } from "../../shared/shared.module";
 import { NotificationsListComponent } from './components/notifications-list/notifications-list.component';
+import { TableRowHeightDirective } from "../../shared/directives/table-row-height.directive";
 
 @NgModule({
   declarations: [
@@ -21,18 +22,19 @@ import { NotificationsListComponent } from './components/notifications-list/noti
     NotificationButtonComponent,
     NotificationsListComponent
   ],
-  imports: [
-    CommonModule,
-    NzBadgeModule,
-    NzButtonModule,
-    NzIconModule,
-    NzPopoverModule,
-    NzCardModule,
-    NzTableModule,
-    NzTypographyModule,
-    TranslocoModule,
-    SharedModule
-  ]
+    imports: [
+        CommonModule,
+        NzBadgeModule,
+        NzButtonModule,
+        NzIconModule,
+        NzPopoverModule,
+        NzCardModule,
+        NzTableModule,
+        NzTypographyModule,
+        TranslocoModule,
+        SharedModule,
+        TableRowHeightDirective
+    ]
 })
 export class NotificationsModule {
 }

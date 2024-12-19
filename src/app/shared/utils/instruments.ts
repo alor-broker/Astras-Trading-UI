@@ -1,4 +1,7 @@
-import { InstrumentType } from "../models/enums/instrument-type.model";
+import {
+  FutureType,
+  InstrumentType
+} from "../models/enums/instrument-type.model";
 import { InstrumentKey } from "../models/instruments/instrument-key.model";
 import { Instrument } from '../models/instruments/instrument.model';
 
@@ -69,6 +72,31 @@ export function getTypeByCfi(cfi: string | undefined): InstrumentType {
     return InstrumentType.Options;
   }
   return InstrumentType.Other;
+}
+
+/**
+ * Determines the type of future by CFI code
+ * @param cfi cfi code
+ * @returns InstrumentType
+ */
+export function getFutureType(cfi: string): FutureType | undefined {
+  // FFXPSX - example CFI for future
+  // see https://en.wikipedia.org/wiki/ISO_10962 for CFI code semantic.
+  const futureTypeCode = cfi[3];
+
+  if (futureTypeCode === 'P') {
+    return FutureType.Deliverable;
+  }
+
+  if (futureTypeCode === 'C') {
+    return FutureType.Settlement;
+  }
+
+  if (futureTypeCode === 'N') {
+    return FutureType.NonDeliverable;
+  }
+
+  return undefined;
 }
 
 /**

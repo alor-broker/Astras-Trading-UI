@@ -1,32 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { InfoService } from '../../../services/info.service';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { DividendsComponent } from './dividends.component';
-import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
+import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
 
 describe('DividendsComponent', () => {
   let component: DividendsComponent;
   let fixture: ComponentFixture<DividendsComponent>;
-
-  const infoSpy = jasmine.createSpyObj('InfoService', ['getDividends', 'getExchangeInfo']);
-  infoSpy.getDividends.and.returnValue(of([]));
-  infoSpy.getExchangeInfo.and.returnValue(of({}));
-
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         DividendsComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-loading-indicator',
-          inputs: ['isLoading']
-        })
+        TranslocoTestsModule.getModule()
       ],
-      providers: [
-        { provide: InfoService, useValue: infoSpy }
-      ]
-
     }).compileComponents();
   });
 

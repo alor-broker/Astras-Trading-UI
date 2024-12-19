@@ -2,17 +2,21 @@ import {
   ComponentFixture,
   TestBed
 } from '@angular/core/testing';
-import { InfoService } from '../../services/info.service';
 
 import { InfoWidgetComponent } from './info-widget.component';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { of } from 'rxjs';
+import {
+  EMPTY,
+  of
+} from 'rxjs';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import {Widget} from "../../../../shared/models/dashboard/widget.model";
-import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
-import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import { Widget } from "../../../../shared/models/dashboard/widget.model";
+import { WidgetMeta } from "../../../../shared/models/widget-meta.model";
+import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { MockProvider } from "ng-mocks";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
 
 describe('InfoWidgetComponent', () => {
   let component: InfoWidgetComponent;
@@ -31,37 +35,35 @@ describe('InfoWidgetComponent', () => {
         TranslocoTestsModule.getModule()
       ],
       providers: [
-        {
-          provide: WidgetSettingsService,
-          useValue: {
+        MockProvider(
+          WidgetSettingsService,
+          {
             getSettingsOrNull: jasmine.createSpy('getSettingsOrNull').and.returnValue(of(null)),
             getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
             addSettings: jasmine.createSpy('addSettings').and.callThrough()
           }
-        },
-        {
-          provide: TerminalSettingsService,
-          useValue: {
-            terminalSettingsService: of({})
+        ),
+        MockProvider(
+          TerminalSettingsService,
+          {
+            getSettings: () => of({})
           }
-        },
-        {
-          provide: DashboardContextService,
-          useValue: {
+        ),
+        MockProvider(
+          DashboardContextService,
+          {
             instrumentsSelection$: of({})
           }
-        }
+        ),
+        MockProvider(
+          InstrumentsService,
+          {
+            getInstrument: () => EMPTY
+          }
+        )
       ]
     })
       .compileComponents();
-
-    TestBed.overrideComponent(InfoWidgetComponent, {
-      set: {
-        providers: [
-          { provide: InfoService, useValue: infoSpy }
-        ]
-      }
-    });
   });
 
   beforeEach(() => {

@@ -25,6 +25,7 @@ import { LetDirective } from "@ngrx/component";
 import { InstrumentsModule } from "../instruments/instruments.module";
 import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
 import { NzDividerComponent } from "ng-zorro-antd/divider";
+import { TableRowHeightDirective } from "../../shared/directives/table-row-height.directive";
 import { InstrumentBadgeDisplayComponent } from "../../shared/components/instrument-badge-display/instrument-badge-display.component";
 
 @NgModule({
@@ -55,6 +56,7 @@ import { InstrumentBadgeDisplayComponent } from "../../shared/components/instrum
         InstrumentsModule,
         WidgetSettingsComponent,
         NzDividerComponent,
+        TableRowHeightDirective,
         InstrumentBadgeDisplayComponent
     ],
   exports: [
