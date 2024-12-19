@@ -53,10 +53,6 @@ import { ScrollableRowComponent } from './components/scrollable-row/scrollable-r
 import { ScrollableItemDirective } from "./directives/scrollable-item.directive";
 import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
 import { PushNotificationsProvider } from "../modules/push-notifications/services/push-notifications-provider";
-import {
-  InstrumentBadgeDisplayComponent
-} from './components/instrument-badge-display/instrument-badge-display.component';
-import { MergedBadgeComponent } from './components/merged-badge/merged-badge.component';
 import { AtsPricePipe } from './pipes/ats-price.pipe';
 import {
   WidgetHeaderInstrumentSwitchComponent
@@ -70,6 +66,7 @@ import { LetDirective } from "@ngrx/component";
 import { InputNumberComponent } from "./components/input-number/input-number.component";
 import { InstrumentSearchComponent } from "./components/instrument-search/instrument-search.component";
 import { TableRowHeightDirective } from "./directives/table-row-height.directive";
+import { MergedBadgeComponent } from "./components/merged-badge/merged-badge.component";
 
 @NgModule({
   declarations: [
@@ -82,8 +79,6 @@ import { TableRowHeightDirective } from "./directives/table-row-height.directive
     ShortNumberComponent,
     ScrollableRowComponent,
     ScrollableItemDirective,
-    InstrumentBadgeDisplayComponent,
-    MergedBadgeComponent,
     AtsPricePipe,
     WidgetHeaderInstrumentSwitchComponent,
     RemoveSelectTitlesDirective,
@@ -136,7 +131,8 @@ import { TableRowHeightDirective } from "./directives/table-row-height.directive
     LetDirective,
     InputNumberComponent,
     InstrumentSearchComponent,
-    TableRowHeightDirective
+    TableRowHeightDirective,
+    MergedBadgeComponent
   ],
   exports: [
     // Ng zorro
@@ -186,7 +182,6 @@ import { TableRowHeightDirective } from "./directives/table-row-height.directive
     WidgetSkeletonComponent,
     ShortNumberComponent,
     ScrollableRowComponent,
-    InstrumentBadgeDisplayComponent,
     WidgetHeaderInstrumentSwitchComponent,
     PriceDiffComponent,
     // directives

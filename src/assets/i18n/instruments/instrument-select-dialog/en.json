@@ -1,0 +1,10 @@
+{
+  "dialogTitle": "Instrument select",
+  "searchForm": {
+    "instrumentName": {
+      "placeholder": "Ticker or instrument name"
+    }
+  },
+
+  "emptyResultsMessage": "There are no suitable instruments"
+}

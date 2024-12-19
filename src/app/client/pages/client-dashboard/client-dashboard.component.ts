@@ -27,6 +27,9 @@ import {
 import {
   WatchlistCollectionBrokerService
 } from "../../../modules/instruments/services/watchlist-collection-broker.service";
+import { EXPORT_SETTINGS_SERVICE_TOKEN } from "../../../shared/services/settings/export-settings.service";
+import { ExportDesktopSettingsService } from "../../../shared/services/settings/export-desktop-settings.service";
+import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instruments/widgets/instrument-select-dialog-widget/instrument-select-dialog-widget.component";
 
 @Component({
   selector: 'ats-client-dashboard',
@@ -42,7 +45,8 @@ import {
     ApplicationMetaModule,
     OrderCommandsModule,
     SettingsLoadErrorDialogComponent,
-    TerminalSettingsWidgetComponent
+    TerminalSettingsWidgetComponent,
+    InstrumentSelectDialogWidgetComponent
   ],
   templateUrl: './client-dashboard.component.html',
   styleUrl: './client-dashboard.component.less',
@@ -50,6 +54,10 @@ import {
     {
       provide: ACTIONS_CONTEXT,
       useExisting: ClientDashboardComponent
+    },
+    {
+      provide: EXPORT_SETTINGS_SERVICE_TOKEN,
+      useClass: ExportDesktopSettingsService
     }
   ]
 })

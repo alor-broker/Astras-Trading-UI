@@ -12,7 +12,6 @@ import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
 import {
   BehaviorSubject,
   combineLatest,
-  fromEvent,
   Observable,
   of,
   shareReplay,
@@ -30,10 +29,7 @@ import { InstrumentKey } from '../../../../shared/models/instruments/instrument-
 import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { WatchlistCollection } from '../../models/watchlist.model';
-import { DOCUMENT } from '@angular/common';
 import { InstrumentSelectSettings, WatchlistMeta } from '../../models/instrument-select-settings.model';
-import { DomHelper } from "../../../../shared/utils/dom-helper";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { WatchListTitleHelper } from "../../utils/watch-list-title.helper";
 import {
   ACTIONS_CONTEXT,
@@ -69,7 +65,6 @@ export class InstrumentSelectComponent implements OnInit {
     private readonly watchInstrumentsService: WatchInstrumentsService,
     @Inject(ACTIONS_CONTEXT)
     private readonly actionsContext: ActionsContext,
-    @Inject(DOCUMENT) private readonly document: Document,
     private readonly destroyRef: DestroyRef) {
 
   }
@@ -133,17 +128,6 @@ export class InstrumentSelectComponent implements OnInit {
     );
 
     this.setDefaultWatchList();
-
-    fromEvent<KeyboardEvent>(this.document.body, 'keydown').pipe(
-      filter(() => !DomHelper.isModalOpen()),
-      filter(e => e.ctrlKey && e.code === 'KeyF' && !e.cancelBubble),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe((e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      this.inputEl.nativeElement.value = '';
-      this.inputEl.nativeElement.select();
-    });
   }
 
   watch(instrument: InstrumentKey): void {

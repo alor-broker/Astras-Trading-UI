@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {AsyncPipe} from '@angular/common';
 import {NzContentComponent, NzHeaderComponent, NzLayoutComponent,} from 'ng-zorro-antd/layout';
 import {AdminNavbarComponent} from '../../components/admin-navbar/admin-navbar.component';
 import {AdminSettingsBrokerService} from '../../services/settings/admin-settings-broker.service';
@@ -12,20 +11,21 @@ import {OrderCommandsModule} from "../../../modules/order-commands/order-command
 import {
   WatchlistCollectionBrokerService
 } from "../../../modules/instruments/services/watchlist-collection-broker.service";
+import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instruments/widgets/instrument-select-dialog-widget/instrument-select-dialog-widget.component";
 
 @Component({
   selector: 'ats-admin-dashboard',
   standalone: true,
-    imports: [
-        AsyncPipe,
-        NzLayoutComponent,
-        AdminNavbarComponent,
-        NzHeaderComponent,
-        NzContentComponent,
-        DashboardModule,
-        TerminalSettingsModule,
-        OrderCommandsModule,
-    ],
+  imports: [
+    NzLayoutComponent,
+    AdminNavbarComponent,
+    NzHeaderComponent,
+    NzContentComponent,
+    DashboardModule,
+    TerminalSettingsModule,
+    OrderCommandsModule,
+    InstrumentSelectDialogWidgetComponent,
+  ],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.less',
   providers: [

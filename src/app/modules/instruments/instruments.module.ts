@@ -19,6 +19,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
 import { AddToWatchlistMenuComponent } from "./widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
 import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
 import { TableRowHeightDirective } from "../../shared/directives/table-row-height.directive";
+import { InstrumentBadgeDisplayComponent } from "../../shared/components/instrument-badge-display/instrument-badge-display.component";
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { TableRowHeightDirective } from "../../shared/directives/table-row-heigh
         NzUploadModule,
         DragDropModule,
         WidgetSettingsComponent,
-        TableRowHeightDirective
+        TableRowHeightDirective,
+        InstrumentBadgeDisplayComponent
     ],
   exports: [
     InstrumentSelectWidgetComponent,
