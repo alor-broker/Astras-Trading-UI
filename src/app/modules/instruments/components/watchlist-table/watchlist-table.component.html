@@ -223,9 +223,9 @@
 
     <nz-dropdown-menu #menu="nzDropdownMenu">
       <ul nz-menu>
-        @if (getListsForCopyMove(vm.currentList[0], vm.collection); as lists) {
+        @if (getListsForCopyMove(vm.collection); as lists) {
           <ng-container *transloco="let tTitle; scope: 'instruments'">
-            @if (canMoveItem(vm.currentList[0])) {
+            @if (canMoveItem(vm.collection)) {
               <li
                 [nzTitle]="title"
                 nz-submenu
@@ -237,7 +237,7 @@
                 </ng-template>
                 <ul>
                   @for (wl of lists; track wl.id) {
-                    <li nz-menu-item (click)="moveItem(vm.currentList[0], wl); submenu.nzOpen = false">
+                    <li nz-menu-item (click)="moveItem(wl); submenu.nzOpen = false">
                       {{ tTitle('instruments.' + getListTitleTranslationKey(wl), { fallback: wl.title }) }}
                     </li>
                   }

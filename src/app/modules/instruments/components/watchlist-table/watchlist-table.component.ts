@@ -393,12 +393,22 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
     );
   }
 
-  canMoveItem(currentList: Watchlist): boolean {
-    return currentList.type != WatchlistType.HistoryList;
+  canMoveItem(collection: WatchlistCollection): boolean {
+    if(this.selectedItem == null) {
+      return false;
+    }
+
+    const currentList = collection.collection.find(c => c.id === this.selectedItem!.listId);
+
+    return currentList != null && currentList.type != WatchlistType.HistoryList;
   }
 
-  getListsForCopyMove(currentList: Watchlist, collection: WatchlistCollection): Watchlist[] | null {
-    const filteredLists = collection.collection.filter(wl => wl.id !== currentList.id && wl.type !== WatchlistType.HistoryList);
+  getListsForCopyMove(collection: WatchlistCollection): Watchlist[] | null {
+    if(this.selectedItem == null) {
+      return null;
+    }
+
+    const filteredLists = collection.collection.filter(wl => wl.id !== this.selectedItem!.listId && wl.type !== WatchlistType.HistoryList);
     return filteredLists.length > 0
       ? filteredLists
       : null;
@@ -412,12 +422,12 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
     this.watchlistCollectionService.addItemsToList(targetList.id, [this.selectedItem.instrument.instrument], false);
   }
 
-  moveItem(fromList: Watchlist, toList: Watchlist): void {
+  moveItem(toList: Watchlist): void {
     if (!this.selectedItem) {
       return;
     }
 
-    this.watchlistCollectionService.moveItem(this.selectedItem.instrument.recordId, fromList.id, toList.id);
+    this.watchlistCollectionService.moveItem(this.selectedItem.instrument.recordId, this.selectedItem.listId, toList.id);
   }
 
   changeColumnOrder(event: CdkDragDrop<any>): void {
