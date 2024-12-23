@@ -8,6 +8,7 @@ import { ErrorHandlerService } from "./handle-error/error-handler.service";
 import { EnvironmentService } from "./environment.service";
 import {PortfolioItemsModelHelper} from "../utils/portfolio-item-models-helper";
 import {PortfolioKey} from "../models/portfolio-key.model";
+import { TradeFilter } from "../../modules/blotter/models/trade.model";
 
 @Injectable({
   providedIn: 'root'
@@ -20,17 +21,30 @@ export class TradesHistoryService {
   ) {
   }
 
-  getTradesHistoryForPortfolio(exchange: string, portfolio: string, options?: Partial<{
+  getTradesHistoryForPortfolio(
+    exchange: string,
+    portfolio: string,
+    options?: Partial<{
     from: string | null;
     limit: number | null;
+    filters: TradeFilter | null;
   }>): Observable<Trade[] | null> {
     const ownedPortfolio: PortfolioKey = { portfolio, exchange };
     const params: Record<string, any> = {
       descending: true,
       format: 'heavy'
     };
-
     if (options) {
+      if(options.filters != null) {
+        if(options.filters.symbol != null && options.filters.symbol.length > 0) {
+          params.ticker = options.filters.symbol;
+        }
+
+        if(options.filters.side != null) {
+          params.side = options.filters.side;
+        }
+      }
+
       if (options.limit != null) {
         params.limit = options.limit;
       }

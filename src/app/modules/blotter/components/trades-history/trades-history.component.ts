@@ -42,6 +42,7 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
+  debounceTime,
   filter,
   map,
   startWith
@@ -218,7 +219,9 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     // initial load
     combineLatest([
       settingsChange$,
-      scrollViewport$
+      scrollViewport$,
+      // loaded data should be cleared when filters has been changed
+      this.filters$.pipe(debounceTime(100))
     ]).pipe(
       map(([, scrollViewport]) => scrollViewport),
       takeUntilDestroyed(this.destroyRef)
@@ -269,12 +272,13 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       take(1),
       filter(isLoading => !isLoading),
       tap(() => this.isLoading$.next(true)),
-      withLatestFrom(this.settings$),
+      withLatestFrom(this.settings$, this.filters$),
       switchMap(
-        ([, settings]) => this.tradesHistoryService.getTradesHistoryForPortfolio(
+        ([, settings, filters]) => this.tradesHistoryService.getTradesHistoryForPortfolio(
           settings.exchange,
           settings.portfolio,
           {
+            filters,
             from: from,
             limit: itemsCount ?? 50
           }
@@ -355,8 +359,19 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       })),
       mapWith(
         () => this.filters$,
-        (data, filter) => data.filter(t => this.justifyFilter(t, filter))
-      ),
+        (data, filter) =>
+        {
+          const clearedFilter = {
+            ...filter
+          };
+
+          // symbol and side filters has been applied in API call
+          delete clearedFilter.symbol;
+          delete clearedFilter.side;
+
+          return data.filter(t => this.justifyFilter(t, filter));
+        }
+        ),
       shareReplay(1)
     );
   }
