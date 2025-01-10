@@ -53,7 +53,7 @@ export class TopFloatingPanelComponent implements OnInit {
     );
 
     this.priceDayChangePercent$ = this.settings$.pipe(
-      distinctUntilChanged((prev, curr) => isInstrumentEqual(prev.widgetSettings, curr.widgetSettings)),
+      distinctUntilChanged((prev, curr) => isInstrumentEqual(prev, curr)),
       switchMap(s => this.quotesService.getQuotes(s.symbol, s.exchange, s.instrumentGroup)),
       map(q => q.change_percent ?? 0)
     );
