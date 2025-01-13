@@ -4,7 +4,6 @@ import {
   tick
 } from '@angular/core/testing';
 import {
-  BracketOptions,
   SubmitLimitOrderCommand
 } from "./submit-limit-order-command";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
@@ -27,6 +26,7 @@ import { TestingHelpers } from "../../../shared/utils/testing/testing-helpers";
 import {
   ORDER_COMMAND_SERVICE_TOKEN,
 } from "../../../shared/services/orders/order-command.service";
+import { BracketOptions } from './bracket-command';
 
 describe('SubmitLimitOrderCommand', () => {
   let command: SubmitLimitOrderCommand;
