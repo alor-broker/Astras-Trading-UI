@@ -31,10 +31,6 @@ import { TranslocoRootModule } from './transloco-root.module';
 import { LOGGER } from './shared/services/logging/logger-base';
 import { ConsoleLogger } from './shared/services/logging/console-logger';
 import { RemoteLogger } from './shared/services/logging/remote-logger';
-import { environment } from "../environments/environment";
-import { AngularFireAuthModule } from "@angular/fire/compat/auth";
-import { AngularFireMessagingModule } from "@angular/fire/compat/messaging";
-import { AngularFireModule } from "@angular/fire/compat";
 import { NzI18nInterface } from "ng-zorro-antd/i18n/nz-i18n.interface";
 import { GraphQLModule } from './graphql.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -64,9 +60,6 @@ registerLocaleData(ru);
     ...extModules,
     ApplicationMetaModule,
     TranslocoRootModule,
-    AngularFireAuthModule,
-    AngularFireMessagingModule,
-    AngularFireModule.initializeApp(environment.firebase),
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: true,
       // Register the ServiceWorker as soon as the application is stable

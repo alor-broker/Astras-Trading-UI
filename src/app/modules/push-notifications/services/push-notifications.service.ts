@@ -1,7 +1,11 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import {
+  Injectable,
+  OnDestroy
+} from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {
   forkJoin,
+  from,
   Observable,
   of,
   shareReplay,
@@ -11,9 +15,15 @@ import {
   tap,
   throwError,
 } from "rxjs";
-import { AngularFireMessaging } from "@angular/fire/compat/messaging";
-import { catchHttpError, mapWith } from "../../../shared/utils/observable-helper";
-import { catchError, filter, map } from "rxjs/operators";
+import {
+  catchHttpError,
+  mapWith
+} from "../../../shared/utils/observable-helper";
+import {
+  catchError,
+  filter,
+  map
+} from "rxjs/operators";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import {
   OrderExecuteSubscription,
@@ -22,12 +32,15 @@ import {
   SubscriptionBase
 } from "../models/push-notifications.model";
 import { BaseCommandResponse } from "../../../shared/models/http-request-response.model";
-import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
 import { isPortfoliosEqual } from "../../../shared/utils/portfolios";
 import { EnvironmentService } from "../../../shared/services/environment.service";
 import { TranslatorService } from "../../../shared/services/translator.service";
+import { environment } from "../../../../environments/environment";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/messaging';
+import { LoggerService } from "../../../shared/services/logging/logger.service";
 
-interface MessagePayload extends firebase.default.messaging.MessagePayload {
+interface MessagePayload extends firebase.messaging.MessagePayload {
   data?: {
     body?: string;
   };
@@ -38,6 +51,8 @@ interface MessagePayload extends firebase.default.messaging.MessagePayload {
   providedIn: 'root'
 })
 export class PushNotificationsService implements OnDestroy {
+  private readonly messaging = firebase.messaging(firebase.initializeApp(environment.firebase));
+
   private readonly baseUrl = this.environmentService.apiUrl + '/commandapi/observatory/subscriptions';
 
   private token$?: Observable<string | null>;
@@ -49,10 +64,10 @@ export class PushNotificationsService implements OnDestroy {
 
   constructor(
     private readonly environmentService: EnvironmentService,
-    private readonly http: HttpClient,
-    private readonly angularFireMessaging: AngularFireMessaging,
+    private readonly httpClient: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly loggerService: LoggerService
   ) {
   }
 
@@ -67,7 +82,7 @@ export class PushNotificationsService implements OnDestroy {
             return of({message: 'success'});
           }
 
-          return this.http.post<BaseCommandResponse | null>(this.baseUrl + '/actions/addOrdersExecute', {
+          return this.httpClient.post<BaseCommandResponse | null>(this.baseUrl + '/actions/addOrdersExecute', {
             portfolios: portfolios.map(p => ({portfolio: p.portfolio, exchange: p.exchange}))
           });
         }),
@@ -86,30 +101,11 @@ export class PushNotificationsService implements OnDestroy {
       );
   }
 
-  subscribeToOrderExecute(portfolio: PortfolioKey): Observable<BaseCommandResponse | null> {
-    return this.getToken()
-      .pipe(
-        filter(t => t != null && t.length > 0),
-        switchMap(() => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addOrderExecute', {
-          exchange: portfolio.exchange,
-          portfolio: portfolio.portfolio
-        })),
-        catchError(err => {
-          if (err.error?.code === 'SubscriptionAlreadyExists') {
-            return of({message: 'success', code: err.error.code as string});
-          }
-          return throwError(err);
-        }),
-        catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
-        take(1),
-      );
-  }
-
   subscribeToPriceChange(request: PriceChangeRequest): Observable<BaseCommandResponse | null> {
     return this.getToken()
       .pipe(
         take(1),
-        switchMap(() => this.http.post<BaseCommandResponse>(this.baseUrl + '/actions/addPriceSpark', request)),
+        switchMap(() => this.httpClient.post<BaseCommandResponse>(this.baseUrl + '/actions/addPriceSpark', request)),
         catchError(err => {
           if (err.error?.code === 'SubscriptionAlreadyExists') {
             return of({message: 'success', code: err.error.code as string});
@@ -128,11 +124,15 @@ export class PushNotificationsService implements OnDestroy {
 
   getMessages(): Observable<MessagePayload> {
     if (!this.messages$) {
-      this.messages$ = this.angularFireMessaging.messages
-        .pipe(
-          map(payload => payload as MessagePayload),
-          shareReplay(1)
-        );
+      this.messages$ = this.getToken().pipe(
+        switchMap(() => {
+            return new Observable<MessagePayload>(subscriber => {
+              this.messaging.onMessage(value => subscriber.next(value));
+            });
+          }
+        ),
+        shareReplay(1)
+      );
     }
 
     return this.messages$;
@@ -141,7 +141,7 @@ export class PushNotificationsService implements OnDestroy {
   getCurrentSubscriptions(): Observable<SubscriptionBase[] | null> {
     return this.getToken().pipe(
       filter(x => x != null && x.length > 0),
-      switchMap(() => this.http.get<SubscriptionBase[]>(this.baseUrl)),
+      switchMap(() => this.httpClient.get<SubscriptionBase[]>(this.baseUrl)),
       catchHttpError<SubscriptionBase[] | null>(null, this.errorHandlerService),
       map(s => {
         if (!s) {
@@ -160,7 +160,7 @@ export class PushNotificationsService implements OnDestroy {
   cancelSubscription(id: string): Observable<BaseCommandResponse | null> {
     return this.getToken()
       .pipe(
-        switchMap(() => this.http.delete<BaseCommandResponse>(`${this.baseUrl}/${id}`)),
+        switchMap(() => this.httpClient.delete<BaseCommandResponse>(`${this.baseUrl}/${id}`)),
         catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
         take(1),
         tap(r => {
@@ -171,8 +171,8 @@ export class PushNotificationsService implements OnDestroy {
       );
   }
 
-  getBrowserNotificationsStatus(): Observable<"default" | "denied" | "granted"> {
-    return this.angularFireMessaging.requestPermission;
+  getBrowserNotificationsStatus(): Observable<NotificationPermission> {
+    return from(Notification.requestPermission());
   }
 
   ngOnDestroy(): void {
@@ -184,30 +184,39 @@ export class PushNotificationsService implements OnDestroy {
       return this.token$;
     }
 
-    this.token$ = this.angularFireMessaging.requestToken
-      .pipe(
-        filter(token => token != null && !!token.length),
-        mapWith(
-          token => this.http.post<BaseCommandResponse>(
-            this.baseUrl + '/actions/addToken',
-            {
-              token,
-              culture: this.translatorService.getActiveLang()
-            }
-          )
-            .pipe(
-              catchError(err => {
-                if (err.error?.code === 'TokenAlreadyExists') {
-                  return of({message: 'success', code: err.error.code as string});
-                }
-                return throwError(err);
-              }),
-              catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService)
-            ),
-          (token, res) => res ? token : null),
-        filter(token => token != null && !!token.length),
-        shareReplay(1)
-      );
+    this.token$ = from(navigator.serviceWorker.ready).pipe(
+      filter(r => r != null),
+      take(1),
+      switchMap(() => from(this.messaging.getToken())),
+      filter(token => {
+        const isValid = token != null && token.length > 0;
+        if(!isValid) {
+          this.loggerService.warn('Unable to get FCM token');
+        }
+
+        return isValid;
+      }),
+      mapWith(
+        token => this.httpClient.post<BaseCommandResponse>(
+          this.baseUrl + '/actions/addToken',
+          {
+            token,
+            culture: this.translatorService.getActiveLang()
+          }
+        )
+          .pipe(
+            catchError(err => {
+              if (err.error?.code === 'TokenAlreadyExists') {
+                return of({message: 'success', code: err.error.code as string});
+              }
+              return throwError(err);
+            }),
+            catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService)
+          ),
+        (token, res) => res ? token : null),
+      filter(token => token != null && !!token.length),
+      shareReplay(1)
+    );
 
     return this.token$;
   }
