@@ -21,6 +21,8 @@ import { BracketOptions } from './bracket-command';
 import { PriceUnits } from "../models/scalper-order-book-settings.model";
 import { OrderbookDataRow } from "../../orderbook/models/orderbook-data.model";
 import { LessMore } from "../../../shared/models/enums/less-more.model";
+import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
+import { OrderType } from "../../../shared/models/orders/order.model";
 
 describe('SubmitMarketOrderCommand', () => {
   let command: SubmitMarketOrderCommand;
@@ -33,7 +35,7 @@ describe('SubmitMarketOrderCommand', () => {
       'OrderCommandService',
       [
         'submitMarketOrder',
-        'submitStopLimitOrder'
+        'submitOrdersGroup'
       ]
     );
 
@@ -150,7 +152,7 @@ describe('SubmitMarketOrderCommand', () => {
     };
 
     orderServiceSpy.submitMarketOrder.and.returnValue(of({isSuccess: true}));
-    orderServiceSpy.submitStopLimitOrder.and.returnValue(of({}));
+    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
 
     const quantity = TestingHelpers.getRandomInt(1, 100);
     const bestAsk = 201;
@@ -186,29 +188,36 @@ describe('SubmitMarketOrderCommand', () => {
         portfolioKey.portfolio
       );
 
-    expect(orderServiceSpy.submitStopLimitOrder).toHaveBeenCalledTimes(2);
+    const expectedGetProfitOrder = {
+      triggerPrice: bracketOptions.profitPriceRatio! * priceStep + bestAsk,
+      side: Side.Sell,
+      quantity,
+      condition: LessMore.MoreOrEqual,
+      instrument: toInstrumentKey(testInstrumentKey),
+      price: bestAsk,
+      activate: true,
+      type: OrderType.StopLimit
+    };
 
-    expect(orderServiceSpy.submitStopLimitOrder.calls.argsFor(0)[0])
-      .toEqual(jasmine.objectContaining(
-          {
-            triggerPrice: bracketOptions.profitPriceRatio! * priceStep + bestAsk,
-            condition: LessMore.MoreOrEqual,
-            side: Side.Sell,
-            quantity
-          }
-        )
-      );
+    const expectedStopLossOrder = {
+      triggerPrice: bestAsk - bracketOptions.lossPriceRatio! * priceStep,
+      side: Side.Sell,
+      quantity,
+      condition: LessMore.LessOrEqual,
+      instrument: toInstrumentKey(testInstrumentKey),
+      price: bestAsk,
+      activate: true,
+      type: OrderType.StopLimit
+    };
 
-    expect(orderServiceSpy.submitStopLimitOrder.calls.argsFor(1)[0])
-      .toEqual(jasmine.objectContaining(
-          {
-            triggerPrice: bestAsk - bracketOptions.lossPriceRatio! * priceStep,
-            condition: LessMore.LessOrEqual,
-            side: Side.Sell,
-            quantity
-          }
-        )
-      );
+    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+      [
+        expectedGetProfitOrder,
+        expectedStopLossOrder
+      ],
+      portfolioKey.portfolio,
+      ExecutionPolicy.IgnoreCancel
+    );
   }));
 
   it('#execute should create bracket for ask order', fakeAsync(() => {
@@ -231,7 +240,7 @@ describe('SubmitMarketOrderCommand', () => {
     };
 
     orderServiceSpy.submitMarketOrder.and.returnValue(of({isSuccess: true}));
-    orderServiceSpy.submitStopLimitOrder.and.returnValue(of({}));
+    orderServiceSpy.submitOrdersGroup.and.returnValue(of({}));
 
     const quantity = TestingHelpers.getRandomInt(1, 100);
     const bestBid = 100;
@@ -267,28 +276,35 @@ describe('SubmitMarketOrderCommand', () => {
         portfolioKey.portfolio
       );
 
-    expect(orderServiceSpy.submitStopLimitOrder).toHaveBeenCalledTimes(2);
+    const expectedGetProfitOrder = {
+      triggerPrice: bestBid - bracketOptions.profitPriceRatio! * priceStep,
+      side: Side.Buy,
+      quantity,
+      condition: LessMore.LessOrEqual,
+      instrument: toInstrumentKey(testInstrumentKey),
+      price: bestBid,
+      activate: true,
+      type: OrderType.StopLimit
+    };
 
-    expect(orderServiceSpy.submitStopLimitOrder.calls.argsFor(0)[0])
-      .toEqual(jasmine.objectContaining(
-          {
-            triggerPrice: bestBid - bracketOptions.profitPriceRatio! * priceStep,
-            condition: LessMore.LessOrEqual,
-            side: Side.Buy,
-            quantity
-          }
-        )
-      );
+    const expectedStopLossOrder = {
+      triggerPrice: bestBid + bracketOptions.lossPriceRatio! * priceStep,
+      side: Side.Buy,
+      quantity,
+      condition: LessMore.MoreOrEqual,
+      instrument: toInstrumentKey(testInstrumentKey),
+      price: bestBid,
+      activate: true,
+      type: OrderType.StopLimit
+    };
 
-    expect(orderServiceSpy.submitStopLimitOrder.calls.argsFor(1)[0])
-      .toEqual(jasmine.objectContaining(
-          {
-            triggerPrice: bestBid + bracketOptions.lossPriceRatio! * priceStep,
-            condition: LessMore.MoreOrEqual,
-            side: Side.Buy,
-            quantity
-          }
-        )
-      );
+    expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
+     [
+       expectedGetProfitOrder,
+       expectedStopLossOrder
+     ],
+      portfolioKey.portfolio,
+      ExecutionPolicy.IgnoreCancel
+    );
   }));
 });

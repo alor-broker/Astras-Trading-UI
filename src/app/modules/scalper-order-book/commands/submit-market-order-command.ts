@@ -6,9 +6,9 @@ import { InstrumentKey } from "../../../shared/models/instruments/instrument-key
 import { Side } from "../../../shared/models/enums/side.model";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
 import {
+  NewLinkedOrder,
   NewMarketOrder,
-  NewStopLimitOrder,
-  OrderCommandResult
+  NewStopLimitOrder
 } from "../../../shared/models/orders/new-order.model";
 import { toInstrumentKey } from "../../../shared/utils/instruments";
 import { OrderFormType } from "../../../shared/models/orders/orders-dialog.model";
@@ -18,15 +18,11 @@ import {
 } from "./bracket-command";
 import { OrderbookData } from "../../orderbook/models/orderbook-data.model";
 import {
-  forkJoin,
-  Observable,
-  of,
-  switchMap
-} from "rxjs";
-import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
 } from "../../../shared/services/orders/order-command.service";
+import { ExecutionPolicy } from "../../../shared/models/orders/orders-group.model";
+import { OrderType } from "../../../shared/models/orders/order.model";
 
 export interface SubmitMarketOrderCommandArgs {
   instrumentKey: InstrumentKey;
@@ -103,29 +99,27 @@ export class SubmitMarketOrderCommand extends BracketCommand<SubmitMarketOrderCo
     stopLossOrder: NewStopLimitOrder | null,
     args: SubmitMarketOrderCommandArgs
   ): void {
-    this.orderCommandService.submitMarketOrder(marketOrder, args.targetPortfolio).pipe(
-      switchMap(r => {
-        if (r.isSuccess) {
-          const bracketOrders: Observable<OrderCommandResult>[] = [];
+    this.orderCommandService.submitMarketOrder(marketOrder, args.targetPortfolio).subscribe(r => {
+      if (r.isSuccess) {
+        const bracketOrders = [
+          getProfitOrder,
+          stopLossOrder
+        ].filter(o => o != null)
+          .map(o => ({
+            ...o,
+            type: OrderType.StopLimit,
+            activate: true
+          } as NewLinkedOrder));
 
-          if (getProfitOrder != null) {
-            getProfitOrder.activate = true;
-            bracketOrders.push(this.orderCommandService.submitStopLimitOrder(getProfitOrder, args.targetPortfolio));
-          }
-
-          if (stopLossOrder != null) {
-            stopLossOrder.activate = true;
-            bracketOrders.push(this.orderCommandService.submitStopLimitOrder(stopLossOrder, args.targetPortfolio));
-          }
-
-          if (bracketOrders.length > 0) {
-            return forkJoin(bracketOrders);
-          }
+        if (bracketOrders.length > 0) {
+          this.orderCommandService.submitOrdersGroup(
+            bracketOrders,
+            args.targetPortfolio,
+            ExecutionPolicy.IgnoreCancel
+          ).subscribe();
         }
-
-        return of([]);
-      })
-    ).subscribe();
+      }
+    });
   }
 
   private calculateBasePrice(order: NewMarketOrder, args: SubmitMarketOrderCommandArgs): number | null {
