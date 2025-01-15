@@ -4,6 +4,7 @@ import {
 } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {
+  combineLatest,
   forkJoin,
   from,
   Observable,
@@ -184,8 +185,11 @@ export class PushNotificationsService implements OnDestroy {
       return this.token$;
     }
 
-    this.token$ = from(navigator.serviceWorker.ready).pipe(
-      filter(r => r != null),
+    this.token$ = combineLatest({
+      swReady: navigator.serviceWorker.ready,
+      notificationsStatus: this.getBrowserNotificationsStatus()
+    }).pipe(
+      filter(x => x.swReady != null && x.notificationsStatus === 'granted'),
       take(1),
       switchMap(() => from(this.messaging.getToken())),
       filter(token => {
