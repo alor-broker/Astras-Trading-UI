@@ -8,7 +8,6 @@ import {F} from "@angular/cdk/keycodes";
 import {PortfolioSummaryService} from "../../../../shared/services/portfolio-summary.service";
 import {CommonSummaryView} from "../../../../shared/models/common-summary-view.model";
 import {ForwardRisksView} from "../../../../shared/models/forward-risks-view.model";
-import {Value} from "@angular/fire/compat/remote-config";
 
 @Component({
   selector: 'ats-portfolio-summary',
@@ -45,6 +44,4 @@ export class PortfolioSummaryComponent implements OnInit {
       switchMap(settings => this.portfolioSummaryService.getForwardRisks(settings))
     );
   }
-
-  protected readonly Value = Value;
 }
