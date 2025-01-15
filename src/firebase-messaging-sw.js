@@ -13,6 +13,11 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
+  if(payload.notification != null) {
+    // messages with notification are displayed by default
+    return;
+  }
+
   if (!payload.data.body) {
     return;
   }
