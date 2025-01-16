@@ -1,7 +1,5 @@
-importScripts("https://www.gstatic.com/firebasejs/9.19.1/firebase-app-compat.js");
-importScripts(
-  "https://www.gstatic.com/firebasejs/9.19.1/firebase-messaging-compat.js",
-);
+importScripts('https://www.gstatic.com/firebasejs/11.1.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/11.1.0/firebase-messaging-compat.js');
 
 firebase.initializeApp({
   apiKey: "AIzaSyCI0yjnNuT8VWJG4ow38-iY231ZoTGxV-o",
@@ -15,6 +13,11 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
+  if(payload.notification != null) {
+    // messages with notification are displayed by default
+    return;
+  }
+
   if (!payload.data.body) {
     return;
   }
@@ -22,8 +25,12 @@ messaging.onBackgroundMessage((payload) => {
   const messageData = JSON.parse(payload.data.body).notification;
 
   if (messageData) {
-    return self.registration.showNotification(messageData.title,
-      messageData
+    return self.registration.showNotification(
+      messageData.title,
+      {
+        ...messageData,
+        icon: '/assets/custom_icons/outline/ats-logo.svg'
+      }
     );
   }
 });
