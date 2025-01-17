@@ -1,13 +1,25 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import {MobileDashboardContentComponent} from "./mobile-dashboard-content.component";
-import {DashboardContextService} from "../../../shared/services/dashboard-context.service";
-import {of, Subject} from "rxjs";
-import {WidgetsMetaService} from "../../../shared/services/widgets-meta.service";
-import {MobileActionsContextService} from "../../../modules/dashboard/services/mobile-actions-context.service";
-import {MobileDashboardService} from "../../../modules/dashboard/services/mobile-dashboard.service";
-import {TranslocoTestsModule} from "../../../shared/utils/testing/translocoTestsModule";
-import {NzIconDirective} from "ng-zorro-antd/icon";
-import {MockDirective} from "ng-mocks";
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
+import { MobileDashboardContentComponent } from "./mobile-dashboard-content.component";
+import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
+import {
+  EMPTY,
+  of,
+  Subject
+} from "rxjs";
+import { WidgetsMetaService } from "../../../shared/services/widgets-meta.service";
+import { MobileActionsContextService } from "../../../modules/dashboard/services/mobile-actions-context.service";
+import { MobileDashboardService } from "../../../modules/dashboard/services/mobile-dashboard.service";
+import { TranslocoTestsModule } from "../../../shared/utils/testing/translocoTestsModule";
+import { NzIconDirective } from "ng-zorro-antd/icon";
+import {
+  MockDirective,
+  MockProvider
+} from "ng-mocks";
+import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
+import { WidgetsSharedDataService } from "../../../shared/services/widgets-shared-data.service";
 
 describe('MobileDashboardContentComponent', () => {
   let component: MobileDashboardContentComponent;
@@ -21,33 +33,40 @@ describe('MobileDashboardContentComponent', () => {
         MockDirective(NzIconDirective)
       ],
       providers: [
-        {
-          provide: DashboardContextService,
-          useValue: {
-            selectedDashboard$: of({})
+        MockProvider(
+          DashboardContextService,
+          {
+            selectedDashboard$: EMPTY
           }
-        },
-        {
-          provide: WidgetsMetaService,
-          useValue: {
-            getWidgetsMeta: jasmine.createSpy('getWidgetsMeta').and.returnValue(new Subject())
+        ),
+        MockProvider(
+          WidgetsMetaService,
+          {
+            getWidgetsMeta: () => EMPTY
           }
-        },
-        {
-          provide: MobileActionsContextService,
-          useValue: {
+        ),
+        MockProvider(
+          MobileActionsContextService,
+          {
             actionEvents$: new Subject()
           }
-        },
-        {
-          provide: MobileDashboardService,
-          useValue: {
-            addWidget: jasmine.createSpy('addWidget').and.callThrough()
+        ),
+        MockProvider(MobileDashboardService),
+        MockProvider(
+          WidgetsSharedDataService,
+          {
+            getDataProvideValues: () => EMPTY
           }
-        }
+        ),
+        MockProvider(
+          WidgetSettingsService,
+          {
+            getSettingsOrNull: () => of(null),
+          },
+        ),
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(MobileDashboardContentComponent);
     component = fixture.componentInstance;

@@ -1,5 +1,14 @@
 import {Component, DestroyRef, OnInit} from "@angular/core";
-import {BehaviorSubject, combineLatest, distinctUntilChanged, Observable, of, shareReplay, switchMap, take} from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged,
+  Observable,
+  shareReplay,
+  switchMap,
+  take,
+  tap
+} from "rxjs";
 import {WidgetInstance} from "../../../shared/models/dashboard/dashboard-item.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {WidgetCategory, WidgetMeta} from "../../../shared/models/widget-meta.model";
@@ -23,6 +32,9 @@ import {NgForOf, NgIf} from "@angular/common";
 import {DashboardModule} from "../../../modules/dashboard/dashboard.module";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzDividerComponent} from "ng-zorro-antd/divider";
+import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
+import { WidgetSettings } from "../../../shared/models/widget-settings.model";
+import { isInstrumentDependent } from "../../../shared/utils/settings-helper";
 @Component({
   selector: 'ats-mobile-dashboard-content',
   templateUrl: './mobile-dashboard-content.component.html',
@@ -61,7 +73,8 @@ export class MobileDashboardContentComponent implements OnInit {
     private readonly mobileActionsContextService: MobileActionsContextService,
     private readonly destroyRef: DestroyRef,
     private readonly mobileDashboardService: MobileDashboardService,
-    private readonly widgetsSharedDataService: WidgetsSharedDataService
+    private readonly widgetsSharedDataService: WidgetsSharedDataService,
+    private readonly widgetSettingsService: WidgetSettingsService
   ) {
   }
 
@@ -131,7 +144,17 @@ export class MobileDashboardContentComponent implements OnInit {
                 map(newWidgets => newWidgets.find(w => w.instance.widgetType === widgetName)!)
               );
           } else {
-            return of(selectedWidget);
+            // Some widgets can be unlinked from current instrument. For example Options Board is unlinked after option selection
+            // For such widgets need to restore link
+            return this.widgetSettingsService.getSettingsOrNull<WidgetSettings>(selectedWidget.instance.guid).pipe(
+              take(1),
+              tap(s => {
+                if(s != null && isInstrumentDependent(s) && (s.linkToActive === false)) {
+                  this.widgetSettingsService.updateIsLinked(selectedWidget.instance.guid, true);
+                }
+              }),
+              map(() => selectedWidget)
+            );
           }
         })
       )

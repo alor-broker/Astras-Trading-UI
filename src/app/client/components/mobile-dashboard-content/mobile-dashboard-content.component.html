@@ -53,7 +53,7 @@
         <div
           class="d-flex flex-column align-items-center"
           [class.active-widget]="widget.instance.widgetType === vm.selectedWidget?.instance?.widgetType"
-          (click)="selectedWidget$.next(widget)"
+          (click)="selectWidget(widget.instance.widgetType)"
         >
           <i nz-icon [nzType]="widget.widgetMeta.mobileMeta!.ribbonIcon" class="widget-icon" nzTheme="outline"></i>
           <div class="widget-label">
