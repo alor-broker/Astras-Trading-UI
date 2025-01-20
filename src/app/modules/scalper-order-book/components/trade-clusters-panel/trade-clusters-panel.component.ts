@@ -43,10 +43,10 @@ import { ContextMenuService } from '../../../../shared/services/context-menu.ser
 import { TradeClustersService } from '../../services/trade-clusters.service';
 import { toUnixTime } from '../../../../shared/utils/datetime';
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import { NumberDisplayFormat } from "../../../../shared/models/enums/number-display-format";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
+import { TradesClusterPanelSettingsDefaults } from "../scalper-order-book-settings/constants/settings-defaults";
 
 @Component({
   selector: 'ats-trade-clusters-panel',
@@ -71,12 +71,6 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
 
   readonly availableTimeframes: number[] = Object.values(ClusterTimeframe).filter((v): v is number => !isNaN(Number(v)));
   readonly availableIntervalsCount = [1, 2, 5];
-
-  readonly defaultSettings: Required<TradesClusterPanelSettings> = {
-    timeframe: ClusterTimeframe.M1,
-    displayIntervalsCount: 5,
-    volumeDisplayFormat: NumberDisplayFormat.LetterSuffix
-  };
 
   constructor(
     private readonly settingsWriteService: ScalperOrderBookSettingsWriteService,
@@ -201,7 +195,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
 
         return {
           ...settings,
-          tradesClusterPanelSettings: {...this.defaultSettings}
+          tradesClusterPanelSettings: {...TradesClusterPanelSettingsDefaults}
         };
       }),
       shareReplay(1)
@@ -218,8 +212,8 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
       mapWith(
         s => this.tradeClustersService.getHistory(
           s,
-          s.tradesClusterPanelSettings?.timeframe ?? this.defaultSettings.timeframe,
-          s.tradesClusterPanelSettings?.displayIntervalsCount ?? this.defaultSettings.displayIntervalsCount,
+          s.tradesClusterPanelSettings?.timeframe ?? TradesClusterPanelSettingsDefaults.timeframe,
+          s.tradesClusterPanelSettings?.displayIntervalsCount ?? TradesClusterPanelSettingsDefaults.displayIntervalsCount,
         ),
         (settings, history) => ({settings, history})
       ),

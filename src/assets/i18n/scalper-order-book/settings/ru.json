@@ -21,6 +21,8 @@
   "showOwnTradesLabel": "Показывать свои сделки",
 
   "showTradesClustersPanelLabel": "Показывать панель кластеров",
+  "tradesClusterPanelSettingsLabel": "Настройки панели кластеров",
+  "tradesClusterHighlightModeLabel": "Подсветка",
 
   "disableHotkeysLabel": "Выключить горячие клавиши",
   "enableMouseClickSilentOrdersLabel": "Покупать по кликам без уведомлений",
@@ -87,5 +89,10 @@
   "panelSlotOptions": {
     "topPanel": "Верхняя панель",
     "bottomFloatingPanel": "Нижняя плавающая панель"
+  },
+
+  "tradesClusterHighlightOptions": {
+    "off": "Отключено",
+    "buySellDominance": "Доминирование покупатели/продавцы"
   }
 }

@@ -1,20 +1,20 @@
 <div class="container">
   <ng-container *ngrxLet="{
   settings: settings$,
+  themeColors: themeColors$,
   displayItems: displayItems$,
   hoveredPriceRow: hoveredPriceRow$
   } as vm">
-    <ng-container *ngFor="let item of vm.displayItems; trackBy: trackBy">
+    @for (item of vm.displayItems; track $index) {
       <div
         [ngClass]="{
           'volume-cell': true,
           'max-volume': item?.isMaxVolume,
           'hovered': isRulerHovered(item, vm.hoveredPriceRow)
           }"
-        [ngStyle]="{
-          'height': xAxisStep + 'px',
-          'line-height': xAxisStep + 'px'
-          }"
+        [style.height]="xAxisStep + 'px'"
+        [style.line-height]="xAxisStep + 'px'"
+        [ngStyle]="getClusterItemHighlightStyle(item, vm.settings.widgetSettings.tradesClusterPanelSettings ?? null, vm.themeColors)"
 
         class="position-relative"
       >
@@ -27,16 +27,19 @@
             'minor': item.isMinorLinePrice
             }"
           >&nbsp;</span>
-        <span class="position-relative z-2">
-                      <ats-short-number
-                        *ngIf="vm.settings.widgetSettings.tradesClusterPanelSettings?.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
-                        [value]="item?.volume"
-                        [allowRounding]="true"></ats-short-number>
-          <ng-template #defaultVolumeFormat>
+        <span
+          class="position-relative z-2"
+        >
+          @if (vm.settings.widgetSettings.tradesClusterPanelSettings?.volumeDisplayFormat === numberFormats.LetterSuffix) {
+            <ats-short-number
+              [value]="item?.volume"
+              [allowRounding]="true">
+            </ats-short-number>
+          } @else {
             <span>{{item?.volume}}</span>
-          </ng-template>
+          }
           </span>
       </div>
-    </ng-container>
+    }
   </ng-container>
 </div>

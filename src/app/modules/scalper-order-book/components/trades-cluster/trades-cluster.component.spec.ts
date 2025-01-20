@@ -3,10 +3,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TradesClusterComponent } from './trades-cluster.component';
 import {
   BehaviorSubject,
+  EMPTY,
   Subject
 } from 'rxjs';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 import { LetDirective } from "@ngrx/component";
+import { MockProvider } from "ng-mocks";
+import { ThemeService } from "../../../../shared/services/theme.service";
 
 describe('TradesClusterComponent', () => {
   let component: TradesClusterComponent;
@@ -15,7 +18,15 @@ describe('TradesClusterComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [LetDirective],
-      declarations: [TradesClusterComponent]
+      declarations: [TradesClusterComponent],
+      providers: [
+        MockProvider(
+          ThemeService,
+          {
+            getThemeSettings: () => EMPTY
+          }
+        )
+      ]
     })
     .compileComponents();
 

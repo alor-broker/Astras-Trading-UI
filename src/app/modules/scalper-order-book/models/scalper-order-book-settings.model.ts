@@ -19,10 +19,16 @@ export enum PanelSlots {
   BottomFloatingPanel = 'bottomFloatingPanel'
 }
 
+export enum TradesClusterHighlightMode {
+  Off = 'off',
+  BuySellDominance = 'buySellDominance'
+}
+
 export interface TradesClusterPanelSettings {
   timeframe: ClusterTimeframe;
   displayIntervalsCount: number;
   volumeDisplayFormat?: NumberDisplayFormat;
+  highlightMode?: TradesClusterHighlightMode;
 }
 
 export interface OrderBookLayoutSettings {
