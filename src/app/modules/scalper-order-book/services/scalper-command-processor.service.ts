@@ -49,7 +49,6 @@ import {
   StopMarketOrderTracker
 } from "../commands/set-stop-loss-command";
 import {
-  BracketOptions,
   LimitOrderTracker,
   SubmitLimitOrderCommand
 } from "../commands/submit-limit-order-command";
@@ -58,6 +57,7 @@ import { GetBestOfferCommand } from "../commands/get-best-offer-command";
 import { UpdateOrdersCommand } from "../commands/update-orders-command";
 import { ScalperCommand } from "../models/scalper-command";
 import { ScalperHotKeyCommandService } from "./scalper-hot-key-command.service";
+import { BracketOptions } from "../commands/bracket-command";
 
 @Injectable()
 export class ScalperCommandProcessorService {
@@ -261,12 +261,12 @@ export class ScalperCommandProcessorService {
     }
 
     if (commandType === ActiveOrderBookHotKeysTypes.sellMarket) {
-      this.placeMarketOrderSilent(dataContext, Side.Sell);
+      this.marketOrderAction(Side.Sell, dataContext, true);
       return;
     }
 
     if (commandType === ActiveOrderBookHotKeysTypes.buyMarket) {
-      this.placeMarketOrderSilent(dataContext, Side.Buy);
+      this.marketOrderAction(Side.Buy, dataContext, true);
       return;
     }
 
@@ -375,27 +375,6 @@ export class ScalperCommandProcessorService {
     dataContext.currentOrders$.pipe(
       take(1)
     ).subscribe(action);
-  }
-
-  private placeMarketOrderSilent(dataContext: ScalperOrderBookDataContext, side: Side): void {
-    this.callWithSettings(
-      dataContext,
-      settings => {
-        this.callWithSelectedVolume(
-          dataContext,
-          workingVolume => {
-            this.callWithPortfolioKey(
-              dataContext,
-              portfolioKey => this.submitMarketOrderCommand.execute({
-                instrumentKey: settings.widgetSettings,
-                side,
-                quantity: workingVolume,
-                targetPortfolio: portfolioKey.portfolio,
-                silent: true
-              })
-            );
-          });
-      });
   }
 
   private callWithSettings(
@@ -669,25 +648,42 @@ export class ScalperCommandProcessorService {
     };
   }
 
-  private marketOrderAction(side: Side, dataContext: ScalperOrderBookDataContext): void {
+  private marketOrderAction(
+    side: Side,
+    dataContext: ScalperOrderBookDataContext,
+    silent?: boolean
+  ): void {
     this.callWithSettings(
       dataContext,
       settings => {
-        this.callWithSelectedVolume(
+        this.callWithCurrentOrderBook(
           dataContext,
-          workingVolume => {
-            this.callWithPortfolioKey(
+          orderBook => {
+            this.callWithSelectedVolume(
               dataContext,
-              portfolioKey => {
-                this.submitMarketOrderCommand.execute({
-                  instrumentKey: settings.widgetSettings,
-                  side,
-                  quantity: workingVolume,
-                  targetPortfolio: portfolioKey.portfolio,
-                  silent: settings.widgetSettings.enableMouseClickSilentOrders
-                });
-              }
-            );
+              workingVolume => {
+                this.callWithPortfolioKey(
+                  dataContext,
+                  portfolioKey => {
+                    this.callWithPosition(
+                      dataContext,
+                      position => this.submitMarketOrderCommand.execute({
+                        instrumentKey: settings.widgetSettings,
+                        side,
+                        quantity: workingVolume,
+                        targetPortfolio: portfolioKey.portfolio,
+                        bracketOptions: this.getBracketOptions(
+                          settings.widgetSettings,
+                          position
+                        ),
+                        priceStep: settings.instrument.minstep,
+                        orderBook,
+                        silent: silent ?? settings.widgetSettings.enableMouseClickSilentOrders
+                      })
+                    );
+                  }
+                );
+              });
           });
       });
   }

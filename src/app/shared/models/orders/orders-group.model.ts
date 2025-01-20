@@ -7,7 +7,6 @@ import {
 export enum ExecutionPolicy {
   OnExecuteOrCancel = 'OnExecuteOrCancel',
   IgnoreCancel = 'IgnoreCancel',
-  IgnoreCancelEditingSupport = 'IgnoreCancelEditingSupport',
   TriggerBracketOrders = 'TriggerBracketOrders'
 }
 

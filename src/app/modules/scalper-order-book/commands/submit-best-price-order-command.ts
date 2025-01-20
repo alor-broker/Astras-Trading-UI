@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { Side } from "../../../shared/models/enums/side.model";
 import {
-  BracketOptions,
   LimitOrderTracker,
   SubmitLimitOrderCommand
 } from "./submit-limit-order-command";
 import { OrderbookData } from "../../orderbook/models/orderbook-data.model";
 import { CommandBase } from "./command-base";
 import { MathHelper } from "../../../shared/utils/math-helper";
+import { BracketOptions } from "./bracket-command";
 
 export interface SubmitBestPriceOrderCommandArgs {
   instrumentKey: InstrumentKey;
