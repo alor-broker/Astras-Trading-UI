@@ -358,6 +358,28 @@
                 <nz-switch formControlName='showTradesClustersPanel'></nz-switch>
               </nz-form-control>
             </nz-form-item>
+            <nz-form-item *ngIf="form.controls.showTradesClustersPanel.value">
+              <nz-collapse [nzBordered]="false" nzGhost>
+                <nz-collapse-panel
+                  [nzActive]="true"
+                  [nzHeader]="t('scalperOrderBookSettings.tradesClusterPanelSettingsLabel')"
+                  [formGroup]="form.controls.tradesClusterPanelSettings"
+                >
+                  <nz-form-item>
+                    <nz-form-label nzFor="highlightMode">{{t('scalperOrderBookSettings.tradesClusterHighlightModeLabel')}}</nz-form-label>
+                    <nz-form-control>
+                      <nz-select formControlName='highlightMode'>
+                        <nz-option
+                          *ngFor='let option of availableTradesClusterHighlightModes'
+                          [nzLabel]="t('scalperOrderBookSettings.tradesClusterHighlightOptions.' + option, { fallback: option })"
+                          [nzValue]="option"
+                        ></nz-option>
+                      </nz-select>
+                    </nz-form-control>
+                  </nz-form-item>
+                </nz-collapse-panel>
+              </nz-collapse>
+            </nz-form-item>
 
           </nz-collapse-panel>
           <nz-collapse-panel class="working-volumes" [nzDisabled]="form.controls.workingVolumes.enabled && !form.controls.workingVolumes.valid" [nzHeader]="t('scalperOrderBookSettings.workingVolumesHeader')">

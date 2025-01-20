@@ -25,6 +25,7 @@ import {
   PanelSlots,
   PriceUnits,
   ScalperOrderBookWidgetSettings,
+  TradesClusterHighlightMode,
   VolumeHighlightMode,
   VolumeHighlightOption
 } from '../../models/scalper-order-book-settings.model';
@@ -38,6 +39,7 @@ import { ScalperOrderBookConstants } from "../../constants/scalper-order-book.co
 import { ScalperOrderBookSettingsReadService } from "../../services/scalper-order-book-settings-read.service";
 import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
 import { map } from "rxjs/operators";
+import { TradesClusterPanelSettingsDefaults } from "./constants/settings-defaults";
 
 @Component({
   selector: 'ats-scalper-order-book-settings',
@@ -121,6 +123,8 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
   };
 
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
+
+  readonly availableTradesClusterHighlightModes = Object.values(TradesClusterHighlightMode);
 
   readonly workingVolumesPanelSlots = [PanelSlots.BottomFloatingPanel, PanelSlots.TopPanel];
 
@@ -226,6 +230,11 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
     ),
     // additional panels
     showTradesClustersPanel: this.formBuilder.nonNullable.control(false),
+    tradesClusterPanelSettings: this.formBuilder.group(
+      {
+        highlightMode: this.formBuilder.nonNullable.control(TradesClusterHighlightMode.Off)
+      }
+    ),
     showTradesPanel: this.formBuilder.nonNullable.control(false),
     tradesPanelSettings: this.formBuilder.nonNullable.group(
       {
@@ -495,7 +504,11 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       volumeHighlightOptions: newSettings.volumeHighlightOptions ?? prevInstrumentLinkedSettings?.volumeHighlightOptions ?? initialSettings.volumeHighlightOptions,
       volumeHighlightFullness: newSettings.volumeHighlightFullness ?? prevInstrumentLinkedSettings?.volumeHighlightFullness ?? initialSettings.volumeHighlightFullness,
       workingVolumes: newSettings.workingVolumes!,
-      tradesClusterPanelSettings: initialSettings.tradesClusterPanelSettings,
+      tradesClusterPanelSettings: {
+        ...TradesClusterPanelSettingsDefaults,
+        ...initialSettings.tradesClusterPanelSettings,
+        highlightMode: newSettings.tradesClusterPanelSettings?.highlightMode ?? TradesClusterHighlightMode.Off
+      },
       bracketsSettings: newSettings.bracketsSettings ?? prevInstrumentLinkedSettings?.bracketsSettings ?? initialSettings.bracketsSettings,
       tradesPanelSettings: newSettings.tradesPanelSettings ?? prevInstrumentLinkedSettings?.tradesPanelSettings ?? initialSettings.tradesPanelSettings,
       minorLinesStep: newSettings.minorLinesStep,
@@ -572,6 +585,9 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
     }
 
     this.form.controls.showTradesClustersPanel.setValue(settings.showTradesClustersPanel ?? false);
+    this.form.controls.tradesClusterPanelSettings.setValue({
+      highlightMode: settings.tradesClusterPanelSettings?.highlightMode ?? TradesClusterHighlightMode.Off
+    });
 
     this.form.controls.showWorkingVolumesPanel.setValue(settings.showWorkingVolumesPanel ?? true);
     this.form.controls.workingVolumesPanelSlot.setValue(settings.workingVolumesPanelSlot ?? PanelSlots.BottomFloatingPanel);
@@ -648,6 +664,12 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       this.form.controls.tradesPanelSettings.enable();
     } else {
       this.form.controls.tradesPanelSettings.disable();
+    }
+
+    if ((formValue?.showTradesClustersPanel) ?? false) {
+      this.form.controls.tradesClusterPanelSettings.enable();
+    } else {
+      this.form.controls.tradesClusterPanelSettings.disable();
     }
 
     if ((formValue?.showWorkingVolumesPanel) ?? false) {

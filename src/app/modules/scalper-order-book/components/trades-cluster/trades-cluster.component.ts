@@ -7,10 +7,7 @@ import {
   Optional,
   SkipSelf
 } from '@angular/core';
-import {
-  ClusterItem,
-  TradesCluster
-} from '../../models/trades-clusters.model';
+import { TradesCluster } from '../../models/trades-clusters.model';
 import {
   BehaviorSubject,
   combineLatest,
@@ -28,9 +25,19 @@ import {
   RULER_CONTEX,
   RulerContext
 } from "../scalper-order-book-body/scalper-order-book-body.component";
+import {
+  TradesClusterHighlightMode,
+  TradesClusterPanelSettings
+} from "../../models/scalper-order-book-settings.model";
+import { ThemeService } from "../../../../shared/services/theme.service";
+import { ThemeColors } from "../../../../shared/models/settings/theme-settings.model";
+import { color } from "d3";
+import { MathHelper } from "../../../../shared/utils/math-helper";
 
 interface DisplayItem {
   volume: number | null;
+  buyQty: number;
+  sellQty: number;
   isMaxVolume: boolean;
   isMajorLinePrice: boolean;
   isMinorLinePrice: boolean;
@@ -56,11 +63,17 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
   private readonly currentCluster$ = new BehaviorSubject<TradesCluster | null>(null);
   hoveredPriceRow$: Observable<{ price: number } | null> = this.rulerContext?.hoveredRow$ ?? of(null);
 
+  readonly themeColors$ = this.themeService.getThemeSettings().pipe(
+    map(t => t.themeColors)
+  );
+
   constructor(
+    private readonly themeService: ThemeService,
     @Inject(RULER_CONTEX)
     @SkipSelf()
     @Optional()
-    private readonly rulerContext?: RulerContext) {
+    private readonly rulerContext?: RulerContext,
+    ) {
   }
 
   @Input()
@@ -84,14 +97,12 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
       map(([body, displayRange, currentCluster]) => {
         const displayRows = body.slice(displayRange!.start, Math.min(displayRange!.end + 1, body.length));
 
-        const getVolume = (item: ClusterItem): number => {
-          return Math.round(item.buyQty + item.sellQty);
-        };
-
         let maxVolume = 0;
         const mappedRows = displayRows.map(r => {
           const displayRow = {
             volume: null,
+            buyQty: 0,
+            sellQty: 0,
             isMaxVolume: false,
             isMajorLinePrice: r.isMajorLinePrice,
             isMinorLinePrice: r.isMinorLinePrice,
@@ -107,12 +118,25 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
             return displayRow;
           }
 
-          const itemVolume = mappedItems.reduce((total, curr) => Math.round(total + getVolume(curr)), 0);
-          maxVolume = Math.max(maxVolume, itemVolume);
+          const itemVolume = mappedItems.reduce(
+            (agg, curr) => ({
+              buyQty: agg.buyQty + curr.buyQty,
+              sellQty: agg.sellQty + curr.sellQty,
+            }),
+            { buyQty: 0, sellQty: 0 }
+          );
+
+          const totalBuyQty = Math.round(itemVolume.buyQty);
+          const totalSellQty = Math.round(itemVolume.sellQty);
+          const totalVolume = Math.round(itemVolume.buyQty + itemVolume.sellQty);
+
+          maxVolume = Math.max(maxVolume, totalVolume);
 
           return {
             ...displayRow,
-            volume: itemVolume
+            volume: totalVolume,
+            buyQty: totalBuyQty,
+            sellQty: totalSellQty
           };
         });
 
@@ -127,11 +151,51 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
     );
   }
 
-  trackBy(index: number): number {
-    return index;
-  }
-
   isRulerHovered(item: DisplayItem, hoveredPriceRow: { price: number } | null): boolean {
     return item.mappedPrice === hoveredPriceRow?.price;
+  }
+
+  getClusterItemHighlightStyle(
+    item: DisplayItem,
+    settings: TradesClusterPanelSettings | null,
+    themeColors: ThemeColors): any | null {
+    if(
+      settings?.highlightMode !== TradesClusterHighlightMode.BuySellDominance
+      || item.volume == null
+      || item.volume === 0
+    ) {
+      return null;
+    }
+
+    let itemsColor: string | null = null;
+    let percent = 0;
+    if(item.buyQty > item.sellQty) {
+      itemsColor = themeColors.buyColor;
+      percent = item.buyQty / item.volume;
+    } else if(item.sellQty > item.buyQty) {
+      itemsColor = themeColors.sellColor;
+      percent = item.sellQty / item.volume;
+    }
+
+    if(itemsColor == null) {
+      return null;
+    }
+
+    percent = Math.min(1, MathHelper.round(percent, 2));
+
+    const d3Color = color(itemsColor);
+    if(d3Color == null) {
+      return null;
+    }
+
+    if(percent > 0.75) {
+      d3Color.opacity = 0.8;
+    } else {
+      d3Color.opacity = percent - 0.25;
+    }
+
+    return {
+      'background-color': d3Color.formatRgb()
+    };
   }
 }

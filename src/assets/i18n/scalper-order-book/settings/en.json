@@ -21,6 +21,8 @@
   "showOwnTradesLabel": "Show own trades",
 
   "showTradesClustersPanelLabel": "Show clusters panel",
+  "tradesClusterPanelSettingsLabel": "Clusters panel settings",
+  "tradesClusterHighlightModeLabel": "Highlighting",
 
   "disableHotkeysLabel": "Turn off hotkeys",
   "enableMouseClickSilentOrdersLabel": "Buy by click without notification",
@@ -87,5 +89,10 @@
   "panelSlotOptions": {
     "topPanel": "Top panel",
     "bottomFloatingPanel": "Bottom floating panel"
+  },
+
+  "tradesClusterHighlightOptions": {
+    "off": "Off",
+    "buySellDominance": "Buy/Sell dominance"
   }
 }

@@ -9,10 +9,10 @@ import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-se
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import { Observable } from 'rxjs';
 import {
-  ClusterTimeframe,
   PanelSlots,
   PriceUnits,
   ScalperOrderBookWidgetSettings,
+  TradesClusterHighlightMode,
   VolumeHighlightMode
 } from '../../models/scalper-order-book-settings.model';
 import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
@@ -20,6 +20,7 @@ import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-it
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 import { ScalperOrderBookConstants } from "../../constants/scalper-order-book.constants";
+import { TradesClusterPanelSettingsDefaults } from "../../components/scalper-order-book-settings/constants/settings-defaults";
 
 @Component({
   selector: 'ats-scalper-order-book-widget',
@@ -83,9 +84,8 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
         tradesClusterPanelSettings: getValueOrDefault(
           settings.tradesClusterPanelSettings,
           {
-            timeframe: ClusterTimeframe.M1,
-            displayIntervalsCount: 5,
-            volumeDisplayFormat: NumberDisplayFormat.LetterSuffix
+            ...TradesClusterPanelSettingsDefaults,
+            highlightMode: TradesClusterHighlightMode.BuySellDominance
           }
         ),
         volumeDisplayFormat: getValueOrDefault(settings.volumeDisplayFormat, NumberDisplayFormat.Default),
