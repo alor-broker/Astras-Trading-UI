@@ -115,7 +115,10 @@
               [nzSpan]="2"
               [nzTitle]="t('optionBoardSelectedOptions.columns.symbol.name')"
             >
-              <span class="separated-option-ticker">
+              <span
+                class="separated-option-ticker cursor-pointer"
+                (click)="rowClick(option, $event)"
+              >
                 <span class="ticker">{{option.optionTranscription!.ticker}}</span>
                 <span class="settlementType">{{option.optionTranscription!.settlementType}}</span>
                 <span class="expirationDate">{{option.optionTranscription!.expirationDate}}</span>
