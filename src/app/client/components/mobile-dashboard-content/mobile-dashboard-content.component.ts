@@ -53,10 +53,12 @@ import { isInstrumentDependent } from "../../../shared/utils/settings-helper";
 })
 export class MobileDashboardContentComponent implements OnInit {
   readonly newOrderWidgetId = 'order-submit';
+  readonly homeWidgetId = 'mobile-home-screen';
   galleryVisible = false;
   defaultWidgetNames = [
     'order-submit',
     'blotter',
+    'mobile-home-screen',
     'order-book',
     'light-chart'
   ];
@@ -79,13 +81,13 @@ export class MobileDashboardContentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const widgets$ = this.dashboardContextService.selectedDashboard$.pipe(
+    const currentDashboardWidgets$ = this.dashboardContextService.selectedDashboard$.pipe(
       distinctUntilChanged((previous, current) => arraysEqual(previous.items.map(x => x.guid), current.items.map(x => x.guid))),
       map((dashboard) => dashboard.items)
     );
 
     this.widgets$ = combineLatest([
-      widgets$,
+      currentDashboardWidgets$,
       this.widgetsMetaService.getWidgetsMeta().pipe(take(1))
     ]).pipe(
       map(([items, meta]) => items.map(x => ({
@@ -102,10 +104,12 @@ export class MobileDashboardContentComponent implements OnInit {
       shareReplay(1)
     );
 
+    
+    // set default widget selection
     this.widgets$
       .pipe(take(1))
       .subscribe(widgets => {
-        this.selectedWidget$.next(widgets.find(w => w.instance.widgetType === this.newOrderWidgetId) ?? null);
+        this.selectedWidget$.next(widgets.find(w => w.instance.widgetType === this.homeWidgetId) ?? null);
       });
 
     this.mobileActionsContextService.actionEvents$.pipe(

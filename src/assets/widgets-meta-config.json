@@ -724,5 +724,25 @@
       "galleryOrder": 21,
       "enabled": true
     }
+  },
+  {
+    "typeId": "mobile-home-screen",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "MobileHomeScreenModule",
+        "componentName": "MobileHomeScreenWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": ""
+    },
+    "category": "positionsTradesOrders",
+    "mobileMeta": {
+      "galleryIcon": "home",
+      "ribbonIcon": "home",
+      "enabled": true,
+      "galleryOrder": 0
+    }
   }
 ]

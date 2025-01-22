@@ -37,6 +37,7 @@
     "angular-gridster2": "^18.0.1",
     "apollo-angular": "^7.1.1",
     "chart.js": "^4.4.0",
+    "chartjs-adapter-moment": "^1.0.1",
     "chartjs-chart-treemap": "^2.3.0",
     "d3": "^7.9.0",
     "firebase": "^11.1.0",

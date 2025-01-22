@@ -74,6 +74,9 @@ importers:
       chart.js:
         specifier: ^4.4.0
         version: 4.4.3
+      chartjs-adapter-moment:
+        specifier: ^1.0.1
+        version: 1.0.1(chart.js@4.4.3)(moment@2.30.1)
       chartjs-chart-treemap:
         specifier: ^2.3.0
         version: 2.3.1(chart.js@4.4.3)
@@ -3139,6 +3142,12 @@ packages:
   chart.js@4.4.3:
     resolution: {integrity: sha512-qK1gkGSRYcJzqrrzdR6a+I0vQ4/R+SoODXyAjscQ/4mzuNzySaMCd+hyVxitSY1+L2fjPD1Gbn+ibNqRmwQeLw==}
     engines: {pnpm: '>=8'}
+
+  chartjs-adapter-moment@1.0.1:
+    resolution: {integrity: sha512-Uz+nTX/GxocuqXpGylxK19YG4R3OSVf8326D+HwSTsNw1LgzyIGRo+Qujwro1wy6X+soNSnfj5t2vZ+r6EaDmA==}
+    peerDependencies:
+      chart.js: '>=3.0.0'
+      moment: ^2.10.2
 
   chartjs-chart-treemap@2.3.1:
     resolution: {integrity: sha512-GW+iODLICIJhNZtHbTtaOjCwRIxmXcquXRKDFMsrkXyqyDeSN1aiVfzNNj6Xjy55soopqRA+YfHqjT2S2zF7lQ==}
@@ -10182,6 +10191,11 @@ snapshots:
   chart.js@4.4.3:
     dependencies:
       '@kurkle/color': 0.3.2
+
+  chartjs-adapter-moment@1.0.1(chart.js@4.4.3)(moment@2.30.1):
+    dependencies:
+      chart.js: 4.4.3
+      moment: 2.30.1
 
   chartjs-chart-treemap@2.3.1(chart.js@4.4.3):
     dependencies:

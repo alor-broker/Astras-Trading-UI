@@ -41,6 +41,7 @@ import {
 } from 'ng2-charts';
 import { MarkdownModule } from "ngx-markdown";
 import { APP_HOOKS } from "./app-hooks";
+import 'chartjs-adapter-moment';
 
 registerLocaleData(ru);
 

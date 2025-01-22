@@ -12,13 +12,13 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://apidev.alor.ru',
-  wsUrl: 'wss://apidev.alor.ru/ws',
-  cwsUrl: 'wss://apidev.alor.ru/cws',
-  clientDataUrl: 'https://lk-api-dev.alorbroker.ru',
-  ssoUrl: 'https://login-dev.alor.ru',
+  apiUrl: 'https://api.alor.ru',
+  wsUrl: 'wss://api.alor.ru/ws',
+  cwsUrl: 'wss://api.alor.ru/cws',
+  clientDataUrl: 'https://lk-api.alor.ru',
+  ssoUrl: 'https://login.alor.ru',
   warpUrl: 'https://warp.alor.dev',
-  remoteSettingsStorageUrl: 'https://astras-dev.alor.ru/identity/v5/UserSettings',
+  remoteSettingsStorageUrl: 'https://astras.alor.ru/identity/v5/UserSettings',
   teamlyDatabaseUrl: 'https://astras-dev.alor.ru/teamly/api/v1/ql/content-database/content',
   alorIconsStorageUrl: 'https://storage.alorbroker.ru/icon/',
   logging: {

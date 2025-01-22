@@ -1,0 +1,12 @@
+<div>
+    @if (chartConfig$ | async; as chartConfig) {
+        <canvas
+                baseChart
+                type="line"
+                [data]="chartConfig.chartData"
+                [options]="chartConfig.charOptions"
+        >
+        </canvas>
+    }
+
+</div>
