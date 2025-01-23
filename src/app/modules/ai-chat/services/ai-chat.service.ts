@@ -17,10 +17,10 @@ import { EnvironmentService } from "../../../shared/services/environment.service
 import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
 import { LoggerService } from "../../../shared/services/logging/logger.service";
 import { ApplicationErrorHandler } from "../../../shared/services/handle-error/error-handler";
-import moment from "moment";
 import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
 import { defaultBadgeColor } from "../../../shared/utils/instruments";
 import { GuidGenerator } from "../../../shared/utils/guid";
+import { formatISO } from "date-fns";
 
 interface PostMessageResponse {
   answer: string;
@@ -116,7 +116,8 @@ export class AiChatService {
           portfolio: x.selectedDashboard.selectedPortfolio?.portfolio ?? '',
           instruments: [...selectedInstruments.values()],
           openWidgets: [...widgets.values()],
-          currentDate: moment().format()
+          // Use ISO format to send info about user timezone
+          currentDate: formatISO(new Date())
         };
       }),
       take(1)

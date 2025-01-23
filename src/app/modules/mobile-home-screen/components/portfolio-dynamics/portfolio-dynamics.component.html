@@ -1,12 +1,39 @@
-<div>
-    @if (chartConfig$ | async; as chartConfig) {
+<ng-container *transloco="let t; scope: 'mobile-home-screen/portfolio-dynamics'">
+  <ng-container *ngrxLet="{selectedTimeRange: selectedTimeRange$, chartConfig: chartConfig$} as vm">
+    <div class="fs-4 text-end">
+      @if (vm.chartConfig?.rawData != null) {
+        <span
+          [ngClass]="{
+          'positive-color': vm.chartConfig!.rawData!.profitablityPct >= 0,
+          'negative-color': vm.chartConfig!.rawData!.profitablityPct < 0
+          }"
+        >{{ (vm.chartConfig!.rawData!.profitablityPct / 100) | percent: '1.1-2' }}</span>
+      }
+    </div>
+    <div [style.min-height]="chartHeight + 'px'">
+      @if (vm.chartConfig != null) {
         <canvas
-                baseChart
-                type="line"
-                [data]="chartConfig.chartData"
-                [options]="chartConfig.charOptions"
+          baseChart
+          type="line"
+          [data]="vm.chartConfig.chartData"
+          [options]="vm.chartConfig.charOptions"
         >
         </canvas>
-    }
-
-</div>
+      }
+    </div>
+    <div class="mt-8 d-flex flex-row justify-content-center flex-gap-10">
+      @for (item of availableTimeRanges; track $index) {
+        <button
+          nz-button
+          nzType="default"
+          nzGhost
+          [disabled]="item === vm.selectedTimeRange"
+          (click)="selectedTimeRange$.next(item)"
+        >
+          {{ t('mobileHomeScreenPortfolioDynamics.timeRangeOptions.' + item, {fallback: item}) }}
+        </button>
+      }
+    </div>
+  </ng-container>
+</ng-container>
+<canvas #utilsCanvas class="d-none"></canvas>
