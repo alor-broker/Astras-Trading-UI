@@ -1,0 +1,29 @@
+@import 'theme-mixin';
+
+.themeMixin({
+  :host {
+    table {
+      tr {
+        &.item {
+          td {
+            border-bottom: 1px solid @border-color-split;
+          }
+        }
+      }
+    }
+  }
+});
+
+table {
+  width: 100%;
+  table-layout: auto;
+  border-collapse: collapse;
+
+  tr {
+    &.item {
+      td {
+        padding: 5px;
+      }
+    }
+  }
+}
