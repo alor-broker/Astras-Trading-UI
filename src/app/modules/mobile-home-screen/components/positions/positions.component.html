@@ -1,11 +1,19 @@
-<ng-container>
-  <ng-container *ngrxLet="{ itemsDisplayParams: itemsDisplayParams$, displayPositions: displayPositions$} as vm">
+<ng-container *transloco="let t; scope: 'mobile-home-screen/positions'">
+
+  <span class="heading-color fs-5">{{ t('mobileHomeScreenPositions.sectionTitle') }}</span>
+
+  <div
+    *ngrxLet="{ itemsDisplayParams: itemsDisplayParams$, displayPositions: displayPositions$} as vm"
+    class="mt-15"
+  >
     <table>
       <thead>
       <tr>
-        <th></th>
-        <th></th>
-        <th></th>
+        <th class="text-start"><span nz-typography
+                                     nzType="secondary">{{ t('mobileHomeScreenPositions.columns.ticker.title') }}</span>
+        </th>
+        <th class="text-start">{{ t('mobileHomeScreenPositions.columns.currentVolume.title') }}</th>
+        <th class="text-end">{{ t('mobileHomeScreenPositions.columns.dailyPlPerc.title') }}</th>
       </tr>
       </thead>
 
@@ -15,12 +23,17 @@
             <td class="text-start">
               <div class="d-flex flex-column">
                 <span>
-                  <ats-truncated-text [maxLength]="50" [text]="item.targetInstrument.symbol" className="heading-color text-nowrap fs-6"></ats-truncated-text>
-                  <span class="fs-11"> ({{item.ownedPortfolio.portfolio}})</span>
+                  <ats-truncated-text
+                    [maxLength]="50"
+                    [text]="item.targetInstrument.symbol"
+                    className="heading-color text-nowrap fs-6"
+                  ></ats-truncated-text>
+                  <span class="fs-11"> ({{ item.ownedPortfolio.portfolio }})</span>
                 </span>
-                
+
                 <span>
-                  <ats-truncated-text [maxLength]="50" [text]="item.shortName" className="text-nowrap fs-10"></ats-truncated-text>
+                  <ats-truncated-text [maxLength]="50" [text]="item.shortName"
+                                      className="text-nowrap fs-10"></ats-truncated-text>
                 </span>
               </div>
 
@@ -32,7 +45,7 @@
 
             <td class="text-end">
               <span
-                  [ngClass]="{
+                [ngClass]="{
                   'positive-color': item.dailyUnrealisedPl >= 0,
                   'negative-color': item.dailyUnrealisedPl < 0
                   }"
@@ -44,6 +57,14 @@
         }
       </tbody>
     </table>
-
-  </ng-container>
+    @if (vm.itemsDisplayParams.itemsDisplayCount < vm.displayPositions.totalItems) {
+      <button
+        nz-button
+        nzBlock
+        (click)="showMoreItems()"
+      >
+        {{ t('mobileHomeScreenPositions.moreItemsButton.title') }}
+      </button>
+    }
+  </div>
 </ng-container>

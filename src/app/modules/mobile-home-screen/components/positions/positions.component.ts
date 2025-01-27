@@ -31,6 +31,9 @@ import {
   NgClass,
   PercentPipe
 } from "@angular/common";
+import { TranslocoDirective } from "@jsverse/transloco";
+import { NzTypographyComponent } from "ng-zorro-antd/typography";
+import {NzButtonComponent} from "ng-zorro-antd/button";
 
 enum SortBy {
   Ticker = "ticker"
@@ -57,7 +60,10 @@ type SortFn = (a: Position, b: Position) => number;
     TruncatedTextComponent,
     DecimalPipe,
     PercentPipe,
-    NgClass
+    NgClass,
+    TranslocoDirective,
+    NzTypographyComponent,
+    NzButtonComponent
   ],
   templateUrl: './positions.component.html',
   styleUrl: './positions.component.less'
@@ -67,7 +73,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
   guid!: string;
 
   displayPositions$!: Observable<DisplayPositions>;
-  private readonly itemsDisplayStep = 20;
+  private readonly itemsDisplayStep = 5;
   readonly itemsDisplayParams$ = new BehaviorSubject<DisplayParams>({
     itemsDisplayCount: this.itemsDisplayStep,
     sortBy: SortBy.Ticker,
