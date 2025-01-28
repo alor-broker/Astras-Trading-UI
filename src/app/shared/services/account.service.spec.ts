@@ -8,6 +8,8 @@ import { EnvironmentService } from "./environment.service";
 import { PortfolioMeta } from "../models/user/portfolio-meta.model";
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { USER_CONTEXT } from "./auth/user-context";
+import {MockProvider} from "ng-mocks";
+import {ErrorHandlerService} from "./handle-error/error-handler.service";
 
 describe('AccountService', () => {
   let service: AccountService;
@@ -37,17 +39,24 @@ describe('AccountService', () => {
     TestBed.configureTestingModule({
     imports: [],
     providers: [
-        AccountService,
-        { provide: USER_CONTEXT, useValue: spyUserContext },
-        { provide: PositionsService, useValue: spyPositions },
+      AccountService,
+      MockProvider(
+        EnvironmentService,
         {
-            provide: EnvironmentService,
-            useValue: {
-                clientDataUrl
-            }
-        },
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting()
+          clientDataUrl
+        }
+      ),
+      MockProvider(
+        USER_CONTEXT,
+        spyUserContext
+      ),
+      MockProvider(
+        PositionsService,
+        spyPositions
+      ),
+      MockProvider(ErrorHandlerService),
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting()
     ]
 });
 

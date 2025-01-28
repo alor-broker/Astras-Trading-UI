@@ -27,11 +27,9 @@ import {WidgetsSharedDataService} from "../../../shared/services/widgets-shared-
 import {filter, map} from "rxjs/operators";
 import { arraysEqual } from "ng-zorro-antd/core/util";
 import {LetDirective} from "@ngrx/component";
-import {TranslocoDirective} from "@jsverse/transloco";
 import {NgForOf, NgIf} from "@angular/common";
 import {DashboardModule} from "../../../modules/dashboard/dashboard.module";
 import {NzIconDirective} from "ng-zorro-antd/icon";
-import {NzDividerComponent} from "ng-zorro-antd/divider";
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 import { WidgetSettings } from "../../../shared/models/widget-settings.model";
 import { isInstrumentDependent } from "../../../shared/utils/settings-helper";
@@ -41,12 +39,10 @@ import { isInstrumentDependent } from "../../../shared/utils/settings-helper";
   styleUrls: ['./mobile-dashboard-content.component.less'],
   imports: [
     LetDirective,
-    TranslocoDirective,
     NgForOf,
     DashboardModule,
     NgIf,
     NzIconDirective,
-    NzDividerComponent,
     WidgetsGalleryComponent
   ],
   standalone: true
