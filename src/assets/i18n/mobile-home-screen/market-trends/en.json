@@ -1,14 +1,14 @@
 ﻿{
-  "sectionTitle": "Positions",
+  "sectionTitle": "Market trends",
   "columns": {
     "ticker": {
       "title": "Ticker"
     },
-    "currentVolume": {
-      "title": "Curr volume"
+    "dailyGrowthPercent": {
+      "title": "Growth, %"
     },
-    "dailyPlPerc": {
-      "title": "P/L daily, %"
+    "lastPrice": {
+      "title": "Last price"
     }
   },
 

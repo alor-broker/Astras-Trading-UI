@@ -20,10 +20,25 @@ table {
   border-collapse: collapse;
 
   tr {
+    th {
+      padding: 0 5px;
+    }
+
     &.item {
       td {
         padding: 5px;
       }
     }
+  }
+}
+
+.loading {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  span[nz-icon] {
+    font-size: 24px;
   }
 }

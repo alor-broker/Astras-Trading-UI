@@ -1,14 +1,15 @@
 ﻿{
-  "sectionTitle": "Позиции",
+  "sectionTitle": "Тенденции рынка",
+
   "columns": {
     "ticker": {
       "title": "Тикер"
     },
-    "currentVolume": {
-      "title": "Тек. объём"
+    "dailyGrowthPercent": {
+      "title": "Рост, %"
     },
-    "dailyPlPerc": {
-      "title": "P/L дн., %"
+    "lastPrice": {
+      "title": "Цена"
     }
   },
 

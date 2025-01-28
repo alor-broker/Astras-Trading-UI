@@ -1,39 +1,20 @@
-import {
-  Component,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  distinctUntilChanged,
-  Observable,
-  of
-} from "rxjs";
-import { PortfolioExtended } from "../../../../shared/models/user/portfolio-extended.model";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
-import { UserPortfoliosService } from "../../../../shared/services/user-portfolios.service";
-import {
-  filter,
-  map,
-  switchMap,
-  take
-} from "rxjs/operators";
-import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
-import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
-import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
-import { Position } from "../../../../shared/models/positions/position.model";
-import { LetDirective } from "@ngrx/component";
-import { TruncatedTextComponent } from "../../../../shared/components/truncated-text/truncated-text.component";
-import {
-  DecimalPipe,
-  NgClass,
-  PercentPipe
-} from "@angular/common";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { NzTypographyComponent } from "ng-zorro-antd/typography";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {BehaviorSubject, combineLatest, distinctUntilChanged, Observable, of} from "rxjs";
+import {PortfolioExtended} from "../../../../shared/models/user/portfolio-extended.model";
+import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
+import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
+import {filter, map, switchMap, take} from "rxjs/operators";
+import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
+import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
+import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
+import {Position} from "../../../../shared/models/positions/position.model";
+import {LetDirective} from "@ngrx/component";
+import {TruncatedTextComponent} from "../../../../shared/components/truncated-text/truncated-text.component";
+import {DecimalPipe, NgClass, PercentPipe} from "@angular/common";
+import {TranslocoDirective} from "@jsverse/transloco";
 import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
+import {NzSkeletonComponent} from "ng-zorro-antd/skeleton";
 
 enum SortBy {
   Ticker = "ticker"
@@ -62,18 +43,16 @@ type SortFn = (a: Position, b: Position) => number;
     PercentPipe,
     NgClass,
     TranslocoDirective,
-    NzTypographyComponent,
-    NzButtonComponent
+    NzButtonComponent,
+    NzEmptyComponent,
+    NzSkeletonComponent
   ],
   templateUrl: './positions.component.html',
   styleUrl: './positions.component.less'
 })
 export class PositionsComponent implements OnInit, OnDestroy {
-  @Input({required: true})
-  guid!: string;
-
   displayPositions$!: Observable<DisplayPositions>;
-  private readonly itemsDisplayStep = 5;
+  private readonly itemsDisplayStep = 20;
   readonly itemsDisplayParams$ = new BehaviorSubject<DisplayParams>({
     itemsDisplayCount: this.itemsDisplayStep,
     sortBy: SortBy.Ticker,

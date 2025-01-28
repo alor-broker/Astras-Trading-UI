@@ -1,55 +1,28 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
-import { LoadingEvent } from "../../models/components.model";
-import { UserPortfoliosService } from "../../../../shared/services/user-portfolios.service";
-import { AccountService } from "../../../../shared/services/account.service";
-import {
-  BehaviorSubject,
-  combineLatest,
-  distinctUntilChanged,
-  Observable,
-} from 'rxjs';
-import {
-  filter,
-  map
-} from "rxjs/operators";
-import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
-import {
-  ChartData,
-  ChartOptions
-} from "chart.js";
-import { BaseChartDirective } from "ng2-charts";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
-import { PortfolioDynamics } from "../../../../shared/models/user/portfolio-dynamics.model";
-import { ThemeService } from 'src/app/shared/services/theme.service';
-import { mapWith } from "../../../../shared/utils/observable-helper";
-import { ThemeColors } from "../../../../shared/models/settings/theme-settings.model";
-import { color } from "d3";
-import {
-  add,
-  format
-} from "date-fns";
-import {
-  enUS,
-  ru
-} from 'date-fns/locale';
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { NzButtonComponent } from "ng-zorro-antd/button";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { LetDirective } from "@ngrx/component";
-import type { Duration } from "date-fns/types";
-import {
-  NgClass,
-  PercentPipe
-} from "@angular/common";
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
+import {AccountService} from "../../../../shared/services/account.service";
+import {BehaviorSubject, combineLatest, distinctUntilChanged, Observable,} from 'rxjs';
+import {filter, map, tap} from "rxjs/operators";
+import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
+import {ChartData, ChartOptions} from "chart.js";
+import {BaseChartDirective} from "ng2-charts";
+import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
+import {PortfolioDynamics} from "../../../../shared/models/user/portfolio-dynamics.model";
+import {ThemeService} from 'src/app/shared/services/theme.service';
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {ThemeColors} from "../../../../shared/models/settings/theme-settings.model";
+import {color} from "d3";
+import {add, format} from "date-fns";
+import {enUS, ru} from 'date-fns/locale';
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {LetDirective} from "@ngrx/component";
+import type {Duration} from "date-fns/types";
+import {NgClass, PercentPipe} from "@angular/common";
+import {NzSkeletonComponent} from "ng-zorro-antd/skeleton";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
+import {NzSpinComponent} from "ng-zorro-antd/spin";
 
 type DynamicsChartData = ChartData<'line', number[], Date>;
 type DynamicsChartOptions = ChartOptions<'line'>;
@@ -77,7 +50,10 @@ enum TimeRange {
     TranslocoDirective,
     LetDirective,
     PercentPipe,
-    NgClass
+    NgClass,
+    NzSkeletonComponent,
+    NzEmptyComponent,
+    NzSpinComponent
   ],
   templateUrl: './portfolio-dynamics.component.html',
   styleUrl: './portfolio-dynamics.component.less'
@@ -87,16 +63,13 @@ export class PortfolioDynamicsComponent implements OnInit, OnDestroy {
   @ViewChild('utilsCanvas')
   utilsCanvas!: ElementRef<HTMLCanvasElement>;
 
-  @Input({required: true})
-  guid!: string;
-
-  @Output()
-  loadingChanged = new EventEmitter<LoadingEvent>();
-
   chartConfig$!: Observable<ChartConfig | null>;
+
   readonly selectedTimeRange$ = new BehaviorSubject<TimeRange>(TimeRange.W1);
 
   readonly availableTimeRanges = Object.values(TimeRange);
+
+  readonly isLoading$ = new BehaviorSubject(false);
 
   constructor(
     private readonly accountService: AccountService,
@@ -108,12 +81,15 @@ export class PortfolioDynamicsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.isLoading$.next(true);
+
     this.chartConfig$ = combineLatest({
       currentAgreement: this.getCurrentAgreement(),
       selectedTimeRange: this.selectedTimeRange$,
       themeColors: this.themeService.getThemeSettings().pipe(map(s => s.themeColors)),
       lang: this.translatorService.getLangChanges()
     }).pipe(
+      tap(() => this.isLoading$.next(true)),
       mapWith(
         x => {
           const datesRange = this.getDatesRange(x.selectedTimeRange);
@@ -138,7 +114,8 @@ export class PortfolioDynamicsComponent implements OnInit, OnDestroy {
           charOptions: this.prepareChartOptions(x.lang),
           rawData: x.data
         };
-      })
+      }),
+      tap(() => this.isLoading$.next(false)),
     );
   }
 
@@ -148,9 +125,7 @@ export class PortfolioDynamicsComponent implements OnInit, OnDestroy {
 
   private getDatesRange(timeRange: TimeRange): { fromDate: Date, toDate: Date } {
     const toDate = new Date();
-    let duration: Duration = {
-      weeks: -1
-    };
+    let duration: Duration;
 
     switch (timeRange) {
       case TimeRange.M1: {
@@ -188,12 +163,6 @@ export class PortfolioDynamicsComponent implements OnInit, OnDestroy {
       fromDate: add(toDate, duration),
       toDate
     };
-  }
-
-  private riseLoadingChanged(loading: boolean): void {
-    setTimeout(() => {
-      this.loadingChanged.emit({loading, source: 'portfolio-dynamics'});
-    });
   }
 
   private getCurrentAgreement(): Observable<string> {
