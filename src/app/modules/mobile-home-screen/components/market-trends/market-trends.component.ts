@@ -73,7 +73,7 @@ export class MarketTrendsComponent implements OnInit {
     );
   }
 
-  trackBy(index: number, item: InstrumentInfoType): string {
+  trackBy(item: InstrumentInfoType): string {
     return `${item.basicInformation.symbol}_${item.basicInformation.exchange}`;
   }
 

@@ -99,7 +99,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
     });
   }
 
-  trackBy(index: number, item: Position): string {
+  trackBy(item: Position): string {
     return `${item.targetInstrument.symbol}_${item.targetInstrument.exchange}${item.ownedPortfolio.portfolio}`;
   }
 

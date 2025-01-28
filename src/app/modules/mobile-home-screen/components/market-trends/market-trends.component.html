@@ -17,7 +17,7 @@
         </thead>
 
         <tbody>
-          @for (item of vm.displayItems.nodes; track trackBy) {
+          @for (item of vm.displayItems.nodes; track trackBy(item)) {
             <tr class="item">
               <td class="text-start">
                 <div class="d-flex flex-column">
