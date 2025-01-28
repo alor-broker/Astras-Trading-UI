@@ -48,8 +48,8 @@
     "hasInstrumentBind": true,
     "category": "chartsAndOrderbooks",
     "desktopMeta": {
-      "headerIcon": "ordered-list",
-      "galleryIcon": "ordered-list",
+      "headerIcon": "ats-orderbook",
+      "galleryIcon": "ats-orderbook",
       "addOptions": {
         "initialPosition": "auto",
         "isFullWidth": false,
@@ -60,8 +60,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "galleryIcon": "ordered-list",
-      "ribbonIcon": "ordered-list",
+      "galleryIcon": "ats-orderbook",
+      "ribbonIcon": "ats-orderbook",
       "enabled": true,
       "galleryOrder": 2
     }
@@ -84,8 +84,8 @@
     },
     "category": "chartsAndOrderbooks",
     "desktopMeta": {
-      "headerIcon": "ordered-list",
-      "galleryIcon": "ordered-list",
+      "headerIcon": "ats-orderbook",
+      "galleryIcon": "ats-orderbook",
       "addOptions": {
         "initialPosition": "auto",
         "isFullWidth": false,

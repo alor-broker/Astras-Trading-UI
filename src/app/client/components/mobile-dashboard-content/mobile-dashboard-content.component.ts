@@ -11,7 +11,7 @@ import {
 } from "rxjs";
 import {WidgetInstance} from "../../../shared/models/dashboard/dashboard-item.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {WidgetCategory, WidgetMeta} from "../../../shared/models/widget-meta.model";
+import {WidgetCategory} from "../../../shared/models/widget-meta.model";
 import {WidgetsHelper} from "../../../shared/utils/widgets";
 import {
   GalleryDisplay,
@@ -104,7 +104,6 @@ export class MobileDashboardContentComponent implements OnInit {
       shareReplay(1)
     );
 
-    
     // set default widget selection
     this.widgets$
       .pipe(take(1))
@@ -127,10 +126,6 @@ export class MobileDashboardContentComponent implements OnInit {
       });
 
     this.initWidgetsGallery();
-  }
-
-  getWidgetName(meta: WidgetMeta): string {
-    return WidgetsHelper.getWidgetName(meta.mobileMeta?.widgetName ?? meta.widgetName, this.translatorService.getActiveLang());
   }
 
   selectWidget(widgetName: string): void {
