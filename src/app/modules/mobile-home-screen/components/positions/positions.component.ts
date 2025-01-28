@@ -80,9 +80,11 @@ export class PositionsComponent implements OnInit, OnDestroy {
       params: this.itemsDisplayParams$
     }).pipe(
       map(x => {
+        const filteredPositions = x.allPositions.filter(p => p.currentVolume > 0);
+
         return {
-          items: this.getDisplayItems(x.allPositions, x.params),
-          totalItems: x.allPositions.length
+          items: this.getDisplayItems(filteredPositions, x.params),
+          totalItems: filteredPositions.length
         };
       })
     );
@@ -145,7 +147,6 @@ export class PositionsComponent implements OnInit, OnDestroy {
   private getDisplayItems(allPositions: Position[], params: DisplayParams): Position[] {
     const sortFn = this.getSortFn(params);
     const sorted = allPositions
-      .filter(p => p.currentVolume > 0)
       .sort(sortFn);
 
     return sorted.slice(0, params.itemsDisplayCount);

@@ -69,7 +69,7 @@ export class PortfolioDynamicsComponent implements OnInit, OnDestroy {
 
   readonly availableTimeRanges = Object.values(TimeRange);
 
-  readonly isLoading$ = new BehaviorSubject(false);
+  isLoading = false;
 
   constructor(
     private readonly accountService: AccountService,
@@ -81,7 +81,7 @@ export class PortfolioDynamicsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.isLoading$.next(true);
+    this.isLoading = true;
 
     this.chartConfig$ = combineLatest({
       currentAgreement: this.getCurrentAgreement(),
@@ -89,7 +89,7 @@ export class PortfolioDynamicsComponent implements OnInit, OnDestroy {
       themeColors: this.themeService.getThemeSettings().pipe(map(s => s.themeColors)),
       lang: this.translatorService.getLangChanges()
     }).pipe(
-      tap(() => this.isLoading$.next(true)),
+      tap(() => this.isLoading = true),
       mapWith(
         x => {
           const datesRange = this.getDatesRange(x.selectedTimeRange);
@@ -115,7 +115,7 @@ export class PortfolioDynamicsComponent implements OnInit, OnDestroy {
           rawData: x.data
         };
       }),
-      tap(() => this.isLoading$.next(false)),
+      tap(() => this.isLoading = false),
     );
   }
 

@@ -2,7 +2,6 @@
   <ng-container *ngrxLet="{
   selectedTimeRange: selectedTimeRange$,
   chartConfig: chartConfig$,
-  isLoading: isLoading$
   } as vm; suspenseTpl: loading">
     <div class="d-flex justify-content-between align-items-center">
       <div>
@@ -21,8 +20,8 @@
       </div>
     </div>
 
-    <nz-spin [nzSpinning]="vm.isLoading">
-      <div [style.min-height]="chartHeight + 'px'">
+    <nz-spin [nzSpinning]="isLoading">
+      <div [style.min-height]="chartHeight + 'px'" class="d-flex align-items-center justify-content-center">
         @if (vm.chartConfig != null) {
           <canvas
             baseChart
