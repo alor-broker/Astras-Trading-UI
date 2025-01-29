@@ -10,9 +10,9 @@
       <table class="mt-10">
         <thead>
         <tr>
-          <th class="text-start">{{ t('mobileHomeScreenMarketTrends.columns.ticker.title') }}</th>
-          <th class="text-start">{{ t('mobileHomeScreenMarketTrends.columns.dailyGrowthPercent.title') }}</th>
-          <th class="text-end">{{ t('mobileHomeScreenMarketTrends.columns.lastPrice.title') }}</th>
+          <th class="text-start text-nowrap">{{ t('mobileHomeScreenMarketTrends.columns.ticker.title') }}</th>
+          <th class="text-start text-nowrap">{{ t('mobileHomeScreenMarketTrends.columns.dailyGrowthPercent.title') }}</th>
+          <th class="text-end text-nowrap">{{ t('mobileHomeScreenMarketTrends.columns.lastPrice.title') }}</th>
         </tr>
         </thead>
 
@@ -23,15 +23,15 @@
                 <div class="d-flex flex-column">
                 <span>
                   <ats-truncated-text
-                    [maxLength]="50"
+                    [maxLength]="20"
                     [text]="item.basicInformation.symbol"
                     className="heading-color text-nowrap fs-6"
                   ></ats-truncated-text>
                 </span>
 
                   <span>
-                  <ats-truncated-text [maxLength]="50" [text]="item.basicInformation.shortName"
-                                      className="text-nowrap fs-10"></ats-truncated-text>
+                  <ats-truncated-text [maxLength]="30" [text]="item.basicInformation.shortName"
+                                      className="fs-10"></ats-truncated-text>
                 </span>
                 </div>
 

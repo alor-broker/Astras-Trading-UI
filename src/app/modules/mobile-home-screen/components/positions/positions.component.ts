@@ -52,6 +52,7 @@ type SortFn = (a: Position, b: Position) => number;
 })
 export class PositionsComponent implements OnInit, OnDestroy {
   displayPositions$!: Observable<DisplayPositions>;
+  protected readonly isFinite = isFinite;
   private readonly itemsDisplayStep = 20;
   readonly itemsDisplayParams$ = new BehaviorSubject<DisplayParams>({
     itemsDisplayCount: this.itemsDisplayStep,

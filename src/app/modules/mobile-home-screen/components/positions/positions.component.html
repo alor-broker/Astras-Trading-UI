@@ -10,9 +10,9 @@
       <table class="mt-10">
         <thead>
         <tr>
-          <th class="text-start">{{ t('mobileHomeScreenPositions.columns.ticker.title') }}</th>
-          <th class="text-start">{{ t('mobileHomeScreenPositions.columns.currentVolume.title') }}</th>
-          <th class="text-end">{{ t('mobileHomeScreenPositions.columns.dailyPlPerc.title') }}</th>
+          <th class="text-start text-nowrap">{{ t('mobileHomeScreenPositions.columns.ticker.title') }}</th>
+          <th class="text-start text-nowrap">{{ t('mobileHomeScreenPositions.columns.currentVolume.title') }}</th>
+          <th class="text-end text-nowrap">{{ t('mobileHomeScreenPositions.columns.dailyPlPerc.title') }}</th>
         </tr>
         </thead>
 
@@ -23,7 +23,7 @@
                 <div class="d-flex flex-column">
                 <span>
                   <ats-truncated-text
-                    [maxLength]="50"
+                    [maxLength]="20"
                     [text]="item.targetInstrument.symbol"
                     className="heading-color text-nowrap fs-6"
                   ></ats-truncated-text>
@@ -31,8 +31,8 @@
                 </span>
 
                   <span>
-                  <ats-truncated-text [maxLength]="50" [text]="item.shortName"
-                                      className="text-nowrap fs-10"></ats-truncated-text>
+                  <ats-truncated-text [maxLength]="30" [text]="item.shortName"
+                                      className="fs-10"></ats-truncated-text>
                 </span>
                 </div>
 
@@ -49,7 +49,11 @@
                   'negative-color': item.dailyUnrealisedPl < 0
                   }"
               >
-                {{ calculateDailyUnrealisedPlRatio(item) | percent: '1.1-2' }}
+                @if(calculateDailyUnrealisedPlRatio(item); as dailyUnrealisedPlRatio) {
+                  @if(isFinite(dailyUnrealisedPlRatio)) {
+                    {{ dailyUnrealisedPlRatio | percent: '1.1-2' }}
+                  }
+                }
               </span>
               </td>
             </tr>
