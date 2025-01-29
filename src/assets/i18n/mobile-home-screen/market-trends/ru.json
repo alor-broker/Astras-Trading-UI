@@ -1,0 +1,19 @@
+﻿{
+  "sectionTitle": "Тенденции рынка",
+
+  "columns": {
+    "ticker": {
+      "title": "Тикер"
+    },
+    "dailyGrowthPercent": {
+      "title": "Рост, %"
+    },
+    "lastPrice": {
+      "title": "Цена"
+    }
+  },
+
+  "moreItemsButton": {
+    "title": "Показать еще"
+  }
+}
