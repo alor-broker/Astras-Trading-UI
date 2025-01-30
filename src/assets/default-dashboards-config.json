@@ -142,6 +142,9 @@
         "widgetTypeId": "blotter"
       },
       {
+        "widgetTypeId": "mobile-home-screen"
+      },
+      {
         "widgetTypeId": "order-book",
         "initialSettings": {
           "useOrderWidget": true

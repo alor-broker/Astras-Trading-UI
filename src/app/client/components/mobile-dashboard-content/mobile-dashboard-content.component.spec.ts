@@ -15,11 +15,12 @@ import { MobileDashboardService } from "../../../modules/dashboard/services/mobi
 import { TranslocoTestsModule } from "../../../shared/utils/testing/translocoTestsModule";
 import { NzIconDirective } from "ng-zorro-antd/icon";
 import {
-  MockDirective,
+  MockDirective, MockModule,
   MockProvider
 } from "ng-mocks";
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 import { WidgetsSharedDataService } from "../../../shared/services/widgets-shared-data.service";
+import {SharedModule} from "../../../shared/shared.module";
 
 describe('MobileDashboardContentComponent', () => {
   let component: MobileDashboardContentComponent;
@@ -30,7 +31,8 @@ describe('MobileDashboardContentComponent', () => {
       imports: [
         MobileDashboardContentComponent,
         TranslocoTestsModule.getModule(),
-        MockDirective(NzIconDirective)
+        MockDirective(NzIconDirective),
+        MockModule(SharedModule)
       ],
       providers: [
         MockProvider(

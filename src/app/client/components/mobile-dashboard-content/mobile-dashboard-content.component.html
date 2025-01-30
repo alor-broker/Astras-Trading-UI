@@ -1,4 +1,4 @@
-<div class="d-flex flex-column w-100 h-100" *transloco="let t; scope: 'dashboard/mobile-dashboard'">
+<div class="d-flex flex-column w-100 h-100">
   <ng-container
     *ngrxLet="{
       defaultWidgets: defaultWidgets$,
@@ -29,43 +29,23 @@
       </div>
     </div>
 
-    <div class="widgets-menu d-flex justify-content-around p-10 flex-gap-10 overflow-auto">
+    <div class="widgets-menu">
       <div
-        class="d-flex flex-column align-items-center"
+        class="menu-item "
         [class.active-widget]="!defaultWidgetNames.includes(vm.selectedWidget?.instance?.widgetType ?? '')"
         (click)="galleryVisible = true"
       >
         <i nz-icon nzType="ellipsis" nzTheme="outline"></i>
-        <div class="widget-label">
-          <span>{{t('dashboardMobileDashboard.more')}}</span>
-        </div>
       </div>
 
-      <ng-container
-        *ngFor="let widget of vm.defaultWidgets"
-      >
-        <nz-divider
-          class="vertical-divider"
-          nzType="vertical"
-          *ngIf="widget.instance.widgetType === newOrderWidgetId"
-        ></nz-divider>
-
+      <ng-container *ngFor="let widget of vm.defaultWidgets">
         <div
-          class="d-flex flex-column align-items-center"
+          class="menu-item"
           [class.active-widget]="widget.instance.widgetType === vm.selectedWidget?.instance?.widgetType"
           (click)="selectWidget(widget.instance.widgetType)"
         >
           <i nz-icon [nzType]="widget.widgetMeta.mobileMeta!.ribbonIcon" class="widget-icon" nzTheme="outline"></i>
-          <div class="widget-label">
-            <span>{{getWidgetName(widget.widgetMeta)}}</span>
-          </div>
         </div>
-
-        <nz-divider
-          class="vertical-divider"
-          nzType="vertical"
-          *ngIf="widget.instance.widgetType === newOrderWidgetId"
-        ></nz-divider>
       </ng-container>
     </div>
 

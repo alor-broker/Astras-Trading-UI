@@ -1,0 +1,24 @@
+<ng-container *transloco="let t;">
+    <ats-widget-skeleton
+            *ngIf="settings$ | async as settings"
+            [content]="contentRef"
+            [header]="headerRef"
+            [isBlockWidget]="isBlockWidget"
+            [showContentScroll]="true"
+            [showSettings]="shouldShowSettings"
+    >
+
+        <ng-template #headerRef>
+            <ats-widget-header
+                    [guid]="guid"
+                    [hasSettings]="false"
+                    [widgetMeta]="widgetInstance.widgetMeta"
+                    [customTitle]="title$ | async"
+            ></ats-widget-header>
+        </ng-template>
+
+        <ng-template #contentRef>
+            <ats-mobile-home-screen-content></ats-mobile-home-screen-content>
+        </ng-template>
+    </ats-widget-skeleton>
+</ng-container>

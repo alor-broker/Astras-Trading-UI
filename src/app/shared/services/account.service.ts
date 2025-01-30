@@ -8,7 +8,10 @@ import {
 } from 'rxjs/operators';
 import { PositionsService } from 'src/app/shared/services/positions.service';
 import { findUnique } from 'src/app/shared/utils/collections';
-import { Observable } from 'rxjs';
+import {
+  Observable,
+  take
+} from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { FullName } from 'src/app/shared/models/user/full-name.model';
 import { PortfolioMeta } from 'src/app/shared/models/user/portfolio-meta.model';
@@ -17,33 +20,40 @@ import {
   formatMarket,
   getMarketTypeByPortfolio
 } from "../utils/portfolios";
-import { mapWith } from '../utils/observable-helper';
+import {
+  catchHttpError,
+  mapWith
+} from '../utils/observable-helper';
 import { EnvironmentService } from "./environment.service";
 import { Exchange } from "../../../generated/graphql.types";
 import {
   USER_CONTEXT,
   UserContext
 } from "./auth/user-context";
+import { PortfolioDynamics } from "../models/user/portfolio-dynamics.model";
+import { ErrorHandlerService } from "./handle-error/error-handler.service";
 
 @Injectable({
   providedIn: 'any',
 })
 export class AccountService {
   private readonly accountUrl = this.environmentService.clientDataUrl + '/client/v1.0';
+  private readonly accountUrl2 = this.environmentService.clientDataUrl + '/client/v2.0';
 
   constructor(
     private readonly environmentService: EnvironmentService,
     @Inject(USER_CONTEXT)
     private readonly userContext: UserContext,
     private readonly positionsService: PositionsService,
-    private readonly http: HttpClient
+    private readonly httpClient: HttpClient,
+    private readonly errorHandlerService: ErrorHandlerService
   ) {
   }
 
   getFullName(): Observable<FullName> {
     return this.userContext.getUser().pipe(
       switchMap((u) =>
-        this.http.get<FullName>(`${this.accountUrl}/users/${u.login}/full-name`)
+        this.httpClient.get<FullName>(`${this.accountUrl}/users/${u.login}/full-name`)
       )
     );
   }
@@ -94,8 +104,40 @@ export class AccountService {
     );
   }
 
+  getPortfolioDynamicsForAgreement(
+    agreement: string,
+    fromDate: Date,
+    toDate: Date
+  ): Observable<PortfolioDynamics | null> {
+    return this.httpClient.get<PortfolioDynamics>(
+      `${this.accountUrl2}/agreements/${agreement}/portfolios/any/dynamics`,
+      {
+        params: {
+          startDate: fromDate.toISOString(),
+          endDate: toDate.toISOString()
+        }
+      }
+    ).pipe(
+      catchHttpError<PortfolioDynamics | null>(null, this.errorHandlerService),
+      map(r => {
+        if(r == null) {
+          return r;
+        }
+
+        return {
+          ...r,
+          portfolioValues: r.portfolioValues.map(i => ({
+            ...i,
+            date: new Date(i.date)
+          }))
+        };
+      }),
+      take(1)
+    );
+  }
+
   private getAllPortfolios(clientId: string): Observable<PortfolioMeta[]> {
-    return this.http.get<PortfolioMeta[]>(
+    return this.httpClient.get<PortfolioMeta[]>(
       `${this.accountUrl}/users/${clientId}/all-portfolios`
     );
   }

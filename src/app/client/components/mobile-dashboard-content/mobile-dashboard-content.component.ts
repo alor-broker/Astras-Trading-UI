@@ -11,7 +11,7 @@ import {
 } from "rxjs";
 import {WidgetInstance} from "../../../shared/models/dashboard/dashboard-item.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {WidgetCategory, WidgetMeta} from "../../../shared/models/widget-meta.model";
+import {WidgetCategory} from "../../../shared/models/widget-meta.model";
 import {WidgetsHelper} from "../../../shared/utils/widgets";
 import {
   GalleryDisplay,
@@ -27,11 +27,9 @@ import {WidgetsSharedDataService} from "../../../shared/services/widgets-shared-
 import {filter, map} from "rxjs/operators";
 import { arraysEqual } from "ng-zorro-antd/core/util";
 import {LetDirective} from "@ngrx/component";
-import {TranslocoDirective} from "@jsverse/transloco";
 import {NgForOf, NgIf} from "@angular/common";
 import {DashboardModule} from "../../../modules/dashboard/dashboard.module";
 import {NzIconDirective} from "ng-zorro-antd/icon";
-import {NzDividerComponent} from "ng-zorro-antd/divider";
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 import { WidgetSettings } from "../../../shared/models/widget-settings.model";
 import { isInstrumentDependent } from "../../../shared/utils/settings-helper";
@@ -41,22 +39,22 @@ import { isInstrumentDependent } from "../../../shared/utils/settings-helper";
   styleUrls: ['./mobile-dashboard-content.component.less'],
   imports: [
     LetDirective,
-    TranslocoDirective,
     NgForOf,
     DashboardModule,
     NgIf,
     NzIconDirective,
-    NzDividerComponent,
     WidgetsGalleryComponent
   ],
   standalone: true
 })
 export class MobileDashboardContentComponent implements OnInit {
   readonly newOrderWidgetId = 'order-submit';
+  readonly homeWidgetId = 'mobile-home-screen';
   galleryVisible = false;
   defaultWidgetNames = [
     'order-submit',
     'blotter',
+    'mobile-home-screen',
     'order-book',
     'light-chart'
   ];
@@ -79,13 +77,13 @@ export class MobileDashboardContentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const widgets$ = this.dashboardContextService.selectedDashboard$.pipe(
+    const currentDashboardWidgets$ = this.dashboardContextService.selectedDashboard$.pipe(
       distinctUntilChanged((previous, current) => arraysEqual(previous.items.map(x => x.guid), current.items.map(x => x.guid))),
       map((dashboard) => dashboard.items)
     );
 
     this.widgets$ = combineLatest([
-      widgets$,
+      currentDashboardWidgets$,
       this.widgetsMetaService.getWidgetsMeta().pipe(take(1))
     ]).pipe(
       map(([items, meta]) => items.map(x => ({
@@ -102,10 +100,11 @@ export class MobileDashboardContentComponent implements OnInit {
       shareReplay(1)
     );
 
+    // set default widget selection
     this.widgets$
       .pipe(take(1))
       .subscribe(widgets => {
-        this.selectedWidget$.next(widgets.find(w => w.instance.widgetType === this.newOrderWidgetId) ?? null);
+        this.selectedWidget$.next(widgets.find(w => w.instance.widgetType === this.homeWidgetId) ?? null);
       });
 
     this.mobileActionsContextService.actionEvents$.pipe(
@@ -123,10 +122,6 @@ export class MobileDashboardContentComponent implements OnInit {
       });
 
     this.initWidgetsGallery();
-  }
-
-  getWidgetName(meta: WidgetMeta): string {
-    return WidgetsHelper.getWidgetName(meta.mobileMeta?.widgetName ?? meta.widgetName, this.translatorService.getActiveLang());
   }
 
   selectWidget(widgetName: string): void {

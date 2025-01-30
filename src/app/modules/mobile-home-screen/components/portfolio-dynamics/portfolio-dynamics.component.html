@@ -1,0 +1,57 @@
+<ng-container *transloco="let t; scope: 'mobile-home-screen/portfolio-dynamics'">
+  <ng-container *ngrxLet="{
+  selectedTimeRange: selectedTimeRange$,
+  chartConfig: chartConfig$,
+  } as vm; suspenseTpl: loading">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <span class="heading-color fs-5">{{ t('mobileHomeScreenPortfolioDynamics.sectionTitle') }}</span>
+      </div>
+
+      <div class="fs-4">
+        @if (vm.chartConfig?.rawData != null) {
+          <span
+            [ngClass]="{
+          'positive-color': vm.chartConfig!.rawData!.profitablityPct >= 0,
+          'negative-color': vm.chartConfig!.rawData!.profitablityPct < 0
+          }"
+          >{{ (vm.chartConfig!.rawData!.profitablityPct / 100) | percent: '1.1-2' }}</span>
+        }
+      </div>
+    </div>
+
+    <nz-spin [nzSpinning]="isLoading">
+      <div [style.min-height]="chartHeight + 'px'" class="d-flex align-items-center justify-content-center">
+        @if (vm.chartConfig != null) {
+          <canvas
+            baseChart
+            type="line"
+            [data]="vm.chartConfig.chartData"
+            [options]="vm.chartConfig.charOptions"
+          >
+          </canvas>
+        } @else {
+          <nz-empty nzNotFoundImage="simple"></nz-empty>
+        }
+      </div>
+    </nz-spin>
+
+    <div class="mt-8 d-flex flex-row justify-content-center flex-gap-10">
+      @for (item of availableTimeRanges; track $index) {
+        <button
+          nz-button
+          nzType="default"
+          [disabled]="item === vm.selectedTimeRange"
+          (click)="selectedTimeRange$.next(item)"
+        >
+          {{ t('mobileHomeScreenPortfolioDynamics.timeRangeOptions.' + item, {fallback: item}) }}
+        </button>
+      }
+    </div>
+  </ng-container>
+
+  <ng-template #loading>
+    <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }"></nz-skeleton>
+  </ng-template>
+</ng-container>
+<canvas #utilsCanvas class="d-none"></canvas>

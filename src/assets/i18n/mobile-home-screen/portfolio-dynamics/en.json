@@ -1,0 +1,10 @@
+﻿{
+  "sectionTitle": "Dynamics",
+  "timeRangeOptions": {
+    "W1": "W1",
+    "1M": "1М",
+    "6M": "6М",
+    "1Y": "1Y",
+    "ALL": "All"
+  }
+}

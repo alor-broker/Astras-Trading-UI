@@ -1,0 +1,18 @@
+﻿{
+  "sectionTitle": "Позиции",
+  "columns": {
+    "ticker": {
+      "title": "Тикер"
+    },
+    "currentVolume": {
+      "title": "Тек. объём"
+    },
+    "dailyPlPerc": {
+      "title": "P/L дн., %"
+    }
+  },
+
+  "moreItemsButton": {
+    "title": "Показать еще"
+  }
+}
