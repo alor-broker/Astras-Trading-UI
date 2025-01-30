@@ -90,11 +90,11 @@ export class ThemeService {
   }
 
   attachDefaultStyles(): void {
+    this.currentTheme = ThemeType.dark;
     const style = document.createElement('link');
-    style.rel = 'stylesheet';
-    style.href = `dark.css`;
-    style.className = this.styleLinkClassName;
+    this.setupThemeCssElement(style, this.currentTheme);
     document.head.prepend(style);
+    this.document.documentElement.classList.add(this.currentTheme);
   }
 
   private getColorsMap(theme: ThemeType): Observable<Record<string, string>> {
@@ -143,11 +143,7 @@ export class ThemeService {
   private loadCss(theme: ThemeType): Observable<boolean | null> {
     const subj = new BehaviorSubject<boolean | null>(null);
     const style = document.createElement('link');
-
-    style.rel = 'stylesheet';
-    style.href = `${theme}.css`;
-    style.id = theme;
-    style.className = this.styleLinkClassName;
+    this.setupThemeCssElement(style, theme);
 
     style.onload = (): void => {
       subj.next(true);
@@ -161,5 +157,12 @@ export class ThemeService {
     document.head.prepend(style);
 
     return subj;
+  }
+
+  private setupThemeCssElement(target: HTMLLinkElement, theme: ThemeType): void {
+    target.rel = 'stylesheet';
+    target.href = `${theme}.css`;
+    target.id = theme;
+    target.className = this.styleLinkClassName;
   }
 }

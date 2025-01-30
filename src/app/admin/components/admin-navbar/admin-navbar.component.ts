@@ -13,6 +13,9 @@ import {
 } from "../../../modules/dashboard/components/open-orders-dialog-nav-btn/open-orders-dialog-nav-btn.component";
 import {AdminProfileMenuNavBtnComponent} from "../admin-profile-menu-nav-btn/admin-profile-menu-nav-btn.component";
 import {DesktopNavbarComponent} from "../../../modules/dashboard/components/desktop-navbar/desktop-navbar.component";
+import {
+  ThemeSwitchWidgetComponent
+} from "../../../modules/terminal-settings/widgets/theme-switch-widget/theme-switch-widget.component";
 
 @Component({
   selector: 'ats-admin-navbar',
@@ -24,7 +27,8 @@ import {DesktopNavbarComponent} from "../../../modules/dashboard/components/desk
     WidgetsGalleryNavBtnComponent,
     OpenOrdersDialogNavBtnComponent,
     AdminProfileMenuNavBtnComponent,
-    DesktopNavbarComponent
+    DesktopNavbarComponent,
+    ThemeSwitchWidgetComponent,
   ],
   templateUrl: './admin-navbar.component.html',
   styleUrl: './admin-navbar.component.less',
