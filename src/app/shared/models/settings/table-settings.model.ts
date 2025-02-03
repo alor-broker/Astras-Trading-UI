@@ -46,6 +46,7 @@ export interface FilterData {
   inputFieldType?: InputFieldType;
   filterWarning?: string | null;
   multipleAutocompleteSelectedOptionLabelKey?: keyof NzOptionComponent;
+  initialValue?: string | number | string[] | number[];
 }
 
 export enum FilterType {

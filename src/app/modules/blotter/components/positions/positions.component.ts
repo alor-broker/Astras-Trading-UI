@@ -8,11 +8,12 @@ import {
   Output
 } from '@angular/core';
 import {
+  combineLatest,
   distinctUntilChanged,
   Observable,
   shareReplay,
   switchMap,
-  take
+  take, tap
 } from 'rxjs';
 import { debounceTime, map, mergeMap, startWith } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
@@ -23,7 +24,6 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { mapWith } from "../../../../shared/utils/observable-helper";
 import { BlotterSettings, ColumnsNames, TableNames } from '../../models/blotter-settings.model';
 import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -39,6 +39,7 @@ import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
 } from "../../../../shared/services/orders/order-command.service";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 interface PositionDisplay extends Position {
   id: string;
@@ -188,6 +189,10 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
   settingsColumnsName = ColumnsNames.PositionsColumns;
   fileSuffix = 'positions';
 
+  get restoreFiltersAndSortOnLoad(): boolean {
+    return true;
+  }
+
   readonly abs = Math.abs;
   constructor(
     private readonly service: BlotterService,
@@ -196,6 +201,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
     @Inject(ORDER_COMMAND_SERVICE_TOKEN)
     protected readonly orderCommandService: OrderCommandService,
     protected readonly nzContextMenuService: NzContextMenuService,
+    protected readonly widgetLocalStateService: WidgetLocalStateService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     protected readonly destroyRef: DestroyRef
   ) {
@@ -203,6 +209,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
       settingsService,
       translatorService,
       nzContextMenuService,
+      widgetLocalStateService,
       destroyRef
     );
   }
@@ -230,18 +237,27 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
   }
 
   protected initTableConfigStream(): Observable<TableConfig<PositionDisplay>> {
-    return this.settings$.pipe(
+    const tableSettings$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.positionsTable, current.positionsTable)
         && previous.badgeColor === current.badgeColor
-      ),
-      mapWith(
-        () => this.translatorService.getTranslator('blotter/positions'),
-        (s, t) => ({ s, t })
-      ),
+      )
+    );
+
+    return combineLatest({
+      tableSettings: tableSettings$,
+      filters: this.getFiltersState().pipe(take(1)),
+      sort: this.getSortState().pipe(take(1)),
+      translator: this.translatorService.getTranslator('blotter/positions')
+    }).pipe(
       takeUntilDestroyed(this.destroyRef),
-      map(({ s, t }) => {
-        const tableSettings = TableSettingHelper.toTableDisplaySettings(s.positionsTable, s.positionsColumns);
+      tap(x => {
+        if(x.filters != null) {
+          this.filterChange(x.filters);
+        }
+      }),
+      map(x => {
+        const tableSettings = TableSettingHelper.toTableDisplaySettings(x.tableSettings.positionsTable, x.tableSettings.positionsColumns);
 
         return {
           columns: this.allColumns
@@ -249,20 +265,23 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
             .filter(c => !!c.columnSettings)
             .map((column, index) => ({
               ...column.column,
-              displayName: t(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
-              tooltip: t(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
+              displayName: x.translator(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
+              tooltip: x.translator(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
               width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
               order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index),
               filterData: column.column.filterData
                 ? {
                   ...column.column.filterData,
-                  filterName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+                  filterName: x.translator(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
                   filters: (column.column.filterData.filters ?? []).map(f => ({
-                    value: f.value as unknown,
-                    text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
-                  }))
+                    value: x.filters?.[column.column.id] as unknown,
+                    text: x.translator(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text}),
+                    byDefault: this.isFilterItemApplied(column.column.id, x.filters, f)
+                  })),
+                  initialValue: x.filters?.[column.column.id]
                 }
                 : undefined,
+              sortOrder: this.getSort(column.column.id, x.sort),
             }))
             .sort((a, b) => a.order - b.order)
         };

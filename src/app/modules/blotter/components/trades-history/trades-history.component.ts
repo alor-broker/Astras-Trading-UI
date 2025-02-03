@@ -57,6 +57,7 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { BlotterService } from "../../services/blotter.service";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 @Component({
   selector: 'ats-trades-history',
@@ -155,6 +156,11 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
   settingsTableName = TableNames.TradesHistoryTable;
   settingsColumnsName = ColumnsNames.TradesColumns;
   fileSuffix = 'tradesHistory';
+
+  get restoreFiltersAndSortOnLoad(): boolean {
+    return false;
+  }
+
   private readonly loadedHistory$ = new BehaviorSubject<Trade[]>([]);
 
   @ViewChildren('nzTable')
@@ -166,6 +172,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
     protected readonly nzContextMenuService: NzContextMenuService,
+    protected readonly widgetLocalStateService: WidgetLocalStateService,
     private readonly tradesHistoryService: TradesHistoryService,
     protected readonly destroyRef: DestroyRef
   ) {
@@ -173,6 +180,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       settingsService,
       translatorService,
       nzContextMenuService,
+      widgetLocalStateService,
       destroyRef
     );
   }
@@ -316,9 +324,16 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
 
     return combineLatest({
       tableSettings: tableSettings$,
+      filters: this.getFiltersState().pipe(take(1)),
+      sort: this.getSortState().pipe(take(1)),
       translator: this.translatorService.getTranslator('blotter/trades')
     }).pipe(
       takeUntilDestroyed(this.destroyRef),
+      tap(x => {
+        if(x.filters != null) {
+          this.filterChange(x.filters);
+        }
+      }),
       map(x => {
         return {
           columns: this.allColumns
@@ -334,10 +349,13 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
                   filterName: x.translator(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
                   filters: (column.column.filterData.filters ?? []).map(f => ({
                     value: f.value as unknown,
-                    text: x.translator(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
-                  }))
+                    text: x.translator(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text}),
+                    byDefault: this.isFilterItemApplied(column.column.id, x.filters, f)
+                  })),
+                  initialValue: x.filters?.[column.column.id]
                 }
                 : undefined,
+              sortOrder: this.getSort(column.column.id, x.sort),
               width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
               order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
             }))

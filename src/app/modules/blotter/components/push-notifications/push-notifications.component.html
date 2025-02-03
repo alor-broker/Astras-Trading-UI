@@ -53,6 +53,8 @@
                   [nzShowFilter]="column.filterData?.filterType === filterTypes.DefaultMultiple"
                   [nzShowSort]="!!column.sortFn"
                   [nzSortFn]="column.sortFn ?? false"
+                  [nzSortOrder]="column.sortOrder ?? null"
+                  (nzSortOrderChange)="saveSortState(column.id, $event)"
                   [nzWidth]="column.width ? column.width + 'px': null"
                   cdkDrag
                   cdkDragLockAxis="x"
@@ -67,11 +69,10 @@
                 <nz-filter-trigger
                   *ngIf="column.filterData != null && column.filterData?.filterType !== filterTypes.DefaultMultiple"
                   [nzVisible]="!!column.filterData.isOpenedFilter" (nzVisibleChange)="column.filterData.isOpenedFilter = $event"
-                  [nzActive]="!!filters$"
+                  [nzActive]="isFilterApplied(column)"
                   [nzDropdownMenu]="searchMenu"
                 >
-                  <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'" nz-icon
-                     nzType="search"></i>
+                  <i nz-icon nzType="search"></i>
                 </nz-filter-trigger>
               </th>
             </tr>
@@ -111,7 +112,7 @@
         </div>
 
         <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-          <ats-table-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns"></ats-table-filter>
+          <ats-search-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns"></ats-search-filter>
         </nz-dropdown-menu>
 
         <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>

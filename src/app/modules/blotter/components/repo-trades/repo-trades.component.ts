@@ -17,10 +17,9 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { BlotterService } from "../../services/blotter.service";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { debounceTime, map, mergeMap, startWith } from "rxjs/operators";
+import { debounceTime, map, mergeMap, startWith, tap } from "rxjs/operators";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import { mapWith } from "../../../../shared/utils/observable-helper";
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { RepoTrade } from "../../../../shared/models/trades/trade.model";
 import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
@@ -29,6 +28,7 @@ import { TableConfig } from "../../../../shared/models/table-config.model";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { ExportHelper } from "../../utils/export-helper";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 @Component({
   selector: 'ats-repo-trades',
@@ -203,6 +203,9 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
 
   settingsTableName = TableNames.RepoTradesTable;
   fileSuffix = 'repoTrades';
+  get restoreFiltersAndSortOnLoad(): boolean {
+    return true;
+  }
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,
@@ -210,33 +213,41 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
     protected readonly nzContextMenuService: NzContextMenuService,
+    protected readonly widgetLocalStateService: WidgetLocalStateService,
     protected readonly destroyRef: DestroyRef
   ) {
     super(
       settingsService,
       translatorService,
       nzContextMenuService,
+      widgetLocalStateService,
       destroyRef
     );
   }
 
   protected initTableConfigStream(): Observable<TableConfig<RepoTrade>> {
-    return this.settings$.pipe(
+    const tableSettings$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.repoTradesTable, current.repoTradesTable)
         && previous.badgeColor === current.badgeColor
-      ),
-      mapWith(
-        () => this.translatorService.getTranslator('blotter/trades'),
-        (s, tTrades) => ({ s, tTrades })
-      ),
-      mapWith(
-        () => this.translatorService.getTranslator('blotter/repo-trades'),
-        ({ s, tTrades }, tRepoTrades) => ({ s, tTrades, tRepoTrades })
-      ),
+      )
+    );
+
+    return combineLatest({
+      tableSettings: tableSettings$,
+      filters: this.getFiltersState().pipe(take(1)),
+      sort: this.getSortState().pipe(take(1)),
+      tTrades: this.translatorService.getTranslator('blotter/trades'),
+      tRepoTrades: this.translatorService.getTranslator('blotter/repo-trades')
+    }).pipe(
       takeUntilDestroyed(this.destroyRef),
-      map(({ s, tTrades, tRepoTrades }) => {
-        const tableSettings = TableSettingHelper.toTableDisplaySettings(s.repoTradesTable, allRepoTradesColumns.filter(c => c.isDefault).map(c => c.id));
+      tap(x => {
+        if(x.filters != null) {
+          this.filterChange(x.filters);
+        }
+      }),
+      map(x => {
+        const tableSettings = TableSettingHelper.toTableDisplaySettings(x.tableSettings.repoTradesTable, allRepoTradesColumns.filter(c => c.isDefault).map(c => c.id));
 
           return {
             columns: this.allColumns
@@ -244,33 +255,36 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
               .filter(c => !!c.columnSettings)
               .map((column, index) => ({
                 ...column.column,
-                displayName: tTrades(
+                displayName: x.tTrades(
                   ['columns', column.column.id, 'name'],
                   {
-                    fallback: tRepoTrades(['columns', column.column.id, 'name'], {falback: column.column.displayName})
+                    fallback: x.tRepoTrades(['columns', column.column.id, 'name'], {falback: column.column.displayName})
                   }
                 ),
-                tooltip: tTrades(
+                tooltip: x.tTrades(
                   ['columns', column.column.id, 'tooltip'],
                   {
-                    fallback: tRepoTrades(['columns', column.column.id, 'tooltip'], {falback: column.column.tooltip})
+                    fallback: x.tRepoTrades(['columns', column.column.id, 'tooltip'], {falback: column.column.tooltip})
                   }
                 ),
                 filterData: column.column.filterData
                   ? {
                     ...column.column.filterData,
-                    filterName: tTrades(
+                    filterName: x.tTrades(
                       ['columns', column.column.id, 'name'],
                       {
-                        fallback: tRepoTrades(['columns', column.column.id, 'name'], {falback: column.column.displayName})
+                        fallback: x.tRepoTrades(['columns', column.column.id, 'name'], {falback: column.column.displayName})
                       }
                     ),
                     filters: (column.column.filterData.filters ?? []).map(f => ({
                       value: f.value as unknown,
-                      text: tTrades(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
-                    }))
+                      text: x.tTrades(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text}),
+                      byDefault: this.isFilterItemApplied(column.column.id, x.filters, f)
+                    })),
+                    initialValue: x.filters?.[column.column.id]
                   }
                   : undefined,
+                sortOrder: this.getSort(column.column.id, x.sort),
                 width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
                 order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
               }))

@@ -40,7 +40,6 @@ import {
   FilterType
 } from "../../../../shared/models/settings/table-settings.model";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
@@ -48,11 +47,13 @@ import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { ErrorHandlerService } from "../../../../shared/services/handle-error/error-handler.service";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
 
 interface NotificationFilter {
   id?: string;
   subscriptionType?: string[];
   instrument?: string;
+  [key: string]: string | string[] | undefined;
 }
 
 type DisplayNotification = Partial<OrderExecuteSubscription> & Partial<PriceSparkSubscription> & { id: string };
@@ -67,6 +68,10 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
 
   isNotificationsAllowed$!: Observable<boolean>;
   isLoading$ = new BehaviorSubject<boolean>(false);
+
+  get restoreFiltersAndSortOnLoad(): boolean {
+    return false;
+  }
 
   protected readonly allColumns: BaseColumnSettings<DisplayNotification>[] = [
     {
@@ -118,6 +123,7 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
     private readonly pushNotificationsService: PushNotificationsService,
     protected readonly translatorService: TranslatorService,
     protected readonly nzContextMenuService: NzContextMenuService,
+    protected readonly widgetLocalStateService: WidgetLocalStateService,
     protected readonly destroyRef: DestroyRef,
     private readonly errorHandlerService: ErrorHandlerService
   ) {
@@ -125,23 +131,33 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
       widgetSettingsService,
       translatorService,
       nzContextMenuService,
+      widgetLocalStateService,
       destroyRef
     );
   }
 
   protected initTableConfigStream(): Observable<TableConfig<DisplayNotification>> {
-    return this.settings$.pipe(
+    const tableSettings$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.notificationsTable, current.notificationsTable)
         && previous.badgeColor === current.badgeColor
-      ),
-      mapWith(
-        () => this.translatorService.getTranslator('blotter/notifications'),
-        (s, t) => ({s, t})
-      ),
+      )
+    );
+
+    return combineLatest({
+      tableSettings: tableSettings$,
+      filters: this.getFiltersState().pipe(take(1)),
+      sort: this.getSortState().pipe(take(1)),
+      translator: this.translatorService.getTranslator('blotter/notifications')
+    }).pipe(
       takeUntilDestroyed(this.destroyRef),
-      map(({s, t}) => {
-        const tableSettings = TableSettingHelper.toTableDisplaySettings(s.notificationsTable, allNotificationsColumns.filter(c => c.isDefault).map(c => c.id));
+      tap(x => {
+        if(x.filters != null) {
+          this.filterChange(x.filters);
+        }
+      }),
+      map(x => {
+        const tableSettings = TableSettingHelper.toTableDisplaySettings(x.tableSettings.notificationsTable, allNotificationsColumns.filter(c => c.isDefault).map(c => c.id));
 
         return {
           columns: this.allColumns
@@ -149,18 +165,21 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
             .filter(c => !!c.columnSettings)
             .map((column, index) => ({
               ...column.column,
-              displayName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-              tooltip: t(['columns', column.column.id, 'tooltip'], {fallback: column.column.tooltip}),
+              displayName: x.translator(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+              tooltip: x.translator(['columns', column.column.id, 'tooltip'], {fallback: column.column.tooltip}),
               filterData: column.column.filterData
                 ? {
                   ...column.column.filterData,
-                  filterName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+                  filterName: x.translator(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
                   filters: (column.column.filterData.filters ?? []).map(f => ({
                     value: f.value as unknown,
-                    text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
-                  }))
+                    text: x.translator(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text}),
+                    byDefault: this.isFilterItemApplied(column.column.id, x.filters, f)
+                  })),
+                  initialValue: x.filters?.[column.column.id]
                 }
                 : undefined,
+              sortOrder: this.getSort(column.column.id, x.sort),
               width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
               order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
             }))
