@@ -10,7 +10,7 @@ import {
   distinctUntilChanged,
   Observable,
   switchMap,
-  take
+  take, tap
 } from 'rxjs';
 import {
   debounceTime,
@@ -26,7 +26,6 @@ import {
 } from "../../../../shared/utils/settings-helper";
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { mapWith } from "../../../../shared/utils/observable-helper";
 import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
 import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -39,6 +38,7 @@ import { TableConfig } from "../../../../shared/models/table-config.model";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 @Component({
   selector: 'ats-trades',
@@ -151,18 +151,24 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
   settingsColumnsName = ColumnsNames.TradesColumns;
   fileSuffix = 'trades';
 
+  get restoreFiltersAndSortOnLoad(): boolean {
+    return true;
+  }
+
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     protected readonly service: BlotterService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
     protected readonly nzContextMenuService: NzContextMenuService,
+    protected readonly widgetLocalStateService: WidgetLocalStateService,
     protected readonly destroyRef: DestroyRef
   ) {
     super(
       settingsService,
       translatorService,
       nzContextMenuService,
+      widgetLocalStateService,
       destroyRef
     );
   }
@@ -172,18 +178,27 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
   }
 
   protected initTableConfigStream(): Observable<TableConfig<DisplayTrade>> {
-    return this.settings$.pipe(
+    const tableSettings$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.tradesTable, current.tradesTable)
         && previous.badgeColor === current.badgeColor
-      ),
-      mapWith(
-        () => this.translatorService.getTranslator('blotter/trades'),
-        (s, t) => ({ s, t })
-      ),
+      )
+    );
+
+    return combineLatest({
+      tableSettings: tableSettings$,
+      filters: this.getFiltersState().pipe(take(1)),
+      sort: this.getSortState().pipe(take(1)),
+      translator: this.translatorService.getTranslator('blotter/trades'),
+    }).pipe(
       takeUntilDestroyed(this.destroyRef),
-      map(({ s, t }) => {
-        const tableSettings = TableSettingHelper.toTableDisplaySettings(s.tradesTable, s.tradesColumns);
+      tap(x => {
+        if(x.filters != null) {
+          this.filterChange(x.filters);
+        }
+      }),
+      map(x => {
+        const tableSettings = TableSettingHelper.toTableDisplaySettings(x.tableSettings.tradesTable, x.tableSettings.tradesColumns);
 
         return {
           columns: this.allColumns
@@ -191,18 +206,21 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
             .filter(c => !!c.columnSettings)
             .map((column, index) => ({
               ...column.column,
-              displayName: t(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
-              tooltip: t(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
+              displayName: x.translator(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
+              tooltip: x.translator(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
               filterData: column.column.filterData
                 ? {
                   ...column.column.filterData,
-                  filterName: t(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+                  filterName: x.translator(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
                   filters: (column.column.filterData.filters ?? []).map(f => ({
                     value: f.value as unknown,
-                    text: t(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text})
-                  }))
+                    text: x.translator(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text}),
+                    byDefault: this.isFilterItemApplied(column.column.id, x.filters, f)
+                  })),
+                  initialValue: x.filters?.[column.column.id]
                 }
                 : undefined,
+              sortOrder: this.getSort(column.column.id, x.sort),
               width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
               order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
             }))

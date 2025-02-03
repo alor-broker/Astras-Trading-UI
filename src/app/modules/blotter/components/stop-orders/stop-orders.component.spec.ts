@@ -4,7 +4,7 @@ import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { StopOrdersComponent } from './stop-orders.component';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
-import { of, Subject } from 'rxjs';
+import {EMPTY, Observable, of, Subject} from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -18,6 +18,7 @@ import { ComponentHelpers } from "../../../../shared/utils/testing/component-hel
 import {
   ORDER_COMMAND_SERVICE_TOKEN,
 } from "../../../../shared/services/orders/order-command.service";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 describe('StopOrdersComponent', () => {
   let component: StopOrdersComponent;
@@ -72,6 +73,13 @@ describe('StopOrdersComponent', () => {
           useValue: {
             create: jasmine.createSpy('create').and.callThrough(),
             close: jasmine.createSpy('close').and.callThrough()
+          }
+        },
+        {
+          provide: WidgetLocalStateService,
+          useValue: {
+            getStateRecord: (): Observable<never> => EMPTY,
+            setStateRecord: jasmine.createSpy('setStateRecord').and.callThrough()
           }
         },
         ...commonTestProviders

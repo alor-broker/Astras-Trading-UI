@@ -39,6 +39,8 @@
           <th *ngFor="let column of td.tableConfig.columns"
               [nzCustomFilter]="column.filterData?.filterType !== filterTypes.DefaultMultiple"
               [nzSortFn]="column.sortFn ?? false"
+              [nzSortOrder]="column.sortOrder ?? null"
+              (nzSortOrderChange)="saveSortState(column.id, $event)"
               [nzFilters]="column.filterData?.filters ?? []"
               [nzShowFilter]="column.filterData?.filterType === filterTypes.DefaultMultiple"
               [nzFilterMultiple]="column.filterData?.filterType === filterTypes.DefaultMultiple"
@@ -60,10 +62,10 @@
             <nz-filter-trigger
               *ngIf="column.filterData != null && column.filterData?.filterType !== filterTypes.DefaultMultiple"
               [nzVisible]="!!column.filterData.isOpenedFilter" (nzVisibleChange)="column.filterData.isOpenedFilter = $event"
-              [nzActive]="!!filters$"
+              [nzActive]="isFilterApplied(column)"
               [nzDropdownMenu]="searchMenu"
             >
-              <i [ngClass]="isFilterApplied(column) ? 'active-filter' : 'not-active-filter'"  nz-icon nzType="search"></i>
+              <i nz-icon nzType="search"></i>
             </nz-filter-trigger>
           </th>
         </tr>
@@ -109,7 +111,7 @@
     </div>
 
     <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-      <ats-table-filter [columns]="td.tableConfig.columns" (filterChange)="filterChange($event)"></ats-table-filter>
+      <ats-search-filter [columns]="td.tableConfig.columns" (filterChange)="filterChange($event)"></ats-search-filter>
     </nz-dropdown-menu>
 
     <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>

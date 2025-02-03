@@ -21,7 +21,6 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { mapWith } from "../../../../shared/utils/observable-helper";
 import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
 import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
 import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
@@ -47,6 +46,7 @@ import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
 } from "../../../../shared/services/orders/order-command.service";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 interface DisplayOrder extends StopOrder {
   residue: string;
@@ -238,6 +238,10 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
   settingsColumnsName = ColumnsNames.StopOrdersColumns;
   fileSuffix = 'stopOrders';
 
+  get restoreFiltersAndSortOnLoad(): boolean {
+    return true;
+  }
+
   constructor(
     protected readonly service: BlotterService,
     protected readonly settingsService: WidgetSettingsService,
@@ -247,6 +251,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
     protected readonly nzContextMenuService: NzContextMenuService,
+    protected readonly widgetLocalStateService: WidgetLocalStateService,
     private readonly ordersGroupService: OrdersGroupService,
     protected readonly destroyRef: DestroyRef
   ) {
@@ -254,6 +259,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
       settingsService,
       translatorService,
       nzContextMenuService,
+      widgetLocalStateService,
       destroyRef
     );
   }
@@ -263,21 +269,28 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
   }
 
   protected initTableConfigStream(): Observable<TableConfig<DisplayOrder>> {
-    return this.settings$.pipe(
+    const tableSettings$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.stopOrdersTable, current.stopOrdersTable)
         && previous.badgeColor === current.badgeColor
-      ),
-      mapWith(
-        () => combineLatest([
-          this.translatorService.getTranslator('blotter/stop-orders'),
-          this.translatorService.getTranslator('blotter/blotter-common')
-        ]),
-        (s, [tStopOrders, tCommon]) => ({ s, tStopOrders, tCommon })
-      ),
+      )
+    );
+
+    return combineLatest({
+      tableSettings: tableSettings$,
+      filters: this.getFiltersState().pipe(take(1)),
+      sort: this.getSortState().pipe(take(1)),
+      tStopOrders: this.translatorService.getTranslator('blotter/stop-orders'),
+      tCommon: this.translatorService.getTranslator('blotter/blotter-common')
+    }).pipe(
       takeUntilDestroyed(this.destroyRef),
-      map(({ s, tStopOrders, tCommon }) => {
-        const tableSettings = TableSettingHelper.toTableDisplaySettings(s.stopOrdersTable, s.stopOrdersColumns);
+      tap(x => {
+        if(x.filters != null) {
+          this.filterChange(x.filters);
+        }
+      }),
+      map(x => {
+        const tableSettings = TableSettingHelper.toTableDisplaySettings(x.tableSettings.stopOrdersTable, x.tableSettings.stopOrdersColumns);
 
         return {
           columns: this.allColumns
@@ -285,18 +298,21 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
             .filter(c => !!c.columnSettings)
             .map((column, index) => ({
               ...column.column,
-              displayName: tStopOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-              tooltip: tStopOrders(['columns', column.column.id, 'tooltip'], {fallback: column.column.tooltip}),
+              displayName: x.tStopOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+              tooltip: x.tStopOrders(['columns', column.column.id, 'tooltip'], {fallback: column.column.tooltip}),
               filterData: column.column.filterData
                 ? {
                   ...column.column.filterData,
-                  filterName: tStopOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+                  filterName: x.tStopOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
                   filters: (column.column.filterData.filters ?? []).map(f => ({
                     value: f.value as unknown,
-                    text: tCommon([column.column.id + 'Filters', f.value], {fallback: f.text})
-                  }))
+                    text: x.tCommon([column.column.id + 'Filters', f.value], {fallback: f.text}),
+                    byDefault: this.isFilterItemApplied(column.column.id, x.filters, f)
+                  })),
+                  initialValue: x.filters?.[column.column.id]
                 }
                 : undefined,
+              sortOrder: this.getSort(column.column.id, x.sort),
               width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
               order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
             }))

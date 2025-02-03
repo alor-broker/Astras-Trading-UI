@@ -10,7 +10,6 @@ import { CommonSummaryComponent } from './components/common-summary/common-summa
 import { StopOrdersComponent } from './components/stop-orders/stop-orders.component';
 import { ForwardSummaryComponent } from './components/forward-summary/forward-summary.component';
 import { NzInputModule } from "ng-zorro-antd/input";
-import { TableFilterComponent } from "./components/table-filter/table-filter.component";
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 import { PushNotificationsComponent } from './components/push-notifications/push-notifications.component';
@@ -27,6 +26,7 @@ import { WidgetSettingsComponent } from "../../shared/components/widget-settings
 import { NzDividerComponent } from "ng-zorro-antd/divider";
 import { TableRowHeightDirective } from "../../shared/directives/table-row-height.directive";
 import { InstrumentBadgeDisplayComponent } from "../../shared/components/instrument-badge-display/instrument-badge-display.component";
+import {SearchFilterComponent} from "./components/search-filter/search-filter.component";
 
 @NgModule({
   declarations: [
@@ -38,27 +38,27 @@ import { InstrumentBadgeDisplayComponent } from "../../shared/components/instrum
     BlotterSettingsComponent,
     CommonSummaryComponent,
     ForwardSummaryComponent,
-    TableFilterComponent,
     PushNotificationsComponent,
     OrdersGroupModalWidgetComponent,
     OrdersGroupModalComponent,
     RepoTradesComponent,
     TradesHistoryComponent
   ],
-    imports: [
-        SharedModule,
-        BlotterRoutingModule,
-        NzInputModule,
-        DragDropModule,
-        NzResizeObserverModule,
-        NzTreeModule,
-        LetDirective,
-        InstrumentsModule,
-        WidgetSettingsComponent,
-        NzDividerComponent,
-        TableRowHeightDirective,
-        InstrumentBadgeDisplayComponent
-    ],
+  imports: [
+    SharedModule,
+    BlotterRoutingModule,
+    NzInputModule,
+    DragDropModule,
+    NzResizeObserverModule,
+    NzTreeModule,
+    LetDirective,
+    InstrumentsModule,
+    WidgetSettingsComponent,
+    NzDividerComponent,
+    TableRowHeightDirective,
+    InstrumentBadgeDisplayComponent,
+    SearchFilterComponent
+  ],
   exports: [
     BlotterWidgetComponent
   ]

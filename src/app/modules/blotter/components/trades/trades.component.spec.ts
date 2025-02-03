@@ -7,7 +7,7 @@ import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 
 import { TradesComponent } from './trades.component';
 import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
-import { of } from 'rxjs';
+import {EMPTY, Observable, of} from 'rxjs';
 import { TimezoneConverter } from '../../../../shared/utils/timezone-converter';
 import { TimezoneDisplayOption } from '../../../../shared/models/enums/timezone-display-option';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -15,6 +15,7 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 describe('TradesComponent', () => {
   let component: TradesComponent;
@@ -53,7 +54,14 @@ describe('TradesComponent', () => {
             create: jasmine.createSpy('create').and.callThrough(),
             close: jasmine.createSpy('close').and.callThrough()
           }
-        }
+        },
+        {
+          provide: WidgetLocalStateService,
+          useValue: {
+            getStateRecord: (): Observable<never> => EMPTY,
+            setStateRecord: jasmine.createSpy('setStateRecord').and.callThrough()
+          }
+        },
       ],
       declarations: [
         TradesComponent,

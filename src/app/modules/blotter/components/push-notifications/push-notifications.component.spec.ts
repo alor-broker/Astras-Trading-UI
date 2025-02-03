@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PushNotificationsComponent } from './push-notifications.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { Subject } from "rxjs";
+import {EMPTY, Observable, Subject} from "rxjs";
 import { BlotterService } from "../../services/blotter.service";
 import { PushNotificationsService } from "../../../push-notifications/services/push-notifications.service";
 import { LetDirective } from "@ngrx/component";
@@ -10,6 +10,7 @@ import { ErrorHandlerService } from "../../../../shared/services/handle-error/er
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 describe('PushNotificationsComponent', () => {
   let component: PushNotificationsComponent;
@@ -64,7 +65,14 @@ describe('PushNotificationsComponent', () => {
             create: jasmine.createSpy('create').and.callThrough(),
             close: jasmine.createSpy('close').and.callThrough()
           }
-        }
+        },
+        {
+          provide: WidgetLocalStateService,
+          useValue: {
+            getStateRecord: (): Observable<never> => EMPTY,
+            setStateRecord: jasmine.createSpy('setStateRecord').and.callThrough()
+          }
+        },
       ]
     })
     .compileComponents();

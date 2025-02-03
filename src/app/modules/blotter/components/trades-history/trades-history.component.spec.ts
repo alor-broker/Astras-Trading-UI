@@ -3,6 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TradesHistoryComponent } from './trades-history.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
+  EMPTY,
+  Observable,
   of,
   Subject
 } from "rxjs";
@@ -18,6 +20,7 @@ import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 describe('TradesHistoryComponent', () => {
   let component: TradesHistoryComponent;
@@ -65,7 +68,14 @@ describe('TradesHistoryComponent', () => {
             create: jasmine.createSpy('create').and.callThrough(),
             close: jasmine.createSpy('close').and.callThrough()
           }
-        }
+        },
+        {
+          provide: WidgetLocalStateService,
+          useValue: {
+            getStateRecord: (): Observable<never> => EMPTY,
+            setStateRecord: jasmine.createSpy('setStateRecord').and.callThrough()
+          }
+        },
       ],
     });
     fixture = TestBed.createComponent(TradesHistoryComponent);

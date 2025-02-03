@@ -5,6 +5,8 @@ import { MockServiceBlotter } from '../../utils/mock-blotter-service';
 import { PositionsComponent } from './positions.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
+  EMPTY,
+  Observable,
   of,
   Subject
 } from "rxjs";
@@ -17,6 +19,7 @@ import { ComponentHelpers } from "../../../../shared/utils/testing/component-hel
 import {
   ORDER_COMMAND_SERVICE_TOKEN,
 } from "../../../../shared/services/orders/order-command.service";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
@@ -61,6 +64,13 @@ describe('PositionsComponent', () => {
           useValue: {
             create: jasmine.createSpy('create').and.callThrough(),
             close: jasmine.createSpy('close').and.callThrough()
+          }
+        },
+        {
+          provide: WidgetLocalStateService,
+          useValue: {
+            getStateRecord: (): Observable<never> => EMPTY,
+            setStateRecord: jasmine.createSpy('setStateRecord').and.callThrough()
           }
         },
         ...commonTestProviders

@@ -26,7 +26,6 @@ import {
   isEqualPortfolioDependedSettings
 } from "../../../../shared/utils/settings-helper";
 import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
-import { mapWith } from "../../../../shared/utils/observable-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
 import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
@@ -44,6 +43,7 @@ import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
 } from "../../../../shared/services/orders/order-command.service";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 interface DisplayOrder extends Order {
   residue: string;
@@ -208,6 +208,10 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
   settingsColumnsName = ColumnsNames.OrdersColumns;
   fileSuffix = 'orders';
 
+  get restoreFiltersAndSortOnLoad(): boolean {
+    return true;
+  }
+
   constructor(
     protected readonly settingsService: WidgetSettingsService,
     private readonly service: BlotterService,
@@ -216,6 +220,7 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly translatorService: TranslatorService,
     protected readonly nzContextMenuService: NzContextMenuService,
+    protected readonly widgetLocalStateService: WidgetLocalStateService,
     private readonly ordersGroupService: OrdersGroupService,
     private readonly ordersDialogService: OrdersDialogService,
     protected readonly destroyRef: DestroyRef
@@ -224,6 +229,7 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       settingsService,
       translatorService,
       nzContextMenuService,
+      widgetLocalStateService,
       destroyRef
     );
   }
@@ -233,43 +239,55 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
   }
 
   protected initTableConfigStream(): Observable<TableConfig<DisplayOrder>> {
-    return this.settings$.pipe(
+    const tableSettings$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) =>
         TableSettingHelper.isTableSettingsEqual(previous.ordersTable, current.ordersTable)
         && previous.badgeColor === current.badgeColor
-      ),
-      mapWith(
-        () => combineLatest([
-          this.translatorService.getTranslator('blotter/orders'),
-          this.translatorService.getTranslator('blotter/blotter-common')
-        ]),
-        (s, [tOrders, tCommon]) => ({s, tOrders, tCommon})
-      ),
+      )
+    );
+
+    return combineLatest({
+      tableSettings: tableSettings$,
+      filters: this.getFiltersState().pipe(take(1)),
+      sort: this.getSortState().pipe(take(1)),
+      tOrders: this.translatorService.getTranslator('blotter/orders'),
+      tCommon: this.translatorService.getTranslator('blotter/blotter-common')
+    }).pipe(
       takeUntilDestroyed(this.destroyRef),
-      map(({ s, tOrders, tCommon }) => {
-        const tableSettings = TableSettingHelper.toTableDisplaySettings(s.ordersTable, s.ordersColumns);
+      tap(x => {
+        if(x.filters != null) {
+          this.filterChange(x.filters);
+        }
+      }),
+      map(x => {
+        const tableSettings = TableSettingHelper.toTableDisplaySettings(x.tableSettings.ordersTable, x.tableSettings.ordersColumns);
 
         return {
           columns: this.allColumns
             .map(c => ({column: c, columnSettings: tableSettings?.columns.find(x => x.columnId === c.id)}))
             .filter(c => c.columnSettings != null)
-            .map((column, index) => ({
-              ...column.column,
-              displayName: tOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-              tooltip: tOrders(['columns', column.column.id, 'tooltip'], {fallback: column.column.tooltip}),
-              filterData: column.column.filterData
-                ? {
-                  ...column.column.filterData,
-                  filterName: tOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
-                  filters: (column.column.filterData.filters ?? []).map(f => ({
-                    value: f.value as unknown,
-                    text: tCommon([column.column.id + 'Filters', f.value], {fallback: f.text})
-                  }))
-                }
-                : undefined,
-              width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
-              order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
-            }))
+            .map((column, index) => {
+              return {
+                ...column.column,
+                displayName: x.tOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+                tooltip: x.tOrders(['columns', column.column.id, 'tooltip'], {fallback: column.column.tooltip}),
+                filterData: column.column.filterData
+                  ? {
+                    ...column.column.filterData,
+                    filterName: x.tOrders(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+                    filters: (column.column.filterData.filters ?? []).map(f => ({
+                      value: f.value as unknown,
+                      text: x.tCommon([column.column.id + 'Filters', f.value], {fallback: f.text}),
+                      byDefault: this.isFilterItemApplied(column.column.id, x.filters, f)
+                    })),
+                    initialValue: x.filters?.[column.column.id]
+                  }
+                  : undefined,
+                sortOrder: this.getSort(column.column.id, x.sort),
+                width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
+                order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+              };
+            })
             .sort((a, b) => a.order - b.order)
         };
       })

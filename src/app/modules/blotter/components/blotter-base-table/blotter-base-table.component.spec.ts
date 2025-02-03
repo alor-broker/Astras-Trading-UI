@@ -11,6 +11,7 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { BlotterService } from "../../services/blotter.service";
 import { By } from "@angular/platform-browser";
 import {
+  EMPTY,
   Observable,
   of,
   Subject,
@@ -24,6 +25,7 @@ import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 @Component({
   selector: 'ats-test-comp',
@@ -45,9 +47,10 @@ class TestComponent extends BlotterBaseTableComponent<{ id: string }, object> {
     protected readonly settingsService: WidgetSettingsService,
     protected readonly translatorService: TranslatorService,
     protected readonly nzContextMenuService: NzContextMenuService,
+    protected readonly widgetLocalStateService: WidgetLocalStateService,
     protected readonly destroyRef: DestroyRef
   ) {
-    super(settingsService, translatorService, nzContextMenuService, destroyRef);
+    super(settingsService, translatorService, nzContextMenuService, widgetLocalStateService, destroyRef);
   }
 
   protected initTableConfigStream(): Observable<TableConfig<any>> {
@@ -57,6 +60,8 @@ class TestComponent extends BlotterBaseTableComponent<{ id: string }, object> {
   protected initTableDataStream(): Observable<any[]> {
     return of([]);
   }
+
+  readonly restoreFiltersAndSortOnLoad = false;
 }
 
 @Component({
@@ -102,6 +107,13 @@ describe('BlotterBaseTableComponent', () => {
           useValue: {
             create: jasmine.createSpy('create').and.callThrough(),
             close: jasmine.createSpy('close').and.callThrough()
+          }
+        },
+        {
+          provide: WidgetLocalStateService,
+          useValue: {
+            getStateRecord: (): Observable<never> => EMPTY,
+            setStateRecord: jasmine.createSpy('setStateRecord').and.callThrough()
           }
         }
       ]
