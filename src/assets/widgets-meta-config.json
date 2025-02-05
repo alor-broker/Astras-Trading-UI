@@ -17,8 +17,8 @@
     },
     "category": "all",
     "desktopMeta": {
-      "headerIcon": "eye",
-      "galleryIcon": "eye",
+      "headerIcon": "ats-watchlist",
+      "galleryIcon": "ats-watchlist",
       "addOptions": {
         "initialPosition": "auto",
         "isFullWidth": false,
@@ -84,8 +84,8 @@
     },
     "category": "chartsAndOrderbooks",
     "desktopMeta": {
-      "headerIcon": "ats-orderbook",
-      "galleryIcon": "ats-orderbook",
+      "headerIcon": "ats-scalper-orderbook",
+      "galleryIcon": "ats-scalper-orderbook",
       "addOptions": {
         "initialPosition": "auto",
         "isFullWidth": false,
@@ -189,8 +189,8 @@
     },
     "category": "positionsTradesOrders",
     "desktopMeta": {
-      "headerIcon": "table",
-      "galleryIcon": "table",
+      "headerIcon": "ats-portfolio",
+      "galleryIcon": "ats-portfolio",
       "addOptions": {
         "initialPosition": "auto",
         "isFullWidth": false,
@@ -201,8 +201,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "galleryIcon": "table",
-      "ribbonIcon": "table",
+      "galleryIcon": "ats-portfolio",
+      "ribbonIcon": "ats-portfolio",
       "enabled": true,
       "galleryOrder": 6
     }
@@ -226,8 +226,8 @@
     "hasInstrumentBind": true,
     "category": "info",
     "desktopMeta": {
-      "headerIcon": "info",
-      "galleryIcon": "info",
+      "headerIcon": "ats-instrument-info",
+      "galleryIcon": "ats-instrument-info",
       "addOptions": {
         "initialPosition": "auto",
         "isFullWidth": false,
@@ -238,8 +238,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "galleryIcon": "info",
-      "ribbonIcon": "info",
+      "galleryIcon": "ats-instrument-info",
+      "ribbonIcon": "ats-instrument-info",
       "enabled": true,
       "galleryOrder": 7
     }
@@ -299,8 +299,8 @@
     "hasInstrumentBind": true,
     "category": "details",
     "desktopMeta": {
-      "headerIcon": "unordered-list",
-      "galleryIcon": "unordered-list",
+      "headerIcon": "ats-trade",
+      "galleryIcon": "ats-trade",
       "addOptions": {
         "initialPosition": "auto",
         "isFullWidth": false,
@@ -311,8 +311,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "galleryIcon": "unordered-list",
-      "ribbonIcon": "unordered-list",
+      "galleryIcon": "ats-trade",
+      "ribbonIcon": "ats-trade",
       "enabled": true,
       "galleryOrder": 9
     }
@@ -335,8 +335,8 @@
     },
     "category": "info",
     "desktopMeta": {
-      "headerIcon": "line-chart",
-      "galleryIcon": "line-chart",
+      "headerIcon": "dollar",
+      "galleryIcon": "ats-exchange-rate",
       "addOptions": {
         "initialPosition": "auto",
         "isFullWidth": false,
@@ -347,8 +347,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "galleryIcon": "line-chart",
-      "ribbonIcon": "line-chart",
+      "galleryIcon": "ats-exchange-rate",
+      "ribbonIcon": "ats-exchange-rate",
       "enabled": true,
       "galleryOrder": 10
     }
@@ -371,8 +371,8 @@
     },
     "category": "details",
     "desktopMeta": {
-      "headerIcon": "profile",
-      "galleryIcon": "profile",
+      "headerIcon": "ats-instruments-search",
+      "galleryIcon": "ats-instruments-search",
       "addOptions": {
         "initialPosition": "auto",
         "isFullWidth": false,
@@ -383,8 +383,8 @@
       "enabled": true
     },
     "mobileMeta": {
-      "galleryIcon": "profile",
-      "ribbonIcon": "profile",
+      "galleryIcon": "ats-instruments-search",
+      "ribbonIcon": "aats-instruments-search",
       "enabled": true,
       "galleryOrder": 11
     }
@@ -408,8 +408,8 @@
     "hasInstrumentBind": true,
     "category": "positionsTradesOrders",
     "desktopMeta": {
-      "headerIcon": "send",
-      "galleryIcon": "send",
+      "headerIcon": "plus-circle",
+      "galleryIcon": "plus-circle",
       "addOptions": {
         "initialPosition": "auto",
         "isFullWidth": false,
@@ -420,7 +420,7 @@
       "enabled": true
     },
     "mobileMeta": {
-      "galleryIcon": "send",
+      "galleryIcon": "plus-circle",
       "ribbonIcon": "plus-circle",
       "enabled": true,
       "widgetName": {
@@ -654,8 +654,8 @@
     },
     "category": "positionsTradesOrders",
     "desktopMeta": {
-      "headerIcon": "wallet",
-      "galleryIcon": "wallet",
+      "headerIcon": "ats-portfolio-summary",
+      "galleryIcon": "ats-portfolio-summary",
       "addOptions": {
         "initialPosition": "below",
         "isFullWidth": true,
@@ -713,8 +713,8 @@
     },
     "category": "info",
     "desktopMeta": {
-      "headerIcon": "monitor",
-      "galleryIcon": "monitor",
+      "headerIcon": "ats-bonds-search",
+      "galleryIcon": "ats-bonds-search",
       "addOptions": {
         "initialPosition": "auto",
         "isFullWidth": false,
