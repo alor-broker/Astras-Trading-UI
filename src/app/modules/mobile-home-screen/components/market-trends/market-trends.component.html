@@ -11,14 +11,28 @@
         <thead>
         <tr>
           <th class="text-start text-nowrap">{{ t('mobileHomeScreenMarketTrends.columns.ticker.title') }}</th>
-          <th class="text-start text-nowrap">{{ t('mobileHomeScreenMarketTrends.columns.dailyGrowthPercent.title') }}</th>
+          <th
+            class="text-start text-nowrap"
+            (click)="changeSortOrder()"
+          >
+            {{ t('mobileHomeScreenMarketTrends.columns.dailyGrowthPercent.title') }}
+            @if(isLoading) {
+              <span nz-icon nzType="loading" nzTheme="outline"></span>
+            } @else {
+              <span nz-icon
+                    [nzType]="vm.itemsDisplayParams.growOrder === SortEnumTypes.Desc ? 'arrow-down' : 'arrow-up'"
+                    nzTheme="outline"
+              >
+            </span>
+            }
+          </th>
           <th class="text-end text-nowrap">{{ t('mobileHomeScreenMarketTrends.columns.lastPrice.title') }}</th>
         </tr>
         </thead>
 
         <tbody>
           @for (item of vm.displayItems.nodes; track trackBy(item)) {
-            <tr class="item">
+            <tr class="item" (click)="openChart(item)">
               <td class="text-start">
                 <div class="d-flex flex-column">
                 <span>

@@ -346,7 +346,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
         take(1),
       )
       .subscribe(s => {
-        this.actionsContext.instrumentSelected({
+        this.actionsContext.selectInstrument({
             exchange: this.defaultExchange,
             symbol
           },

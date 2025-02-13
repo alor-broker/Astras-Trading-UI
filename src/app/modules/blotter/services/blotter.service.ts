@@ -56,7 +56,7 @@ export class BlotterService {
           return;
         }
 
-        this.actionsContext.instrumentSelected(instrument, badgeColor);
+        this.actionsContext.selectInstrument(instrument, badgeColor);
       });
   }
 

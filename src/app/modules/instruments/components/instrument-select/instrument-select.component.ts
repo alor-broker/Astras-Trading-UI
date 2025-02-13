@@ -139,7 +139,7 @@ export class InstrumentSelectComponent implements OnInit {
       }
 
       this.watchlistCollectionService.addItemsToList(settings.activeWatchlistMetas![0].id, [instrument]);
-      this.actionsContext.instrumentSelected(instrument, settings.badgeColor ?? defaultBadgeColor);
+      this.actionsContext.selectInstrument(instrument, settings.badgeColor ?? defaultBadgeColor);
     });
   }
 

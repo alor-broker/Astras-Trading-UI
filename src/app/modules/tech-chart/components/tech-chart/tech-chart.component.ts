@@ -475,7 +475,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
           const instrumentKey = toInstrumentKey((<RegularInstrumentKey>SyntheticInstrumentsHelper.getRegularOrSyntheticInstrumentKey(chartSymbol)).instrument);
 
           if (settings.widgetSettings.linkToActive ?? false) {
-            this.actionsContext.instrumentSelected(instrumentKey, settings.widgetSettings.badgeColor ?? defaultBadgeColor);
+            this.actionsContext.selectInstrument(instrumentKey, settings.widgetSettings.badgeColor ?? defaultBadgeColor);
             return;
           }
 

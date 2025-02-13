@@ -83,7 +83,7 @@ export class ListViewComponent implements OnInit, OnDestroy {
   }
 
   selectInstrument(symbol: string): void {
-    this.actionsContext.instrumentSelected({ symbol, exchange: 'MOEX' }, defaultBadgeColor);
+    this.actionsContext.selectInstrument({ symbol, exchange: 'MOEX' }, defaultBadgeColor);
   }
 
   isEventsEmpty(events: CalendarEvents): boolean {

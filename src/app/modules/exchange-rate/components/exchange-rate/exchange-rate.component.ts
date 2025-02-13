@@ -96,7 +96,7 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
       this.settingsService.getSettings<ExchangeRateSettings>(this.guid).pipe(
         take(1)
       ).subscribe(s => {
-        this.actionsContext.instrumentSelected({
+        this.actionsContext.selectInstrument({
             symbol: item.sourceSymbol!,
             exchange: marketSettings.currencies.defaultCurrencyExchange
           },

@@ -358,7 +358,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
     this.settings$.pipe(
       take(1)
     ).subscribe(s => {
-      this.actionsContext?.instrumentSelected(row.instrument, s.badgeColor ?? defaultBadgeColor);
+      this.actionsContext?.selectInstrument(row.instrument, s.badgeColor ?? defaultBadgeColor);
     });
   }
 
