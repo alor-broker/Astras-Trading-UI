@@ -3,7 +3,7 @@ import { NotificationsProvider } from '../../notifications/services/notification
 import { combineLatest, Observable, shareReplay } from 'rxjs';
 import { NotificationMeta } from '../../notifications/models/notification.model';
 import { PushNotificationsService } from "./push-notifications.service";
-import { filter, map } from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { isPortfoliosEqual } from "../../../shared/utils/portfolios";
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
 import { TimezoneConverterService } from "../../../shared/services/timezone-converter.service";
@@ -88,10 +88,14 @@ export class PushNotificationsProvider implements NotificationsProvider {
 
   private initNotificationsSync(): void {
     this.pushNotificationsService.getMessages().pipe(
-      filter(payload => payload.data?.body != null),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(payload => {
-      const messageData = JSON.parse(payload!.data!.body!).notification as { title: string, body: string } | undefined;
+      let messageData = payload.notification;
+
+      if(messageData == null && payload.data?.body != null) {
+        messageData = JSON.parse(payload.data.body).notification as { title: string, body: string } | undefined;
+      }
+
       if (!messageData) {
         return;
       }
