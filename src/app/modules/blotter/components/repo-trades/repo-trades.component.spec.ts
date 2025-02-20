@@ -5,7 +5,7 @@ import {
 
 import { RepoTradesComponent } from './repo-trades.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { of } from "rxjs";
+import {EMPTY, Observable, of} from "rxjs";
 import { BlotterService } from "../../services/blotter.service";
 import { MockServiceBlotter } from "../../utils/mock-blotter-service";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
@@ -15,6 +15,7 @@ import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 describe('RepoTradesComponent', () => {
   let component: RepoTradesComponent;
@@ -59,7 +60,14 @@ describe('RepoTradesComponent', () => {
             create: jasmine.createSpy('create').and.callThrough(),
             close: jasmine.createSpy('close').and.callThrough()
           }
-        }
+        },
+        {
+          provide: WidgetLocalStateService,
+          useValue: {
+            getStateRecord: (): Observable<never> => EMPTY,
+            setStateRecord: jasmine.createSpy('setStateRecord').and.callThrough()
+          }
+        },
       ],
     });
     fixture = TestBed.createComponent(RepoTradesComponent);
