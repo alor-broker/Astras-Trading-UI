@@ -45,7 +45,8 @@ describe('MobileDashboardComponent', () => {
         MockProvider(
           ACTIONS_CONTEXT,
           {
-            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
+            selectInstrument: jasmine.createSpy('selectInstrument').and.callThrough(),
+            openChart: jasmine.createSpy('selectInstrument').and.callThrough(),
           }
         ),
         MockProvider(MobileSettingsBrokerService),

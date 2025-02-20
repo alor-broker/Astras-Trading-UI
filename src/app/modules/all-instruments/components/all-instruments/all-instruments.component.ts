@@ -475,7 +475,7 @@ implements OnInit, OnDestroy {
       this.settings$.pipe(
         take(1)
       ).subscribe(s => {
-        this.actionsContext.instrumentSelected({
+        this.actionsContext.selectInstrument({
           symbol: row.basicInformation!.symbol!,
           exchange: row.basicInformation!.exchange!,
           instrumentGroup: row.boardInformation?.board

@@ -92,7 +92,7 @@ export class ClientDashboardComponent implements OnInit, ActionsContext {
       });
   }
 
-  instrumentSelected(instrumentKey: InstrumentKey, groupKey: string): void {
+  selectInstrument(instrumentKey: InstrumentKey, groupKey: string): void {
     this.dashboardContextService.selectDashboardInstrument(instrumentKey, groupKey);
   }
 
@@ -104,5 +104,9 @@ export class ClientDashboardComponent implements OnInit, ActionsContext {
     this.store.dispatch(PortfoliosInternalActions.init());
     this.store.dispatch(WidgetsLocalStateInternalActions.init({storageKey: LocalStorageCommonConstants.WidgetsLocalStateStorageKey}));
     this.onboarding.start();
+  }
+
+  openChart(): void {
+    return;
   }
 }

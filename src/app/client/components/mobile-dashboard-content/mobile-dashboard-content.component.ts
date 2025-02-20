@@ -24,7 +24,7 @@ import {TranslatorService} from "../../../shared/services/translator.service";
 import {MobileActionsContextService} from "../../../modules/dashboard/services/mobile-actions-context.service";
 import {MobileDashboardService} from "../../../modules/dashboard/services/mobile-dashboard.service";
 import {WidgetsSharedDataService} from "../../../shared/services/widgets-shared-data.service";
-import {filter, map} from "rxjs/operators";
+import {map} from "rxjs/operators";
 import { arraysEqual } from "ng-zorro-antd/core/util";
 import {LetDirective} from "@ngrx/component";
 import {NgForOf, NgIf} from "@angular/common";
@@ -108,10 +108,16 @@ export class MobileDashboardContentComponent implements OnInit {
       });
 
     this.mobileActionsContextService.actionEvents$.pipe(
-      filter(e => e.eventType === "instrumentSelected"),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      this.selectWidget(this.newOrderWidgetId);
+    ).subscribe(event => {
+      switch (event.eventType) {
+        case "instrumentSelected":
+          this.selectWidget(this.newOrderWidgetId);
+          break;
+        case "openChart":
+          this.selectWidget("light-chart");
+          break;
+      }
     });
 
     this.widgetsSharedDataService.getDataProvideValues('selectedPrice').pipe(

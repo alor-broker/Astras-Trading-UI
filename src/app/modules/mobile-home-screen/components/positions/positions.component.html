@@ -18,7 +18,7 @@
 
         <tbody>
           @for (item of vm.displayPositions.items; track trackBy(item)) {
-            <tr class="item">
+            <tr class="item" (click)="openChart(item)">
               <td class="text-start">
                 <div class="d-flex flex-column">
                 <span>

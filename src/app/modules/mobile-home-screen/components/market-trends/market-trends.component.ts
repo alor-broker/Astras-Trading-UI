@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {TranslocoDirective} from "@jsverse/transloco";
 import {FetchPolicy, GraphQlService} from "../../../../shared/services/graph-ql.service";
-import {BehaviorSubject, Observable, switchMap, take, timer} from "rxjs";
+import {BehaviorSubject, Observable, switchMap, take, tap, timer} from "rxjs";
 import {
   InstrumentInfoType,
   MarketTrendsInstrumentsConnectionType,
@@ -21,9 +21,14 @@ import {NzButtonComponent} from "ng-zorro-antd/button";
 import {TruncatedTextComponent} from "../../../../shared/components/truncated-text/truncated-text.component";
 import {NzEmptyComponent} from "ng-zorro-antd/empty";
 import {NzSkeletonComponent} from "ng-zorro-antd/skeleton";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {ACTIONS_CONTEXT, ActionsContext} from "../../../../shared/services/actions-context";
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 
 interface DisplayParams {
   itemsDisplayCount: number;
+  growOrder: SortEnumType;
 }
 
 @Component({
@@ -37,7 +42,8 @@ interface DisplayParams {
     NgClass,
     PercentPipe,
     NzEmptyComponent,
-    NzSkeletonComponent
+    NzSkeletonComponent,
+    NzIconDirective
   ],
   templateUrl: './market-trends.component.html',
   styleUrl: './market-trends.component.less'
@@ -51,13 +57,18 @@ export class MarketTrendsComponent implements OnInit {
   private readonly itemsDisplayStep = 20;
 
   readonly itemsDisplayParams$ = new BehaviorSubject<DisplayParams>({
-    itemsDisplayCount: this.itemsDisplayStep
+    itemsDisplayCount: this.itemsDisplayStep,
+    growOrder: SortEnumType.Desc
   });
 
   private readonly refreshInterval = 30_000;
 
+  readonly SortEnumTypes = SortEnumType;
+
   constructor(
-    private readonly graphQlService: GraphQlService
+    private readonly graphQlService: GraphQlService,
+    @Inject(ACTIONS_CONTEXT)
+    private readonly actionsContext: ActionsContext
   ) {
   }
 
@@ -78,8 +89,6 @@ export class MarketTrendsComponent implements OnInit {
   }
 
   showMoreItems(): void {
-    this.isLoading = true;
-
     this.itemsDisplayParams$.pipe(
       take(1),
     ).subscribe(p => {
@@ -87,11 +96,34 @@ export class MarketTrendsComponent implements OnInit {
         ...p,
         itemsDisplayCount: Math.round(Math.min(this.maxDisplayItems, p.itemsDisplayCount + this.itemsDisplayStep))
       });
-      this.isLoading = false;
     });
   }
 
+  changeSortOrder(): void {
+    this.itemsDisplayParams$.pipe(
+      take(1),
+    ).subscribe(p => {
+      this.itemsDisplayParams$.next({
+        ...p,
+        growOrder: p.growOrder === SortEnumType.Desc ? SortEnumType.Asc : SortEnumType.Desc
+      });
+    });
+  }
+
+  openChart(item: InstrumentInfoType): void {
+    this.actionsContext.openChart(this.toInstrumentKey(item), defaultBadgeColor);
+  }
+
+  private toInstrumentKey(item: InstrumentInfoType): InstrumentKey {
+    return {
+      symbol: item.basicInformation.symbol,
+      exchange: item.basicInformation.exchange,
+      instrumentGroup: item.boardInformation.board
+    };
+  }
+
   private loadMarketTrends(params: DisplayParams): Observable<MarketTrendsInstrumentsConnectionType | null> {
+    this.isLoading = true;
     const where: InstrumentModelFilterInput = {
       and: [
         {
@@ -120,7 +152,7 @@ export class MarketTrendsComponent implements OnInit {
       order: [
         {
           tradingDetails: {
-            dailyGrowthPercent: SortEnumType.Desc
+            dailyGrowthPercent: params.growOrder
           }
         },
         {
@@ -157,7 +189,8 @@ export class MarketTrendsComponent implements OnInit {
           totalCount: r.instruments.totalCount,
         };
       }),
-      take(1)
+      take(1),
+      tap(() => this.isLoading = false)
     );
   }
 }
