@@ -78,7 +78,7 @@ interface ChartItemsPositions {
 
 interface MatrixCell {
   correlation: number;
-  cointegration: boolean;
+  cointegration: boolean | null;
 }
 
 interface CorrelationMatrix {
@@ -352,7 +352,13 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
           .attr("text-anchor", "middle")
           .attr("dominant-baseline", "middle")
           .style('user-select', 'none')
-          .text(d => d.cellValue.cointegration ? translator(['cointegrationMark']) : '');
+          .text(d => {
+            if(d.cellValue.cointegration == null) {
+              return '-';
+            }
+
+            return d.cellValue.cointegration ? translator(['cointegrationMark']) : '';
+          });
 
         return cell;
       });
@@ -655,7 +661,9 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
       for (const colInstrument of indexes) {
         matrixRow.push({
           correlation: response.data.correlation[rowInstrument][colInstrument],
-          cointegration: response.data.cointegration[rowInstrument][colInstrument] === 1
+          cointegration:response.data.cointegration == null
+            ? null
+            : response.data.cointegration?.[rowInstrument][colInstrument] === 1
         });
       }
     }
