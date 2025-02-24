@@ -14,6 +14,9 @@ import {
 import {AdminProfileMenuNavBtnComponent} from "../admin-profile-menu-nav-btn/admin-profile-menu-nav-btn.component";
 import {DesktopNavbarComponent} from "../../../modules/dashboard/components/desktop-navbar/desktop-navbar.component";
 import {NzIconDirective} from "ng-zorro-antd/icon";
+import {
+  ThemeSwitchWidgetComponent
+} from "../../../modules/terminal-settings/widgets/theme-switch-widget/theme-switch-widget.component";
 
 describe('AdminNavbarComponent', () => {
   let component: AdminNavbarComponent;
@@ -28,7 +31,8 @@ describe('AdminNavbarComponent', () => {
           SelectClientPortfolioBtnComponent,
           WidgetsGalleryNavBtnComponent,
           OpenOrdersDialogNavBtnComponent,
-          AdminProfileMenuNavBtnComponent
+          AdminProfileMenuNavBtnComponent,
+          ThemeSwitchWidgetComponent
         ),
         MockDirective(NzIconDirective)
       ],

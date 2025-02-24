@@ -3,7 +3,7 @@ import {
   DestroyRef, Input,
   OnInit,
 } from '@angular/core';
-import { take, combineLatest, Observable, shareReplay, BehaviorSubject } from "rxjs";
+import {take, combineLatest, Observable, shareReplay, BehaviorSubject, subscribeOn, asyncScheduler} from "rxjs";
 import { BlotterSettings } from "../../models/blotter-settings.model";
 import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
 import { ExportHelper } from "../../utils/export-helper";
@@ -17,6 +17,20 @@ import { map } from "rxjs/operators";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { AddToWatchlistMenuComponent } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import {NzSafeAny} from "ng-zorro-antd/core/types";
+import {NzTableSortOrder} from "ng-zorro-antd/table/src/table.types";
+
+export interface SortState {
+  columnId: string;
+  direction: NzTableSortOrder;
+}
+
+export interface NzTableFilterListItem {
+  text: string;
+  value: NzSafeAny;
+  byDefault?: boolean;
+}
 
 @Component({
   template: ''
@@ -34,10 +48,13 @@ implements OnInit {
 
   protected fileSuffix!: string;
 
+  abstract get restoreFiltersAndSortOnLoad(): boolean;
+
   protected constructor(
     protected readonly settingsService: WidgetSettingsService,
     protected readonly translatorService: TranslatorService,
     protected readonly nzContextMenuService: NzContextMenuService,
+    protected readonly widgetLocalStateService: WidgetLocalStateService,
     protected readonly destroyRef: DestroyRef
   ) {
     super(settingsService, destroyRef);
@@ -80,6 +97,60 @@ implements OnInit {
       });
   }
 
+  protected getSort(columnId: string, sortState: SortState | null): NzTableSortOrder {
+    if(sortState == null) {
+      return null;
+    }
+
+    if(sortState.columnId !== columnId) {
+      return null;
+    }
+
+    return sortState.direction;
+  }
+
+  protected saveFilterState(filter: F): void {
+    setTimeout(() => {
+      this.widgetLocalStateService.setStateRecord<F>(
+        this.guid,
+        this.filterStateStorageKey,
+        filter,
+        this.restoreFiltersAndSortOnLoad
+      );
+    });
+  }
+
+  protected saveSortState(columnId: string, direction: NzTableSortOrder): void {
+    this.getSortState().pipe(
+      take(1),
+      subscribeOn(asyncScheduler)
+    ).subscribe(sortState => {
+      if(sortState != null && direction == null) {
+        if(sortState.columnId != columnId) {
+          return;
+        }
+      }
+
+      this.widgetLocalStateService.setStateRecord<SortState>(
+        this.guid,
+        this.sortStateStorageKey,
+        {
+          columnId,
+          direction
+        },
+        this.restoreFiltersAndSortOnLoad
+      );
+    });
+  }
+
+  getSortState(): Observable<SortState | null> {
+    return this.widgetLocalStateService.getStateRecord<SortState>(this.guid, this.sortStateStorageKey);
+  }
+
+  protected getFiltersState(): Observable<F | null> {
+    return this.widgetLocalStateService.getStateRecord<F>(this.guid, this.filterStateStorageKey);
+  }
+
   protected abstract rowToInstrumentKey(row: T): Observable<InstrumentKey | null>;
 
   protected initContentSize(): void {
@@ -106,10 +177,17 @@ implements OnInit {
     });
   }
 
-  protected filterChange(newFilter: F): void {
-    this.filters$.next({
-      ...this.filters$.getValue(),
-      ...newFilter
+  protected filterChange(updates: Partial<F>): void {
+    this.filters$.pipe(
+      take(1)
+    ).subscribe(currentFilters => {
+      const newValue = {
+        ...currentFilters,
+        ...updates
+      };
+
+      this.filters$.next(newValue);
+      this.saveFilterState(newValue);
     });
   }
 
@@ -188,5 +266,33 @@ implements OnInit {
       return true;
     }
     return item[key]!.toString().toLowerCase().includes((value as string).toLowerCase());
+  }
+
+  protected isFilterItemApplied(
+    columnId: string,
+    filterState: F | null,
+    item: NzTableFilterListItem): boolean {
+    if(filterState == null) {
+      return false;
+    }
+
+    const filterValue = filterState[columnId as keyof F] as unknown;
+    if(Array.isArray(filterValue)) {
+      return filterValue.some(f => f === item.value);
+    }
+
+    if(typeof filterValue === 'string') {
+      return filterValue === item.value;
+    }
+
+    return false;
+  }
+
+  private get filterStateStorageKey(): string {
+   return `${this.settingsTableName}_filters`;
+  }
+
+  private get sortStateStorageKey(): string {
+    return `${this.settingsTableName}_sort`;
   }
 }

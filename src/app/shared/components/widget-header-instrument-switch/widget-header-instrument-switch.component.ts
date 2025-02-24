@@ -123,7 +123,7 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit, OnDestroy 
       take(1)
     ).subscribe(settings => {
       if (settings.linkToActive ?? false) {
-        this.actionsContext.instrumentSelected(instrument, settings.badgeColor ?? defaultBadgeColor);
+        this.actionsContext.selectInstrument(instrument, settings.badgeColor ?? defaultBadgeColor);
         return;
       }
 

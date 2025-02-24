@@ -279,7 +279,7 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
         this.widgetSettingsService.updateSettings(settings.guid, {linkToActive: false});
       }
 
-      this.actionsContext.instrumentSelected(
+      this.actionsContext.selectInstrument(
         {
           symbol: optionKey.symbol,
           exchange: optionKey.exchange

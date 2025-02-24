@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {BehaviorSubject, combineLatest, distinctUntilChanged, Observable, of} from "rxjs";
 import {PortfolioExtended} from "../../../../shared/models/user/portfolio-extended.model";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
@@ -15,6 +15,8 @@ import {TranslocoDirective} from "@jsverse/transloco";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzEmptyComponent} from "ng-zorro-antd/empty";
 import {NzSkeletonComponent} from "ng-zorro-antd/skeleton";
+import {ACTIONS_CONTEXT, ActionsContext} from "../../../../shared/services/actions-context";
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
 
 enum SortBy {
   Ticker = "ticker"
@@ -63,7 +65,9 @@ export class PositionsComponent implements OnInit, OnDestroy {
   constructor(
     private readonly dashboardContextService: DashboardContextService,
     private readonly userPortfoliosService: UserPortfoliosService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService
+    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
+    @Inject(ACTIONS_CONTEXT)
+    private readonly actionsContext: ActionsContext
   ) {
   }
 
@@ -108,6 +112,10 @@ export class PositionsComponent implements OnInit, OnDestroy {
 
   calculateDailyUnrealisedPlRatio(position: Position): number {
     return position.dailyUnrealisedPl / Math.abs(position.volume);
+  }
+
+  openChart(position: Position): void {
+    this.actionsContext.openChart(position.targetInstrument, defaultBadgeColor);
   }
 
   private getCurrentAgreementPortfolios(): Observable<PortfolioExtended[]> {

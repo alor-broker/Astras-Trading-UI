@@ -1,20 +1,19 @@
-import {
-  Injectable,
-  OnDestroy
-} from '@angular/core';
-import { ActionsContext } from "../../../shared/services/actions-context";
-import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
-import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
-import { Subject } from "rxjs";
+import {Injectable, OnDestroy} from '@angular/core';
+import {ActionsContext} from "../../../shared/services/actions-context";
+import {InstrumentKey} from "../../../shared/models/instruments/instrument-key.model";
+import {DashboardContextService} from "../../../shared/services/dashboard-context.service";
+import {Subject} from "rxjs";
 
 @Injectable()
 export class MobileActionsContextService implements ActionsContext, OnDestroy {
-  readonly actionEvents$ = new Subject<{ eventType: 'instrumentSelected' }>();
+  readonly actionEvents$ = new Subject<{
+    eventType: 'instrumentSelected' | 'openChart';
+  }>();
 
   constructor(private readonly dashboardContextService: DashboardContextService) {
   }
 
-  instrumentSelected(instrumentKey: InstrumentKey, groupKey: string): void {
+  selectInstrument(instrumentKey: InstrumentKey, groupKey: string): void {
     this.dashboardContextService.selectDashboardInstrument(instrumentKey, groupKey);
     this.actionEvents$.next({
       eventType: "instrumentSelected"
@@ -23,5 +22,12 @@ export class MobileActionsContextService implements ActionsContext, OnDestroy {
 
   ngOnDestroy(): void {
     this.actionEvents$.complete();
+  }
+
+  openChart(instrumentKey: InstrumentKey, groupKey: string): void {
+    this.dashboardContextService.selectDashboardInstrument(instrumentKey, groupKey);
+    this.actionEvents$.next({
+      eventType: "openChart"
+    });
   }
 }

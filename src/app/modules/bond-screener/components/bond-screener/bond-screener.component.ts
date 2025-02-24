@@ -558,7 +558,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     this.settings$.pipe(
       take(1)
     ).subscribe(s => {
-      this.actionsContext.instrumentSelected(instrument, s.badgeColor ?? defaultBadgeColor);
+      this.actionsContext.selectInstrument(instrument, s.badgeColor ?? defaultBadgeColor);
     });
   }
 

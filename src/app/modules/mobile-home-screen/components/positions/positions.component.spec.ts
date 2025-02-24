@@ -7,6 +7,7 @@ import {EMPTY} from "rxjs";
 import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {ACTIONS_CONTEXT} from "../../../../shared/services/actions-context";
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
@@ -36,7 +37,14 @@ describe('PositionsComponent', () => {
           {
             getAllPositionsSubscription: () => EMPTY
           }
-        )
+        ),
+        MockProvider(
+          ACTIONS_CONTEXT,
+          {
+            selectInstrument: jasmine.createSpy('selectInstrument').and.callThrough(),
+            openChart: jasmine.createSpy('selectInstrument').and.callThrough(),
+          }
+        ),
       ]
     })
     .compileComponents();

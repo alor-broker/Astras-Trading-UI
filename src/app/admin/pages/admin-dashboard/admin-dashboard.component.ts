@@ -55,7 +55,11 @@ export class AdminDashboardComponent implements OnInit, ActionsContext {
     });
   }
 
-  instrumentSelected(instrumentKey: InstrumentKey, groupKey: string): void {
+  selectInstrument(instrumentKey: InstrumentKey, groupKey: string): void {
     this.dashboardContextService.selectDashboardInstrument(instrumentKey, groupKey);
+  }
+
+  openChart(): void {
+    return;
   }
 }
