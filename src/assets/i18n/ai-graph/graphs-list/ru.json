@@ -1,0 +1,6 @@
+﻿{
+  "emptyListMessage": "Нет текущих графов",
+  "newGraphTitlePlaceholder": "Название графа",
+  "newGraphTitleTemplate": "Граф {{number}}",
+  "removeItemConfirmTitle": "Удалить граф?"
+}

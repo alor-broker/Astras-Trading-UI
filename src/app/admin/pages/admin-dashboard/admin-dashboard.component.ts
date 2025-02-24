@@ -12,6 +12,7 @@ import {
   WatchlistCollectionBrokerService
 } from "../../../modules/instruments/services/watchlist-collection-broker.service";
 import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instruments/widgets/instrument-select-dialog-widget/instrument-select-dialog-widget.component";
+import {GraphStorageService} from "../../../modules/ai-graph/services/graph-storage.service";
 
 @Component({
   selector: 'ats-admin-dashboard',
@@ -39,7 +40,8 @@ export class AdminDashboardComponent implements OnInit, ActionsContext {
   constructor(
     private readonly adminSettingsBrokerService: AdminSettingsBrokerService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly watchlistCollectionBrokerService: WatchlistCollectionBrokerService
+    private readonly watchlistCollectionBrokerService: WatchlistCollectionBrokerService,
+    private readonly graphStorageService: GraphStorageService
   ) {
   }
 
@@ -47,6 +49,9 @@ export class AdminDashboardComponent implements OnInit, ActionsContext {
     this.adminSettingsBrokerService.initSettingsBrokers();
     this.watchlistCollectionBrokerService.setConfig({
       enableStore: false
+    });
+    this.graphStorageService.setConfig({
+      storageType: 'local'
     });
   }
 

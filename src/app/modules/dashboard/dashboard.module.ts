@@ -42,6 +42,7 @@ import { RouterLink } from "@angular/router";
 import {DashboardsPanelComponent} from "../../client/components/dashboards-panel/dashboards-panel.component";
 import {NetworkIndicatorComponent} from "./components/network-indicator/network-indicator.component";
 import { MobileHomeScreenWidgetComponent } from "../mobile-home-screen/widgets/mobile-home-screen-widget/mobile-home-screen-widget.component";
+import {AiGraphsWidgetComponent} from "../ai-graph/widgets/ai-graphs-widget/ai-graphs-widget.component";
 
 @NgModule({
   declarations: [
@@ -90,6 +91,7 @@ import { MobileHomeScreenWidgetComponent } from "../mobile-home-screen/widgets/m
         DashboardsPanelComponent,
         NetworkIndicatorComponent,
         MobileHomeScreenWidgetComponent,
+        AiGraphsWidgetComponent,
     ],
   exports: [
     DashboardComponent,

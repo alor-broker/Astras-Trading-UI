@@ -26,6 +26,7 @@
     "@angular/router": "^18.1.0",
     "@angular/service-worker": "^18.1.0",
     "@apollo/client": "^3.11.4",
+    "@comfyorg/litegraph": "^0.8.87",
     "@jsverse/transloco": "^7.4.0",
     "@ngrx/component": "^18.0.0",
     "@ngrx/component-store": "^18.0.0",

@@ -9,6 +9,7 @@ import {
   WatchlistCollectionBrokerService
 } from "../../../modules/instruments/services/watchlist-collection-broker.service";
 import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instruments/widgets/instrument-select-dialog-widget/instrument-select-dialog-widget.component";
+import {GraphStorageService} from "../../../modules/ai-graph/services/graph-storage.service";
 
 describe('AdminDashboardComponent', () => {
   let component: AdminDashboardComponent;
@@ -26,7 +27,8 @@ describe('AdminDashboardComponent', () => {
       providers: [
         MockProvider(AdminSettingsBrokerService),
         MockProvider(DashboardContextService),
-        MockProvider(WatchlistCollectionBrokerService)
+        MockProvider(WatchlistCollectionBrokerService),
+        MockProvider(GraphStorageService),
       ]
     })
       .compileComponents();

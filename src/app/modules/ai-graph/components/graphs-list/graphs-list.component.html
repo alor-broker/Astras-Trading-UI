@@ -1,0 +1,74 @@
+<ng-container *transloco="let t; scope: 'ai-graph/graphs-list'">
+  <ng-container *ngrxLet="{graphs: $graphs} as vm">
+    <div class="h-100 d-flex flex-column">
+      <div class="flex-fill show-scroll">
+        <nz-spin [nzSpinning]="isLoading">
+          <div class="container">
+            @for (graph of vm.graphs; track graph.id) {
+              <div class="item">
+                <div class="overflow-hidden">
+                  {{ graph.title }}
+                </div>
+                <div class="d-flex flex-row flex-nowrap flex-gap-5">
+                  <button
+                    nz-button
+                    nzSize="small"
+                    nzDanger
+                    nzType="text"
+                    nz-popconfirm
+                    [nzPopconfirmTitle]="t('aiGraphGraphsList.removeItemConfirmTitle')"
+                    [nzCancelText]="t('no')"
+                    [nzOkText]="t('yes')"
+                    (nzOnConfirm)="remove(graph.id)"
+                    nzPopconfirmPlacement="left"
+                  >
+                    <span nz-icon nzType="delete" nzTheme="outline"></span>
+                  </button>
+
+                  <button
+                    nz-button
+                    nzSize="small"
+                    nzType="text"
+                    (click)="editGraph.emit(graph.id)"
+                  >
+                    <span nz-icon nzType="edit" nzTheme="outline"></span>
+                  </button>
+
+                  <button nz-button nzSize="small" nzType="text" [disabled]="graph.config == null">
+                    <span nz-icon nzType="play-circle" nzTheme="outline"></span>
+                  </button>
+                </div>
+              </div>
+            } @empty {
+              <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="t('aiGraphGraphsList.emptyListMessage')"></nz-empty>
+            }
+          </div>
+        </nz-spin>
+      </div>
+      <div class="mt-10">
+        <form nz-form>
+          <nz-form-control
+            [nzErrorTip]="t('validationErrors.stringInputLength', {min: 1, max: validationOptions.graphTitle.max}) ">
+            <nz-input-group [nzAddOnAfter]="suffixButton" nzSearch>
+              <input [formControl]="newGraphTitleControl"
+                     [placeholder]="t('aiGraphGraphsList.newGraphTitlePlaceholder')" nz-input
+                     type="text"/>
+              <ng-template #suffixButton>
+                <button
+                  (click)="addGraph(); $event.preventDefault()"
+                  [disabled]="newGraphTitleControl.invalid"
+                  nz-button
+                  nzSearch
+                  nzType="primary"
+                >
+                  <span nz-icon nzTheme="outline" nzType="plus"></span>
+                </button>
+              </ng-template>
+            </nz-input-group>
+          </nz-form-control>
+        </form>
+      </div>
+    </div>
+  </ng-container>
+
+</ng-container>

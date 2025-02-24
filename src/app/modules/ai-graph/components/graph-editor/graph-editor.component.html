@@ -1,0 +1,9 @@
+<div
+  (nzResizeObserve)="containerSizeChanged($event)"
+  class="h-100 w-100"
+  nzResizeObserver>
+  <ng-container *ngrxLet="{containerSize: containerSize$} as vm">
+    <canvas #canvas [height]="vm.containerSize.height" [width]="vm.containerSize.width"></canvas>
+  </ng-container>
+</div>
+

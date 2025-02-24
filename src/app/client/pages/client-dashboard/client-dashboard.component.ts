@@ -30,6 +30,7 @@ import {
 import { EXPORT_SETTINGS_SERVICE_TOKEN } from "../../../shared/services/settings/export-settings.service";
 import { ExportDesktopSettingsService } from "../../../shared/services/settings/export-desktop-settings.service";
 import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instruments/widgets/instrument-select-dialog-widget/instrument-select-dialog-widget.component";
+import {GraphStorageService} from "../../../modules/ai-graph/services/graph-storage.service";
 
 @Component({
   selector: 'ats-client-dashboard',
@@ -71,13 +72,17 @@ export class ClientDashboardComponent implements OnInit, ActionsContext {
     private readonly router: Router,
     private readonly desktopSettingsBrokerService: DesktopSettingsBrokerService,
     private readonly dashboardContextService: DashboardContextService,
-    private readonly watchlistCollectionBrokerService: WatchlistCollectionBrokerService
+    private readonly watchlistCollectionBrokerService: WatchlistCollectionBrokerService,
+    private readonly graphStorageService: GraphStorageService
   ) {
   }
 
   ngOnInit(): void {
     this.watchlistCollectionBrokerService.setConfig({
       enableStore: true
+    });
+    this.graphStorageService.setConfig({
+      storageType: 'local'
     });
 
     this.deviceService.deviceInfo$
