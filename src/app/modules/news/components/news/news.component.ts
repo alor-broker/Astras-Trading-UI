@@ -7,10 +7,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import { NewsService } from "../../services/news.service";
-import { ModalService } from "../../../../shared/services/modal.service";
 import {
-  NewsListItem,
   NewsSection
 } from "../../models/news.model";
 import {
@@ -43,6 +40,7 @@ import { TableConfig } from "../../../../shared/models/table-config.model";
 import {
   LazyLoadingBaseTableComponent
 } from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
+import {NewsListItem, NewsService} from "../../../../shared/services/news.service";
 
 interface NewsFilter {
   symbols?: string[];
@@ -72,7 +70,6 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
 
   constructor(
     private readonly newsService: NewsService,
-    private readonly modalService: ModalService,
     private readonly translatorService: TranslatorService,
     protected readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,

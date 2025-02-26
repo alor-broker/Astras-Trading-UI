@@ -1,4 +1,6 @@
-﻿export type SlotType = number | string;
+﻿import { RenderShape } from "@comfyorg/litegraph/dist/types/globalEnums";
+
+export type SlotType = number | string;
 export type LinkId = number;
 export type NodeId = string;
 export type Point = [x: number, y: number] | Float32Array | Float64Array;
@@ -17,6 +19,13 @@ export interface ItemConfig<TB, TE> {
 export interface NodeSlotConfig {
   name: string;
   type: SlotType;
+  editorOptions: {
+    label?: string;
+    localized_name?: string;
+    nameLocked?: boolean;
+    removable?: boolean;
+    shape?: RenderShape;
+  };
 }
 
 export interface InputSlotConfig extends NodeSlotConfig {
@@ -35,7 +44,11 @@ export interface NodeBaseConfig {
   properties: Record<string, unknown>;
 }
 
-export type NodeConfig = ItemConfig<NodeBaseConfig, BaseEditorOptions>;
+export interface NodeEditorOptions extends BaseEditorOptions {
+  title?: string;
+}
+
+export type NodeConfig = ItemConfig<NodeBaseConfig, NodeEditorOptions>;
 
 export interface GraphConfigEditorOptions {
   state: {
@@ -46,9 +59,19 @@ export interface GraphConfigEditorOptions {
   };
 }
 
+export interface LinkConfig {
+  linkId: LinkId;
+  originId: NodeId;
+  originSlotIndex: number;
+  targetId: NodeId;
+  targetSlotIndex: number;
+  type: SlotType;
+}
+
 export interface GraphConfig {
   nodes: NodeConfig[];
   editorOptions: GraphConfigEditorOptions;
+  links: LinkConfig[];
 }
 
 export interface Graph {

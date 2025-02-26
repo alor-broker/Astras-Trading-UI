@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GraphEditorComponent } from './graph-editor.component';
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponent} from "ng-mocks";
+import {GraphRunnerPanelComponent} from "../graph-runner-panel/graph-runner-panel.component";
 
 describe('GraphEditorComponent', () => {
   let component: GraphEditorComponent;
@@ -11,7 +13,8 @@ describe('GraphEditorComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         GraphEditorComponent,
-        TranslocoTestsModule.getModule()
+        TranslocoTestsModule.getModule(),
+        MockComponent(GraphRunnerPanelComponent)
       ]
     })
     .compileComponents();

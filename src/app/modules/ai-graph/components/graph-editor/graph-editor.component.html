@@ -1,9 +1,17 @@
-<div
-  (nzResizeObserve)="containerSizeChanged($event)"
-  class="h-100 w-100"
-  nzResizeObserver>
-  <ng-container *ngrxLet="{containerSize: containerSize$} as vm">
-    <canvas #canvas [height]="vm.containerSize.height" [width]="vm.containerSize.width"></canvas>
-  </ng-container>
+<div class="h-100 d-flex flex-row flex-nowrap">
+  <div
+    (nzResizeObserve)="containerSizeChanged($event)"
+    class="h-100 flex-fill overflow-hidden"
+    nzResizeObserver>
+    <ng-container *ngrxLet="{containerSize: containerSize$} as vm">
+      <canvas #canvas [height]="vm.containerSize.height" [width]="vm.containerSize.width"></canvas>
+    </ng-container>
+  </div>
+
+  <div class="pl-5">
+    <ats-graph-runner-panel [config]="currentConfig"></ats-graph-runner-panel>
+  </div>
 </div>
+
+
 

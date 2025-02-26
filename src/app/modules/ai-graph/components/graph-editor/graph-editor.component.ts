@@ -1,6 +1,5 @@
 import {
   AfterViewInit,
-  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
@@ -12,27 +11,26 @@ import {
 import {GraphConfig} from "../../models/graph.model";
 import {IContextMenuValue, LGraph, LGraphCanvas, LGraphNode, LiteGraph} from '@comfyorg/litegraph';
 import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
-import {BehaviorSubject, take} from "rxjs";
+import {asyncScheduler, BehaviorSubject, subscribeOn, take} from "rxjs";
 import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {LetDirective} from "@ngrx/component";
 import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
 import {IContextMenuOptions} from "@comfyorg/litegraph/dist/interfaces";
-import "../../editor/nodes/news-source-node";
-import "../../editor/nodes/const-symbol-node";
 import {NodesRegister} from "../../editor/nodes/nodes-register";
 import {SerialisableGraph} from "@comfyorg/litegraph/dist/types/serialisation";
 import {LiteGraphModelsConverter} from "../../editor/lite-graph-models-converter";
+import {GraphRunnerPanelComponent} from "../graph-runner-panel/graph-runner-panel.component";
 
 @Component({
   selector: 'ats-graph-editor',
   standalone: true,
   imports: [
     NzResizeObserverDirective,
-    LetDirective
+    LetDirective,
+    GraphRunnerPanelComponent
   ],
   templateUrl: './graph-editor.component.html',
-  styleUrl: './graph-editor.component.less',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './graph-editor.component.less'
 })
 export class GraphEditorComponent implements AfterViewInit, OnDestroy {
   @Input()
@@ -45,6 +43,7 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
   canvas?: ElementRef<HTMLCanvasElement>;
 
   protected containerSize$ = new BehaviorSubject<ContentSize>({height: 1, width: 1});
+  protected currentConfig: GraphConfig | null = null;
   private graphCanvas?: LGraphCanvas;
 
   constructor(private readonly translatorService: TranslatorService) {
@@ -60,7 +59,8 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.translatorService.getTranslator('ai-graph/graph-editor').pipe(
-      take(1)
+      take(1),
+      subscribeOn(asyncScheduler)
     ).subscribe(translator => {
       this.initLiteGraph(translator);
     });
@@ -107,8 +107,10 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
       graph.configure(this.fromConfig(this.initialConfig), false);
     }
 
+    this.currentConfig = this.toConfig(graph.asSerialisable());
     graph.onAfterChange = (updated): void => {
-      this.updateConfig.emit(this.toConfig(updated.asSerialisable()));
+      this.currentConfig = this.toConfig(updated.asSerialisable());
+      this.updateConfig.emit(this.currentConfig);
     };
   }
 

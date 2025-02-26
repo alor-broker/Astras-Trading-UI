@@ -1,9 +1,11 @@
-﻿import {INodeInputSlot, INodeOutputSlot, INodeSlot, SerialisableGraph} from "@comfyorg/litegraph";
+﻿import {INodeInputSlot, INodeOutputSlot, INodeSlot, SerialisableGraph, SerialisableLLink} from "@comfyorg/litegraph";
 import {
   GraphConfig,
   InputSlotConfig,
+  LinkConfig,
   NodeBaseConfig,
   NodeConfig,
+  NodeId,
   NodeSlotConfig,
   OutputSlotConfig
 } from "../models/graph.model";
@@ -12,9 +14,11 @@ import {ISerialisedNode} from "@comfyorg/litegraph/dist/types/serialisation";
 export class LiteGraphModelsConverter {
   static toGraphConfig(liteGraphConfig: SerialisableGraph): GraphConfig {
     const nodes = (liteGraphConfig.nodes ?? []).map(node => this.toNodeConfig(node));
+    const links = (liteGraphConfig.links ?? []).map(link => this.toLinkConfig(link));
 
     return {
       nodes,
+      links,
       editorOptions: {
         state: {
           ...liteGraphConfig.state
@@ -25,6 +29,7 @@ export class LiteGraphModelsConverter {
 
   static toSerialisableGraph(config: GraphConfig): SerialisableGraph {
     const nodes = config.nodes.map(node => this.toSerialisedNode(node));
+    const links = config.links.map(link => this.toSerialisableLink(link));
 
     return {
       version: 1,
@@ -32,7 +37,8 @@ export class LiteGraphModelsConverter {
       state: {
         ...config.editorOptions.state
       },
-      nodes
+      nodes,
+      links
     };
   }
 
@@ -48,6 +54,7 @@ export class LiteGraphModelsConverter {
     return {
       baseOptions,
       editorOptions: {
+        title: node.title,
         pos: node.pos,
         size: node.size,
       }
@@ -72,6 +79,24 @@ export class LiteGraphModelsConverter {
     return {
       name: slot.name,
       type: slot.type!,
+      editorOptions: {
+        label: slot.label,
+        localized_name: slot.localized_name,
+        nameLocked: slot.nameLocked,
+        removable: slot.removable,
+        shape: slot.shape
+      }
+    };
+  }
+
+  private static toLinkConfig(link: SerialisableLLink): LinkConfig {
+    return {
+      linkId: link.id,
+      originId: link.origin_id as NodeId,
+      originSlotIndex: link.origin_slot,
+      targetId: link.target_id as NodeId,
+      targetSlotIndex: link.target_slot,
+      type: link.type
     };
   }
 
@@ -97,8 +122,9 @@ export class LiteGraphModelsConverter {
 
   private static toNodeOutputSlot(outputSlot: OutputSlotConfig): INodeOutputSlot {
     return {
-      ...this.toNodeSlotConfig(outputSlot),
-      links: (outputSlot.links ?? []).map(link => link)
+      ...this.toNodeSlot(outputSlot),
+      links: (outputSlot.links ?? []).map(link => link),
+      _layoutElement: undefined
     };
   }
 
@@ -106,6 +132,18 @@ export class LiteGraphModelsConverter {
     return {
       name: slot.name,
       type: slot.type!,
+      ...slot.editorOptions
+    };
+  }
+
+  private static toSerialisableLink(link: LinkConfig): SerialisableLLink {
+    return {
+      id: link.linkId,
+      origin_id: link.originId,
+      origin_slot: link.originSlotIndex,
+      target_id: link.targetId,
+      target_slot: link.targetSlotIndex,
+      type: link.type
     };
   }
 }
