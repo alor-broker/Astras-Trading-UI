@@ -1,7 +1,7 @@
 ﻿import {INodeInputSlot, LGraphNode} from "@comfyorg/litegraph";
 import {Observable, of} from "rxjs";
 import {INodeOutputSlot, ISlotType} from "@comfyorg/litegraph/dist/interfaces";
-import {NodeSlotOptions, OutputFormat} from "./models";
+import {NodeSlotOptions, OutputDataObject, OutputFormat} from "./models";
 import {GraphProcessingContextService} from "../../services/graph-processing-context.service";
 
 export class NodeBase extends LGraphNode {
@@ -58,10 +58,13 @@ export class NodeBase extends LGraphNode {
     );
   }
 
-  setOutputByName(outputName: string, data: unknown): void {
+  setOutputByName(outputName: string, data: number | string | boolean | OutputDataObject): void {
     const outputIndex = this.findOutputSlot(outputName);
     if (outputIndex >= 0) {
-      this.setOutputData(outputIndex, data);
+      this.setOutputData(
+        outputIndex,
+        data
+      );
     }
   }
 
