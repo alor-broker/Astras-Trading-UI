@@ -1,4 +1,4 @@
-﻿import {INodeInputSlot, INodeOutputSlot, INodeSlot, SerialisableGraph, SerialisableLLink} from "@comfyorg/litegraph";
+﻿import {INodeSlot, SerialisableGraph, SerialisableLLink} from "@comfyorg/litegraph";
 import {
   GraphConfig,
   InputSlotConfig,
@@ -9,7 +9,11 @@ import {
   NodeSlotConfig,
   OutputSlotConfig
 } from "../models/graph.model";
-import {ISerialisedNode} from "@comfyorg/litegraph/dist/types/serialisation";
+import {
+  ISerialisedNode,
+  ISerialisedNodeInputSlot,
+  ISerialisedNodeOutputSlot
+} from "@comfyorg/litegraph/dist/types/serialisation";
 
 export class LiteGraphModelsConverter {
   static toGraphConfig(liteGraphConfig: SerialisableGraph): GraphConfig {
@@ -61,14 +65,14 @@ export class LiteGraphModelsConverter {
     };
   }
 
-  private static toInputSlotConfig(inputSlot: INodeInputSlot): InputSlotConfig {
+  private static toInputSlotConfig(inputSlot: ISerialisedNodeInputSlot): InputSlotConfig {
     return {
       ...this.toNodeSlotConfig(inputSlot),
       linkId: inputSlot.link
     };
   }
 
-  private static toOutputSlotConfig(outputSlot: INodeOutputSlot): OutputSlotConfig {
+  private static toOutputSlotConfig(outputSlot: ISerialisedNodeOutputSlot): OutputSlotConfig {
     return {
       ...this.toNodeSlotConfig(outputSlot),
       links: (outputSlot.links ?? []).map(link => link)
@@ -112,19 +116,17 @@ export class LiteGraphModelsConverter {
     };
   }
 
-  private static toNodeInputSlot(inputSlot: InputSlotConfig): INodeInputSlot {
+  private static toNodeInputSlot(inputSlot: InputSlotConfig): ISerialisedNodeInputSlot {
     return {
       ...this.toNodeSlot(inputSlot),
-      link: inputSlot.linkId,
-      _layoutElement: undefined
+      link: inputSlot.linkId
     };
   }
 
-  private static toNodeOutputSlot(outputSlot: OutputSlotConfig): INodeOutputSlot {
+  private static toNodeOutputSlot(outputSlot: OutputSlotConfig): ISerialisedNodeOutputSlot {
     return {
       ...this.toNodeSlot(outputSlot),
       links: (outputSlot.links ?? []).map(link => link),
-      _layoutElement: undefined
     };
   }
 

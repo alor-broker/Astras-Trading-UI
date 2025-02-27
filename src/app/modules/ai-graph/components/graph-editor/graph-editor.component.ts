@@ -9,7 +9,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {GraphConfig} from "../../models/graph.model";
-import {IContextMenuValue, LGraph, LGraphCanvas, LGraphNode, LiteGraph} from '@comfyorg/litegraph';
+import {IContextMenuValue, LGraphCanvas, LGraphNode, LiteGraph} from '@comfyorg/litegraph';
 import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
 import {asyncScheduler, BehaviorSubject, subscribeOn, take} from "rxjs";
 import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
@@ -20,6 +20,8 @@ import {NodesRegister} from "../../editor/nodes/nodes-register";
 import {SerialisableGraph} from "@comfyorg/litegraph/dist/types/serialisation";
 import {LiteGraphModelsConverter} from "../../editor/lite-graph-models-converter";
 import {GraphRunnerPanelComponent} from "../graph-runner-panel/graph-runner-panel.component";
+import {AtsGraphCanvas} from "../../editor/graph-canvas";
+import {Graph} from "../../editor/graph";
 
 @Component({
   selector: 'ats-graph-editor',
@@ -86,8 +88,8 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
     LiteGraph.use_uuids = true;
     NodesRegister.fillLGraphRegistration();
 
-    const graph = new LGraph();
-    this.graphCanvas = new LGraphCanvas(this.canvas.nativeElement!, graph);
+    const graph = new Graph();
+    this.graphCanvas = new AtsGraphCanvas(this.canvas.nativeElement!, graph);
     this.graphCanvas.show_info = false;
 
     this.graphCanvas.getMenuOptions = (): IContextMenuValue[] => {
@@ -95,7 +97,7 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
         {
           content: translator(['canvasMenu', 'addNode']),
           callback: (value, options1, event, previousMenu): boolean => {
-            return LGraphCanvas.onMenuAdd(null as unknown as LGraphNode, options1 as IContextMenuOptions, event as MouseEvent, previousMenu!);
+            return AtsGraphCanvas.onMenuAdd(null as unknown as LGraphNode, options1 as IContextMenuOptions, event as MouseEvent, previousMenu!);
           }
         }
       ];
