@@ -61,6 +61,7 @@ export class LiteGraphModelsConverter {
         title: node.title,
         pos: node.pos,
         size: node.size,
+        flags: node.flags
       }
     };
   }

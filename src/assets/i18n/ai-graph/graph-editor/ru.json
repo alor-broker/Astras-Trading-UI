@@ -1,5 +1,81 @@
 ﻿{
-  "canvasMenu": {
-    "addNode": "Добавить блок"
+  "nodes": {
+    "const-symbol": {
+      "title": "Инструмент"
+    },
+    "news": {
+      "title": "Новости"
+    },
+    "request-to-ai": {
+      "title": "Запрос к ИИ"
+    },
+    "markdown-output": {
+      "title": "Текст"
+    }
+  },
+
+  "categories": {
+    "base": "Базовые",
+    "instrument-selection": "Выбор инструмента",
+    "info-sources": "Инфо. источники",
+    "ai": "ИИ",
+    "output": "Вывод"
+  },
+
+  "slots": {
+    "symbol": {
+      "name": "Тикер"
+    },
+    "exchange": {
+      "name": "Биржа"
+    },
+    "instrument": {
+      "name": "Инструмент"
+    },
+    "recordsCount": {
+      "name": "Число записей"
+    },
+    "news": {
+      "name": "Новости"
+    },
+    "prompt": {
+      "name": "Запрос"
+    },
+    "in": {
+      "name": "Вх."
+    },
+    "out": {
+      "name": "Вых."
+    }
+  },
+
+  "labels": {
+    "properties": "Свойства",
+    "resize": "Подогнать размер",
+    "expand": "Развернуть",
+    "collapse": "Свернуть",
+    "pin": "Закрепить",
+    "unpin": "Открепить",
+    "alignTo": "Выровнять по",
+    "distribute": "Распределить",
+    "clone": "Копировать",
+    "remove": "Удалить",
+    "addNode": "Добавить блок",
+    "categories": "Категории",
+    "blocks": "Блоки",
+    "disconnectLinks": "Удалить связи",
+    "rename": "Переименовать"
+  },
+
+  "alignSideOptions": {
+    "top": "Верх",
+    "bottom": "Низ",
+    "left": "Лево",
+    "right": "Право"
+  },
+
+  "distributeOptions": {
+    "vertically": "Вертикально",
+    "horizontally": "Горизонтально"
   }
 }

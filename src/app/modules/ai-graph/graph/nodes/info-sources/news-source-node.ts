@@ -23,7 +23,6 @@ export class NewsSourceNode extends NodeBase {
       this.inputSlotName,
       SlotType.InstrumentKey,
       {
-        label: "instrument",
         nameLocked: true,
         removable: false
       }
@@ -33,7 +32,7 @@ export class NewsSourceNode extends NodeBase {
       this.outputSlotName,
       SlotType.String,
       {
-        label: "news"
+        removable: false
       }
     );
   }
@@ -42,7 +41,7 @@ export class NewsSourceNode extends NodeBase {
     return 'news';
   }
 
-  static get nodeCategory(): string {
+  static get nodeCategory(): NodeCategories {
     return NodeCategories.InfoSources;
   }
 

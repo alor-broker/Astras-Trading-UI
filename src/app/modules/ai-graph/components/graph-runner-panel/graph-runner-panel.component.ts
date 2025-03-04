@@ -2,11 +2,11 @@ import {ChangeDetectorRef, Component, Input} from '@angular/core';
 import {GraphConfig} from "../../models/graph.model";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzIconDirective} from "ng-zorro-antd/icon";
-import {LiteGraphRunner} from "../../editor/lite-graph-runner";
 import {toArray} from "rxjs";
 import {GraphProcessingContextService} from "../../services/graph-processing-context.service";
-import {OutputFormat} from "../../editor/nodes/models";
 import {MarkdownComponent} from "ngx-markdown";
+import { LiteGraphRunner } from '../../graph/lite-graph-runner';
+import {OutputFormat} from "../../graph/nodes/models";
 
 interface GraphResult {
   format: OutputFormat;

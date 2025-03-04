@@ -4,8 +4,10 @@ import {NodeBase} from "../node-base";
 import {SlotType} from "../../slot-types";
 import {NodeCategories} from "../node-categories";
 import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
+import {INodeInputSlot} from "@comfyorg/litegraph";
 
 export class RequestToAiNode extends NodeBase {
+  private readonly inputSlotPrefix = 'in';
   readonly outputSlotName = 'out';
   readonly promptPropertyName = 'prompt';
 
@@ -23,10 +25,9 @@ export class RequestToAiNode extends NodeBase {
 
     for (let i = 1; i <= 5; i++) {
       this.addInput(
-        `in${i}`,
+        `${this.inputSlotPrefix}${i}`,
         SlotType.String,
         {
-          label: `in${i}`,
           removable: true,
           nameLocked: false
         });
@@ -36,7 +37,6 @@ export class RequestToAiNode extends NodeBase {
       this.outputSlotName,
       SlotType.String,
       {
-        label: this.outputSlotName,
         removable: false,
         nameLocked: true
       }
@@ -47,7 +47,7 @@ export class RequestToAiNode extends NodeBase {
     return 'request-to-ai';
   }
 
-  static get nodeCategory(): string {
+  static get nodeCategory(): NodeCategories {
     return NodeCategories.AI;
   }
 
@@ -75,6 +75,10 @@ export class RequestToAiNode extends NodeBase {
         );
       })
     );
+  }
+
+  getInputSlotLocalizedLabel?(input: INodeInputSlot): string {
+    return input.name;
   }
 
   private preparePrompt(): string | null {

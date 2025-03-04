@@ -46,6 +46,13 @@ export interface NodeBaseConfig {
 
 export interface NodeEditorOptions extends BaseEditorOptions {
   title?: string;
+  flags?: {
+    skip_repeated_outputs?: boolean;
+    allow_interaction?: boolean;
+    pinned?: boolean;
+    collapsed?: boolean;
+    keepAllLinksOnBypass?: boolean;
+  };
 }
 
 export type NodeConfig = ItemConfig<NodeBaseConfig, NodeEditorOptions>;

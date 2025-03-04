@@ -35,7 +35,6 @@ export class ConstSymbolNode extends NodeBase {
       this.outputSlotName,
       SlotType.InstrumentKey,
       {
-        label: "instrument",
         nameLocked: true,
         removable: false
       }
@@ -46,7 +45,7 @@ export class ConstSymbolNode extends NodeBase {
     return 'const-symbol';
   }
 
-  static get nodeCategory(): string {
+  static get nodeCategory(): NodeCategories {
     return NodeCategories.InstrumentSelection;
   }
 

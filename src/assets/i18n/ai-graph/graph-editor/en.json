@@ -1,5 +1,22 @@
 ﻿{
   "canvasMenu": {
     "addNode": "Add block"
+  },
+
+  "nodes": {
+    "nodes": {
+      "const-symbol": {
+        "title": "Instrument"
+      },
+      "news": {
+        "title": "News"
+      },
+      "request-to-ai": {
+        "title": "AI request"
+      },
+      "markdown-output": {
+        "title": "Text"
+      }
+    }
   }
 }

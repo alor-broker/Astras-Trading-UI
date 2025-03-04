@@ -4,7 +4,7 @@
 }
 
 export enum SlotType {
-  InstrumentKey = "instrumentKey",
+  InstrumentKey = "instrument_key",
   Number = "number",
   String = "string",
   Array = "array",

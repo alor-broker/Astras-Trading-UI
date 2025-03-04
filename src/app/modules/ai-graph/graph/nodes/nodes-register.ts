@@ -4,6 +4,7 @@ import {LiteGraph} from "@comfyorg/litegraph";
 import {NewsSourceNode} from "./info-sources/news-source-node";
 import {RequestToAiNode} from "./ai/request-to-ai-node";
 import {MarkdownOutputNode} from "./output/markdown-output-node";
+import {NodeCategories} from "./node-categories";
 
 interface NodeRegistration {
   type: string;
@@ -24,6 +25,10 @@ export class NodesRegister {
         node.class
       );
     });
+  }
+
+  static getRegistrationsForCategory(category: NodeCategories): NodeRegistration[] {
+    return this.nodes.filter(node => node.class.nodeCategory === category);
   }
 }
 

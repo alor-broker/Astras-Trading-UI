@@ -1,16 +1,20 @@
-﻿import {INodeInputSlot, LGraphNode} from "@comfyorg/litegraph";
+﻿import {IFoundSlot, INodeInputSlot, LGraphNode} from "@comfyorg/litegraph";
 import {Observable, of} from "rxjs";
 import {INodeOutputSlot, ISlotType} from "@comfyorg/litegraph/dist/interfaces";
-import {NodeSlotOptions, OutputDataObject, OutputFormat} from "./models";
+import {ContextMenu, NodeSlotOptions, OutputDataObject, OutputFormat} from "./models";
 import {GraphProcessingContextService} from "../../services/graph-processing-context.service";
+import {TranslatorFn} from "../../../../shared/services/translator.service";
+import {NodeMenuBuilder} from "../menu/node-menu-builder";
+import {NodeCategories} from "./node-categories";
+import {SlotMenuBuilder} from "../menu/slot-menu-builder";
 
 export class NodeBase extends LGraphNode {
   static get nodeId(): string {
     return "node-base";
   }
 
-  static get nodeCategory(): string {
-    return "base-category";
+  static get nodeCategory(): NodeCategories {
+    return NodeCategories.Base;
   }
 
   static get title(): string {
@@ -23,6 +27,10 @@ export class NodeBase extends LGraphNode {
 
   get outputFormat(): OutputFormat | null {
     return null;
+  }
+
+  get hasPropertiesPanel(): boolean {
+    return true;
   }
 
   onExecute(): void {
@@ -81,5 +89,19 @@ export class NodeBase extends LGraphNode {
     const linkId = this.inputs[slot].link;
 
     return this.graph?.links.get(linkId)?.data ?? null;
+  }
+
+  getInputSlotLocalizedLabel?(input: INodeInputSlot, translator: TranslatorFn): string;
+
+  getOutputSlotLocalizedLabel?(output: INodeOutputSlot, translator: TranslatorFn): string;
+
+  getPropertyLocalizedLabel?(name: string, translator: TranslatorFn): string;
+
+  getNodeMenu(translator: TranslatorFn): ContextMenu {
+    return NodeMenuBuilder.getMenu(this, translator);
+  }
+
+  getSlotMenu(targetSlot: IFoundSlot, translator: TranslatorFn): ContextMenu {
+    return SlotMenuBuilder.getMenu(this, targetSlot, translator);
   }
 }

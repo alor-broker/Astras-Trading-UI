@@ -13,7 +13,6 @@ export class MarkdownOutputNode extends NodeBase {
       "in",
       SlotType.String,
       {
-        label: "in",
         removable: false,
         nameLocked: true
       }
@@ -24,7 +23,7 @@ export class MarkdownOutputNode extends NodeBase {
     return 'markdown-output';
   }
 
-  static get nodeCategory(): string {
+  static get nodeCategory(): NodeCategories {
     return NodeCategories.Output;
   }
 
