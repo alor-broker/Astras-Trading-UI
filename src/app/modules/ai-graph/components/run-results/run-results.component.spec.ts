@@ -1,25 +1,22 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {GraphEditorComponent} from './graph-editor.component';
+import {RunResultsComponent} from './run-results.component';
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
-import {MockComponent} from "ng-mocks";
-import {SideMenuComponent} from "../side-menu/side-menu.component";
 
-describe('GraphEditorComponent', () => {
-  let component: GraphEditorComponent;
-  let fixture: ComponentFixture<GraphEditorComponent>;
+describe('RunResultsComponent', () => {
+  let component: RunResultsComponent;
+  let fixture: ComponentFixture<RunResultsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        GraphEditorComponent,
+        RunResultsComponent,
         TranslocoTestsModule.getModule(),
-        MockComponent(SideMenuComponent)
       ]
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(GraphEditorComponent);
+    fixture = TestBed.createComponent(RunResultsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

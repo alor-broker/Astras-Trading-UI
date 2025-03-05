@@ -1,0 +1,6 @@
+﻿{
+  "runGraphMessage": "Запустите граф",
+  "noResultsToDisplayMessage": "Нет результатов для отображения",
+  "graphRunErrorMessage": "Не удалось запустить граф",
+  "loadingMessage": "Подготавливаем результаты..."
+}

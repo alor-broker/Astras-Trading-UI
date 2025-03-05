@@ -1,4 +1,14 @@
-import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 import {GraphConfig} from "../../models/graph.model";
 import {LGraph, LGraphCanvas, LGraphNode, LiteGraph} from '@comfyorg/litegraph';
 import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
@@ -8,13 +18,21 @@ import {LetDirective} from "@ngrx/component";
 import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
 import {IContextMenuOptions} from "@comfyorg/litegraph/dist/interfaces";
 import {SerialisableGraph} from "@comfyorg/litegraph/dist/types/serialisation";
-import {GraphRunnerPanelComponent} from "../graph-runner-panel/graph-runner-panel.component";
 import {LiteGraphModelsConverter} from "../../graph/lite-graph-models-converter";
 import {NodesRegister} from '../../graph/nodes/nodes-register';
 import {NodePropertyInfo} from "../../graph/nodes/models";
 import {NodeBase} from "../../graph/nodes/node-base";
 import {CanvasMouseEvent} from "@comfyorg/litegraph/dist/types/events";
 import {BackgroundMenuBuilder} from "../../graph/menu/background-menu-builder";
+import {SideMenuComponent} from "../side-menu/side-menu.component";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {SideMenuTitleDirective} from "../../directives/side-menu-title.directive";
+import {SideMenuContentDirective} from "../../directives/side-menu-content.directive";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {filter, map, startWith} from "rxjs/operators";
+import {RunConfigBtnComponent} from "../run-config-btn/run-config-btn.component";
+import {RunStatus} from "../../models/run-results.model";
+import {RunResultsComponent} from "../run-results/run-results.component";
 
 @Component({
   selector: 'ats-graph-editor',
@@ -22,7 +40,13 @@ import {BackgroundMenuBuilder} from "../../graph/menu/background-menu-builder";
   imports: [
     NzResizeObserverDirective,
     LetDirective,
-    GraphRunnerPanelComponent
+    SideMenuComponent,
+    NzIconDirective,
+    SideMenuTitleDirective,
+    SideMenuContentDirective,
+    TranslocoDirective,
+    RunConfigBtnComponent,
+    RunResultsComponent
   ],
   templateUrl: './graph-editor.component.html',
   styleUrl: './graph-editor.component.less'
@@ -34,14 +58,21 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
   @Output()
   updateConfig = new EventEmitter<GraphConfig>();
 
-  @ViewChild('canvas')
-  canvas?: ElementRef<HTMLCanvasElement>;
+  @ViewChildren('canvas')
+  canvasQuery!: QueryList<ElementRef<HTMLCanvasElement>>;
 
-  protected containerSize$ = new BehaviorSubject<ContentSize>({height: 1, width: 1});
+  isMenuVisible = false;
+
+  runStatus: RunStatus | null = null;
+
+  protected containerSize$ = new BehaviorSubject<ContentSize>({height: 100, width: 100});
   protected currentConfig: GraphConfig | null = null;
+  protected isRightSideMenuVisible = false;
   private graphCanvas?: LGraphCanvas;
 
-  constructor(private readonly translatorService: TranslatorService) {
+  constructor(
+    private readonly translatorService: TranslatorService
+  ) {
   }
 
   ngOnDestroy(): void {
@@ -53,11 +84,19 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.translatorService.getTranslator('ai-graph/graph-editor').pipe(
-      take(1),
-      subscribeOn(asyncScheduler)
-    ).subscribe(translator => {
-      this.initLiteGraph(translator);
+    this.canvasQuery.changes.pipe(
+      map(x => x.first as ElementRef<HTMLCanvasElement> | undefined),
+      startWith(this.canvasQuery.first),
+      filter((x): x is ElementRef<HTMLCanvasElement> => !!x),
+      map(x => x.nativeElement),
+      take(1)
+    ).subscribe(el => {
+      this.translatorService.getTranslator('ai-graph/graph-editor').pipe(
+        take(1),
+        subscribeOn(asyncScheduler)
+      ).subscribe(translator => {
+        this.initLiteGraph(el, translator);
+      });
     });
   }
 
@@ -73,16 +112,12 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  private initLiteGraph(translator: TranslatorFn): void {
-    if (!this.canvas) {
-      return;
-    }
-
+  private initLiteGraph(canvas: HTMLCanvasElement, translator: TranslatorFn): void {
     LiteGraph.use_uuids = true;
     NodesRegister.fillLGraphRegistration();
 
     const graph = new LGraph();
-    this.graphCanvas = new LGraphCanvas(this.canvas.nativeElement!, graph);
+    this.graphCanvas = new LGraphCanvas(canvas, graph);
     this.graphCanvas.show_info = false;
     this.graphCanvas.allow_searchbox = false;
 
@@ -122,9 +157,11 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
     }
 
     this.currentConfig = this.toConfig(graph.asSerialisable());
+
     graph.onAfterChange = (updated): void => {
       this.currentConfig = this.toConfig(updated.asSerialisable());
       this.updateConfig.emit(this.currentConfig);
+      this.runStatus = null;
     };
 
     this.graphCanvas.processContextMenu = (node, event): void => this.processContextMenu(node, event, translator);

@@ -1,4 +1,10 @@
 ﻿{
+  "panels": {
+    "run": {
+      "title": "Запуск графа"
+    }
+  },
+
   "nodes": {
     "const-symbol": {
       "title": "Инструмент"

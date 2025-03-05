@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GraphRunnerPanelComponent } from './graph-runner-panel.component';
+import { RunConfigBtnComponent } from './run-config-btn.component';
 import {MockDirective, MockProvider} from "ng-mocks";
 import {GraphProcessingContextService} from "../../services/graph-processing-context.service";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 
-describe('GraphRunnerPanelComponent', () => {
-  let component: GraphRunnerPanelComponent;
-  let fixture: ComponentFixture<GraphRunnerPanelComponent>;
+describe('RunConfigBtnComponent', () => {
+  let component: RunConfigBtnComponent;
+  let fixture: ComponentFixture<RunConfigBtnComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        GraphRunnerPanelComponent,
+        RunConfigBtnComponent,
         MockDirective(NzIconDirective)
       ],
       providers:[
@@ -21,7 +21,7 @@ describe('GraphRunnerPanelComponent', () => {
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(GraphRunnerPanelComponent);
+    fixture = TestBed.createComponent(RunConfigBtnComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
