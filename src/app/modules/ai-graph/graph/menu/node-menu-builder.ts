@@ -6,7 +6,13 @@ import {alignNodes, distributeNodes} from "../utils/arrange";
 import {IContextMenuOptions} from "@comfyorg/litegraph/dist/interfaces";
 
 export class NodeMenuBuilder {
-  static getMenu(targetNode: NodeBase, translator: TranslatorFn): ContextMenu {
+  static getMenu(
+    targetNode: NodeBase,
+    translator: TranslatorFn,
+    customCallbacks?: {
+      editNodeProperties?: (node: NodeBase) => void;
+    }
+  ): ContextMenu {
     const options: (IContextMenuValue | null)[] = [];
 
     options.push({
@@ -110,7 +116,13 @@ export class NodeMenuBuilder {
 
     options.push({
       content: translator(['labels', 'properties'], {falback: 'Properties'}),
-      callback: () => LGraphCanvas.active_canvas.showShowNodePanel(targetNode)
+      callback: () => {
+        if(customCallbacks?.editNodeProperties != null) {
+          customCallbacks.editNodeProperties(targetNode);
+        } else {
+          LGraphCanvas.active_canvas.showShowNodePanel(targetNode);
+        }
+      }
     });
 
     return {

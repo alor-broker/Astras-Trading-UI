@@ -93,6 +93,8 @@
     "tooLittle": "Too little",
     "tooMuch": "Too much",
     "intervalError": "Value should be from {{min}} to {{max}}",
+    "minError": "Value must be no less than {{min}}",
+    "maxError": "Value must be no more than {{max}}",
     "stringInputLength": "Enter from {{min}} to {{max}} symbols",
     "stringMaxLength": "Enter no more than {{max}} symbols"
   },

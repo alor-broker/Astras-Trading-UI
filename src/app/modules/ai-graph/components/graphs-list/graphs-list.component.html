@@ -5,7 +5,7 @@
         <nz-spin [nzSpinning]="isLoading">
           <div class="container">
             @for (graph of vm.graphs; track graph.id) {
-              <div class="item">
+              <div class="item user-select-none" (dblclick)="editGraph.emit(graph.id)">
                 <div class="overflow-hidden">
                   {{ graph.title }}
                 </div>
@@ -34,7 +34,7 @@
                     <span nz-icon nzType="edit" nzTheme="outline"></span>
                   </button>
 
-                  <button nz-button nzSize="small" nzType="text" [disabled]="graph.config == null">
+                  <button nz-button nzSize="small" nzType="text" [disabled]="graph.config == null" [style.display]="'none'">
                     <span nz-icon nzType="play-circle" nzTheme="outline"></span>
                   </button>
                 </div>

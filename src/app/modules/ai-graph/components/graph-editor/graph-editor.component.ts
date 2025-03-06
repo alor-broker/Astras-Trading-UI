@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -33,6 +34,7 @@ import {filter, map, startWith} from "rxjs/operators";
 import {RunConfigBtnComponent} from "../run-config-btn/run-config-btn.component";
 import {RunStatus} from "../../models/run-results.model";
 import {RunResultsComponent} from "../run-results/run-results.component";
+import {NodePropertiesEditorComponent} from "../node-properties-editor/node-properties-editor.component";
 
 @Component({
   selector: 'ats-graph-editor',
@@ -46,7 +48,8 @@ import {RunResultsComponent} from "../run-results/run-results.component";
     SideMenuContentDirective,
     TranslocoDirective,
     RunConfigBtnComponent,
-    RunResultsComponent
+    RunResultsComponent,
+    NodePropertiesEditorComponent
   ],
   templateUrl: './graph-editor.component.html',
   styleUrl: './graph-editor.component.less'
@@ -61,17 +64,18 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('canvas')
   canvasQuery!: QueryList<ElementRef<HTMLCanvasElement>>;
 
-  isMenuVisible = false;
+  protected nodeToEdit: NodeBase | null = null;
 
-  runStatus: RunStatus | null = null;
+  protected runStatus: RunStatus | null = null;
 
   protected containerSize$ = new BehaviorSubject<ContentSize>({height: 100, width: 100});
   protected currentConfig: GraphConfig | null = null;
-  protected isRightSideMenuVisible = false;
+  protected isRunMenuVisible = false;
   private graphCanvas?: LGraphCanvas;
 
   constructor(
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly cdr: ChangeDetectorRef
   ) {
   }
 
@@ -110,6 +114,17 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
         this.graphCanvas?.draw(true, true);
       });
     });
+  }
+
+  protected nodePropertiesEditorVisibilityChanged(visible: boolean): void {
+    if (!visible) {
+      this.nodeToEdit = null;
+    }
+  }
+
+  protected showRunMenu(): void {
+    this.nodePropertiesEditorVisibilityChanged(false);
+    this.isRunMenuVisible = true;
   }
 
   private initLiteGraph(canvas: HTMLCanvasElement, translator: TranslatorFn): void {
@@ -165,6 +180,9 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
     };
 
     this.graphCanvas.processContextMenu = (node, event): void => this.processContextMenu(node, event, translator);
+    this.graphCanvas.onNodeDblClicked = (node: LGraphNode): void => {
+      this.showNodePropertiesEditor(node as NodeBase);
+    };
   }
 
   private toConfig(graph: SerialisableGraph): GraphConfig {
@@ -198,7 +216,14 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
         return;
       }
 
-      const nodeMenu = targetNode.getNodeMenu(translator);
+      const nodeMenu = targetNode.getNodeMenu(
+        translator,
+        {
+          editNodeProperties: selectedNode => {
+            this.showNodePropertiesEditor(selectedNode);
+          }
+        }
+      );
       if (nodeMenu.items.length > 0) {
         options.title = nodeMenu.title;
         new LiteGraph.ContextMenu(nodeMenu.items, options);
@@ -211,6 +236,14 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
     if (backgroundMenu.items.length > 0) {
       options.title = backgroundMenu.title;
       new LiteGraph.ContextMenu(backgroundMenu.items, options);
+    }
+  }
+
+  private showNodePropertiesEditor(node: NodeBase): void {
+    if(!node.pinned) {
+      this.nodeToEdit = node;
+      this.isRunMenuVisible = false;
+      this.cdr.markForCheck();
     }
   }
 }

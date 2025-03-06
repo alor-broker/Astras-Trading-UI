@@ -2,6 +2,9 @@
   "panels": {
     "run": {
       "title": "Запуск графа"
+    },
+    "nodePropertiesEditor": {
+      "title": "Свойства"
     }
   },
 
@@ -70,7 +73,8 @@
     "categories": "Категории",
     "blocks": "Блоки",
     "disconnectLinks": "Удалить связи",
-    "rename": "Переименовать"
+    "rename": "Переименовать",
+    "blockTitle": "Имя блока"
   },
 
   "alignSideOptions": {

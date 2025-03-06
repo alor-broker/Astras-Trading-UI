@@ -29,7 +29,7 @@ export class NodeBase extends LGraphNode {
     return null;
   }
 
-  get hasPropertiesPanel(): boolean {
+  get titleLocked(): boolean {
     return true;
   }
 
@@ -96,9 +96,10 @@ export class NodeBase extends LGraphNode {
   getOutputSlotLocalizedLabel?(output: INodeOutputSlot, translator: TranslatorFn): string;
 
   getPropertyLocalizedLabel?(name: string, translator: TranslatorFn): string;
-
-  getNodeMenu(translator: TranslatorFn): ContextMenu {
-    return NodeMenuBuilder.getMenu(this, translator);
+  getNodeMenu(translator: TranslatorFn, customCallbacks?: {
+    editNodeProperties?: (node: NodeBase) => void;
+  }): ContextMenu {
+    return NodeMenuBuilder.getMenu(this, translator, customCallbacks);
   }
 
   getSlotMenu(targetSlot: IFoundSlot, translator: TranslatorFn): ContextMenu {

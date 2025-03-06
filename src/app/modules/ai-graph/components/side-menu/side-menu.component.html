@@ -4,6 +4,10 @@
 >
   <div
     class="d-flex flex-row flex-nowrap align-items-center flex-gap-10 pb-5 header"
+    [ngClass]="{
+    'flex-row': position === 'right',
+    'flex-row-reverse': position === 'left'
+    }"
   >
     @if (closable) {
       <div class="close-btn cursor-pointer">

@@ -93,6 +93,8 @@
     "tooLittle": "Слишком мало",
     "tooMuch": "Слишком много",
     "intervalError": "Значение должно быть от {{min}} до {{max}}",
+    "minError": "Значение должно быть не меньше {{min}}",
+    "maxError": "Значение должно быть не больше {{max}}",
     "stringInputLength": "Введите от {{min}} до {{max}} символов",
     "stringMaxLength": "Введите не более {{max}} символов"
   },

@@ -8,6 +8,11 @@ export enum SlotType {
   Number = "number",
   String = "string",
   Array = "array",
-  Boolean = "boolean",
-  Toggle = "toggle",
+  Boolean = "boolean"
 }
+
+export enum ExtendedEditors {
+  MultilineText = 'multiline_text'
+}
+
+export type EditorType = SlotType | ExtendedEditors;

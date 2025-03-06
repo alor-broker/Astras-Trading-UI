@@ -4,6 +4,7 @@ import { NodeBase } from "../node-base";
 import {InstrumentKey, SlotType} from "../../slot-types";
 import {NodeCategories} from "../node-categories";
 import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
+import {NumberValueValidationOptions} from "../models";
 
 export class NewsSourceNode extends NodeBase {
   readonly inputSlotName = 'instrument';
@@ -16,7 +17,17 @@ export class NewsSourceNode extends NodeBase {
     this.addProperty(
       this.recordsCountPropertyName,
       50,
-      SlotType.Number
+      SlotType.Number,
+      {
+        validation: {
+          required: true,
+          min: 1,
+          max: 10000,
+          step: 1,
+          allowDecimal: false,
+          allowNegative: false
+        } as NumberValueValidationOptions
+      }
     );
 
     this.addInput(

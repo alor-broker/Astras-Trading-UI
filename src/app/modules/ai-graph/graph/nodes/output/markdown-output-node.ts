@@ -27,15 +27,19 @@ export class MarkdownOutputNode extends NodeBase {
     return NodeCategories.Output;
   }
 
+  override get outputFormat(): OutputFormat {
+    return OutputFormat.Markdown;
+  }
+
+  override get titleLocked(): boolean {
+    return false;
+  }
+
   override executor(): Observable<boolean> {
     return of(true).pipe(
       map(() => {
         return true;
       })
     );
-  }
-
-  override get outputFormat(): OutputFormat {
-    return OutputFormat.Markdown;
   }
 }
