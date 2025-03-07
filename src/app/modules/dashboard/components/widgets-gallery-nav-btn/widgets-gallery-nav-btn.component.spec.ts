@@ -8,6 +8,7 @@ import {EMPTY} from "rxjs";
 import {TranslatorService} from "../../../../shared/services/translator.service";
 import {provideHttpClient} from "@angular/common/http";
 import {WidgetsGalleryComponent} from "../widgets-gallery/widgets-gallery.component";
+import {LocalStorageService} from "../../../../shared/services/local-storage.service";
 
 describe('WidgetsGalleryNavBtnComponent', () => {
   let component: WidgetsGalleryNavBtnComponent;
@@ -26,6 +27,12 @@ describe('WidgetsGalleryNavBtnComponent', () => {
           WidgetsMetaService,
           {
             getWidgetsMeta: () => EMPTY
+          }
+        ),
+        MockProvider(
+          LocalStorageService,
+          {
+            getItem: () => undefined
           }
         ),
         MockProvider(

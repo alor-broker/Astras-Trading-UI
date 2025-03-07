@@ -21,6 +21,8 @@ import { NzIconDirective } from 'ng-zorro-antd/icon';
 import { DashboardModule } from '../../dashboard.module';
 import { TranslocoDirective } from '@jsverse/transloco';
 import {NzButtonComponent} from "ng-zorro-antd/button";
+import {LocalStorageService} from "../../../../shared/services/local-storage.service";
+import {LocalStorageCommonConstants} from "../../../../shared/constants/local-storage.constants";
 
 @Component({
   selector: 'ats-widgets-gallery-nav-btn',
@@ -47,7 +49,8 @@ export class WidgetsGalleryNavBtnComponent implements OnInit {
   constructor(
     private readonly manageDashboardsService: ManageDashboardsService,
     private readonly widgetsMetaService: WidgetsMetaService,
-    private readonly translatorService: TranslatorService
+    private readonly translatorService: TranslatorService,
+    private readonly localStorageService: LocalStorageService
   ) {}
 
   ngOnInit(): void {
@@ -77,9 +80,14 @@ export class WidgetsGalleryNavBtnComponent implements OnInit {
     }).pipe(
       map((s) => {
         const groups = new Map<WidgetCategory, WidgetDisplay[]>();
+        const isDemoModeEnabled = this.localStorageService.getItem<boolean>(LocalStorageCommonConstants.DemoModeStorageKey);
 
         const widgets = s.meta
-          .filter((x) => !!x.desktopMeta && x.desktopMeta.enabled)
+          .filter((x) => {
+            return x.desktopMeta != null
+              && x.desktopMeta.enabled
+              && (!(x.isDemoOnly ?? false) || isDemoModeEnabled);
+          })
           .sort((a, b) => {
             return (
               (a.desktopMeta!.galleryOrder ?? 0) -

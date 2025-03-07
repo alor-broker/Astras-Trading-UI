@@ -762,6 +762,7 @@
       }
     },
     "category": "info",
+    "isDemoOnly": true,
     "desktopMeta": {
       "headerIcon": "ats-ai-graph",
       "galleryIcon": "ats-ai-graph",

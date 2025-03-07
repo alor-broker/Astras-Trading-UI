@@ -2,6 +2,7 @@
   static WidgetsLocalStateStorageKey = 'widgets-local-state';
   static FeedbackStorageKey = 'feedback';
   static AIGraphsStorageKey = 'ai-graphs';
+  static DemoModeStorageKey = 'demo-mode';
 }
 
 export class DesignSettingsConstants {
