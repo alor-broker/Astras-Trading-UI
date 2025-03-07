@@ -8,7 +8,8 @@ export enum SlotType {
   Number = "number",
   String = "string",
   Array = "array",
-  Boolean = "boolean"
+  Boolean = "boolean",
+  Date = "date",
 }
 
 export enum ExtendedEditors {

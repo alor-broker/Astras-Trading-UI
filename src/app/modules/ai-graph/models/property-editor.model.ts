@@ -1,4 +1,8 @@
-﻿import {NumberValueValidationOptions, StringValueValidationOptions} from "../graph/nodes/models";
+﻿import {
+  DateValueValidationOptions,
+  NumberValueValidationOptions,
+  StringValueValidationOptions
+} from "../graph/nodes/models";
 
 export interface PropertyEditorConfig<T = unknown> {
   label: string;
@@ -15,4 +19,8 @@ export interface NumberPropertyEditorConfig extends PropertyEditorConfig<number>
 
 export interface StringPropertyEditorConfig extends PropertyEditorConfig<string> {
   validation: StringValueValidationOptions;
+}
+
+export interface DatePropertyEditorConfig extends PropertyEditorConfig<Date> {
+  validation: DateValueValidationOptions;
 }

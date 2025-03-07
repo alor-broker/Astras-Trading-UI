@@ -2,6 +2,8 @@ import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {NodeBase} from "../../graph/nodes/node-base";
 import {EditorType, ExtendedEditors, SlotType} from "../../graph/slot-types";
 import {
+  BooleanPropertyEditorConfig,
+  DatePropertyEditorConfig,
   NumberPropertyEditorConfig,
   PropertyEditorConfig,
   StringPropertyEditorConfig
@@ -20,8 +22,15 @@ import {
 import {
   BooleanPropertyEditorComponent
 } from "../property-editors/boolean-property-editor/boolean-property-editor.component";
-import {NodePropertyInfo, NumberValueValidationOptions, StringValueValidationOptions} from "../../graph/nodes/models";
+import {
+  DateValueValidationOptions,
+  NodePropertyInfo,
+  NumberValueValidationOptions,
+  StringValueValidationOptions
+} from "../../graph/nodes/models";
 import {TextPropertyEditorComponent} from "../property-editors/text-property-editor/text-property-editor.component";
+import {add} from "date-fns";
+import {DatePropertyEditorComponent} from "../property-editors/date-property-editor/date-property-editor.component";
 
 interface Editor {
   type: EditorType;
@@ -41,7 +50,8 @@ interface EditorsSection {
     StringPropertyEditorComponent,
     NumberPropertyEditorComponent,
     BooleanPropertyEditorComponent,
-    TextPropertyEditorComponent
+    TextPropertyEditorComponent,
+    DatePropertyEditorComponent
   ],
   templateUrl: './node-properties-editor.component.html',
   styleUrl: './node-properties-editor.component.less'
@@ -184,6 +194,10 @@ export class NodePropertiesEditorComponent implements OnChanges {
         return this.createNumberEditor(propertyKey, propertyInfo, targetNode, label);
       case ExtendedEditors.MultilineText:
         return this.createTextEditor(propertyKey, propertyInfo, targetNode, label);
+      case SlotType.Boolean:
+        return this.createBooleanEditor(propertyKey, targetNode, label);
+      case SlotType.Date:
+        return this.createDateEditor(propertyKey, propertyInfo, targetNode, label);
       default:
         return this.createStringEditor(propertyKey, propertyInfo, targetNode, label);
     }
@@ -249,6 +263,57 @@ export class NodePropertiesEditorComponent implements OnChanges {
           min: -1_000_000
         },
         initialValue: targetNode.properties[propertyKey] as (number | null),
+        applyValueCallback: value => {
+          this.applyChanges(node => {
+            node.properties[propertyKey] = value;
+          });
+        }
+      }
+    );
+  }
+
+  private createBooleanEditor(
+    propertyKey: string,
+    targetNode: NodeBase,
+    label: string
+  ): Editor {
+    return this.createEditor<BooleanPropertyEditorConfig>(
+      SlotType.Boolean,
+      {
+        label,
+        initialValue: (targetNode.properties[propertyKey] as (boolean | null)) ?? false,
+        applyValueCallback: value => {
+          this.applyChanges(node => {
+            node.properties[propertyKey] = value;
+          });
+        }
+      }
+    );
+  }
+
+  private createDateEditor(
+    propertyKey: string,
+    propertyInfo: NodePropertyInfo,
+    targetNode: NodeBase,
+    label: string
+  ): Editor {
+    const value = targetNode.properties[propertyKey] as (Date | null);
+
+    return this.createEditor<DatePropertyEditorConfig>(
+      SlotType.Date,
+      {
+        label,
+        validation: (propertyInfo.validation as DateValueValidationOptions) ?? {
+          required: true,
+          allowFuture: false,
+          min: add(
+            new Date(),
+            {
+              years: -1
+            }
+          )
+        },
+        initialValue: value != null ? new Date(value) : null,
         applyValueCallback: value => {
           this.applyChanges(node => {
             node.properties[propertyKey] = value;

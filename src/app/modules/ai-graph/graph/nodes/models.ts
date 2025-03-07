@@ -33,6 +33,12 @@ export interface NumberValueValidationOptions extends ValidationOptions {
   allowDecimal: boolean;
 }
 
+export interface DateValueValidationOptions extends ValidationOptions {
+  min: Date;
+  allowFuture: boolean;
+  required: boolean;
+}
+
 export interface NodePropertyInfo extends INodePropertyInfo {
   label?: string;
   editorType?: EditorType;

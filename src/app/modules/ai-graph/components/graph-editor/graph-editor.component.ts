@@ -162,7 +162,7 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
         if (targetNode.getPropertyLocalizedLabel) {
           info.label = targetNode.getPropertyLocalizedLabel(propertyKey, translator);
         } else {
-          info.label = translator(['slots', propertyKey, 'name'], {fallback: info.label});
+          info.label = translator(['slots', propertyKey, 'name'], {fallback: propertyKey});
         }
       }
     };

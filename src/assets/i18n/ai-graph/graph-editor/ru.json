@@ -41,8 +41,8 @@
     "instrument": {
       "name": "Инструмент"
     },
-    "recordsCount": {
-      "name": "Число записей"
+    "maxRecordsCount": {
+      "name": "Макс. число записей"
     },
     "news": {
       "name": "Новости"
@@ -55,6 +55,18 @@
     },
     "out": {
       "name": "Вых."
+    },
+    "fromDate": {
+      "name": "Начиная с даты"
+    },
+    "includeDate": {
+      "name": "Добавить дату"
+    },
+    "includeHeader": {
+      "name": "Добавить заголовок"
+    },
+    "includeContent": {
+      "name": "Добавить содержимое"
     }
   },
 

@@ -1,7 +1,7 @@
 <ng-container *transloco="let t; scope: 'ai-graph/graph-editor'">
-  <ats-side-menu [visible]="nodeToEdit != null" (visibleChange)="nodePropertiesEditorVisibilityChanged($event)">
+  <ats-side-menu (visibleChange)="nodePropertiesEditorVisibilityChanged($event)" [visible]="nodeToEdit != null">
     <ng-template atsSideMenuTitle>
-      <span>{{ t('aiGraphGraphEditor.panels.nodePropertiesEditor.title') + ': ' + (nodeToEdit?.getTitle() ?? '') }}</span>
+      <span>{{ t('aiGraphGraphEditor.panels.nodePropertiesEditor.title', {fallback: 'Properties'}) + ': ' + (nodeToEdit?.getTitle() ?? '') }}</span>
     </ng-template>
 
     <ng-template atsSideMenuContent>
