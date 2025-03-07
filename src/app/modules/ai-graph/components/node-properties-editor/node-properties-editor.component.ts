@@ -21,6 +21,7 @@ import {
   BooleanPropertyEditorComponent
 } from "../property-editors/boolean-property-editor/boolean-property-editor.component";
 import {NodePropertyInfo, NumberValueValidationOptions, StringValueValidationOptions} from "../../graph/nodes/models";
+import {TextPropertyEditorComponent} from "../property-editors/text-property-editor/text-property-editor.component";
 
 interface Editor {
   type: EditorType;
@@ -39,7 +40,8 @@ interface EditorsSection {
     TranslocoDirective,
     StringPropertyEditorComponent,
     NumberPropertyEditorComponent,
-    BooleanPropertyEditorComponent
+    BooleanPropertyEditorComponent,
+    TextPropertyEditorComponent
   ],
   templateUrl: './node-properties-editor.component.html',
   styleUrl: './node-properties-editor.component.less'
@@ -180,6 +182,8 @@ export class NodePropertiesEditorComponent implements OnChanges {
         return this.createStringEditor(propertyKey, propertyInfo, targetNode, label);
       case SlotType.Number:
         return this.createNumberEditor(propertyKey, propertyInfo, targetNode, label);
+      case ExtendedEditors.MultilineText:
+        return this.createTextEditor(propertyKey, propertyInfo, targetNode, label);
       default:
         return this.createStringEditor(propertyKey, propertyInfo, targetNode, label);
     }
@@ -207,6 +211,23 @@ export class NodePropertiesEditorComponent implements OnChanges {
         }
       }
     );
+  }
+
+  private createTextEditor(
+    propertyKey: string,
+    propertyInfo: NodePropertyInfo,
+    targetNode: NodeBase,
+    label: string
+  ): Editor {
+    return {
+      ...this.createStringEditor(
+        propertyKey,
+        propertyInfo,
+        targetNode,
+        label
+      ),
+      type: ExtendedEditors.MultilineText
+    };
   }
 
   private createNumberEditor(

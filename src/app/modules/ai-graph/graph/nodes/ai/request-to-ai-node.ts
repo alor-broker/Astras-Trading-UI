@@ -1,10 +1,11 @@
 ﻿import {Observable, of, switchMap} from "rxjs";
 import {map} from "rxjs/operators";
 import {NodeBase} from "../node-base";
-import {SlotType} from "../../slot-types";
+import {ExtendedEditors, SlotType} from "../../slot-types";
 import {NodeCategories} from "../node-categories";
 import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
 import {INodeInputSlot} from "@comfyorg/litegraph";
+import {StringValueValidationOptions} from "../models";
 
 export class RequestToAiNode extends NodeBase {
   private readonly inputSlotPrefix = 'in';
@@ -19,7 +20,11 @@ export class RequestToAiNode extends NodeBase {
       '',
       SlotType.String,
       {
-        'label': this.promptPropertyName
+        editorType: ExtendedEditors.MultilineText,
+        validation: {
+          minLength: 1,
+          maxLength: 10000
+        } as StringValueValidationOptions
       }
     );
 

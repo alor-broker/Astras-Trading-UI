@@ -29,8 +29,8 @@ export class StringPropertyEditorComponent extends PropertyEditorBaseComponent<S
   });
 
   constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
+    protected readonly formBuilder: FormBuilder,
+    protected readonly destroyRef: DestroyRef
   ) {
     super();
   }

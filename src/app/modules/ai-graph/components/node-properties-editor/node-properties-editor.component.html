@@ -7,6 +7,9 @@
             @case (SlotTypes.String) {
               <ats-string-property-editor [config]="editor.config"></ats-string-property-editor>
             }
+            @case (ExtendedEditors.MultilineText) {
+              <ats-text-property-editor [config]="editor.config"></ats-text-property-editor>
+            }
             @case (SlotTypes.Number) {
               <ats-number-property-editor [config]="editor.config"></ats-number-property-editor>
             }
