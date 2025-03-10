@@ -30,7 +30,7 @@
   >
     <ng-template atsSideMenuTitle>
       <div class="d-flex flex-row flex-nowrap justify-content-between align-items-center">
-        <span>{{ t('aiGraphGraphEditor.panels.run.title') }}</span>
+        <span>{{ t('aiGraphGraphEditor.panels.run.title', {fallback: 'Run Graph'}) }}</span>
         <ats-run-config-btn (status)="runStatus = $event" [config]="currentConfig"></ats-run-config-btn>
       </div>
     </ng-template>
