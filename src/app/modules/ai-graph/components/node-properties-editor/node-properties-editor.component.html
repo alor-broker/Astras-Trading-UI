@@ -1,0 +1,30 @@
+<ng-container *transloco="let t; scope: 'ai-graph/node-properties-editor'">
+  @for (section of sections; track section) {
+    <div class="d-flex flex-column align-items-start section">
+      @for (editor of section.editors; track editor) {
+        <div class="w-100 mb-5">
+          @switch (editor.type) {
+            @case (SlotTypes.String) {
+              <ats-string-property-editor [config]="editor.config"></ats-string-property-editor>
+            }
+            @case (ExtendedEditors.MultilineText) {
+              <ats-text-property-editor [config]="editor.config"></ats-text-property-editor>
+            }
+            @case (SlotTypes.Number) {
+              <ats-number-property-editor [config]="editor.config"></ats-number-property-editor>
+            }
+            @case (SlotTypes.Boolean) {
+              <ats-boolean-property-editor [config]="editor.config"></ats-boolean-property-editor>
+            }
+            @case (SlotTypes.Date) {
+              <ats-date-property-editor [config]="editor.config"></ats-date-property-editor>
+            }
+          }
+        </div>
+      }
+    </div>
+  } @empty {
+    <nz-empty nzNotFoundImage="simple"
+              [nzNotFoundContent]="t('aiGraphNodePropertiesEditor.nothingToEditMessage')"></nz-empty>
+  }
+</ng-container>

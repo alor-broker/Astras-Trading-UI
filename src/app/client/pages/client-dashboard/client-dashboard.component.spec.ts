@@ -21,6 +21,7 @@ import {
   WatchlistCollectionBrokerService
 } from "../../../modules/instruments/services/watchlist-collection-broker.service";
 import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instruments/widgets/instrument-select-dialog-widget/instrument-select-dialog-widget.component";
+import {GraphStorageService} from "../../../modules/ai-graph/services/graph-storage.service";
 
 describe('ClientDashboardComponent', () => {
   let component: ClientDashboardComponent;
@@ -55,6 +56,7 @@ describe('ClientDashboardComponent', () => {
           }
         },
         MockProvider(WatchlistCollectionBrokerService),
+        MockProvider(GraphStorageService),
         ...commonTestProviders
       ]
     })

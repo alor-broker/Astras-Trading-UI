@@ -3,22 +3,22 @@ import {
   TestBed
 } from '@angular/core/testing';
 
-import { NewsComponent } from './news.component';
-import { NewsService } from "../../services/news.service";
+import {NewsComponent} from './news.component';
 import {
   of,
   Subject
 } from "rxjs";
-import { ModalService } from "../../../../shared/services/modal.service";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
-import { PositionsService } from "../../../../shared/services/positions.service";
-import { LetDirective } from "@ngrx/component";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {ModalService} from "../../../../shared/services/modal.service";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
+import {PositionsService} from "../../../../shared/services/positions.service";
+import {LetDirective} from "@ngrx/component";
+import {ngZorroMockComponents} from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import {ComponentHelpers} from "../../../../shared/utils/testing/component-helpers";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 import {MockComponent} from "ng-mocks";
 import {NewsDialogComponent} from "../news-dialog/news-dialog.component";
+import {NewsService} from "../../../../shared/services/news.service";
 
 describe('NewsComponent', () => {
   const testNewsItem = {

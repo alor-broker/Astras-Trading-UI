@@ -1,0 +1,6 @@
+﻿{
+  "emptyListMessage": "There are no graphs",
+  "newGraphTitlePlaceholder": "Graph title",
+  "newGraphTitleTemplate": "Graph {{number}}",
+  "removeItemConfirmTitle": "Remove graph?"
+}

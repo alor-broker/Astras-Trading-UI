@@ -1,16 +1,28 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { NewsListItem } from "../models/news.model";
-import { catchHttpError } from "../../../shared/utils/observable-helper";
-import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
-import { EnvironmentService } from "../../../shared/services/environment.service";
 import { map } from "rxjs/operators";
+import {EnvironmentService} from "./environment.service";
+import {ErrorHandlerService} from "./handle-error/error-handler.service";
+import {catchHttpError} from "../utils/observable-helper";
 
 interface GetNewsParams {
   limit: number;
   offset: number;
   symbols: string[] | null;
+}
+
+export interface NewsListItem {
+  id: string;
+  sourceId: string;
+  header: string;
+  publishDate: string;
+  newsType: number;
+  content: string;
+  countryCodes: string[];
+  rubricCodes: string[];
+  symbols: string[];
+  mt: null;
 }
 
 @Injectable({

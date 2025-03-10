@@ -41,6 +41,9 @@ importers:
       '@apollo/client':
         specifier: ^3.11.4
         version: 3.11.4(@types/react@18.3.3)(graphql-ws@5.16.0(graphql@16.9.0))(graphql@16.9.0)
+      '@comfyorg/litegraph':
+        specifier: 0.8.98
+        version: 0.8.98
       '@jsverse/transloco':
         specifier: ^7.4.0
         version: 7.4.3(@angular/core@18.2.0(rxjs@7.8.1)(zone.js@0.14.10))(typescript@5.5.4)
@@ -1134,6 +1137,9 @@ packages:
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
+
+  '@comfyorg/litegraph@0.8.98':
+    resolution: {integrity: sha512-AXw4Sn6EZ7esik8KLm7nybnaHxyjtV0WDKEhTXn8ubC5RNaT40psolWWAckAyYTB05o0xa5YKlCCH35QxK7D2A==}
 
   '@ctrl/tinycolor@3.6.1':
     resolution: {integrity: sha512-SITSV6aIXsuVNV3f3O0f2n/cgyEDWoSqtZMYiAmcsYHydcKrOz3gUxB/iXd/Qf08+IZX4KpgNbvUdMBmWz+kcA==}
@@ -7797,6 +7803,8 @@ snapshots:
     optional: true
 
   '@colors/colors@1.5.0': {}
+
+  '@comfyorg/litegraph@0.8.98': {}
 
   '@ctrl/tinycolor@3.6.1': {}
 

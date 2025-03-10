@@ -1,0 +1,103 @@
+﻿{
+  "panels": {
+    "run": {
+      "title": "Run Graph"
+    },
+    "nodePropertiesEditor": {
+      "title": "Properties"
+    }
+  },
+
+  "nodes": {
+    "const-symbol": {
+      "title": "Instrument"
+    },
+    "news": {
+      "title": "News"
+    },
+    "request-to-ai": {
+      "title": "AI Query"
+    },
+    "markdown-output": {
+      "title": "Text"
+    }
+  },
+
+  "categories": {
+    "base": "Base",
+    "instrument-selection": "Instrument Selection",
+    "info-sources": "Info. Sources",
+    "ai": "AI",
+    "output": "Output"
+  },
+
+  "slots": {
+    "symbol": {
+      "name": "Ticker"
+    },
+    "exchange": {
+      "name": "Exchange"
+    },
+    "instrument": {
+      "name": "Instrument"
+    },
+    "maxRecordsCount": {
+      "name": "Max Records Count"
+    },
+    "news": {
+      "name": "News"
+    },
+    "prompt": {
+      "name": "Prompt"
+    },
+    "in": {
+      "name": "In"
+    },
+    "out": {
+      "name": "Out."
+    },
+    "fromDate": {
+      "name": "From Date"
+    },
+    "includeDate": {
+      "name": "Include Date"
+    },
+    "includeHeader": {
+      "name": "Include Header"
+    },
+    "includeContent": {
+      "name": "Include Content"
+    }
+  },
+
+  "labels": {
+    "properties": "Properties",
+    "resize": "Adjust Size",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "alignTo": "Align To",
+    "distribute": "Distribute",
+    "clone": "Copy",
+    "remove": "Remove",
+    "addNode": "Add Node",
+    "categories": "Categories",
+    "blocks": "Blocks",
+    "disconnectLinks": "Remove Links",
+    "rename": "Rename",
+    "blockTitle": "Block Title"
+  },
+
+  "alignSideOptions": {
+    "top": "Top",
+    "bottom": "Bottom",
+    "left": "Left",
+    "right": "Right"
+  },
+
+  "distributeOptions": {
+    "vertically": "Vertically",
+    "horizontally": "Horizontally"
+  }
+}

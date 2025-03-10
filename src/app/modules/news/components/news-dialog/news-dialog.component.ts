@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
-import {NewsListItem} from "../../models/news.model";
 import {NzModalComponent, NzModalContentDirective} from "ng-zorro-antd/modal";
+import {NewsListItem} from "../../../../shared/services/news.service";
 
 @Component({
   selector: 'ats-news-dialog',

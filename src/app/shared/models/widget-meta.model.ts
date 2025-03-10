@@ -35,6 +35,8 @@ export interface WidgetMeta {
 
   category: WidgetCategory;
 
+  isDemoOnly?: boolean;
+
   /**
    * Desktop specific meta information. Skip if widget is not applicable on desktop
    */

@@ -744,5 +744,36 @@
       "enabled": true,
       "galleryOrder": 0
     }
+  },
+  {
+    "typeId": "ai-graphs",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "",
+        "componentName": "MobileHomeScreenWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "AI graphs",
+      "translations": {
+        "ru": "ИИ графы",
+        "en": "AI graphs"
+      }
+    },
+    "category": "info",
+    "isDemoOnly": true,
+    "desktopMeta": {
+      "headerIcon": "ats-ai-graph",
+      "galleryIcon": "ats-ai-graph",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 21,
+      "enabled": true
+    }
   }
 ]

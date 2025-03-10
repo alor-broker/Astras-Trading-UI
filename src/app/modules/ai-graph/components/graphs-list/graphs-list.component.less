@@ -1,0 +1,25 @@
+@import 'theme-mixin';
+
+.themeMixin({
+  :host {
+    .container {
+      .item {
+        border-bottom: 1px solid @border-color-split;
+
+        &:hover {
+          background-color: @descriptions-bg;
+        }
+      }
+    }
+  }
+});
+
+.container {
+  .item {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 5pc;
+    padding: 5px 0;
+  }
+}
