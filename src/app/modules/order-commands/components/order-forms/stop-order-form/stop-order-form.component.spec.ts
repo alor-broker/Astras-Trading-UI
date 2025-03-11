@@ -24,9 +24,7 @@ import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing"
 import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
 import { NzDatePickerModule } from "ng-zorro-antd/date-picker";
 import { BuySellButtonsComponent } from "../../buy-sell-buttons/buy-sell-buttons.component";
-import {
-  ORDER_COMMAND_SERVICE_TOKEN,
-} from "../../../../../shared/services/orders/order-command.service";
+import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
 
 describe('StopOrderFormComponent', () => {
   let component: StopOrderFormComponent;
@@ -117,7 +115,7 @@ describe('StopOrderFormComponent', () => {
           }
         },
         {
-          provide: ORDER_COMMAND_SERVICE_TOKEN,
+          provide: ConfirmableOrderCommandsService,
           useValue: orderServiceSpy
         },
         {

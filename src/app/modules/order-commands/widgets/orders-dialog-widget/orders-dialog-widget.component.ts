@@ -34,12 +34,16 @@ import {
   PUSH_NOTIFICATIONS_CONFIG,
   PushNotificationsConfig
 } from "../../../push-notifications/services/push-notifications-config";
+import {ConfirmableOrderCommandsService} from "../../services/confirmable-order-commands.service";
 
 @Component({
   selector: 'ats-orders-dialog-widget',
   templateUrl: './orders-dialog-widget.component.html',
   styleUrls: ['./orders-dialog-widget.component.less'],
-  providers: [CommonParametersService]
+  providers: [
+    CommonParametersService,
+    ConfirmableOrderCommandsService
+  ]
 })
 export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
   helpUrl$!: Observable<string | null>;

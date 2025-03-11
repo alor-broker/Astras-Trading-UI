@@ -7,12 +7,16 @@ import {filter, map} from "rxjs/operators";
 import {OrderFormState} from "../../models/order-form.model";
 import {OrderFormType} from "../../../../shared/models/orders/orders-dialog.model";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+import {ConfirmableOrderCommandsService} from "../../services/confirmable-order-commands.service";
 
 @Component({
   selector: 'ats-edit-order-dialog-widget',
   templateUrl: './edit-order-dialog-widget.component.html',
   styleUrls: ['./edit-order-dialog-widget.component.less'],
-  providers: [CommonParametersService]
+  providers: [
+    CommonParametersService,
+    ConfirmableOrderCommandsService
+  ]
 })
 export class EditOrderDialogWidgetComponent implements OnInit, OnDestroy {
   readonly formState$ = new BehaviorSubject<OrderFormState | null>(null);

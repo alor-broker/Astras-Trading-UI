@@ -1,35 +1,19 @@
-import {
-  Injectable,
-  OnDestroy
-} from '@angular/core';
-import {
-  Observable,
-  of,
-  shareReplay,
-  switchMap,
-  take
-} from 'rxjs';
-import { User } from 'src/app/shared/models/user/user.model';
-import {
-  catchError,
-  filter,
-  map
-} from "rxjs/operators";
-import {
-  HttpClient,
-  HttpContext
-} from "@angular/common/http";
-import { ComponentStore } from "@ngrx/component-store";
-import { UserContext } from "../../../shared/services/auth/user-context";
-import { SessionContext } from "../../../shared/services/auth/session-context";
-import { LocalStorageSsoConstants } from "../../../shared/constants/local-storage.constants";
-import { EnvironmentService } from "../../../shared/services/environment.service";
-import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
-import { LocalStorageService } from "../../../shared/services/local-storage.service";
-import { ApiTokenProviderService } from "../../../shared/services/auth/api-token-provider.service";
-import { HttpContextTokens } from "../../../shared/constants/http.constants";
-import { JwtHelper } from "../../../shared/utils/jwt-helper";
-import { catchHttpError } from "../../../shared/utils/observable-helper";
+import {Injectable, OnDestroy} from '@angular/core';
+import {Observable, of, shareReplay, switchMap, take} from 'rxjs';
+import {Role, User} from 'src/app/shared/models/user/user.model';
+import {catchError, filter, map} from "rxjs/operators";
+import {HttpClient, HttpContext} from "@angular/common/http";
+import {ComponentStore} from "@ngrx/component-store";
+import {UserContext} from "../../../shared/services/auth/user-context";
+import {SessionContext} from "../../../shared/services/auth/session-context";
+import {LocalStorageSsoConstants} from "../../../shared/constants/local-storage.constants";
+import {EnvironmentService} from "../../../shared/services/environment.service";
+import {ErrorHandlerService} from "../../../shared/services/handle-error/error-handler.service";
+import {LocalStorageService} from "../../../shared/services/local-storage.service";
+import {ApiTokenProviderService} from "../../../shared/services/auth/api-token-provider.service";
+import {HttpContextTokens} from "../../../shared/constants/http.constants";
+import {JwtHelper} from "../../../shared/utils/jwt-helper";
+import {catchHttpError} from "../../../shared/utils/observable-helper";
 
 enum AuthStateStatus {
   Initial = 'initial',
@@ -227,6 +211,7 @@ export class ClientAuthContextService implements UserContext, SessionContext, On
             clientId: jwtBody.clientid,
             login: jwtBody.sub,
             portfolios: (jwtBody.portfolios as string | undefined)?.split(' ') ?? [],
+            roles: [Role.Client]
           },
           expirationTime: jwtBody.exp * 1000,
         } as JwtState;

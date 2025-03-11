@@ -15,6 +15,7 @@ export interface NewOrderBase {
   instrument: InstrumentKey;
   quantity: number;
   meta?: OrderMeta;
+  allowMargin?: boolean;
 }
 
 export interface NewMarketOrder extends NewOrderBase {

@@ -19,7 +19,7 @@ import {ComponentHelpers} from "../../../../../shared/utils/testing/component-he
 import {commonTestProviders} from "../../../../../shared/utils/testing/common-test-providers";
 import {FormsTesting} from "../../../../../shared/utils/testing/forms-testing";
 import {InputNumberComponent} from "../../../../../shared/components/input-number/input-number.component";
-import {ORDER_COMMAND_SERVICE_TOKEN,} from "../../../../../shared/services/orders/order-command.service";
+import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
 
 describe('EditLimitOrderFormComponent', () => {
   let component: EditLimitOrderFormComponent;
@@ -107,7 +107,7 @@ describe('EditLimitOrderFormComponent', () => {
           }
         },
         {
-          provide: ORDER_COMMAND_SERVICE_TOKEN,
+          provide: ConfirmableOrderCommandsService,
           useValue: orderServiceSpy
         },
         {

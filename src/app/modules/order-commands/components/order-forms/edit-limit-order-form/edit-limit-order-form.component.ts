@@ -1,7 +1,6 @@
 import {
   Component,
   DestroyRef,
-  Inject,
   Input,
   OnDestroy,
   OnInit
@@ -22,10 +21,7 @@ import { EvaluationBaseProperties } from "../../../../../shared/models/evaluatio
 import { PriceDiffHelper } from "../../../utils/price-diff.helper";
 import { LimitOrderEdit } from "../../../../../shared/models/orders/edit-order.model";
 import { toInstrumentKey } from "../../../../../shared/utils/instruments";
-import {
-  ORDER_COMMAND_SERVICE_TOKEN,
-  OrderCommandService
-} from "../../../../../shared/services/orders/order-command.service";
+import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
 
 @Component({
   selector: 'ats-edit-limit-order-form',
@@ -85,8 +81,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
     protected readonly instrumentService: InstrumentsService,
     private readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
+    private readonly orderCommandService: ConfirmableOrderCommandsService,
     protected readonly destroyRef: DestroyRef) {
     super(instrumentService, destroyRef);
   }
