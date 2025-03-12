@@ -7,6 +7,8 @@ import {GraphProcessingContextService} from "../../../services/graph-processing-
 import {DateValueValidationOptions, NumberValueValidationOptions} from "../models";
 import {add, isBefore, parseISO, startOfDay} from "date-fns";
 import {NewsListItem, NewsService} from "../../../../../shared/services/news.service";
+import {ArrayItemsSeparator} from "../../../constants/graph-data.constants";
+import {InstrumentUtils} from "../../../utils/instrument.utils";
 
 export class NewsSourceNode extends NodeBase {
   readonly inputSlotName = 'instrument';
@@ -74,7 +76,7 @@ export class NewsSourceNode extends NodeBase {
 
     this.addInput(
       this.inputSlotName,
-      SlotType.InstrumentKey,
+      SlotType.String,
       {
         nameLocked: true,
         removable: false
@@ -101,15 +103,16 @@ export class NewsSourceNode extends NodeBase {
   override executor(context: GraphProcessingContextService): Observable<boolean> {
     return of(true).pipe(
       switchMap(() => {
-          const targetInstrument = this.getValueOfInput(this.inputSlotName) as InstrumentKey | undefined;
-          if (targetInstrument == null) {
+          const targetInstruments = this.getValueOfInput(this.inputSlotName) as string | undefined;
+          const inputDescriptor = this.findInputSlot(this.inputSlotName, true);
+          if(targetInstruments == null && inputDescriptor?.link != null) {
             return of(null);
           }
 
           const limit = this.properties[this.maxRecordsCountPropertyName] as number | undefined ?? 100;
           const fromDate = this.properties[this.fromDatePropertyName] as Date;
 
-          return this.loadNews(targetInstrument, limit, context.newsService, fromDate);
+          return this.loadNews(this.toInstruments(targetInstruments ?? ''), limit, context.newsService, fromDate);
         }
       ),
       map(items => {
@@ -170,7 +173,7 @@ export class NewsSourceNode extends NodeBase {
   }
 
   private loadNews(
-    targetInstrument: InstrumentKey,
+    targetInstruments: InstrumentKey[],
     limit: number,
     newsService: NewsService,
     fromDate?: Date,
@@ -193,7 +196,7 @@ export class NewsSourceNode extends NodeBase {
       return newsService.getNews({
         offset,
         limit: itemsToRequest,
-        symbols: [targetInstrument.symbol]
+        symbols: targetInstruments.map(i => i.symbol)
       }).pipe(
         switchMap(items => {
           if (items.length === 0) {
@@ -226,5 +229,17 @@ export class NewsSourceNode extends NodeBase {
     };
 
     return loadBatch();
+  }
+
+  private toInstruments(rawValue: string): InstrumentKey[] {
+    if (rawValue.length === 0) {
+      return [];
+    }
+
+    if (rawValue.includes(ArrayItemsSeparator)) {
+      return rawValue.split(ArrayItemsSeparator).map(i => InstrumentUtils.fromString(i));
+    }
+
+    return [InstrumentUtils.fromString(rawValue)];
   }
 }

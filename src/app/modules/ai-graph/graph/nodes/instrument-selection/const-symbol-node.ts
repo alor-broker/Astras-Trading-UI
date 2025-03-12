@@ -3,7 +3,8 @@ import {map} from "rxjs/operators";
 import {NodeBase} from "../node-base";
 import {SlotType} from "../../slot-types";
 import {NodeCategories} from "../node-categories";
-import {OutputDataObject, StringValueValidationOptions} from "../models";
+import {StringValueValidationOptions} from "../models";
+import {InstrumentUtils} from "../../../utils/instrument.utils";
 
 export class ConstSymbolNode extends NodeBase {
   readonly outputSlotName = 'instrument';
@@ -39,7 +40,7 @@ export class ConstSymbolNode extends NodeBase {
 
     this.addOutput(
       this.outputSlotName,
-      SlotType.InstrumentKey,
+      SlotType.String,
       {
         nameLocked: true,
         removable: false
@@ -64,10 +65,10 @@ export class ConstSymbolNode extends NodeBase {
         if ((symbol ?? '').length > 0 && (exchange ?? '').length) {
           this.setOutputByName(
             this.outputSlotName,
-            {
+            InstrumentUtils.toString({
               symbol,
-              exchange,
-            } as OutputDataObject
+              exchange
+            })
           );
 
           return true;
