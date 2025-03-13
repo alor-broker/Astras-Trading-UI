@@ -20,6 +20,9 @@
     },
     "markdown-output": {
       "title": "Текст"
+    },
+    "portfolio": {
+      "title": "Портфель"
     }
   },
 
@@ -38,7 +41,7 @@
     "exchange": {
       "name": "Биржа"
     },
-    "instrument": {
+    "instruments": {
       "name": "Инстр."
     },
     "maxRecordsCount": {
@@ -67,6 +70,9 @@
     },
     "includeContent": {
       "name": "Добавить содержимое"
+    },
+    "portfolio": {
+      "name": "Портфель"
     }
   },
 

@@ -1,13 +1,14 @@
-﻿import {Observable, of} from "rxjs";
+﻿import {Observable} from "rxjs";
 import {map} from "rxjs/operators";
 import {NodeBase} from "../node-base";
 import {SlotType} from "../../slot-types";
 import {NodeCategories} from "../node-categories";
 import {StringValueValidationOptions} from "../models";
 import {InstrumentUtils} from "../../../utils/instrument.utils";
+import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
 
 export class ConstSymbolNode extends NodeBase {
-  readonly outputSlotName = 'instrument';
+  readonly outputSlotName = 'instruments';
   readonly symbolPropertyName = 'symbol';
   readonly exchangePropertyName = 'exchange';
 
@@ -40,7 +41,7 @@ export class ConstSymbolNode extends NodeBase {
 
     this.addOutput(
       this.outputSlotName,
-      SlotType.String,
+      SlotType.InstrumentsStr,
       {
         nameLocked: true,
         removable: false
@@ -56,8 +57,8 @@ export class ConstSymbolNode extends NodeBase {
     return NodeCategories.InstrumentSelection;
   }
 
-  override executor(): Observable<boolean> {
-    return of(true).pipe(
+  override executor(context: GraphProcessingContextService): Observable<boolean> {
+    return super.executor(context).pipe(
       map(() => {
         const symbol = this.properties[this.symbolPropertyName] as string;
         const exchange = this.properties[this.exchangePropertyName] as string;

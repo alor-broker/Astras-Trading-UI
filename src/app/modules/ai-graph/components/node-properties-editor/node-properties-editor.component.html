@@ -19,6 +19,9 @@
             @case (SlotTypes.Date) {
               <ats-date-property-editor [config]="editor.config"></ats-date-property-editor>
             }
+            @case (SlotTypes.Portfolio) {
+              <ats-portfolio-property-editor [config]="editor.config"></ats-portfolio-property-editor>
+            }
           }
         </div>
       }

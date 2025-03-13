@@ -7,11 +7,10 @@ import {GraphProcessingContextService} from "../../../services/graph-processing-
 import {DateValueValidationOptions, NumberValueValidationOptions} from "../models";
 import {add, isBefore, parseISO, startOfDay} from "date-fns";
 import {NewsListItem, NewsService} from "../../../../../shared/services/news.service";
-import {ArrayItemsSeparator} from "../../../constants/graph-data.constants";
 import {InstrumentUtils} from "../../../utils/instrument.utils";
 
 export class NewsSourceNode extends NodeBase {
-  readonly inputSlotName = 'instrument';
+  readonly inputSlotName = 'instruments';
   readonly maxRecordsCountPropertyName = 'maxRecordsCount';
   readonly fromDatePropertyName = 'fromDate';
   readonly includeDatePropertyName = 'includeDate';
@@ -76,7 +75,7 @@ export class NewsSourceNode extends NodeBase {
 
     this.addInput(
       this.inputSlotName,
-      SlotType.String,
+      SlotType.InstrumentsStr,
       {
         nameLocked: true,
         removable: false
@@ -101,22 +100,30 @@ export class NewsSourceNode extends NodeBase {
   }
 
   override executor(context: GraphProcessingContextService): Observable<boolean> {
-    return of(true).pipe(
+    return super.executor(context).pipe(
       switchMap(() => {
           const targetInstruments = this.getValueOfInput(this.inputSlotName) as string | undefined;
           const inputDescriptor = this.findInputSlot(this.inputSlotName, true);
-          if(targetInstruments == null && inputDescriptor?.link != null) {
+          if (targetInstruments == null && inputDescriptor?.link != null) {
             return of(null);
           }
 
           const limit = this.properties[this.maxRecordsCountPropertyName] as number | undefined ?? 100;
           const fromDate = this.properties[this.fromDatePropertyName] as Date;
+          const instruments = this.toInstruments(targetInstruments ?? '');
 
-          return this.loadNews(this.toInstruments(targetInstruments ?? ''), limit, context.newsService, fromDate);
+          return this.loadNews(instruments, limit, context.newsService, fromDate).pipe(
+            map(items => (
+              {
+                items,
+                instruments
+              }
+            ))
+          );
         }
       ),
-      map(items => {
-          if (items == null) {
+      map(x => {
+          if (x?.items == null) {
             return false;
           }
 
@@ -125,10 +132,11 @@ export class NewsSourceNode extends NodeBase {
           const includeContent = this.properties[this.includeContentPropertyName] as boolean ?? false;
 
           const merged = this.mergeToString(
-            items,
+            x.items,
             includeDate,
             includeHeader,
-            includeContent
+            includeContent,
+            x.instruments.length !== 1
           );
 
           this.setOutputByName(
@@ -145,7 +153,8 @@ export class NewsSourceNode extends NodeBase {
     items: NewsListItem[],
     includeDate: boolean,
     includeHeader: boolean,
-    includeContent: boolean
+    includeContent: boolean,
+    hasItemsForSeveralInstruments: boolean
   ): string {
     if (!includeDate && !includeHeader && !includeContent) {
       return '';
@@ -153,6 +162,7 @@ export class NewsSourceNode extends NodeBase {
 
     const merged = items.map(i => {
       const parts: string[] = [];
+
       if (includeDate) {
         parts.push(i.publishDate);
       }
@@ -165,9 +175,14 @@ export class NewsSourceNode extends NodeBase {
         parts.push(i.content);
       }
 
-      return parts.join('<br>');
+      const itemContent = parts.join('<br>');
+      if (hasItemsForSeveralInstruments) {
+        return `\n#### ${i.symbols.join(', ')}\n${itemContent}`;
+      }
+
+      return itemContent;
     })
-      .join('<br><br>');
+      .join(hasItemsForSeveralInstruments ? '<br>' : '<br><br>');
 
     return merged;
   }
@@ -236,8 +251,8 @@ export class NewsSourceNode extends NodeBase {
       return [];
     }
 
-    if (rawValue.includes(ArrayItemsSeparator)) {
-      return rawValue.split(ArrayItemsSeparator).map(i => InstrumentUtils.fromString(i));
+    if (InstrumentUtils.isArray(rawValue)) {
+      return InstrumentUtils.fromStringToArray(rawValue) ?? [];
     }
 
     return [InstrumentUtils.fromString(rawValue)];

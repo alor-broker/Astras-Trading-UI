@@ -20,6 +20,9 @@
     },
     "markdown-output": {
       "title": "Text"
+    },
+    "portfolio": {
+      "title": "Portfolio"
     }
   },
 
@@ -38,7 +41,7 @@
     "exchange": {
       "name": "Exchange"
     },
-    "instrument": {
+    "instruments": {
       "name": "Instrument"
     },
     "maxRecordsCount": {
@@ -67,6 +70,9 @@
     },
     "includeContent": {
       "name": "Include Content"
+    },
+    "portfolio": {
+      "name": "Portfolio"
     }
   },
 

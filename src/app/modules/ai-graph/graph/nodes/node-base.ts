@@ -1,5 +1,5 @@
 ﻿import {IFoundSlot, INodeInputSlot, LGraphNode} from "@comfyorg/litegraph";
-import {Observable, of} from "rxjs";
+import {Observable, of, tap} from "rxjs";
 import {INodeOutputSlot, ISlotType} from "@comfyorg/litegraph/dist/interfaces";
 import {ContextMenu, NodeSlotOptions, OutputDataObject, OutputFormat} from "./models";
 import {GraphProcessingContextService} from "../../services/graph-processing-context.service";
@@ -39,7 +39,9 @@ export class NodeBase extends LGraphNode {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   executor(context: GraphProcessingContextService): Observable<boolean> {
-    return of(true);
+    return of(true).pipe(
+      tap(() => this.clearOutputs())
+    );
   }
 
   addOutput(
@@ -76,6 +78,14 @@ export class NodeBase extends LGraphNode {
     }
   }
 
+  clearOutputs(): void {
+    for (const output of this.outputs) {
+      for (const link of output.links ?? []) {
+        delete this.graph?.links.get(link)?.data;
+      }
+    }
+  }
+
   getValueOfInput(name: string): unknown {
     const slot = this.findInputSlot(name);
     if (slot === -1) {
@@ -96,6 +106,7 @@ export class NodeBase extends LGraphNode {
   getOutputSlotLocalizedLabel?(output: INodeOutputSlot, translator: TranslatorFn): string;
 
   getPropertyLocalizedLabel?(name: string, translator: TranslatorFn): string;
+
   getNodeMenu(translator: TranslatorFn, customCallbacks?: {
     editNodeProperties?: (node: NodeBase) => void;
   }): ContextMenu {

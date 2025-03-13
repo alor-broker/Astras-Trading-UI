@@ -3,13 +3,19 @@
   exchange: string;
 }
 
+export interface PortfolioKey {
+  portfolio: string;
+  exchange: string;
+}
+
 export enum SlotType {
-  InstrumentKey = "instrument_key",
   Number = "number",
   String = "string",
   Array = "array",
   Boolean = "boolean",
   Date = "date",
+  Portfolio = "portfolio",
+  InstrumentsStr = "instruments_str",
 }
 
 export enum ExtendedEditors {

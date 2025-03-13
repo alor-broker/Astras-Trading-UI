@@ -57,7 +57,7 @@ export class RequestToAiNode extends NodeBase {
   }
 
   override executor(context: GraphProcessingContextService): Observable<boolean> {
-    return of(true).pipe(
+    return super.executor(context).pipe(
       switchMap(() => {
         const prompt = this.preparePrompt();
         if (prompt == null || prompt.length === 0) {
