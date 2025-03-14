@@ -9,7 +9,7 @@ export class SlotMenuBuilder {
 
     if ((targetSlot.output?.links?.length ?? 0) > 0) {
       options.push({
-        content: translator(['labels', 'disconnectLinks'], {falback: 'Disconnect Links'}),
+        content: translator(['labels', 'disconnectLinks'], {fallback: 'Disconnect Links'}),
         callback: () => {
           targetNode.graph?.beforeChange();
           if (targetSlot.output) {
@@ -25,7 +25,7 @@ export class SlotMenuBuilder {
     const slot = (targetSlot.input ?? targetSlot.output);
     if ((slot?.removable ?? true) && !(slot?.locked ?? false)) {
       options.push({
-        content: translator(['labels', 'remove'], {falback: 'Remove'}),
+        content: translator(['labels', 'remove'], {fallback: 'Remove'}),
         callback: () => {
           targetNode.graph?.beforeChange();
           if (targetSlot.input) {

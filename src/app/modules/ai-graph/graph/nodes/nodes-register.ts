@@ -5,6 +5,7 @@ import {NewsSourceNode} from "./info-sources/news-source-node";
 import {RequestToAiNode} from "./ai/request-to-ai-node";
 import {MarkdownOutputNode} from "./output/markdown-output-node";
 import {NodeCategories} from "./node-categories";
+import {PortfolioNode} from "./instrument-selection/portfolio-node";
 
 interface NodeRegistration {
   type: string;
@@ -53,4 +54,9 @@ NodesRegister.registerNode({
 NodesRegister.registerNode({
   type: MarkdownOutputNode.nodeType,
   class: MarkdownOutputNode
+});
+
+NodesRegister.registerNode({
+  type: PortfolioNode.nodeType,
+  class: PortfolioNode
 });

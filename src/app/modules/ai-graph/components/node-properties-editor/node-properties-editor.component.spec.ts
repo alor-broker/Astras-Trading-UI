@@ -1,7 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { NodePropertiesEditorComponent } from './node-properties-editor.component';
+import {NodePropertiesEditorComponent} from './node-properties-editor.component';
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents} from "ng-mocks";
+import {
+  StringPropertyEditorComponent
+} from "../property-editors/string-property-editor/string-property-editor.component";
+import {
+  NumberPropertyEditorComponent
+} from "../property-editors/number-property-editor/number-property-editor.component";
+import {
+  BooleanPropertyEditorComponent
+} from "../property-editors/boolean-property-editor/boolean-property-editor.component";
+import {TextPropertyEditorComponent} from "../property-editors/text-property-editor/text-property-editor.component";
+import {DatePropertyEditorComponent} from "../property-editors/date-property-editor/date-property-editor.component";
+import {
+  PortfolioPropertyEditorComponent
+} from "../property-editors/portfolio-property-editor/portfolio-property-editor.component";
 
 describe('NodePropertiesEditorComponent', () => {
   let component: NodePropertiesEditorComponent;
@@ -11,10 +26,18 @@ describe('NodePropertiesEditorComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         NodePropertiesEditorComponent,
-        TranslocoTestsModule.getModule()
+        TranslocoTestsModule.getModule(),
+        MockComponents(
+          StringPropertyEditorComponent,
+          NumberPropertyEditorComponent,
+          BooleanPropertyEditorComponent,
+          TextPropertyEditorComponent,
+          DatePropertyEditorComponent,
+          PortfolioPropertyEditorComponent
+        )
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(NodePropertiesEditorComponent);
     component = fixture.componentInstance;

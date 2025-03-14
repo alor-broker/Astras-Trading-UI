@@ -13,7 +13,13 @@
     class="h-100 w-100"
     nzResizeObserver>
     <ng-container *ngrxLet="{containerSize: containerSize$} as vm">
-      <canvas #canvas [height]="vm.containerSize.height" [width]="vm.containerSize.width"></canvas>
+      <canvas
+        #canvas
+        [height]="vm.containerSize.canvas.height"
+        [width]="vm.containerSize.canvas.width"
+        [style.height]="vm.containerSize.canvas.height + 'px'"
+        [style.width]="vm.containerSize.canvas.width + 'px'"
+      ></canvas>
     </ng-container>
   </div>
   <div

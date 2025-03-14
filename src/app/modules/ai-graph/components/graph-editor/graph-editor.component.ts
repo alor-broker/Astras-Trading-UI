@@ -68,7 +68,18 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
 
   protected runStatus: RunStatus | null = null;
 
-  protected containerSize$ = new BehaviorSubject<ContentSize>({height: 100, width: 100});
+  protected containerSize$ = new BehaviorSubject<{
+    css: ContentSize;
+    canvas: ContentSize;
+  }>({
+    css: {
+      height: 100, width: 100
+    },
+    canvas: {
+      height: 100, width: 100
+    }
+  });
+
   protected currentConfig: GraphConfig | null = null;
   protected isRunMenuVisible = false;
   private graphCanvas?: LGraphCanvas;
@@ -106,10 +117,22 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
 
   containerSizeChanged(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {
-      this.containerSize$.next({
+      const pixels: ContentSize = {
         width: Math.floor(x.contentRect.width),
         height: Math.floor(x.contentRect.height)
-      });
+      };
+
+      const dpr = window.devicePixelRatio;
+
+      this.containerSize$.next(
+        {
+          css: pixels,
+          canvas: {
+            height: pixels.height * dpr,
+            width: pixels.width * dpr,
+          }
+        }
+      );
       setTimeout(() => {
         this.graphCanvas?.draw(true, true);
       });

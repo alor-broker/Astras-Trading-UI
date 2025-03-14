@@ -13,7 +13,7 @@ export class BackgroundMenuBuilder {
 
     if (submenu.options != null && submenu.options.length > 0) {
       options.push({
-          content: translator(['labels', 'addNode'], {falback: "Add Node"}),
+          content: translator(['labels', 'addNode'], {fallback: "Add Node"}),
           has_submenu: true,
           submenu
         }
@@ -33,10 +33,10 @@ export class BackgroundMenuBuilder {
 
       if (nodes.length > 0) {
         options.push({
-          content: translator(['categories', category], {falback: category}),
+          content: translator(['categories', category], {fallback: category}),
           has_submenu: true,
           submenu: {
-            title: translator(['labels', 'blocks'], {falback: 'Blocks'}),
+            title: translator(['labels', 'blocks'], {fallback: 'Blocks'}),
             options: nodes,
             callback: (value, subOptions, event, parent) => {
               const firstEvent = parent?.getFirstEvent() ?? event;
@@ -55,7 +55,7 @@ export class BackgroundMenuBuilder {
     });
 
     return {
-      title: translator(['labels', 'categories'], {falback: 'Categories'}),
+      title: translator(['labels', 'categories'], {fallback: 'Categories'}),
       options
     };
   }
@@ -63,7 +63,7 @@ export class BackgroundMenuBuilder {
   private static getNodesForCategoryMenu(category: NodeCategories, translator: TranslatorFn): IContextMenuValue[] {
     return NodesRegister.getRegistrationsForCategory(category).map(r => {
         return {
-          content: translator(['nodes', r.class.title, 'title'], {falback: r.class.title}),
+          content: translator(['nodes', r.class.title, 'title'], {fallback: r.class.title}),
           value: r.type
         };
       }
