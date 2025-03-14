@@ -116,4 +116,11 @@ export class NodeBase extends LGraphNode {
   getSlotMenu(targetSlot: IFoundSlot, translator: TranslatorFn): ContextMenu {
     return SlotMenuBuilder.getMenu(this, targetSlot, translator);
   }
+
+  isAllInputsProvided(): boolean {
+    return this.inputs.every((input, index) => {
+      return input.link == null
+        || this.getInputData(index) != null;
+    });
+  }
 }

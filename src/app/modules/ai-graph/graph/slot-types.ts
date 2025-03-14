@@ -16,10 +16,12 @@ export enum SlotType {
   Date = "date",
   Portfolio = "portfolio",
   InstrumentsStr = "instruments_str",
+  Any = "*"
 }
 
 export enum ExtendedEditors {
-  MultilineText = 'multiline_text'
+  MultilineText = 'multiline_text',
+  Prompt = 'prompt',
 }
 
 export type EditorType = SlotType | ExtendedEditors;

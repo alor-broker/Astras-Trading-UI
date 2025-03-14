@@ -104,7 +104,10 @@ export class NewsSourceNode extends NodeBase {
       switchMap(() => {
           const targetInstruments = this.getValueOfInput(this.inputSlotName) as string | undefined;
           const inputDescriptor = this.findInputSlot(this.inputSlotName, true);
-          if (targetInstruments == null && inputDescriptor?.link != null) {
+          if (
+            inputDescriptor?.link != null
+            && (targetInstruments == null || targetInstruments.length === 0)
+          ) {
             return of(null);
           }
 
