@@ -148,6 +148,8 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
         return this.getClusterBuySellDominanceStyle(item, themeColors);
       case TradesClusterHighlightMode.TargetVolume:
         return this.getClusterTargetVolumeStyle(item, settings.targetVolume ?? null, themeColors);
+      case TradesClusterHighlightMode.BuyVsSell:
+        return this.getClusterBuyVsSellStyle(item, themeColors);
       default:
         return null;
     }
@@ -235,6 +237,34 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
     return {
       'background-color': d3Color.formatRgb(),
       'width': `${percent}%`
+    };
+  }
+
+  private getClusterBuyVsSellStyle(
+    item: DisplayItem,
+    themeColors: ThemeColors
+  ): any | null {
+    if(
+      item.volume == null
+      || item.volume === 0
+    ) {
+      return null;
+    }
+
+    const d3BuyColor = color(themeColors.buyColor);
+    const d3SellColor = color(themeColors.sellColor);
+
+    if(d3BuyColor == null || d3SellColor == null) {
+      return null;
+    }
+
+    d3BuyColor.opacity = d3SellColor.opacity = 0.5;
+
+    const buyVolumePercent = Math.round((item.buyQty / item.volume) * 100);
+
+    return {
+      'background': `linear-gradient(90deg, ${d3BuyColor.formatRgb()} ${buyVolumePercent}%, ${d3SellColor.formatRgb()} ${buyVolumePercent}%)`,
+      'width': '100%'
     };
   }
 }

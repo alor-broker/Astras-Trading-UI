@@ -23,6 +23,7 @@ export enum TradesClusterHighlightMode {
   Off = 'off',
   BuySellDominance = 'buySellDominance',
   TargetVolume = 'targetVolume',
+  BuyVsSell = 'buyVsSell'
 }
 
 export interface TradesClusterPanelSettings {

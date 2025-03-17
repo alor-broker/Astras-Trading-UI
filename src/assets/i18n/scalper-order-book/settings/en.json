@@ -94,6 +94,7 @@
   "tradesClusterHighlightOptions": {
     "off": "Off",
     "buySellDominance": "Buy/Sell dominance",
-    "targetVolume": "Filling relative to volume"
+    "targetVolume": "Filling relative to volume",
+    "buyVsSell": "Byu | Sell"
   }
 }
