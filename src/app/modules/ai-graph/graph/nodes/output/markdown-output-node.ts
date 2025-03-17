@@ -1,9 +1,10 @@
 ﻿import {NodeBase} from "../node-base";
 import {NodeCategories} from "../node-categories";
 import {SlotType} from "../../slot-types";
-import {Observable, of} from "rxjs";
+import {Observable} from "rxjs";
 import {map} from "rxjs/operators";
 import {OutputFormat} from "../models";
+import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
 
 export class MarkdownOutputNode extends NodeBase {
   constructor() {
@@ -35,8 +36,8 @@ export class MarkdownOutputNode extends NodeBase {
     return false;
   }
 
-  override executor(): Observable<boolean> {
-    return of(true).pipe(
+  override executor(context: GraphProcessingContextService): Observable<boolean> {
+    return super.executor(context).pipe(
       map(() => {
         return true;
       })

@@ -1,0 +1,40 @@
+<ng-container *transloco="let t; scope: 'ai-graph/prompt-property-editor'">
+  @if (getTypedConfig(); as config) {
+    <form nz-form [formGroup]="form">
+      <nz-form-item>
+        <nz-form-label nzFor="property" [nzRequired]="config.validation.minLength > 0">{{ config.label }}
+        </nz-form-label>
+        <nz-form-control
+          [nzErrorTip]="t('validationErrors.stringInputLength', {min: config.validation.minLength, max: config.validation.maxLength})">
+          <span>
+            <span
+              nz-icon
+              nzType="info-circle"
+              nzTheme="outline"
+              class="primary-color pr-5"
+              nz-tooltip
+              [nzTooltipTitle]="t('aiGraphPromptPropertyEditor.inputPlaceholdersTooltip')"
+            ></span>
+
+            @for (input of availableInputs; track input) {
+              <button
+                nz-button
+                nzType="text"
+                nzShape="round"
+                (click)="addInputPlaceholder(input, inputEl)"
+              >
+                {{ input }}
+              </button>
+            }
+
+          </span>
+          <nz-textarea-count [nzMaxCharacterCount]="config.validation.maxLength">
+            <textarea nz-input formControlName="property" [nzAutosize]="{ minRows: 5, maxRows: 20 }"
+                      #inputEl></textarea>
+          </nz-textarea-count>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  }
+</ng-container>
+

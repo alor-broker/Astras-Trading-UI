@@ -29,7 +29,7 @@ export class NodeMenuBuilder {
 
     if (targetNode.resizable ?? true) {
       options.push({
-        content: translator(['labels', 'resize'], {falback: 'Adjust Size'}),
+        content: translator(['labels', 'resize'], {fallback: 'Adjust Size'}),
         callback: (value, subOptions, event, previousMenu) => {
           LGraphCanvas.onMenuResizeNode(value as IContextMenuValue, subOptions as IContextMenuOptions, event!, previousMenu!, targetNode);
           LGraphCanvas.active_canvas.graph?.afterChange();
@@ -40,8 +40,8 @@ export class NodeMenuBuilder {
     if (targetNode.collapsible) {
       options.push({
         content: targetNode.collapsed
-          ? translator(['labels', 'expand'], {falback: 'Expand'})
-          : translator(['labels', 'collapse'], {falback: 'Collapse'}),
+          ? translator(['labels', 'expand'], {fallback: 'Expand'})
+          : translator(['labels', 'collapse'], {fallback: 'Collapse'}),
         callback: LGraphCanvas.onMenuNodeCollapse
       });
     }
@@ -51,12 +51,12 @@ export class NodeMenuBuilder {
 
     if(Object.keys(LGraphCanvas.active_canvas.selected_nodes).length > 1) {
       options.push({
-        content: translator(['labels', 'alignTo'], {falback: 'Align Selected To'}),
+        content: translator(['labels', 'alignTo'], {fallback: 'Align Selected To'}),
         has_submenu: true,
         submenu: {
           options: ['top', 'bottom', 'left', 'right'].map(value => {
             return {
-              content: translator(['alignSideOptions', value], {falback: value}),
+              content: translator(['alignSideOptions', value], {fallback: value}),
               callback: (): void => {
                 const canvas = LGraphCanvas.active_canvas;
                 alignNodes(
@@ -74,12 +74,12 @@ export class NodeMenuBuilder {
       });
 
       options.push({
-        content: translator(['labels', 'distribute'], {falback: 'Distribute Nodes'}),
+        content: translator(['labels', 'distribute'], {fallback: 'Distribute Nodes'}),
         has_submenu: true,
         submenu: {
           options: ['vertically', 'horizontally'].map(value => {
             return {
-              content: translator(['distributeOptions', value], {falback: value}),
+              content: translator(['distributeOptions', value], {fallback: value}),
               callback: (): void => {
                 const canvas = LGraphCanvas.active_canvas;
                 distributeNodes(Object.values(canvas.selected_nodes), value === "horizontally");
@@ -97,14 +97,14 @@ export class NodeMenuBuilder {
 
     if (targetNode.clonable ?? true) {
       options.push({
-        content: translator(['labels', 'clone'], {falback: 'Clone'}),
+        content: translator(['labels', 'clone'], {fallback: 'Clone'}),
         callback: LGraphCanvas.onMenuNodeClone
       });
     }
 
     if (targetNode.removable ?? true) {
       options.push({
-        content: translator(['labels', 'remove'], {falback: 'Remove'}),
+        content: translator(['labels', 'remove'], {fallback: 'Remove'}),
         callback: LGraphCanvas.onMenuNodeRemove
       });
     }
@@ -115,7 +115,7 @@ export class NodeMenuBuilder {
     }
 
     options.push({
-      content: translator(['labels', 'properties'], {falback: 'Properties'}),
+      content: translator(['labels', 'properties'], {fallback: 'Properties'}),
       callback: () => {
         if(customCallbacks?.editNodeProperties != null) {
           customCallbacks.editNodeProperties(targetNode);
