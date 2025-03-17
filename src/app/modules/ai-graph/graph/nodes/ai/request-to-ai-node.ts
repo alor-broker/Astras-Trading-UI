@@ -20,7 +20,7 @@ export class RequestToAiNode extends NodeBase {
       '',
       SlotType.String,
       {
-        editorType: ExtendedEditors.MultilineText,
+        editorType: ExtendedEditors.Prompt,
         validation: {
           minLength: 1,
           maxLength: 10000
@@ -31,7 +31,7 @@ export class RequestToAiNode extends NodeBase {
     for (let i = 1; i <= 5; i++) {
       this.addInput(
         `${this.inputSlotPrefix}${i}`,
-        SlotType.String,
+        SlotType.Any,
         {
           removable: true,
           nameLocked: false
@@ -57,8 +57,12 @@ export class RequestToAiNode extends NodeBase {
   }
 
   override executor(context: GraphProcessingContextService): Observable<boolean> {
-    return of(true).pipe(
+    return super.executor(context).pipe(
       switchMap(() => {
+        if(!this.isAllInputsProvided()) {
+          return of(false);
+        }
+
         const prompt = this.preparePrompt();
         if (prompt == null || prompt.length === 0) {
           return of(false);

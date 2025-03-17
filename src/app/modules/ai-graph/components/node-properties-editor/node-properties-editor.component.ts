@@ -1,10 +1,11 @@
 import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {NodeBase} from "../../graph/nodes/node-base";
-import {EditorType, ExtendedEditors, SlotType} from "../../graph/slot-types";
+import {EditorType, ExtendedEditors, PortfolioKey, SlotType} from "../../graph/slot-types";
 import {
   BooleanPropertyEditorConfig,
   DatePropertyEditorConfig,
   NumberPropertyEditorConfig,
+  PortfolioPropertyEditorConfig,
   PropertyEditorConfig,
   StringPropertyEditorConfig
 } from "../../models/property-editor.model";
@@ -26,11 +27,18 @@ import {
   DateValueValidationOptions,
   NodePropertyInfo,
   NumberValueValidationOptions,
+  PortfolioValueValidationOptions,
   StringValueValidationOptions
 } from "../../graph/nodes/models";
 import {TextPropertyEditorComponent} from "../property-editors/text-property-editor/text-property-editor.component";
 import {add} from "date-fns";
 import {DatePropertyEditorComponent} from "../property-editors/date-property-editor/date-property-editor.component";
+import {
+  PortfolioPropertyEditorComponent
+} from "../property-editors/portfolio-property-editor/portfolio-property-editor.component";
+import {
+  PromptPropertyEditorComponent
+} from "../property-editors/prompt-property-editor/prompt-property-editor.component";
 
 interface Editor {
   type: EditorType;
@@ -51,7 +59,9 @@ interface EditorsSection {
     NumberPropertyEditorComponent,
     BooleanPropertyEditorComponent,
     TextPropertyEditorComponent,
-    DatePropertyEditorComponent
+    DatePropertyEditorComponent,
+    PortfolioPropertyEditorComponent,
+    PromptPropertyEditorComponent
   ],
   templateUrl: './node-properties-editor.component.html',
   styleUrl: './node-properties-editor.component.less'
@@ -198,6 +208,10 @@ export class NodePropertiesEditorComponent implements OnChanges {
         return this.createBooleanEditor(propertyKey, targetNode, label);
       case SlotType.Date:
         return this.createDateEditor(propertyKey, propertyInfo, targetNode, label);
+      case SlotType.Portfolio:
+        return this.createPortfolioEditor(propertyKey, propertyInfo, targetNode, label);
+      case ExtendedEditors.Prompt:
+        return this.createPromptEditor(propertyKey, propertyInfo, targetNode, label);
       default:
         return this.createStringEditor(propertyKey, propertyInfo, targetNode, label);
     }
@@ -241,6 +255,23 @@ export class NodePropertiesEditorComponent implements OnChanges {
         label
       ),
       type: ExtendedEditors.MultilineText
+    };
+  }
+
+  private createPromptEditor(
+    propertyKey: string,
+    propertyInfo: NodePropertyInfo,
+    targetNode: NodeBase,
+    label: string
+  ): Editor {
+    return {
+      ...this.createStringEditor(
+        propertyKey,
+        propertyInfo,
+        targetNode,
+        label
+      ),
+      type: ExtendedEditors.Prompt
     };
   }
 
@@ -314,6 +345,31 @@ export class NodePropertiesEditorComponent implements OnChanges {
           )
         },
         initialValue: value != null ? new Date(value) : null,
+        applyValueCallback: value => {
+          this.applyChanges(node => {
+            node.properties[propertyKey] = value;
+          });
+        }
+      }
+    );
+  }
+
+  private createPortfolioEditor(
+    propertyKey: string,
+    propertyInfo: NodePropertyInfo,
+    targetNode: NodeBase,
+    label: string
+  ): Editor {
+    const value = targetNode.properties[propertyKey] as (PortfolioKey | null);
+
+    return this.createEditor<PortfolioPropertyEditorConfig>(
+      SlotType.Portfolio,
+      {
+        label,
+        validation: (propertyInfo.validation as PortfolioValueValidationOptions) ?? {
+          required: true
+        },
+        initialValue: value,
         applyValueCallback: value => {
           this.applyChanges(node => {
             node.properties[propertyKey] = value;

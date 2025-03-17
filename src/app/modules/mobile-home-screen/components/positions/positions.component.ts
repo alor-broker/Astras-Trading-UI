@@ -85,7 +85,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
       params: this.itemsDisplayParams$
     }).pipe(
       map(x => {
-        const filteredPositions = x.allPositions.filter(p => p.currentVolume > 0);
+        const filteredPositions = x.allPositions.filter(p => p.currentVolume != 0);
 
         return {
           items: this.getDisplayItems(filteredPositions, x.params),

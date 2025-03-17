@@ -30,7 +30,7 @@ export class StringPropertyEditorComponent extends PropertyEditorBaseComponent<S
 
   constructor(
     protected readonly formBuilder: FormBuilder,
-    protected readonly destroyRef: DestroyRef
+    protected readonly destroyRef: DestroyRef,
   ) {
     super();
   }
