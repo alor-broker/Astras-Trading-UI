@@ -118,7 +118,7 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
         quantity: Number(formValue.quantity),
         side: side
       },
-      portfolioKey.portfolio
+      portfolioKey
     );
   }
 

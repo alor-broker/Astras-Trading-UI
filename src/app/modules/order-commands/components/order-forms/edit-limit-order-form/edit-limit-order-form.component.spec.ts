@@ -315,7 +315,7 @@ describe('EditLimitOrderFormComponent', () => {
         ).subscribe(() => {
           expect(orderServiceSpy.submitLimitOrderEdit).toHaveBeenCalledOnceWith(
             jasmine.objectContaining(expectedOrder),
-            portfolio.portfolio
+            jasmine.objectContaining(portfolio)
           );
         });
 

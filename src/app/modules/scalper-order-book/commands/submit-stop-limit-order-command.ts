@@ -36,6 +36,7 @@ export interface SubmitStopLimitOrderCommandArgs {
   targetPortfolio: string;
   silent: boolean;
   orderTracker?: StopLimitOrderTracker;
+  allowMargin?: boolean;
 }
 
 @Injectable()
@@ -66,7 +67,8 @@ export class SubmitStopLimitOrderCommand extends CommandBase<SubmitStopLimitOrde
       condition: args.side === Side.Buy ? LessMore.MoreOrEqual : LessMore.LessOrEqual,
       meta: {
         trackId: GuidGenerator.newGuid()
-      }
+      },
+      allowMargin: args.allowMargin
     };
 
     if (args.silent) {

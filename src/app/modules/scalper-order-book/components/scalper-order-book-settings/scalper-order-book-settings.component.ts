@@ -228,6 +228,7 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
         Validators.max(this.validationOptions.stopLimitOrdersDistance.max)
       ]
     ),
+    allowMargin: this.formBuilder.nonNullable.control<boolean | null>(null),
     // additional panels
     showTradesClustersPanel: this.formBuilder.nonNullable.control(false),
     tradesClusterPanelSettings: this.formBuilder.group(
@@ -573,6 +574,7 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
     this.form.controls.disableHotkeys.setValue(settings.disableHotkeys);
     this.form.controls.enableMouseClickSilentOrders.setValue(settings.enableMouseClickSilentOrders);
     this.form.controls.stopLimitOrdersDistance.setValue(settings.stopLimitOrdersDistance ?? 0);
+    this.form.controls.allowMargin.setValue(settings.allowMargin ?? null);
 
     this.form.controls.showTradesPanel.setValue(settings.showTradesPanel ?? false);
     if (settings.tradesPanelSettings) {

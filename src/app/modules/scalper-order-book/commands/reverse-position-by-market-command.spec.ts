@@ -73,7 +73,8 @@ describe('ReversePositionByMarketCommand', () => {
           {
             side: Side.Sell,
             quantity: position.qtyTFutureBatch * 2,
-            instrument: testInstrumentKey
+            instrument: testInstrumentKey,
+            allowMargin: undefined
           } as NewMarketOrder,
           portfolioKey.portfolio
         );
@@ -93,7 +94,8 @@ describe('ReversePositionByMarketCommand', () => {
           {
             side: Side.Buy,
             quantity: Math.abs(position.qtyTFutureBatch) * 2,
-            instrument: testInstrumentKey
+            instrument: testInstrumentKey,
+            allowMargin: undefined
           } as NewMarketOrder,
           portfolioKey.portfolio
         );

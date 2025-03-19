@@ -13,6 +13,7 @@ import {
 export interface ReversePositionByMarketCommandArgs {
   currentPosition: Position | null;
   targetInstrumentBoard: string | null;
+  allowMargin?: boolean;
 }
 
 @Injectable()
@@ -32,7 +33,8 @@ export class ReversePositionByMarketCommand extends CommandBase<ReversePositionB
     CommonOrderCommands.reversePositionsByMarket(
       args.currentPosition,
       args.targetInstrumentBoard,
-      this.orderCommandService
+      this.orderCommandService,
+      args.allowMargin
     );
   }
 }

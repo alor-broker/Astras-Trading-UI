@@ -262,19 +262,19 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
               baseOrder,
               linkedOrder
             ] as NewLinkedOrder[],
-            portfolioKey.portfolio,
+            portfolioKey,
             ExecutionPolicy.OnExecuteOrCancel
           );
         } else {
           if (formValue.withLimit === true) {
             return this.orderCommandService.submitStopLimitOrder(
               this.getStopLimitOrder(instrument, side, formValue, tc),
-              portfolioKey.portfolio
+              portfolioKey
             );
           } else {
             return this.orderCommandService.submitStopMarketOrder(
               this.getStopMarketOrder(instrument, side, formValue, tc),
-              portfolioKey.portfolio
+              portfolioKey
             );
           }
         }

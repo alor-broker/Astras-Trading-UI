@@ -269,7 +269,7 @@ describe('StopOrderFormComponent', () => {
 
       expect(orderServiceSpy.submitStopMarketOrder).toHaveBeenCalledOnceWith(
         jasmine.objectContaining(expectedOrder),
-        portfolio.portfolio
+        jasmine.objectContaining(portfolio)
       );
 
       discardPeriodicTasks();
@@ -306,7 +306,7 @@ describe('StopOrderFormComponent', () => {
 
       expect(orderServiceSpy.submitStopLimitOrder).toHaveBeenCalledOnceWith(
         jasmine.objectContaining(expectedOrder),
-        portfolio.portfolio
+        jasmine.objectContaining(portfolio)
       );
 
       discardPeriodicTasks();

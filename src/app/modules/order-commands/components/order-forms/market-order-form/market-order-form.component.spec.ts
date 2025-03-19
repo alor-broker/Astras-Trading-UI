@@ -280,7 +280,7 @@ describe('MarketOrderFormComponent', () => {
 
       expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledOnceWith(
         jasmine.objectContaining(expectedOrder),
-        portfolio.portfolio
+        jasmine.objectContaining(portfolio)
       );
 
       discardPeriodicTasks();

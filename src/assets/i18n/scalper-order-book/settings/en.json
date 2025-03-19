@@ -61,6 +61,7 @@
   "minorLinesStepLabel": "Minor levels multiplier",
   "majorLinesStepLabel": "Major levels multiplier",
   "panelSlotsLabel": "Panel slot",
+  "allowMarginLabel": "Allow trades that may result in an uncovered position (for low risk clients only)",
 
   "tickerError": "Select ticker",
   "intervalError": "Value should be from {{min}} to {{max}}",

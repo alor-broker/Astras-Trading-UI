@@ -250,7 +250,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
         const bracketOrders = this.getBracketOrders(limitOrder);
 
         if (bracketOrders.length === 0) {
-          return this.orderCommandService.submitLimitOrder(limitOrder, portfolioKey.portfolio);
+          return this.orderCommandService.submitLimitOrder(limitOrder, portfolioKey);
         } else {
           return this.orderCommandService.submitOrdersGroup([
               {
@@ -262,7 +262,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
                 type: OrderType.StopLimit
               } as NewLinkedOrder))
             ],
-            portfolioKey.portfolio,
+            portfolioKey,
             ExecutionPolicy.TriggerBracketOrders);
         }
       })

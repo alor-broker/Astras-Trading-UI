@@ -104,6 +104,7 @@ export interface ScalperOrderBookInstanceSettings extends InstrumentKey, WidgetS
   fontSize?: number;
   // @deprecated Use shared settings
   instrumentLinkedSettings?: Record<string, InstrumentLinkedSettings>;
+  allowMargin?: boolean;
 }
 
 export interface ScalperOrderBookWidgetSettings extends ScalperOrderBookInstanceSettings, InstrumentLinkedSettings {

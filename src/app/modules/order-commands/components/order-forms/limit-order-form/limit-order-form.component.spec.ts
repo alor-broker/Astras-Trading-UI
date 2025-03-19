@@ -327,7 +327,7 @@ describe('LimitOrderFormComponent', () => {
 
       expect(orderServiceSpy.submitLimitOrder).toHaveBeenCalledOnceWith(
         jasmine.objectContaining(expectedOrder),
-        portfolio.portfolio
+        jasmine.objectContaining(portfolio)
       );
 
       discardPeriodicTasks();

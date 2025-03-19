@@ -18,6 +18,7 @@ export interface GetBestOfferCommandArgs {
   bracketOptions: BracketOptions | null;
   priceStep: number;
   orderTracker?: LimitOrderTracker;
+  allowMargin?: boolean;
 }
 
 @Injectable()
@@ -53,7 +54,8 @@ export class GetBestOfferCommand extends CommandBase<GetBestOfferCommandArgs> {
       bracketOptions: args.bracketOptions,
       priceStep: args.priceStep,
       silent: true,
-      orderTracker: args.orderTracker
+      orderTracker: args.orderTracker,
+      allowMargin: args.allowMargin,
     });
   }
 }

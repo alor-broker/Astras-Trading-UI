@@ -377,7 +377,7 @@ describe('EditStopOrderFormComponent', () => {
         ).subscribe(() => {
           expect(orderServiceSpy.submitStopMarketOrderEdit).toHaveBeenCalledOnceWith(
             jasmine.objectContaining(expectedOrder),
-            portfolio.portfolio
+            jasmine.objectContaining(portfolio)
           );
         });
       });

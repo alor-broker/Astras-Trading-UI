@@ -331,10 +331,10 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
             updatedLimitOrder.icebergVariance = Number(formValue.icebergVariance);
           }
 
-          return this.orderCommandService.submitStopLimitOrderEdit(updatedLimitOrder, x.portfolioKey!.portfolio);
+          return this.orderCommandService.submitStopLimitOrderEdit(updatedLimitOrder, x.portfolioKey!);
         }
 
-        return this.orderCommandService.submitStopMarketOrderEdit(updatedOrder, x.portfolioKey!.portfolio);
+        return this.orderCommandService.submitStopMarketOrderEdit(updatedOrder, x.portfolioKey!);
       }),
       map(r => r.isSuccess),
       take(1)
