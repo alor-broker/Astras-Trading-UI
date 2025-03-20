@@ -242,6 +242,10 @@ export class ClientOrderCommandService implements OrderCommandService {
     delete clone.instrument;
     delete clone.meta;
 
+    if(clone.allowMargin == null) {
+      delete clone.allowMargin;
+    }
+
     return {
       opcode: `create:${type}`,
       ...clone,

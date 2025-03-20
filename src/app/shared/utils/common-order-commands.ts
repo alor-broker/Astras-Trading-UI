@@ -26,7 +26,8 @@ export class CommonOrderCommands {
   static reversePositionsByMarket(
     position: Position,
     targetInstrumentBoard: string | null,
-    orderCommandService: OrderCommandService
+    orderCommandService: OrderCommandService,
+    allowMargin?: boolean
   ): void {
     if (!position.qtyTFutureBatch) {
       return;
@@ -39,6 +40,7 @@ export class CommonOrderCommands {
           ...position.targetInstrument,
           instrumentGroup: targetInstrumentBoard
         },
+        allowMargin
       },
       position.ownedPortfolio.portfolio
     ).subscribe();

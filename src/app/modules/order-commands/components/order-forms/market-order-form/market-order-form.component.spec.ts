@@ -22,9 +22,7 @@ import { commonTestProviders } from "../../../../../shared/utils/testing/common-
 import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
 import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
 import { BuySellButtonsComponent } from "../../buy-sell-buttons/buy-sell-buttons.component";
-import {
-  ORDER_COMMAND_SERVICE_TOKEN,
-} from "../../../../../shared/services/orders/order-command.service";
+import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
 
 describe('MarketOrderFormComponent', () => {
   let component: MarketOrderFormComponent;
@@ -112,7 +110,7 @@ describe('MarketOrderFormComponent', () => {
           }
         },
         {
-          provide: ORDER_COMMAND_SERVICE_TOKEN,
+          provide: ConfirmableOrderCommandsService,
           useValue: orderServiceSpy
         },
         {
@@ -282,7 +280,7 @@ describe('MarketOrderFormComponent', () => {
 
       expect(orderServiceSpy.submitMarketOrder).toHaveBeenCalledOnceWith(
         jasmine.objectContaining(expectedOrder),
-        portfolio.portfolio
+        jasmine.objectContaining(portfolio)
       );
 
       discardPeriodicTasks();

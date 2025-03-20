@@ -213,7 +213,8 @@ export class ScalperCommandProcessorService {
                           targetPortfolio: portfolioKey.portfolio,
                           bracketOptions: this.getBracketOptions(settings.widgetSettings, position),
                           priceStep: settings.instrument.minstep,
-                          orderTracker: this.getLimitOrderTracker(dataContext, portfolioKey)
+                          orderTracker: this.getLimitOrderTracker(dataContext, portfolioKey),
+                          allowMargin: settings.widgetSettings.allowMargin
                         })
                       );
                     }
@@ -248,7 +249,8 @@ export class ScalperCommandProcessorService {
                           targetPortfolio: portfolioKey.portfolio,
                           bracketOptions: this.getBracketOptions(settings.widgetSettings, position),
                           priceStep: settings.instrument.minstep,
-                          orderTracker: this.getLimitOrderTracker(dataContext, portfolioKey)
+                          orderTracker: this.getLimitOrderTracker(dataContext, portfolioKey),
+                          allowMargin:  settings.widgetSettings.allowMargin
                         })
                       );
                     }
@@ -279,7 +281,8 @@ export class ScalperCommandProcessorService {
             position => {
               this.reversePositionByMarketCommand.execute({
                 currentPosition: position,
-                targetInstrumentBoard: settings.widgetSettings.instrumentGroup ?? null
+                targetInstrumentBoard: settings.widgetSettings.instrumentGroup ?? null,
+                allowMargin: settings.widgetSettings.allowMargin
               });
             }
           );
@@ -359,7 +362,8 @@ export class ScalperCommandProcessorService {
                         orderBook,
                         priceStep: settings.instrument.minstep,
                         bracketOptions: this.getBracketOptions(settings.widgetSettings, position),
-                        orderTracker: this.getLimitOrderTracker(dataContext, portfolioKey)
+                        orderTracker: this.getLimitOrderTracker(dataContext, portfolioKey),
+                        allowMargin: settings.widgetSettings.allowMargin
                       })
                     );
                   }
@@ -505,7 +509,8 @@ export class ScalperCommandProcessorService {
                   },
                   targetPortfolio: portfolioKey.portfolio,
                   silent: settings.widgetSettings.enableMouseClickSilentOrders,
-                  orderTracker: this.getStopLimitOrderTracker(dataContext, portfolioKey)
+                  orderTracker: this.getStopLimitOrderTracker(dataContext, portfolioKey),
+                  allowMargin: settings.widgetSettings.allowMargin
                 });
               }
             );
@@ -590,7 +595,8 @@ export class ScalperCommandProcessorService {
               silent: settings.widgetSettings.enableMouseClickSilentOrders,
               orderTracker: position != null
                 ? this.getStopMarketOrderTracker(dataContext, position.ownedPortfolio)
-                : undefined
+                : undefined,
+              allowMargin: settings.widgetSettings.allowMargin
             });
           }
         );
@@ -625,7 +631,8 @@ export class ScalperCommandProcessorService {
                       ),
                       priceStep: settings.instrument.minstep,
                       silent: settings.widgetSettings.enableMouseClickSilentOrders,
-                      orderTracker: this.getLimitOrderTracker(dataContext, portfolioKey)
+                      orderTracker: this.getLimitOrderTracker(dataContext, portfolioKey),
+                      allowMargin: settings.widgetSettings.allowMargin
                     });
                   }
                 );
@@ -678,7 +685,8 @@ export class ScalperCommandProcessorService {
                         ),
                         priceStep: settings.instrument.minstep,
                         orderBook,
-                        silent: silent ?? settings.widgetSettings.enableMouseClickSilentOrders
+                        silent: silent ?? settings.widgetSettings.enableMouseClickSilentOrders,
+                        allowMargin: settings.widgetSettings.allowMargin
                       })
                     );
                   }

@@ -48,6 +48,7 @@ export const environment = {
     identityUrl: "https://hub.dev.alor.ru/api"
   },
   features: {
-    aiChat: true
+    aiChat: true,
+    lowClientRiskCheck: true
   }
 };

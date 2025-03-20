@@ -1,7 +1,6 @@
 import {
   Component,
   DestroyRef,
-  Inject,
   Input,
   OnInit
 } from '@angular/core';
@@ -48,10 +47,7 @@ import {
 } from "../../../../../shared/models/orders/edit-order.model";
 import { getConditionTypeByString } from "../../../../../shared/utils/order-conditions-helper";
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
-import {
-  ORDER_COMMAND_SERVICE_TOKEN,
-  OrderCommandService
-} from "../../../../../shared/services/orders/order-command.service";
+import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
 
 @Component({
   selector: 'ats-edit-stop-order-form',
@@ -120,8 +116,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     private readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     private readonly timezoneConverterService: TimezoneConverterService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
+    private readonly orderCommandService: ConfirmableOrderCommandsService,
     protected readonly destroyRef: DestroyRef) {
     super(instrumentService, destroyRef);
   }
@@ -336,10 +331,10 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
             updatedLimitOrder.icebergVariance = Number(formValue.icebergVariance);
           }
 
-          return this.orderCommandService.submitStopLimitOrderEdit(updatedLimitOrder, x.portfolioKey!.portfolio);
+          return this.orderCommandService.submitStopLimitOrderEdit(updatedLimitOrder, x.portfolioKey!);
         }
 
-        return this.orderCommandService.submitStopMarketOrderEdit(updatedOrder, x.portfolioKey!.portfolio);
+        return this.orderCommandService.submitStopMarketOrderEdit(updatedOrder, x.portfolioKey!);
       }),
       map(r => r.isSuccess),
       take(1)

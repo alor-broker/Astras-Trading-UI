@@ -2,5 +2,8 @@
   "limitOrderTabTitle": "Limit",
   "marketOrderTabTitle": "Market",
   "stopOrderTabTitle": "Conditional",
-  "notificationsTabTitle": "Notifications"
+  "notificationsTabTitle": "Notifications",
+
+  "marginOrderConfirmationTitle": "Confirmation",
+  "marginOrderConfirmationContent": "I am aware that this order may result in an uncovered position."
 }

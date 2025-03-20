@@ -1,7 +1,6 @@
 import {
   Component,
   DestroyRef,
-  Inject,
   Input,
   OnDestroy,
   OnInit
@@ -62,11 +61,8 @@ import {
 } from "../../../../../shared/utils/datetime";
 import { MarketService } from "../../../../../shared/services/market.service";
 import { Market } from "../../../../../../generated/graphql.types";
-import {
-  ORDER_COMMAND_SERVICE_TOKEN,
-  OrderCommandService
-} from "../../../../../shared/services/orders/order-command.service";
 import { LimitOrderConfig } from "../../../../../shared/models/orders/orders-config.model";
+import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
 
 @Component({
   selector: 'ats-limit-order-form',
@@ -165,8 +161,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     private readonly formBuilder: FormBuilder,
     protected readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
+    private readonly orderCommandService: ConfirmableOrderCommandsService,
     private readonly timezoneConverterService: TimezoneConverterService,
     private readonly marketService: MarketService,
     protected readonly destroyRef: DestroyRef) {
@@ -255,7 +250,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
         const bracketOrders = this.getBracketOrders(limitOrder);
 
         if (bracketOrders.length === 0) {
-          return this.orderCommandService.submitLimitOrder(limitOrder, portfolioKey.portfolio);
+          return this.orderCommandService.submitLimitOrder(limitOrder, portfolioKey);
         } else {
           return this.orderCommandService.submitOrdersGroup([
               {
@@ -267,7 +262,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
                 type: OrderType.StopLimit
               } as NewLinkedOrder))
             ],
-            portfolioKey.portfolio,
+            portfolioKey,
             ExecutionPolicy.TriggerBracketOrders);
         }
       })

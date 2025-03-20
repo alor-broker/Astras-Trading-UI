@@ -106,7 +106,8 @@ describe('SubmitBestPriceOrderCommand', () => {
             targetPortfolio: args.targetPortfolio,
             bracketOptions: args.bracketOptions,
             silent: true,
-            orderTracker: undefined
+            orderTracker: undefined,
+            allowMargin: undefined
           } as SubmitLimitOrderCommandArgs
         );
 
@@ -128,7 +129,8 @@ describe('SubmitBestPriceOrderCommand', () => {
             targetPortfolio: args.targetPortfolio,
             bracketOptions: args.bracketOptions,
             silent: true,
-            orderTracker: undefined
+            orderTracker: undefined,
+            allowMargin: undefined
           } as SubmitLimitOrderCommandArgs
         );
 
@@ -164,7 +166,8 @@ describe('SubmitBestPriceOrderCommand', () => {
             targetPortfolio: args.targetPortfolio,
             bracketOptions: args.bracketOptions,
             silent: true,
-            orderTracker: undefined
+            orderTracker: undefined,
+            allowMargin: undefined
           } as SubmitLimitOrderCommandArgs
         );
 
@@ -186,7 +189,8 @@ describe('SubmitBestPriceOrderCommand', () => {
             targetPortfolio: args.targetPortfolio,
             bracketOptions: args.bracketOptions,
             silent: true,
-            orderTracker: undefined
+            orderTracker: undefined,
+            allowMargin: undefined
           } as SubmitLimitOrderCommandArgs
         );
     })

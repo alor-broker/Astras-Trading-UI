@@ -1,26 +1,16 @@
-import {
-  Injectable,
-  OnDestroy
-} from '@angular/core';
-import { UserContext } from "../../../shared/services/auth/user-context";
-import { SessionContext } from "../../../shared/services/auth/session-context";
-import {
-  Observable,
-  shareReplay,
-  take
-} from 'rxjs';
-import { User } from 'src/app/shared/models/user/user.model';
-import { ComponentStore } from "@ngrx/component-store";
-import { LocalStorageSsoConstants } from "../../../shared/constants/local-storage.constants";
-import {
-  filter,
-  map
-} from "rxjs/operators";
-import { JwtHelper } from "../../../shared/utils/jwt-helper";
-import { LocalStorageService } from "../../../shared/services/local-storage.service";
-import { ApiTokenProviderService } from "../../../shared/services/auth/api-token-provider.service";
-import { AdminIdentityService } from "../identity/admin-identity.service";
-import { Router } from "@angular/router";
+import {Injectable, OnDestroy} from '@angular/core';
+import {UserContext} from "../../../shared/services/auth/user-context";
+import {SessionContext} from "../../../shared/services/auth/session-context";
+import {Observable, shareReplay, take} from 'rxjs';
+import {Role, User} from 'src/app/shared/models/user/user.model';
+import {ComponentStore} from "@ngrx/component-store";
+import {LocalStorageSsoConstants} from "../../../shared/constants/local-storage.constants";
+import {filter, map} from "rxjs/operators";
+import {JwtHelper} from "../../../shared/utils/jwt-helper";
+import {LocalStorageService} from "../../../shared/services/local-storage.service";
+import {ApiTokenProviderService} from "../../../shared/services/auth/api-token-provider.service";
+import {AdminIdentityService} from "../identity/admin-identity.service";
+import {Router} from "@angular/router";
 
 enum AuthStateStatus {
   Initial = 'initial',
@@ -116,6 +106,7 @@ export class AdminAuthContextService implements UserContext, SessionContext, OnD
         clientId: jwtBody.clientid,
         login: jwtBody.sub,
         portfolios: (jwtBody.portfolios as string | undefined)?.split(' ') ?? [],
+        roles: [Role.Admin]
       },
       expirationTime: jwtBody.exp * 1000,
     };

@@ -29,6 +29,7 @@ export interface SetStopLossCommandArgs {
   triggerPrice: number;
   silent: boolean;
   orderTracker?: StopMarketOrderTracker;
+  allowMargin?: boolean;
 }
 
 @Injectable()
@@ -62,7 +63,8 @@ export class SetStopLossCommand extends CommandBase<SetStopLossCommandArgs> {
       condition: side === Side.Sell ? LessMore.LessOrEqual : LessMore.MoreOrEqual,
       meta: {
         trackId: GuidGenerator.newGuid()
-      }
+      },
+      allowMargin: args.allowMargin
     };
 
     if (args.silent) {

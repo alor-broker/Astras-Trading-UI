@@ -19,6 +19,7 @@ export interface SubmitBestPriceOrderCommandArgs {
   bracketOptions: BracketOptions | null;
   priceStep: number;
   orderTracker?: LimitOrderTracker;
+  allowMargin?: boolean;
 }
 
 @Injectable()
@@ -72,7 +73,8 @@ export class SubmitBestPriceOrderCommand extends CommandBase<SubmitBestPriceOrde
       bracketOptions: args.bracketOptions,
       priceStep: args.priceStep,
       silent: true,
-      orderTracker: args.orderTracker
+      orderTracker: args.orderTracker,
+      allowMargin: args.allowMargin
     });
   }
 }

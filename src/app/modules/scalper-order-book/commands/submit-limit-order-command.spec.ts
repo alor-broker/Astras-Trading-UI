@@ -97,7 +97,8 @@ describe('SubmitLimitOrderCommand', () => {
             side: Side.Sell,
             quantity,
             price: price,
-            instrument: toInstrumentKey(testInstrumentKey)
+            instrument: toInstrumentKey(testInstrumentKey),
+            allowMargin: undefined
           } as NewLimitOrder),
           portfolioKey.portfolio
         );
@@ -175,7 +176,8 @@ describe('SubmitLimitOrderCommand', () => {
       side: Side.Buy,
       quantity,
       price,
-      instrument: toInstrumentKey(testInstrumentKey)
+      instrument: toInstrumentKey(testInstrumentKey),
+      allowMargin: undefined
     };
 
     expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
@@ -251,7 +253,8 @@ describe('SubmitLimitOrderCommand', () => {
       side: Side.Buy,
       quantity,
       price,
-      instrument: toInstrumentKey(testInstrumentKey)
+      instrument: toInstrumentKey(testInstrumentKey),
+      allowMargin: undefined
     };
 
     expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
