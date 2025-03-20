@@ -377,6 +377,18 @@
                       </nz-select>
                     </nz-form-control>
                   </nz-form-item>
+                  <nz-form-item *ngIf="form.controls.tradesClusterPanelSettings.controls.targetVolume.enabled">
+                    <nz-form-label nzFor="targetVolume" nzRequired>{{t('scalperOrderBookSettings.volumeHighlightFullnessLabel')}}</nz-form-label>
+                    <nz-form-control [nzErrorTip]="t(
+                    'scalperOrderBookSettings.intervalError',
+               {
+                min: validationOptions.tradesClusterPanelSettings.targetVolume.min,
+                 max: validationOptions.tradesClusterPanelSettings.targetVolume.max
+                 })"
+                    >
+                      <ats-input-number formControlName="targetVolume" [allowDecimal]="false"></ats-input-number>
+                    </nz-form-control>
+                  </nz-form-item>
                 </nz-collapse-panel>
               </nz-collapse>
             </nz-form-item>

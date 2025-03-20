@@ -21,7 +21,9 @@ export enum PanelSlots {
 
 export enum TradesClusterHighlightMode {
   Off = 'off',
-  BuySellDominance = 'buySellDominance'
+  BuySellDominance = 'buySellDominance',
+  TargetVolume = 'targetVolume',
+  BuyVsSell = 'buyVsSell'
 }
 
 export interface TradesClusterPanelSettings {
@@ -29,6 +31,7 @@ export interface TradesClusterPanelSettings {
   displayIntervalsCount: number;
   volumeDisplayFormat?: NumberDisplayFormat;
   highlightMode?: TradesClusterHighlightMode;
+  targetVolume?: number;
 }
 
 export interface OrderBookLayoutSettings {
