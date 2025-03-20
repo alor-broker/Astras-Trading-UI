@@ -10,6 +10,7 @@ import {
 } from "rxjs";
 import {
   NewLimitOrder,
+  NewOrderBase,
   OrderCommandResult
 } from "../../../shared/models/orders/new-order.model";
 import { OrderType } from "../../../shared/models/orders/order.model";
@@ -119,7 +120,7 @@ export class AdminOrderCommandService implements OrderCommandService {
       () => ({
         url: `${this.baseApiUrl}/actions/limit`,
         body: {
-          ...order,
+          ...this.cleanOrder(order),
           comment: order.meta != null
             ? JSON.stringify({ meta: order.meta })
             : undefined
@@ -315,5 +316,13 @@ export class AdminOrderCommandService implements OrderCommandService {
     return error.error?.code != null && error.error?.message != null
       ? `${error.error.code} <br/> ${error.error.message}`
       : error.message;
+  }
+
+  private cleanOrder<T extends NewOrderBase>(order: T): T {
+    if(order.allowMargin == null) {
+      delete order.allowMargin;
+    }
+
+    return order;
   }
 }
