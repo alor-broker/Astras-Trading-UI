@@ -107,17 +107,28 @@ describe('TechChartDatafeedService', () => {
           '1S' as ResolutionString,
           '5S' as ResolutionString,
           '10S' as ResolutionString,
+          '15S' as ResolutionString,
+          '30S' as ResolutionString,
+          '45S' as ResolutionString,
           '1' as ResolutionString,
+          '2' as ResolutionString,
+          '3' as ResolutionString,
           '5' as ResolutionString,
+          '10' as ResolutionString,
           '15' as ResolutionString,
           '30' as ResolutionString,
+          '45' as ResolutionString,
           '1H' as ResolutionString,
+          '2H' as ResolutionString,
+          '3H' as ResolutionString,
           '4h' as ResolutionString,
           '1D' as ResolutionString,
           '1W' as ResolutionString,
           '2W' as ResolutionString,
           '1M' as ResolutionString,
-          '3M' as ResolutionString
+          '3M' as ResolutionString,
+          '6M' as ResolutionString,
+          '12M' as ResolutionString
         ],
         exchanges: [
           {
@@ -180,27 +191,14 @@ describe('TechChartDatafeedService', () => {
       minmov: 1,
       pricescale: 100,
       format: 'price',
-      has_empty_bars: false,
+      has_empty_bars: true,
       has_intraday: true,
       has_seconds: true,
+      has_weekly_and_monthly: true,
+      weekly_multipliers: ['1','2'],
+      monthly_multipliers: ['1','3','6','12'],
       timezone: 'Europe/Moscow',
       session: '24x7',
-      supported_resolutions: [
-        '1S' as ResolutionString,
-        '5S' as ResolutionString,
-        '10S' as ResolutionString,
-        '1' as ResolutionString,
-        '5' as ResolutionString,
-        '15' as ResolutionString,
-        '30' as ResolutionString,
-        '1H' as ResolutionString,
-        '4h' as ResolutionString,
-        '1D' as ResolutionString,
-        '1W' as ResolutionString,
-        '2W' as ResolutionString,
-        '1M' as ResolutionString,
-        '3M' as ResolutionString
-      ]
     } as LibrarySymbolInfo;
 
     instrumentsServiceSpy.getInstrument.and.returnValue(of(instrumentDetails));
