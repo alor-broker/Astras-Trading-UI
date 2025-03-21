@@ -309,6 +309,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
           portfolio: x.portfolioKey!
         };
       }),
+      take(1),
       switchMap(x => this.orderCommandService.submitLimitOrderEdit(x.updatedOrder, x.portfolio)),
       map(r => r.isSuccess),
       take(1)
