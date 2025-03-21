@@ -108,7 +108,13 @@ export class ConfirmableOrderCommandsService {
   }
 
   submitLimitOrderEdit(orderEdit: LimitOrderEdit, targetPortfolio: TargetPortfolio): Observable<OrderCommandResult> {
-    return this.orderCommandService.submitLimitOrderEdit(orderEdit, targetPortfolio.portfolio);
+    return this.toConfirmable(
+      targetPortfolio,
+      isConfirmed => {
+        orderEdit.allowMargin = isConfirmed ?? undefined;
+        return this.orderCommandService.submitLimitOrderEdit(orderEdit, targetPortfolio.portfolio);
+      }
+    );
   }
 
   submitMarketOrder(order: NewMarketOrder, targetPortfolio: TargetPortfolio): Observable<OrderCommandResult> {
@@ -139,7 +145,13 @@ export class ConfirmableOrderCommandsService {
   }
 
   submitStopLimitOrderEdit(orderEdit: StopLimitOrderEdit, targetPortfolio: TargetPortfolio): Observable<OrderCommandResult> {
-    return this.orderCommandService.submitStopLimitOrderEdit(orderEdit, targetPortfolio.portfolio);
+    return this.toConfirmable(
+      targetPortfolio,
+      isConfirmed => {
+        orderEdit.allowMargin = isConfirmed ?? undefined;
+        return this.orderCommandService.submitStopLimitOrderEdit(orderEdit, targetPortfolio.portfolio);
+      }
+    );
   }
 
   submitStopMarketOrder(order: NewStopMarketOrder, targetPortfolio: TargetPortfolio): Observable<OrderCommandResult> {
@@ -152,7 +164,13 @@ export class ConfirmableOrderCommandsService {
   }
 
   submitStopMarketOrderEdit(orderEdit: StopMarketOrderEdit, targetPortfolio: TargetPortfolio): Observable<OrderCommandResult> {
-    return this.orderCommandService.submitStopMarketOrderEdit(orderEdit, targetPortfolio.portfolio);
+    return this.toConfirmable(
+      targetPortfolio,
+      isConfirmed => {
+        orderEdit.allowMargin = isConfirmed ?? undefined;
+        return this.orderCommandService.submitStopMarketOrderEdit(orderEdit, targetPortfolio.portfolio);
+      }
+    );
   }
 
   private toConfirmable<TR>(
