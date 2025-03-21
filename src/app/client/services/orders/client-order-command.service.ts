@@ -242,9 +242,7 @@ export class ClientOrderCommandService implements OrderCommandService {
     delete clone.instrument;
     delete clone.meta;
 
-    if(clone.allowMargin == null) {
-      delete clone.allowMargin;
-    }
+    this.cleanUpRequest(clone);
 
     return {
       opcode: `create:${type}`,
@@ -263,7 +261,7 @@ export class ClientOrderCommandService implements OrderCommandService {
     };
   }
 
-  private prepareOrderUpdateCommand<T extends { instrument: InstrumentKey }>(
+  private prepareOrderUpdateCommand<T extends { instrument: InstrumentKey, allowMargin?: boolean }>(
     type: OrderType.Limit | OrderType.StopMarket | OrderType.StopLimit,
     baseRequest: T,
     portfolio: string
@@ -273,6 +271,8 @@ export class ClientOrderCommandService implements OrderCommandService {
     };
 
     delete clone.instrument;
+
+    this.cleanUpRequest(clone);
 
     return {
       opcode: `update:${type}`,
@@ -411,5 +411,13 @@ export class ClientOrderCommandService implements OrderCommandService {
       default:
         throw new Error(`Unsupported order type ${type}`);
     }
+  }
+
+  private cleanUpRequest<T extends { allowMargin?: boolean }>(request: T): T {
+    if(request.allowMargin == null) {
+      delete request.allowMargin;
+    }
+
+    return request;
   }
 }

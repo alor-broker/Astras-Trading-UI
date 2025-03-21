@@ -402,6 +402,7 @@ describe('ConfirmableOrderCommandsService', () => {
 
   describe('#submitLimitOrderEdit', () => {
     it('should call appropriate method', () => {
+      environmentFeatures.lowClientRiskCheck = false;
       const order: LimitOrderEdit = {
         instrument: {
           symbol: 'ABC',
@@ -420,10 +421,38 @@ describe('ConfirmableOrderCommandsService', () => {
         targetTestPortfolio.portfolio
       );
     });
+
+    it('should show confirmation', (done) => {
+      environmentFeatures.lowClientRiskCheck = true;
+
+      const order: LimitOrderEdit = {
+        instrument: {
+          symbol: 'ABC',
+          exchange: 'MOEX'
+        },
+        quantity: 100,
+        price: 100,
+        orderId: '123',
+        side: Side.Buy
+      };
+
+      nzModalServiceSpy.confirm.and.callFake(() => {
+        done();
+        expect(true).toBeTrue();
+  });
+
+      service.submitLimitOrderEdit(order, targetTestPortfolio).pipe(
+        take(1),
+        subscribeOn(queueScheduler),
+      ).subscribe();
+
+      setupClientCategoryResponse();
+    });
   });
 
   describe('#submitStopMarketOrderEdit', () => {
     it('should call appropriate method', () => {
+      environmentFeatures.lowClientRiskCheck = false;
       const order: StopMarketOrderEdit = {
         instrument: {
           symbol: 'ABC',
@@ -444,10 +473,40 @@ describe('ConfirmableOrderCommandsService', () => {
         targetTestPortfolio.portfolio
       );
     });
+
+    it('should show confirmation', (done) => {
+      environmentFeatures.lowClientRiskCheck = true;
+
+      const order: StopMarketOrderEdit = {
+        instrument: {
+          symbol: 'ABC',
+          exchange: 'MOEX'
+        },
+        quantity: 100,
+        orderId: '123',
+        condition: LessMore.Less,
+        triggerPrice: 100,
+        side: Side.Buy,
+        stopEndUnixTime: new Date()
+      };
+
+      nzModalServiceSpy.confirm.and.callFake(() => {
+        done();
+        expect(true).toBeTrue();
+  });
+
+      service.submitStopMarketOrderEdit(order, targetTestPortfolio).pipe(
+        take(1),
+        subscribeOn(queueScheduler),
+      ).subscribe();
+
+      setupClientCategoryResponse();
+    });
   });
 
   describe('#submitStopLimitOrderEdit', () => {
     it('should call appropriate method', () => {
+      environmentFeatures.lowClientRiskCheck = false;
       const order: StopLimitOrderEdit = {
         instrument: {
           symbol: 'ABC',
@@ -468,6 +527,36 @@ describe('ConfirmableOrderCommandsService', () => {
         order,
         targetTestPortfolio.portfolio
       );
+    });
+
+    it('should show confirmation', (done) => {
+      environmentFeatures.lowClientRiskCheck = true;
+
+      const order: StopLimitOrderEdit = {
+        instrument: {
+          symbol: 'ABC',
+          exchange: 'MOEX'
+        },
+        quantity: 100,
+        orderId: '123',
+        condition: LessMore.Less,
+        triggerPrice: 100,
+        price: 100,
+        side: Side.Buy,
+        stopEndUnixTime: new Date()
+      };
+
+      nzModalServiceSpy.confirm.and.callFake(() => {
+        done();
+        expect(true).toBeTrue();
+      });
+
+      service.submitStopLimitOrderEdit(order, targetTestPortfolio).pipe(
+        take(1),
+        subscribeOn(queueScheduler),
+      ).subscribe();
+
+      setupClientCategoryResponse();
     });
   });
 

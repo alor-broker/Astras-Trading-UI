@@ -17,6 +17,7 @@ export interface UpdateOrdersCommandArgs {
   ordersToUpdate: CurrentOrderDisplay[];
   updates: { price: number };
   silent: boolean;
+  allowMargin?: boolean;
 }
 
 @Injectable()
@@ -40,7 +41,8 @@ export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
           orderId: order.orderId,
           side: order.side,
           quantity: order.displayVolume,
-          instrument: order.targetInstrument
+          instrument: order.targetInstrument,
+          allowMargin: args.allowMargin
         };
 
         switch (order.type) {

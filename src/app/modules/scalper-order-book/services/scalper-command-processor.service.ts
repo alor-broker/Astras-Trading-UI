@@ -107,7 +107,8 @@ export class ScalperCommandProcessorService {
         this.updateOrdersCommand.execute({
           ordersToUpdate: orders,
           updates: { price: row.price },
-          silent: settings.widgetSettings.enableMouseClickSilentOrders
+          silent: settings.widgetSettings.enableMouseClickSilentOrders,
+          allowMargin: settings.widgetSettings.allowMargin
         });
       }
     );
