@@ -112,8 +112,8 @@ export class ConfirmableOrderCommandsService {
       targetPortfolio,
       isConfirmed => {
         orderEdit.allowMargin = isConfirmed ?? undefined;
-        return this.orderCommandService.submitLimitOrderEdit(orderEdit, targetPortfolio.portfolio);
-      }
+    return this.orderCommandService.submitLimitOrderEdit(orderEdit, targetPortfolio.portfolio);
+  }
     );
   }
 
@@ -149,8 +149,8 @@ export class ConfirmableOrderCommandsService {
       targetPortfolio,
       isConfirmed => {
         orderEdit.allowMargin = isConfirmed ?? undefined;
-        return this.orderCommandService.submitStopLimitOrderEdit(orderEdit, targetPortfolio.portfolio);
-      }
+    return this.orderCommandService.submitStopLimitOrderEdit(orderEdit, targetPortfolio.portfolio);
+  }
     );
   }
 
@@ -168,8 +168,8 @@ export class ConfirmableOrderCommandsService {
       targetPortfolio,
       isConfirmed => {
         orderEdit.allowMargin = isConfirmed ?? undefined;
-        return this.orderCommandService.submitStopMarketOrderEdit(orderEdit, targetPortfolio.portfolio);
-      }
+    return this.orderCommandService.submitStopMarketOrderEdit(orderEdit, targetPortfolio.portfolio);
+  }
     );
   }
 

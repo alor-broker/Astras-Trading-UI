@@ -13,8 +13,9 @@
       }
 
       &.max-volume {
-        border: @warning-color 1px solid;
-        background-color: fade(@warning-color, 10%);
+        border: @text-max-contrast-color 1px solid;
+        font-weight: @font-weight-bold;
+        background-color: fade(@warning-color, 15%);
       }
     }
 
@@ -32,7 +33,12 @@
     text-align: right;
     box-sizing: border-box;
 
-    padding: 0 2px;
+    .highlighter {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+    }
   }
 
   .grid-line {

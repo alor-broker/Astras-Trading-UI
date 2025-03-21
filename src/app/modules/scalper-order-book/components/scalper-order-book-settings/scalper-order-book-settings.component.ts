@@ -1,25 +1,8 @@
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
-import {
-  distinctUntilChanged,
-  Observable,
-  shareReplay,
-  take
-} from "rxjs";
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators
-} from "@angular/forms";
-import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
-import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
+import {Component, DestroyRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {distinctUntilChanged, Observable, shareReplay, take} from "rxjs";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {isInstrumentEqual} from '../../../../shared/utils/settings-helper';
+import {InstrumentKey} from '../../../../shared/models/instruments/instrument-key.model';
 import {
   InstrumentLinkedSettings,
   PanelSlots,
@@ -29,17 +12,19 @@ import {
   VolumeHighlightMode,
   VolumeHighlightOption
 } from '../../models/scalper-order-book-settings.model';
-import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { WidgetSettingsFormComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { inputNumberValidation } from "../../../../shared/utils/validation-options";
-import { NzMarks } from "ng-zorro-antd/slider";
-import { ScalperOrderBookConstants } from "../../constants/scalper-order-book.constants";
-import { ScalperOrderBookSettingsReadService } from "../../services/scalper-order-book-settings-read.service";
-import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
-import { map } from "rxjs/operators";
-import { TradesClusterPanelSettingsDefaults } from "./constants/settings-defaults";
+import {NumberDisplayFormat} from '../../../../shared/models/enums/number-display-format';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {
+  WidgetSettingsFormComponent
+} from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {inputNumberValidation} from "../../../../shared/utils/validation-options";
+import {NzMarks} from "ng-zorro-antd/slider";
+import {ScalperOrderBookConstants} from "../../constants/scalper-order-book.constants";
+import {ScalperOrderBookSettingsReadService} from "../../services/scalper-order-book-settings-read.service";
+import {ScalperOrderBookSettingsWriteService} from "../../services/scalper-order-book-settings-write.service";
+import {map} from "rxjs/operators";
+import {TradesClusterPanelSettingsDefaults} from "./constants/settings-defaults";
 
 @Component({
   selector: 'ats-scalper-order-book-settings',
@@ -114,6 +99,12 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       tradesAggregationPeriodMs: {
         min: 0,
         max: 60 * 60 * 1000
+      }
+    },
+    tradesClusterPanelSettings: {
+      targetVolume: {
+        min: 1,
+        max: inputNumberValidation.max
       }
     },
     stopLimitOrdersDistance: {
@@ -233,7 +224,15 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
     showTradesClustersPanel: this.formBuilder.nonNullable.control(false),
     tradesClusterPanelSettings: this.formBuilder.group(
       {
-        highlightMode: this.formBuilder.nonNullable.control(TradesClusterHighlightMode.Off)
+        highlightMode: this.formBuilder.nonNullable.control(TradesClusterHighlightMode.Off),
+        targetVolume: this.formBuilder.nonNullable.control(
+          10000,
+          [
+            Validators.required,
+            Validators.min(this.validationOptions.tradesClusterPanelSettings.targetVolume.min),
+            Validators.max(this.validationOptions.tradesClusterPanelSettings.targetVolume.max)
+          ]
+        ),
       }
     ),
     showTradesPanel: this.formBuilder.nonNullable.control(false),
@@ -270,7 +269,7 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
     // volume highlight
     volumeHighlightMode: this.formBuilder.nonNullable.control(VolumeHighlightMode.Off),
     volumeHighlightFullness: this.formBuilder.nonNullable.control(
-      1000,
+      10000,
       [
         Validators.required,
         Validators.min(this.validationOptions.volumeHighlightOption.volumeHighlightFullness.min),
@@ -508,7 +507,8 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       tradesClusterPanelSettings: {
         ...TradesClusterPanelSettingsDefaults,
         ...initialSettings.tradesClusterPanelSettings,
-        highlightMode: newSettings.tradesClusterPanelSettings?.highlightMode ?? TradesClusterHighlightMode.Off
+        highlightMode: newSettings.tradesClusterPanelSettings?.highlightMode ?? TradesClusterHighlightMode.Off,
+        targetVolume: Number(newSettings.tradesClusterPanelSettings?.targetVolume ?? 10000)
       },
       bracketsSettings: newSettings.bracketsSettings ?? prevInstrumentLinkedSettings?.bracketsSettings ?? initialSettings.bracketsSettings,
       tradesPanelSettings: newSettings.tradesPanelSettings ?? prevInstrumentLinkedSettings?.tradesPanelSettings ?? initialSettings.tradesPanelSettings,
@@ -588,7 +588,8 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
 
     this.form.controls.showTradesClustersPanel.setValue(settings.showTradesClustersPanel ?? false);
     this.form.controls.tradesClusterPanelSettings.setValue({
-      highlightMode: settings.tradesClusterPanelSettings?.highlightMode ?? TradesClusterHighlightMode.Off
+      highlightMode: settings.tradesClusterPanelSettings?.highlightMode ?? TradesClusterHighlightMode.Off,
+      targetVolume: settings.tradesClusterPanelSettings?.targetVolume ?? 10000,
     });
 
     this.form.controls.showWorkingVolumesPanel.setValue(settings.showWorkingVolumesPanel ?? true);
@@ -601,7 +602,7 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
     }
 
     this.form.controls.volumeHighlightMode.setValue(settings.volumeHighlightMode ?? VolumeHighlightMode.Off);
-    this.form.controls.volumeHighlightFullness.setValue(settings.volumeHighlightFullness ?? 1000);
+    this.form.controls.volumeHighlightFullness.setValue(settings.volumeHighlightFullness ?? 10000);
 
     if (settings.volumeHighlightOptions.length > 0) {
       this.form.controls.volumeHighlightOptions.clear();
@@ -635,26 +636,25 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
   }
 
   private checkFieldsAvailability(): void {
-    const formValue = this.form.value;
-    if ((formValue?.showShortLongIndicators) ?? false) {
+    if ((this.form.value?.showShortLongIndicators) ?? false) {
       this.form.controls.shortLongIndicatorsUpdateIntervalSec.enable();
     } else {
       this.form.controls.shortLongIndicatorsUpdateIntervalSec.disable();
     }
 
-    if ((formValue?.showRuler) ?? false) {
+    if ((this.form.value?.showRuler) ?? false) {
       this.form.controls.rulerSettings.enable();
     } else {
       this.form.controls.rulerSettings.disable();
     }
 
-    if ((formValue?.enableAutoAlign) ?? false) {
+    if ((this.form.value?.enableAutoAlign) ?? false) {
       this.form.controls.autoAlignIntervalSec.enable();
     } else {
       this.form.controls.autoAlignIntervalSec.disable();
     }
 
-    if (formValue?.volumeHighlightMode === VolumeHighlightMode.VolumeBoundsWithFixedValue) {
+    if (this.form.value?.volumeHighlightMode === VolumeHighlightMode.VolumeBoundsWithFixedValue) {
       this.form.controls.volumeHighlightFullness.enable();
       this.form.controls.volumeHighlightOptions.enable();
     } else {
@@ -662,19 +662,27 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       this.form.controls.volumeHighlightOptions.disable();
     }
 
-    if ((formValue?.showTradesPanel) ?? false) {
+    if ((this.form.value?.showTradesPanel) ?? false) {
       this.form.controls.tradesPanelSettings.enable();
     } else {
       this.form.controls.tradesPanelSettings.disable();
     }
 
-    if ((formValue?.showTradesClustersPanel) ?? false) {
+    if ((this.form.value?.showTradesClustersPanel) ?? false) {
       this.form.controls.tradesClusterPanelSettings.enable();
     } else {
       this.form.controls.tradesClusterPanelSettings.disable();
     }
 
-    if ((formValue?.showWorkingVolumesPanel) ?? false) {
+    if(this.form.controls.tradesClusterPanelSettings.enabled) {
+      if(this.form.value?.tradesClusterPanelSettings?.highlightMode === TradesClusterHighlightMode.TargetVolume) {
+        this.form.controls.tradesClusterPanelSettings.controls.targetVolume.enable();
+      } else {
+        this.form.controls.tradesClusterPanelSettings.controls.targetVolume.disable({onlySelf: true});
+      }
+    }
+
+    if ((this.form.value?.showWorkingVolumesPanel) ?? false) {
       this.form.controls.workingVolumes.enable();
     } else {
       this.form.controls.workingVolumes.disable();

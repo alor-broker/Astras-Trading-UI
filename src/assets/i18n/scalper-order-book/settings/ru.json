@@ -94,6 +94,8 @@
 
   "tradesClusterHighlightOptions": {
     "off": "Отключено",
-    "buySellDominance": "Доминирование покупатели/продавцы"
+    "buySellDominance": "Доминирование покупатели/продавцы",
+    "targetVolume": "Заполнение относительно объема",
+    "buyVsSell": "Покупатели | Продавцы"
   }
 }

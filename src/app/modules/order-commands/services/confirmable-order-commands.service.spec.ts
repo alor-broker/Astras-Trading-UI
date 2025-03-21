@@ -439,7 +439,7 @@ describe('ConfirmableOrderCommandsService', () => {
       nzModalServiceSpy.confirm.and.callFake(() => {
         done();
         expect(true).toBeTrue();
-      });
+  });
 
       service.submitLimitOrderEdit(order, targetTestPortfolio).pipe(
         take(1),
@@ -493,7 +493,7 @@ describe('ConfirmableOrderCommandsService', () => {
       nzModalServiceSpy.confirm.and.callFake(() => {
         done();
         expect(true).toBeTrue();
-      });
+  });
 
       service.submitStopMarketOrderEdit(order, targetTestPortfolio).pipe(
         take(1),
