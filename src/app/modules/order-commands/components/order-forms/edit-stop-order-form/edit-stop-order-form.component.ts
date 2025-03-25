@@ -298,6 +298,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     }).pipe(
       filter(x => !!x.portfolioKey),
       filter(() => this.form.valid),
+      take(1),
       switchMap(x => {
         const formValue = this.form.value;
 

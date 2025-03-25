@@ -8,5 +8,29 @@
   "vmInterClTitle": "Variation margin",
   "vmCurrentPositionsTitle": "Position variation margin",
   "varMarginTitle": "Total variation margin",
-  "isLimitsSetTitle": "Cash and pledge limits"
+  "isLimitsSetTitle": "Cash and pledge limits",
+
+  "indicativeVarMarginTitle": "Indicative margin",
+  "netOptionValueTitle": "NOV",
+  "posRiskTitle": "Oper. risk",
+  "initialMarginTitle": "Initial. margin",
+  "minimalMarginTitle": "Min. margin",
+  "correctedMarginTitle": "Corr. margin",
+  "riskCoverageRatioOneTitle": "RCR1",
+  "riskCoverageRatioTwoTitle": "RCR2",
+
+  "clientTypeTitle": "Risk level",
+  "clientTypeValues": {
+    "StandardRisk": "Standard",
+    "HighRisk": "High",
+    "Special": "Special",
+    "LowRisk": "Low"
+  },
+
+  "statusTitle": "Status",
+  "statusValues": {
+    "normal": "Normal",
+    "limitation": "Limitation",
+    "closing": "Closing"
+  }
 }

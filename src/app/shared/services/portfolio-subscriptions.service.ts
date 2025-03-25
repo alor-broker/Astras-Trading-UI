@@ -23,6 +23,7 @@ import { HttpClient } from "@angular/common/http";
 import { EnvironmentService } from "./environment.service";
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
 import {PortfolioItemsModelHelper} from "../utils/portfolio-item-models-helper";
+import { Risks } from "../../modules/blotter/models/risks.model";
 
 interface PortfolioRequestBase {
   opcode: string;
@@ -58,6 +59,16 @@ export class PortfolioSubscriptionsService {
   getSpectraRisksSubscription(portfolio: string, exchange: string): Observable<ForwardRisks> {
     return this.subscriptionsDataFeedService.subscribe({
         opcode: 'SpectraRisksGetAndSubscribe',
+        portfolio,
+        exchange
+      },
+      this.getSubscriptionKey
+    );
+  }
+
+  getRisksSubscription(portfolio: string, exchange: string): Observable<Risks> {
+    return this.subscriptionsDataFeedService.subscribe({
+        opcode: 'RisksGetAndSubscribe',
         portfolio,
         exchange
       },
