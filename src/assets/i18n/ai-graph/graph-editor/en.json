@@ -29,6 +29,15 @@
     },
     "history": {
       "title": "Price History"
+    },
+    "portfolio-summary": {
+      "title": "Portfolio Summary"
+    },
+    "portfolio-positions": {
+      "title": "Portfolio Positions"
+    },
+    "const-portfolio": {
+      "title": "Portfolio Selection"
     }
   },
 
@@ -123,6 +132,12 @@
     },
     "history": {
       "name": "History"
+    },
+    "summary": {
+      "name": "Summary"
+    },
+    "positions": {
+      "name": "Positions"
     }
   },
 

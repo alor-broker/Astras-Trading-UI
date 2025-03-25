@@ -10,6 +10,7 @@ import {InstrumentUtils} from "../../../utils/instrument.utils";
 export class PortfolioNode extends NodeBase {
   readonly portfolioPropertyName = 'portfolio';
   readonly instrumentsOutputName = 'instruments';
+  readonly portfolioOutputName = 'portfolio';
 
   constructor() {
     super(PortfolioNode.title);
@@ -33,6 +34,16 @@ export class PortfolioNode extends NodeBase {
         removable: false
       }
     );
+
+    // Add a portfolio output that can be connected to summary and positions nodes
+    this.addOutput(
+      this.portfolioOutputName,
+      SlotType.String,
+      {
+        nameLocked: true,
+        removable: false
+      }
+    );
   }
 
   static get nodeId(): string {
@@ -50,6 +61,9 @@ export class PortfolioNode extends NodeBase {
         if (targetPortfolio == null) {
           return of(false);
         }
+
+        // Output the portfolio as a string in the format "portfolio:exchange"
+        this.setOutputByName(this.portfolioOutputName, `${targetPortfolio.portfolio}:${targetPortfolio.exchange}`);
 
         return forkJoin([
           this.preparePortfolioInstruments(targetPortfolio, context)

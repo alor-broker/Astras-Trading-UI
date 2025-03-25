@@ -68,7 +68,7 @@ export class NodeBase extends LGraphNode {
     );
   }
 
-  setOutputByName(outputName: string, data: number | string | boolean | OutputDataObject | PortfolioKey): void {
+  setOutputByName(outputName: string, data: number | string | boolean | OutputDataObject): void {
     const outputIndex = this.findOutputSlot(outputName);
     if (outputIndex >= 0) {
       this.setOutputData(

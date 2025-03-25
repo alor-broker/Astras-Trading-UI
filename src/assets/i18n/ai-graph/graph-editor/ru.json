@@ -29,12 +29,21 @@
     },
     "history": {
       "title": "История цен"
+    },
+    "portfolio-summary": {
+      "title": "Сводка портфеля"
+    },
+    "portfolio-positions": {
+      "title": "Позиции портфеля"
+    },
+    "const-portfolio": {
+      "title": "Выбор портфеля"
     }
   },
 
   "categories": {
     "base": "Базовые",
-    "instrument-selection": "Выбор инструмента",
+    "instrument-selection": "Выбор",
     "info-sources": "Инфо. источники",
     "ai": "ИИ",
     "output": "Вывод"
@@ -123,6 +132,12 @@
     },
     "history": {
       "name": "История"
+    },
+    "summary": {
+      "name": "Сводка"
+    },
+    "positions": {
+      "name": "Позиции"
     }
   },
 

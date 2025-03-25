@@ -107,7 +107,7 @@ export class HistorySourceNode extends NodeBase {
               return false;
             }
 
-            const formattedCandles = response.history.map(candle => 
+            const formattedCandles = response.history.map(candle =>
               `Date: ${new Date(candle.time * 1000).toISOString().split('T')[0]}\n` +
               `Open: ${candle.open}\n` +
               `High: ${candle.high}\n` +
