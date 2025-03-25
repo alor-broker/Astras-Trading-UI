@@ -64,7 +64,7 @@ export class PortfolioSelectionNode extends NodeBase {
         if ((portfolio ?? '').length > 0 && (exchange ?? '').length) {
           this.setOutputByName(
             this.outputSlotName,
-            { portfolio, exchange }
+            `${portfolio}:${exchange}`
           );
 
           return true;
