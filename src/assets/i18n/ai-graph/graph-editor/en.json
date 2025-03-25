@@ -15,6 +15,9 @@
     "news": {
       "title": "News"
     },
+    "quotes": {
+      "title": "Quotes"
+    },
     "request-to-ai": {
       "title": "AI Query"
     },
@@ -50,6 +53,9 @@
     "news": {
       "name": "News"
     },
+    "quotes": {
+      "name": "Quotes"
+    },
     "prompt": {
       "name": "Prompt"
     },
@@ -73,6 +79,41 @@
     },
     "portfolio": {
       "name": "Portfolio"
+    },
+    "includePrice": {
+      "name": "Include Price"
+    },
+    "includeVolume": {
+      "name": "Include Volume"  
+    },
+    "includeLastUpdate": {
+      "name": "Include Last Update"
+    },
+    "includeBidAsk": {
+      "name": "Include Bid/Ask"
+    },
+    "includeHighLow": {
+      "name": "Include High/Low"
+    },
+    "lastPrice": {
+      "name": "Last Price",
+      "text": "Last Price: "
+    },
+    "volume": {
+      "name": "Volume",
+      "text": "Volume: "
+    },
+    "lastUpdate": {
+      "name": "Last Update",
+      "text": "Last Update: "
+    },
+    "bidAsk": {
+      "name": "Bid/Ask",
+      "text": "Bid/Ask: "
+    },
+    "highLow": {
+      "name": "High/Low",
+      "text": "High/Low: "
     }
   },
 

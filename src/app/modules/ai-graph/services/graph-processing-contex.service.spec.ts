@@ -4,6 +4,8 @@ import {MockProviders} from "ng-mocks";
 import {NewsService} from "../../../shared/services/news.service";
 import {LLMService} from "./llm.service";
 import {PositionsService} from "../../../shared/services/positions.service";
+import {QuotesService} from "../../../shared/services/quotes.service";
+import {TranslatorService} from "../../../shared/services/translator.service";
 
 describe('GraphProcessingContexService', () => {
   let service: GraphProcessingContextService;
@@ -14,7 +16,9 @@ describe('GraphProcessingContexService', () => {
         ...MockProviders(
           NewsService,
           LLMService,
-          PositionsService
+          PositionsService,
+          QuotesService,
+          TranslatorService
         )
       ]
     });

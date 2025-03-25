@@ -15,6 +15,9 @@
     "news": {
       "title": "Новости"
     },
+    "quotes": {
+      "title": "Котировки"
+    },
     "request-to-ai": {
       "title": "Запрос к ИИ"
     },
@@ -50,6 +53,9 @@
     "news": {
       "name": "Новости"
     },
+    "quotes": {
+      "name": "Котировки"
+    },
     "prompt": {
       "name": "Запрос"
     },
@@ -73,6 +79,41 @@
     },
     "portfolio": {
       "name": "Портфель"
+    },
+    "includePrice": {
+      "name": "Добавить цену"
+    },
+    "includeVolume": {
+      "name": "Добавить объем"  
+    },
+    "includeLastUpdate": {
+      "name": "Добавить время обновления"
+    },
+    "includeBidAsk": {
+      "name": "Добавить спрос/предл."
+    },
+    "includeHighLow": {
+      "name": "Добавить макс./мин."
+    },
+    "lastPrice": {
+      "name": "Последняя цена",
+      "text": "Последняя цена: "
+    },
+    "volume": {
+      "name": "Объем",
+      "text": "Объем: "
+    },
+    "lastUpdate": {
+      "name": "Время обновления",
+      "text": "Время обновления: "
+    },
+    "bidAsk": {
+      "name": "Спрос/Предл.",
+      "text": "Спрос/Предл.: "
+    },
+    "highLow": {
+      "name": "Макс/Мин",
+      "text": "Макс/Мин: "
     }
   },
 

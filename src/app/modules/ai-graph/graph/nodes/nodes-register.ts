@@ -6,6 +6,7 @@ import {RequestToAiNode} from "./ai/request-to-ai-node";
 import {MarkdownOutputNode} from "./output/markdown-output-node";
 import {NodeCategories} from "./node-categories";
 import {PortfolioNode} from "./instrument-selection/portfolio-node";
+import {QuotesSourceNode} from "./info-sources/quotes-source-node";
 
 interface NodeRegistration {
   type: string;
@@ -59,4 +60,9 @@ NodesRegister.registerNode({
 NodesRegister.registerNode({
   type: PortfolioNode.nodeType,
   class: PortfolioNode
+});
+
+NodesRegister.registerNode({
+  type: QuotesSourceNode.nodeType,
+  class: QuotesSourceNode
 });
