@@ -1,11 +1,14 @@
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 import { NodeBase } from "../node-base";
+import { SlotType } from "../../slot-types";
 import { NodeCategories } from "../node-categories";
-import { PortfolioKey, SlotType } from "../../slot-types";
 import { PortfolioValueValidationOptions } from "../models";
-import { of, Observable } from "rxjs";
+import { GraphProcessingContextService } from "../../../services/graph-processing-context.service";
 
 export class PortfolioSelectionNode extends NodeBase {
   readonly portfolioPropertyName = 'portfolio';
+  readonly exchangePropertyName = 'exchange';
   readonly outputSlotName = 'portfolio';
 
   constructor() {
@@ -18,6 +21,18 @@ export class PortfolioSelectionNode extends NodeBase {
       {
         validation: {
           required: true
+        } as PortfolioValueValidationOptions
+      }
+    );
+
+    this.addProperty(
+      this.exchangePropertyName,
+      "",
+      SlotType.String,
+      {
+        validation: {
+          minLength: 1,
+          maxLength: 20
         } as PortfolioValueValidationOptions
       }
     );
@@ -40,13 +55,23 @@ export class PortfolioSelectionNode extends NodeBase {
     return NodeCategories.InstrumentSelection;
   }
 
-  override executor(): Observable<boolean> {
-    const selectedPortfolio = this.properties[this.portfolioPropertyName] as PortfolioKey | undefined;
-    if (!selectedPortfolio) {
-      return of(false);
-    }
+  override executor(context: GraphProcessingContextService): Observable<boolean> {
+    return super.executor(context).pipe(
+      map(() => {
+        const portfolio = this.properties[this.portfolioPropertyName] as string;
+        const exchange = this.properties[this.exchangePropertyName] as string;
 
-    this.setOutputByName(this.outputSlotName, { portfolio: selectedPortfolio });
-    return of(true);
+        if ((portfolio ?? '').length > 0 && (exchange ?? '').length) {
+          this.setOutputByName(
+            this.outputSlotName,
+            { portfolio, exchange }
+          );
+
+          return true;
+        }
+
+        return false;
+      })
+    );
   }
 }
