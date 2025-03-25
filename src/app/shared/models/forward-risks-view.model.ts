@@ -19,4 +19,24 @@ export interface ForwardRisksView {
   varMargin: string;
   /** Наличие установленных денежного и залогового лимитов **/
   isLimitsSet: boolean;
+  /** Индикативная маржа **/
+  indicativeVarMargin: string;
+  /** NOV: (net option value) **/
+  netOptionValue: number;
+  /** Опер риск  **/
+  posRisk: string;
+  /** Начальная маржа **/
+  initialMargin: string;
+  /** Минимальная маржа **/
+  minimalMargin: string;
+  /** Скорр. Маржа **/
+  correctedMargin: string;
+  /** НПР1 **/
+  riskCoverageRatioOne: string;
+  /** НПР2 **/
+  riskCoverageRatioTwo: string;
+  /** Статус **/
+  status: 'normal' | 'limitation' | 'closing' | null;
+  /** Уровень риска **/
+  clientType: string;
 }

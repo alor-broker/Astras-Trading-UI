@@ -47,10 +47,15 @@ export class MarketService {
   }
 
   getExchangeSettings(exchange: string): Observable<ExchangeSettings> {
+    return this.getExchangeSettingsIfExists(exchange).pipe(
+        filter((x): x is ExchangeSettings => !!x)
+      );
+  }
+
+  getExchangeSettingsIfExists(exchange: string): Observable<ExchangeSettings | null> {
     return this.getMarketSettings()
       .pipe(
-        map(s => s.exchanges.find(x => x.exchange === exchange)?.settings),
-        filter((x): x is ExchangeSettings => !!x)
+        map(s => (s.exchanges.find(x => x.exchange === exchange)?.settings) ?? null),
       );
   }
 

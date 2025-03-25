@@ -19,6 +19,17 @@
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.vmCurrentPositionsTitle')">{{summary.vmCurrentPositions}}</nz-descriptions-item>
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.varMarginTitle')">{{summary.varMargin}}</nz-descriptions-item>
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.isLimitsSetTitle')">{{summary.isLimitsSet ? t('yes') : t('no')}}</nz-descriptions-item>
+
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.indicativeVarMarginTitle')">{{summary.indicativeVarMargin}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.netOptionValueTitle')">{{summary.netOptionValue}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.posRiskTitle')">{{summary.posRisk}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.initialMarginTitle')">{{summary.initialMargin}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.minimalMarginTitle')">{{summary.minimalMargin}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.correctedMarginTitle')">{{summary.correctedMargin}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.riskCoverageRatioOneTitle')">{{summary.riskCoverageRatioOne}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.riskCoverageRatioTwoTitle')">{{summary.riskCoverageRatioTwo}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.clientTypeTitle')">{{t('blotterForwardSummary.clientTypeValues.' + summary.clientType, {fallback: summary.clientType})}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.statusTitle')">{{t('blotterForwardSummary.statusValues.' + summary.status, {fallback: summary.status})}}</nz-descriptions-item>
   </nz-descriptions>
 </ng-container>
 </div>
