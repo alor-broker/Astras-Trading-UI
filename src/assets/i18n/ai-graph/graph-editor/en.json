@@ -26,6 +26,9 @@
     },
     "portfolio": {
       "title": "Portfolio"
+    },
+    "history": {
+      "title": "Price History"
     }
   },
 
@@ -114,6 +117,12 @@
     "highLow": {
       "name": "High/Low",
       "text": "High/Low: "
+    },
+    "timeframe": {
+      "name": "Timeframe"
+    },
+    "history": {
+      "name": "History"
     }
   },
 
