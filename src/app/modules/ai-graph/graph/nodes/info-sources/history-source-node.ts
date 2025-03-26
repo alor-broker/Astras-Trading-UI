@@ -1,10 +1,10 @@
 import {Observable, of, switchMap} from "rxjs";
 import {map} from "rxjs/operators";
 import {NodeBase} from "../node-base";
-import {InstrumentKey, SlotType} from "../../slot-types";
+import {ExtendedEditors, InstrumentKey, SlotType} from "../../slot-types";
 import {NodeCategories} from "../node-categories";
 import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
-import {NumberValueValidationOptions} from "../models";
+import {NumberValueValidationOptions, SelectValueValidationOptions} from "../models";
 import {addDaysUnix} from "../../../../../shared/utils/datetime";
 import {InstrumentUtils} from "../../../utils/instrument.utils";
 
@@ -38,10 +38,11 @@ export class HistorySourceNode extends NodeBase {
       'D',
       SlotType.String,
       {
+        editorType: ExtendedEditors.Select,
         validation: {
           required: true,
           allowedValues: ['D', 'W', 'M']
-        }
+        } as SelectValueValidationOptions
       }
     );
 

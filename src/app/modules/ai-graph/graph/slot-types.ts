@@ -22,6 +22,7 @@ export enum SlotType {
 export enum ExtendedEditors {
   MultilineText = 'multiline_text',
   Prompt = 'prompt',
+  Select = 'select',
 }
 
 export type EditorType = SlotType | ExtendedEditors;
