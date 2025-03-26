@@ -108,24 +108,19 @@
       "name": "Include High/Low"
     },
     "lastPrice": {
-      "name": "Last Price",
-      "text": "Last Price: "
+      "name": "Last Price"
     },
     "volume": {
-      "name": "Volume",
-      "text": "Volume: "
+      "name": "Volume"
     },
     "lastUpdate": {
-      "name": "Last Update",
-      "text": "Last Update: "
+      "name": "Last Update"
     },
     "bidAsk": {
-      "name": "Bid/Ask",
-      "text": "Bid/Ask: "
+      "name": "Bid/Ask"
     },
     "highLow": {
-      "name": "High/Low",
-      "text": "High/Low: "
+      "name": "High/Low"
     },
     "timeframe": {
       "name": "Timeframe"
@@ -138,6 +133,21 @@
     },
     "positions": {
       "name": "Positions"
+    },
+    "buyingPower": {
+      "name": "Buying Power"
+    },
+    "profit": {
+      "name": "Profit"
+    },
+    "portfolioValue": {
+      "name": "Portfolio Value"
+    },
+    "initialMargin": {
+      "name": "Initial Margin"
+    },
+    "commission": {
+      "name": "Commission"
     }
   },
 

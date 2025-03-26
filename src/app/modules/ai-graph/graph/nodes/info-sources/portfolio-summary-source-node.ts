@@ -1,20 +1,24 @@
 import { Observable, of, switchMap } from "rxjs";
-import { map } from "rxjs/operators";
+import { map, take } from "rxjs/operators";
 import { NodeBase } from "../node-base";
-import { PortfolioKey, SlotType } from "../../slot-types";
+import { SlotType } from "../../slot-types";
 import { NodeCategories } from "../node-categories";
 import { GraphProcessingContextService } from "../../../services/graph-processing-context.service";
+import { TranslatorFn } from "../../../../../shared/services/translator.service";
+import { PortfolioUtils } from "../../../utils/portfolio.utils";
 
 export class PortfolioSummarySourceNode extends NodeBase {
   readonly inputSlotName = 'portfolio';
   readonly outputSlotName = 'summary';
+
+  private translatorFn?: Observable<TranslatorFn>;
 
   constructor() {
     super(PortfolioSummarySourceNode.title);
 
     this.addInput(
       this.inputSlotName,
-      SlotType.String,
+      SlotType.Portfolio,
       {
         nameLocked: true,
         removable: false
@@ -40,6 +44,9 @@ export class PortfolioSummarySourceNode extends NodeBase {
   }
 
   override executor(context: GraphProcessingContextService): Observable<boolean> {
+    // Initialize translator function for data fields
+    this.translatorFn = context.translatorService.getTranslator('ai-graph/data-fields');
+
     return super.executor(context).pipe(
       switchMap(() => {
         const portfolioKeyString = this.getValueOfInput(this.inputSlotName) as string | undefined;
@@ -48,27 +55,35 @@ export class PortfolioSummarySourceNode extends NodeBase {
           return of(false);
         }
 
-        // Parse the portfolio string format "portfolio:exchange"
-        const parts = portfolioKeyString.split(':');
-        if (parts.length !== 2 || !parts[0] || !parts[1]) {
+        // Parse the portfolio string using PortfolioUtils
+        const targetPortfolio = PortfolioUtils.fromString(portfolioKeyString);
+        if (!targetPortfolio.portfolio || !targetPortfolio.exchange) {
           return of(false);
         }
 
-        const [portfolio, exchange] = parts;
-        const targetPortfolio: PortfolioKey = { portfolio, exchange };
-
         return context.portfolioSummaryService.getCommonSummary(targetPortfolio).pipe(
-          map(summary => {
-            const summaryText = [
-              `Buying Power: ${summary.buyingPower}`,
-              `Profit: ${summary.profit} (${summary.profitRate}%)`,
-              `Portfolio Value: ${summary.portfolioEvaluation}`,
-              `Initial Margin: ${summary.initialMargin}`,
-              `Commission: ${summary.commission}`
-            ].join('\n');
+          switchMap(summary => {
+            return this.translatorFn!.pipe(
+              take(1),
+              map(t => {
+                const buyingPowerLabel = t(['fields', 'buyingPower', 'text']);
+                const profitLabel = t(['fields', 'profit', 'text']);
+                const portfolioValueLabel = t(['fields', 'portfolioValue', 'text']);
+                const initialMarginLabel = t(['fields', 'initialMargin', 'text']);
+                const commissionLabel = t(['fields', 'commission', 'text']);
 
-            this.setOutputByName(this.outputSlotName, summaryText);
-            return true;
+                const summaryText = [
+                  `${buyingPowerLabel} ${summary.buyingPower}`,
+                  `${profitLabel} ${summary.profit} (${summary.profitRate}%)`,
+                  `${portfolioValueLabel} ${summary.portfolioEvaluation}`,
+                  `${initialMarginLabel} ${summary.initialMargin}`,
+                  `${commissionLabel} ${summary.commission}`
+                ].join('\n');
+
+                this.setOutputByName(this.outputSlotName, summaryText);
+                return true;
+              })
+            );
           })
         );
       })

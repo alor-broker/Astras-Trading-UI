@@ -107,6 +107,9 @@ export class HistorySourceNode extends NodeBase {
               return false;
             }
 
+            // We don't need translation for candles because there is no
+            // straightforward terminology for them in russian.
+            // I'm afraid LLM will be misled by the translation.
             const formattedCandles = response.history.map(candle =>
               `Date: ${new Date(candle.time * 1000).toISOString().split('T')[0]}\n` +
               `Open: ${candle.open}\n` +

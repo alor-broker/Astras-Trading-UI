@@ -79,8 +79,8 @@ export class QuotesSourceNode extends NodeBase {
   }
 
   override executor(context: GraphProcessingContextService): Observable<boolean> {
-    // Initialize translator function
-    this.translatorFn = context.translatorService.getTranslator('ai-graph/graph-editor');
+    // Initialize translator function for data fields
+    this.translatorFn = context.translatorService.getTranslator('ai-graph/data-fields');
 
     return super.executor(context).pipe(
       switchMap(() => {
@@ -155,27 +155,27 @@ export class QuotesSourceNode extends NodeBase {
           const parts: string[] = [];
 
           if (includePrice) {
-            const label = t(['slots', 'lastPrice', 'text']);
+            const label = t(['fields', 'lastPrice', 'text']);
             parts.push(`${label}${q.last_price}`);
           }
 
           if (includeVolume) {
-            const label = t(['slots', 'volume', 'text']);
+            const label = t(['fields', 'volume', 'text']);
             parts.push(`${label}${q.volume}`);
           }
 
           if (includeLastUpdate) {
-            const label = t(['slots', 'lastUpdate', 'text']);
+            const label = t(['fields', 'lastUpdate', 'text']);
             parts.push(`${label}${new Date(q.last_price_timestamp * 1000).toISOString()}`);
           }
 
           if (includeBidAsk) {
-            const label = t(['slots', 'bidAsk', 'text']);
+            const label = t(['fields', 'bidAsk', 'text']);
             parts.push(`${label}${q.bid} (${q.bid_vol}) / ${q.ask} (${q.ask_vol})`);
           }
 
           if (includeHighLow) {
-            const label = t(['slots', 'highLow', 'text']);
+            const label = t(['fields', 'highLow', 'text']);
             parts.push(`${label}${q.high_price} / ${q.low_price}`);
           }
 

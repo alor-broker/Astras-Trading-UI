@@ -6,6 +6,7 @@ import {PortfolioValueValidationOptions} from "../models";
 import {map} from "rxjs/operators";
 import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
 import {InstrumentUtils} from "../../../utils/instrument.utils";
+import {PortfolioUtils} from "../../../utils/portfolio.utils";
 
 export class PortfolioNode extends NodeBase {
   readonly portfolioPropertyName = 'portfolio';
@@ -38,7 +39,7 @@ export class PortfolioNode extends NodeBase {
     // Add a portfolio output that can be connected to summary and positions nodes
     this.addOutput(
       this.portfolioOutputName,
-      SlotType.String,
+      SlotType.Portfolio,
       {
         nameLocked: true,
         removable: false
@@ -62,8 +63,7 @@ export class PortfolioNode extends NodeBase {
           return of(false);
         }
 
-        // Output the portfolio as a string in the format "portfolio:exchange"
-        this.setOutputByName(this.portfolioOutputName, `${targetPortfolio.portfolio}:${targetPortfolio.exchange}`);
+        this.setOutputByName(this.portfolioOutputName, PortfolioUtils.toString(targetPortfolio));
 
         return forkJoin([
           this.preparePortfolioInstruments(targetPortfolio, context)

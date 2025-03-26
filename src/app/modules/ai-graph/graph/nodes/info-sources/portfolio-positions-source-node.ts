@@ -1,21 +1,25 @@
 import { Observable, of, switchMap } from "rxjs";
-import { map } from "rxjs/operators";
+import { map, take } from "rxjs/operators";
 import { NodeBase } from "../node-base";
 import { SlotType } from "../../slot-types";
 import { NodeCategories } from "../node-categories";
 import { GraphProcessingContextService } from "../../../services/graph-processing-context.service";
 import { Position } from "../../../../../shared/models/positions/position.model";
+import { TranslatorFn } from "../../../../../shared/services/translator.service";
+import { PortfolioUtils } from "../../../utils/portfolio.utils";
 
 export class PortfolioPositionsSourceNode extends NodeBase {
   readonly inputSlotName = 'portfolio';
   readonly outputSlotName = 'positions';
+
+  private translatorFn?: Observable<TranslatorFn>;
 
   constructor() {
     super(PortfolioPositionsSourceNode.title);
 
     this.addInput(
       this.inputSlotName,
-      SlotType.String,
+      SlotType.Portfolio,
       {
         nameLocked: true,
         removable: false
@@ -41,6 +45,9 @@ export class PortfolioPositionsSourceNode extends NodeBase {
   }
 
   override executor(context: GraphProcessingContextService): Observable<boolean> {
+    // Initialize translator function for data fields
+    this.translatorFn = context.translatorService.getTranslator('ai-graph/data-fields');
+
     return super.executor(context).pipe(
       switchMap(() => {
         const portfolioKeyString = this.getValueOfInput(this.inputSlotName) as string | undefined;
@@ -48,33 +55,44 @@ export class PortfolioPositionsSourceNode extends NodeBase {
             return of(false);
           }
 
-        // Parse the portfolio string format "portfolio:exchange"
-        const parts = portfolioKeyString.split(':');
-        if (parts.length !== 2 || !parts[0] || !parts[1]) {
+        // Parse the portfolio string using PortfolioUtils
+        const targetPortfolio = PortfolioUtils.fromString(portfolioKeyString);
+        if (!targetPortfolio.portfolio || !targetPortfolio.exchange) {
           return of(false);
         }
 
-        const [portfolio, exchange] = parts;
-
-        return context.positionsService.getAllByPortfolio(portfolio, exchange).pipe(
-          map(positions => {
+        return context.positionsService.getAllByPortfolio(targetPortfolio.portfolio, targetPortfolio.exchange).pipe(
+          switchMap(positions => {
             if (positions == null) {
-              return false;
+              return of(false);
             }
 
-            const positionsText = positions.map((position: Position) => {
-              return [
-                `Symbol: ${position.targetInstrument.symbol}`,
-                `Exchange: ${position.targetInstrument.exchange}`,
-                `Volume: ${position.currentVolume}`,
-                `Average Price: ${position.avgPrice}`,
-                `Profit: ${position.unrealisedPl}`,
-                '---'
-              ].join('\n');
-            }).join('\n');
+            return this.translatorFn!.pipe(
+              take(1),
+              map(t => {
+                const symbolLabel = t(['fields', 'symbol', 'text']);
+                const exchangeLabel = t(['fields', 'exchange', 'text']);
+                const volumeLabel = t(['fields', 'volume', 'text']);
+                const avgPriceLabel = t(['fields', 'avgPrice', 'text']);
+                const profitLabel = t(['fields', 'profit', 'text']);
+                const dailyProfitLabel = t(['fields', 'dailyProfit', 'text']);
 
-            this.setOutputByName(this.outputSlotName, positionsText);
-            return true;
+                const positionsText = positions.map((position: Position) => {
+                  return [
+                    `${symbolLabel} ${position.targetInstrument.symbol}`,
+                    `${exchangeLabel} ${position.targetInstrument.exchange}`,
+                    `${volumeLabel} ${position.currentVolume}`,
+                    `${avgPriceLabel} ${position.avgPrice}`,
+                    `${profitLabel} ${position.unrealisedPl}`,
+                    `${dailyProfitLabel} ${position.dailyUnrealisedPl}`,
+                    '---'
+                  ].join('\n');
+                }).join('\n');
+
+                this.setOutputByName(this.outputSlotName, positionsText);
+                return true;
+              })
+            );
           })
         );
       })
