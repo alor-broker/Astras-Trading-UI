@@ -27,10 +27,10 @@
     "LowRisk": "Low"
   },
 
-  "statusTitle": "Status",
-  "statusValues": {
-    "normal": "Normal",
-    "limitation": "Limitation",
-    "closing": "Closing"
+  "riskStatusTitle": "Status",
+  "riskStatusValues": {
+    "Ok": "Normal",
+    "Demand": "Limitation",
+    "ToClose": "Closing"
   }
 }

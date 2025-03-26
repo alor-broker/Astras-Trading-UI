@@ -108,15 +108,6 @@ export class PortfolioSummaryService {
   }
 
   private formatForwardRisks(forwardRisks: ForwardRisks, risks: Risks, currencyFormat: CurrencyFormat | null, exchangeRate: number): ForwardRisksView {
-    let status: 'normal' | 'limitation' | 'closing' | null = null;
-    if(risks.riskCoverageRatioOne > 0) {
-      status = 'normal';
-    } else if(risks.riskCoverageRatioOne < 0 && risks.riskCoverageRatioTwo > 0) {
-      status = 'limitation';
-    } else if(risks.riskCoverageRatioTwo > 0) {
-      status = 'closing';
-    }
-
     return {
       moneyFree: formatCurrency(forwardRisks.moneyFree / exchangeRate, currencyFormat),
       moneyBlocked: formatCurrency(forwardRisks.moneyBlocked / exchangeRate, currencyFormat),
@@ -136,7 +127,7 @@ export class PortfolioSummaryService {
       correctedMargin: formatCurrency(risks.correctedMargin / exchangeRate, currencyFormat),
       riskCoverageRatioOne: formatCurrency(risks.riskCoverageRatioOne / exchangeRate, currencyFormat),
       riskCoverageRatioTwo: formatCurrency(risks.riskCoverageRatioTwo / exchangeRate, currencyFormat),
-      status,
+      riskStatus: risks.riskStatus,
       clientType: risks.clientType
     };
   }
