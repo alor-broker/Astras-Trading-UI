@@ -27,10 +27,10 @@
     "LowRisk": "КНУР"
   },
 
-  "statusTitle": "Статус",
-  "statusValues": {
-    "normal": "Нормальный",
-    "limitation": "Ограничение",
-    "closing": "Закрытие"
+  "riskStatusTitle": "Статус",
+  "riskStatusValues": {
+    "Ok": "Нормальный",
+    "Demand": "Ограничение",
+    "ToClose": "Закрытие"
   }
 }

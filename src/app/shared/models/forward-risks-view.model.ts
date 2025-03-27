@@ -36,7 +36,7 @@ export interface ForwardRisksView {
   /** НПР2 **/
   riskCoverageRatioTwo: string;
   /** Статус **/
-  status: 'normal' | 'limitation' | 'closing' | null;
+  riskStatus: string;
   /** Уровень риска **/
   clientType: string;
 }
