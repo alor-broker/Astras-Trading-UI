@@ -15,6 +15,9 @@
     "news": {
       "title": "News"
     },
+    "quotes": {
+      "title": "Quotes"
+    },
     "request-to-ai": {
       "title": "AI Query"
     },
@@ -23,6 +26,18 @@
     },
     "portfolio": {
       "title": "Portfolio"
+    },
+    "history": {
+      "title": "Price History"
+    },
+    "portfolio-summary": {
+      "title": "Portfolio Summary"
+    },
+    "portfolio-positions": {
+      "title": "Portfolio Positions"
+    },
+    "const-portfolio": {
+      "title": "Portfolio Selection"
     }
   },
 
@@ -50,6 +65,9 @@
     "news": {
       "name": "News"
     },
+    "quotes": {
+      "name": "Quotes"
+    },
     "prompt": {
       "name": "Prompt"
     },
@@ -73,6 +91,63 @@
     },
     "portfolio": {
       "name": "Portfolio"
+    },
+    "includePrice": {
+      "name": "Include Price"
+    },
+    "includeVolume": {
+      "name": "Include Volume"  
+    },
+    "includeLastUpdate": {
+      "name": "Include Last Update"
+    },
+    "includeBidAsk": {
+      "name": "Include Bid/Ask"
+    },
+    "includeHighLow": {
+      "name": "Include High/Low"
+    },
+    "lastPrice": {
+      "name": "Last Price"
+    },
+    "volume": {
+      "name": "Volume"
+    },
+    "lastUpdate": {
+      "name": "Last Update"
+    },
+    "bidAsk": {
+      "name": "Bid/Ask"
+    },
+    "highLow": {
+      "name": "High/Low"
+    },
+    "timeframe": {
+      "name": "Timeframe"
+    },
+    "history": {
+      "name": "History"
+    },
+    "summary": {
+      "name": "Summary"
+    },
+    "positions": {
+      "name": "Positions"
+    },
+    "buyingPower": {
+      "name": "Buying Power"
+    },
+    "profit": {
+      "name": "Profit"
+    },
+    "portfolioValue": {
+      "name": "Portfolio Value"
+    },
+    "initialMargin": {
+      "name": "Initial Margin"
+    },
+    "commission": {
+      "name": "Commission"
     }
   },
 

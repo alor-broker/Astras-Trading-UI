@@ -27,6 +27,9 @@
                 <ats-prompt-property-editor [config]="editor.config" [targetNode]="targetNode"></ats-prompt-property-editor>
               }
             }
+            @case (ExtendedEditors.Select) {
+              <ats-select-property-editor [config]="editor.config"></ats-select-property-editor>
+            }
           }
         </div>
       }

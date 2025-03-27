@@ -6,10 +6,12 @@ import {PortfolioValueValidationOptions} from "../models";
 import {map} from "rxjs/operators";
 import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
 import {InstrumentUtils} from "../../../utils/instrument.utils";
+import {PortfolioUtils} from "../../../utils/portfolio.utils";
 
 export class PortfolioNode extends NodeBase {
   readonly portfolioPropertyName = 'portfolio';
   readonly instrumentsOutputName = 'instruments';
+  readonly portfolioOutputName = 'portfolio';
 
   constructor() {
     super(PortfolioNode.title);
@@ -33,6 +35,16 @@ export class PortfolioNode extends NodeBase {
         removable: false
       }
     );
+
+    // Add a portfolio output that can be connected to summary and positions nodes
+    this.addOutput(
+      this.portfolioOutputName,
+      SlotType.Portfolio,
+      {
+        nameLocked: true,
+        removable: false
+      }
+    );
   }
 
   static get nodeId(): string {
@@ -50,6 +62,8 @@ export class PortfolioNode extends NodeBase {
         if (targetPortfolio == null) {
           return of(false);
         }
+
+        this.setOutputByName(this.portfolioOutputName, PortfolioUtils.toString(targetPortfolio));
 
         return forkJoin([
           this.preparePortfolioInstruments(targetPortfolio, context)

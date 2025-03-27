@@ -1,0 +1,46 @@
+{
+  "fields": {
+    "symbol": {
+      "text": "Тикер:"
+    },
+    "exchange": {
+      "text": "Биржа:"
+    },
+    "volume": {
+      "text": "Объем:"
+    },
+    "avgPrice": {
+      "text": "Средняя цена:"
+    },
+    "profit": {
+      "text": "Прибыль:"
+    },
+    "dailyProfit": {
+      "text": "Дневная прибыль:"
+    },
+    "lastPrice": {
+      "text": "Последняя цена:"
+    },
+    "lastUpdate": {
+      "text": "Время обновления:"
+    },
+    "bidAsk": {
+      "text": "Спрос/Предл.:"
+    },
+    "highLow": {
+      "text": "Макс/Мин:"
+    },
+    "buyingPower": {
+      "text": "Покупательная способность:"
+    },
+    "portfolioValue": {
+      "text": "Стоимость портфеля:"
+    },
+    "initialMargin": {
+      "text": "Начальная маржа:"
+    },
+    "commission": {
+      "text": "Комиссия:"
+    }
+  }
+}

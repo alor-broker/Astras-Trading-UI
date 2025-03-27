@@ -1,6 +1,6 @@
 ﻿import {
   DateValueValidationOptions,
-  NumberValueValidationOptions, PortfolioValueValidationOptions,
+  NumberValueValidationOptions, PortfolioValueValidationOptions, SelectValueValidationOptions,
   StringValueValidationOptions
 } from "../graph/nodes/models";
 import {PortfolioKey} from "../graph/slot-types";
@@ -28,4 +28,8 @@ export interface DatePropertyEditorConfig extends PropertyEditorConfig<Date> {
 
 export interface PortfolioPropertyEditorConfig extends PropertyEditorConfig<PortfolioKey> {
   validation: PortfolioValueValidationOptions;
+}
+
+export interface SelectPropertyEditorConfig extends PropertyEditorConfig<string> {
+  validation: SelectValueValidationOptions;
 }
