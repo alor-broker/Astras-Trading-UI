@@ -31,7 +31,9 @@ const spreadItem: ArbitrageSpread = {
     quantity: 3,
     ratio: 3,
     portfolio: {portfolio: 'portfolio3', exchange: 'exchange3'},
-  }
+  },
+  buySpread: null,
+  sellSpread: null
 };
 
 const quote = {
@@ -227,7 +229,9 @@ describe('ArbitrageSpreadService', () => {
 
     service.editSpread({
       ...expectedSpread,
-      id: spreadItem.id!
+      id: spreadItem.id!,
+      sellSpread: null,
+      buySpread: null
     });
     tick();
   }));
