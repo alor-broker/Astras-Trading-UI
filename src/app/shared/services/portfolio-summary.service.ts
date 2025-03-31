@@ -122,6 +122,7 @@ export class PortfolioSummaryService {
       indicativeVarMargin: formatCurrency(forwardRisks.indicativeVarMargin / exchangeRate, currencyFormat),
       netOptionValue: forwardRisks.netOptionValue,
       posRisk:formatCurrency(forwardRisks.posRisk / exchangeRate, currencyFormat),
+      portfolioLiquidationValue: formatCurrency(risks.portfolioLiquidationValue / exchangeRate, currencyFormat),
       initialMargin: formatCurrency(risks.initialMargin / exchangeRate, currencyFormat),
       minimalMargin: formatCurrency(risks.minimalMargin / exchangeRate, currencyFormat),
       correctedMargin: formatCurrency(risks.correctedMargin / exchangeRate, currencyFormat),

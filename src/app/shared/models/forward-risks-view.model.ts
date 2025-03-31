@@ -25,6 +25,8 @@ export interface ForwardRisksView {
   netOptionValue: number;
   /** Опер риск  **/
   posRisk: string;
+  /** Стоимость ликвидного портфеля  **/
+  portfolioLiquidationValue: string;
   /** Начальная маржа **/
   initialMargin: string;
   /** Минимальная маржа **/
