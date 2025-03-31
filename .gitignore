@@ -53,3 +53,4 @@ Thumbs.db
 /.nx/cache/nx_files.nxt
 /.nx/cache/parsed-lock-file.json
 /.nx/cache/project-graph.json
+.aider*

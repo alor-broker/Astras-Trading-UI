@@ -1,0 +1,46 @@
+{
+  "fields": {
+    "symbol": {
+      "text": "Symbol:"
+    },
+    "exchange": {
+      "text": "Exchange:"
+    },
+    "volume": {
+      "text": "Volume:"
+    },
+    "avgPrice": {
+      "text": "Average Price:"
+    },
+    "profit": {
+      "text": "Profit:"
+    },
+    "dailyProfit": {
+      "text": "Daily Profit:"
+    },
+    "lastPrice": {
+      "text": "Last Price:"
+    },
+    "lastUpdate": {
+      "text": "Last Update:"
+    },
+    "bidAsk": {
+      "text": "Bid/Ask:"
+    },
+    "highLow": {
+      "text": "High/Low:"
+    },
+    "buyingPower": {
+      "text": "Buying Power:"
+    },
+    "portfolioValue": {
+      "text": "Portfolio Value:"
+    },
+    "initialMargin": {
+      "text": "Initial Margin:"
+    },
+    "commission": {
+      "text": "Commission:"
+    }
+  }
+}
