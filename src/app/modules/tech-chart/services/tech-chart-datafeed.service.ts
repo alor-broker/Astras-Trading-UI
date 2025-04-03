@@ -149,7 +149,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
         pricescale: priceScale,
         format: 'price',
         type: instrumentDetails.type ?? '',
-        has_empty_bars: true,
+        has_empty_bars: false,
         has_intraday: true,
         has_seconds: true,
         has_weekly_and_monthly: true,

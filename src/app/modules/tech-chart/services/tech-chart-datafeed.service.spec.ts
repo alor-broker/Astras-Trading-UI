@@ -191,7 +191,7 @@ describe('TechChartDatafeedService', () => {
       minmov: 1,
       pricescale: 100,
       format: 'price',
-      has_empty_bars: true,
+      has_empty_bars: false,
       has_intraday: true,
       has_seconds: true,
       has_weekly_and_monthly: true,
