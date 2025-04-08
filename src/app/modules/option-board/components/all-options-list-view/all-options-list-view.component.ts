@@ -197,7 +197,7 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
 
   protected expirations$!: Observable<ExpirationDisplay[] | null>;
 
-  private readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
+  protected readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
 
   private readonly StorageKeys = {
     rowLayout: 'row-layout',

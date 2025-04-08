@@ -12,7 +12,7 @@
          nzResizeObserver
     >
       <div class="settings">
-        <form [formGroup]="settingsForm" [nzLayout]="'inline'" nz-form>
+        <form [formGroup]="settingsForm" [nzLayout]="((contentSize$ | async)?.width ?? 0) > 550 ? 'inline' : 'vertical'" nz-form>
           <nz-form-item>
             <nz-form-label>{{ tListView('optionBoardAllOptionsListView.settingsForm.strikesCount.label') }}</nz-form-label>
             <nz-form-control>
