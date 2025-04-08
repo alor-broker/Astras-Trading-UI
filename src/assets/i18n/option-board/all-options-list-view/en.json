@@ -1,0 +1,10 @@
+﻿{
+  "settingsForm": {
+    "strikesCount": {
+      "label": "Strikes count"
+    },
+    "highlightedSpreadItemsCount": {
+      "label": "Highlight spread when difference, steps"
+    }
+  }
+}

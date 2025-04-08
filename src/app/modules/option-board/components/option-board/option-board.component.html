@@ -1,53 +1,81 @@
 <ng-container *transloco="let t; scope: 'option-board'">
-  <div *ngIf="selectedTab$ | async as selectedTab" class="container h-100 d-flex flex-column  user-select-none">
-    <div class="header d-flex flex-row justify-content-between flex-gap-5">
-      <div [hidden]="selectedTab !== tabs.AllOptions" class="d-flex flex-row justify-content-start flex-gap-5">
-        <div>
-          <nz-select (ngModelChange)="dataContext.selectedParameter$.next($event)"
-                     [ngModel]="dataContext.selectedParameter$ | async">
-            <ng-container *ngFor="let parameter of parameters">
-              <nz-option [nzLabel]="t('optionBoard.parameterOptions.' + parameter, { fallback: parameter})"
-                         [nzValue]="parameter">
-              </nz-option>
-            </ng-container>
-          </nz-select>
-        </div>
+  <ng-container *ngrxLet="{selectedTab: selectedTab$, boardView: boardView$} as vm">
+    <div class="container h-100 d-flex flex-column  user-select-none">
+      <div class="header d-flex flex-row justify-content-between flex-gap-5">
+        @if (vm.selectedTab === tabs.AllOptions) {
+          @if (vm.boardView === BoardViewValues.VerticalTable) {
+            <div class="d-flex flex-row justify-content-start flex-gap-5">
+              <div>
+                <nz-select (ngModelChange)="dataContext.selectedParameter$.next($event)"
+                           [ngModel]="dataContext.selectedParameter$ | async">
+                  <ng-container *ngFor="let parameter of parameters">
+                    <nz-option [nzLabel]="t('optionBoard.parameterOptions.' + parameter, { fallback: parameter})"
+                               [nzValue]="parameter">
+                    </nz-option>
+                  </ng-container>
+                </nz-select>
+              </div>
 
-        <div>
-          <nz-select (ngModelChange)="dataContext.selectedSide$.next($event)"
-                     [ngModel]="dataContext.selectedSide$ | async">
-            <ng-container *ngFor="let side of optionSides">
-              <nz-option [nzLabel]="t('optionBoard.sideOptions.' + side, { fallback: side})" [nzValue]="side">
-              </nz-option>
-            </ng-container>
-          </nz-select>
+              <div>
+                <nz-select (ngModelChange)="dataContext.selectedSide$.next($event)"
+                           [ngModel]="dataContext.selectedSide$ | async">
+                  <ng-container *ngFor="let side of optionSides">
+                    <nz-option [nzLabel]="t('optionBoard.sideOptions.' + side, { fallback: side})" [nzValue]="side">
+                    </nz-option>
+                  </ng-container>
+                </nz-select>
+              </div>
+            </div>
+          }
+        }
+
+        <div *ngIf="dataContext.currentSelection$ | async as currentSelection" class="flex-fill d-flex flex-row justify-content-end">
+          <nz-radio-group (ngModelChange)="selectTab($event)" [ngModel]="selectedTab$ | async">
+            <label [nzValue]="tabs.AllOptions" nz-radio-button>
+              @if (vm.boardView === BoardViewValues.VerticalTable) {
+                <span
+                  nz-icon
+                  nzType="insert-row-left"
+                  nzTheme="outline"
+                  (click)="changeBoardView(BoardViewValues.List)"
+                ></span>
+              } @else {
+                <span
+                  nz-icon
+                  nzType="menu"
+                  nzTheme="outline"
+                  (click)="changeBoardView(BoardViewValues.VerticalTable)"
+                ></span>
+              }
+              {{t('optionBoard.tabNames.' + tabs.AllOptions)}}
+            </label>
+
+            <label [nzValue]="tabs.SelectedOptions" nz-radio-button [nzDisabled]="currentSelection.selectedOptions.length === 0"
+            >
+              {{t('optionBoard.tabNames.' + tabs.SelectedOptions)}}({{currentSelection.selectedOptions.length}})
+            </label>
+
+            <label [nzValue]="tabs.Charts" nz-radio-button [nzDisabled]="currentSelection.selectedOptions.length === 0">{{t('optionBoard.tabNames.' + tabs.Charts)}}</label>
+          </nz-radio-group>
         </div>
       </div>
 
-      <div *ngIf="dataContext.currentSelection$ | async as currentSelection" class="flex-fill d-flex flex-row justify-content-end">
-        <nz-radio-group (ngModelChange)="selectTab($event)" [ngModel]="selectedTab$ | async">
-          <label [nzValue]="tabs.AllOptions" nz-radio-button>{{t('optionBoard.tabNames.' + tabs.AllOptions)}}</label>
-          <label [nzValue]="tabs.SelectedOptions" nz-radio-button [nzDisabled]="currentSelection.selectedOptions.length === 0">{{t('optionBoard.tabNames.' + tabs.SelectedOptions)}}
-            ({{currentSelection.selectedOptions.length}})</label>
-          <label [nzValue]="tabs.Charts" nz-radio-button [nzDisabled]="currentSelection.selectedOptions.length === 0">{{t('optionBoard.tabNames.' + tabs.Charts)}}</label>
-        </nz-radio-group>
+      <div class="body flex-fill w-100 mt-10">
+          <div [hidden]="vm.selectedTab !== componentTabs.AllOptions" class="tab">
+            @if (vm.boardView === BoardViewValues.VerticalTable) {
+              <ats-all-options [dataContext]="dataContext"></ats-all-options>
+            } @else {
+              <ats-all-options-list-view [guid]="guid" [dataContext]="dataContext"></ats-all-options-list-view>
+            }
+          </div>
+
+          <div [hidden]="vm.selectedTab !== componentTabs.SelectedOptions" class="tab">
+            <ats-selected-options [dataContext]="dataContext"></ats-selected-options>
+          </div>
+          <div [hidden]="vm.selectedTab !== componentTabs.Charts" class="tab">
+            <ats-option-board-charts-layout [dataContext]="dataContext"></ats-option-board-charts-layout>
+          </div>
       </div>
     </div>
-
-    <div class="body flex-fill w-100 mt-10">
-      <ng-container *ngIf="selectedTab$ | async as selectedTab">
-        <div [hidden]="selectedTab !== componentTabs.AllOptions" class="tab">
-          <ats-all-options [dataContext]="dataContext"></ats-all-options>
-        </div>
-
-        <div [hidden]="selectedTab !== componentTabs.SelectedOptions" class="tab">
-          <ats-selected-options [dataContext]="dataContext"></ats-selected-options>
-        </div>
-        <div [hidden]="selectedTab !== componentTabs.Charts" class="tab">
-          <ats-option-board-charts-layout [dataContext]="dataContext"></ats-option-board-charts-layout>
-        </div>
-      </ng-container>
-
-    </div>
-  </div>
+  </ng-container>
 </ng-container>

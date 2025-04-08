@@ -25,6 +25,7 @@ import { InputNumberComponent } from "../../shared/components/input-number/input
 import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
 import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
 import { TableRowHeightDirective } from "../../shared/directives/table-row-height.directive";
+import { AllOptionsListViewComponent } from "./components/all-options-list-view/all-options-list-view.component";
 
 @NgModule({
   declarations: [
@@ -37,23 +38,24 @@ import { TableRowHeightDirective } from "../../shared/directives/table-row-heigh
     OptionBoardChartsLayoutComponent,
     OptionBoardChartComponent
   ],
-    imports: [
-        CommonModule,
-        SharedModule,
-        TranslocoModule,
-        NzSpinModule,
-        NzResizeObserverModule,
-        CdkDrag,
-        CdkDropList,
-        LetDirective,
-        BaseChartDirective,
-        NzAlertComponent,
-        InstrumentsModule,
-        InputNumberComponent,
-        WidgetSettingsComponent,
-        InstrumentSearchComponent,
-        TableRowHeightDirective
-    ],
+  imports: [
+    CommonModule,
+    SharedModule,
+    TranslocoModule,
+    NzSpinModule,
+    NzResizeObserverModule,
+    CdkDrag,
+    CdkDropList,
+    LetDirective,
+    BaseChartDirective,
+    NzAlertComponent,
+    InstrumentsModule,
+    InputNumberComponent,
+    WidgetSettingsComponent,
+    InstrumentSearchComponent,
+    TableRowHeightDirective,
+    AllOptionsListViewComponent
+  ],
   exports: [
     OptionBoardWidgetComponent
   ],

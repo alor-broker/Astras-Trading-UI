@@ -5,7 +5,10 @@ import {
 
 import { OptionBoardComponent } from './option-board.component';
 import { OptionBoardDataContextFactory } from "../../utils/option-board-data-context-factory";
-import { Subject } from "rxjs";
+import {
+  EMPTY,
+  Subject
+} from "rxjs";
 import {
   OptionParameters,
   OptionSide
@@ -14,6 +17,9 @@ import { OptionsSelection } from "../../models/option-board-data-context.model";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { MockProvider } from "ng-mocks";
+import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
+import { LetDirective } from "@ngrx/component";
 
 describe('OptionBoardComponent', () => {
   let component: OptionBoardComponent;
@@ -21,7 +27,10 @@ describe('OptionBoardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TranslocoTestsModule.getModule()],
+      imports: [
+        TranslocoTestsModule.getModule(),
+        LetDirective
+      ],
       declarations: [
         OptionBoardComponent,
         ...ngZorroMockComponents,
@@ -35,6 +44,10 @@ describe('OptionBoardComponent', () => {
         }),
         ComponentHelpers.mockComponent({
           selector: 'ats-option-board-charts-layout',
+          inputs: ['dataContext']
+        }),
+        ComponentHelpers.mockComponent({
+          selector: 'ats-all-options-list-view',
           inputs: ['dataContext']
         })
       ],
@@ -58,7 +71,13 @@ describe('OptionBoardComponent', () => {
               }
             })
           }
-        }
+        },
+        MockProvider(
+          WidgetLocalStateService,
+          {
+            getStateRecord: () => EMPTY,
+          }
+        )
       ]
     })
       .compileComponents();
