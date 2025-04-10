@@ -42,6 +42,7 @@ export interface SubmitLimitOrderCommandArgs {
   priceStep: number;
   silent: boolean;
   orderTracker?: LimitOrderTracker;
+  allowMargin?: boolean;
 }
 
 @Injectable({
@@ -144,6 +145,7 @@ export class SubmitLimitOrderCommand extends BracketCommand<SubmitLimitOrderComm
     args: SubmitLimitOrderCommandArgs
   ): void {
     args.orderTracker?.beforeOrderCreated(limitOrder);
+    limitOrder.allowMargin = args.allowMargin;
 
     if (getProfitOrder != null || stopLossOrder != null) {
       const orders: NewLinkedOrder[] = [
@@ -156,14 +158,16 @@ export class SubmitLimitOrderCommand extends BracketCommand<SubmitLimitOrderComm
       if (getProfitOrder != null) {
         orders.push({
           ...getProfitOrder,
-          type: OrderType.StopLimit
+          type: OrderType.StopLimit,
+          allowMargin: args.allowMargin
         });
       }
 
       if (stopLossOrder != null) {
         orders.push({
           ...stopLossOrder,
-          type: OrderType.StopLimit
+          type: OrderType.StopLimit,
+          allowMargin: args.allowMargin
         });
       }
 

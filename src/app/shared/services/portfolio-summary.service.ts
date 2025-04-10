@@ -18,6 +18,7 @@ import { CommonSummaryView } from "../models/common-summary-view.model";
 import { ForwardRisksView } from "../models/forward-risks-view.model";
 import { TerminalSettingsService } from "./terminal-settings.service";
 import { CurrencyFormat } from "../models/market-settings.model";
+import { Risks } from "../../modules/blotter/models/risks.model";
 
 @Injectable({
   providedIn: 'root'
@@ -41,11 +42,13 @@ export class PortfolioSummaryService {
   }
 
   getForwardRisks(portfolioKey: PortfolioKey): Observable<ForwardRisksView> {
-    return combineLatest([
-      this.portfolioSubscriptionsService.getSpectraRisksSubscription(portfolioKey.portfolio, portfolioKey.exchange),
-      this.getExchangeRate(portfolioKey.portfolio, portfolioKey.exchange)
-    ]).pipe(
-      map(([risks, quoteData]) => this.formatForwardRisks(risks, quoteData.currencyFormat, quoteData.quote))
+    return combineLatest({
+      spectraRisks: this.portfolioSubscriptionsService.getSpectraRisksSubscription(portfolioKey.portfolio, portfolioKey.exchange),
+      risks: this.portfolioSubscriptionsService.getRisksSubscription(portfolioKey.portfolio, portfolioKey.exchange),
+      exchangeRate: this.getExchangeRate(portfolioKey.portfolio, portfolioKey.exchange)
+    }
+    ).pipe(
+      map(x => this.formatForwardRisks(x.spectraRisks, x.risks, x.exchangeRate.currencyFormat, x.exchangeRate.quote))
     );
   }
 
@@ -104,18 +107,29 @@ export class PortfolioSummaryService {
     });
   }
 
-  private formatForwardRisks(risks: ForwardRisks, currencyFormat: CurrencyFormat | null, exchangeRate: number): ForwardRisksView {
+  private formatForwardRisks(forwardRisks: ForwardRisks, risks: Risks, currencyFormat: CurrencyFormat | null, exchangeRate: number): ForwardRisksView {
     return {
-      moneyFree: formatCurrency(risks.moneyFree / exchangeRate, currencyFormat),
-      moneyBlocked: formatCurrency(risks.moneyBlocked / exchangeRate, currencyFormat),
-      fee: formatCurrency(risks.fee / exchangeRate, currencyFormat),
-      moneyOld: formatCurrency(risks.moneyOld / exchangeRate, currencyFormat),
-      moneyAmount: formatCurrency(risks.moneyAmount / exchangeRate, currencyFormat),
-      moneyPledgeAmount: formatCurrency(risks.moneyPledgeAmount / exchangeRate, currencyFormat),
-      vmInterCl: formatCurrency(risks.vmInterCl / exchangeRate, currencyFormat),
-      vmCurrentPositions: formatCurrency(risks.vmCurrentPositions / exchangeRate, currencyFormat),
-      varMargin: formatCurrency(risks.varMargin / exchangeRate, currencyFormat),
-      isLimitsSet: risks.isLimitsSet
-    } as ForwardRisksView;
+      moneyFree: formatCurrency(forwardRisks.moneyFree / exchangeRate, currencyFormat),
+      moneyBlocked: formatCurrency(forwardRisks.moneyBlocked / exchangeRate, currencyFormat),
+      fee: formatCurrency(forwardRisks.fee / exchangeRate, currencyFormat),
+      moneyOld: formatCurrency(forwardRisks.moneyOld / exchangeRate, currencyFormat),
+      moneyAmount: formatCurrency(forwardRisks.moneyAmount / exchangeRate, currencyFormat),
+      moneyPledgeAmount: formatCurrency(forwardRisks.moneyPledgeAmount / exchangeRate, currencyFormat),
+      vmInterCl: formatCurrency(forwardRisks.vmInterCl / exchangeRate, currencyFormat),
+      vmCurrentPositions: formatCurrency(forwardRisks.vmCurrentPositions / exchangeRate, currencyFormat),
+      varMargin: formatCurrency(forwardRisks.varMargin / exchangeRate, currencyFormat),
+      isLimitsSet: forwardRisks.isLimitsSet,
+      indicativeVarMargin: formatCurrency(forwardRisks.indicativeVarMargin / exchangeRate, currencyFormat),
+      netOptionValue: forwardRisks.netOptionValue,
+      posRisk:formatCurrency(forwardRisks.posRisk / exchangeRate, currencyFormat),
+      portfolioLiquidationValue: formatCurrency(risks.portfolioLiquidationValue / exchangeRate, currencyFormat),
+      initialMargin: formatCurrency(risks.initialMargin / exchangeRate, currencyFormat),
+      minimalMargin: formatCurrency(risks.minimalMargin / exchangeRate, currencyFormat),
+      correctedMargin: formatCurrency(risks.correctedMargin / exchangeRate, currencyFormat),
+      riskCoverageRatioOne: formatCurrency(risks.riskCoverageRatioOne / exchangeRate, currencyFormat),
+      riskCoverageRatioTwo: formatCurrency(risks.riskCoverageRatioTwo / exchangeRate, currencyFormat),
+      riskStatus: risks.riskStatus,
+      clientType: risks.clientType
+    };
   }
 }

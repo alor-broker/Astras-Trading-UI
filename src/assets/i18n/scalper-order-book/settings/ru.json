@@ -61,6 +61,7 @@
   "minorLinesStepLabel": "Множитель промежуточных уровней",
   "majorLinesStepLabel": "Множитель основных уровней",
   "panelSlotsLabel": "Слот панели",
+  "allowMarginLabel": "Разрешить сделки, которые могут привести к открытию непокрытой позиции (только для клиентов низкого уровня риска)",
 
   "tickerError": "Выберите тикер",
   "intervalError": "Значение должно быть от {{min}} до {{max}}",
@@ -93,6 +94,8 @@
 
   "tradesClusterHighlightOptions": {
     "off": "Отключено",
-    "buySellDominance": "Доминирование покупатели/продавцы"
+    "buySellDominance": "Доминирование покупатели/продавцы",
+    "targetVolume": "Заполнение относительно объема",
+    "buyVsSell": "Покупатели | Продавцы"
   }
 }

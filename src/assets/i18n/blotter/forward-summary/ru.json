@@ -2,11 +2,35 @@
   "moneyFreeTitle": "Свободные ДС",
   "moneyBlockedTitle": "ГО",
   "feeTitle": "Комиссия",
-  "moneyOldTitle": "Всего ДС",
-  "moneyAmountTitle": "Текущий лимит",
+  "moneyAmountTitle": "Всего ДС",
+  "portfolioLiquidationValueTitle": "Текущий лимит",
   "moneyPledgeAmountTitle": "Залоги",
   "vmInterClTitle": "Вар. маржа",
   "vmCurrentPositionsTitle": "Вар. маржа по позициям",
   "varMarginTitle": "Итоговая вар. маржа",
-  "isLimitsSetTitle": "Денежные и залоговые лимиты"
+  "isLimitsSetTitle": "Денежные и залоговые лимиты",
+
+  "indicativeVarMarginTitle": "Индикативная маржа",
+  "netOptionValueTitle": "NOV",
+  "posRiskTitle": "Опер. риск",
+  "initialMarginTitle": "Нач. маржа",
+  "minimalMarginTitle": "Мин. маржа",
+  "correctedMarginTitle": "Скорр. маржа",
+  "riskCoverageRatioOneTitle": "НПР1",
+  "riskCoverageRatioTwoTitle": "НПР2",
+
+  "clientTypeTitle": "Уровень риска",
+  "clientTypeValues": {
+    "StandardRisk": "КСУР",
+    "HighRisk": "КПУР",
+    "Special": "КОУР",
+    "LowRisk": "КНУР"
+  },
+
+  "riskStatusTitle": "Статус",
+  "riskStatusValues": {
+    "Ok": "Нормальный",
+    "Demand": "Ограничение",
+    "ToClose": "Закрытие"
+  }
 }

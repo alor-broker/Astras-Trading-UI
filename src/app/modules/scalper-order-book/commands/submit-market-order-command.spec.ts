@@ -98,7 +98,8 @@ describe('SubmitMarketOrderCommand', () => {
           {
             side: Side.Sell,
             quantity,
-            instrument: toInstrumentKey(testInstrumentKey)
+            instrument: toInstrumentKey(testInstrumentKey),
+            allowMargin: undefined
           } as NewMarketOrder,
           portfolioKey.portfolio
         );
@@ -179,7 +180,8 @@ describe('SubmitMarketOrderCommand', () => {
     const expectedMarketOrder = {
       side: Side.Buy,
       quantity,
-      instrument: toInstrumentKey(testInstrumentKey)
+      instrument: toInstrumentKey(testInstrumentKey),
+      allowMargin: undefined
     };
 
     expect(orderServiceSpy.submitMarketOrder)
@@ -196,7 +198,8 @@ describe('SubmitMarketOrderCommand', () => {
       instrument: toInstrumentKey(testInstrumentKey),
       price: bestAsk,
       activate: true,
-      type: OrderType.StopLimit
+      type: OrderType.StopLimit,
+      allowMargin: undefined
     };
 
     const expectedStopLossOrder = {
@@ -207,7 +210,8 @@ describe('SubmitMarketOrderCommand', () => {
       instrument: toInstrumentKey(testInstrumentKey),
       price: bestAsk,
       activate: true,
-      type: OrderType.StopLimit
+      type: OrderType.StopLimit,
+      allowMargin: undefined
     };
 
     expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
@@ -267,7 +271,8 @@ describe('SubmitMarketOrderCommand', () => {
     const expectedMarketOrder = {
       side: Side.Sell,
       quantity,
-      instrument: toInstrumentKey(testInstrumentKey)
+      instrument: toInstrumentKey(testInstrumentKey),
+      allowMargin: undefined
     };
 
     expect(orderServiceSpy.submitMarketOrder)
@@ -284,7 +289,8 @@ describe('SubmitMarketOrderCommand', () => {
       instrument: toInstrumentKey(testInstrumentKey),
       price: bestBid,
       activate: true,
-      type: OrderType.StopLimit
+      type: OrderType.StopLimit,
+      allowMargin: undefined
     };
 
     const expectedStopLossOrder = {
@@ -295,7 +301,8 @@ describe('SubmitMarketOrderCommand', () => {
       instrument: toInstrumentKey(testInstrumentKey),
       price: bestBid,
       activate: true,
-      type: OrderType.StopLimit
+      type: OrderType.StopLimit,
+      allowMargin: undefined
     };
 
     expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(

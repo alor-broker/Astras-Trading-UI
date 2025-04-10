@@ -119,7 +119,7 @@ export class AdminOrderCommandService implements OrderCommandService {
       () => ({
         url: `${this.baseApiUrl}/actions/limit`,
         body: {
-          ...order,
+          ...this.cleanOrder(order),
           comment: order.meta != null
             ? JSON.stringify({ meta: order.meta })
             : undefined
@@ -134,7 +134,7 @@ export class AdminOrderCommandService implements OrderCommandService {
       () => ({
         url: `${this.baseApiUrl}/actions/limit/${orderEdit.orderId}`,
         body: {
-          ...orderEdit
+          ...this.cleanOrder(orderEdit)
         }
       })
     );
@@ -315,5 +315,13 @@ export class AdminOrderCommandService implements OrderCommandService {
     return error.error?.code != null && error.error?.message != null
       ? `${error.error.code} <br/> ${error.error.message}`
       : error.message;
+  }
+
+  private cleanOrder<T extends { allowMargin?: boolean }>(order: T): T {
+    if(order.allowMargin == null) {
+      delete order.allowMargin;
+    }
+
+    return order;
   }
 }

@@ -227,6 +227,12 @@
                 <nz-switch formControlName='enableMouseClickSilentOrders'></nz-switch>
               </nz-form-control>
             </nz-form-item>
+            <nz-form-item class="one-row">
+              <nz-form-label nzFor="allowMargin">{{t('scalperOrderBookSettings.allowMarginLabel')}}</nz-form-label>
+              <nz-form-control>
+                <nz-switch formControlName='allowMargin'></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
             <nz-form-item>
               <nz-form-label nzFor="stopLimitOrdersDistance">
                 {{t('scalperOrderBookSettings.stopLimitOrdersDistanceLabel')}}
@@ -375,6 +381,18 @@
                           [nzValue]="option"
                         ></nz-option>
                       </nz-select>
+                    </nz-form-control>
+                  </nz-form-item>
+                  <nz-form-item *ngIf="form.controls.tradesClusterPanelSettings.controls.targetVolume.enabled">
+                    <nz-form-label nzFor="targetVolume" nzRequired>{{t('scalperOrderBookSettings.volumeHighlightFullnessLabel')}}</nz-form-label>
+                    <nz-form-control [nzErrorTip]="t(
+                    'scalperOrderBookSettings.intervalError',
+               {
+                min: validationOptions.tradesClusterPanelSettings.targetVolume.min,
+                 max: validationOptions.tradesClusterPanelSettings.targetVolume.max
+                 })"
+                    >
+                      <ats-input-number formControlName="targetVolume" [allowDecimal]="false"></ats-input-number>
                     </nz-form-control>
                   </nz-form-item>
                 </nz-collapse-panel>

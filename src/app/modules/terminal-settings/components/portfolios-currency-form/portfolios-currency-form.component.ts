@@ -130,15 +130,23 @@ export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseCom
 
           return forkJoin(
             portfolios.map(portfolio =>
-              this.marketService.getExchangeSettings(portfolio.exchange)
-                .pipe(map(p => {
-                  const existingSettings = currentSettings.find(
-                    pc => pc.portfolio.portfolio === portfolio.portfolio && pc.portfolio.exchange === portfolio.exchange
-                  );
+              this.marketService.getExchangeSettingsIfExists(portfolio.exchange)
+                .pipe(
+                  map(p => {
+                    if(p == null) {
+                      return null;
+                    }
 
-                  return existingSettings ?? { portfolio, currency: p.defaultPortfolioCurrencyInstrument };
-                }))
+                    const existingSettings = currentSettings.find(
+                      pc => pc.portfolio.portfolio === portfolio.portfolio && pc.portfolio.exchange === portfolio.exchange
+                    );
+
+                    return existingSettings ?? { portfolio, currency: p.defaultPortfolioCurrencyInstrument };
+                  })
+                )
             )
+          ).pipe(
+            map(x => x.filter(p => p != null))
           );
         })
       );

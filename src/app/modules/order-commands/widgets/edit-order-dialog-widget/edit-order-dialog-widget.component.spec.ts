@@ -5,6 +5,8 @@ import {
 
 import { EditOrderDialogWidgetComponent } from './edit-order-dialog-widget.component';
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockProvider} from "ng-mocks";
+import {ConfirmableOrderCommandsService} from "../../services/confirmable-order-commands.service";
 
 describe('EditOrderDialogWidgetComponent', () => {
   let component: EditOrderDialogWidgetComponent;
@@ -13,6 +15,9 @@ describe('EditOrderDialogWidgetComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TranslocoTestsModule.getModule()],
+      providers: [
+        MockProvider(ConfirmableOrderCommandsService)
+      ],
       declarations: [EditOrderDialogWidgetComponent]
     });
     fixture = TestBed.createComponent(EditOrderDialogWidgetComponent);

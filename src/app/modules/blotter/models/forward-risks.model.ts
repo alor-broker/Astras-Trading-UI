@@ -19,4 +19,10 @@ export interface ForwardRisks {
   varMargin: number;
   /** Наличие установленных денежного и залогового лимитов **/
   isLimitsSet: boolean;
+  /** Индикативная маржа **/
+  indicativeVarMargin: number;
+  /** NOV: (net option value) **/
+  netOptionValue: number;
+  /** Опер риск **/
+  posRisk: number;
 }

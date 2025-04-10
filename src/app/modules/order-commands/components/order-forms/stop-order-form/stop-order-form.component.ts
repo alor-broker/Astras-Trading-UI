@@ -1,7 +1,6 @@
 import {
   Component,
   DestroyRef,
-  Inject,
   Input,
   OnDestroy,
   OnInit
@@ -58,10 +57,7 @@ import {
   ExecutionPolicy,
   SubmitGroupResult
 } from "../../../../../shared/models/orders/orders-group.model";
-import {
-  ORDER_COMMAND_SERVICE_TOKEN,
-  OrderCommandService
-} from "../../../../../shared/services/orders/order-command.service";
+import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
 
 @Component({
   selector: 'ats-stop-order-form',
@@ -153,8 +149,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     private readonly formBuilder: FormBuilder,
     protected readonly commonParametersService: CommonParametersService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
+    private readonly orderCommandService: ConfirmableOrderCommandsService,
     private readonly quotesService: QuotesService,
     private readonly timezoneConverterService: TimezoneConverterService,
     protected readonly destroyRef: DestroyRef) {
@@ -267,19 +262,19 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
               baseOrder,
               linkedOrder
             ] as NewLinkedOrder[],
-            portfolioKey.portfolio,
+            portfolioKey,
             ExecutionPolicy.OnExecuteOrCancel
           );
         } else {
           if (formValue.withLimit === true) {
             return this.orderCommandService.submitStopLimitOrder(
               this.getStopLimitOrder(instrument, side, formValue, tc),
-              portfolioKey.portfolio
+              portfolioKey
             );
           } else {
             return this.orderCommandService.submitStopMarketOrder(
               this.getStopMarketOrder(instrument, side, formValue, tc),
-              portfolioKey.portfolio
+              portfolioKey
             );
           }
         }

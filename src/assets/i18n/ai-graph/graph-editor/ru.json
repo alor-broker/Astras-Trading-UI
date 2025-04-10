@@ -15,17 +15,35 @@
     "news": {
       "title": "Новости"
     },
+    "quotes": {
+      "title": "Котировки"
+    },
     "request-to-ai": {
       "title": "Запрос к ИИ"
     },
     "markdown-output": {
       "title": "Текст"
+    },
+    "portfolio": {
+      "title": "Портфель"
+    },
+    "history": {
+      "title": "История цен"
+    },
+    "portfolio-summary": {
+      "title": "Сводка портфеля"
+    },
+    "portfolio-positions": {
+      "title": "Позиции портфеля"
+    },
+    "const-portfolio": {
+      "title": "Выбор портфеля"
     }
   },
 
   "categories": {
     "base": "Базовые",
-    "instrument-selection": "Выбор инструмента",
+    "instrument-selection": "Выбор",
     "info-sources": "Инфо. источники",
     "ai": "ИИ",
     "output": "Вывод"
@@ -38,14 +56,17 @@
     "exchange": {
       "name": "Биржа"
     },
-    "instrument": {
-      "name": "Инструмент"
+    "instruments": {
+      "name": "Инстр."
     },
     "maxRecordsCount": {
       "name": "Макс. число записей"
     },
     "news": {
       "name": "Новости"
+    },
+    "quotes": {
+      "name": "Котировки"
     },
     "prompt": {
       "name": "Запрос"
@@ -67,6 +88,66 @@
     },
     "includeContent": {
       "name": "Добавить содержимое"
+    },
+    "portfolio": {
+      "name": "Портфель"
+    },
+    "includePrice": {
+      "name": "Добавить цену"
+    },
+    "includeVolume": {
+      "name": "Добавить объем"  
+    },
+    "includeLastUpdate": {
+      "name": "Добавить время обновления"
+    },
+    "includeBidAsk": {
+      "name": "Добавить спрос/предл."
+    },
+    "includeHighLow": {
+      "name": "Добавить макс./мин."
+    },
+    "lastPrice": {
+      "name": "Последняя цена"
+    },
+    "volume": {
+      "name": "Объем"
+    },
+    "lastUpdate": {
+      "name": "Время обновления"
+    },
+    "bidAsk": {
+      "name": "Спрос/Предл."
+    },
+    "highLow": {
+      "name": "Макс/Мин"
+    },
+    "timeframe": {
+      "name": "Таймфрейм"
+    },
+    "history": {
+      "name": "История"
+    },
+    "summary": {
+      "name": "Сводка"
+    },
+    "positions": {
+      "name": "Позиции"
+    },
+    "buyingPower": {
+      "name": "Покупательная способность"
+    },
+    "profit": {
+      "name": "Прибыль"
+    },
+    "portfolioValue": {
+      "name": "Стоимость портфеля"
+    },
+    "initialMargin": {
+      "name": "Начальная маржа"
+    },
+    "commission": {
+      "name": "Комиссия"
     }
   },
 

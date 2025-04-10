@@ -102,7 +102,8 @@ describe('GetBestOfferCommand', () => {
             targetPortfolio: args.targetPortfolio,
             bracketOptions: args.bracketOptions,
             silent: true,
-            orderTracker: undefined
+            orderTracker: undefined,
+            allowMargin: undefined
           } as SubmitLimitOrderCommandArgs
         );
     })
@@ -166,7 +167,8 @@ describe('GetBestOfferCommand', () => {
             targetPortfolio: args.targetPortfolio,
             bracketOptions: args.bracketOptions,
             silent: true,
-            orderTracker: undefined
+            orderTracker: undefined,
+            allowMargin: undefined
           } as SubmitLimitOrderCommandArgs
         );
     })

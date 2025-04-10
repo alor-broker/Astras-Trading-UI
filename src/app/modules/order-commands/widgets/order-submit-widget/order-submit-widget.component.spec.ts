@@ -12,6 +12,8 @@ import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 import { ORDER_COMMAND_SERVICE_TOKEN } from "../../../../shared/services/orders/order-command.service";
 import {PUSH_NOTIFICATIONS_CONFIG} from "../../../push-notifications/services/push-notifications-config";
+import {MockProvider} from "ng-mocks";
+import {ConfirmableOrderCommandsService} from "../../services/confirmable-order-commands.service";
 
 describe('OrderSubmitWidgetComponent', () => {
   let component: OrderSubmitWidgetComponent;
@@ -21,52 +23,53 @@ describe('OrderSubmitWidgetComponent', () => {
     TestBed.configureTestingModule({
       declarations: [OrderSubmitWidgetComponent],
       providers: [
-        {
-          provide: WidgetSettingsService,
-          useValue: {
-            getSettings: jasmine.createSpy('getSettings ').and.returnValue(new Subject()),
-            getSettingsOrNull: jasmine.createSpy('getSettingsOrNull ').and.returnValue(new Subject())
-          }
-        },
-        {
-          provide: DashboardContextService,
-          useValue: {
+          MockProvider(
+            WidgetSettingsService,
+            {
+              getSettings: jasmine.createSpy('getSettings ').and.returnValue(new Subject()),
+              getSettingsOrNull: jasmine.createSpy('getSettingsOrNull ').and.returnValue(new Subject())
+            }
+          ),
+        MockProvider(
+          DashboardContextService,
+          {
             selectedPortfolio$: new Subject(),
           }
-        },
-        {
-          provide: TerminalSettingsService,
-          useValue: {
+        ),
+        MockProvider(
+          TerminalSettingsService,
+          {
             getSettings: jasmine.createSpy('getSettings').and.returnValue(new Subject())
           }
-        },
-        {
-          provide: InstrumentsService,
-          useValue: {
+        ),
+        MockProvider(
+          InstrumentsService,
+          {
             getInstrument: jasmine.createSpy('getInstrument').and.returnValue(new Subject())
           }
-        },
-        {
-          provide: CommonParametersService,
-          useValue: {
+        ),
+        MockProvider(
+          CommonParametersService,
+          {
             setParameters: jasmine.createSpy('setParameters').and.callThrough()
           }
-        },
+        ),
+        MockProvider(ConfirmableOrderCommandsService),
         {
           provide: WidgetsSharedDataService,
           useValue: {
             getDataProvideValues: jasmine.createSpy('getDataProvideValues').and.returnValue(new Subject())
           }
         },
-        {
-          provide: ORDER_COMMAND_SERVICE_TOKEN,
-          useValue: {
+        MockProvider(
+          ORDER_COMMAND_SERVICE_TOKEN,
+          {
             getOrdersConfig: jasmine.createSpy('getOrdersConfig').and.returnValue({ })
           }
-        },
-        {
-          provide: PUSH_NOTIFICATIONS_CONFIG,
-          useValue: {
+        ),
+        MockProvider(
+          PUSH_NOTIFICATIONS_CONFIG,
+          {
             priceChangeNotifications: {
               isSupported: true
             },
@@ -75,7 +78,7 @@ describe('OrderSubmitWidgetComponent', () => {
               isSupported: true
             }
           }
-        }
+        )
       ]
     });
     fixture = TestBed.createComponent(OrderSubmitWidgetComponent);

@@ -3,16 +3,24 @@ import {CommonParameters, CommonParametersService} from "../../services/common-p
 import {BehaviorSubject, Observable, shareReplay, take} from "rxjs";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
-import {filter, map} from "rxjs/operators";
+import {
+  filter,
+  finalize,
+  map
+} from "rxjs/operators";
 import {OrderFormState} from "../../models/order-form.model";
 import {OrderFormType} from "../../../../shared/models/orders/orders-dialog.model";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+import {ConfirmableOrderCommandsService} from "../../services/confirmable-order-commands.service";
 
 @Component({
   selector: 'ats-edit-order-dialog-widget',
   templateUrl: './edit-order-dialog-widget.component.html',
   styleUrls: ['./edit-order-dialog-widget.component.less'],
-  providers: [CommonParametersService]
+  providers: [
+    CommonParametersService,
+    ConfirmableOrderCommandsService
+  ]
 })
 export class EditOrderDialogWidgetComponent implements OnInit, OnDestroy {
   readonly formState$ = new BehaviorSubject<OrderFormState | null>(null);
@@ -66,7 +74,8 @@ export class EditOrderDialogWidgetComponent implements OnInit, OnDestroy {
     ).subscribe(s => {
       this.busy$.next(true);
       s?.submit?.().pipe(
-        take(1)
+        take(1),
+        finalize(() => this.busy$.next(false)),
       ).subscribe(r => {
         this.busy$.next(false);
         if (r) {

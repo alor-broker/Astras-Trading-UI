@@ -1,38 +1,18 @@
-import {
-  Component,
-  Inject,
-  Input,
-  OnDestroy,
-  OnInit,
-  Optional,
-  SkipSelf
-} from '@angular/core';
-import { TradesCluster } from '../../models/trades-clusters.model';
-import {
-  BehaviorSubject,
-  combineLatest,
-  filter,
-  Observable,
-  of
-} from 'rxjs';
+import {Component, Inject, Input, OnDestroy, OnInit, Optional, SkipSelf} from '@angular/core';
+import {TradesCluster} from '../../models/trades-clusters.model';
+import {BehaviorSubject, combineLatest, filter, Observable, of} from 'rxjs';
 import {
   ScalperOrderBookDataContext,
   ScalperOrderBookExtendedSettings
 } from '../../models/scalper-order-book-data-context.model';
-import { map } from 'rxjs/operators';
-import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
-import {
-  RULER_CONTEX,
-  RulerContext
-} from "../scalper-order-book-body/scalper-order-book-body.component";
-import {
-  TradesClusterHighlightMode,
-  TradesClusterPanelSettings
-} from "../../models/scalper-order-book-settings.model";
-import { ThemeService } from "../../../../shared/services/theme.service";
-import { ThemeColors } from "../../../../shared/models/settings/theme-settings.model";
-import { color } from "d3";
-import { MathHelper } from "../../../../shared/utils/math-helper";
+import {map} from 'rxjs/operators';
+import {NumberDisplayFormat} from '../../../../shared/models/enums/number-display-format';
+import {RULER_CONTEX, RulerContext} from "../scalper-order-book-body/scalper-order-book-body.component";
+import {TradesClusterHighlightMode, TradesClusterPanelSettings} from "../../models/scalper-order-book-settings.model";
+import {ThemeService} from "../../../../shared/services/theme.service";
+import {ThemeColors} from "../../../../shared/models/settings/theme-settings.model";
+import {color} from "d3";
+import {MathHelper} from "../../../../shared/utils/math-helper";
 
 interface DisplayItem {
   volume: number | null;
@@ -159,9 +139,28 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
     item: DisplayItem,
     settings: TradesClusterPanelSettings | null,
     themeColors: ThemeColors): any | null {
+    if(settings == null) {
+      return null;
+    }
+
+    switch (settings.highlightMode ?? TradesClusterHighlightMode.Off) {
+      case TradesClusterHighlightMode.BuySellDominance:
+        return this.getClusterBuySellDominanceStyle(item, themeColors);
+      case TradesClusterHighlightMode.TargetVolume:
+        return this.getClusterTargetVolumeStyle(item, settings.targetVolume ?? null, themeColors);
+      case TradesClusterHighlightMode.BuyVsSell:
+        return this.getClusterBuyVsSellStyle(item, themeColors);
+      default:
+        return null;
+    }
+  }
+
+  private getClusterBuySellDominanceStyle(
+    item: DisplayItem,
+    themeColors: ThemeColors
+  ): any | null {
     if(
-      settings?.highlightMode !== TradesClusterHighlightMode.BuySellDominance
-      || item.volume == null
+      item.volume == null
       || item.volume === 0
     ) {
       return null;
@@ -195,7 +194,77 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
     }
 
     return {
-      'background-color': d3Color.formatRgb()
+      'background-color': d3Color.formatRgb(),
+      'width': '100%'
+    };
+  }
+
+  private getClusterTargetVolumeStyle(
+    item: DisplayItem,
+    targetVolume: number | null,
+    themeColors: ThemeColors
+  ): any | null {
+    if(
+      item.volume == null
+      || item.volume === 0
+      || targetVolume == null
+    ) {
+      return null;
+    }
+
+    let itemColor = themeColors.mixColor;
+
+    if(item.buyQty > item.sellQty) {
+      itemColor = themeColors.buyColor;
+    }
+
+    if(item.buyQty < item.sellQty) {
+      itemColor = themeColors.sellColor;
+    }
+
+    const d3Color = color(itemColor);
+    if(d3Color == null) {
+      return null;
+    }
+
+    d3Color.opacity = 0.5;
+
+    const percent = Math.min(
+      100,
+      Math.round((item.volume / targetVolume) * 100)
+    );
+
+    return {
+      'background-color': d3Color.formatRgb(),
+      'width': `${percent}%`
+    };
+  }
+
+  private getClusterBuyVsSellStyle(
+    item: DisplayItem,
+    themeColors: ThemeColors
+  ): any | null {
+    if(
+      item.volume == null
+      || item.volume === 0
+    ) {
+      return null;
+    }
+
+    const d3BuyColor = color(themeColors.buyColor);
+    const d3SellColor = color(themeColors.sellColor);
+
+    if(d3BuyColor == null || d3SellColor == null) {
+      return null;
+    }
+
+    d3BuyColor.opacity = d3SellColor.opacity = 0.5;
+
+    const buyVolumePercent = Math.round((item.buyQty / item.volume) * 100);
+
+    return {
+      'background': `linear-gradient(90deg, ${d3BuyColor.formatRgb()} ${buyVolumePercent}%, ${d3SellColor.formatRgb()} ${buyVolumePercent}%)`,
+      'width': '100%'
     };
   }
 }

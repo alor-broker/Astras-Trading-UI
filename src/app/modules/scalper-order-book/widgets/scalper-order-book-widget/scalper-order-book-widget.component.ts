@@ -85,7 +85,8 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
           settings.tradesClusterPanelSettings,
           {
             ...TradesClusterPanelSettingsDefaults,
-            highlightMode: TradesClusterHighlightMode.BuySellDominance
+            highlightMode: TradesClusterHighlightMode.BuySellDominance,
+            targetVolume:10000
           }
         ),
         volumeDisplayFormat: getValueOrDefault(settings.volumeDisplayFormat, NumberDisplayFormat.Default),

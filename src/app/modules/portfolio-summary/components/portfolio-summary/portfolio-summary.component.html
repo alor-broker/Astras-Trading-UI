@@ -69,13 +69,13 @@
         </div>
 
         <div atsScrollableItem class="item">
-          <span class="label">{{t('blotterForwardSummary.moneyOldTitle')}}:</span>
-          <span>{{forwardSummary.moneyOld}}</span>
+          <span class="label">{{t('blotterForwardSummary.moneyAmountTitle')}}:</span>
+          <span>{{forwardSummary.moneyAmount}}</span>
         </div>
 
         <div atsScrollableItem class="item">
-          <span class="label">{{t('blotterForwardSummary.moneyAmountTitle')}}:</span>
-          <span>{{forwardSummary.moneyAmount}}</span>
+          <span class="label">{{t('blotterForwardSummary.portfolioLiquidationValueTitle')}}:</span>
+          <span>{{forwardSummary.portfolioLiquidationValue}}</span>
         </div>
 
         <div atsScrollableItem class="item">
@@ -102,6 +102,57 @@
           <span class="label">{{t('blotterForwardSummary.isLimitsSetTitle')}}:</span>
           <span>{{forwardSummary.isLimitsSet ? t('yes') : t('no')}}</span>
         </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.indicativeVarMarginTitle')}}:</span>
+          <span>{{forwardSummary.indicativeVarMargin}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.netOptionValueTitle')}}:</span>
+          <span>{{forwardSummary.netOptionValue}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.posRiskTitle')}}:</span>
+          <span>{{forwardSummary.posRisk}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.initialMarginTitle')}}:</span>
+          <span>{{forwardSummary.initialMargin}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.minimalMarginTitle')}}:</span>
+          <span>{{forwardSummary.minimalMargin}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.correctedMarginTitle')}}:</span>
+          <span>{{forwardSummary.correctedMargin}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.riskCoverageRatioOneTitle')}}:</span>
+          <span>{{forwardSummary.riskCoverageRatioOne}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.riskCoverageRatioTwoTitle')}}:</span>
+          <span>{{forwardSummary.riskCoverageRatioTwo}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.clientTypeTitle')}}:</span>
+          <span>{{t('blotterForwardSummary.clientTypeValues.' + forwardSummary.clientType, {fallback: forwardSummary.clientType})}}</span>
+        </div>
+
+        <div atsScrollableItem class="item">
+          <span class="label">{{t('blotterForwardSummary.riskStatusTitle')}}:</span>
+          <span>{{t('blotterForwardSummary.riskStatusValues.' + forwardSummary.riskStatus, {fallback: forwardSummary.riskStatus})}}</span>
+        </div>
+
       </ats-scrollable-row>
     </ng-container>
   </ng-container>

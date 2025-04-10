@@ -5,6 +5,11 @@ import {NewsSourceNode} from "./info-sources/news-source-node";
 import {RequestToAiNode} from "./ai/request-to-ai-node";
 import {MarkdownOutputNode} from "./output/markdown-output-node";
 import {NodeCategories} from "./node-categories";
+import {PortfolioNode} from "./instrument-selection/portfolio-node";
+import {QuotesSourceNode} from "./info-sources/quotes-source-node";
+import {HistorySourceNode} from "./info-sources/history-source-node";
+import {PortfolioSummarySourceNode} from "./info-sources/portfolio-summary-source-node";
+import {PortfolioPositionsSourceNode} from "./info-sources/portfolio-positions-source-node";
 
 interface NodeRegistration {
   type: string;
@@ -53,4 +58,29 @@ NodesRegister.registerNode({
 NodesRegister.registerNode({
   type: MarkdownOutputNode.nodeType,
   class: MarkdownOutputNode
+});
+
+NodesRegister.registerNode({
+  type: PortfolioNode.nodeType,
+  class: PortfolioNode
+});
+
+NodesRegister.registerNode({
+  type: QuotesSourceNode.nodeType,
+  class: QuotesSourceNode
+});
+
+NodesRegister.registerNode({
+  type: HistorySourceNode.nodeId,
+  class: HistorySourceNode
+});
+
+NodesRegister.registerNode({
+  type: PortfolioSummarySourceNode.nodeType,
+  class: PortfolioSummarySourceNode
+});
+
+NodesRegister.registerNode({
+  type: PortfolioPositionsSourceNode.nodeType,
+  class: PortfolioPositionsSourceNode
 });

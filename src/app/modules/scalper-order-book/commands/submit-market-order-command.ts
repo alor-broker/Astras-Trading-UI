@@ -33,6 +33,7 @@ export interface SubmitMarketOrderCommandArgs {
   priceStep: number;
   orderBook: OrderbookData;
   silent: boolean;
+  allowMargin?: boolean;
 }
 
 @Injectable({
@@ -51,7 +52,7 @@ export class SubmitMarketOrderCommand extends BracketCommand<SubmitMarketOrderCo
     const order: NewMarketOrder = {
       instrument: toInstrumentKey(args.instrumentKey),
       side: args.side,
-      quantity: args.quantity,
+      quantity: args.quantity
     };
 
     let getProfitOrder: NewStopLimitOrder | null = null;
@@ -99,6 +100,8 @@ export class SubmitMarketOrderCommand extends BracketCommand<SubmitMarketOrderCo
     stopLossOrder: NewStopLimitOrder | null,
     args: SubmitMarketOrderCommandArgs
   ): void {
+    marketOrder.allowMargin = args.allowMargin;
+
     this.orderCommandService.submitMarketOrder(marketOrder, args.targetPortfolio).subscribe(r => {
       if (r.isSuccess) {
         const bracketOrders = [
@@ -108,7 +111,8 @@ export class SubmitMarketOrderCommand extends BracketCommand<SubmitMarketOrderCo
           .map(o => ({
             ...o,
             type: OrderType.StopLimit,
-            activate: true
+            activate: true,
+            allowMargin: args.allowMargin
           } as NewLinkedOrder));
 
         if (bracketOrders.length > 0) {

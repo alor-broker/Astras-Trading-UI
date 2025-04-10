@@ -2,11 +2,35 @@
   "moneyFreeTitle": "Free cash",
   "moneyBlockedTitle": "Collaterals for guarantees",
   "feeTitle": "Fee",
-  "moneyOldTitle": "Total cash",
-  "moneyAmountTitle": "Current limit",
+  "moneyAmountTitle": "Total cash",
+  "portfolioLiquidationValueTitle": "Current limit",
   "moneyPledgeAmountTitle": "Pledges",
   "vmInterClTitle": "Variation margin",
   "vmCurrentPositionsTitle": "Position variation margin",
   "varMarginTitle": "Total variation margin",
-  "isLimitsSetTitle": "Cash and pledge limits"
+  "isLimitsSetTitle": "Cash and pledge limits",
+
+  "indicativeVarMarginTitle": "Indicative margin",
+  "netOptionValueTitle": "NOV",
+  "posRiskTitle": "Oper. risk",
+  "initialMarginTitle": "Initial. margin",
+  "minimalMarginTitle": "Min. margin",
+  "correctedMarginTitle": "Corr. margin",
+  "riskCoverageRatioOneTitle": "RCR1",
+  "riskCoverageRatioTwoTitle": "RCR2",
+
+  "clientTypeTitle": "Risk level",
+  "clientTypeValues": {
+    "StandardRisk": "Standard",
+    "HighRisk": "High",
+    "Special": "Special",
+    "LowRisk": "Low"
+  },
+
+  "riskStatusTitle": "Status",
+  "riskStatusValues": {
+    "Ok": "Normal",
+    "Demand": "Limitation",
+    "ToClose": "Closing"
+  }
 }

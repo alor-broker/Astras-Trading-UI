@@ -9,8 +9,8 @@ export interface ArbitrageSpread {
   secondLeg: SpreadLeg;
   isThirdLeg: boolean;
   thirdLeg: SpreadLeg;
-  buySpread?: number;
-  sellSpread?: number;
+  buySpread: number | null;
+  sellSpread: number | null;
 }
 
 export interface SpreadLeg {

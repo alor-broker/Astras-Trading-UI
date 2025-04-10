@@ -39,6 +39,15 @@ export interface DateValueValidationOptions extends ValidationOptions {
   required: boolean;
 }
 
+export interface PortfolioValueValidationOptions extends ValidationOptions {
+  required: boolean;
+}
+
+export interface SelectValueValidationOptions extends ValidationOptions {
+  required: boolean;
+  allowedValues: string[];
+}
+
 export interface NodePropertyInfo extends INodePropertyInfo {
   label?: string;
   editorType?: EditorType;
