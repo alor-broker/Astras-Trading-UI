@@ -137,6 +137,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     },
     {
       id: 'date',
+      sourceField: 'displayDate',
       displayName: 'Время',
       sortOrder: null,
       tooltip: 'Время совершения сделки',
@@ -375,7 +376,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     ).pipe(
       map(([trades, converter]) => trades.map(t => <DisplayTrade>{
         ...t,
-        date: converter.toTerminalDate(t.date)
+        displayDate: converter.toTerminalDate(t.date)
       })),
       mapWith(
         () => this.filters$,

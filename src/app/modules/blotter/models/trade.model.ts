@@ -10,4 +10,5 @@ export interface TradeFilter {
 
 export interface DisplayTrade extends Trade {
   volume: number;
+  displayDate: Date;
 }

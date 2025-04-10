@@ -131,6 +131,7 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
     },
     {
       id: 'date',
+      sourceField: 'displayDate',
       displayName: 'Время',
       sortOrder: null,
       sortFn: (a: DisplayTrade, b: DisplayTrade): number => Number(a.date) - Number(b.date),
@@ -245,7 +246,7 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
     ).pipe(
       map(([trades, converter]) => trades.map(t => <DisplayTrade>{
         ...t,
-        date: converter.toTerminalDate(t.date)
+        displayDate: converter.toTerminalDate(t.date)
       })),
       mergeMap(trades => this.filters$.pipe(
         map(f => trades.filter(t => this.justifyFilter(t, f)))
