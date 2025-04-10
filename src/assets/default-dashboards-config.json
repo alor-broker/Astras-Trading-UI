@@ -142,7 +142,12 @@
         "widgetTypeId": "blotter"
       },
       {
-        "widgetTypeId": "mobile-home-screen"
+        "widgetTypeId": "mobile-home-screen",
+        "initialSettings": {
+          "showPortfolioDynamics": true,
+          "displayTrendsForMarket": ["FOND"],
+          "ignoreTrendsForBoards": ["FQBR"]
+        }
       },
       {
         "widgetTypeId": "order-book",
