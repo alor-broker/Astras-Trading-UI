@@ -186,9 +186,9 @@ export class ConfirmableOrderCommandsService {
         take(1),
         switchMap(x => {
           if (x.user.roles == null || x.user.roles.includes(Role.Client)) {
-            return this.isLowRiskClient(targetPortfolio).pipe(
-              switchMap(isLowRiskClient => {
-                if (isLowRiskClient ?? true) {
+            return this.shouldShowNotification(targetPortfolio).pipe(
+              switchMap(shouldShowNotification => {
+                if (shouldShowNotification ?? true) {
                   return new Observable<boolean | null>(subscriber => {
                     this.showConfirmation(
                       x.translator,
@@ -232,7 +232,7 @@ export class ConfirmableOrderCommandsService {
     });
   }
 
-  private isLowRiskClient(targetPortfolio: TargetPortfolio): Observable<boolean | null> {
+  private shouldShowNotification(targetPortfolio: TargetPortfolio): Observable<boolean | null> {
     return this.httpClient.get<PortfolioRisk>(
       `${this.baseUrl}/${targetPortfolio.exchange}/${targetPortfolio.portfolio}/risk`,
       {
@@ -247,7 +247,7 @@ export class ConfirmableOrderCommandsService {
           return null;
         }
 
-        return r.clientType === 'LowRisk';
+        return r.clientType === 'LowRisk' && r.riskCategoryId !== 100;
       }),
       take(1)
     );

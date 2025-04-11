@@ -2,8 +2,8 @@
   "moneyFreeTitle": "Free cash",
   "moneyBlockedTitle": "Collaterals for guarantees",
   "feeTitle": "Fee",
-  "moneyOldTitle": "Total cash",
-  "moneyAmountTitle": "Current limit",
+  "moneyAmountTitle": "Total cash",
+  "portfolioLiquidationValueTitle": "Current limit",
   "moneyPledgeAmountTitle": "Pledges",
   "vmInterClTitle": "Variation margin",
   "vmCurrentPositionsTitle": "Position variation margin",
@@ -27,10 +27,10 @@
     "LowRisk": "Low"
   },
 
-  "statusTitle": "Status",
-  "statusValues": {
-    "normal": "Normal",
-    "limitation": "Limitation",
-    "closing": "Closing"
+  "riskStatusTitle": "Status",
+  "riskStatusValues": {
+    "Ok": "Normal",
+    "Demand": "Limitation",
+    "ToClose": "Closing"
   }
 }

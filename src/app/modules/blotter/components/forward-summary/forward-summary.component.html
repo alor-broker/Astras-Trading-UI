@@ -12,8 +12,8 @@
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyFreeTitle')">{{summary.moneyFree}}</nz-descriptions-item>
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyBlockedTitle')">{{summary.moneyBlocked}}</nz-descriptions-item>
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.feeTitle')">{{summary.fee}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyOldTitle')">{{summary.moneyOld}}</nz-descriptions-item>
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyAmountTitle')">{{summary.moneyAmount}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.portfolioLiquidationValueTitle')">{{summary.portfolioLiquidationValue}}</nz-descriptions-item>
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyPledgeAmountTitle')">{{summary.moneyPledgeAmount}}</nz-descriptions-item>
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.vmInterClTitle')">{{summary.vmInterCl}}</nz-descriptions-item>
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.vmCurrentPositionsTitle')">{{summary.vmCurrentPositions}}</nz-descriptions-item>
@@ -29,7 +29,7 @@
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.riskCoverageRatioOneTitle')">{{summary.riskCoverageRatioOne}}</nz-descriptions-item>
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.riskCoverageRatioTwoTitle')">{{summary.riskCoverageRatioTwo}}</nz-descriptions-item>
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.clientTypeTitle')">{{t('blotterForwardSummary.clientTypeValues.' + summary.clientType, {fallback: summary.clientType})}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.statusTitle')">{{t('blotterForwardSummary.statusValues.' + summary.status, {fallback: summary.status})}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.riskStatusTitle')">{{t('blotterForwardSummary.riskStatusValues.' + summary.riskStatus, {fallback: summary.riskStatus})}}</nz-descriptions-item>
   </nz-descriptions>
 </ng-container>
 </div>

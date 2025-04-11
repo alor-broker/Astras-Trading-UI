@@ -195,14 +195,14 @@ export class DerivativeInfoComponent extends InstrumentInfoBaseComponent impleme
     if(derivative.marginBuy != null && derivative.marginBuy !== 0) {
       descriptors.push({
         id: 'marginBuy',
-        formattedValue: this.formatCurrency(derivative.marginBuy, currencyCode)
+        formattedValue: formatNumber(derivative.marginBuy, this.locale, '0.1-2')
       });
     }
 
     if(derivative.marginSell != null && derivative.marginSell !== 0) {
       descriptors.push({
         id: 'marginSell',
-        formattedValue: this.formatCurrency(derivative.marginSell, currencyCode)
+        formattedValue: formatNumber(derivative.marginSell, this.locale, '0.1-2')
       });
     }
 

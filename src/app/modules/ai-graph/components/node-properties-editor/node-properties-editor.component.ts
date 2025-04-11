@@ -7,6 +7,7 @@ import {
   NumberPropertyEditorConfig,
   PortfolioPropertyEditorConfig,
   PropertyEditorConfig,
+  SelectPropertyEditorConfig,
   StringPropertyEditorConfig
 } from "../../models/property-editor.model";
 import {NzEmptyComponent} from "ng-zorro-antd/empty";
@@ -28,6 +29,7 @@ import {
   NodePropertyInfo,
   NumberValueValidationOptions,
   PortfolioValueValidationOptions,
+  SelectValueValidationOptions,
   StringValueValidationOptions
 } from "../../graph/nodes/models";
 import {TextPropertyEditorComponent} from "../property-editors/text-property-editor/text-property-editor.component";
@@ -39,6 +41,9 @@ import {
 import {
   PromptPropertyEditorComponent
 } from "../property-editors/prompt-property-editor/prompt-property-editor.component";
+import {
+  SelectPropertyEditorComponent
+} from "../property-editors/select-property-editor/select-property-editor.component";
 
 interface Editor {
   type: EditorType;
@@ -61,7 +66,8 @@ interface EditorsSection {
     TextPropertyEditorComponent,
     DatePropertyEditorComponent,
     PortfolioPropertyEditorComponent,
-    PromptPropertyEditorComponent
+    PromptPropertyEditorComponent,
+    SelectPropertyEditorComponent
   ],
   templateUrl: './node-properties-editor.component.html',
   styleUrl: './node-properties-editor.component.less'
@@ -212,6 +218,8 @@ export class NodePropertiesEditorComponent implements OnChanges {
         return this.createPortfolioEditor(propertyKey, propertyInfo, targetNode, label);
       case ExtendedEditors.Prompt:
         return this.createPromptEditor(propertyKey, propertyInfo, targetNode, label);
+      case ExtendedEditors.Select:
+        return this.createSelectEditor(propertyKey, propertyInfo, targetNode, label);
       default:
         return this.createStringEditor(propertyKey, propertyInfo, targetNode, label);
     }
@@ -370,6 +378,30 @@ export class NodePropertiesEditorComponent implements OnChanges {
           required: true
         },
         initialValue: value,
+        applyValueCallback: value => {
+          this.applyChanges(node => {
+            node.properties[propertyKey] = value;
+          });
+        }
+      }
+    );
+  }
+
+  private createSelectEditor(
+    propertyKey: string,
+    propertyInfo: NodePropertyInfo,
+    targetNode: NodeBase,
+    label: string
+  ): Editor {
+    return this.createEditor<SelectPropertyEditorConfig>(
+      ExtendedEditors.Select,
+      {
+        label,
+        validation: (propertyInfo.validation as SelectValueValidationOptions) ?? {
+          required: true,
+          allowedValues: []
+        },
+        initialValue: targetNode.properties[propertyKey] as (string | null),
         applyValueCallback: value => {
           this.applyChanges(node => {
             node.properties[propertyKey] = value;

@@ -1,5 +1,14 @@
-<div class="d-flex flex-column flex-gap-25">
-    <ats-portfolio-dynamics></ats-portfolio-dynamics>
+<ng-container *ngrxLet="settings$ as settings">
+  <div class="d-flex flex-column flex-gap-25">
+    @if (settings.showPortfolioDynamics ?? true) {
+      <ats-portfolio-dynamics></ats-portfolio-dynamics>
+    }
+
     <ats-positions></ats-positions>
-    <ats-market-trends></ats-market-trends>
-</div>
+
+    <ats-market-trends
+      [ignoredBoardsFilter]="settings.ignoreTrendsForBoards ?? ['FQBR']"
+      [marketFilter]="settings.displayTrendsForMarket ?? [Market.Fond]"
+    ></ats-market-trends>
+  </div>
+</ng-container>

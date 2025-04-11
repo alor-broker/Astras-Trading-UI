@@ -9,7 +9,10 @@
   riskCoverageRatioOne: number;
   riskCoverageRatioTwo: number;
   riskCategoryId: number;
+  // StandardRisk, HighRisk, Special, LowRisk
   clientType: string;
   hasForbiddenPositions: boolean;
   hasNegativeQuantity: boolean;
+  // Ok, Demand, ToClose
+  riskStatus: string;
 }

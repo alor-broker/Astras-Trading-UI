@@ -1,7 +1,22 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {TranslocoDirective} from "@jsverse/transloco";
-import {FetchPolicy, GraphQlService} from "../../../../shared/services/graph-ql.service";
-import {BehaviorSubject, Observable, switchMap, take, tap, timer} from "rxjs";
+import {
+  Component,
+  Inject,
+  Input,
+  OnInit
+} from '@angular/core';
+import { TranslocoDirective } from "@jsverse/transloco";
+import {
+  FetchPolicy,
+  GraphQlService
+} from "../../../../shared/services/graph-ql.service";
+import {
+  BehaviorSubject,
+  Observable,
+  switchMap,
+  take,
+  tap,
+  timer
+} from "rxjs";
 import {
   InstrumentInfoType,
   MarketTrendsInstrumentsConnectionType,
@@ -14,17 +29,23 @@ import {
   QueryInstrumentsArgs,
   SortEnumType
 } from "../../../../../generated/graphql.types";
-import {map} from "rxjs/operators";
-import {NgClass, PercentPipe} from "@angular/common";
-import {LetDirective} from "@ngrx/component";
-import {NzButtonComponent} from "ng-zorro-antd/button";
-import {TruncatedTextComponent} from "../../../../shared/components/truncated-text/truncated-text.component";
-import {NzEmptyComponent} from "ng-zorro-antd/empty";
-import {NzSkeletonComponent} from "ng-zorro-antd/skeleton";
-import {NzIconDirective} from "ng-zorro-antd/icon";
-import {ACTIONS_CONTEXT, ActionsContext} from "../../../../shared/services/actions-context";
-import {defaultBadgeColor} from "../../../../shared/utils/instruments";
-import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import { map } from "rxjs/operators";
+import {
+  NgClass,
+  PercentPipe
+} from "@angular/common";
+import { LetDirective } from "@ngrx/component";
+import { NzButtonComponent } from "ng-zorro-antd/button";
+import { TruncatedTextComponent } from "../../../../shared/components/truncated-text/truncated-text.component";
+import { NzEmptyComponent } from "ng-zorro-antd/empty";
+import { NzSkeletonComponent } from "ng-zorro-antd/skeleton";
+import { NzIconDirective } from "ng-zorro-antd/icon";
+import {
+  ACTIONS_CONTEXT,
+  ActionsContext
+} from "../../../../shared/services/actions-context";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 
 interface DisplayParams {
   itemsDisplayCount: number;
@@ -49,6 +70,12 @@ interface DisplayParams {
   styleUrl: './market-trends.component.less'
 })
 export class MarketTrendsComponent implements OnInit {
+  @Input({required: true})
+  marketFilter: Market[] = [Market.Fond];
+
+  @Input({required: true})
+  ignoredBoardsFilter: string[] = ['FQBR'];
+
   displayItems$!: Observable<MarketTrendsInstrumentsConnectionType | null>;
   readonly maxDisplayItems = 1000;
 
@@ -129,7 +156,7 @@ export class MarketTrendsComponent implements OnInit {
         {
           basicInformation: {
             market: {
-              eq: Market.Fond
+              in: this.marketFilter ?? [Market.Fond]
             }
           }
         },
@@ -137,7 +164,7 @@ export class MarketTrendsComponent implements OnInit {
         {
           boardInformation: {
             board: {
-              neq: 'FQBR'
+              nin: this.ignoredBoardsFilter ?? ['FQBR']
             }
           }
         }
