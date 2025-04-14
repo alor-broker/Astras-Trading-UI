@@ -198,7 +198,7 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
     );
 
     const selectionParameters$ = this.dataContext.selectionParameters$.pipe(
-      debounceTime(3000)
+      debounceTime(2000)
     );
 
     return combineLatest({

@@ -46,8 +46,8 @@
       "tooltip": "Bid"
     },
     "price": {
-      "name": "Цена",
-      "tooltip": "Цена"
+      "name": "Т.цена",
+      "tooltip": "Теоретическая цена"
     },
     "delta": {
       "name": "Delta",

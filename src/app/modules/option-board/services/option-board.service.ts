@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import {
   InstrumentOptions,
   OptionDetails,
+  OptionExpiration,
   OptionPlot,
   OptionSide
 } from "../models/option-board.model";
@@ -15,6 +16,10 @@ import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { map } from "rxjs/operators";
 import { CacheService } from "../../../shared/services/cache.service";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import {
+  formatISO,
+  parseISO
+} from "date-fns";
 
 @Injectable()
 export class OptionBoardService {
@@ -92,6 +97,59 @@ export class OptionBoardService {
       body
     ).pipe(
       catchHttpError<OptionPlot | null>(null, this.errorHandlerService),
+      take(1)
+    );
+  }
+
+  getExpirations(symbol: string, exchange: string): Observable<OptionExpiration[] | null> {
+    return this.httpClient.get<OptionExpiration[]>(`${this.baseUrl}/options/expirations/${exchange}/${symbol}`)
+      .pipe(
+        catchHttpError<OptionExpiration[] | null>(null, this.errorHandlerService),
+        map(r => {
+          if(r == null) {
+            return null;
+          }
+
+          return r.map(i => ({
+            ...i,
+            expiration: parseISO(i.expiration as unknown as string),
+            symbol,
+            exchange
+          }));
+        }),
+        take(1)
+      );
+  }
+
+  getOptionsByExpirationDate(
+    symbol: string,
+    exchange: string,
+    expiration: Date,
+    strikesCount: number
+  ): Observable<InstrumentOptions | null> {
+    return this.httpClient.get<InstrumentOptions>(
+      `${this.baseUrl}/options/expiration/${exchange}/${symbol}`,
+      {
+        params: {
+          'expiration_date': formatISO(expiration, { representation: 'date' }),
+          'strikes': strikesCount
+        }
+      }
+    ).pipe(
+      catchHttpError<InstrumentOptions | null>(null, this.errorHandlerService),
+      map(response => {
+        if (!response) {
+          return response;
+        }
+
+        return {
+          ...response,
+          options: response.options.map(o => ({
+            ...o,
+            expirationDate: new Date(o.expirationDate)
+          }))
+        } as InstrumentOptions;
+      }),
       take(1)
     );
   }
