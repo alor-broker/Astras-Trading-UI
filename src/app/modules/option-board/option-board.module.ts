@@ -26,6 +26,8 @@ import { WidgetSettingsComponent } from "../../shared/components/widget-settings
 import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
 import { TableRowHeightDirective } from "../../shared/directives/table-row-height.directive";
 import { AllOptionsListViewComponent } from "./components/all-options-list-view/all-options-list-view.component";
+import { ViewSelectorComponent } from "./components/view-selector/view-selector.component";
+import { ViewSelectorItemComponent } from "./components/view-selector-item/view-selector-item.component";
 
 @NgModule({
   declarations: [
@@ -54,7 +56,9 @@ import { AllOptionsListViewComponent } from "./components/all-options-list-view/
     WidgetSettingsComponent,
     InstrumentSearchComponent,
     TableRowHeightDirective,
-    AllOptionsListViewComponent
+    AllOptionsListViewComponent,
+    ViewSelectorComponent,
+    ViewSelectorItemComponent
   ],
   exports: [
     OptionBoardWidgetComponent

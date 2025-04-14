@@ -10,24 +10,23 @@ import {
 } from "../../models/option-board.model";
 import {
   BehaviorSubject,
-  Observable,
-  shareReplay
+  take
 } from "rxjs";
 import { OptionBoardDataContextFactory } from "../../utils/option-board-data-context-factory";
 import { OptionBoardDataContext } from "../../models/option-board-data-context.model";
 import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
-import { BoardView } from "../../models/option-board-layout.model";
 import { map } from "rxjs/operators";
 import { RecordContent } from "../../../../store/widgets-local-state/widgets-local-state.model";
 
 enum ComponentTabs {
   AllOptions = 'allOptions',
+  OptionsByExpiration = 'allOptionsByExpiration',
   SelectedOptions = 'selectedOptions',
   Charts = 'charts'
 }
 
 interface BoardViewRecord extends RecordContent {
-  boardView: BoardView;
+  boardView: string;
 }
 
 @Component({
@@ -37,8 +36,7 @@ interface BoardViewRecord extends RecordContent {
 })
 export class OptionBoardComponent implements OnInit, OnDestroy {
   private readonly BoardViewStorageKey = 'board-view';
-  componentTabs = ComponentTabs;
-  tabs = ComponentTabs;
+  readonly ComponentTabs = ComponentTabs;
   optionSides = Object.values(OptionSide);
   parameters = Object.values(OptionParameters);
 
@@ -47,9 +45,6 @@ export class OptionBoardComponent implements OnInit, OnDestroy {
 
   selectedTab$ = new BehaviorSubject(ComponentTabs.AllOptions);
   dataContext!: OptionBoardDataContext;
-
-  boardView$!: Observable<BoardView>;
-  BoardViewValues = BoardView;
 
   constructor(
     private readonly contextFactory: OptionBoardDataContextFactory,
@@ -65,27 +60,29 @@ export class OptionBoardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.dataContext = this.contextFactory.create(this.guid);
 
-    this.boardView$ = this.widgetLocalStateService.getStateRecord<BoardViewRecord>(
+    this.widgetLocalStateService.getStateRecord<BoardViewRecord>(
       this.guid,
       this.BoardViewStorageKey
     ).pipe(
-      map(result => result?.boardView ?? BoardView.VerticalTable),
-      shareReplay({ bufferSize:1, refCount: true})
-    );
+      take(1),
+      map(result => result?.boardView ?? ComponentTabs.AllOptions)
+    ).subscribe(view => {
+      this.selectTab(view);
+    });
   }
 
-  protected selectTab(tab: ComponentTabs): void {
-    this.selectedTab$.next(tab);
-  }
+  protected selectTab(tab: string): void {
+    this.selectedTab$.next(tab as ComponentTabs);
 
-  protected changeBoardView(view: BoardView): void {
-    this.widgetLocalStateService.setStateRecord<BoardViewRecord>(
-      this.guid,
-      this.BoardViewStorageKey,
-      {
-        boardView: view
-      },
-      true
-    );
+    if([ComponentTabs.AllOptions, ComponentTabs.OptionsByExpiration].includes(tab as ComponentTabs)) {
+      this.widgetLocalStateService.setStateRecord<BoardViewRecord>(
+        this.guid,
+        this.BoardViewStorageKey,
+        {
+          boardView: tab
+        },
+        true
+      );
+    }
   }
 }

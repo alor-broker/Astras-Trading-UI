@@ -27,6 +27,7 @@
 
   "tabNames": {
     "allOptions": "All",
+    "allOptionsByExpiration": "By expiration",
     "selectedOptions": "Selected",
     "charts": "Charts"
   },

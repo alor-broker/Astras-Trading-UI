@@ -27,6 +27,7 @@
 
   "tabNames": {
     "allOptions": "Все",
+    "allOptionsByExpiration": "По экспирации",
     "selectedOptions": "Выбранные",
     "charts": "Графики"
   },
