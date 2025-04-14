@@ -137,6 +137,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     },
     {
       id: 'date',
+      sourceField: 'displayDate',
       displayName: 'Время',
       sortOrder: null,
       tooltip: 'Время совершения сделки',
@@ -216,7 +217,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       const bottomScrollOffset = scrollViewport.measureScrollOffset('bottom');
       if ((bottomScrollOffset / this.rowHeight) < bufferItemsCount) {
         const lastItem = loadedData[loadedData.length - 1];
-        this.loadMoreItems(lastItem.id, 100);
+        this.loadMoreItems(lastItem.date, 100);
       }
     });
 
@@ -251,7 +252,8 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     ).subscribe(([scrollViewport, displayTrades]) => {
       const itemsCount = Math.ceil(scrollViewport.measureViewportSize('vertical') / this.rowHeight);
       if(itemsCount > displayTrades.length) {
-        this.loadMoreItems(null, Math.max(itemsCount, 100));
+        const lastItem = displayTrades[displayTrades.length - 1];
+        this.loadMoreItems(lastItem.date, Math.max(itemsCount, 100));
       }
     });
   }
@@ -275,7 +277,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     );
   }
 
-  private loadMoreItems(from?: string | null, itemsCount?: number | null): void {
+  private loadMoreItems(dateFrom?: Date | null, itemsCount?: number | null): void {
     this.isLoading$.pipe(
       take(1),
       filter(isLoading => !isLoading),
@@ -287,28 +289,29 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
           settings.portfolio,
           {
             filters,
-            from: from,
+            dateFrom,
             limit: itemsCount ?? 50
           }
         )
       ),
       tap(() => this.isLoading$.next(false)),
-    ).subscribe(loadedItems => {
+    ).subscribe((loadedItems) => {
       if (!loadedItems || loadedItems.length === 0) {
         return;
       }
 
-      const filteredItems = from != null
-        ? loadedItems.filter(i => i.id !== from)
-        : loadedItems;
-
       this.loadedHistory$.pipe(
         take(1)
       ).subscribe(existingItems => {
-        this.loadedHistory$.next([
-          ...existingItems,
-          ...filteredItems
-        ]);
+        const existingIds = new Set(existingItems.map(x => x.id));
+        const uniqueItems = loadedItems.filter(x => !existingIds.has(x.id));
+
+        if(uniqueItems.length > 0) {
+          this.loadedHistory$.next([
+            ...existingItems,
+            ...uniqueItems
+          ]);
+        }
       });
     });
   }
@@ -373,7 +376,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     ).pipe(
       map(([trades, converter]) => trades.map(t => <DisplayTrade>{
         ...t,
-        date: converter.toTerminalDate(t.date)
+        displayDate: converter.toTerminalDate(t.date)
       })),
       mapWith(
         () => this.filters$,
