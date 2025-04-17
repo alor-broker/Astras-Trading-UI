@@ -142,7 +142,7 @@ export class ThemeService {
 
     const themeStyles = this.document.getElementsByClassName(this.styleLinkClassName);
     Array.from(themeStyles).forEach(s => {
-      if (s.id !== this.currentTheme!) {
+      if (s.id !== this.currentTheme! as string) {
         this.document.head.removeChild(s);
       }
     });
