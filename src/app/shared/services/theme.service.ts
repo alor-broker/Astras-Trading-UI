@@ -1,6 +1,13 @@
 import {Inject, Injectable} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
-import {BehaviorSubject, distinctUntilChanged, Observable, shareReplay, Subscription} from 'rxjs';
+import {
+  BehaviorSubject,
+  distinctUntilChanged,
+  Observable,
+  shareReplay,
+  Subscription,
+  take
+} from 'rxjs';
 import {filter, map, startWith} from 'rxjs/operators';
 import {ThemeColors, ThemeSettings, ThemeType} from '../models/settings/theme-settings.model';
 import {TerminalSettingsService} from "./terminal-settings.service";
@@ -113,28 +120,29 @@ export class ThemeService {
   }
 
   private setTheme(theme: ThemeType): void {
+    this.currentTheme = theme;
     const themeStyle = this.document.getElementById(theme);
     if(themeStyle != null) {
       return;
     }
 
     this.loadCss(theme).pipe(
-      filter(x => x ?? false)
+      filter(x => x ?? false),
+      take(1)
     ).subscribe(() => {
-      this.removeUnusedTheme(this.currentTheme ?? null, theme);
-      this.currentTheme = theme;
-      this.document.documentElement.classList.add(this.currentTheme);
+      this.removeUnusedTheme();
+      this.document.documentElement.classList.add(this.currentTheme!);
     });
   }
 
-  private removeUnusedTheme(prevTheme: ThemeType | null, currentTheme: ThemeType): void {
-    if (prevTheme != null) {
-      this.document.documentElement.classList.remove(prevTheme);
-    }
+  private removeUnusedTheme(): void {
+    Object.values(ThemeType).forEach(v => {
+      this.document.documentElement.classList.remove(v);
+    });
 
     const themeStyles = this.document.getElementsByClassName(this.styleLinkClassName);
     Array.from(themeStyles).forEach(s => {
-      if (s.id !== (currentTheme as string)) {
+      if (s.id !== this.currentTheme!) {
         this.document.head.removeChild(s);
       }
     });
