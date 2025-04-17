@@ -1,0 +1,24 @@
+<ng-container *ngrxLet="viewModel$ as vm">
+  <nz-radio-group
+    nzButtonStyle="solid"
+    [ngModel]="vm.selectedValue"
+    (ngModelChange)="selectDashboard($event)"
+  >
+    @for (option of vm.options; track option.value) {
+      <label nz-radio-button [nzValue]="option.value">
+        <span class="d-flex flex-row flex-nowrap align-items-center">
+          <span>{{ option.label }}</span>
+          @if (option.closable) {
+            <span
+              nz-icon
+              nzType="close"
+              nzTheme="outline"
+              class="ml-5"
+              (click)="closeDashboard(option.value); $event.stopPropagation()"
+            ></span>
+          }
+        </span>
+      </label>
+    }
+  </nz-radio-group>
+</ng-container>

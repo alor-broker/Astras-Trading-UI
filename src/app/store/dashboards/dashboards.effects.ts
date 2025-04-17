@@ -10,7 +10,10 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs';
-import { DefaultDesktopDashboardConfig } from '../../shared/models/dashboard/dashboard.model';
+import {
+  ClientDashboardType,
+  DefaultDesktopDashboardConfig
+} from '../../shared/models/dashboard/dashboard.model';
 import { ManageDashboardsService } from '../../shared/services/manage-dashboards.service';
 import { mapWith } from '../../shared/utils/observable-helper';
 import { MarketService } from '../../shared/services/market.service';
@@ -61,37 +64,52 @@ export class DashboardsEffects {
   resetDashboard$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(DashboardsManageActions.reset),
-      mapWith(
-        action => this.store.select(DashboardsFeature.getDashboardItems(action.dashboardGuid)).pipe(take(1)),
-        (action, items) => ({dashboardGuid: action.dashboardGuid, items: items ?? []})
-      ),
+      switchMap(action => this.store.select(DashboardsFeature.getDashboard(action.dashboardGuid)).pipe(take(1))),
       mapWith(
         () => this.dashboardService.getDefaultDashboardConfig(),
-        (source, defaultConfig) => ({...source, defaultConfig})
+        (source, defaultConfig) => ({dashboard: source, defaultConfig})
       ),
-      switchMap(({dashboardGuid, items, defaultConfig}) => {
-        const standardDashboard = defaultConfig
-          .filter(d => d.type === 'desktop')
-          .map(d => d as DefaultDesktopDashboardConfig)
-          .find(d => d.isStandard);
+      switchMap((x => {
+          if (x.dashboard == null) {
+            return EMPTY;
+          }
 
-        if(standardDashboard != null) {
-          return of(
-            DashboardItemsActions.removeWidgets({dashboardGuid, widgetIds: items.map(i => i.guid)}),
-            DashboardItemsActions.addWidgets({
-                dashboardGuid,
-                widgets: standardDashboard.widgets.map(w => ({
-                  widgetType: w.widgetTypeId,
-                  position: w.position,
-                  initialSettings: w.initialSettings
-                }))
-              }
-            )
-          );
-        }
+          const configs = x.defaultConfig
+            .filter(d => d.type === (x.dashboard!.type ?? ClientDashboardType.ClientDesktop))
+            .map(d => d as DefaultDesktopDashboardConfig);
 
-        return EMPTY;
-      })
+          if (configs.length === 0) {
+            return EMPTY;
+          }
+
+          let standardDashboard: DefaultDesktopDashboardConfig | null = null;
+          if (configs.length > 1) {
+            standardDashboard = configs.find(c => c.isStandard) ?? null;
+          } else {
+            standardDashboard = configs[0];
+          }
+
+          if (standardDashboard != null) {
+            return of(
+              DashboardItemsActions.removeWidgets({
+                dashboardGuid: x.dashboard.guid,
+                widgetIds: x.dashboard.items.map(i => i.guid)
+              }),
+              DashboardItemsActions.addWidgets({
+                  dashboardGuid: x.dashboard.guid,
+                  widgets: standardDashboard.widgets.map(w => ({
+                    widgetType: w.widgetTypeId,
+                    position: w.position,
+                    initialSettings: w.initialSettings
+                  }))
+                }
+              )
+            );
+          }
+
+          return EMPTY;
+        })
+      )
     );
   });
 

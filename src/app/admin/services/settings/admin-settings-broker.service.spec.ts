@@ -6,6 +6,7 @@ import {MockProviders} from "ng-mocks";
 import {LocalStorageService} from "../../../shared/services/local-storage.service";
 import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
 import {GlobalLoadingIndicatorService} from "../../../shared/services/global-loading-indicator.service";
+import { ManageDashboardsService } from "../../../shared/services/manage-dashboards.service";
 
 describe('AdminSettingsBrokerService', () => {
   let service: AdminSettingsBrokerService;
@@ -19,7 +20,8 @@ describe('AdminSettingsBrokerService', () => {
         ...MockProviders(
           LocalStorageService,
           TerminalSettingsService,
-          GlobalLoadingIndicatorService
+          GlobalLoadingIndicatorService,
+          ManageDashboardsService
         )
       ]
     });

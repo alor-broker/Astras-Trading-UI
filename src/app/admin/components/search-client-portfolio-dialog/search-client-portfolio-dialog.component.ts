@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   DestroyRef,
   EventEmitter,
@@ -103,7 +104,8 @@ export class SearchClientPortfolioDialogComponent implements OnInit {
     private readonly formBuilder: FormBuilder,
     private readonly marketService: MarketService,
     private readonly clientPortfolioSearchService: ClientPortfolioSearchService,
-    private readonly destroyRef: DestroyRef
+    private readonly destroyRef: DestroyRef,
+    private readonly cdr: ChangeDetectorRef
   ) {
   }
 
@@ -141,6 +143,7 @@ export class SearchClientPortfolioDialogComponent implements OnInit {
       ),
       take(1)
     ).subscribe(x => {
+      this.cdr.markForCheck();
       this.isSearchInProgress = false;
 
       if (!x.hasAccess) {

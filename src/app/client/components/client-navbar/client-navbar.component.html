@@ -8,6 +8,7 @@
     <div class="left-side-item">
       <ats-widgets-gallery-nav-btn
         [atsDisabled]="(selectedDashboard$ | async ) == null"
+        [currentDashboardType]="(selectedDashboard$ | async )?.type ?? null"
         joyrideStep="step2"
         [title]="t('joyride.step2.title')"
         [text]="t('joyride.step2.text')"

@@ -9,6 +9,7 @@
 
   "defaultDashboardNames": {
     "Default Dashboard": "Default Dashboard",
-    "Lite Dashboard": "Lite Dashboard"
+    "Lite Dashboard": "Lite Dashboard",
+    "All Clients": "All Clients"
   }
 }

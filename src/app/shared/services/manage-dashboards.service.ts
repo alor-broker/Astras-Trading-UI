@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
-  Observable, shareReplay,
+  Observable,
+  shareReplay,
   take,
 } from 'rxjs';
 import {
@@ -8,11 +9,18 @@ import {
   Widget
 } from '../models/dashboard/widget.model';
 import { Store } from '@ngrx/store';
-import {Dashboard, DefaultDashboardConfig} from '../models/dashboard/dashboard.model';
+import {
+  ClientDashboardType,
+  Dashboard,
+  DefaultDashboardConfig
+} from '../models/dashboard/dashboard.model';
 import { GuidGenerator } from '../utils/guid';
 import { DashboardContextService } from './dashboard-context.service';
-import {HttpClient, HttpContext} from "@angular/common/http";
-import {DashboardsStreams} from "../../store/dashboards/dashboards.streams";
+import {
+  HttpClient,
+  HttpContext
+} from "@angular/common/http";
+import { DashboardsStreams } from "../../store/dashboards/dashboards.streams";
 import { WidgetSettings } from "../models/widget-settings.model";
 import {
   filter,
@@ -24,7 +32,7 @@ import {
   DashboardsCurrentSelectionActions,
   DashboardsManageActions
 } from "../../store/dashboards/dashboards-actions";
-import {HttpContextTokens} from "../constants/http.constants";
+import { HttpContextTokens } from "../constants/http.constants";
 
 @Injectable({
   providedIn: 'root',
@@ -128,7 +136,8 @@ export class ManageDashboardsService {
       title: title,
       isSelected: true,
       isFavorite: false,
-      existedItems: []
+      existedItems: [],
+      dashboardType: ClientDashboardType.ClientDesktop
     }));
   }
 
@@ -140,7 +149,8 @@ export class ManageDashboardsService {
       isSelected: template.isSelected ?? false,
       isFavorite: template.isFavorite ?? false,
       instrumentsSelection: template.instrumentsSelection ?? undefined,
-      selectedPortfolio: template.selectedPortfolio ?? undefined
+      selectedPortfolio: template.selectedPortfolio ?? undefined,
+      dashboardType: template.type ?? ClientDashboardType.ClientDesktop
     }));
   }
 

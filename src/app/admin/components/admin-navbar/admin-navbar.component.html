@@ -1,16 +1,17 @@
 <ats-desktop-navbar>
   <div class="left-side-item">
     <ats-widgets-gallery-nav-btn
-      [atsDisabled]="(isDashboardReady$ | async ) === false"></ats-widgets-gallery-nav-btn>
+      [currentDashboardType]="(dashboardType$ | async) ?? null"
+    ></ats-widgets-gallery-nav-btn>
   </div>
 
   <div class="left-side-item">
     <ats-open-orders-dialog-nav-btn
-      [atsDisabled]="(isDashboardReady$ | async ) === false"></ats-open-orders-dialog-nav-btn>
+      [atsDisabled]="(isPortfolioSelected$ | async ) === false"></ats-open-orders-dialog-nav-btn>
   </div>
 
   <div class="left-side-item">
-    <ats-select-client-portfolio-btn></ats-select-client-portfolio-btn>
+    <ats-admin-dashboards-panel></ats-admin-dashboards-panel>
   </div>
 
   <div  class="right-side-item mr-10">

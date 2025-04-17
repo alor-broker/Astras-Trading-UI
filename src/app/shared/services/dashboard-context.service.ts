@@ -32,9 +32,14 @@ export class DashboardContextService {
   }
 
   get selectedPortfolio$(): Observable<PortfolioKey> {
+    return this.selectedPortfolioOrNull$.pipe(
+      filter((p): p is PortfolioKey => !!p)
+    );
+  }
+
+  get selectedPortfolioOrNull$(): Observable<PortfolioKey | null> {
     return this.selectedDashboard$.pipe(
-      map(d => d.selectedPortfolio),
-      filter((p): p is PortfolioKey => !!p),
+      map(d => d.selectedPortfolio ?? null),
       distinctUntilChanged((prev, curr) => isPortfoliosEqual(prev, curr))
     );
   }

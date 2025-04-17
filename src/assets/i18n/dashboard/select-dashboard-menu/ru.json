@@ -9,6 +9,7 @@
 
   "defaultDashboardNames": {
     "Default Dashboard": "Дашборд по умолчанию",
-    "Lite Dashboard": "Легкий дашборд"
+    "Lite Dashboard": "Легкий дашборд",
+    "All Clients": "Все клиенты"
   }
 }

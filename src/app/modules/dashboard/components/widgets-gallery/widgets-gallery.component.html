@@ -2,7 +2,7 @@
   <nz-drawer
     (nzOnClose)="close()"
     [nzClosable]="false"
-    [nzExtra]="isMobile ? '' : extra"
+    [nzExtra]="showResetBtn ? extra : ''"
     [nzTitle]="t('dashboardWidgetsGallery.title')"
     [nzVisible]="atsVisible"
     [nzWidth]="250"

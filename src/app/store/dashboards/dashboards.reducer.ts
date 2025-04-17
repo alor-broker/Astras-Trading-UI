@@ -77,7 +77,8 @@ const reducer = createReducer(
           items: props.existedItems.map(x => ({ ...x })),
           instrumentsSelection: props.instrumentsSelection ?? null,
           selectedPortfolio: props.selectedPortfolio,
-          sourceGuid: props.sourceGuid
+          sourceGuid: props.sourceGuid,
+          type: props.dashboardType
         },
         updatedState);
     }),
@@ -325,6 +326,10 @@ export const DashboardsFeature = createFeature({
     getDashboardItems: (dashboardGuid: string): MemoizedSelector<Record<string, any>, Widget[] | undefined> => createSelector(
       selectDashboardsState,
       state => state.entities[dashboardGuid]?.items
+    ),
+    getDashboard: (dashboardGuid: string): MemoizedSelector<Record<string, any>, Dashboard | undefined> => createSelector(
+      selectDashboardsState,
+      state => state.entities[dashboardGuid]
     )
   })
 });

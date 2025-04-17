@@ -3,9 +3,16 @@ import {
   ChangeDetectionStrategy,
   Component,
   Input,
+  OnDestroy,
   OnInit
 } from '@angular/core';
-import { combineLatest, map, Observable, shareReplay } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  map,
+  Observable,
+  shareReplay
+} from 'rxjs';
 import {
   GalleryDisplay,
   WidgetDisplay,
@@ -23,6 +30,7 @@ import { TranslocoDirective } from '@jsverse/transloco';
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {LocalStorageService} from "../../../../shared/services/local-storage.service";
 import {LocalStorageCommonConstants} from "../../../../shared/constants/local-storage.constants";
+import { DashboardType } from "../../../../shared/models/dashboard/dashboard.model";
 
 @Component({
   selector: 'ats-widgets-gallery-nav-btn',
@@ -39,12 +47,18 @@ import {LocalStorageCommonConstants} from "../../../../shared/constants/local-st
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WidgetsGalleryNavBtnComponent implements OnInit {
+export class WidgetsGalleryNavBtnComponent implements OnInit, OnDestroy {
+  private readonly currentDashboardType$ = new BehaviorSubject<DashboardType | null>(null);
   galleryVisible = false;
   widgetsGallery$!: Observable<GalleryDisplay>;
 
   @Input()
   atsDisabled = false;
+
+  @Input()
+  set currentDashboardType(value: DashboardType | null) {
+    this.currentDashboardType$.next(value);
+  }
 
   constructor(
     private readonly manageDashboardsService: ManageDashboardsService,
@@ -77,6 +91,7 @@ export class WidgetsGalleryNavBtnComponent implements OnInit {
     this.widgetsGallery$ = combineLatest({
       meta: this.widgetsMetaService.getWidgetsMeta(),
       lang: this.translatorService.getLangChanges(),
+      currentDashboardType: this.currentDashboardType$
     }).pipe(
       map((s) => {
         const groups = new Map<WidgetCategory, WidgetDisplay[]>();
@@ -86,6 +101,7 @@ export class WidgetsGalleryNavBtnComponent implements OnInit {
           .filter((x) => {
             return x.desktopMeta != null
               && x.desktopMeta.enabled
+              && (s.currentDashboardType == null || x.hideOnDashboardType == null || !x.hideOnDashboardType.includes(s.currentDashboardType))
               && (!(x.isDemoOnly ?? false) || isDemoModeEnabled);
           })
           .sort((a, b) => {
@@ -139,5 +155,9 @@ export class WidgetsGalleryNavBtnComponent implements OnInit {
       }),
       shareReplay(1)
     );
+  }
+
+  ngOnDestroy(): void {
+    this.currentDashboardType$.complete();
   }
 }

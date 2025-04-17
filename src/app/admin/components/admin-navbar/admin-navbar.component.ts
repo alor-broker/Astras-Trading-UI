@@ -3,7 +3,6 @@ import {
   ChangeDetectionStrategy,
   Component
 } from '@angular/core';
-import { SelectClientPortfolioBtnComponent } from '../select-client-portfolio-btn/select-client-portfolio-btn.component';
 import { DashboardModule } from '../../../modules/dashboard/dashboard.module';
 import { AsyncPipe } from '@angular/common';
 import { WidgetsGalleryNavBtnComponent } from "../../../modules/dashboard/components/widgets-gallery-nav-btn/widgets-gallery-nav-btn.component";
@@ -16,12 +15,12 @@ import {DesktopNavbarComponent} from "../../../modules/dashboard/components/desk
 import {
   ThemeSwitchWidgetComponent
 } from "../../../modules/terminal-settings/widgets/theme-switch-widget/theme-switch-widget.component";
+import { AdminDashboardsPanelComponent } from "../admin-dashboards-panel/admin-dashboards-panel.component";
 
 @Component({
   selector: 'ats-admin-navbar',
   standalone: true,
   imports: [
-    SelectClientPortfolioBtnComponent,
     DashboardModule,
     AsyncPipe,
     WidgetsGalleryNavBtnComponent,
@@ -29,16 +28,22 @@ import {
     AdminProfileMenuNavBtnComponent,
     DesktopNavbarComponent,
     ThemeSwitchWidgetComponent,
+    AdminDashboardsPanelComponent,
   ],
   templateUrl: './admin-navbar.component.html',
   styleUrl: './admin-navbar.component.less',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminNavbarComponent {
-  readonly isDashboardReady$ = this.dashboardContextService.selectedPortfolio$.pipe(
-    map(() => true),
+  readonly isPortfolioSelected$ = this.dashboardContextService.selectedPortfolioOrNull$.pipe(
+    map(p => p != null),
     startWith(false),
     shareReplay(1)
+  );
+
+  readonly dashboardType$ = this.dashboardContextService.selectedDashboard$.pipe(
+    map(d => d.type),
+    shareReplay({bufferSize: 1, refCount: true})
   );
 
   constructor(

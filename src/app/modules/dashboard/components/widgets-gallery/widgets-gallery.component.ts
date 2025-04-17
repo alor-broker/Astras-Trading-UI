@@ -51,7 +51,7 @@ export class WidgetsGalleryComponent {
   gallery: GalleryDisplay | null = null;
 
   @Input()
-  isMobile = false;
+  showResetBtn = true;
 
   @Input()
   activeWidget: string | null = null;

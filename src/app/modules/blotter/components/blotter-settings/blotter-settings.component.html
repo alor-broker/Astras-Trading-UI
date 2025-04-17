@@ -11,23 +11,28 @@
       <nz-form-item *ngIf="!deviceInfo.isMobile">
         <nz-form-control [nzErrorTip]="t('blotterSettings.portfolioError')">
           <nz-form-label nzRequired nzFor="portfolio">{{t('blotterSettings.portfolioLabel')}}</nz-form-label>
-          <nz-select
-            formControlName="portfolio"
-            nzAllowClear
-            [nzPlaceHolder]="t('blotterSettings.portfolioLabel')"
-            nzShowSearch
-            (ngModelChange)="portfolioChanged($event)"
-            *ngIf="availablePortfolios$ | async as availablePortfolios">
-            <ng-container *ngFor="let agreement of availablePortfolios.keys()">
-              <nz-option-group [nzLabel]="agreement">
-                <ng-container *ngIf="availablePortfolios.get(agreement) as portfolios">
-                  <ng-container *ngFor="let portfolio of portfolios">
-                    <nz-option [nzValue]="toPortfolioKey(portfolio)" [nzLabel]="portfolio.market + ' ' +  portfolio.portfolio"></nz-option>
-                  </ng-container>
+          <ng-container *ngIf="availablePortfolios$ | async as availablePortfolios">
+            @if (availablePortfolios.size > 0) {
+              <nz-select
+                formControlName="portfolio"
+                nzAllowClear
+                [nzPlaceHolder]="t('blotterSettings.portfolioLabel')"
+                nzShowSearch
+                (ngModelChange)="portfolioChanged($event)">
+                <ng-container *ngFor="let agreement of availablePortfolios.keys()">
+                  <nz-option-group [nzLabel]="agreement">
+                    <ng-container *ngIf="availablePortfolios.get(agreement) as portfolios">
+                      <ng-container *ngFor="let portfolio of portfolios">
+                        <nz-option [nzValue]="toPortfolioKey(portfolio)" [nzLabel]="portfolio.market + ' ' +  portfolio.portfolio"></nz-option>
+                      </ng-container>
+                    </ng-container>
+                  </nz-option-group>
                 </ng-container>
-              </nz-option-group>
-            </ng-container>
-          </nz-select>
+              </nz-select>
+            } @else {
+              <div>{{form.value.portfolio}}</div>
+            }
+          </ng-container>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item *ngIf="!deviceInfo.isMobile">

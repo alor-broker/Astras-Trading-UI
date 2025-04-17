@@ -4,7 +4,6 @@ import {AdminNavbarComponent} from './admin-navbar.component';
 import {DashboardContextService} from "../../../shared/services/dashboard-context.service";
 import {EMPTY} from "rxjs";
 import {MockComponents, MockDirective} from "ng-mocks";
-import {SelectClientPortfolioBtnComponent} from "../select-client-portfolio-btn/select-client-portfolio-btn.component";
 import {
   WidgetsGalleryNavBtnComponent
 } from "../../../modules/dashboard/components/widgets-gallery-nav-btn/widgets-gallery-nav-btn.component";
@@ -17,6 +16,7 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import {
   ThemeSwitchWidgetComponent
 } from "../../../modules/terminal-settings/widgets/theme-switch-widget/theme-switch-widget.component";
+import { AdminDashboardsPanelComponent } from "../admin-dashboards-panel/admin-dashboards-panel.component";
 
 describe('AdminNavbarComponent', () => {
   let component: AdminNavbarComponent;
@@ -28,11 +28,11 @@ describe('AdminNavbarComponent', () => {
         AdminNavbarComponent,
         ...MockComponents(
           DesktopNavbarComponent,
-          SelectClientPortfolioBtnComponent,
           WidgetsGalleryNavBtnComponent,
           OpenOrdersDialogNavBtnComponent,
           AdminProfileMenuNavBtnComponent,
-          ThemeSwitchWidgetComponent
+          ThemeSwitchWidgetComponent,
+          AdminDashboardsPanelComponent
         ),
         MockDirective(NzIconDirective)
       ],
@@ -40,7 +40,8 @@ describe('AdminNavbarComponent', () => {
         {
           provide: DashboardContextService,
           useValue: {
-            selectedPortfolio$: EMPTY
+            selectedPortfolioOrNull$: EMPTY,
+            selectedDashboard$: EMPTY
           }
         }
       ]
