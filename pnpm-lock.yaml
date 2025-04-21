@@ -45,7 +45,7 @@ importers:
         specifier: 0.8.98
         version: 0.8.98
       '@jsverse/transloco':
-        specifier: ^7.4.0
+        specifier: ^7.6.1
         version: 7.6.1(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(typescript@5.5.4)
       '@ngrx/component':
         specifier: ^19.1.0
@@ -12759,7 +12759,7 @@ snapshots:
 
   regenerator-transform@0.15.2:
     dependencies:
-      '@babel/runtime': 7.27.0
+      '@babel/runtime': 7.26.10
 
   regex-parser@2.3.1: {}
 
