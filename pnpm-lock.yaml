@@ -69,8 +69,8 @@ importers:
         specifier: ^19.1.0
         version: 19.1.0(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(@ngrx/store@19.1.0(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(rxjs@7.8.2)
       angular-gridster2:
-        specifier: ^18.0.1
-        version: 18.0.1(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2)
+        specifier: ^19.0.0
+        version: 19.0.0(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2)
       apollo-angular:
         specifier: ^7.1.1
         version: 7.2.1(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(@apollo/client@3.13.8(graphql-ws@6.0.4(graphql@16.10.0)(ws@8.18.1))(graphql@16.10.0))(graphql@16.10.0)(rxjs@7.8.2)
@@ -2878,11 +2878,11 @@ packages:
       typescript: '*'
       typescript-eslint: ^8.0.0
 
-  angular-gridster2@18.0.1:
-    resolution: {integrity: sha512-+Nar4lkRGl5kgmU+WFi5d57F7X4jbehRzBZ+JQifVZKtGA1OYKzBYA2Wd1ZQP246oHXakl14BBkxTu8hLer0Cg==}
+  angular-gridster2@19.0.0:
+    resolution: {integrity: sha512-82SHZzwOmGRvR77VtbpV5Eh7CoTtxLslwOVzTYB3qNQIGGFaOsS8nRAuYpZOlZpVc+n6fBz1HU0yP0icnQ9ppg==}
     peerDependencies:
-      '@angular/common': ^18.0.0
-      '@angular/core': ^18.0.0
+      '@angular/common': ^19.0.0
+      '@angular/core': ^19.0.0
       rxjs: ^7.0.0
 
   ansi-colors@4.1.3:
@@ -9781,7 +9781,7 @@ snapshots:
       - chokidar
       - supports-color
 
-  angular-gridster2@18.0.1(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2):
+  angular-gridster2@19.0.0(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2):
     dependencies:
       '@angular/common': 19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2)
       '@angular/core': 19.2.7(rxjs@7.8.2)(zone.js@0.15.0)

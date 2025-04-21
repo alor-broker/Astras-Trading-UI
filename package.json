@@ -35,7 +35,7 @@
     "@ngrx/operators": "^19.1.0",
     "@ngrx/store": "^19.1.0",
     "@ngrx/store-devtools": "^19.1.0",
-    "angular-gridster2": "^18.0.1",
+    "angular-gridster2": "^19.0.0",
     "apollo-angular": "^7.1.1",
     "chart.js": "^4.4.0",
     "chartjs-adapter-date-fns": "^3.0.0",
