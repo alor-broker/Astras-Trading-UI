@@ -85,12 +85,13 @@ export class ScalperHotKeyCommandService {
 
         return fromEvent<KeyboardEvent>(this.document.body, 'keydown').pipe(
           filter(x => !this.isUserInputTarget(x.target as HTMLElement)),
-          filter(x => !x.repeat),
-          map(x => {
+          tap(x => {
             if (x.code === 'Space') {
               x.preventDefault();
             }
-
+          }),
+          filter(x => !x.repeat),
+          map(x => {
             let mappedCommand = null as { commandType: string, index?: number } | null | undefined;
 
             hotKeyMap.forEach((value, key) => {

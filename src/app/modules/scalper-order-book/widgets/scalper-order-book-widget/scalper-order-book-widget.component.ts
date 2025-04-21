@@ -79,7 +79,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
         disableHotkeys: getValueOrDefault(settings.disableHotkeys, true),
         enableMouseClickSilentOrders: getValueOrDefault(settings.enableMouseClickSilentOrders, false),
         enableAutoAlign: getValueOrDefault(settings.enableAutoAlign, true),
-        autoAlignIntervalSec: getValueOrDefault(settings.autoAlignIntervalSec, 15),
+        autoAlignIntervalSec: getValueOrDefault(settings.autoAlignIntervalSec, 5),
         showTradesClustersPanel: getValueOrDefault(settings.showTradesClustersPanel, true),
         tradesClusterPanelSettings: getValueOrDefault(
           settings.tradesClusterPanelSettings,

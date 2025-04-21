@@ -60,7 +60,7 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       }
     },
     autoAlignIntervalSec: {
-      min: 1,
+      min: 0.1,
       max: 600
     },
     shortLongIndicators: {
@@ -168,7 +168,7 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
     ),
     enableAutoAlign: this.formBuilder.nonNullable.control(true),
     autoAlignIntervalSec: this.formBuilder.nonNullable.control(
-      15,
+      5,
       [
         Validators.required,
         Validators.min(this.validationOptions.autoAlignIntervalSec.min),
@@ -562,7 +562,7 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
     });
 
     this.form.controls.enableAutoAlign.setValue(settings.enableAutoAlign ?? false);
-    this.form.controls.autoAlignIntervalSec.setValue(settings.autoAlignIntervalSec ?? 15);
+    this.form.controls.autoAlignIntervalSec.setValue(settings.autoAlignIntervalSec ?? 5);
 
     this.form.controls.showPriceWithZeroPadding.setValue(settings.showPriceWithZeroPadding ?? false);
 
