@@ -23,9 +23,10 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-feedback-widget',
-  templateUrl: './feedback-widget.component.html',
-  styleUrls: ['./feedback-widget.component.less']
+    selector: 'ats-feedback-widget',
+    templateUrl: './feedback-widget.component.html',
+    styleUrls: ['./feedback-widget.component.less'],
+    standalone: false
 })
 export class FeedbackWidgetComponent implements OnInit {
   isVisible$: Observable<boolean> = of(false);

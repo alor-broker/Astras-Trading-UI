@@ -47,9 +47,10 @@ interface BondDisplay extends Omit<Bond, 'coupons' | 'offers' | 'amortizations'>
 }
 
 @Component({
-  selector: 'ats-bond-screener',
-  templateUrl: './bond-screener.component.html',
-  styleUrls: ['./bond-screener.component.less']
+    selector: 'ats-bond-screener',
+    templateUrl: './bond-screener.component.html',
+    styleUrls: ['./bond-screener.component.less'],
+    standalone: false
 })
 export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
   BondDisplay,

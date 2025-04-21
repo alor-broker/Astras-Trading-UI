@@ -34,9 +34,10 @@ interface ExportResult {
 }
 
 @Component({
-  selector: 'ats-export-watchlist-dialog',
-  templateUrl: './export-watchlist-dialog.component.html',
-  styleUrls: ['./export-watchlist-dialog.component.less']
+    selector: 'ats-export-watchlist-dialog',
+    templateUrl: './export-watchlist-dialog.component.html',
+    styleUrls: ['./export-watchlist-dialog.component.less'],
+    standalone: false
 })
 export class ExportWatchlistDialogComponent implements OnInit, OnDestroy {
   exportResult$!: Observable<ExportResult>;

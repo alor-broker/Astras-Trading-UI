@@ -13,18 +13,17 @@ import {
 import { TableRowHeightDirective } from "../../../../../shared/directives/table-row-height.directive";
 
 @Component({
-  selector: 'ats-calendar',
-  templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.less'],
-  standalone: true,
-  imports: [
-    NzTableModule,
-    TranslocoDirective,
-    NzEmptyComponent,
-    NzTypographyComponent,
-    CurrencyPipe,
-    TableRowHeightDirective
-  ]
+    selector: 'ats-calendar',
+    templateUrl: './calendar.component.html',
+    styleUrls: ['./calendar.component.less'],
+    imports: [
+        NzTableModule,
+        TranslocoDirective,
+        NzEmptyComponent,
+        NzTypographyComponent,
+        CurrencyPipe,
+        TableRowHeightDirective
+    ]
 })
 export class CalendarComponent {
   @Input({required: true})

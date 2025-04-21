@@ -60,9 +60,10 @@ import { InstrumentKey } from "../../../../shared/models/instruments/instrument-
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 @Component({
-  selector: 'ats-trades-history',
-  templateUrl: './trades-history.component.html',
-  styleUrls: ['./trades-history.component.less']
+    selector: 'ats-trades-history',
+    templateUrl: './trades-history.component.html',
+    styleUrls: ['./trades-history.component.less'],
+    standalone: false
 })
 export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTrade, TradeFilter> implements AfterViewInit, OnDestroy {
   readonly rowHeight = 20;

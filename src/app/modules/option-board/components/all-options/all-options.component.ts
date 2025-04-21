@@ -45,9 +45,10 @@ interface LayoutSizes {
 }
 
 @Component({
-  selector: 'ats-all-options',
-  templateUrl: './all-options.component.html',
-  styleUrls: ['./all-options.component.less']
+    selector: 'ats-all-options',
+    templateUrl: './all-options.component.html',
+    styleUrls: ['./all-options.component.less'],
+    standalone: false
 })
 export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly rowHeight = 30;

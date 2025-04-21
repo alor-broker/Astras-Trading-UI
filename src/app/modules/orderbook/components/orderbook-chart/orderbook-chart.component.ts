@@ -30,9 +30,10 @@ import { TranslatorService } from "../../../../shared/services/translator.servic
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-orderbook-chart',
-  templateUrl: './orderbook-chart.component.html',
-  styleUrls: ['./orderbook-chart.component.less'],
+    selector: 'ats-orderbook-chart',
+    templateUrl: './orderbook-chart.component.html',
+    styleUrls: ['./orderbook-chart.component.less'],
+    standalone: false
 })
 export class OrderbookChartComponent implements OnInit, OnChanges {
   @Input({required: true})

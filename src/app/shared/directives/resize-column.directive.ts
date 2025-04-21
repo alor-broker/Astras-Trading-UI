@@ -27,7 +27,8 @@ import { NzThMeasureDirective } from 'ng-zorro-antd/table';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Directive({
-  selector: 'th[atsResizeColumn]'
+    selector: 'th[atsResizeColumn]',
+    standalone: false
 })
 export class ResizeColumnDirective implements OnInit {
   @Input()

@@ -10,25 +10,24 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 
 @Component({
-  selector: 'ats-prompt-property-editor',
-  standalone: true,
-  imports: [
-    FormsModule,
-    NzAutosizeDirective,
-    NzFormControlComponent,
-    NzFormDirective,
-    NzFormItemComponent,
-    NzFormLabelComponent,
-    NzInputDirective,
-    NzTextareaCountComponent,
-    ReactiveFormsModule,
-    TranslocoDirective,
-    NzButtonComponent,
-    NzIconDirective,
-    NzTooltipDirective
-  ],
-  templateUrl: './prompt-property-editor.component.html',
-  styleUrl: './prompt-property-editor.component.less'
+    selector: 'ats-prompt-property-editor',
+    imports: [
+        FormsModule,
+        NzAutosizeDirective,
+        NzFormControlComponent,
+        NzFormDirective,
+        NzFormItemComponent,
+        NzFormLabelComponent,
+        NzInputDirective,
+        NzTextareaCountComponent,
+        ReactiveFormsModule,
+        TranslocoDirective,
+        NzButtonComponent,
+        NzIconDirective,
+        NzTooltipDirective
+    ],
+    templateUrl: './prompt-property-editor.component.html',
+    styleUrl: './prompt-property-editor.component.less'
 })
 export class PromptPropertyEditorComponent extends StringPropertyEditorComponent implements OnChanges {
   @Input({required: true})

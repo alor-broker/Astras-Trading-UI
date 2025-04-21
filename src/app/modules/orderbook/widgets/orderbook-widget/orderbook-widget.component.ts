@@ -19,10 +19,11 @@ import {TerminalSettingsService} from "../../../../shared/services/terminal-sett
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
-  selector: 'ats-orderbook-widget',
-  templateUrl: './orderbook-widget.component.html',
-  styleUrls: ['./orderbook-widget.component.less'],
-  providers: [OrderbookService]
+    selector: 'ats-orderbook-widget',
+    templateUrl: './orderbook-widget.component.html',
+    styleUrls: ['./orderbook-widget.component.less'],
+    providers: [OrderbookService],
+    standalone: false
 })
 export class OrderbookWidgetComponent implements OnInit {
   shouldShowSettings = false;

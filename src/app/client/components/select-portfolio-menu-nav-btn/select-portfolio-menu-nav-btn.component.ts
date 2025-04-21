@@ -33,34 +33,33 @@ import {NzTypographyComponent} from "ng-zorro-antd/typography";
 import {ExternalLinkComponent} from "../../../shared/components/external-link/external-link.component";
 
 @Component({
-  selector: 'ats-select-portfolio-menu-nav-btn',
-  standalone: true,
-  imports: [
-    AsyncPipe,
-    FormsModule,
-    JoyrideModule,
-    KeyValuePipe,
-    NgForOf,
-    NgIf,
-    NzButtonComponent,
-    NzDropDownDirective,
-    NzDropdownButtonDirective,
-    NzDropdownMenuComponent,
-    NzIconDirective,
-    NzInputDirective,
-    NzMenuDirective,
-    NzMenuItemComponent,
-    NzPopoverDirective,
-    TranslocoDirective,
-    LetDirective,
-    EmptyPortfoliosWarningModalComponent,
-    ReactiveFormsModule,
-    NzTypographyComponent,
-    ExternalLinkComponent
-  ],
-  templateUrl: './select-portfolio-menu-nav-btn.component.html',
-  styleUrl: './select-portfolio-menu-nav-btn.component.less',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-select-portfolio-menu-nav-btn',
+    imports: [
+        AsyncPipe,
+        FormsModule,
+        JoyrideModule,
+        KeyValuePipe,
+        NgForOf,
+        NgIf,
+        NzButtonComponent,
+        NzDropDownDirective,
+        NzDropdownButtonDirective,
+        NzDropdownMenuComponent,
+        NzIconDirective,
+        NzInputDirective,
+        NzMenuDirective,
+        NzMenuItemComponent,
+        NzPopoverDirective,
+        TranslocoDirective,
+        LetDirective,
+        EmptyPortfoliosWarningModalComponent,
+        ReactiveFormsModule,
+        NzTypographyComponent,
+        ExternalLinkComponent
+    ],
+    templateUrl: './select-portfolio-menu-nav-btn.component.html',
+    styleUrl: './select-portfolio-menu-nav-btn.component.less',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SelectPortfolioMenuNavBtnComponent implements OnInit {
   readonly externalLinks = this.environmentService.externalLinks;

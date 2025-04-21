@@ -15,9 +15,10 @@ import { mapWith } from "../../utils/observable-helper";
 import { TerminalSettingsService } from "../../services/terminal-settings.service";
 
 @Component({
-  selector: 'ats-widget-header',
-  templateUrl: './widget-header.component.html',
-  styleUrls: ['./widget-header.component.less']
+    selector: 'ats-widget-header',
+    templateUrl: './widget-header.component.html',
+    styleUrls: ['./widget-header.component.less'],
+    standalone: false
 })
 export class WidgetHeaderComponent implements OnInit {
   @Input({required: true})

@@ -40,21 +40,22 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { toInstrumentKey } from "../../../../shared/utils/instruments";
 
 @Component({
-  selector: 'ats-orders-basket-item',
-  templateUrl: './orders-basket-item.component.html',
-  styleUrls: ['./orders-basket-item.component.less'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: OrdersBasketItemComponent
-    },
-    {
-      provide: NG_VALIDATORS,
-      multi: true,
-      useExisting: OrdersBasketItemComponent
-    },
-  ]
+    selector: 'ats-orders-basket-item',
+    templateUrl: './orders-basket-item.component.html',
+    styleUrls: ['./orders-basket-item.component.less'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: OrdersBasketItemComponent
+        },
+        {
+            provide: NG_VALIDATORS,
+            multi: true,
+            useExisting: OrdersBasketItemComponent
+        },
+    ],
+    standalone: false
 })
 export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValueAccessor, Validator {
   @Input({required: true})

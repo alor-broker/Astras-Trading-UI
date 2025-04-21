@@ -10,9 +10,10 @@ import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 @Component({
-  selector: 'ats-treemap-widget',
-  templateUrl: './treemap-widget.component.html',
-  styleUrls: ['./treemap-widget.component.less']
+    selector: 'ats-treemap-widget',
+    templateUrl: './treemap-widget.component.html',
+    styleUrls: ['./treemap-widget.component.less'],
+    standalone: false
 })
 export class TreemapWidgetComponent implements OnInit {
   shouldShowSettings = false;

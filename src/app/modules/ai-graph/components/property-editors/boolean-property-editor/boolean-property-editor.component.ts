@@ -9,19 +9,18 @@ import {TranslocoDirective} from "@jsverse/transloco";
 import {NzSwitchComponent} from "ng-zorro-antd/switch";
 
 @Component({
-  selector: 'ats-boolean-property-editor',
-  standalone: true,
-  imports: [
-    NzFormControlComponent,
-    NzFormDirective,
-    NzFormItemComponent,
-    NzFormLabelComponent,
-    ReactiveFormsModule,
-    TranslocoDirective,
-    NzSwitchComponent
-  ],
-  templateUrl: './boolean-property-editor.component.html',
-  styleUrl: './boolean-property-editor.component.less'
+    selector: 'ats-boolean-property-editor',
+    imports: [
+        NzFormControlComponent,
+        NzFormDirective,
+        NzFormItemComponent,
+        NzFormLabelComponent,
+        ReactiveFormsModule,
+        TranslocoDirective,
+        NzSwitchComponent
+    ],
+    templateUrl: './boolean-property-editor.component.html',
+    styleUrl: './boolean-property-editor.component.less'
 })
 export class BooleanPropertyEditorComponent extends PropertyEditorBaseComponent<BooleanPropertyEditorConfig> implements OnChanges {
   protected readonly form = this.formBuilder.group({

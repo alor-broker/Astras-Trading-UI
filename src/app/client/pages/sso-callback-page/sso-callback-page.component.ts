@@ -7,9 +7,10 @@ import { Router } from "@angular/router";
 import { ClientAuthContextService } from "../../services/auth/client-auth-context.service";
 
 @Component({
-  selector: 'ats-sso-callback-page',
-  templateUrl: './sso-callback-page.component.html',
-  styleUrl: './sso-callback-page.component.less'
+    selector: 'ats-sso-callback-page',
+    templateUrl: './sso-callback-page.component.html',
+    styleUrl: './sso-callback-page.component.less',
+    standalone: false
 })
 export class SsoCallbackPageComponent implements OnInit {
   @Input()

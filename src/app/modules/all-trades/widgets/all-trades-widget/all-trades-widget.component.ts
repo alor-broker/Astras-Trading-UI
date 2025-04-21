@@ -17,9 +17,10 @@ import {TerminalSettingsService} from "../../../../shared/services/terminal-sett
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
-  selector: 'ats-all-trades-widget',
-  templateUrl: './all-trades-widget.component.html',
-  styleUrls: ['./all-trades-widget.component.less']
+    selector: 'ats-all-trades-widget',
+    templateUrl: './all-trades-widget.component.html',
+    styleUrls: ['./all-trades-widget.component.less'],
+    standalone: false
 })
 export class AllTradesWidgetComponent implements OnInit {
   shouldShowSettings = false;

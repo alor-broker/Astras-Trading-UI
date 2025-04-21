@@ -8,15 +8,14 @@ import { TranslocoDirective } from "@jsverse/transloco";
 import { NgStyle } from "@angular/common";
 
 @Component({
-  selector: 'ats-descriptors-list',
-  standalone: true,
-  imports: [
-    TranslocoDirective,
-    NgStyle
-  ],
-  templateUrl: './descriptors-list.component.html',
-  styleUrl: './descriptors-list.component.less',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-descriptors-list',
+    imports: [
+        TranslocoDirective,
+        NgStyle
+    ],
+    templateUrl: './descriptors-list.component.html',
+    styleUrl: './descriptors-list.component.less',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DescriptorsListComponent {
   @Input()

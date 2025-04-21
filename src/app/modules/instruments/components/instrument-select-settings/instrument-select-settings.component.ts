@@ -23,9 +23,10 @@ import { TimeframeValue } from "../../../light-chart/models/light-chart.models";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 
 @Component({
-  selector: 'ats-instrument-select-settings',
-  templateUrl: './instrument-select-settings.component.html',
-  styleUrls: ['./instrument-select-settings.component.less']
+    selector: 'ats-instrument-select-settings',
+    templateUrl: './instrument-select-settings.component.html',
+    styleUrls: ['./instrument-select-settings.component.less'],
+    standalone: false
 })
 export class InstrumentSelectSettingsComponent extends WidgetSettingsBaseComponent<InstrumentSelectSettings> implements OnInit {
   readonly settingsForm = this.formBuilder.group({

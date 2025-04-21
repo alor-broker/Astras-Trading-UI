@@ -11,9 +11,10 @@ import { RibbonSettings } from '../../models/ribbon-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-ribbon-widget',
-  templateUrl: './ribbon-widget.component.html',
-  styleUrls: ['./ribbon-widget.component.less']
+    selector: 'ats-ribbon-widget',
+    templateUrl: './ribbon-widget.component.html',
+    styleUrls: ['./ribbon-widget.component.less'],
+    standalone: false
 })
 export class RibbonWidgetComponent implements OnInit {
   @Input({required: true})

@@ -11,15 +11,14 @@ import {ThemeType} from "../../../../shared/models/settings/theme-settings.model
 import {GuidGenerator} from "../../../../shared/utils/guid";
 
 @Component({
-  selector: 'ats-theme-switch-widget',
-  standalone: true,
-  imports: [
-    FormsModule,
-    NzIconModule,
-    NzSwitchModule
-  ],
-  templateUrl: './theme-switch-widget.component.html',
-  styleUrl: './theme-switch-widget.component.less'
+    selector: 'ats-theme-switch-widget',
+    imports: [
+        FormsModule,
+        NzIconModule,
+        NzSwitchModule
+    ],
+    templateUrl: './theme-switch-widget.component.html',
+    styleUrl: './theme-switch-widget.component.less'
 })
 export class ThemeSwitchWidgetComponent implements OnInit {
   isLoading = false;

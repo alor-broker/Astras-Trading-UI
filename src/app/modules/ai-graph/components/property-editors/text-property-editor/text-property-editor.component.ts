@@ -6,21 +6,20 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {TranslocoDirective} from "@jsverse/transloco";
 
 @Component({
-  selector: 'ats-text-property-editor',
-  standalone: true,
-  imports: [
-    NzFormControlComponent,
-    NzFormDirective,
-    NzFormItemComponent,
-    NzFormLabelComponent,
-    NzInputDirective,
-    ReactiveFormsModule,
-    TranslocoDirective,
-    NzAutosizeDirective,
-    NzTextareaCountComponent
-  ],
-  templateUrl: './text-property-editor.component.html',
-  styleUrl: './text-property-editor.component.less'
+    selector: 'ats-text-property-editor',
+    imports: [
+        NzFormControlComponent,
+        NzFormDirective,
+        NzFormItemComponent,
+        NzFormLabelComponent,
+        NzInputDirective,
+        ReactiveFormsModule,
+        TranslocoDirective,
+        NzAutosizeDirective,
+        NzTextareaCountComponent
+    ],
+    templateUrl: './text-property-editor.component.html',
+    styleUrl: './text-property-editor.component.less'
 })
 export class TextPropertyEditorComponent extends StringPropertyEditorComponent {
 

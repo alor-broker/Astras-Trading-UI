@@ -42,7 +42,8 @@ interface ExtendedOrderbookSettings {
 }
 
 @Component({
-  template: '',
+    template: '',
+    standalone: false
 })
 export abstract class OrderbookTableBaseComponent implements OnInit {
   readonly numberFormats = NumberDisplayFormat;

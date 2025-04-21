@@ -10,19 +10,18 @@ import {NzDatePickerComponent} from "ng-zorro-antd/date-picker";
 import {isBefore, isFuture} from "date-fns";
 
 @Component({
-  selector: 'ats-date-property-editor',
-  standalone: true,
-  imports: [
-    NzFormControlComponent,
-    NzFormDirective,
-    NzFormItemComponent,
-    NzFormLabelComponent,
-    ReactiveFormsModule,
-    TranslocoDirective,
-    NzDatePickerComponent
-  ],
-  templateUrl: './date-property-editor.component.html',
-  styleUrl: './date-property-editor.component.less'
+    selector: 'ats-date-property-editor',
+    imports: [
+        NzFormControlComponent,
+        NzFormDirective,
+        NzFormItemComponent,
+        NzFormLabelComponent,
+        ReactiveFormsModule,
+        TranslocoDirective,
+        NzDatePickerComponent
+    ],
+    templateUrl: './date-property-editor.component.html',
+    styleUrl: './date-property-editor.component.less'
 })
 export class DatePropertyEditorComponent extends PropertyEditorBaseComponent<DatePropertyEditorConfig> implements OnChanges {
   protected readonly form = this.formBuilder.group({

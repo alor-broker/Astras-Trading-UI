@@ -15,23 +15,22 @@ import {TranslocoDirective} from "@jsverse/transloco";
 import {ModalService} from "../../../shared/services/modal.service";
 
 @Component({
-  selector: 'ats-client-profile-menu-nav-btn',
-  standalone: true,
-  imports: [
-    AsyncPipe,
-    NzButtonComponent,
-    NzDropDownDirective,
-    NzDropdownMenuComponent,
-    NzIconDirective,
-    NzMenuDirective,
-    NzMenuItemComponent,
-    TranslocoDirective,
-    NgTemplateOutlet,
-    NgIf
-  ],
-  templateUrl: './client-profile-menu-nav-btn.component.html',
-  styleUrl: './client-profile-menu-nav-btn.component.less',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-client-profile-menu-nav-btn',
+    imports: [
+        AsyncPipe,
+        NzButtonComponent,
+        NzDropDownDirective,
+        NzDropdownMenuComponent,
+        NzIconDirective,
+        NzMenuDirective,
+        NzMenuItemComponent,
+        TranslocoDirective,
+        NgTemplateOutlet,
+        NgIf
+    ],
+    templateUrl: './client-profile-menu-nav-btn.component.html',
+    styleUrl: './client-profile-menu-nav-btn.component.less',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClientProfileMenuNavBtnComponent {
   readonly externalLinks = this.environmentService.externalLinks;

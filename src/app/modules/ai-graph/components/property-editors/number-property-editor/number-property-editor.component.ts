@@ -9,19 +9,18 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {InputNumberComponent} from "../../../../../shared/components/input-number/input-number.component";
 
 @Component({
-  selector: 'ats-number-property-editor',
-  standalone: true,
-  imports: [
-    NzFormControlComponent,
-    NzFormDirective,
-    NzFormItemComponent,
-    NzFormLabelComponent,
-    ReactiveFormsModule,
-    TranslocoDirective,
-    InputNumberComponent
-  ],
-  templateUrl: './number-property-editor.component.html',
-  styleUrl: './number-property-editor.component.less'
+    selector: 'ats-number-property-editor',
+    imports: [
+        NzFormControlComponent,
+        NzFormDirective,
+        NzFormItemComponent,
+        NzFormLabelComponent,
+        ReactiveFormsModule,
+        TranslocoDirective,
+        InputNumberComponent
+    ],
+    templateUrl: './number-property-editor.component.html',
+    styleUrl: './number-property-editor.component.less'
 })
 export class NumberPropertyEditorComponent extends PropertyEditorBaseComponent<NumberPropertyEditorConfig> implements OnChanges {
   protected readonly form = this.formBuilder.group({

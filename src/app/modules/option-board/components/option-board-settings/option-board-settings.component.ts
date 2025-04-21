@@ -16,9 +16,10 @@ import { WidgetSettingsBaseComponent } from "../../../../shared/components/widge
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 @Component({
-  selector: 'ats-option-board-settings',
-  templateUrl: './option-board-settings.component.html',
-  styleUrls: ['./option-board-settings.component.less']
+    selector: 'ats-option-board-settings',
+    templateUrl: './option-board-settings.component.html',
+    styleUrls: ['./option-board-settings.component.less'],
+    standalone: false
 })
 export class OptionBoardSettingsComponent extends WidgetSettingsBaseComponent<OptionBoardSettings> implements OnInit {
   readonly form = this.formBuilder.group({

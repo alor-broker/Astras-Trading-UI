@@ -44,9 +44,10 @@ interface Safe extends GridsterConfig {
 interface WidgetItem { instance: WidgetInstance, gridsterItem: GridsterItem }
 
 @Component({
-  selector: 'ats-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.less']
+    selector: 'ats-dashboard',
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.less'],
+    standalone: false
 })
 export class DashboardComponent implements OnInit {
   @ViewChild(GridsterComponent)

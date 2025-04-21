@@ -26,16 +26,17 @@ import { TerminalSettingsHelper } from "../../../../shared/utils/terminal-settin
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-hot-key-settings-form',
-  templateUrl: './hot-key-settings-form.component.html',
-  styleUrls: ['./hot-key-settings-form.component.less'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: HotKeySettingsFormComponent
-    }
-  ]
+    selector: 'ats-hot-key-settings-form',
+    templateUrl: './hot-key-settings-form.component.html',
+    styleUrls: ['./hot-key-settings-form.component.less'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: HotKeySettingsFormComponent
+        }
+    ],
+    standalone: false
 })
 export class HotKeySettingsFormComponent extends ControlValueAccessorBaseComponent<HotKeysSettings> implements OnInit {
   readonly form = this.formBuilder.group({

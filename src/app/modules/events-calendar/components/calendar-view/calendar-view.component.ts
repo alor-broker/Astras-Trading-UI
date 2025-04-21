@@ -31,9 +31,10 @@ import {
 } from "../../../../shared/utils/formatters";
 
 @Component({
-  selector: 'ats-calendar-view',
-  templateUrl: './calendar-view.component.html',
-  styleUrls: ['./calendar-view.component.less']
+    selector: 'ats-calendar-view',
+    templateUrl: './calendar-view.component.html',
+    styleUrls: ['./calendar-view.component.less'],
+    standalone: false
 })
 export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly symbols$ = new BehaviorSubject<string[]>([]);

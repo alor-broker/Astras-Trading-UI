@@ -62,21 +62,20 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<StockResponse>> = object({
 });
 
 @Component({
-  selector: 'ats-stock-info',
-  standalone: true,
-  imports: [
-    NzTabSetComponent,
-    TranslocoDirective,
-    NzTabComponent,
-    LetDirective,
-    NzEmptyComponent,
-    DescriptorsListComponent,
-    RisksComponent,
-    FinanceComponent,
-    DividendsComponent
-  ],
-  templateUrl: './stock-info.component.html',
-  styleUrl: './stock-info.component.less'
+    selector: 'ats-stock-info',
+    imports: [
+        NzTabSetComponent,
+        TranslocoDirective,
+        NzTabComponent,
+        LetDirective,
+        NzEmptyComponent,
+        DescriptorsListComponent,
+        RisksComponent,
+        FinanceComponent,
+        DividendsComponent
+    ],
+    templateUrl: './stock-info.component.html',
+    styleUrl: './stock-info.component.less'
 })
 export class StockInfoComponent extends InstrumentInfoBaseComponent implements OnInit {
   info$!: Observable<Stock | null>;

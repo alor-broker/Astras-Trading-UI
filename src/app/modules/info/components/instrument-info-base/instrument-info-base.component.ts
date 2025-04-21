@@ -14,7 +14,8 @@ export interface TargetInstrumentKey {
 }
 
 @Component({
-  template: ''
+    template: '',
+    standalone: false
 })
 export abstract class InstrumentInfoBaseComponent implements OnDestroy {
   readonly targetInstrumentKey$ = new BehaviorSubject<TargetInstrumentKey | null>(null);

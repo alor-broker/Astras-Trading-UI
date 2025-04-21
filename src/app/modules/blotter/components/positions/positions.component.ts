@@ -49,9 +49,10 @@ interface PositionDisplay extends Position {
 }
 
 @Component({
-  selector: 'ats-positions',
-  templateUrl: './positions.component.html',
-  styleUrls: ['./positions.component.less']
+    selector: 'ats-positions',
+    templateUrl: './positions.component.html',
+    styleUrls: ['./positions.component.less'],
+    standalone: false
 })
 export class PositionsComponent extends BlotterBaseTableComponent<PositionDisplay, PositionFilter> implements OnInit {
   @Input()

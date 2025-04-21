@@ -42,21 +42,20 @@ enum TimeRange {
 }
 
 @Component({
-  selector: 'ats-portfolio-dynamics',
-  standalone: true,
-  imports: [
-    BaseChartDirective,
-    NzButtonComponent,
-    TranslocoDirective,
-    LetDirective,
-    PercentPipe,
-    NgClass,
-    NzSkeletonComponent,
-    NzEmptyComponent,
-    NzSpinComponent
-  ],
-  templateUrl: './portfolio-dynamics.component.html',
-  styleUrl: './portfolio-dynamics.component.less'
+    selector: 'ats-portfolio-dynamics',
+    imports: [
+        BaseChartDirective,
+        NzButtonComponent,
+        TranslocoDirective,
+        LetDirective,
+        PercentPipe,
+        NgClass,
+        NzSkeletonComponent,
+        NzEmptyComponent,
+        NzSpinComponent
+    ],
+    templateUrl: './portfolio-dynamics.component.html',
+    styleUrl: './portfolio-dynamics.component.less'
 })
 export class PortfolioDynamicsComponent implements OnInit, OnDestroy {
   readonly chartHeight = 250;

@@ -33,34 +33,33 @@ import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instrume
 import {GraphStorageService} from "../../../modules/ai-graph/services/graph-storage.service";
 
 @Component({
-  selector: 'ats-client-dashboard',
-  standalone: true,
-  imports: [
-    DashboardModule,
-    NzContentComponent,
-    NzHeaderComponent,
-    NzLayoutComponent,
-    TerminalSettingsModule,
-    ClientNavbarComponent,
-    FeedbackModule,
-    ApplicationMetaModule,
-    OrderCommandsModule,
-    SettingsLoadErrorDialogComponent,
-    TerminalSettingsWidgetComponent,
-    InstrumentSelectDialogWidgetComponent
-  ],
-  templateUrl: './client-dashboard.component.html',
-  styleUrl: './client-dashboard.component.less',
-  providers: [
-    {
-      provide: ACTIONS_CONTEXT,
-      useExisting: ClientDashboardComponent
-    },
-    {
-      provide: EXPORT_SETTINGS_SERVICE_TOKEN,
-      useClass: ExportDesktopSettingsService
-    }
-  ]
+    selector: 'ats-client-dashboard',
+    imports: [
+        DashboardModule,
+        NzContentComponent,
+        NzHeaderComponent,
+        NzLayoutComponent,
+        TerminalSettingsModule,
+        ClientNavbarComponent,
+        FeedbackModule,
+        ApplicationMetaModule,
+        OrderCommandsModule,
+        SettingsLoadErrorDialogComponent,
+        TerminalSettingsWidgetComponent,
+        InstrumentSelectDialogWidgetComponent
+    ],
+    templateUrl: './client-dashboard.component.html',
+    styleUrl: './client-dashboard.component.less',
+    providers: [
+        {
+            provide: ACTIONS_CONTEXT,
+            useExisting: ClientDashboardComponent
+        },
+        {
+            provide: EXPORT_SETTINGS_SERVICE_TOKEN,
+            useClass: ExportDesktopSettingsService
+        }
+    ]
 })
 export class ClientDashboardComponent implements OnInit, ActionsContext {
   showSettingsLoadDialog = false;

@@ -36,33 +36,32 @@ import { NzTagComponent } from "ng-zorro-antd/tag";
 import { NzIconDirective } from "ng-zorro-antd/icon";
 
 @Component({
-  selector: 'ats-instrument-search',
-  templateUrl: './instrument-search.component.html',
-  styleUrls: ['./instrument-search.component.less'],
-  standalone: true,
-  imports: [
-    TranslocoDirective,
-    NzInputGroupComponent,
-    NzInputDirective,
-    NzAutocompleteTriggerDirective,
-    ReactiveFormsModule,
-    NzTooltipDirective,
-    NgIf,
-    NzTypographyComponent,
-    NzAutocompleteComponent,
-    AsyncPipe,
-    NzAutocompleteOptionComponent,
-    NgForOf,
-    NzTagComponent,
-    NzIconDirective
-  ],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: InstrumentSearchComponent
-    }
-  ]
+    selector: 'ats-instrument-search',
+    templateUrl: './instrument-search.component.html',
+    styleUrls: ['./instrument-search.component.less'],
+    imports: [
+        TranslocoDirective,
+        NzInputGroupComponent,
+        NzInputDirective,
+        NzAutocompleteTriggerDirective,
+        ReactiveFormsModule,
+        NzTooltipDirective,
+        NgIf,
+        NzTypographyComponent,
+        NzAutocompleteComponent,
+        AsyncPipe,
+        NzAutocompleteOptionComponent,
+        NgForOf,
+        NzTagComponent,
+        NzIconDirective
+    ],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: InstrumentSearchComponent
+        }
+    ]
 })
 export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @ViewChild('searchInput')

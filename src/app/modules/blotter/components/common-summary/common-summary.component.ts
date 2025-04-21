@@ -18,9 +18,10 @@ import {PortfolioSummaryService} from "../../../../shared/services/portfolio-sum
 import {CommonSummaryView} from "../../../../shared/models/common-summary-view.model";
 
 @Component({
-  selector: 'ats-common-summary',
-  templateUrl: './common-summary.component.html',
-  styleUrls: ['./common-summary.component.less']
+    selector: 'ats-common-summary',
+    templateUrl: './common-summary.component.html',
+    styleUrls: ['./common-summary.component.less'],
+    standalone: false
 })
 export class CommonSummaryComponent implements OnInit {
   @Input()

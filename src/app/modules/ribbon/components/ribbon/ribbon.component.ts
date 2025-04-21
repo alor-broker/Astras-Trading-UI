@@ -7,9 +7,10 @@ import {InstrumentKey} from "../../../../shared/models/instruments/instrument-ke
 import {getDayChangePerPrice} from "../../../../shared/utils/price";
 
 @Component({
-  selector: 'ats-ribbon',
-  templateUrl: './ribbon.component.html',
-  styleUrls: ['./ribbon.component.less']
+    selector: 'ats-ribbon',
+    templateUrl: './ribbon.component.html',
+    styleUrls: ['./ribbon.component.less'],
+    standalone: false
 })
 export class RibbonComponent implements OnInit {
   @Input({required: true})

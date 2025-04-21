@@ -59,18 +59,17 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<InstrumentResponse>> = object({
 });
 
 @Component({
-  selector: 'ats-common-info',
-  standalone: true,
-  imports: [
-    TranslocoDirective,
-    LetDirective,
-    NzEmptyComponent,
-    NzTabSetComponent,
-    NzTabComponent,
-    DescriptorsListComponent
-  ],
-  templateUrl: './common-info.component.html',
-  styleUrl: './common-info.component.less'
+    selector: 'ats-common-info',
+    imports: [
+        TranslocoDirective,
+        LetDirective,
+        NzEmptyComponent,
+        NzTabSetComponent,
+        NzTabComponent,
+        DescriptorsListComponent
+    ],
+    templateUrl: './common-info.component.html',
+    styleUrl: './common-info.component.less'
 })
 export class CommonInfoComponent extends InstrumentInfoBaseComponent implements OnInit {
   info$!: Observable<Instrument | null>;

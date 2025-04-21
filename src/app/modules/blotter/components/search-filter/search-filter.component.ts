@@ -9,18 +9,17 @@ import {NzInputDirective} from "ng-zorro-antd/input";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 
 @Component({
-  selector: 'ats-search-filter',
-  templateUrl: './search-filter.component.html',
-  styleUrls: ['./search-filter.component.less'],
-  imports: [
-    ReactiveFormsModule,
-    NgIf,
-    TranslocoDirective,
-    NgForOf,
-    NzInputDirective,
-    NzButtonComponent
-  ],
-  standalone: true
+    selector: 'ats-search-filter',
+    templateUrl: './search-filter.component.html',
+    styleUrls: ['./search-filter.component.less'],
+    imports: [
+        ReactiveFormsModule,
+        NgIf,
+        TranslocoDirective,
+        NgForOf,
+        NzInputDirective,
+        NzButtonComponent
+    ]
 })
 export class SearchFilterComponent implements OnChanges, OnDestroy {
   filtersForm?: UntypedFormGroup;

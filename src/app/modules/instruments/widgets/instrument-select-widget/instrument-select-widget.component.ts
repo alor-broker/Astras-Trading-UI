@@ -18,10 +18,11 @@ import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 import { WatchInstrumentsService } from "../../services/watch-instruments.service";
 
 @Component({
-  selector: 'ats-instrument-select-widget',
-  templateUrl: './instrument-select-widget.component.html',
-  styleUrls: ['./instrument-select-widget.component.less'],
-  providers: [WatchInstrumentsService]
+    selector: 'ats-instrument-select-widget',
+    templateUrl: './instrument-select-widget.component.html',
+    styleUrls: ['./instrument-select-widget.component.less'],
+    providers: [WatchInstrumentsService],
+    standalone: false
 })
 export class InstrumentSelectWidgetComponent implements OnInit {
   shouldShowSettings = false;

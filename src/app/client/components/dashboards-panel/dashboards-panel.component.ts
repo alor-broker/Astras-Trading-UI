@@ -41,26 +41,25 @@ type DashboardSegmentedOption = {
 } & NzSegmentedOption;
 
 @Component({
-  selector: 'ats-dashboards-panel',
-  templateUrl: './dashboards-panel.component.html',
-  styleUrls: ['./dashboards-panel.component.less'],
-  imports: [
-    CdkDropList,
-    AsyncPipe,
-    NzSegmentedComponent,
-    FormsModule,
-    NzTooltipDirective,
-    CdkDrag,
-    NzButtonComponent,
-    NzDropDownDirective,
-    NgIf,
-    NzTypographyComponent,
-    NzIconDirective,
-    NzDropdownMenuComponent,
-    SelectDashboardMenuComponent
-  ],
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-dashboards-panel',
+    templateUrl: './dashboards-panel.component.html',
+    styleUrls: ['./dashboards-panel.component.less'],
+    imports: [
+        CdkDropList,
+        AsyncPipe,
+        NzSegmentedComponent,
+        FormsModule,
+        NzTooltipDirective,
+        CdkDrag,
+        NzButtonComponent,
+        NzDropDownDirective,
+        NgIf,
+        NzTypographyComponent,
+        NzIconDirective,
+        NzDropdownMenuComponent,
+        SelectDashboardMenuComponent
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardsPanelComponent implements OnInit, OnDestroy {
   options$!: Observable<DashboardSegmentedOption[]>;

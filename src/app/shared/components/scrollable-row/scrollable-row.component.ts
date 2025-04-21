@@ -4,9 +4,10 @@ import {CdkScrollable} from "@angular/cdk/overlay";
 import {BehaviorSubject} from "rxjs";
 
 @Component({
-  selector: 'ats-scrollable-row',
-  templateUrl: './scrollable-row.component.html',
-  styleUrls: ['./scrollable-row.component.less']
+    selector: 'ats-scrollable-row',
+    templateUrl: './scrollable-row.component.html',
+    styleUrls: ['./scrollable-row.component.less'],
+    standalone: false
 })
 export class ScrollableRowComponent implements OnDestroy {
   @ContentChildren(ScrollableItemDirective)

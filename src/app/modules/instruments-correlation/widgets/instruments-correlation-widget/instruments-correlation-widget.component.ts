@@ -11,9 +11,10 @@ import { InstrumentsCorrelationSettings } from "../../models/instruments-correla
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 
 @Component({
-  selector: 'ats-instruments-correlation-widget',
-  templateUrl: './instruments-correlation-widget.component.html',
-  styleUrls: ['./instruments-correlation-widget.component.less']
+    selector: 'ats-instruments-correlation-widget',
+    templateUrl: './instruments-correlation-widget.component.html',
+    styleUrls: ['./instruments-correlation-widget.component.less'],
+    standalone: false
 })
 export class InstrumentsCorrelationWidgetComponent implements OnInit {
   @Input({ required: true })

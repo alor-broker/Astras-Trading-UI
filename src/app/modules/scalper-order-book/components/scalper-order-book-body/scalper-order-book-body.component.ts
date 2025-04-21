@@ -82,14 +82,15 @@ interface ScaleState {
 }
 
 @Component({
-  selector: 'ats-scalper-order-book-body',
-  templateUrl: './scalper-order-book-body.component.html',
-  styleUrls: ['./scalper-order-book-body.component.less'],
-  providers: [
-    PriceRowsStore,
-    {provide: SCALPER_ORDERBOOK_BODY_REF, useExisting: ScalperOrderBookBodyComponent},
-    {provide: RULER_CONTEX, useExisting: ScalperOrderBookBodyComponent}
-  ]
+    selector: 'ats-scalper-order-book-body',
+    templateUrl: './scalper-order-book-body.component.html',
+    styleUrls: ['./scalper-order-book-body.component.less'],
+    providers: [
+        PriceRowsStore,
+        { provide: SCALPER_ORDERBOOK_BODY_REF, useExisting: ScalperOrderBookBodyComponent },
+        { provide: RULER_CONTEX, useExisting: ScalperOrderBookBodyComponent }
+    ],
+    standalone: false
 })
 export class ScalperOrderBookBodyComponent implements OnInit,
   AfterViewInit,

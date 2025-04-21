@@ -39,17 +39,16 @@ import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { formatNumber } from "@angular/common";
 
 @Component({
-  selector: 'ats-risks',
-  templateUrl: './risks.component.html',
-  styleUrls: ['./risks.component.less'],
-  imports: [
-    TranslocoDirective,
-    LetDirective,
-    NzTypographyComponent,
-    NzSpinComponent,
-    DescriptorsListComponent
-  ],
-  standalone: true
+    selector: 'ats-risks',
+    templateUrl: './risks.component.html',
+    styleUrls: ['./risks.component.less'],
+    imports: [
+        TranslocoDirective,
+        LetDirective,
+        NzTypographyComponent,
+        NzSpinComponent,
+        DescriptorsListComponent
+    ]
 })
 export class RisksComponent implements OnInit, OnDestroy {
   currentPortfolio$!: Observable<PortfolioKey>;

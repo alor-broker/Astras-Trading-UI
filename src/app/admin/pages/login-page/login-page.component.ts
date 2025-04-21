@@ -54,27 +54,26 @@ enum LoginErrorCode {
 }
 
 @Component({
-  selector: 'ats-login-page',
-  standalone: true,
-  imports: [
-    NzFormDirective,
-    ReactiveFormsModule,
-    NzFormItemComponent,
-    NzFormControlComponent,
-    NzInputGroupComponent,
-    NzInputDirective,
-    NzButtonComponent,
-    TranslocoDirective,
-    LetDirective,
-    AsyncPipe,
-    NgSwitch,
-    NzTypographyComponent,
-    NgSwitchCase,
-    NgSwitchDefault,
-    NgIf
-  ],
-  templateUrl: './login-page.component.html',
-  styleUrl: './login-page.component.less'
+    selector: 'ats-login-page',
+    imports: [
+        NzFormDirective,
+        ReactiveFormsModule,
+        NzFormItemComponent,
+        NzFormControlComponent,
+        NzInputGroupComponent,
+        NzInputDirective,
+        NzButtonComponent,
+        TranslocoDirective,
+        LetDirective,
+        AsyncPipe,
+        NgSwitch,
+        NzTypographyComponent,
+        NgSwitchCase,
+        NgSwitchDefault,
+        NgIf
+    ],
+    templateUrl: './login-page.component.html',
+    styleUrl: './login-page.component.less'
 })
 export class LoginPageComponent implements OnDestroy, AfterViewInit {
   readonly isLoading$ = new BehaviorSubject(false);

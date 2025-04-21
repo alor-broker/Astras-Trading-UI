@@ -54,9 +54,10 @@ interface NewsListState {
 }
 
 @Component({
-  selector: 'ats-news',
-  templateUrl: './news.component.html',
-  styleUrls: ['./news.component.less']
+    selector: 'ats-news',
+    templateUrl: './news.component.html',
+    styleUrls: ['./news.component.less'],
+    standalone: false
 })
 export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, NewsFilter> implements OnInit, OnDestroy {
   @Input({ required: true }) guid!: string;

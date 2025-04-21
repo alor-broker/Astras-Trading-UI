@@ -42,9 +42,10 @@ interface SelectedWorkingVolumeState extends RecordContent {
 }
 
 @Component({
-  selector: 'ats-working-volumes-panel',
-  templateUrl: './working-volumes-panel.component.html',
-  styleUrls: ['./working-volumes-panel.component.less']
+    selector: 'ats-working-volumes-panel',
+    templateUrl: './working-volumes-panel.component.html',
+    styleUrls: ['./working-volumes-panel.component.less'],
+    standalone: false
 })
 export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
   readonly validation = {

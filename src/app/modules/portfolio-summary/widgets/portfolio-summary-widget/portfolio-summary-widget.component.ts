@@ -9,9 +9,10 @@ import {BlotterSettings} from "../../../blotter/models/blotter-settings.model";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 
 @Component({
-  selector: 'ats-portfolio-summary-widget',
-  templateUrl: './portfolio-summary-widget.component.html',
-  styleUrls: ['./portfolio-summary-widget.component.less']
+    selector: 'ats-portfolio-summary-widget',
+    templateUrl: './portfolio-summary-widget.component.html',
+    styleUrls: ['./portfolio-summary-widget.component.less'],
+    standalone: false
 })
 export class PortfolioSummaryWidgetComponent implements OnInit {
   @Input({required: true})

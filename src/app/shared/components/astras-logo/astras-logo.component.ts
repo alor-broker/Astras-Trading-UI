@@ -4,14 +4,13 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import {RouterLink} from "@angular/router";
 
 @Component({
-  selector: 'ats-astras-logo',
-  standalone: true,
-  imports: [
-    NzIconDirective,
-    RouterLink
-  ],
-  templateUrl: './astras-logo.component.html',
-  styleUrl: './astras-logo.component.less'
+    selector: 'ats-astras-logo',
+    imports: [
+        NzIconDirective,
+        RouterLink
+    ],
+    templateUrl: './astras-logo.component.html',
+    styleUrl: './astras-logo.component.less'
 })
 export class AstrasLogoComponent {
   showNewYearIcon = NewYearHelper.showNewYearIcon;

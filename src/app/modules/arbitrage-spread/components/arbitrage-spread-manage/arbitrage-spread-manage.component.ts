@@ -33,9 +33,10 @@ const calculationFormulaValidator: ValidatorFn = (form) => {
 };
 
 @Component({
-  selector: 'ats-arbitrage-spread-manage',
-  templateUrl: './arbitrage-spread-manage.component.html',
-  styleUrls: ['./arbitrage-spread-manage.component.less']
+    selector: 'ats-arbitrage-spread-manage',
+    templateUrl: './arbitrage-spread-manage.component.html',
+    styleUrls: ['./arbitrage-spread-manage.component.less'],
+    standalone: false
 })
 export class ArbitrageSpreadManageComponent implements OnInit {
   @Input() spread?: ArbitrageSpread | null;

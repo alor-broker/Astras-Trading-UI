@@ -25,16 +25,17 @@ import { GeneralSettings } from "../../models/terminal-settings.model";
 import { TableRowHeight } from "../../../../shared/models/enums/table-row-height";
 
 @Component({
-  selector: 'ats-general-settings-form',
-  templateUrl: './general-settings-form.component.html',
-  styleUrls: ['./general-settings-form.component.less'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: GeneralSettingsFormComponent
-    }
-  ]
+    selector: 'ats-general-settings-form',
+    templateUrl: './general-settings-form.component.html',
+    styleUrls: ['./general-settings-form.component.less'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: GeneralSettingsFormComponent
+        }
+    ],
+    standalone: false
 })
 export class GeneralSettingsFormComponent extends ControlValueAccessorBaseComponent<GeneralSettings> implements OnInit {
   @Input() excludedSettings: string[] = [];

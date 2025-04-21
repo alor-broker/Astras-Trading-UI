@@ -33,9 +33,10 @@ export interface TableDataRow {
 }
 
 @Component({
-  selector: 'ats-infinite-scroll-table',
-  templateUrl: './infinite-scroll-table.component.html',
-  styleUrls: ['./infinite-scroll-table.component.less']
+    selector: 'ats-infinite-scroll-table',
+    templateUrl: './infinite-scroll-table.component.html',
+    styleUrls: ['./infinite-scroll-table.component.less'],
+    standalone: false
 })
 export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, OnInit {
   private tableData: TableDataRow[] = [];

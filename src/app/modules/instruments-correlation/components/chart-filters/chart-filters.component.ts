@@ -37,9 +37,10 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { mapWith } from "../../../../shared/utils/observable-helper";
 
 @Component({
-  selector: 'ats-chart-filters',
-  templateUrl: './chart-filters.component.html',
-  styleUrls: ['./chart-filters.component.less']
+    selector: 'ats-chart-filters',
+    templateUrl: './chart-filters.component.html',
+    styleUrls: ['./chart-filters.component.less'],
+    standalone: false
 })
 export class ChartFiltersComponent implements OnInit {
   @Input({ required: true })

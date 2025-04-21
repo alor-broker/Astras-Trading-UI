@@ -53,21 +53,20 @@ interface DisplayParams {
 }
 
 @Component({
-  selector: 'ats-market-trends',
-  standalone: true,
-  imports: [
-    TranslocoDirective,
-    LetDirective,
-    NzButtonComponent,
-    TruncatedTextComponent,
-    NgClass,
-    PercentPipe,
-    NzEmptyComponent,
-    NzSkeletonComponent,
-    NzIconDirective
-  ],
-  templateUrl: './market-trends.component.html',
-  styleUrl: './market-trends.component.less'
+    selector: 'ats-market-trends',
+    imports: [
+        TranslocoDirective,
+        LetDirective,
+        NzButtonComponent,
+        TruncatedTextComponent,
+        NgClass,
+        PercentPipe,
+        NzEmptyComponent,
+        NzSkeletonComponent,
+        NzIconDirective
+    ],
+    templateUrl: './market-trends.component.html',
+    styleUrl: './market-trends.component.less'
 })
 export class MarketTrendsComponent implements OnInit {
   @Input({required: true})

@@ -28,13 +28,12 @@ import {
 import { filter } from "rxjs/operators";
 
 @Component({
-  selector: 'ats-finance-bar-chart',
-  templateUrl: './finance-bar-chart.component.html',
-  styleUrls: ['./finance-bar-chart.component.less'],
-  imports: [
-    BaseChartDirective
-  ],
-  standalone: true
+    selector: 'ats-finance-bar-chart',
+    templateUrl: './finance-bar-chart.component.html',
+    styleUrls: ['./finance-bar-chart.component.less'],
+    imports: [
+        BaseChartDirective
+    ]
 })
 export class FinanceBarChartComponent implements OnInit, OnDestroy {
   yearChartOptions: ChartConfiguration['options'] = {

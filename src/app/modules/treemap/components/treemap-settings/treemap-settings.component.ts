@@ -15,9 +15,10 @@ import { NzMarks } from "ng-zorro-antd/slider";
 import { TreemapSettings } from "../../models/treemap.model";
 
 @Component({
-  selector: 'ats-treemap-settings',
-  templateUrl: './treemap-settings.component.html',
-  styleUrls: ['./treemap-settings.component.less']
+    selector: 'ats-treemap-settings',
+    templateUrl: './treemap-settings.component.html',
+    styleUrls: ['./treemap-settings.component.less'],
+    standalone: false
 })
 export class TreemapSettingsComponent extends WidgetSettingsBaseComponent<TreemapSettings> implements OnInit {
   readonly validation = {

@@ -8,14 +8,13 @@ import {
 } from "@angular/common";
 
 @Component({
-  selector: 'ats-merged-badge',
-  templateUrl: './merged-badge.component.html',
-  styleUrls: ['./merged-badge.component.less'],
-  imports: [
-    NgIf,
-    NgStyle
-  ],
-  standalone: true
+    selector: 'ats-merged-badge',
+    templateUrl: './merged-badge.component.html',
+    styleUrls: ['./merged-badge.component.less'],
+    imports: [
+        NgIf,
+        NgStyle
+    ]
 })
 export class MergedBadgeComponent {
   @Input()

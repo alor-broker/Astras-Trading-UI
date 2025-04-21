@@ -13,16 +13,17 @@ import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
 import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
 
 @Component({
-  selector: 'ats-instant-notifications-form',
-  templateUrl: './instant-notifications-form.component.html',
-  styleUrls: ['./instant-notifications-form.component.less'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: InstantNotificationsFormComponent
-    }
-  ]
+    selector: 'ats-instant-notifications-form',
+    templateUrl: './instant-notifications-form.component.html',
+    styleUrls: ['./instant-notifications-form.component.less'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: InstantNotificationsFormComponent
+        }
+    ],
+    standalone: false
 })
 export class InstantNotificationsFormComponent
 extends ControlValueAccessorBaseComponent<InstantNotificationsSettings>

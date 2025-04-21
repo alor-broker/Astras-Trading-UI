@@ -3,14 +3,13 @@ import {NzModalComponent, NzModalContentDirective} from "ng-zorro-antd/modal";
 import {NewsListItem} from "../../../../shared/services/news.service";
 
 @Component({
-  selector: 'ats-news-dialog',
-  templateUrl: './news-dialog.component.html',
-  styleUrls: ['./news-dialog.component.less'],
-  imports: [
-    NzModalComponent,
-    NzModalContentDirective
-  ],
-  standalone: true
+    selector: 'ats-news-dialog',
+    templateUrl: './news-dialog.component.html',
+    styleUrls: ['./news-dialog.component.less'],
+    imports: [
+        NzModalComponent,
+        NzModalContentDirective
+    ]
 })
 export class NewsDialogComponent {
   @Input({required: true})

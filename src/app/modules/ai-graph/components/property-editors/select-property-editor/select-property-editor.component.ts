@@ -10,21 +10,20 @@ import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
 import {NgForOf} from "@angular/common";
 
 @Component({
-  selector: 'ats-select-property-editor',
-  standalone: true,
-  imports: [
-    NzFormControlComponent,
-    NzFormDirective,
-    NzFormItemComponent,
-    NzFormLabelComponent,
-    ReactiveFormsModule,
-    TranslocoDirective,
-    NzSelectComponent,
-    NzOptionComponent,
-    NgForOf
-  ],
-  templateUrl: './select-property-editor.component.html',
-  styleUrl: './select-property-editor.component.less'
+    selector: 'ats-select-property-editor',
+    imports: [
+        NzFormControlComponent,
+        NzFormDirective,
+        NzFormItemComponent,
+        NzFormLabelComponent,
+        ReactiveFormsModule,
+        TranslocoDirective,
+        NzSelectComponent,
+        NzOptionComponent,
+        NgForOf
+    ],
+    templateUrl: './select-property-editor.component.html',
+    styleUrl: './select-property-editor.component.less'
 })
 export class SelectPropertyEditorComponent extends PropertyEditorBaseComponent<SelectPropertyEditorConfig> implements OnChanges {
   protected readonly form = this.formBuilder.group({

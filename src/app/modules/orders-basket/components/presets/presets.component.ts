@@ -9,9 +9,10 @@ import {
 import { DataPreset } from "../../models/orders-basket-settings.model";
 
 @Component({
-  selector: 'ats-presets',
-  templateUrl: './presets.component.html',
-  styleUrls: ['./presets.component.less']
+    selector: 'ats-presets',
+    templateUrl: './presets.component.html',
+    styleUrls: ['./presets.component.less'],
+    standalone: false
 })
 export class PresetsComponent {
   @ViewChild('inputElement', { static: false })

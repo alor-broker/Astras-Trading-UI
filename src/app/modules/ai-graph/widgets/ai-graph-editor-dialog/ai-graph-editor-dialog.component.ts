@@ -8,17 +8,16 @@ import {LetDirective} from "@ngrx/component";
 import {GraphEditorComponent} from "../../components/graph-editor/graph-editor.component";
 
 @Component({
-  selector: 'ats-ai-graph-editor-dialog',
-  standalone: true,
-  imports: [
-    TranslocoDirective,
-    NzModalComponent,
-    NzModalContentDirective,
-    LetDirective,
-    GraphEditorComponent
-  ],
-  templateUrl: './ai-graph-editor-dialog.component.html',
-  styleUrl: './ai-graph-editor-dialog.component.less'
+    selector: 'ats-ai-graph-editor-dialog',
+    imports: [
+        TranslocoDirective,
+        NzModalComponent,
+        NzModalContentDirective,
+        LetDirective,
+        GraphEditorComponent
+    ],
+    templateUrl: './ai-graph-editor-dialog.component.html',
+    styleUrl: './ai-graph-editor-dialog.component.less'
 })
 export class AiGraphEditorDialogComponent implements OnInit, OnDestroy {
   targetGraph$!: Observable<Graph | null>;

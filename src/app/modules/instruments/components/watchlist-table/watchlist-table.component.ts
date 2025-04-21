@@ -88,10 +88,10 @@ interface DisplayWatchlist extends Omit<Watchlist, 'items'> {
 type SortFn = (a: WatchedInstrument, b: WatchedInstrument) => number;
 
 @Component({
-  selector: 'ats-watchlist-table',
-  templateUrl: './watchlist-table.component.html',
-  styleUrls: ['./watchlist-table.component.less'],
-
+    selector: 'ats-watchlist-table',
+    templateUrl: './watchlist-table.component.html',
+    styleUrls: ['./watchlist-table.component.less'],
+    standalone: false
 })
 export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist>
   implements OnInit, OnDestroy {

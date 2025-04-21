@@ -7,9 +7,10 @@ import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-comm
 import { ModifierKeys } from "../../models/scalper-command";
 
 @Component({
-  selector: 'ats-modifiers-indicator',
-  templateUrl: './modifiers-indicator.component.html',
-  styleUrls: ['./modifiers-indicator.component.less']
+    selector: 'ats-modifiers-indicator',
+    templateUrl: './modifiers-indicator.component.html',
+    styleUrls: ['./modifiers-indicator.component.less'],
+    standalone: false
 })
 export class ModifiersIndicatorComponent implements OnInit {
   modifierKeyPressed$!: Observable<ModifierKeys>;

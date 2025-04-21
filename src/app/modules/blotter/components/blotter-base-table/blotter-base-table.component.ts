@@ -33,7 +33,8 @@ export interface NzTableFilterListItem {
 }
 
 @Component({
-  template: ''
+    template: '',
+    standalone: false
 })
 export abstract class BlotterBaseTableComponent<T extends { id: string }, F extends object>
 extends BaseTableComponent<T, F>

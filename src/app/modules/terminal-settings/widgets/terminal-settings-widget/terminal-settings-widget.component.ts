@@ -13,20 +13,19 @@ import {AsyncPipe, NgIf} from "@angular/common";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 
 @Component({
-  selector: 'ats-terminal-settings-widget',
-  templateUrl: './terminal-settings-widget.component.html',
-  styleUrls: ['./terminal-settings-widget.component.less'],
-  imports: [
-    NzModalComponent,
-    TranslocoDirective,
-    TerminalSettingsModule,
-    AsyncPipe,
-    NzModalFooterDirective,
-    NgIf,
-    NzModalContentDirective,
-    NzButtonComponent
-  ],
-  standalone: true
+    selector: 'ats-terminal-settings-widget',
+    templateUrl: './terminal-settings-widget.component.html',
+    styleUrls: ['./terminal-settings-widget.component.less'],
+    imports: [
+        NzModalComponent,
+        TranslocoDirective,
+        TerminalSettingsModule,
+        AsyncPipe,
+        NzModalFooterDirective,
+        NgIf,
+        NzModalContentDirective,
+        NzButtonComponent
+    ]
 })
 export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
   @Input()

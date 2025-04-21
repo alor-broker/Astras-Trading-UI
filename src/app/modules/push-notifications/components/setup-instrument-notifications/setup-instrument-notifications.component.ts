@@ -33,9 +33,10 @@ import { CommonParametersService } from "../../../order-commands/services/common
 import { QuotesService } from "../../../../shared/services/quotes.service";
 
 @Component({
-  selector: 'ats-setup-instrument-notifications',
-  templateUrl: './setup-instrument-notifications.component.html',
-  styleUrls: ['./setup-instrument-notifications.component.less']
+    selector: 'ats-setup-instrument-notifications',
+    templateUrl: './setup-instrument-notifications.component.html',
+    styleUrls: ['./setup-instrument-notifications.component.less'],
+    standalone: false
 })
 export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy {
   isNotificationsAllowed$!: Observable<boolean>;

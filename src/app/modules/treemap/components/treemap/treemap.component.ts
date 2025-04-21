@@ -82,9 +82,10 @@ interface TooltipData {
 }
 
 @Component({
-  selector: 'ats-treemap',
-  templateUrl: './treemap.component.html',
-  styleUrls: ['./treemap.component.less']
+    selector: 'ats-treemap',
+    templateUrl: './treemap.component.html',
+    styleUrls: ['./treemap.component.less'],
+    standalone: false
 })
 export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('treemapWrapper') treemapWrapperEl?: ElementRef<HTMLDivElement>;

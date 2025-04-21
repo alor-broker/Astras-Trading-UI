@@ -11,9 +11,10 @@ import { DeviceInfo } from "../../../../shared/models/device-info.model";
 import { DeviceService } from "../../../../shared/services/device.service";
 
 @Component({
-  selector: 'ats-option-board-widget',
-  templateUrl: './option-board-widget.component.html',
-  styleUrls: ['./option-board-widget.component.less']
+    selector: 'ats-option-board-widget',
+    templateUrl: './option-board-widget.component.html',
+    styleUrls: ['./option-board-widget.component.less'],
+    standalone: false
 })
 export class OptionBoardWidgetComponent implements OnInit {
   shouldShowSettings = false;

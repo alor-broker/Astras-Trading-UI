@@ -14,9 +14,10 @@ import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 @Component({
-  selector: 'ats-bond-screener-widget',
-  templateUrl: './bond-screener-widget.component.html',
-  styleUrls: ['./bond-screener-widget.component.less']
+    selector: 'ats-bond-screener-widget',
+    templateUrl: './bond-screener-widget.component.html',
+    styleUrls: ['./bond-screener-widget.component.less'],
+    standalone: false
 })
 export class BondScreenerWidgetComponent implements OnInit {
   shouldShowSettings = false;

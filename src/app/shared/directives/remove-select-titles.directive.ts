@@ -9,7 +9,8 @@ import { Observable } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Directive({
-  selector: 'nz-select[atsRemoveSelectTitles]'
+    selector: 'nz-select[atsRemoveSelectTitles]',
+    standalone: false
 })
 export class RemoveSelectTitlesDirective implements AfterViewInit {
   @Input() valueChanges?: Observable<any>;

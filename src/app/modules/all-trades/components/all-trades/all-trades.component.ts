@@ -45,9 +45,10 @@ import {
 import { toInstrumentKey } from "../../../../shared/utils/instruments";
 
 @Component({
-  selector: 'ats-all-trades',
-  templateUrl: './all-trades.component.html',
-  styleUrls: ['./all-trades.component.less'],
+    selector: 'ats-all-trades',
+    templateUrl: './all-trades.component.html',
+    styleUrls: ['./all-trades.component.less'],
+    standalone: false
 })
 export class AllTradesComponent extends LazyLoadingBaseTableComponent<
     AllTradesItem,

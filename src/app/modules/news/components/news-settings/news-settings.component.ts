@@ -15,9 +15,10 @@ import {
 import { NzMarks } from "ng-zorro-antd/slider";
 
 @Component({
-  selector: 'ats-news-settings',
-  templateUrl: './news-settings.component.html',
-  styleUrls: ['./news-settings.component.less']
+    selector: 'ats-news-settings',
+    templateUrl: './news-settings.component.html',
+    styleUrls: ['./news-settings.component.less'],
+    standalone: false
 })
 export class NewsSettingsComponent extends WidgetSettingsBaseComponent<NewsSettings> implements OnInit {
   readonly validation = {

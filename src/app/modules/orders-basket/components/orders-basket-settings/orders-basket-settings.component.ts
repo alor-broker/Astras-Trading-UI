@@ -14,9 +14,10 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
 import { FormBuilder } from "@angular/forms";
 
 @Component({
-  selector: 'ats-orders-basket-settings',
-  templateUrl: './orders-basket-settings.component.html',
-  styleUrls: ['./orders-basket-settings.component.less']
+    selector: 'ats-orders-basket-settings',
+    templateUrl: './orders-basket-settings.component.html',
+    styleUrls: ['./orders-basket-settings.component.less'],
+    standalone: false
 })
 export class OrdersBasketSettingsComponent extends WidgetSettingsBaseComponent<OrdersBasketSettings> implements OnInit {
   @Input({ required: true })

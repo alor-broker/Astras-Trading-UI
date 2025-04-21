@@ -15,18 +15,17 @@ import { NzEmptyComponent } from "ng-zorro-antd/empty";
 import { TranslocoDirective } from "@jsverse/transloco";
 
 @Component({
-  selector: 'ats-dividends',
-  templateUrl: './dividends.component.html',
-  styleUrls: ['./dividends.component.less'],
-  imports: [
-    NzTableModule,
-    TableRowHeightDirective,
-    CurrencyPipe,
-    PercentPipe,
-    NzEmptyComponent,
-    TranslocoDirective
-  ],
-  standalone: true
+    selector: 'ats-dividends',
+    templateUrl: './dividends.component.html',
+    styleUrls: ['./dividends.component.less'],
+    imports: [
+        NzTableModule,
+        TableRowHeightDirective,
+        CurrencyPipe,
+        PercentPipe,
+        NzEmptyComponent,
+        TranslocoDirective
+    ]
 })
 export class DividendsComponent {
   @Input({required: true})

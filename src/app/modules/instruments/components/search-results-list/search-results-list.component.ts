@@ -40,29 +40,28 @@ import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
 import { TranslocoDirective } from "@jsverse/transloco";
 
 @Component({
-  selector: 'ats-search-results-list',
-  standalone: true,
-  imports: [
-    NzRowDirective,
-    NzColDirective,
-    CdkVirtualScrollViewport,
-    CdkVirtualForOf,
-    CdkFixedSizeVirtualScroll,
-    TruncatedTextComponent,
-    NzButtonComponent,
-    NzIconDirective,
-    InstrumentBadgeDisplayComponent,
-    LetDirective,
-    NzDropDownDirective,
-    NzDropdownMenuComponent,
-    NzMenuDirective,
-    NzMenuItemComponent,
-    NzTooltipDirective,
-    TranslocoDirective
-  ],
-  templateUrl: './search-results-list.component.html',
-  styleUrl: './search-results-list.component.less',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-search-results-list',
+    imports: [
+        NzRowDirective,
+        NzColDirective,
+        CdkVirtualScrollViewport,
+        CdkVirtualForOf,
+        CdkFixedSizeVirtualScroll,
+        TruncatedTextComponent,
+        NzButtonComponent,
+        NzIconDirective,
+        InstrumentBadgeDisplayComponent,
+        LetDirective,
+        NzDropDownDirective,
+        NzDropdownMenuComponent,
+        NzMenuDirective,
+        NzMenuItemComponent,
+        NzTooltipDirective,
+        TranslocoDirective
+    ],
+    templateUrl: './search-results-list.component.html',
+    styleUrl: './search-results-list.component.less',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchResultsListComponent implements OnInit {
   @Input({required: true})

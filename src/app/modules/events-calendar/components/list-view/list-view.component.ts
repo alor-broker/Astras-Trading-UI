@@ -31,9 +31,10 @@ import {
 } from "../../../../shared/services/actions-context";
 
 @Component({
-  selector: 'ats-list-view',
-  templateUrl: './list-view.component.html',
-  styleUrls: ['./list-view.component.less']
+    selector: 'ats-list-view',
+    templateUrl: './list-view.component.html',
+    styleUrls: ['./list-view.component.less'],
+    standalone: false
 })
 export class ListViewComponent implements OnInit, OnDestroy {
   private readonly symbols$ = new BehaviorSubject<string[]>([]);

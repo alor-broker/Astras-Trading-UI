@@ -11,7 +11,8 @@ import {OrderFormState} from "../../models/order-form.model";
 import { Order } from "../../../../shared/models/orders/order.model";
 
 @Component({
-  template: ''
+    template: '',
+    standalone: false
 })
 export abstract class BaseEditOrderFormComponent implements OnDestroy {
   formInstrument$!: Observable<Instrument>;

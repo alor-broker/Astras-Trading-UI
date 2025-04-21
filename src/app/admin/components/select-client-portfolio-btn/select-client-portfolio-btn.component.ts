@@ -23,20 +23,19 @@ import {Store} from "@ngrx/store";
 import {Exchange} from "../../../../generated/graphql.types";
 
 @Component({
-  selector: 'ats-select-client-portfolio-btn',
-  standalone: true,
-  imports: [
-    NzButtonComponent,
-    TranslocoDirective,
-    AsyncPipe,
-    LetDirective,
-    NzTypographyComponent,
-    SearchClientPortfolioDialogComponent,
-    NzIconDirective,
-  ],
-  templateUrl: './select-client-portfolio-btn.component.html',
-  styleUrl: './select-client-portfolio-btn.component.less',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-select-client-portfolio-btn',
+    imports: [
+        NzButtonComponent,
+        TranslocoDirective,
+        AsyncPipe,
+        LetDirective,
+        NzTypographyComponent,
+        SearchClientPortfolioDialogComponent,
+        NzIconDirective,
+    ],
+    templateUrl: './select-client-portfolio-btn.component.html',
+    styleUrl: './select-client-portfolio-btn.component.less',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SelectClientPortfolioBtnComponent implements OnInit, OnDestroy {
   readonly selectedPortfolio$ = new BehaviorSubject<PortfolioKey | null>(null);

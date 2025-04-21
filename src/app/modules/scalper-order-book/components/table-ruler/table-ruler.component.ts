@@ -38,9 +38,10 @@ interface MarkerDisplay {
 }
 
 @Component({
-  selector: 'ats-table-ruler',
-  templateUrl: './table-ruler.component.html',
-  styleUrls: ['./table-ruler.component.less']
+    selector: 'ats-table-ruler',
+    templateUrl: './table-ruler.component.html',
+    styleUrls: ['./table-ruler.component.less'],
+    standalone: false
 })
 export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('marker')

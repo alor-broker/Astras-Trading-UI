@@ -19,9 +19,10 @@ import { filter } from "rxjs/operators";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-timeframes-panel',
-  templateUrl: './timeframes-panel.component.html',
-  styleUrls: ['./timeframes-panel.component.less']
+    selector: 'ats-timeframes-panel',
+    templateUrl: './timeframes-panel.component.html',
+    styleUrls: ['./timeframes-panel.component.less'],
+    standalone: false
 })
 export class TimeframesPanelComponent implements OnDestroy, OnInit, OnChanges {
   @Input({ required: true })

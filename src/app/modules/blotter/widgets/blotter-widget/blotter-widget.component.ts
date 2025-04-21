@@ -41,12 +41,13 @@ import {
 } from "../../../push-notifications/services/push-notifications-config";
 
 @Component({
-  selector: 'ats-blotter-widget',
-  templateUrl: './blotter-widget.component.html',
-  styleUrls: ['./blotter-widget.component.less'],
-  providers: [
-    BlotterService
-  ]
+    selector: 'ats-blotter-widget',
+    templateUrl: './blotter-widget.component.html',
+    styleUrls: ['./blotter-widget.component.less'],
+    providers: [
+        BlotterService
+    ],
+    standalone: false
 })
 export class BlotterWidgetComponent implements OnInit, OnDestroy {
   readonly marketTypes = MarketType;

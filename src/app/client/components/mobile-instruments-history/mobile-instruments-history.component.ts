@@ -16,17 +16,16 @@ interface InstrumentKeyViewData extends InstrumentKey {
 }
 
 @Component({
-  selector: 'ats-mobile-instruments-history',
-  templateUrl: './mobile-instruments-history.component.html',
-  styleUrls: ['./mobile-instruments-history.component.less'],
-  imports: [
-    NgIf,
-    AsyncPipe,
-    NzTagComponent,
-    NgForOf,
-    TranslocoDirective
-  ],
-  standalone: true
+    selector: 'ats-mobile-instruments-history',
+    templateUrl: './mobile-instruments-history.component.html',
+    styleUrls: ['./mobile-instruments-history.component.less'],
+    imports: [
+        NgIf,
+        AsyncPipe,
+        NzTagComponent,
+        NgForOf,
+        TranslocoDirective
+    ]
 })
 export class MobileInstrumentsHistoryComponent implements OnInit {
   instruments$!: Observable<InstrumentKeyViewData[] | undefined>;

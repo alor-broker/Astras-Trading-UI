@@ -27,27 +27,26 @@ import {NzFormControlComponent, NzFormDirective, NzFormItemComponent} from "ng-z
 import {NzInputDirective} from "ng-zorro-antd/input";
 
 @Component({
-  selector: 'ats-select-dashboard-menu',
-  templateUrl: './select-dashboard-menu.component.html',
-  styleUrls: ['./select-dashboard-menu.component.less'],
-  imports: [
-    TranslocoDirective,
-    NgIf,
-    AsyncPipe,
-    NzMenuDirective,
-    NgForOf,
-    NzMenuItemComponent,
-    EditableStringComponent,
-    NzButtonComponent,
-    NzIconDirective,
-    NzMenuDividerDirective,
-    ReactiveFormsModule,
-    NzFormDirective,
-    NzFormItemComponent,
-    NzFormControlComponent,
-    NzInputDirective
-  ],
-  standalone: true
+    selector: 'ats-select-dashboard-menu',
+    templateUrl: './select-dashboard-menu.component.html',
+    styleUrls: ['./select-dashboard-menu.component.less'],
+    imports: [
+        TranslocoDirective,
+        NgIf,
+        AsyncPipe,
+        NzMenuDirective,
+        NgForOf,
+        NzMenuItemComponent,
+        EditableStringComponent,
+        NzButtonComponent,
+        NzIconDirective,
+        NzMenuDividerDirective,
+        ReactiveFormsModule,
+        NzFormDirective,
+        NzFormItemComponent,
+        NzFormControlComponent,
+        NzInputDirective
+    ]
 })
 export class SelectDashboardMenuComponent implements OnInit {
   readonly validationOptions = {

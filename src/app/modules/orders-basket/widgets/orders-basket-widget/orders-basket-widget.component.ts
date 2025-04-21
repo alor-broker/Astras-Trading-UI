@@ -15,9 +15,10 @@ import {TerminalSettingsService} from "../../../../shared/services/terminal-sett
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
-  selector: 'ats-orders-basket-widget',
-  templateUrl: './orders-basket-widget.component.html',
-  styleUrls: ['./orders-basket-widget.component.less']
+    selector: 'ats-orders-basket-widget',
+    templateUrl: './orders-basket-widget.component.html',
+    styleUrls: ['./orders-basket-widget.component.less'],
+    standalone: false
 })
 export class OrdersBasketWidgetComponent implements OnInit {
   @Input({required: true})

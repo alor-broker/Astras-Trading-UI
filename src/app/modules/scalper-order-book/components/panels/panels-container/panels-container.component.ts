@@ -30,15 +30,16 @@ export interface ResizedEvent {
 }
 
 @Component({
-  selector: 'ats-panels-container',
-  templateUrl: './panels-container.component.html',
-  styleUrls: ['./panels-container.component.less'],
-  providers: [
-    {
-      provide: PANELS_CONTAINER_CONTEXT,
-      useExisting: PanelsContainerComponent
-    }
-  ]
+    selector: 'ats-panels-container',
+    templateUrl: './panels-container.component.html',
+    styleUrls: ['./panels-container.component.less'],
+    providers: [
+        {
+            provide: PANELS_CONTAINER_CONTEXT,
+            useExisting: PanelsContainerComponent
+        }
+    ],
+    standalone: false
 })
 export class PanelsContainerComponent implements PanelsContainerContext, AfterViewInit, OnDestroy {
   @ContentChildren(PanelComponent, { emitDistinctChangesOnly: true })

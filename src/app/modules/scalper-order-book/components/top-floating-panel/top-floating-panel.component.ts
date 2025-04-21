@@ -22,9 +22,10 @@ import { ScalperOrderBookDataProvider } from "../../services/scalper-order-book-
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 
 @Component({
-  selector: 'ats-top-floating-panel',
-  templateUrl: './top-floating-panel.component.html',
-  styleUrls: ['./top-floating-panel.component.less']
+    selector: 'ats-top-floating-panel',
+    templateUrl: './top-floating-panel.component.html',
+    styleUrls: ['./top-floating-panel.component.less'],
+    standalone: false
 })
 export class TopFloatingPanelComponent implements OnInit {
   @Input({ required: true })
