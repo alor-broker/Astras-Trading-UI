@@ -25,8 +25,7 @@ import {AsyncPipe, NgIf, NgTemplateOutlet} from "@angular/common";
         NzMenuDirective,
         NgTemplateOutlet,
         NzMenuItemComponent,
-        AsyncPipe,
-        NgIf
+        AsyncPipe
     ],
     styleUrl: './admin-profile-menu-nav-btn.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush

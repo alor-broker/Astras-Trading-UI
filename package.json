@@ -16,7 +16,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^19.2.7",
-    "@angular/cdk": "^19.2.10",
+    "@angular/cdk": "^19.2.7",
     "@angular/common": "^19.2.7",
     "@angular/compiler": "^19.2.7",
     "@angular/core": "^19.2.7",
@@ -47,7 +47,7 @@
     "graphql": "^16.9.0",
     "json-patch": "^0.7.0",
     "lightweight-charts": "^4.2.0",
-    "ng-zorro-antd": "18.2.1",
+    "ng-zorro-antd": "19.2.1",
     "ng2-charts": "^6.0.0",
     "ngx-device-detector": "^8.0.0",
     "ngx-joyride": "^2.5.0",

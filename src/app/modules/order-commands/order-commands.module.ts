@@ -24,7 +24,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { SharedModule } from "../../shared/shared.module";
 import { OrderSubmitWidgetComponent } from './widgets/order-submit-widget/order-submit-widget.component';
 import { OrderSubmitSettingsComponent } from "./components/order-submit-settings/order-submit-settings.component";
-import { NzInputNumberModule } from "ng-zorro-antd/input-number";
+import { NzInputNumberLegacyModule } from "ng-zorro-antd/input-number-legacy";
 import { WorkingVolumesComponent } from "./components/working-volumes/working-volumes.component";
 import {
   LimitOrderPriceChangeComponent
@@ -80,7 +80,7 @@ import { InstrumentSearchComponent } from "../../shared/components/instrument-se
     NzFormModule,
     ReactiveFormsModule,
     SharedModule,
-    NzInputNumberModule,
+    NzInputNumberLegacyModule,
     NzResizeObserverModule,
     LetDirective,
     InputNumberComponent,

@@ -9,7 +9,6 @@ import {
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {BehaviorSubject, combineLatest, take} from 'rxjs';
-import {AsyncPipe} from '@angular/common';
 import {LetDirective} from '@ngrx/component';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {
@@ -27,7 +26,6 @@ import {Exchange} from "../../../../generated/graphql.types";
     imports: [
         NzButtonComponent,
         TranslocoDirective,
-        AsyncPipe,
         LetDirective,
         NzTypographyComponent,
         SearchClientPortfolioDialogComponent,

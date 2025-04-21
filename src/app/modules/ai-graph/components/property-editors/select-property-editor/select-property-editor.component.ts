@@ -19,8 +19,7 @@ import {NgForOf} from "@angular/common";
         ReactiveFormsModule,
         TranslocoDirective,
         NzSelectComponent,
-        NzOptionComponent,
-        NgForOf
+        NzOptionComponent
     ],
     templateUrl: './select-property-editor.component.html',
     styleUrl: './select-property-editor.component.less'

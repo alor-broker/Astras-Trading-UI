@@ -35,7 +35,6 @@ import {ExternalLinkComponent} from "../../../shared/components/external-link/ex
 @Component({
     selector: 'ats-select-portfolio-menu-nav-btn',
     imports: [
-        AsyncPipe,
         FormsModule,
         JoyrideModule,
         KeyValuePipe,
