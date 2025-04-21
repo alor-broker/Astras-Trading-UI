@@ -135,7 +135,7 @@
                       max: validationOptions.autoAlignIntervalSec.max
                       })"
                     >
-                      <ats-input-number formControlName="autoAlignIntervalSec" [allowDecimal]="false"></ats-input-number>
+                      <ats-input-number formControlName="autoAlignIntervalSec" [allowDecimal]="true" [step]="0.1"></ats-input-number>
                     </nz-form-control>
                   </nz-form-item>
                 </nz-collapse-panel>
