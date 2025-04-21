@@ -142,8 +142,8 @@ importers:
         specifier: ^19.2.7
         version: 19.2.7(@angular/compiler@19.2.7)(typescript@5.5.4)
       '@ant-design/icons-angular':
-        specifier: ^18.0.0
-        version: 18.0.0(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(@angular/platform-browser@19.2.7(@angular/animations@19.2.7(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0)))(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0)))(rxjs@7.8.2)
+        specifier: ^19.0.0
+        version: 19.0.0(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(@angular/platform-browser@19.2.7(@angular/animations@19.2.7(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0)))(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0)))(rxjs@7.8.2)
       '@graphql-codegen/add':
         specifier: ^5.0.2
         version: 5.0.3(graphql@16.10.0)
@@ -496,14 +496,6 @@ packages:
   '@ant-design/fast-color@2.0.6':
     resolution: {integrity: sha512-y2217gk4NqL35giHl72o6Zzqji9O7vHh9YmhUVkPtAOpoTCH4uWxo/pr4VE8t0+ChEPs0qo4eJRC5Q1eXWo3vA==}
     engines: {node: '>=8.x'}
-
-  '@ant-design/icons-angular@18.0.0':
-    resolution: {integrity: sha512-nxNtHKd7MyGNnEyv22NK5hZ/Pczp63XJfej9zPjxiXm0wvJeIdMNUPOKtsdVkyPTRjRGHGe7F9M0Gv9SmyIjrQ==}
-    peerDependencies:
-      '@angular/common': ^18.0.0
-      '@angular/core': ^18.0.0
-      '@angular/platform-browser': ^18.0.0
-      rxjs: ^6.4.0 || ^7.4.0
 
   '@ant-design/icons-angular@19.0.0':
     resolution: {integrity: sha512-bBWFA1cTZwLAFTgpozkeNIHX1nXyZuiUaRzTcAfFEt85eW1X3ypMcBfS/XEVVVzkdTw5Td+E1vwzgfuUlKiYSA==}
@@ -6912,15 +6904,6 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.27.0
 
-  '@ant-design/icons-angular@18.0.0(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(@angular/platform-browser@19.2.7(@angular/animations@19.2.7(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0)))(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0)))(rxjs@7.8.2)':
-    dependencies:
-      '@angular/common': 19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2)
-      '@angular/core': 19.2.7(rxjs@7.8.2)(zone.js@0.15.0)
-      '@angular/platform-browser': 19.2.7(@angular/animations@19.2.7(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0)))(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))
-      '@ant-design/colors': 7.2.0
-      rxjs: 7.8.2
-      tslib: 2.8.1
-
   '@ant-design/icons-angular@19.0.0(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(@angular/platform-browser@19.2.7(@angular/animations@19.2.7(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0)))(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0)))(rxjs@7.8.2)':
     dependencies:
       '@angular/common': 19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2)
@@ -12776,7 +12759,7 @@ snapshots:
 
   regenerator-transform@0.15.2:
     dependencies:
-      '@babel/runtime': 7.26.10
+      '@babel/runtime': 7.27.0
 
   regex-parser@2.3.1: {}
 
