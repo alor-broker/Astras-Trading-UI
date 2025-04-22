@@ -78,7 +78,7 @@
     "@types/node": "^22.14.1",
     "angular-eslint": "^19.3.0",
     "eslint": "^9.25.1",
-    "graphql-codegen-typescript-validation-schema": "^0.16.0",
+    "graphql-codegen-typescript-validation-schema": "^0.17.1",
     "husky": "^9.1.4",
     "jasmine-core": "~5.2.0",
     "karma": "~6.4.4",

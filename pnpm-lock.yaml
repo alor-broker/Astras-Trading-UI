@@ -190,11 +190,11 @@ importers:
         specifier: ^19.3.0
         version: 19.3.0(chokidar@4.0.3)(eslint@9.25.1(jiti@2.4.2))(typescript-eslint@8.31.0(eslint@9.25.1(jiti@2.4.2))(typescript@5.5.4))(typescript@5.5.4)
       eslint:
-        specifier: ^9.8.0
+        specifier: ^9.25.1
         version: 9.25.1(jiti@2.4.2)
       graphql-codegen-typescript-validation-schema:
-        specifier: ^0.16.0
-        version: 0.16.1(encoding@0.1.13)(graphql@16.10.0)
+        specifier: ^0.17.1
+        version: 0.17.1(encoding@0.1.13)(graphql@16.10.0)
       husky:
         specifier: ^9.1.4
         version: 9.1.7
@@ -4078,8 +4078,8 @@ packages:
   graphlib@2.1.8:
     resolution: {integrity: sha512-jcLLfkpoVGmH7/InMC/1hIvOPSUh38oJtGhvrOFGzioE1DZ+0YW16RgmOJhHiuWTvGiJQ9Z1Ik43JvkRPRvE+A==}
 
-  graphql-codegen-typescript-validation-schema@0.16.1:
-    resolution: {integrity: sha512-S8uNJEYUJBB0J3s3uzdbNON0PJSfdcU225rAhDYt1XrD9KKum2LIjG9qpQ8MSxk6mnPSk3MK71uYzs6B2pAj+w==}
+  graphql-codegen-typescript-validation-schema@0.17.1:
+    resolution: {integrity: sha512-OEpX6iuo+mEJrfI/GoGwIs5qr3Gv2go+VzxSyIPtVI2ix5akZlukcOcZmk5gTEBytdVKROAxkYP2qravaQZN6w==}
     peerDependencies:
       graphql: ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
 
@@ -11139,7 +11139,7 @@ snapshots:
     dependencies:
       lodash: 4.17.21
 
-  graphql-codegen-typescript-validation-schema@0.16.1(encoding@0.1.13)(graphql@16.10.0):
+  graphql-codegen-typescript-validation-schema@0.17.1(encoding@0.1.13)(graphql@16.10.0):
     dependencies:
       '@graphql-codegen/plugin-helpers': 5.1.0(graphql@16.10.0)
       '@graphql-codegen/schema-ast': 4.1.0(graphql@16.10.0)
