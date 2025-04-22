@@ -42,7 +42,7 @@
     "chartjs-chart-treemap": "^3.1.0",
     "d3": "^7.9.0",
     "date-fns": "^4.1.0",
-    "firebase": "^11.1.0",
+    "firebase": "11.6.0",
     "gql-query-builder": "^3.8.0",
     "graphql": "^16.9.0",
     "json-patch": "^0.7.0",

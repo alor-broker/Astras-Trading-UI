@@ -90,7 +90,7 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       firebase:
-        specifier: ^11.1.0
+        specifier: 11.6.0
         version: 11.6.0
       gql-query-builder:
         specifier: ^3.8.0
