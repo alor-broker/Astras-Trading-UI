@@ -102,8 +102,8 @@ importers:
         specifier: ^0.7.0
         version: 0.7.0
       lightweight-charts:
-        specifier: ^4.2.0
-        version: 4.2.3
+        specifier: ^5.0.6
+        version: 5.0.6
       ng-zorro-antd:
         specifier: 19.2.1
         version: 19.2.1(v2defuiot6mg377hxw2guykmf4)
@@ -4674,8 +4674,8 @@ packages:
       webpack:
         optional: true
 
-  lightweight-charts@4.2.3:
-    resolution: {integrity: sha512-5kS/2hY3wNYNzhnS8Gb+GAS07DX8GPF2YVDnd2NMC85gJVQ6RLU6YrXNgNJ6eg0AnWPwCnvaGtYmGky3HiLQEw==}
+  lightweight-charts@5.0.6:
+    resolution: {integrity: sha512-A7mkToJ3ZPecKkWWM5afN5PZUUf5BlQ+UgcYbWuSlpe1V18n61ahtbtToCSIL0VpSgE5sQPJ/k+/ieQ7/FJe+Q==}
 
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
@@ -11799,7 +11799,7 @@ snapshots:
     optionalDependencies:
       webpack: 5.98.0(esbuild@0.25.1)
 
-  lightweight-charts@4.2.3:
+  lightweight-charts@5.0.6:
     dependencies:
       fancy-canvas: 2.1.0
 

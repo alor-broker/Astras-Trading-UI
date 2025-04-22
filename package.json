@@ -46,7 +46,7 @@
     "gql-query-builder": "^3.8.0",
     "graphql": "^16.10.0",
     "json-patch": "^0.7.0",
-    "lightweight-charts": "^4.2.0",
+    "lightweight-charts": "^5.0.6",
     "ng-zorro-antd": "19.2.1",
     "ng2-charts": "^6.0.0",
     "ngx-device-detector": "^8.0.0",
