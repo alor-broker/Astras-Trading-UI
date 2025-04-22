@@ -97,7 +97,7 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
       debounceTime(50), // used to prevent animation error
       map((dashboards) => {
           const options: DashboardSegmentedOption[] = dashboards
-            .filter(d => d.isFavorite)
+            .filter(d => d.isFavorite ?? false)
             .sort((a, b) => (a.favoritesOrder ?? 0) - (b.favoritesOrder ?? 0))
             .map(d => ({
               value: d.guid,
@@ -137,7 +137,7 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(([dashboards, lastSelection]) => {
-        const selectedDashboard = dashboards.find((d: Dashboard) => d.isSelected);
+        const selectedDashboard = dashboards.find((d: Dashboard) => d.isSelected ?? false);
         const isFavorite = (dashboard: Dashboard): boolean => {
           return dashboard.isFavorite ?? false;
         };

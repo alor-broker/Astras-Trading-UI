@@ -281,8 +281,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   private initTooltipDataStream(): void {
-    if (!this.tooltipData$) {
-      this.tooltipData$ = this.newTooltip$
+    this.tooltipData$ ??= this.newTooltip$
         .pipe(
           takeUntilDestroyed(this.destroy),
           filter((tr): tr is TooltipModelRaw[] => tr != null && tr.length > 0),
@@ -335,7 +334,6 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
               );
           })
         );
-    }
   }
 
   getMinValue(...args: number[]): number {

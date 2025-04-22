@@ -61,7 +61,7 @@ export class SearchFilterComponent implements OnChanges, OnDestroy {
   }
 
   reset(): void {
-    const activeCol = this.columns.find(col => col.filterData?.isOpenedFilter);
+    const activeCol = this.columns.find(col => col.filterData?.isOpenedFilter ?? false);
     this.filtersForm?.get(activeCol!.id)?.reset();
   }
 

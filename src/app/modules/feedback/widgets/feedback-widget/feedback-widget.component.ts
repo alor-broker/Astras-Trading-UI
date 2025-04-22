@@ -104,7 +104,7 @@ export class FeedbackWidgetComponent implements OnInit {
 
   checkAskComment(): void {
     this.askComment = this.form.value.rating != null
-    && this.form.value.rating < this.maxStarsCount
-    && (this.form.value.comment ?? '').length === 0;
+      && this.form.value.rating < this.maxStarsCount
+      && (this.form.value.comment ?? '').length === 0;
   }
 }

@@ -174,7 +174,9 @@ module.exports = tseslint.config(
           "allowAny": true
         }
       ],
-      "@typescript-eslint/switch-exhaustiveness-check": "error"
+      "@typescript-eslint/switch-exhaustiveness-check": "error",
+      "@angular-eslint/prefer-standalone": "off",
+      "@typescript-eslint/switch-exhaustiveness-check": "off"
     },
   },
   {

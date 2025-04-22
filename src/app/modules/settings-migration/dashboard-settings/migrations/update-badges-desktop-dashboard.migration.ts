@@ -64,7 +64,7 @@ export class UpdateBadgesDesktopDashboardMigration extends MigrationBase {
         for (let index = 0; index < current.length; index++) {
           const item = current[index] as Dashboard;
 
-          let exchangeSettings = marketSettings.find(x => x.settings.isDefault);
+          let exchangeSettings = marketSettings.find(x => x.settings.isDefault ?? false);
           if (item.selectedPortfolio != null) {
             exchangeSettings = marketSettings.find(x => x.exchange === item.selectedPortfolio!.exchange) ?? exchangeSettings;
           }

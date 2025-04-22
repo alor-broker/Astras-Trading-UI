@@ -76,8 +76,8 @@
     "@types/jasmine": "~5.1.7",
     "@types/json-patch": "^0.0.33",
     "@types/node": "^22.14.1",
-    "angular-eslint": "^18.3.0",
-    "eslint": "^9.8.0",
+    "angular-eslint": "^19.3.0",
+    "eslint": "^9.25.1",
     "graphql-codegen-typescript-validation-schema": "^0.16.0",
     "husky": "^9.1.4",
     "jasmine-core": "~5.2.0",
@@ -91,7 +91,7 @@
     "ng-mocks": "^14.13.1",
     "typescript": "~5.5.2",
     "typescript-eslint": "^8.1.0",
-    "marked":"^15.0.0"
+    "marked": "^15.0.0"
   },
   "packageManager": "pnpm@9.7.1"
 }

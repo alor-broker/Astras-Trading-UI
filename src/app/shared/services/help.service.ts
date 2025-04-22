@@ -55,8 +55,7 @@ export class HelpService {
   }
 
   private getTeamlyData(): Observable<HelpLinkInfo[]> {
-    if (this.teamlyData$ == null) {
-      this.teamlyData$ = this.http.post<HelpDatabaseResponse>(
+    this.teamlyData$ ??= this.http.post<HelpDatabaseResponse>(
         this.teamlyDatabaseUrl,
         {
           query: {
@@ -88,7 +87,6 @@ export class HelpService {
           shareReplay(1),
           takeUntilDestroyed(this.destroyRef)
         );
-    }
 
     return this.teamlyData$;
   }

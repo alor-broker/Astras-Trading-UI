@@ -222,7 +222,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
 
   private calculateScrollHeight(): void {
     this.scrollHeight = this.tableContainerHeight -
-    InfiniteScrollTableComponent.getElementHeight((this.headerRowEl as QueryList<ElementRef> | undefined)?.first.nativeElement);
+      InfiniteScrollTableComponent.getElementHeight((this.headerRowEl as QueryList<ElementRef> | undefined)?.first.nativeElement);
 
     this.visibleItemsCount = Math.ceil(this.scrollHeight / this.itemHeight);
   }

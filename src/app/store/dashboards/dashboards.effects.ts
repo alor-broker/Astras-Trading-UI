@@ -169,7 +169,7 @@ export class DashboardsEffects {
         ({ dashboard, badgesColors }, marketSettings) => ({ dashboard, badgesColors, marketSettings })
       ),
       switchMap(({dashboard, badgesColors, marketSettings}) => {
-          let exchangeSettings = marketSettings.find(x => x.settings.isDefault);
+          let exchangeSettings = marketSettings.find(x => x.settings.isDefault ?? false);
           if (dashboard.selectedPortfolio) {
             exchangeSettings = marketSettings.find(x => x.exchange === dashboard.selectedPortfolio!.exchange) ?? exchangeSettings;
           }

@@ -128,7 +128,7 @@ export class PositionDisplayExtension extends BaseExtension {
   private getCurrentPosition(settings: TechChartSettings): Observable<Position | null> {
     return this.currentDashboardService.selectedPortfolio$.pipe(
       switchMap(portfolio => this.portfolioSubscriptionsService.getAllPositionsSubscription(portfolio.portfolio, portfolio.exchange)),
-      map((positions => positions.filter(p => p.avgPrice && p.qtyTFutureBatch))),
+      map(positions => positions.filter(p => p.avgPrice && p.qtyTFutureBatch)),
       startWith([]),
       map(x => x.find(p => p.targetInstrument.symbol === settings.symbol && p.targetInstrument.exchange === settings.exchange) ?? null),
       distinctUntilChanged((p, c) => p?.avgPrice === c?.avgPrice && p?.qtyTFutureBatch === c?.qtyTFutureBatch),

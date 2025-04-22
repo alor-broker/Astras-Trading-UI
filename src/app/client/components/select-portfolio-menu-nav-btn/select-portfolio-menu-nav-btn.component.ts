@@ -11,7 +11,7 @@ import {filter, map} from "rxjs/operators";
 import {EntityStatus} from "../../../shared/models/enums/entity-status";
 import {groupPortfoliosByAgreement} from "../../../shared/utils/portfolios";
 import {Store} from "@ngrx/store";
-import {AsyncPipe, KeyValuePipe, NgForOf, NgIf} from "@angular/common";
+import { KeyValuePipe, NgForOf, NgIf} from "@angular/common";
 import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {JoyrideModule} from "ngx-joyride";
 import {NzButtonComponent} from "ng-zorro-antd/button";

@@ -332,7 +332,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
   private initLayout(): void {
     this.panelWidths$ = this.dataContext.extendedSettings$.pipe(
       map(x => x.widgetSettings.layout?.widths
-      ?? {
+        ?? {
           [this.panelIds.ordersTable]: 50,
           [this.panelIds.currentTrades]: 25,
           [this.panelIds.tradeClusters]: 25,
@@ -474,11 +474,11 @@ export class ScalperOrderBookBodyComponent implements OnInit,
         if (spreadRows.length > 0) {
           targetIndex = x.orderBookBody.indexOf(spreadRows[0]) + Math.round(spreadRows.length / 2);
         } else {
-          const bestSellRowIndex = x.orderBookBody.findIndex(r => r.rowType === ScalperOrderBookRowType.Ask && r.isBest);
+          const bestSellRowIndex = x.orderBookBody.findIndex(r => r.rowType === ScalperOrderBookRowType.Ask && (r.isBest ?? false));
           if (bestSellRowIndex >= 0) {
             targetIndex = bestSellRowIndex;
           } else {
-            const bestBidRowIndex = x.orderBookBody.findIndex(r => r.rowType === ScalperOrderBookRowType.Bid && r.isBest);
+            const bestBidRowIndex = x.orderBookBody.findIndex(r => r.rowType === ScalperOrderBookRowType.Bid && (r.isBest ?? false));
             if (bestBidRowIndex >= 0) {
               targetIndex = bestBidRowIndex;
             } else {

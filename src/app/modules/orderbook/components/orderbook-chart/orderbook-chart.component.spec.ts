@@ -34,7 +34,7 @@ describe('OrderbookChartComponent', () => {
   } as ThemeSettings));
 
   beforeAll(() => TestBed.resetTestingModule());
-  beforeEach((async () => {
+  beforeEach(async () => {
     const settingsMock = {
       symbol: 'SBER',
       exchange: 'MOEX',
@@ -57,7 +57,7 @@ describe('OrderbookChartComponent', () => {
         }
       ]
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(OrderbookChartComponent);

@@ -124,9 +124,9 @@ describe('ArbitrageSpreadService', () => {
         const spread = spreads[0];
 
         expect(spread.buySpread).toBe(quote.ask * spread.firstLeg.quantity * spread.firstLeg.quantity -
-        quote.bid * spread.secondLeg.quantity * spread.secondLeg.quantity);
+          quote.bid * spread.secondLeg.quantity * spread.secondLeg.quantity);
         expect(spread.sellSpread).toBe(quote.bid * spread.firstLeg.quantity * spread.firstLeg.quantity -
-        quote.ask * spread.secondLeg.quantity * spread.secondLeg.quantity);
+          quote.ask * spread.secondLeg.quantity * spread.secondLeg.quantity);
         expect(spread.firstLeg.positionsCount).toBe(expectedQuantity);
         expect(spread.secondLeg.positionsCount).toBe(0);
       });

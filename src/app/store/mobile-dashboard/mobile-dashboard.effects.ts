@@ -113,7 +113,7 @@ export class MobileDashboardEffects {
         (dashboard, marketSettings) => ({dashboard, marketSettings})
       ),
       switchMap(({dashboard, marketSettings}) => {
-          let exchangeSettings = marketSettings.find(x => x.settings.isDefault);
+          let exchangeSettings = marketSettings.find(x => x.settings.isDefault ?? false);
           if (dashboard.selectedPortfolio) {
             exchangeSettings = marketSettings.find(x => x.exchange === dashboard.selectedPortfolio!.portfolio) ?? exchangeSettings;
           }

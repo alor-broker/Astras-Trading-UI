@@ -18,10 +18,8 @@ export abstract class BaseTranslatorService {
   }
 
   protected getTranslatorFn(): Observable<TranslatorFn> {
-    if (this.translator$ == null) {
-      this.translator$ = this.translatorService.getTranslator(this.translationsPath)
+    this.translator$ ??= this.translatorService.getTranslator(this.translationsPath)
         .pipe(shareReplay(1));
-    }
 
     return this.translator$;
   }

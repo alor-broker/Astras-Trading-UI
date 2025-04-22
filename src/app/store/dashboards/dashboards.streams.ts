@@ -14,7 +14,7 @@ import {
 export class DashboardsStreams {
   static getSelectedDashboard(store: Store): Observable<Dashboard> {
     return this.getAllDashboards(store).pipe(
-      map(dashboards => dashboards.find(s => s.isSelected)),
+      map(dashboards => dashboards.find(s => s.isSelected ?? false)),
       filter((x): x is Dashboard => !!x)
     );
   }

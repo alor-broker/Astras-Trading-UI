@@ -7,7 +7,6 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from "ng-zorro-antd/form";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
-import {NgForOf} from "@angular/common";
 
 @Component({
     selector: 'ats-select-property-editor',

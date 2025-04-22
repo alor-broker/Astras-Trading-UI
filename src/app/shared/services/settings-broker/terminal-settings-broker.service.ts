@@ -69,13 +69,11 @@ export class TerminalSettingsBrokerService {
   }
 
   saveSettings(settings: TerminalSettings): Observable<boolean> {
-    if (!this.saveStream$) {
-      this.saveStream$ = this.saveQuery$.pipe(
+    this.saveStream$ ??= this.saveQuery$.pipe(
         debounceTime(this.saveRequestDelay),
         switchMap(query => this.setRemoteRecord(query)),
         share()
       );
-    }
 
     const result$ = new BehaviorSubject<boolean | null>(null);
 

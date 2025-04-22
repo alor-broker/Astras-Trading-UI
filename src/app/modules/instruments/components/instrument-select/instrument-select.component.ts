@@ -206,7 +206,7 @@ export class InstrumentSelectComponent implements OnInit {
         }
       }
 
-      const defaultList = collection.collection.find(x => x.isDefault);
+      const defaultList = collection.collection.find(x => x.isDefault ?? false);
 
       if (defaultList) {
         this.settingsService.updateSettings(this.guid, { activeWatchlistMetas: [{ id: defaultList.id, isExpanded: true }] });

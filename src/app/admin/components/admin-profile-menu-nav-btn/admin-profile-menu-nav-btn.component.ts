@@ -11,7 +11,7 @@ import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzDropDownDirective, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzMenuDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
-import {AsyncPipe, NgIf, NgTemplateOutlet} from "@angular/common";
+import {AsyncPipe, NgTemplateOutlet} from "@angular/common";
 
 @Component({
     selector: 'ats-admin-profile-menu-nav-btn',

@@ -33,8 +33,7 @@ export class ApiTokenProviderService implements OnDestroy {
   }
 
   getToken(): Observable<string> {
-    if (this.token$ == null) {
-      this.token$ = this.state$.pipe(
+    this.token$ ??= this.state$.pipe(
         filter(s => s != null),
         mapWith(() => interval(1000), (state,) => state),
         map(state => {
@@ -49,7 +48,6 @@ export class ApiTokenProviderService implements OnDestroy {
         distinct(),
         shareReplay(1)
       );
-    }
 
     return this.token$;
   }

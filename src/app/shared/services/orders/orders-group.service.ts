@@ -31,15 +31,13 @@ export class OrdersGroupService {
   }
 
   getAllOrderGroups(): Observable<OrdersGroup[]> {
-    if (!this.orderGroups$) {
-      this.orderGroups$ = this.eventBusService.subscribe(event => event.key === GroupCreatedEventKey)
+    this.orderGroups$ ??= this.eventBusService.subscribe(event => event.key === GroupCreatedEventKey)
         .pipe(
           startWith(null),
           switchMap(() => this.httpClient.get<OrdersGroup[]>(`${this.orderGroupsUrl}`)),
           catchHttpError<OrdersGroup[]>([], this.errorHandlerService),
           shareReplay(1)
         );
-    }
 
     return this.orderGroups$;
   }

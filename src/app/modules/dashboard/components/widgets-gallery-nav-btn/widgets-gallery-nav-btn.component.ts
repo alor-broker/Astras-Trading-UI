@@ -79,7 +79,7 @@ export class WidgetsGalleryNavBtnComponent implements OnInit {
     }).pipe(
       map((s) => {
         const groups = new Map<WidgetCategory, WidgetDisplay[]>();
-        const isDemoModeEnabled = this.localStorageService.getItem<boolean>(LocalStorageCommonConstants.DemoModeStorageKey);
+        const isDemoModeEnabled = this.localStorageService.getItem<boolean>(LocalStorageCommonConstants.DemoModeStorageKey) ?? false;
 
         const widgets = s.meta
           .filter((x) => {

@@ -325,8 +325,7 @@ export class DataContextBuilder {
       }
     }
 
-    if (!priceBounds$) {
-      priceBounds$ = deps.quotesService.getLastPrice(settings.widgetSettings, 1).pipe(
+    priceBounds$ ??= deps.quotesService.getLastPrice(settings.widgetSettings, 1).pipe(
         map(lp => {
           if (lp != null) {
             return {
@@ -344,7 +343,6 @@ export class DataContextBuilder {
           return null;
         })
       );
-    }
 
     return priceBounds$.pipe(
       take(1),
