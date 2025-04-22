@@ -1,5 +1,6 @@
 import {
   ErrorHandler,
+  inject,
   NgModule
 } from '@angular/core';
 
@@ -32,7 +33,6 @@ import { LOGGER } from './shared/services/logging/logger-base';
 import { ConsoleLogger } from './shared/services/logging/console-logger';
 import { RemoteLogger } from './shared/services/logging/remote-logger';
 import { NzI18nInterface } from "ng-zorro-antd/i18n/nz-i18n.interface";
-import { GraphQLModule } from './graphql.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { NzSpinModule } from "ng-zorro-antd/spin";
 import {
@@ -42,6 +42,10 @@ import {
 import { MarkdownModule } from "ngx-markdown";
 import { APP_HOOKS } from "./app-hooks";
 import "chartjs-adapter-date-fns";
+import { provideApollo } from "apollo-angular";
+import { HttpLink } from "apollo-angular/http";
+import { environment } from "../environments/environment";
+import { InMemoryCache } from "@apollo/client/core";
 
 registerLocaleData(ru);
 
@@ -67,7 +71,6 @@ registerLocaleData(ru);
       // or after 15 seconds (whichever comes first).
       // registrationStrategy: 'registerWhenStable:15000'
     }),
-    GraphQLModule,
     NzSpinModule
   ],
   providers: [
@@ -106,7 +109,15 @@ registerLocaleData(ru);
     },
     ...APP_HOOKS,
     provideCharts(withDefaultRegisterables()),
-    provideHttpClient(withInterceptorsFromDi())
+    provideHttpClient(withInterceptorsFromDi()),
+    provideApollo(() => {
+      const httpLink = inject(HttpLink);
+
+      return {
+        link: httpLink.create({ uri: environment.apiUrl + '/hyperion' }),
+        cache: new InMemoryCache(),
+      };
+    })
   ]
 })
 export class AppModule {

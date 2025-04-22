@@ -39,7 +39,7 @@ importers:
         specifier: ^19.2.7
         version: 19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2)
       '@apollo/client':
-        specifier: ^3.11.4
+        specifier: ^3.13.8
         version: 3.13.8(graphql-ws@6.0.4(graphql@16.10.0)(ws@8.18.1))(graphql@16.10.0)
       '@comfyorg/litegraph':
         specifier: 0.8.98
@@ -72,8 +72,8 @@ importers:
         specifier: ^19.0.0
         version: 19.0.0(@angular/common@19.2.7(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2)
       apollo-angular:
-        specifier: ^7.1.1
-        version: 7.2.1(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(@apollo/client@3.13.8(graphql-ws@6.0.4(graphql@16.10.0)(ws@8.18.1))(graphql@16.10.0))(graphql@16.10.0)(rxjs@7.8.2)
+        specifier: ^10.0.3
+        version: 10.0.3(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(@apollo/client@3.13.8(graphql-ws@6.0.4(graphql@16.10.0)(ws@8.18.1))(graphql@16.10.0))(graphql@16.10.0)(rxjs@7.8.2)
       chart.js:
         specifier: ^4.4.0
         version: 4.4.9
@@ -2922,12 +2922,12 @@ packages:
     resolution: {integrity: sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==}
     engines: {node: '>= 8'}
 
-  apollo-angular@7.2.1:
-    resolution: {integrity: sha512-kUztS6VPI4IMOT6i1f2U+Ps9DOMoGXLfOURiEN2LApek7ajOSsz1pmWmItg6lZ/5om3sO+cbuaNCwb2M1sy26Q==}
+  apollo-angular@10.0.3:
+    resolution: {integrity: sha512-gBNxKVraflbEG5tcFHEklCYjmer6vlOQ8sOw3EfD8SvIlYqTQ0DqES7oOau9lnHDgINnCtFYDZ3/c2SjLsXxVg==}
     engines: {node: '>=16'}
     peerDependencies:
-      '@angular/core': ^17.0.0 || ^18.0.0
-      '@apollo/client': ^3.0.0
+      '@angular/core': ^17.0.0 || ^18.0.0 || ^19.0.0
+      '@apollo/client': ^3.13.1
       graphql: ^15.0.0 || ^16.0.0
       rxjs: ^6.0.0 || ^7.0.0
 
@@ -9815,7 +9815,7 @@ snapshots:
       normalize-path: 3.0.0
       picomatch: 2.3.1
 
-  apollo-angular@7.2.1(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(@apollo/client@3.13.8(graphql-ws@6.0.4(graphql@16.10.0)(ws@8.18.1))(graphql@16.10.0))(graphql@16.10.0)(rxjs@7.8.2):
+  apollo-angular@10.0.3(@angular/core@19.2.7(rxjs@7.8.2)(zone.js@0.15.0))(@apollo/client@3.13.8(graphql-ws@6.0.4(graphql@16.10.0)(ws@8.18.1))(graphql@16.10.0))(graphql@16.10.0)(rxjs@7.8.2):
     dependencies:
       '@angular/core': 19.2.7(rxjs@7.8.2)(zone.js@0.15.0)
       '@apollo/client': 3.13.8(graphql-ws@6.0.4(graphql@16.10.0)(ws@8.18.1))(graphql@16.10.0)
