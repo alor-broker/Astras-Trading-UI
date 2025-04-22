@@ -44,7 +44,7 @@
     "date-fns": "^4.1.0",
     "firebase": "11.6.0",
     "gql-query-builder": "^3.8.0",
-    "graphql": "^16.9.0",
+    "graphql": "^16.10.0",
     "json-patch": "^0.7.0",
     "lightweight-charts": "^4.2.0",
     "ng-zorro-antd": "19.2.1",
