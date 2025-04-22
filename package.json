@@ -49,7 +49,7 @@
     "lightweight-charts": "^5.0.6",
     "ng-zorro-antd": "19.2.1",
     "ng2-charts": "^8.0.0",
-    "ngx-device-detector": "^8.0.0",
+    "ngx-device-detector": "^9.0.0",
     "ngx-joyride": "^2.5.0",
     "ngx-markdown": "^18.0.0",
     "rxjs": "^7.8.2",
