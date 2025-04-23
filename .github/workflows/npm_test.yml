@@ -28,4 +28,4 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: pnpm install
-    - run: pnpm test -- --browsers=ChromeHeadless --watch=false
+    - run: pnpm test --browsers=ChromeHeadless --watch=false
