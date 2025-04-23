@@ -84,8 +84,8 @@ export class WidgetHeaderComponent implements OnInit {
               (prev, cur) => {
                 prev[cur!.symbol] = (prev[cur!.symbol] ?? 0) + 1;
                 return prev;
-              }
-              , {} as Record<string, number | undefined>
+              },
+              {} as Record<string, number | undefined>
             );
 
           return badgesColors.map(b => {

@@ -88,8 +88,8 @@ export class AdminOrderCommandService implements OrderCommandService {
                 isSuccess: false,
                 message: err?.message
               };
-            }
-            , this.errorHandlerService),
+            },
+            this.errorHandlerService),
           take(1)
         );
       }

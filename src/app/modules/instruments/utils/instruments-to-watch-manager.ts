@@ -45,8 +45,8 @@ export class InstrumentsToWatchManager {
           watchItem,
           updatesSubscription: null,
           onItemRemove: onItemRemove ?? null
-        }
-        , state);
+        },
+        state);
     });
   }
 
