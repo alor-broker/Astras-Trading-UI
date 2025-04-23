@@ -11,7 +11,7 @@
       (nzValueChange)="selectDashboard($event)"
     >
       @for (option of options; track option.value) {
-        <label nz-segmented-item [nzValue]="option.value">
+        <label nz-segmented-item [nzValue]="option.value" [nzDisabled]="option.disabled">
           @if($index !== (options.length - 1)) {
           <div
             class="dashboard-label"

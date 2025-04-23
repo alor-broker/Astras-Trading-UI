@@ -171,7 +171,9 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
   }
 
   selectDashboard(guid: string | number): void {
-    this.manageDashboardsService.selectDashboard(<string>guid);
+    if(guid != this.allDashboardsValue) {
+      this.manageDashboardsService.selectDashboard(<string>guid);
+    }
   }
 
   changeDashboardsOrder(e: CdkDragDrop<any>): void {
