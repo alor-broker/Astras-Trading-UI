@@ -48,7 +48,7 @@ describe('OptionBoardComponent', () => {
         }),
         ComponentHelpers.mockComponent({
           selector: 'ats-all-options-list-view',
-          inputs: ['dataContext']
+          inputs: ['dataContext', 'guid']
         })
       ],
       providers: [
