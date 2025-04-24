@@ -30,6 +30,11 @@
 
       .descriptor-label {
         background-color: @descriptions-bg;
+        user-select: none;
+
+        &.with-tooltip {
+          cursor: help;
+        }
       }
 
       .descriptor-content {

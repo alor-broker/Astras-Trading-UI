@@ -129,10 +129,12 @@ export class RisksComponent implements OnInit, OnDestroy {
       },
       {
         id: 'longMultiplier',
+        titleTooltipTranslationKey: 'longMultiplier',
         formattedValue: formatNumber(risks.longMultiplier, this.locale, '0.0-6')
       },
       {
         id: 'shortMultiplier',
+        titleTooltipTranslationKey: 'shortMultiplier',
         formattedValue: formatNumber(risks.shortMultiplier, this.locale, '0.0-6')
       },
       {
