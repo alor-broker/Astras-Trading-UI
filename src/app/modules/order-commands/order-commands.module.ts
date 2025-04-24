@@ -24,7 +24,6 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { SharedModule } from "../../shared/shared.module";
 import { OrderSubmitWidgetComponent } from './widgets/order-submit-widget/order-submit-widget.component';
 import { OrderSubmitSettingsComponent } from "./components/order-submit-settings/order-submit-settings.component";
-import { NzInputNumberLegacyModule } from "ng-zorro-antd/input-number-legacy";
 import { WorkingVolumesComponent } from "./components/working-volumes/working-volumes.component";
 import {
   LimitOrderPriceChangeComponent
@@ -41,6 +40,7 @@ import { InputNumberComponent } from "../../shared/components/input-number/input
 import { BuySellButtonsComponent } from "./components/buy-sell-buttons/buy-sell-buttons.component";
 import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
 import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
+import { NzInputNumberComponent } from "ng-zorro-antd/input-number";
 
 @NgModule({
   declarations: [
@@ -80,13 +80,13 @@ import { InstrumentSearchComponent } from "../../shared/components/instrument-se
     NzFormModule,
     ReactiveFormsModule,
     SharedModule,
-    NzInputNumberLegacyModule,
     NzResizeObserverModule,
     LetDirective,
     InputNumberComponent,
     BuySellButtonsComponent,
     WidgetSettingsComponent,
-    InstrumentSearchComponent
+    InstrumentSearchComponent,
+    NzInputNumberComponent
   ]
 })
 export class OrderCommandsModule {
