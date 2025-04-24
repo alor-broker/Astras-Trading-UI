@@ -124,7 +124,8 @@ export class DashboardsEffects {
         DashboardFavoritesActions.changeOrder,
         DashboardsCurrentSelectionActions.selectPortfolio,
         DashboardsCurrentSelectionActions.selectInstruments,
-        DashboardsInternalActions.drop
+        DashboardsInternalActions.drop,
+        DashboardsInternalActions.cleanInitialSettings
       ),
       withLatestFrom(DashboardsStreams.getAllDashboards(this.store)),
       map(([, dashboards]) => DashboardsEventsActions.updated({dashboards}))

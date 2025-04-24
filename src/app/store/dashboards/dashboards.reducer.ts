@@ -196,6 +196,10 @@ const reducer = createReducer(
   }),
 
   on(DashboardsCurrentSelectionActions.select, (state, props) => {
+    if(props.dashboardGuid == null) {
+      return state;
+    }
+
     const updatedState = adapter.updateMany(
       state.ids.map(id => ({
         id: <string>id,
@@ -315,6 +319,39 @@ const reducer = createReducer(
         }
       },
       state);
+  }),
+
+  on(DashboardsInternalActions.cleanInitialSettings, (state, props) => {
+    let updatedState = state;
+
+    for (const itemToUpdate of props.items) {
+      const targetDashboard = state.entities[itemToUpdate.dashboardGuid];
+      if(targetDashboard != null) {
+        const updatedDashboardItems: Widget[] = [];
+        for (const dashboardItem of targetDashboard.items) {
+          const updatedItem = {
+            ...dashboardItem
+          };
+
+          if(itemToUpdate.itemGuids.includes(dashboardItem.guid)) {
+            delete updatedItem.initialSettings;
+          }
+
+          updatedDashboardItems.push(updatedItem);
+        }
+
+        updatedState = adapter.updateOne({
+            id: targetDashboard.guid,
+            changes: {
+              items: updatedDashboardItems
+            }
+          },
+          updatedState
+        );
+      }
+    }
+
+    return updatedState;
   }),
 );
 

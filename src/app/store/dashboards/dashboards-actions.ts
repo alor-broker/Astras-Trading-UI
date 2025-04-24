@@ -103,7 +103,8 @@ export const DashboardsInternalActions = createActionGroup({
     "Init Success": emptyProps(),
     "Drop": props<{
       dashboardGuid: string;
-    }>()
+    }>(),
+    "CleanInitialSettings": props<{ items: { dashboardGuid: string, itemGuids: string[] }[] }>(),
   }
 });
 

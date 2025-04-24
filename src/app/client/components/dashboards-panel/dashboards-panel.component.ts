@@ -170,8 +170,8 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
     setTimeout(() => this.isDashboardSelectionMenuVisible$.next(value));
   }
 
-  selectDashboard(guid: string | number): void {
-    if(guid != this.allDashboardsValue) {
+  selectDashboard(guid: string | number | null): void {
+    if(guid != this.allDashboardsValue && guid != null) {
       this.manageDashboardsService.selectDashboard(<string>guid);
     }
   }
