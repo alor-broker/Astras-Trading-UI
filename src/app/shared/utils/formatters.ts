@@ -7,11 +7,12 @@ import { MathHelper } from "./math-helper";
 /**
  *  Currency pipe and angular's formatCurrency throws error, while formating rubles without fraction part. =(
  * @param number A number with amount
+ * @param locale A locale for formatting
  * @param formatSettings a currency format settings
  * @param maxFractionDigits number of digits
  * @returns formated number
  */
-export function formatCurrency(number: number, formatSettings: CurrencyFormat | null, maxFractionDigits = 2): string {
+export function formatCurrency(number: number, locale: string, formatSettings: CurrencyFormat | null, maxFractionDigits = 2): string {
   if(formatSettings == null) {
     return MathHelper.round(number, maxFractionDigits).toString();
   }
@@ -21,10 +22,18 @@ export function formatCurrency(number: number, formatSettings: CurrencyFormat | 
       return MathHelper.round(number, maxFractionDigits).toString() + ' ' + formatSettings.displaySymbol;
     }
 
-    return Intl.NumberFormat(formatSettings.locale).format(number) + ' ' + formatSettings.displaySymbol;
+    return Intl.NumberFormat(locale).format(number) + ' ' + formatSettings.displaySymbol;
   }
 
-  return Intl.NumberFormat(formatSettings.locale, { style: 'currency', currency: formatSettings.formatCode, maximumFractionDigits: maxFractionDigits }).format(number);
+  const currencyFormat = Intl.NumberFormat(formatSettings.locale, { style: 'currency', currency: formatSettings.formatCode, maximumFractionDigits: maxFractionDigits });
+  const parts = currencyFormat.formatToParts(number);
+  const currencyIndex = parts.findIndex(p => p.type === 'currency');
+
+  if(currencyIndex < 0) {
+    return currencyFormat.format(number);
+  }
+
+  return Intl.NumberFormat(locale).format(number) + ' ' + parts[currencyIndex].value;
 }
 
 export function getCurrencySign(formatSettings: CurrencyFormat): string {
@@ -34,7 +43,7 @@ export function getCurrencySign(formatSettings: CurrencyFormat): string {
     style: 'currency',
     currency: formatSettings.formatCode,
   })
-    .formatToParts(0).forEach(({ type, value }) => {
+    .formatToParts().forEach(({ type, value }) => {
     if (type === 'currency') {
       symbol = value;
     }

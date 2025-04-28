@@ -177,18 +177,18 @@
                       </td>
                     }
                     @case ('priceChange') {
-                      <td [ngClass]="inst.priceChange < 0 ? 'sellCell' : 'buyCell'">{{ inst.priceChange }}</td>
+                      <td [ngClass]="inst.priceChange < 0 ? 'sellCell' : 'buyCell'">{{ inst.priceChange | number: '0.0-6' }}</td>
                     }
                     @case ('priceChangeRatio') {
                       <td [ngClass]="inst.priceChangeRatio < 0 ? 'sellCell' : 'buyCell'">
-                        {{ inst.priceChangeRatio }}
+                        {{ inst.priceChangeRatio | number: '0.0-3' }}
                       </td>
                     }
                     @case ('maxPrice') {
-                      <td>{{ inst.maxPrice }}</td>
+                      <td>{{ inst.maxPrice | number: '0.0-6' }}</td>
                     }
                     @case ('minPrice') {
-                      <td>{{ inst.minPrice }}</td>
+                      <td>{{ inst.minPrice | number: '0.0-6' }}</td>
                     }
                     @case ('volume') {
                       <td style="white-space: nowrap;">
@@ -197,10 +197,10 @@
                       </td>
                     }
                     @case ('openPrice') {
-                      <td>{{ inst.openPrice }}</td>
+                      <td>{{ inst.openPrice | number: '0.0-6' }}</td>
                     }
                     @case ('closePrice') {
-                      <td>{{ inst.closePrice }}</td>
+                      <td>{{ inst.closePrice | number: '0.0-6' }}</td>
                     }
                     @default {
                       <td></td>

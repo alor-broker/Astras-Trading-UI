@@ -3,6 +3,7 @@ import {
   DestroyRef,
   Inject,
   Input,
+  LOCALE_ID,
   OnDestroy,
   OnInit
 } from '@angular/core';
@@ -53,7 +54,9 @@ export class ListViewComponent implements OnInit, OnDestroy {
     private readonly actionsContext: ActionsContext,
     private readonly translatorService: TranslatorService,
     private readonly marketService: MarketService,
-    private readonly destroyRef: DestroyRef
+    private readonly destroyRef: DestroyRef,
+    @Inject(LOCALE_ID)
+    private readonly locale: string
 ) {
   }
 
@@ -92,6 +95,6 @@ export class ListViewComponent implements OnInit, OnDestroy {
   }
 
   formatCurrencyFn(value: number, currency: string, settings: CurrencySettings): string {
-    return formatCurrency(value, getCurrencyFormat(currency, settings));
+    return formatCurrency(value, this.locale, getCurrencyFormat(currency, settings));
   }
 }

@@ -1,4 +1,12 @@
-import { Component, DestroyRef, Inject, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  Inject,
+  Input,
+  LOCALE_ID,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, shareReplay, switchMap, take, tap } from 'rxjs';
 import { TableConfig } from '../../../../shared/models/table-config.model';
 import {
@@ -39,6 +47,7 @@ import {
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { AddToWatchlistMenuComponent } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
 import { TableDataRow } from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
+import { formatNumber } from "@angular/common";
 
 interface BondDisplay extends Omit<Bond, 'coupons' | 'offers' | 'amortizations'> {
   id: string;
@@ -182,7 +191,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'currentYield',
       displayName: 'Доходность, %',
-      transformFn: (d: BondDisplay): string => d.yield?.currentYield == null ? '' : MathHelper.round(d.yield.currentYield, 2).toString(),
+      transformFn: (d: BondDisplay): string => d.yield?.currentYield == null ? '' : formatNumber(MathHelper.round(d.yield.currentYield, 2), this.locale, '0.0-2'),
       sortChangeFn: (dir): void => this.sortChange(['yield', 'currentYield'], dir),
       width: 120,
       filterData: {
@@ -196,7 +205,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'issueValue',
       displayName: 'Заявл. объём выпуска',
-      transformFn: (d: BondDisplay): string => d.volumes!.issueValue != null ? MathHelper.round(+d.volumes!.issueValue!, 2).toString() : '',
+      transformFn: (d: BondDisplay): string => d.volumes!.issueValue != null ? formatNumber(MathHelper.round(+d.volumes!.issueValue!, 2), this.locale, '0.0-2') : '',
       sortChangeFn: (dir): void => this.sortChange(['volumes', 'issueValue'], dir),
       width: 100,
       filterData: {
@@ -210,7 +219,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'faceValue',
       displayName: 'Номинал',
-      transformFn: (d: BondDisplay): string => d.faceValue != null ? MathHelper.round(d.faceValue, 2).toString() : '',
+      transformFn: (d: BondDisplay): string => d.faceValue != null ? formatNumber(MathHelper.round(d.faceValue, 2), this.locale, '0.0-2') : '',
       sortChangeFn: (dir): void => this.sortChange(['faceValue'], dir),
       width: 100,
       filterData: {
@@ -224,7 +233,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'currentFaceValue',
       displayName: 'Ост. номинал',
-      transformFn: (d: BondDisplay): string => d.currentFaceValue != null ? MathHelper.round(d.currentFaceValue, 2).toString() : '',
+      transformFn: (d: BondDisplay): string => d.currentFaceValue != null ? formatNumber(MathHelper.round(d.currentFaceValue, 2), this.locale, '0.0-2') : '',
       sortChangeFn: (dir): void => this.sortChange(['currentFaceValue'], dir),
       width: 100,
       filterData: {
@@ -253,7 +262,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'couponRate',
       displayName: 'Ставка купона',
-      transformFn: (d: BondDisplay): string => d.couponRate != null ? MathHelper.round(d.couponRate, 2).toString() : '',
+      transformFn: (d: BondDisplay): string => d.couponRate != null ? formatNumber(MathHelper.round(d.couponRate, 2), this.locale, '0.0-2') : '',
       sortChangeFn: (dir): void => this.sortChange(['couponRate'], dir),
       width: 90,
       filterData: {
@@ -267,7 +276,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'couponAccruedInterest',
       displayName: 'НКД',
-      transformFn: (d: BondDisplay): string => d.closestCoupon?.accruedInterest?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.closestCoupon?.accruedInterest != null ? formatNumber(d.closestCoupon.accruedInterest, this.locale, '0.0-10') : '',
       filterData: {
         filterName: 'couponAccruedInterest',
         filterType: FilterType.Interval,
@@ -303,7 +312,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'couponAmount',
       displayName: 'Размер купона',
-      transformFn: (d: BondDisplay): string => d.closestCoupon?.amount?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.closestCoupon?.amount != null ? formatNumber(d.closestCoupon.amount, this.locale, '0.0-10') : '',
       filterData: {
         filterName: 'couponAmount',
         filterType: FilterType.Interval,
@@ -327,7 +336,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'priceMultiplier',
       displayName: 'Множитель цены',
-      transformFn: (d: BondDisplay): string => d.additionalInformation!.priceMultiplier?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.additionalInformation!.priceMultiplier != null ? formatNumber(d.additionalInformation.priceMultiplier, this.locale, '0.0-10') : '',
       sortChangeFn: (dir): void => this.sortChange(['additionalInformation', 'priceMultiplier'], dir),
       width: 110,
       filterData: {
@@ -393,7 +402,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'duration',
       displayName: 'Дюрация, %',
-      transformFn: (d: BondDisplay): string => d.duration?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.duration != null ? formatNumber(d.duration, this.locale, '0.0-3') : '',
       sortChangeFn: (dir): void => this.sortChange(['duration'], dir),
       width: 90,
       filterData: {
@@ -407,7 +416,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'durationMacaulay',
       displayName: 'Дюрация по Маколею, д.',
-      transformFn: (d: BondDisplay): string => d.durationMacaulay?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.durationMacaulay != null ? formatNumber(d.durationMacaulay, this.locale, '0.0-3') : '',
       sortChangeFn: (dir): void => this.sortChange(['durationMacaulay'], dir),
       width: 90,
       filterData: {
@@ -421,7 +430,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'lotSize',
       displayName: 'Размер лота',
-      transformFn: (d: BondDisplay): string => d.tradingDetails!.lotSize?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.tradingDetails!.lotSize != null ? formatNumber(d.tradingDetails.lotSize, this.locale, '0.0-10') : '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'lotSize'], dir),
       width: 90,
       filterData: {
@@ -435,7 +444,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'minStep',
       displayName: 'Шаг цены',
-      transformFn: (d: BondDisplay): string => d.tradingDetails!.minStep?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.tradingDetails!.minStep != null ? formatNumber(d.tradingDetails!.minStep, this.locale, '0.0-10') : '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'minStep'], dir),
       width: 80,
       filterData: {
@@ -449,7 +458,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'price',
       displayName: 'Тек. цена',
-      transformFn: (d: BondDisplay): string => d.tradingDetails!.price?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.tradingDetails!.price != null ? formatNumber(d.tradingDetails!.price, this.locale, '0.0-10') : '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'price'], dir),
       width: 80,
       filterData: {
@@ -463,7 +472,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'priceMax',
       displayName: 'Макс. цена',
-      transformFn: (d: BondDisplay): string => d.tradingDetails!.priceMax?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.tradingDetails!.priceMax != null ? formatNumber(d.tradingDetails!.priceMax, this.locale, '0.0-10') : '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceMax'], dir),
       width: 80,
       filterData: {
@@ -477,7 +486,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'priceMin',
       displayName: 'Мин. цена',
-      transformFn: (d: BondDisplay): string => d.tradingDetails!.priceMin?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.tradingDetails!.priceMin != null ? formatNumber(d.tradingDetails!.priceMin, this.locale, '0.0-10') : '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceMin'], dir),
       width: 80,
       filterData: {
@@ -491,7 +500,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'priceStep',
       displayName: 'Стоимость шага цены',
-      transformFn: (d: BondDisplay): string => d.tradingDetails!.priceStep?.toString() ?? '',
+      transformFn: (d: BondDisplay): string => d.tradingDetails!.priceStep != null ? formatNumber(d.tradingDetails!.priceStep, this.locale, '0.0-10') : '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceStep'], dir),
       width: 110,
       filterData: {
@@ -514,7 +523,9 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     private readonly dashboardContextService: DashboardContextService,
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly nzContextMenuService: NzContextMenuService,
-    protected readonly destroyRef: DestroyRef
+    protected readonly destroyRef: DestroyRef,
+    @Inject(LOCALE_ID)
+    private readonly locale: string
   ) {
     super(settingsService, destroyRef);
   }

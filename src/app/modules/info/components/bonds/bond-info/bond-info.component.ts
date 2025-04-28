@@ -312,7 +312,8 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
   private getTradingDetailsDescriptors(bond: Bond): Descriptor[] {
     return DescriptorFiller.tradingDetails({
       tradingDetails: bond.tradingDetails,
-      currencyInformation: bond.currencyInformation
+      currencyInformation: bond.currencyInformation,
+      locale: this.locale
     });
   }
 
