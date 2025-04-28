@@ -1,5 +1,7 @@
 import {
   Component,
+  Inject,
+  LOCALE_ID,
   OnInit
 } from '@angular/core';
 import {
@@ -84,7 +86,9 @@ export class StockInfoComponent extends InstrumentInfoBaseComponent implements O
 
   constructor(
     private readonly graphQlService: GraphQlService,
-    private readonly translatorService: TranslatorService) {
+    private readonly translatorService: TranslatorService,
+    @Inject(LOCALE_ID)
+    private readonly locale: string) {
     super();
   }
 
@@ -150,7 +154,8 @@ export class StockInfoComponent extends InstrumentInfoBaseComponent implements O
   private getTradingDetailsDescriptors(stock: Stock): Descriptor[] {
     return DescriptorFiller.tradingDetails({
       tradingDetails: stock.tradingDetails,
-      currencyInformation: stock.currencyInformation
+      currencyInformation: stock.currencyInformation,
+      locale: this.locale
     });
   }
 }

@@ -218,7 +218,8 @@ export class DerivativeInfoComponent extends InstrumentInfoBaseComponent impleme
   private getTradingDetailsDescriptors(derivative: Derivative): Descriptor[] {
     return DescriptorFiller.tradingDetails({
       tradingDetails: derivative.tradingDetails,
-      currencyInformation: derivative.currencyInformation
+      currencyInformation: derivative.currencyInformation,
+      locale: this.locale
     });
   }
 

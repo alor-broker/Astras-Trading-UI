@@ -12,7 +12,7 @@
           [nzTooltipTitle]="hideTooltips ? null : t('scalperOrderBookTopFloatingPanel.priceDayChangePercentTooltip')"
           [nzTooltipMouseEnterDelay]="1"
         >
-          {{ priceDayChangePercent }}%
+          {{ priceDayChangePercent | number: '1.0-2' }}%
         </span>
       </div>
     </ng-container>

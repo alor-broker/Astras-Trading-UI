@@ -2,7 +2,9 @@ import {
   AfterViewInit,
   Component,
   DestroyRef,
+  Inject,
   Input,
+  LOCALE_ID,
   OnDestroy,
   OnInit,
   ViewChild
@@ -56,7 +58,9 @@ export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private readonly service: EventsCalendarService,
     private readonly marketService: MarketService,
-    private readonly destroyRef: DestroyRef
+    private readonly destroyRef: DestroyRef,
+    @Inject(LOCALE_ID)
+    private readonly locale: string
   ) {
   }
 
@@ -126,6 +130,6 @@ export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   formatCurrencyFn(value: number, currency: string, settings: CurrencySettings): string {
-    return formatCurrency(value, getCurrencyFormat(currency, settings));
+    return formatCurrency(value, this.locale, getCurrencyFormat(currency, settings));
   }
 }

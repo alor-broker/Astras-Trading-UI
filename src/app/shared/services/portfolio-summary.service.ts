@@ -1,4 +1,8 @@
-import { Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable,
+  LOCALE_ID
+} from '@angular/core';
 import { PortfolioKey } from "../models/portfolio-key.model";
 import {
   combineLatest,
@@ -29,6 +33,8 @@ export class PortfolioSummaryService {
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly marketService: MarketService,
     private readonly quotes: QuotesService,
+    @Inject(LOCALE_ID)
+    private readonly locale: string
   ) {
   }
 
@@ -94,40 +100,40 @@ export class PortfolioSummaryService {
 
   private formatCommonSummary(summary: CommonSummaryModel, currencyFormat: CurrencyFormat | null, exchangeRate: number): CommonSummaryView {
     return ({
-      buyingPowerAtMorning: formatCurrency(summary.buyingPowerAtMorning / exchangeRate, currencyFormat),
-      buyingPower: formatCurrency(summary.buyingPower / exchangeRate, currencyFormat),
-      profit: formatCurrency(summary.profit / exchangeRate, currencyFormat),
+      buyingPowerAtMorning: formatCurrency(summary.buyingPowerAtMorning / exchangeRate, this.locale, currencyFormat),
+      buyingPower: formatCurrency(summary.buyingPower / exchangeRate, this.locale, currencyFormat),
+      profit: formatCurrency(summary.profit / exchangeRate, this.locale, currencyFormat),
       profitRate: summary.profitRate,
-      portfolioEvaluation: formatCurrency(summary.portfolioEvaluation / exchangeRate, currencyFormat),
-      portfolioLiquidationValue: formatCurrency(summary.portfolioLiquidationValue / exchangeRate, currencyFormat),
-      initialMargin: formatCurrency(summary.initialMargin / exchangeRate, currencyFormat),
-      correctedMargin: formatCurrency(summary.correctedMargin / exchangeRate, currencyFormat),
-      riskBeforeForcePositionClosing: formatCurrency(summary.riskBeforeForcePositionClosing / exchangeRate, currencyFormat),
-      commission: formatCurrency(summary.commission / exchangeRate, currencyFormat),
+      portfolioEvaluation: formatCurrency(summary.portfolioEvaluation / exchangeRate, this.locale, currencyFormat),
+      portfolioLiquidationValue: formatCurrency(summary.portfolioLiquidationValue / exchangeRate, this.locale, currencyFormat),
+      initialMargin: formatCurrency(summary.initialMargin / exchangeRate, this.locale, currencyFormat),
+      correctedMargin: formatCurrency(summary.correctedMargin / exchangeRate, this.locale, currencyFormat),
+      riskBeforeForcePositionClosing: formatCurrency(summary.riskBeforeForcePositionClosing / exchangeRate, this.locale, currencyFormat),
+      commission: formatCurrency(summary.commission / exchangeRate, this.locale, currencyFormat),
     });
   }
 
   private formatForwardRisks(forwardRisks: ForwardRisks, risks: Risks, currencyFormat: CurrencyFormat | null, exchangeRate: number): ForwardRisksView {
     return {
-      moneyFree: formatCurrency(forwardRisks.moneyFree / exchangeRate, currencyFormat),
-      moneyBlocked: formatCurrency(forwardRisks.moneyBlocked / exchangeRate, currencyFormat),
-      fee: formatCurrency(forwardRisks.fee / exchangeRate, currencyFormat),
-      moneyOld: formatCurrency(forwardRisks.moneyOld / exchangeRate, currencyFormat),
-      moneyAmount: formatCurrency(forwardRisks.moneyAmount / exchangeRate, currencyFormat),
-      moneyPledgeAmount: formatCurrency(forwardRisks.moneyPledgeAmount / exchangeRate, currencyFormat),
-      vmInterCl: formatCurrency(forwardRisks.vmInterCl / exchangeRate, currencyFormat),
-      vmCurrentPositions: formatCurrency(forwardRisks.vmCurrentPositions / exchangeRate, currencyFormat),
-      varMargin: formatCurrency(forwardRisks.varMargin / exchangeRate, currencyFormat),
+      moneyFree: formatCurrency(forwardRisks.moneyFree / exchangeRate, this.locale, currencyFormat),
+      moneyBlocked: formatCurrency(forwardRisks.moneyBlocked / exchangeRate, this.locale, currencyFormat),
+      fee: formatCurrency(forwardRisks.fee / exchangeRate, this.locale, currencyFormat),
+      moneyOld: formatCurrency(forwardRisks.moneyOld / exchangeRate, this.locale, currencyFormat),
+      moneyAmount: formatCurrency(forwardRisks.moneyAmount / exchangeRate, this.locale, currencyFormat),
+      moneyPledgeAmount: formatCurrency(forwardRisks.moneyPledgeAmount / exchangeRate, this.locale, currencyFormat),
+      vmInterCl: formatCurrency(forwardRisks.vmInterCl / exchangeRate, this.locale, currencyFormat),
+      vmCurrentPositions: formatCurrency(forwardRisks.vmCurrentPositions / exchangeRate, this.locale, currencyFormat),
+      varMargin: formatCurrency(forwardRisks.varMargin / exchangeRate, this.locale, currencyFormat),
       isLimitsSet: forwardRisks.isLimitsSet,
-      indicativeVarMargin: formatCurrency(forwardRisks.indicativeVarMargin / exchangeRate, currencyFormat),
+      indicativeVarMargin: formatCurrency(forwardRisks.indicativeVarMargin / exchangeRate, this.locale, currencyFormat),
       netOptionValue: forwardRisks.netOptionValue,
-      posRisk:formatCurrency(forwardRisks.posRisk / exchangeRate, currencyFormat),
-      portfolioLiquidationValue: formatCurrency(risks.portfolioLiquidationValue / exchangeRate, currencyFormat),
-      initialMargin: formatCurrency(risks.initialMargin / exchangeRate, currencyFormat),
-      minimalMargin: formatCurrency(risks.minimalMargin / exchangeRate, currencyFormat),
-      correctedMargin: formatCurrency(risks.correctedMargin / exchangeRate, currencyFormat),
-      riskCoverageRatioOne: formatCurrency(risks.riskCoverageRatioOne / exchangeRate, currencyFormat),
-      riskCoverageRatioTwo: formatCurrency(risks.riskCoverageRatioTwo / exchangeRate, currencyFormat),
+      posRisk:formatCurrency(forwardRisks.posRisk / exchangeRate, this.locale, currencyFormat),
+      portfolioLiquidationValue: formatCurrency(risks.portfolioLiquidationValue / exchangeRate, this.locale, currencyFormat),
+      initialMargin: formatCurrency(risks.initialMargin / exchangeRate, this.locale, currencyFormat),
+      minimalMargin: formatCurrency(risks.minimalMargin / exchangeRate, this.locale, currencyFormat),
+      correctedMargin: formatCurrency(risks.correctedMargin / exchangeRate, this.locale, currencyFormat),
+      riskCoverageRatioOne: formatCurrency(risks.riskCoverageRatioOne / exchangeRate, this.locale, currencyFormat),
+      riskCoverageRatioTwo: formatCurrency(risks.riskCoverageRatioTwo / exchangeRate, this.locale, currencyFormat),
       riskStatus: risks.riskStatus,
       clientType: risks.clientType
     };

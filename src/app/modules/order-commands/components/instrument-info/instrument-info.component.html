@@ -11,7 +11,7 @@
         (click)="selectQuantity(data.position.abs)"
         [title]="data.position.abs"
       >
-        {{data.position.abs}}
+        {{data.position.abs | number: '0.0-10'}}
       </span>
   </div>
 
@@ -25,7 +25,7 @@
         </div>
       </div>
       <div class='price'>
-        <span>{{data.priceData.lastPrice}}</span>
+        <span>{{data.priceData.lastPrice  | number: '0.0-10'}}</span>
       </div>
     </div>
 
@@ -37,24 +37,24 @@
       nzSize="small"
     >
       <nz-descriptions-item [nzTitle]="t('orderCommandsInstrumentInfo.dayChangeLabel')">
-        <p [class]='(data.priceData.dayChange ?? 0) < 0 ? "sell" : "buy"' class="upper-row">{{data.priceData.dayChange}}</p>
+        <p [class]='(data.priceData.dayChange ?? 0) < 0 ? "sell" : "buy"' class="upper-row">{{data.priceData.dayChange  | number: '0.0-10'}}</p>
       </nz-descriptions-item>
       <nz-descriptions-item nzTitle="High">
-        <p class="upper-row">{{data.priceData.high}}</p>
+        <p class="upper-row">{{data.priceData.high  | number: '0.0-10'}}</p>
       </nz-descriptions-item>
       <nz-descriptions-item nzTitle="Ask">
-        <p (click)="selectPrice(data.priceData.ask)" class='sell selectable upper-row'>{{data.priceData.ask}}</p>
+        <p (click)="selectPrice(data.priceData.ask)" class='sell selectable upper-row'>{{data.priceData.ask  | number: '0.0-10'}}</p>
       </nz-descriptions-item>
 
       <nz-descriptions-item [nzTitle]="t('orderCommandsInstrumentInfo.dayChangePerPriceLabel')">
         <p [class]='(data.priceData.dayChange ?? 0) < 0 ? "sell" : "buy"'
-           class="lower-row">{{data.priceData.dayChangePerPrice}}</p>
+           class="lower-row">{{data.priceData.dayChangePerPrice  | number: '0.0-10'}}</p>
       </nz-descriptions-item>
       <nz-descriptions-item nzTitle="Low">
-        <p class="lower-row">{{data.priceData.low}}</p>
+        <p class="lower-row">{{data.priceData.low  | number: '0.0-10'}}</p>
       </nz-descriptions-item>
       <nz-descriptions-item nzTitle="Bid">
-        <p (click)="selectPrice(data.priceData.bid)" class='buy selectable lower-row'>{{data.priceData.bid}}</p>
+        <p (click)="selectPrice(data.priceData.bid )" class='buy selectable lower-row'>{{data.priceData.bid  | number: '0.0-10'}}</p>
       </nz-descriptions-item>
     </nz-descriptions>
   </div>
