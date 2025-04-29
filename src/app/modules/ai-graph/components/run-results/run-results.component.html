@@ -12,7 +12,7 @@
       }
 
       @if (runStatus.status === Statuses.Success) {
-        @for (resultItem of runStatus?.results ?? []; track $index) {
+        @for (resultItem of runStatus.results; track $index) {
           <h3>{{ resultItem.source }}:</h3>
           @if (resultItem.format === Formats.Markdown) {
             <markdown>
