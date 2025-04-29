@@ -33,9 +33,10 @@ export interface TableDataRow {
 }
 
 @Component({
-  selector: 'ats-infinite-scroll-table',
-  templateUrl: './infinite-scroll-table.component.html',
-  styleUrls: ['./infinite-scroll-table.component.less']
+    selector: 'ats-infinite-scroll-table',
+    templateUrl: './infinite-scroll-table.component.html',
+    styleUrls: ['./infinite-scroll-table.component.less'],
+    standalone: false
 })
 export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, OnInit {
   private tableData: TableDataRow[] = [];
@@ -221,7 +222,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
 
   private calculateScrollHeight(): void {
     this.scrollHeight = this.tableContainerHeight -
-    InfiniteScrollTableComponent.getElementHeight((this.headerRowEl as QueryList<ElementRef> | undefined)?.first.nativeElement);
+      InfiniteScrollTableComponent.getElementHeight((this.headerRowEl as QueryList<ElementRef> | undefined)?.first.nativeElement);
 
     this.visibleItemsCount = Math.ceil(this.scrollHeight / this.itemHeight);
   }

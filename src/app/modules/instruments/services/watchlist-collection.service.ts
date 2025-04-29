@@ -238,8 +238,7 @@ export class WatchlistCollectionService {
   }
 
   private getCollection(): Observable<WatchlistCollection> {
-    if (!this.collection$) {
-      this.collection$ = this.watchlistCollectionBrokerService.getCollection().pipe(
+    this.collection$ ??= this.watchlistCollectionBrokerService.getCollection().pipe(
         tap(x => {
           const newLists: Watchlist[] = [];
           if (x.length === 0) {
@@ -270,7 +269,6 @@ export class WatchlistCollectionService {
         })),
         shareReplay(1)
       );
-    }
 
     return this.collection$;
   }

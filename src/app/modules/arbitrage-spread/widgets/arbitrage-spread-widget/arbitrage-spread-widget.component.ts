@@ -6,9 +6,10 @@ import { ArbitrageSpreadSettings } from "../../models/arbitrage-spread-settings.
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-arbitrage-spread-widget',
-  templateUrl: './arbitrage-spread-widget.component.html',
-  styleUrls: ['./arbitrage-spread-widget.component.less']
+    selector: 'ats-arbitrage-spread-widget',
+    templateUrl: './arbitrage-spread-widget.component.html',
+    styleUrls: ['./arbitrage-spread-widget.component.less'],
+    standalone: false
 })
 export class ArbitrageSpreadWidgetComponent implements OnInit {
   @Input({required: true})

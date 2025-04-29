@@ -6,9 +6,10 @@ import { ArbitrageSpread } from "../../models/arbitrage-spread.model";
 import { Side } from "../../../../shared/models/enums/side.model";
 
 @Component({
-  selector: 'ats-arbitrage-spread',
-  templateUrl: './arbitrage-spread-table.component.html',
-  styleUrls: ['./arbitrage-spread-table.component.less']
+    selector: 'ats-arbitrage-spread',
+    templateUrl: './arbitrage-spread-table.component.html',
+    styleUrls: ['./arbitrage-spread-table.component.less'],
+    standalone: false
 })
 export class ArbitrageSpreadTableComponent implements OnInit {
   items$?: Observable<ArbitrageSpread[]>;

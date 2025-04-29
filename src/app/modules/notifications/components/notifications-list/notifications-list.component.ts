@@ -5,9 +5,10 @@ import { NotificationMeta } from "../../models/notification.model";
 import { map } from "rxjs/operators";
 
 @Component({
-  selector: 'ats-notifications-list',
-  templateUrl: './notifications-list.component.html',
-  styleUrls: ['./notifications-list.component.less']
+    selector: 'ats-notifications-list',
+    templateUrl: './notifications-list.component.html',
+    styleUrls: ['./notifications-list.component.less'],
+    standalone: false
 })
 export class NotificationsListComponent implements OnInit {
   sortedNotifications$!: Observable<NotificationMeta[]>;

@@ -9,9 +9,10 @@ import {
 } from "../../models/scalper-order-book-settings.model";
 
 @Component({
-  selector: 'ats-bottom-floating-panel',
-  templateUrl: './bottom-floating-panel.component.html',
-  styleUrls: ['./bottom-floating-panel.component.less']
+    selector: 'ats-bottom-floating-panel',
+    templateUrl: './bottom-floating-panel.component.html',
+    styleUrls: ['./bottom-floating-panel.component.less'],
+    standalone: false
 })
 export class BottomFloatingPanelComponent {
   @Input({ required: true })

@@ -55,22 +55,21 @@ interface EditorsSection {
 }
 
 @Component({
-  selector: 'ats-node-properties-editor',
-  standalone: true,
-  imports: [
-    NzEmptyComponent,
-    TranslocoDirective,
-    StringPropertyEditorComponent,
-    NumberPropertyEditorComponent,
-    BooleanPropertyEditorComponent,
-    TextPropertyEditorComponent,
-    DatePropertyEditorComponent,
-    PortfolioPropertyEditorComponent,
-    PromptPropertyEditorComponent,
-    SelectPropertyEditorComponent
-  ],
-  templateUrl: './node-properties-editor.component.html',
-  styleUrl: './node-properties-editor.component.less'
+    selector: 'ats-node-properties-editor',
+    imports: [
+        NzEmptyComponent,
+        TranslocoDirective,
+        StringPropertyEditorComponent,
+        NumberPropertyEditorComponent,
+        BooleanPropertyEditorComponent,
+        TextPropertyEditorComponent,
+        DatePropertyEditorComponent,
+        PortfolioPropertyEditorComponent,
+        PromptPropertyEditorComponent,
+        SelectPropertyEditorComponent
+    ],
+    templateUrl: './node-properties-editor.component.html',
+    styleUrl: './node-properties-editor.component.less'
 })
 export class NodePropertiesEditorComponent implements OnChanges {
   @Input()

@@ -12,9 +12,10 @@ export interface OutcomingMessage {
 }
 
 @Component({
-  selector: 'ats-message-input',
-  templateUrl: './message-input.component.html',
-  styleUrls: ['./message-input.component.less']
+    selector: 'ats-message-input',
+    templateUrl: './message-input.component.html',
+    styleUrls: ['./message-input.component.less'],
+    standalone: false
 })
 export class MessageInputComponent {
   @ViewChild('inputElement', { static: true })

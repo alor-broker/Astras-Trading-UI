@@ -45,13 +45,14 @@ import {
 import {ConfirmableOrderCommandsService} from "../../services/confirmable-order-commands.service";
 
 @Component({
-  selector: 'ats-order-submit-widget',
-  templateUrl: './order-submit-widget.component.html',
-  styleUrls: ['./order-submit-widget.component.less'],
-  providers: [
-    CommonParametersService,
-    ConfirmableOrderCommandsService
-  ]
+    selector: 'ats-order-submit-widget',
+    templateUrl: './order-submit-widget.component.html',
+    styleUrls: ['./order-submit-widget.component.less'],
+    providers: [
+        CommonParametersService,
+        ConfirmableOrderCommandsService
+    ],
+    standalone: false
 })
 export class OrderSubmitWidgetComponent implements OnInit {
   currentPortfolio$!: Observable<PortfolioKey>;

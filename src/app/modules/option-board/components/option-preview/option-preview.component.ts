@@ -3,9 +3,10 @@ import {Option, OptionParameters} from "../../models/option-board.model";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 
 @Component({
-  selector: 'ats-option-preview',
-  templateUrl: './option-preview.component.html',
-  styleUrls: ['./option-preview.component.less']
+    selector: 'ats-option-preview',
+    templateUrl: './option-preview.component.html',
+    styleUrls: ['./option-preview.component.less'],
+    standalone: false
 })
 export class OptionPreviewComponent {
   optionParameter = OptionParameters;

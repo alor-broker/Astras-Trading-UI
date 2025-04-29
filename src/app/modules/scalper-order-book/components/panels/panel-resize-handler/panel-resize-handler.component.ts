@@ -24,9 +24,10 @@ import {
 } from "../tokens";
 
 @Component({
-  selector: 'ats-panel-resize-handler',
-  templateUrl: './panel-resize-handler.component.html',
-  styleUrls: ['./panel-resize-handler.component.less']
+    selector: 'ats-panel-resize-handler',
+    templateUrl: './panel-resize-handler.component.html',
+    styleUrls: ['./panel-resize-handler.component.less'],
+    standalone: false
 })
 export class PanelResizeHandlerComponent implements OnInit {
   constructor(

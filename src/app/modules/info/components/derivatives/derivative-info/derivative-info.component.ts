@@ -70,18 +70,17 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<DerivativeResponse>> = object({
 });
 
 @Component({
-  selector: 'ats-derivative-info',
-  standalone: true,
-  imports: [
-    DescriptorsListComponent,
-    LetDirective,
-    NzEmptyComponent,
-    NzTabComponent,
-    NzTabSetComponent,
-    TranslocoDirective
-  ],
-  templateUrl: './derivative-info.component.html',
-  styleUrl: './derivative-info.component.less'
+    selector: 'ats-derivative-info',
+    imports: [
+        DescriptorsListComponent,
+        LetDirective,
+        NzEmptyComponent,
+        NzTabComponent,
+        NzTabSetComponent,
+        TranslocoDirective
+    ],
+    templateUrl: './derivative-info.component.html',
+    styleUrl: './derivative-info.component.less'
 })
 export class DerivativeInfoComponent extends InstrumentInfoBaseComponent implements OnInit {
   info$!: Observable<Derivative | null>;

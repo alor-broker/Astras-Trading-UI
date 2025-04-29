@@ -20,21 +20,22 @@ import { Instrument } from "../../../../shared/models/instruments/instrument.mod
 import {Exchange} from "../../../../../generated/graphql.types";
 
 @Component({
-  selector: 'ats-spread-leg',
-  templateUrl: './spread-leg.component.html',
-  styleUrls: ['./spread-leg.component.less'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: SpreadLegComponent
-    },
-    {
-      provide: NG_VALIDATORS,
-      useExisting: SpreadLegComponent,
-      multi: true,
-    },
-  ]
+    selector: 'ats-spread-leg',
+    templateUrl: './spread-leg.component.html',
+    styleUrls: ['./spread-leg.component.less'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: SpreadLegComponent
+        },
+        {
+            provide: NG_VALIDATORS,
+            useExisting: SpreadLegComponent,
+            multi: true,
+        },
+    ],
+    standalone: false
 })
 export class SpreadLegComponent extends ControlValueAccessorBaseComponent<SpreadLeg> implements OnInit, Validator {
   @Input() isSideNeeded = false;

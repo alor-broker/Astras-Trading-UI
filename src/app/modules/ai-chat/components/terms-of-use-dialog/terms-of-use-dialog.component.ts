@@ -7,10 +7,11 @@ import {
 } from '@angular/core';
 
 @Component({
-  selector: 'ats-terms-of-use-dialog',
-  templateUrl: './terms-of-use-dialog.component.html',
-  styleUrl: './terms-of-use-dialog.component.less',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-terms-of-use-dialog',
+    templateUrl: './terms-of-use-dialog.component.html',
+    styleUrl: './terms-of-use-dialog.component.less',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TermsOfUseDialogComponent {
   @Input({ required: true })

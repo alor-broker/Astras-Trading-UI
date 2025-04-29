@@ -24,23 +24,22 @@ import {
 import { NgTemplateOutlet } from "@angular/common";
 
 @Component({
-  selector: 'ats-input-number',
-  templateUrl: './input-number.component.html',
-  styleUrls: ['./input-number.component.less'],
-  standalone: true,
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => InputNumberComponent),
-      multi: true
-    }
-  ],
-  imports: [
-    NzInputGroupComponent,
-    NzInputDirective,
-    FormsModule,
-    NgTemplateOutlet
-  ]
+    selector: 'ats-input-number',
+    templateUrl: './input-number.component.html',
+    styleUrls: ['./input-number.component.less'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => InputNumberComponent),
+            multi: true
+        }
+    ],
+    imports: [
+        NzInputGroupComponent,
+        NzInputDirective,
+        FormsModule,
+        NgTemplateOutlet
+    ]
 })
 export class InputNumberComponent extends ControlValueAccessorBaseComponent<number> {
   private readonly minus = '-';

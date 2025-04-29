@@ -26,9 +26,10 @@ import { ExportDialogParams } from "../export-watchlist-dialog/export-watchlist-
 import { ImportDialogParams } from "../import-watchlist-dialog/import-watchlist-dialog.component";
 
 @Component({
-  selector: 'ats-watchlist-collection-edit',
-  templateUrl: './watchlist-collection-edit.component.html',
-  styleUrls: ['./watchlist-collection-edit.component.less']
+    selector: 'ats-watchlist-collection-edit',
+    templateUrl: './watchlist-collection-edit.component.html',
+    styleUrls: ['./watchlist-collection-edit.component.less'],
+    standalone: false
 })
 export class WatchlistCollectionEditComponent implements OnInit {
   readonly exportDialogParams$ = new Subject<ExportDialogParams | null>();

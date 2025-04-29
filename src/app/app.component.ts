@@ -13,9 +13,10 @@ import {
 } from "./shared/services/hook/app/app-hook-token";
 
 @Component({
-  selector: 'ats-app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.less'],
+    selector: 'ats-app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.less'],
+    standalone: false
 })
 export class AppComponent implements OnInit, OnDestroy {
   readonly isLoading$: Observable<boolean>;

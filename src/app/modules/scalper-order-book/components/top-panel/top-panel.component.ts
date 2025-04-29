@@ -9,9 +9,10 @@ import {
 import { ScalperOrderBookDataContext, } from "../../models/scalper-order-book-data-context.model";
 
 @Component({
-  selector: 'ats-top-panel',
-  templateUrl: './top-panel.component.html',
-  styleUrls: ['./top-panel.component.less']
+    selector: 'ats-top-panel',
+    templateUrl: './top-panel.component.html',
+    styleUrls: ['./top-panel.component.less'],
+    standalone: false
 })
 export class TopPanelComponent {
   @Input({ required: true })

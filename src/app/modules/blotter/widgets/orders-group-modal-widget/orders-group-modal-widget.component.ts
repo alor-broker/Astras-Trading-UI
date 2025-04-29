@@ -3,9 +3,10 @@ import { Observable, of } from "rxjs";
 import { BlotterService } from "../../services/blotter.service";
 
 @Component({
-  selector: 'ats-orders-group-modal-widget',
-  templateUrl: './orders-group-modal-widget.component.html',
-  styleUrls: ['./orders-group-modal-widget.component.less']
+    selector: 'ats-orders-group-modal-widget',
+    templateUrl: './orders-group-modal-widget.component.html',
+    styleUrls: ['./orders-group-modal-widget.component.less'],
+    standalone: false
 })
 export class OrdersGroupModalWidgetComponent implements OnInit {
   @Input({required: true})

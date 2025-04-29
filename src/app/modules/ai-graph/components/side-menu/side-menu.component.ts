@@ -11,51 +11,38 @@ export interface MenuWidth {
 }
 
 @Component({
-  selector: 'ats-side-menu',
-  standalone: true,
-  imports: [
-    NzIconDirective,
-    NgClass,
-    NgTemplateOutlet
-  ],
-  templateUrl: './side-menu.component.html',
-  styleUrl: './side-menu.component.less',
-  animations: [
-    trigger('openCloseLeft', [
-      state('open', style({transform: 'translateX(0)', opacity: 1})),
-      state('closed', style({display: 'none', opacity: 0})),
-      transition(
-        'closed => open',
-        [
-          style({transform: 'translateX(-100%)'}),
-          animate(150)
-        ]
-      ),
-      transition(
-        'open => closed',
-        [
-          animate(150)
-        ]
-      ),
-    ]),
-    trigger('openCloseRight', [
-      state('open', style({transform: 'translateX(0)', opacity: 1})),
-      state('closed', style({display: 'none', opacity: 0})),
-      transition(
-        'closed => open',
-        [
-          style({transform: 'translateX(100%)'}),
-          animate(150)
-        ]
-      ),
-      transition(
-        'open => closed',
-        [
-          animate(150)
-        ]
-      ),
-    ]),
-  ]
+    selector: 'ats-side-menu',
+    imports: [
+        NzIconDirective,
+        NgClass,
+        NgTemplateOutlet
+    ],
+    templateUrl: './side-menu.component.html',
+    styleUrl: './side-menu.component.less',
+    animations: [
+        trigger('openCloseLeft', [
+            state('open', style({ transform: 'translateX(0)', opacity: 1 })),
+            state('closed', style({ display: 'none', opacity: 0 })),
+            transition('closed => open', [
+                style({ transform: 'translateX(-100%)' }),
+                animate(150)
+            ]),
+            transition('open => closed', [
+                animate(150)
+            ]),
+        ]),
+        trigger('openCloseRight', [
+            state('open', style({ transform: 'translateX(0)', opacity: 1 })),
+            state('closed', style({ display: 'none', opacity: 0 })),
+            transition('closed => open', [
+                style({ transform: 'translateX(100%)' }),
+                animate(150)
+            ]),
+            transition('open => closed', [
+                animate(150)
+            ]),
+        ]),
+    ]
 })
 export class SideMenuComponent {
   @Input()

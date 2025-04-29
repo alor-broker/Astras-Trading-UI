@@ -5,9 +5,10 @@ import {
 } from '@angular/core';
 
 @Component({
-  selector: 'ats-widget-skeleton',
-  templateUrl: './widget-skeleton.component.html',
-  styleUrls: ['./widget-skeleton.component.less']
+    selector: 'ats-widget-skeleton',
+    templateUrl: './widget-skeleton.component.html',
+    styleUrls: ['./widget-skeleton.component.less'],
+    standalone: false
 })
 export class WidgetSkeletonComponent {
   @Input({required: true})

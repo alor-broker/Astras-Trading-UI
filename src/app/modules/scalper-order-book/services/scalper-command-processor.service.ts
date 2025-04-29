@@ -435,12 +435,10 @@ export class ScalperCommandProcessorService {
   }
 
   private getMouseActionsMap(): Observable<ScalperOrderBookMouseActionsMap> {
-    if (!this.mouseActionsMap$) {
-      this.mouseActionsMap$ = this.terminalSettingsService.getSettings().pipe(
+    this.mouseActionsMap$ ??= this.terminalSettingsService.getSettings().pipe(
         map(x => x.scalperOrderBookMouseActions ?? TerminalSettingsHelper.getScalperOrderBookMouseActionsScheme1()),
         shareReplay(1)
       );
-    }
 
     return this.mouseActionsMap$;
   }

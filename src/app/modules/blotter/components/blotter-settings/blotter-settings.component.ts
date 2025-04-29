@@ -45,9 +45,10 @@ import {
 } from "../../../push-notifications/services/push-notifications-config";
 
 @Component({
-  selector: 'ats-blotter-settings',
-  templateUrl: './blotter-settings.component.html',
-  styleUrls: ['./blotter-settings.component.less']
+    selector: 'ats-blotter-settings',
+    templateUrl: './blotter-settings.component.html',
+    styleUrls: ['./blotter-settings.component.less'],
+    standalone: false
 })
 export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<BlotterSettings> implements OnInit {
   form = this.formBuilder.group({

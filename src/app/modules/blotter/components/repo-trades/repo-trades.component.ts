@@ -31,9 +31,10 @@ import { ExportHelper } from "../../utils/export-helper";
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 @Component({
-  selector: 'ats-repo-trades',
-  templateUrl: './repo-trades.component.html',
-  styleUrls: ['./repo-trades.component.less']
+    selector: 'ats-repo-trades',
+    templateUrl: './repo-trades.component.html',
+    styleUrls: ['./repo-trades.component.less'],
+    standalone: false
 })
 export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, TradeFilter> {
   @Output()

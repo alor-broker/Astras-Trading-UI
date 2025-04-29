@@ -11,18 +11,17 @@ import {AiGraphsSettings} from "../../models/ai-graphs-settings.model";
 import {AiGraphEditorDialogComponent} from "../ai-graph-editor-dialog/ai-graph-editor-dialog.component";
 
 @Component({
-  selector: 'ats-ai-graphs-widget',
-  standalone: true,
-  imports: [
-    AsyncPipe,
-    NgIf,
-    SharedModule,
-    TranslocoDirective,
-    GraphsListComponent,
-    AiGraphEditorDialogComponent
-  ],
-  templateUrl: './ai-graphs-widget.component.html',
-  styleUrl: './ai-graphs-widget.component.less'
+    selector: 'ats-ai-graphs-widget',
+    imports: [
+        AsyncPipe,
+        NgIf,
+        SharedModule,
+        TranslocoDirective,
+        GraphsListComponent,
+        AiGraphEditorDialogComponent
+    ],
+    templateUrl: './ai-graphs-widget.component.html',
+    styleUrl: './ai-graphs-widget.component.less'
 })
 export class AiGraphsWidgetComponent implements OnInit {
   @Input({required: true})

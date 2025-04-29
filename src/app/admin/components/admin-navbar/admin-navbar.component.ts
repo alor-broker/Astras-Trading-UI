@@ -18,21 +18,20 @@ import {
 } from "../../../modules/terminal-settings/widgets/theme-switch-widget/theme-switch-widget.component";
 
 @Component({
-  selector: 'ats-admin-navbar',
-  standalone: true,
-  imports: [
-    SelectClientPortfolioBtnComponent,
-    DashboardModule,
-    AsyncPipe,
-    WidgetsGalleryNavBtnComponent,
-    OpenOrdersDialogNavBtnComponent,
-    AdminProfileMenuNavBtnComponent,
-    DesktopNavbarComponent,
-    ThemeSwitchWidgetComponent,
-  ],
-  templateUrl: './admin-navbar.component.html',
-  styleUrl: './admin-navbar.component.less',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-admin-navbar',
+    imports: [
+        SelectClientPortfolioBtnComponent,
+        DashboardModule,
+        AsyncPipe,
+        WidgetsGalleryNavBtnComponent,
+        OpenOrdersDialogNavBtnComponent,
+        AdminProfileMenuNavBtnComponent,
+        DesktopNavbarComponent,
+        ThemeSwitchWidgetComponent,
+    ],
+    templateUrl: './admin-navbar.component.html',
+    styleUrl: './admin-navbar.component.less',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminNavbarComponent {
   readonly isDashboardReady$ = this.dashboardContextService.selectedPortfolio$.pipe(

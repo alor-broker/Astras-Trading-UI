@@ -8,14 +8,13 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import {RunStatus, Status} from '../../models/run-results.model';
 
 @Component({
-  selector: 'ats-run-config-btn',
-  standalone: true,
-  imports: [
-    NzButtonComponent,
-    NzIconDirective
-  ],
-  templateUrl: './run-config-btn.component.html',
-  styleUrl: './run-config-btn.component.less'
+    selector: 'ats-run-config-btn',
+    imports: [
+        NzButtonComponent,
+        NzIconDirective
+    ],
+    templateUrl: './run-config-btn.component.html',
+    styleUrl: './run-config-btn.component.less'
 })
 export class RunConfigBtnComponent implements OnInit {
   @Input()

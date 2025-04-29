@@ -58,9 +58,10 @@ interface DisplayRow extends BodyRow {
 }
 
 @Component({
-  selector: 'ats-scalper-order-book-table',
-  templateUrl: './scalper-order-book-table.component.html',
-  styleUrls: ['./scalper-order-book-table.component.less']
+    selector: 'ats-scalper-order-book-table',
+    templateUrl: './scalper-order-book-table.component.html',
+    styleUrls: ['./scalper-order-book-table.component.less'],
+    standalone: false
 })
 export class ScalperOrderBookTableComponent implements OnInit {
   readonly numberFormats = NumberDisplayFormat;

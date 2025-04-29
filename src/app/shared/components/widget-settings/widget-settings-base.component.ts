@@ -25,7 +25,8 @@ export interface WidgetSettingsFormComponent {
 }
 
 @Component({
-  template: ''
+    template: '',
+    standalone: false
 })
 export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> implements WidgetSettingsFormComponent, OnInit {
   @Input({ required: true })

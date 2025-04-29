@@ -60,9 +60,10 @@ import {
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
 
 @Component({
-  selector: 'ats-stop-order-form',
-  templateUrl: './stop-order-form.component.html',
-  styleUrls: ['./stop-order-form.component.less']
+    selector: 'ats-stop-order-form',
+    templateUrl: './stop-order-form.component.html',
+    styleUrls: ['./stop-order-form.component.less'],
+    standalone: false
 })
 export class StopOrderFormComponent extends BaseOrderFormComponent implements OnInit, OnDestroy {
   readonly sides = Side;

@@ -13,16 +13,15 @@ import { LetDirective } from "@ngrx/component";
 import { Market } from "../../../../../generated/graphql.types";
 
 @Component({
-  selector: 'ats-mobile-home-screen-content',
-  standalone: true,
-  imports: [
-    PortfolioDynamicsComponent,
-    PositionsComponent,
-    MarketTrendsComponent,
-    LetDirective
-  ],
-  templateUrl: './mobile-home-screen-content.component.html',
-  styleUrl: './mobile-home-screen-content.component.less'
+    selector: 'ats-mobile-home-screen-content',
+    imports: [
+        PortfolioDynamicsComponent,
+        PositionsComponent,
+        MarketTrendsComponent,
+        LetDirective
+    ],
+    templateUrl: './mobile-home-screen-content.component.html',
+    styleUrl: './mobile-home-screen-content.component.less'
 })
 export class MobileHomeScreenContentComponent implements OnInit {
   @Input({required: true})

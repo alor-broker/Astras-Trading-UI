@@ -268,8 +268,7 @@ export class WsOrdersConnector implements OnDestroy {
   }
 
   private sendMessageWithAuthorization<T extends WsRequestMessage>(request: T, socketState: SocketState): Observable<WsResponseMessage> {
-    if (socketState.authorizationCheck$ == null) {
-      socketState.authorizationCheck$ = this.getCurrentAccessToken().pipe(
+    socketState.authorizationCheck$ ??= this.getCurrentAccessToken().pipe(
         distinctUntilChanged(),
         filter(x => !!x),
         switchMap(t => this.sendBaseMessage(
@@ -285,7 +284,6 @@ export class WsOrdersConnector implements OnDestroy {
         map(() => ({})),
         shareReplay(1)
       );
-    }
 
     return socketState.authorizationCheck$.pipe(
       switchMap(() => this.sendBaseMessage(request, socketState.webSocketSubject)),

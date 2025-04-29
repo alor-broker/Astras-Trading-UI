@@ -124,8 +124,7 @@ export class PushNotificationsService implements OnDestroy {
   }
 
   getMessages(): Observable<MessagePayload> {
-    if (!this.messages$) {
-      this.messages$ = this.getToken().pipe(
+    this.messages$ ??= this.getToken().pipe(
         switchMap(() => {
             return new Observable<MessagePayload>(subscriber => {
               this.messaging.onMessage(value => subscriber.next(value));
@@ -134,7 +133,6 @@ export class PushNotificationsService implements OnDestroy {
         ),
         shareReplay(1)
       );
-    }
 
     return this.messages$;
   }

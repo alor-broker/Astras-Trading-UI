@@ -13,7 +13,6 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { SharedModule } from '../../shared/shared.module';
-import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzResizeObserverModule } from 'ng-zorro-antd/cdk/resize-observer';
 import { PresetsComponent } from './components/presets/presets.component';
 import { OrdersBasketSettingsComponent } from './components/orders-basket-settings/orders-basket-settings.component';
@@ -40,7 +39,6 @@ import { InstrumentSearchComponent } from "../../shared/components/instrument-se
         NzFormModule,
         NzInputModule,
         SharedModule,
-        NzInputNumberModule,
         NzResizeObserverModule,
         NzNoAnimationModule,
         InputNumberComponent,

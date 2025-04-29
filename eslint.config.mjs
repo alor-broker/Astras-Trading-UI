@@ -1,9 +1,10 @@
-// @ts-check
-const tseslint = require("typescript-eslint");
-const angular = require("angular-eslint");
-const stylistic = require("@stylistic/eslint-plugin")
+import tseslint from "typescript-eslint";
+import { defineConfig } from "eslint/config";
+import angular from "angular-eslint";
+import stylistic from "@stylistic/eslint-plugin";
 
-module.exports = tseslint.config(
+
+export default defineConfig([
   {
     files: ["**/*.ts"],
     ignores: [
@@ -174,7 +175,8 @@ module.exports = tseslint.config(
           "allowAny": true
         }
       ],
-      "@typescript-eslint/switch-exhaustiveness-check": "error"
+      "@angular-eslint/prefer-standalone": "off",
+      "@typescript-eslint/switch-exhaustiveness-check": "off"
     },
   },
   {
@@ -200,4 +202,4 @@ module.exports = tseslint.config(
       ]
     },
   },
-);
+]);

@@ -30,9 +30,10 @@ interface BoardViewRecord extends RecordContent {
 }
 
 @Component({
-  selector: 'ats-option-board',
-  templateUrl: './option-board.component.html',
-  styleUrls: ['./option-board.component.less'],
+    selector: 'ats-option-board',
+    templateUrl: './option-board.component.html',
+    styleUrls: ['./option-board.component.less'],
+    standalone: false
 })
 export class OptionBoardComponent implements OnInit, OnDestroy {
   private readonly BoardViewStorageKey = 'board-view';

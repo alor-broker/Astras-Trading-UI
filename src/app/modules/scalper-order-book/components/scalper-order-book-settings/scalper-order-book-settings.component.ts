@@ -27,9 +27,10 @@ import {map} from "rxjs/operators";
 import {TradesClusterPanelSettingsDefaults} from "./constants/settings-defaults";
 
 @Component({
-  selector: 'ats-scalper-order-book-settings',
-  templateUrl: './scalper-order-book-settings.component.html',
-  styleUrls: ['./scalper-order-book-settings.component.less']
+    selector: 'ats-scalper-order-book-settings',
+    templateUrl: './scalper-order-book-settings.component.html',
+    styleUrls: ['./scalper-order-book-settings.component.less'],
+    standalone: false
 })
 export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComponent, OnInit {
   @Input({required: true})

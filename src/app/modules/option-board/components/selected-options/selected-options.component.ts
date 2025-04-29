@@ -81,9 +81,10 @@ interface DetailsDisplay extends OptionKey {
 }
 
 @Component({
-  selector: 'ats-selected-options',
-  templateUrl: './selected-options.component.html',
-  styleUrls: ['./selected-options.component.less']
+    selector: 'ats-selected-options',
+    templateUrl: './selected-options.component.html',
+    styleUrls: ['./selected-options.component.less'],
+    standalone: false
 })
 export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay> {
   @Input({required: true})

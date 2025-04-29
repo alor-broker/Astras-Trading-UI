@@ -22,9 +22,10 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
 import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 
 @Component({
-  selector: 'ats-order-submit-settings',
-  templateUrl: './order-submit-settings.component.html',
-  styleUrls: ['./order-submit-settings.component.less']
+    selector: 'ats-order-submit-settings',
+    templateUrl: './order-submit-settings.component.html',
+    styleUrls: ['./order-submit-settings.component.less'],
+    standalone: false
 })
 export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<OrderSubmitSettings> implements OnInit {
   readonly form = this.formBuilder.group({

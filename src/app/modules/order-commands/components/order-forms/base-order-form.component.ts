@@ -39,7 +39,8 @@ import {
 } from "../../services/common-parameters.service";
 
 @Component({
-  template: ''
+    template: '',
+    standalone: false
 })
 export abstract class BaseOrderFormComponent implements OnDestroy {
   readonly formInstrument$ = new BehaviorSubject<Instrument | null>(null);

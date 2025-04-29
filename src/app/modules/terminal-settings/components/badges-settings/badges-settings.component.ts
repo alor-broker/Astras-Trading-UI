@@ -10,16 +10,17 @@ import {
 } from "../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component";
 
 @Component({
-  selector: 'ats-badges-settings',
-  templateUrl: './badges-settings.component.html',
-  styleUrl: './badges-settings.component.less',
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: BadgesSettingsComponent
-    }
-  ]
+    selector: 'ats-badges-settings',
+    templateUrl: './badges-settings.component.html',
+    styleUrl: './badges-settings.component.less',
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: BadgesSettingsComponent
+        }
+    ],
+    standalone: false
 })
 export class BadgesSettingsComponent extends ControlValueAccessorBaseComponent<string[]> {
   newBadgeColorControl = this.formBuilder.nonNullable.control('');

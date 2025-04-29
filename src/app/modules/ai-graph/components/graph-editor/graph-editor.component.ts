@@ -37,22 +37,21 @@ import {RunResultsComponent} from "../run-results/run-results.component";
 import {NodePropertiesEditorComponent} from "../node-properties-editor/node-properties-editor.component";
 
 @Component({
-  selector: 'ats-graph-editor',
-  standalone: true,
-  imports: [
-    NzResizeObserverDirective,
-    LetDirective,
-    SideMenuComponent,
-    NzIconDirective,
-    SideMenuTitleDirective,
-    SideMenuContentDirective,
-    TranslocoDirective,
-    RunConfigBtnComponent,
-    RunResultsComponent,
-    NodePropertiesEditorComponent
-  ],
-  templateUrl: './graph-editor.component.html',
-  styleUrl: './graph-editor.component.less'
+    selector: 'ats-graph-editor',
+    imports: [
+        NzResizeObserverDirective,
+        LetDirective,
+        SideMenuComponent,
+        NzIconDirective,
+        SideMenuTitleDirective,
+        SideMenuContentDirective,
+        TranslocoDirective,
+        RunConfigBtnComponent,
+        RunResultsComponent,
+        NodePropertiesEditorComponent
+    ],
+    templateUrl: './graph-editor.component.html',
+    styleUrl: './graph-editor.component.less'
 })
 export class GraphEditorComponent implements AfterViewInit, OnDestroy {
   @Input()

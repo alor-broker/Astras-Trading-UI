@@ -119,26 +119,25 @@ interface DisplaySettings extends RecordContent {
 }
 
 @Component({
-  selector: 'ats-all-options-list-view',
-  standalone: true,
-  imports: [
-    TranslocoDirective,
-    NzSpinComponent,
-    AsyncPipe,
-    NgTemplateOutlet,
-    NzResizeObserverDirective,
-    LetDirective,
-    NzEmptyComponent,
-    NzSelectComponent,
-    FormsModule,
-    NzOptionComponent,
-    NzCollapseComponent,
-    DatePipe,
-    SharedModule,
-    InputNumberComponent
-  ],
-  templateUrl: './all-options-list-view.component.html',
-  styleUrl: './all-options-list-view.component.less'
+    selector: 'ats-all-options-list-view',
+    imports: [
+        TranslocoDirective,
+        NzSpinComponent,
+        AsyncPipe,
+        NgTemplateOutlet,
+        NzResizeObserverDirective,
+        LetDirective,
+        NzEmptyComponent,
+        NzSelectComponent,
+        FormsModule,
+        NzOptionComponent,
+        NzCollapseComponent,
+        DatePipe,
+        SharedModule,
+        InputNumberComponent
+    ],
+    templateUrl: './all-options-list-view.component.html',
+    styleUrl: './all-options-list-view.component.less'
 })
 export class AllOptionsListViewComponent implements OnInit, OnDestroy {
   @Input({required: true})

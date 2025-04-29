@@ -14,8 +14,9 @@ import {
 import { TableConfig } from "../../models/table-config.model";
 
 @Component({
-  selector: 'ats-test-comp',
-  template: ''
+    selector: 'ats-test-comp',
+    template: '',
+    standalone: false
 })
 class TestComponent extends BaseTableComponent<any, any> {
   protected initTableConfigStream(): Observable<TableConfig<any>> {
@@ -28,7 +29,8 @@ class TestComponent extends BaseTableComponent<any, any> {
 }
 
 @Component({
-  template: '<ats-test-comp></ats-test-comp>'
+    template: '<ats-test-comp></ats-test-comp>',
+    standalone: false
 })
 class TestWrapperComponent {}
 

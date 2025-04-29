@@ -51,28 +51,27 @@ import { NzEmptyComponent } from "ng-zorro-antd/empty";
 import { SearchResultsListComponent } from "../../components/search-results-list/search-results-list.component";
 
 @Component({
-  selector: 'ats-instrument-select-dialog-widget',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    NzFormModule,
-    NzInputModule,
-    NzSelectModule,
-    TranslocoDirective,
-    NzModalComponent,
-    LetDirective,
-    NzModalContentDirective,
-    NzIconDirective,
-    NzSpinComponent,
-    NzEmptyComponent,
-    SearchResultsListComponent
-  ],
-  templateUrl: './instrument-select-dialog-widget.component.html',
-  styleUrl: './instrument-select-dialog-widget.component.less',
-  providers: [
-    SearchInstrumentStore
-  ]
+    selector: 'ats-instrument-select-dialog-widget',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        NzFormModule,
+        NzInputModule,
+        NzSelectModule,
+        TranslocoDirective,
+        NzModalComponent,
+        LetDirective,
+        NzModalContentDirective,
+        NzIconDirective,
+        NzSpinComponent,
+        NzEmptyComponent,
+        SearchResultsListComponent
+    ],
+    templateUrl: './instrument-select-dialog-widget.component.html',
+    styleUrl: './instrument-select-dialog-widget.component.less',
+    providers: [
+        SearchInstrumentStore
+    ]
 })
 export class InstrumentSelectDialogWidgetComponent implements OnInit, AfterViewInit, OnDestroy {
   exchanges$!: Observable<string[]>;

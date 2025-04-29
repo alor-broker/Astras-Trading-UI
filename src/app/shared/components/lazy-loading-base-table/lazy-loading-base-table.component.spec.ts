@@ -8,8 +8,9 @@ import { WidgetSettingsService } from "../../services/widget-settings.service";
 import { By } from "@angular/platform-browser";
 
 @Component({
-  selector: 'ats-test-comp',
-  template: ''
+    selector: 'ats-test-comp',
+    template: '',
+    standalone: false
 })
 class TestComponent extends LazyLoadingBaseTableComponent<any, any> {
   protected initTableConfigStream(): Observable<TableConfig<any>> {
@@ -22,7 +23,8 @@ class TestComponent extends LazyLoadingBaseTableComponent<any, any> {
 }
 
 @Component({
-  template: '<ats-test-comp></ats-test-comp>'
+    template: '<ats-test-comp></ats-test-comp>',
+    standalone: false
 })
 class TestWrapperComponent {}
 

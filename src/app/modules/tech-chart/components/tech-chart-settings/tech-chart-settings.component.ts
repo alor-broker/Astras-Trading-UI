@@ -30,9 +30,10 @@ import { map } from "rxjs/operators";
 import { NzMarks } from "ng-zorro-antd/slider";
 
 @Component({
-  selector: 'ats-tech-chart-settings',
-  templateUrl: './tech-chart-settings.component.html',
-  styleUrls: ['./tech-chart-settings.component.less']
+    selector: 'ats-tech-chart-settings',
+    templateUrl: './tech-chart-settings.component.html',
+    styleUrls: ['./tech-chart-settings.component.less'],
+    standalone: false
 })
 export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<TechChartSettings> implements OnInit {
   readonly availableLineMarkerPositions = Object.values(LineMarkerPosition);

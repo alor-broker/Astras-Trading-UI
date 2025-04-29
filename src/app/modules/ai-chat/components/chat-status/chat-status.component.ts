@@ -8,9 +8,10 @@ export interface DisplayStatus {
 }
 
 @Component({
-  selector: 'ats-chat-status',
-  templateUrl: './chat-status.component.html',
-  styleUrls: ['./chat-status.component.less']
+    selector: 'ats-chat-status',
+    templateUrl: './chat-status.component.html',
+    styleUrls: ['./chat-status.component.less'],
+    standalone: false
 })
 export class ChatStatusComponent {
   @Input({ required: true })

@@ -16,24 +16,23 @@ import {NzPopconfirmDirective} from "ng-zorro-antd/popconfirm";
 import {NzEmptyComponent} from "ng-zorro-antd/empty";
 
 @Component({
-  selector: 'ats-graphs-list',
-  standalone: true,
-  imports: [
-    LetDirective,
-    NzSpinComponent,
-    NzButtonComponent,
-    NzIconDirective,
-    NzInputGroupComponent,
-    NzInputDirective,
-    TranslocoDirective,
-    ReactiveFormsModule,
-    NzFormControlComponent,
-    NzFormDirective,
-    NzPopconfirmDirective,
-    NzEmptyComponent
-  ],
-  templateUrl: './graphs-list.component.html',
-  styleUrl: './graphs-list.component.less'
+    selector: 'ats-graphs-list',
+    imports: [
+        LetDirective,
+        NzSpinComponent,
+        NzButtonComponent,
+        NzIconDirective,
+        NzInputGroupComponent,
+        NzInputDirective,
+        TranslocoDirective,
+        ReactiveFormsModule,
+        NzFormControlComponent,
+        NzFormDirective,
+        NzPopconfirmDirective,
+        NzEmptyComponent
+    ],
+    templateUrl: './graphs-list.component.html',
+    styleUrl: './graphs-list.component.less'
 })
 export class GraphsListComponent implements OnInit {
   readonly validationOptions = {

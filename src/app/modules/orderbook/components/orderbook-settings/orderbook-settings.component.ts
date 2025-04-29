@@ -28,9 +28,10 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
 import { NzMarks } from "ng-zorro-antd/slider";
 
 @Component({
-  selector: 'ats-orderbook-settings',
-  templateUrl: './orderbook-settings.component.html',
-  styleUrls: ['./orderbook-settings.component.less']
+    selector: 'ats-orderbook-settings',
+    templateUrl: './orderbook-settings.component.html',
+    styleUrls: ['./orderbook-settings.component.less'],
+    standalone: false
 })
 export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<OrderbookSettings> implements OnInit {
   readonly validationOptions = {

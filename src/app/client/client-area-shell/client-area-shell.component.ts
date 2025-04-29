@@ -13,13 +13,12 @@ import { ClientAuthContextService } from "../services/auth/client-auth-context.s
 import {RouterOutlet} from "@angular/router";
 
 @Component({
-  selector: 'ats-client-area-shell',
-  templateUrl: './client-area-shell.component.html',
-  styleUrl: './client-area-shell.component.less',
-  imports: [
-    RouterOutlet
-  ],
-  standalone: true
+    selector: 'ats-client-area-shell',
+    templateUrl: './client-area-shell.component.html',
+    styleUrl: './client-area-shell.component.less',
+    imports: [
+        RouterOutlet
+    ]
 })
 export class ClientAreaShellComponent implements OnInit, OnDestroy {
   constructor(

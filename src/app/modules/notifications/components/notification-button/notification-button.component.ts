@@ -8,10 +8,11 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Component({
-  selector: 'ats-notification-button',
-  templateUrl: './notification-button.component.html',
-  styleUrls: ['./notification-button.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-notification-button',
+    templateUrl: './notification-button.component.html',
+    styleUrls: ['./notification-button.component.less'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NotificationButtonComponent implements OnInit {
   isTableVisible = false;

@@ -26,12 +26,13 @@ import { InstrumentSearchService } from "../../services/instrument-search.servic
 import { ThemeService } from "../../../../shared/services/theme.service";
 
 @Component({
-  selector: 'ats-tech-chart-widget',
-  templateUrl: './tech-chart-widget.component.html',
-  styleUrls: ['./tech-chart-widget.component.less'],
-  providers: [
-    InstrumentSearchService
-  ],
+    selector: 'ats-tech-chart-widget',
+    templateUrl: './tech-chart-widget.component.html',
+    styleUrls: ['./tech-chart-widget.component.less'],
+    providers: [
+        InstrumentSearchService
+    ],
+    standalone: false
 })
 export class TechChartWidgetComponent implements OnInit {
   shouldShowSettings = false;

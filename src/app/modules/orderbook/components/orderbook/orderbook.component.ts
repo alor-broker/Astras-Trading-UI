@@ -42,11 +42,12 @@ interface SpreadDiffData {
 }
 
 @Component({
-  selector: 'ats-order-book',
-  templateUrl: './orderbook.component.html',
-  styleUrls: ['./orderbook.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
+    selector: 'ats-order-book',
+    templateUrl: './orderbook.component.html',
+    styleUrls: ['./orderbook.component.less'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class OrderBookComponent implements OnInit {
   @Input({required: true})

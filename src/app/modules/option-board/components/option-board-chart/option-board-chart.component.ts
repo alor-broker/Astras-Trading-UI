@@ -51,9 +51,10 @@ enum ChartType {
 }
 
 @Component({
-  selector: 'ats-option-board-chart',
-  templateUrl: './option-board-chart.component.html',
-  styleUrl: './option-board-chart.component.less'
+    selector: 'ats-option-board-chart',
+    templateUrl: './option-board-chart.component.html',
+    styleUrl: './option-board-chart.component.less',
+    standalone: false
 })
 export class OptionBoardChartComponent implements OnInit, OnDestroy {
   readonly isLoading$ = new BehaviorSubject<boolean>(false);

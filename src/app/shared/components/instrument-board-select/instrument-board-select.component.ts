@@ -19,16 +19,17 @@ import {
 import { isInstrumentEqual } from "../../utils/settings-helper";
 
 @Component({
-  selector: 'ats-instrument-board-select',
-  templateUrl: './instrument-board-select.component.html',
-  styleUrls: ['./instrument-board-select.component.less'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: InstrumentBoardSelectComponent
-    }
-  ]
+    selector: 'ats-instrument-board-select',
+    templateUrl: './instrument-board-select.component.html',
+    styleUrls: ['./instrument-board-select.component.less'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: InstrumentBoardSelectComponent
+        }
+    ],
+    standalone: false
 })
 export class InstrumentBoardSelectComponent implements OnInit, OnDestroy, ControlValueAccessor {
   currentValue: string | null = null;

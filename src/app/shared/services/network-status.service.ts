@@ -29,8 +29,7 @@ export class NetworkStatusService {
   }
 
   get status$(): Observable<NetworkStatus> {
-    if (!this.networkStatus$) {
-      this.networkStatus$ = combineLatest([
+    this.networkStatus$ ??= combineLatest([
         isOnline$(),
         this.subscriptionsDataFeedService.getConnectionStatus(),
         this.wsOrdersConnector?.getConnectionStatus() ?? of(true)
@@ -44,7 +43,6 @@ export class NetworkStatusService {
         }),
         shareReplay(1)
       );
-    }
 
     return this.networkStatus$;
   }

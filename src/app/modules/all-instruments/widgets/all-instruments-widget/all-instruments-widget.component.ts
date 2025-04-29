@@ -17,9 +17,10 @@ import {TerminalSettingsService} from "../../../../shared/services/terminal-sett
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
-  selector: 'ats-all-instruments-widget',
-  templateUrl: './all-instruments-widget.component.html',
-  styleUrls: ['./all-instruments-widget.component.less']
+    selector: 'ats-all-instruments-widget',
+    templateUrl: './all-instruments-widget.component.html',
+    styleUrls: ['./all-instruments-widget.component.less'],
+    standalone: false
 })
 export class AllInstrumentsWidgetComponent implements OnInit {
   shouldShowSettings = false;

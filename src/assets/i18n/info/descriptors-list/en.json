@@ -10,8 +10,8 @@
     "priceStepCurrency": "Price step cost currency",
     "isMarginal": "Available for margin",
     "isShortSellPossible": "Available for short",
-    "longMultiplier": "Downside risk rate",
-    "shortMultiplier": "Upward risk rate",
+    "longMultiplier": "Long rate",
+    "shortMultiplier": "Short rate",
     "currencyLongMultiplier": "Trading currency downside risk rate",
     "currencyShortMultiplier": "Trading currency upside risk rate",
     "EBITDA": "EBITDA",
@@ -54,6 +54,11 @@
     "marginSell": "Margin sell",
     "volatility": "Volatility",
     "expirationDate": "Expiration date"
+  },
+
+  "titleTooltips": {
+    "longMultiplier": "Price downside risk rate",
+    "shortMultiplier": "Price increase risk rate"
   },
 
   "instrumentTypeOptions": {

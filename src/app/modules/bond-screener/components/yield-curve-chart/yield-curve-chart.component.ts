@@ -90,9 +90,10 @@ interface ItemPosition {
 }
 
 @Component({
-  selector: 'ats-yield-curve-chart',
-  templateUrl: './yield-curve-chart.component.html',
-  styleUrls: ['./yield-curve-chart.component.less']
+    selector: 'ats-yield-curve-chart',
+    templateUrl: './yield-curve-chart.component.html',
+    styleUrls: ['./yield-curve-chart.component.less'],
+    standalone: false
 })
 export class YieldCurveChartComponent implements OnInit, OnDestroy {
   readonly loadingStatus$ = new BehaviorSubject<LoadingStatus>(LoadingStatus.Initial);

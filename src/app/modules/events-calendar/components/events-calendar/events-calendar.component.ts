@@ -24,9 +24,10 @@ import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reduc
 import {Exchange} from "../../../../../generated/graphql.types";
 
 @Component({
-  selector: 'ats-events-calendar',
-  templateUrl: './events-calendar.component.html',
-  styleUrls: ['./events-calendar.component.less']
+    selector: 'ats-events-calendar',
+    templateUrl: './events-calendar.component.html',
+    styleUrls: ['./events-calendar.component.less'],
+    standalone: false
 })
 export class EventsCalendarComponent implements OnInit, OnDestroy {
   @Input({required: true})

@@ -4,7 +4,8 @@ import { WidgetSettingsService } from "../../services/widget-settings.service";
 import { BehaviorSubject } from "rxjs";
 
 @Component({
-  template: ''
+    template: '',
+    standalone: false
 })
 export abstract class LazyLoadingBaseTableComponent<
   T extends Record<string, any>,

@@ -15,24 +15,23 @@ import {NzOptionComponent, NzOptionGroupComponent, NzSelectComponent} from "ng-z
 import {UserPortfoliosService} from "../../../../../shared/services/user-portfolios.service";
 
 @Component({
-  selector: 'ats-portfolio-property-editor',
-  standalone: true,
-  imports: [
-    NzFormControlComponent,
-    NzFormDirective,
-    NzFormItemComponent,
-    NzFormLabelComponent,
-    ReactiveFormsModule,
-    TranslocoDirective,
-    AsyncPipe,
-    NgForOf,
-    NgIf,
-    NzOptionComponent,
-    NzOptionGroupComponent,
-    NzSelectComponent
-  ],
-  templateUrl: './portfolio-property-editor.component.html',
-  styleUrl: './portfolio-property-editor.component.less'
+    selector: 'ats-portfolio-property-editor',
+    imports: [
+        NzFormControlComponent,
+        NzFormDirective,
+        NzFormItemComponent,
+        NzFormLabelComponent,
+        ReactiveFormsModule,
+        TranslocoDirective,
+        AsyncPipe,
+        NgForOf,
+        NgIf,
+        NzOptionComponent,
+        NzOptionGroupComponent,
+        NzSelectComponent
+    ],
+    templateUrl: './portfolio-property-editor.component.html',
+    styleUrl: './portfolio-property-editor.component.less'
 })
 export class PortfolioPropertyEditorComponent extends PropertyEditorBaseComponent<PortfolioPropertyEditorConfig> implements OnInit, OnChanges {
   protected availablePortfolios$!: Observable<Map<string, PortfolioExtended[]>>;

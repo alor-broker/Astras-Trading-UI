@@ -35,7 +35,7 @@ describe('LightChartSettingsComponent', () => {
   };
 
   beforeAll(() => TestBed.resetTestingModule());
-  beforeEach((async () => {
+  beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
         LightChartSettingsComponent,
@@ -71,7 +71,7 @@ describe('LightChartSettingsComponent', () => {
       ]
     })
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LightChartSettingsComponent);

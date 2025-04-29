@@ -59,9 +59,10 @@ interface NotificationFilter {
 type DisplayNotification = Partial<OrderExecuteSubscription> & Partial<PriceSparkSubscription> & { id: string };
 
 @Component({
-  selector: 'ats-push-notifications',
-  templateUrl: './push-notifications.component.html',
-  styleUrls: ['./push-notifications.component.less']
+    selector: 'ats-push-notifications',
+    templateUrl: './push-notifications.component.html',
+    styleUrls: ['./push-notifications.component.less'],
+    standalone: false
 })
 export class PushNotificationsComponent extends BlotterBaseTableComponent<DisplayNotification, NotificationFilter> {
   readonly subscriptionTypes = PushSubscriptionType;

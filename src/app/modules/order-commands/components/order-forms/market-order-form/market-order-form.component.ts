@@ -40,9 +40,10 @@ import { toInstrumentKey } from "../../../../../shared/utils/instruments";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
 
 @Component({
-  selector: 'ats-market-order-form',
-  templateUrl: './market-order-form.component.html',
-  styleUrls: ['./market-order-form.component.less']
+    selector: 'ats-market-order-form',
+    templateUrl: './market-order-form.component.html',
+    styleUrls: ['./market-order-form.component.less'],
+    standalone: false
 })
 export class MarketOrderFormComponent extends BaseOrderFormComponent implements OnInit, OnDestroy {
   readonly evaluationRequest$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);

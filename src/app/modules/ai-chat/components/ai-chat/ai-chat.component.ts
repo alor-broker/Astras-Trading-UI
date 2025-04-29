@@ -28,9 +28,10 @@ import { map } from "rxjs/operators";
 import {GuidGenerator} from "../../../../shared/utils/guid";
 
 @Component({
-  selector: 'ats-ai-chat',
-  templateUrl: './ai-chat.component.html',
-  styleUrls: ['./ai-chat.component.less']
+    selector: 'ats-ai-chat',
+    templateUrl: './ai-chat.component.html',
+    styleUrls: ['./ai-chat.component.less'],
+    standalone: false
 })
 export class AiChatComponent implements OnInit, OnDestroy {
   displayMessages: Message<any>[] = [];

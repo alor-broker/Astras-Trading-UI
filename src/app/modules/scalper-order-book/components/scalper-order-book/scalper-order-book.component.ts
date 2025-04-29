@@ -27,15 +27,16 @@ export interface ScalperOrderBookSharedContext {
 export const SCALPER_ORDERBOOK_SHARED_CONTEXT = new InjectionToken<ScalperOrderBookSharedContext>('ScalperOrderBookSharedContext');
 
 @Component({
-  selector: 'ats-scalper-order-book',
-  templateUrl: './scalper-order-book.component.html',
-  styleUrls: ['./scalper-order-book.component.less'],
-  providers: [
-    {
-      provide: SCALPER_ORDERBOOK_SHARED_CONTEXT,
-      useExisting: ScalperOrderBookComponent
-    }
-  ]
+    selector: 'ats-scalper-order-book',
+    templateUrl: './scalper-order-book.component.html',
+    styleUrls: ['./scalper-order-book.component.less'],
+    providers: [
+        {
+            provide: SCALPER_ORDERBOOK_SHARED_CONTEXT,
+            useExisting: ScalperOrderBookComponent
+        }
+    ],
+    standalone: false
 })
 export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext, OnInit, OnDestroy {
   @Input({required: true})

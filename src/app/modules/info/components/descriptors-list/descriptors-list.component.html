@@ -11,8 +11,12 @@
 
           @for (descriptor of group.items; track $index) {
             <tr class="descriptor-row">
-              <td class="descriptor-label">
-                <span>{{ t('infoDescriptorsList.descriptorTitles.' + (descriptor.translationKey ?? descriptor.id)) }}</span>
+              <td class="descriptor-label" [class.with-tooltip]="descriptor.titleTooltipTranslationKey != null">
+                <span
+                  nz-tooltip
+                  [nzTooltipTitle]="t('infoDescriptorsList.titleTooltips.' + (descriptor.titleTooltipTranslationKey ?? ''))"
+                >
+                  {{ t('infoDescriptorsList.descriptorTitles.' + (descriptor.translationKey ?? descriptor.id)) }}</span>
               </td>
               <td class="descriptor-content">
                 <span [ngStyle]="descriptor.customStyles">

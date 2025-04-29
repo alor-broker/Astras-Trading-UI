@@ -24,15 +24,14 @@ import { MergedBadgeComponent } from "../merged-badge/merged-badge.component";
 import { LetDirective } from "@ngrx/component";
 
 @Component({
-  selector: 'ats-instrument-badge-display',
-  templateUrl: './instrument-badge-display.component.html',
-  styleUrls: ['./instrument-badge-display.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MergedBadgeComponent,
-    LetDirective
-  ],
-  standalone: true
+    selector: 'ats-instrument-badge-display',
+    templateUrl: './instrument-badge-display.component.html',
+    styleUrls: ['./instrument-badge-display.component.less'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        MergedBadgeComponent,
+        LetDirective
+    ]
 })
 export class InstrumentBadgeDisplayComponent implements OnInit {
   @Input({required: true})

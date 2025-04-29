@@ -14,9 +14,10 @@ import {
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-chat-container',
-  templateUrl: './chat-container.component.html',
-  styleUrls: ['./chat-container.component.less']
+    selector: 'ats-chat-container',
+    templateUrl: './chat-container.component.html',
+    styleUrls: ['./chat-container.component.less'],
+    standalone: false
 })
 export class ChatContainerComponent implements AfterViewInit {
   @ViewChild('messagesContainer')

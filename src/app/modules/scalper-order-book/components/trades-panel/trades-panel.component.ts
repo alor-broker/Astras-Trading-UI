@@ -69,9 +69,10 @@ interface TradeDisplay {
 }
 
 @Component({
-  selector: 'ats-trades-panel',
-  templateUrl: './trades-panel.component.html',
-  styleUrls: ['./trades-panel.component.less']
+    selector: 'ats-trades-panel',
+    templateUrl: './trades-panel.component.html',
+    styleUrls: ['./trades-panel.component.less'],
+    standalone: false
 })
 export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('canvas')

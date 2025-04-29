@@ -10,10 +10,11 @@ import {
 } from "../../utils/number-abbreviation";
 
 @Component({
-  selector: 'ats-short-number',
-  templateUrl: './short-number.component.html',
-  styleUrls: ['./short-number.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-short-number',
+    templateUrl: './short-number.component.html',
+    styleUrls: ['./short-number.component.less'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ShortNumberComponent implements OnChanges {
   @Input() allowRounding = false;

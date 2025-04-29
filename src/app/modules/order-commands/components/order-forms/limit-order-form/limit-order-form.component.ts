@@ -65,9 +65,10 @@ import { LimitOrderConfig } from "../../../../../shared/models/orders/orders-con
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
 
 @Component({
-  selector: 'ats-limit-order-form',
-  templateUrl: './limit-order-form.component.html',
-  styleUrls: ['./limit-order-form.component.less']
+    selector: 'ats-limit-order-form',
+    templateUrl: './limit-order-form.component.html',
+    styleUrls: ['./limit-order-form.component.less'],
+    standalone: false
 })
 export class LimitOrderFormComponent extends BaseOrderFormComponent implements OnInit, OnDestroy {
   expandAdvancedOptions = false;

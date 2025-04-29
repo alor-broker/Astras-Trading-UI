@@ -23,9 +23,10 @@ import { ScalperOrderBookConstants } from "../../constants/scalper-order-book.co
 import { TradesClusterPanelSettingsDefaults } from "../../components/scalper-order-book-settings/constants/settings-defaults";
 
 @Component({
-  selector: 'ats-scalper-order-book-widget',
-  templateUrl: './scalper-order-book-widget.component.html',
-  styleUrls: ['./scalper-order-book-widget.component.less']
+    selector: 'ats-scalper-order-book-widget',
+    templateUrl: './scalper-order-book-widget.component.html',
+    styleUrls: ['./scalper-order-book-widget.component.less'],
+    standalone: false
 })
 export class ScalperOrderBookWidgetComponent implements OnInit {
   shouldShowSettings = false;

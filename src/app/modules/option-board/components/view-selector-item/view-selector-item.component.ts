@@ -6,14 +6,13 @@ import {
 } from '@angular/core';
 
 @Component({
-  selector: 'ats-view-selector-item',
-  standalone: true,
-  imports: [],
-  template: `
+    selector: 'ats-view-selector-item',
+    imports: [],
+    template: `
     <ng-template>
       <ng-content></ng-content>
     </ng-template>`,
-  preserveWhitespaces: false
+    preserveWhitespaces: false
 })
 export class ViewSelectorItemComponent {
   @ViewChild(TemplateRef, {static: true})

@@ -10,18 +10,17 @@ import {EnvironmentService} from "../../../../shared/services/environment.servic
 import {AiChatModule} from "../../ai-chat.module";
 
 @Component({
-  selector: 'ats-ai-chat-nav-btn',
-  standalone: true,
-  imports: [
-    NzButtonComponent,
-    NzTooltipDirective,
-    NzIconDirective,
-    TranslocoDirective,
-    AiChatModule
-  ],
-  templateUrl: './ai-chat-nav-btn.component.html',
-  styleUrl: './ai-chat-nav-btn.component.less',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-ai-chat-nav-btn',
+    imports: [
+        NzButtonComponent,
+        NzTooltipDirective,
+        NzIconDirective,
+        TranslocoDirective,
+        AiChatModule
+    ],
+    templateUrl: './ai-chat-nav-btn.component.html',
+    styleUrl: './ai-chat-nav-btn.component.less',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AiChatNavBtnComponent {
   aiChatAvailable = this.environmentService.features.aiChat;

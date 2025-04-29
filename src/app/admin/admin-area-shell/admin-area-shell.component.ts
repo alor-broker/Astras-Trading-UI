@@ -13,13 +13,12 @@ import { AdminAuthContextService } from "../services/auth/admin-auth-context.ser
 import { RouterOutlet } from "@angular/router";
 
 @Component({
-  selector: 'ats-admin-area-shell',
-  templateUrl: './admin-area-shell.component.html',
-  styleUrl: './admin-area-shell.component.less',
-  imports: [
-    RouterOutlet
-  ],
-  standalone: true
+    selector: 'ats-admin-area-shell',
+    templateUrl: './admin-area-shell.component.html',
+    styleUrl: './admin-area-shell.component.less',
+    imports: [
+        RouterOutlet
+    ]
 })
 export class AdminAreaShellComponent implements OnInit, OnDestroy {
   constructor(

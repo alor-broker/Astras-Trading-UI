@@ -6,9 +6,10 @@ import { filter } from 'rxjs/operators';
 import { ReleaseMeta } from '../../models/application-release.model';
 
 @Component({
-  selector: 'ats-application-updated-widget',
-  templateUrl: './application-updated-widget.component.html',
-  styleUrls: ['./application-updated-widget.component.less']
+    selector: 'ats-application-updated-widget',
+    templateUrl: './application-updated-widget.component.html',
+    styleUrls: ['./application-updated-widget.component.less'],
+    standalone: false
 })
 export class ApplicationUpdatedWidgetComponent implements OnInit {
   isVisible$: Observable<boolean> = of(false);

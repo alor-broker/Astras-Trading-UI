@@ -9,9 +9,10 @@ import { PortfolioSubscriptionsService } from "../../../../shared/services/portf
 import { EnvironmentService } from "../../../../shared/services/environment.service";
 
 @Component({
-  selector: 'ats-instrument-info',
-  templateUrl: './instrument-info.component.html',
-  styleUrls: ['./instrument-info.component.less']
+    selector: 'ats-instrument-info',
+    templateUrl: './instrument-info.component.html',
+    styleUrls: ['./instrument-info.component.less'],
+    standalone: false
 })
 export class InstrumentInfoComponent implements OnInit, OnDestroy {
   viewData$!: Observable<{

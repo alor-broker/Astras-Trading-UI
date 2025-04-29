@@ -41,9 +41,10 @@ import { InstrumentKey } from "../../../../shared/models/instruments/instrument-
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 @Component({
-  selector: 'ats-trades',
-  templateUrl: './trades.component.html',
-  styleUrls: ['./trades.component.less']
+    selector: 'ats-trades',
+    templateUrl: './trades.component.html',
+    styleUrls: ['./trades.component.less'],
+    standalone: false
 })
 export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, TradeFilter> implements OnInit {
   @Output()

@@ -51,9 +51,10 @@ interface DisplayOrder extends Order {
 }
 
 @Component({
-  selector: 'ats-orders',
-  templateUrl: './orders.component.html',
-  styleUrls: ['./orders.component.less'],
+    selector: 'ats-orders',
+    templateUrl: './orders.component.html',
+    styleUrls: ['./orders.component.less'],
+    standalone: false
 })
 export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, OrderFilter> implements OnInit {
   @Output()

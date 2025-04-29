@@ -87,9 +87,10 @@ interface CorrelationMatrix {
 }
 
 @Component({
-  selector: 'ats-correlation-chart',
-  templateUrl: './correlation-chart.component.html',
-  styleUrls: ['./correlation-chart.component.less']
+    selector: 'ats-correlation-chart',
+    templateUrl: './correlation-chart.component.html',
+    styleUrls: ['./correlation-chart.component.less'],
+    standalone: false
 })
 export class CorrelationChartComponent implements OnInit, OnDestroy {
   readonly loadingStatus$ = new BehaviorSubject<LoadingStatus>(LoadingStatus.Initial);

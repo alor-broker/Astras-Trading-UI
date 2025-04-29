@@ -6,15 +6,14 @@ import {NzEmptyComponent} from "ng-zorro-antd/empty";
 import {TranslocoDirective} from "@jsverse/transloco";
 
 @Component({
-  selector: 'ats-run-results',
-  standalone: true,
-  imports: [
-    MarkdownComponent,
-    NzEmptyComponent,
-    TranslocoDirective
-  ],
-  templateUrl: './run-results.component.html',
-  styleUrl: './run-results.component.less'
+    selector: 'ats-run-results',
+    imports: [
+        MarkdownComponent,
+        NzEmptyComponent,
+        TranslocoDirective
+    ],
+    templateUrl: './run-results.component.html',
+    styleUrl: './run-results.component.less'
 })
 export class RunResultsComponent {
   readonly Formats = OutputFormat;

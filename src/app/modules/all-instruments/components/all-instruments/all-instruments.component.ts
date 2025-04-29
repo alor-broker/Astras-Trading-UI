@@ -74,9 +74,10 @@ interface AllInstrumentsNodeDisplay extends Instrument {
 }
 
 @Component({
-  selector: 'ats-all-instruments',
-  templateUrl: './all-instruments.component.html',
-  styleUrls: ['./all-instruments.component.less']
+    selector: 'ats-all-instruments',
+    templateUrl: './all-instruments.component.html',
+    styleUrls: ['./all-instruments.component.less'],
+    standalone: false
 })
 export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
   AllInstrumentsNodeDisplay,

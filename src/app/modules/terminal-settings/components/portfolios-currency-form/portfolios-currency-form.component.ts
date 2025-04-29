@@ -28,16 +28,17 @@ import { UserPortfoliosService } from "../../../../shared/services/user-portfoli
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-portfolios-currency-form',
-  templateUrl: './portfolios-currency-form.component.html',
-  styleUrls: ['./portfolios-currency-form.component.less'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: PortfoliosCurrencyFormComponent
-    }
-  ]
+    selector: 'ats-portfolios-currency-form',
+    templateUrl: './portfolios-currency-form.component.html',
+    styleUrls: ['./portfolios-currency-form.component.less'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: PortfoliosCurrencyFormComponent
+        }
+    ],
+    standalone: false
 })
 export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseComponent<PortfolioCurrencySettings[]> implements OnInit {
   readonly form = this.formBuilder.array([

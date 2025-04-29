@@ -13,7 +13,6 @@ import {
   take,
   withLatestFrom
 } from "rxjs";
-import { NzSegmentedOption } from "ng-zorro-antd/segmented/types";
 import {
   debounceTime,
   filter,
@@ -26,7 +25,10 @@ import {DashboardTitleHelper} from "../../../modules/dashboard/utils/dashboard-t
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {CdkDrag, CdkDragDrop, CdkDropList} from "@angular/cdk/drag-drop";
 import {AsyncPipe, NgIf} from "@angular/common";
-import {NzSegmentedComponent} from "ng-zorro-antd/segmented";
+import {
+  NzSegmentedComponent,
+  NzSegmentedItemComponent
+} from "ng-zorro-antd/segmented";
 import {FormsModule} from "@angular/forms";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {NzButtonComponent} from "ng-zorro-antd/button";
@@ -35,15 +37,17 @@ import {NzTypographyComponent} from "ng-zorro-antd/typography";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {SelectDashboardMenuComponent} from "../select-dashboard-menu/select-dashboard-menu.component";
 
-type DashboardSegmentedOption = {
+interface DashboardSegmentedOption {
   value: string;
+  label: string;
   hasSelection: boolean;
-} & NzSegmentedOption;
+  disabled?: boolean;
+}
 
 @Component({
-  selector: 'ats-dashboards-panel',
-  templateUrl: './dashboards-panel.component.html',
-  styleUrls: ['./dashboards-panel.component.less'],
+    selector: 'ats-dashboards-panel',
+    templateUrl: './dashboards-panel.component.html',
+    styleUrls: ['./dashboards-panel.component.less'],
   imports: [
     CdkDropList,
     AsyncPipe,
@@ -57,17 +61,18 @@ type DashboardSegmentedOption = {
     NzTypographyComponent,
     NzIconDirective,
     NzDropdownMenuComponent,
-    SelectDashboardMenuComponent
+    SelectDashboardMenuComponent,
+    NzSegmentedItemComponent
   ],
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardsPanelComponent implements OnInit, OnDestroy {
+  private readonly allDashboardsValue = 'all_dashboards';
   options$!: Observable<DashboardSegmentedOption[]>;
-  selectedOptionIndex$ = new BehaviorSubject<number>(0);
   isDashboardSelectionMenuVisible$ = new BehaviorSubject(false);
   lastSelectedNonFavoriteDashboard$ = new BehaviorSubject<Dashboard | null>(null);
   dropdownTrigger$ = new BehaviorSubject<'click' | 'hover'>('hover');
+  selectedValue$!: Observable<string>;
 
   constructor(
     private readonly manageDashboardsService: ManageDashboardsService,
@@ -92,19 +97,17 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
       debounceTime(50), // used to prevent animation error
       map((dashboards) => {
           const options: DashboardSegmentedOption[] = dashboards
-            .filter(d => d.isFavorite)
+            .filter(d => d.isFavorite ?? false)
             .sort((a, b) => (a.favoritesOrder ?? 0) - (b.favoritesOrder ?? 0))
             .map(d => ({
               value: d.guid,
               label: d.title,
-              useTemplate: true,
               hasSelection: d.isSelected ?? false
             }));
 
           options.push({
-            value: 'all_dashboards',
+            value: this.allDashboardsValue,
             label: 'all dashboards',
-            useTemplate: true,
             disabled: true,
             hasSelection: false
           });
@@ -115,7 +118,18 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
       shareReplay(1)
     );
 
-    this.initSelectedOptionIndexChange();
+    this.selectedValue$ = this.options$.pipe(
+      filter(o => o.length > 0),
+      map(o => {
+        const selected = o.find(o => o.hasSelection);
+
+        if (selected != null) {
+          return selected.value;
+        } else {
+          return this.allDashboardsValue;
+        }
+      })
+    );
 
     allDashboards$
       .pipe(
@@ -123,7 +137,7 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(([dashboards, lastSelection]) => {
-        const selectedDashboard = dashboards.find((d: Dashboard) => d.isSelected);
+        const selectedDashboard = dashboards.find((d: Dashboard) => d.isSelected ?? false);
         const isFavorite = (dashboard: Dashboard): boolean => {
           return dashboard.isFavorite ?? false;
         };
@@ -147,7 +161,6 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.selectedOptionIndex$.complete();
     this.isDashboardSelectionMenuVisible$.complete();
     this.lastSelectedNonFavoriteDashboard$.complete();
     this.dropdownTrigger$.complete();
@@ -157,8 +170,10 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
     setTimeout(() => this.isDashboardSelectionMenuVisible$.next(value));
   }
 
-  selectDashboard(guid: string): void {
-    this.manageDashboardsService.selectDashboard(<string>guid);
+  selectDashboard(guid: string | number): void {
+    if(guid != this.allDashboardsValue) {
+      this.manageDashboardsService.selectDashboard(<string>guid);
+    }
   }
 
   changeDashboardsOrder(e: CdkDragDrop<any>): void {
@@ -169,20 +184,5 @@ export class DashboardsPanelComponent implements OnInit, OnDestroy {
       .subscribe(dashboards => {
         this.manageDashboardsService.changeFavoriteDashboardsOrder(dashboards[e.previousIndex]!.value, e.currentIndex);
       });
-  }
-
-  private initSelectedOptionIndexChange(): void {
-    this.options$.pipe(
-      filter(o => o.length > 0),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(options => {
-      const selectedIndex = options.findIndex(o => o.hasSelection);
-
-      if (selectedIndex >= 0) {
-        this.selectedOptionIndex$.next(selectedIndex);
-      } else {
-        this.selectedOptionIndex$.next(options.length - 1);
-      }
-    });
   }
 }

@@ -19,9 +19,10 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import { getConditionSign, getConditionTypeByString } from "../../../../shared/utils/order-conditions-helper";
 
 @Component({
-  selector: 'ats-orders-group-modal',
-  templateUrl: './orders-group-modal.component.html',
-  styleUrls: ['./orders-group-modal.component.less']
+    selector: 'ats-orders-group-modal',
+    templateUrl: './orders-group-modal.component.html',
+    styleUrls: ['./orders-group-modal.component.less'],
+    standalone: false
 })
 export class OrdersGroupModalComponent implements AfterViewInit {
   @Input({required: true})

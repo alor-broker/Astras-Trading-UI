@@ -25,19 +25,18 @@ import {LocalStorageService} from "../../../../shared/services/local-storage.ser
 import {LocalStorageCommonConstants} from "../../../../shared/constants/local-storage.constants";
 
 @Component({
-  selector: 'ats-widgets-gallery-nav-btn',
-  templateUrl: './widgets-gallery-nav-btn.component.html',
-  styleUrls: ['./widgets-gallery-nav-btn.component.less'],
-  standalone: true,
-  imports: [
-    DashboardModule,
-    NzIconDirective,
-    AsyncPipe,
-    TranslocoDirective,
-    NzButtonComponent,
-    WidgetsGalleryComponent
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-widgets-gallery-nav-btn',
+    templateUrl: './widgets-gallery-nav-btn.component.html',
+    styleUrls: ['./widgets-gallery-nav-btn.component.less'],
+    imports: [
+        DashboardModule,
+        NzIconDirective,
+        AsyncPipe,
+        TranslocoDirective,
+        NzButtonComponent,
+        WidgetsGalleryComponent
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WidgetsGalleryNavBtnComponent implements OnInit {
   galleryVisible = false;
@@ -80,7 +79,7 @@ export class WidgetsGalleryNavBtnComponent implements OnInit {
     }).pipe(
       map((s) => {
         const groups = new Map<WidgetCategory, WidgetDisplay[]>();
-        const isDemoModeEnabled = this.localStorageService.getItem<boolean>(LocalStorageCommonConstants.DemoModeStorageKey);
+        const isDemoModeEnabled = this.localStorageService.getItem<boolean>(LocalStorageCommonConstants.DemoModeStorageKey) ?? false;
 
         const widgets = s.meta
           .filter((x) => {

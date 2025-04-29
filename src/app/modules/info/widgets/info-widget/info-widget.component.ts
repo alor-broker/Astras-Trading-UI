@@ -22,9 +22,10 @@ import { InstrumentType } from "../../../../shared/models/enums/instrument-type.
 import { getTypeByCfi } from "../../../../shared/utils/instruments";
 
 @Component({
-  selector: 'ats-info-widget',
-  templateUrl: './info-widget.component.html',
-  styleUrls: ['./info-widget.component.less']
+    selector: 'ats-info-widget',
+    templateUrl: './info-widget.component.html',
+    styleUrls: ['./info-widget.component.less'],
+    standalone: false
 })
 export class InfoWidgetComponent implements OnInit {
   @Input({required: true})

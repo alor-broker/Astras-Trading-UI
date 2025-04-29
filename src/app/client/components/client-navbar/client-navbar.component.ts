@@ -24,27 +24,26 @@ import { AiChatNavBtnComponent } from "../../../modules/ai-chat/widgets/ai-chat-
 import { ExternalLinkComponent } from "../../../shared/components/external-link/external-link.component";
 
 @Component({
-  selector: 'ats-client-navbar',
-  standalone: true,
-  imports: [
-    DesktopNavbarComponent,
-    WidgetsGalleryNavBtnComponent,
-    AsyncPipe,
-    OpenOrdersDialogNavBtnComponent,
-    ClientProfileMenuNavBtnComponent,
-    TranslocoDirective,
-    JoyrideModule,
-    SelectPortfolioMenuNavBtnComponent,
-    DashboardsPanelComponent,
-    DashboardModule,
-    NetworkIndicatorComponent,
-    NotificationsModule,
-    AiChatNavBtnComponent,
-    ExternalLinkComponent
-  ],
-  templateUrl: './client-navbar.component.html',
-  styleUrl: './client-navbar.component.less',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-client-navbar',
+    imports: [
+        DesktopNavbarComponent,
+        WidgetsGalleryNavBtnComponent,
+        AsyncPipe,
+        OpenOrdersDialogNavBtnComponent,
+        ClientProfileMenuNavBtnComponent,
+        TranslocoDirective,
+        JoyrideModule,
+        SelectPortfolioMenuNavBtnComponent,
+        DashboardsPanelComponent,
+        DashboardModule,
+        NetworkIndicatorComponent,
+        NotificationsModule,
+        AiChatNavBtnComponent,
+        ExternalLinkComponent
+    ],
+    templateUrl: './client-navbar.component.html',
+    styleUrl: './client-navbar.component.less',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClientNavbarComponent {
   readonly externalLinks = this.environmentService.externalLinks;

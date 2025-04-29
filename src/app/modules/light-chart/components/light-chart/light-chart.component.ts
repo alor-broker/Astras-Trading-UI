@@ -39,11 +39,12 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
 @Component({
-  selector: 'ats-light-chart',
-  templateUrl: './light-chart.component.html',
-  styleUrls: ['./light-chart.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
+    selector: 'ats-light-chart',
+    templateUrl: './light-chart.component.html',
+    styleUrls: ['./light-chart.component.less'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   availableTimeFrames$!: Observable<TimeframeValue[]>;

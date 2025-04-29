@@ -15,7 +15,9 @@ import {
   ISeriesApi,
   LogicalRange,
   Time,
-  UTCTimestamp
+  UTCTimestamp,
+  CandlestickSeries,
+  HistogramSeries
 } from 'lightweight-charts';
 import { Candle } from '../../../shared/models/history/candle.model';
 import { TimeframesHelper } from './timeframes-helper';
@@ -104,23 +106,27 @@ export class LightChartWrapper {
     const priceScaleId = 'right';
     const volumeScaleId = 'volume';
 
-    const candlestickSeries = target.addCandlestickSeries({
-      upColor: this.config.themeColors.buyColor,
-      downColor: this.config.themeColors.sellColor,
-      wickUpColor: this.config.themeColors.buyColorBackground,
-      wickDownColor: this.config.themeColors.sellColorBackground,
-      borderVisible: false,
-      priceScaleId,
-      priceFormat: PriceFormatHelper.getPriceFormat(this.config.instrumentDetails.priceMinStep)
-    });
+    const candlestickSeries = target.addSeries(
+      CandlestickSeries,
+      {
+        priceScaleId,
+        upColor: this.config.themeColors.buyColor,
+        downColor: this.config.themeColors.sellColor,
+        wickUpColor: this.config.themeColors.buyColorBackground,
+        wickDownColor: this.config.themeColors.sellColorBackground,
+        priceFormat: PriceFormatHelper.getPriceFormat(this.config.instrumentDetails.priceMinStep)
+      }
+    );
 
-    const volumeSeries = target.addHistogramSeries({
-      color: '#26a69a',
-      priceFormat: {
-        type: 'volume',
-      },
-      priceScaleId: volumeScaleId,
-    });
+    const volumeSeries = target.addSeries(
+      HistogramSeries,
+      {
+        priceScaleId: volumeScaleId,
+        priceFormat: {
+          type: 'volume'
+        }
+      }
+    );
 
     target.priceScale(priceScaleId).applyOptions({
       autoScale: true,

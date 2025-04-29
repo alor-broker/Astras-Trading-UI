@@ -11,20 +11,19 @@ import {NzButtonComponent} from "ng-zorro-antd/button";
 import {ExternalLinkComponent} from "../../../shared/components/external-link/external-link.component";
 
 @Component({
-  selector: 'ats-empty-portfolios-warning-modal',
-  standalone: true,
-  imports: [
-    NzModalComponent,
-    AsyncPipe,
-    TranslocoDirective,
-    NzModalContentDirective,
-    NzTypographyComponent,
-    NzModalFooterDirective,
-    NzButtonComponent,
-    ExternalLinkComponent
-  ],
-  templateUrl: './empty-portfolios-warning-modal.component.html',
-  styleUrl: './empty-portfolios-warning-modal.component.less'
+    selector: 'ats-empty-portfolios-warning-modal',
+    imports: [
+        NzModalComponent,
+        AsyncPipe,
+        TranslocoDirective,
+        NzModalContentDirective,
+        NzTypographyComponent,
+        NzModalFooterDirective,
+        NzButtonComponent,
+        ExternalLinkComponent
+    ],
+    templateUrl: './empty-portfolios-warning-modal.component.html',
+    styleUrl: './empty-portfolios-warning-modal.component.less'
 })
 export class EmptyPortfoliosWarningModalComponent implements OnInit {
   supportLink = this.environmentService.externalLinks.support;

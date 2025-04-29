@@ -8,9 +8,10 @@ import {Evaluation} from "../../../../shared/models/evaluation.model";
 type EvaluationDisplay = Evaluation & { currency: string };
 
 @Component({
-  selector: 'ats-order-evaluation',
-  templateUrl: './order-evaluation.component.html',
-  styleUrls: ['./order-evaluation.component.less']
+    selector: 'ats-order-evaluation',
+    templateUrl: './order-evaluation.component.html',
+    styleUrls: ['./order-evaluation.component.less'],
+    standalone: false
 })
 export class OrderEvaluationComponent implements OnInit {
   evaluation$!: Observable<EvaluationDisplay | null>;

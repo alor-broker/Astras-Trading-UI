@@ -54,9 +54,10 @@ interface DisplayOrder extends StopOrder {
 }
 
 @Component({
-  selector: 'ats-stop-orders',
-  templateUrl: './stop-orders.component.html',
-  styleUrls: ['./stop-orders.component.less'],
+    selector: 'ats-stop-orders',
+    templateUrl: './stop-orders.component.html',
+    styleUrls: ['./stop-orders.component.less'],
+    standalone: false
 })
 export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder, OrderFilter> implements OnInit {
   readonly orderTypes = OrderType;

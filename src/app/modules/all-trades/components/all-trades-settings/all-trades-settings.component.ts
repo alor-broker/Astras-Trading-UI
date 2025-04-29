@@ -22,9 +22,10 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 
 @Component({
-  selector: 'ats-all-trades-settings',
-  templateUrl: './all-trades-settings.component.html',
-  styleUrls: ['./all-trades-settings.component.less']
+    selector: 'ats-all-trades-settings',
+    templateUrl: './all-trades-settings.component.html',
+    styleUrls: ['./all-trades-settings.component.less'],
+    standalone: false
 })
 export class AllTradesSettingsComponent extends WidgetSettingsBaseComponent<AllTradesSettings> implements OnInit {
   readonly form = this.formBuilder.group({

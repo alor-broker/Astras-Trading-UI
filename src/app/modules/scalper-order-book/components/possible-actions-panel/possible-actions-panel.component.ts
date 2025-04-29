@@ -12,9 +12,10 @@ import { ScalperOrderBookMouseAction } from '../../../../shared/models/terminal-
 import { TranslatorService } from '../../../../shared/services/translator.service';
 
 @Component({
-  selector: 'ats-possible-actions-panel',
-  templateUrl: './possible-actions-panel.component.html',
-  styleUrls: ['./possible-actions-panel.component.less']
+    selector: 'ats-possible-actions-panel',
+    templateUrl: './possible-actions-panel.component.html',
+    styleUrls: ['./possible-actions-panel.component.less'],
+    standalone: false
 })
 export class PossibleActionsPanelComponent implements OnInit {
   currentActions$!: Observable<string[] | null>;

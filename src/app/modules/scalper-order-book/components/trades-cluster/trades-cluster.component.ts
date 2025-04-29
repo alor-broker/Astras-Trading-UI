@@ -25,9 +25,10 @@ interface DisplayItem {
 }
 
 @Component({
-  selector: 'ats-trades-cluster',
-  templateUrl: './trades-cluster.component.html',
-  styleUrls: ['./trades-cluster.component.less']
+    selector: 'ats-trades-cluster',
+    templateUrl: './trades-cluster.component.html',
+    styleUrls: ['./trades-cluster.component.less'],
+    standalone: false
 })
 export class TradesClusterComponent implements OnInit, OnDestroy {
   readonly numberFormats = NumberDisplayFormat;

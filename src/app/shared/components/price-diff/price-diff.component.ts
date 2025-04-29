@@ -22,10 +22,11 @@ interface PriceDiff {
 }
 
 @Component({
-  selector: 'ats-price-diff',
-  templateUrl: './price-diff.component.html',
-  styleUrls: ['./price-diff.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-price-diff',
+    templateUrl: './price-diff.component.html',
+    styleUrls: ['./price-diff.component.less'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PriceDiffComponent implements OnChanges {
   @Input({ required: true })

@@ -21,15 +21,16 @@ import {
 } from "../tokens";
 
 @Component({
-  selector: 'ats-panel',
-  templateUrl: './panel.component.html',
-  styleUrls: ['./panel.component.less'],
-  providers: [
-    {
-      provide: PANEL_RESIZE_CONTEXT,
-      useExisting: PanelComponent
-    }
-  ]
+    selector: 'ats-panel',
+    templateUrl: './panel.component.html',
+    styleUrls: ['./panel.component.less'],
+    providers: [
+        {
+            provide: PANEL_RESIZE_CONTEXT,
+            useExisting: PanelComponent
+        }
+    ],
+    standalone: false
 })
 export class PanelComponent implements PanelResizeContext, OnInit, OnDestroy {
   readonly resizeEndOutsideAngular$ = new Subject<void>();

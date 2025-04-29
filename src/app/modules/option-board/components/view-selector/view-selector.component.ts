@@ -25,22 +25,21 @@ import { NzButtonComponent } from "ng-zorro-antd/button";
 import { NzIconDirective } from "ng-zorro-antd/icon";
 
 @Component({
-  selector: 'ats-view-selector',
-  standalone: true,
-  imports: [
-    NzRadioGroupComponent,
-    FormsModule,
-    NzRadioComponent,
-    NgTemplateOutlet,
-    NzDropdownMenuComponent,
-    NzMenuDirective,
-    NzMenuItemComponent,
-    NzButtonComponent,
-    NzDropDownDirective,
-    NzIconDirective
-  ],
-  templateUrl: './view-selector.component.html',
-  styleUrl: './view-selector.component.less'
+    selector: 'ats-view-selector',
+    imports: [
+        NzRadioGroupComponent,
+        FormsModule,
+        NzRadioComponent,
+        NgTemplateOutlet,
+        NzDropdownMenuComponent,
+        NzMenuDirective,
+        NzMenuItemComponent,
+        NzButtonComponent,
+        NzDropDownDirective,
+        NzIconDirective
+    ],
+    templateUrl: './view-selector.component.html',
+    styleUrl: './view-selector.component.less'
 })
 export class ViewSelectorComponent {
   @Input()

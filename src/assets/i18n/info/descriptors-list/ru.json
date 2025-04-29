@@ -10,8 +10,8 @@
     "priceStepCurrency": "Валюта стоимости шага цены",
     "isMarginal": "Доступно в маржу",
     "isShortSellPossible": "Доступно в шорт",
-    "longMultiplier": "Ставка риска понижения",
-    "shortMultiplier": "Ставка риска повышения",
+    "longMultiplier": "Cтавка лонг",
+    "shortMultiplier": "Ставка шорт",
     "currencyLongMultiplier": "Ставка риска понижения валюты торгов",
     "currencyShortMultiplier": "Ставка риска повышения валюты торгов",
     "EBITDA": "EBITDA",
@@ -54,6 +54,11 @@
     "marginSell": "ГО на продажу",
     "volatility": "Волатильность",
     "expirationDate": "Дата исполнения"
+  },
+
+  "titleTooltips": {
+    "longMultiplier": "Ставка риска понижения цены",
+    "shortMultiplier": "Ставка риска повышения цены"
   },
 
   "instrumentTypeOptions": {
