@@ -187,6 +187,10 @@ implements OnInit {
         ...updates
       };
 
+      if(JSON.stringify(currentFilters) === JSON.stringify(newValue)) {
+        return;
+      }
+
       this.filters$.next(newValue);
       this.saveFilterState(newValue);
     });

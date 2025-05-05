@@ -17,6 +17,7 @@ import { NzTableComponent } from "ng-zorro-antd/table";
 import {
   BehaviorSubject,
   combineLatest,
+  defer,
   distinctUntilChanged,
   Observable,
   pairwise,
@@ -114,7 +115,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       sortOrder: null,
       filterData: {
         filterName: 'side',
-        filterType: FilterType.DefaultMultiple,
+        filterType: FilterType.Default,
         filters: [
           { text: 'Покупка', value: 'buy' },
           { text: 'Продажа', value: 'sell' }
@@ -236,7 +237,6 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       map(([, scrollViewport]) => scrollViewport),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(scrollViewport => {
-      this.loadedHistory$.next([]);
       const itemsCount = Math.ceil(scrollViewport.measureViewportSize('vertical') / this.rowHeight);
       this.loadMoreItems(null, Math.max(itemsCount, 100));
     });
@@ -301,19 +301,23 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
         return;
       }
 
-      this.loadedHistory$.pipe(
-        take(1)
-      ).subscribe(existingItems => {
-        const existingIds = new Set(existingItems.map(x => x.id));
-        const uniqueItems = loadedItems.filter(x => !existingIds.has(x.id));
+      if(dateFrom == null) {
+        this.loadedHistory$.next(loadedItems);
+      } else {
+        this.loadedHistory$.pipe(
+          take(1)
+        ).subscribe(existingItems => {
+          const existingIds = new Set(existingItems.map(x => x.id));
+          const uniqueItems = loadedItems.filter(x => !existingIds.has(x.id));
 
-        if(uniqueItems.length > 0) {
-          this.loadedHistory$.next([
-            ...existingItems,
-            ...uniqueItems
-          ]);
-        }
-      });
+          if(uniqueItems.length > 0) {
+            this.loadedHistory$.next([
+              ...existingItems,
+              ...uniqueItems
+            ]);
+          }
+        });
+      }
     });
   }
 
@@ -326,12 +330,18 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       filter((s): s is TableDisplaySettings => !!s)
     );
 
+    const tableState$ = defer(() => {
+      return combineLatest({
+        filters: this.getFiltersState().pipe(take(1)),
+        sort: this.getSortState().pipe(take(1))
+      });
+    });
+
     return combineLatest({
       tableSettings: tableSettings$,
-      filters: this.getFiltersState().pipe(take(1)),
-      sort: this.getSortState().pipe(take(1)),
       translator: this.translatorService.getTranslator('blotter/trades')
     }).pipe(
+      mapWith(() => tableState$, (source, output) => ({...source, ...output})),
       takeUntilDestroyed(this.destroyRef),
       tap(x => {
         if(x.filters != null) {
@@ -379,21 +389,18 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
         ...t,
         displayDate: converter.toTerminalDate(t.date)
       })),
-      mapWith(
-        () => this.filters$,
-        (data, filter) =>
-        {
-          const clearedFilter = {
-            ...filter
-          };
+      withLatestFrom(this.filters$),
+      map(([data,filter]) => {
+        const clearedFilter = {
+          ...filter
+        };
 
-          // symbol and side filters has been applied in API call
-          delete clearedFilter.symbol;
-          delete clearedFilter.side;
+        // symbol and side filters has been applied in API call
+        delete clearedFilter.symbol;
+        delete clearedFilter.side;
 
-          return data.filter(t => this.justifyFilter(t, filter));
-        }
-        ),
+        return data.filter(t => this.justifyFilter(t, filter));
+      }),
       shareReplay(1)
     );
   }

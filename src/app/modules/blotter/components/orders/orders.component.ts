@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import {
   combineLatest,
+  defer,
   distinctUntilChanged,
   Observable,
   switchMap,
@@ -44,6 +45,7 @@ import {
   OrderCommandService
 } from "../../../../shared/services/orders/order-command.service";
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 interface DisplayOrder extends Order {
   residue: string;
@@ -247,13 +249,19 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       )
     );
 
+    const tableState$ = defer(() => {
+      return combineLatest({
+        filters: this.getFiltersState().pipe(take(1)),
+        sort: this.getSortState().pipe(take(1))
+      });
+    });
+
     return combineLatest({
       tableSettings: tableSettings$,
-      filters: this.getFiltersState().pipe(take(1)),
-      sort: this.getSortState().pipe(take(1)),
       tOrders: this.translatorService.getTranslator('blotter/orders'),
       tCommon: this.translatorService.getTranslator('blotter/blotter-common')
     }).pipe(
+      mapWith(() => tableState$, (source, output) => ({...source, ...output})),
       takeUntilDestroyed(this.destroyRef),
       tap(x => {
         if(x.filters != null) {
