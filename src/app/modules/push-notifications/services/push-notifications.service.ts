@@ -7,6 +7,7 @@ import {
   combineLatest,
   forkJoin,
   from,
+  fromEvent,
   Observable,
   of,
   shareReplay,
@@ -171,7 +172,14 @@ export class PushNotificationsService implements OnDestroy {
   }
 
   getBrowserNotificationsStatus(): Observable<NotificationPermission> {
-    return from(Notification.requestPermission());
+    return from(Notification.requestPermission()).pipe(
+      catchError(() => {
+        return fromEvent(document, 'click').pipe(
+          switchMap(() => Notification.requestPermission()),
+          take(1)
+        );
+      })
+    );
   }
 
   ngOnDestroy(): void {
