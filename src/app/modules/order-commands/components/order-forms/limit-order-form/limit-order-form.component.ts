@@ -39,7 +39,7 @@ import {
 import {
   NewLimitOrder,
   NewLinkedOrder,
-  NewStopLimitOrder,
+  NewStopMarketOrder,
   OrderCommandResult
 } from "../../../../../shared/models/orders/new-order.model";
 import { LessMore } from "../../../../../shared/models/enums/less-more.model";
@@ -260,7 +260,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
               },
               ...bracketOrders.map(x => ({
                 ...x,
-                type: OrderType.StopLimit
+                type: OrderType.StopMarket
               } as NewLinkedOrder))
             ],
             portfolioKey,
@@ -331,17 +331,16 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     return limitOrder;
   }
 
-  private getBracketOrders(limitOrder: NewLimitOrder): NewStopLimitOrder[] {
+  private getBracketOrders(limitOrder: NewLimitOrder): NewStopMarketOrder[] {
     const formValue = this.form.value;
 
-    const bracketOrders: NewStopLimitOrder[] = [];
+    const bracketOrders: NewStopMarketOrder[] = [];
 
     if (formValue.topOrderPrice != null) {
       bracketOrders.push({
         instrument: limitOrder.instrument,
         quantity: limitOrder.quantity,
         side: formValue.topOrderSide!,
-        price: limitOrder.price,
         condition: LessMore.MoreOrEqual,
         triggerPrice: Number(formValue.topOrderPrice),
         activate: false
@@ -353,7 +352,6 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
         instrument: limitOrder.instrument,
         quantity: limitOrder.quantity,
         side: formValue.bottomOrderSide!,
-        price: limitOrder.price,
         condition: LessMore.LessOrEqual,
         triggerPrice: Number(formValue.bottomOrderPrice),
         activate: false

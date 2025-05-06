@@ -145,8 +145,10 @@ describe('SubmitLimitOrderCommand', () => {
     };
 
     const bracketOptions: BracketOptions = {
-      profitPriceRatio: 1,
-      lossPriceRatio: 2,
+      profitTriggerPriceRatio: 10,
+      profitLimitPriceGapRatio: 1,
+      lossTriggerPriceRatio: 20,
+      lossLimitPriceGapRatio: 2,
       orderPriceUnits: PriceUnits.Points,
       currentPosition: null,
       applyBracketOnClosing: false
@@ -180,6 +182,9 @@ describe('SubmitLimitOrderCommand', () => {
       allowMargin: undefined
     };
 
+    const expectedProfitTriggerPrice = MathHelper.roundPrice(price + (bracketOptions.profitTriggerPriceRatio! * priceStep), priceStep);
+    const expectedLossTriggerPrice = MathHelper.roundPrice(price - (bracketOptions.lossTriggerPriceRatio! * priceStep), priceStep);
+
     expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
       [
         jasmine.objectContaining(
@@ -191,7 +196,8 @@ describe('SubmitLimitOrderCommand', () => {
           ...expectedLimitOrder,
           type: OrderType.StopLimit,
           condition: LessMore.MoreOrEqual,
-          triggerPrice: MathHelper.roundPrice(price + (bracketOptions.profitPriceRatio! * priceStep), priceStep),
+          triggerPrice: expectedProfitTriggerPrice,
+          price: MathHelper.roundPrice(expectedProfitTriggerPrice - bracketOptions.profitLimitPriceGapRatio! * priceStep, priceStep),
           side: Side.Sell,
           activate: false
         },
@@ -199,7 +205,8 @@ describe('SubmitLimitOrderCommand', () => {
           ...expectedLimitOrder,
           type: OrderType.StopLimit,
           condition: LessMore.LessOrEqual,
-          triggerPrice: MathHelper.roundPrice(price - (bracketOptions.lossPriceRatio! * priceStep), priceStep),
+          triggerPrice: expectedLossTriggerPrice,
+          price: MathHelper.roundPrice(expectedLossTriggerPrice - bracketOptions.lossLimitPriceGapRatio! * priceStep, priceStep),
           side: Side.Sell,
           activate: false
         },
@@ -223,8 +230,10 @@ describe('SubmitLimitOrderCommand', () => {
     const priceStep = 0.5;
 
     const bracketOptions: BracketOptions = {
-      profitPriceRatio: 1,
-      lossPriceRatio: null,
+      profitTriggerPriceRatio: 10,
+      profitLimitPriceGapRatio: null,
+      lossTriggerPriceRatio: null,
+      lossLimitPriceGapRatio: null,
       orderPriceUnits: PriceUnits.Percents,
       currentPosition: null,
       applyBracketOnClosing: false
@@ -257,6 +266,7 @@ describe('SubmitLimitOrderCommand', () => {
       allowMargin: undefined
     };
 
+    const expectedProfitTriggerPrice = MathHelper.roundPrice((1 + bracketOptions.profitTriggerPriceRatio! * 0.01) * price, priceStep);
     expect(orderServiceSpy.submitOrdersGroup).toHaveBeenCalledOnceWith(
       [
         jasmine.objectContaining({
@@ -267,7 +277,8 @@ describe('SubmitLimitOrderCommand', () => {
           ...expectedLimitOrder,
           type: OrderType.StopLimit,
           condition: LessMore.MoreOrEqual,
-          triggerPrice: MathHelper.roundPrice((1 + bracketOptions.profitPriceRatio! * 0.01) * price, priceStep),
+          triggerPrice: expectedProfitTriggerPrice,
+          price: expectedProfitTriggerPrice,
           side: Side.Sell,
           activate: false
         }

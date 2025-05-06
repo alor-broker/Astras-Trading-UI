@@ -85,8 +85,14 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       max: inputNumberValidation.max
     },
     bracket: {
-      price: {
+      triggerPrice: {
         min: 0.01,
+        max: inputNumberValidation.max,
+        percentsStep: 0.01,
+        stepsStep: 1
+      },
+      limitPrice: {
+        min: 0,
         max: inputNumberValidation.max,
         percentsStep: 0.01,
         stepsStep: 1
@@ -287,15 +293,29 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
         topOrderPriceRatio: this.formBuilder.control<number | null>(
           null,
           [
-            Validators.min(this.validationOptions.bracket.price.min),
-            Validators.max(this.validationOptions.bracket.price.max)
+            Validators.min(this.validationOptions.bracket.triggerPrice.min),
+            Validators.max(this.validationOptions.bracket.triggerPrice.max)
+          ]
+        ),
+        topOrderPriceGapRatio: this.formBuilder.control<number>(
+          0,
+          [
+            Validators.min(this.validationOptions.bracket.limitPrice.min),
+            Validators.max(this.validationOptions.bracket.limitPrice.max)
           ]
         ),
         bottomOrderPriceRatio: this.formBuilder.control<number | null>(
           null,
           [
-            Validators.min(this.validationOptions.bracket.price.min),
-            Validators.max(this.validationOptions.bracket.price.max)
+            Validators.min(this.validationOptions.bracket.triggerPrice.min),
+            Validators.max(this.validationOptions.bracket.triggerPrice.max)
+          ]
+        ),
+        bottomOrderPriceGapRatio: this.formBuilder.control<number>(
+          0,
+          [
+            Validators.min(this.validationOptions.bracket.limitPrice.min),
+            Validators.max(this.validationOptions.bracket.limitPrice.max)
           ]
         ),
         useBracketsWhenClosingPosition: this.formBuilder.nonNullable.control(false),
@@ -469,14 +489,6 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       newSettings.autoAlignIntervalSec = Number(formValue.autoAlignIntervalSec);
     }
 
-    if ((formValue.bracketsSettings?.topOrderPriceRatio ?? null) != null) {
-      newSettings.topOrderPriceRatio = Number(formValue.bracketsSettings!.topOrderPriceRatio);
-    }
-
-    if ((formValue.bracketsSettings?.bottomOrderPriceRatio ?? null) != null) {
-      newSettings.bottomOrderPriceRatio = Number(formValue.bracketsSettings!.bottomOrderPriceRatio);
-    }
-
     if (formValue.showTradesPanel ?? false) {
       newSettings.tradesPanelSettings = {
         minTradeVolumeFilter: Number(formValue.tradesPanelSettings!.minTradeVolumeFilter),
@@ -619,7 +631,9 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       this.form.controls.bracketsSettings.setValue({
         orderPriceUnits: settings.bracketsSettings.orderPriceUnits ?? PriceUnits.Points,
         topOrderPriceRatio: settings.bracketsSettings.topOrderPriceRatio ?? null,
+        topOrderPriceGapRatio: settings.bracketsSettings.topOrderPriceGapRatio ?? 0,
         bottomOrderPriceRatio: settings.bracketsSettings.bottomOrderPriceRatio ?? null,
+        bottomOrderPriceGapRatio: settings.bracketsSettings.bottomOrderPriceGapRatio ?? 0,
         useBracketsWhenClosingPosition: settings.bracketsSettings.useBracketsWhenClosingPosition ?? false
       });
     }

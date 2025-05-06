@@ -646,8 +646,10 @@ export class ScalperCommandProcessorService {
     currentPosition: Position | null
   ): BracketOptions {
     return {
-      profitPriceRatio: settings.bracketsSettings?.topOrderPriceRatio ?? null,
-      lossPriceRatio: settings.bracketsSettings?.bottomOrderPriceRatio ?? null,
+      profitTriggerPriceRatio: settings.bracketsSettings?.topOrderPriceRatio ?? null,
+      profitLimitPriceGapRatio: settings.bracketsSettings?.topOrderPriceGapRatio ?? null,
+      lossTriggerPriceRatio: settings.bracketsSettings?.bottomOrderPriceRatio ?? null,
+      lossLimitPriceGapRatio: settings.bracketsSettings?.bottomOrderPriceGapRatio ?? null,
       orderPriceUnits: settings.bracketsSettings?.orderPriceUnits ?? PriceUnits.Points,
       applyBracketOnClosing: settings.bracketsSettings?.useBracketsWhenClosingPosition ?? false,
       currentPosition
