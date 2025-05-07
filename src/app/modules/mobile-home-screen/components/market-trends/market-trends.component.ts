@@ -31,6 +31,7 @@ import {
 } from "../../../../../generated/graphql.types";
 import { map } from "rxjs/operators";
 import {
+  DecimalPipe,
   NgClass,
   PercentPipe
 } from "@angular/common";
@@ -54,17 +55,18 @@ interface DisplayParams {
 
 @Component({
     selector: 'ats-market-trends',
-    imports: [
-        TranslocoDirective,
-        LetDirective,
-        NzButtonComponent,
-        TruncatedTextComponent,
-        NgClass,
-        PercentPipe,
-        NzEmptyComponent,
-        NzSkeletonComponent,
-        NzIconDirective
-    ],
+  imports: [
+    TranslocoDirective,
+    LetDirective,
+    NzButtonComponent,
+    TruncatedTextComponent,
+    NgClass,
+    PercentPipe,
+    NzEmptyComponent,
+    NzSkeletonComponent,
+    NzIconDirective,
+    DecimalPipe
+  ],
     templateUrl: './market-trends.component.html',
     styleUrl: './market-trends.component.less'
 })

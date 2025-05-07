@@ -62,7 +62,7 @@
               </span>
               </td>
 
-              <td class="text-end">{{ item.tradingDetails.price }}</td>
+              <td class="text-end">{{ item.tradingDetails.price | number: '0.0-10' }}</td>
             </tr>
           }
         </tbody>

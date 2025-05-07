@@ -1,5 +1,5 @@
 <ng-container *ngIf="displayData">
   <ng-container *transloco="let t; scope: 'shared/short-number'">
-    {{displayData.value}}<ng-container *ngIf="displayData.suffixName">{{t('sharedShortNumber.' + displayData.suffixName + '.' + suffixForm)}}</ng-container>
+    {{displayData.value | number: '1.0-10'}}<ng-container *ngIf="displayData.suffixName">{{t('sharedShortNumber.' + displayData.suffixName + '.' + suffixForm)}}</ng-container>
   </ng-container>
 </ng-container>

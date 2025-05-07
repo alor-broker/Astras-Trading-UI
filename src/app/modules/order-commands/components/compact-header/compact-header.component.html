@@ -19,11 +19,11 @@
         <ng-container *ngIf="priceData$ | async as priceData">
           <div>
             <label>Ask: </label>
-            <span (click)="priceSelected.emit(priceData.ask)" class="selectable sell">{{priceData.ask}}</span>
+            <span (click)="priceSelected.emit(priceData.ask)" class="selectable sell">{{priceData.ask | number: '0.0-10'}}</span>
           </div>
           <div>
             <label>Bid: </label>
-            <span (click)="priceSelected.emit(priceData.bid)" class="selectable buy">{{priceData.bid}}</span>
+            <span (click)="priceSelected.emit(priceData.bid)" class="selectable buy">{{priceData.bid | number: '0.0-10'}}</span>
           </div>
         </ng-container>
       </div>

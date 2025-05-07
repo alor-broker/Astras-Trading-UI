@@ -210,7 +210,7 @@
                       <span>
                         @switch (parameter) {
                           @case (OptionParameters.Price) {
-                            {{ roundPrice(option.parameters.price, options.underlyingAsset) }}
+                            {{ roundPrice(option.parameters.price, options.underlyingAsset) | number: '0.0-10' }}
                           }
                           @case (OptionParameters.Delta) {
                             {{ option.parameters.delta | number: '0.2-2' }}

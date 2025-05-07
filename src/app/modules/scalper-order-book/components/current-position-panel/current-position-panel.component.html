@@ -11,7 +11,7 @@
       [nzTooltipMouseEnterDelay]="1"
       class="p-2"
     >
-      {{vm.orderBookPosition.price ?? '--'}}
+      {{(vm.orderBookPosition.price | number: '1.0-2') ?? '--'}}
     </div>
     <div [ngClass]="{
         'qty': true,
@@ -22,7 +22,7 @@
          [nzTooltipMouseEnterDelay]="1"
          class="p-2"
     >
-      {{vm.orderBookPosition.qty}}{{t('scalperOrderBookCurrentPositionState.lots')}}.
+      {{vm.orderBookPosition.qty | number: '1.0-2'}}{{t('scalperOrderBookCurrentPositionState.lots')}}.
     </div>
     <div [ngClass]="{
         'loss-or-profit': true,

@@ -1,6 +1,7 @@
 import {
   ErrorHandler,
   inject,
+  LOCALE_ID,
   NgModule
 } from '@angular/core';
 
@@ -14,8 +15,6 @@ import {
   NZ_I18N,
   ru_RU
 } from 'ng-zorro-antd/i18n';
-import { registerLocaleData } from '@angular/common';
-import ru from '@angular/common/locales/ru';
 import { FormsModule } from '@angular/forms';
 import {
   HTTP_INTERCEPTORS,
@@ -46,8 +45,7 @@ import { provideApollo } from "apollo-angular";
 import { HttpLink } from "apollo-angular/http";
 import { environment } from "../environments/environment";
 import { InMemoryCache } from "@apollo/client/core";
-
-registerLocaleData(ru);
+import { LocaleService } from "./shared/services/locale.service";
 
 @NgModule({
   declarations: [
@@ -74,6 +72,11 @@ registerLocaleData(ru);
     NzSpinModule
   ],
   providers: [
+    {
+      provide: LOCALE_ID,
+      deps: [LocaleService],
+      useFactory: (localeService: LocaleService): string => localeService.currentLocale,
+    },
     {
       provide: NZ_I18N,
       useFactory: (localId: string): NzI18nInterface => {
