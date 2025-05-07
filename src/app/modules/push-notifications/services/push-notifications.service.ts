@@ -204,6 +204,7 @@ export class PushNotificationsService implements OnDestroy {
   }
 
   private getToken(): Observable<string | null> {
+    console.log('getToken');
     if (this.token$) {
       return this.token$;
     }
@@ -212,6 +213,7 @@ export class PushNotificationsService implements OnDestroy {
       swReady: navigator.serviceWorker.ready,
       notificationsStatus: this.getBrowserNotificationsStatus()
     }).pipe(
+      tap(x => console.log(JSON.stringify(x))),
       filter(x => x.swReady != null && x.notificationsStatus === 'granted'),
       take(1),
       switchMap(() => from(this.messaging.getToken())),
