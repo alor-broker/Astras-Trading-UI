@@ -45,7 +45,9 @@ export interface RulerSettings {
 export interface BracketsSettings {
   orderPriceUnits?: PriceUnits;
   topOrderPriceRatio?: number;
+  topOrderPriceGapRatio?: number;
   bottomOrderPriceRatio?: number;
+  bottomOrderPriceGapRatio?: number;
   useBracketsWhenClosingPosition?: boolean;
 }
 

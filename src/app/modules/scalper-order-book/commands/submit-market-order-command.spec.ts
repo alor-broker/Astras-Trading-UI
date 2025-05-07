@@ -145,8 +145,10 @@ describe('SubmitMarketOrderCommand', () => {
     };
 
     const bracketOptions: BracketOptions = {
-      profitPriceRatio: 1,
-      lossPriceRatio: 2,
+      profitTriggerPriceRatio: 10,
+      profitLimitPriceGapRatio: 1,
+      lossTriggerPriceRatio: 20,
+      lossLimitPriceGapRatio: 2,
       orderPriceUnits: PriceUnits.Points,
       currentPosition: null,
       applyBracketOnClosing: false
@@ -190,25 +192,28 @@ describe('SubmitMarketOrderCommand', () => {
         portfolioKey.portfolio
       );
 
+    let expectedTriggerPrice = bracketOptions.profitTriggerPriceRatio! * priceStep + bestAsk;
+
     const expectedGetProfitOrder = {
-      triggerPrice: bracketOptions.profitPriceRatio! * priceStep + bestAsk,
+      triggerPrice: expectedTriggerPrice,
       side: Side.Sell,
       quantity,
       condition: LessMore.MoreOrEqual,
       instrument: toInstrumentKey(testInstrumentKey),
-      price: bestAsk,
+      price: expectedTriggerPrice - bracketOptions.profitLimitPriceGapRatio! * priceStep,
       activate: true,
       type: OrderType.StopLimit,
       allowMargin: undefined
     };
 
+    expectedTriggerPrice = bestAsk - bracketOptions.lossTriggerPriceRatio! * priceStep;
     const expectedStopLossOrder = {
-      triggerPrice: bestAsk - bracketOptions.lossPriceRatio! * priceStep,
+      triggerPrice: expectedTriggerPrice,
       side: Side.Sell,
       quantity,
       condition: LessMore.LessOrEqual,
       instrument: toInstrumentKey(testInstrumentKey),
-      price: bestAsk,
+      price: expectedTriggerPrice - bracketOptions.lossLimitPriceGapRatio! * priceStep,
       activate: true,
       type: OrderType.StopLimit,
       allowMargin: undefined
@@ -236,8 +241,10 @@ describe('SubmitMarketOrderCommand', () => {
     };
 
     const bracketOptions: BracketOptions = {
-      profitPriceRatio: 1,
-      lossPriceRatio: 2,
+      profitTriggerPriceRatio: 10,
+      profitLimitPriceGapRatio: 1,
+      lossTriggerPriceRatio: 20,
+      lossLimitPriceGapRatio: 2,
       orderPriceUnits: PriceUnits.Points,
       currentPosition: null,
       applyBracketOnClosing: false
@@ -281,25 +288,28 @@ describe('SubmitMarketOrderCommand', () => {
         portfolioKey.portfolio
       );
 
+    let expectedTriggerPrice = bestBid - bracketOptions.profitTriggerPriceRatio! * priceStep;
+
     const expectedGetProfitOrder = {
-      triggerPrice: bestBid - bracketOptions.profitPriceRatio! * priceStep,
+      triggerPrice: expectedTriggerPrice,
       side: Side.Buy,
       quantity,
       condition: LessMore.LessOrEqual,
       instrument: toInstrumentKey(testInstrumentKey),
-      price: bestBid,
+      price: expectedTriggerPrice + bracketOptions.profitLimitPriceGapRatio! * priceStep,
       activate: true,
       type: OrderType.StopLimit,
       allowMargin: undefined
     };
 
+    expectedTriggerPrice = bestBid + bracketOptions.lossTriggerPriceRatio! * priceStep;
     const expectedStopLossOrder = {
-      triggerPrice: bestBid + bracketOptions.lossPriceRatio! * priceStep,
+      triggerPrice: expectedTriggerPrice,
       side: Side.Buy,
       quantity,
       condition: LessMore.MoreOrEqual,
       instrument: toInstrumentKey(testInstrumentKey),
-      price: bestBid,
+      price: expectedTriggerPrice + bracketOptions.lossLimitPriceGapRatio! * priceStep,
       activate: true,
       type: OrderType.StopLimit,
       allowMargin: undefined

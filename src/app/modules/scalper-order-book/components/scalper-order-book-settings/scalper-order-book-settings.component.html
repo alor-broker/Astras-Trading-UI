@@ -552,8 +552,8 @@
                       <ats-input-number
                         formControlName="topOrderPriceRatio"
                         [step]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
-                          ? validationOptions.bracket.price.stepsStep
-                          : validationOptions.bracket.price.percentsStep"
+                          ? validationOptions.bracket.triggerPrice.stepsStep
+                          : validationOptions.bracket.triggerPrice.percentsStep"
                         [allowDecimal]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Percents"
                       ></ats-input-number>
                     </nz-form-control>
@@ -563,8 +563,34 @@
                          form.controls.bracketsSettings.controls.topOrderPriceRatio.errors?.max"
                       >
                         {{t('scalperOrderBookSettings.intervalError', {
-                        min: validationOptions.bracket.price.min,
-                        max: validationOptions.bracket.price.max
+                        min: validationOptions.bracket.triggerPrice.min,
+                        max: validationOptions.bracket.triggerPrice.max
+                      })}}
+                      </span>
+                    </ng-template>
+                  </nz-form-item>
+
+                  <nz-form-item>
+                    <nz-form-label nzFor="topOrderPriceGapRatio">
+                      {{t('scalperOrderBookSettings.topOrderPriceGapRatioLabel')}}
+                    </nz-form-label>
+                    <nz-form-control [nzErrorTip]="topOrderPriceGapRatioError">
+                      <ats-input-number
+                        formControlName="topOrderPriceGapRatio"
+                        [step]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
+                          ? validationOptions.bracket.limitPrice.stepsStep
+                          : validationOptions.bracket.limitPrice.percentsStep"
+                        [allowDecimal]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Percents"
+                      ></ats-input-number>
+                    </nz-form-control>
+                    <ng-template #topOrderPriceGapRatioError>
+                      <span
+                        *ngIf="form.controls.bracketsSettings.controls.topOrderPriceGapRatio.errors?.min ||
+                         form.controls.bracketsSettings.controls.topOrderPriceGapRatio.errors?.max"
+                      >
+                        {{t('scalperOrderBookSettings.intervalError', {
+                        min: validationOptions.bracket.limitPrice.min,
+                        max: validationOptions.bracket.limitPrice.max
                       })}}
                       </span>
                     </ng-template>
@@ -578,8 +604,8 @@
                       <ats-input-number
                         formControlName="bottomOrderPriceRatio"
                         [step]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
-                          ? validationOptions.bracket.price.stepsStep
-                          : validationOptions.bracket.price.percentsStep"
+                          ? validationOptions.bracket.triggerPrice.stepsStep
+                          : validationOptions.bracket.triggerPrice.percentsStep"
                         [allowDecimal]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Percents"
                       ></ats-input-number>
                     </nz-form-control>
@@ -589,9 +615,35 @@
                          form.controls.bracketsSettings.controls.bottomOrderPriceRatio.errors?.max"
                       >
                         {{t('scalperOrderBookSettings.intervalError', {
-                          min: validationOptions.bracket.price.min,
-                          max: validationOptions.bracket.price.max
+                          min: validationOptions.bracket.triggerPrice.min,
+                          max: validationOptions.bracket.triggerPrice.max
                         })}}
+                      </span>
+                    </ng-template>
+                  </nz-form-item>
+
+                  <nz-form-item>
+                    <nz-form-label nzFor="bottomOrderPriceGapRatio">
+                      {{t('scalperOrderBookSettings.bottomOrderPriceGapRatioLabel')}}
+                    </nz-form-label>
+                    <nz-form-control [nzErrorTip]="bottomOrderPriceGapRatioError">
+                      <ats-input-number
+                        formControlName="bottomOrderPriceGapRatio"
+                        [step]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
+                          ? validationOptions.bracket.limitPrice.stepsStep
+                          : validationOptions.bracket.limitPrice.percentsStep"
+                        [allowDecimal]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Percents"
+                      ></ats-input-number>
+                    </nz-form-control>
+                    <ng-template #bottomOrderPriceGapRatioError>
+                      <span
+                        *ngIf="form.controls.bracketsSettings.controls.bottomOrderPriceGapRatio.errors?.min ||
+                         form.controls.bracketsSettings.controls.bottomOrderPriceGapRatio.errors?.max"
+                      >
+                        {{t('scalperOrderBookSettings.intervalError', {
+                        min: validationOptions.bracket.limitPrice.min,
+                        max: validationOptions.bracket.limitPrice.max
+                      })}}
                       </span>
                     </ng-template>
                   </nz-form-item>

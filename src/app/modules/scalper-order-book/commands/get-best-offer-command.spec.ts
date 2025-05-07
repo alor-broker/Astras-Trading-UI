@@ -78,8 +78,10 @@ describe('GetBestOfferCommand', () => {
         targetPortfolio: portfolioKey.portfolio,
         orderBook: { a: testAsks, b: testBids },
         bracketOptions: {
-          profitPriceRatio: 1,
-          lossPriceRatio: 2,
+          profitTriggerPriceRatio: 10,
+          profitLimitPriceGapRatio: 1,
+          lossTriggerPriceRatio: 20,
+          lossLimitPriceGapRatio: 2,
           orderPriceUnits: PriceUnits.Points,
           currentPosition: null,
           applyBracketOnClosing: false
@@ -143,8 +145,10 @@ describe('GetBestOfferCommand', () => {
         targetPortfolio: portfolioKey.portfolio,
         orderBook: { a: testAsks, b: testBids },
         bracketOptions: {
-          profitPriceRatio: 1,
-          lossPriceRatio: 2,
+          profitTriggerPriceRatio: 10,
+          profitLimitPriceGapRatio: 1,
+          lossTriggerPriceRatio: 20,
+          lossLimitPriceGapRatio: 2,
           orderPriceUnits: PriceUnits.Points,
           currentPosition: null,
           applyBracketOnClosing: false,
