@@ -1,3 +1,4 @@
+<ng-container *transloco="let t; scope: 'order-commands/instrument-info'">
 <div *ngIf="viewData$ | async as data" class="content">
   <div class='instrument-logo'>
       <nz-avatar [nzSize]="64" [nzSrc]="iconsUrl + data.instrumentKey.symbol + '.png'"
@@ -5,11 +6,12 @@
                  nzGap='4'>
       </nz-avatar>
       <span
-        *ngIf="data.position.abs > 0"
+        *ngIf="data.position != null && data.position.abs > 0"
         class="badge"
         [class]="data.position.quantity > 0 ? 'long' : 'short'"
         (click)="selectQuantity(data.position.abs)"
-        [title]="data.position.abs"
+        nz-tooltip
+        [nzTooltipTitle]="t('orderCommandsInstrumentInfo.positionTooltip')"
       >
         {{data.position.abs}}
       </span>
@@ -30,7 +32,6 @@
     </div>
 
     <nz-descriptions
-      *transloco="let t; scope: 'order-commands/instrument-info'"
       [nzColon]="false"
       [nzColumn]="{ xxl: 3, xl: 3, lg: 3, md: 2, sm: 2, xs: 2 }"
       class="dynamic"
@@ -59,4 +60,4 @@
     </nz-descriptions>
   </div>
 </div>
-
+</ng-container>
