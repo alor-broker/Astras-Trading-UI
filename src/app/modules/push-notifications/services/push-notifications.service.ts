@@ -177,6 +177,13 @@ export class PushNotificationsService implements OnDestroy {
     this.browserNotificationStatus$ ??= of(DeviceHelper.isSafari()).pipe(
       switchMap(isSafari => {
           if(isSafari) {
+            if(Notification == null) {
+              console.log('Notification is not defined');
+              return of("denied" as NotificationPermission);
+            }
+
+            console.log(Notification.permission);
+
             return fromEvent(document, 'click').pipe(
               switchMap(() => Notification.requestPermission()),
               take(1)
