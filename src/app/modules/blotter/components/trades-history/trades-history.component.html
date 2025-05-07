@@ -40,13 +40,13 @@
           >
             <th nzWidth="5px"></th>
             <th *ngFor="let column of td.tableConfig.columns"
-                [nzCustomFilter]="column.filterData?.filterType !== filterTypes.DefaultMultiple"
+                [nzCustomFilter]="column.filterData?.filterType !== filterTypes.Default"
                 [nzShowSort]="!!column.sortFn"
                 [nzSortFn]="column.sortFn ?? false"
                 [nzSortOrder]="column.sortOrder ?? null"
                 (nzSortOrderChange)="saveSortState(column.id, $event)"
                 [nzFilters]="column.filterData?.filters ?? []"
-                [nzShowFilter]="column.filterData?.filterType === filterTypes.DefaultMultiple"
+                [nzShowFilter]="column.filterData?.filterType === filterTypes.Default"
                 [nzFilterMultiple]="column.filterData?.filterType === filterTypes.DefaultMultiple"
                 (nzFilterChange)="defaultFilterChange(column.id, $event)"
                 [nzWidth]="column.width ? column.width + 'px': null"

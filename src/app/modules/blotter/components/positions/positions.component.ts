@@ -9,11 +9,13 @@ import {
 } from '@angular/core';
 import {
   combineLatest,
+  defer,
   distinctUntilChanged,
   Observable,
   shareReplay,
   switchMap,
-  take, tap
+  take,
+  tap
 } from 'rxjs';
 import { debounceTime, map, mergeMap, startWith } from 'rxjs/operators';
 import { Position } from 'src/app/shared/models/positions/position.model';
@@ -40,6 +42,7 @@ import {
   OrderCommandService
 } from "../../../../shared/services/orders/order-command.service";
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 interface PositionDisplay extends Position {
   id: string;
@@ -245,12 +248,18 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
       )
     );
 
+    const tableState$ = defer(() => {
+      return combineLatest({
+        filters: this.getFiltersState().pipe(take(1)),
+        sort: this.getSortState().pipe(take(1))
+      });
+    });
+
     return combineLatest({
       tableSettings: tableSettings$,
-      filters: this.getFiltersState().pipe(take(1)),
-      sort: this.getSortState().pipe(take(1)),
       translator: this.translatorService.getTranslator('blotter/positions')
     }).pipe(
+      mapWith(() => tableState$, (source, output) => ({...source, ...output})),
       takeUntilDestroyed(this.destroyRef),
       tap(x => {
         if(x.filters != null) {
