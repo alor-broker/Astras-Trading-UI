@@ -172,13 +172,20 @@ export class PushNotificationsService implements OnDestroy {
   }
 
   getBrowserNotificationsStatus(): Observable<NotificationPermission> {
-    return from(Notification.requestPermission()).pipe(
-      catchError(() => {
-        return fromEvent(document, 'click').pipe(
-          switchMap(() => Notification.requestPermission()),
-          take(1)
-        );
-      })
+    return new Observable(subscriber => {
+        Notification.requestPermission()
+          .then(r => {
+            console.log('No error');
+            subscriber.next(r);
+          })
+          .catch(() => {
+            console.log('Error caught in promise');
+            fromEvent(document, 'click').pipe(
+              switchMap(() => Notification.requestPermission()),
+              take(1)
+            ).subscribe(r => subscriber.next(r));
+          });
+      }
     );
   }
 
