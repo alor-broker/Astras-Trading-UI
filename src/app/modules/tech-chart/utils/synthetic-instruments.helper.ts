@@ -136,10 +136,10 @@ export class SyntheticInstrumentsHelper {
 
     return {
       ...candle,
-      close: eval(candle.close) as number,
-      open: eval(candle.open) as number,
-      high: eval(candle.high) as number,
-      low: eval(candle.low) as number,
+      close: this.calculateExpression(candle.close) ?? NaN,
+      open: this.calculateExpression(candle.open) ?? NaN,
+      high: this.calculateExpression(candle.high) ?? NaN,
+      low: this.calculateExpression(candle.low) ?? NaN,
       volume: 0,
     } as Candle;
   }
@@ -163,12 +163,14 @@ export class SyntheticInstrumentsHelper {
       return acc + '0.1';
     }, '');
 
-    try {
-      eval(expressionStr);
-    } catch {
-      return false;
-    }
+    return this.calculateExpression(expressionStr) != null;
+  }
 
-    return true;
+  private static calculateExpression(expression: string): number | null {
+    try {
+      return window.eval(expression) as number;
+    } catch {
+      return null;
+    }
   }
 }
