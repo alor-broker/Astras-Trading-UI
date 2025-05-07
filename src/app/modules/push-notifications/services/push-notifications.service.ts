@@ -41,6 +41,7 @@ import { environment } from "../../../../environments/environment";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/messaging';
 import { LoggerService } from "../../../shared/services/logging/logger.service";
+import { DeviceHelper } from "../../../shared/utils/device-helper";
 
 interface MessagePayload extends firebase.messaging.MessagePayload {
   data?: {
@@ -60,6 +61,7 @@ export class PushNotificationsService implements OnDestroy {
   private token$?: Observable<string | null>;
 
   private readonly subscriptionsUpdatedSub = new Subject<PushSubscriptionType | null>();
+  private browserNotificationStatus$: Observable<NotificationPermission> | null = null;
   readonly subscriptionsUpdated$ = this.subscriptionsUpdatedSub.asObservable();
 
   private messages$?: Observable<MessagePayload>;
@@ -172,33 +174,22 @@ export class PushNotificationsService implements OnDestroy {
   }
 
   getBrowserNotificationsStatus(): Observable<NotificationPermission> {
-    return new Observable(subscriber => {
-        const checkInEvent = (): void => {
-          fromEvent(document, 'click').pipe(
-            switchMap(() => Notification.requestPermission()),
-            take(1)
-          ).subscribe(r => {
-            subscriber.next(r);
-            subscriber.complete();
-          });
-        };
+    this.browserNotificationStatus$ ??= of(DeviceHelper.isSafari()).pipe(
+      switchMap(isSafari => {
+          if(isSafari) {
+            return fromEvent(document, 'click').pipe(
+              switchMap(() => Notification.requestPermission()),
+              take(1)
+            );
+          }
 
-        try {
-          Notification.requestPermission()
-            .then(r => {
-              console.log('No error', r);
-              subscriber.next(r);
-              subscriber.complete();
-            })
-            .catch(() => {
-              console.log('Error caught in promise');
-              checkInEvent();
-            });
-        } catch {
-          checkInEvent();
-        }
-      }
-    );
+          return from(Notification.requestPermission());
+        }),
+        take(1),
+        shareReplay(1)
+      );
+
+    return this.browserNotificationStatus$;
   }
 
   ngOnDestroy(): void {
