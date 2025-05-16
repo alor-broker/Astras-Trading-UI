@@ -17,6 +17,7 @@ import {NzEmptyComponent} from "ng-zorro-antd/empty";
 import {NzSkeletonComponent} from "ng-zorro-antd/skeleton";
 import {ACTIONS_CONTEXT, ActionsContext} from "../../../../shared/services/actions-context";
 import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
 
 enum SortBy {
   Ticker = "ticker"
@@ -37,17 +38,18 @@ type SortFn = (a: Position, b: Position) => number;
 
 @Component({
     selector: 'ats-positions',
-    imports: [
-        LetDirective,
-        TruncatedTextComponent,
-        DecimalPipe,
-        PercentPipe,
-        NgClass,
-        TranslocoDirective,
-        NzButtonComponent,
-        NzEmptyComponent,
-        NzSkeletonComponent
-    ],
+  imports: [
+    LetDirective,
+    TruncatedTextComponent,
+    DecimalPipe,
+    PercentPipe,
+    NgClass,
+    TranslocoDirective,
+    NzButtonComponent,
+    NzEmptyComponent,
+    NzSkeletonComponent,
+    InstrumentIconComponent
+  ],
     templateUrl: './positions.component.html',
     styleUrl: './positions.component.less'
 })

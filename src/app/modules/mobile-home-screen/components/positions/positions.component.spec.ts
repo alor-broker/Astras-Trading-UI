@@ -1,13 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PositionsComponent } from './positions.component';
-import {MockProvider} from "ng-mocks";
+import {
+  MockComponents,
+  MockProvider
+} from "ng-mocks";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {EMPTY} from "rxjs";
 import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 import {ACTIONS_CONTEXT} from "../../../../shared/services/actions-context";
+import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
 
 describe('PositionsComponent', () => {
   let component: PositionsComponent;
@@ -17,7 +21,8 @@ describe('PositionsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         PositionsComponent,
-        TranslocoTestsModule.getModule()
+        TranslocoTestsModule.getModule(),
+        ...MockComponents(InstrumentIconComponent)
       ],
       providers: [
         MockProvider(

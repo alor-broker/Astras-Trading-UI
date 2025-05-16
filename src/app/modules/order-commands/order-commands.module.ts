@@ -41,6 +41,7 @@ import { BuySellButtonsComponent } from "./components/buy-sell-buttons/buy-sell-
 import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
 import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
 import { NzInputNumberComponent } from "ng-zorro-antd/input-number";
+import { InstrumentIconComponent } from "../../shared/components/instrument-icon/instrument-icon.component";
 
 @NgModule({
   declarations: [
@@ -86,7 +87,8 @@ import { NzInputNumberComponent } from "ng-zorro-antd/input-number";
     BuySellButtonsComponent,
     WidgetSettingsComponent,
     InstrumentSearchComponent,
-    NzInputNumberComponent
+    NzInputNumberComponent,
+    InstrumentIconComponent
   ]
 })
 export class OrderCommandsModule {
