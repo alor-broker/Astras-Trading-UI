@@ -5,7 +5,6 @@ import {BehaviorSubject, combineLatest, filter, map, Observable, shareReplay, sw
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { startWith } from "rxjs/operators";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
-import { EnvironmentService } from "../../../../shared/services/environment.service";
 
 @Component({
     selector: 'ats-instrument-info',
@@ -30,8 +29,6 @@ export class InstrumentInfoComponent implements OnInit, OnDestroy {
     };
   }>;
 
-  iconsUrl = this.environmentService.alorIconsStorageUrl;
-
   @Output()
   priceSelected = new EventEmitter<number>();
 
@@ -43,8 +40,7 @@ export class InstrumentInfoComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly quoteService: QuotesService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly environmentService: EnvironmentService
+    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService
   ) {
   }
 

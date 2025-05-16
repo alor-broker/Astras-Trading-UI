@@ -1,10 +1,10 @@
 <ng-container *transloco="let t; scope: 'order-commands/instrument-info'">
 <div *ngIf="viewData$ | async as data" class="content">
   <div class='instrument-logo'>
-      <nz-avatar [nzSize]="64" [nzSrc]="iconsUrl + data.instrumentKey.symbol + '.png'"
-                 [nzText]="data.instrumentKey.symbol"
-                 nzGap='4'>
-      </nz-avatar>
+    <ats-instrument-icon
+      [symbol]="data.instrumentKey.symbol"
+      [size]="64"
+    ></ats-instrument-icon>
       <span
         *ngIf="data.position != null && data.position.abs > 0"
         class="badge"
