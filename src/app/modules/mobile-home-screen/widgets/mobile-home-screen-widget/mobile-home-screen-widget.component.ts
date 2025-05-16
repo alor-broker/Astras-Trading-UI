@@ -28,7 +28,6 @@ import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
 
 @Component({
     selector: 'ats-mobile-home-screen-widget',
-    standalone: true,
     imports: [
         AsyncPipe,
         NgIf,

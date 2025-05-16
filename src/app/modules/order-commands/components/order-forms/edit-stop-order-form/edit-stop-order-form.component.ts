@@ -50,9 +50,10 @@ import { Instrument } from "../../../../../shared/models/instruments/instrument.
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
 
 @Component({
-  selector: 'ats-edit-stop-order-form',
-  templateUrl: './edit-stop-order-form.component.html',
-  styleUrls: ['./edit-stop-order-form.component.less']
+    selector: 'ats-edit-stop-order-form',
+    templateUrl: './edit-stop-order-form.component.html',
+    styleUrls: ['./edit-stop-order-form.component.less'],
+    standalone: false
 })
 export class EditStopOrderFormComponent extends BaseEditOrderFormComponent implements OnInit {
   currentOrder$!: Observable<StopOrder>;

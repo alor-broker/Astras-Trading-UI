@@ -9,6 +9,7 @@ import { EnvironmentService } from "./environment.service";
 import {PortfolioItemsModelHelper} from "../utils/portfolio-item-models-helper";
 import {PortfolioKey} from "../models/portfolio-key.model";
 import { TradeFilter } from "../../modules/blotter/models/trade.model";
+import {formatISO} from "date-fns";
 
 @Injectable({
   providedIn: 'root'
@@ -25,13 +26,14 @@ export class TradesHistoryService {
     exchange: string,
     portfolio: string,
     options?: Partial<{
-    from: string | null;
+    dateFrom: Date | null;
     limit: number | null;
     filters: TradeFilter | null;
   }>): Observable<Trade[] | null> {
     const ownedPortfolio: PortfolioKey = { portfolio, exchange };
     const params: Record<string, any> = {
       descending: true,
+      orderByTradeDate: true,
       format: 'heavy'
     };
     if (options) {
@@ -49,8 +51,8 @@ export class TradesHistoryService {
         params.limit = options.limit;
       }
 
-      if (options.from != null) {
-        params.from = options.from;
+      if (options.dateFrom != null) {
+        params.dateFrom = formatISO(options.dateFrom);
       }
     }
     return this.httpClient.get<TradeResponse[]>(

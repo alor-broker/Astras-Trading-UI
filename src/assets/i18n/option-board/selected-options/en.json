@@ -46,8 +46,8 @@
       "tooltip": "Bid"
     },
     "price": {
-      "name": "Price",
-      "tooltip": "Price"
+      "name": "T.price",
+      "tooltip": "Theoretical price"
     },
     "delta": {
       "name": "Delta",

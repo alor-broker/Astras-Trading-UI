@@ -66,8 +66,7 @@ export class LocalStorageService implements OnDestroy {
   }
 
   public onOuterChange(): Observable<OuterChanges> {
-    if(this.outerChanges == null) {
-      this.outerChanges = fromEvent(window, 'storage').pipe(
+    this.outerChanges ??= fromEvent(window, 'storage').pipe(
         map(event => {
           const e = event as StorageEvent;
           return {
@@ -78,7 +77,6 @@ export class LocalStorageService implements OnDestroy {
         }),
         shareReplay({bufferSize: 1, refCount: true})
       );
-    }
 
     return this.outerChanges;
   }

@@ -29,9 +29,10 @@ interface MenuItem {
 }
 
 @Component({
-  selector: 'ats-add-to-watchlist-menu',
-  templateUrl: './add-to-watchlist-menu.component.html',
-  styleUrl: './add-to-watchlist-menu.component.less'
+    selector: 'ats-add-to-watchlist-menu',
+    templateUrl: './add-to-watchlist-menu.component.html',
+    styleUrl: './add-to-watchlist-menu.component.less',
+    standalone: false
 })
 export class AddToWatchlistMenuComponent implements OnInit {
   menuItems$!: Observable<MenuItem[]>;

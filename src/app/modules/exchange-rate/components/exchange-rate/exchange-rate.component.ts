@@ -44,9 +44,10 @@ interface CurrencyMatrix {
 }
 
 @Component({
-  selector: 'ats-exchange-rate',
-  templateUrl: './exchange-rate.component.html',
-  styleUrls: ['./exchange-rate.component.less']
+    selector: 'ats-exchange-rate',
+    templateUrl: './exchange-rate.component.html',
+    styleUrls: ['./exchange-rate.component.less'],
+    standalone: false
 })
 export class ExchangeRateComponent implements OnInit, OnDestroy {
   @Input({ required: true })

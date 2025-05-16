@@ -7,7 +7,11 @@
 export class ComponentHelpers {
   static mockComponent(options: Component, klass = (class {
   })): unknown {
-    const metadata: Component = { template: '<ng-content></ng-content>', ...options };
+    const metadata: Component = {
+      template: '<ng-content></ng-content>',
+      ...options,
+      standalone: options.standalone ?? false
+    };
     const classWithOutputs = this.classWithOutputEmittersFactory(klass, options.outputs ?? []);
 
     return Component(metadata)(classWithOutputs);
@@ -15,6 +19,7 @@ export class ComponentHelpers {
 
   static mockDirective(options: Directive, klass = (class {
   })): any {
+    options.standalone ??= false;
     return Directive(options)(klass);
   }
 

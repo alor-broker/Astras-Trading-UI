@@ -14,13 +14,14 @@ import {OrdersDialogService} from "../../../../shared/services/orders/orders-dia
 import {ConfirmableOrderCommandsService} from "../../services/confirmable-order-commands.service";
 
 @Component({
-  selector: 'ats-edit-order-dialog-widget',
-  templateUrl: './edit-order-dialog-widget.component.html',
-  styleUrls: ['./edit-order-dialog-widget.component.less'],
-  providers: [
-    CommonParametersService,
-    ConfirmableOrderCommandsService
-  ]
+    selector: 'ats-edit-order-dialog-widget',
+    templateUrl: './edit-order-dialog-widget.component.html',
+    styleUrls: ['./edit-order-dialog-widget.component.less'],
+    providers: [
+        CommonParametersService,
+        ConfirmableOrderCommandsService
+    ],
+    standalone: false
 })
 export class EditOrderDialogWidgetComponent implements OnInit, OnDestroy {
   readonly formState$ = new BehaviorSubject<OrderFormState | null>(null);

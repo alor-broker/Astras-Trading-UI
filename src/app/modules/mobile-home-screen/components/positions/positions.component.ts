@@ -36,21 +36,20 @@ interface DisplayPositions {
 type SortFn = (a: Position, b: Position) => number;
 
 @Component({
-  selector: 'ats-positions',
-  standalone: true,
-  imports: [
-    LetDirective,
-    TruncatedTextComponent,
-    DecimalPipe,
-    PercentPipe,
-    NgClass,
-    TranslocoDirective,
-    NzButtonComponent,
-    NzEmptyComponent,
-    NzSkeletonComponent
-  ],
-  templateUrl: './positions.component.html',
-  styleUrl: './positions.component.less'
+    selector: 'ats-positions',
+    imports: [
+        LetDirective,
+        TruncatedTextComponent,
+        DecimalPipe,
+        PercentPipe,
+        NgClass,
+        TranslocoDirective,
+        NzButtonComponent,
+        NzEmptyComponent,
+        NzSkeletonComponent
+    ],
+    templateUrl: './positions.component.html',
+    styleUrl: './positions.component.less'
 })
 export class PositionsComponent implements OnInit, OnDestroy {
   displayPositions$!: Observable<DisplayPositions>;

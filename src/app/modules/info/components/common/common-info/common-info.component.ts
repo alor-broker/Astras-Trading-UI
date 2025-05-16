@@ -1,5 +1,7 @@
 import {
   Component,
+  Inject,
+  LOCALE_ID,
   OnInit
 } from '@angular/core';
 import { InstrumentInfoBaseComponent } from "../../instrument-info-base/instrument-info-base.component";
@@ -59,18 +61,17 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<InstrumentResponse>> = object({
 });
 
 @Component({
-  selector: 'ats-common-info',
-  standalone: true,
-  imports: [
-    TranslocoDirective,
-    LetDirective,
-    NzEmptyComponent,
-    NzTabSetComponent,
-    NzTabComponent,
-    DescriptorsListComponent
-  ],
-  templateUrl: './common-info.component.html',
-  styleUrl: './common-info.component.less'
+    selector: 'ats-common-info',
+    imports: [
+        TranslocoDirective,
+        LetDirective,
+        NzEmptyComponent,
+        NzTabSetComponent,
+        NzTabComponent,
+        DescriptorsListComponent
+    ],
+    templateUrl: './common-info.component.html',
+    styleUrl: './common-info.component.less'
 })
 export class CommonInfoComponent extends InstrumentInfoBaseComponent implements OnInit {
   info$!: Observable<Instrument | null>;
@@ -79,7 +80,10 @@ export class CommonInfoComponent extends InstrumentInfoBaseComponent implements 
 
   constructor(
     private readonly graphQlService: GraphQlService,
-    private readonly translatorService: TranslatorService) {
+    private readonly translatorService: TranslatorService,
+    @Inject(LOCALE_ID)
+    private readonly locale: string
+  ) {
     super();
   }
 
@@ -145,7 +149,8 @@ export class CommonInfoComponent extends InstrumentInfoBaseComponent implements 
   private getTradingDetailsDescriptors(instrument: Instrument): Descriptor[] {
     return DescriptorFiller.tradingDetails({
       tradingDetails: instrument.tradingDetails,
-      currencyInformation: instrument.currencyInformation
+      currencyInformation: instrument.currencyInformation,
+      locale: this.locale
     });
   }
 }

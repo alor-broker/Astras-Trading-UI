@@ -138,9 +138,7 @@ export class AggregatedTradesIterator implements Iterator<AggregatedTrade | null
   }
 
   private noAggregationIterator(): IteratorResult<AggregatedTrade, null> {
-    if (this.currentIndex == null) {
-      this.currentIndex = this.orderedTrades.length;
-    }
+    this.currentIndex ??= this.orderedTrades.length;
 
     this.currentIndex--;
 

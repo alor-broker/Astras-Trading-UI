@@ -15,9 +15,10 @@ import {PortfolioSummaryService} from "../../../../shared/services/portfolio-sum
 import {ForwardRisksView} from "../../../../shared/models/forward-risks-view.model";
 
 @Component({
-  selector: 'ats-forward-summary',
-  templateUrl: './forward-summary.component.html',
-  styleUrls: ['./forward-summary.component.less']
+    selector: 'ats-forward-summary',
+    templateUrl: './forward-summary.component.html',
+    styleUrls: ['./forward-summary.component.less'],
+    standalone: false
 })
 export class ForwardSummaryComponent implements OnInit {
   @Input()

@@ -22,9 +22,10 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 
 @Component({
-  selector: 'ats-all-instruments-settings',
-  templateUrl: './all-instruments-settings.component.html',
-  styleUrls: ['./all-instruments-settings.component.less']
+    selector: 'ats-all-instruments-settings',
+    templateUrl: './all-instruments-settings.component.html',
+    styleUrls: ['./all-instruments-settings.component.less'],
+    standalone: false
 })
 export class AllInstrumentsSettingsComponent extends WidgetSettingsBaseComponent<AllInstrumentsSettings> implements OnInit {
   readonly form = this.formBuilder.group({

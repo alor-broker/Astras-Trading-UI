@@ -3,6 +3,7 @@ export interface Descriptor {
   translationKey?: string;
   formattedValue: string;
   valueTranslationKey?: string;
+  titleTooltipTranslationKey?: string;
   customStyles?: Record<string, any>;
 }
 

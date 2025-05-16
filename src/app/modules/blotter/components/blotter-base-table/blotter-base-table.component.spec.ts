@@ -28,12 +28,13 @@ import { TranslocoTestsModule } from "../../../../shared/utils/testing/transloco
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 @Component({
-  selector: 'ats-test-comp',
-  template: `
+    selector: 'ats-test-comp',
+    template: `
     <div class="table-container" [style]="{ height: '100%'}">
       <nz-table #nzTable></nz-table>
     </div>
-  `
+  `,
+    standalone: false
 })
 class TestComponent extends BlotterBaseTableComponent<{ id: string }, object> {
   protected rowToInstrumentKey(): Observable<InstrumentKey | null> {
@@ -65,7 +66,8 @@ class TestComponent extends BlotterBaseTableComponent<{ id: string }, object> {
 }
 
 @Component({
-  template: '<ats-test-comp [guid]="guid"></ats-test-comp>'
+    template: '<ats-test-comp [guid]="guid"></ats-test-comp>',
+    standalone: false
 })
 class TestWrapperComponent {
   guid = 'testGuid';

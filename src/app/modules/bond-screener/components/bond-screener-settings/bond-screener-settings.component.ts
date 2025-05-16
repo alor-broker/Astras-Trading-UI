@@ -22,9 +22,10 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 @Component({
-  selector: 'ats-bond-screener-settings',
-  templateUrl: './bond-screener-settings.component.html',
-  styleUrls: ['./bond-screener-settings.component.less']
+    selector: 'ats-bond-screener-settings',
+    templateUrl: './bond-screener-settings.component.html',
+    styleUrls: ['./bond-screener-settings.component.less'],
+    standalone: false
 })
 export class BondScreenerSettingsComponent extends WidgetSettingsBaseComponent<BondScreenerSettings> implements OnInit {
   readonly form = this.formBuilder.group({

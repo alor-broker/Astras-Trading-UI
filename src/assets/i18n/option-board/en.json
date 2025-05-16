@@ -1,6 +1,7 @@
 ﻿{
   "loadingLabel": "Loading...",
-  "noOptionsMessage": "No options found for the selected type",
+  "noOptionsWithSelectedTypeMessage": "No options found for the selected type",
+  "noOptionsMessage": "No options found for the selected instrument",
 
   "dayOfMonthFormat": "{{month}} {{day}}",
   "missingOptionTooltip": "No option is written at strike of {{strikePrice}} and expiration of {{month}} {{day}} {{year}}",
@@ -12,7 +13,7 @@
   },
 
   "parameterOptions": {
-    "price": "Price",
+    "price": "T.price",
     "delta": "Delta",
     "gamma": "Gamma",
     "vega": "Vega",
@@ -22,8 +23,11 @@
     "bid": "Bid"
   },
 
+  "strikePriceLabel": "Strike",
+
   "tabNames": {
     "allOptions": "All",
+    "allOptionsByExpiration": "By expiration",
     "selectedOptions": "Selected",
     "charts": "Charts"
   },

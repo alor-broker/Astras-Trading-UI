@@ -18,9 +18,10 @@ import {TerminalSettingsService} from "../../../../shared/services/terminal-sett
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
-  selector: 'ats-light-chart-widget',
-  templateUrl: './light-chart-widget.component.html',
-  styleUrls: ['./light-chart-widget.component.less']
+    selector: 'ats-light-chart-widget',
+    templateUrl: './light-chart-widget.component.html',
+    styleUrls: ['./light-chart-widget.component.less'],
+    standalone: false
 })
 export class LightChartWidgetComponent implements OnInit {
   shouldShowSettings = false;

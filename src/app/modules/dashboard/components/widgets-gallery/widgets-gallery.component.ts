@@ -28,20 +28,19 @@ export interface GalleryDisplay {
 }
 
 @Component({
-  selector: 'ats-widgets-gallery',
-  templateUrl: './widgets-gallery.component.html',
-  styleUrls: ['./widgets-gallery.component.less'],
-  encapsulation: ViewEncapsulation.None,
-  imports: [
-    NzDrawerComponent,
-    NzDrawerContentDirective,
-    NgIf,
-    NgForOf,
-    NgTemplateOutlet,
-    NzIconDirective,
-    TranslocoDirective
-  ],
-  standalone: true
+    selector: 'ats-widgets-gallery',
+    templateUrl: './widgets-gallery.component.html',
+    styleUrls: ['./widgets-gallery.component.less'],
+    encapsulation: ViewEncapsulation.None,
+    imports: [
+        NzDrawerComponent,
+        NzDrawerContentDirective,
+        NgIf,
+        NgForOf,
+        NgTemplateOutlet,
+        NzIconDirective,
+        TranslocoDirective
+    ]
 })
 export class WidgetsGalleryComponent {
   @Input({ required: true })

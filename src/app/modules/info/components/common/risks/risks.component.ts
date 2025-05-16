@@ -39,17 +39,16 @@ import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { formatNumber } from "@angular/common";
 
 @Component({
-  selector: 'ats-risks',
-  templateUrl: './risks.component.html',
-  styleUrls: ['./risks.component.less'],
-  imports: [
-    TranslocoDirective,
-    LetDirective,
-    NzTypographyComponent,
-    NzSpinComponent,
-    DescriptorsListComponent
-  ],
-  standalone: true
+    selector: 'ats-risks',
+    templateUrl: './risks.component.html',
+    styleUrls: ['./risks.component.less'],
+    imports: [
+        TranslocoDirective,
+        LetDirective,
+        NzTypographyComponent,
+        NzSpinComponent,
+        DescriptorsListComponent
+    ]
 })
 export class RisksComponent implements OnInit, OnDestroy {
   currentPortfolio$!: Observable<PortfolioKey>;
@@ -130,10 +129,12 @@ export class RisksComponent implements OnInit, OnDestroy {
       },
       {
         id: 'longMultiplier',
+        titleTooltipTranslationKey: 'longMultiplier',
         formattedValue: formatNumber(risks.longMultiplier, this.locale, '0.0-6')
       },
       {
         id: 'shortMultiplier',
+        titleTooltipTranslationKey: 'shortMultiplier',
         formattedValue: formatNumber(risks.shortMultiplier, this.locale, '0.0-6')
       },
       {

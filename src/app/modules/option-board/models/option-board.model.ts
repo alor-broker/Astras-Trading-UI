@@ -1,6 +1,6 @@
 ﻿export enum OptionSide {
-  Call = 'call',
-  Put = 'put'
+  Call = 'Call',
+  Put = 'Put'
 }
 
 export enum OptionParameters {
@@ -73,4 +73,10 @@ export interface OptionPlot {
   priceByYears: OptionPlotPoint[];
   priceByStrikePrice: OptionPlotPoint[];
   profitLossByAssetPrice: OptionPlotPoint[];
+}
+
+export interface OptionExpiration {
+  symbol: string;
+  exchange: string;
+  expiration: Date;
 }

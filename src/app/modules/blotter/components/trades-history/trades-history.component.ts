@@ -17,6 +17,7 @@ import { NzTableComponent } from "ng-zorro-antd/table";
 import {
   BehaviorSubject,
   combineLatest,
+  defer,
   distinctUntilChanged,
   Observable,
   pairwise,
@@ -60,9 +61,10 @@ import { InstrumentKey } from "../../../../shared/models/instruments/instrument-
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 
 @Component({
-  selector: 'ats-trades-history',
-  templateUrl: './trades-history.component.html',
-  styleUrls: ['./trades-history.component.less']
+    selector: 'ats-trades-history',
+    templateUrl: './trades-history.component.html',
+    styleUrls: ['./trades-history.component.less'],
+    standalone: false
 })
 export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTrade, TradeFilter> implements AfterViewInit, OnDestroy {
   readonly rowHeight = 20;
@@ -113,7 +115,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       sortOrder: null,
       filterData: {
         filterName: 'side',
-        filterType: FilterType.DefaultMultiple,
+        filterType: FilterType.Default,
         filters: [
           { text: 'Покупка', value: 'buy' },
           { text: 'Продажа', value: 'sell' }
@@ -137,6 +139,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     },
     {
       id: 'date',
+      sourceField: 'displayDate',
       displayName: 'Время',
       sortOrder: null,
       tooltip: 'Время совершения сделки',
@@ -216,7 +219,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       const bottomScrollOffset = scrollViewport.measureScrollOffset('bottom');
       if ((bottomScrollOffset / this.rowHeight) < bufferItemsCount) {
         const lastItem = loadedData[loadedData.length - 1];
-        this.loadMoreItems(lastItem.id, 100);
+        this.loadMoreItems(lastItem.date, 100);
       }
     });
 
@@ -234,7 +237,6 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       map(([, scrollViewport]) => scrollViewport),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(scrollViewport => {
-      this.loadedHistory$.next([]);
       const itemsCount = Math.ceil(scrollViewport.measureViewportSize('vertical') / this.rowHeight);
       this.loadMoreItems(null, Math.max(itemsCount, 100));
     });
@@ -251,7 +253,8 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     ).subscribe(([scrollViewport, displayTrades]) => {
       const itemsCount = Math.ceil(scrollViewport.measureViewportSize('vertical') / this.rowHeight);
       if(itemsCount > displayTrades.length) {
-        this.loadMoreItems(null, Math.max(itemsCount, 100));
+        const lastItem = displayTrades[displayTrades.length - 1];
+        this.loadMoreItems(lastItem.date, Math.max(itemsCount, 100));
       }
     });
   }
@@ -275,7 +278,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     );
   }
 
-  private loadMoreItems(from?: string | null, itemsCount?: number | null): void {
+  private loadMoreItems(dateFrom?: Date | null, itemsCount?: number | null): void {
     this.isLoading$.pipe(
       take(1),
       filter(isLoading => !isLoading),
@@ -287,29 +290,34 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
           settings.portfolio,
           {
             filters,
-            from: from,
+            dateFrom,
             limit: itemsCount ?? 50
           }
         )
       ),
       tap(() => this.isLoading$.next(false)),
-    ).subscribe(loadedItems => {
+    ).subscribe((loadedItems) => {
       if (!loadedItems || loadedItems.length === 0) {
         return;
       }
 
-      const filteredItems = from != null
-        ? loadedItems.filter(i => i.id !== from)
-        : loadedItems;
+      if(dateFrom == null) {
+        this.loadedHistory$.next(loadedItems);
+      } else {
+        this.loadedHistory$.pipe(
+          take(1)
+        ).subscribe(existingItems => {
+          const existingIds = new Set(existingItems.map(x => x.id));
+          const uniqueItems = loadedItems.filter(x => !existingIds.has(x.id));
 
-      this.loadedHistory$.pipe(
-        take(1)
-      ).subscribe(existingItems => {
-        this.loadedHistory$.next([
-          ...existingItems,
-          ...filteredItems
-        ]);
-      });
+          if(uniqueItems.length > 0) {
+            this.loadedHistory$.next([
+              ...existingItems,
+              ...uniqueItems
+            ]);
+          }
+        });
+      }
     });
   }
 
@@ -322,12 +330,18 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       filter((s): s is TableDisplaySettings => !!s)
     );
 
+    const tableState$ = defer(() => {
+      return combineLatest({
+        filters: this.getFiltersState().pipe(take(1)),
+        sort: this.getSortState().pipe(take(1))
+      });
+    });
+
     return combineLatest({
       tableSettings: tableSettings$,
-      filters: this.getFiltersState().pipe(take(1)),
-      sort: this.getSortState().pipe(take(1)),
       translator: this.translatorService.getTranslator('blotter/trades')
     }).pipe(
+      mapWith(() => tableState$, (source, output) => ({...source, ...output})),
       takeUntilDestroyed(this.destroyRef),
       tap(x => {
         if(x.filters != null) {
@@ -373,23 +387,20 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     ).pipe(
       map(([trades, converter]) => trades.map(t => <DisplayTrade>{
         ...t,
-        date: converter.toTerminalDate(t.date)
+        displayDate: converter.toTerminalDate(t.date)
       })),
-      mapWith(
-        () => this.filters$,
-        (data, filter) =>
-        {
-          const clearedFilter = {
-            ...filter
-          };
+      withLatestFrom(this.filters$),
+      map(([data,filter]) => {
+        const clearedFilter = {
+          ...filter
+        };
 
-          // symbol and side filters has been applied in API call
-          delete clearedFilter.symbol;
-          delete clearedFilter.side;
+        // symbol and side filters has been applied in API call
+        delete clearedFilter.symbol;
+        delete clearedFilter.side;
 
-          return data.filter(t => this.justifyFilter(t, filter));
-        }
-        ),
+        return data.filter(t => this.justifyFilter(t, filter));
+      }),
       shareReplay(1)
     );
   }

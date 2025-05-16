@@ -44,25 +44,24 @@ import { NzTypographyComponent } from "ng-zorro-antd/typography";
 import { NzInputDirective } from 'ng-zorro-antd/input';
 
 @Component({
-  selector: 'ats-search-client-portfolio-dialog',
-  standalone: true,
-  imports: [
-    TranslocoDirective,
-    NzModalComponent,
-    NzModalContentDirective,
-    NzFormDirective,
-    ReactiveFormsModule,
-    NzFormItemComponent,
-    NzSelectComponent,
-    AsyncPipe,
-    NzOptionComponent,
-    NzFormControlComponent,
-    NzButtonComponent,
-    NzTypographyComponent,
-    NzInputDirective
-  ],
-  templateUrl: './search-client-portfolio-dialog.component.html',
-  styleUrl: './search-client-portfolio-dialog.component.less'
+    selector: 'ats-search-client-portfolio-dialog',
+    imports: [
+        TranslocoDirective,
+        NzModalComponent,
+        NzModalContentDirective,
+        NzFormDirective,
+        ReactiveFormsModule,
+        NzFormItemComponent,
+        NzSelectComponent,
+        AsyncPipe,
+        NzOptionComponent,
+        NzFormControlComponent,
+        NzButtonComponent,
+        NzTypographyComponent,
+        NzInputDirective
+    ],
+    templateUrl: './search-client-portfolio-dialog.component.html',
+    styleUrl: './search-client-portfolio-dialog.component.less'
 })
 export class SearchClientPortfolioDialogComponent implements OnInit {
   @Input()

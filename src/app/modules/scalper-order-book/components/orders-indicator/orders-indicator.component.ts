@@ -4,9 +4,10 @@ import {
 } from '@angular/core';
 
 @Component({
-  selector: 'ats-orders-indicator',
-  templateUrl: './orders-indicator.component.html',
-  styleUrls: ['./orders-indicator.component.less']
+    selector: 'ats-orders-indicator',
+    templateUrl: './orders-indicator.component.html',
+    styleUrls: ['./orders-indicator.component.less'],
+    standalone: false
 })
 export class OrdersIndicatorComponent {
   @Input({required: true})

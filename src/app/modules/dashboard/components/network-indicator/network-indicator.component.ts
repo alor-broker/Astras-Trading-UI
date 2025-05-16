@@ -16,22 +16,21 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 
 type StatusColor = 'warning' | 'danger' | 'success';
 @Component({
-  selector: 'ats-network-indicator',
-  templateUrl: './network-indicator.component.html',
-  styleUrls: ['./network-indicator.component.less'],
-  imports: [
-    TranslocoDirective,
-    AsyncPipe,
-    NgIf,
-    LetDirective,
-    NzTypographyComponent,
-    NzTooltipDirective,
-    DecimalPipe,
-    NgClass,
-    NzIconDirective
-  ],
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-network-indicator',
+    templateUrl: './network-indicator.component.html',
+    styleUrls: ['./network-indicator.component.less'],
+    imports: [
+        TranslocoDirective,
+        AsyncPipe,
+        NgIf,
+        LetDirective,
+        NzTypographyComponent,
+        NzTooltipDirective,
+        DecimalPipe,
+        NgClass,
+        NzIconDirective
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NetworkIndicatorComponent implements OnInit {
   statuses = NetworkStatus;

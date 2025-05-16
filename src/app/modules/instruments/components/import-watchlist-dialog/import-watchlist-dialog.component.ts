@@ -36,9 +36,10 @@ interface ParsedItem {
 }
 
 @Component({
-  selector: 'ats-import-watchlist-dialog',
-  templateUrl: './import-watchlist-dialog.component.html',
-  styleUrls: ['./import-watchlist-dialog.component.less']
+    selector: 'ats-import-watchlist-dialog',
+    templateUrl: './import-watchlist-dialog.component.html',
+    styleUrls: ['./import-watchlist-dialog.component.less'],
+    standalone: false
 })
 export class ImportWatchlistDialogComponent implements OnInit, OnDestroy {
   inputString = '';

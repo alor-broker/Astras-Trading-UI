@@ -7,9 +7,10 @@ import {PortfolioSubscriptionsService} from "../../../../shared/services/portfol
 import {filter, map, startWith} from "rxjs/operators";
 
 @Component({
-  selector: 'ats-compact-header',
-  templateUrl: './compact-header.component.html',
-  styleUrls: ['./compact-header.component.less']
+    selector: 'ats-compact-header',
+    templateUrl: './compact-header.component.html',
+    styleUrls: ['./compact-header.component.less'],
+    standalone: false
 })
 export class CompactHeaderComponent implements OnInit, OnDestroy {
   @Output()

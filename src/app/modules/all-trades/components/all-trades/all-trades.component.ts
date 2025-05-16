@@ -1,11 +1,16 @@
 import {
   Component,
   DestroyRef,
+  Inject,
   Input,
+  LOCALE_ID,
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { DatePipe } from "@angular/common";
+import {
+  DatePipe,
+  formatNumber
+} from "@angular/common";
 import { startOfDay, toUnixTimestampSeconds } from "../../../../shared/utils/datetime";
 import { filter, map, tap, bufferTime } from "rxjs/operators";
 import {
@@ -45,9 +50,10 @@ import {
 import { toInstrumentKey } from "../../../../shared/utils/instruments";
 
 @Component({
-  selector: 'ats-all-trades',
-  templateUrl: './all-trades.component.html',
-  styleUrls: ['./all-trades.component.less'],
+    selector: 'ats-all-trades',
+    templateUrl: './all-trades.component.html',
+    styleUrls: ['./all-trades.component.less'],
+    standalone: false
 })
 export class AllTradesComponent extends LazyLoadingBaseTableComponent<
     AllTradesItem,
@@ -82,6 +88,7 @@ implements OnInit, OnDestroy {
       displayName: 'Цена',
       minWidth: 70,
       sortChangeFn: (dir): void => this.sort$.next(dir == null ? null : { descending: dir === 'descend', orderBy: 'price' }),
+      transformFn: data => formatNumber(data.price, this.locale, '0.0-10'),
       filterData: {
         filterName: 'price',
         intervalStartName: 'priceFrom',
@@ -119,7 +126,11 @@ implements OnInit, OnDestroy {
         ]
       }
     },
-    {id: 'oi', displayName: 'Откр. интерес', minWidth: 60 },
+    {
+      id: 'oi',
+      displayName: 'Откр. интерес', minWidth: 60,
+      transformFn: data => formatNumber(data.oi, this.locale, '0.0-10'),
+    },
     {
       id: 'existing',
       displayName: 'Новое событие',
@@ -159,7 +170,8 @@ implements OnInit, OnDestroy {
     protected readonly settingsService: WidgetSettingsService,
     private readonly translatorService: TranslatorService,
     private readonly timezoneConverterService: TimezoneConverterService,
-    protected readonly destroyRef: DestroyRef
+    protected readonly destroyRef: DestroyRef,
+    @Inject(LOCALE_ID) private readonly locale: string
   ) {
     super(settingsService, destroyRef);
   }

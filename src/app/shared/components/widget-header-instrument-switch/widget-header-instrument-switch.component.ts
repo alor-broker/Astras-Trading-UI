@@ -32,9 +32,10 @@ import {
 } from "../../services/actions-context";
 
 @Component({
-  selector: 'ats-widget-header-instrument-switch',
-  templateUrl: './widget-header-instrument-switch.component.html',
-  styleUrls: ['./widget-header-instrument-switch.component.less']
+    selector: 'ats-widget-header-instrument-switch',
+    templateUrl: './widget-header-instrument-switch.component.html',
+    styleUrls: ['./widget-header-instrument-switch.component.less'],
+    standalone: false
 })
 export class WidgetHeaderInstrumentSwitchComponent implements OnInit, OnDestroy {
   private readonly explicitTitle$ = new BehaviorSubject<string | null>(null);

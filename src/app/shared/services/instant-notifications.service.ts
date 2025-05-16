@@ -67,12 +67,10 @@ export class InstantNotificationsService {
   }
 
   private getSettings(): Observable<InstantNotificationsSettings> {
-    if (!this.notificationsSettings$) {
-      this.notificationsSettings$ = this.terminalSettingsService.getSettings().pipe(
+    this.notificationsSettings$ ??= this.terminalSettingsService.getSettings().pipe(
         map(s => s.instantNotificationsSettings!),
         shareReplay(1)
       );
-    }
 
     return this.notificationsSettings$;
   }

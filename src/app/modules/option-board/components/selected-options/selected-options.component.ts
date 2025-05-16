@@ -81,9 +81,10 @@ interface DetailsDisplay extends OptionKey {
 }
 
 @Component({
-  selector: 'ats-selected-options',
-  templateUrl: './selected-options.component.html',
-  styleUrls: ['./selected-options.component.less']
+    selector: 'ats-selected-options',
+    templateUrl: './selected-options.component.html',
+    styleUrls: ['./selected-options.component.less'],
+    standalone: false
 })
 export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay> {
   @Input({required: true})
@@ -198,7 +199,7 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
     );
 
     const selectionParameters$ = this.dataContext.selectionParameters$.pipe(
-      debounceTime(3000)
+      debounceTime(2000)
     );
 
     return combineLatest({

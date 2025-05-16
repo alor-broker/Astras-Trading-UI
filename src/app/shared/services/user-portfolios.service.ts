@@ -16,13 +16,11 @@ export class UserPortfoliosService {
   }
 
   getPortfolios(): Observable<PortfolioExtended[]> {
-    if(!this.allPortfolios) {
-      this.allPortfolios = this.store.select(PortfoliosFeature.selectPortfoliosState).pipe(
+    this.allPortfolios ??= this.store.select(PortfoliosFeature.selectPortfoliosState).pipe(
         filter(s => s.status === EntityStatus.Success),
         map(s => Object.values(s.entities).map(x => x!)),
         shareReplay(1)
       );
-    }
 
     return this.allPortfolios;
   }

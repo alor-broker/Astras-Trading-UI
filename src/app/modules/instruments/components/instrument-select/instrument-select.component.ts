@@ -39,10 +39,11 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { WatchInstrumentsService } from "../../services/watch-instruments.service";
 
 @Component({
-  selector: 'ats-instrument-select',
-  templateUrl: './instrument-select.component.html',
-  styleUrls: ['./instrument-select.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-instrument-select',
+    templateUrl: './instrument-select.component.html',
+    styleUrls: ['./instrument-select.component.less'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class InstrumentSelectComponent implements OnInit {
   @ViewChild('inputEl') inputEl!: ElementRef<HTMLInputElement>;
@@ -205,7 +206,7 @@ export class InstrumentSelectComponent implements OnInit {
         }
       }
 
-      const defaultList = collection.collection.find(x => x.isDefault);
+      const defaultList = collection.collection.find(x => x.isDefault ?? false);
 
       if (defaultList) {
         this.settingsService.updateSettings(this.guid, { activeWatchlistMetas: [{ id: defaultList.id, isExpanded: true }] });

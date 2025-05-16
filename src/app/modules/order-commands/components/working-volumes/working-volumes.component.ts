@@ -7,9 +7,10 @@ import {map, startWith} from "rxjs/operators";
 import {SubscriptionsDataFeedService} from "../../../../shared/services/subscriptions-data-feed.service";
 
 @Component({
-  selector: 'ats-working-volumes',
-  templateUrl: './working-volumes.component.html',
-  styleUrls: ['./working-volumes.component.less']
+    selector: 'ats-working-volumes',
+    templateUrl: './working-volumes.component.html',
+    styleUrls: ['./working-volumes.component.less'],
+    standalone: false
 })
 export class WorkingVolumesComponent implements OnInit {
   readonly instrumentKey$ = new BehaviorSubject<InstrumentKey | null>(null);

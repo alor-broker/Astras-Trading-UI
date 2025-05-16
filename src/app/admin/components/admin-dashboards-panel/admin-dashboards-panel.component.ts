@@ -18,11 +18,6 @@ import {
 import { AdminDashboardType } from "../../../shared/models/dashboard/dashboard.model";
 import { DashboardTitleHelper } from "../../../modules/dashboard/utils/dashboard-title.helper";
 import { LetDirective } from "@ngrx/component";
-import {
-  NzOptionComponent,
-  NzSelectComponent
-} from "ng-zorro-antd/select";
-import { NzSegmentedComponent } from "ng-zorro-antd/segmented";
 import { NzIconDirective } from "ng-zorro-antd/icon";
 import { FormsModule } from "@angular/forms";
 import {
@@ -47,9 +42,6 @@ interface AdminDashboardsPanelViewModel {
   standalone: true,
   imports: [
     LetDirective,
-    NzSelectComponent,
-    NzOptionComponent,
-    NzSegmentedComponent,
     NzIconDirective,
     FormsModule,
     NzRadioGroupComponent,
@@ -125,7 +117,7 @@ export class AdminDashboardsPanelComponent implements OnInit {
     this.allDashboards$.pipe(
       take(1),
     ).subscribe(all => {
-      if(!all.some(d => d.isSelected)) {
+      if(!all.some(d => d.isSelected ?? false)) {
         const main = all.find(d => d.type === AdminDashboardType.AdminMain);
         if (main != null) {
           this.manageDashboardsService.selectDashboard(main.guid);

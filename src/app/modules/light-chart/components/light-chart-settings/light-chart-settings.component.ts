@@ -24,9 +24,10 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
 import { TimeframeValue } from "../../models/light-chart.models";
 
 @Component({
-  selector: 'ats-light-chart-settings',
-  templateUrl: './light-chart-settings.component.html',
-  styleUrls: ['./light-chart-settings.component.less']
+    selector: 'ats-light-chart-settings',
+    templateUrl: './light-chart-settings.component.html',
+    styleUrls: ['./light-chart-settings.component.less'],
+    standalone: false
 })
 export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<LightChartSettings> implements OnInit {
   readonly form = this.formBuilder.group({

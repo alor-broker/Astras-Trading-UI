@@ -15,7 +15,7 @@ import { commonTestProviders } from "../../utils/testing/common-test-providers";
 import { NzToolTipModule } from "ng-zorro-antd/tooltip";
 
 @Component({
-  template: `
+    template: `
     <ats-infinite-scroll-table
       [tableContainerHeight]="tableContainerHeight"
       [tableContainerWidth]="tableContainerWidth"
@@ -28,7 +28,8 @@ import { NzToolTipModule } from "ng-zorro-antd/tooltip";
       (rowClick)="rowClick($event)"
     >
     </ats-infinite-scroll-table>
-  `
+  `,
+    standalone: false
 })
 class TestWrapperComponent implements OnInit {
   constructor(private readonly cdr: ChangeDetectorRef) {

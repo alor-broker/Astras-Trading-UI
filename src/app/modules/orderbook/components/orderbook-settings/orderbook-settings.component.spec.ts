@@ -22,7 +22,7 @@ describe('OrderbookSettingsComponent', () => {
   let fixture: ComponentFixture<OrderbookSettingsComponent>;
 
   beforeAll(() => TestBed.resetTestingModule());
-  beforeEach((async () => {
+  beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
         OrderbookSettingsComponent,
@@ -59,7 +59,7 @@ describe('OrderbookSettingsComponent', () => {
         ...commonTestProviders
       ]
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(OrderbookSettingsComponent);

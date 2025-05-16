@@ -1,4 +1,5 @@
 ﻿{
   "dayChangeLabel": "Изм.",
-  "dayChangePerPriceLabel": "Дн.%"
+  "dayChangePerPriceLabel": "Дн.%",
+  "positionTooltip": "Текущая позиция"
 }

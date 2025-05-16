@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import {
   combineLatest,
+  defer,
   distinctUntilChanged,
   Observable,
   switchMap,
@@ -29,11 +30,13 @@ import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { ExportHelper } from "../../utils/export-helper";
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 @Component({
-  selector: 'ats-repo-trades',
-  templateUrl: './repo-trades.component.html',
-  styleUrls: ['./repo-trades.component.less']
+    selector: 'ats-repo-trades',
+    templateUrl: './repo-trades.component.html',
+    styleUrls: ['./repo-trades.component.less'],
+    standalone: false
 })
 export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, TradeFilter> {
   @Output()
@@ -233,13 +236,19 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       )
     );
 
+    const tableState$ = defer(() => {
+      return combineLatest({
+        filters: this.getFiltersState().pipe(take(1)),
+        sort: this.getSortState().pipe(take(1))
+      });
+    });
+
     return combineLatest({
       tableSettings: tableSettings$,
-      filters: this.getFiltersState().pipe(take(1)),
-      sort: this.getSortState().pipe(take(1)),
       tTrades: this.translatorService.getTranslator('blotter/trades'),
       tRepoTrades: this.translatorService.getTranslator('blotter/repo-trades')
     }).pipe(
+      mapWith(() => tableState$, (source, output) => ({...source, ...output})),
       takeUntilDestroyed(this.destroyRef),
       tap(x => {
         if(x.filters != null) {

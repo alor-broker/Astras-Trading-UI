@@ -30,6 +30,7 @@ import {
   DashboardFavoritesActions,
   DashboardItemsActions,
   DashboardsCurrentSelectionActions,
+  DashboardsInternalActions,
   DashboardsManageActions
 } from "../../store/dashboards/dashboards-actions";
 import { HttpContextTokens } from "../constants/http.constants";
@@ -180,6 +181,10 @@ export class ManageDashboardsService {
     }
 
     return this.defaultConfig$!;
+  }
+
+  removeInitialSettings(items: { dashboardGuid: string, itemGuids: string[] }[]): void {
+    this.store.dispatch(DashboardsInternalActions.cleanInitialSettings({items}));
   }
 
   private readDefaultConfig(): void {

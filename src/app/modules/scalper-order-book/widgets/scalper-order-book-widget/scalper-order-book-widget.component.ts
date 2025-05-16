@@ -23,9 +23,10 @@ import { ScalperOrderBookConstants } from "../../constants/scalper-order-book.co
 import { TradesClusterPanelSettingsDefaults } from "../../components/scalper-order-book-settings/constants/settings-defaults";
 
 @Component({
-  selector: 'ats-scalper-order-book-widget',
-  templateUrl: './scalper-order-book-widget.component.html',
-  styleUrls: ['./scalper-order-book-widget.component.less']
+    selector: 'ats-scalper-order-book-widget',
+    templateUrl: './scalper-order-book-widget.component.html',
+    styleUrls: ['./scalper-order-book-widget.component.less'],
+    standalone: false
 })
 export class ScalperOrderBookWidgetComponent implements OnInit {
   shouldShowSettings = false;
@@ -79,7 +80,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
         disableHotkeys: getValueOrDefault(settings.disableHotkeys, true),
         enableMouseClickSilentOrders: getValueOrDefault(settings.enableMouseClickSilentOrders, false),
         enableAutoAlign: getValueOrDefault(settings.enableAutoAlign, true),
-        autoAlignIntervalSec: getValueOrDefault(settings.autoAlignIntervalSec, 15),
+        autoAlignIntervalSec: getValueOrDefault(settings.autoAlignIntervalSec, 5),
         showTradesClustersPanel: getValueOrDefault(settings.showTradesClustersPanel, true),
         tradesClusterPanelSettings: getValueOrDefault(
           settings.tradesClusterPanelSettings,

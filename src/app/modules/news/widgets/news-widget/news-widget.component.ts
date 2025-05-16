@@ -19,9 +19,10 @@ import {TerminalSettingsService} from "../../../../shared/services/terminal-sett
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 
 @Component({
-  selector: 'ats-news-widget',
-  templateUrl: './news-widget.component.html',
-  styleUrls: ['./news-widget.component.less']
+    selector: 'ats-news-widget',
+    templateUrl: './news-widget.component.html',
+    styleUrls: ['./news-widget.component.less'],
+    standalone: false
 })
 export class NewsWidgetComponent implements OnInit {
   shouldShowSettings = false;

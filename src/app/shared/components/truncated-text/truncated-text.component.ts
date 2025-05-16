@@ -5,12 +5,11 @@ import {
 import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
 
 @Component({
-  selector: 'ats-truncated-text',
-  standalone: true,
-  imports: [
-    NzTooltipDirective
-  ],
-  template: `
+    selector: 'ats-truncated-text',
+    imports: [
+        NzTooltipDirective
+    ],
+    template: `
         <span
         [class]="className"
         [nz-tooltip]="text"
@@ -18,7 +17,7 @@ import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
         >
             {{truncatedText}}
         </span>
-    `,
+    `
 })
 export class TruncatedTextComponent {
   @Input()

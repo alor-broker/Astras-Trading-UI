@@ -2,7 +2,8 @@
 import {PropertyEditorConfig} from "../../models/property-editor.model";
 
 @Component({
-  template: ""
+    template: "",
+    standalone: false
 })
 export abstract class PropertyEditorBaseComponent<T extends PropertyEditorConfig<any>> {
   @Input({required: true})

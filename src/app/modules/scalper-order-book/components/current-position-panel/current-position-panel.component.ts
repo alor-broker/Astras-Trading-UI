@@ -16,9 +16,10 @@ import { ScalperOrderBookPositionState } from '../../models/scalper-order-book.m
 import { ScalperOrderBookDataProvider } from '../../services/scalper-order-book-data-provider.service';
 
 @Component({
-  selector: 'ats-current-position-panel',
-  templateUrl: './current-position-panel.component.html',
-  styleUrls: ['./current-position-panel.component.less']
+    selector: 'ats-current-position-panel',
+    templateUrl: './current-position-panel.component.html',
+    styleUrls: ['./current-position-panel.component.less'],
+    standalone: false
 })
 export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
   @Input({required: true})

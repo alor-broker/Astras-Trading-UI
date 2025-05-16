@@ -6,14 +6,13 @@ import {
 import {NzIconDirective} from "ng-zorro-antd/icon";
 
 @Component({
-  selector: 'ats-external-link',
-  templateUrl: './external-link.component.html',
-  styleUrls: ['./external-link.component.less'],
-  imports: [
-    NzIconDirective
-  ],
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-external-link',
+    templateUrl: './external-link.component.html',
+    styleUrls: ['./external-link.component.less'],
+    imports: [
+        NzIconDirective
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExternalLinkComponent {
   @Input()

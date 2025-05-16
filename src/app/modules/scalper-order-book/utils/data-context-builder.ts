@@ -95,6 +95,8 @@ export interface DataContextBuilderDeps {
 }
 
 export class DataContextBuilder {
+  private static readonly PriceDeviationMultiplier = 10000;
+
   static buildContext(
     args: DataContextBuilderArgs,
     deps: DataContextBuilderDeps,
@@ -323,8 +325,7 @@ export class DataContextBuilder {
       }
     }
 
-    if (!priceBounds$) {
-      priceBounds$ = deps.quotesService.getLastPrice(settings.widgetSettings, 1).pipe(
+    priceBounds$ ??= deps.quotesService.getLastPrice(settings.widgetSettings, 1).pipe(
         map(lp => {
           if (lp != null) {
             return {
@@ -342,7 +343,6 @@ export class DataContextBuilder {
           return null;
         })
       );
-    }
 
     return priceBounds$.pipe(
       take(1),
@@ -406,13 +406,25 @@ export class DataContextBuilder {
 
     const startPrice = OrderBookScaleHelper.getStartPrice(bestAsk, bestBid, priceStep, scaleFactor, majorLinesStep);
 
+    // Some instruments can have huge difference between min and max price. See https://github.com/alor-broker/Astras-Trading-UI/issues/1916
+    const maxPriceDeviation = this.PriceDeviationMultiplier * priceStep;
+    const pricePrecision = MathHelper.getPrecision(priceStep);
+    const minPriceRestricted = MathHelper.round(
+      startPrice.startPrice - maxPriceDeviation,
+      pricePrecision
+    );
+    const maxPriceRestricted = MathHelper.round(
+      startPrice.startPrice + maxPriceDeviation,
+      pricePrecision
+    );
+
     return {
       startPrice: startPrice.startPrice,
       scaledStep: startPrice.step,
       basePriceStep: priceStep,
       scaleFactor,
-      expectedRangeMin: Math.min(minPrice, startPrice.startPrice),
-      expectedRangeMax: Math.max(maxPrice, startPrice.startPrice)
+      expectedRangeMin: Math.min(Math.max(minPrice, minPriceRestricted), startPrice.startPrice),
+      expectedRangeMax: Math.max(Math.min(maxPrice, maxPriceRestricted), startPrice.startPrice)
     };
   }
 
@@ -434,8 +446,12 @@ export class DataContextBuilder {
     const expectedMinPrice = orderBookBounds.bidsRange?.min ?? orderBookBounds.asksRange?.min;
     if ((expectedMinPrice != null && expectedMinPrice < minRowPrice)
       || (expectedMaxPrice != null && expectedMaxPrice > maxRowPrice)) {
-      this.regenerateForOrderBook(orderBookData, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor);
-      return false;
+      const priceDiff = ((expectedMaxPrice ?? expectedMinPrice ?? 0) - (expectedMinPrice ?? expectedMaxPrice ?? 0)) / settings.instrument.minstep;
+
+      if(priceDiff < this.PriceDeviationMultiplier * 4) {
+        this.regenerateForOrderBook(orderBookData, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor);
+        return false;
+      }
     }
 
     return true;

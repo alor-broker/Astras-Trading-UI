@@ -48,9 +48,10 @@ import {
 } from "../../../../shared/utils/file-export/file-saver";
 
 @Component({
-  selector: 'ats-terminal-settings',
-  templateUrl: './terminal-settings.component.html',
-  styleUrls: ['./terminal-settings.component.less']
+    selector: 'ats-terminal-settings',
+    templateUrl: './terminal-settings.component.html',
+    styleUrls: ['./terminal-settings.component.less'],
+    standalone: false
 })
 export class TerminalSettingsComponent implements OnInit, OnDestroy {
   @Input()

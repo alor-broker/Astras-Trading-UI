@@ -5,6 +5,7 @@ import {
   ElementRef,
   Inject,
   Input,
+  LOCALE_ID,
   OnDestroy,
   OnInit,
   ViewChild
@@ -59,6 +60,7 @@ import {
   TreemapNode,
   TreemapSettings
 } from "../../models/treemap.model";
+import { formatNumber } from "@angular/common";
 
 interface TooltipModelRaw {
   _data: {
@@ -82,9 +84,10 @@ interface TooltipData {
 }
 
 @Component({
-  selector: 'ats-treemap',
-  templateUrl: './treemap.component.html',
-  styleUrls: ['./treemap.component.less']
+    selector: 'ats-treemap',
+    templateUrl: './treemap.component.html',
+    styleUrls: ['./treemap.component.less'],
+    standalone: false
 })
 export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('treemapWrapper') treemapWrapperEl?: ElementRef<HTMLDivElement>;
@@ -116,7 +119,9 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
     private readonly actionsContext: ActionsContext,
     private readonly settingsService: WidgetSettingsService,
     private readonly marketService: MarketService,
-    private readonly destroy: DestroyRef
+    private readonly destroy: DestroyRef,
+    @Inject(LOCALE_ID)
+    private readonly locale: string
   ) {
   }
 
@@ -193,7 +198,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                 },
                 labels: {
                   display: true,
-                  formatter: (t: any) => [t.raw._data.symbol, `${t.raw._data.children[0]?.dayChange}%`] as string[],
+                  formatter: (t: any) => [t.raw._data.symbol, `${formatNumber(t.raw._data.children[0]?.dayChange, this.locale, '1.1-2')}%`] as string[],
                   overflow: 'fit',
                   color: themeColors.textColor,
                   font: [{ weight: '500' }, { weight: '400' }]
@@ -280,8 +285,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   private initTooltipDataStream(): void {
-    if (!this.tooltipData$) {
-      this.tooltipData$ = this.newTooltip$
+    this.tooltipData$ ??= this.newTooltip$
         .pipe(
           takeUntilDestroyed(this.destroy),
           filter((tr): tr is TooltipModelRaw[] => tr != null && tr.length > 0),
@@ -321,12 +325,12 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                     title: treemapNode.symbol,
                     body: [
                       `${tTreemap(['company'])}: ${quote?.description}`,
-                      `${tTreemap(['dayChange'])}: ${treemapNode.dayChange}%`,
-                      `${tTreemap(['marketCap'])}: ${marketCapBase!.value}${tShortNumber([
+                      `${tTreemap(['dayChange'])}: ${formatNumber(treemapNode.dayChange, this.locale, '1.1-2')}%`,
+                      `${tTreemap(['marketCap'])}: ${formatNumber(marketCapBase!.value, this.locale, '1.1-2')} ${tShortNumber([
                         marketCapBase!.suffixName!,
                         'long'
                       ])} ${getCurrencySign(curencyFormat)}`,
-                      `${tTreemap(['lastPrice'])}: ${formatCurrency(quote!.last_price, curencyFormat)}`
+                      `${tTreemap(['lastPrice'])}: ${formatCurrency(quote!.last_price, this.locale, curencyFormat)}`
                     ],
                     position
                   };
@@ -334,7 +338,6 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
               );
           })
         );
-    }
   }
 
   getMinValue(...args: number[]): number {

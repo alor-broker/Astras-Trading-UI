@@ -15,16 +15,17 @@ import {
 } from "@angular/animations";
 
 @Component({
-  selector: 'ats-chat-suggested-message-container',
-  templateUrl: './chat-suggested-message-container.component.html',
-  styleUrl: './chat-suggested-message-container.component.less',
-  animations: [
-    trigger('flyInOut', [
-      state('in', style({transform: 'translateX(0)', opacity: 1})),
-      transition(':enter', [style({transform: 'translateX(-100%)', opacity: 0}), animate(200)]),
-      transition(':leave', [animate(200, style({transform: 'translateX(100%)', opacity: 0}))]),
-    ]),
-  ],
+    selector: 'ats-chat-suggested-message-container',
+    templateUrl: './chat-suggested-message-container.component.html',
+    styleUrl: './chat-suggested-message-container.component.less',
+    animations: [
+        trigger('flyInOut', [
+            state('in', style({ transform: 'translateX(0)', opacity: 1 })),
+            transition(':enter', [style({ transform: 'translateX(-100%)', opacity: 0 }), animate(200)]),
+            transition(':leave', [animate(200, style({ transform: 'translateX(100%)', opacity: 0 }))]),
+        ]),
+    ],
+    standalone: false
 })
 export class ChatSuggestedMessageContainerComponent {
   @Input({ required: true })

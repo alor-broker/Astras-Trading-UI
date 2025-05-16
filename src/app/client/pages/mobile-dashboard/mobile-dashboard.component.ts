@@ -29,35 +29,34 @@ import { EXPORT_SETTINGS_SERVICE_TOKEN } from "../../../shared/services/settings
 import { ExportMobileSettingsService } from "../../../shared/services/settings/export-mobile-settings.service";
 
 @Component({
-  selector: 'ats-mobile-dashboard',
-  standalone: true,
-  imports: [
-    NzLayoutComponent,
-    NgIf,
-    AsyncPipe,
-    DashboardModule,
-    TerminalSettingsModule,
-    FeedbackModule,
-    ApplicationMetaModule,
-    OrderCommandsModule,
-    MobileNavbarComponent,
-    MobileInstrumentsHistoryComponent,
-    MobileDashboardContentComponent,
-    TerminalSettingsWidgetComponent
-  ],
-  templateUrl: './mobile-dashboard.component.html',
-  styleUrl: './mobile-dashboard.component.less',
-  providers: [
-    MobileActionsContextService,
-    {
-      provide: ACTIONS_CONTEXT,
-      useExisting: MobileActionsContextService
-    },
-    {
-      provide: EXPORT_SETTINGS_SERVICE_TOKEN,
-      useClass: ExportMobileSettingsService
-    }
-  ]
+    selector: 'ats-mobile-dashboard',
+    imports: [
+        NzLayoutComponent,
+        NgIf,
+        AsyncPipe,
+        DashboardModule,
+        TerminalSettingsModule,
+        FeedbackModule,
+        ApplicationMetaModule,
+        OrderCommandsModule,
+        MobileNavbarComponent,
+        MobileInstrumentsHistoryComponent,
+        MobileDashboardContentComponent,
+        TerminalSettingsWidgetComponent
+    ],
+    templateUrl: './mobile-dashboard.component.html',
+    styleUrl: './mobile-dashboard.component.less',
+    providers: [
+        MobileActionsContextService,
+        {
+            provide: ACTIONS_CONTEXT,
+            useExisting: MobileActionsContextService
+        },
+        {
+            provide: EXPORT_SETTINGS_SERVICE_TOKEN,
+            useClass: ExportMobileSettingsService
+        }
+    ]
 })
 export class MobileDashboardComponent implements OnInit {
   screenHeight!: Observable<number>;

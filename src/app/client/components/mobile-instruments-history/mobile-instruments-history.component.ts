@@ -16,17 +16,16 @@ interface InstrumentKeyViewData extends InstrumentKey {
 }
 
 @Component({
-  selector: 'ats-mobile-instruments-history',
-  templateUrl: './mobile-instruments-history.component.html',
-  styleUrls: ['./mobile-instruments-history.component.less'],
-  imports: [
-    NgIf,
-    AsyncPipe,
-    NzTagComponent,
-    NgForOf,
-    TranslocoDirective
-  ],
-  standalone: true
+    selector: 'ats-mobile-instruments-history',
+    templateUrl: './mobile-instruments-history.component.html',
+    styleUrls: ['./mobile-instruments-history.component.less'],
+    imports: [
+        NgIf,
+        AsyncPipe,
+        NzTagComponent,
+        NgForOf,
+        TranslocoDirective
+    ]
 })
 export class MobileInstrumentsHistoryComponent implements OnInit {
   instruments$!: Observable<InstrumentKeyViewData[] | undefined>;
@@ -51,7 +50,7 @@ export class MobileInstrumentsHistoryComponent implements OnInit {
                   map(instr => ({
                     ...instrument,
                     showInstrumentGroup: instrument.instrumentGroup !== instr?.instrumentGroup
-                    || instruments!.filter(i => i.symbol === instrument.symbol).length > 1
+                      || instruments!.filter(i => i.symbol === instrument.symbol).length > 1
                   }))
                 )
             )

@@ -27,8 +27,7 @@ export class MarketService {
   }
 
   getMarketSettings(): Observable<MarketSettings> {
-    if (!this.settings$) {
-      this.settings$ = this.http.get<MarketSettings>(
+    this.settings$ ??= this.http.get<MarketSettings>(
         '../../../assets/market-settings-config.json',
         {
           headers: {
@@ -41,7 +40,6 @@ export class MarketService {
         .pipe(
           shareReplay(1)
         );
-    }
 
     return this.settings$;
   }
@@ -67,7 +65,7 @@ export class MarketService {
 
   getDefaultExchange(): Observable<string | undefined> {
     return this.getMarketSettings().pipe(
-      map(x => x.exchanges.find(ex => ex.settings.isDefault)?.exchange)
+      map(x => x.exchanges.find(ex => ex.settings.isDefault ?? false)?.exchange)
     );
   }
 }

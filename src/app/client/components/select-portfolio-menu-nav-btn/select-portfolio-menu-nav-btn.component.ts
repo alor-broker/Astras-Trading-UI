@@ -11,7 +11,7 @@ import {filter, map} from "rxjs/operators";
 import {EntityStatus} from "../../../shared/models/enums/entity-status";
 import {groupPortfoliosByAgreement} from "../../../shared/utils/portfolios";
 import {Store} from "@ngrx/store";
-import {AsyncPipe, KeyValuePipe, NgForOf, NgIf} from "@angular/common";
+import { KeyValuePipe, NgForOf, NgIf} from "@angular/common";
 import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {JoyrideModule} from "ngx-joyride";
 import {NzButtonComponent} from "ng-zorro-antd/button";
@@ -33,34 +33,32 @@ import {NzTypographyComponent} from "ng-zorro-antd/typography";
 import {ExternalLinkComponent} from "../../../shared/components/external-link/external-link.component";
 
 @Component({
-  selector: 'ats-select-portfolio-menu-nav-btn',
-  standalone: true,
-  imports: [
-    AsyncPipe,
-    FormsModule,
-    JoyrideModule,
-    KeyValuePipe,
-    NgForOf,
-    NgIf,
-    NzButtonComponent,
-    NzDropDownDirective,
-    NzDropdownButtonDirective,
-    NzDropdownMenuComponent,
-    NzIconDirective,
-    NzInputDirective,
-    NzMenuDirective,
-    NzMenuItemComponent,
-    NzPopoverDirective,
-    TranslocoDirective,
-    LetDirective,
-    EmptyPortfoliosWarningModalComponent,
-    ReactiveFormsModule,
-    NzTypographyComponent,
-    ExternalLinkComponent
-  ],
-  templateUrl: './select-portfolio-menu-nav-btn.component.html',
-  styleUrl: './select-portfolio-menu-nav-btn.component.less',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-select-portfolio-menu-nav-btn',
+    imports: [
+        FormsModule,
+        JoyrideModule,
+        KeyValuePipe,
+        NgForOf,
+        NgIf,
+        NzButtonComponent,
+        NzDropDownDirective,
+        NzDropdownButtonDirective,
+        NzDropdownMenuComponent,
+        NzIconDirective,
+        NzInputDirective,
+        NzMenuDirective,
+        NzMenuItemComponent,
+        NzPopoverDirective,
+        TranslocoDirective,
+        LetDirective,
+        EmptyPortfoliosWarningModalComponent,
+        ReactiveFormsModule,
+        NzTypographyComponent,
+        ExternalLinkComponent
+    ],
+    templateUrl: './select-portfolio-menu-nav-btn.component.html',
+    styleUrl: './select-portfolio-menu-nav-btn.component.less',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SelectPortfolioMenuNavBtnComponent implements OnInit {
   readonly externalLinks = this.environmentService.externalLinks;

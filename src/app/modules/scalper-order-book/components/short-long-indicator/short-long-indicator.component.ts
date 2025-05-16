@@ -33,9 +33,10 @@ import { toInstrumentKey } from "../../../../shared/utils/instruments";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ats-short-long-indicator',
-  templateUrl: './short-long-indicator.component.html',
-  styleUrls: ['./short-long-indicator.component.less']
+    selector: 'ats-short-long-indicator',
+    templateUrl: './short-long-indicator.component.html',
+    styleUrls: ['./short-long-indicator.component.less'],
+    standalone: false
 })
 export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
   @Input({ required: true })

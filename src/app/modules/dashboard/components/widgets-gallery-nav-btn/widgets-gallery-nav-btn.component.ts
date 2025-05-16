@@ -33,19 +33,18 @@ import {LocalStorageCommonConstants} from "../../../../shared/constants/local-st
 import { DashboardType } from "../../../../shared/models/dashboard/dashboard.model";
 
 @Component({
-  selector: 'ats-widgets-gallery-nav-btn',
-  templateUrl: './widgets-gallery-nav-btn.component.html',
-  styleUrls: ['./widgets-gallery-nav-btn.component.less'],
-  standalone: true,
-  imports: [
-    DashboardModule,
-    NzIconDirective,
-    AsyncPipe,
-    TranslocoDirective,
-    NzButtonComponent,
-    WidgetsGalleryComponent
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-widgets-gallery-nav-btn',
+    templateUrl: './widgets-gallery-nav-btn.component.html',
+    styleUrls: ['./widgets-gallery-nav-btn.component.less'],
+    imports: [
+        DashboardModule,
+        NzIconDirective,
+        AsyncPipe,
+        TranslocoDirective,
+        NzButtonComponent,
+        WidgetsGalleryComponent
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WidgetsGalleryNavBtnComponent implements OnInit, OnDestroy {
   private readonly currentDashboardType$ = new BehaviorSubject<DashboardType | null>(null);
@@ -95,7 +94,7 @@ export class WidgetsGalleryNavBtnComponent implements OnInit, OnDestroy {
     }).pipe(
       map((s) => {
         const groups = new Map<WidgetCategory, WidgetDisplay[]>();
-        const isDemoModeEnabled = this.localStorageService.getItem<boolean>(LocalStorageCommonConstants.DemoModeStorageKey);
+        const isDemoModeEnabled = this.localStorageService.getItem<boolean>(LocalStorageCommonConstants.DemoModeStorageKey) ?? false;
 
         const widgets = s.meta
           .filter((x) => {

@@ -6,6 +6,7 @@ import {
 } from "../../../../generated/graphql.types";
 import { Descriptor } from "../models/instrument-descriptors.model";
 import { getTypeByCfi } from "../../../shared/utils/instruments";
+import { formatNumber } from "@angular/common";
 
 export class DescriptorFiller {
   static basicInformation(input: {
@@ -52,6 +53,7 @@ export class DescriptorFiller {
   static tradingDetails(input: {
     currencyInformation: CurrencyInformation;
     tradingDetails: TradingDetails;
+    locale: string;
   }): Descriptor[] {
     const descriptors: Descriptor[] = [];
 
@@ -65,14 +67,14 @@ export class DescriptorFiller {
     if(input.tradingDetails.minStep > 0) {
       descriptors.push({
         id: 'minStep',
-        formattedValue: input.tradingDetails.minStep.toString(),
+        formattedValue: formatNumber(input.tradingDetails.minStep, input.locale, '0.0-10'),
       });
     }
 
     if(input.tradingDetails.priceStep > 0) {
       descriptors.push({
         id: 'priceStep',
-        formattedValue: input.tradingDetails.priceStep.toString(),
+        formattedValue: formatNumber(input.tradingDetails.priceStep, input.locale, '0.0-10'),
       });
     }
 

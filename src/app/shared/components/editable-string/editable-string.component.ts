@@ -31,23 +31,22 @@ import {NzFormControlComponent, NzFormDirective, NzFormItemComponent} from "ng-z
 import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
 
 @Component({
-  selector: 'ats-editable-string',
-  templateUrl: './editable-string.component.html',
-  styleUrls: ['./editable-string.component.less'],
-  imports: [
-    TranslocoDirective,
-    AsyncPipe,
-    NgIf,
-    NzIconDirective,
-    ReactiveFormsModule,
-    NzButtonComponent,
-    NzFormDirective,
-    NzFormItemComponent,
-    NzInputGroupComponent,
-    NzFormControlComponent,
-    NzInputDirective
-  ],
-  standalone: true
+    selector: 'ats-editable-string',
+    templateUrl: './editable-string.component.html',
+    styleUrls: ['./editable-string.component.less'],
+    imports: [
+        TranslocoDirective,
+        AsyncPipe,
+        NgIf,
+        NzIconDirective,
+        ReactiveFormsModule,
+        NzButtonComponent,
+        NzFormDirective,
+        NzFormItemComponent,
+        NzInputGroupComponent,
+        NzFormControlComponent,
+        NzInputDirective
+    ]
 })
 export class EditableStringComponent implements OnInit, OnDestroy {
   @ViewChildren('editInput')

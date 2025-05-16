@@ -31,6 +31,7 @@ import {
 } from "../../../../../generated/graphql.types";
 import { map } from "rxjs/operators";
 import {
+  DecimalPipe,
   NgClass,
   PercentPipe
 } from "@angular/common";
@@ -53,8 +54,7 @@ interface DisplayParams {
 }
 
 @Component({
-  selector: 'ats-market-trends',
-  standalone: true,
+    selector: 'ats-market-trends',
   imports: [
     TranslocoDirective,
     LetDirective,
@@ -64,10 +64,11 @@ interface DisplayParams {
     PercentPipe,
     NzEmptyComponent,
     NzSkeletonComponent,
-    NzIconDirective
+    NzIconDirective,
+    DecimalPipe
   ],
-  templateUrl: './market-trends.component.html',
-  styleUrl: './market-trends.component.less'
+    templateUrl: './market-trends.component.html',
+    styleUrl: './market-trends.component.less'
 })
 export class MarketTrendsComponent implements OnInit {
   @Input({required: true})

@@ -25,9 +25,10 @@ export interface ChartParameters {
 }
 
 @Component({
-  selector: 'ats-yield-curve-chart-parameters',
-  templateUrl: './yield-curve-chart-parameters.component.html',
-  styleUrls: ['./yield-curve-chart-parameters.component.less']
+    selector: 'ats-yield-curve-chart-parameters',
+    templateUrl: './yield-curve-chart-parameters.component.html',
+    styleUrls: ['./yield-curve-chart-parameters.component.less'],
+    standalone: false
 })
 export class YieldCurveChartParametersComponent implements OnInit {
   readonly durationTypes = Object.values(DurationType);

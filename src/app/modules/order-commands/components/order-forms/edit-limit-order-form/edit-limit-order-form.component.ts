@@ -24,9 +24,10 @@ import { toInstrumentKey } from "../../../../../shared/utils/instruments";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
 
 @Component({
-  selector: 'ats-edit-limit-order-form',
-  templateUrl: './edit-limit-order-form.component.html',
-  styleUrls: ['./edit-limit-order-form.component.less']
+    selector: 'ats-edit-limit-order-form',
+    templateUrl: './edit-limit-order-form.component.html',
+    styleUrls: ['./edit-limit-order-form.component.less'],
+    standalone: false
 })
 export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent implements OnInit, OnDestroy {
   timeInForceEnum = TimeInForce;

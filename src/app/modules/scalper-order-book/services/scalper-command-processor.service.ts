@@ -435,12 +435,10 @@ export class ScalperCommandProcessorService {
   }
 
   private getMouseActionsMap(): Observable<ScalperOrderBookMouseActionsMap> {
-    if (!this.mouseActionsMap$) {
-      this.mouseActionsMap$ = this.terminalSettingsService.getSettings().pipe(
+    this.mouseActionsMap$ ??= this.terminalSettingsService.getSettings().pipe(
         map(x => x.scalperOrderBookMouseActions ?? TerminalSettingsHelper.getScalperOrderBookMouseActionsScheme1()),
         shareReplay(1)
       );
-    }
 
     return this.mouseActionsMap$;
   }
@@ -648,8 +646,10 @@ export class ScalperCommandProcessorService {
     currentPosition: Position | null
   ): BracketOptions {
     return {
-      profitPriceRatio: settings.bracketsSettings?.topOrderPriceRatio ?? null,
-      lossPriceRatio: settings.bracketsSettings?.bottomOrderPriceRatio ?? null,
+      profitTriggerPriceRatio: settings.bracketsSettings?.topOrderPriceRatio ?? null,
+      profitLimitPriceGapRatio: settings.bracketsSettings?.topOrderPriceGapRatio ?? null,
+      lossTriggerPriceRatio: settings.bracketsSettings?.bottomOrderPriceRatio ?? null,
+      lossLimitPriceGapRatio: settings.bracketsSettings?.bottomOrderPriceGapRatio ?? null,
       orderPriceUnits: settings.bracketsSettings?.orderPriceUnits ?? PriceUnits.Points,
       applyBracketOnClosing: settings.bracketsSettings?.useBracketsWhenClosingPosition ?? false,
       currentPosition

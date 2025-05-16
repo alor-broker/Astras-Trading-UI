@@ -88,10 +88,10 @@ interface DisplayWatchlist extends Omit<Watchlist, 'items'> {
 type SortFn = (a: WatchedInstrument, b: WatchedInstrument) => number;
 
 @Component({
-  selector: 'ats-watchlist-table',
-  templateUrl: './watchlist-table.component.html',
-  styleUrls: ['./watchlist-table.component.less'],
-
+    selector: 'ats-watchlist-table',
+    templateUrl: './watchlist-table.component.html',
+    styleUrls: ['./watchlist-table.component.less'],
+    standalone: false
 })
 export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist>
   implements OnInit, OnDestroy {
@@ -272,7 +272,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
             return list;
           }
 
-          return [collection.collection.find(c => c.isDefault)!];
+          return [collection.collection.find(c => c.isDefault ?? false)!];
         }
       ),
       distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
@@ -286,7 +286,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
     ).pipe(
       map(([meta, lang]) => meta
         .filter(x => !!x.desktopMeta && x.desktopMeta.enabled)
-        .filter(x => x.hasInstrumentBind)
+        .filter(x => x.hasInstrumentBind ?? false)
         .sort((a, b) => {
             return (a.desktopMeta!.galleryOrder ?? 0) - (b.desktopMeta!.galleryOrder ?? 0);
           }

@@ -7,10 +7,12 @@ import {
 } from '@angular/core';
 import {
   combineLatest,
+  defer,
   distinctUntilChanged,
   Observable,
   switchMap,
-  take, tap
+  take,
+  tap
 } from 'rxjs';
 import {
   debounceTime,
@@ -39,11 +41,13 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 @Component({
-  selector: 'ats-trades',
-  templateUrl: './trades.component.html',
-  styleUrls: ['./trades.component.less']
+    selector: 'ats-trades',
+    templateUrl: './trades.component.html',
+    styleUrls: ['./trades.component.less'],
+    standalone: false
 })
 export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, TradeFilter> implements OnInit {
   @Output()
@@ -131,6 +135,7 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
     },
     {
       id: 'date',
+      sourceField: 'displayDate',
       displayName: 'Время',
       sortOrder: null,
       sortFn: (a: DisplayTrade, b: DisplayTrade): number => Number(a.date) - Number(b.date),
@@ -185,12 +190,18 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
       )
     );
 
+    const tableState$ = defer(() => {
+      return combineLatest({
+        filters: this.getFiltersState().pipe(take(1)),
+        sort: this.getSortState().pipe(take(1))
+      });
+    });
+
     return combineLatest({
       tableSettings: tableSettings$,
-      filters: this.getFiltersState().pipe(take(1)),
-      sort: this.getSortState().pipe(take(1)),
       translator: this.translatorService.getTranslator('blotter/trades'),
     }).pipe(
+      mapWith(() => tableState$, (source, output) => ({...source, ...output})),
       takeUntilDestroyed(this.destroyRef),
       tap(x => {
         if(x.filters != null) {
@@ -245,7 +256,7 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
     ).pipe(
       map(([trades, converter]) => trades.map(t => <DisplayTrade>{
         ...t,
-        date: converter.toTerminalDate(t.date)
+        displayDate: converter.toTerminalDate(t.date)
       })),
       mergeMap(trades => this.filters$.pipe(
         map(f => trades.filter(t => this.justifyFilter(t, f)))

@@ -12,17 +12,16 @@ import { EnvironmentService } from "../../../../shared/services/environment.serv
 import {ExternalLinkComponent} from "../../../../shared/components/external-link/external-link.component";
 
 @Component({
-  selector: 'ats-settings-load-error-dialog',
-  standalone: true,
-  imports: [
-    NzModalComponent,
-    NzModalContentDirective,
-    TranslocoDirective,
-    NzResultComponent,
-    ExternalLinkComponent
-  ],
-  templateUrl: './settings-load-error-dialog.component.html',
-  styleUrl: './settings-load-error-dialog.component.less'
+    selector: 'ats-settings-load-error-dialog',
+    imports: [
+        NzModalComponent,
+        NzModalContentDirective,
+        TranslocoDirective,
+        NzResultComponent,
+        ExternalLinkComponent
+    ],
+    templateUrl: './settings-load-error-dialog.component.html',
+    styleUrl: './settings-load-error-dialog.component.less'
 })
 export class SettingsLoadErrorDialogComponent {
   @Input()

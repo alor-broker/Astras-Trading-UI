@@ -23,9 +23,10 @@ import {
 } from "../../../../shared/services/orders/order-command.service";
 
 @Component({
-  selector: 'ats-limit-order-price-change',
-  templateUrl: './limit-order-price-change.component.html',
-  styleUrls: ['./limit-order-price-change.component.less']
+    selector: 'ats-limit-order-price-change',
+    templateUrl: './limit-order-price-change.component.html',
+    styleUrls: ['./limit-order-price-change.component.less'],
+    standalone: false
 })
 export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
   readonly orderSides = Side;

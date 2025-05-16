@@ -10,9 +10,10 @@ import { map } from "rxjs/operators";
 import { OrderType } from "../../../../shared/models/orders/order.model";
 
 @Component({
-  selector: 'ats-limit-orders-volume-indicator',
-  templateUrl: './limit-orders-volume-indicator.component.html',
-  styleUrls: ['./limit-orders-volume-indicator.component.less']
+    selector: 'ats-limit-orders-volume-indicator',
+    templateUrl: './limit-orders-volume-indicator.component.html',
+    styleUrls: ['./limit-orders-volume-indicator.component.less'],
+    standalone: false
 })
 export class LimitOrdersVolumeIndicatorComponent implements OnInit {
   readonly sides = Side;

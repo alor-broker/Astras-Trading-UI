@@ -59,9 +59,10 @@ import {
 } from "../../../../shared/services/orders/order-command.service";
 
 @Component({
-  selector: 'ats-orders-basket',
-  templateUrl: './orders-basket.component.html',
-  styleUrls: ['./orders-basket.component.less']
+    selector: 'ats-orders-basket',
+    templateUrl: './orders-basket.component.html',
+    styleUrls: ['./orders-basket.component.less'],
+    standalone: false
 })
 export class OrdersBasketComponent implements OnInit, OnDestroy {
   @Input({ required: true })

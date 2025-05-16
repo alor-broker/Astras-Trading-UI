@@ -42,16 +42,15 @@ import {
 import { FinanceBarChartComponent } from "../finance-bar-chart/finance-bar-chart.component";
 
 @Component({
-  selector: 'ats-finance',
-  templateUrl: './finance.component.html',
-  styleUrls: ['./finance.component.less'],
-  imports: [
-    LetDirective,
-    NzEmptyComponent,
-    DescriptorsListComponent,
-    FinanceBarChartComponent
-  ],
-  standalone: true
+    selector: 'ats-finance',
+    templateUrl: './finance.component.html',
+    styleUrls: ['./finance.component.less'],
+    imports: [
+        LetDirective,
+        NzEmptyComponent,
+        DescriptorsListComponent,
+        FinanceBarChartComponent
+    ]
 })
 export class FinanceComponent implements OnInit, OnDestroy {
   readonly stockInfo$ = new BehaviorSubject<Stock | null>(null);

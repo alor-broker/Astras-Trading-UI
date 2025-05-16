@@ -1,4 +1,5 @@
 ﻿{
   "dayChangeLabel": "Diff.",
-  "dayChangePerPriceLabel": "Diff.%"
+  "dayChangePerPriceLabel": "Diff.%",
+  "positionTooltip": "Current position"
 }

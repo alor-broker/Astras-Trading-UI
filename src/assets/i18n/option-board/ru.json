@@ -1,18 +1,19 @@
 ﻿{
   "loadingLabel": "Загрузка...",
-  "noOptionsMessage": "Не найдено опционов выбранного типа",
+  "noOptionsWithSelectedTypeMessage": "Не найдено опционов выбранного типа",
+  "noOptionsMessage": "Не найдено опционов для выбранного инструмента",
 
   "dayOfMonthFormat": "{{day}} {{month}}",
   "missingOptionTooltip": "Нет опциона со страйком {{strikePrice}} и сроком действия до {{day}} {{month}} {{year}}",
   "currentPriceTooltip": "Текущая цена: {{price}}",
 
   "sideOptions": {
-    "call": "Call",
-    "put": "Put"
+    "call": "Колл",
+    "put": "Пут"
   },
 
   "parameterOptions": {
-    "price": "Цена",
+    "price": "Т.цена",
     "delta": "Delta",
     "gamma": "Gamma",
     "vega": "Vega",
@@ -22,8 +23,11 @@
     "bid": "Bid"
   },
 
+  "strikePriceLabel": "Страйк",
+
   "tabNames": {
     "allOptions": "Все",
+    "allOptionsByExpiration": "По экспирации",
     "selectedOptions": "Выбранные",
     "charts": "Графики"
   },

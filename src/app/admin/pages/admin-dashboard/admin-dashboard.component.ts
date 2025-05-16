@@ -15,26 +15,25 @@ import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instrume
 import {GraphStorageService} from "../../../modules/ai-graph/services/graph-storage.service";
 
 @Component({
-  selector: 'ats-admin-dashboard',
-  standalone: true,
-  imports: [
-    NzLayoutComponent,
-    AdminNavbarComponent,
-    NzHeaderComponent,
-    NzContentComponent,
-    DashboardModule,
-    TerminalSettingsModule,
-    OrderCommandsModule,
-    InstrumentSelectDialogWidgetComponent,
-  ],
-  templateUrl: './admin-dashboard.component.html',
-  styleUrl: './admin-dashboard.component.less',
-  providers: [
-    {
-      provide: ACTIONS_CONTEXT,
-      useExisting: AdminDashboardComponent,
-    },
-  ],
+    selector: 'ats-admin-dashboard',
+    imports: [
+        NzLayoutComponent,
+        AdminNavbarComponent,
+        NzHeaderComponent,
+        NzContentComponent,
+        DashboardModule,
+        TerminalSettingsModule,
+        OrderCommandsModule,
+        InstrumentSelectDialogWidgetComponent,
+    ],
+    templateUrl: './admin-dashboard.component.html',
+    styleUrl: './admin-dashboard.component.less',
+    providers: [
+        {
+            provide: ACTIONS_CONTEXT,
+            useExisting: AdminDashboardComponent,
+        },
+    ]
 })
 export class AdminDashboardComponent implements OnInit, ActionsContext {
   constructor(

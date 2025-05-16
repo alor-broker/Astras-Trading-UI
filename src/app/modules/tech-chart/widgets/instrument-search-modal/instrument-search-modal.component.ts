@@ -11,9 +11,10 @@ import { InstrumentKey } from "../../../../shared/models/instruments/instrument-
 import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
 
 @Component({
-  selector: 'ats-instrument-search-modal',
-  templateUrl: './instrument-search-modal.component.html',
-  styleUrl: './instrument-search-modal.component.less'
+    selector: 'ats-instrument-search-modal',
+    templateUrl: './instrument-search-modal.component.html',
+    styleUrl: './instrument-search-modal.component.less',
+    standalone: false
 })
 export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
   readonly minusSign = '－'; // This is not character that on keyboard

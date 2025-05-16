@@ -14,16 +14,15 @@ import {DashboardContextService} from "../../../../shared/services/dashboard-con
 import {filter, map} from "rxjs/operators";
 
 @Component({
-  selector: 'ats-open-orders-dialog-nav-btn',
-  standalone: true,
-  imports: [
-    TranslocoDirective,
-    NzButtonComponent,
-    NzIconDirective
-  ],
-  templateUrl: './open-orders-dialog-nav-btn.component.html',
-  styleUrl: './open-orders-dialog-nav-btn.component.less',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ats-open-orders-dialog-nav-btn',
+    imports: [
+        TranslocoDirective,
+        NzButtonComponent,
+        NzIconDirective
+    ],
+    templateUrl: './open-orders-dialog-nav-btn.component.html',
+    styleUrl: './open-orders-dialog-nav-btn.component.less',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OpenOrdersDialogNavBtnComponent {
   @Input()

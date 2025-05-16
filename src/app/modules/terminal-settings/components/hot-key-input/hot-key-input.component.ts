@@ -10,16 +10,17 @@ import {
 } from "@angular/forms";
 
 @Component({
-  selector: 'ats-hot-key-input',
-  templateUrl: './hot-key-input.component.html',
-  styleUrls: ['./hot-key-input.component.less'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: HotKeyInputComponent,
-      multi: true
-    }
-  ]
+    selector: 'ats-hot-key-input',
+    templateUrl: './hot-key-input.component.html',
+    styleUrls: ['./hot-key-input.component.less'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: HotKeyInputComponent,
+            multi: true
+        }
+    ],
+    standalone: false
 })
 export class HotKeyInputComponent extends ControlValueAccessorBaseComponent<HotKeyMeta> {
   @Input({ required: true })

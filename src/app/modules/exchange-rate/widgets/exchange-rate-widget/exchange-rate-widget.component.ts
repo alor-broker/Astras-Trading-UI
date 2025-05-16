@@ -16,9 +16,10 @@ import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 @Component({
-  selector: 'ats-exchange-rate-widget',
-  templateUrl: './exchange-rate-widget.component.html',
-  styleUrls: ['./exchange-rate-widget.component.less']
+    selector: 'ats-exchange-rate-widget',
+    templateUrl: './exchange-rate-widget.component.html',
+    styleUrls: ['./exchange-rate-widget.component.less'],
+    standalone: false
 })
 export class ExchangeRateWidgetComponent implements OnInit {
   @Input({required: true})

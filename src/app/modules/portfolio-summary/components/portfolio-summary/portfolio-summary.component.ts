@@ -10,9 +10,10 @@ import {CommonSummaryView} from "../../../../shared/models/common-summary-view.m
 import {ForwardRisksView} from "../../../../shared/models/forward-risks-view.model";
 
 @Component({
-  selector: 'ats-portfolio-summary',
-  templateUrl: './portfolio-summary.component.html',
-  styleUrls: ['./portfolio-summary.component.less']
+    selector: 'ats-portfolio-summary',
+    templateUrl: './portfolio-summary.component.html',
+    styleUrls: ['./portfolio-summary.component.less'],
+    standalone: false
 })
 export class PortfolioSummaryComponent implements OnInit {
   readonly marketTypes = MarketType;

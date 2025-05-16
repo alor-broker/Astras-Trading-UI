@@ -8,13 +8,12 @@ import { EnvironmentService } from "../../../../../shared/services/environment.s
 import { InstrumentSummary } from "../../../models/instrument-summary.model";
 
 @Component({
-  selector: 'ats-info-header',
-  templateUrl: './info-header.component.html',
-  styleUrls: ['./info-header.component.less'],
-  imports: [
-    NzAvatarComponent
-  ],
-  standalone: true
+    selector: 'ats-info-header',
+    templateUrl: './info-header.component.html',
+    styleUrls: ['./info-header.component.less'],
+    imports: [
+        NzAvatarComponent
+    ]
 })
 export class InfoHeaderComponent {
   @ViewChild('avatar')

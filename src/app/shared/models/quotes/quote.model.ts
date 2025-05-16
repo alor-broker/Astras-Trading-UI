@@ -13,7 +13,9 @@ export interface Quote {
   accrued_interest: number; // 0,
   volume: number; // 14291950,
   open_interest: number; // null,
+  // can be null
   ask: number; // 292.6,
+  // can be null
   bid: number; // 292.5,
   ask_vol: number; // 90,
   bid_vol: number; // 355,

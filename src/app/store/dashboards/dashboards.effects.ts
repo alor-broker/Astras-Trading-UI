@@ -69,7 +69,7 @@ export class DashboardsEffects {
         () => this.dashboardService.getDefaultDashboardConfig(),
         (source, defaultConfig) => ({dashboard: source, defaultConfig})
       ),
-      switchMap((x => {
+      switchMap(x => {
           if (x.dashboard == null) {
             return EMPTY;
           }
@@ -84,7 +84,7 @@ export class DashboardsEffects {
 
           let standardDashboard: DefaultDesktopDashboardConfig | null = null;
           if (configs.length > 1) {
-            standardDashboard = configs.find(c => c.isStandard) ?? null;
+            standardDashboard = configs.find(c => c.isStandard ?? false) ?? null;
           } else {
             standardDashboard = configs[0];
           }
@@ -108,7 +108,7 @@ export class DashboardsEffects {
           }
 
           return EMPTY;
-        })
+        }
       )
     );
   });
@@ -142,7 +142,8 @@ export class DashboardsEffects {
         DashboardFavoritesActions.changeOrder,
         DashboardsCurrentSelectionActions.selectPortfolio,
         DashboardsCurrentSelectionActions.selectInstruments,
-        DashboardsInternalActions.drop
+        DashboardsInternalActions.drop,
+        DashboardsInternalActions.cleanInitialSettings
       ),
       withLatestFrom(DashboardsStreams.getAllDashboards(this.store)),
       map(([, dashboards]) => DashboardsEventsActions.updated({dashboards}))
@@ -187,7 +188,7 @@ export class DashboardsEffects {
         ({ dashboard, badgesColors }, marketSettings) => ({ dashboard, badgesColors, marketSettings })
       ),
       switchMap(({dashboard, badgesColors, marketSettings}) => {
-          let exchangeSettings = marketSettings.find(x => x.settings.isDefault);
+          let exchangeSettings = marketSettings.find(x => x.settings.isDefault ?? false);
           if (dashboard.selectedPortfolio) {
             exchangeSettings = marketSettings.find(x => x.exchange === dashboard.selectedPortfolio!.exchange) ?? exchangeSettings;
           }

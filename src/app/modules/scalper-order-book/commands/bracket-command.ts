@@ -10,8 +10,10 @@ import { LessMore } from "../../../shared/models/enums/less-more.model";
 import { MathHelper } from "../../../shared/utils/math-helper";
 
 export interface BracketOptions {
-  profitPriceRatio: number | null;
-  lossPriceRatio: number | null;
+  profitTriggerPriceRatio: number | null;
+  profitLimitPriceGapRatio: number | null;
+  lossTriggerPriceRatio: number | null;
+  lossLimitPriceGapRatio: number | null;
   orderPriceUnits: PriceUnits;
   applyBracketOnClosing: boolean;
   currentPosition: Position | null;
@@ -45,19 +47,26 @@ export abstract class BracketCommand<T> extends CommandBase<T> {
     bracketOptions: BracketOptions,
     priceStep: number
   ): NewStopLimitOrder | null {
-    if (bracketOptions.profitPriceRatio == null || bracketOptions.profitPriceRatio === 0) {
+    if (bracketOptions.profitTriggerPriceRatio == null || bracketOptions.profitTriggerPriceRatio === 0) {
       return null;
     }
 
     return this.buildStopOrder(
       baseOrder,
-      basePrice,
       () => {
         if (baseOrder.side === Side.Buy) {
+          const triggerPrice = this.calculateTriggerPrice(
+            basePrice,
+            bracketOptions.profitTriggerPriceRatio!,
+            priceStep,
+            bracketOptions.orderPriceUnits
+          );
+
           return {
-            triggerPrice: this.calculateTriggerPrice(
-              basePrice,
-              bracketOptions.profitPriceRatio!,
+            triggerPrice,
+            price: this.calculatePriceGap(
+              triggerPrice,
+              (bracketOptions.profitLimitPriceGapRatio ?? 0) * -1,
               priceStep,
               bracketOptions.orderPriceUnits
             ),
@@ -65,10 +74,18 @@ export abstract class BracketCommand<T> extends CommandBase<T> {
           };
         }
 
+        const triggerPrice = this.calculateTriggerPrice(
+          basePrice,
+          bracketOptions.profitTriggerPriceRatio! * -1,
+          priceStep,
+          bracketOptions.orderPriceUnits
+        );
+
         return {
-          triggerPrice: this.calculateTriggerPrice(
-            basePrice,
-            bracketOptions.profitPriceRatio! * -1,
+          triggerPrice,
+          price: this.calculatePriceGap(
+            triggerPrice,
+            bracketOptions.profitLimitPriceGapRatio ?? 0,
             priceStep,
             bracketOptions.orderPriceUnits
           ),
@@ -84,19 +101,26 @@ export abstract class BracketCommand<T> extends CommandBase<T> {
     bracketOptions: BracketOptions,
     priceStep: number
   ): NewStopLimitOrder | null {
-    if (bracketOptions.lossPriceRatio == null || bracketOptions.lossPriceRatio === 0) {
+    if (bracketOptions.lossTriggerPriceRatio == null || bracketOptions.lossTriggerPriceRatio === 0) {
       return null;
     }
 
     return this.buildStopOrder(
       baseOrder,
-      basePrice,
       () => {
         if (baseOrder.side === Side.Buy) {
+          const triggerPrice = this.calculateTriggerPrice(
+            basePrice,
+            bracketOptions.lossTriggerPriceRatio! * -1,
+            priceStep,
+            bracketOptions.orderPriceUnits
+          );
+
           return {
-            triggerPrice: this.calculateTriggerPrice(
-              basePrice,
-              bracketOptions.lossPriceRatio! * -1,
+            triggerPrice,
+            price: this.calculatePriceGap(
+              triggerPrice,
+              (bracketOptions.lossLimitPriceGapRatio ?? 0) * -1,
               priceStep,
               bracketOptions.orderPriceUnits
             ),
@@ -104,10 +128,18 @@ export abstract class BracketCommand<T> extends CommandBase<T> {
           };
         }
 
+        const triggerPrice = this.calculateTriggerPrice(
+          basePrice,
+          bracketOptions.lossTriggerPriceRatio!,
+          priceStep,
+          bracketOptions.orderPriceUnits
+        );
+
         return {
-          triggerPrice: this.calculateTriggerPrice(
-            basePrice,
-            bracketOptions.lossPriceRatio!,
+          triggerPrice,
+          price: this.calculatePriceGap(
+            triggerPrice,
+            bracketOptions.lossLimitPriceGapRatio ?? 0,
             priceStep,
             bracketOptions.orderPriceUnits
           ),
@@ -136,10 +168,28 @@ export abstract class BracketCommand<T> extends CommandBase<T> {
     );
   }
 
+  protected calculatePriceGap(
+    triggerPrice: number,
+    gap: number,
+    priceStep: number,
+    priceUnits: PriceUnits
+  ): number {
+    if (priceUnits === PriceUnits.Points) {
+      return MathHelper.roundPrice(
+        triggerPrice + (gap * priceStep),
+        priceStep
+      );
+    }
+
+    return MathHelper.roundPrice(
+      triggerPrice * (1 + (gap / 100)),
+      priceStep
+    );
+  }
+
   private buildStopOrder(
     baseOrder: NewOrderBase,
-    basePrice: number,
-    optionsCalc: () => ({ triggerPrice: number, condition: LessMore })): NewStopLimitOrder {
+    optionsCalc: () => ({ triggerPrice: number, price: number, condition: LessMore })): NewStopLimitOrder {
     const options = optionsCalc();
 
     return {
@@ -150,7 +200,7 @@ export abstract class BracketCommand<T> extends CommandBase<T> {
       quantity: baseOrder.quantity,
       triggerPrice: options.triggerPrice,
       condition: options.condition,
-      price: basePrice,
+      price: options.price,
       activate: false
     };
   }

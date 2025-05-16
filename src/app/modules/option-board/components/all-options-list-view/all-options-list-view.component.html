@@ -1,0 +1,291 @@
+<ng-container *transloco="let t; scope: 'option-board'">
+  <ng-container *transloco="let tListView; scope: 'option-board/all-options-list-view'">
+
+    @if (isLoading$ | async) {
+      <div class="position-absolute top-0 h-100 w-100">
+        <ng-container [ngTemplateOutlet]="loading"></ng-container>
+      </div>
+    }
+
+    <div (nzResizeObserve)="updateContentSize($event)"
+         class="h-100 show-scroll"
+         nzResizeObserver
+    >
+      <div class="settings">
+        <form [formGroup]="settingsForm" [nzLayout]="((contentSize$ | async)?.width ?? 0) > 550 ? 'inline' : 'vertical'" nz-form>
+          <nz-form-item>
+            <nz-form-label>{{ tListView('optionBoardAllOptionsListView.settingsForm.strikesCount.label') }}</nz-form-label>
+            <nz-form-control>
+              <nz-select [formControl]="settingsForm.controls.strikesCount">
+                @for (option of availableValuesForStrikesCount; track option) {
+                  <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+                }
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label>{{ tListView('optionBoardAllOptionsListView.settingsForm.highlightedSpreadItemsCount.label') }}</nz-form-label>
+            <nz-form-control>
+              <ats-input-number
+                [allowDecimal]="false"
+                [allowNegative]="false"
+                [formControl]="settingsForm.controls.highlightedSpreadItemsCount"
+                [step]="1"
+              ></ats-input-number>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </div>
+
+      <ng-container
+        *ngrxLet="{
+      expirations: expirations$,
+      rowLayout: rowLayout$,
+      parameterCellWidth: parameterCellWidth$,
+      activeLang: activeLang$,
+      currentPrice: currentPrice$,
+      selectedOptionKeys: selectedOptionKeys$
+      } as vm"
+      >
+        @if ((vm.expirations ?? []).length > 0) {
+          <div class="board">
+            <nz-collapse nzAccordion>
+
+              @for (expiration of vm.expirations; track expiration) {
+
+                <ng-template #groupHeader>
+                  <span class="text-color">
+                      {{
+                      t(
+                        'optionBoard.dayOfMonthFormat',
+                        {
+                          day: expiration.expiration | date: 'dd',
+                          month: expiration.expiration | date: 'MMM' : '': vm.activeLang
+                        })
+                    }}
+                  </span>
+
+                  <span class="text-color">{{ expiration.expiration  | date: 'YYYY' }}</span>
+
+                  <span
+                    class="pl-10 fw-bold"> {{ getDaysToExpirations(expiration.expiration) + ' ' + t('optionBoard.abbreviations.days') }}</span>
+                </ng-template>
+
+                <nz-collapse-panel [nzHeader]="groupHeader" #panel [nzActive]="$first">
+                  @if (panel.nzActive) {
+                    <ng-container *ngrxLet="expiration.strikes$ as options; suspenseTpl: suspense">
+                      @if (options != null && options.strikes.length > 0) {
+
+                        <div class="row justify-content-around">
+                          <span class="fw-bold heading-color">
+                            {{ t('optionBoard.sideOptions.call', {fallback: 'Call'}) }}
+                          </span>
+                          <span class="fw-bold heading-color ">
+                            {{ t('optionBoard.sideOptions.put', {fallback: 'Put'}) }}
+                          </span>
+                        </div>
+
+                        <div class="header row">
+                          @for (parameter of vm.rowLayout.callSideLayout; track parameter) {
+                            <div class="cell bordered-right" [style.width]="vm.parameterCellWidth + 'px'">
+                              @if (parameter.isEditable) {
+                                <ng-container [ngTemplateOutlet]="editableParameter"
+                                              [ngTemplateOutletContext]="{cellLayout: parameter, side: OptionSide.Call, index: $index}"></ng-container>
+                              } @else {
+                                <span>{{ t('optionBoard.parameterOptions.' + parameter.displayParameter, {fallback: parameter.displayParameter}) }}</span>
+                              }
+                            </div>
+                          }
+
+                          <div [style.width]="vm.parameterCellWidth + 'px'" class="cell text-center">
+                            <span
+                              class="fw-bold heading-color">{{ t('optionBoard.strikePriceLabel', {fallback: 'Strike'}) }}</span>
+                          </div>
+
+                          @for (parameter of vm.rowLayout.putSideLayout; track parameter) {
+                            <div class="cell bordered-left" [style.width]="vm.parameterCellWidth + 'px'">
+                              @if (parameter.isEditable) {
+                                <ng-container [ngTemplateOutlet]="editableParameter"
+                                              [ngTemplateOutletContext]="{cellLayout: parameter, side: OptionSide.Put, index: $index}"></ng-container>
+                              } @else {
+                                <span>{{ t('optionBoard.parameterOptions.' + parameter.displayParameter, {fallback: parameter.displayParameter}) }}</span>
+                              }
+                            </div>
+                          }
+
+                          <ng-template #editableParameter let-cellLayout='cellLayout' let-side='side' let-index='index'>
+                            <nz-select
+                              nzBorderless
+                              [nzDropdownMatchSelectWidth]="false"
+                              [nzShowArrow]="true"
+                              [ngModel]="cellLayout.displayParameter"
+                              [nzSize]="'small'"
+                              (ngModelChange)="changeCellLayout(side, index, $event)"
+                            >
+                              @for (option of AvailableParameters; track option) {
+                                <nz-option
+                                  [nzLabel]="t('optionBoard.parameterOptions.' + option, {fallback: option})"
+                                  [nzValue]="option"
+                                ></nz-option>
+                              }
+                            </nz-select>
+                          </ng-template>
+                        </div>
+
+                        @for (strikeRow of options.strikes; track strikeRow) {
+                          <div
+                            #strikeRowEl
+                            class="row position-relative"
+                          >
+                            <div
+                              class="option-row call-row"
+                              [class.selected]="isOptionSelected(strikeRow.call?.optionKey ?? null, vm.selectedOptionKeys)"
+                              (click)="updateOptionSelection(strikeRow.call?.optionKey ?? null, options.underlyingAsset)"
+                            >
+                              <ng-container [ngTemplateOutlet]="optionView"
+                                            [ngTemplateOutletContext]="{option: strikeRow.call, layout: vm.rowLayout.callSideLayout}">
+                              </ng-container>
+                            </div>
+
+                            <div
+                              [style.width]="vm.parameterCellWidth + 'px'"
+                              class="fw-bold cell"
+                            >
+                              <span class="text-max-contrast-color">{{ strikeRow.strikePrice }}</span>
+                            </div>
+
+                            <div
+                              class="option-row put-row"
+                              [class.selected]="isOptionSelected(strikeRow.put?.optionKey ?? null, vm.selectedOptionKeys)"
+                              (click)="updateOptionSelection(strikeRow.put?.optionKey ?? null, options.underlyingAsset)"
+                            >
+                              <ng-container [ngTemplateOutlet]="optionView"
+                                            [ngTemplateOutletContext]="{option: strikeRow.put, layout: vm.rowLayout.putSideLayout}">
+                              </ng-container>
+                            </div>
+
+                            <ng-container
+                              *ngrxLet="getCurrentPricePosition($index, options.strikes, vm.currentPrice, strikeRowEl) as position">
+                              @if (position != null) {
+                                <div
+                                  class="current-price-line"
+                                  [style.top]="position + 'px'"
+                                >
+                            <span class="itm-call" [style.left]="(-vm.parameterCellWidth / 2) + 'px'">
+                              <span nz-icon nzType="up" nzTheme="outline"></span>
+                            </span>
+                                  <span class="itm-put" [style.left]="(vm.parameterCellWidth / 2) + 'px'">
+                              <span nz-icon nzType="down" nzTheme="outline"></span>
+                            </span>
+                                </div>
+                              }
+                            </ng-container>
+                          </div>
+                        }
+
+                        <ng-template #optionView
+                                     let-option="option"
+                                     let-layout='layout'
+                        >
+                          <ng-container *ngrxLet="option.quotes$ as quotes">
+                            @for (cell of layout; track cell) {
+                              <div
+                                class="cell"
+                                [class.highlighted]="(cell.displayParameter === OptionParameters.Ask || cell.displayParameter === OptionParameters.Bid) && isSpreadHighlighted(quotes, options.underlyingAsset)"
+                                [style.width]="vm.parameterCellWidth + 'px'"
+                              >
+                                @if (option != null) {
+                                  <ng-container [ngTemplateOutlet]="cellView"
+                                                [ngTemplateOutletContext]="{option: option, parameter: cell.displayParameter, quotes: quotes}"></ng-container>
+                                } @else {
+                                  <span>-</span>
+                                }
+                              </div>
+                            }
+                          </ng-container>
+                        </ng-template>
+
+                        <ng-template #cellView let-option='option' let-parameter='parameter' let-quotes='quotes'>
+                      <span>
+                        @switch (parameter) {
+                          @case (OptionParameters.Price) {
+                            {{ roundPrice(option.parameters.price, options.underlyingAsset) | number: '0.0-10' }}
+                          }
+                          @case (OptionParameters.Delta) {
+                            {{ option.parameters.delta | number: '0.2-2' }}
+                          }
+                          @case (OptionParameters.Gamma) {
+                            {{ option.parameters.gamma | number: '0.2-2' }}
+                          }
+                          @case (OptionParameters.Vega) {
+                            {{ option.parameters.vega | number: '0.2-2' }}
+                          }
+                          @case (OptionParameters.Theta) {
+                            {{ option.parameters.theta | number: '0.2-2' }}
+                          }
+                          @case (OptionParameters.Rho) {
+                            {{ option.parameters.rho | number: '0.2-2' }}
+                          }
+                          @case (OptionParameters.Ask) {
+                            @if (quotes.ask != null) {
+                              <ats-price-diff [basePrice]="quotes.prevAsk"
+                                              [currentPrice]="quotes.ask"
+                                              [showChangeForce]="false">
+                              </ats-price-diff>
+                            } @else {
+                              <span>-</span>
+                            }
+
+                          }
+                          @case (OptionParameters.Bid) {
+                            @if (quotes.bid != null) {
+                              <ats-price-diff [basePrice]="quotes.prevBid"
+                                              [currentPrice]="quotes.bid"
+                                              [showChangeForce]="false">
+                              </ats-price-diff>
+                            } @else {
+                              <span>-</span>
+                            }
+                          }
+                        }
+                      </span>
+                        </ng-template>
+
+                      } @else {
+                        <nz-empty
+                          [nzNotFoundContent]="t('optionBoard.noOptionsMessage')"
+                          class="ant-list-empty-text"
+                          nzNotFoundImage="simple">
+                        </nz-empty>
+                      }
+                    </ng-container>
+
+                    <ng-template #suspense>
+                      <span>...</span>
+                    </ng-template>
+                  }
+
+                </nz-collapse-panel>
+
+              }
+            </nz-collapse>
+          </div>
+        } @else {
+          <nz-empty
+            [nzNotFoundContent]="t('optionBoard.noOptionsMessage')"
+            class="ant-list-empty-text"
+            nzNotFoundImage="simple">
+          </nz-empty>
+        }
+
+      </ng-container>
+    </div>
+
+    <ng-template #loading>
+      <div class="h-100 d-flex justify-content-center align-items-center">
+        <nz-spin [nzTip]="t('optionBoard.loadingLabel', { fallback: 'Loading...'})" class="w-100"></nz-spin>
+      </div>
+    </ng-template>
+  </ng-container>
+</ng-container>

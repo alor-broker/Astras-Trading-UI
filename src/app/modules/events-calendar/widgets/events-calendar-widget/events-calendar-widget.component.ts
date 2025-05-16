@@ -6,9 +6,10 @@ import { WidgetSettingsService } from "../../../../shared/services/widget-settin
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 
 @Component({
-  selector: 'ats-events-calendar-widget',
-  templateUrl: './events-calendar-widget.component.html',
-  styleUrls: ['./events-calendar-widget.component.less']
+    selector: 'ats-events-calendar-widget',
+    templateUrl: './events-calendar-widget.component.html',
+    styleUrls: ['./events-calendar-widget.component.less'],
+    standalone: false
 })
 export class EventsCalendarWidgetComponent implements OnInit {
   @Input({required: true})

@@ -22,7 +22,8 @@ export interface Sort {
 }
 
 @Component({
-  template: ''
+    template: '',
+    standalone: false
 })
 export abstract class BaseTableComponent<
     T extends Record<string, any>,

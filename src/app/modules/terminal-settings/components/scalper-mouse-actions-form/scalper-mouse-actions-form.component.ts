@@ -20,17 +20,18 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { filter } from "rxjs/operators";
 
 @Component({
-  selector: 'ats-scalper-mouse-actions-form',
-  templateUrl: './scalper-mouse-actions-form.component.html',
-  styleUrls: ['./scalper-mouse-actions-form.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: ScalperMouseActionsFormComponent
-    }
-  ]
+    selector: 'ats-scalper-mouse-actions-form',
+    templateUrl: './scalper-mouse-actions-form.component.html',
+    styleUrls: ['./scalper-mouse-actions-form.component.less'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: ScalperMouseActionsFormComponent
+        }
+    ],
+    standalone: false
 })
 export class ScalperMouseActionsFormComponent extends ControlValueAccessorBaseComponent<ScalperOrderBookMouseActionsMap> implements OnInit {
   form = this.formBuilder.group({

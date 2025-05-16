@@ -88,9 +88,7 @@ export class ChartTemplatesSettingsBrokerService {
   }
 
   getSavedTemplates(): Observable<SavedTemplate[]> {
-    if (this.savedTemplates$ == null) {
-      this.savedTemplates$ = this.initSavedTemplatesStream();
-    }
+    this.savedTemplates$ ??= this.initSavedTemplatesStream();
 
     return this.savedTemplates$;
   }

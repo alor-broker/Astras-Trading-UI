@@ -14,9 +14,7 @@ export class ArrayReverseIterator<T> implements Iterator<T> {
   }
 
   next(): IteratorResult<T, null> {
-    if (this.currentIndex == null) {
-      this.currentIndex = this.source.length;
-    }
+    this.currentIndex ??= this.source.length;
 
     this.currentIndex--;
 

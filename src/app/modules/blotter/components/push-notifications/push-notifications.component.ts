@@ -5,6 +5,7 @@ import {
 import {
   BehaviorSubject,
   combineLatest,
+  defer,
   distinctUntilChanged,
   fromEvent,
   Observable,
@@ -48,6 +49,7 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { ErrorHandlerService } from "../../../../shared/services/handle-error/error-handler.service";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 interface NotificationFilter {
   id?: string;
@@ -59,9 +61,10 @@ interface NotificationFilter {
 type DisplayNotification = Partial<OrderExecuteSubscription> & Partial<PriceSparkSubscription> & { id: string };
 
 @Component({
-  selector: 'ats-push-notifications',
-  templateUrl: './push-notifications.component.html',
-  styleUrls: ['./push-notifications.component.less']
+    selector: 'ats-push-notifications',
+    templateUrl: './push-notifications.component.html',
+    styleUrls: ['./push-notifications.component.less'],
+    standalone: false
 })
 export class PushNotificationsComponent extends BlotterBaseTableComponent<DisplayNotification, NotificationFilter> {
   readonly subscriptionTypes = PushSubscriptionType;
@@ -144,12 +147,18 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
       )
     );
 
+    const tableState$ = defer(() => {
+      return combineLatest({
+        filters: this.getFiltersState().pipe(take(1)),
+        sort: this.getSortState().pipe(take(1))
+      });
+    });
+
     return combineLatest({
       tableSettings: tableSettings$,
-      filters: this.getFiltersState().pipe(take(1)),
-      sort: this.getSortState().pipe(take(1)),
       translator: this.translatorService.getTranslator('blotter/notifications')
     }).pipe(
+      mapWith(() => tableState$, (source, output) => ({...source, ...output})),
       takeUntilDestroyed(this.destroyRef),
       tap(x => {
         if(x.filters != null) {

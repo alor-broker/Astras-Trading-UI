@@ -3,6 +3,7 @@ import {
   DestroyRef,
   Inject,
   Input,
+  LOCALE_ID,
   OnDestroy,
   OnInit
 } from '@angular/core';
@@ -68,15 +69,17 @@ import { NzModalService } from "ng-zorro-antd/modal";
 import { AddToWatchlistMenuComponent } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
 import { TableDataRow } from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+import { formatNumber } from "@angular/common";
 
 interface AllInstrumentsNodeDisplay extends Instrument {
   id: string;
 }
 
 @Component({
-  selector: 'ats-all-instruments',
-  templateUrl: './all-instruments.component.html',
-  styleUrls: ['./all-instruments.component.less']
+    selector: 'ats-all-instruments',
+    templateUrl: './all-instruments.component.html',
+    styleUrls: ['./all-instruments.component.less'],
+    standalone: false
 })
 export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
   AllInstrumentsNodeDisplay,
@@ -130,7 +133,7 @@ implements OnInit, OnDestroy {
     {
       id: 'dailyGrowth',
       displayName: 'Рост за сегодня',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.dailyGrowth?.toString() ?? '',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.dailyGrowth != null ? formatNumber(data.tradingDetails!.dailyGrowth, this.locale, '0.0-10') : '',
       classFn: (data): 'sell' | 'buy' | null => data.tradingDetails!.dailyGrowth == null
         ? null
         : data.tradingDetails!.dailyGrowth < 0 ? 'sell' : 'buy',
@@ -148,7 +151,7 @@ implements OnInit, OnDestroy {
     {
       id: 'dailyGrowthPercent',
       displayName: 'Рост за сегодня, %',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.dailyGrowthPercent?.toString() ?? '',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.dailyGrowthPercent != null ? formatNumber(data.tradingDetails!.dailyGrowthPercent, this.locale, '0.0-3') : '',
       classFn: (data): 'sell' | 'buy' | null => data.tradingDetails!.dailyGrowthPercent == null
         ? null
         : data.tradingDetails!.dailyGrowthPercent < 0 ? 'sell' : 'buy',
@@ -168,7 +171,7 @@ implements OnInit, OnDestroy {
       displayName: 'Объём торгов',
       width: 80,
       minWidth: 80,
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.tradeVolume?.toString() ?? '',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.tradeVolume != null ? formatNumber(data.tradingDetails!.tradeVolume, this.locale, '0.0-10') : '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'tradeVolume'], dir),
       filterData: {
         filterName: 'tradeVolume',
@@ -232,7 +235,7 @@ implements OnInit, OnDestroy {
     {
       id: 'lotSize',
       displayName: 'Лотность',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.lotSize?.toString() ?? '',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.lotSize != null ? formatNumber(data.tradingDetails!.lotSize, this.locale, '0.0-10') : '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'lotSize'], dir),
       filterData: {
         filterName: 'lotSize',
@@ -247,7 +250,7 @@ implements OnInit, OnDestroy {
     {
       id: 'price',
       displayName: 'Цена',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.price?.toString() ?? '',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.price != null ? formatNumber(data.tradingDetails!.price, this.locale, '0.0-10') : '',
       width: 80,
       minWidth: 80,
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'price'], dir),
@@ -262,7 +265,7 @@ implements OnInit, OnDestroy {
     {
       id: 'priceMax',
       displayName: 'Макс. цена',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceMax?.toString() ?? '',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceMax != null ? formatNumber(data.tradingDetails!.priceMax, this.locale, '0.0-10') : '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceMax'], dir),
       filterData: {
         filterName: 'priceMax',
@@ -277,7 +280,7 @@ implements OnInit, OnDestroy {
     {
       id: 'priceMin',
       displayName: 'Мин. цена',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceMin?.toString() ?? '',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceMin != null ? formatNumber(data.tradingDetails!.priceMin, this.locale, '0.0-10') : '',
       sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'priceMin'], dir),
       filterData: {
         filterName: 'priceMin',
@@ -293,7 +296,7 @@ implements OnInit, OnDestroy {
       id: 'priceScale',
       sourceField: 'minStep',
       displayName: 'Шаг цены',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.minStep?.toString() ?? '',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.minStep != null ? formatNumber(data.tradingDetails!.minStep, this.locale, '0.0-10') : '',
       filterData: {
         filterName: 'minStep',
         filterType: FilterType.Interval,
@@ -308,7 +311,7 @@ implements OnInit, OnDestroy {
     {
       id: 'priceStep',
       displayName: 'Стоимость шага цены',
-      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceStep?.toString() ?? '',
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.priceStep != null ? formatNumber(data.tradingDetails!.priceStep, this.locale, '0.0-10') : '',
       filterData: {
         filterName: 'priceStep',
         filterType: FilterType.Interval,
@@ -343,7 +346,8 @@ implements OnInit, OnDestroy {
     private readonly terminalSettingsService: TerminalSettingsService,
     private readonly translatorService: TranslatorService,
     private readonly modalService: NzModalService,
-    protected readonly destroyRef: DestroyRef
+    protected readonly destroyRef: DestroyRef,
+    @Inject(LOCALE_ID) private readonly locale: string
   ) {
     super(settingsService, destroyRef);
   }

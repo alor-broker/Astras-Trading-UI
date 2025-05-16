@@ -1,0 +1,10 @@
+﻿{
+  "settingsForm": {
+    "strikesCount": {
+      "label": "Кол-во страйков"
+    },
+    "highlightedSpreadItemsCount": {
+      "label": "Подсвечивать спред при различии, шагов"
+    }
+  }
+}

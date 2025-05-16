@@ -23,13 +23,12 @@ export class GraphQlErrorHandlerService implements ApplicationErrorHandler {
     }
 
     if (error.extensions?.code === 'AUTH_NOT_AUTHORIZED') { //
-      if (this.errorTranslator == null) { //
-        this.errorTranslator = this.translatorService.getTranslator('shared/graph-ql-error-handler') //
+      //
+this.errorTranslator ??= this.translatorService.getTranslator('shared/graph-ql-error-handler') //
           .pipe( //
             takeUntilDestroyed(this.destroyRef), //
             shareReplay(1) //
-          ); //
-      } //
+          ); // //
                                                                                                       //  TODO: remove after release!!!
       this.errorTranslator //
         .pipe(take(1)) //

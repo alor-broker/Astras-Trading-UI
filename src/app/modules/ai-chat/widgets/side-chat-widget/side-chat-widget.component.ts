@@ -28,9 +28,10 @@ import {
 } from "rxjs/operators";
 
 @Component({
-  selector: 'ats-side-chat-widget',
-  templateUrl: './side-chat-widget.component.html',
-  styleUrls: ['./side-chat-widget.component.less']
+    selector: 'ats-side-chat-widget',
+    templateUrl: './side-chat-widget.component.html',
+    styleUrls: ['./side-chat-widget.component.less'],
+    standalone: false
 })
 export class SideChatWidgetComponent implements OnInit, OnChanges {
   @Input({ required: true })

@@ -19,7 +19,6 @@ import { AdminDashboardsPanelComponent } from "../admin-dashboards-panel/admin-d
 
 @Component({
   selector: 'ats-admin-navbar',
-  standalone: true,
   imports: [
     DashboardModule,
     AsyncPipe,

@@ -4,7 +4,7 @@
       <ng-container *ngIf="optionsMatrix$ | async as optionsMatrix">
         <ng-container *ngIf="optionsMatrix.priceIndex.length === 0">
           <nz-empty
-            [nzNotFoundContent]="t('optionBoard.noOptionsMessage')"
+            [nzNotFoundContent]="t('optionBoard.noOptionsWithSelectedTypeMessage')"
             class="ant-list-empty-text"
             nzNotFoundImage="simple">
           </nz-empty>

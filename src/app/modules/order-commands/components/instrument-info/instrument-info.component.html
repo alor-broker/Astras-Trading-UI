@@ -1,3 +1,4 @@
+<ng-container *transloco="let t; scope: 'order-commands/instrument-info'">
 <div *ngIf="viewData$ | async as data" class="content">
   <div class='instrument-logo'>
       <nz-avatar [nzSize]="64" [nzSrc]="iconsUrl + data.instrumentKey.symbol + '.png'"
@@ -5,13 +6,14 @@
                  nzGap='4'>
       </nz-avatar>
       <span
-        *ngIf="data.position.abs > 0"
+        *ngIf="data.position != null && data.position.abs > 0"
         class="badge"
         [class]="data.position.quantity > 0 ? 'long' : 'short'"
         (click)="selectQuantity(data.position.abs)"
-        [title]="data.position.abs"
+        nz-tooltip
+        [nzTooltipTitle]="t('orderCommandsInstrumentInfo.positionTooltip')"
       >
-        {{data.position.abs}}
+        {{data.position.abs | number: '0.0-10'}}
       </span>
   </div>
 
@@ -25,38 +27,37 @@
         </div>
       </div>
       <div class='price'>
-        <span>{{data.priceData.lastPrice}}</span>
+        <span>{{data.priceData.lastPrice  | number: '0.0-10'}}</span>
       </div>
     </div>
 
     <nz-descriptions
-      *transloco="let t; scope: 'order-commands/instrument-info'"
       [nzColon]="false"
       [nzColumn]="{ xxl: 3, xl: 3, lg: 3, md: 2, sm: 2, xs: 2 }"
       class="dynamic"
       nzSize="small"
     >
       <nz-descriptions-item [nzTitle]="t('orderCommandsInstrumentInfo.dayChangeLabel')">
-        <p [class]='(data.priceData.dayChange ?? 0) < 0 ? "sell" : "buy"' class="upper-row">{{data.priceData.dayChange}}</p>
+        <p [class]='(data.priceData.dayChange ?? 0) < 0 ? "sell" : "buy"' class="upper-row">{{data.priceData.dayChange  | number: '0.0-10'}}</p>
       </nz-descriptions-item>
       <nz-descriptions-item nzTitle="High">
-        <p class="upper-row">{{data.priceData.high}}</p>
+        <p class="upper-row">{{data.priceData.high  | number: '0.0-10'}}</p>
       </nz-descriptions-item>
       <nz-descriptions-item nzTitle="Ask">
-        <p (click)="selectPrice(data.priceData.ask)" class='sell selectable upper-row'>{{data.priceData.ask}}</p>
+        <p (click)="selectPrice(data.priceData.ask)" class='sell selectable upper-row'>{{data.priceData.ask  | number: '0.0-10'}}</p>
       </nz-descriptions-item>
 
       <nz-descriptions-item [nzTitle]="t('orderCommandsInstrumentInfo.dayChangePerPriceLabel')">
         <p [class]='(data.priceData.dayChange ?? 0) < 0 ? "sell" : "buy"'
-           class="lower-row">{{data.priceData.dayChangePerPrice}}</p>
+           class="lower-row">{{data.priceData.dayChangePerPrice  | number: '0.0-10'}}</p>
       </nz-descriptions-item>
       <nz-descriptions-item nzTitle="Low">
-        <p class="lower-row">{{data.priceData.low}}</p>
+        <p class="lower-row">{{data.priceData.low  | number: '0.0-10'}}</p>
       </nz-descriptions-item>
       <nz-descriptions-item nzTitle="Bid">
-        <p (click)="selectPrice(data.priceData.bid)" class='buy selectable lower-row'>{{data.priceData.bid}}</p>
+        <p (click)="selectPrice(data.priceData.bid )" class='buy selectable lower-row'>{{data.priceData.bid  | number: '0.0-10'}}</p>
       </nz-descriptions-item>
     </nz-descriptions>
   </div>
 </div>
-
+</ng-container>

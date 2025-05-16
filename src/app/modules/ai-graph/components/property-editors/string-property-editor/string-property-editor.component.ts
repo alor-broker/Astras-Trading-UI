@@ -9,19 +9,18 @@ import {TranslocoDirective} from "@jsverse/transloco";
 import {NzInputDirective} from "ng-zorro-antd/input";
 
 @Component({
-  selector: 'ats-string-property-editor',
-  standalone: true,
-  imports: [
-    NzFormDirective,
-    TranslocoDirective,
-    NzFormItemComponent,
-    NzFormLabelComponent,
-    NzInputDirective,
-    NzFormControlComponent,
-    ReactiveFormsModule,
-  ],
-  templateUrl: './string-property-editor.component.html',
-  styleUrl: './string-property-editor.component.less'
+    selector: 'ats-string-property-editor',
+    imports: [
+        NzFormDirective,
+        TranslocoDirective,
+        NzFormItemComponent,
+        NzFormLabelComponent,
+        NzInputDirective,
+        NzFormControlComponent,
+        ReactiveFormsModule,
+    ],
+    templateUrl: './string-property-editor.component.html',
+    styleUrl: './string-property-editor.component.less'
 })
 export class StringPropertyEditorComponent extends PropertyEditorBaseComponent<StringPropertyEditorConfig> implements OnChanges {
   protected readonly form = this.formBuilder.group({

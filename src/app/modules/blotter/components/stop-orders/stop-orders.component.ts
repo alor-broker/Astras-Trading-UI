@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import {
   combineLatest,
+  defer,
   distinctUntilChanged,
   Observable,
   switchMap,
@@ -47,6 +48,7 @@ import {
   OrderCommandService
 } from "../../../../shared/services/orders/order-command.service";
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 interface DisplayOrder extends StopOrder {
   residue: string;
@@ -54,9 +56,10 @@ interface DisplayOrder extends StopOrder {
 }
 
 @Component({
-  selector: 'ats-stop-orders',
-  templateUrl: './stop-orders.component.html',
-  styleUrls: ['./stop-orders.component.less'],
+    selector: 'ats-stop-orders',
+    templateUrl: './stop-orders.component.html',
+    styleUrls: ['./stop-orders.component.less'],
+    standalone: false
 })
 export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder, OrderFilter> implements OnInit {
   readonly orderTypes = OrderType;
@@ -276,13 +279,19 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
       )
     );
 
+    const tableState$ = defer(() => {
+      return combineLatest({
+        filters: this.getFiltersState().pipe(take(1)),
+        sort: this.getSortState().pipe(take(1))
+      });
+    });
+
     return combineLatest({
       tableSettings: tableSettings$,
-      filters: this.getFiltersState().pipe(take(1)),
-      sort: this.getSortState().pipe(take(1)),
       tStopOrders: this.translatorService.getTranslator('blotter/stop-orders'),
       tCommon: this.translatorService.getTranslator('blotter/blotter-common')
     }).pipe(
+      mapWith(() => tableState$, (source, output) => ({...source, ...output})),
       takeUntilDestroyed(this.destroyRef),
       tap(x => {
         if(x.filters != null) {

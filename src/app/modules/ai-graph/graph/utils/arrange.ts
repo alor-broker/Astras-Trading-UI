@@ -7,7 +7,7 @@ import {Direction, IBoundaryNodes, LGraphNode} from "@comfyorg/litegraph";
  * `null` if no nodes were supplied or the first node was falsy.
  */
 export function getBoundaryNodes(nodes: LGraphNode[]): IBoundaryNodes | null {
-  const valid = nodes?.find(x => x);
+  const valid = nodes?.find(x => x != null);
   if (!valid) return null;
 
   let top = valid;

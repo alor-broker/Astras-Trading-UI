@@ -34,18 +34,17 @@ import { WidgetSettingsService } from "../../../shared/services/widget-settings.
 import { WidgetSettings } from "../../../shared/models/widget-settings.model";
 import { isInstrumentDependent } from "../../../shared/utils/settings-helper";
 @Component({
-  selector: 'ats-mobile-dashboard-content',
-  templateUrl: './mobile-dashboard-content.component.html',
-  styleUrls: ['./mobile-dashboard-content.component.less'],
-  imports: [
-    LetDirective,
-    NgForOf,
-    DashboardModule,
-    NgIf,
-    NzIconDirective,
-    WidgetsGalleryComponent
-  ],
-  standalone: true
+    selector: 'ats-mobile-dashboard-content',
+    templateUrl: './mobile-dashboard-content.component.html',
+    styleUrls: ['./mobile-dashboard-content.component.less'],
+    imports: [
+        LetDirective,
+        NgForOf,
+        DashboardModule,
+        NgIf,
+        NzIconDirective,
+        WidgetsGalleryComponent
+    ]
 })
 export class MobileDashboardContentComponent implements OnInit {
   readonly newOrderWidgetId = 'order-submit';

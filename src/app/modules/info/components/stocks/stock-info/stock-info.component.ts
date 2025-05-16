@@ -1,5 +1,7 @@
 import {
   Component,
+  Inject,
+  LOCALE_ID,
   OnInit
 } from '@angular/core';
 import {
@@ -62,21 +64,20 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<StockResponse>> = object({
 });
 
 @Component({
-  selector: 'ats-stock-info',
-  standalone: true,
-  imports: [
-    NzTabSetComponent,
-    TranslocoDirective,
-    NzTabComponent,
-    LetDirective,
-    NzEmptyComponent,
-    DescriptorsListComponent,
-    RisksComponent,
-    FinanceComponent,
-    DividendsComponent
-  ],
-  templateUrl: './stock-info.component.html',
-  styleUrl: './stock-info.component.less'
+    selector: 'ats-stock-info',
+    imports: [
+        NzTabSetComponent,
+        TranslocoDirective,
+        NzTabComponent,
+        LetDirective,
+        NzEmptyComponent,
+        DescriptorsListComponent,
+        RisksComponent,
+        FinanceComponent,
+        DividendsComponent
+    ],
+    templateUrl: './stock-info.component.html',
+    styleUrl: './stock-info.component.less'
 })
 export class StockInfoComponent extends InstrumentInfoBaseComponent implements OnInit {
   info$!: Observable<Stock | null>;
@@ -85,7 +86,9 @@ export class StockInfoComponent extends InstrumentInfoBaseComponent implements O
 
   constructor(
     private readonly graphQlService: GraphQlService,
-    private readonly translatorService: TranslatorService) {
+    private readonly translatorService: TranslatorService,
+    @Inject(LOCALE_ID)
+    private readonly locale: string) {
     super();
   }
 
@@ -151,7 +154,8 @@ export class StockInfoComponent extends InstrumentInfoBaseComponent implements O
   private getTradingDetailsDescriptors(stock: Stock): Descriptor[] {
     return DescriptorFiller.tradingDetails({
       tradingDetails: stock.tradingDetails,
-      currencyInformation: stock.currencyInformation
+      currencyInformation: stock.currencyInformation,
+      locale: this.locale
     });
   }
 }

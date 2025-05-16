@@ -49,9 +49,10 @@ import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-ord
 import { TradesClusterPanelSettingsDefaults } from "../scalper-order-book-settings/constants/settings-defaults";
 
 @Component({
-  selector: 'ats-trade-clusters-panel',
-  templateUrl: './trade-clusters-panel.component.html',
-  styleUrls: ['./trade-clusters-panel.component.less']
+    selector: 'ats-trade-clusters-panel',
+    templateUrl: './trade-clusters-panel.component.html',
+    styleUrls: ['./trade-clusters-panel.component.less'],
+    standalone: false
 })
 export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren(CdkScrollable)

@@ -41,9 +41,7 @@ export enum ActiveOrderBookHotKeysTypes {
 
 export type AllOrderBookHotKeyTypes = AllOrderBooksHotKeysTypes | ActiveOrderBookHotKeysTypes;
 
-export type HotKeysMap = {
-  [K in AllOrderBookHotKeyTypes]?: DeprecatedHotKey;
-};
+export type HotKeysMap = Partial<Record<AllOrderBookHotKeyTypes, DeprecatedHotKey>>;
 
 export interface HotKeysSettings extends HotKeysMap {
   workingVolumes?: string[];

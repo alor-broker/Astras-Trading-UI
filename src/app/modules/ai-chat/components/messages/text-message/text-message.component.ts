@@ -5,9 +5,10 @@ import {
 import { TextMessageContent } from "../../../models/messages-display.model";
 
 @Component({
-  selector: 'ats-text-message',
-  templateUrl: './text-message.component.html',
-  styleUrls: ['./text-message.component.less']
+    selector: 'ats-text-message',
+    templateUrl: './text-message.component.html',
+    styleUrls: ['./text-message.component.less'],
+    standalone: false
 })
 export class TextMessageComponent {
   @Input({required: true})
