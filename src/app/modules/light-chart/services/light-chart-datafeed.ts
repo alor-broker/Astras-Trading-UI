@@ -12,7 +12,7 @@ import {
 } from 'rxjs';
 import { Candle } from '../../../shared/models/history/candle.model';
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
-import { ChartSubscriptionIdHelper } from '../../../shared/utils/subscription-id-helper';
+import { ChartSubscriptionIdHelper } from "../../../shared/utils/chart-subscription-id-helper";
 
 export class LightChartDatafeed {
   private lastHistoryPoint: number | null = null;

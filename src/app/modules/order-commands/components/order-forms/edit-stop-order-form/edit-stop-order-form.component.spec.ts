@@ -171,7 +171,7 @@ describe('EditStopOrderFormComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show form errors', async () => {
+  it('should show form errors', fakeAsync(() => {
     const portfolio = getDefaultPortfolio();
     const order = {
       id: '111',
@@ -232,18 +232,17 @@ describe('EditStopOrderFormComponent', () => {
       (component.form!.controls as any)[testCase.control]!.updateValueAndValidity({onlySelf: false});
 
       fixture.detectChanges();
+      tick();
 
-      await fixture.whenStable().then(() => {
-        const errorElement = getValidationErrorElement(control);
+      const errorElement = getValidationErrorElement(control);
 
-        expect(errorElement).not.toBeNull();
+      expect(errorElement).not.toBeNull();
 
-        if (testCase.expectedError ?? '') {
-          expect(errorElement?.textContent).toEqual(testCase.expectedError);
-        }
-      });
+      if (testCase.expectedError ?? '') {
+        expect(errorElement?.textContent).toEqual(testCase.expectedError);
+      }
     }
-  });
+  }));
 
   it('should disable submission', () => {
     const portfolio = getDefaultPortfolio();
