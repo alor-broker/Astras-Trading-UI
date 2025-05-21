@@ -278,7 +278,7 @@ describe('EditStopOrderFormComponent', () => {
     }
   );
 
-  it('should set initial values', async () => {
+  it('should set initial values', fakeAsync(() => {
     const portfolioKey = getDefaultPortfolio();
       const order = {
         id: '111',
@@ -299,19 +299,18 @@ describe('EditStopOrderFormComponent', () => {
       component.orderId = order.id;
       component.portfolioKey = portfolioKey;
       fixture.detectChanges();
+      tick();
 
-      await fixture.whenStable().then(() => {
-        const expectedValue = {
-          quantity: order.qtyBatch,
-          triggerPrice: order.triggerPrice,
-          price: order.price,
-          withLimit: true
-        };
+      const expectedValue = {
+        quantity: order.qtyBatch,
+        triggerPrice: order.triggerPrice,
+        price: order.price,
+        withLimit: true
+      };
 
-        expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
-      });
-    }
-  );
+      expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
+      }
+  ));
 
   it('should pass correct order to service (market)', fakeAsync(() => {
       const instrument = getDefaultInstrument();
