@@ -1,9 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CommonInfoComponent } from './common-info.component';
-import { MockProviders } from "ng-mocks";
+import {
+  MockComponents,
+  MockProviders
+} from "ng-mocks";
 import { GraphQlService } from "../../../../../shared/services/graph-ql.service";
 import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
+import { RisksComponent } from "../risks/risks.component";
 
 describe('CommonInfoComponent', () => {
   let component: CommonInfoComponent;
@@ -13,7 +17,8 @@ describe('CommonInfoComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         CommonInfoComponent,
-        TranslocoTestsModule.getModule()
+        TranslocoTestsModule.getModule(),
+        ...MockComponents(RisksComponent)
       ],
       providers: [
         MockProviders(
