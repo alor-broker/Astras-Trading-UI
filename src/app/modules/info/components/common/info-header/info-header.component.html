@@ -1,11 +1,9 @@
 <div class="header">
   <div class='left'>
-    <nz-avatar
-      #avatar
-      [nzSize]="64"
-      [nzSrc]="iconsUrl + info.symbol + '.png'" [nzText]="info.symbol"
-      nzGap='4'>
-    </nz-avatar>
+    <ats-instrument-icon
+      [symbol]="info.symbol"
+      [size]="64"
+    ></ats-instrument-icon>
   </div>
   <div class='middle'>
     <span class='identifier line'>

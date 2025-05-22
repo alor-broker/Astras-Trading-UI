@@ -4,7 +4,9 @@ import { InstrumentInfoComponent } from './instrument-info.component';
 import {QuotesService} from "../../../../shared/services/quotes.service";
 import {Subject} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
-import { EnvironmentService } from "../../../../shared/services/environment.service";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { MockComponents } from "ng-mocks";
+import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
 
 describe('InstrumentInfoComponent', () => {
   let component: InstrumentInfoComponent;
@@ -12,7 +14,13 @@ describe('InstrumentInfoComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [InstrumentInfoComponent],
+      imports: [
+        TranslocoTestsModule.getModule()
+      ],
+      declarations: [
+        InstrumentInfoComponent,
+        ...MockComponents(InstrumentIconComponent)
+      ],
       providers:[
         {
           provide: QuotesService,
@@ -25,13 +33,7 @@ describe('InstrumentInfoComponent', () => {
           useValue: {
             getInstrumentPositionSubscription: jasmine.createSpy('getInstrumentPositionSubscription').and.returnValue(new Subject())
           }
-        },
-        {
-          provide: EnvironmentService,
-          useValue: {
-            alorIconsStorageUrl: ''
-          }
-        },
+        }
       ]
     });
     fixture = TestBed.createComponent(InstrumentInfoComponent);
