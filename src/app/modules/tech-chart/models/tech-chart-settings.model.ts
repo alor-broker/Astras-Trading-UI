@@ -47,4 +47,5 @@ export interface TechChartSettings extends WidgetSettings {
   isin?: string;
   panels?: ChartPanels;
   trades?: TechChartTradesDisplaySettings;
+  allowCustomTimeframes?: boolean;
 }
