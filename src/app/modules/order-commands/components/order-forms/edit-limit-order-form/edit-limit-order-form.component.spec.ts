@@ -138,7 +138,7 @@ describe('EditLimitOrderFormComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show form errors', async () => {
+  it('should show form errors', fakeAsync(() => {
     const portfolio = getDefaultPortfolio();
     const instrument = getDefaultInstrument();
 
@@ -189,17 +189,16 @@ describe('EditLimitOrderFormComponent', () => {
 
       fixture.detectChanges();
 
-      await fixture.whenStable().then(() => {
-        const errorElement = getValidationErrorElement(control);
+      tick();
+      const errorElement = getValidationErrorElement(control);
 
-        expect(errorElement).not.toBeNull();
+      expect(errorElement).not.toBeNull();
 
-        if (testCase.expectedError ?? '') {
-          expect(errorElement?.textContent).toEqual(testCase.expectedError);
-        }
-      });
+      if (testCase.expectedError ?? '') {
+        expect(errorElement?.textContent).toEqual(testCase.expectedError);
+      }
     }
-  });
+  }));
 
   it('should disable submission', () => {
       const portfolio = getDefaultPortfolio();
@@ -229,7 +228,7 @@ describe('EditLimitOrderFormComponent', () => {
     }
   );
 
-  it('should set initial values', async () => {
+  it('should set initial values', fakeAsync(() => {
       const portfolio = getDefaultPortfolio();
       const instrument = getDefaultInstrument();
 
@@ -245,17 +244,16 @@ describe('EditLimitOrderFormComponent', () => {
       component.orderId = '111';
       component.portfolioKey = portfolio;
       fixture.detectChanges();
+      tick();
 
-      await fixture.whenStable().then(() => {
-        const expectedValue = {
-          price: order.price,
-          quantity: order.qty,
-        };
+      const expectedValue = {
+        price: order.price,
+        quantity: order.qty,
+      };
 
-        expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
-      });
+      expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
     }
-  );
+  ));
 
   it('should pass correct order to service', fakeAsync(() => {
       const portfolio = getDefaultPortfolio();

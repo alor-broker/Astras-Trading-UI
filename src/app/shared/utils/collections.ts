@@ -1,7 +1,7 @@
 /**
  * Find unique elements and applies a selector, which can create a new object from provided one
  * @param array array
- * @param selector a function with gets an element of array and returns same or diffrent object, constructed from this element
+ * @param selector a function with gets an element of array and returns same or different object, constructed from this element
  * @returns array of unique objects
  */
 export function findUnique<T, P>(array: T[], selector: (element: T) => P): P[] {
@@ -21,59 +21,25 @@ export function findUniqueElements<T>(
     sorter: (e1: T, e2: T) => number,
     comparer: (first: T, second: T) => boolean): T[]
 {
+  if (array.length === 0) {
+    return array;
+  }
+
   array.sort(sorter);
-  let dupes = 0;
-  for (let i = 1; i < array.length; i++)
-  {
-      if (comparer(array[i], array[i - 1]))
-      {
-      dupes++;
+
+  let writeIndex = 1; // Points to the position for the next unique element
+  for (let readIndex = 1; readIndex < array.length; readIndex++) {
+    // Compare current element with the last unique element added
+    if (!comparer(array[readIndex], array[writeIndex - 1])) {
+      // If it's not a duplicate, copy it to the writeIndex position
+      if (writeIndex !== readIndex) { // Avoid self-assignment if no duplicates were skipped yet
+         array[writeIndex] = array[readIndex];
+      }
+      writeIndex++;
     }
-    array[i - dupes] = array[i];
   }
-  array.length -= dupes;
+  array.length = writeIndex;
   return array;
-}
-
-type SortArg<T> = keyof T | `-${string & keyof T}`;
-
-/**
- * Returns a comparator for objects of type T that can be used by sort
- * functions, were T objects are compared by the specified T properties.
- *
- * @param sortBy - the names of the properties to sort by, in precedence order.
- *                 Prefix any name with `-` to sort it in descending order.
- */
-export function byPropertiesOf<T extends object>(sortBy: SortArg<T>[]): (obj1: T, obj2: T) => number {
-  function compareByProperty(arg: SortArg<T>): (a: T, b: T) => number {
-    let key: keyof T;
-    let sortOrder = 1;
-    if (typeof arg === 'string' && arg.startsWith('-')) {
-      sortOrder = -1;
-      // Typescript is not yet smart enough to infer that substring is keyof T
-      key = arg.substr(1) as keyof T;
-    } else {
-      // Likewise it is not yet smart enough to infer that arg is not keyof T
-      key = arg as keyof T;
-    }
-    return function (a: T, b: T): number {
-      const result = a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0;
-
-      return result * sortOrder;
-    };
-  }
-
-  return function (obj1: T, obj2: T): number {
-    let i = 0;
-    let result = 0;
-    const numberOfProperties = sortBy.length;
-    while (result === 0 && i < numberOfProperties) {
-      result = compareByProperty(sortBy[i])(obj1, obj2);
-      i++;
-    }
-
-    return result;
-  };
 }
 
 /**

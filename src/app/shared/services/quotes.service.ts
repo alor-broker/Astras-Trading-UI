@@ -7,7 +7,6 @@ import {
 import { Quote } from '../models/quotes/quote.model';
 import { QuotesRequest } from '../models/quotes/quotes-request.model';
 import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service';
-import { ChartSubscriptionIdHelper } from '../utils/subscription-id-helper';
 import { InstrumentKey } from '../models/instruments/instrument-key.model';
 import { catchHttpError } from '../utils/observable-helper';
 import { ErrorHandlerService } from './handle-error/error-handler.service';
@@ -37,7 +36,10 @@ export class QuotesService {
       instrumentGroup: instrumentGroup
     };
 
-    return this.subscriptionsDataFeedService.subscribe<QuotesRequest, Quote>(request, ChartSubscriptionIdHelper.getQuotesSubscriptionId).pipe(
+    return this.subscriptionsDataFeedService.subscribe<QuotesRequest, Quote>(
+      request,
+      () => `${request.opcode}_${request.code}_${request.exchange}_${request.instrumentGroup}_${request.format}`
+    ).pipe(
       filter((q: Quote | null): q is Quote => !!q)
     );
   }

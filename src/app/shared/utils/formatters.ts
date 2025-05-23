@@ -22,7 +22,7 @@ export function formatCurrency(number: number, locale: string, formatSettings: C
       return MathHelper.round(number, maxFractionDigits).toString() + ' ' + formatSettings.displaySymbol;
     }
 
-    return Intl.NumberFormat(locale).format(number) + ' ' + formatSettings.displaySymbol;
+    return Intl.NumberFormat(locale, { maximumFractionDigits: maxFractionDigits }).format(number) + ' ' + formatSettings.displaySymbol;
   }
 
   const currencyFormat = Intl.NumberFormat(formatSettings.locale, { style: 'currency', currency: formatSettings.formatCode, maximumFractionDigits: maxFractionDigits });

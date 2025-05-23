@@ -140,7 +140,7 @@ describe('StopOrderFormComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show form errors', async () => {
+  it('should show form errors', fakeAsync(() => {
     component.instrument = getDefaultInstrument();
     component.portfolioKey = getDefaultPortfolio();
     component.activated = true;
@@ -186,18 +186,17 @@ describe('StopOrderFormComponent', () => {
       (component.form!.controls as any)[testCase.control]!.updateValueAndValidity({onlySelf: false});
 
       fixture.detectChanges();
+      tick();
 
-      await fixture.whenStable().then(() => {
-        const errorElement = getValidationErrorElement(control);
+      const errorElement = getValidationErrorElement(control);
 
-        expect(errorElement).not.toBeNull();
+      expect(errorElement).not.toBeNull();
 
-        if (testCase.expectedError ?? '') {
-          expect(errorElement?.textContent).toEqual(testCase.expectedError);
-        }
-      });
+      if (testCase.expectedError ?? '') {
+        expect(errorElement?.textContent).toEqual(testCase.expectedError);
+      }
     }
-  });
+  }));
 
   it('should disable submission', () => {
       component.instrument = getDefaultInstrument();
@@ -212,7 +211,7 @@ describe('StopOrderFormComponent', () => {
     }
   );
 
-  it('should set initial values', async () => {
+  it('should set initial values', fakeAsync(() => {
       const initialValues = {
         price: 10,
         quantity: 2,
@@ -227,20 +226,19 @@ describe('StopOrderFormComponent', () => {
       component.portfolioKey = getDefaultPortfolio();
       component.activated = true;
       fixture.detectChanges();
+      tick();
 
-      await fixture.whenStable().then(() => {
-        const expectedValue = {
-          triggerPrice: initialValues.price,
-          price: initialValues.price,
-          quantity: initialValues.quantity,
-          condition: initialValues.stopOrder.condition,
-          withLimit: initialValues.stopOrder.limit
-        };
+      const expectedValue = {
+        triggerPrice: initialValues.price,
+        price: initialValues.price,
+        quantity: initialValues.quantity,
+        condition: initialValues.stopOrder.condition,
+        withLimit: initialValues.stopOrder.limit
+      };
 
-        expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
-      });
+      expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
     }
-  );
+  ));
 
   it('should pass correct order to service (StopMarketOrder)', fakeAsync(() => {
       const instrument = getDefaultInstrument();

@@ -11,9 +11,16 @@
  * @returns object property value
  */
 export function getPropertyFromPath(obj: any, path: string): any {
+  if(obj == null) {
+    return undefined;
+  }
+
   const pathArr = path.split('.');
 
   if (pathArr.length > 1) {
+    if(obj[pathArr[0]] == null) {
+      return undefined;
+    }
     return getPropertyFromPath(obj[pathArr[0]], pathArr.slice(1).join('.'));
   } else {
     return obj[pathArr[0]];

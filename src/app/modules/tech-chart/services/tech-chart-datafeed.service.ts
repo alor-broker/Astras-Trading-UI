@@ -29,7 +29,6 @@ import { HttpClient } from "@angular/common/http";
 import { MathHelper } from "../../../shared/utils/math-helper";
 import { SearchFilter } from "../../instruments/models/search-filter.model";
 import { SubscriptionsDataFeedService } from '../../../shared/services/subscriptions-data-feed.service';
-import { ChartSubscriptionIdHelper } from '../../../shared/utils/subscription-id-helper';
 import { TranslatorService } from "../../../shared/services/translator.service";
 import { SyntheticInstrumentsService } from "./synthetic-instruments.service";
 import { map, startWith } from "rxjs/operators";
@@ -43,6 +42,7 @@ import {
   ExchangeSettings,
   MarketExchange
 } from "../../../shared/models/market-settings.model";
+import { ChartSubscriptionIdHelper } from "../../../shared/utils/chart-subscription-id-helper";
 
 @Injectable()
 export class TechChartDatafeedService implements IBasicDataFeed {

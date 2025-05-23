@@ -164,7 +164,7 @@ describe('LimitOrderFormComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show form errors', async () => {
+  it('should show form errors', fakeAsync(() => {
     component.instrument = getDefaultInstrument();
     component.portfolioKey = getDefaultPortfolio();
     component.activated = true;
@@ -205,17 +205,16 @@ describe('LimitOrderFormComponent', () => {
 
       fixture.detectChanges();
 
-      await fixture.whenStable().then(() => {
-        const errorElement = getValidationErrorElement(control);
+      tick();
+      const errorElement = getValidationErrorElement(control);
 
-        expect(errorElement).not.toBeNull();
+      expect(errorElement).not.toBeNull();
 
-        if (testCase.expectedError ?? '') {
-          expect(errorElement?.textContent).toEqual(testCase.expectedError);
-        }
-      });
+      if (testCase.expectedError ?? '') {
+        expect(errorElement?.textContent).toEqual(testCase.expectedError);
+      }
     }
-  });
+  }));
 
   it('should disable submission', () => {
       component.instrument = getDefaultInstrument();
@@ -230,7 +229,7 @@ describe('LimitOrderFormComponent', () => {
     }
   );
 
-  it('should set initial values', async () => {
+  it('should set initial values', fakeAsync(() => {
       const initialValues = {
         price: 10,
         quantity: 2,
@@ -248,20 +247,19 @@ describe('LimitOrderFormComponent', () => {
       component.activated = true;
       fixture.detectChanges();
 
-      await fixture.whenStable().then(() => {
-        const expectedValue = {
-          price: initialValues.price,
-          quantity: initialValues.quantity,
-          topOrderPrice: initialValues.bracket.topOrderPrice,
-          topOrderSide: initialValues.bracket.topOrderSide,
-          bottomOrderPrice: initialValues.bracket.bottomOrderPrice,
-          bottomOrderSide: initialValues.bracket.bottomOrderSide
-        };
+      tick();
+    const expectedValue = {
+      price: initialValues.price,
+      quantity: initialValues.quantity,
+      topOrderPrice: initialValues.bracket.topOrderPrice,
+      topOrderSide: initialValues.bracket.topOrderSide,
+      bottomOrderPrice: initialValues.bracket.bottomOrderPrice,
+      bottomOrderSide: initialValues.bracket.bottomOrderSide
+    };
 
-        expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
-      });
+    expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
     }
-  );
+  ));
 
   it('should update evaluation', fakeAsync(() => {
       const instrument = getDefaultInstrument();

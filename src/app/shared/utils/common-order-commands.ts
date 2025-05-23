@@ -8,7 +8,7 @@ export class CommonOrderCommands {
     targetInstrumentBoard: string | null,
     orderCommandService: OrderCommandService
   ): void {
-    if (!position.qtyTFutureBatch) {
+    if ((position.qtyTFutureBatch ?? 0) === 0) {
       return;
     }
     orderCommandService.submitMarketOrder({
@@ -29,7 +29,7 @@ export class CommonOrderCommands {
     orderCommandService: OrderCommandService,
     allowMargin?: boolean
   ): void {
-    if (!position.qtyTFutureBatch) {
+    if ((position.qtyTFutureBatch ?? 0) === 0) {
       return;
     }
 
