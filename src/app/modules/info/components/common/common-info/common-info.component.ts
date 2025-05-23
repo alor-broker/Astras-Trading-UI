@@ -47,6 +47,7 @@ import {
   NzTabSetComponent
 } from "ng-zorro-antd/tabs";
 import { DescriptorsListComponent } from "../../descriptors-list/descriptors-list.component";
+import { RisksComponent } from "../risks/risks.component";
 
 type InstrumentResponse = Modify<
   Query,
@@ -62,14 +63,15 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<InstrumentResponse>> = object({
 
 @Component({
     selector: 'ats-common-info',
-    imports: [
-        TranslocoDirective,
-        LetDirective,
-        NzEmptyComponent,
-        NzTabSetComponent,
-        NzTabComponent,
-        DescriptorsListComponent
-    ],
+  imports: [
+    TranslocoDirective,
+    LetDirective,
+    NzEmptyComponent,
+    NzTabSetComponent,
+    NzTabComponent,
+    DescriptorsListComponent,
+    RisksComponent
+  ],
     templateUrl: './common-info.component.html',
     styleUrl: './common-info.component.less'
 })
