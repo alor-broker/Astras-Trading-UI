@@ -33,6 +33,9 @@
   "drawingsToolbarLabel": "Панель рисования",
   "timeframesBottomToolbarLabel": "Панель временных интервалов",
 
+  "allowCustomTimeframesLabel": "Разрешить свои таймфреймы",
+  "allowCustomTimeframesWarning": "Данная опция реализована на стороне графика TradingView. Некоторые фреймы могут не поддерживаться, либо отображаемые данные могут быть получены путем комбинирования данных меньших фреймов",
+
   "lineMarkerPositionOptions": {
     "right": "Справа",
     "middle": "По центру",

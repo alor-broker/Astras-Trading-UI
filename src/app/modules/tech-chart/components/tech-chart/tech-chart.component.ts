@@ -684,6 +684,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     this.switchChartFeature('header_fullscreen_button', settings.panels?.headerFullscreenButton ?? true, enabled, disabled);
     this.switchChartFeature('left_toolbar', settings.panels?.drawingsToolbar ?? true, enabled, disabled);
     this.switchChartFeature('timeframes_toolbar', settings.panels?.timeframesBottomToolbar ?? true, enabled, disabled);
+    this.switchChartFeature('custom_resolutions', settings.allowCustomTimeframes ?? false, enabled, disabled);
 
     return {
       enabled: [...enabled.values()],
