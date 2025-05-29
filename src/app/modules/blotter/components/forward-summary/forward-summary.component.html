@@ -9,6 +9,7 @@
     [nzColumn]="columns"
     [nzSize]="columns === 1 ? 'small' : 'default'"
   >
+    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.portfolioEvaluationTitle')">{{summary.portfolioEvaluation}}</nz-descriptions-item>
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyFreeTitle')">{{summary.moneyFree}}</nz-descriptions-item>
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyBlockedTitle')">{{summary.moneyBlocked}}</nz-descriptions-item>
     <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.feeTitle')">{{summary.fee}}</nz-descriptions-item>
