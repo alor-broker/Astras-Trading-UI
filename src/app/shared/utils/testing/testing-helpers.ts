@@ -1,9 +1,4 @@
-﻿import {
-  defer,
-  Observable
-} from "rxjs";
-
-export class TestingHelpers {
+﻿export class TestingHelpers {
   /**
    * Create random string
    * @param length target string length
@@ -30,9 +25,5 @@ export class TestingHelpers {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
-  }
-
-  asyncData<T>(data: T): Observable<T> {
-    return defer(() => Promise.resolve(data));
   }
 }
