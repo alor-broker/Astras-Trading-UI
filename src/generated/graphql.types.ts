@@ -106,6 +106,8 @@ export interface BasicInformation {
   description: Scalars['String']['output'];
   /** Биржа */
   exchange: Exchange;
+  /** Полное описание инструмента */
+  fullDescription: Scalars['String']['output'];
   /** Рынок */
   market: Market;
   /** Краткое наименование инструмента */
@@ -124,6 +126,8 @@ export interface BasicInformationFilterInput {
   description?: InputMaybe<StringOperationFilterInput>;
   /** Биржа */
   exchange?: InputMaybe<ExchangeOperationFilterInput>;
+  /** Полное описание инструмента */
+  fullDescription?: InputMaybe<StringOperationFilterInput>;
   /** Рынок */
   market?: InputMaybe<MarketOperationFilterInput>;
   or?: InputMaybe<Array<BasicInformationFilterInput>>;
@@ -142,6 +146,8 @@ export interface BasicInformationSortInput {
   description?: InputMaybe<SortEnumType>;
   /** Биржа */
   exchange?: InputMaybe<SortEnumType>;
+  /** Полное описание инструмента */
+  fullDescription?: InputMaybe<SortEnumType>;
   /** Рынок */
   market?: InputMaybe<SortEnumType>;
   /** Краткое наименование инструмента */
@@ -601,6 +607,8 @@ export interface Derivative extends Instrument {
   boardInformation: BoardInformation;
   currencyInformation: CurrencyInformation;
   financialAttributes: FinancialAttributes;
+  /** Базовое ГО */
+  initialMargin: InitialMargin;
   /** Цена маржинальной покупки (заемные средства) */
   marginBuy?: Maybe<Scalars['Decimal']['output']>;
   /** Отношение цены маржинальной покупки к цене последней сделки */
@@ -625,6 +633,8 @@ export interface DerivativeFilterInput {
   boardInformation?: InputMaybe<BoardInformationFilterInput>;
   currencyInformation?: InputMaybe<CurrencyInformationFilterInput>;
   financialAttributes?: InputMaybe<FinancialAttributesFilterInput>;
+  /** Базовое ГО */
+  initialMargin?: InputMaybe<InitialMarginFilterInput>;
   /** Цена маржинальной покупки (заемные средства) */
   marginBuy?: InputMaybe<DecimalOperationFilterInput>;
   /** Отношение цены маржинальной покупки к цене последней сделки */
@@ -649,6 +659,8 @@ export interface DerivativeSortInput {
   boardInformation?: InputMaybe<BoardInformationSortInput>;
   currencyInformation?: InputMaybe<CurrencyInformationSortInput>;
   financialAttributes?: InputMaybe<FinancialAttributesSortInput>;
+  /** Базовое ГО */
+  initialMargin?: InputMaybe<InitialMarginSortInput>;
   /** Цена маржинальной покупки (заемные средства) */
   marginBuy?: InputMaybe<SortEnumType>;
   /** Отношение цены маржинальной покупки к цене последней сделки */
@@ -812,6 +824,65 @@ export interface FinancialAttributesSortInput {
   tradingStatus?: InputMaybe<SortEnumType>;
   /** Описание торгового статуса инструмента */
   tradingStatusInfo?: InputMaybe<SortEnumType>;
+}
+
+export interface InitialMargin {
+  /** Базовое ГО лонг (КПУР) */
+  highRiskLong: Scalars['Decimal']['output'];
+  /** Базовое ГО шорт (КПУР) */
+  highRiskShort: Scalars['Decimal']['output'];
+  /** Базовое ГО лонг (КНУР) */
+  lowRiskLong: Scalars['Decimal']['output'];
+  /** Базовое ГО шорт (КНУР) */
+  lowRiskShort: Scalars['Decimal']['output'];
+  /** Базовое ГО лонг (КОУР) */
+  specialRiskLong: Scalars['Decimal']['output'];
+  /** Базовое ГО шорт (КОУР) */
+  specialRiskShort: Scalars['Decimal']['output'];
+  /** Базовое ГО лонг (КСУР) */
+  standardRiskLong: Scalars['Decimal']['output'];
+  /** Базовое ГО шорт (КСУР) */
+  standardRiskShort: Scalars['Decimal']['output'];
+}
+
+export interface InitialMarginFilterInput {
+  and?: InputMaybe<Array<InitialMarginFilterInput>>;
+  /** Базовое ГО лонг (КПУР) */
+  highRiskLong?: InputMaybe<DecimalOperationFilterInput>;
+  /** Базовое ГО шорт (КПУР) */
+  highRiskShort?: InputMaybe<DecimalOperationFilterInput>;
+  /** Базовое ГО лонг (КНУР) */
+  lowRiskLong?: InputMaybe<DecimalOperationFilterInput>;
+  /** Базовое ГО шорт (КНУР) */
+  lowRiskShort?: InputMaybe<DecimalOperationFilterInput>;
+  or?: InputMaybe<Array<InitialMarginFilterInput>>;
+  /** Базовое ГО лонг (КОУР) */
+  specialRiskLong?: InputMaybe<DecimalOperationFilterInput>;
+  /** Базовое ГО шорт (КОУР) */
+  specialRiskShort?: InputMaybe<DecimalOperationFilterInput>;
+  /** Базовое ГО лонг (КСУР) */
+  standardRiskLong?: InputMaybe<DecimalOperationFilterInput>;
+  /** Базовое ГО шорт (КСУР) */
+  standardRiskShort?: InputMaybe<DecimalOperationFilterInput>;
+}
+
+export interface InitialMarginSortInput {
+  /** Базовое ГО лонг (КПУР) */
+  highRiskLong?: InputMaybe<SortEnumType>;
+  /** Базовое ГО шорт (КПУР) */
+  highRiskShort?: InputMaybe<SortEnumType>;
+  /** Базовое ГО лонг (КНУР) */
+  lowRiskLong?: InputMaybe<SortEnumType>;
+  /** Базовое ГО шорт (КНУР) */
+  lowRiskShort?: InputMaybe<SortEnumType>;
+  /** Базовое ГО лонг (КОУР) */
+  specialRiskLong?: InputMaybe<SortEnumType>;
+  /** Базовое ГО шорт (КОУР) */
+  specialRiskShort?: InputMaybe<SortEnumType>;
+  /** Базовое ГО лонг (КСУР) */
+  standardRiskLong?: InputMaybe<SortEnumType>;
+  /** Базовое ГО шорт (КСУР) */
+  standardRiskShort?: InputMaybe<SortEnumType>;
 }
 
 export interface Instrument {

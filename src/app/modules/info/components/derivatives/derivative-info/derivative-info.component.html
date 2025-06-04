@@ -1,5 +1,5 @@
 <ng-container *transloco="let t; scope: 'info'">
-  <ng-container *ngrxLet="{ commonDescriptors: commonDescriptors$, info: info$ } as vm">
+  <ng-container *ngrxLet="{ commonDescriptors: descriptors$, info: info$ } as vm">
     @if(vm.info == null) {
       <nz-empty nzNotFoundImage="simple"></nz-empty>
     } @else {

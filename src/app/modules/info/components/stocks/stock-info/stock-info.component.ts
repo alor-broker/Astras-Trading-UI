@@ -1,5 +1,6 @@
 import {
   Component,
+  DestroyRef,
   Inject,
   LOCALE_ID,
   OnInit
@@ -11,10 +12,12 @@ import {
 import { TranslatorService } from "../../../../../shared/services/translator.service";
 import {
   combineLatest,
+  defer,
   Observable,
   shareReplay,
   switchMap,
-  tap
+  tap,
+  timer
 } from "rxjs";
 import {
   Query,
@@ -50,6 +53,9 @@ import { DescriptorFiller } from "../../../utils/descriptor-filler";
 import { RisksComponent } from "../../common/risks/risks.component";
 import { FinanceComponent } from "../finance/finance.component";
 import { DividendsComponent } from "../dividends/dividends.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { mapWith } from "../../../../../shared/utils/observable-helper";
+import { REFRESH_TIMEOUT_MS } from "../../../constants/info.constants";
 
 type StockResponse = Modify<
   Query,
@@ -82,13 +88,14 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<StockResponse>> = object({
 export class StockInfoComponent extends InstrumentInfoBaseComponent implements OnInit {
   info$!: Observable<Stock | null>;
 
-  commonDescriptors$!: Observable<DescriptorsGroup[] | null>;
+  descriptors!: Observable<DescriptorsGroup[] | null>;
 
   constructor(
     private readonly graphQlService: GraphQlService,
     private readonly translatorService: TranslatorService,
     @Inject(LOCALE_ID)
-    private readonly locale: string) {
+    private readonly locale: string,
+    private readonly destroyRef: DestroyRef) {
     super();
   }
 
@@ -98,8 +105,15 @@ export class StockInfoComponent extends InstrumentInfoBaseComponent implements O
   }
 
   private initDataStream(): void {
+    const refreshTimer$ = defer(() => {
+      return timer(0, REFRESH_TIMEOUT_MS).pipe(
+        takeUntilDestroyed(this.destroyRef)
+      );
+    });
+
     this.info$ = this.targetInstrumentKey$.pipe(
       filter(i => i != null),
+      mapWith(() => refreshTimer$, (source,) => source),
       tap(() => this.setLoading(true)),
       switchMap(i => {
         return this.graphQlService.watchQueryForSchema<StockResponse>(
@@ -120,7 +134,7 @@ export class StockInfoComponent extends InstrumentInfoBaseComponent implements O
   }
 
   private initDescriptors(): void {
-    this.commonDescriptors$ = combineLatest({
+    this.descriptors = combineLatest({
       info: this.info$,
       translator: this.translatorService.getTranslator('info/descriptors-list')
     }).pipe(
@@ -135,8 +149,20 @@ export class StockInfoComponent extends InstrumentInfoBaseComponent implements O
             items: this.getBasicInformationDescriptors(x.info)
           },
           {
-            title: x.translator(['groupTitles', 'tradingDetails']),
-            items: this.getTradingDetailsDescriptors(x.info)
+            title: x.translator(['groupTitles', 'currency']),
+            items: this.getCurrencyDescriptors(x.info)
+          },
+          {
+            title: x.translator(['groupTitles', 'tradingParameters']),
+            items: this.getTradingParametersDescriptors(x.info)
+          },
+          {
+            title: x.translator(['groupTitles', 'tradingData']),
+            items: this.getTradingDataDescriptors(x.info)
+          },
+          {
+            title: x.translator(['groupTitles', 'additional']),
+            items: this.getAdditionalInfoDescriptors(x.info)
           }
         ];
       })
@@ -146,15 +172,34 @@ export class StockInfoComponent extends InstrumentInfoBaseComponent implements O
   private getBasicInformationDescriptors(stock: Stock): Descriptor[] {
     return DescriptorFiller.basicInformation({
       basicInformation: stock.basicInformation,
+      boardInformation: stock.boardInformation,
       financialAttributes: stock.financialAttributes,
       currencyInformation: stock.currencyInformation
     });
   }
 
-  private getTradingDetailsDescriptors(stock: Stock): Descriptor[] {
-    return DescriptorFiller.tradingDetails({
+  private getCurrencyDescriptors(stock: Stock): Descriptor[] {
+    return DescriptorFiller.currencyInformation(stock.currencyInformation);
+  }
+
+  private getTradingParametersDescriptors(stock: Stock): Descriptor[] {
+    return DescriptorFiller.tradingParameters({
       tradingDetails: stock.tradingDetails,
       currencyInformation: stock.currencyInformation,
+      locale: this.locale
+    });
+  }
+
+  private getTradingDataDescriptors(stock: Stock): Descriptor[] {
+    return DescriptorFiller.tradingData({
+      tradingDetails: stock.tradingDetails,
+      locale: this.locale
+    });
+  }
+
+  private getAdditionalInfoDescriptors(stock: Stock): Descriptor[] {
+    return DescriptorFiller.additionalInformation({
+      additionalInfo: stock.additionalInformation,
       locale: this.locale
     });
   }
