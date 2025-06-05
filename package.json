@@ -9,7 +9,8 @@
     "watch": "pnpm generate && ng build --watch --configuration development",
     "test": "pnpm generate && ng test",
     "preinstall": "npx only-allow pnpm",
-    "codegen": "graphql-codegen --config codegen.ts",
+    "codegen-hyperion": "graphql-codegen --config hyperion-codegen.ts",
+    "codegen-news": "graphql-codegen --config news-codegen.ts",
     "lint": "ng lint --max-warnings 0",
     "prepare": "husky"
   },

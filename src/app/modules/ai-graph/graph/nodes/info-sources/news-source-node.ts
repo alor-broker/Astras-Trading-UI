@@ -205,23 +205,28 @@ export class NewsSourceNode extends NodeBase {
     };
 
     const finishDate = startOfDay(fromDate ?? add(new Date(), {months: -1}));
-    let offset = state.itemsIds.size;
     const batchLimit = Math.min(limit, 100);
+    let cursor: string | null = null;
 
     const loadBatch = (): Observable<NewsListItem[]> => {
       const itemsToRequest = Math.min(limit - state.itemsIds.size, batchLimit);
 
       return newsService.getNews({
-        offset,
         limit: itemsToRequest,
+        afterCursor: cursor,
+        beforeCursor: null,
         symbols: targetInstruments.map(i => i.symbol)
       }).pipe(
-        switchMap(items => {
-          if (items.length === 0) {
+        switchMap(result => {
+          if(result == null) {
             return of(state.loadedItems);
           }
 
-          for (const item of items) {
+          if (result.data.length === 0) {
+            return of(state.loadedItems);
+          }
+
+          for (const item of result.data) {
             if (state.itemsIds.has(item.id)) {
               continue;
             }
@@ -239,7 +244,11 @@ export class NewsSourceNode extends NodeBase {
             }
           }
 
-          offset += itemsToRequest;
+          if(!result.hasNextPage) {
+            return of(state.loadedItems);
+          }
+
+          cursor = result.endCursor;
           return loadBatch();
         }),
         take(1),

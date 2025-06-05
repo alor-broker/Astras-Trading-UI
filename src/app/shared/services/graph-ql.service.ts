@@ -4,6 +4,7 @@ import {
   gql
 } from "apollo-angular";
 import {
+  from,
   Observable,
   of
 } from "rxjs";
@@ -22,6 +23,11 @@ import {
 } from "../utils/graph-ql/gql-query-builder";
 
 export type GraphQlVariables = Record<string, any>;
+
+export enum NamedClients {
+  Default = 'default',
+  News = 'news'
+}
 
 export enum FetchPolicy {
   Default = 'cache-first',
@@ -51,8 +57,63 @@ export class GraphQlService {
         variables,
         fetchPolicy: options?.fetchPolicy ?? FetchPolicy.Default
       })
-      .valueChanges
-      .pipe(
+        .valueChanges
+        .pipe(
+          catchError(err => {
+            if (err.networkError != null) {
+              this.errorHandlerService.handleError(new HttpErrorResponse(err.networkError));
+            } else if (err.graphQLErrors?.length > 0) {
+              err.graphQLErrors.forEach((e: GraphQLError) => {
+                this.errorHandlerService.handleError(new GraphQLError(e.message, e));
+              });
+            } else {
+              this.errorHandlerService.handleError(new GraphQLError(err.message, err));
+            }
+
+            return of(null);
+          }),
+          map((res) => res?.data ?? null)
+        );
+    } catch (err) { // In case of query parsing error
+      this.errorHandlerService.handleError(err as Error);
+      return of(null);
+    }
+  }
+
+  watchQueryForSchema<TResp>(
+    responseSchema: ZodObject<ZodPropertiesOf<TResp>>,
+    variables?: Variables,
+    options?: {
+      fetchPolicy: FetchPolicy;
+    }): Observable<TResp | null> {
+    const query = GqlQueryBuilder.getQuery(responseSchema, variables);
+
+    return this.watchQuery<TResp>(query.query, query.variables, options);
+  }
+
+  queryForSchema<TResp>(
+    responseSchema: ZodObject<ZodPropertiesOf<TResp>>,
+    variables?: Variables,
+    options?: {
+      clientName?: NamedClients;
+      fetchPolicy?: FetchPolicy;
+    }
+  ): Observable<TResp | null> {
+    const client = options?.clientName != null
+      ? this.apollo.use(options.clientName)
+      : this.apollo.default();
+
+    const query = GqlQueryBuilder.getQuery(responseSchema, variables);
+
+    try {
+      return from(client.query(
+        {
+          query: gql<TResp, GraphQlVariables>`${query.query}`,
+          variables: query.variables as GraphQlVariables,
+          fetchPolicy: options?.fetchPolicy ?? FetchPolicy.NoCache,
+          errorPolicy: "none"
+        }
+      )).pipe(
         catchError(err => {
           if (err.networkError != null) {
             this.errorHandlerService.handleError(new HttpErrorResponse(err.networkError));
@@ -72,16 +133,5 @@ export class GraphQlService {
       this.errorHandlerService.handleError(err as Error);
       return of(null);
     }
-  }
-
-  watchQueryForSchema<TResp>(
-    responseSchema: ZodObject<ZodPropertiesOf<TResp>>,
-    variables?: Variables,
-    options?: {
-      fetchPolicy: FetchPolicy;
-    }): Observable<TResp | null> {
-    const query = GqlQueryBuilder.getQuery(responseSchema, variables);
-
-    return this.watchQuery<TResp>(query.query, query.variables, options);
   }
 }

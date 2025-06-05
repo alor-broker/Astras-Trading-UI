@@ -1,4 +1,4 @@
-﻿import {TimeInForce} from "./order.model";
+import {TimeInForce} from "./order.model";
 import {NewLimitOrder, NewStopMarketOrder} from "./new-order.model";
 
 export interface LimitOrderEdit extends NewLimitOrder {

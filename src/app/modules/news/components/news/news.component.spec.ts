@@ -5,6 +5,7 @@ import {
 
 import {NewsComponent} from './news.component';
 import {
+  NEVER,
   of,
   Subject
 } from "rxjs";
@@ -21,12 +22,6 @@ import {NewsDialogComponent} from "../news-dialog/news-dialog.component";
 import {NewsService} from "../../../../shared/services/news.service";
 
 describe('NewsComponent', () => {
-  const testNewsItem = {
-    id: 1,
-    title: 'Some news 1',
-    pubDate: 'some date'
-  };
-
   let component: NewsComponent;
   let fixture: ComponentFixture<NewsComponent>;
 
@@ -38,18 +33,18 @@ describe('NewsComponent', () => {
         ComponentHelpers.mockComponent({
           selector: 'ats-infinite-scroll-table',
           inputs: ['data', 'isLoading', 'tableConfig', 'tableContainerHeight', 'tableContainerWidth']
-        })
+        }),
+        MockComponent(NewsDialogComponent)
       ],
       imports: [
         TranslocoTestsModule.getModule(),
-        LetDirective,
-        MockComponent(NewsDialogComponent)
+        LetDirective
       ],
       providers: [
         {
           provide: NewsService,
           useValue: {
-            getNews: jasmine.createSpy('getNews').and.returnValue(of([testNewsItem]))
+            getNews: jasmine.createSpy('getNews').and.returnValue(NEVER)
           }
         },
         {
