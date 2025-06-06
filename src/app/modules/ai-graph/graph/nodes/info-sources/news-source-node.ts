@@ -215,7 +215,9 @@ export class NewsSourceNode extends NodeBase {
         limit: itemsToRequest,
         afterCursor: cursor,
         beforeCursor: null,
-        symbols: targetInstruments.map(i => i.symbol)
+        symbols: targetInstruments.map(i => i.symbol),
+        includedKeywords: [],
+        excludedKeywords: []
       }).pipe(
         switchMap(result => {
           if(result == null) {

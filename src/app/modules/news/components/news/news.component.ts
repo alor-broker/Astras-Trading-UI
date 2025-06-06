@@ -24,7 +24,10 @@ import {
 } from "rxjs";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { NewsSettings } from "../../models/news-settings.model";
+import {
+  NewsFilters,
+  NewsSettings
+} from "../../models/news-settings.model";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { PositionsService } from "../../../../shared/services/positions.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
@@ -42,12 +45,8 @@ import {
 } from "../../../../shared/services/news.service";
 import { PagedResult } from "../../../../shared/models/paging-model";
 
-interface NewsFilter {
-  symbols?: string[];
-}
-
 interface NewsListState {
-  filter: NewsFilter;
+  filter: NewsFilters;
   isEndOfList: boolean;
   loadedItems: NewsListItem[];
   startPageCursor: string | null;
@@ -60,7 +59,7 @@ interface NewsListState {
   styleUrls: ['./news.component.less'],
   standalone: false
 })
-export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, NewsFilter> implements OnInit, OnDestroy {
+export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, NewsFilters> implements OnInit, OnDestroy {
   @Input({required: true}) guid!: string;
 
   @Output() sectionChange = new EventEmitter<NewsSection>();
@@ -69,9 +68,13 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
 
   selectedNewsListItem: NewsListItem | null = null;
 
-  private readonly selectedSection$ = new BehaviorSubject<NewsSection>(NewsSection.All);
+  readonly selectedSection$ = new BehaviorSubject<NewsSection>(NewsSection.All);
 
-  private settings$!: Observable<NewsSettings>;
+  isAllFiltersVisible = false;
+
+  isFiltersApplied$!: Observable<boolean>;
+
+  protected settings$!: Observable<NewsSettings>;
 
   constructor(
     private readonly newsService: NewsService,
@@ -114,6 +117,16 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
     this.sectionChange.emit(section);
   }
 
+  applyAllFilters(filters: NewsFilters | null): void {
+    this.isAllFiltersVisible = false;
+    this.widgetSettingsService.updateSettings<NewsSettings>(
+      this.guid,
+      {
+        allNewsFilters: filters
+      }
+    );
+  }
+
   protected initTableConfigStream(): Observable<TableConfig<NewsListItem>> {
     return this.translatorService.getTranslator('news').pipe(
       map((translate) => ({
@@ -147,6 +160,8 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
         switchMap(() => {
           return this.newsService.getNews({
             symbols: state.filter.symbols ?? null,
+            includedKeywords: state.filter.includedKeyWords,
+            excludedKeywords: state.filter.excludedKeyWords,
             limit: this.loadingChunkSize,
             afterCursor: state.endPageCursor
           });
@@ -206,6 +221,8 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
       mapWith(
         state => this.newsService.getNews({
           symbols: state.filter.symbols ?? null,
+          includedKeywords: state.filter.includedKeyWords,
+          excludedKeywords: state.filter.excludedKeyWords,
           limit: this.loadingChunkSize
         }),
         (state, result) => {
@@ -232,7 +249,7 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
     );
   }
 
-  private loadUpdates(startPageCursor: string | null, filter: NewsFilter): Observable<{
+  private loadUpdates(startPageCursor: string | null, filter: NewsFilters): Observable<{
     loadedItems: NewsListItem[];
     startPageCursor: string | null;
   }> {
@@ -241,6 +258,8 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
     const load = (): Observable<{ loadedItems: NewsListItem[], startPageCursor: string | null }> => {
       return this.newsService.getNews({
         symbols: filter.symbols ?? null,
+        includedKeywords: filter.includedKeyWords,
+        excludedKeywords: filter.excludedKeyWords,
         limit: this.loadingChunkSize,
         beforeCursor: currentCursor
       }).pipe(
@@ -276,13 +295,27 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
   private createFiltersStream(): void {
     this.selectedSection$.pipe(
       switchMap(section => {
+        if(section === NewsSection.All) {
+          return this.settings$.pipe(
+            map(s => s.allNewsFilters),
+            distinctUntilChanged((previous, current) => previous === current),
+            map(s => ({
+              includedKeyWords: s?.includedKeyWords ?? [],
+              excludedKeyWords: s?.excludedKeyWords ?? [],
+              symbols: s?.symbols ?? [],
+            } as NewsFilters))
+          );
+        }
+
         if (section === NewsSection.Symbol) {
           return this.settings$.pipe(
             map(s => s.symbol),
             distinctUntilChanged((previous, current) => previous === current),
             map(s => ({
+              includedKeyWords: [],
+              excludedKeyWords: [],
               symbols: [s]
-            } as NewsFilter))
+            } as NewsFilters))
           );
         }
 
@@ -291,15 +324,29 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
             .pipe(
               switchMap(p => this.positionsService.getAllByPortfolio(p.portfolio, p.exchange)),
               map(p => ({
+                includedKeyWords: [],
+                excludedKeyWords: [],
                 symbols: (p ?? []).map(i => i.targetInstrument.symbol)
-              } as NewsFilter))
+              } as NewsFilters))
             );
         }
 
-        return of({});
+        return of({
+          includedKeyWords: [],
+          excludedKeyWords: [],
+          symbols: []
+        });
       }),
       takeUntilDestroyed(this.destroyRef)
     )
       .subscribe(f => this.filters$.next(f));
+
+    this.isFiltersApplied$ = this.filters$.pipe(
+      map(f => {
+        return f.includedKeyWords.length > 0
+          || f.excludedKeyWords.length > 0
+          || f.symbols.length > 0;
+      })
+    );
   }
 }

@@ -17,9 +17,14 @@ import {LetDirective} from "@ngrx/component";
 import {ngZorroMockComponents} from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 import {ComponentHelpers} from "../../../../shared/utils/testing/component-helpers";
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
-import {MockComponent} from "ng-mocks";
+import {
+  MockComponent,
+  MockDirective
+} from "ng-mocks";
 import {NewsDialogComponent} from "../news-dialog/news-dialog.component";
 import {NewsService} from "../../../../shared/services/news.service";
+import { NewsFiltersComponent } from "../news-filters/news-filters.component";
+import { NzIconDirective } from "ng-zorro-antd/icon";
 
 describe('NewsComponent', () => {
   let component: NewsComponent;
@@ -34,7 +39,9 @@ describe('NewsComponent', () => {
           selector: 'ats-infinite-scroll-table',
           inputs: ['data', 'isLoading', 'tableConfig', 'tableContainerHeight', 'tableContainerWidth']
         }),
-        MockComponent(NewsDialogComponent)
+        MockComponent(NewsDialogComponent),
+        MockComponent(NewsFiltersComponent),
+        MockDirective(NzIconDirective),
       ],
       imports: [
         TranslocoTestsModule.getModule(),

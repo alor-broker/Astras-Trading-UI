@@ -1,0 +1,11 @@
+﻿{
+  "dialogTitle": "Фильтр новостей",
+  "includedKeywordsHeader": "Ключевые слова",
+  "excludedKeywordsHeader": "Исключающие слова",
+  "symbolsHeader": "Тикеры",
+  "newKeywordPlaceholder": "Новое ключевое слово",
+  "newExcludedKeywordsPlaceholder": "Новое исключающее слово",
+  "newSymbolPlaceholder": "Новый тикер",
+  "clear": "Очистить",
+  "apply": "Применить"
+}

@@ -1,0 +1,11 @@
+﻿{
+  "dialogTitle": "News filter",
+  "includedKeywordsHeader": "Keywords",
+  "excludedKeywordsHeader": "Excluded keywords",
+  "symbolsHeader": "Tickers",
+  "newKeywordPlaceholder": "New keyword",
+  "newExcludedKeywordsPlaceholder": "New excluded keyword",
+  "newSymbolPlaceholder": "New ticker",
+  "clear": "Clear",
+  "apply": "Apply"
+}

@@ -20,6 +20,7 @@ import {
 } from "zod";
 import {
   NewsConnection,
+  NewsFilterInput,
   PageInfo,
   Query,
   QueryNewsArgs
@@ -33,6 +34,8 @@ import { Variables } from "../utils/graph-ql/gql-query-builder";
 
 interface GetNewsParams extends PagedRequest {
   symbols: string[] | null;
+  includedKeywords: string[] | null;
+  excludedKeywords: string[] | null;
 }
 
 export interface NewsListItem {
@@ -100,45 +103,75 @@ export class NewsService {
       ]
     };
 
-    if(params.afterCursor != null) {
+    if (params.afterCursor != null) {
       args.first = params.limit;
       args.after = params.afterCursor;
-    } else if(params.beforeCursor != null) {
+    } else if (params.beforeCursor != null) {
       args.last = params.limit;
       args.before = params.beforeCursor;
     } else {
       args.first = params.limit;
     }
 
+    args.where = {
+      and: []
+    };
+
     if (params.symbols != null && params.symbols.length > 0) {
-      args.where = {
-        symbols: {
-          in: params.symbols
+      args.where.and!.push({
+          symbols: {
+            in: params.symbols
+          }
         }
+      );
+    }
+
+    if (params.includedKeywords != null && params.includedKeywords.length > 0) {
+      const includedKeywordsFilters: NewsFilterInput = {
+        or: []
       };
+      for (const keyword of params.includedKeywords) {
+        includedKeywordsFilters.or!.push({
+          headline: {
+            contains: keyword
+          }
+        });
+      }
+
+      args.where.and!.push(includedKeywordsFilters);
+    }
+
+    if (params.excludedKeywords != null && params.excludedKeywords.length > 0) {
+      for (const keyword of params.excludedKeywords) {
+        args.where.and!.push({
+          headline: {
+            ncontains: keyword
+          }
+        });
+      }
     }
 
     const variables: Variables = {
       order: {value: args.order, type: '[NewsSortInput!]'},
     };
 
-    if(args.first != null) {
+    if (args.first != null) {
       variables.first = args.first;
     }
 
-    if(args.last != null) {
+    if (args.last != null) {
       variables.last = args.last;
     }
 
-    if(args.after != null) {
+    if (args.after != null) {
       variables.after = args.after;
     }
 
-    if(args.before != null) {
+    if (args.before != null) {
       variables.before = args.before;
     }
 
-    if(args.where != null) {
+    if (args.where != null) {
       variables.where = {value: args.where, type: 'NewsFilterInput'};
     }
 
