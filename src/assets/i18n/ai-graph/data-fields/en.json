@@ -41,6 +41,12 @@
     },
     "commission": {
       "text": "Commission:"
+    },
+    "market": {
+      "text": "Market:"
+    },
+    "timeRange": {
+      "text": "Time Range:"
     }
   }
 }

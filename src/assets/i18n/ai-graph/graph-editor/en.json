@@ -36,6 +36,9 @@
     "portfolio-positions": {
       "title": "Portfolio Positions"
     },
+    "reports": {
+      "title": "Client Reports"
+    },
     "const-portfolio": {
       "title": "Portfolio Selection"
     }
@@ -148,6 +151,9 @@
     },
     "commission": {
       "name": "Commission"
+    },
+    "reports": {
+      "name": "Reports"
     }
   },
 

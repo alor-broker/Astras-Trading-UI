@@ -6,6 +6,7 @@ import {QuotesService} from "../../../shared/services/quotes.service";
 import {TranslatorService} from "../../../shared/services/translator.service";
 import {HistoryService} from "../../../shared/services/history.service";
 import {PortfolioSummaryService} from 'src/app/shared/services/portfolio-summary.service';
+import {ClientReportsService} from "../../../shared/services/client-reports.service";
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,8 @@ export class GraphProcessingContextService {
     readonly quotesService: QuotesService,
     readonly translatorService: TranslatorService,
     readonly historyService: HistoryService,
-    readonly portfolioSummaryService: PortfolioSummaryService
+    readonly portfolioSummaryService: PortfolioSummaryService,
+    readonly clientReportsService: ClientReportsService
   ) {
   }
 }

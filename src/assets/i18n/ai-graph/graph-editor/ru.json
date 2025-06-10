@@ -36,6 +36,9 @@
     "portfolio-positions": {
       "title": "Позиции портфеля"
     },
+    "reports": {
+      "title": "Клиентские отчеты"
+    },
     "const-portfolio": {
       "title": "Выбор портфеля"
     }
@@ -148,6 +151,9 @@
     },
     "commission": {
       "name": "Комиссия"
+    },
+    "reports": {
+      "name": "Отчеты"
     }
   },
 

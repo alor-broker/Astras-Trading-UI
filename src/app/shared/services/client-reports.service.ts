@@ -5,6 +5,7 @@ import { EnvironmentService } from "./environment.service";
 import { Observable } from "rxjs";
 import { catchHttpError } from "../utils/observable-helper";
 import { map } from "rxjs/operators";
+import { format } from 'date-fns';
 
 export enum ReportTimeRange {
   Monthly = 'monthly',
@@ -80,15 +81,26 @@ export class ClientReportsService {
   getAvailableReports(
     agreement: string,
     market: ReportMarket,
-    timeRange: ReportTimeRange
+    timeRange: ReportTimeRange,
+    fromDate?: Date
   ): Observable<ClientReportId[] | null> {
+    const params: {
+      market: ReportMarket,
+      timeRange: ReportTimeRange,
+      from?: string
+    } = {
+      market,
+      timeRange
+    };
+
+    if (fromDate) {
+      params.from = format(fromDate, 'yyyy-MM-dd');
+    }
+
     return this.httpClient.get<string[]>(
       `${this.baseUrl}/agreements/${agreement}/reports`,
       {
-        params: {
-          market,
-          timeRange
-        }
+        params
       }
     ).pipe(
       catchHttpError<string[] | null>(null, this.httpErrorHandler),
