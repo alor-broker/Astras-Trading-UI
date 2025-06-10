@@ -1,5 +1,5 @@
 import {forkJoin, Observable, of, switchMap} from "rxjs";
-import {map} from "rxjs/operators";
+import {map, take} from "rxjs/operators";
 import {NodeBase} from "../node-base";
 import {Portfolio, SlotType} from "../../slot-types";
 import {NodeCategories} from "../node-categories";
@@ -13,6 +13,7 @@ import {
   ReportTimeRange
 } from "../../../../../shared/services/client-reports.service";
 import {PortfolioUtils} from "../../../utils/portfolio.utils";
+import { TranslatorFn } from "../../../../../shared/services/translator.service";
 
 export class ReportsSourceNode extends NodeBase {
   readonly portfolioInputName = 'portfolio';
@@ -21,6 +22,8 @@ export class ReportsSourceNode extends NodeBase {
   readonly fromDatePropertyName = 'fromDate';
   readonly timeRangePropertyName = 'timeRange';
   readonly outputSlotName = 'reports';
+
+  private translatorFn?: Observable<TranslatorFn>;
 
   constructor() {
     super(ReportsSourceNode.title);
@@ -97,16 +100,18 @@ export class ReportsSourceNode extends NodeBase {
     return 'reports';
   }
 
-
   static get nodeCategory(): NodeCategories {
     return NodeCategories.InfoSources;
   }
 
   static get title(): string {
-    return 'Client Reports';
+    return 'reports';
   }
 
   override executor(context: GraphProcessingContextService): Observable<boolean> {
+    // Initialize translator function for data fields
+    this.translatorFn = context.translatorService.getTranslator('ai-graph/data-fields');
+
     return super.executor(context).pipe(
       switchMap(() => {
           const portfolioKeyString = this.getValueOfInput(this.portfolioInputName) as string | undefined;
@@ -118,7 +123,7 @@ export class ReportsSourceNode extends NodeBase {
             return of(null);
           }
 
-          if (!portfolioKeyString) {
+          if (portfolioKeyString == null || portfolioKeyString.length === 0) {
             return of(null);
           }
 
@@ -126,17 +131,17 @@ export class ReportsSourceNode extends NodeBase {
           const marketInputDescriptor = this.findInputSlot(this.marketInputName, true);
           if (
             marketInputDescriptor?.link != null
-            && !market
+            && market == null
           ) {
             return of(null);
           }
 
-          if(!market) {
+          if(market == null) {
             return of(null);
           }
 
           const targetPortfolio = PortfolioUtils.fromString(portfolioKeyString);
-          if (!targetPortfolio?.portfolio) {
+          if (targetPortfolio?.portfolio == null || targetPortfolio.portfolio.length === 0) {
             return of(null);
           }
 
@@ -156,33 +161,36 @@ export class ReportsSourceNode extends NodeBase {
           );
         }
       ),
-      map(x => {
+      switchMap(x => {
         if (x?.items == null) {
-          return false;
+          return of(false);
         }
 
-        const merged = this.mergeToString(x.items);
-
-        this.setOutputByName(
-          this.outputSlotName,
-          merged
+        return this.translatorFn!.pipe(
+          take(1),
+          map(t => {
+            const merged = this.mergeToString(x.items, t);
+            this.setOutputByName(this.outputSlotName, merged);
+            return true;
+          })
         );
-
-        return true;
       })
     );
   }
 
-  private mergeToString(items: ClientReport[]): string {
+  private mergeToString(items: ClientReport[], t: TranslatorFn): string {
     if (items.length === 0) {
       return '';
     }
 
+    const reportDateLabel = t(['fields', 'reportDate', 'text']);
+    const commentLabel = t(['fields', 'reportComment', 'text']);
+
     return items.map(i => {
       const parts: string[] = [];
-      parts.push(`Report Date: ${i.reportDate}`);
+      parts.push(`${reportDateLabel} ${i.reportDate}`);
       if (i.comment) {
-        parts.push(`Comment: ${i.comment}`);
+        parts.push(`${commentLabel} ${i.comment}`);
       }
       return parts.join('\n');
     }).join('\n\n---\n\n');

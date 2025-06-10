@@ -151,9 +151,11 @@
     },
     "commission": {
       "name": "Commission"
-    },
-    "reports": {
+    },    "reports": {
       "name": "Reports"
+    },
+    "market": {
+      "name": "Market"
     }
   },
 

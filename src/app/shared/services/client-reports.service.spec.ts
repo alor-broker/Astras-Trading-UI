@@ -6,6 +6,7 @@ import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MockProvider } from "ng-mocks";
 import { EnvironmentService } from "./environment.service";
 import { HttpErrorHandler } from "./handle-error/http-error-handler";
+import {commonTestProviders} from "../utils/testing/common-test-providers";
 
 describe('ClientReportsService', () => {
   let service: ClientReportsService;
@@ -13,6 +14,7 @@ describe('ClientReportsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        ...commonTestProviders,
         provideHttpClient(),
         provideHttpClientTesting(),
         MockProvider(EnvironmentService),

@@ -85,9 +85,9 @@ export class ClientReportsService {
     fromDate?: Date
   ): Observable<ClientReportId[] | null> {
     const params: {
-      market: ReportMarket,
-      timeRange: ReportTimeRange,
-      from?: string
+      market: ReportMarket;
+      timeRange: ReportTimeRange;
+      from?: string;
     } = {
       market,
       timeRange

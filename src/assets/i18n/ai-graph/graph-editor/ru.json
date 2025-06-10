@@ -151,9 +151,11 @@
     },
     "commission": {
       "name": "Комиссия"
-    },
-    "reports": {
+    },    "reports": {
       "name": "Отчеты"
+    },
+    "market": {
+      "name": "Рынок"
     }
   },
 
