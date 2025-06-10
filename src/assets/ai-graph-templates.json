@@ -1,0 +1,250 @@
+﻿[
+  {
+    "id": "976ff2be-ceb3-4583-8936-090638290107",
+    "title": "Анализ новостей (1 инструмент)",
+    "config": {
+      "nodes": [
+        {
+          "baseOptions": {
+            "id": "defa926f-63ba-4a03-829f-4faa95bf1570",
+            "type": "instrument-selection/const-symbol",
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "instruments",
+                "type": "instruments_str",
+                "editorOptions": {
+                  "localized_name": "Инстр.",
+                  "nameLocked": true,
+                  "removable": false
+                },
+                "links": [
+                  1
+                ]
+              }
+            ],
+            "properties": {
+              "symbol": "SBER",
+              "exchange": "MOEX"
+            }
+          },
+          "editorOptions": {
+            "title": "Инструмент",
+            "pos": [
+              478.796875,
+              309
+            ],
+            "size": [
+              140,
+              26
+            ],
+            "flags": {}
+          }
+        },
+        {
+          "baseOptions": {
+            "id": "cb43d382-860a-428b-b6ba-f434997ffb0e",
+            "type": "info-sources/news",
+            "inputs": [
+              {
+                "name": "instruments",
+                "type": "instruments_str",
+                "editorOptions": {
+                  "localized_name": "Инстр.",
+                  "nameLocked": true,
+                  "removable": false
+                },
+                "linkId": 1
+              }
+            ],
+            "outputs": [
+              {
+                "name": "news",
+                "type": "string",
+                "editorOptions": {
+                  "localized_name": "Новости",
+                  "removable": false
+                },
+                "links": [
+                  2
+                ]
+              }
+            ],
+            "properties": {
+              "maxRecordsCount": 1000,
+              "fromDate": null,
+              "includeDate": true,
+              "includeHeader": true,
+              "includeContent": false
+            }
+          },
+          "editorOptions": {
+            "title": "Новости",
+            "pos": [
+              674.796875,
+              309
+            ],
+            "size": [
+              140,
+              26
+            ],
+            "flags": {}
+          }
+        },
+        {
+          "baseOptions": {
+            "id": "70e77881-c7b8-48d8-8b5f-649b07b54e07",
+            "type": "ai/request-to-ai",
+            "inputs": [
+              {
+                "name": "in1",
+                "type": "*",
+                "editorOptions": {
+                  "localized_name": "in1",
+                  "nameLocked": false,
+                  "removable": true
+                },
+                "linkId": 2
+              },
+              {
+                "name": "in2",
+                "type": "*",
+                "editorOptions": {
+                  "localized_name": "in2",
+                  "nameLocked": false,
+                  "removable": true
+                },
+                "linkId": null
+              },
+              {
+                "name": "in3",
+                "type": "*",
+                "editorOptions": {
+                  "localized_name": "in3",
+                  "nameLocked": false,
+                  "removable": true
+                },
+                "linkId": null
+              },
+              {
+                "name": "in4",
+                "type": "*",
+                "editorOptions": {
+                  "localized_name": "in4",
+                  "nameLocked": false,
+                  "removable": true
+                },
+                "linkId": null
+              },
+              {
+                "name": "in5",
+                "type": "*",
+                "editorOptions": {
+                  "localized_name": "in5",
+                  "nameLocked": false,
+                  "removable": true
+                },
+                "linkId": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "out",
+                "type": "string",
+                "editorOptions": {
+                  "localized_name": "Вых.",
+                  "nameLocked": true,
+                  "removable": false
+                },
+                "links": [
+                  3
+                ]
+              }
+            ],
+            "properties": {
+              "prompt": "Проанализируй новости с точки зрения влияния на цену акций.\n\nНовости: {{in1}}"
+            }
+          },
+          "editorOptions": {
+            "title": "Запрос к ИИ",
+            "pos": [
+              854.796875,
+              309
+            ],
+            "size": [
+              140,
+              106
+            ],
+            "flags": {}
+          }
+        },
+        {
+          "baseOptions": {
+            "id": "4e03ca54-3bde-4d20-a07b-b46df83397e6",
+            "type": "output/markdown-output",
+            "inputs": [
+              {
+                "name": "in",
+                "type": "string",
+                "editorOptions": {
+                  "localized_name": "Вх.",
+                  "nameLocked": true,
+                  "removable": false
+                },
+                "linkId": 3
+              }
+            ],
+            "outputs": [],
+            "properties": {}
+          },
+          "editorOptions": {
+            "title": "Анализ новостей",
+            "pos": [
+              1037.796875,
+              309
+            ],
+            "size": [
+              140,
+              26
+            ],
+            "flags": {}
+          }
+        }
+      ],
+      "links": [
+        {
+          "linkId": 1,
+          "originId": "defa926f-63ba-4a03-829f-4faa95bf1570",
+          "originSlotIndex": 0,
+          "targetId": "cb43d382-860a-428b-b6ba-f434997ffb0e",
+          "targetSlotIndex": 0,
+          "type": "instruments_str"
+        },
+        {
+          "linkId": 2,
+          "originId": "cb43d382-860a-428b-b6ba-f434997ffb0e",
+          "originSlotIndex": 0,
+          "targetId": "70e77881-c7b8-48d8-8b5f-649b07b54e07",
+          "targetSlotIndex": 0,
+          "type": "*"
+        },
+        {
+          "linkId": 3,
+          "originId": "70e77881-c7b8-48d8-8b5f-649b07b54e07",
+          "originSlotIndex": 0,
+          "targetId": "4e03ca54-3bde-4d20-a07b-b46df83397e6",
+          "targetSlotIndex": 0,
+          "type": "string"
+        }
+      ],
+      "editorOptions": {
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 0,
+          "lastLinkId": 3,
+          "lastRerouteId": 0
+        }
+      }
+    }
+  }
+]
