@@ -1,7 +1,7 @@
 ﻿import {NodeBase} from "../node-base";
 import {NodeCategories} from "../node-categories";
 import {forkJoin, Observable, of, switchMap} from "rxjs";
-import {PortfolioKey, SlotType} from "../../slot-types";
+import {Portfolio, SlotType} from "../../slot-types";
 import {PortfolioValueValidationOptions} from "../models";
 import {map} from "rxjs/operators";
 import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
@@ -58,7 +58,7 @@ export class PortfolioNode extends NodeBase {
   override executor(context: GraphProcessingContextService): Observable<boolean> {
     return super.executor(context).pipe(
       switchMap(() => {
-        const targetPortfolio = this.properties[this.portfolioPropertyName] as PortfolioKey | undefined;
+        const targetPortfolio = this.properties[this.portfolioPropertyName] as Portfolio | undefined;
         if (targetPortfolio == null) {
           return of(false);
         }
@@ -74,7 +74,7 @@ export class PortfolioNode extends NodeBase {
     );
   }
 
-  private preparePortfolioInstruments(portfolio: PortfolioKey, context: GraphProcessingContextService): Observable<boolean> {
+  private preparePortfolioInstruments(portfolio: Portfolio, context: GraphProcessingContextService): Observable<boolean> {
     return context.positionsService.getAllByPortfolio(portfolio.portfolio, portfolio.exchange).pipe(
       map(positions => {
         if (positions == null) {

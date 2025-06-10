@@ -3,9 +3,11 @@
   exchange: string;
 }
 
-export interface PortfolioKey {
+export interface Portfolio {
   portfolio: string;
   exchange: string;
+  agreement: string;
+  market: string;
 }
 
 export enum SlotType {

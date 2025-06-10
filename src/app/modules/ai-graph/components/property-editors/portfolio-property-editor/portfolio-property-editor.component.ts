@@ -6,7 +6,7 @@ import {PortfolioExtended} from "../../../../../shared/models/user/portfolio-ext
 import {filter, map} from "rxjs/operators";
 import {groupPortfoliosByAgreement} from "../../../../../shared/utils/portfolios";
 import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
-import {PortfolioKey} from "../../../graph/slot-types";
+import {Portfolio} from "../../../graph/slot-types";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from "ng-zorro-antd/form";
 import {TranslocoDirective} from "@jsverse/transloco";
@@ -34,6 +34,7 @@ import {UserPortfoliosService} from "../../../../../shared/services/user-portfol
     styleUrl: './portfolio-property-editor.component.less'
 })
 export class PortfolioPropertyEditorComponent extends PropertyEditorBaseComponent<PortfolioPropertyEditorConfig> implements OnInit, OnChanges {
+  private readonly separator = ':';
   protected availablePortfolios$!: Observable<Map<string, PortfolioExtended[]>>;
 
   protected readonly form = this.formBuilder.group({
@@ -76,18 +77,22 @@ export class PortfolioPropertyEditorComponent extends PropertyEditorBaseComponen
     );
   }
 
-  protected portfolioToStr(portfolio: PortfolioKey): string {
+  protected portfolioToStr(portfolio: Portfolio): string {
     return [
       portfolio.portfolio,
-      portfolio.exchange
-    ].join(":");
+      portfolio.exchange,
+      portfolio.agreement,
+      portfolio.market
+    ].join(this.separator);
   }
 
-  private strToPortfolio(value: string): PortfolioKey {
-    const parts = value.split(":");
+  private strToPortfolio(value: string): Portfolio {
+    const parts = value.split(this.separator);
     return {
       portfolio: parts[0],
-      exchange: parts[1]
+      exchange: parts[1],
+      agreement: parts[2],
+      market: parts[3]
     };
   }
 }
