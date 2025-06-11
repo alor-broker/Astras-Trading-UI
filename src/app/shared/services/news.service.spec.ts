@@ -1,12 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 
 import { NewsService } from './news.service';
-import { provideHttpClientTesting } from "@angular/common/http/testing";
-import {
-  provideHttpClient,
-} from '@angular/common/http';
-import {EnvironmentService} from "./environment.service";
-import {commonTestProviders} from "../utils/testing/common-test-providers";
+import { EnvironmentService } from "./environment.service";
+import { commonTestProviders } from "../utils/testing/common-test-providers";
+import { GraphQlService } from "./graph-ql.service";
+import { EMPTY } from "rxjs";
 
 describe('NewsService', () => {
   let service: NewsService;
@@ -21,8 +19,12 @@ describe('NewsService', () => {
           }
         },
         ...commonTestProviders,
-        provideHttpClient(),
-        provideHttpClientTesting()
+        {
+          provide: GraphQlService,
+          useValue: {
+            queryForSchema: jasmine.createSpy('queryForSchema').and.returnValue(EMPTY)
+          }
+        }
       ]
     });
     service = TestBed.inject(NewsService);

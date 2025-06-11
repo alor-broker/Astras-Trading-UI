@@ -41,7 +41,9 @@ import {
 import { MarkdownModule } from "ngx-markdown";
 import { APP_HOOKS } from "./app-hooks";
 import "chartjs-adapter-date-fns";
-import { provideApollo } from "apollo-angular";
+import {
+  provideNamedApollo
+} from "apollo-angular";
 import { HttpLink } from "apollo-angular/http";
 import { environment } from "../environments/environment";
 import { InMemoryCache } from "@apollo/client/core";
@@ -113,12 +115,18 @@ import { LocaleService } from "./shared/services/locale.service";
     ...APP_HOOKS,
     provideCharts(withDefaultRegisterables()),
     provideHttpClient(withInterceptorsFromDi()),
-    provideApollo(() => {
+    provideNamedApollo(() => {
       const httpLink = inject(HttpLink);
 
       return {
-        link: httpLink.create({ uri: environment.apiUrl + '/hyperion' }),
-        cache: new InMemoryCache(),
+        default: {
+          link: httpLink.create({ uri: environment.apiUrl + '/hyperion' }),
+          cache: new InMemoryCache(),
+        },
+        news: {
+          link: httpLink.create({ uri: environment.apiUrl + '/news/graphql' }),
+          cache: new InMemoryCache(),
+        }
       };
     })
   ]

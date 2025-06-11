@@ -10,6 +10,7 @@ import {NewsSettingsComponent} from "./components/news-settings/news-settings.co
 import {NzSliderModule} from "ng-zorro-antd/slider";
 import {WidgetSettingsComponent} from "../../shared/components/widget-settings/widget-settings.component";
 import {NewsDialogComponent} from "./components/news-dialog/news-dialog.component";
+import { NewsFiltersComponent } from "./components/news-filters/news-filters.component";
 
 @NgModule({
   declarations: [
@@ -20,16 +21,17 @@ import {NewsDialogComponent} from "./components/news-dialog/news-dialog.componen
   exports: [
     NewsWidgetComponent
   ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    NzSpinModule,
-    NzResizeObserverModule,
-    LetDirective,
-    NzSliderModule,
-    WidgetSettingsComponent,
-    NewsDialogComponent,
-  ]
+    imports: [
+        CommonModule,
+        SharedModule,
+        NzSpinModule,
+        NzResizeObserverModule,
+        LetDirective,
+        NzSliderModule,
+        WidgetSettingsComponent,
+        NewsDialogComponent,
+        NewsFiltersComponent,
+    ]
 })
 export class NewsModule {
 }
