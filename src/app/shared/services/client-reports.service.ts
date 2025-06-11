@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { HttpErrorHandler } from "./handle-error/http-error-handler";
 import { EnvironmentService } from "./environment.service";
 import { Observable } from "rxjs";
 import { catchHttpError } from "../utils/observable-helper";
 import { map } from "rxjs/operators";
 import { format } from 'date-fns';
+import { ErrorHandlerService } from "./handle-error/error-handler.service";
 
 export enum ReportTimeRange {
   Monthly = 'monthly',
@@ -73,7 +73,7 @@ export class ClientReportsService {
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly httpClient: HttpClient,
-    private readonly httpErrorHandler: HttpErrorHandler
+    private readonly errorHandlerService: ErrorHandlerService,
   ) {
 
   }
@@ -103,7 +103,7 @@ export class ClientReportsService {
         params
       }
     ).pipe(
-      catchHttpError<string[] | null>(null, this.httpErrorHandler),
+      catchHttpError<string[] | null>(null, this.errorHandlerService),
       map(r => {
         if (r == null) {
           return null;
@@ -124,7 +124,7 @@ export class ClientReportsService {
     id: string
   ): Observable<ClientReport | null> {
     return this.httpClient.get<ClientReport>(`${this.baseUrl}/agreements/${agreement}/report/${market}/${id}`).pipe(
-      catchHttpError<ClientReport | null>(null, this.httpErrorHandler)
+      catchHttpError<ClientReport | null>(null, this.errorHandlerService)
     );
   }
 }
