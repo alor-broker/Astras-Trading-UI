@@ -17,6 +17,7 @@ export enum SlotType {
   Boolean = "boolean",
   Date = "date",
   Portfolio = "portfolio",
+  Market = "market",
   InstrumentsStr = "instruments_str",
   Any = "*"
 }

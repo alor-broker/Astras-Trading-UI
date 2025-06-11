@@ -41,6 +41,18 @@
     },
     "commission": {
       "text": "Комиссия:"
+    },
+    "market": {
+      "text": "Рынок:"
+    },
+    "timeRange": {
+      "text": "Временной диапазон:"
+    },
+    "reportDate": {
+      "text": "Дата отчета:"
+    },
+    "reportComment": {
+      "text": "Комментарий:"
     }
   }
 }

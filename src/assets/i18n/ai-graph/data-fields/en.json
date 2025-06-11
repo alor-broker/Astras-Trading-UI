@@ -41,6 +41,18 @@
     },
     "commission": {
       "text": "Commission:"
+    },
+    "market": {
+      "text": "Market:"
+    },
+    "timeRange": {
+      "text": "Time Range:"
+    },
+    "reportDate": {
+      "text": "Report Date:"
+    },
+    "reportComment": {
+      "text": "Report Comment:"
     }
   }
 }
