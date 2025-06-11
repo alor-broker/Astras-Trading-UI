@@ -5,8 +5,8 @@ import { provideHttpClient } from "@angular/common/http";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MockProvider } from "ng-mocks";
 import { EnvironmentService } from "./environment.service";
-import { HttpErrorHandler } from "./handle-error/http-error-handler";
 import {commonTestProviders} from "../utils/testing/common-test-providers";
+import { ErrorHandlerService } from "./handle-error/error-handler.service";
 
 describe('ClientReportsService', () => {
   let service: ClientReportsService;
@@ -18,7 +18,7 @@ describe('ClientReportsService', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         MockProvider(EnvironmentService),
-        MockProvider(HttpErrorHandler)
+        MockProvider(ErrorHandlerService)
       ]
     });
     service = TestBed.inject(ClientReportsService);
