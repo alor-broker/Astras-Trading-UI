@@ -12,7 +12,6 @@ export class PortfolioNode extends NodeBase {
   readonly portfolioPropertyName = 'portfolio';
   readonly instrumentsOutputName = 'instruments';
   readonly portfolioOutputName = 'portfolio';
-  readonly marketOutputName = 'market';
 
   constructor() {
     super(PortfolioNode.title);
@@ -46,15 +45,6 @@ export class PortfolioNode extends NodeBase {
         removable: false
       }
     );
-
-    this.addOutput(
-      this.marketOutputName,
-      SlotType.Market,
-      {
-        nameLocked: true,
-        removable: false
-      }
-    );
   }
 
   static get nodeId(): string {
@@ -74,7 +64,6 @@ export class PortfolioNode extends NodeBase {
         }
 
         this.setOutputByName(this.portfolioOutputName, PortfolioUtils.toString(targetPortfolio));
-        this.setOutputByName(this.marketOutputName, targetPortfolio.market);
 
         return forkJoin([
           this.preparePortfolioInstruments(targetPortfolio, context)
@@ -102,5 +91,5 @@ export class PortfolioNode extends NodeBase {
         return true;
       })
     );
-  }
+  };
 }

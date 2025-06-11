@@ -44,7 +44,6 @@ export class PortfolioSummarySourceNode extends NodeBase {
   }
 
   override executor(context: GraphProcessingContextService): Observable<boolean> {
-    // Initialize translator function for data fields
     this.translatorFn = context.translatorService.getTranslator('ai-graph/data-fields');
 
     return super.executor(context).pipe(
@@ -55,7 +54,6 @@ export class PortfolioSummarySourceNode extends NodeBase {
           return of(false);
         }
 
-        // Parse the portfolio string using PortfolioUtils
         const targetPortfolio = PortfolioUtils.fromString(portfolioKeyString);
         if (!targetPortfolio.portfolio || !targetPortfolio.exchange) {
           return of(false);
