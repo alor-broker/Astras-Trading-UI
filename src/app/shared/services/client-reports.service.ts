@@ -5,8 +5,7 @@ import { Observable } from "rxjs";
 import { catchHttpError } from "../utils/observable-helper";
 import { map } from "rxjs/operators";
 import {
-  isAfter,
-  isEqual,
+  format,
   parse
 } from 'date-fns';
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
@@ -97,10 +96,15 @@ export class ClientReportsService {
     const params: {
       market: ReportMarket;
       timeRange: ReportTimeRange;
+      from?: string;
     } = {
       market,
       timeRange
     };
+
+    if (fromDate != null) {
+      params.from = format(fromDate, 'yyyy-MM-dd');
+    }
 
     return this.httpClient.get<AvailableReportsResponse>(
       `${this.baseUrl}/agreements/${agreement}/reports`,
@@ -118,7 +122,7 @@ export class ClientReportsService {
           ? 'yyyyMMdd'
           : 'yyyyMM';
 
-        let items = r.list.map(i => ({
+        return r.list.map(i => ({
           id: i,
           timeRange,
           market,
@@ -127,13 +131,8 @@ export class ClientReportsService {
             dateParseFormat,
             new Date()
           )
-        }));
-
-        if(fromDate != null) {
-          items = items.filter(i => isAfter(i.reportDate, fromDate) || isEqual(i.reportDate, fromDate));
-        }
-
-        return items.slice(-limit)
+        }))
+          .slice(-limit)
           .reverse();
       })
     );
