@@ -76,7 +76,7 @@ export class PortfolioSummarySourceNode extends NodeBase {
                   `${portfolioValueLabel} ${summary.portfolioEvaluation}`,
                   `${initialMarginLabel} ${summary.initialMargin}`,
                   `${commissionLabel} ${summary.commission}`
-                ].join('\n');
+                ].join('<br>');
 
                 this.setOutputByName(this.outputSlotName, summaryText);
                 return true;

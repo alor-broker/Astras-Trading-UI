@@ -1,11 +1,26 @@
-import {forkJoin, Observable, of, switchMap} from "rxjs";
-import {map, take} from "rxjs/operators";
-import {NodeBase} from "../node-base";
-import {ExtendedEditors, Portfolio, SlotType} from "../../slot-types";
-import {NodeCategories} from "../node-categories";
-import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
-import {DateValueValidationOptions, SelectValueValidationOptions} from "../models";
-import {add} from "date-fns";
+import {
+  forkJoin,
+  Observable,
+  of,
+  switchMap
+} from "rxjs";
+import {
+  map,
+  take
+} from "rxjs/operators";
+import { NodeBase } from "../node-base";
+import {
+  ExtendedEditors,
+  Portfolio,
+  SlotType
+} from "../../slot-types";
+import { NodeCategories } from "../node-categories";
+import { GraphProcessingContextService } from "../../../services/graph-processing-context.service";
+import {
+  DateValueValidationOptions,
+  SelectValueValidationOptions
+} from "../models";
+import { add } from "date-fns";
 import {
   ClientReport,
   ClientReportsService,
@@ -13,6 +28,9 @@ import {
   ReportTimeRange
 } from "../../../../../shared/services/client-reports.service";
 import { TranslatorFn } from "../../../../../shared/services/translator.service";
+import { PortfolioUtils } from "../../../utils/portfolio.utils";
+import { StringHelper } from "../../../../../shared/utils/string-helper";
+import { MarketType } from "../../../../../shared/models/portfolio-key.model";
 
 export class ReportsSourceNode extends NodeBase {
   readonly portfolioInputName = 'portfolio';
@@ -104,25 +122,18 @@ export class ReportsSourceNode extends NodeBase {
 
     return super.executor(context).pipe(
       switchMap(() => {
-          const targetPortfolio = this.getValueOfInput(this.portfolioInputName) as Portfolio | undefined;
-          const portfolioInputDescriptor = this.findInputSlot(this.portfolioInputName, true);
-          if (
-            portfolioInputDescriptor?.link != null
-            && (targetPortfolio == null)
+        const portfolioKeyString = this.getValueOfInput(this.portfolioInputName) as string | undefined;
+        if (portfolioKeyString === undefined || portfolioKeyString === null || portfolioKeyString.length === 0) {
+          return of(false);
+        }
+
+        const targetPortfolio = PortfolioUtils.fromString(portfolioKeyString);
+
+          if (targetPortfolio == null
+            || StringHelper.isNullOrEmpty(targetPortfolio.agreement)
+            || StringHelper.isNullOrEmpty(targetPortfolio.market)
           ) {
-            return of(null);
-          }
-
-          if (targetPortfolio == null) {
-            return of(null);
-          }
-
-          if (targetPortfolio?.portfolio == null || targetPortfolio.portfolio.length === 0) {
-            return of(null);
-          }
-
-          if (!targetPortfolio.market) {
-            return of(null);
+            return of(false);
           }
 
           const limit = this.properties[this.maxRecordsCountPropertyName] as number | undefined ?? 10;
@@ -132,29 +143,27 @@ export class ReportsSourceNode extends NodeBase {
           return this.loadReports(
             targetPortfolio,
             limit,
-            targetPortfolio.market as ReportMarket,
             timeRange,
             context.clientReportsService,
             fromDate
           ).pipe(
-            map(items => ({items}))
+            switchMap(items => {
+              if (items.length === 0) {
+                return of(false);
+              }
+
+              return this.translatorFn!.pipe(
+                take(1),
+                map(t => {
+                  const merged = this.mergeToString(items, t);
+                  this.setOutputByName(this.outputSlotName, merged);
+                  return true;
+                })
+              );
+            })
           );
         }
-      ),
-      switchMap(x => {
-        if (x?.items == null) {
-          return of(false);
-        }
-
-        return this.translatorFn!.pipe(
-          take(1),
-          map(t => {
-            const merged = this.mergeToString(x.items, t);
-            this.setOutputByName(this.outputSlotName, merged);
-            return true;
-          })
-        );
-      })
+      )
     );
   }
 
@@ -179,15 +188,19 @@ export class ReportsSourceNode extends NodeBase {
   private loadReports(
     targetPortfolio: Portfolio,
     limit: number,
-    market: ReportMarket,
     timeRange: ReportTimeRange,
     reportsService: ClientReportsService,
     fromDate?: Date,
   ): Observable<ClientReport[]> {
+    const reportMarket: ReportMarket = targetPortfolio.market === MarketType.ForeignExchange
+      ? ReportMarket.Currency
+      : ReportMarket.United;
+
     return reportsService.getAvailableReports(
-      targetPortfolio.portfolio,
-      market,
+      targetPortfolio.agreement,
+      reportMarket,
       timeRange,
+      limit,
       fromDate
     ).pipe(
       switchMap(reportIds => {
@@ -195,9 +208,8 @@ export class ReportsSourceNode extends NodeBase {
           return of([]);
         }
 
-        const idsToLoad = reportIds.slice(0, limit);
-        const reportRequests = idsToLoad.map(reportId =>
-          reportsService.getReport(targetPortfolio.portfolio, reportId.market, reportId.id)
+        const reportRequests = reportIds.map(reportId =>
+          reportsService.getReport(targetPortfolio.agreement, reportMarket, reportId.id)
         );
 
         return forkJoin(reportRequests).pipe(

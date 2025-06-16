@@ -4,7 +4,11 @@ import { EnvironmentService } from "./environment.service";
 import { Observable } from "rxjs";
 import { catchHttpError } from "../utils/observable-helper";
 import { map } from "rxjs/operators";
-import { format } from 'date-fns';
+import {
+  isAfter,
+  isEqual,
+  parse
+} from 'date-fns';
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
 
 export enum ReportTimeRange {
@@ -23,6 +27,7 @@ export interface ClientReportId {
   id: string;
   timeRange: ReportTimeRange;
   market: ReportMarket;
+  reportDate: Date;
 }
 
 export interface ReportField {
@@ -64,6 +69,10 @@ export interface ClientReport {
   signature: string;
 }
 
+interface AvailableReportsResponse {
+  list: string[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -82,38 +91,50 @@ export class ClientReportsService {
     agreement: string,
     market: ReportMarket,
     timeRange: ReportTimeRange,
+    limit = 10,
     fromDate?: Date
   ): Observable<ClientReportId[] | null> {
     const params: {
       market: ReportMarket;
       timeRange: ReportTimeRange;
-      from?: string;
     } = {
       market,
       timeRange
     };
 
-    if (fromDate) {
-      params.from = format(fromDate, 'yyyy-MM-dd');
-    }
-
-    return this.httpClient.get<string[]>(
+    return this.httpClient.get<AvailableReportsResponse>(
       `${this.baseUrl}/agreements/${agreement}/reports`,
       {
         params
       }
     ).pipe(
-      catchHttpError<string[] | null>(null, this.errorHandlerService),
+      catchHttpError<AvailableReportsResponse | null>(null, this.errorHandlerService),
       map(r => {
         if (r == null) {
           return null;
         }
 
-        return r.map(i => ({
+        const dateParseFormat = timeRange === ReportTimeRange.Daily
+          ? 'yyyyMMdd'
+          : 'yyyyMM';
+
+        let items = r.list.map(i => ({
           id: i,
           timeRange,
-          market
+          market,
+          reportDate: parse(
+            i,
+            dateParseFormat,
+            new Date()
+          )
         }));
+
+        if(fromDate != null) {
+          items = items.filter(i => isAfter(i.reportDate, fromDate) || isEqual(i.reportDate, fromDate));
+        }
+
+        return items.slice(-limit)
+          .reverse();
       })
     );
   }

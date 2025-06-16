@@ -1,4 +1,6 @@
-﻿export interface InstrumentKey {
+﻿import { MarketType } from "../../../shared/models/portfolio-key.model";
+
+export interface InstrumentKey {
   symbol: string;
   exchange: string;
 }
@@ -7,7 +9,7 @@ export interface Portfolio {
   portfolio: string;
   exchange: string;
   agreement: string;
-  market: string;
+  market: MarketType | null;
 }
 
 export enum SlotType {

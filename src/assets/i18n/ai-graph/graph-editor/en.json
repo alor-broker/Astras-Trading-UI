@@ -99,7 +99,7 @@
       "name": "Include Price"
     },
     "includeVolume": {
-      "name": "Include Volume"  
+      "name": "Include Volume"
     },
     "includeLastUpdate": {
       "name": "Include Last Update"
@@ -156,6 +156,9 @@
     },
     "market": {
       "name": "Market"
+    },
+    "timeRange": {
+      "name": "Time Range"
     }
   },
 

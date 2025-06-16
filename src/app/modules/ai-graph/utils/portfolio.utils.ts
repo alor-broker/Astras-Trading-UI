@@ -1,5 +1,6 @@
 import {Portfolio} from "../graph/slot-types";
 import {ArrayItemsSeparator} from "../constants/graph-data.constants";
+import { MarketType } from "../../../shared/models/portfolio-key.model";
 
 export class PortfolioUtils {
   private static readonly Separator = ':';
@@ -16,7 +17,7 @@ export class PortfolioUtils {
       portfolio: parts[0] ?? '',
       exchange: parts[1] ?? '',
       agreement: parts[2] ?? '',
-      market: parts[3] ?? '',
+      market: (parts[3] ?? null) as (MarketType | null)
     };
   }
 

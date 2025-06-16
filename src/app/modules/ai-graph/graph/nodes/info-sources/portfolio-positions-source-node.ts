@@ -85,9 +85,8 @@ export class PortfolioPositionsSourceNode extends NodeBase {
                     `${avgPriceLabel} ${position.avgPrice}`,
                     `${profitLabel} ${position.unrealisedPl}`,
                     `${dailyProfitLabel} ${position.dailyUnrealisedPl}`,
-                    '---'
-                  ].join('\n');
-                }).join('\n');
+                  ].join('<br>');
+                }).join('<br><br>');
 
                 this.setOutputByName(this.outputSlotName, positionsText);
                 return true;
