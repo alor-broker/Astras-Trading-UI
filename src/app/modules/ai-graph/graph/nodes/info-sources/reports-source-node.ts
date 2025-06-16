@@ -1,7 +1,7 @@
 import {forkJoin, Observable, of, switchMap} from "rxjs";
 import {map, take} from "rxjs/operators";
 import {NodeBase} from "../node-base";
-import {Portfolio, SlotType} from "../../slot-types";
+import {ExtendedEditors, Portfolio, SlotType} from "../../slot-types";
 import {NodeCategories} from "../node-categories";
 import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
 import {DateValueValidationOptions, SelectValueValidationOptions} from "../models";
@@ -60,6 +60,7 @@ export class ReportsSourceNode extends NodeBase {
       ReportTimeRange.Daily,
       SlotType.String,
       {
+        editorType: ExtendedEditors.Select,
         validation: {
           required: true,
           allowedValues: Object.values(ReportTimeRange)
