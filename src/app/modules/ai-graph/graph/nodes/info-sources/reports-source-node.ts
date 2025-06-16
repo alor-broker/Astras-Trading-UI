@@ -1,7 +1,7 @@
 import {forkJoin, Observable, of, switchMap} from "rxjs";
 import {map, take} from "rxjs/operators";
 import {NodeBase} from "../node-base";
-import {Portfolio, SlotType} from "../../slot-types";
+import {ExtendedEditors, Portfolio, SlotType} from "../../slot-types";
 import {NodeCategories} from "../node-categories";
 import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
 import {DateValueValidationOptions, SelectValueValidationOptions} from "../models";
@@ -12,12 +12,10 @@ import {
   ReportMarket,
   ReportTimeRange
 } from "../../../../../shared/services/client-reports.service";
-import {PortfolioUtils} from "../../../utils/portfolio.utils";
 import { TranslatorFn } from "../../../../../shared/services/translator.service";
 
 export class ReportsSourceNode extends NodeBase {
   readonly portfolioInputName = 'portfolio';
-  readonly marketInputName = 'market';
   readonly maxRecordsCountPropertyName = 'maxRecordsCount';
   readonly fromDatePropertyName = 'fromDate';
   readonly timeRangePropertyName = 'timeRange';
@@ -62,6 +60,7 @@ export class ReportsSourceNode extends NodeBase {
       ReportTimeRange.Daily,
       SlotType.String,
       {
+        editorType: ExtendedEditors.Select,
         validation: {
           required: true,
           allowedValues: Object.values(ReportTimeRange)
@@ -72,15 +71,6 @@ export class ReportsSourceNode extends NodeBase {
     this.addInput(
       this.portfolioInputName,
       SlotType.Portfolio,
-      {
-        nameLocked: true,
-        removable: false
-      }
-    );
-
-    this.addInput(
-      this.marketInputName,
-      SlotType.Market,
       {
         nameLocked: true,
         removable: false
@@ -114,34 +104,24 @@ export class ReportsSourceNode extends NodeBase {
 
     return super.executor(context).pipe(
       switchMap(() => {
-          const portfolioKeyString = this.getValueOfInput(this.portfolioInputName) as string | undefined;
+          const targetPortfolio = this.getValueOfInput(this.portfolioInputName) as Portfolio | undefined;
           const portfolioInputDescriptor = this.findInputSlot(this.portfolioInputName, true);
           if (
             portfolioInputDescriptor?.link != null
-            && (portfolioKeyString == null || portfolioKeyString.length === 0)
+            && (targetPortfolio == null)
           ) {
             return of(null);
           }
 
-          if (portfolioKeyString == null || portfolioKeyString.length === 0) {
+          if (targetPortfolio == null) {
             return of(null);
           }
 
-          const market = this.getValueOfInput(this.marketInputName) as ReportMarket | undefined;
-          const marketInputDescriptor = this.findInputSlot(this.marketInputName, true);
-          if (
-            marketInputDescriptor?.link != null
-            && market == null
-          ) {
-            return of(null);
-          }
-
-          if(market == null) {
-            return of(null);
-          }
-
-          const targetPortfolio = PortfolioUtils.fromString(portfolioKeyString);
           if (targetPortfolio?.portfolio == null || targetPortfolio.portfolio.length === 0) {
+            return of(null);
+          }
+
+          if (!targetPortfolio.market) {
             return of(null);
           }
 
@@ -152,7 +132,7 @@ export class ReportsSourceNode extends NodeBase {
           return this.loadReports(
             targetPortfolio,
             limit,
-            market,
+            targetPortfolio.market as ReportMarket,
             timeRange,
             context.clientReportsService,
             fromDate
