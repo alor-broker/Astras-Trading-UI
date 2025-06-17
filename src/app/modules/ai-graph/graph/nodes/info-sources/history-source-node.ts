@@ -1,17 +1,33 @@
-import {Observable, of, switchMap} from "rxjs";
-import {map} from "rxjs/operators";
-import {NodeBase} from "../node-base";
-import {ExtendedEditors, InstrumentKey, SlotType} from "../../slot-types";
-import {NodeCategories} from "../node-categories";
-import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
-import {NumberValueValidationOptions, SelectValueValidationOptions} from "../models";
-import {addDaysUnix} from "../../../../../shared/utils/datetime";
-import {InstrumentUtils} from "../../../utils/instrument.utils";
+import {
+  forkJoin,
+  Observable,
+  of,
+  switchMap
+} from "rxjs";
+import { map } from "rxjs/operators";
+import { NodeBase } from "../node-base";
+import {
+  ExtendedEditors,
+  InstrumentKey,
+  SlotType
+} from "../../slot-types";
+import { NodeCategories } from "../node-categories";
+import { GraphProcessingContextService } from "../../../services/graph-processing-context.service";
+import {
+  NumberValueValidationOptions,
+  SelectValueValidationOptions
+} from "../models";
+import { addDaysUnix } from "../../../../../shared/utils/datetime";
+import { InstrumentUtils } from "../../../utils/instrument.utils";
+import { HistoryResponse } from "../../../../../shared/models/history/history-response.model";
 
 export class HistorySourceNode extends NodeBase {
   readonly inputSlotName = 'instruments';
+
   readonly maxRecordsCountPropertyName = 'maxRecordsCount';
+
   readonly timeframePropertyName = 'timeframe';
+
   readonly outputSlotName = 'history';
 
   constructor() {
@@ -86,43 +102,42 @@ export class HistorySourceNode extends NodeBase {
 
         const limit = this.properties[this.maxRecordsCountPropertyName] as number ?? 100;
         const timeframe = this.properties[this.timeframePropertyName] as string ?? 'D';
-        const instrument = this.toInstrument(targetInstruments ?? '');
+        const instruments = this.toInstruments(targetInstruments ?? '');
 
-        if (!instrument) {
+        if (instruments.length === 0) {
           return of(false);
         }
 
-        const daysToLookBack = limit * (timeframe === 'D' ? 1 : timeframe === 'W' ? 7 : 30);
-
-        return context.historyService.getHistory({
-          symbol: instrument.symbol,
-          exchange: instrument.exchange,
-          tf: timeframe,
-          from: addDaysUnix(new Date(), -daysToLookBack),
-          to: Math.round(Date.now() / 1000),
-          countBack: limit
-        }).pipe(
-          map(response => {
-            if (response === null || !Array.isArray(response.history) || response.history.length === 0) {
+        return forkJoin(instruments.map(i => this.loadHistoryForInstrument(
+          context,
+          i,
+          timeframe,
+          limit
+        ))).pipe(
+          map(responses => {
+            if (responses.some(r => r == null)) {
               this.setOutputByName(this.outputSlotName, '');
               return false;
             }
 
-            // We don't need translation for candles because there is no
-            // straightforward terminology for them in russian.
-            // I'm afraid LLM will be misled by the translation.
-            const formattedCandles = response.history.map(candle =>
-              `Date: ${new Date(candle.time * 1000).toISOString().split('T')[0]}\n` +
-              `Open: ${candle.open}\n` +
-              `High: ${candle.high}\n` +
-              `Low: ${candle.low}\n` +
-              `Close: ${candle.close}\n` +
-              `Volume: ${candle.volume}`
-            ).join('\n\n');
+            const formatted = responses.map(r => {
+              // We don't need translation for candles because there is no
+              // straightforward terminology for them in russian.
+              // I'm afraid LLM will be misled by the translation.
+              return r!.history.history.map(candle =>
+                `Ticker: ${r!.instrument.symbol}:${r!.instrument.exchange}\n` +
+                `Date: ${new Date(candle.time * 1000).toISOString().split('T')[0]}\n` +
+                `Open: ${candle.open}\n` +
+                `High: ${candle.high}\n` +
+                `Low: ${candle.low}\n` +
+                `Close: ${candle.close}\n` +
+                `Volume: ${candle.volume}`
+              ).join('\n\n');
+            }).join('\n\n---\n\n');
 
             this.setOutputByName(
               this.outputSlotName,
-              formattedCandles
+              formatted
             );
 
             return true;
@@ -132,16 +147,44 @@ export class HistorySourceNode extends NodeBase {
     );
   }
 
-  private toInstrument(rawValue: string): InstrumentKey | null {
+  private toInstruments(rawValue: string): InstrumentKey[] {
     if (rawValue.length === 0) {
-      return null;
+      return [];
     }
 
     if (InstrumentUtils.isArray(rawValue)) {
-      const instruments = InstrumentUtils.fromStringToArray(rawValue);
-      return instruments?.[0] ?? null;
+      return InstrumentUtils.fromStringToArray(rawValue) ?? [];
     }
 
-    return InstrumentUtils.fromString(rawValue);
+    return [InstrumentUtils.fromString(rawValue)];
+  }
+
+  private loadHistoryForInstrument(
+    context: GraphProcessingContextService,
+    instrument: InstrumentKey,
+    timeframe: string,
+    limit: number
+  ): Observable<{ instrument: InstrumentKey, history: HistoryResponse } | null> {
+    const daysToLookBack = limit * (timeframe === 'D' ? 1 : timeframe === 'W' ? 7 : 30);
+
+    return context.historyService.getHistory({
+      symbol: instrument.symbol,
+      exchange: instrument.exchange,
+      tf: timeframe,
+      from: addDaysUnix(new Date(), -daysToLookBack),
+      to: Math.round(Date.now() / 1000),
+      countBack: limit
+    }).pipe(
+      map(r => {
+        if (r == null) {
+          return null;
+        }
+
+        return {
+          instrument,
+          history: r
+        };
+      })
+    );
   }
 }
