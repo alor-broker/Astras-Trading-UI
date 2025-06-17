@@ -96,14 +96,14 @@ export class ClientReportsService {
     const params: {
       market: ReportMarket;
       timeRange: ReportTimeRange;
-      from?: string;
+      dateFrom?: string;
     } = {
       market,
       timeRange
     };
 
     if (fromDate != null) {
-      params.from = format(fromDate, 'yyyy-MM-dd');
+      params.dateFrom = format(fromDate, 'yyyy-MM-dd');
     }
 
     return this.httpClient.get<AvailableReportsResponse>(

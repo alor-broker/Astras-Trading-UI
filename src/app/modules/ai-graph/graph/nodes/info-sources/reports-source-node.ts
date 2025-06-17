@@ -4,10 +4,7 @@ import {
   of,
   switchMap
 } from "rxjs";
-import {
-  map,
-  take
-} from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { NodeBase } from "../node-base";
 import {
   ExtendedEditors,
@@ -27,19 +24,20 @@ import {
   ReportMarket,
   ReportTimeRange
 } from "../../../../../shared/services/client-reports.service";
-import { TranslatorFn } from "../../../../../shared/services/translator.service";
 import { PortfolioUtils } from "../../../utils/portfolio.utils";
 import { StringHelper } from "../../../../../shared/utils/string-helper";
 import { MarketType } from "../../../../../shared/models/portfolio-key.model";
 
 export class ReportsSourceNode extends NodeBase {
   readonly portfolioInputName = 'portfolio';
-  readonly maxRecordsCountPropertyName = 'maxRecordsCount';
-  readonly fromDatePropertyName = 'fromDate';
-  readonly timeRangePropertyName = 'timeRange';
-  readonly outputSlotName = 'reports';
 
-  private translatorFn?: Observable<TranslatorFn>;
+  readonly maxRecordsCountPropertyName = 'maxRecordsCount';
+
+  readonly fromDatePropertyName = 'fromDate';
+
+  readonly timeRangePropertyName = 'timeRange';
+
+  readonly outputSlotName = 'reports';
 
   constructor() {
     super(ReportsSourceNode.title);
@@ -117,17 +115,14 @@ export class ReportsSourceNode extends NodeBase {
   }
 
   override executor(context: GraphProcessingContextService): Observable<boolean> {
-    // Initialize translator function for data fields
-    this.translatorFn = context.translatorService.getTranslator('ai-graph/data-fields');
-
     return super.executor(context).pipe(
       switchMap(() => {
-        const portfolioKeyString = this.getValueOfInput(this.portfolioInputName) as string | undefined;
-        if (portfolioKeyString === undefined || portfolioKeyString === null || portfolioKeyString.length === 0) {
-          return of(false);
-        }
+          const portfolioKeyString = this.getValueOfInput(this.portfolioInputName) as string | undefined;
+          if (portfolioKeyString === undefined || portfolioKeyString === null || portfolioKeyString.length === 0) {
+            return of(false);
+          }
 
-        const targetPortfolio = PortfolioUtils.fromString(portfolioKeyString);
+          const targetPortfolio = PortfolioUtils.fromString(portfolioKeyString);
 
           if (targetPortfolio == null
             || StringHelper.isNullOrEmpty(targetPortfolio.agreement)
@@ -152,14 +147,9 @@ export class ReportsSourceNode extends NodeBase {
                 return of(false);
               }
 
-              return this.translatorFn!.pipe(
-                take(1),
-                map(t => {
-                  const merged = this.mergeToString(items, t);
-                  this.setOutputByName(this.outputSlotName, merged);
-                  return true;
-                })
-              );
+              const merged = this.mergeToString(items);
+              this.setOutputByName(this.outputSlotName, merged);
+              return of(true);
             })
           );
         }
@@ -167,22 +157,22 @@ export class ReportsSourceNode extends NodeBase {
     );
   }
 
-  private mergeToString(items: ClientReport[], t: TranslatorFn): string {
+  private mergeToString(items: ClientReport[]): string {
     if (items.length === 0) {
       return '';
     }
-
-    const reportDateLabel = t(['fields', 'reportDate', 'text']);
-    const commentLabel = t(['fields', 'reportComment', 'text']);
-
     return items.map(i => {
-      const parts: string[] = [];
-      parts.push(`${reportDateLabel} ${i.reportDate}`);
-      if (i.comment) {
-        parts.push(`${commentLabel} ${i.comment}`);
-      }
-      return parts.join('\n');
-    }).join('\n\n---\n\n');
+      const clone = JSON.parse(JSON.stringify(i)) as Partial<ClientReport>;
+
+      delete clone.clientName;
+      delete clone.clientSignatureName;
+      delete clone.clientSignatureResolution;
+      delete clone.clientSignatureRemarks;
+
+      return '~~~json\n' +
+        JSON.stringify(clone, null, 2) +
+        '\n' + '~~~';
+    }).join('\n\n');
   }
 
   private loadReports(
