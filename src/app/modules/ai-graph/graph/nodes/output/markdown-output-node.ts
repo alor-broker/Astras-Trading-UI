@@ -1,5 +1,8 @@
 ﻿import {NodeBase} from "../node-base";
-import {NodeCategories} from "../node-categories";
+import {
+  NodeCategories,
+  NodeCategoryColors
+} from "../node-categories";
 import {SlotType} from "../../slot-types";
 import {Observable} from "rxjs";
 import {map} from "rxjs/operators";
@@ -9,6 +12,11 @@ import {GraphProcessingContextService} from "../../../services/graph-processing-
 export class MarkdownOutputNode extends NodeBase {
   constructor() {
     super(MarkdownOutputNode.title);
+    this.setColorOption({
+      color: NodeCategoryColors.output.headerColor,
+      bgcolor: NodeCategoryColors.output.bodyColor,
+      groupcolor: NodeCategoryColors.output.headerColor
+    });
 
     this.addInput(
       "in",

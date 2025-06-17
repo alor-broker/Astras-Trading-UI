@@ -11,7 +11,10 @@ import {
   Portfolio,
   SlotType
 } from "../../slot-types";
-import { NodeCategories } from "../node-categories";
+import {
+  NodeCategories,
+  NodeCategoryColors
+} from "../node-categories";
 import { GraphProcessingContextService } from "../../../services/graph-processing-context.service";
 import {
   DateValueValidationOptions,
@@ -41,6 +44,11 @@ export class ReportsSourceNode extends NodeBase {
 
   constructor() {
     super(ReportsSourceNode.title);
+    this.setColorOption({
+      color: NodeCategoryColors["info-sources"].headerColor,
+      bgcolor: NodeCategoryColors["info-sources"].bodyColor,
+      groupcolor: NodeCategoryColors["info-sources"].headerColor
+    });
 
     this.addProperty(
       this.maxRecordsCountPropertyName,

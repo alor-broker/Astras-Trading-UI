@@ -1,5 +1,8 @@
 ﻿import {NodeBase} from "../node-base";
-import {NodeCategories} from "../node-categories";
+import {
+  NodeCategories,
+  NodeCategoryColors
+} from "../node-categories";
 import {forkJoin, Observable, of, switchMap} from "rxjs";
 import {Portfolio, SlotType} from "../../slot-types";
 import {PortfolioValueValidationOptions} from "../models";
@@ -15,6 +18,11 @@ export class PortfolioNode extends NodeBase {
 
   constructor() {
     super(PortfolioNode.title);
+    this.setColorOption({
+      color: NodeCategoryColors["instrument-selection"].headerColor,
+      bgcolor: NodeCategoryColors["instrument-selection"].bodyColor,
+      groupcolor: NodeCategoryColors["instrument-selection"].headerColor
+    });
 
     this.addProperty(
       this.portfolioPropertyName,

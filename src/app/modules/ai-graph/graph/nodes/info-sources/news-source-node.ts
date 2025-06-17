@@ -8,7 +8,10 @@ import {
 import {map} from "rxjs/operators";
 import {NodeBase} from "../node-base";
 import {InstrumentKey, SlotType} from "../../slot-types";
-import {NodeCategories} from "../node-categories";
+import {
+  NodeCategories,
+  NodeCategoryColors
+} from "../node-categories";
 import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
 import {DateValueValidationOptions, NumberValueValidationOptions} from "../models";
 import {add, isBefore, parseISO, startOfDay} from "date-fns";
@@ -27,6 +30,11 @@ export class NewsSourceNode extends NodeBase {
 
   constructor() {
     super(NewsSourceNode.title);
+    this.setColorOption({
+      color: NodeCategoryColors["info-sources"].headerColor,
+      bgcolor: NodeCategoryColors["info-sources"].bodyColor,
+      groupcolor: NodeCategoryColors["info-sources"].headerColor
+    });
 
     this.addProperty(
       this.maxRecordsCountPropertyName,

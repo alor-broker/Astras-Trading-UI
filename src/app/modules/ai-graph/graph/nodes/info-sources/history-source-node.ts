@@ -11,7 +11,10 @@ import {
   InstrumentKey,
   SlotType
 } from "../../slot-types";
-import { NodeCategories } from "../node-categories";
+import {
+  NodeCategories,
+  NodeCategoryColors
+} from "../node-categories";
 import { GraphProcessingContextService } from "../../../services/graph-processing-context.service";
 import {
   NumberValueValidationOptions,
@@ -32,6 +35,12 @@ export class HistorySourceNode extends NodeBase {
 
   constructor() {
     super(HistorySourceNode.title);
+
+    this.setColorOption({
+      color: NodeCategoryColors["info-sources"].headerColor,
+      bgcolor: NodeCategoryColors["info-sources"].bodyColor,
+      groupcolor: NodeCategoryColors["info-sources"].headerColor
+    });
 
     this.addProperty(
       this.maxRecordsCountPropertyName,

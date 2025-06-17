@@ -2,7 +2,10 @@ import { Observable, of, switchMap } from "rxjs";
 import { map, take } from "rxjs/operators";
 import { NodeBase } from "../node-base";
 import { SlotType } from "../../slot-types";
-import { NodeCategories } from "../node-categories";
+import {
+  NodeCategories,
+  NodeCategoryColors
+} from "../node-categories";
 import { GraphProcessingContextService } from "../../../services/graph-processing-context.service";
 import { TranslatorFn } from "../../../../../shared/services/translator.service";
 import { PortfolioUtils } from "../../../utils/portfolio.utils";
@@ -15,6 +18,11 @@ export class PortfolioSummarySourceNode extends NodeBase {
 
   constructor() {
     super(PortfolioSummarySourceNode.title);
+    this.setColorOption({
+      color: NodeCategoryColors["info-sources"].headerColor,
+      bgcolor: NodeCategoryColors["info-sources"].bodyColor,
+      groupcolor: NodeCategoryColors["info-sources"].headerColor
+    });
 
     this.addInput(
       this.inputSlotName,
