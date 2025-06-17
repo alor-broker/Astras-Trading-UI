@@ -1,4 +1,19 @@
-<div class="container" *transloco="let t; scope: 'news'">
+<div class="container position-relative" *transloco="let t; scope: 'news'">
+  @if((selectedSection$ | async) === newsSectionEnum.All) {
+    <div class="position-absolute top-0 end-0 z-1">
+      @let isFilterApplied = isFiltersApplied$ | async;
+
+      <button
+        nz-button
+        nzGhost
+        (click)="isAllFiltersVisible = true"
+        class="primary-color"
+      >
+        <nz-icon nzType="filter" [class.primary-color]="isFilterApplied" [nzTheme]="isFilterApplied ? 'fill' : 'outline'" />
+      </button>
+    </div>
+  }
+
   <div>
     <nz-tabset nzSize="small">
       <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.All)" (nzSelect)="newsSectionChange(newsSectionEnum.All)"></nz-tab>
@@ -23,3 +38,8 @@
 </div>
 
 <ats-news-dialog [newsItem]="selectedNewsListItem"></ats-news-dialog>
+<ats-news-filters
+  [isVisible]="isAllFiltersVisible"
+  (closed)="applyAllFilters($event)"
+  [currentFilters]="(settings$ | async)?.allNewsFilters"
+></ats-news-filters>
