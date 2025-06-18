@@ -1,13 +1,23 @@
-import {Observable, of, switchMap, take} from "rxjs";
+import {
+  forkJoin,
+  Observable,
+  of,
+  switchMap,
+  take
+} from "rxjs";
 import {map} from "rxjs/operators";
 import {NodeBase} from "../node-base";
 import {InstrumentKey, SlotType} from "../../slot-types";
-import {NodeCategories} from "../node-categories";
+import {
+  NodeCategories,
+  NodeCategoryColors
+} from "../node-categories";
 import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
 import {DateValueValidationOptions, NumberValueValidationOptions} from "../models";
 import {add, isBefore, parseISO, startOfDay} from "date-fns";
 import {NewsListItem, NewsService} from "../../../../../shared/services/news.service";
 import {InstrumentUtils} from "../../../utils/instrument.utils";
+import { mergeArrays } from "../../../../../shared/utils/collections";
 
 export class NewsSourceNode extends NodeBase {
   readonly inputSlotName = 'instruments';
@@ -20,6 +30,11 @@ export class NewsSourceNode extends NodeBase {
 
   constructor() {
     super(NewsSourceNode.title);
+    this.setColorOption({
+      color: NodeCategoryColors["info-sources"].headerColor,
+      bgcolor: NodeCategoryColors["info-sources"].bodyColor,
+      groupcolor: NodeCategoryColors["info-sources"].headerColor
+    });
 
     this.addProperty(
       this.maxRecordsCountPropertyName,
@@ -115,10 +130,14 @@ export class NewsSourceNode extends NodeBase {
           const fromDate = this.properties[this.fromDatePropertyName] as Date;
           const instruments = this.toInstruments(targetInstruments ?? '');
 
-          return this.loadNews(instruments, limit, context.newsService, fromDate).pipe(
+          if(instruments.length === 0) {
+            return of(null);
+          }
+
+          return forkJoin(instruments.map(i => this.loadNews(i, limit, context.newsService, fromDate))).pipe(
             map(items => (
               {
-                items,
+                items: mergeArrays(items),
                 instruments
               }
             ))
@@ -191,7 +210,7 @@ export class NewsSourceNode extends NodeBase {
   }
 
   private loadNews(
-    targetInstruments: InstrumentKey[],
+    targetInstrument: InstrumentKey,
     limit: number,
     newsService: NewsService,
     fromDate?: Date,
@@ -215,7 +234,7 @@ export class NewsSourceNode extends NodeBase {
         limit: itemsToRequest,
         afterCursor: cursor,
         beforeCursor: null,
-        symbols: targetInstruments.map(i => i.symbol),
+        symbols: [targetInstrument.symbol],
         includedKeywords: [],
         excludedKeywords: []
       }).pipe(

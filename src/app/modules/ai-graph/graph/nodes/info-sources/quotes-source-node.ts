@@ -2,7 +2,10 @@ import { forkJoin, Observable, of } from "rxjs";
 import { map, switchMap, take } from "rxjs/operators";
 import { NodeBase } from "../node-base";
 import { InstrumentKey, SlotType } from "../../slot-types";
-import { NodeCategories } from "../node-categories";
+import {
+  NodeCategories,
+  NodeCategoryColors
+} from "../node-categories";
 import { GraphProcessingContextService } from "../../../services/graph-processing-context.service";
 import { InstrumentUtils } from "../../../utils/instrument.utils";
 import { Quote } from "../../../../../shared/models/quotes/quote.model";
@@ -21,6 +24,11 @@ export class QuotesSourceNode extends NodeBase {
 
   constructor() {
     super(QuotesSourceNode.title);
+    this.setColorOption({
+      color: NodeCategoryColors["info-sources"].headerColor,
+      bgcolor: NodeCategoryColors["info-sources"].bodyColor,
+      groupcolor: NodeCategoryColors["info-sources"].headerColor
+    });
 
     this.addProperty(
       this.includePricePropertyName,

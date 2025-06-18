@@ -2,7 +2,10 @@
 import {map} from "rxjs/operators";
 import {NodeBase} from "../node-base";
 import {SlotType} from "../../slot-types";
-import {NodeCategories} from "../node-categories";
+import {
+  NodeCategories,
+  NodeCategoryColors
+} from "../node-categories";
 import {StringValueValidationOptions} from "../models";
 import {InstrumentUtils} from "../../../utils/instrument.utils";
 import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
@@ -14,6 +17,11 @@ export class ConstSymbolNode extends NodeBase {
 
   constructor() {
     super(ConstSymbolNode.title);
+    this.setColorOption({
+      color: NodeCategoryColors["instrument-selection"].headerColor,
+      bgcolor: NodeCategoryColors["instrument-selection"].bodyColor,
+      groupcolor: NodeCategoryColors["instrument-selection"].headerColor
+    });
 
     this.addProperty(
       this.symbolPropertyName,
