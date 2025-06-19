@@ -95,7 +95,7 @@ export interface DataContextBuilderDeps {
 }
 
 export class DataContextBuilder {
-  private static readonly PriceDeviationMultiplier = 10000;
+  private static readonly PriceDeviationMultiplier = 20000;
 
   static buildContext(
     args: DataContextBuilderArgs,
