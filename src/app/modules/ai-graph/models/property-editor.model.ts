@@ -3,7 +3,7 @@
   NumberValueValidationOptions, PortfolioValueValidationOptions, SelectValueValidationOptions,
   StringValueValidationOptions
 } from "../graph/nodes/models";
-import {PortfolioKey} from "../graph/slot-types";
+import {Portfolio} from "../graph/slot-types";
 
 export interface PropertyEditorConfig<T = unknown> {
   label: string;
@@ -26,7 +26,7 @@ export interface DatePropertyEditorConfig extends PropertyEditorConfig<Date> {
   validation: DateValueValidationOptions;
 }
 
-export interface PortfolioPropertyEditorConfig extends PropertyEditorConfig<PortfolioKey> {
+export interface PortfolioPropertyEditorConfig extends PropertyEditorConfig<Portfolio> {
   validation: PortfolioValueValidationOptions;
 }
 

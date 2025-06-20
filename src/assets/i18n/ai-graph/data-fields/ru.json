@@ -41,6 +41,12 @@
     },
     "commission": {
       "text": "Комиссия:"
+    },
+    "reportDate": {
+      "text": "Дата отчета:"
+    },
+    "reportComment": {
+      "text": "Комментарий:"
     }
   }
 }

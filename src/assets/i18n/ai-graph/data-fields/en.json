@@ -41,6 +41,12 @@
     },
     "commission": {
       "text": "Commission:"
+    },
+    "reportDate": {
+      "text": "Report Date:"
+    },
+    "reportComment": {
+      "text": "Report Comment:"
     }
   }
 }

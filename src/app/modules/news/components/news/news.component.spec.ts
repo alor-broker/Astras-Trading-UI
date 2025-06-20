@@ -5,6 +5,7 @@ import {
 
 import {NewsComponent} from './news.component';
 import {
+  NEVER,
   of,
   Subject
 } from "rxjs";
@@ -16,17 +17,16 @@ import {LetDirective} from "@ngrx/component";
 import {ngZorroMockComponents} from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 import {ComponentHelpers} from "../../../../shared/utils/testing/component-helpers";
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
-import {MockComponent} from "ng-mocks";
+import {
+  MockComponent,
+  MockDirective
+} from "ng-mocks";
 import {NewsDialogComponent} from "../news-dialog/news-dialog.component";
 import {NewsService} from "../../../../shared/services/news.service";
+import { NewsFiltersComponent } from "../news-filters/news-filters.component";
+import { NzIconDirective } from "ng-zorro-antd/icon";
 
 describe('NewsComponent', () => {
-  const testNewsItem = {
-    id: 1,
-    title: 'Some news 1',
-    pubDate: 'some date'
-  };
-
   let component: NewsComponent;
   let fixture: ComponentFixture<NewsComponent>;
 
@@ -38,18 +38,20 @@ describe('NewsComponent', () => {
         ComponentHelpers.mockComponent({
           selector: 'ats-infinite-scroll-table',
           inputs: ['data', 'isLoading', 'tableConfig', 'tableContainerHeight', 'tableContainerWidth']
-        })
+        }),
+        MockComponent(NewsDialogComponent),
+        MockComponent(NewsFiltersComponent),
+        MockDirective(NzIconDirective),
       ],
       imports: [
         TranslocoTestsModule.getModule(),
-        LetDirective,
-        MockComponent(NewsDialogComponent)
+        LetDirective
       ],
       providers: [
         {
           provide: NewsService,
           useValue: {
-            getNews: jasmine.createSpy('getNews').and.returnValue(of([testNewsItem]))
+            getNews: jasmine.createSpy('getNews').and.returnValue(NEVER)
           }
         },
         {

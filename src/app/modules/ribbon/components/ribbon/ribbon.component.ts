@@ -4,7 +4,7 @@ import {IndexDisplay} from '../../models/ribbon-display.model';
 import {map, switchMap} from "rxjs/operators";
 import {HistoryService} from "../../../../shared/services/history.service";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
-import {getDayChangePerPrice} from "../../../../shared/utils/price";
+import { MathHelper } from "../../../../shared/utils/math-helper";
 
 @Component({
     selector: 'ats-ribbon',
@@ -94,10 +94,17 @@ export class RibbonComponent implements OnInit {
 
         return {
           value: candles.cur.close,
-          percentChange: getDayChangePerPrice(candles.cur.close, candles.prev.close)
+          percentChange: this.getDayChangePerPrice(candles.cur.close, candles.prev.close)
         };
       })
     );
+  }
+
+  private getDayChangePerPrice(lastPrice?: number, closePrice?: number): number {
+    if (lastPrice == null || closePrice == null) {
+      return 0;
+    }
+    return MathHelper.round((1 - (closePrice / lastPrice)) * 100, 2);
   }
 
   private getNextFuturesContract(prefix: string): string {

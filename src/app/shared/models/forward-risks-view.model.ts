@@ -41,4 +41,6 @@ export interface ForwardRisksView {
   riskStatus: string;
   /** Уровень риска **/
   clientType: string;
+  /** оценка ликвидного портфеля **/
+  portfolioEvaluation: string;
 }

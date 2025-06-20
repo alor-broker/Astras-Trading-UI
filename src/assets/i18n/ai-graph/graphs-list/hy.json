@@ -1,6 +1,8 @@
 {
-  "emptyListMessage": "Ներկայումս գրաֆներ չկան",
+  "emptyListMessage": "Ընթացիկ գրաֆներ չկան",
   "newGraphTitlePlaceholder": "Գրաֆի անվանումը",
   "newGraphTitleTemplate": "Գրաֆ {{number}}",
-  "removeItemConfirmTitle": "Ջնջե՞լ գրաֆը:"
+  "removeItemConfirmTitle": "Ջնջե՞լ գրաֆը:",
+  "addGraphTooltip": "Ստեղծել նոր գրաֆ զրոյից",
+  "addGraphWithTemplateTooltip": "Օգտագործել կաղապար"
 }
