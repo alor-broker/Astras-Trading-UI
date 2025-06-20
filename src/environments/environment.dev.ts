@@ -50,5 +50,16 @@ export const environment = {
   features: {
     aiChat: true,
     lowClientRiskCheck: true
+  },
+  internationalization: {
+    ru: {
+      title: "Русский"
+    },
+    en: {
+      title: "English"
+    },
+    hy: {
+      title: "Հայերեն"
+    }
   }
 };

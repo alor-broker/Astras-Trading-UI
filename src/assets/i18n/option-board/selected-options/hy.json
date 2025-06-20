@@ -1,0 +1,87 @@
+{
+  "loadingLabel": "Բեռնում...",
+  "noSelectionMessage": "Ընտրված տարբերակներ չկան",
+  "clearConfirm": "Համոզվա՞ծ եք, որ ցանկանում եք ջնջել բոլոր ընտրված տարբերակները:",
+  "columns": {
+    "unselect": {
+      "name": "Հեռաց.",
+      "tooltip": "Հեռացնել ընտրությունից"
+    },
+    "symbol": {
+      "name": "Թիքեր",
+      "tooltip": "Արժեթղթի բորսայական նույնականացուցիչ"
+    },
+    "quantity": {
+      "name": "Քանակ",
+      "tooltip": "Քանակը ցանկալի գործողության մեջ, լոտեր: Գնում: > 0. Վաճառք: < 0"
+    },
+    "underlyingAssetSymbol": {
+      "name": "Հիմնական ակտիվ",
+      "tooltip": "Հիմնական ակտիվի թիքեր"
+    },
+    "optionSide": {
+      "name": "Կողմ",
+      "tooltip": "Օպցիոնի կողմը"
+    },
+    "optionType": {
+      "name": "Տեսակ",
+      "tooltip": "Օպցիոնի տեսակը"
+    },
+    "strikePrice": {
+      "name": "Սթրայք",
+      "tooltip": "Սթրայք գինը"
+    },
+    "expirationDate": {
+      "name": "Գործողության ժամկետ",
+      "tooltip": "Օպցիոնի գործողության ժամկետը"
+    },
+    "ask": {
+      "name": "Ask",
+      "tooltip": "Ask"
+    },
+    "bid": {
+      "name": "Bid",
+      "tooltip": "Bid"
+    },
+    "price": {
+      "name": "Տես. գին",
+      "tooltip": "Տեսական գին"
+    },
+    "delta": {
+      "name": "Delta",
+      "tooltip": "Delta"
+    },
+    "gamma": {
+      "name": "Gamma",
+      "tooltip": "Gamma"
+    },
+    "vega": {
+      "name": "Vega",
+      "tooltip": "Vega"
+    },
+    "theta": {
+      "name": "Theta",
+      "tooltip": "Theta"
+    },
+    "rho": {
+      "name": "Rho",
+      "tooltip": "Rho"
+    }
+  },
+  "optionTranscription": {
+    "ticker": "Թիքեր",
+    "settlementType": "Հաշվարկների տեսակ",
+    "expirationDate": "Կատարման ամսաթիվ",
+    "optionType": "Օպցիոնի տեսակ",
+    "expirationType": "Էքսպիրացիայի տեսակ",
+    "strikePrice": "Սթրայք"
+  },
+  "settlementType": {
+    "P": "Պրեմիալ",
+    "M": "Մարժայով"
+  },
+  "expirationType": {
+    "E": "Եվրոպական",
+    "A": "Ամերիկյան"
+  }
+}

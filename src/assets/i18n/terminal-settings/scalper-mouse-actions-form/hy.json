@@ -1,0 +1,37 @@
+{
+  "selectValueError": "Ընտրեք արժեքը",
+  "mapNameLabel": "Սխեմա",
+  "schemes": {
+    "scheme1": "Սխեմա 1",
+    "scheme2": "Սխեմա 2"
+  },
+  "schemeDescription": {
+    "buttonLabel": "Սեղմակ",
+    "modifierLabel": "Ձևափոխիչ",
+    "sideLabel": "Կողմ",
+    "actionLabel": "Գործողություն",
+    "buttons": {
+      "left": "Ձախ",
+      "right": "Աջ"
+    },
+    "modifiers": {
+      "shift": "Shift",
+      "ctrl": "Ctrl"
+    },
+    "sides": {
+      "ask": "Վաճառողներ",
+      "bid": "Գնորդներ",
+      "spread": "Սփրեդ",
+      "any": "Ցանկացած"
+    },
+    "actions": {
+      "limitBuyOrder": "Գնման լիմիտավորված հայտ",
+      "limitSellOrder": "Վաճառքի լիմիտավորված հայտ",
+      "marketBuyOrder": "Գնման շուկայական հայտ",
+      "marketSellOrder": "Վաճառքի շուկայական հայտ",
+      "stopLimitBuyOrder": "Գնման ստոպ-լիմիտ հայտ",
+      "stopLimitSellOrder": "Վաճառքի ստոպ-լիմիտ հայտ",
+      "stopLossOrder": "Ստոպ-լոս հայտ"
+    }
+  }
+}

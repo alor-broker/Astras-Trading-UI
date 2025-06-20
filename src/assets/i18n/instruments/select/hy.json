@@ -1,0 +1,62 @@
+{
+  "searchPlaceHolder": "Որոնում...",
+  "columns": {
+    "favorites": {
+      "name": "Ընտրված",
+      "tooltip": "Ընտրված"
+    },
+    "symbol": {
+      "name": "Թիքեր",
+      "tooltip": "Արժեթղթի բորսայական նույնականացուցիչ"
+    },
+    "shortName": {
+      "name": "Անվ.",
+      "tooltip": "Թիքերի անվանումը"
+    },
+    "price": {
+      "name": "Գին",
+      "tooltip": "Վերջին գործարքի գինը"
+    },
+    "priceChange": {
+      "name": "Գնի փոփ.",
+      "tooltip": "Փոփոխություն նշված ժամանակահատվածում"
+    },
+    "priceChangeRatio": {
+      "name": "Գնի փոփ., %",
+      "tooltip": "Փոփոխություն նշված ժամանակահատվածում %"
+    },
+    "maxPrice": {
+      "name": "Օր.առավ.",
+      "tooltip": "Առավելագույն գինը օրվա ընթացքում"
+    },
+    "minPrice": {
+      "name": "Օր.նվզգ.",
+      "tooltip": "Նվազագույն գինը օրվա ընթացքում"
+    },
+    "volume": {
+      "name": "Ծավալ",
+      "tooltip": "Ծավալ"
+    },
+    "openPrice": {
+      "name": "Բաց.",
+      "tooltip": "Գինը օրվա սկզբում"
+    },
+    "closePrice": {
+      "name": "Փակ.",
+      "tooltip": "Գինը նախորդ օրվա վերջում"
+    },
+    "remove": {
+      "name": "Ջնջ.",
+      "tooltip": "Հեռացնել դիտարկումից"
+    }
+  },
+  "exportTooltip": "Պահպանել CSV ֆայլում",
+  "addToFavoritesTooltip": "Ավելացնել ընտրվածների մեջ",
+  "removeFromFavoritesTooltip": "Հեռացնել ընտրվածներից",
+  "contextMenu": {
+    "copyToItemLabel": "Պատճենել ցուցակում",
+    "moveToItemLabel": "Տեղափոխել ցուցակում",
+    "addWidgetItemLabel": "Ավելացնել վիդջեթ",
+    "remove": "Ջնջել"
+  }
+}

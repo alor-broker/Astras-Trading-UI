@@ -1,0 +1,21 @@
+{
+  "error": "Սխալ",
+  "orderTitle": "Հայտ",
+  "orderCreatedLabel": "Հայտը տեղադրվել է",
+  "orderCreatedContent": "Հայտը հաջողությամբ տեղադրվել է, բորսայում դրա համարն է.\n{{orderNumber}}",
+  "orderSubmitFailedLabel": "Հայտը տեղադրելու սխալ",
+  "orderFilledLabel": "{{orderId}} հայտը կատարվել է",
+  "orderPartiallyFilledLabel": "{{orderId}} հայտը կատարվել է {{qty}} հատ:",
+  "OrderStatusChangeToCancelledLabel": "{{orderId}} հայտը չեղարկվել է",
+  "orderUpdatedLabel": "Հայտը փոփոխվել է",
+  "orderUpdatedContent": "Հայտը հաջողությամբ փոփոխվել է, բորսայում դրա համարն է.\n{{orderNumber}}",
+  "orderUpdateFailedLabel": "Հայտը փոփոխելու սխալ",
+  "orderStatusChangedLabel": "{{orderId}} հայտի կարգավիճակը փոխվել է {{orderStatus}}-ի",
+  "ordersGroupCreatedLabel": "Հայտերի խումբը ստեղծվել է",
+  "ordersGroupCreatedContent": "{{orderIds}} հայտերով խումբը հաջողությամբ ստեղծվել է",
+  "ordersGroupUnsupportedLabel": "Հայտերի խմբերը չեն աջակցվում",
+  "ordersGroupUnsupportedContent": "Հայտերի խմբի ստեղծումը մատչելի չէ",
+  "orderCancelledTitle": "Հայտը չեղարկվել է",
+  "orderCancelledContent": "{{orderId}} հայտը {{exchange}}-ում հաջողությամբ չեղարկվել է",
+  "orderCancelFailedLabel": "Հայտը չեղարկելու սխալ"
+}

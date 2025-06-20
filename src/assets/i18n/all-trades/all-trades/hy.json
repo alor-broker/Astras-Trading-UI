@@ -1,0 +1,32 @@
+{
+  "columns": {
+    "qty": {
+      "displayName": "Քանակ",
+      "tooltip": "Լոտերի քանակը"
+    },
+    "price": {
+      "displayName": "Գին",
+      "tooltip": "Գործարքի գինը"
+    },
+    "timestamp": {
+      "displayName": "Ժամանակ",
+      "tooltip": "Գործարքի կատարման ժամանակը"
+    },
+    "side": {
+      "displayName": "Կողմ",
+      "tooltip": "Գործարքի կողմը",
+      "filters": {
+        "sell": "Վաճառք",
+        "buy": "Գնում"
+      }
+    },
+    "oi": {
+      "displayName": "Բաց. հետաքրքրություն",
+      "tooltip": "Բաց հետաքրքրություն"
+    },
+    "existing": {
+      "displayName": "Նոր իրադարձություն",
+      "tooltip": "Նոր իրադարձություն"
+    }
+  }
+}

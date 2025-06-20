@@ -1,0 +1,11 @@
+{
+  "calculationFormulaLabel": "Հաշվարկման բանաձև",
+  "calculationFormulaTooltip1": "Բանաձև գնման շուկայական տարածությունը հաշվարկելու համար:",
+  "calculationFormulaTooltip2": "Որպես ոտքի տարր օգտագործեք \"L1\", \"L2\", \"L3\" բանալի բառերը համապատասխանաբար առաջին, երկրորդ և երրորդ ոտքերի համար: Օրինակ:",
+  "calculationFormulaTooltip3": "Վաճառքի շուկայական տարածության հաշվարկման բանաձևը ավտոմատ կերպով կկիրառվի՝ հիմնվելով գնման տարածության հաշվարկման բանաձևի վրա:",
+  "calculationFormulaIncorrectError": "Հաշվարկման բանաձևը սխալ է",
+  "calculationFormulaNoThirdLegError": "Երրորդ ոտքը ավելացված չէ",
+  "firstLegTitle": "Առաջին ոտք",
+  "secondLegTitle": "Երկրորդ ոտք",
+  "isThirdLegLabel": "Երրորդ ոտք"
+}

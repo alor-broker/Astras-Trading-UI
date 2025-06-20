@@ -1,0 +1,42 @@
+{
+  "instrumentSelectionHeader": "Գործիք",
+  "tickerLabel": "Թիքեր",
+  "tickerError": "Ընտրեք թիքեր",
+  "exchangeLabel": "Բորսա",
+  "advanced": "Ընդլայնված",
+  "instrumentGroupLabel": "Առևտրի ռեժիմ",
+  "instrumentGroupError": "Ընտրեք առևտրի ռեժիմ",
+  "portfolioSettingsGroupLabel": "Հայտեր, գործարքներ, դիրք",
+  "showOrdersLabel": "Ցուցադրել հայտերը",
+  "ordersLineMarkerPositionLabel": "Հայտի նշիչի դիրքը",
+  "showPositionLabel": "Ցուցադրել դիրքը",
+  "positionLineMarkerPositionLabel": "Դիրքի նշիչի դիրքը",
+  "showTradesLabel": "Ցուցադրել գործարքները",
+  "tradeMarkerLabel": "Գործարքի նշիչ",
+  "buyTradeMarkerColorLabel": "Գնման նշիչի գույնը",
+  "sellTradeMarkerColorLabel": "Վաճառքի նշիչի գույնը",
+  "markerSizeLabel": "Նշիչի չափը",
+  "chartElementsGroupLabel": "Գրաֆիկի տարրեր",
+  "headerLabel": "Վերևի վահանակ",
+  "headerSymbolSearchLabel": "Գործիքների որոնում",
+  "headerCompareLabel": "Համեմատել",
+  "headerResolutionsLabel": "Թայմֆրեյմների ընտրացանկ",
+  "headerChartTypeLabel": "Գրաֆիկի տեսակը",
+  "headerIndicatorsLabel": "Ինդիկատորներ",
+  "headerUndoRedoLabel": "Չեղարկել/կրկնել",
+  "headerSettingsLabel": "Կարգավորումներ",
+  "headerFullscreenButtonLabel": "Լիաէկրան ռեժիմ",
+  "headerScreenshotLabel": "Էկրանի պատկեր",
+  "drawingsToolbarLabel": "Նկարչական վահանակ",
+  "timeframesBottomToolbarLabel": "Ժամանակային միջակայքերի վահանակ",
+  "lineMarkerPositionOptions": {
+    "right": "Աջ կողմում",
+    "middle": "Կենտրոնում",
+    "left": "Ձախ կողմում"
+  },
+  "tradeDisplayMarkerOptions": {
+    "note": "Նշում",
+    "arrows": "Սլաքներ",
+    "carets": "Կարետներ"
+  }
+}

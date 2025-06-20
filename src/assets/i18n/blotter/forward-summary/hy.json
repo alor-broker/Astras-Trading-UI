@@ -1,0 +1,33 @@
+{
+  "moneyFreeTitle": "Ազատ դրամական միջոցներ",
+  "moneyBlockedTitle": "Երաշխիքային ապահովում",
+  "feeTitle": "Միջնորդավճար",
+  "moneyAmountTitle": "Ընդհանուր դրամական միջոցներ",
+  "portfolioLiquidationValueTitle": "Ընթացիկ սահմանաչափ",
+  "moneyPledgeAmountTitle": "Գրավադրումներ",
+  "vmInterClTitle": "Փոփոխական մարժա",
+  "vmCurrentPositionsTitle": "Փոփոխական մարժա դիրքերով",
+  "varMarginTitle": "Ամփոփիչ փոփոխական մարժա",
+  "isLimitsSetTitle": "Դրամական և գրավադրման սահմանաչափեր",
+  "indicativeVarMarginTitle": "Ինդիկատիվ մարժա",
+  "netOptionValueTitle": "NOV",
+  "posRiskTitle": "Գործառնական ռիսկ",
+  "initialMarginTitle": "Սկզբնական մարժա",
+  "minimalMarginTitle": "Նվազագույն մարժա",
+  "correctedMarginTitle": "Ճշգրտված մարժա",
+  "riskCoverageRatioOneTitle": "ՌԾԳ1",
+  "riskCoverageRatioTwoTitle": "ՌԾԳ2",
+  "clientTypeTitle": "Ռիսկի մակարդակ",
+  "clientTypeValues": {
+    "StandardRisk": "ՀՌԿՀ",
+    "HighRisk": "ԲՌԿՀ",
+    "Special": "ԱՌԿՀ",
+    "LowRisk": "ՑՌԿՀ"
+  },
+  "riskStatusTitle": "Կարգավիճակ",
+  "riskStatusValues": {
+    "Ok": "Նորմալ",
+    "Demand": "Սահմանափակում",
+    "ToClose": "Փակում"
+  }
+}

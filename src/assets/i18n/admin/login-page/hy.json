@@ -1,0 +1,10 @@
+{
+  "title": "Մուտք",
+  "userNameLabel": "Օգտատիրոջ անուն",
+  "passwordLabel": "Գաղտնաբառ",
+  "submitBtnLabel": "Մուտք գործել",
+  "errors": {
+    "common": "Հարցումը չհաջողվեց։ Փորձեք ավելի ուշ",
+    "wrongCredentials": "Օգտատիրոջ սխալ անուն կամ գաղտնաբառ"
+  }
+}

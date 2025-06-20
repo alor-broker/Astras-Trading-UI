@@ -1,0 +1,12 @@
+{
+  "tickerLabel": "Թիքեր",
+  "tickerError": "Ընտրեք թիքեր",
+  "quotaLabel": "Տոկոս",
+  "quotaPlaceholder": "Մուտքագրեք տոկոսը",
+  "intervalError": "Արժեքը պետք է լինի {{min}}-ից {{max}} միջակայքում",
+  "priceLabel": "Գին",
+  "pricePlaceholder": "Մուտքագրեք գինը",
+  "priceStepMultiplicityError": "Արժեքը պետք է բազմապատիկ լինի գնային քայլին",
+  "quantityLabel": "Հայտի ծավալ",
+  "quantityPlaceholder": "Ծավալ"
+}

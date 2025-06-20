@@ -1,0 +1,18 @@
+{
+  "trillions": {
+    "short": "T",
+    "long": "տրլն"
+  },
+  "billions": {
+    "short": "B",
+    "long": "մլրդ"
+  },
+  "millions": {
+    "short": "M",
+    "long": "մլն"
+  },
+  "thousands": {
+    "short": "K",
+    "long": "հզ."
+  }
+}

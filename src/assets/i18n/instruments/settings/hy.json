@@ -1,0 +1,31 @@
+{
+  "displaySettingsTab": "Տեսքի կարգավորումներ",
+  "instrumentsListsTab": "Գործիքների ցանկեր",
+  "selectColumnsError": "Ընտրեք սյուները",
+  "selectColumnsLabel": "Գործիքների սյուներ",
+  "selectColumnsPlaceholder": "Ընտրեք...",
+  "watchListError": "Մուտքագրեք ցանկի անվանումը, առավելագույնը 100 նիշ",
+  "watchListExistingError": "Այս անվանումով ցանկ արդեն գոյություն ունի",
+  "watchListPlaceholder": "Նոր ցանկի անվանումը",
+  "addWatchlistBtnTooltip": "Ավելացնել նոր ցանկ",
+  "standardListPlaceholder": "Ընտրեք ստանդարտ ցանկ",
+  "removeConfirmText": "Հեռացնել հաստատ?",
+  "editWatchlistTooltip": "Խմբագրել",
+  "showFavoritesLabel": "Ցույց տալ ընտրվածները",
+  "exportActionLabel": "Գործիքների արտահանում",
+  "importActionLabel": "Գործիքների ներմուծում",
+  "priceChangeTimeframeLabel": "Գնի փոփոխության ժամանակահատված",
+  "timeframes": {
+    "S1": "1 վայրկյան",
+    "S5": "5 վայրկյան",
+    "S10": "10 վայրկյան",
+    "M1": "1 րոպե",
+    "M5": "5 րոպե",
+    "M15": "15 րոպե",
+    "H": "1 ժամ",
+    "H4": "4 ժամ",
+    "Day": "1 օր",
+    "W": "1 շաբաթ",
+    "Month": "1 ամիս"
+  }
+}

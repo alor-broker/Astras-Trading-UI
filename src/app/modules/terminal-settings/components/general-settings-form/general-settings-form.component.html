@@ -5,8 +5,9 @@
       <nz-form-control>
         <nz-select formControlName='language'>
           <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.notSelectedOption')" [nzValue]="''" nzDisabled nzHide></nz-option>
-          <nz-option [nzValue]="'en'" nzLabel="English"></nz-option>
-          <nz-option [nzValue]="'ru'" nzLabel="Русский"></nz-option>
+          @for (option of availableLanguages; track option.key) {
+            <nz-option [nzValue]="option.key" [nzLabel]="option.title"></nz-option>
+          }
         </nz-select>
       </nz-form-control>
     </nz-form-item>

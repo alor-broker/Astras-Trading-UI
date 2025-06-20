@@ -1,0 +1,34 @@
+{
+  "orderStatus": {
+    "filled": "Կատարված",
+    "canceled": "Չեղարկված",
+    "working": "Ակտիվ",
+    "rejected": "Մերժված"
+  },
+  "statusFilters": {
+    "filled": "Կատարված",
+    "working": "Ակտիվ",
+    "canceled": "Չեղարկված",
+    "rejected": "Մերժված"
+  },
+  "exchangeFilters": {
+    "MOEX": "ՄՄՎԲ",
+    "SPBX": "ՍՊԲ"
+  },
+  "typeFilters": {
+    "limit": "Լիմիտ",
+    "market": "Շուկայական",
+    "stoplimit": "Ստոպ-լիմիտ",
+    "stop": "Ստոպ-մարկետ"
+  },
+  "sideFilters": {
+    "buy": "Գնում",
+    "sell": "Վաճառք"
+  },
+  "rejectedStatusHint": "Կասեցված է, մինչև կատարվի կապակցված լիմիտային հայտը",
+  "emptyOrders": "Այսօր հայտեր չկան",
+  "emptyOrdersWithFilters": "Նման զտիչներով ոչինչ չի գտնվել",
+  "cancelConfirm": "Հաստա՞տ չեղարկել:",
+  "cancelAll": "Հեռացնել բոլորը",
+  "orderGroupsTooltip": "Ցույց տալ կապակցված հայտերը"
+}

@@ -1,0 +1,9 @@
+{
+  "mode": "Ռեժիմ",
+  "actions": {
+    "limitOrder": "սահմանային հայտ",
+    "marketOrder": "շուկայական հայտ",
+    "stopLimitOrder": "ստոպ-սահմանային հայտ",
+    "stopLossOrder": "ստոպ-լոս հայտ"
+  }
+}
