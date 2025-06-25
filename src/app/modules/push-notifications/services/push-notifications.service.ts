@@ -194,7 +194,7 @@ export class PushNotificationsService implements OnDestroy {
 
   private getMessagingState(): Observable<MessagingState> {
     if (this.messagingState$ == null) {
-      if (Notification == null || !isSupported()) {
+      if (window.Notification == null || !isSupported()) {
         this.messagingState$ = of({
           permission: 'not-supported' as MessagingStatus,
           swToken: null
