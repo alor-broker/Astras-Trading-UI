@@ -26,6 +26,7 @@ import { DisplayStatus } from "../chat-status/chat-status.component";
 import { AiChatService } from "../../services/ai-chat.service";
 import { map } from "rxjs/operators";
 import {GuidGenerator} from "../../../../shared/utils/guid";
+import { SuggestionsService } from "../../services/suggestions.service";
 
 @Component({
     selector: 'ats-ai-chat',
@@ -48,7 +49,8 @@ export class AiChatComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly translatorService: TranslatorService,
-    private readonly aiChatService: AiChatService
+    private readonly aiChatService: AiChatService,
+    private readonly suggestionsService: SuggestionsService
   ) {
   }
 
@@ -61,13 +63,13 @@ export class AiChatComponent implements OnInit, OnDestroy {
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    this.suggestedMessages$ = this.aiChatService.getSuggestions().pipe(
+    this.suggestedMessages$ = this.suggestionsService.getSuggestions().pipe(
       map(r => {
         if (r == null) {
           return [];
         }
 
-        return r.suggestions
+        return r
           .sort((a, b) => a.length - b.length)
           .map(s => ({ text: s }));
       })
@@ -145,7 +147,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
     // without delay default language message will be displayed
     const greetingDelay = this.displayMessages.length > 0
       ? 0
-      : 1000;
+      : 3000;
 
     this.threadId = GuidGenerator.newGuid();
     this.displayMessages = [];

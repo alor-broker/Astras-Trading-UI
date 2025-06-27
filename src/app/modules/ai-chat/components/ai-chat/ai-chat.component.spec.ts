@@ -5,9 +5,14 @@ import {
 
 import { AiChatComponent } from './ai-chat.component';
 import { AiChatService } from "../../services/ai-chat.service";
-import { Subject } from "rxjs";
+import {
+  EMPTY,
+  Subject
+} from "rxjs";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { MockProvider } from "ng-mocks";
+import { SuggestionsService } from "../../services/suggestions.service";
 
 describe('AiChatComponent', () => {
   let component: AiChatComponent;
@@ -29,13 +34,18 @@ describe('AiChatComponent', () => {
         ComponentHelpers.mockComponent({ selector: 'ats-usage-disclaimer'})
       ],
       providers: [
-        {
-          provide: AiChatService,
-          useValue: {
+        MockProvider(
+          AiChatService,
+          {
             sendMessage: jasmine.createSpy('sendMessage').and.returnValue(new Subject()),
-            getSuggestions: jasmine.createSpy('getSuggestions').and.returnValue(new Subject())
           }
-        }
+        ),
+        MockProvider(
+          SuggestionsService,
+          {
+            getSuggestions: () => EMPTY
+          }
+        )
       ]
     });
     fixture = TestBed.createComponent(AiChatComponent);
