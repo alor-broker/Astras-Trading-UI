@@ -144,7 +144,7 @@ export interface TerminalSettings {
   timezoneDisplayOption?: TimezoneDisplayOption;
   isLogoutOnUserIdle?: boolean;
   userIdleDurationMin?: number;
-  language?: 'en' | 'ru' | null;
+  language?: 'en' | 'ru' | 'hy' | null;
   tableRowHeight?: TableRowHeight;
   badgesBind?: boolean;
   hotKeysSettings?: HotKeysSettings;

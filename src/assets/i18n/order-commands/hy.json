@@ -1,0 +1,8 @@
+{
+  "limitOrderTabTitle": "Սահմանային",
+  "marketOrderTabTitle": "Շուկայական",
+  "stopOrderTabTitle": "Պայմանական",
+  "notificationsTabTitle": "Ծանուցումներ",
+  "marginOrderConfirmationTitle": "Հաստատում",
+  "marginOrderConfirmationContent": "Ես տեղեկացված եմ, որ այս գործարքը կարող է հանգեցնել չծածկված դիրքի բացմանը:"
+}

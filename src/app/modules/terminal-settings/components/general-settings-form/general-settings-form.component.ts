@@ -23,6 +23,7 @@ import { ThemeType } from '../../../../shared/models/settings/theme-settings.mod
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { GeneralSettings } from "../../models/terminal-settings.model";
 import { TableRowHeight } from "../../../../shared/models/enums/table-row-height";
+import { environment } from "../../../../../environments/environment";
 
 @Component({
     selector: 'ats-general-settings-form',
@@ -49,6 +50,13 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
 
   gridTypes = GridType;
   readonly availableFontFamilies = Object.values(FontFamilies);
+  readonly availableLanguages = Object.keys(environment.internationalization).map(k => {
+    const language = (environment.internationalization as unknown as any)[k] as { title: string };
+    return {
+      key: k,
+      title: language.title,
+    };
+  });
 
   readonly form = this.formBuilder.group({
     designSettings: this.formBuilder.nonNullable.group({

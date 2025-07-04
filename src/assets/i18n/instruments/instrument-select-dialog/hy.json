@@ -1,0 +1,9 @@
+{
+  "dialogTitle": "Գործիքի ընտրություն",
+  "searchForm": {
+    "instrumentName": {
+      "placeholder": "Գործիքի նշում կամ անվանում"
+    }
+  },
+  "emptyResultsMessage": "Համապատասխան գործիքներ չկան"
+}

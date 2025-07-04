@@ -1,0 +1,13 @@
+{
+  "buyBtnText": "Գնել",
+  "sellBtnText": "Վաճառել",
+  "addBtnText": "Ավելացնել",
+  "emptyListText": "Սփրեդների ցուցակը դատարկ է",
+  "columns": {
+    "symbols": "Գործիքներ",
+    "buySpread": "Գնման շուկայական սփրեդ",
+    "sellSpread": "Վաճառքի շուկայական սփրեդ",
+    "operation": "Գործողություն",
+    "volume": "Հայտի ծավալը"
+  }
+}

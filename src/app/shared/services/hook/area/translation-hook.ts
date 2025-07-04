@@ -1,11 +1,22 @@
 ﻿import {Injectable} from "@angular/core";
-import {filter, map} from "rxjs/operators";
-import {en_US, NzI18nService, ru_RU} from "ng-zorro-antd/i18n";
+import {
+  distinct,
+  filter,
+  map
+} from "rxjs/operators";
 import {Subscription, tap} from "rxjs";
 import { TerminalSettingsService } from "../../terminal-settings.service";
 import { TranslatorService } from "../../translator.service";
 import { rusLangLocales } from "../../../utils/translation-helper";
 import { AreaHook } from "./area-hook-token";
+import { LocaleService } from "../../locale.service";
+import {
+  en_US,
+  hy_AM,
+  NzI18nService,
+  ru_RU
+} from "ng-zorro-antd/i18n";
+import { NzI18nInterface } from "ng-zorro-antd/i18n/nz-i18n.interface";
 
 @Injectable()
 export class TranslationHook implements AreaHook {
@@ -14,7 +25,8 @@ export class TranslationHook implements AreaHook {
   constructor(
     private readonly terminalSettings: TerminalSettingsService,
     private readonly translatorService: TranslatorService,
-    private readonly nzI18nService: NzI18nService,
+    private readonly localeService: LocaleService,
+    private readonly nzI18nService: NzI18nService
   ) {
   }
 
@@ -41,7 +53,30 @@ export class TranslationHook implements AreaHook {
       )
       .subscribe(lang => {
         this.translatorService.setActiveLang(lang!);
-        this.nzI18nService.setLocale(lang === 'en' ? en_US : ru_RU);
       });
+
+    this.langChangeSubscription.add(
+      this.terminalSettings.getSettings().pipe(
+        map(s => s.language ?? this.localeService.defaultLocale),
+        distinct()
+      ).subscribe(locale => {
+        this.localeService.setLocale(locale);
+
+        this.nzI18nService.setLocale(this.getNzI18nInterface(locale));
+      })
+    );
+  }
+
+  private getNzI18nInterface(localeId: string): NzI18nInterface {
+    switch (localeId) {
+      case 'en':
+        return en_US;
+      case 'ru':
+        return ru_RU;
+      case 'hy':
+        return hy_AM;
+      default:
+        return ru_RU;
+    }
   }
 }

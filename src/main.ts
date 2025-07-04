@@ -4,6 +4,7 @@ import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 import '@angular/common/locales/global/ru';
 import '@angular/common/locales/global/en';
+import '@angular/common/locales/global/hy';
 
 if (environment.production) {
   enableProdMode();

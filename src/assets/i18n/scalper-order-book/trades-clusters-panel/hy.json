@@ -1,0 +1,10 @@
+{
+  "displayPanelsCountMenuLabel": "Միջակայքերի քանակը",
+  "timeframesMenuLabel": "Ժամանակահատված",
+  "timeframeOptions": {
+    "60": "1 րոպե",
+    "300": "5 րոպե",
+    "900": "15 րոպե",
+    "3600": "1 ժամ"
+  }
+}

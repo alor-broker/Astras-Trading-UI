@@ -26,7 +26,11 @@
               <h4>{{data.title}}</h4>
             </div>
             <div *ngIf="data.showDate" class="date">
-              <span>{{data.date | date : 'dd MMM в HH:mm' :undefined: 'ru'}}</span>
+              @if (isTodayDate(data.date)) {
+                <span>{{data.date | date : 'HH:mm' }}</span>
+              } @else {
+                <span>{{data.date | date : 'dd MMM HH:mm' }}</span>
+              }
             </div>
           </div>
           <div class="body">

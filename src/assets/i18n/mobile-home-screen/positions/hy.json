@@ -1,0 +1,17 @@
+{
+  "sectionTitle": "Դիրքեր",
+  "columns": {
+    "ticker": {
+      "title": "Թիքեր"
+    },
+    "currentVolume": {
+      "title": "Ընթ. ծավալ"
+    },
+    "dailyPlPerc": {
+      "title": "P/L օր., %"
+    }
+  },
+  "moreItemsButton": {
+    "title": "Ցույց տալ ավելին"
+  }
+}
