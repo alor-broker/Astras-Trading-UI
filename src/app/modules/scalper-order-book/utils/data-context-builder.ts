@@ -95,7 +95,7 @@ export interface DataContextBuilderDeps {
 }
 
 export class DataContextBuilder {
-  private static readonly PriceDeviationMultiplier = 10000;
+  private static readonly PriceDeviationMultiplier = 20000;
 
   static buildContext(
     args: DataContextBuilderArgs,
@@ -407,14 +407,14 @@ export class DataContextBuilder {
     const startPrice = OrderBookScaleHelper.getStartPrice(bestAsk, bestBid, priceStep, scaleFactor, majorLinesStep);
 
     // Some instruments can have huge difference between min and max price. See https://github.com/alor-broker/Astras-Trading-UI/issues/1916
-    const maxPriceDeviation = this.PriceDeviationMultiplier * priceStep;
+    const maxPriceDeviation = (this.PriceDeviationMultiplier + 1) * priceStep;
     const pricePrecision = MathHelper.getPrecision(priceStep);
     const minPriceRestricted = MathHelper.round(
-      startPrice.startPrice - maxPriceDeviation,
+      Math.min(startPrice.startPrice, bestBid) - maxPriceDeviation,
       pricePrecision
     );
     const maxPriceRestricted = MathHelper.round(
-      startPrice.startPrice + maxPriceDeviation,
+      Math.max(startPrice.startPrice, bestAsk) + maxPriceDeviation,
       pricePrecision
     );
 
@@ -447,11 +447,14 @@ export class DataContextBuilder {
     if ((expectedMinPrice != null && expectedMinPrice < minRowPrice)
       || (expectedMaxPrice != null && expectedMaxPrice > maxRowPrice)) {
       const priceDiff = ((expectedMaxPrice ?? expectedMinPrice ?? 0) - (expectedMinPrice ?? expectedMaxPrice ?? 0)) / settings.instrument.minstep;
+      const maxDeviation = this.PriceDeviationMultiplier * 2;
 
-      if(priceDiff < this.PriceDeviationMultiplier * 4) {
-        this.regenerateForOrderBook(orderBookData, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor);
+      if(priceDiff > maxDeviation) {
         return false;
       }
+
+      this.regenerateForOrderBook(orderBookData, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor);
+      return false;
     }
 
     return true;
