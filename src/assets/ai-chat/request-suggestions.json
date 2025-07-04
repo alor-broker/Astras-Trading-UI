@@ -1,0 +1,38 @@
+﻿[
+  {
+    "lang": "ru",
+    "text": "Что такое облигации?"
+  },
+  {
+    "lang": "ru",
+    "text": "Покажи комиссию за {{today}}"
+  },
+  {
+    "lang": "ru",
+    "text": "За что отвечает виджет блоттер?"
+  },
+  {
+    "lang": "en",
+    "text": "What are bonds?"
+  },
+  {
+    "lang": "en",
+    "text": "Show the commission for {{today}}"
+  },
+  {
+    "lang": "en",
+    "text": "What does the blotter widget do?"
+  },
+  {
+    "lang": "hy",
+    "text": "Ինչ են պարտատոմսերը"
+  },
+  {
+    "lang": "hy",
+    "text": "Ցույց տուր {{today}}-ի համար հանձնաժողովը"
+  },
+  {
+    "lang": "hy",
+    "text": "Ինչ է անում «բլոտեր» վիջետը"
+  }
+]
