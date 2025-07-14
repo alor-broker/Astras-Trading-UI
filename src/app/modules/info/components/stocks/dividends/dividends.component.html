@@ -18,7 +18,14 @@
       <tbody>
         @for (dividend of nzTable.data; track $index) {
           <tr>
-            <td>{{ formatDate(dividend.recordDate) }}</td>
+            <td>
+              @if(dividend.recommendFixDate != null) {
+                {{ formatDate(dividend.recommendFixDate) }}
+              } @else {
+                -
+              }
+
+            </td>
             <td>{{ dividend.dividendPerShare | currency: dividend.currency ?? 'RUB':'symbol-narrow' }}</td>
             <td>{{ dividend.dividendYield | percent:'1.1-2' }}</td>
           </tr>
