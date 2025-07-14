@@ -304,7 +304,7 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
 
       descriptors.push({
         id: 'yieldToMaturity',
-        formattedValue: formatPercent(bond.yield.yieldToMaturity, this.locale, '0.1-2')
+        formattedValue: formatPercent(bond.yield.yieldToMaturity / 100, this.locale, '0.1-2')
       });
     }
 

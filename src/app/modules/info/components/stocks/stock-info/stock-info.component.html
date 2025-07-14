@@ -25,7 +25,7 @@
         </nz-tab>
 
         <nz-tab [nzTitle]="t('info.dividendsTab')">
-          <ats-dividends [dividends]="vm.info.dividends"></ats-dividends>
+          <ats-dividends [dividends]="vm.info.dividends ?? []"></ats-dividends>
         </nz-tab>
       </nz-tabset>
     }

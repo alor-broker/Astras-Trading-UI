@@ -93,6 +93,25 @@ export interface AmortizationFilterInput {
   value?: InputMaybe<DecimalOperationFilterInput>;
 }
 
+export interface AmortizationSortInput {
+  /** Выплата на одну облигацию */
+  amount?: InputMaybe<SortEnumType>;
+  /** Цена выкупа, в процентах от номинала(чистая) */
+  buyBackPrice?: InputMaybe<SortEnumType>;
+  /** Валюта выплаты */
+  currency?: InputMaybe<SortEnumType>;
+  /** Дата события */
+  date?: InputMaybe<SortEnumType>;
+  /** Дата фиксации владельцев для участия в событии */
+  fixDate?: InputMaybe<SortEnumType>;
+  /** Признак наличия ближайшего события */
+  isClosest?: InputMaybe<SortEnumType>;
+  /** Процент погашения */
+  parFraction?: InputMaybe<SortEnumType>;
+  /** Ставка купона, доля номинала, цена выкупа или коэффициент конвертации */
+  value?: InputMaybe<SortEnumType>;
+}
+
 export enum ApplyPolicy {
   AfterResolver = 'AFTER_RESOLVER',
   BeforeResolver = 'BEFORE_RESOLVER',
@@ -108,8 +127,14 @@ export interface BasicInformation {
   exchange: Exchange;
   /** Полное описание инструмента */
   fullDescription: Scalars['String']['output'];
+  /** Полное имя эмитента */
+  fullName?: Maybe<Scalars['String']['output']>;
   /** Рынок */
   market: Market;
+  /** Читаемый тип финансового инструмента */
+  readableType?: Maybe<Scalars['String']['output']>;
+  /** Сектор деятельности эмитента */
+  sector?: Maybe<Scalars['String']['output']>;
   /** Краткое наименование инструмента */
   shortName: Scalars['String']['output'];
   /** Тикер (Код финансового инструмента) */
@@ -128,9 +153,15 @@ export interface BasicInformationFilterInput {
   exchange?: InputMaybe<ExchangeOperationFilterInput>;
   /** Полное описание инструмента */
   fullDescription?: InputMaybe<StringOperationFilterInput>;
+  /** Полное имя эмитента */
+  fullName?: InputMaybe<StringOperationFilterInput>;
   /** Рынок */
   market?: InputMaybe<MarketOperationFilterInput>;
   or?: InputMaybe<Array<BasicInformationFilterInput>>;
+  /** Читаемый тип финансового инструмента */
+  readableType?: InputMaybe<StringOperationFilterInput>;
+  /** Сектор деятельности эмитента */
+  sector?: InputMaybe<StringOperationFilterInput>;
   /** Краткое наименование инструмента */
   shortName?: InputMaybe<StringOperationFilterInput>;
   /** Тикер (Код финансового инструмента) */
@@ -148,8 +179,14 @@ export interface BasicInformationSortInput {
   exchange?: InputMaybe<SortEnumType>;
   /** Полное описание инструмента */
   fullDescription?: InputMaybe<SortEnumType>;
+  /** Полное имя эмитента */
+  fullName?: InputMaybe<SortEnumType>;
   /** Рынок */
   market?: InputMaybe<SortEnumType>;
+  /** Читаемый тип финансового инструмента */
+  readableType?: InputMaybe<SortEnumType>;
+  /** Сектор деятельности эмитента */
+  sector?: InputMaybe<SortEnumType>;
   /** Краткое наименование инструмента */
   shortName?: InputMaybe<SortEnumType>;
   /** Тикер (Код финансового инструмента) */
@@ -215,6 +252,8 @@ export interface Bond extends Instrument {
   hasAmortization: Scalars['Boolean']['output'];
   /** Признак наличия по выпуску возможности досрочного выкупа или погашения */
   hasOffer: Scalars['Boolean']['output'];
+  /** Эмитент */
+  issuer?: Maybe<Scalars['String']['output']>;
   /** Дата погашения */
   maturityDate?: Maybe<Scalars['DateTime']['output']>;
   /** События досрочных выкупов/оферт */
@@ -228,6 +267,24 @@ export interface Bond extends Instrument {
   volumes?: Maybe<BondVolumes>;
   /** Доходность */
   yield?: Maybe<BondYield>;
+}
+
+
+export interface BondAmortizationsArgs {
+  order?: InputMaybe<Array<AmortizationSortInput>>;
+  where?: InputMaybe<AmortizationFilterInput>;
+}
+
+
+export interface BondCouponsArgs {
+  order?: InputMaybe<Array<CouponSortInput>>;
+  where?: InputMaybe<CouponFilterInput>;
+}
+
+
+export interface BondOffersArgs {
+  order?: InputMaybe<Array<OfferSortInput>>;
+  where?: InputMaybe<OfferFilterInput>;
 }
 
 export enum BondEventType {
@@ -273,6 +330,8 @@ export interface BondFilterInput {
   hasAmortization?: InputMaybe<BooleanOperationFilterInput>;
   /** Признак наличия по выпуску возможности досрочного выкупа или погашения */
   hasOffer?: InputMaybe<BooleanOperationFilterInput>;
+  /** Эмитент */
+  issuer?: InputMaybe<StringOperationFilterInput>;
   /** Дата погашения */
   maturityDate?: InputMaybe<DateTimeOperationFilterInput>;
   /** События досрочных выкупов/оферт */
@@ -313,6 +372,8 @@ export interface BondSortInput {
   hasAmortization?: InputMaybe<SortEnumType>;
   /** Признак наличия по выпуску возможности досрочного выкупа или погашения */
   hasOffer?: InputMaybe<SortEnumType>;
+  /** Эмитент */
+  issuer?: InputMaybe<SortEnumType>;
   /** Дата погашения */
   maturityDate?: InputMaybe<SortEnumType>;
   /** Дата окончания размещения */
@@ -484,6 +545,29 @@ export interface CouponFilterInput {
   or?: InputMaybe<Array<CouponFilterInput>>;
   /** Ставка купона, доля номинала, цена выкупа или коэффициент конвертации */
   value?: InputMaybe<DecimalOperationFilterInput>;
+}
+
+export interface CouponSortInput {
+  /** НКД */
+  accruedInterest?: InputMaybe<SortEnumType>;
+  /** Выплата на одну облигацию */
+  amount?: InputMaybe<SortEnumType>;
+  /** Ставка купона, процентов годовых */
+  couponRate?: InputMaybe<SortEnumType>;
+  /** Тип купона (плавающий, фиксированный) */
+  couponType?: InputMaybe<SortEnumType>;
+  /** Валюта выплаты */
+  currency?: InputMaybe<SortEnumType>;
+  /** Дата события */
+  date?: InputMaybe<SortEnumType>;
+  /** Дата фиксации владельцев для участия в событии */
+  fixDate?: InputMaybe<SortEnumType>;
+  /** Интервал между выплатами */
+  intervalInDays?: InputMaybe<SortEnumType>;
+  /** Признак наличия ближайшего события */
+  isClosest?: InputMaybe<SortEnumType>;
+  /** Ставка купона, доля номинала, цена выкупа или коэффициент конвертации */
+  value?: InputMaybe<SortEnumType>;
 }
 
 export enum CouponType {
@@ -715,6 +799,8 @@ export interface Dividend {
   listDate?: Maybe<Scalars['DateTime']['output']>;
   /** Рекомендация совета директоров по выплате дивидендов на одну акцию */
   recommendDividendPerShare: Scalars['Decimal']['output'];
+  /** Рекомендация совета директоров по дате фиксации владельцев для участия в событии */
+  recommendFixDate?: Maybe<Scalars['DateTime']['output']>;
   /** Дата отсечки */
   recordDate: Scalars['DateTime']['output'];
 }
@@ -738,8 +824,33 @@ export interface DividendFilterInput {
   or?: InputMaybe<Array<DividendFilterInput>>;
   /** Рекомендация совета директоров по выплате дивидендов на одну акцию */
   recommendDividendPerShare?: InputMaybe<DecimalOperationFilterInput>;
+  /** Рекомендация совета директоров по дате фиксации владельцев для участия в событии */
+  recommendFixDate?: InputMaybe<DateTimeOperationFilterInput>;
   /** Дата отсечки */
   recordDate?: InputMaybe<DateTimeOperationFilterInput>;
+}
+
+export interface DividendSortInput {
+  /** Валюта выплаты */
+  currency?: InputMaybe<SortEnumType>;
+  /** Планируемая дата окончания выплаты дивидендов */
+  declaredPayDateNominee?: InputMaybe<SortEnumType>;
+  /** Выплата на одну акцию */
+  dividendPerShare?: InputMaybe<SortEnumType>;
+  /** Дивидендная доходность */
+  dividendYield?: InputMaybe<SortEnumType>;
+  /** Экс-дивидендная дата - дата, начиная с которой ценные бумаги начинают торговаться без учета объявленных дивидендов */
+  exDividendDate?: InputMaybe<SortEnumType>;
+  /** Дата фиксации владельцев для участия в событии */
+  fixDate?: InputMaybe<SortEnumType>;
+  /** Дата закрытия реестра */
+  listDate?: InputMaybe<SortEnumType>;
+  /** Рекомендация совета директоров по выплате дивидендов на одну акцию */
+  recommendDividendPerShare?: InputMaybe<SortEnumType>;
+  /** Рекомендация совета директоров по дате фиксации владельцев для участия в событии */
+  recommendFixDate?: InputMaybe<SortEnumType>;
+  /** Дата отсечки */
+  recordDate?: InputMaybe<SortEnumType>;
 }
 
 export interface DividendsAggregateInfo {
@@ -1117,6 +1228,29 @@ export interface OfferFilterInput {
   value?: InputMaybe<DecimalOperationFilterInput>;
 }
 
+export interface OfferSortInput {
+  /** Выплата на одну облигацию */
+  amount?: InputMaybe<SortEnumType>;
+  /** Начало периода предъявления к выкупу */
+  begOrder?: InputMaybe<SortEnumType>;
+  /** Тип события (CALL, PUT) */
+  bondEventType?: InputMaybe<SortEnumType>;
+  /** Валюта выплаты */
+  currency?: InputMaybe<SortEnumType>;
+  /** Дата события */
+  date?: InputMaybe<SortEnumType>;
+  /** Описание (безотзывная оферта, Call-опцион и т.д.) */
+  description?: InputMaybe<SortEnumType>;
+  /** Окончание периода предъявления к выкупу */
+  endOrder?: InputMaybe<SortEnumType>;
+  /** Дата фиксации владельцев для участия в событии */
+  fixDate?: InputMaybe<SortEnumType>;
+  /** Признак наличия ближайшего события */
+  isClosest?: InputMaybe<SortEnumType>;
+  /** Ставка купона, доля номинала, цена выкупа или коэффициент конвертации */
+  value?: InputMaybe<SortEnumType>;
+}
+
 export interface Other extends Instrument {
   additionalInformation: AdditionalInformation;
   basicInformation: BasicInformation;
@@ -1325,7 +1459,7 @@ export interface Stock extends Instrument {
   costEstimate?: Maybe<CostEstimate>;
   currencyInformation: CurrencyInformation;
   /** Данные о выплате дивидендов (если инструмент является акцией) */
-  dividends: Array<Dividend>;
+  dividends?: Maybe<Array<Dividend>>;
   /** Данные о выплате дивидендов компанией */
   dividendsAggregateInfo?: Maybe<DividendsAggregateInfo>;
   financialAttributes: FinancialAttributes;
@@ -1340,6 +1474,12 @@ export interface Stock extends Instrument {
   /** Торговые данные компании */
   trading?: Maybe<Trading>;
   tradingDetails: TradingDetails;
+}
+
+
+export interface StockDividendsArgs {
+  order?: InputMaybe<Array<DividendSortInput>>;
+  where?: InputMaybe<DividendFilterInput>;
 }
 
 export interface StockFilterInput {
