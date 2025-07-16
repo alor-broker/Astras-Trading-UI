@@ -10,6 +10,7 @@ import { TranslatorService } from '../../../shared/services/translator.service';
 import { HistoryService } from '../../../shared/services/history.service';
 import { PortfolioSummaryService } from 'src/app/shared/services/portfolio-summary.service';
 import { ClientReportsService } from 'src/app/shared/services/client-reports.service';
+import { TradesHistoryService } from "../../../shared/services/trades-history.service";
 
 describe('GraphProcessingContextService', () => {
   let service: GraphProcessingContextService;
@@ -22,6 +23,7 @@ describe('GraphProcessingContextService', () => {
   const mockHistoryService = {};
   const mockPortfolioSummaryService = {};
   const mockClientReportsService = {};
+  const mockTradesHistoryServiceService = {};
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -35,6 +37,7 @@ describe('GraphProcessingContextService', () => {
         { provide: HistoryService, useValue: mockHistoryService },
         { provide: PortfolioSummaryService, useValue: mockPortfolioSummaryService },
         { provide: ClientReportsService, useValue: mockClientReportsService },
+        { provide: TradesHistoryService, useValue: mockTradesHistoryServiceService },
         provideHttpClientTesting()
       ]
     });
