@@ -20,7 +20,10 @@ import {
   DateValueValidationOptions,
   SelectValueValidationOptions
 } from "../models";
-import { add } from "date-fns";
+import {
+  add,
+  startOfDay
+} from "date-fns";
 import {
   ClientReport,
   ClientReportsService,
@@ -124,7 +127,8 @@ export class ReportsSourceNode extends NodeBase {
 
   override executor(context: GraphProcessingContextService): Observable<boolean> {
     return super.executor(context).pipe(
-      switchMap(() => {
+      switchMap(() => context.dataContext),
+      switchMap(dataContext => {
           const portfolioKeyString = this.getValueOfInput(this.portfolioInputName) as string | undefined;
           if (portfolioKeyString === undefined || portfolioKeyString === null || portfolioKeyString.length === 0) {
             return of(false);
@@ -140,8 +144,16 @@ export class ReportsSourceNode extends NodeBase {
           }
 
           const limit = this.properties[this.maxRecordsCountPropertyName] as number | undefined ?? 10;
-          const fromDate = this.properties[this.fromDatePropertyName] as Date | undefined;
           const timeRange = this.properties[this.timeRangePropertyName] as ReportTimeRange;
+
+          let fromDate = this.properties[this.fromDatePropertyName] as Date | undefined;
+          fromDate ??= startOfDay(
+            add(
+              dataContext.currentDate,
+              {
+                months: timeRange === ReportTimeRange.Daily ? -1 : -12
+              }
+            ));
 
           return this.loadReports(
             targetPortfolio,

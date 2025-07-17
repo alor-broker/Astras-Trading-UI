@@ -128,7 +128,8 @@ export class PortfolioTradesSourceNode extends NodeBase {
     this.translatorFn = context.translatorService.getTranslator('ai-graph/data-fields');
 
     return super.executor(context).pipe(
-      switchMap(() => {
+      switchMap(() => context.dataContext),
+      switchMap(dataContext => {
           const portfolioKeyString = this.getValueOfInput(this.portfolioSlotName) as string | undefined;
           if (portfolioKeyString === undefined || portfolioKeyString === null || portfolioKeyString.length === 0) {
             return of(null);
@@ -154,7 +155,8 @@ export class PortfolioTradesSourceNode extends NodeBase {
           const instruments = this.toInstruments(targetInstruments ?? '');
 
           const limit = this.properties[this.maxRecordsCountPropertyName] as number | undefined ?? 100;
-          const fromDate = this.properties[this.fromDatePropertyName] as Date;
+          const fromDate = this.properties[this.fromDatePropertyName] as Date | undefined
+            ?? add(dataContext.currentDate, {months: -1});
 
           if (instruments.length === 0) {
             return of(null);
@@ -186,7 +188,7 @@ export class PortfolioTradesSourceNode extends NodeBase {
     targetInstrument: InstrumentKey,
     limit: number,
     tradesHistoryService: TradesHistoryService,
-    fromDate?: Date,
+    fromDate: Date,
   ): Observable<Trade[]> {
     const state: {
       loadedItems: Trade[];
@@ -196,7 +198,7 @@ export class PortfolioTradesSourceNode extends NodeBase {
       itemsIds: new Set(),
     };
 
-    const finishDate = startOfDay(fromDate ?? add(new Date(), {months: -1}));
+    const finishDate = startOfDay(fromDate);
     const batchLimit = Math.min(limit, 100);
     let from: string | null = null;
 
@@ -276,7 +278,7 @@ export class PortfolioTradesSourceNode extends NodeBase {
     const price = translator(['fields', 'price', 'text']);
     const sideLabel = translator(['fields', 'side', 'text']);
 
-    const merged = items.map((trade: Trade) => {
+    return items.map((trade: Trade) => {
       return [
         `${symbolLabel} ${trade.targetInstrument.symbol}`,
         `${exchangeLabel} ${trade.targetInstrument.exchange}`,
@@ -286,7 +288,5 @@ export class PortfolioTradesSourceNode extends NodeBase {
         `${sideLabel} ${trade.side}`,
       ].join('<br>');
     }).join('<br><br>');
-
-    return merged;
   }
 }
