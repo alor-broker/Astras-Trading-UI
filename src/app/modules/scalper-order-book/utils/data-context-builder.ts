@@ -440,58 +440,31 @@ export class DataContextBuilder {
   ): boolean {
     const maxRowPrice = priceRows[0].price;
     const minRowPrice = priceRows[priceRows.length - 1].price;
-    const orderBookBounds = this.getOrderBookBounds(orderBookData);
 
-    const expectedMaxPrice = orderBookBounds.asksRange?.max ?? orderBookBounds.bidsRange?.max;
-    const expectedMinPrice = orderBookBounds.bidsRange?.min ?? orderBookBounds.asksRange?.min;
-    if ((expectedMinPrice != null && expectedMinPrice < minRowPrice)
-      || (expectedMaxPrice != null && expectedMaxPrice > maxRowPrice)) {
-      const priceDiff = ((expectedMaxPrice ?? expectedMinPrice ?? 0) - (expectedMinPrice ?? expectedMaxPrice ?? 0)) / settings.instrument.minstep;
-      const maxDeviation = this.PriceDeviationMultiplier * 2;
+    const priceOptions = this.getPriceOptions(
+      this.getOrderBookBounds(orderBookData),
+      settings.instrument.minstep,
+      scaleFactor,
+      settings.widgetSettings.majorLinesStep ?? ScalperOrderBookConstants.defaultMajorLinesStep
+    );
 
-      if(priceDiff > maxDeviation) {
-        return false;
-      }
+    if (priceOptions != null && (minRowPrice > priceOptions.expectedRangeMin || maxRowPrice < priceOptions.expectedRangeMax)) {
+      actions?.priceRowsRegenerationStarted();
 
-      this.regenerateForOrderBook(orderBookData, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor);
+      priceRowsStore.initWithPriceRange(
+        settings.widgetSettings,
+        priceOptions,
+        false,
+        getters.getVisibleRowsCount(rowHeight),
+        () => {
+          actions?.priceRowsRegenerationCompleted();
+        }
+      );
+
       return false;
     }
 
     return true;
-  }
-
-  private static regenerateForOrderBook(
-    orderBookData: OrderbookData,
-    settings: ScalperOrderBookExtendedSettings,
-    getters: BodyGetters,
-    actions: ChangeNotifications | null,
-    priceRowsStore: PriceRowsStore,
-    rowHeight: number,
-    scaleFactor: number
-  ): void {
-    actions?.priceRowsRegenerationStarted();
-
-    const bounds = this.getOrderBookBounds(orderBookData);
-    const expectedBestAsk = bounds.asksRange?.min ?? bounds.bidsRange?.max;
-    const expectedBestBid = bounds.bidsRange?.max ?? bounds.asksRange?.min;
-
-    if (expectedBestAsk == null || expectedBestBid == null) {
-      return;
-    }
-
-    priceRowsStore.initWithPriceRange(
-      settings.widgetSettings,
-      this.getPriceOptions(
-        this.getOrderBookBounds(orderBookData),
-        settings.instrument.minstep,
-        scaleFactor,
-        settings.widgetSettings.majorLinesStep ?? ScalperOrderBookConstants.defaultMajorLinesStep),
-      false,
-      getters.getVisibleRowsCount(rowHeight),
-      () => {
-        actions?.priceRowsRegenerationCompleted();
-      }
-    );
   }
 
   private static mapPriceRowToOrderBook(
