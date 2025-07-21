@@ -1,8 +1,7 @@
 import {Directive, ElementRef} from '@angular/core';
 
 @Directive({
-    selector: '[atsScrollableItem]',
-    standalone: false
+    selector: '[atsScrollableItem]'
 })
 export class ScrollableItemDirective {
   constructor(private readonly elementRef: ElementRef<HTMLElement>) {

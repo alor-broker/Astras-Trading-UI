@@ -11,15 +11,17 @@ import { Observable } from "rxjs";
 import { MobileHomeScreenSettings } from "../../models/mobile-home-screen-settings.model";
 import { LetDirective } from "@ngrx/component";
 import { Market } from "../../../../../generated/graphql.types";
+import { RibbonComponent } from "../../../ribbon/components/ribbon/ribbon.component";
 
 @Component({
     selector: 'ats-mobile-home-screen-content',
-    imports: [
-        PortfolioDynamicsComponent,
-        PositionsComponent,
-        MarketTrendsComponent,
-        LetDirective
-    ],
+  imports: [
+    PortfolioDynamicsComponent,
+    PositionsComponent,
+    MarketTrendsComponent,
+    LetDirective,
+    RibbonComponent
+  ],
     templateUrl: './mobile-home-screen-content.component.html',
     styleUrl: './mobile-home-screen-content.component.less'
 })

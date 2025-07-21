@@ -7,6 +7,8 @@ import {PortfolioSummaryComponent} from './components/portfolio-summary/portfoli
 import {TranslocoModule} from "@jsverse/transloco";
 import {NzTypographyModule} from "ng-zorro-antd/typography";
 import {SharedModule} from "../../shared/shared.module";
+import { ScrollableRowComponent } from "../../shared/components/scrollable-row/scrollable-row.component";
+import { ScrollableItemDirective } from "../../shared/directives/scrollable-item.directive";
 
 @NgModule({
   declarations: [
@@ -22,7 +24,9 @@ import {SharedModule} from "../../shared/shared.module";
     NzButtonModule,
     TranslocoModule,
     NzTypographyModule,
-    SharedModule
+    SharedModule,
+    ScrollableRowComponent,
+    ScrollableItemDirective
   ]
 })
 export class PortfolioSummaryModule {

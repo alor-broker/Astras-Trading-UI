@@ -1,22 +1,49 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  input,
+  OnInit
+} from '@angular/core';
 import {forkJoin, Observable, timer} from 'rxjs';
 import {IndexDisplay} from '../../models/ribbon-display.model';
 import {map, switchMap} from "rxjs/operators";
 import {HistoryService} from "../../../../shared/services/history.service";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import { MathHelper } from "../../../../shared/utils/math-helper";
+import { ScrollableRowComponent } from "../../../../shared/components/scrollable-row/scrollable-row.component";
+import {
+  AsyncPipe,
+  DecimalPipe,
+  NgClass,
+  NgForOf,
+  NgTemplateOutlet
+} from "@angular/common";
+import { ScrollableItemDirective } from "../../../../shared/directives/scrollable-item.directive";
+import { NzTypographyComponent } from "ng-zorro-antd/typography";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
-    selector: 'ats-ribbon',
-    templateUrl: './ribbon.component.html',
-    styleUrls: ['./ribbon.component.less'],
-    standalone: false
+  selector: 'ats-ribbon',
+  templateUrl: './ribbon.component.html',
+  styleUrls: ['./ribbon.component.less'],
+  imports: [
+    ScrollableRowComponent,
+    NgForOf,
+    ScrollableItemDirective,
+    NzTypographyComponent,
+    AsyncPipe,
+    DecimalPipe,
+    NgClass,
+    NgTemplateOutlet
+  ],
+  standalone: true
 })
 export class RibbonComponent implements OnInit {
-  @Input({required: true})
-  guid!: string;
-
   indices$!: Observable<IndexDisplay[]>;
+
+  layout = input<'singleRow' | '2row'>('singleRow');
+  showScrollButtons = input(true);
+
   private readonly displayIndices: { displayName: string, instrumentKey: InstrumentKey }[] = [
     {
       displayName: 'IMOEX',
@@ -63,7 +90,8 @@ export class RibbonComponent implements OnInit {
   ];
 
   constructor(
-    private readonly historyService: HistoryService
+    private readonly historyService: HistoryService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -81,7 +109,8 @@ export class RibbonComponent implements OnInit {
         });
 
         return forkJoin(indices$);
-      })
+      }),
+      takeUntilDestroyed(this.destroyRef)
     );
   }
 

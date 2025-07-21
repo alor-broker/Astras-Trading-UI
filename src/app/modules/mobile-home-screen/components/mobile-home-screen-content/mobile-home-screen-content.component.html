@@ -1,5 +1,7 @@
 <ng-container *ngrxLet="settings$ as settings">
   <div class="d-flex flex-column flex-gap-25">
+    <ats-ribbon layout="2row" [showScrollButtons]="false"></ats-ribbon>
+
     @if (settings.showPortfolioDynamics ?? true) {
       <ats-portfolio-dynamics></ats-portfolio-dynamics>
     }
