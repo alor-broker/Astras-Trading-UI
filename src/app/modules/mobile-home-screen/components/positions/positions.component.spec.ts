@@ -46,8 +46,7 @@ describe('PositionsComponent', () => {
         MockProvider(
           ACTIONS_CONTEXT,
           {
-            selectInstrument: jasmine.createSpy('selectInstrument').and.callThrough(),
-            openChart: jasmine.createSpy('selectInstrument').and.callThrough(),
+            selectInstrument: jasmine.createSpy('selectInstrument').and.callThrough()
           }
         ),
       ]

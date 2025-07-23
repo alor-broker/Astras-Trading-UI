@@ -12,6 +12,8 @@ import { MobileHomeScreenSettings } from "../../models/mobile-home-screen-settin
 import { LetDirective } from "@ngrx/component";
 import { Market } from "../../../../../generated/graphql.types";
 import { RibbonComponent } from "../../../ribbon/components/ribbon/ribbon.component";
+import { PortfolioEvaluationComponent } from "../portfolio-evaluation/portfolio-evaluation.component";
+import { WidgetsSwitcherService } from "../../../../shared/services/widgets-switcher.service";
 
 @Component({
     selector: 'ats-mobile-home-screen-content',
@@ -20,7 +22,8 @@ import { RibbonComponent } from "../../../ribbon/components/ribbon/ribbon.compon
     PositionsComponent,
     MarketTrendsComponent,
     LetDirective,
-    RibbonComponent
+    RibbonComponent,
+    PortfolioEvaluationComponent
   ],
     templateUrl: './mobile-home-screen-content.component.html',
     styleUrl: './mobile-home-screen-content.component.less'
@@ -33,10 +36,25 @@ export class MobileHomeScreenContentComponent implements OnInit {
 
   protected settings$!: Observable<MobileHomeScreenSettings>;
 
-  constructor(private readonly widgetSettingsService: WidgetSettingsService) {
+  constructor(
+    private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly widgetsSwitcherService: WidgetsSwitcherService
+  ) {
   }
 
   ngOnInit(): void {
     this.settings$ = this.widgetSettingsService.getSettings<MobileHomeScreenSettings>(this.guid);
+  }
+
+  openPortfolioDetails(): void {
+    this.widgetsSwitcherService.activateWidget({
+      identifier: {
+        typeId: 'blotter'
+      },
+      parameters: {
+        activeTab: 'summary'
+      },
+      sourceWidgetInstanceId: this.guid
+    });
   }
 }

@@ -18,6 +18,7 @@ import {NzSkeletonComponent} from "ng-zorro-antd/skeleton";
 import {ACTIONS_CONTEXT, ActionsContext} from "../../../../shared/services/actions-context";
 import {defaultBadgeColor} from "../../../../shared/utils/instruments";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
+import { WidgetsSwitcherService } from "../../../../shared/services/widgets-switcher.service";
 
 enum SortBy {
   Ticker = "ticker"
@@ -68,7 +69,8 @@ export class PositionsComponent implements OnInit, OnDestroy {
     private readonly userPortfoliosService: UserPortfoliosService,
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
     @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext
+    private readonly actionsContext: ActionsContext,
+    private readonly widgetsSwitcherService: WidgetsSwitcherService
   ) {
   }
 
@@ -116,7 +118,12 @@ export class PositionsComponent implements OnInit, OnDestroy {
   }
 
   openChart(position: Position): void {
-    this.actionsContext.openChart(position.targetInstrument, defaultBadgeColor);
+    this.actionsContext.selectInstrument(position.targetInstrument, defaultBadgeColor);
+    this.widgetsSwitcherService.activateWidget({
+      identifier: {
+        typeId: 'light-chart'
+      }
+    });
   }
 
   private getCurrentAgreementPortfolios(): Observable<PortfolioExtended[]> {

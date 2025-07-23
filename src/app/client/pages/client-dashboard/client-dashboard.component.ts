@@ -109,8 +109,4 @@ export class ClientDashboardComponent implements OnInit, ActionsContext {
     this.store.dispatch(WidgetsLocalStateInternalActions.init({storageKey: LocalStorageCommonConstants.WidgetsLocalStateStorageKey}));
     this.onboarding.start();
   }
-
-  openChart(): void {
-    return;
-  }
 }

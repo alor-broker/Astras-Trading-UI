@@ -6,7 +6,6 @@ import {BehaviorSubject} from "rxjs";
 import { NzResizeObserverDirective } from "ng-zorro-antd/cdk/resize-observer";
 import {
   AsyncPipe,
-  NgIf
 } from "@angular/common";
 import { NzIconDirective } from "ng-zorro-antd/icon";
 import { SwipeDirective } from "../../directives/swipe.directive";
@@ -17,7 +16,6 @@ import { SwipeDirective } from "../../directives/swipe.directive";
   imports: [
     NzResizeObserverDirective,
     CdkScrollable,
-    NgIf,
     NzIconDirective,
     AsyncPipe,
     SwipeDirective

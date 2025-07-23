@@ -2,6 +2,8 @@
   <div class="d-flex flex-column flex-gap-25">
     <ats-ribbon layout="2row" [showScrollButtons]="false"></ats-ribbon>
 
+    <ats-portfolio-evaluation (openDetails)="openPortfolioDetails()"></ats-portfolio-evaluation>
+
     @if (settings.showPortfolioDynamics ?? true) {
       <ats-portfolio-dynamics></ats-portfolio-dynamics>
     }

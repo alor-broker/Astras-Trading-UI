@@ -47,7 +47,7 @@ async function translateObject(obj) {
   if (!jsonMatch) {
     throw new Error('Could not find a valid JSON object in the API response.');
   }
-  
+
   return JSON.parse(jsonMatch[0]);
 }
 
@@ -90,7 +90,7 @@ async function main() {
     process.exit(1);
   }
 
-  const i18nDir = path.resolve('./src/assets/i18n/');
+  const i18nDir = path.resolve('../src/assets/i18n/');
   console.log(`Searching for ru.json files in ${i18nDir}...`);
 
   const ruFiles = await findAllRuFiles(i18nDir);

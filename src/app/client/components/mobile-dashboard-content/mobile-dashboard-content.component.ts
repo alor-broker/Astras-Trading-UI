@@ -1,10 +1,16 @@
-import {Component, DestroyRef, OnInit} from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  OnInit
+} from "@angular/core";
 import {
   BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
   Observable,
+  queueScheduler,
   shareReplay,
+  subscribeOn,
   switchMap,
   take,
   tap
@@ -24,7 +30,7 @@ import {TranslatorService} from "../../../shared/services/translator.service";
 import {MobileActionsContextService} from "../../../modules/dashboard/services/mobile-actions-context.service";
 import {MobileDashboardService} from "../../../modules/dashboard/services/mobile-dashboard.service";
 import {WidgetsSharedDataService} from "../../../shared/services/widgets-shared-data.service";
-import {map} from "rxjs/operators";
+import {filter, map} from "rxjs/operators";
 import { arraysEqual } from "ng-zorro-antd/core/util";
 import {LetDirective} from "@ngrx/component";
 import {NgForOf, NgIf} from "@angular/common";
@@ -33,6 +39,10 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 import { WidgetSettings } from "../../../shared/models/widget-settings.model";
 import { isInstrumentDependent } from "../../../shared/utils/settings-helper";
+import {
+  WidgetsSwitcherService
+} from "../../../shared/services/widgets-switcher.service";
+import { NavigationStart, Router } from "@angular/router";
 @Component({
     selector: 'ats-mobile-dashboard-content',
     templateUrl: './mobile-dashboard-content.component.html',
@@ -51,9 +61,9 @@ export class MobileDashboardContentComponent implements OnInit {
   readonly homeWidgetId = 'mobile-home-screen';
   galleryVisible = false;
   defaultWidgetNames = [
-    'order-submit',
+    this.newOrderWidgetId,
     'blotter',
-    'mobile-home-screen',
+    this.homeWidgetId,
     'order-book',
     'light-chart'
   ];
@@ -71,7 +81,9 @@ export class MobileDashboardContentComponent implements OnInit {
     private readonly destroyRef: DestroyRef,
     private readonly mobileDashboardService: MobileDashboardService,
     private readonly widgetsSharedDataService: WidgetsSharedDataService,
-    private readonly widgetSettingsService: WidgetSettingsService
+    private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly widgetsSwitcherService: WidgetsSwitcherService,
+    private readonly router: Router
   ) {
   }
 
@@ -113,9 +125,6 @@ export class MobileDashboardContentComponent implements OnInit {
         case "instrumentSelected":
           this.selectWidget(this.newOrderWidgetId);
           break;
-        case "openChart":
-          this.selectWidget("light-chart");
-          break;
       }
     });
 
@@ -126,7 +135,52 @@ export class MobileDashboardContentComponent implements OnInit {
         this.selectWidget(this.newOrderWidgetId);
       });
 
+    this.widgetsSwitcherService.switchSubscription$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(event => {
+      if(event?.curr != null) {
+        if(event.curr.identifier.typeId != null) {
+          this.selectWidget(event.curr.identifier.typeId);
+        }
+      }
+
+      if(event?.curr == null && event?.prev != null && event.prev.sourceWidgetInstanceId != null) {
+        this.widgets$.pipe(
+          take(1)
+        ).subscribe(widgets => {
+          const targetWidget = widgets.find(w => w.instance.guid === event!.prev!.sourceWidgetInstanceId);
+          if(targetWidget != null) {
+            this.selectWidget(targetWidget.instance.widgetType);
+          }
+        });
+      }
+    });
+
     this.initWidgetsGallery();
+
+    this.router.events
+      .pipe(
+        filter(event => event instanceof NavigationStart),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(event => {
+        this.widgetsSwitcherService.switchSubscription$.pipe(
+          take(1),
+          subscribeOn(queueScheduler)
+        ).subscribe(switchState => {
+          console.log(event.navigationTrigger);
+          if(
+            event.navigationTrigger !== 'popstate'
+            || switchState == null
+            || switchState.curr?.sourceWidgetInstanceId == null
+          ) {
+            return;
+          }
+
+          this.router.navigateByUrl(this.router.routerState.snapshot.url);
+          this.widgetsSwitcherService.returnToSource();
+        });
+      });
   }
 
   selectWidget(widgetName: string): void {
