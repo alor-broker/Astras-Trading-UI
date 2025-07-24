@@ -4,62 +4,51 @@
     *ngrxLet="{ itemsDisplayParams: itemsDisplayParams$, displayPositions: displayPositions$} as vm; suspenseTpl: loading"
     class="mt-15"
   >
-    <span class="heading-color fs-5">{{ t('mobileHomeScreenPositions.sectionTitle') }}</span>
-
     @if (vm.displayPositions.totalItems > 0) {
       <table class="mt-10">
-        <thead>
-        <tr>
-          <th class="text-start text-nowrap">{{ t('mobileHomeScreenPositions.columns.ticker.title') }}</th>
-          <th class="text-start text-nowrap">{{ t('mobileHomeScreenPositions.columns.currentVolume.title') }}</th>
-          <th class="text-end text-nowrap">{{ t('mobileHomeScreenPositions.columns.dailyPlPerc.title') }}</th>
-        </tr>
-        </thead>
-
         <tbody>
           @for (item of vm.displayPositions.items; track trackBy(item)) {
-            <tr class="item" (click)="openChart(item)">
+            <tr class="item" (click)="instrumentSelected.emit(item.targetInstrument)">
               <td class="text-start">
                 <div class="d-flex flex-row flex-nowrap flex-gap-5 align-items-center">
                   <ats-instrument-icon [symbol]="item.targetInstrument.symbol" size="large"></ats-instrument-icon>
                   <div class="d-flex flex-column">
                     <span>
                       <ats-truncated-text
-                        [maxLength]="20"
-                        [text]="item.targetInstrument.symbol"
+                        [maxLength]="50"
+                        [text]="item.shortName"
                         className="heading-color text-nowrap fs-6"
                       ></ats-truncated-text>
-                      <span class="fs-11"> ({{ item.ownedPortfolio.portfolio }})</span>
                     </span>
-                    @if (item.targetInstrument.symbol !== item.shortName) {
-                      <span>
+                    <span>
                         <ats-truncated-text
-                          [maxLength]="30"
-                          [text]="item.shortName"
+                          [maxLength]="20"
+                          [text]="item.targetInstrument.symbol"
                           className="fs-10"></ats-truncated-text>
                     </span>
-                    }
                   </div>
                 </div>
               </td>
 
-              <td class="text-start">
-                <span>{{ item.currentVolume | number }}</span>
-              </td>
-
               <td class="text-end">
-              <span
-                [ngClass]="{
-                  'positive-color': item.dailyUnrealisedPl >= 0,
-                  'negative-color': item.dailyUnrealisedPl < 0
-                  }"
-              >
-                @if (calculateDailyUnrealisedPlRatio(item); as dailyUnrealisedPlRatio) {
-                  @if (isFinite(dailyUnrealisedPlRatio)) {
-                    {{ dailyUnrealisedPlRatio | percent: '1.1-2' }}
-                  }
-                }
-              </span>
+                <div class="d-flex d-flex flex-column">
+                  <span class="heading-color">{{ item.currentVolume | number }}</span>
+                  <span
+                    [ngClass]="{
+                    'positive-color': item.dailyUnrealisedPl >= 0,
+                    'negative-color': item.dailyUnrealisedPl < 0
+                    }"
+                  >
+                    @if (calculateDailyUnrealisedPlRatio(item); as dailyUnrealisedPlRatio) {
+                      @if (isFinite(dailyUnrealisedPlRatio)) {
+                        @if (dailyUnrealisedPlRatio > 0) {
+                          <span>+</span>
+                        }
+                        <span>{{ dailyUnrealisedPlRatio | percent: '1.1-2' }}</span>
+                      }
+                    }
+                  </span>
+                </div>
               </td>
             </tr>
           }

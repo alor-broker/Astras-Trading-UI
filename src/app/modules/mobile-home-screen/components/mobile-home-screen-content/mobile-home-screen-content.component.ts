@@ -1,5 +1,6 @@
 import {
   Component,
+  Inject,
   Input,
   OnInit
 } from '@angular/core';
@@ -14,6 +15,12 @@ import { Market } from "../../../../../generated/graphql.types";
 import { RibbonComponent } from "../../../ribbon/components/ribbon/ribbon.component";
 import { PortfolioEvaluationComponent } from "../portfolio-evaluation/portfolio-evaluation.component";
 import { WidgetsSwitcherService } from "../../../../shared/services/widgets-switcher.service";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import {
+  ACTIONS_CONTEXT,
+  ActionsContext
+} from "../../../../shared/services/actions-context";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 
 @Component({
     selector: 'ats-mobile-home-screen-content',
@@ -38,7 +45,9 @@ export class MobileHomeScreenContentComponent implements OnInit {
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly widgetsSwitcherService: WidgetsSwitcherService
+    private readonly widgetsSwitcherService: WidgetsSwitcherService,
+    @Inject(ACTIONS_CONTEXT)
+    private readonly actionsContext: ActionsContext,
   ) {
   }
 
@@ -53,6 +62,16 @@ export class MobileHomeScreenContentComponent implements OnInit {
       },
       parameters: {
         activeTab: 'summary'
+      },
+      sourceWidgetInstanceId: this.guid
+    });
+  }
+
+  openChart(instrumentKey: InstrumentKey): void {
+    this.actionsContext.selectInstrument(instrumentKey, defaultBadgeColor);
+    this.widgetsSwitcherService.activateWidget({
+      identifier: {
+        typeId: 'light-chart'
       },
       sourceWidgetInstanceId: this.guid
     });

@@ -10,7 +10,6 @@ import {EMPTY} from "rxjs";
 import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
-import {ACTIONS_CONTEXT} from "../../../../shared/services/actions-context";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
 
 describe('PositionsComponent', () => {
@@ -42,13 +41,7 @@ describe('PositionsComponent', () => {
           {
             getAllPositionsSubscription: () => EMPTY
           }
-        ),
-        MockProvider(
-          ACTIONS_CONTEXT,
-          {
-            selectInstrument: jasmine.createSpy('selectInstrument').and.callThrough()
-          }
-        ),
+        )
       ]
     })
     .compileComponents();

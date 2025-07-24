@@ -1,8 +1,8 @@
 import {
   Component,
-  Inject,
   Input,
-  OnInit
+  OnInit,
+  output
 } from '@angular/core';
 import { TranslocoDirective } from "@jsverse/transloco";
 import {
@@ -41,14 +41,8 @@ import { TruncatedTextComponent } from "../../../../shared/components/truncated-
 import { NzEmptyComponent } from "ng-zorro-antd/empty";
 import { NzSkeletonComponent } from "ng-zorro-antd/skeleton";
 import { NzIconDirective } from "ng-zorro-antd/icon";
-import {
-  ACTIONS_CONTEXT,
-  ActionsContext
-} from "../../../../shared/services/actions-context";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
-import { WidgetsSwitcherService } from "../../../../shared/services/widgets-switcher.service";
 
 interface DisplayParams {
   itemsDisplayCount: number;
@@ -96,11 +90,10 @@ export class MarketTrendsComponent implements OnInit {
 
   readonly SortEnumTypes = SortEnumType;
 
+  readonly instrumentSelected = output<InstrumentKey>();
+
   constructor(
-    private readonly graphQlService: GraphQlService,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext,
-    private readonly widgetsSwitcherService: WidgetsSwitcherService
+    private readonly graphQlService: GraphQlService
   ) {
   }
 
@@ -142,16 +135,7 @@ export class MarketTrendsComponent implements OnInit {
     });
   }
 
-  openChart(item: InstrumentInfoType): void {
-    this.actionsContext.selectInstrument(this.toInstrumentKey(item), defaultBadgeColor);
-    this.widgetsSwitcherService.activateWidget({
-      identifier: {
-        typeId: 'light-chart'
-      }
-    });
-  }
-
-  private toInstrumentKey(item: InstrumentInfoType): InstrumentKey {
+  protected toInstrumentKey(item: InstrumentInfoType): InstrumentKey {
     return {
       symbol: item.basicInformation.symbol,
       exchange: item.basicInformation.exchange,

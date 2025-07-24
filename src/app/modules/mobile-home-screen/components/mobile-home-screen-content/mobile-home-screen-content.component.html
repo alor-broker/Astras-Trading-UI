@@ -4,15 +4,16 @@
 
     <ats-portfolio-evaluation (openDetails)="openPortfolioDetails()"></ats-portfolio-evaluation>
 
+    <ats-positions (instrumentSelected)="openChart($event)"></ats-positions>
+
     @if (settings.showPortfolioDynamics ?? true) {
       <ats-portfolio-dynamics></ats-portfolio-dynamics>
     }
 
-    <ats-positions></ats-positions>
-
     <ats-market-trends
       [ignoredBoardsFilter]="settings.ignoreTrendsForBoards ?? ['FQBR']"
       [marketFilter]="settings.displayTrendsForMarket ?? [Market.Fond]"
+      (instrumentSelected)="openChart($event)"
     ></ats-market-trends>
   </div>
 </ng-container>

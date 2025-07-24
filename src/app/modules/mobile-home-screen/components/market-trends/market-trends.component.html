@@ -9,7 +9,7 @@
     @if (vm.displayItems != null && vm.displayItems.totalCount > 0) {
       <table class="mt-10">
         <thead>
-        <tr>
+        <tr class="heading-color">
           <th class="text-start text-nowrap">{{ t('mobileHomeScreenMarketTrends.columns.ticker.title') }}</th>
           <th
             class="text-start text-nowrap"
@@ -32,27 +32,25 @@
 
         <tbody>
           @for (item of vm.displayItems.nodes; track trackBy(item)) {
-            <tr class="item" (click)="openChart(item)">
+            <tr class="item" (click)="instrumentSelected.emit(toInstrumentKey(item))">
               <td class="text-start">
                 <div class="d-flex flex-row flex-nowrap flex-gap-5 align-items-center">
                   <ats-instrument-icon [symbol]="item.basicInformation.symbol" size="large"></ats-instrument-icon>
                   <div class="d-flex flex-column">
                     <span>
                       <ats-truncated-text
-                        [maxLength]="20"
-                        [text]="item.basicInformation.symbol"
+                        [maxLength]="30"
+                        [text]="item.basicInformation.shortName"
                         className="heading-color text-nowrap fs-6"
                       ></ats-truncated-text>
                     </span>
 
-                    @if (item.basicInformation.symbol !== item.basicInformation.shortName) {
-                      <span>
+                    <span>
                         <ats-truncated-text
-                          [maxLength]="30"
-                          [text]="item.basicInformation.shortName"
+                          [maxLength]="20"
+                          [text]="item.basicInformation.symbol"
                           className="fs-10"></ats-truncated-text>
                       </span>
-                    }
                   </div>
                 </div>
               </td>

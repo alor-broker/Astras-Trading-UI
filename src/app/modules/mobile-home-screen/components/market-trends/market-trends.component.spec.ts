@@ -8,7 +8,6 @@ import {
 import {GraphQlService} from "../../../../shared/services/graph-ql.service";
 import {EMPTY} from "rxjs";
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
-import {ACTIONS_CONTEXT} from "../../../../shared/services/actions-context";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
 
 describe('MarketTrendsComponent', () => {
@@ -28,13 +27,7 @@ describe('MarketTrendsComponent', () => {
           {
             watchQueryForSchema: () => EMPTY
           }
-        ),
-        MockProvider(
-          ACTIONS_CONTEXT,
-          {
-            selectInstrument: jasmine.createSpy('selectInstrument').and.callThrough()
-          }
-        ),
+        )
       ]
     })
     .compileComponents();

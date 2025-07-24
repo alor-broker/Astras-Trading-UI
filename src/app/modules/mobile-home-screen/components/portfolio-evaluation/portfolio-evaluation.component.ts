@@ -32,7 +32,7 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
   styleUrl: './portfolio-evaluation.component.less'
 })
 export class PortfolioEvaluationComponent {
-  openDetails = output();
+  readonly openDetails = output();
 
   readonly summary$ = this.dashboardContextService.selectedPortfolio$.pipe(
     switchMap(portfolio => {
