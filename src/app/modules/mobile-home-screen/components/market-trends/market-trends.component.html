@@ -4,8 +4,6 @@
     *ngrxLet="{ itemsDisplayParams: itemsDisplayParams$, displayItems: displayItems$} as vm; suspenseTpl: loading"
     class="mt-15"
   >
-    <span class="heading-color fs-5">{{ t('mobileHomeScreenMarketTrends.sectionTitle') }}</span>
-
     @if (vm.displayItems != null && vm.displayItems.totalCount > 0) {
       <table class="mt-10">
         <thead>

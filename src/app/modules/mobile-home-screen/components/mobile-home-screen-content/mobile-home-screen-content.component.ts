@@ -21,6 +21,11 @@ import {
   ActionsContext
 } from "../../../../shared/services/actions-context";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import {
+  NzCollapseComponent,
+  NzCollapsePanelComponent
+} from "ng-zorro-antd/collapse";
+import { TranslocoDirective } from "@jsverse/transloco";
 
 @Component({
     selector: 'ats-mobile-home-screen-content',
@@ -30,7 +35,10 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
     MarketTrendsComponent,
     LetDirective,
     RibbonComponent,
-    PortfolioEvaluationComponent
+    PortfolioEvaluationComponent,
+    NzCollapseComponent,
+    NzCollapsePanelComponent,
+    TranslocoDirective
   ],
     templateUrl: './mobile-home-screen-content.component.html',
     styleUrl: './mobile-home-screen-content.component.less'

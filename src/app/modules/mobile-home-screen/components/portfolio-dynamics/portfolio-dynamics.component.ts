@@ -28,6 +28,7 @@ type DynamicsChartData = ChartData<'line', number[], Date>;
 type DynamicsChartOptions = ChartOptions<'line'>;
 
 interface ChartConfig {
+  agreement: string;
   chartData: DynamicsChartData;
   charOptions: DynamicsChartOptions;
   rawData: PortfolioDynamics | null;
@@ -111,7 +112,8 @@ export class PortfolioDynamicsComponent implements OnInit, OnDestroy {
         return {
           chartData: this.prepareDatasets(x.data, x.themeColors),
           charOptions: this.prepareChartOptions(x.lang),
-          rawData: x.data
+          rawData: x.data,
+          agreement: x.currentAgreement
         };
       }),
       tap(() => this.isLoading = false),

@@ -1,19 +1,38 @@
-<ng-container *ngrxLet="settings$ as settings">
-  <div class="d-flex flex-column flex-gap-25">
-    <ats-ribbon layout="2row" [showScrollButtons]="false"></ats-ribbon>
+<ng-container *transloco="let t; scope: 'mobile-home-screen'">
+  <ng-container *ngrxLet="settings$ as settings">
+    <div class="d-flex flex-column">
+      <ats-ribbon [showScrollButtons]="false" layout="2row"></ats-ribbon>
 
-    <ats-portfolio-evaluation (openDetails)="openPortfolioDetails()"></ats-portfolio-evaluation>
+      <div class="bordered mt-15">
+        <ats-portfolio-evaluation (openDetails)="openPortfolioDetails()"></ats-portfolio-evaluation>
+      </div>
 
-    <ats-positions (instrumentSelected)="openChart($event)"></ats-positions>
+      <ats-positions (instrumentSelected)="openChart($event)"></ats-positions>
 
-    @if (settings.showPortfolioDynamics ?? true) {
-      <ats-portfolio-dynamics></ats-portfolio-dynamics>
-    }
+      @if (settings.showPortfolioDynamics ?? true) {
+        <div class="bordered mt-20">
+          <nz-collapse nzExpandIconPosition="end" nzGhost>
+            <nz-collapse-panel
+              [nzHeader]="header"
+            >
+              <ats-portfolio-dynamics></ats-portfolio-dynamics>
+            </nz-collapse-panel>
+            <ng-template #header>
+              <span class="section-header">{{t('mobileHomeScreen.agreementDynamicsTitle')}}</span>
+            </ng-template>
+          </nz-collapse>
+        </div>
+      }
+      <span class="section-header pl-10 mt-20">{{t('mobileHomeScreen.ideasTitle')}}</span>
 
-    <ats-market-trends
-      [ignoredBoardsFilter]="settings.ignoreTrendsForBoards ?? ['FQBR']"
-      [marketFilter]="settings.displayTrendsForMarket ?? [Market.Fond]"
-      (instrumentSelected)="openChart($event)"
-    ></ats-market-trends>
-  </div>
+      <span class="section-header pl-10 mt-20">{{t('mobileHomeScreen.marketTrendsTitle')}}</span>
+      <ats-market-trends
+        (instrumentSelected)="openChart($event)"
+        [ignoredBoardsFilter]="settings.ignoreTrendsForBoards ?? ['FQBR']"
+        [marketFilter]="settings.displayTrendsForMarket ?? [Market.Fond]"
+      ></ats-market-trends>
+
+      <span class="section-header pl-10 mt-20">{{t('mobileHomeScreen.newsTitle')}}</span>
+    </div>
+  </ng-container>
 </ng-container>
