@@ -395,7 +395,7 @@
     },
     "mobileMeta": {
       "galleryIcon": "ats-instruments-search",
-      "ribbonIcon": "aats-instruments-search",
+      "ribbonIcon": "ats-instruments-search",
       "enabled": true,
       "galleryOrder": 11
     }

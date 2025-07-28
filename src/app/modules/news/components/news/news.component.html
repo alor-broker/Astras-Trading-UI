@@ -15,7 +15,7 @@
   }
 
   <div>
-    <nz-tabset nzSize="small">
+    <nz-tabset nzSize="small" #tabSet>
       <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.All)" (nzSelect)="newsSectionChange(newsSectionEnum.All)"></nz-tab>
       <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.Portfolio)" (nzSelect)="newsSectionChange(newsSectionEnum.Portfolio)"></nz-tab>
       <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.Symbol)" (nzSelect)="newsSectionChange(newsSectionEnum.Symbol)"></nz-tab>

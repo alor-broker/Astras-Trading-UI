@@ -69,21 +69,17 @@
           }
         </tbody>
       </table>
-      @if ((vm.itemsDisplayParams.itemsDisplayCount < vm.displayItems.totalCount)
-      && (vm.itemsDisplayParams.itemsDisplayCount < this.maxDisplayItems)) {
-        <button
-          nz-button
-          nzBlock
-          (click)="showMoreItems()"
-          class="mt-5"
-          [nzLoading]="isLoading"
-        >
-          {{ t('mobileHomeScreenMarketTrends.moreItemsButton.title') }}
-        </button>
-      }
     } @else {
       <nz-empty nzNotFoundImage="simple"></nz-empty>
     }
+    <button
+      nz-button
+      nzBlock
+      (click)="processShowMore()"
+      class="mt-5"
+    >
+      {{ t('mobileHomeScreenMarketTrends.moreItemsButton.title') }}
+    </button>
   </ng-container>
 
   <ng-template #loading>

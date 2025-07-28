@@ -64,8 +64,8 @@ export class MobileDashboardContentComponent implements OnInit {
     this.newOrderWidgetId,
     'blotter',
     this.homeWidgetId,
-    'order-book',
-    'light-chart'
+    'light-chart',
+    'all-instruments'
   ];
 
   widgets$!: Observable<WidgetInstance[]>;

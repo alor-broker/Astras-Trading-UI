@@ -44,8 +44,7 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
 
-interface DisplayParams {
-  itemsDisplayCount: number;
+export interface DisplayParams {
   growOrder: SortEnumType;
 }
 
@@ -75,14 +74,11 @@ export class MarketTrendsComponent implements OnInit {
   ignoredBoardsFilter: string[] = ['FQBR'];
 
   displayItems$!: Observable<MarketTrendsInstrumentsConnectionType | null>;
-  readonly maxDisplayItems = 1000;
-
   isLoading = false;
 
-  private readonly itemsDisplayStep = 20;
+  private readonly itemsDisplayStep = 10;
 
   readonly itemsDisplayParams$ = new BehaviorSubject<DisplayParams>({
-    itemsDisplayCount: this.itemsDisplayStep,
     growOrder: SortEnumType.Desc
   });
 
@@ -91,6 +87,7 @@ export class MarketTrendsComponent implements OnInit {
   readonly SortEnumTypes = SortEnumType;
 
   readonly instrumentSelected = output<InstrumentKey>();
+  readonly showMore = output<DisplayParams>();
 
   constructor(
     private readonly graphQlService: GraphQlService
@@ -113,17 +110,6 @@ export class MarketTrendsComponent implements OnInit {
     return `${item.basicInformation.symbol}_${item.basicInformation.exchange}`;
   }
 
-  showMoreItems(): void {
-    this.itemsDisplayParams$.pipe(
-      take(1),
-    ).subscribe(p => {
-      this.itemsDisplayParams$.next({
-        ...p,
-        itemsDisplayCount: Math.round(Math.min(this.maxDisplayItems, p.itemsDisplayCount + this.itemsDisplayStep))
-      });
-    });
-  }
-
   changeSortOrder(): void {
     this.itemsDisplayParams$.pipe(
       take(1),
@@ -141,6 +127,14 @@ export class MarketTrendsComponent implements OnInit {
       exchange: item.basicInformation.exchange,
       instrumentGroup: item.boardInformation.board
     };
+  }
+
+  protected processShowMore(): void {
+    this.itemsDisplayParams$.pipe(
+      take(1)
+    ).subscribe(p => {
+      this.showMore.emit(p);
+    });
   }
 
   private loadMarketTrends(params: DisplayParams): Observable<MarketTrendsInstrumentsConnectionType | null> {
@@ -166,7 +160,7 @@ export class MarketTrendsComponent implements OnInit {
     };
 
     const args: QueryInstrumentsArgs = {
-      first: params.itemsDisplayCount,
+      first: this.itemsDisplayStep,
       includeNonBaseBoards: false,
       includeOld: false,
       where,

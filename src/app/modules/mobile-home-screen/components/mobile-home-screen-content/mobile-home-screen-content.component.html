@@ -7,7 +7,9 @@
         <ats-portfolio-evaluation (openDetails)="openPortfolioDetails()"></ats-portfolio-evaluation>
       </div>
 
-      <ats-positions (instrumentSelected)="openChart($event)"></ats-positions>
+      <div class="mt-5">
+        <ats-positions (instrumentSelected)="openChart($event)"></ats-positions>
+      </div>
 
       @if (settings.showPortfolioDynamics ?? true) {
         <div class="bordered mt-20">
@@ -23,16 +25,21 @@
           </nz-collapse>
         </div>
       }
+
+      <span class="section-header pl-10 mt-20">{{t('mobileHomeScreen.newsTitle')}}</span>
+      <div class="px-5">
+        <ats-news (showMore)="openNews()"></ats-news>
+      </div>
+
       <span class="section-header pl-10 mt-20">{{t('mobileHomeScreen.ideasTitle')}}</span>
 
       <span class="section-header pl-10 mt-20">{{t('mobileHomeScreen.marketTrendsTitle')}}</span>
       <ats-market-trends
         (instrumentSelected)="openChart($event)"
+        (showMore)="openAllInstruments($event)"
         [ignoredBoardsFilter]="settings.ignoreTrendsForBoards ?? ['FQBR']"
         [marketFilter]="settings.displayTrendsForMarket ?? [Market.Fond]"
       ></ats-market-trends>
-
-      <span class="section-header pl-10 mt-20">{{t('mobileHomeScreen.newsTitle')}}</span>
     </div>
   </ng-container>
 </ng-container>

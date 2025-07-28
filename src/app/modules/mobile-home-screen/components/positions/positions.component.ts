@@ -138,8 +138,8 @@ export class PositionsComponent implements OnInit, OnDestroy {
   }
 
   private getSortFn(params: DisplayParams): SortFn {
-    // For now ony sort by ticker is supported
-    let sortFn = this.sortByTicker;
+    // For now ony sort by pl is supported
+    let sortFn = this.sortByPl;
 
     if (params.sortDesc) {
       sortFn = (a, b): number => {
@@ -150,18 +150,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
     return sortFn;
   }
 
-  private readonly sortByTicker: SortFn = (a, b): number => {
-    const ticketComp = a.targetInstrument.symbol.localeCompare(b.targetInstrument.symbol);
-
-    if (ticketComp === 0) {
-      const exchangeComp = a.targetInstrument.exchange.localeCompare(b.targetInstrument.exchange);
-      if (exchangeComp === 0) {
-        return a.ownedPortfolio.portfolio.localeCompare(b.ownedPortfolio.portfolio);
-      }
-
-      return exchangeComp;
-    }
-
-    return ticketComp;
+  private readonly sortByPl: SortFn = (a, b): number => {
+    return b.dailyUnrealisedPl - a.dailyUnrealisedPl;
   };
 }

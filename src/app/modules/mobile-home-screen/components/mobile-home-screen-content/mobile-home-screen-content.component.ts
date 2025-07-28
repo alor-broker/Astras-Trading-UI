@@ -6,7 +6,10 @@ import {
 } from '@angular/core';
 import { PortfolioDynamicsComponent } from "../portfolio-dynamics/portfolio-dynamics.component";
 import { PositionsComponent } from "../positions/positions.component";
-import { MarketTrendsComponent } from "../market-trends/market-trends.component";
+import {
+  DisplayParams,
+  MarketTrendsComponent
+} from "../market-trends/market-trends.component";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { Observable } from "rxjs";
 import { MobileHomeScreenSettings } from "../../models/mobile-home-screen-settings.model";
@@ -26,6 +29,7 @@ import {
   NzCollapsePanelComponent
 } from "ng-zorro-antd/collapse";
 import { TranslocoDirective } from "@jsverse/transloco";
+import { NewsComponent } from "../news/news.component";
 
 @Component({
     selector: 'ats-mobile-home-screen-content',
@@ -38,7 +42,8 @@ import { TranslocoDirective } from "@jsverse/transloco";
     PortfolioEvaluationComponent,
     NzCollapseComponent,
     NzCollapsePanelComponent,
-    TranslocoDirective
+    TranslocoDirective,
+    NewsComponent
   ],
     templateUrl: './mobile-home-screen-content.component.html',
     styleUrl: './mobile-home-screen-content.component.less'
@@ -80,6 +85,33 @@ export class MobileHomeScreenContentComponent implements OnInit {
     this.widgetsSwitcherService.activateWidget({
       identifier: {
         typeId: 'light-chart'
+      },
+      sourceWidgetInstanceId: this.guid
+    });
+  }
+
+  openNews(): void {
+    this.widgetsSwitcherService.activateWidget({
+      identifier: {
+        typeId: 'news'
+      },
+      parameters: {
+        section: 'portfolio'
+      },
+      sourceWidgetInstanceId: this.guid
+    });
+  }
+
+  openAllInstruments(displayParams: DisplayParams): void {
+    this.widgetsSwitcherService.activateWidget({
+      identifier: {
+        typeId: 'all-instruments'
+      },
+      parameters: {
+        sort: {
+          parameter: 'dailyGrowthPercent',
+          order: displayParams.growOrder
+        }
       },
       sourceWidgetInstanceId: this.guid
     });

@@ -1,11 +1,13 @@
 import {
+  AfterViewInit,
   Component,
   DestroyRef,
   EventEmitter,
   Input,
   OnDestroy,
   OnInit,
-  Output
+  Output,
+  ViewChild,
 } from '@angular/core';
 import { NewsSection } from "../../models/news.model";
 import {
@@ -44,6 +46,10 @@ import {
   NewsService
 } from "../../../../shared/services/news.service";
 import { PagedResult } from "../../../../shared/models/paging-model";
+import { WidgetsSwitcherService } from "../../../../shared/services/widgets-switcher.service";
+import {
+  NzTabSetComponent
+} from "ng-zorro-antd/tabs";
 
 interface NewsListState {
   filter: NewsFilters;
@@ -59,10 +65,13 @@ interface NewsListState {
   styleUrls: ['./news.component.less'],
   standalone: false
 })
-export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, NewsFilters> implements OnInit, OnDestroy {
+export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, NewsFilters> implements AfterViewInit, OnInit, OnDestroy {
   @Input({required: true}) guid!: string;
 
   @Output() sectionChange = new EventEmitter<NewsSection>();
+
+  @ViewChild('tabSet')
+  tabSet?: NzTabSetComponent;
 
   readonly newsSectionEnum = NewsSection;
 
@@ -82,9 +91,23 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
     protected readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly positionsService: PositionsService,
+    private readonly widgetsSwitcherService: WidgetsSwitcherService,
     protected readonly destroyRef: DestroyRef
   ) {
     super(widgetSettingsService, destroyRef);
+  }
+
+  ngAfterViewInit(): void {
+    this.selectedSection$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(selectedTab => {
+      if(
+        selectedTab === NewsSection.Portfolio
+        && this.tabSet != null
+        && (this.tabSet.nzSelectedIndex ?? -1) !== 1) {
+        setTimeout(() => this.tabSet?.setSelectedIndex(1));
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -97,6 +120,18 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
     super.ngOnInit();
 
     this.createFiltersStream();
+
+    this.widgetsSwitcherService.switchSubscription$.pipe(
+      filter(args => args?.curr != null),
+      map(args => args?.curr!),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(args => {
+      if(args.identifier.typeId === 'news') {
+        if(args.parameters?.section === 'portfolio') {
+          setTimeout(() => this.newsSectionChange(NewsSection.Portfolio), 250);
+        }
+      }
+    });
   }
 
   rowClick(newsItem: NewsListItem): void {
