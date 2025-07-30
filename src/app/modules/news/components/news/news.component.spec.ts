@@ -26,7 +26,7 @@ import {NewsDialogComponent} from "../news-dialog/news-dialog.component";
 import {NewsService} from "../../../../shared/services/news.service";
 import { NewsFiltersComponent } from "../news-filters/news-filters.component";
 import { NzIconDirective } from "ng-zorro-antd/icon";
-import { WidgetsSwitcherService } from "../../../../shared/services/widgets-switcher.service";
+import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
 
 describe('NewsComponent', () => {
   let component: NewsComponent;
@@ -81,9 +81,9 @@ describe('NewsComponent', () => {
           }
         },
         {
-          provide: WidgetsSwitcherService,
+          provide: NavigationStackService,
           useValue: {
-            switchSubscription$: EMPTY
+            currentState$: EMPTY
           }
         }
       ]

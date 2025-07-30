@@ -32,6 +32,7 @@
       </div>
 
       <span class="section-header pl-10 mt-20">{{t('mobileHomeScreen.ideasTitle')}}</span>
+      <ats-ideas (instrumentSelected)="openOrder($event)"></ats-ideas>
 
       <span class="section-header pl-10 mt-20">{{t('mobileHomeScreen.marketTrendsTitle')}}</span>
       <ats-market-trends

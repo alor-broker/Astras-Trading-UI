@@ -46,10 +46,10 @@ import {
   NewsService
 } from "../../../../shared/services/news.service";
 import { PagedResult } from "../../../../shared/models/paging-model";
-import { WidgetsSwitcherService } from "../../../../shared/services/widgets-switcher.service";
 import {
   NzTabSetComponent
 } from "ng-zorro-antd/tabs";
+import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
 
 interface NewsListState {
   filter: NewsFilters;
@@ -91,7 +91,7 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
     protected readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly positionsService: PositionsService,
-    private readonly widgetsSwitcherService: WidgetsSwitcherService,
+    private readonly navigationStackService: NavigationStackService,
     protected readonly destroyRef: DestroyRef
   ) {
     super(widgetSettingsService, destroyRef);
@@ -121,15 +121,12 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
 
     this.createFiltersStream();
 
-    this.widgetsSwitcherService.switchSubscription$.pipe(
-      filter(args => args?.curr != null),
-      map(args => args?.curr!),
+    this.navigationStackService.currentState$.pipe(
+      filter(state => state.widgetTarget.typeId === 'news'),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(args => {
-      if(args.identifier.typeId === 'news') {
-        if(args.parameters?.section === 'portfolio') {
-          setTimeout(() => this.newsSectionChange(NewsSection.Portfolio), 250);
-        }
+    ).subscribe(state => {
+      if(state.widgetTarget.parameters?.section === 'portfolio') {
+        setTimeout(() => this.newsSectionChange(NewsSection.Portfolio), 250);
       }
     });
   }

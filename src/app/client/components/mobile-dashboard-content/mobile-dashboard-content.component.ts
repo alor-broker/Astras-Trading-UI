@@ -7,10 +7,9 @@ import {
   BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
+  fromEvent,
   Observable,
-  queueScheduler,
   shareReplay,
-  subscribeOn,
   switchMap,
   take,
   tap
@@ -30,7 +29,7 @@ import {TranslatorService} from "../../../shared/services/translator.service";
 import {MobileActionsContextService} from "../../../modules/dashboard/services/mobile-actions-context.service";
 import {MobileDashboardService} from "../../../modules/dashboard/services/mobile-dashboard.service";
 import {WidgetsSharedDataService} from "../../../shared/services/widgets-shared-data.service";
-import {filter, map} from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { arraysEqual } from "ng-zorro-antd/core/util";
 import {LetDirective} from "@ngrx/component";
 import {NgForOf, NgIf} from "@angular/common";
@@ -39,10 +38,7 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 import { WidgetSettings } from "../../../shared/models/widget-settings.model";
 import { isInstrumentDependent } from "../../../shared/utils/settings-helper";
-import {
-  WidgetsSwitcherService
-} from "../../../shared/services/widgets-switcher.service";
-import { NavigationStart, Router } from "@angular/router";
+import { NavigationStackService } from "../../../shared/services/navigation-stack.service";
 @Component({
     selector: 'ats-mobile-dashboard-content',
     templateUrl: './mobile-dashboard-content.component.html',
@@ -82,8 +78,7 @@ export class MobileDashboardContentComponent implements OnInit {
     private readonly mobileDashboardService: MobileDashboardService,
     private readonly widgetsSharedDataService: WidgetsSharedDataService,
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly widgetsSwitcherService: WidgetsSwitcherService,
-    private readonly router: Router
+    private readonly navigationStackService: NavigationStackService
   ) {
   }
 
@@ -115,7 +110,18 @@ export class MobileDashboardContentComponent implements OnInit {
     this.widgets$
       .pipe(take(1))
       .subscribe(widgets => {
-        this.selectedWidget$.next(widgets.find(w => w.instance.widgetType === this.homeWidgetId) ?? null);
+        const homeWidget = widgets.find(w => w.instance.widgetType === this.homeWidgetId) ?? null;
+
+        if(homeWidget != null) {
+          this.selectedWidget$.next(homeWidget);
+          this.navigationStackService.pushState({
+            isFinal: true,
+            widgetTarget: {
+              typeId: homeWidget.instance.widgetType,
+              instanceId: homeWidget.instance.guid
+            }
+          });
+        }
       });
 
     this.mobileActionsContextService.actionEvents$.pipe(
@@ -135,55 +141,11 @@ export class MobileDashboardContentComponent implements OnInit {
         this.selectWidget(this.newOrderWidgetId);
       });
 
-    this.widgetsSwitcherService.switchSubscription$.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(event => {
-      if(event?.curr != null) {
-        if(event.curr.identifier.typeId != null) {
-          this.selectWidget(event.curr.identifier.typeId);
-        }
-      }
-
-      if(event?.curr == null && event?.prev != null && event.prev.sourceWidgetInstanceId != null) {
-        this.widgets$.pipe(
-          take(1)
-        ).subscribe(widgets => {
-          const targetWidget = widgets.find(w => w.instance.guid === event!.prev!.sourceWidgetInstanceId);
-          if(targetWidget != null) {
-            this.selectWidget(targetWidget.instance.widgetType);
-          }
-        });
-      }
-    });
-
     this.initWidgetsGallery();
-
-    this.router.events
-      .pipe(
-        filter(event => event instanceof NavigationStart),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(event => {
-        this.widgetsSwitcherService.switchSubscription$.pipe(
-          take(1),
-          subscribeOn(queueScheduler)
-        ).subscribe(switchState => {
-          console.log(event.navigationTrigger);
-          if(
-            event.navigationTrigger !== 'popstate'
-            || switchState == null
-            || switchState.curr?.sourceWidgetInstanceId == null
-          ) {
-            return;
-          }
-
-          this.router.navigateByUrl(this.router.routerState.snapshot.url);
-          this.widgetsSwitcherService.returnToSource();
-        });
-      });
+    this.initNavigationProcessing();
   }
 
-  selectWidget(widgetName: string): void {
+  selectWidget(widgetName: string, skipNavigationStackUpdate = true): void {
     this.widgets$
       .pipe(
         take(1),
@@ -212,7 +174,23 @@ export class MobileDashboardContentComponent implements OnInit {
           }
         })
       )
-      .subscribe(newWidget => this.selectedWidget$.next(newWidget));
+      .subscribe(newWidget => {
+        this.selectedWidget$.next(newWidget);
+        if(!skipNavigationStackUpdate) {
+          this.navigationStackService.currentState$.pipe(
+            take(1)
+          ).subscribe(s => {
+            if(s.widgetTarget.typeId !== newWidget.instance.widgetType) {
+              this.navigationStackService.pushState({
+                widgetTarget: {
+                  typeId: newWidget.instance.widgetType,
+                  instanceId: newWidget.instance.guid
+                }
+              });
+            }
+          });
+        }
+      });
   }
 
   private initWidgetsGallery(): void {
@@ -279,5 +257,47 @@ export class MobileDashboardContentComponent implements OnInit {
       }),
       shareReplay(1)
     );
+  }
+
+  private initNavigationProcessing(): void {
+    const initialUrl = window.location.href;
+    history.pushState(
+      {
+      isApp: true
+    },
+      document.title,
+      initialUrl
+    );
+
+    // process back button action
+    this.navigationStackService.currentState$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(currentState => {
+      this.selectedWidget$.pipe(
+        take(1)
+      ).subscribe(selectedWidget => {
+        if(selectedWidget != null && selectedWidget.instance.widgetType != currentState.widgetTarget.typeId) {
+          this.selectWidget(currentState.widgetTarget.typeId, true);
+        }
+      });
+    });
+
+    fromEvent(window, 'popstate').pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe((event: Event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.navigationStackService.popState();
+
+      if(history.state == null || history.state.isApp == null) {
+        history.pushState(
+          {
+            isApp: true
+          },
+          document.title,
+          initialUrl
+        );
+      }
+    });
   }
 }

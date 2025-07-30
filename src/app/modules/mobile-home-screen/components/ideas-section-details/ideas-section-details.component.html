@@ -1,0 +1,60 @@
+@let section = displaySection();
+
+<nz-modal
+  [nzTitle]="modalTitle"
+  [nzClosable]="false"
+  [nzFooter]="null"
+  [nzMaskClosable]="false"
+  [nzVisible]="displaySection() !== null"
+>
+  <ng-container *nzModalContent>
+    @if (section != null) {
+      <p nz-typography nzEllipsis nzExpandable [nzEllipsisRows]="5">{{ section.description }}</p>
+
+      <div class="d-flex flex-column flex-gap-10">
+        @let items = sectionItems();
+        @for (item of items; track item) {
+          <div
+            class="d-flex flex-row flex-nowrap flex-gap-10 align-items-center justify-content-between"
+            (click)="instrumentSelected.emit(item.instrumentKey)"
+          >
+            <div class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5">
+              <ats-instrument-icon [symbol]="item.instrumentKey.symbol" size="large"></ats-instrument-icon>
+              <div class="d-flex flex-column" >
+                <span nz-typography nzEllipsis class="heading-color">{{ item.shortName }}</span>
+                <span nz-typography nzEllipsis>{{ item.instrumentKey.symbol }}</span>
+              </div>
+            </div>
+
+            <div class="d-flex flex-column align-items-end" *ngrxLet="item.priceInfo$ as priceInfo">
+              @if (priceInfo != null) {
+                <span class="heading-color">{{ priceInfo.lastPrice }}</span>
+                <span
+                  [ngClass]="{
+                  'positive-color': priceInfo.dayChangePercent >= 0,
+                  'negative-color': priceInfo.dayChangePercent < 0
+                  }"
+                >
+                  @if(priceInfo.dayChangePercent > 0) {
+                    <span>+</span>
+                  }
+
+                  <span>{{ priceInfo.dayChangePercent }}%</span>
+                </span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </ng-container>
+
+</nz-modal>
+
+<ng-template #modalTitle>
+  <span class="mr-10" (click)="close()">
+    <nz-icon nzType="arrow-left" nzTheme="outline" />
+  </span>
+  <span>{{section?.title}}</span>
+</ng-template>
+

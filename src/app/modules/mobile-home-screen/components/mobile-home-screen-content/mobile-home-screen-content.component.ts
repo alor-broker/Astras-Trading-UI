@@ -1,6 +1,5 @@
 import {
   Component,
-  Inject,
   Input,
   OnInit
 } from '@angular/core';
@@ -17,12 +16,7 @@ import { LetDirective } from "@ngrx/component";
 import { Market } from "../../../../../generated/graphql.types";
 import { RibbonComponent } from "../../../ribbon/components/ribbon/ribbon.component";
 import { PortfolioEvaluationComponent } from "../portfolio-evaluation/portfolio-evaluation.component";
-import { WidgetsSwitcherService } from "../../../../shared/services/widgets-switcher.service";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import {
-  ACTIONS_CONTEXT,
-  ActionsContext
-} from "../../../../shared/services/actions-context";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import {
   NzCollapseComponent,
@@ -30,9 +24,12 @@ import {
 } from "ng-zorro-antd/collapse";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { NewsComponent } from "../news/news.component";
+import { IdeasComponent } from "../ideas/ideas.component";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
 
 @Component({
-    selector: 'ats-mobile-home-screen-content',
+  selector: 'ats-mobile-home-screen-content',
   imports: [
     PortfolioDynamicsComponent,
     PositionsComponent,
@@ -43,10 +40,11 @@ import { NewsComponent } from "../news/news.component";
     NzCollapseComponent,
     NzCollapsePanelComponent,
     TranslocoDirective,
-    NewsComponent
+    NewsComponent,
+    IdeasComponent
   ],
-    templateUrl: './mobile-home-screen-content.component.html',
-    styleUrl: './mobile-home-screen-content.component.less'
+  templateUrl: './mobile-home-screen-content.component.html',
+  styleUrl: './mobile-home-screen-content.component.less'
 })
 export class MobileHomeScreenContentComponent implements OnInit {
   @Input({required: true})
@@ -58,9 +56,8 @@ export class MobileHomeScreenContentComponent implements OnInit {
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly widgetsSwitcherService: WidgetsSwitcherService,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext,
+    private readonly dashboardContextService: DashboardContextService,
+    private readonly navigationStackService: NavigationStackService,
   ) {
   }
 
@@ -69,51 +66,56 @@ export class MobileHomeScreenContentComponent implements OnInit {
   }
 
   openPortfolioDetails(): void {
-    this.widgetsSwitcherService.activateWidget({
-      identifier: {
-        typeId: 'blotter'
-      },
-      parameters: {
-        activeTab: 'summary'
-      },
-      sourceWidgetInstanceId: this.guid
+    this.navigationStackService.pushState({
+      widgetTarget: {
+        typeId: 'blotter',
+        parameters: {
+          activeTab: 'summary'
+        }
+      }
     });
   }
 
   openChart(instrumentKey: InstrumentKey): void {
-    this.actionsContext.selectInstrument(instrumentKey, defaultBadgeColor);
-    this.widgetsSwitcherService.activateWidget({
-      identifier: {
+    this.dashboardContextService.selectDashboardInstrument(instrumentKey, defaultBadgeColor);
+    this.navigationStackService.pushState({
+      widgetTarget: {
         typeId: 'light-chart'
-      },
-      sourceWidgetInstanceId: this.guid
+      }
+    });
+  }
+
+  openOrder(instrumentKey: InstrumentKey): void {
+    this.dashboardContextService.selectDashboardInstrument(instrumentKey, defaultBadgeColor);
+    this.navigationStackService.pushState({
+      widgetTarget: {
+        typeId: 'order-submit'
+      }
     });
   }
 
   openNews(): void {
-    this.widgetsSwitcherService.activateWidget({
-      identifier: {
-        typeId: 'news'
-      },
-      parameters: {
-        section: 'portfolio'
-      },
-      sourceWidgetInstanceId: this.guid
+    this.navigationStackService.pushState({
+      widgetTarget: {
+        typeId: 'news',
+        parameters: {
+          section: 'portfolio'
+        }
+      }
     });
   }
 
   openAllInstruments(displayParams: DisplayParams): void {
-    this.widgetsSwitcherService.activateWidget({
-      identifier: {
-        typeId: 'all-instruments'
-      },
-      parameters: {
-        sort: {
-          parameter: 'dailyGrowthPercent',
-          order: displayParams.growOrder
+    this.navigationStackService.pushState({
+      widgetTarget: {
+        typeId: 'all-instruments',
+        parameters: {
+          sort: {
+            parameter: 'dailyGrowthPercent',
+            order: displayParams.growOrder
+          }
         }
-      },
-      sourceWidgetInstanceId: this.guid
+      }
     });
   }
 }

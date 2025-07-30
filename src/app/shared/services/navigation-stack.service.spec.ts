@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { WidgetsSwitcherService } from './widgets-switcher.service';
+import { NavigationStackService } from './navigation-stack.service';
 
-describe('WidgetsSwitcherService', () => {
-  let service: WidgetsSwitcherService;
+describe('NavigationStackService', () => {
+  let service: NavigationStackService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(WidgetsSwitcherService);
+    service = TestBed.inject(NavigationStackService);
   });
 
   it('should be created', () => {

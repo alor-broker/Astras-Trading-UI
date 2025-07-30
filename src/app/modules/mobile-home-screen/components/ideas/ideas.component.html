@@ -1,0 +1,38 @@
+<div *ngrxLet="sections$ as sections; suspenseTpl: loading">
+  @if (sections.length > 0) {
+    <nz-carousel [nzDots]="true">
+      @for (section of sections; track section) {
+        <div nz-carousel-content class="p-5">
+          <div class="section" (click)="openSection(section)">
+            <div class="mb-10">
+              <span nz-typography nzEllipsis class="fs-6 heading-color">{{ section.title }}</span>
+            </div>
+            <div>
+              <p nz-typography nzEllipsis [nzEllipsisRows]="3">{{ section.description }}</p>
+            </div>
+            <div class="d-flex flex-row flex-nowrap justify-content-start flex-gap-10">
+              @for (idea of section.ideas; track idea) {
+                @if ($index < 4) {
+                  <div class="d-flex flex-column align-items-center flex-gap-5 idea">
+                    <ats-instrument-icon [symbol]="idea.instrumentKey.symbol" size="large"
+                                         shape="rounded-square"></ats-instrument-icon>
+                    <span nz-typography nzEllipsis class="heading-color">{{ idea.shortName }}</span>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </nz-carousel>
+  } @else {
+    <nz-empty nzNotFoundImage="simple"></nz-empty>
+  }
+</div>
+
+<ng-template #loading>
+  <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }"></nz-skeleton>
+</ng-template>
+
+<ats-ideas-section-details (instrumentSelected)="selectInstrument($event)"
+                           [(displaySection)]="selectedSection"></ats-ideas-section-details>

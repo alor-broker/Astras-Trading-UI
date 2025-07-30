@@ -74,7 +74,7 @@ import {
 } from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { formatNumber } from "@angular/common";
-import { WidgetsSwitcherService } from "../../../../shared/services/widgets-switcher.service";
+import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
 
 interface AllInstrumentsNodeDisplay extends Instrument {
   id: string;
@@ -356,7 +356,7 @@ implements OnInit, OnDestroy {
     private readonly modalService: NzModalService,
     protected readonly destroyRef: DestroyRef,
     @Inject(LOCALE_ID) private readonly locale: string,
-    private readonly widgetsSwitcherService: WidgetsSwitcherService
+    private readonly navigationStackService: NavigationStackService,
   ) {
     super(settingsService, destroyRef);
   }
@@ -371,18 +371,15 @@ implements OnInit, OnDestroy {
 
     super.ngOnInit();
 
-    this.widgetsSwitcherService.switchSubscription$.pipe(
-      filter(args => args?.curr != null),
-      map(args => args?.curr!),
+    this.navigationStackService.currentState$.pipe(
+      filter(state => state.widgetTarget.typeId === 'all-instruments'),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(args => {
-      if(args.identifier.typeId === 'all-instruments') {
-        if(args.parameters?.sort?.parameter != null) {
-          const targetColumn = this.allColumns.find(c => c.id === args.parameters?.sort?.parameter);
-          if(targetColumn != null) {
-            const order = args.parameters?.sort.order === SortEnumType.Desc ? 'descend' : 'ascend';
-            this.table?.sortChange(order, targetColumn);
-          }
+    ).subscribe(state => {
+      if(state.widgetTarget.parameters?.sort?.parameter != null) {
+        const targetColumn = this.allColumns.find(c => c.id === state.widgetTarget.parameters?.sort?.parameter);
+        if(targetColumn != null) {
+          const order = state.widgetTarget.parameters?.sort.order === SortEnumType.Desc ? 'descend' : 'ascend';
+          this.table?.sortChange(order, targetColumn);
         }
       }
     });

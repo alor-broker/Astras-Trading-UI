@@ -2,7 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AllInstrumentsComponent } from './all-instruments.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {of, Subject} from "rxjs";
+import {
+  EMPTY,
+  of,
+  Subject
+} from "rxjs";
 import { AllInstrumentsService } from "../../services/all-instruments.service";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { TranslatorService } from '../../../../shared/services/translator.service';
@@ -14,6 +18,7 @@ import { NzModalService } from "ng-zorro-antd/modal";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
 
 describe('AllInstrumentsComponent', () => {
   let component: AllInstrumentsComponent;
@@ -95,6 +100,12 @@ describe('AllInstrumentsComponent', () => {
           provide: NzModalService,
           useValue: {
             warning: jasmine.createSpy('warning').and.callThrough()
+          }
+        },
+        {
+          provide: NavigationStackService,
+          useValue: {
+            currentState$: EMPTY
           }
         },
         ...commonTestProviders

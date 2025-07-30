@@ -7,8 +7,8 @@ import { PositionsComponent } from "../positions/positions.component";
 import { MarketTrendsComponent } from "../market-trends/market-trends.component";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { EMPTY } from 'rxjs';
-import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
-import { WidgetsSwitcherService } from "../../../../shared/services/widgets-switcher.service";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
 
 describe('MobileHomeScreenContentComponent', () => {
   let component: MobileHomeScreenContentComponent;
@@ -32,12 +32,12 @@ describe('MobileHomeScreenContentComponent', () => {
           }
         ),
         MockProvider(
-          ACTIONS_CONTEXT,
+          DashboardContextService,
           {
-            selectInstrument: jasmine.createSpy('selectInstrument').and.callThrough()
+            selectDashboardInstrument: jasmine.createSpy('selectDashboardInstrument').and.callThrough()
           }
         ),
-        MockProvider(WidgetsSwitcherService)
+        MockProvider(NavigationStackService)
       ]
     })
     .compileComponents();

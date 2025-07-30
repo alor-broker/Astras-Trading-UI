@@ -40,10 +40,8 @@ import {
   PUSH_NOTIFICATIONS_CONFIG,
   PushNotificationsConfig
 } from "../../../push-notifications/services/push-notifications-config";
-import {
-  WidgetsSwitcherService
-} from "../../../../shared/services/widgets-switcher.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
 
 @Component({
     selector: 'ats-blotter-widget',
@@ -77,7 +75,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly widgetsSwitcherService: WidgetsSwitcherService,
+    private readonly navigationStackService: NavigationStackService,
     private readonly destroyRef: DestroyRef
   ) {
   }
@@ -159,15 +157,12 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
       shareReplay(1)
     );
 
-    this.widgetsSwitcherService.switchSubscription$.pipe(
-      filter(args => args?.curr != null),
-      map(args => args?.curr!),
+    this.navigationStackService.currentState$.pipe(
+      filter(state => state.widgetTarget.typeId === 'blotter'),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(args => {
-      if(args.identifier.typeId === 'blotter') {
-        if(args.parameters?.activeTab === 'summary') {
-          this.onIndexChange(0);
-        }
+    ).subscribe(state => {
+      if(state.widgetTarget.parameters?.activeTab === 'summary') {
+        this.onIndexChange(0);
       }
     });
   }
