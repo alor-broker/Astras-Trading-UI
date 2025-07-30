@@ -1,5 +1,6 @@
 import {
   Component,
+  DestroyRef,
   model,
   OnInit,
   output
@@ -7,6 +8,7 @@ import {
 import { NzSkeletonComponent } from "ng-zorro-antd/skeleton";
 import {
   BehaviorSubject,
+  fromEvent,
   Observable
 } from "rxjs";
 import { LetDirective } from "@ngrx/component";
@@ -20,6 +22,7 @@ import { InstrumentIconComponent } from "../../../../shared/components/instrumen
 import { Section } from "../../models/ideas-typings.model";
 import { IdeasSectionDetailsComponent } from "../ideas-section-details/ideas-section-details.component";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-ideas',
@@ -43,12 +46,21 @@ export class IdeasComponent implements OnInit {
 
   readonly instrumentSelected = output<InstrumentKey>();
 
+  constructor(private readonly destroyRef: DestroyRef) {
+  }
+
   selectInstrument(instrumentKey: InstrumentKey): void {
     this.instrumentSelected.emit(instrumentKey);
     this.selectedSection.set(null);
   }
 
   ngOnInit(): void {
+    fromEvent(window, 'popstate').pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => {
+      this.selectedSection.set(null);
+    });
+
     this.sections$ = new BehaviorSubject<Section[]>([
       {
         title: "Искусственный интеллект",
