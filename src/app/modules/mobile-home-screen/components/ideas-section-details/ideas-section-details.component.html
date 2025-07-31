@@ -3,9 +3,11 @@
 <nz-modal
   [nzTitle]="modalTitle"
   [nzClosable]="false"
+  [nzMaskClosable]="true"
   [nzFooter]="null"
-  [nzMaskClosable]="false"
   [nzVisible]="displaySection() !== null"
+  nzClassName="full-screen"
+  (nzOnCancel)="close()"
 >
   <ng-container *nzModalContent>
     @if (section != null) {

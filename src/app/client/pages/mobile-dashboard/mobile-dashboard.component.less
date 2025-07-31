@@ -63,4 +63,28 @@ nz-layout {
   }
 }
 
+::ng-deep {
+  .ant-modal {
+    &.full-screen {
+      position: absolute;
+      top: 50px;
+      bottom: 50px;
+      left: 0;
+      right: 0;
+
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+
+      .ant-modal-content {
+        height: 100%;
+      }
+
+      .ant-modal-body {
+        padding-top: 0;
+      }
+    }
+  }
+}
+
 
