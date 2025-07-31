@@ -155,6 +155,13 @@ export class MarketTrendsComponent implements OnInit {
               nin: this.ignoredBoardsFilter ?? ['FQBR']
             }
           }
+        },
+        {
+          tradingDetails: {
+            tradeVolume: {
+               gt: 1
+            }
+          }
         }
       ]
     };
