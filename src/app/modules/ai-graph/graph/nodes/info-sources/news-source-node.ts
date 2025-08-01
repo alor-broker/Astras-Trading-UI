@@ -116,7 +116,8 @@ export class NewsSourceNode extends NodeBase {
 
   override executor(context: GraphProcessingContextService): Observable<boolean> {
     return super.executor(context).pipe(
-      switchMap(() => {
+      switchMap(() => context.dataContext),
+      switchMap(dataContext => {
           const targetInstruments = this.getValueOfInput(this.inputSlotName) as string | undefined;
           const inputDescriptor = this.findInputSlot(this.inputSlotName, true);
           if (
@@ -127,7 +128,10 @@ export class NewsSourceNode extends NodeBase {
           }
 
           const limit = this.properties[this.maxRecordsCountPropertyName] as number | undefined ?? 100;
-          const fromDate = this.properties[this.fromDatePropertyName] as Date;
+          const fromDate =
+            this.properties[this.fromDatePropertyName] as Date | undefined
+            ?? add(dataContext.currentDate, {months: -1});
+
           const instruments = this.toInstruments(targetInstruments ?? '');
 
           if(instruments.length === 0) {
@@ -213,7 +217,7 @@ export class NewsSourceNode extends NodeBase {
     targetInstrument: InstrumentKey,
     limit: number,
     newsService: NewsService,
-    fromDate?: Date,
+    fromDate: Date,
   ): Observable<NewsListItem[]> {
     const state: {
       loadedItems: NewsListItem[];
@@ -223,7 +227,7 @@ export class NewsSourceNode extends NodeBase {
       itemsIds: new Set(),
     };
 
-    const finishDate = startOfDay(fromDate ?? add(new Date(), {months: -1}));
+    const finishDate = startOfDay(fromDate);
     const batchLimit = Math.min(limit, 100);
     let cursor: string | null = null;
 
