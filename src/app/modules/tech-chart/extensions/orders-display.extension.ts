@@ -50,6 +50,8 @@ import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
 } from "../../../shared/services/orders/order-command.service";
+import { StopMarketOrderEdit } from "../../../shared/models/orders/edit-order.model";
+import { MathHelper } from "../../../shared/utils/math-helper";
 
 class OrdersState {
   readonly limitOrders = new Map<string, IOrderLineAdapter>();
@@ -143,7 +145,8 @@ export class OrdersDisplayExtension extends BaseExtension {
         this.fillLimitOrder(
           order,
           orderLineAdapter,
-          translator);
+          translator,
+          context);
       }
     ));
 
@@ -161,7 +164,8 @@ export class OrdersDisplayExtension extends BaseExtension {
         this.fillStopOrder(
           order,
           orderLineAdapter,
-          translator
+          translator,
+          context
         );
       }
     ));
@@ -252,7 +256,8 @@ export class OrdersDisplayExtension extends BaseExtension {
   private fillLimitOrder(
     order: Order,
     orderLineAdapter: IOrderLineAdapter,
-    translator: TranslatorFn
+    translator: TranslatorFn,
+    context: ChartContext
   ): void {
     const getEditCommand = (): EditOrderDialogParams => ({
       orderId: order.id,
@@ -274,6 +279,14 @@ export class OrdersDisplayExtension extends BaseExtension {
       )
       .onModify(() => this.ordersDialogService.openEditOrderDialog(getEditCommand()))
       .onMove(() => {
+        if(context.settings.orders?.editWithoutConfirmation ?? false) {
+          const newPrice = orderLineAdapter.getPrice();
+          if(newPrice === order.price) {
+            return;
+          }
+
+          this.editLimitOrderPrice(order, newPrice);
+        } else {
           const params = {
             ...getEditCommand(),
             cancelCallback: (): IOrderLineAdapter => orderLineAdapter.setPrice(order.price)
@@ -286,13 +299,15 @@ export class OrdersDisplayExtension extends BaseExtension {
           };
           this.ordersDialogService.openEditOrderDialog(params);
         }
+        }
       );
   }
 
   private fillStopOrder(
     order: StopOrder,
     orderLineAdapter: IOrderLineAdapter,
-    translator: TranslatorFn
+    translator: TranslatorFn,
+    context: ChartContext
   ): void {
     const conditionType: LessMore = getConditionTypeByString(order.conditionType)!;
     const orderText = 'S'
@@ -328,6 +343,14 @@ export class OrdersDisplayExtension extends BaseExtension {
       )
       .onModify(() => this.ordersDialogService.openEditOrderDialog(getEditCommand()))
       .onMove(() => {
+        if(context.settings.orders?.editWithoutConfirmation ?? false) {
+          const newPrice = orderLineAdapter.getPrice();
+          if(newPrice === order.triggerPrice) {
+            return;
+          }
+
+          this.editStopOrderPrice(order, newPrice);
+        } else {
           const params = {
             ...getEditCommand(),
             cancelCallback: (): IOrderLineAdapter => orderLineAdapter.setPrice(order.triggerPrice)
@@ -340,6 +363,7 @@ export class OrdersDisplayExtension extends BaseExtension {
           };
           this.ordersDialogService.openEditOrderDialog(params);
         }
+      }
       );
   }
 
@@ -351,6 +375,57 @@ export class OrdersDisplayExtension extends BaseExtension {
         return 40;
       default:
         return 10;
+    }
+  }
+
+  private editLimitOrderPrice(order: Order, newPrice: number): void {
+    this.orderCommandService.submitLimitOrderEdit(
+      {
+        orderId: order.id,
+        side: order.side,
+        quantity: order.qtyBatch - (order.filledQtyBatch ?? 0),
+        price: newPrice,
+        instrument: order.targetInstrument,
+        allowMargin: true
+      },
+      order.ownedPortfolio.portfolio
+    ).subscribe();
+  }
+
+  private editStopOrderPrice(order: StopOrder, newPrice: number): void {
+    const editOrder: StopMarketOrderEdit = {
+      orderId: order.id,
+      side: order.side,
+      quantity: order.qtyBatch - (order.filledQtyBatch ?? 0),
+      condition: getConditionTypeByString(order.conditionType)!,
+      triggerPrice: newPrice,
+      instrument: order.targetInstrument,
+      allowMargin: true
+    };
+
+    if (order.type === OrderType.StopMarket) {
+      this.orderCommandService.submitStopMarketOrderEdit(
+        editOrder,
+        order.ownedPortfolio.portfolio
+      ).subscribe();
+
+      return;
+    }
+
+    if (order.type === OrderType.StopLimit) {
+      this.orderCommandService.submitStopLimitOrderEdit({
+          ...editOrder,
+          price: MathHelper.round(
+            order.price! - (order.triggerPrice - newPrice),
+            Math.max(
+              MathHelper.getPrecision(order.price),
+              MathHelper.getPrecision(order.triggerPrice),
+              MathHelper.getPrecision(newPrice)
+            )
+          )
+        },
+        order.ownedPortfolio.portfolio
+      ).subscribe();
     }
   }
 }
