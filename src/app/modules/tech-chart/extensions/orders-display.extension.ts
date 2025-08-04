@@ -197,7 +197,7 @@ export class OrdersDisplayExtension extends BaseExtension {
 
         orders.forEach(order => {
           const existingOrderLine = state.get(order.id);
-          if (order.status !== 'working') {
+          if (order.status !== 'working' && order.status !== 'rejected') {
             if (existingOrderLine) {
               removeItem(order.id);
             }
