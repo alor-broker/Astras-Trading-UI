@@ -19,6 +19,7 @@ export interface NewOrderBase {
 }
 
 export interface NewMarketOrder extends NewOrderBase {
+  timeInForce?: TimeInForce;
 }
 
 export interface NewLimitOrder extends NewOrderBase {
