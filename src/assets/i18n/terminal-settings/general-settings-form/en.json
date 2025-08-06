@@ -34,5 +34,7 @@
   "addBadgesBtnLabel": "Add predefined badges",
   "badgesColorsHeaders": "Available badges",
 
+  "showCurrentTimeLabel": "Show current time",
+
   "intervalError": "Value should be from {{min}} to {{max}}"
 }
