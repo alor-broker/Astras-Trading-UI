@@ -77,7 +77,8 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
     language: this.formBuilder.nonNullable.control(''),
     badgesBind: this.formBuilder.nonNullable.control(false),
     badgesColors: this.formBuilder.nonNullable.control<string[]>([]),
-    tableRowHeight: this.formBuilder.nonNullable.control(TableRowHeight.Medium)
+    tableRowHeight: this.formBuilder.nonNullable.control(TableRowHeight.Medium),
+    showCurrentTime: this.formBuilder.nonNullable.control(false),
   });
 
   constructor(

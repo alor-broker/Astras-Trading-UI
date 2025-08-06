@@ -19,4 +19,5 @@ export interface GeneralSettings {
   badgesBind?: boolean;
   badgesColors?: string[];
   tableRowHeight?: TableRowHeight;
+  showCurrentTime?: boolean;
 }

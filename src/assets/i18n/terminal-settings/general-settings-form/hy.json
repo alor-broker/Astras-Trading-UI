@@ -28,5 +28,6 @@
   "badgesBindHint3": "Վիդջեթներ, որոնցում կփոխվեն տվյալները՝ կախված ընտրված գործիքից",
   "addBadgesBtnLabel": "Ավելացնել կանխորոշված լեյբլներ",
   "badgesColorsHeaders": "Մատչելի լեյբլներ",
+  "showCurrentTimeLabel": "Ցուցադրել ընթացիկ ժամանակը",
   "intervalError": "Արժեքը պետք է լինի {{min}}-ից մինչև {{max}}"
 }
