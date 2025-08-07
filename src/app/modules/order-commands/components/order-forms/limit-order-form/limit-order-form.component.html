@@ -72,7 +72,7 @@
                 </nz-form-control>
               </nz-form-item>
             </div>
-            <nz-collapse [nzBordered]="false" class="compact" nzGhost>
+            <nz-collapse [nzBordered]="false" class="compact" nzGhost *ngIf="!(limitOrderConfig.unsupportedFields.advanced ?? false)">
               <nz-collapse-panel [nzHeader]="t('orderCommandsOrderForms.advanced')" [nzActive]="expandAdvancedOptions">
                 <nz-form-item class="compact">
                   <nz-form-control [nzErrorTip]="t('orderCommandsOrderForms.instrumentGroupError')">
@@ -241,7 +241,7 @@
           </div>
         </form>
       </div>
-      <div>
+      <div class="mt-10">
         <ats-order-evaluation
           (quantitySelect)="setQuantity($event)"
           [evaluationProperties]="evaluationRequest$ | async"

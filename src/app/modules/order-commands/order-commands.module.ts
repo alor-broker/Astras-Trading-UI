@@ -1,9 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OrdersDialogWidgetComponent } from './widgets/orders-dialog-widget/orders-dialog-widget.component';
-import { CompactHeaderComponent } from './components/compact-header/compact-header.component';
 import { InstrumentInfoComponent } from './components/instrument-info/instrument-info.component';
-import { OrderEvaluationComponent } from './components/order-evaluation/order-evaluation.component';
 import { LimitOrderFormComponent } from './components/order-forms/limit-order-form/limit-order-form.component';
 import { MarketOrderFormComponent } from './components/order-forms/market-order-form/market-order-form.component';
 import { StopOrderFormComponent } from './components/order-forms/stop-order-form/stop-order-form.component';
@@ -42,13 +40,13 @@ import { WidgetSettingsComponent } from "../../shared/components/widget-settings
 import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
 import { NzInputNumberComponent } from "ng-zorro-antd/input-number";
 import { InstrumentIconComponent } from "../../shared/components/instrument-icon/instrument-icon.component";
+import { CompactHeaderComponent } from "./components/compact-header/compact-header.component";
+import { OrderEvaluationComponent } from "./components/order-evaluation/order-evaluation.component";
 
 @NgModule({
   declarations: [
     OrdersDialogWidgetComponent,
-    CompactHeaderComponent,
     InstrumentInfoComponent,
-    OrderEvaluationComponent,
     LimitOrderFormComponent,
     MarketOrderFormComponent,
     StopOrderFormComponent,
@@ -60,11 +58,12 @@ import { InstrumentIconComponent } from "../../shared/components/instrument-icon
     EditLimitOrderFormComponent,
     EditStopOrderFormComponent
   ],
-  exports: [
-    OrdersDialogWidgetComponent,
-    OrderSubmitWidgetComponent,
-    EditOrderDialogWidgetComponent
-  ],
+    exports: [
+        OrdersDialogWidgetComponent,
+        OrderSubmitWidgetComponent,
+        EditOrderDialogWidgetComponent,
+        LimitOrderFormComponent
+    ],
   imports: [
     CommonModule,
     TranslocoModule,
@@ -88,7 +87,9 @@ import { InstrumentIconComponent } from "../../shared/components/instrument-icon
     WidgetSettingsComponent,
     InstrumentSearchComponent,
     NzInputNumberComponent,
-    InstrumentIconComponent
+    InstrumentIconComponent,
+    CompactHeaderComponent,
+    OrderEvaluationComponent
   ]
 })
 export class OrderCommandsModule {

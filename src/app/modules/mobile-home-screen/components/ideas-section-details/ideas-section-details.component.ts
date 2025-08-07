@@ -3,18 +3,20 @@ import {
   computed,
   DestroyRef,
   model,
-  output
+  OnDestroy,
+  ViewEncapsulation
 } from '@angular/core';
-import { Section } from "../../models/ideas-typings.model";
 import {
-  NzModalComponent,
-  NzModalContentDirective
-} from "ng-zorro-antd/modal";
+  Idea,
+  Section
+} from "../../models/ideas-typings.model";
+import { NzModalComponent } from "ng-zorro-antd/modal";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
 import { NzTypographyComponent } from "ng-zorro-antd/typography";
 import { HistoryService } from "../../../../shared/services/history.service";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import {
+  BehaviorSubject,
   Observable,
   switchMap,
   timer
@@ -23,8 +25,15 @@ import { MathHelper } from "../../../../shared/utils/math-helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { map } from "rxjs/operators";
 import { LetDirective } from "@ngrx/component";
-import { NgClass } from "@angular/common";
+import {
+  AsyncPipe,
+  NgClass
+} from "@angular/common";
 import { NzIconDirective } from "ng-zorro-antd/icon";
+import { OrderCommandsModule } from "../../../order-commands/order-commands.module";
+import { SubmitOrderForIdeaComponent } from "../submit-order-for-idea/submit-order-for-idea.component";
+import { ArrayHelper } from "../../../../shared/utils/array-helper";
+import { InstrumentEqualityComparer } from "../../../../shared/utils/instruments";
 
 interface InstrumentPrice {
   lastPrice: number;
@@ -35,18 +44,23 @@ interface InstrumentPrice {
   selector: 'ats-ideas-section-details',
   imports: [
     NzModalComponent,
-    NzModalContentDirective,
     InstrumentIconComponent,
     NzTypographyComponent,
     LetDirective,
     NgClass,
-    NzIconDirective
+    NzIconDirective,
+    OrderCommandsModule,
+    SubmitOrderForIdeaComponent,
+    AsyncPipe
   ],
   templateUrl: './ideas-section-details.component.html',
-  styleUrl: './ideas-section-details.component.less'
+  styleUrl: './ideas-section-details.component.less',
+  encapsulation: ViewEncapsulation.None
 })
-export class IdeasSectionDetailsComponent {
+export class IdeasSectionDetailsComponent implements OnDestroy {
   readonly displaySection = model<Section | null>(null);
+
+  readonly selectedIdea$ = new BehaviorSubject<Idea | null>(null);
 
   readonly sectionItems = computed(() => {
     const section = this.displaySection();
@@ -54,18 +68,21 @@ export class IdeasSectionDetailsComponent {
       return [];
     }
 
+    this.selectedIdea$.next(ArrayHelper.firstOrNull(section.ideas));
     return section.ideas.map(i => ({
       ...i,
       priceInfo$: this.getPriceInfo(i.instrumentKey)
     }));
   });
 
-  readonly instrumentSelected = output<InstrumentKey>();
-
   constructor(
     private readonly historyService: HistoryService,
     private readonly destroyRef: DestroyRef
   ) {
+  }
+
+  ngOnDestroy(): void {
+    this.selectedIdea$.complete();
   }
 
   protected close(): void {
@@ -95,4 +112,6 @@ export class IdeasSectionDetailsComponent {
     }
     return MathHelper.round((1 - (closePrice / lastPrice)) * 100, 2);
   }
+
+  readonly isInstrumentsEquals = InstrumentEqualityComparer.equals;
 }

@@ -85,15 +85,6 @@ export class MobileHomeScreenContentComponent implements OnInit {
     });
   }
 
-  openOrder(instrumentKey: InstrumentKey): void {
-    this.dashboardContextService.selectDashboardInstrument(instrumentKey, defaultBadgeColor);
-    this.navigationStackService.pushState({
-      widgetTarget: {
-        typeId: 'order-submit'
-      }
-    });
-  }
-
   openNews(): void {
     this.navigationStackService.pushState({
       widgetTarget: {

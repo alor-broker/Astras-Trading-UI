@@ -6,52 +6,65 @@
   [nzMaskClosable]="true"
   [nzFooter]="null"
   [nzVisible]="displaySection() !== null"
-  nzClassName="full-screen"
+  nzClassName="full-screen ats-ideas-section-details"
   (nzOnCancel)="close()"
+  [nzContent]="content"
 >
-  <ng-container *nzModalContent>
-    @if (section != null) {
-      <p nz-typography nzEllipsis nzExpandable [nzEllipsisRows]="5">{{ section.description }}</p>
+</nz-modal>
 
-      <div class="d-flex flex-column flex-gap-10">
-        @let items = sectionItems();
-        @for (item of items; track item) {
-          <div
-            class="d-flex flex-row flex-nowrap flex-gap-10 align-items-center justify-content-between"
-            (click)="instrumentSelected.emit(item.instrumentKey)"
-          >
-            <div class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5">
-              <ats-instrument-icon [symbol]="item.instrumentKey.symbol" size="large"></ats-instrument-icon>
-              <div class="d-flex flex-column" >
-                <span nz-typography nzEllipsis class="heading-color">{{ item.shortName }}</span>
-                <span nz-typography nzEllipsis>{{ item.instrumentKey.symbol }}</span>
-              </div>
+<ng-template #content>
+  @if (section != null) {
+    <p nz-typography nzEllipsis nzExpandable [nzEllipsisRows]="5">{{ section.description }}</p>
+
+    <div class="d-flex flex-column flex-gap-10">
+
+      @let items = sectionItems();
+      @let selectedItem = selectedIdea$ | async;
+
+      @for (item of items; track item) {
+        <div
+          class="d-flex flex-row flex-nowrap flex-gap-10 align-items-center justify-content-between p-5"
+          [class.selected]="isInstrumentsEquals(item.instrumentKey, selectedItem?.instrumentKey ?? null)"
+          (click)="selectedIdea$.next(item)"
+        >
+          <div class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5">
+            <ats-instrument-icon [symbol]="item.instrumentKey.symbol" size="large"></ats-instrument-icon>
+            <div class="d-flex flex-column" >
+              <span nz-typography nzEllipsis class="heading-color">{{ item.shortName }}</span>
+              <span nz-typography nzEllipsis>{{ item.instrumentKey.symbol }}</span>
             </div>
+          </div>
 
-            <div class="d-flex flex-column align-items-end" *ngrxLet="item.priceInfo$ as priceInfo">
-              @if (priceInfo != null) {
-                <span class="heading-color">{{ priceInfo.lastPrice }}</span>
-                <span
-                  [ngClass]="{
+          <div class="d-flex flex-column align-items-end" *ngrxLet="item.priceInfo$ as priceInfo">
+            @if (priceInfo != null) {
+              <span class="heading-color">{{ priceInfo.lastPrice }}</span>
+              <span
+                [ngClass]="{
                   'positive-color': priceInfo.dayChangePercent >= 0,
                   'negative-color': priceInfo.dayChangePercent < 0
                   }"
-                >
+              >
                   @if(priceInfo.dayChangePercent > 0) {
                     <span>+</span>
                   }
 
-                  <span>{{ priceInfo.dayChangePercent }}%</span>
+                <span>{{ priceInfo.dayChangePercent }}%</span>
                 </span>
-              }
-            </div>
+            }
           </div>
-        }
+        </div>
+      }
+    </div>
+
+    @if(selectedItem != null) {
+      <div class="mt-15">
+        <div>
+          <ats-submit-order-for-idea [idea]="selectedItem"></ats-submit-order-for-idea>
+        </div>
       </div>
     }
-  </ng-container>
-
-</nz-modal>
+  }
+</ng-template>
 
 <ng-template #modalTitle>
   <span class="mr-10" (click)="close()">

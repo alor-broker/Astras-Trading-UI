@@ -3,7 +3,6 @@ import {
   DestroyRef,
   model,
   OnInit,
-  output
 } from '@angular/core';
 import { NzSkeletonComponent } from "ng-zorro-antd/skeleton";
 import {
@@ -21,7 +20,6 @@ import { NzTypographyComponent } from "ng-zorro-antd/typography";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
 import { Section } from "../../models/ideas-typings.model";
 import { IdeasSectionDetailsComponent } from "../ideas-section-details/ideas-section-details.component";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
@@ -44,14 +42,7 @@ export class IdeasComponent implements OnInit {
 
   protected selectedSection = model<Section | null>(null);
 
-  readonly instrumentSelected = output<InstrumentKey>();
-
   constructor(private readonly destroyRef: DestroyRef) {
-  }
-
-  selectInstrument(instrumentKey: InstrumentKey): void {
-    this.instrumentSelected.emit(instrumentKey);
-    this.selectedSection.set(null);
   }
 
   ngOnInit(): void {

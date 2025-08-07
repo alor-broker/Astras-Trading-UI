@@ -1,9 +1,9 @@
 <ng-container *transloco="let t; scope: 'order-commands/compact-header'">
-  <ng-container *ngIf="instrumentKey$ | async as instrumentKey">
+  <ng-container *ngIf="instrument$ | async as instrument">
     <ng-container *ngIf="portfolioKey$ | async as portfolioKey">
       <div class="d-flex justify-content-between flex-gap-5">
         <div>
-          <label class="portfolio">{{portfolioKey.portfolio}} ({{instrumentKey.exchange}})</label>
+          <label class="portfolio">{{portfolioKey.portfolio}} ({{instrument.exchange}})</label>
           <ng-container *ngIf="positionInfo$ | async as positionInfo">
             <span>&nbsp;</span>
             <span
@@ -19,11 +19,11 @@
         <ng-container *ngIf="priceData$ | async as priceData">
           <div>
             <label>Ask: </label>
-            <span (click)="priceSelected.emit(priceData.ask)" class="selectable sell">{{priceData.ask | number: '0.0-10'}}</span>
+            <span (click)="priceSelected.emit(priceData.ask)" class="selectable sell">{{priceData.ask | atsPrice: getPriceDecimalSymbolsCount(instrument)}}</span>
           </div>
           <div>
             <label>Bid: </label>
-            <span (click)="priceSelected.emit(priceData.bid)" class="selectable buy">{{priceData.bid | number: '0.0-10'}}</span>
+            <span (click)="priceSelected.emit(priceData.bid)" class="selectable buy">{{priceData.bid | atsPrice:  getPriceDecimalSymbolsCount(instrument)}}</span>
           </div>
         </ng-container>
       </div>

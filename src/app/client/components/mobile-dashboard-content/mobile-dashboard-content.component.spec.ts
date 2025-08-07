@@ -20,7 +20,7 @@ import {
 } from "ng-mocks";
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 import { WidgetsSharedDataService } from "../../../shared/services/widgets-shared-data.service";
-import {SharedModule} from "../../../shared/shared.module";
+import { DashboardModule } from "../../../modules/dashboard/dashboard.module";
 
 describe('MobileDashboardContentComponent', () => {
   let component: MobileDashboardContentComponent;
@@ -32,7 +32,7 @@ describe('MobileDashboardContentComponent', () => {
         MobileDashboardContentComponent,
         TranslocoTestsModule.getModule(),
         MockDirective(NzIconDirective),
-        MockModule(SharedModule)
+        MockModule(DashboardModule)
       ],
       providers: [
         MockProvider(

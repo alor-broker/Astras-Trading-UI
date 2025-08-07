@@ -1,0 +1,33 @@
+<ng-container *transloco="let t; scope: 'mobile-home-screen/submit-order-for-idea'">
+  @let targetInstrument = targetInstrument$ | async;
+  @let selectedPortfolio = this.selectedPortfolio$ | async;
+
+  @if (targetInstrument != null && selectedPortfolio != null) {
+    <span class="fs-5 heading-color">{{ t('mobileHomeScreenSubmitOrderForIdea.title') }}
+      {{ targetInstrument.symbol }}
+      @if (targetInstrument.instrumentGroup != null && targetInstrument.instrumentGroup.length > 0) {
+        ({{ targetInstrument.instrumentGroup }})
+      }
+      {{ targetInstrument.shortName }}
+    </span>
+
+    <div class="mt-10 bordered">
+      <ats-compact-header
+        [instrument]="targetInstrument"
+        [currentPortfolio]="selectedPortfolio"
+        (priceSelected)="setCommonParameters({price: $event})"
+        (qtySelected)="setCommonParameters({quantity: $event})"
+      ></ats-compact-header>
+    </div>
+
+    <div>
+      <ats-limit-order-form
+        #limitOrderForm
+        [instrument]="targetInstrument"
+        [portfolioKey]="selectedPortfolio"
+        [activated]="true"
+        [limitOrderConfig]="limitOrderConfig"
+      ></ats-limit-order-form>
+    </div>
+  }
+</ng-container>
