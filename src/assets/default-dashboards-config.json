@@ -145,6 +145,8 @@
         "widgetTypeId": "mobile-home-screen",
         "initialSettings": {
           "showPortfolioDynamics": true,
+          "showNews": true,
+          "showIdeas": true,
           "displayTrendsForMarket": ["FOND"],
           "ignoreTrendsForBoards": ["FQBR"]
         }

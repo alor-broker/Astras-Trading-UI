@@ -3,6 +3,8 @@ import { Market } from "../../../../generated/graphql.types";
 
 export interface MobileHomeScreenSettings extends WidgetSettings {
   showPortfolioDynamics?: boolean;
+  showNews?: boolean;
+  showIdeas?: boolean;
   displayTrendsForMarket?: Market[];
   ignoreTrendsForBoards?: string[];
 }

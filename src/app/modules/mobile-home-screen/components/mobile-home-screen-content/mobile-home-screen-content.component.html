@@ -26,13 +26,17 @@
         </div>
       }
 
-      <span class="section-header pl-10 mt-20">{{t('mobileHomeScreen.newsTitle')}}</span>
-      <div class="px-5">
-        <ats-news (showMore)="openNews()"></ats-news>
-      </div>
+      @if (settings.showNews ?? true) {
+        <span class="section-header pl-10 mt-20">{{t('mobileHomeScreen.newsTitle')}}</span>
+        <div class="px-5">
+          <ats-news (showMore)="openNews()"></ats-news>
+        </div>
+      }
 
-      <span class="section-header pl-10 mt-20">{{t('mobileHomeScreen.ideasTitle')}}</span>
-      <ats-ideas></ats-ideas>
+      @if (settings.showIdeas ?? true) {
+        <span class="section-header pl-10 mt-20">{{t('mobileHomeScreen.ideasTitle')}}</span>
+        <ats-ideas></ats-ideas>
+      }
 
       <span class="section-header pl-10 mt-20">{{t('mobileHomeScreen.marketTrendsTitle')}}</span>
       <ats-market-trends
