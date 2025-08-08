@@ -97,11 +97,13 @@ nz-layout {
 
       .ant-modal-content {
         height: 100%;
-      }
+        display: flex;
+        flex-direction: column;
 
-      .ant-modal-body {
-        padding-top: 0;
-        max-height: 100%;
+        .ant-modal-body {
+          flex: 1 1 auto;
+          padding-top: 0;
+        }
       }
     }
   }
