@@ -23,6 +23,8 @@ export class PortfolioSummaryWidgetComponent implements OnInit {
 
   settings$!: Observable<PortfolioSummarySettings>;
 
+  readonly currentDashboard$ = this.dashboardContextService.selectedDashboard$;
+
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly manageDashboardService: ManageDashboardsService,

@@ -32,6 +32,15 @@
             <i nz-icon nzType="star" nzTheme="outline" [class.active]="dashboard.isFavorite"></i>
           </button>
           <button
+            (click)="toggleDashboardLock(dashboard);$event.stopPropagation(); "
+            nz-button
+            nzSize='small'
+            nzType="link"
+            class="lock-btn"
+          >
+            <i nz-icon nzType="lock" nzTheme="outline" [class.active]="dashboard.isLocked ?? false"></i>
+          </button>
+          <button
             *ngIf="allDashboards.length > 1"
             (click)="removeDashboard(dashboard); $event.stopPropagation();"
             nz-button
