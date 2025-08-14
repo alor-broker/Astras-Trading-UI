@@ -9,6 +9,7 @@ import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-se
 import { ManageDashboardsService } from '../../../../shared/services/manage-dashboards.service';
 import { RibbonSettings } from '../../models/ribbon-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 
 @Component({
     selector: 'ats-ribbon-widget',
@@ -24,10 +25,12 @@ export class RibbonWidgetComponent implements OnInit {
   isBlockWidget!: boolean;
 
   settings$!: Observable<RibbonSettings>;
+  readonly currentDashboard$ = this.dashboardContextService.selectedDashboard$;
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly manageDashboardService: ManageDashboardsService,
+    private readonly dashboardContextService: DashboardContextService,
   ) {
   }
 

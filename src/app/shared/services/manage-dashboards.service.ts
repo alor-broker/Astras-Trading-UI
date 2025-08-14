@@ -161,6 +161,10 @@ export class ManageDashboardsService {
     this.store.dispatch(DashboardFavoritesActions.changeOrder({ dashboardGuid, newIndex }));
   }
 
+  setDashboardLock(dashboardGuid: string, isLocked: boolean): void {
+    this.store.dispatch(DashboardsManageActions.changeLock({dashboardGuid, isLocked}));
+  }
+
   selectDashboard(guid: string): void {
     this.store.dispatch(DashboardsCurrentSelectionActions.select({ dashboardGuid: guid }));
   }

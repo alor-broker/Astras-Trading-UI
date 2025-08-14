@@ -15,6 +15,7 @@ import {
   distinctUntilChanged,
   fromEvent,
   Observable,
+  of,
   shareReplay,
   subscribeOn,
   switchMap,
@@ -76,6 +77,7 @@ import {
 } from "../../../../shared/utils/file-export/file-saver";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { NzTableComponent } from "ng-zorro-antd/table";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 
 interface DisplayInstrument extends WatchedInstrument {
   id: string;
@@ -202,6 +204,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly nzContextMenuService: NzContextMenuService,
     private readonly dashboardService: ManageDashboardsService,
+    private readonly dashboardContextService: DashboardContextService,
     private readonly widgetsMetaService: WidgetsMetaService,
     private readonly translatorService: TranslatorService,
     @Inject(ACTIONS_CONTEXT)
@@ -279,25 +282,33 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    this.menuWidgets$ = combineLatest([
-        this.widgetsMetaService.getWidgetsMeta(),
-        this.translatorService.getLangChanges()
-      ]
-    ).pipe(
-      map(([meta, lang]) => meta
-        .filter(x => !!x.desktopMeta && x.desktopMeta.enabled)
-        .filter(x => x.hasInstrumentBind ?? false)
-        .sort((a, b) => {
-            return (a.desktopMeta!.galleryOrder ?? 0) - (b.desktopMeta!.galleryOrder ?? 0);
-          }
-        )
-        .map(x => ({
-          typeId: x.typeId,
-          name: WidgetsHelper.getWidgetName(x.widgetName, lang),
-          icon: x.desktopMeta?.galleryIcon ?? 'appstore'
-        }))
-      ),
-      shareReplay(1)
+    this.menuWidgets$ = this.dashboardContextService.selectedDashboard$.pipe(
+      switchMap(dashboard => {
+        if(dashboard.isLocked ?? false) {
+          return of([]);
+        }
+
+        return combineLatest([
+            this.widgetsMetaService.getWidgetsMeta(),
+            this.translatorService.getLangChanges()
+          ]
+        ).pipe(
+          map(([meta, lang]) => meta
+            .filter(x => !!x.desktopMeta && x.desktopMeta.enabled)
+            .filter(x => x.hasInstrumentBind ?? false)
+            .sort((a, b) => {
+                return (a.desktopMeta!.galleryOrder ?? 0) - (b.desktopMeta!.galleryOrder ?? 0);
+              }
+            )
+            .map(x => ({
+              typeId: x.typeId,
+              name: WidgetsHelper.getWidgetName(x.widgetName, lang),
+              icon: x.desktopMeta?.galleryIcon ?? 'appstore'
+            }))
+          ),
+          shareReplay(1)
+        );
+      })
     );
 
     return this.currentWatchlist$.pipe(

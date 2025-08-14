@@ -163,4 +163,8 @@ export class SelectDashboardMenuComponent implements OnInit {
       this.dashboardService.addDashboardToFavorites(dashboard.guid);
     }
   }
+
+  toggleDashboardLock(dashboard: Dashboard): void {
+    this.dashboardService.setDashboardLock(dashboard.guid, !(dashboard.isLocked ?? false));
+  }
 }

@@ -23,6 +23,7 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
 import { WidgetsMetaService } from "../../../../shared/services/widgets-meta.service";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 
 describe('WatchlistTableComponent', () => {
   let component: WatchlistTableComponent;
@@ -70,6 +71,12 @@ describe('WatchlistTableComponent', () => {
           provide: ManageDashboardsService,
           useValue: {
             addWidget: jasmine.createSpy('addWidget').and.callThrough()
+          }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            selectedDashboard$: EMPTY
           }
         },
         {

@@ -9,6 +9,7 @@ import {TranslatorService} from "../../../../shared/services/translator.service"
 import {provideHttpClient} from "@angular/common/http";
 import {WidgetsGalleryComponent} from "../widgets-gallery/widgets-gallery.component";
 import {LocalStorageService} from "../../../../shared/services/local-storage.service";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 
 describe('WidgetsGalleryNavBtnComponent', () => {
   let component: WidgetsGalleryNavBtnComponent;
@@ -39,6 +40,12 @@ describe('WidgetsGalleryNavBtnComponent', () => {
           TranslatorService,
           {
             getLangChanges: () => EMPTY
+          }
+        ),
+        MockProvider(
+          DashboardContextService,
+          {
+            selectedDashboard$:  EMPTY
           }
         ),
         provideHttpClient()
