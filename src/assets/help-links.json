@@ -1,0 +1,10 @@
+﻿{
+  "widgets": {
+    "tech-chart": "https://alor.teamly.ru/space/5e0d0c41-20c0-4eef-a55d-782bda40e507/article/f397a380-42ed-40cf-8c79-c967bb8ae62f",
+    "order-book": "/5c09a43b-f585-4005-a652-d5865cdbb430"
+  },
+  "sections": {
+    "main": "/949e8d4d-a84e-4677-9ede-c0b4a4fa437b",
+    "new-order": "/24568ffb-5e5f-42d9-80b0-1ef50c315f94"
+  }
+}
