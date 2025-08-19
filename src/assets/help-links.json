@@ -1,10 +1,27 @@
 ﻿{
   "widgets": {
-    "tech-chart": "https://alor.teamly.ru/space/5e0d0c41-20c0-4eef-a55d-782bda40e507/article/f397a380-42ed-40cf-8c79-c967bb8ae62f",
-    "order-book": "/5c09a43b-f585-4005-a652-d5865cdbb430"
+    "instrument-select": "/widgets/instrument-select",
+    "order-book": "/widgets/order-book",
+    "scalper-order-book": "/widgets/scalper-order-book",
+    "light-chart": "/widgets/light-chart",
+    "tech-chart": "/widgets/tech-chart",
+    "blotter": "/widgets/blotter",
+    "instrument-info": "/widgets/instrument-info",
+    "news": "/widgets/news",
+    "all-trades": "/widgets/all-trades",
+    "exchange-rate": "/widgets/exchange-rate",
+    "all-instruments": "/widgets/all-instruments",
+    "order-submit": "/widgets/new-order",
+    "orders-basket": "/widgets/orders-basket",
+    "treemap": "/widgets/treemap",
+    "events-calendar": "/widgets/events-calendar",
+    "option-board": "/widgets/option-board",
+    "arbitrage-spread": "/widgets/arbitrage-spread",
+    "instruments-correlation": "/widgets/instruments-correlation",
+    "bond-screener": "/widgets/bond-screener"
   },
   "sections": {
-    "main": "/949e8d4d-a84e-4677-9ede-c0b4a4fa437b",
-    "new-order": "/24568ffb-5e5f-42d9-80b0-1ef50c315f94"
+    "main": "/overview",
+    "new-order": "/widgets/new-order"
   }
 }
