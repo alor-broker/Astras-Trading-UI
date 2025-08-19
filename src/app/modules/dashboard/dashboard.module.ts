@@ -43,6 +43,7 @@ import {DashboardsPanelComponent} from "../../client/components/dashboards-panel
 import {NetworkIndicatorComponent} from "./components/network-indicator/network-indicator.component";
 import { MobileHomeScreenWidgetComponent } from "../mobile-home-screen/widgets/mobile-home-screen-widget/mobile-home-screen-widget.component";
 import {AiGraphsWidgetComponent} from "../ai-graph/widgets/ai-graphs-widget/ai-graphs-widget.component";
+import { InvestIdeasWidgetComponent } from "../invest-ideas/widgets/invest-ideas-widget/invest-ideas-widget.component";
 
 @NgModule({
   declarations: [
@@ -92,6 +93,7 @@ import {AiGraphsWidgetComponent} from "../ai-graph/widgets/ai-graphs-widget/ai-g
         NetworkIndicatorComponent,
         MobileHomeScreenWidgetComponent,
         AiGraphsWidgetComponent,
+        InvestIdeasWidgetComponent,
     ],
   exports: [
     DashboardComponent,

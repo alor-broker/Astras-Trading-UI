@@ -797,5 +797,36 @@
       "galleryOrder": 21,
       "enabled": true
     }
+  },
+  {
+    "typeId": "invest-ideas",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "",
+        "componentName": "InstrumentsCorrelationWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Ideas",
+      "translations": {
+        "ru": "Идеи",
+        "en": "Ideas",
+        "hy": "Գաղափարներ"
+      }
+    },
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "bulb",
+      "galleryIcon": "bulb",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 22,
+      "enabled": true
+    }
   }
 ]
