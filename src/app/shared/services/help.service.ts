@@ -1,29 +1,25 @@
-import { DestroyRef, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { environment } from "../../../environments/environment";
-import { HttpClient, HttpContext } from "@angular/common/http";
-import { map } from "rxjs/operators";
-import { Observable, shareReplay } from "rxjs";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { catchHttpError } from "../utils/observable-helper";
+import {
+  HttpClient,
+  HttpContext
+} from "@angular/common/http";
+import {
+  filter,
+  map
+} from "rxjs/operators";
+import {
+  Observable,
+  shareReplay,
+  take
+} from "rxjs";
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
 import { HttpContextTokens } from "../constants/http.constants";
+import { catchHttpError } from "../utils/observable-helper";
 
-interface HelpDatabaseResponse {
-  content: {
-    article: {
-      properties: {
-        properties: {
-          jfYn: string; // help link id
-          nuQL: string; // widget type name
-        };
-      };
-    };
-  }[];
-}
-
-interface HelpLinkInfo {
-  id: string;
-  widgetType: string;
+interface HelpLinks {
+  widgets: Record<string, string>;
+  sections: Record<string, string>;
 }
 
 @Injectable({
@@ -31,63 +27,69 @@ interface HelpLinkInfo {
 })
 export class HelpService {
   private readonly helpUrl = environment.externalLinks.help;
-  private readonly teamlyDatabaseUrl = environment.teamlyDatabaseUrl;
-  private teamlyData$!: Observable<HelpLinkInfo[]>;
+
+  private helpLinks: Observable<HelpLinks> | null = null;
 
   constructor(
-    private readonly http: HttpClient,
-    private readonly destroyRef: DestroyRef,
+    private readonly httpClient: HttpClient,
     private readonly errorHandlerService: ErrorHandlerService
-  ) { }
-
-  getHelpLink(widgetType: string): Observable<string | null> {
-    return this.getTeamlyData()
-      .pipe(
-        map(info => info.find(c => c.widgetType === widgetType) ?? null),
-        map(info => {
-          if (info == null) {
-            return null;
-          }
-
-          return this.helpUrl + info.id;
-        })
-      );
+  ) {
   }
 
-  private getTeamlyData(): Observable<HelpLinkInfo[]> {
-    this.teamlyData$ ??= this.http.post<HelpDatabaseResponse>(
-        this.teamlyDatabaseUrl,
-        {
-          query: {
-            "__filter": {
-              contentDatabaseId: "100970c7-dde3-4404-9d69-0069ce176bfa"
-            },
-            content: {
-              article: {
-                properties: {
-                  properties: true
-                }
-              }
-            }
-          }
-        },
-        {
-          headers: {
-            'X-Account-Slug': 'alor'
-          },
-          context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true)
+  getWidgetHelp(widgetId: string): Observable<string | null> {
+    return this.getHelpLinks().pipe(
+      map(helpLinks => {
+        const helpLink = helpLinks.widgets[widgetId] as string | undefined;
+        if (helpLink == null) {
+          return null;
         }
-      )
-        .pipe(
-          catchHttpError<HelpDatabaseResponse>({ content: [] }, this.errorHandlerService),
-          map(res => res.content
-            .map(item => item.article.properties.properties)
-            .map(item => ({ id: item.jfYn, widgetType: item.nuQL }))
-          ),
-          shareReplay(1),
-          takeUntilDestroyed(this.destroyRef)
-        );
 
-    return this.teamlyData$;
+        return this.getHelpLink(helpLink);
+      }),
+      shareReplay(1),
+      take(1)
+    );
+  }
+
+  getSectionHelp(sectionId: string): Observable<string | null> {
+    return this.getHelpLinks().pipe(
+      map(helpLinks => {
+        const helpLink = helpLinks.sections[sectionId] as string | undefined;
+        if (helpLink == null) {
+          return null;
+        }
+
+        return this.getHelpLink(helpLink);
+      }),
+      shareReplay(1),
+      take(1)
+    );
+  }
+
+  private getHelpLinks(): Observable<HelpLinks> {
+    this.helpLinks ??= this.httpClient.get<HelpLinks>(
+      '/assets/help-links.json',
+      {
+        headers: {
+          "Cache-Control": "no-cache",
+          "Pragma": "no-cache"
+        },
+        context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true),
+      }
+    ).pipe(
+      catchHttpError<HelpLinks | null>(null, this.errorHandlerService),
+      filter((helpLinks): helpLinks is HelpLinks => helpLinks != null),
+      shareReplay(1)
+    );
+
+    return this.helpLinks;
+  }
+
+  private getHelpLink(link: string): string {
+    if (link.startsWith('/')) {
+      return `${this.helpUrl}${link}`;
+    }
+
+    return link;
   }
 }

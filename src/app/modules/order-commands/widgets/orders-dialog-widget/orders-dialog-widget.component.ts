@@ -102,7 +102,7 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
       shareReplay(1)
     );
 
-    this.helpUrl$ = this.helpService.getHelpLink('new-order');
+    this.helpUrl$ = this.helpService.getSectionHelp('new-order');
   }
 
   ngOnDestroy(): void {

@@ -1,7 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Observable} from "rxjs";
 import {EnvironmentService} from "../../../shared/services/environment.service";
-import {ModalService} from "../../../shared/services/modal.service";
 import {HelpService} from "../../../shared/services/help.service";
 import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from "ng-zorro-antd/modal";
 import {AsyncPipe} from "@angular/common";
@@ -34,13 +33,12 @@ export class EmptyPortfoliosWarningModalComponent implements OnInit {
 
   constructor(
     private readonly environmentService: EnvironmentService,
-    private readonly modalService: ModalService,
     private readonly helpService: HelpService
   ) {
   }
 
   ngOnInit(): void {
-    this.helpLink$ = this.helpService.getHelpLink('main');
+    this.helpLink$ = this.helpService.getSectionHelp('main');
   }
 
   handleClose(): void {
