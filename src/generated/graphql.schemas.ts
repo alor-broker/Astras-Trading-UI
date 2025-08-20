@@ -104,6 +104,7 @@ export function BasicInformationSchema(): z.ZodObject<Properties<BasicInformatio
     exchange: ExchangeSchema,
     fullDescription: z.string(),
     fullName: z.string().nullish(),
+    gicsSector: z.string().nullish(),
     market: MarketSchema,
     readableType: z.string().nullish(),
     sector: z.string().nullish(),
@@ -121,6 +122,7 @@ export function BasicInformationFilterInputSchema(): z.ZodObject<Properties<Basi
     exchange: z.lazy(() => ExchangeOperationFilterInputSchema().nullish()),
     fullDescription: z.lazy(() => StringOperationFilterInputSchema().nullish()),
     fullName: z.lazy(() => StringOperationFilterInputSchema().nullish()),
+    gicsSector: z.lazy(() => StringOperationFilterInputSchema().nullish()),
     market: z.lazy(() => MarketOperationFilterInputSchema().nullish()),
     or: z.array(z.lazy(() => BasicInformationFilterInputSchema())).nullish(),
     readableType: z.lazy(() => StringOperationFilterInputSchema().nullish()),
@@ -138,6 +140,7 @@ export function BasicInformationSortInputSchema(): z.ZodObject<Properties<BasicI
     exchange: SortEnumTypeSchema.nullish(),
     fullDescription: SortEnumTypeSchema.nullish(),
     fullName: SortEnumTypeSchema.nullish(),
+    gicsSector: SortEnumTypeSchema.nullish(),
     market: SortEnumTypeSchema.nullish(),
     readableType: SortEnumTypeSchema.nullish(),
     sector: SortEnumTypeSchema.nullish(),
@@ -1282,6 +1285,8 @@ export function TradingSchema(): z.ZodObject<Properties<Trading>> {
 export function TradingDetailsSchema(): z.ZodObject<Properties<TradingDetails>> {
   return z.object({
     __typename: z.literal('TradingDetails').optional(),
+    capitalization: z.number(),
+    closingPrice: z.number(),
     dailyGrowth: z.number(),
     dailyGrowthPercent: z.number(),
     lotSize: z.number(),
@@ -1291,6 +1296,7 @@ export function TradingDetailsSchema(): z.ZodObject<Properties<TradingDetails>> 
     priceMin: z.number(),
     priceStep: z.number(),
     rating: z.number(),
+    tradeAmount: z.number(),
     tradeVolume: z.number()
   })
 }
@@ -1298,6 +1304,8 @@ export function TradingDetailsSchema(): z.ZodObject<Properties<TradingDetails>> 
 export function TradingDetailsFilterInputSchema(): z.ZodObject<Properties<TradingDetailsFilterInput>> {
   return z.object({
     and: z.array(z.lazy(() => TradingDetailsFilterInputSchema())).nullish(),
+    capitalization: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
+    closingPrice: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     dailyGrowth: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     dailyGrowthPercent: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     lotSize: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
@@ -1308,12 +1316,15 @@ export function TradingDetailsFilterInputSchema(): z.ZodObject<Properties<Tradin
     priceMin: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     priceStep: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     rating: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
+    tradeAmount: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     tradeVolume: z.lazy(() => DecimalOperationFilterInputSchema().nullish())
   })
 }
 
 export function TradingDetailsSortInputSchema(): z.ZodObject<Properties<TradingDetailsSortInput>> {
   return z.object({
+    capitalization: SortEnumTypeSchema.nullish(),
+    closingPrice: SortEnumTypeSchema.nullish(),
     dailyGrowth: SortEnumTypeSchema.nullish(),
     dailyGrowthPercent: SortEnumTypeSchema.nullish(),
     lotSize: SortEnumTypeSchema.nullish(),
@@ -1323,6 +1334,7 @@ export function TradingDetailsSortInputSchema(): z.ZodObject<Properties<TradingD
     priceMin: SortEnumTypeSchema.nullish(),
     priceStep: SortEnumTypeSchema.nullish(),
     rating: SortEnumTypeSchema.nullish(),
+    tradeAmount: SortEnumTypeSchema.nullish(),
     tradeVolume: SortEnumTypeSchema.nullish()
   })
 }

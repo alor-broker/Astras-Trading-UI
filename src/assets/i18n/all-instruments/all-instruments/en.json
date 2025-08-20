@@ -40,6 +40,10 @@
       "name": "Volume",
       "tooltip": "Trade Volume"
     },
+    "tradeAmount": {
+      "name": "Volume in base currency",
+      "tooltip": "Trading volume in base currency"
+    },
     "market": {
       "name": "Market",
       "tooltip": "Market"
