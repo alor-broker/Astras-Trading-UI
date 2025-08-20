@@ -148,7 +148,8 @@
           "showNews": true,
           "showIdeas": true,
           "displayTrendsForMarket": ["FOND"],
-          "ignoreTrendsForBoards": ["FQBR"]
+          "ignoreTrendsForBoards": ["FQBR"],
+          "marketTrendsSectors": ["Financials", "Consumer Discretionary", "Basic Materials", "test 4", "test 5", "test 6", "test 7"]
         }
       },
       {

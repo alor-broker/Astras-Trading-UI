@@ -44,6 +44,7 @@
         (showMore)="openAllInstruments($event)"
         [ignoredBoardsFilter]="settings.ignoreTrendsForBoards ?? ['FQBR']"
         [marketFilter]="settings.displayTrendsForMarket ?? [Market.Fond]"
+        [sectors]="settings.marketTrendsSectors ?? []"
       ></ats-market-trends>
     </div>
   </ng-container>

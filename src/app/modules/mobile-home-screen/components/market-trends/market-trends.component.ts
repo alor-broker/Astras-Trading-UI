@@ -1,6 +1,7 @@
 import {
   Component,
-  Input,
+  computed,
+  input,
   OnInit,
   output
 } from '@angular/core';
@@ -24,6 +25,7 @@ import {
   MarketTrendsResponseScheme
 } from "../../gql-schemas/market-trends.gpl-schemas";
 import {
+  BasicInformationFilterInput,
   InstrumentModelFilterInput,
   Market,
   QueryInstrumentsArgs,
@@ -43,13 +45,23 @@ import { NzSkeletonComponent } from "ng-zorro-antd/skeleton";
 import { NzIconDirective } from "ng-zorro-antd/icon";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
+import {
+  NzTabComponent,
+  NzTabSetComponent
+} from "ng-zorro-antd/tabs";
 
 export interface DisplayParams {
   growOrder: SortEnumType;
+  sector: string | null;
+}
+
+interface SectorFilter {
+  sectorCode: string;
+  noFilter?: boolean;
 }
 
 @Component({
-    selector: 'ats-market-trends',
+  selector: 'ats-market-trends',
   imports: [
     TranslocoDirective,
     LetDirective,
@@ -61,33 +73,51 @@ export interface DisplayParams {
     NzSkeletonComponent,
     NzIconDirective,
     DecimalPipe,
-    InstrumentIconComponent
+    InstrumentIconComponent,
+    NzTabSetComponent,
+    NzTabComponent
   ],
-    templateUrl: './market-trends.component.html',
-    styleUrl: './market-trends.component.less'
+  templateUrl: './market-trends.component.html',
+  styleUrl: './market-trends.component.less'
 })
 export class MarketTrendsComponent implements OnInit {
-  @Input({required: true})
-  marketFilter: Market[] = [Market.Fond];
+  marketFilter = input([Market.Fond]);
 
-  @Input({required: true})
-  ignoredBoardsFilter: string[] = ['FQBR'];
+  ignoredBoardsFilter = input(['FQBR']);
 
-  displayItems$!: Observable<MarketTrendsInstrumentsConnectionType | null>;
-  isLoading = false;
+  sectors = input<string[]>([]);
 
-  private readonly itemsDisplayStep = 10;
+  displaySectors = computed<SectorFilter[]>(() => {
+    const sectors = this.sectors();
 
-  readonly itemsDisplayParams$ = new BehaviorSubject<DisplayParams>({
-    growOrder: SortEnumType.Desc
+    if (sectors.length > 0) {
+      return [
+        {sectorCode: 'All', noFilter: true},
+        ...sectors.map(s => ({sectorCode: s}))
+      ];
+    }
+
+    return [];
   });
 
-  private readonly refreshInterval = 30_000;
+  displayItems$!: Observable<MarketTrendsInstrumentsConnectionType | null>;
+
+  isLoading = false;
+
+  readonly itemsDisplayParams$ = new BehaviorSubject<DisplayParams>({
+    growOrder: SortEnumType.Desc,
+    sector: null
+  });
 
   readonly SortEnumTypes = SortEnumType;
 
   readonly instrumentSelected = output<InstrumentKey>();
+
   readonly showMore = output<DisplayParams>();
+
+  private readonly itemsDisplayStep = 10;
+
+  private readonly refreshInterval = 30_000;
 
   constructor(
     private readonly graphQlService: GraphQlService
@@ -121,6 +151,17 @@ export class MarketTrendsComponent implements OnInit {
     });
   }
 
+  changeSector(targetSector: SectorFilter): void {
+    this.itemsDisplayParams$.pipe(
+      take(1),
+    ).subscribe(p => {
+      this.itemsDisplayParams$.next({
+        ...p,
+        sector: (targetSector.noFilter ?? false) ? null : targetSector.sectorCode
+      });
+    });
+  }
+
   protected toInstrumentKey(item: InstrumentInfoType): InstrumentKey {
     return {
       symbol: item.basicInformation.symbol,
@@ -139,27 +180,36 @@ export class MarketTrendsComponent implements OnInit {
 
   private loadMarketTrends(params: DisplayParams): Observable<MarketTrendsInstrumentsConnectionType | null> {
     this.isLoading = true;
+
+    const basicInformationFilter: BasicInformationFilterInput = {
+      market: {
+        in: this.marketFilter() ?? [Market.Fond]
+      }
+    };
+
+    if (params.sector != null) {
+      basicInformationFilter.gicsSector = {
+        eq: params.sector
+      };
+    }
+
     const where: InstrumentModelFilterInput = {
       and: [
         {
-          basicInformation: {
-            market: {
-              in: this.marketFilter ?? [Market.Fond]
-            }
-          }
+          basicInformation: basicInformationFilter
         },
         // remove from list not trading instruments
         {
           boardInformation: {
             board: {
-              nin: this.ignoredBoardsFilter ?? ['FQBR']
+              nin: this.ignoredBoardsFilter() ?? ['FQBR']
             }
           }
         },
         {
           tradingDetails: {
-            tradeVolume: {
-               gt: 1
+            tradeAmount: {
+              gt: 1_000_000
             }
           }
         }

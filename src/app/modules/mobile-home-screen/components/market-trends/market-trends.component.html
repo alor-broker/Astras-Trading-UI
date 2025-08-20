@@ -4,6 +4,16 @@
     *ngrxLet="{ itemsDisplayParams: itemsDisplayParams$, displayItems: displayItems$} as vm; suspenseTpl: loading"
     class="mt-15"
   >
+    @let sectors = displaySectors();
+    @if(sectors.length > 0) {
+      <nz-tabset>
+        @for (sector of sectors; track sector.sectorCode) {
+          <nz-tab [nzTitle]="t('mobileHomeScreenMarketTrends.sectors.' + sector.sectorCode, {fallback: sector.sectorCode})" (nzSelect)="changeSector(sector)">
+          </nz-tab>
+        }
+      </nz-tabset>
+    }
+
     @if (vm.displayItems != null && vm.displayItems.totalCount > 0) {
       <table class="mt-10">
         <thead>

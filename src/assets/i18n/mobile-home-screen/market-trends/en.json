@@ -13,5 +13,12 @@
 
   "moreItemsButton": {
     "title": "Show more"
+  },
+
+  "sectors": {
+    "All": "Все",
+    "Financials": "Банки",
+    "Consumer Discretionary": "Автомобили и запчасти",
+    "Basic Materials": "Горнодобыча"
   }
 }

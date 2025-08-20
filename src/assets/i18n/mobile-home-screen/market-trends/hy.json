@@ -13,5 +13,12 @@
   },
   "moreItemsButton": {
     "title": "Ցույց տալ ավելին"
+  },
+
+  "sectors": {
+    "All": "Все",
+    "Financials": "Банки",
+    "Consumer Discretionary": "Автомобили и запчасти",
+    "Basic Materials": "Горнодобыча"
   }
 }
