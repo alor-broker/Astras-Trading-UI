@@ -21,6 +21,8 @@ import {AiChatNavBtnComponent} from "../../../modules/ai-chat/widgets/ai-chat-na
 import {DashboardContextService} from "../../../shared/services/dashboard-context.service";
 import {EMPTY} from "rxjs";
 import {EnvironmentService} from "../../../shared/services/environment.service";
+import { CurrentTimeComponent } from "../current-time/current-time.component";
+import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
 
 describe('ClientNavbarComponent', () => {
   let component: ClientNavbarComponent;
@@ -38,7 +40,8 @@ describe('ClientNavbarComponent', () => {
           SelectPortfolioMenuNavBtnComponent,
           DashboardsPanelComponent,
           NetworkIndicatorComponent,
-          AiChatNavBtnComponent
+          AiChatNavBtnComponent,
+          CurrentTimeComponent
         )
       ],
       providers: [
@@ -64,6 +67,12 @@ describe('ClientNavbarComponent', () => {
               services: '',
               videoTutorial: ''
             }
+          }
+        ),
+        MockProvider(
+          TerminalSettingsService,
+          {
+            getSettings: () => EMPTY
           }
         )
       ]

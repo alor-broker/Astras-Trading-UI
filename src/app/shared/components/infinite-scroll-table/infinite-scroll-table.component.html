@@ -116,6 +116,7 @@
             [nzPlaceHolder]="t('sharedInfiniteScrollTable.selectValuesPlaceHolder')"
             [nzCustomTemplate]="customOption"
             [formControl]="getFilterControl(column.filterData.filterName)!"
+            [nzDropdownMatchSelectWidth]="false"
           >
               <nz-option
                 *ngFor="let item of column.filterData.filters"

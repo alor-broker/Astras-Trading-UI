@@ -77,6 +77,9 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
       sellTradeColor: this.formBuilder.nonNullable.control('', Validators.required),
     }),
     allowCustomTimeframes: this.formBuilder.nonNullable.control(false),
+    orders: this.formBuilder.group({
+      editWithoutConfirmation: this.formBuilder.nonNullable.control(false),
+    })
   });
 
   isSyntheticInstrument = SyntheticInstrumentsHelper.isSyntheticInstrument;
@@ -183,6 +186,10 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
         buyTradeColor: settings.trades?.buyTradeColor ?? colors.buyColorAccent,
         sellTradeColor: settings.trades?.sellTradeColor ?? colors.sellColorAccent,
         markerSize: settings.trades?.markerSize ?? 20
+      });
+
+      this.form.controls.orders.setValue({
+        editWithoutConfirmation: settings.orders?.editWithoutConfirmation ?? false
       });
 
       this.form.controls.allowCustomTimeframes.setValue(settings.allowCustomTimeframes ?? false);

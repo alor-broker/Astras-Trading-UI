@@ -59,7 +59,8 @@ export class AiChatService {
             sender: 'astras-ai-chart@mock.com',
             text: message.text,
             meta: terminalContext,
-            messageGuid: GuidGenerator.newGuid()
+            messageGuid: GuidGenerator.newGuid(),
+            collectionName: "Astras"
           }
         );
       }),

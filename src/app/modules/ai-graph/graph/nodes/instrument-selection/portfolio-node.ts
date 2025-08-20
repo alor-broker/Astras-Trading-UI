@@ -3,7 +3,7 @@ import {
   NodeCategories,
   NodeCategoryColors
 } from "../node-categories";
-import {forkJoin, Observable, of, switchMap} from "rxjs";
+import {forkJoin, Observable, switchMap} from "rxjs";
 import {Portfolio, SlotType} from "../../slot-types";
 import {PortfolioValueValidationOptions} from "../models";
 import {map} from "rxjs/operators";
@@ -30,7 +30,7 @@ export class PortfolioNode extends NodeBase {
       SlotType.Portfolio,
       {
         validation: {
-          required: true
+          required: false
         } as PortfolioValueValidationOptions
       }
     );
@@ -65,11 +65,11 @@ export class PortfolioNode extends NodeBase {
 
   override executor(context: GraphProcessingContextService): Observable<boolean> {
     return super.executor(context).pipe(
-      switchMap(() => {
-        const targetPortfolio = this.properties[this.portfolioPropertyName] as Portfolio | undefined;
-        if (targetPortfolio == null) {
-          return of(false);
-        }
+      switchMap(() => context.dataContext),
+      switchMap(dataContext => {
+        const targetPortfolio =
+          this.properties[this.portfolioPropertyName] as Portfolio | undefined
+          ?? dataContext.currentPortfolio;
 
         this.setOutputByName(this.portfolioOutputName, PortfolioUtils.toString(targetPortfolio));
 

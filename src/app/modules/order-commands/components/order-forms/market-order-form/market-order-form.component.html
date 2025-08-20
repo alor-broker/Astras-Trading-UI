@@ -20,15 +20,31 @@
           </nz-form-item>
           <nz-collapse [nzBordered]="false" class="compact" nzGhost>
             <nz-collapse-panel [nzHeader]="t('orderCommandsOrderForms.advanced')">
-              <nz-form-label
-                nzFor="instrumentGroup">{{t('orderCommandsOrderForms.instrumentGroupLabel')}}</nz-form-label>
-              <nz-form-control [nzErrorTip]="t('orderCommandsOrderForms.instrumentGroupError')">
-                <ats-instrument-board-select
-                  [instrument]="formInstrument"
-                  [placeholder]="t('orderCommandsOrderForms.instrumentGroupPlaceholder')"
-                  formControlName="instrumentGroup">
-                </ats-instrument-board-select>
-              </nz-form-control>
+              <nz-form-item class="compact">
+                <nz-form-label nzFor="timeInForce">{{t('orderCommandsOrderForms.timeInForceLabel')}}</nz-form-label>
+                <nz-form-control>
+                  <nz-select [nzPlaceHolder]="t('orderCommandsOrderForms.timeInForcePlaceholder')"
+                             formControlName="timeInForce"
+                             nzAllowClear>
+                    <nz-option
+                      *ngFor="let timeInForce of timeInForceEnum | keyvalue"
+                      [nzLabel]="t('orderCommandsOrderForms.timeInForceOptions.' + timeInForce.key)"
+                      [nzValue]="timeInForce.value"
+                    ></nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item>
+                <nz-form-label nzFor="instrumentGroup">{{t('orderCommandsOrderForms.instrumentGroupLabel')}}</nz-form-label>
+                <nz-form-control [nzErrorTip]="t('orderCommandsOrderForms.instrumentGroupError')">
+                  <ats-instrument-board-select
+                    [instrument]="formInstrument"
+                    [placeholder]="t('orderCommandsOrderForms.instrumentGroupPlaceholder')"
+                    formControlName="instrumentGroup">
+                  </ats-instrument-board-select>
+                </nz-form-control>
+              </nz-form-item>
             </nz-collapse-panel>
           </nz-collapse>
         </form>

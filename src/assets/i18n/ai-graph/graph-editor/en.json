@@ -41,6 +41,9 @@
     },
     "const-portfolio": {
       "title": "Portfolio Selection"
+    },
+    "trades": {
+      "title": "Trades"
     }
   },
 
@@ -159,6 +162,9 @@
     },
     "timeRange": {
       "name": "Time Range"
+    },
+    "trades": {
+      "name": "Trades"
     }
   },
 

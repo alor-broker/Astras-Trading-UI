@@ -41,6 +41,9 @@
     },
     "const-portfolio": {
       "title": "Выбор портфеля"
+    },
+    "trades": {
+      "title": "Сделки"
     }
   },
 
@@ -151,7 +154,8 @@
     },
     "commission": {
       "name": "Комиссия"
-    },    "reports": {
+    },
+    "reports": {
       "name": "Отчеты"
     },
     "market": {
@@ -159,6 +163,9 @@
     },
     "timeRange": {
       "name": "Временной диапазон"
+    },
+    "trades": {
+      "name": "Сделки"
     }
   },
 

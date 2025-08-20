@@ -102,7 +102,10 @@ export class TechChartWidgetComponent implements OnInit {
               sellTradeColor:theme.themeColors.sellColorAccent,
               markerSize: 20
             }
-          )
+          ),
+          orders: {
+            editWithoutConfirmation: false
+          }
         }),
         this.dashboardContextService,
         this.widgetSettingsService
