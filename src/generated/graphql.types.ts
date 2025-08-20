@@ -129,6 +129,8 @@ export interface BasicInformation {
   fullDescription: Scalars['String']['output'];
   /** Полное имя эмитента */
   fullName?: Maybe<Scalars['String']['output']>;
+  /** Сектор деятельности эмитента по стандарту GICS */
+  gicsSector?: Maybe<Scalars['String']['output']>;
   /** Рынок */
   market: Market;
   /** Читаемый тип финансового инструмента */
@@ -155,6 +157,8 @@ export interface BasicInformationFilterInput {
   fullDescription?: InputMaybe<StringOperationFilterInput>;
   /** Полное имя эмитента */
   fullName?: InputMaybe<StringOperationFilterInput>;
+  /** Сектор деятельности эмитента по стандарту GICS */
+  gicsSector?: InputMaybe<StringOperationFilterInput>;
   /** Рынок */
   market?: InputMaybe<MarketOperationFilterInput>;
   or?: InputMaybe<Array<BasicInformationFilterInput>>;
@@ -181,6 +185,8 @@ export interface BasicInformationSortInput {
   fullDescription?: InputMaybe<SortEnumType>;
   /** Полное имя эмитента */
   fullName?: InputMaybe<SortEnumType>;
+  /** Сектор деятельности эмитента по стандарту GICS */
+  gicsSector?: InputMaybe<SortEnumType>;
   /** Рынок */
   market?: InputMaybe<SortEnumType>;
   /** Читаемый тип финансового инструмента */
@@ -1632,6 +1638,10 @@ export interface Trading {
 }
 
 export interface TradingDetails {
+  /** Капитализации */
+  capitalization: Scalars['Decimal']['output'];
+  /** Цена закрытия */
+  closingPrice: Scalars['Decimal']['output'];
   /** Дневной рост */
   dailyGrowth: Scalars['Decimal']['output'];
   /** Дневной рост, % */
@@ -1650,12 +1660,18 @@ export interface TradingDetails {
   priceStep: Scalars['Decimal']['output'];
   /** Рейтинг */
   rating: Scalars['Decimal']['output'];
+  /** Объем торгов в базовой валюте */
+  tradeAmount: Scalars['Decimal']['output'];
   /** Объем */
   tradeVolume: Scalars['Decimal']['output'];
 }
 
 export interface TradingDetailsFilterInput {
   and?: InputMaybe<Array<TradingDetailsFilterInput>>;
+  /** Капитализации */
+  capitalization?: InputMaybe<DecimalOperationFilterInput>;
+  /** Цена закрытия */
+  closingPrice?: InputMaybe<DecimalOperationFilterInput>;
   /** Дневной рост */
   dailyGrowth?: InputMaybe<DecimalOperationFilterInput>;
   /** Дневной рост, % */
@@ -1675,11 +1691,17 @@ export interface TradingDetailsFilterInput {
   priceStep?: InputMaybe<DecimalOperationFilterInput>;
   /** Рейтинг */
   rating?: InputMaybe<DecimalOperationFilterInput>;
+  /** Объем торгов в базовой валюте */
+  tradeAmount?: InputMaybe<DecimalOperationFilterInput>;
   /** Объем */
   tradeVolume?: InputMaybe<DecimalOperationFilterInput>;
 }
 
 export interface TradingDetailsSortInput {
+  /** Капитализации */
+  capitalization?: InputMaybe<SortEnumType>;
+  /** Цена закрытия */
+  closingPrice?: InputMaybe<SortEnumType>;
   /** Дневной рост */
   dailyGrowth?: InputMaybe<SortEnumType>;
   /** Дневной рост, % */
@@ -1698,6 +1720,8 @@ export interface TradingDetailsSortInput {
   priceStep?: InputMaybe<SortEnumType>;
   /** Рейтинг */
   rating?: InputMaybe<SortEnumType>;
+  /** Объем торгов в базовой валюте */
+  tradeAmount?: InputMaybe<SortEnumType>;
   /** Объем */
   tradeVolume?: InputMaybe<SortEnumType>;
 }
