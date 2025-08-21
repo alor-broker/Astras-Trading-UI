@@ -149,7 +149,20 @@
           "showIdeas": true,
           "displayTrendsForMarket": ["FOND"],
           "ignoreTrendsForBoards": ["FQBR"],
-          "marketTrendsSectors": ["Financials", "Consumer Discretionary", "Basic Materials", "test 4", "test 5", "test 6", "test 7"]
+          "marketTrendsSectors": [
+            "Energy",
+            "Materials",
+            "Industrials",
+            "Consumer Discretionary",
+            "Consumer Staples",
+            "Health Care",
+            "Financials",
+            "Information Technology",
+            "Communication Services",
+            "Utilities",
+            "Real Estate",
+            "Other"
+          ]
         }
       },
       {
