@@ -16,9 +16,18 @@
   },
 
   "sectors": {
-    "All": "Все",
-    "Financials": "Банки",
-    "Consumer Discretionary": "Автомобили и запчасти",
-    "Basic Materials": "Горнодобыча"
+    "All": "All",
+    "Energy": "Energy",
+    "Materials": "Materials",
+    "Industrials": "Industrials",
+    "Consumer Discretionary": "Discretionary",
+    "Consumer Staples": "Staples",
+    "Health Care": "Healthcare",
+    "Financials": "Financials",
+    "Information Technology": "Tech",
+    "Communication Services": "Comms",
+    "Utilities": "Utilities",
+    "Real Estate": "Real Estate",
+    "Other": "Other"
   }
 }

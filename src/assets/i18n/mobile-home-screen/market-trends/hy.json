@@ -16,9 +16,18 @@
   },
 
   "sectors": {
-    "All": "Все",
-    "Financials": "Банки",
-    "Consumer Discretionary": "Автомобили и запчасти",
-    "Basic Materials": "Горнодобыча"
+    "All": "Բոլորը",
+    "Energy": "Էներգետիկա",
+    "Materials": "Նյութեր",
+    "Industrials": "Արդյունաբերություն",
+    "Consumer Discretionary": "Ցիկլային",
+    "Consumer Staples": "Բազային",
+    "Health Care": "Բժշկություն",
+    "Financials": "Ֆինանսներ",
+    "Information Technology": "ՏՏ",
+    "Communication Services": "Կապ",
+    "Utilities": "Կոմունալ",
+    "Real Estate": "Անշարժ գույք",
+    "Other": "Այլ"
   }
 }
