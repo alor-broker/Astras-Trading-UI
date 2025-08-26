@@ -182,9 +182,23 @@ export class MarketTrendsComponent implements OnInit {
     this.isLoading = true;
 
     const basicInformationFilter: BasicInformationFilterInput = {
-      market: {
-        in: this.marketFilter() ?? [Market.Fond]
-      }
+      and: [
+        {
+          market: {
+            in: this.marketFilter() ?? [Market.Fond]
+          },
+        },
+        {
+          type: {
+            neq: null
+          }
+        },
+        {
+          type: {
+            eq: "stock"
+          }
+        }
+      ]
     };
 
     if (params.sector != null) {
@@ -203,13 +217,6 @@ export class MarketTrendsComponent implements OnInit {
           boardInformation: {
             board: {
               nin: this.ignoredBoardsFilter() ?? ['FQBR']
-            }
-          }
-        },
-        {
-          financialAttributes: {
-            cfiCode: {
-              startsWith: "E"
             }
           }
         },
