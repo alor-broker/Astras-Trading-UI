@@ -5,9 +5,9 @@ import {
   MockComponent,
   MockProvider
 } from "ng-mocks";
-import { HistoryService } from "../../../../shared/services/history.service";
 import { EMPTY } from "rxjs";
 import { NzModalComponent } from "ng-zorro-antd/modal";
+import { HistoryService } from "../../../../shared/services/history.service";
 
 describe('IdeasSectionDetailsComponent', () => {
   let component: IdeasSectionDetailsComponent;

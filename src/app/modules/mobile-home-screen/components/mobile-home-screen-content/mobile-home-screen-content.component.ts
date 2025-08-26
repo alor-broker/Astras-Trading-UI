@@ -24,9 +24,9 @@ import {
 } from "ng-zorro-antd/collapse";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { NewsComponent } from "../news/news.component";
-import { IdeasComponent } from "../ideas/ideas.component";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
+import { InvestIdeasCompactComponent } from "../../../invest-ideas/components/invest-ideas-compact/invest-ideas-compact.component";
 
 @Component({
   selector: 'ats-mobile-home-screen-content',
@@ -41,7 +41,7 @@ import { NavigationStackService } from "../../../../shared/services/navigation-s
     NzCollapsePanelComponent,
     TranslocoDirective,
     NewsComponent,
-    IdeasComponent
+    InvestIdeasCompactComponent
   ],
   templateUrl: './mobile-home-screen-content.component.html',
   styleUrl: './mobile-home-screen-content.component.less'

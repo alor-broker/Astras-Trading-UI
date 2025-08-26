@@ -6,22 +6,14 @@ import {
   OnDestroy,
   ViewEncapsulation
 } from '@angular/core';
-import {
-  Idea,
-  Section
-} from "../../models/ideas-typings.model";
 import { NzModalComponent } from "ng-zorro-antd/modal";
-import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
 import { NzTypographyComponent } from "ng-zorro-antd/typography";
-import { HistoryService } from "../../../../shared/services/history.service";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import {
   BehaviorSubject,
   Observable,
   switchMap,
   timer
 } from "rxjs";
-import { MathHelper } from "../../../../shared/utils/math-helper";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { map } from "rxjs/operators";
 import { LetDirective } from "@ngrx/component";
@@ -30,10 +22,18 @@ import {
   NgClass
 } from "@angular/common";
 import { NzIconDirective } from "ng-zorro-antd/icon";
-import { OrderCommandsModule } from "../../../order-commands/order-commands.module";
 import { SubmitOrderForIdeaComponent } from "../submit-order-for-idea/submit-order-for-idea.component";
-import { ArrayHelper } from "../../../../shared/utils/array-helper";
+import {
+  Idea,
+  Section
+} from "../../models/ideas-typings.model";
+import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
+import { OrderCommandsModule } from "../../../order-commands/order-commands.module";
 import { InstrumentEqualityComparer } from "../../../../shared/utils/instruments";
+import { ArrayHelper } from "../../../../shared/utils/array-helper";
+import { HistoryService } from "../../../../shared/services/history.service";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { MathHelper } from "../../../../shared/utils/math-helper";
 
 interface InstrumentPrice {
   lastPrice: number;
@@ -75,6 +75,8 @@ export class IdeasSectionDetailsComponent implements OnDestroy {
     }));
   });
 
+  readonly isInstrumentsEquals = InstrumentEqualityComparer.equals;
+
   constructor(
     private readonly historyService: HistoryService,
     private readonly destroyRef: DestroyRef
@@ -112,6 +114,4 @@ export class IdeasSectionDetailsComponent implements OnDestroy {
     }
     return MathHelper.round((1 - (closePrice / lastPrice)) * 100, 2);
   }
-
-  readonly isInstrumentsEquals = InstrumentEqualityComparer.equals;
 }
