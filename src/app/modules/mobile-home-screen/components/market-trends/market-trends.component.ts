@@ -216,7 +216,10 @@ export class MarketTrendsComponent implements OnInit {
         {
           tradingDetails: {
             tradeAmount: {
-              gt: 1_000_000
+              gte: 1_000_000
+            },
+            capitalization: {
+              gte: 500_000_000
             }
           }
         }
