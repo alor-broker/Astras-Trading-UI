@@ -207,6 +207,13 @@ export class MarketTrendsComponent implements OnInit {
           }
         },
         {
+          financialAttributes: {
+            cfiCode: {
+              startsWith: "E"
+            }
+          }
+        },
+        {
           tradingDetails: {
             tradeAmount: {
               gt: 1_000_000
