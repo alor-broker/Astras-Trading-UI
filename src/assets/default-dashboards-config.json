@@ -1,10 +1,85 @@
 ﻿[
   {
+    "id": "home_desktop_dashboard",
+    "type": "desktop",
+    "isStandard": false,
+    "isFavorite": true,
+    "name": "Home",
+    "widgets": [
+      {
+        "widgetTypeId": "light-chart",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "cols": 14,
+          "rows": 15
+        },
+        "initialSettings": {
+          "symbol": "IMOEX",
+          "exchange": "MOEX",
+          "instrumentGroup": "TQBR",
+          "linkToActive": false
+        }
+      },
+      {
+        "widgetTypeId": "invest-ideas",
+        "position": {
+          "x": 15,
+          "y": 0,
+          "cols": 10,
+          "rows": 15
+        }
+      },
+      {
+        "widgetTypeId": "order-submit",
+        "position": {
+          "x": 26,
+          "y": 0,
+          "cols": 10,
+          "rows": 15
+        }
+      },
+      {
+        "widgetTypeId": "treemap",
+        "position": {
+          "x": 37,
+          "y": 0,
+          "cols": 13,
+          "rows": 15
+        }
+      },
+      {
+        "widgetTypeId": "blotter",
+        "position": {
+          "x": 0,
+          "y": 16,
+          "cols": 14,
+          "rows": 14
+        },
+        "initialSettings": {
+          "activeTabIndex": 0
+        }
+      },
+      {
+        "widgetTypeId": "blotter",
+        "position": {
+          "x": 14,
+          "y": 16,
+          "cols": 36,
+          "rows": 14
+        },
+        "initialSettings": {
+          "activeTabIndex": 3
+        }
+      }
+    ]
+  },
+  {
     "id": "default_desktop_dashboard",
     "type": "desktop",
     "isStandard": true,
     "isFavorite": true,
-    "name": "Default Dashboard",
+    "name": "Trading",
     "widgets": [
       {
         "widgetTypeId": "tech-chart",
@@ -42,7 +117,7 @@
           "rows": 12
         },
         "initialSettings": {
-          "activeTabIndex": 3
+          "activeTabIndex": 1
         }
       },
       {

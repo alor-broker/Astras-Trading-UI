@@ -9,6 +9,8 @@
 
   "defaultDashboardNames": {
     "Default Dashboard": "Дашборд по умолчанию",
+    "Home": "Домашний",
+    "Trading": "Торговля",
     "Lite Dashboard": "Легкий дашборд"
   }
 }

@@ -8,6 +8,8 @@
   "cancelButtonText": "Ոչ",
   "defaultDashboardNames": {
     "Default Dashboard": "Կանխադրված վահանակ",
+    "Home": "Տնային",
+    "Trading": "Առևտուր",
     "Lite Dashboard": "Թեթև վահանակ"
   }
 }
