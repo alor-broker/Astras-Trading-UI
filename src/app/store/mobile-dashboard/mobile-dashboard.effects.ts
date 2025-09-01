@@ -39,7 +39,7 @@ export class MobileDashboardEffects {
       ofType(MobileDashboardInternalActions.init),
       filter(action => !action.mobileDashboard),
       mapWith(
-        () => this.dashboardService.getDefaultDashboardConfig(),
+        () => this.dashboardService.getDashboardTemplatesConfig(),
         (source, defaultConfig) => defaultConfig
       ),
       switchMap(defaultConfig => {

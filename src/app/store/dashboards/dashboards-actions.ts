@@ -26,6 +26,7 @@ export const DashboardsManageActions = createActionGroup({
       instrumentsSelection?: InstrumentGroups;
       selectedPortfolio?: PortfolioKey;
       sourceGuid?: string;
+      templateId?: string;
     }>(),
     "Reset": props<{
       dashboardGuid: string;

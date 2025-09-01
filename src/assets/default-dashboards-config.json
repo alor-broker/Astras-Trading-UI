@@ -1,5 +1,6 @@
 ﻿[
   {
+    "id": "default_desktop_dashboard",
     "type": "desktop",
     "isStandard": true,
     "isFavorite": true,
@@ -68,6 +69,7 @@
     ]
   },
   {
+    "id": "lite_desktop_dashboard",
     "type": "desktop",
     "isStandard": false,
     "isFavorite": true,
@@ -133,6 +135,7 @@
     ]
   },
   {
+    "id": "mobile_dashboard",
     "type": "mobile",
     "widgets": [
       {
@@ -193,6 +196,7 @@
     ]
   },
   {
+    "id": "admin_main_dashboard",
     "type": "admin",
     "widgets": [
       {

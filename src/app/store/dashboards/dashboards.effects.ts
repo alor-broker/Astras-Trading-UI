@@ -61,26 +61,35 @@ export class DashboardsEffects {
   resetDashboard$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(DashboardsManageActions.reset),
+      switchMap(action => this.store.select(DashboardsFeature.getDashboard(action.dashboardGuid)).pipe(take(1))),
       mapWith(
-        action => this.store.select(DashboardsFeature.getDashboardItems(action.dashboardGuid)).pipe(take(1)),
-        (action, items) => ({dashboardGuid: action.dashboardGuid, items: items ?? []})
+        () => this.dashboardService.getDashboardTemplatesConfig(),
+        (targetDashboard, defaultConfig) => ({targetDashboard, defaultConfig})
       ),
-      mapWith(
-        () => this.dashboardService.getDefaultDashboardConfig(),
-        (source, defaultConfig) => ({...source, defaultConfig})
-      ),
-      switchMap(({dashboardGuid, items, defaultConfig}) => {
-        const standardDashboard = defaultConfig
-          .filter(d => d.type === 'desktop')
-          .map(d => d as DefaultDesktopDashboardConfig)
-          .find(d => d.isStandard);
+      switchMap(({targetDashboard, defaultConfig}) => {
+        if(targetDashboard == null) {
+          return EMPTY;
+        }
 
-        if(standardDashboard != null) {
+        const templates = defaultConfig
+          .filter(d => d.type === 'desktop')
+          .map(d => d as DefaultDesktopDashboardConfig);
+
+        let targetTemplate = templates.find(t => t.isStandard);
+
+        if(targetDashboard.templateId != null) {
+          targetTemplate = templates.find(t => t.id === targetDashboard.templateId) ?? targetTemplate;
+        }
+
+        if(targetTemplate != null) {
           return of(
-            DashboardItemsActions.removeWidgets({dashboardGuid, widgetIds: items.map(i => i.guid)}),
+            DashboardItemsActions.removeWidgets({
+              dashboardGuid: targetDashboard.guid,
+              widgetIds: targetDashboard.items.map(i => i.guid)
+            }),
             DashboardItemsActions.addWidgets({
-                dashboardGuid,
-                widgets: standardDashboard.widgets.map(w => ({
+              dashboardGuid: targetDashboard.guid,
+                widgets: targetTemplate.widgets.map(w => ({
                   widgetType: w.widgetTypeId,
                   position: w.position,
                   initialSettings: w.initialSettings

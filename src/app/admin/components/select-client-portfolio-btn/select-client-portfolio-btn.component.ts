@@ -62,7 +62,7 @@ export class SelectClientPortfolioBtnComponent implements OnInit, OnDestroy {
   processPortfolioChange(selectedPortfolio: PortfolioKey): void {
     combineLatest({
       allDashboards: this.manageDashboardsService.allDashboards$,
-      defaultConfigs: this.manageDashboardsService.getDefaultDashboardConfig(),
+      defaultConfigs: this.manageDashboardsService.getDashboardTemplatesConfig(),
     })
       .pipe(take(1))
       .subscribe((x) => {
@@ -96,6 +96,7 @@ export class SelectClientPortfolioBtnComponent implements OnInit, OnDestroy {
           }));
 
           this.manageDashboardsService.addDashboardWithTemplate({
+            templateId: standardConfig.id,
             title: dashboardTitle,
             items: standardConfig.widgets.map((w) => ({
               guid: GuidGenerator.newGuid(),

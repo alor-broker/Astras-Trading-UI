@@ -79,7 +79,7 @@ export class DesktopSettingsBrokerService {
           this.store.dispatch(DashboardsInternalActions.init({dashboards: dashboards.settings}));
           this.globalLoadingIndicatorService.releaseLoading(loadingId);
         } else {
-          this.manageDashboardsService.getDefaultDashboardConfig().pipe(
+          this.manageDashboardsService.getDashboardTemplatesConfig().pipe(
             take(1)
           ).subscribe(config => {
             this.store.dispatch(DashboardsInternalActions.init({dashboards: []}));
@@ -90,6 +90,7 @@ export class DesktopSettingsBrokerService {
 
             defaultDashboardsConfig.forEach((d, index) => {
               this.manageDashboardsService.addDashboardWithTemplate({
+                templateId: d.id,
                 title: d.name,
                 isSelected: index === 0,
                 items: d.widgets.map(w => ({

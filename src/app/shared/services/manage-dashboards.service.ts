@@ -8,7 +8,7 @@ import {
   Widget
 } from '../models/dashboard/widget.model';
 import { Store } from '@ngrx/store';
-import {Dashboard, DefaultDashboardConfig} from '../models/dashboard/dashboard.model';
+import {Dashboard, DashboardTemplateConfig} from '../models/dashboard/dashboard.model';
 import { GuidGenerator } from '../utils/guid';
 import { DashboardContextService } from './dashboard-context.service';
 import {HttpClient, HttpContext} from "@angular/common/http";
@@ -31,7 +31,7 @@ import {HttpContextTokens} from "../constants/http.constants";
   providedIn: 'root',
 })
 export class ManageDashboardsService {
-  private defaultConfig$?: Observable<DefaultDashboardConfig[]>;
+  private defaultConfig$?: Observable<DashboardTemplateConfig[]>;
 
   constructor(
     private readonly httpClient: HttpClient,
@@ -165,9 +165,9 @@ export class ManageDashboardsService {
     this.store.dispatch(DashboardsCurrentSelectionActions.select({ dashboardGuid: guid }));
   }
 
-  getDefaultDashboardConfig(): Observable<DefaultDashboardConfig[]> {
+  getDashboardTemplatesConfig(): Observable<DashboardTemplateConfig[]> {
     if (!this.defaultConfig$) {
-      this.readDefaultConfig();
+      this.readTemplatesConfig();
     }
 
     return this.defaultConfig$!;
@@ -177,8 +177,8 @@ export class ManageDashboardsService {
     this.store.dispatch(DashboardsInternalActions.cleanInitialSettings({items}));
   }
 
-  private readDefaultConfig(): void {
-    this.defaultConfig$ = this.httpClient.get<DefaultDashboardConfig[]>(
+  private readTemplatesConfig(): void {
+    this.defaultConfig$ = this.httpClient.get<DashboardTemplateConfig[]>(
       '../../../assets/default-dashboards-config.json',
       {
         headers: {
