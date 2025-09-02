@@ -828,5 +828,36 @@
       "galleryOrder": 22,
       "enabled": true
     }
+  },
+  {
+    "typeId": "portfolio-charts",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "",
+        "componentName": "PortfolioChartsWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Portfolio dynamics",
+      "translations": {
+        "ru": "Динамика по портфелю",
+        "en": "Portfolio dynamics",
+        "hy": "Պորտֆելի դինամիկ"
+      }
+    },
+    "category": "positionsTradesOrders",
+    "desktopMeta": {
+      "headerIcon": "area-chart",
+      "galleryIcon": "area-chart",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 12,
+        "initialWidth": 8
+      },
+      "galleryOrder": 23,
+      "enabled": true
+    }
   }
 ]

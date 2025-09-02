@@ -2,13 +2,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MobileHomeScreenContentComponent } from './mobile-home-screen-content.component';
 import { MockComponents, MockProvider } from "ng-mocks";
-import { PortfolioDynamicsComponent } from "../portfolio-dynamics/portfolio-dynamics.component";
 import { PositionsComponent } from "../positions/positions.component";
 import { MarketTrendsComponent } from "../market-trends/market-trends.component";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { EMPTY } from 'rxjs';
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
+import { UserPortfoliosService } from "../../../../shared/services/user-portfolios.service";
+import { AgreementDynamicsComponent } from "../../../portfolio-charts/components/agreement-dynamics/agreement-dynamics.component";
 
 describe('MobileHomeScreenContentComponent', () => {
   let component: MobileHomeScreenContentComponent;
@@ -18,7 +19,7 @@ describe('MobileHomeScreenContentComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         MockComponents(
-          PortfolioDynamicsComponent,
+          AgreementDynamicsComponent,
           PositionsComponent,
           MarketTrendsComponent
         ),
@@ -37,7 +38,13 @@ describe('MobileHomeScreenContentComponent', () => {
             selectDashboardInstrument: jasmine.createSpy('selectDashboardInstrument').and.callThrough()
           }
         ),
-        MockProvider(NavigationStackService)
+        MockProvider(NavigationStackService),
+        MockProvider(
+          UserPortfoliosService,
+          {
+            getPortfolios: () => EMPTY
+          }
+        ),
       ]
     })
     .compileComponents();

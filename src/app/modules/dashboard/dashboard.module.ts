@@ -44,6 +44,7 @@ import {NetworkIndicatorComponent} from "./components/network-indicator/network-
 import { MobileHomeScreenWidgetComponent } from "../mobile-home-screen/widgets/mobile-home-screen-widget/mobile-home-screen-widget.component";
 import {AiGraphsWidgetComponent} from "../ai-graph/widgets/ai-graphs-widget/ai-graphs-widget.component";
 import { InvestIdeasWidgetComponent } from "../invest-ideas/widgets/invest-ideas-widget/invest-ideas-widget.component";
+import { PortfolioChartsWidgetComponent } from "../portfolio-charts/widgets/portfolio-charts-widget/portfolio-charts-widget.component";
 
 @NgModule({
   declarations: [
@@ -94,6 +95,7 @@ import { InvestIdeasWidgetComponent } from "../invest-ideas/widgets/invest-ideas
         MobileHomeScreenWidgetComponent,
         AiGraphsWidgetComponent,
         InvestIdeasWidgetComponent,
+        PortfolioChartsWidgetComponent,
     ],
   exports: [
     DashboardComponent,

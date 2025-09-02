@@ -49,11 +49,11 @@
         }
       },
       {
-        "widgetTypeId": "blotter",
+        "widgetTypeId": "portfolio-charts",
         "position": {
           "x": 0,
           "y": 16,
-          "cols": 14,
+          "cols": 10,
           "rows": 14
         },
         "initialSettings": {
@@ -63,9 +63,9 @@
       {
         "widgetTypeId": "blotter",
         "position": {
-          "x": 14,
+          "x": 10,
           "y": 16,
-          "cols": 36,
+          "cols": 40,
           "rows": 14
         },
         "initialSettings": {

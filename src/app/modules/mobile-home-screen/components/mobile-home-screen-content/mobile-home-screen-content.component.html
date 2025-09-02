@@ -17,7 +17,11 @@
             <nz-collapse-panel
               [nzHeader]="header"
             >
-              <ats-portfolio-dynamics></ats-portfolio-dynamics>
+              @if(currentAgreement$ | async; as currentAgreement) {
+                <div style="height:250px">
+                  <ats-agreement-dynamics [agreement]="currentAgreement"></ats-agreement-dynamics>
+                </div>
+              }
             </nz-collapse-panel>
             <ng-template #header>
               <span class="section-header">{{t('mobileHomeScreen.agreementDynamicsTitle')}}</span>
