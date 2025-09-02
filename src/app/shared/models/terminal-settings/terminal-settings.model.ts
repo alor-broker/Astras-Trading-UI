@@ -153,4 +153,5 @@ export interface TerminalSettings {
   portfoliosCurrency?: PortfolioCurrencySettings[];
   instantNotificationsSettings?: InstantNotificationsSettings;
   badgesColors?: string[];
+  showCurrentTime?: boolean;
 }

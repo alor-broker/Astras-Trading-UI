@@ -13,5 +13,21 @@
 
   "moreItemsButton": {
     "title": "Show more"
+  },
+
+  "sectors": {
+    "All": "All",
+    "Energy": "Energy",
+    "Materials": "Materials",
+    "Industrials": "Industrials",
+    "Consumer Discretionary": "Discretionary",
+    "Consumer Staples": "Staples",
+    "Health Care": "Healthcare",
+    "Financials": "Financials",
+    "Information Technology": "Tech",
+    "Communication Services": "Comms",
+    "Utilities": "Utilities",
+    "Real Estate": "Real Estate",
+    "Other": "Other"
   }
 }

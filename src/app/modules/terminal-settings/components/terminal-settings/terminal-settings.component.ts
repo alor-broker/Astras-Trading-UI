@@ -204,7 +204,8 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
       userIdleDurationMin: settings.userIdleDurationMin,
       badgesBind: settings.badgesBind,
       badgesColors: settings.badgesColors,
-      tableRowHeight: settings.tableRowHeight
+      tableRowHeight: settings.tableRowHeight,
+      showCurrentTime: settings.showCurrentTime ?? false
     });
 
     this.settingsForm.controls.portfoliosCurrency.setValue(settings.portfoliosCurrency ?? []);

@@ -13,7 +13,7 @@
       />
       <nz-autocomplete
         #auto
-        [nzWidth]="autocompleteMinWidth"
+        [nzWidth]="getAutocompleteWidth(inputEl)"
         [nzOverlayStyle]="{
           left: getAutocompleteLeftPosition()
         }"

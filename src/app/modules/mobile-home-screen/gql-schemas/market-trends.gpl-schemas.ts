@@ -23,7 +23,8 @@ const basicInfoScheme = BasicInformationSchema().pick({
   symbol: true,
   exchange: true,
   shortName: true,
-  market: true
+  market: true,
+  gicsSector: true,
 });
 
 const boardInfoScheme = BoardInformationSchema().pick({

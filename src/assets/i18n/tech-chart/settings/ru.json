@@ -36,6 +36,9 @@
   "allowCustomTimeframesLabel": "Разрешить свои таймфреймы",
   "allowCustomTimeframesWarning": "Данная опция реализована на стороне графика TradingView. Некоторые фреймы могут не поддерживаться, либо отображаемые данные могут быть получены путем комбинирования данных меньших фреймов",
 
+  "chartOrdersGroupLabel": "Управление заявками",
+  "editWithoutConfirmationLabel": "Редактировать цену без подтверждения",
+
   "lineMarkerPositionOptions": {
     "right": "Справа",
     "middle": "По центру",

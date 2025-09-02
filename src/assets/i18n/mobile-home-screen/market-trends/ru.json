@@ -13,5 +13,21 @@
 
   "moreItemsButton": {
     "title": "Показать еще"
+  },
+
+  "sectors": {
+    "All": "Все",
+    "Energy": "Энергетика",
+    "Materials": "Сырье и материалы",
+    "Industrials": "Промышленность",
+    "Consumer Discretionary": "Ритейл и досуг",
+    "Consumer Staples": "Продукты и быт",
+    "Health Care": "Медицина",
+    "Financials": "Финансы",
+    "Information Technology": "IT",
+    "Communication Services": "Телеком / Медиа",
+    "Utilities": "Ком. услуги",
+    "Real Estate": "Недвижимость",
+    "Other": "Другое"
   }
 }

@@ -90,7 +90,11 @@ export class PortfolioPropertyEditorComponent extends PropertyEditorBaseComponen
         filter(() => this.form.controls.property.valid),
         takeUntilDestroyed(this.destroyRef)
       ).subscribe(value => {
-        config.applyValueCallback(this.strToPortfolio(value!));
+        if(value == null) {
+          config.applyValueCallback(null);
+        } else {
+          config.applyValueCallback(this.strToPortfolio(value));
+        }
       });
     }
   }

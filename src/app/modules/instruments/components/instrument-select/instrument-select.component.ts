@@ -213,4 +213,9 @@ export class InstrumentSelectComponent implements OnInit {
       }
     });
   }
+
+  getAutocompleteWidth(input: HTMLInputElement): number {
+    const inputWidth = input.getBoundingClientRect().width;
+    return Math.max(250, inputWidth);
+  }
 }
