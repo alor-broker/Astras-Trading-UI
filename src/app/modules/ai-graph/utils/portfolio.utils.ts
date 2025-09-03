@@ -1,5 +1,6 @@
-import {PortfolioKey} from "../graph/slot-types";
+import {Portfolio} from "../graph/slot-types";
 import {ArrayItemsSeparator} from "../constants/graph-data.constants";
+import { MarketType } from "../../../shared/models/portfolio-key.model";
 
 export class PortfolioUtils {
   private static readonly Separator = ':';
@@ -9,12 +10,14 @@ export class PortfolioUtils {
    * @param value String representation of a portfolio
    * @returns PortfolioKey object
    */
-  static fromString(value: string): PortfolioKey {
+  static fromString(value: string): Portfolio {
     const parts = value.split(this.Separator);
 
     return {
       portfolio: parts[0] ?? '',
-      exchange: parts[1] ?? ''
+      exchange: parts[1] ?? '',
+      agreement: parts[2] ?? '',
+      market: (parts[3] ?? null) as (MarketType | null)
     };
   }
 
@@ -23,10 +26,12 @@ export class PortfolioUtils {
    * @param portfolio PortfolioKey object
    * @returns String representation of the portfolio
    */
-  static toString(portfolio: PortfolioKey): string {
+  static toString(portfolio: Portfolio): string {
     return [
       portfolio.portfolio,
-      portfolio.exchange
+      portfolio.exchange,
+      portfolio.agreement,
+      portfolio.market
     ].join(this.Separator);
   }
 
@@ -35,7 +40,7 @@ export class PortfolioUtils {
    * @param portfolios Array of PortfolioKey objects
    * @returns String representation of the portfolio array
    */
-  static fromArrayToString(portfolios: PortfolioKey[]): string {
+  static fromArrayToString(portfolios: Portfolio[]): string {
     return portfolios.map(p => this.toString(p))
       .join(ArrayItemsSeparator);
   }
@@ -54,7 +59,7 @@ export class PortfolioUtils {
    * @param value String representation of multiple portfolios
    * @returns Array of PortfolioKey objects or null if invalid
    */
-  static fromStringToArray(value: string): PortfolioKey[] | null {
+  static fromStringToArray(value: string): Portfolio[] | null {
     if (value.length === 0 || !this.isArray(value)) {
       return null;
     }

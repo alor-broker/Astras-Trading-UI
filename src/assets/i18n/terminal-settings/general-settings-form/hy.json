@@ -1,0 +1,33 @@
+{
+  "langLabel": "Լեզու",
+  "themeLabel": "Թեմա",
+  "fontFamilyLabel": "Տառատեսակ",
+  "fontFamilyPlaceholder": "Ընտրեք նախընտրելի տառատեսակը",
+  "gridTypeLabel": "Վիդջեթների ցանցի պահվածքը",
+  "timezoneLabel": "Ժամանակի ցուցադրման ժամային գոտի",
+  "isLogoutOnUserIdleLabel": "Դուրս գալ անգործության դեպքում",
+  "logoutDisclaimer": "Ուշադրություն․ Այս կարգավորումն ակտիվացնելու դեպքում, Աստրասում ոչ ակտիվ լինելու դեպքում դուրս կգաք նաև այս բրաուզերի Ալորայի մյուս բոլոր կայքերից։",
+  "userIdleDurationLabel": "Սեսիայի դադարեցման անգործության ժամանակը, րոպե",
+  "badgesBindLabel": "Միացնել գործիքների կապումը լեյբլներին",
+  "darkThemeOption": "Մութ",
+  "lightThemeOption": "Բաց",
+  "gridTypeFitOption": "Մեծացնել պատուհանի չափերով",
+  "gridTypeVerticalFixedOption": "Մեծացնել ներքև",
+  "gridTypeHorizontalFixedOption": "Մեծացնել աջ",
+  "mskTimezoneOption": "Մոսկվա (MSK)",
+  "localTimezoneOption": "Տեղական ժամանակ",
+  "notSelectedOption": "Ընտրված չէ",
+  "tableRowHeightLabel": "Տողերի բարձրությունը աղյուսակներում",
+  "tableRowHeight": {
+    "low": "Ցածր",
+    "medium": "Միջին",
+    "high": "Բարձր"
+  },
+  "badgesBindHint1": "Ընտրելով գործիք որոշակի գույնի լեյբլով վիդջեթում, կփոխվի ընտրված գործիքը բոլոր վիդջեթներում նույն գույնի լեյբլով",
+  "badgesBindHint2": "Վիդջեթներ, որոնցում կարող եք ընտրել գործիք",
+  "badgesBindHint3": "Վիդջեթներ, որոնցում կփոխվեն տվյալները՝ կախված ընտրված գործիքից",
+  "addBadgesBtnLabel": "Ավելացնել կանխորոշված լեյբլներ",
+  "badgesColorsHeaders": "Մատչելի լեյբլներ",
+  "showCurrentTimeLabel": "Ցուցադրել ընթացիկ ժամանակը",
+  "intervalError": "Արժեքը պետք է լինի {{min}}-ից մինչև {{max}}"
+}

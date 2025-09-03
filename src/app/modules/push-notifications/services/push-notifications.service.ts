@@ -4,9 +4,9 @@ import {
 } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {
-  combineLatest,
   forkJoin,
   from,
+  fromEvent,
   Observable,
   of,
   shareReplay,
@@ -40,12 +40,21 @@ import { environment } from "../../../../environments/environment";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/messaging';
 import { LoggerService } from "../../../shared/services/logging/logger.service";
+import { DeviceHelper } from "../../../shared/utils/device-helper";
+import isSupported = firebase.messaging.isSupported;
+
+export type MessagingStatus = NotificationPermission | 'not-supported';
 
 interface MessagePayload extends firebase.messaging.MessagePayload {
   data?: {
     body?: string;
   };
   messageId: string;
+}
+
+interface MessagingState {
+  permission: MessagingStatus;
+  swToken: string | null;
 }
 
 @Injectable({
@@ -59,9 +68,12 @@ export class PushNotificationsService implements OnDestroy {
   private token$?: Observable<string | null>;
 
   private readonly subscriptionsUpdatedSub = new Subject<PushSubscriptionType | null>();
+
   readonly subscriptionsUpdated$ = this.subscriptionsUpdatedSub.asObservable();
 
   private messages$?: Observable<MessagePayload>;
+
+  private messagingState$: Observable<MessagingState> | null = null;
 
   constructor(
     private readonly environmentService: EnvironmentService,
@@ -103,7 +115,7 @@ export class PushNotificationsService implements OnDestroy {
   }
 
   subscribeToPriceChange(request: PriceChangeRequest): Observable<BaseCommandResponse | null> {
-    return this.getToken()
+    return this.initFCM()
       .pipe(
         take(1),
         switchMap(() => this.httpClient.post<BaseCommandResponse>(this.baseUrl + '/actions/addPriceSpark', request)),
@@ -124,21 +136,21 @@ export class PushNotificationsService implements OnDestroy {
   }
 
   getMessages(): Observable<MessagePayload> {
-    this.messages$ ??= this.getToken().pipe(
-        switchMap(() => {
-            return new Observable<MessagePayload>(subscriber => {
-              this.messaging.onMessage(value => subscriber.next(value));
-            });
-          }
-        ),
-        shareReplay(1)
-      );
+    this.messages$ ??= this.initFCM().pipe(
+      switchMap(() => {
+          return new Observable<MessagePayload>(subscriber => {
+            this.messaging.onMessage(value => subscriber.next(value));
+          });
+        }
+      ),
+      shareReplay(1)
+    );
 
     return this.messages$;
   }
 
   getCurrentSubscriptions(): Observable<SubscriptionBase[] | null> {
-    return this.getToken().pipe(
+    return this.initFCM().pipe(
       filter(x => x != null && x.length > 0),
       switchMap(() => this.httpClient.get<SubscriptionBase[]>(this.baseUrl)),
       catchHttpError<SubscriptionBase[] | null>(null, this.errorHandlerService),
@@ -157,7 +169,7 @@ export class PushNotificationsService implements OnDestroy {
   }
 
   cancelSubscription(id: string): Observable<BaseCommandResponse | null> {
-    return this.getToken()
+    return this.initFCM()
       .pipe(
         switchMap(() => this.httpClient.delete<BaseCommandResponse>(`${this.baseUrl}/${id}`)),
         catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
@@ -170,39 +182,95 @@ export class PushNotificationsService implements OnDestroy {
       );
   }
 
-  getBrowserNotificationsStatus(): Observable<NotificationPermission> {
-    return from(Notification.requestPermission());
+  getBrowserNotificationsStatus(): Observable<MessagingStatus> {
+    return this.getMessagingState().pipe(
+      map(s => s.permission)
+    );
   }
 
   ngOnDestroy(): void {
     this.subscriptionsUpdatedSub.complete();
   }
 
-  private getToken(): Observable<string | null> {
+  private getMessagingState(): Observable<MessagingState> {
+    if (this.messagingState$ == null) {
+      if (window.Notification == null || !isSupported()) {
+        this.messagingState$ = of({
+          permission: 'not-supported' as MessagingStatus,
+          swToken: null
+        }).pipe(
+          shareReplay(1)
+        );
+
+        this.loggerService.info(this.formatLogMessage('Push is not supported'));
+      } else {
+        let base = of(null);
+
+        if (DeviceHelper.isSafari()) {
+          base = fromEvent(document, 'click').pipe(
+            map(() => null)
+          );
+        }
+
+        this.messagingState$ = base.pipe(
+          take(1),
+          switchMap(() => navigator.serviceWorker.ready),
+          switchMap(() => Notification.requestPermission()),
+          catchError(e => {
+            this.loggerService.error(this.formatLogMessage(`Unable to request permission. Details: ${e}`));
+            return of(null);
+          }),
+          switchMap(p => {
+            this.loggerService.info(`Push permission: ${p ?? ''}`);
+
+            if (p == null || p !== 'granted') {
+              return of({
+                permission: p ?? 'not-supported' as MessagingStatus,
+                swToken: null
+              });
+            }
+
+            return from(this.messaging.getToken()).pipe(
+              catchError(e => {
+                this.loggerService.warn(this.formatLogMessage(`Unable to get FCM token. Details: ${e}`));
+                return of(null);
+              }),
+              map(t => {
+                if (t != null && t.length > 0) {
+                  return {
+                    permission: p,
+                    swToken: t
+                  };
+                }
+
+                return {
+                  permission: p,
+                  swToken: null
+                };
+              })
+            );
+          }),
+          take(1),
+          shareReplay(1)
+        );
+      }
+    }
+
+    return this.messagingState$;
+  }
+
+  private initFCM(): Observable<string | null> {
     if (this.token$) {
       return this.token$;
     }
 
-    this.token$ = combineLatest({
-      swReady: navigator.serviceWorker.ready,
-      notificationsStatus: this.getBrowserNotificationsStatus()
-    }).pipe(
-      filter(x => x.swReady != null && x.notificationsStatus === 'granted'),
-      take(1),
-      switchMap(() => from(this.messaging.getToken())),
-      filter(token => {
-        const isValid = token != null && token.length > 0;
-        if(!isValid) {
-          this.loggerService.warn('Unable to get FCM token');
-        }
-
-        return isValid;
-      }),
+    this.token$ = this.getMessagingState().pipe(
+      filter(state => state.swToken != null && state.swToken.length > 0),
       mapWith(
-        token => this.httpClient.post<BaseCommandResponse>(
+        state => this.httpClient.post<BaseCommandResponse>(
           this.baseUrl + '/actions/addToken',
           {
-            token,
+            token: state.swToken,
             culture: this.translatorService.getActiveLang()
           }
         )
@@ -215,7 +283,7 @@ export class PushNotificationsService implements OnDestroy {
             }),
             catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService)
           ),
-        (token, res) => res ? token : null),
+        (state, res) => res ? state.swToken! : null),
       filter(token => token != null && !!token.length),
       shareReplay(1)
     );
@@ -224,7 +292,7 @@ export class PushNotificationsService implements OnDestroy {
   }
 
   private cancelOrderExecuteSubscriptions(portfolios: { portfolio: string, exchange: string }[]): Observable<boolean> {
-    return this.getToken()
+    return this.initFCM()
       .pipe(
         switchMap(() => this.getCurrentSubscriptions()),
         map(subs => (subs ?? []).filter((s): s is OrderExecuteSubscription => s.subscriptionType === PushSubscriptionType.OrderExecute)),
@@ -251,5 +319,9 @@ export class PushNotificationsService implements OnDestroy {
             );
         })
       );
+  }
+
+  private formatLogMessage(message: string): string {
+    return `[Push]: ${message}`;
   }
 }

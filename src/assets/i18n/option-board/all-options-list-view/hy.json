@@ -1,0 +1,10 @@
+{
+  "settingsForm": {
+    "strikesCount": {
+      "label": "Սթրայքների քանակ"
+    },
+    "highlightedSpreadItemsCount": {
+      "label": "Ընդգծել սփրեդը տարբերության դեպքում, քայլեր"
+    }
+  }
+}

@@ -3,7 +3,6 @@ import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import {
   NewMessageRequest,
   ReplyResponse,
-  SuggestionsResponse
 } from "../models/messages-http.model";
 import {
   combineLatest,
@@ -60,7 +59,8 @@ export class AiChatService {
             sender: 'astras-ai-chart@mock.com',
             text: message.text,
             meta: terminalContext,
-            messageGuid: GuidGenerator.newGuid()
+            messageGuid: GuidGenerator.newGuid(),
+            collectionName: "Astras"
           }
         );
       }),
@@ -74,13 +74,6 @@ export class AiChatService {
           text: r.answer
         } as ReplyResponse;
       }),
-      take(1)
-    );
-  }
-
-  getSuggestions(): Observable<SuggestionsResponse | null> {
-    return this.httpClient.get<SuggestionsResponse>(`${this.baseUrl}/features`).pipe(
-      catchHttpError<SuggestionsResponse | null>(null, this.getErrorHandler()),
       take(1)
     );
   }

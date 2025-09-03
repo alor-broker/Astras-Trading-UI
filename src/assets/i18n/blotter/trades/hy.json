@@ -1,0 +1,50 @@
+{
+  "columns": {
+    "id": {
+      "name": "Id",
+      "tooltip": "Գործարքի նույնականացման համարը",
+      "searchDescription": "Փնտրել ըստ համարի"
+    },
+    "orderNo": {
+      "name": "Հայտ",
+      "tooltip": "Հայտի համարը",
+      "searchDescription": "Փնտրել ըստ հայտի"
+    },
+    "symbol": {
+      "name": "Թիքեր",
+      "tooltip": "Արժեթղթի բորսայական նույնացուցիչը",
+      "searchDescription": "Փնտրել ըստ թիքերի"
+    },
+    "shortName": {
+      "name": "Անվանում",
+      "tooltip": "Արժեթղթի անվանումը",
+      "searchDescription": "Փնտրել ըստ անվանման"
+    },
+    "side": {
+      "name": "Կողմ",
+      "tooltip": "Գործարքի կողմը (գնում/վաճառք)",
+      "listOfFilter": {
+        "buy": "Գնում",
+        "sell": "Վաճառք"
+      }
+    },
+    "qty": {
+      "name": "Քանակ",
+      "tooltip": "Գործարքների քանակը"
+    },
+    "price": {
+      "name": "Գին",
+      "tooltip": "Գինը"
+    },
+    "date": {
+      "name": "Ժամանակ",
+      "tooltip": "Գործարքի կատարման ժամանակը"
+    },
+    "volume": {
+      "name": "Ծավալ",
+      "tooltip": "Ծավալը"
+    }
+  },
+  "emptyTrades": "Այսօր գործարքներ չեն եղել",
+  "emptyTradesWithFilters": "Նման զտիչներով ոչինչ չի գտնվել"
+}

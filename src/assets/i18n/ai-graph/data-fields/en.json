@@ -41,6 +41,24 @@
     },
     "commission": {
       "text": "Commission:"
+    },
+    "reportDate": {
+      "text": "Report Date:"
+    },
+    "reportComment": {
+      "text": "Report Comment:"
+    },
+    "date": {
+      "text": "Date:"
+    },
+    "qty": {
+      "text": "Quantity:"
+    },
+    "price": {
+      "text": "Price:"
+    },
+    "side": {
+      "text": "Side:"
     }
   }
 }

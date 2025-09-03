@@ -10,11 +10,6 @@ import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {
-  en_US,
-  NZ_I18N,
-  ru_RU
-} from 'ng-zorro-antd/i18n';
 import { FormsModule } from '@angular/forms';
 import {
   HTTP_INTERCEPTORS,
@@ -31,7 +26,6 @@ import { TranslocoRootModule } from './transloco-root.module';
 import { LOGGER } from './shared/services/logging/logger-base';
 import { ConsoleLogger } from './shared/services/logging/console-logger';
 import { RemoteLogger } from './shared/services/logging/remote-logger';
-import { NzI18nInterface } from "ng-zorro-antd/i18n/nz-i18n.interface";
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { NzSpinModule } from "ng-zorro-antd/spin";
 import {
@@ -41,7 +35,9 @@ import {
 import { MarkdownModule } from "ngx-markdown";
 import { APP_HOOKS } from "./app-hooks";
 import "chartjs-adapter-date-fns";
-import { provideApollo } from "apollo-angular";
+import {
+  provideNamedApollo
+} from "apollo-angular";
 import { HttpLink } from "apollo-angular/http";
 import { environment } from "../environments/environment";
 import { InMemoryCache } from "@apollo/client/core";
@@ -78,19 +74,6 @@ import { LocaleService } from "./shared/services/locale.service";
       useFactory: (localeService: LocaleService): string => localeService.currentLocale,
     },
     {
-      provide: NZ_I18N,
-      useFactory: (localId: string): NzI18nInterface => {
-        switch (localId) {
-          case 'en':
-            return en_US;
-          case 'ru':
-            return ru_RU;
-          default:
-            return ru_RU;
-        }
-      }
-    },
-    {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
@@ -113,12 +96,18 @@ import { LocaleService } from "./shared/services/locale.service";
     ...APP_HOOKS,
     provideCharts(withDefaultRegisterables()),
     provideHttpClient(withInterceptorsFromDi()),
-    provideApollo(() => {
+    provideNamedApollo(() => {
       const httpLink = inject(HttpLink);
 
       return {
-        link: httpLink.create({ uri: environment.apiUrl + '/hyperion' }),
-        cache: new InMemoryCache(),
+        default: {
+          link: httpLink.create({ uri: environment.apiUrl + '/hyperion' }),
+          cache: new InMemoryCache(),
+        },
+        news: {
+          link: httpLink.create({ uri: environment.apiUrl + '/news/graphql' }),
+          cache: new InMemoryCache(),
+        }
       };
     })
   ]

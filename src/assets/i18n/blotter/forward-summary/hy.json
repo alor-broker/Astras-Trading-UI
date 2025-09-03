@@ -1,0 +1,34 @@
+{
+  "portfolioEvaluationTitle": "Պորտֆելի գնահատում",
+  "moneyFreeTitle": "Ազատ դրամական միջոցներ",
+  "moneyBlockedTitle": "Ապահովման գումար",
+  "feeTitle": "Միջնորդավճար",
+  "moneyAmountTitle": "Ընդամենը դրամական միջոցներ",
+  "portfolioLiquidationValueTitle": "Ընթացիկ սահմանաչափ",
+  "moneyPledgeAmountTitle": "Գրավադրված գումարներ",
+  "vmInterClTitle": "Փոփոխական մարժա",
+  "vmCurrentPositionsTitle": "Փոփոխական մարժա ըստ դիրքերի",
+  "varMarginTitle": "Ամփոփիչ փոփոխական մարժա",
+  "isLimitsSetTitle": "Դրամական և գրավադրված սահմանաչափեր",
+  "indicativeVarMarginTitle": "Ինդիկատիվ մարժա",
+  "netOptionValueTitle": "NOV",
+  "posRiskTitle": "Գործ. ռիսկ",
+  "initialMarginTitle": "Սկզբնական մարժա",
+  "minimalMarginTitle": "Նվազագույն մարժա",
+  "correctedMarginTitle": "Ճշգրտված մարժա",
+  "riskCoverageRatioOneTitle": "ՌԾԳ1",
+  "riskCoverageRatioTwoTitle": "ՌԾԳ2",
+  "clientTypeTitle": "Ռիսկի մակարդակ",
+  "clientTypeValues": {
+    "StandardRisk": "ՀՌԿՍ",
+    "HighRisk": "ՌԿԲ",
+    "Special": "ՌԿՀ",
+    "LowRisk": "ՌԿՑ"
+  },
+  "riskStatusTitle": "Կարգավիճակ",
+  "riskStatusValues": {
+    "Ok": "Նորմալ",
+    "Demand": "Սահմանափակում",
+    "ToClose": "Փակում"
+  }
+}

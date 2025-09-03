@@ -1,0 +1,32 @@
+{
+  "loadingLabel": "Բեռնում...",
+  "noOptionsWithSelectedTypeMessage": "Ընտրված տեսակի տարբերակներ չեն գտնվել",
+  "noOptionsMessage": "Ընտրված գործիքի համար տարբերակներ չեն գտնվել",
+  "dayOfMonthFormat": "{{day}} {{month}}",
+  "missingOptionTooltip": "Չկա օպցիոն {{strikePrice}} սթրայքով և {{day}} {{month}} {{year}} վավերականության ժամկետով",
+  "currentPriceTooltip": "Ընթացիկ գինը՝ {{price}}",
+  "sideOptions": {
+    "call": "Զանգ",
+    "put": "Պուտ"
+  },
+  "parameterOptions": {
+    "price": "Գինը",
+    "delta": "Դելտա",
+    "gamma": "Գամմա",
+    "vega": "Վեգա",
+    "theta": "Թետա",
+    "rho": "Ռո",
+    "ask": "Ասկ",
+    "bid": "Բիդ"
+  },
+  "strikePriceLabel": "Սթրայք",
+  "tabNames": {
+    "allOptions": "Բոլորը",
+    "allOptionsByExpiration": "Ըստ վավերականության ժամկետի",
+    "selectedOptions": "Ընտրվածները",
+    "charts": "Գծապատկերներ"
+  },
+  "abbreviations": {
+    "days": "օր"
+  }
+}

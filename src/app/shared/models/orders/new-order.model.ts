@@ -1,4 +1,4 @@
-﻿import {Side} from "../enums/side.model";
+import {Side} from "../enums/side.model";
 import {InstrumentKey} from "../instruments/instrument-key.model";
 import {LessMore} from "../enums/less-more.model";
 import {
@@ -19,6 +19,7 @@ export interface NewOrderBase {
 }
 
 export interface NewMarketOrder extends NewOrderBase {
+  timeInForce?: TimeInForce;
 }
 
 export interface NewLimitOrder extends NewOrderBase {

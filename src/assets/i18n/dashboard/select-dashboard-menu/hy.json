@@ -1,0 +1,13 @@
+{
+  "newDashboardTitlePlaceholder": "Նոր վահանակի վերնագիր",
+  "stringLenghtError": "Մուտքագրեք {{min}}-ից մինչև {{max}} նիշ",
+  "actionConfirmationTitle": "Հաստատեք գործողությունը",
+  "removeConfirmationMessage": "Վստա՞հ եք, որ ցանկանում եք հեռացնել '{{title}}' վահանակը:",
+  "copyConfirmationMessage": "Պատճենե՞լ '{{title}}' վահանակը բոլոր վիջեթներով:",
+  "confirmButtonText": "Այո",
+  "cancelButtonText": "Ոչ",
+  "defaultDashboardNames": {
+    "Default Dashboard": "Կանխադրված վահանակ",
+    "Lite Dashboard": "Թեթև վահանակ"
+  }
+}

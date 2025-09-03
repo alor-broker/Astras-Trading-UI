@@ -1,0 +1,25 @@
+{
+  "instrumentHeader": "Գործիք",
+  "viewSettingsHeader": "Դիտման կարգավորումներ",
+  "ordersHeader": "Հայտեր",
+  "tickerLabel": "Թիքեր",
+  "exchangeLabel": "Բորսա",
+  "depthLabel": "Խորություն",
+  "useOrderWidgetLabel": "Օգտագործել հայտերի վիդջեթը",
+  "displayChartLabel": "Ցուցադրել գրաֆիկը",
+  "displayTableLabel": "Ցուցադրել աղյուսակը",
+  "displayVolumeLabel": "Ցուցադրել համախառն ծավալը",
+  "displayYieldForBondsLabel": "Ցուցադրել եկամտաբերությունը պարտատոմսերի համար",
+  "columnsOrderLabel": "Սյունակների հերթականություն",
+  "instrumentGroupLabel": "Առևտրի ռեժիմ",
+  "volumeFormatDisplayLabel": "Ծավալի արտացոլման ձևաչափ",
+  "showPriceWithZeroPaddingLabel": "Ցուցադրել գները նույն քանակությամբ թվանշաններով ստորակետից հետո",
+  "tickerError": "Ընտրեք թիքեր",
+  "intervalError": "Արժեքը պետք է լինի {{min}}-ից {{max}} միջակայքում",
+  "instrumentGroupError": "Ընտրեք առևտրի ռեժիմ",
+  "useOrderWidgetPopover": "Բաժակից գնի վրա սեղմելիս հայտի ցուցադրվող պատուհանը չի հայտնվի, այլ կփոխվի հայտ ներկայացնելու վիդջեթում տեղեկատվությունը",
+  "columnOrders": {
+    "volumesAtTheEdges": "Ծավալները եզրերում",
+    "volumesAtTheMiddle": "Ծավալները կենտրոնում"
+  }
+}

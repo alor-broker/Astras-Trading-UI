@@ -5,6 +5,7 @@ import {
   Input,
   Output
 } from '@angular/core';
+import { AiChatTermsOfUseService } from "../../services/ai-chat-terms-of-use.service";
 
 @Component({
     selector: 'ats-terms-of-use-dialog',
@@ -36,5 +37,10 @@ export class TermsOfUseDialogComponent {
   handleCancel(): void {
     this.confirmed.emit(false);
     this.handleClose();
+  }
+
+  protected readonly content$ = this.termsOfUseService.getContent();
+
+  constructor(private readonly termsOfUseService: AiChatTermsOfUseService) {
   }
 }

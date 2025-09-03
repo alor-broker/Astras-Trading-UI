@@ -44,6 +44,7 @@ class PositionState {
   clear(): void {
     try {
       this.positionLine?.remove();
+      this.positionLine = null;
     } catch {
     }
   }

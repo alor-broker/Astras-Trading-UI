@@ -41,6 +41,24 @@
     },
     "commission": {
       "text": "Комиссия:"
+    },
+    "reportDate": {
+      "text": "Дата отчета:"
+    },
+    "reportComment": {
+      "text": "Комментарий:"
+    },
+    "date": {
+      "text": "Дата:"
+    },
+    "qty": {
+      "text": "Количество:"
+    },
+    "price": {
+      "text": "Цена:"
+    },
+    "side": {
+      "text": "Сторона:"
     }
   }
 }

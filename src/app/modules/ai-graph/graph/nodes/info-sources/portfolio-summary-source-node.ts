@@ -2,7 +2,10 @@ import { Observable, of, switchMap } from "rxjs";
 import { map, take } from "rxjs/operators";
 import { NodeBase } from "../node-base";
 import { SlotType } from "../../slot-types";
-import { NodeCategories } from "../node-categories";
+import {
+  NodeCategories,
+  NodeCategoryColors
+} from "../node-categories";
 import { GraphProcessingContextService } from "../../../services/graph-processing-context.service";
 import { TranslatorFn } from "../../../../../shared/services/translator.service";
 import { PortfolioUtils } from "../../../utils/portfolio.utils";
@@ -15,6 +18,11 @@ export class PortfolioSummarySourceNode extends NodeBase {
 
   constructor() {
     super(PortfolioSummarySourceNode.title);
+    this.setColorOption({
+      color: NodeCategoryColors["info-sources"].headerColor,
+      bgcolor: NodeCategoryColors["info-sources"].bodyColor,
+      groupcolor: NodeCategoryColors["info-sources"].headerColor
+    });
 
     this.addInput(
       this.inputSlotName,
@@ -44,7 +52,6 @@ export class PortfolioSummarySourceNode extends NodeBase {
   }
 
   override executor(context: GraphProcessingContextService): Observable<boolean> {
-    // Initialize translator function for data fields
     this.translatorFn = context.translatorService.getTranslator('ai-graph/data-fields');
 
     return super.executor(context).pipe(
@@ -55,7 +62,6 @@ export class PortfolioSummarySourceNode extends NodeBase {
           return of(false);
         }
 
-        // Parse the portfolio string using PortfolioUtils
         const targetPortfolio = PortfolioUtils.fromString(portfolioKeyString);
         if (!targetPortfolio.portfolio || !targetPortfolio.exchange) {
           return of(false);
@@ -78,7 +84,7 @@ export class PortfolioSummarySourceNode extends NodeBase {
                   `${portfolioValueLabel} ${summary.portfolioEvaluation}`,
                   `${initialMarginLabel} ${summary.initialMargin}`,
                   `${commissionLabel} ${summary.commission}`
-                ].join('\n');
+                ].join('<br>');
 
                 this.setOutputByName(this.outputSlotName, summaryText);
                 return true;

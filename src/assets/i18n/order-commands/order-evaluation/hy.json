@@ -1,0 +1,8 @@
+{
+  "evaluationCost": "Արժեք",
+  "evaluationCommission": "Միջնորդավճար",
+  "quantityToBuy": "Գնել",
+  "quantityToSell": "Վաճառել",
+  "quantityToBuyTooltip": "Մարժինալ գնում / Սեփական միջոցներով գնում",
+  "quantityToSellTooltip": "Մարժինալ վաճառք / Սեփական միջոցներով վաճառք"
+}

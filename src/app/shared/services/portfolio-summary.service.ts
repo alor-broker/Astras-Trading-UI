@@ -135,7 +135,8 @@ export class PortfolioSummaryService {
       riskCoverageRatioOne: formatCurrency(risks.riskCoverageRatioOne / exchangeRate, this.locale, currencyFormat),
       riskCoverageRatioTwo: formatCurrency(risks.riskCoverageRatioTwo / exchangeRate, this.locale, currencyFormat),
       riskStatus: risks.riskStatus,
-      clientType: risks.clientType
+      clientType: risks.clientType,
+      portfolioEvaluation: formatCurrency((forwardRisks.moneyAmount + forwardRisks.varMargin - forwardRisks.fee) / exchangeRate , this.locale, currencyFormat),
     };
   }
 }

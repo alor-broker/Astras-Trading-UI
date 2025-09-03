@@ -36,8 +36,14 @@
     "portfolio-positions": {
       "title": "Позиции портфеля"
     },
+    "reports": {
+      "title": "Клиентские отчеты"
+    },
     "const-portfolio": {
       "title": "Выбор портфеля"
+    },
+    "trades": {
+      "title": "Сделки"
     }
   },
 
@@ -96,7 +102,7 @@
       "name": "Добавить цену"
     },
     "includeVolume": {
-      "name": "Добавить объем"  
+      "name": "Добавить объем"
     },
     "includeLastUpdate": {
       "name": "Добавить время обновления"
@@ -148,6 +154,18 @@
     },
     "commission": {
       "name": "Комиссия"
+    },
+    "reports": {
+      "name": "Отчеты"
+    },
+    "market": {
+      "name": "Рынок"
+    },
+    "timeRange": {
+      "name": "Временной диапазон"
+    },
+    "trades": {
+      "name": "Сделки"
     }
   },
 

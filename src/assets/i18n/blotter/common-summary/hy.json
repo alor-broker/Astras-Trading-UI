@@ -1,0 +1,12 @@
+{
+  "portfolioLiquidationTitle": "Պորտֆելի գնահատում",
+  "portfolioEvaluationTitle": "Պորտֆելի իրացվելիության գնահատում",
+  "profitTitle": "P/L օրվա համար",
+  "profitRateTitle": "P/L օրվա համար, %",
+  "buyingPowerAtMorningTitle": "Գնման հզորությունը առավոտյան",
+  "initialMarginTitle": "Սկզբնական մարժա",
+  "correctedMarginTitle": "Ճշգրտված մարժա",
+  "riskBeforeForcePositionClosingTitle": "Ռիսկը մինչև դիրքի պարտադիր փակումը",
+  "commissionTitle": "Միջնորդավճար",
+  "buyingPowerTitle": "Գնման հզորություն"
+}

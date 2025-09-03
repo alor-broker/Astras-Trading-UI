@@ -5,6 +5,7 @@ import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTe
 import {MockProvider} from "ng-mocks";
 import {GraphStorageService} from "../../services/graph-storage.service";
 import {NEVER} from "rxjs";
+import { GraphTemplatesStorageService } from "../../services/graph-templates-storage.service";
 
 describe('GraphsListComponent', () => {
   let component: GraphsListComponent;
@@ -21,6 +22,12 @@ describe('GraphsListComponent', () => {
           GraphStorageService,
           {
             getAllGraphs: () => NEVER,
+          }
+        ),
+        MockProvider(
+          GraphTemplatesStorageService,
+          {
+            getAllTemplates: () => NEVER,
           }
         )
       ]

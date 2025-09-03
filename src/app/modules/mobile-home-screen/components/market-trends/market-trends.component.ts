@@ -47,6 +47,7 @@ import {
 } from "../../../../shared/services/actions-context";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
 
 interface DisplayParams {
   itemsDisplayCount: number;
@@ -65,7 +66,8 @@ interface DisplayParams {
     NzEmptyComponent,
     NzSkeletonComponent,
     NzIconDirective,
-    DecimalPipe
+    DecimalPipe,
+    InstrumentIconComponent
   ],
     templateUrl: './market-trends.component.html',
     styleUrl: './market-trends.component.less'

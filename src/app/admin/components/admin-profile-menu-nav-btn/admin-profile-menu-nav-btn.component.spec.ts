@@ -34,7 +34,7 @@ describe('AdminProfileMenuNavBtnComponent', () => {
         {
           provide: HelpService,
           useValue: {
-            getHelpLink: jasmine.createSpy('getHelpLink').and.returnValue(EMPTY)
+            getSectionHelp: jasmine.createSpy('getSectionHelp').and.returnValue(EMPTY)
           }
         },
         {

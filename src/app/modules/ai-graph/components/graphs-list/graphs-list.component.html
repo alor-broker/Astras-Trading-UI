@@ -1,5 +1,5 @@
 <ng-container *transloco="let t; scope: 'ai-graph/graphs-list'">
-  <ng-container *ngrxLet="{graphs: $graphs} as vm">
+  <ng-container *ngrxLet="{graphs: graphs$, templates: templates$} as vm">
     <div class="h-100 d-flex flex-column">
       <div class="flex-fill show-scroll">
         <nz-spin [nzSpinning]="isLoading">
@@ -54,15 +54,51 @@
                      [placeholder]="t('aiGraphGraphsList.newGraphTitlePlaceholder')" nz-input
                      type="text"/>
               <ng-template #suffixButton>
-                <button
-                  (click)="addGraph(); $event.preventDefault()"
-                  [disabled]="newGraphTitleControl.invalid"
-                  nz-button
-                  nzSearch
-                  nzType="primary"
-                >
-                  <span nz-icon nzTheme="outline" nzType="plus"></span>
-                </button>
+                <nz-space-compact>
+                  @if(vm.templates.length > 0) {
+                    <button
+                      (click)="$event.preventDefault()"
+                      [disabled]="newGraphTitleControl.invalid"
+                      nzSearch
+                      nz-button
+                      nz-dropdown
+                      nzTrigger="hover"
+                      [nzDropdownMenu]="templatesMenu"
+                      nz-tooltip
+                      [nzTooltipTitle]="t('aiGraphGraphsList.addGraphWithTemplateTooltip')"
+                      [nzTooltipMouseEnterDelay]="1"
+                    >
+                      <span nz-icon nzTheme="outline" nzType="copy"></span>
+                    </button>
+                    <nz-dropdown-menu #templatesMenu="nzDropdownMenu">
+                      <ng-container *transloco="let t; scope: 'ai-graph/graph-templates'">
+                        <ul nz-menu>
+                          @for (template of vm.templates; track template.id) {
+                            <li
+                              nz-menu-item
+                              (click)="addGraphFromTemplate(template)"
+                            >
+                              {{t('aiGraphGraphTemplates.titles.' + template.titleTranslationKey, {fallback: template.title})}}
+                            </li>
+                          }
+                        </ul>
+                      </ng-container>
+                    </nz-dropdown-menu>
+                  }
+
+                  <button
+                    (click)="addGraph(); $event.preventDefault()"
+                    [disabled]="newGraphTitleControl.invalid"
+                    nzSearch
+                    nz-button
+                    nzType="primary"
+                    nz-tooltip
+                    [nzTooltipTitle]="t('aiGraphGraphsList.addGraphTooltip')"
+                    [nzTooltipMouseEnterDelay]="1"
+                  >
+                    <span nz-icon nzTheme="outline" nzType="plus"></span>
+                  </button>
+                </nz-space-compact>
               </ng-template>
             </nz-input-group>
           </nz-form-control>

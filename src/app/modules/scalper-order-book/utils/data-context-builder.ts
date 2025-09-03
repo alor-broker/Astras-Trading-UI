@@ -95,7 +95,7 @@ export interface DataContextBuilderDeps {
 }
 
 export class DataContextBuilder {
-  private static readonly PriceDeviationMultiplier = 10000;
+  private static readonly PriceDeviationMultiplier = 20000;
 
   static buildContext(
     args: DataContextBuilderArgs,
@@ -407,14 +407,14 @@ export class DataContextBuilder {
     const startPrice = OrderBookScaleHelper.getStartPrice(bestAsk, bestBid, priceStep, scaleFactor, majorLinesStep);
 
     // Some instruments can have huge difference between min and max price. See https://github.com/alor-broker/Astras-Trading-UI/issues/1916
-    const maxPriceDeviation = this.PriceDeviationMultiplier * priceStep;
+    const maxPriceDeviation = (this.PriceDeviationMultiplier + 1) * priceStep;
     const pricePrecision = MathHelper.getPrecision(priceStep);
     const minPriceRestricted = MathHelper.round(
-      startPrice.startPrice - maxPriceDeviation,
+      Math.min(startPrice.startPrice, bestBid) - maxPriceDeviation,
       pricePrecision
     );
     const maxPriceRestricted = MathHelper.round(
-      startPrice.startPrice + maxPriceDeviation,
+      Math.max(startPrice.startPrice, bestAsk) + maxPriceDeviation,
       pricePrecision
     );
 
@@ -440,55 +440,31 @@ export class DataContextBuilder {
   ): boolean {
     const maxRowPrice = priceRows[0].price;
     const minRowPrice = priceRows[priceRows.length - 1].price;
-    const orderBookBounds = this.getOrderBookBounds(orderBookData);
 
-    const expectedMaxPrice = orderBookBounds.asksRange?.max ?? orderBookBounds.bidsRange?.max;
-    const expectedMinPrice = orderBookBounds.bidsRange?.min ?? orderBookBounds.asksRange?.min;
-    if ((expectedMinPrice != null && expectedMinPrice < minRowPrice)
-      || (expectedMaxPrice != null && expectedMaxPrice > maxRowPrice)) {
-      const priceDiff = ((expectedMaxPrice ?? expectedMinPrice ?? 0) - (expectedMinPrice ?? expectedMaxPrice ?? 0)) / settings.instrument.minstep;
+    const priceOptions = this.getPriceOptions(
+      this.getOrderBookBounds(orderBookData),
+      settings.instrument.minstep,
+      scaleFactor,
+      settings.widgetSettings.majorLinesStep ?? ScalperOrderBookConstants.defaultMajorLinesStep
+    );
 
-      if(priceDiff < this.PriceDeviationMultiplier * 4) {
-        this.regenerateForOrderBook(orderBookData, settings, getters, actions, priceRowsStore, rowHeight, scaleFactor);
-        return false;
-      }
+    if (priceOptions != null && (minRowPrice > priceOptions.expectedRangeMin || maxRowPrice < priceOptions.expectedRangeMax)) {
+      actions?.priceRowsRegenerationStarted();
+
+      priceRowsStore.initWithPriceRange(
+        settings.widgetSettings,
+        priceOptions,
+        false,
+        getters.getVisibleRowsCount(rowHeight),
+        () => {
+          actions?.priceRowsRegenerationCompleted();
+        }
+      );
+
+      return false;
     }
 
     return true;
-  }
-
-  private static regenerateForOrderBook(
-    orderBookData: OrderbookData,
-    settings: ScalperOrderBookExtendedSettings,
-    getters: BodyGetters,
-    actions: ChangeNotifications | null,
-    priceRowsStore: PriceRowsStore,
-    rowHeight: number,
-    scaleFactor: number
-  ): void {
-    actions?.priceRowsRegenerationStarted();
-
-    const bounds = this.getOrderBookBounds(orderBookData);
-    const expectedBestAsk = bounds.asksRange?.min ?? bounds.bidsRange?.max;
-    const expectedBestBid = bounds.bidsRange?.max ?? bounds.asksRange?.min;
-
-    if (expectedBestAsk == null || expectedBestBid == null) {
-      return;
-    }
-
-    priceRowsStore.initWithPriceRange(
-      settings.widgetSettings,
-      this.getPriceOptions(
-        this.getOrderBookBounds(orderBookData),
-        settings.instrument.minstep,
-        scaleFactor,
-        settings.widgetSettings.majorLinesStep ?? ScalperOrderBookConstants.defaultMajorLinesStep),
-      false,
-      getters.getVisibleRowsCount(rowHeight),
-      () => {
-        actions?.priceRowsRegenerationCompleted();
-      }
-    );
   }
 
   private static mapPriceRowToOrderBook(

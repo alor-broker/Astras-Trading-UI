@@ -37,7 +37,7 @@ describe('EmptyPortfoliosWarningModalComponent', () => {
         {
           provide: HelpService,
           useValue: {
-            getHelpLink: jasmine.createSpy('getHelpLink').and.returnValue('')
+            getSectionHelp: jasmine.createSpy('getSectionHelp').and.returnValue('')
           }
         }
       ]

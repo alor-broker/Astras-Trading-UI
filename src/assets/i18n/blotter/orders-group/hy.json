@@ -1,0 +1,16 @@
+{
+  "modalTitle": "Կապված հայտեր",
+  "groupIdLabel": "Խմբի Id",
+  "instrumentsLabel": "Գործիք(ներ)",
+  "idLabel": "Id",
+  "symbolLabel": "Գործիք",
+  "priceLabel": "Գին",
+  "qtyLabel": "Քանակ",
+  "triggerPriceLabel": "Ազդ. գին",
+  "conditionLabel": "Պայման",
+  "groupStatus": {
+    "Active": "Խումբն ակտիվ է",
+    "Canceled": "Խումբը չեղարկվել է",
+    "Filled": "Խումբն իրականացվել է"
+  }
+}

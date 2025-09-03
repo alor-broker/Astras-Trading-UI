@@ -25,7 +25,7 @@
     <ng-template #contentRef>
       @if (instrumentSummary$ | async; as instrumentSummary) {
         <nz-spin [nzSpinning]="isLoading">
-          <ats-info-header [info]="instrumentSummary" [isVisible]="true"></ats-info-header>
+          <ats-info-header [info]="instrumentSummary"></ats-info-header>
           @switch (instrumentSummary.typeByCfi) {
             @case (InstrumentTypes.Stock) {
               <ats-stock-info [instrumentKey]="instrumentSummary"

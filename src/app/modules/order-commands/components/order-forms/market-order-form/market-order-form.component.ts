@@ -35,9 +35,13 @@ import { Side } from "../../../../../shared/models/enums/side.model";
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
 import { SubmitGroupResult } from "../../../../../shared/models/orders/orders-group.model";
-import { OrderCommandResult } from "../../../../../shared/models/orders/new-order.model";
+import {
+  NewMarketOrder,
+  OrderCommandResult
+} from "../../../../../shared/models/orders/new-order.model";
 import { toInstrumentKey } from "../../../../../shared/utils/instruments";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
+import { TimeInForce } from "../../../../../shared/models/orders/order.model";
 
 @Component({
     selector: 'ats-market-order-form',
@@ -54,6 +58,8 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
     quantity?: number;
   } | null = null;
 
+  timeInForceEnum = TimeInForce;
+
   form = this.formBuilder.group({
     quantity: this.formBuilder.nonNullable.control(
       1,
@@ -66,6 +72,7 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
       }
     ),
     instrumentGroup: this.formBuilder.nonNullable.control<string>(''),
+    timeInForce: this.formBuilder.control<TimeInForce | null>(null),
   });
 
   constructor(
@@ -114,11 +121,18 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
   protected prepareOrderStream(side: Side, instrument: Instrument, portfolioKey: PortfolioKey): Observable<OrderCommandResult | SubmitGroupResult> {
     const formValue = this.form.value;
 
-    return this.orderCommandService.submitMarketOrder({
-        instrument: this.getOrderInstrument(formValue, instrument),
-        quantity: Number(formValue.quantity),
-        side: side
-      },
+    const marketOrder: NewMarketOrder = {
+      instrument: this.getOrderInstrument(formValue, instrument),
+      quantity: Number(formValue.quantity),
+      side: side
+    };
+
+    if (formValue.timeInForce != null) {
+      marketOrder.timeInForce = formValue.timeInForce;
+    }
+
+    return this.orderCommandService.submitMarketOrder(
+      marketOrder,
       portfolioKey
     );
   }

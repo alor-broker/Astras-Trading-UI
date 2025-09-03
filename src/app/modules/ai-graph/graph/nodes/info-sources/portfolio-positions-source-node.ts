@@ -2,7 +2,10 @@ import { Observable, of, switchMap } from "rxjs";
 import { map, take } from "rxjs/operators";
 import { NodeBase } from "../node-base";
 import { SlotType } from "../../slot-types";
-import { NodeCategories } from "../node-categories";
+import {
+  NodeCategories,
+  NodeCategoryColors
+} from "../node-categories";
 import { GraphProcessingContextService } from "../../../services/graph-processing-context.service";
 import { Position } from "../../../../../shared/models/positions/position.model";
 import { TranslatorFn } from "../../../../../shared/services/translator.service";
@@ -16,6 +19,11 @@ export class PortfolioPositionsSourceNode extends NodeBase {
 
   constructor() {
     super(PortfolioPositionsSourceNode.title);
+    this.setColorOption({
+      color: NodeCategoryColors["info-sources"].headerColor,
+      bgcolor: NodeCategoryColors["info-sources"].bodyColor,
+      groupcolor: NodeCategoryColors["info-sources"].headerColor
+    });
 
     this.addInput(
       this.inputSlotName,
@@ -85,9 +93,8 @@ export class PortfolioPositionsSourceNode extends NodeBase {
                     `${avgPriceLabel} ${position.avgPrice}`,
                     `${profitLabel} ${position.unrealisedPl}`,
                     `${dailyProfitLabel} ${position.dailyUnrealisedPl}`,
-                    '---'
-                  ].join('\n');
-                }).join('\n');
+                  ].join('<br>');
+                }).join('<br><br>');
 
                 this.setOutputByName(this.outputSlotName, positionsText);
                 return true;

@@ -10,6 +10,8 @@ import {QuotesSourceNode} from "./info-sources/quotes-source-node";
 import {HistorySourceNode} from "./info-sources/history-source-node";
 import {PortfolioSummarySourceNode} from "./info-sources/portfolio-summary-source-node";
 import {PortfolioPositionsSourceNode} from "./info-sources/portfolio-positions-source-node";
+import {ReportsSourceNode} from "./info-sources/reports-source-node";
+import { PortfolioTradesSourceNode } from "./info-sources/portfolio-trades-source-node";
 
 interface NodeRegistration {
   type: string;
@@ -83,4 +85,14 @@ NodesRegister.registerNode({
 NodesRegister.registerNode({
   type: PortfolioPositionsSourceNode.nodeType,
   class: PortfolioPositionsSourceNode
+});
+
+NodesRegister.registerNode({
+  type: ReportsSourceNode.nodeId,
+  class: ReportsSourceNode
+});
+
+NodesRegister.registerNode({
+  type: PortfolioTradesSourceNode.nodeId,
+  class: PortfolioTradesSourceNode
 });

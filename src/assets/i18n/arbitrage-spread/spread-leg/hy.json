@@ -1,0 +1,15 @@
+{
+  "instrumentLabel": "Գործիք",
+  "quantityLabel": "Լոտերի քանակ",
+  "calculationRatioLabel": "Հաշվարկման գործակից",
+  "portfolioLabel": "Պորտֆել",
+  "sideLabel": "Կողմ",
+  "sideTooltip": "Կողմը սփրեդ գնելիս առաջին ոտքի նկատմամբ",
+  "buy": "Գնում",
+  "sell": "Վաճառք",
+  "portfolioPlaceholder": "Ընտրեք պորտֆելը",
+  "portfoliosEmpty": "Պորտֆելների ցանկը դատարկ է, կամ գործիքը ընտրված չէ",
+  "instrumentRequiredError": "Ընտրեք գործիքը",
+  "quantityRequiredError": "Մուտքագրեք քանակը",
+  "ratioRequiredError": "Մուտքագրեք գործակիցը"
+}

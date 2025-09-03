@@ -267,6 +267,33 @@
             </nz-form-item>
           </nz-collapse-panel>
         </nz-collapse>
+
+        <nz-collapse [nzBordered]="false" nzGhost>
+          <nz-collapse-panel [nzHeader]="t('techChartSettings.chartOrdersGroupLabel')" [formGroup]="form.controls.orders">
+            <nz-form-item class="one-row">
+              <nz-form-control>
+                <nz-switch formControlName='editWithoutConfirmation'></nz-switch>
+              </nz-form-control>
+              <nz-form-label nzFor="editWithoutConfirmation">
+                {{t('techChartSettings.editWithoutConfirmationLabel')}}
+              </nz-form-label>
+            </nz-form-item>
+          </nz-collapse-panel>
+        </nz-collapse>
+
+        <nz-form-item class="one-row">
+          <nz-form-control>
+            <nz-switch formControlName='allowCustomTimeframes'></nz-switch>
+          </nz-form-control>
+          <nz-form-label nzFor="allowCustomTimeframes">
+            {{t('techChartSettings.allowCustomTimeframesLabel')}}
+          </nz-form-label>
+        </nz-form-item>
+        @if(form.controls.allowCustomTimeframes.value) {
+          <span nz-typography nzType="warning">
+            {{t('techChartSettings.allowCustomTimeframesWarning')}}
+          </span>
+        }
       </form>
     </ng-container>
   </ng-container>

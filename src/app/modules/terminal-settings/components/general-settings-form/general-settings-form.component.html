@@ -5,8 +5,9 @@
       <nz-form-control>
         <nz-select formControlName='language'>
           <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.notSelectedOption')" [nzValue]="''" nzDisabled nzHide></nz-option>
-          <nz-option [nzValue]="'en'" nzLabel="English"></nz-option>
-          <nz-option [nzValue]="'ru'" nzLabel="Русский"></nz-option>
+          @for (option of availableLanguages; track option.key) {
+            <nz-option [nzValue]="option.key" [nzLabel]="option.title"></nz-option>
+          }
         </nz-select>
       </nz-form-control>
     </nz-form-item>
@@ -52,6 +53,15 @@
         </nz-select>
       </nz-form-control>
     </nz-form-item>
+    <nz-form-item *ngIf="!excludedSettings.includes('showCurrentTime')">
+      <label
+        formControlName="showCurrentTime"
+        nz-checkbox
+      >
+        {{t('terminalSettingsGeneralSettingsForm.showCurrentTimeLabel')}}
+      </label>
+    </nz-form-item>
+
     <nz-form-item>
       <nz-form-label nzFor="tableRowHeight" nzRequired>{{t('terminalSettingsGeneralSettingsForm.tableRowHeightLabel')}}</nz-form-label>
       <nz-form-control>

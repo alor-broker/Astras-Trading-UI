@@ -1,0 +1,34 @@
+{
+  "emptyList": "Կարգավորված ծանուցումներ չկան",
+  "emptyListWithFilters": "Նման զտիչներով ոչինչ չի գտնվել",
+  "columns": {
+    "cancel": {
+      "name": "Ջնջ.",
+      "tooltip": "Ջնջել ծանուցումը"
+    },
+    "id": {
+      "name": "Id",
+      "tooltip": "Նույնականացման համար"
+    },
+    "subscriptionType": {
+      "name": "Տեսակ",
+      "tooltip": "Ծանուցման տեսակը",
+      "listOfFilter": {
+        "OrderExecute": "Հայտն իրականացված է",
+        "PriceSpark": "Գինը փոխվել է"
+      }
+    },
+    "instrument": {
+      "name": "Թիքեր",
+      "tooltip": "Արժեթղթի բորսային նույնացուցիչ"
+    },
+    "priceCondition": {
+      "name": "Պայման",
+      "tooltip": "Պայման, որի դեպքում կուղարկվի ծանուցում"
+    },
+    "price": {
+      "name": "Գին",
+      "tooltip": "Գինը"
+    }
+  }
+}

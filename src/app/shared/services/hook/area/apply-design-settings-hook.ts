@@ -3,7 +3,6 @@
 } from "@angular/core";
 import { Subscription } from "rxjs";
 import {
-  distinct,
   map,
   startWith
 } from "rxjs/operators";
@@ -13,7 +12,6 @@ import { TerminalSettingsService } from "../../terminal-settings.service";
 import { LocalStorageService } from "../../local-storage.service";
 import { DesignSettingsConstants } from "../../../constants/local-storage.constants";
 import { FontFamilies } from "../../../models/terminal-settings/terminal-settings.model";
-import { LocaleService } from "../../locale.service";
 
 @Injectable()
 export class ApplyDesignSettingsHook implements AreaHook {
@@ -22,8 +20,7 @@ export class ApplyDesignSettingsHook implements AreaHook {
   constructor(
     private readonly themeService: ThemeService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly localStorageService: LocalStorageService,
-    private readonly localeService: LocaleService
+    private readonly localStorageService: LocalStorageService
   ) {
   }
 
@@ -49,15 +46,6 @@ export class ApplyDesignSettingsHook implements AreaHook {
 
         document.body.style.fontFamily = `'${fontFamily}', ${defaultFontFamilies}`;
         this.localStorageService.setStringItem(DesignSettingsConstants.LastFontStorageKey, fontFamily);
-      })
-    );
-
-    this.changesSubscription.add(
-      this.terminalSettingsService.getSettings().pipe(
-        map(s => s.language ?? this.localeService.defaultLocale),
-        distinct()
-      ).subscribe(locale => {
-        this.localeService.setLocale(locale);
       })
     );
   }

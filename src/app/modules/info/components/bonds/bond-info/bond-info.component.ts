@@ -1,5 +1,6 @@
 import {
   Component,
+  DestroyRef,
   Inject,
   LOCALE_ID,
   OnInit
@@ -7,14 +8,16 @@ import {
 import { InstrumentInfoBaseComponent } from "../../instrument-info-base/instrument-info-base.component";
 import {
   combineLatest,
+  defer,
   Observable,
   shareReplay,
   switchMap,
-  tap
+  tap,
+  timer
 } from "rxjs";
 import {
   Bond,
-  Query
+  Query,
 } from "../../../../../../generated/graphql.types";
 import {
   Descriptor,
@@ -57,6 +60,9 @@ import {
   formatPercent
 } from "@angular/common";
 import { CalendarComponent } from "../calendar/calendar.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { mapWith } from "../../../../../shared/utils/observable-helper";
+import { REFRESH_TIMEOUT_MS } from "../../../constants/info.constants";
 
 type BondResponse = Modify<
   Query,
@@ -76,19 +82,19 @@ interface BondDescriptors {
 }
 
 @Component({
-    selector: 'ats-bond-info',
-    imports: [
-        TranslocoDirective,
-        LetDirective,
-        NzEmptyComponent,
-        NzTabSetComponent,
-        NzTabComponent,
-        RisksComponent,
-        DescriptorsListComponent,
-        CalendarComponent
-    ],
-    templateUrl: './bond-info.component.html',
-    styleUrl: './bond-info.component.less'
+  selector: 'ats-bond-info',
+  imports: [
+    TranslocoDirective,
+    LetDirective,
+    NzEmptyComponent,
+    NzTabSetComponent,
+    NzTabComponent,
+    RisksComponent,
+    DescriptorsListComponent,
+    CalendarComponent
+  ],
+  templateUrl: './bond-info.component.html',
+  styleUrl: './bond-info.component.less'
 })
 export class BondInfoComponent extends InstrumentInfoBaseComponent implements OnInit {
   info$!: Observable<Bond | null>;
@@ -100,7 +106,8 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
   constructor(
     private readonly graphQlService: GraphQlService,
     private readonly translatorService: TranslatorService,
-    @Inject(LOCALE_ID) private readonly locale: string) {
+    @Inject(LOCALE_ID) private readonly locale: string,
+    private readonly destroyRef: DestroyRef) {
     super();
   }
 
@@ -110,8 +117,15 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
   }
 
   private initDataStream(): void {
+    const refreshTimer$ = defer(() => {
+      return timer(0, 3 * REFRESH_TIMEOUT_MS).pipe(
+        takeUntilDestroyed(this.destroyRef)
+      );
+    });
+
     this.info$ = this.targetInstrumentKey$.pipe(
       filter(i => i != null),
+      mapWith(() => refreshTimer$, (source,) => source),
       tap(() => this.setLoading(true)),
       switchMap(i => {
         return this.graphQlService.watchQueryForSchema<BondResponse>(
@@ -157,8 +171,20 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
         items: this.getBasicInformationDescriptors(bond)
       },
       {
-        title: translator(['groupTitles', 'tradingDetails']),
-        items: this.getTradingDetailsDescriptors(bond)
+        title: translator(['groupTitles', 'currency']),
+        items: this.getCurrencyDescriptors(bond)
+      },
+      {
+        title: translator(['groupTitles', 'tradingParameters']),
+        items: this.getTradingParametersDescriptors(bond)
+      },
+      {
+        title: translator(['groupTitles', 'tradingData']),
+        items: this.getTradingDataDescriptors(bond)
+      },
+      {
+        title: translator(['groupTitles', 'additional']),
+        items: this.getAdditionalInfoDescriptors(bond)
       }
     ];
   }
@@ -170,6 +196,10 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
       {
         title: null,
         items: this.getIssueBaseDescriptors(bond, currencyCode, commonTranslator)
+      },
+      {
+        title: translator(['groupTitles', 'currency']),
+        items: this.getCurrencyDescriptors(bond)
       },
       {
         title: translator(['groupTitles', 'volumes']),
@@ -206,21 +236,21 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
       }
     ];
 
-    if(bond.placementEndDate != null) {
+    if (bond.placementEndDate != null) {
       descriptors.push({
         id: 'issueDate',
         formattedValue: new Date(bond.placementEndDate).toLocaleDateString()
       });
     }
 
-    if(bond.maturityDate != null) {
+    if (bond.maturityDate != null) {
       descriptors.push({
         id: 'maturityDate',
         formattedValue: new Date(bond.maturityDate).toLocaleDateString()
       });
     }
 
-    if(bond.couponRate != null) {
+    if (bond.couponRate != null) {
       descriptors.push({
         id: 'couponRate',
         formattedValue: formatPercent(bond.couponRate / 100, this.locale, '0.1-2')
@@ -238,7 +268,7 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
   private getVolumesDescriptors(bond: Bond, currencyCode: string): Descriptor[] {
     const descriptors: Descriptor[] = [];
 
-    if(bond.volumes != null) {
+    if (bond.volumes != null) {
       descriptors.push({
         id: 'issueVolume',
         formattedValue: formatNumber(bond.volumes.issueVolume, this.locale)
@@ -266,7 +296,7 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
   private getYieldDescriptors(bond: Bond): Descriptor[] {
     const descriptors: Descriptor[] = [];
 
-    if(bond.yield != null) {
+    if (bond.yield != null) {
       descriptors.push({
         id: 'currentYield',
         formattedValue: formatPercent(bond.yield.currentYield / 100, this.locale, '0.1-2')
@@ -274,7 +304,7 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
 
       descriptors.push({
         id: 'yieldToMaturity',
-        formattedValue: formatPercent(bond.yield.yieldToMaturity, this.locale, '0.1-2')
+        formattedValue: formatPercent(bond.yield.yieldToMaturity / 100, this.locale, '0.1-2')
       });
     }
 
@@ -284,14 +314,14 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
   private getDurationDescriptors(bond: Bond): Descriptor[] {
     const descriptors: Descriptor[] = [];
 
-    if(bond.duration != null) {
+    if (bond.duration != null) {
       descriptors.push({
         id: 'duration',
         formattedValue: formatPercent(bond.duration / 100, this.locale, '0.1-2')
       });
     }
 
-    if(bond.durationMacaulay != null) {
+    if (bond.durationMacaulay != null) {
       descriptors.push({
         id: 'durationMacaulay',
         formattedValue: formatNumber(bond.durationMacaulay, this.locale)
@@ -304,24 +334,21 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
   private getBasicInformationDescriptors(bond: Bond): Descriptor[] {
     return DescriptorFiller.basicInformation({
       basicInformation: bond.basicInformation,
+      boardInformation: bond.boardInformation,
       financialAttributes: bond.financialAttributes,
       currencyInformation: bond.currencyInformation
     });
   }
 
-  private getTradingDetailsDescriptors(bond: Bond): Descriptor[] {
-    return DescriptorFiller.tradingDetails({
-      tradingDetails: bond.tradingDetails,
-      currencyInformation: bond.currencyInformation,
-      locale: this.locale
-    });
+  private getCurrencyDescriptors(bond: Bond): Descriptor[] {
+    return DescriptorFiller.currencyInformation(bond.currencyInformation);
   }
 
   private getNearestAmortizationDescriptors(bond: Bond, currencyCode: string): Descriptor[] {
     const descriptors: Descriptor[] = [];
 
     const nearestAmortization = (bond.amortizations ?? []).find(a => a.isClosest);
-    if(nearestAmortization != null) {
+    if (nearestAmortization != null) {
       descriptors.push({
         id: 'nearestAmortizationParFraction',
         formattedValue: formatPercent(nearestAmortization.parFraction, this.locale)
@@ -346,7 +373,7 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
     const descriptors: Descriptor[] = [];
 
     const nearestCoupon = (bond.coupons ?? []).find(a => a.isClosest);
-    if(nearestCoupon != null) {
+    if (nearestCoupon != null) {
       descriptors.push({
         id: 'nearestCouponAccruedInterest',
         translationKey: 'accruedInterest',
@@ -384,5 +411,27 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
 
   private formatCurrency(value: number, currencyCode: string): string {
     return this.currencyPipe.transform(value, currencyCode, 'symbol-narrow', '0.1-2', this.locale) ?? '';
+  }
+
+  private getTradingParametersDescriptors(bond: Bond): Descriptor[] {
+    return DescriptorFiller.tradingParameters({
+      tradingDetails: bond.tradingDetails,
+      currencyInformation: bond.currencyInformation,
+      locale: this.locale
+    });
+  }
+
+  private getTradingDataDescriptors(bond: Bond): Descriptor[] {
+    return DescriptorFiller.tradingData({
+      tradingDetails: bond.tradingDetails,
+      locale: this.locale
+    });
+  }
+
+  private getAdditionalInfoDescriptors(bond: Bond): Descriptor[] {
+    return DescriptorFiller.additionalInformation({
+      additionalInfo: bond.additionalInformation,
+      locale: this.locale
+    });
   }
 }

@@ -3,6 +3,7 @@ import { NotificationsService } from "../../services/notifications.service";
 import { Observable } from "rxjs";
 import { NotificationMeta } from "../../models/notification.model";
 import { map } from "rxjs/operators";
+import { isToday } from "date-fns";
 
 @Component({
     selector: 'ats-notifications-list',
@@ -32,5 +33,9 @@ export class NotificationsListComponent implements OnInit {
     this.notificationClicked.emit();
     notification.markAsRead?.();
     notification.open?.();
+  }
+
+  isTodayDate(date: Date): boolean {
+    return isToday(date);
   }
 }

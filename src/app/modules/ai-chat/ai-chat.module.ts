@@ -27,6 +27,8 @@ import { MarkdownModule } from "ngx-markdown";
 import { TermsOfUseDialogComponent } from "./components/terms-of-use-dialog/terms-of-use-dialog.component";
 import { UsageDisclaimerComponent } from "./components/usage-disclaimer/usage-disclaimer.component";
 import { NzAlertComponent } from "ng-zorro-antd/alert";
+import { LetDirective } from "@ngrx/component";
+import { NzSpinComponent } from "ng-zorro-antd/spin";
 
 @NgModule({
   declarations: [
@@ -61,7 +63,9 @@ import { NzAlertComponent } from "ng-zorro-antd/alert";
     NzModalFooterDirective,
     NzTooltipDirective,
     MarkdownModule,
-    NzAlertComponent
+    NzAlertComponent,
+    LetDirective,
+    NzSpinComponent
   ]
 })
 export class AiChatModule {

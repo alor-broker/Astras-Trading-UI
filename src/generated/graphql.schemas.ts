@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { z } from 'zod'
-import { AdditionalInformation, AdditionalInformationFilterInput, AdditionalInformationSortInput, Amortization, AmortizationFilterInput, ApplyPolicy, BasicInformation, BasicInformationFilterInput, BasicInformationSortInput, BoardInformation, BoardInformationFilterInput, BoardInformationSortInput, Bond, BondEventType, BondEventTypeOperationFilterInput, BondFilterInput, BondSortInput, BondVolumes, BondVolumesFilterInput, BondVolumesSortInput, BondYield, BondYieldFilterInput, BondYieldSortInput, BondsConnection, BondsEdge, BooleanOperationFilterInput, CostEstimate, CostEstimateFilterInput, CostEstimateSortInput, Coupon, CouponFilterInput, CouponType, CouponTypeOperationFilterInput, CurrenciesConnection, CurrenciesEdge, Currency, CurrencyFilterInput, CurrencyInformation, CurrencyInformationFilterInput, CurrencyInformationSortInput, CurrencySortInput, DateTimeOperationFilterInput, DecimalOperationFilterInput, Derivative, DerivativeFilterInput, DerivativeSortInput, DerivativesConnection, DerivativesEdge, Dividend, DividendFilterInput, DividendsAggregateInfo, DividendsAggregateInfoFilterInput, DividendsAggregateInfoSortInput, Exchange, ExchangeOperationFilterInput, FinancialAttributes, FinancialAttributesFilterInput, FinancialAttributesSortInput, Instrument, InstrumentModelFilterInput, InstrumentModelSortInput, InstrumentsConnection, InstrumentsEdge, IntOperationFilterInput, ListFilterInputTypeOfAmortizationFilterInput, ListFilterInputTypeOfCouponFilterInput, ListFilterInputTypeOfDividendFilterInput, ListFilterInputTypeOfOfferFilterInput, ListFilterInputTypeOfValuePerQuarterFilterInput, ListFilterInputTypeOfValuePerYearFilterInput, LongOperationFilterInput, MainIndicators, MainIndicatorsFilterInput, MainIndicatorsSortInput, Market, MarketOperationFilterInput, NetIncome, NetIncomeFilterInput, NullableOfCouponTypeOperationFilterInput, Offer, OfferFilterInput, Other, PageInfo, Profitability, ProfitabilityFilterInput, ProfitabilitySortInput, Sales, SalesFilterInput, SortEnumType, Stock, StockFilterInput, StockSortInput, StocksConnection, StocksEdge, StringOperationFilterInput, Swap, SwapFilterInput, SwapSortInput, SwapsConnection, SwapsEdge, Trading, TradingDetails, TradingDetailsFilterInput, TradingDetailsSortInput, TradingFilterInput, TradingSortInput, ValuePerQuarter, ValuePerQuarterFilterInput, ValuePerYear, ValuePerYearFilterInput } from './graphql.types'
+import { AdditionalInformation, AdditionalInformationFilterInput, AdditionalInformationSortInput, Amortization, AmortizationFilterInput, AmortizationSortInput, ApplyPolicy, BasicInformation, BasicInformationFilterInput, BasicInformationSortInput, BoardInformation, BoardInformationFilterInput, BoardInformationSortInput, Bond, BondAmortizationsArgs, BondCouponsArgs, BondOffersArgs, BondEventType, BondEventTypeOperationFilterInput, BondFilterInput, BondSortInput, BondVolumes, BondVolumesFilterInput, BondVolumesSortInput, BondYield, BondYieldFilterInput, BondYieldSortInput, BondsConnection, BondsEdge, BooleanOperationFilterInput, CostEstimate, CostEstimateFilterInput, CostEstimateSortInput, Coupon, CouponFilterInput, CouponSortInput, CouponType, CouponTypeOperationFilterInput, CurrenciesConnection, CurrenciesEdge, Currency, CurrencyFilterInput, CurrencyInformation, CurrencyInformationFilterInput, CurrencyInformationSortInput, CurrencySortInput, DateTimeOperationFilterInput, DecimalOperationFilterInput, Derivative, DerivativeFilterInput, DerivativeSortInput, DerivativesConnection, DerivativesEdge, Dividend, DividendFilterInput, DividendSortInput, DividendsAggregateInfo, DividendsAggregateInfoFilterInput, DividendsAggregateInfoSortInput, Exchange, ExchangeOperationFilterInput, FinancialAttributes, FinancialAttributesFilterInput, FinancialAttributesSortInput, InitialMargin, InitialMarginFilterInput, InitialMarginSortInput, Instrument, InstrumentModelFilterInput, InstrumentModelSortInput, InstrumentsConnection, InstrumentsEdge, IntOperationFilterInput, ListFilterInputTypeOfAmortizationFilterInput, ListFilterInputTypeOfCouponFilterInput, ListFilterInputTypeOfDividendFilterInput, ListFilterInputTypeOfOfferFilterInput, ListFilterInputTypeOfValuePerQuarterFilterInput, ListFilterInputTypeOfValuePerYearFilterInput, LongOperationFilterInput, MainIndicators, MainIndicatorsFilterInput, MainIndicatorsSortInput, Market, MarketOperationFilterInput, NetIncome, NetIncomeFilterInput, NullableOfCouponTypeOperationFilterInput, Offer, OfferFilterInput, OfferSortInput, Other, PageInfo, Profitability, ProfitabilityFilterInput, ProfitabilitySortInput, Sales, SalesFilterInput, SortEnumType, Stock, StockDividendsArgs, StockFilterInput, StockSortInput, StocksConnection, StocksEdge, StringOperationFilterInput, Swap, SwapFilterInput, SwapSortInput, SwapsConnection, SwapsEdge, Trading, TradingDetails, TradingDetailsFilterInput, TradingDetailsSortInput, TradingFilterInput, TradingSortInput, ValuePerQuarter, ValuePerQuarterFilterInput, ValuePerYear, ValuePerYearFilterInput } from './graphql.types'
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;
@@ -83,13 +83,31 @@ export function AmortizationFilterInputSchema(): z.ZodObject<Properties<Amortiza
   })
 }
 
+export function AmortizationSortInputSchema(): z.ZodObject<Properties<AmortizationSortInput>> {
+  return z.object({
+    amount: SortEnumTypeSchema.nullish(),
+    buyBackPrice: SortEnumTypeSchema.nullish(),
+    currency: SortEnumTypeSchema.nullish(),
+    date: SortEnumTypeSchema.nullish(),
+    fixDate: SortEnumTypeSchema.nullish(),
+    isClosest: SortEnumTypeSchema.nullish(),
+    parFraction: SortEnumTypeSchema.nullish(),
+    value: SortEnumTypeSchema.nullish()
+  })
+}
+
 export function BasicInformationSchema(): z.ZodObject<Properties<BasicInformation>> {
   return z.object({
     __typename: z.literal('BasicInformation').optional(),
     complexProductCategory: z.string(),
     description: z.string(),
     exchange: ExchangeSchema,
+    fullDescription: z.string(),
+    fullName: z.string().nullish(),
+    gicsSector: z.string().nullish(),
     market: MarketSchema,
+    readableType: z.string().nullish(),
+    sector: z.string().nullish(),
     shortName: z.string(),
     symbol: z.string(),
     type: z.string().nullish()
@@ -102,8 +120,13 @@ export function BasicInformationFilterInputSchema(): z.ZodObject<Properties<Basi
     complexProductCategory: z.lazy(() => StringOperationFilterInputSchema().nullish()),
     description: z.lazy(() => StringOperationFilterInputSchema().nullish()),
     exchange: z.lazy(() => ExchangeOperationFilterInputSchema().nullish()),
+    fullDescription: z.lazy(() => StringOperationFilterInputSchema().nullish()),
+    fullName: z.lazy(() => StringOperationFilterInputSchema().nullish()),
+    gicsSector: z.lazy(() => StringOperationFilterInputSchema().nullish()),
     market: z.lazy(() => MarketOperationFilterInputSchema().nullish()),
     or: z.array(z.lazy(() => BasicInformationFilterInputSchema())).nullish(),
+    readableType: z.lazy(() => StringOperationFilterInputSchema().nullish()),
+    sector: z.lazy(() => StringOperationFilterInputSchema().nullish()),
     shortName: z.lazy(() => StringOperationFilterInputSchema().nullish()),
     symbol: z.lazy(() => StringOperationFilterInputSchema().nullish()),
     type: z.lazy(() => StringOperationFilterInputSchema().nullish())
@@ -115,7 +138,12 @@ export function BasicInformationSortInputSchema(): z.ZodObject<Properties<BasicI
     complexProductCategory: SortEnumTypeSchema.nullish(),
     description: SortEnumTypeSchema.nullish(),
     exchange: SortEnumTypeSchema.nullish(),
+    fullDescription: SortEnumTypeSchema.nullish(),
+    fullName: SortEnumTypeSchema.nullish(),
+    gicsSector: SortEnumTypeSchema.nullish(),
     market: SortEnumTypeSchema.nullish(),
+    readableType: SortEnumTypeSchema.nullish(),
+    sector: SortEnumTypeSchema.nullish(),
     shortName: SortEnumTypeSchema.nullish(),
     symbol: SortEnumTypeSchema.nullish(),
     type: SortEnumTypeSchema.nullish()
@@ -168,6 +196,7 @@ export function BondSchema(): z.ZodObject<Properties<Bond>> {
     guaranteed: z.boolean(),
     hasAmortization: z.boolean(),
     hasOffer: z.boolean(),
+    issuer: z.string().nullish(),
     maturityDate: z.string().nullish(),
     offers: z.array(OfferSchema()).nullish(),
     placementEndDate: z.string().nullish(),
@@ -175,6 +204,27 @@ export function BondSchema(): z.ZodObject<Properties<Bond>> {
     tradingDetails: TradingDetailsSchema(),
     volumes: BondVolumesSchema().nullish(),
     yield: BondYieldSchema().nullish()
+  })
+}
+
+export function BondAmortizationsArgsSchema(): z.ZodObject<Properties<BondAmortizationsArgs>> {
+  return z.object({
+    order: z.array(z.lazy(() => AmortizationSortInputSchema())).nullish(),
+    where: z.lazy(() => AmortizationFilterInputSchema().nullish())
+  })
+}
+
+export function BondCouponsArgsSchema(): z.ZodObject<Properties<BondCouponsArgs>> {
+  return z.object({
+    order: z.array(z.lazy(() => CouponSortInputSchema())).nullish(),
+    where: z.lazy(() => CouponFilterInputSchema().nullish())
+  })
+}
+
+export function BondOffersArgsSchema(): z.ZodObject<Properties<BondOffersArgs>> {
+  return z.object({
+    order: z.array(z.lazy(() => OfferSortInputSchema())).nullish(),
+    where: z.lazy(() => OfferFilterInputSchema().nullish())
   })
 }
 
@@ -206,6 +256,7 @@ export function BondFilterInputSchema(): z.ZodObject<Properties<BondFilterInput>
     guaranteed: z.lazy(() => BooleanOperationFilterInputSchema().nullish()),
     hasAmortization: z.lazy(() => BooleanOperationFilterInputSchema().nullish()),
     hasOffer: z.lazy(() => BooleanOperationFilterInputSchema().nullish()),
+    issuer: z.lazy(() => StringOperationFilterInputSchema().nullish()),
     maturityDate: z.lazy(() => DateTimeOperationFilterInputSchema().nullish()),
     offers: z.lazy(() => ListFilterInputTypeOfOfferFilterInputSchema().nullish()),
     or: z.array(z.lazy(() => BondFilterInputSchema())).nullish(),
@@ -233,6 +284,7 @@ export function BondSortInputSchema(): z.ZodObject<Properties<BondSortInput>> {
     guaranteed: SortEnumTypeSchema.nullish(),
     hasAmortization: SortEnumTypeSchema.nullish(),
     hasOffer: SortEnumTypeSchema.nullish(),
+    issuer: SortEnumTypeSchema.nullish(),
     maturityDate: SortEnumTypeSchema.nullish(),
     placementEndDate: SortEnumTypeSchema.nullish(),
     pledged: SortEnumTypeSchema.nullish(),
@@ -381,6 +433,21 @@ export function CouponFilterInputSchema(): z.ZodObject<Properties<CouponFilterIn
   })
 }
 
+export function CouponSortInputSchema(): z.ZodObject<Properties<CouponSortInput>> {
+  return z.object({
+    accruedInterest: SortEnumTypeSchema.nullish(),
+    amount: SortEnumTypeSchema.nullish(),
+    couponRate: SortEnumTypeSchema.nullish(),
+    couponType: SortEnumTypeSchema.nullish(),
+    currency: SortEnumTypeSchema.nullish(),
+    date: SortEnumTypeSchema.nullish(),
+    fixDate: SortEnumTypeSchema.nullish(),
+    intervalInDays: SortEnumTypeSchema.nullish(),
+    isClosest: SortEnumTypeSchema.nullish(),
+    value: SortEnumTypeSchema.nullish()
+  })
+}
+
 export function CouponTypeOperationFilterInputSchema(): z.ZodObject<Properties<CouponTypeOperationFilterInput>> {
   return z.object({
     eq: CouponTypeSchema.nullish(),
@@ -510,6 +577,7 @@ export function DerivativeSchema(): z.ZodObject<Properties<Derivative>> {
     boardInformation: BoardInformationSchema(),
     currencyInformation: CurrencyInformationSchema(),
     financialAttributes: FinancialAttributesSchema(),
+    initialMargin: InitialMarginSchema(),
     marginBuy: z.number().nullish(),
     marginRate: z.number().nullish(),
     marginSell: z.number().nullish(),
@@ -529,6 +597,7 @@ export function DerivativeFilterInputSchema(): z.ZodObject<Properties<Derivative
     boardInformation: z.lazy(() => BoardInformationFilterInputSchema().nullish()),
     currencyInformation: z.lazy(() => CurrencyInformationFilterInputSchema().nullish()),
     financialAttributes: z.lazy(() => FinancialAttributesFilterInputSchema().nullish()),
+    initialMargin: z.lazy(() => InitialMarginFilterInputSchema().nullish()),
     marginBuy: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     marginRate: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     marginSell: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
@@ -548,6 +617,7 @@ export function DerivativeSortInputSchema(): z.ZodObject<Properties<DerivativeSo
     boardInformation: z.lazy(() => BoardInformationSortInputSchema().nullish()),
     currencyInformation: z.lazy(() => CurrencyInformationSortInputSchema().nullish()),
     financialAttributes: z.lazy(() => FinancialAttributesSortInputSchema().nullish()),
+    initialMargin: z.lazy(() => InitialMarginSortInputSchema().nullish()),
     marginBuy: SortEnumTypeSchema.nullish(),
     marginRate: SortEnumTypeSchema.nullish(),
     marginSell: SortEnumTypeSchema.nullish(),
@@ -588,6 +658,7 @@ export function DividendSchema(): z.ZodObject<Properties<Dividend>> {
     fixDate: z.string().nullish(),
     listDate: z.string().nullish(),
     recommendDividendPerShare: z.number(),
+    recommendFixDate: z.string().nullish(),
     recordDate: z.string()
   })
 }
@@ -604,7 +675,23 @@ export function DividendFilterInputSchema(): z.ZodObject<Properties<DividendFilt
     listDate: z.lazy(() => DateTimeOperationFilterInputSchema().nullish()),
     or: z.array(z.lazy(() => DividendFilterInputSchema())).nullish(),
     recommendDividendPerShare: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
+    recommendFixDate: z.lazy(() => DateTimeOperationFilterInputSchema().nullish()),
     recordDate: z.lazy(() => DateTimeOperationFilterInputSchema().nullish())
+  })
+}
+
+export function DividendSortInputSchema(): z.ZodObject<Properties<DividendSortInput>> {
+  return z.object({
+    currency: SortEnumTypeSchema.nullish(),
+    declaredPayDateNominee: SortEnumTypeSchema.nullish(),
+    dividendPerShare: SortEnumTypeSchema.nullish(),
+    dividendYield: SortEnumTypeSchema.nullish(),
+    exDividendDate: SortEnumTypeSchema.nullish(),
+    fixDate: SortEnumTypeSchema.nullish(),
+    listDate: SortEnumTypeSchema.nullish(),
+    recommendDividendPerShare: SortEnumTypeSchema.nullish(),
+    recommendFixDate: SortEnumTypeSchema.nullish(),
+    recordDate: SortEnumTypeSchema.nullish()
   })
 }
 
@@ -671,6 +758,48 @@ export function FinancialAttributesSortInputSchema(): z.ZodObject<Properties<Fin
     isin: SortEnumTypeSchema.nullish(),
     tradingStatus: SortEnumTypeSchema.nullish(),
     tradingStatusInfo: SortEnumTypeSchema.nullish()
+  })
+}
+
+export function InitialMarginSchema(): z.ZodObject<Properties<InitialMargin>> {
+  return z.object({
+    __typename: z.literal('InitialMargin').optional(),
+    highRiskLong: z.number(),
+    highRiskShort: z.number(),
+    lowRiskLong: z.number(),
+    lowRiskShort: z.number(),
+    specialRiskLong: z.number(),
+    specialRiskShort: z.number(),
+    standardRiskLong: z.number(),
+    standardRiskShort: z.number()
+  })
+}
+
+export function InitialMarginFilterInputSchema(): z.ZodObject<Properties<InitialMarginFilterInput>> {
+  return z.object({
+    and: z.array(z.lazy(() => InitialMarginFilterInputSchema())).nullish(),
+    highRiskLong: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
+    highRiskShort: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
+    lowRiskLong: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
+    lowRiskShort: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
+    or: z.array(z.lazy(() => InitialMarginFilterInputSchema())).nullish(),
+    specialRiskLong: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
+    specialRiskShort: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
+    standardRiskLong: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
+    standardRiskShort: z.lazy(() => DecimalOperationFilterInputSchema().nullish())
+  })
+}
+
+export function InitialMarginSortInputSchema(): z.ZodObject<Properties<InitialMarginSortInput>> {
+  return z.object({
+    highRiskLong: SortEnumTypeSchema.nullish(),
+    highRiskShort: SortEnumTypeSchema.nullish(),
+    lowRiskLong: SortEnumTypeSchema.nullish(),
+    lowRiskShort: SortEnumTypeSchema.nullish(),
+    specialRiskLong: SortEnumTypeSchema.nullish(),
+    specialRiskShort: SortEnumTypeSchema.nullish(),
+    standardRiskLong: SortEnumTypeSchema.nullish(),
+    standardRiskShort: SortEnumTypeSchema.nullish()
   })
 }
 
@@ -905,6 +1034,21 @@ export function OfferFilterInputSchema(): z.ZodObject<Properties<OfferFilterInpu
   })
 }
 
+export function OfferSortInputSchema(): z.ZodObject<Properties<OfferSortInput>> {
+  return z.object({
+    amount: SortEnumTypeSchema.nullish(),
+    begOrder: SortEnumTypeSchema.nullish(),
+    bondEventType: SortEnumTypeSchema.nullish(),
+    currency: SortEnumTypeSchema.nullish(),
+    date: SortEnumTypeSchema.nullish(),
+    description: SortEnumTypeSchema.nullish(),
+    endOrder: SortEnumTypeSchema.nullish(),
+    fixDate: SortEnumTypeSchema.nullish(),
+    isClosest: SortEnumTypeSchema.nullish(),
+    value: SortEnumTypeSchema.nullish()
+  })
+}
+
 export function OtherSchema(): z.ZodObject<Properties<Other>> {
   return z.object({
     __typename: z.literal('Other').optional(),
@@ -979,7 +1123,7 @@ export function StockSchema(): z.ZodObject<Properties<Stock>> {
     boardInformation: BoardInformationSchema(),
     costEstimate: CostEstimateSchema().nullish(),
     currencyInformation: CurrencyInformationSchema(),
-    dividends: z.array(DividendSchema()),
+    dividends: z.array(DividendSchema()).nullish(),
     dividendsAggregateInfo: DividendsAggregateInfoSchema().nullish(),
     financialAttributes: FinancialAttributesSchema(),
     mainIndicators: MainIndicatorsSchema().nullish(),
@@ -988,6 +1132,13 @@ export function StockSchema(): z.ZodObject<Properties<Stock>> {
     sales: SalesSchema().nullish(),
     trading: TradingSchema().nullish(),
     tradingDetails: TradingDetailsSchema()
+  })
+}
+
+export function StockDividendsArgsSchema(): z.ZodObject<Properties<StockDividendsArgs>> {
+  return z.object({
+    order: z.array(z.lazy(() => DividendSortInputSchema())).nullish(),
+    where: z.lazy(() => DividendFilterInputSchema().nullish())
   })
 }
 
@@ -1134,6 +1285,8 @@ export function TradingSchema(): z.ZodObject<Properties<Trading>> {
 export function TradingDetailsSchema(): z.ZodObject<Properties<TradingDetails>> {
   return z.object({
     __typename: z.literal('TradingDetails').optional(),
+    capitalization: z.number(),
+    closingPrice: z.number(),
     dailyGrowth: z.number(),
     dailyGrowthPercent: z.number(),
     lotSize: z.number(),
@@ -1143,6 +1296,7 @@ export function TradingDetailsSchema(): z.ZodObject<Properties<TradingDetails>> 
     priceMin: z.number(),
     priceStep: z.number(),
     rating: z.number(),
+    tradeAmount: z.number(),
     tradeVolume: z.number()
   })
 }
@@ -1150,6 +1304,8 @@ export function TradingDetailsSchema(): z.ZodObject<Properties<TradingDetails>> 
 export function TradingDetailsFilterInputSchema(): z.ZodObject<Properties<TradingDetailsFilterInput>> {
   return z.object({
     and: z.array(z.lazy(() => TradingDetailsFilterInputSchema())).nullish(),
+    capitalization: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
+    closingPrice: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     dailyGrowth: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     dailyGrowthPercent: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     lotSize: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
@@ -1160,12 +1316,15 @@ export function TradingDetailsFilterInputSchema(): z.ZodObject<Properties<Tradin
     priceMin: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     priceStep: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     rating: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
+    tradeAmount: z.lazy(() => DecimalOperationFilterInputSchema().nullish()),
     tradeVolume: z.lazy(() => DecimalOperationFilterInputSchema().nullish())
   })
 }
 
 export function TradingDetailsSortInputSchema(): z.ZodObject<Properties<TradingDetailsSortInput>> {
   return z.object({
+    capitalization: SortEnumTypeSchema.nullish(),
+    closingPrice: SortEnumTypeSchema.nullish(),
     dailyGrowth: SortEnumTypeSchema.nullish(),
     dailyGrowthPercent: SortEnumTypeSchema.nullish(),
     lotSize: SortEnumTypeSchema.nullish(),
@@ -1175,6 +1334,7 @@ export function TradingDetailsSortInputSchema(): z.ZodObject<Properties<TradingD
     priceMin: SortEnumTypeSchema.nullish(),
     priceStep: SortEnumTypeSchema.nullish(),
     rating: SortEnumTypeSchema.nullish(),
+    tradeAmount: SortEnumTypeSchema.nullish(),
     tradeVolume: SortEnumTypeSchema.nullish()
   })
 }

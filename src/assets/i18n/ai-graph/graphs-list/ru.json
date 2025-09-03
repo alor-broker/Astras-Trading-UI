@@ -2,5 +2,7 @@
   "emptyListMessage": "Нет текущих графов",
   "newGraphTitlePlaceholder": "Название графа",
   "newGraphTitleTemplate": "Граф {{number}}",
-  "removeItemConfirmTitle": "Удалить граф?"
+  "removeItemConfirmTitle": "Удалить граф?",
+  "addGraphTooltip": "Создать новый граф с нуля",
+  "addGraphWithTemplateTooltip": "Использовать шаблон"
 }

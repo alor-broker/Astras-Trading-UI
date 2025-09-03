@@ -22,31 +22,35 @@ import { NetworkIndicatorComponent } from "../../../modules/dashboard/components
 import { NotificationsModule } from "../../../modules/notifications/notifications.module";
 import { AiChatNavBtnComponent } from "../../../modules/ai-chat/widgets/ai-chat-nav-btn/ai-chat-nav-btn.component";
 import { ExternalLinkComponent } from "../../../shared/components/external-link/external-link.component";
+import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
+import { CurrentTimeComponent } from "../current-time/current-time.component";
 
 @Component({
     selector: 'ats-client-navbar',
-    imports: [
-        DesktopNavbarComponent,
-        WidgetsGalleryNavBtnComponent,
-        AsyncPipe,
-        OpenOrdersDialogNavBtnComponent,
-        ClientProfileMenuNavBtnComponent,
-        TranslocoDirective,
-        JoyrideModule,
-        SelectPortfolioMenuNavBtnComponent,
-        DashboardsPanelComponent,
-        DashboardModule,
-        NetworkIndicatorComponent,
-        NotificationsModule,
-        AiChatNavBtnComponent,
-        ExternalLinkComponent
-    ],
+  imports: [
+    DesktopNavbarComponent,
+    WidgetsGalleryNavBtnComponent,
+    AsyncPipe,
+    OpenOrdersDialogNavBtnComponent,
+    ClientProfileMenuNavBtnComponent,
+    TranslocoDirective,
+    JoyrideModule,
+    SelectPortfolioMenuNavBtnComponent,
+    DashboardsPanelComponent,
+    DashboardModule,
+    NetworkIndicatorComponent,
+    NotificationsModule,
+    AiChatNavBtnComponent,
+    ExternalLinkComponent,
+    CurrentTimeComponent
+  ],
     templateUrl: './client-navbar.component.html',
     styleUrl: './client-navbar.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClientNavbarComponent {
   readonly externalLinks = this.environmentService.externalLinks;
+  readonly terminalSettings$ = this.terminalSettingsService.getSettings();
 
   readonly selectedDashboard$ = this.dashboardContextService.selectedDashboard$.pipe(
     startWith(null),
@@ -55,6 +59,7 @@ export class ClientNavbarComponent {
 
   constructor(
     private readonly dashboardContextService: DashboardContextService,
+    private readonly terminalSettingsService: TerminalSettingsService,
     private readonly environmentService: EnvironmentService,
   ) {
   }
