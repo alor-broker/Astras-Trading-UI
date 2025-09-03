@@ -40,7 +40,8 @@ describe('WidgetHeaderComponent', () => {
         {
           provide: DashboardContextService,
           useValue: {
-            instrumentsSelection$: new Subject()
+            instrumentsSelection$: new Subject(),
+            selectedDashboard$: new Subject(),
           }
         },
         {

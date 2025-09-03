@@ -114,6 +114,7 @@ export class DashboardsEffects {
       ofType(
         DashboardsManageActions.add,
         DashboardsManageActions.rename,
+        DashboardsManageActions.changeLock,
         DashboardItemsActions.addWidgets,
         DashboardItemsActions.removeWidgets,
         DashboardItemsActions.updateWidgetsPositions,

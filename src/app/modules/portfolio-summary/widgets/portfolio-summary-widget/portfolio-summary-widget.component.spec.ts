@@ -40,7 +40,8 @@ describe('PortfolioSummaryWidgetComponent', () => {
         {
           provide: DashboardContextService,
           useValue: {
-            selectedPortfolio$: new Subject()
+            selectedPortfolio$: new Subject(),
+            selectedDashboard$: new Subject(),
           }
         }
       ]

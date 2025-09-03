@@ -1,12 +1,16 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {RibbonWidgetComponent} from './ribbon-widget.component';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
-import {of} from "rxjs";
+import {
+  of,
+  Subject
+} from "rxjs";
 import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 
 describe('RibbonWidgetComponent', () => {
   let component: RibbonWidgetComponent;
@@ -33,6 +37,12 @@ describe('RibbonWidgetComponent', () => {
           provide: ManageDashboardsService,
           useValue: {
             removeWidget: jasmine.createSpy('removeWidget').and.callThrough()
+          }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            selectedDashboard$: new Subject(),
           }
         }
       ]

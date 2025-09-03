@@ -18,6 +18,7 @@ export interface Dashboard {
 
   sourceGuid?: string;
   isFavorite?: boolean;
+  isLocked?: boolean;
   favoritesOrder?: number;
 }
 
