@@ -1,0 +1,27 @@
+﻿{
+  "widgets": {
+    "instrument-select": "/widgets/instrument-select",
+    "order-book": "/widgets/order-book",
+    "scalper-order-book": "/widgets/scalper-order-book",
+    "light-chart": "/widgets/light-chart",
+    "tech-chart": "/widgets/tech-chart",
+    "blotter": "/widgets/blotter",
+    "instrument-info": "/widgets/instrument-info",
+    "news": "/widgets/news",
+    "all-trades": "/widgets/all-trades",
+    "exchange-rate": "/widgets/exchange-rate",
+    "all-instruments": "/widgets/all-instruments",
+    "order-submit": "/widgets/new-order",
+    "orders-basket": "/widgets/orders-basket",
+    "treemap": "/widgets/treemap",
+    "events-calendar": "/widgets/events-calendar",
+    "option-board": "/widgets/option-board",
+    "arbitrage-spread": "/widgets/arbitrage-spread",
+    "instruments-correlation": "/widgets/instruments-correlation",
+    "bond-screener": "/widgets/bond-screener"
+  },
+  "sections": {
+    "main": "/overview",
+    "new-order": "/widgets/new-order"
+  }
+}
