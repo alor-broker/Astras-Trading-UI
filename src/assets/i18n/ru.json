@@ -99,6 +99,10 @@
     "stringMaxLength": "Введите не более {{max}} символов"
   },
 
+  "placeholders": {
+    "selectValue": "Выберите значение"
+  },
+
   "lessMoreOptions": {
     "less": "Меньше",
     "more": "Больше"
@@ -109,5 +113,21 @@
     "letterSuffix": "Сокращенный"
   },
 
-  "addToList": "Добавить в список"
+  "addToList": "Добавить в список",
+
+  "marketSectors": {
+    "All": "Все",
+    "Energy": "Энергетика",
+    "Materials": "Сырье и материалы",
+    "Industrials": "Промышленность",
+    "Consumer Discretionary": "Ритейл и досуг",
+    "Consumer Staples": "Продукты и быт",
+    "Health Care": "Медицина",
+    "Financials": "Финансы",
+    "Information Technology": "IT",
+    "Communication Services": "Телеком / Медиа",
+    "Utilities": "Ком. услуги",
+    "Real Estate": "Недвижимость",
+    "Other": "Другое"
+  }
 }

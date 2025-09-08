@@ -65,11 +65,20 @@
         "position": {
           "x": 10,
           "y": 16,
-          "cols": 40,
+          "cols": 29,
           "rows": 14
         },
         "initialSettings": {
           "activeTabIndex": 3
+        }
+      },
+      {
+        "widgetTypeId": "market-trends",
+        "position": {
+          "x": 40,
+          "y": 16,
+          "cols": 10,
+          "rows": 14
         }
       }
     ]

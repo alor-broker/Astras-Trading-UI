@@ -1,0 +1,48 @@
+<ats-widget-settings
+  (copyClick)="createWidgetCopy()"
+  (saveClick)="updateSettings()"
+  [canCopy]="canCopy"
+  [canSave]="canSave"
+  [showCopy]="showCopy"
+>
+  <ng-container *transloco="let t; scope: 'market-trends/settings'">
+    <form [formGroup]="form" [nzLayout]="'horizontal'" nz-form>
+      <nz-form-item>
+        <nz-form-control>
+          <nz-form-label nzFor="itemsCount" nzRequired>{{ t('marketTrendsSettings.itemsCountLabel') }}
+          </nz-form-label>
+          <nz-slider
+            [nzMin]="validation.itemsCount.min"
+            [nzMax]="validation.itemsCount.max"
+            [nzStep]="1"
+            [nzMarks]="marks"
+            formControlName="itemsCount"
+          >
+          </nz-slider>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="itemsCount">{{ t('marketTrendsSettings.displaySectorsLabel') }}
+        </nz-form-label>
+        <nz-form-control>
+          <nz-select
+            [nzAllowClear]="true"
+            [nzMaxTagCount]="10"
+            [nzMaxTagPlaceholder]="tagPlaceHolder"
+            nzMode="multiple"
+            [nzPlaceHolder]="t('placeholders.selectValue')"
+            formControlName="displaySectors"
+          >
+            <nz-option
+              *ngFor="let item of allSectors"
+              [nzLabel]="t('marketSectors.' + item, {fallback: item})"
+              [nzValue]="item"
+            >
+            </nz-option>
+          </nz-select>
+          <ng-template #tagPlaceHolder let-selectedList>{{t('maxTagPlaceholder', { count: selectedList.length })}}</ng-template>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</ats-widget-settings>

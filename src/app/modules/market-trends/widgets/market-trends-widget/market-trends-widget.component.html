@@ -1,0 +1,39 @@
+<ng-container>
+  <ats-widget-skeleton
+    *ngIf="settings$ | async as settings"
+    [content]="contentRef"
+    [header]="headerRef"
+    [settings]="settingsRef"
+    [isBlockWidget]="isBlockWidget"
+    [showContentScroll]="true"
+    [showSettings]="shouldShowSettings"
+  >
+    <ng-template #headerRef>
+      <ats-widget-header
+        [badgeShape]="'square'"
+        [guid]="guid"
+        [hasSettings]="true"
+        [selectedBadgeColor]="settings.badgeColor"
+        [showBadgesMenu]="(showBadge$ | async) ?? false"
+        [widgetMeta]="widgetInstance.widgetMeta"
+        (switchSettings)="onSettingsChange()"
+      ></ats-widget-header>
+    </ng-template>
+
+    <ng-template #contentRef>
+      <ats-market-trends
+        [sectors]="settings.displaySectors"
+        [itemsCount]="settings.itemsCount"
+        [showMoreButton]="false"
+        [fixedHeader]="true"
+        (instrumentSelected)="selectInstrument($event)"
+      ></ats-market-trends>
+    </ng-template>
+
+    <ng-template #settingsRef>
+      <ats-market-trends-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-market-trends-settings>
+    </ng-template>
+  </ats-widget-skeleton>
+
+</ng-container>
+

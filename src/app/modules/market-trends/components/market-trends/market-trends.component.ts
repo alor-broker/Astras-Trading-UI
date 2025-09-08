@@ -1,9 +1,10 @@
 import {
   Component,
-  computed,
   input,
+  OnChanges,
   OnInit,
-  output
+  output,
+  SimpleChanges
 } from '@angular/core';
 import { TranslocoDirective } from "@jsverse/transloco";
 import {
@@ -49,15 +50,11 @@ import {
   NzTabComponent,
   NzTabSetComponent
 } from "ng-zorro-antd/tabs";
+import { MarketSector } from "../../../../shared/models/market-typings.model";
 
 export interface DisplayParams {
   growOrder: SortEnumType;
-  sector: string | null;
-}
-
-interface SectorFilter {
-  sectorCode: string;
-  noFilter?: boolean;
+  sector: MarketSector | null;
 }
 
 @Component({
@@ -80,25 +77,18 @@ interface SectorFilter {
   templateUrl: './market-trends.component.html',
   styleUrl: './market-trends.component.less'
 })
-export class MarketTrendsComponent implements OnInit {
+export class MarketTrendsComponent implements OnInit, OnChanges {
   marketFilter = input([Market.Fond]);
 
   ignoredBoardsFilter = input(['FQBR']);
 
-  sectors = input<string[]>([]);
+  itemsCount = input(10);
 
-  displaySectors = computed<SectorFilter[]>(() => {
-    const sectors = this.sectors();
+  showMoreButton = input(true);
 
-    if (sectors.length > 0) {
-      return [
-        {sectorCode: 'All', noFilter: true},
-        ...sectors.map(s => ({sectorCode: s}))
-      ];
-    }
+  sectors = input<MarketSector[]>([]);
 
-    return [];
-  });
+  fixedHeader = input(false);
 
   displayItems$!: Observable<MarketTrendsInstrumentsConnectionType | null>;
 
@@ -115,13 +105,20 @@ export class MarketTrendsComponent implements OnInit {
 
   readonly showMore = output<DisplayParams>();
 
-  private readonly itemsDisplayStep = 10;
-
   private readonly refreshInterval = 30_000;
 
   constructor(
     private readonly graphQlService: GraphQlService
   ) {
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.sectors != null && changes.sectors.currentValue != null) {
+      const sectors = changes.sectors.currentValue as MarketSector[];
+      if (sectors.length > 0) {
+        this.changeSector(sectors[0]);
+      }
+    }
   }
 
   ngOnInit(): void {
@@ -151,13 +148,13 @@ export class MarketTrendsComponent implements OnInit {
     });
   }
 
-  changeSector(targetSector: SectorFilter): void {
+  changeSector(targetSector: MarketSector): void {
     this.itemsDisplayParams$.pipe(
       take(1),
     ).subscribe(p => {
       this.itemsDisplayParams$.next({
         ...p,
-        sector: (targetSector.noFilter ?? false) ? null : targetSector.sectorCode
+        sector: targetSector === MarketSector.All ? null : targetSector
       });
     });
   }
@@ -234,7 +231,7 @@ export class MarketTrendsComponent implements OnInit {
     };
 
     const args: QueryInstrumentsArgs = {
-      first: this.itemsDisplayStep,
+      first: this.itemsCount(),
       includeNonBaseBoards: false,
       includeOld: false,
       where,

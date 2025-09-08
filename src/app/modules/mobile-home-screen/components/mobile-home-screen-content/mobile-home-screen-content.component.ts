@@ -4,10 +4,6 @@ import {
   OnInit
 } from '@angular/core';
 import { PositionsComponent } from "../positions/positions.component";
-import {
-  DisplayParams,
-  MarketTrendsComponent
-} from "../market-trends/market-trends.component";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   combineLatest,
@@ -38,6 +34,10 @@ import {
   map
 } from "rxjs/operators";
 import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
+import {
+  DisplayParams,
+  MarketTrendsComponent
+} from "../../../market-trends/components/market-trends/market-trends.component";
 
 @Component({
   selector: 'ats-mobile-home-screen-content',

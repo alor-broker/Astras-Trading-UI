@@ -1,0 +1,17 @@
+{
+  "sectionTitle": "Շուկայի միտումներ",
+  "columns": {
+    "ticker": {
+      "title": "Թիքեր"
+    },
+    "dailyGrowthPercent": {
+      "title": "Աճ, %"
+    },
+    "lastPrice": {
+      "title": "Գին"
+    }
+  },
+  "moreItemsButton": {
+    "title": "Ցույց տալ ավելին"
+  }
+}

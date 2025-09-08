@@ -19,6 +19,13 @@ table {
   table-layout: auto;
   border-collapse: collapse;
 
+  thead {
+    &.fixed {
+      position: sticky;
+      top: 0;
+    }
+  }
+
   tr {
     th {
       padding: 0 5px;

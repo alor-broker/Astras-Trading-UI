@@ -859,5 +859,36 @@
       "galleryOrder": 23,
       "enabled": true
     }
+  },
+  {
+    "typeId": "market-trends",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "",
+        "componentName": "MarketTrendsWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Market trends",
+      "translations": {
+        "ru": "Тенденции рынка",
+        "en": "Market trends",
+        "hy": "Շուկայի միտումներ"
+      }
+    },
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "ats-cup",
+      "galleryIcon": "ats-cup",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 24,
+      "enabled": true
+    }
   }
 ]

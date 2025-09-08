@@ -93,6 +93,11 @@
     "stringInputLength": "Մուտքագրեք {{min}}-ից {{max}} նիշ",
     "stringMaxLength": "Մուտքագրեք առավելագույնը {{max}} նիշ"
   },
+
+  "placeholders": {
+    "selectValue": "Ընտրեք արժեքը"
+  },
+
   "lessMoreOptions": {
     "less": "Պակաս",
     "more": "Ավելի",
@@ -102,5 +107,21 @@
     "default": "Ստանդարտ",
     "letterSuffix": "Կրճատված"
   },
-  "addToList": "Ավելացնել ցուցակում"
+  "addToList": "Ավելացնել ցուցակում",
+
+  "marketSectors": {
+    "All": "Բոլորը",
+    "Energy": "Էներգետիկա",
+    "Materials": "Նյութեր",
+    "Industrials": "Արդյունաբերություն",
+    "Consumer Discretionary": "Ցիկլային",
+    "Consumer Staples": "Բազային",
+    "Health Care": "Բժշկություն",
+    "Financials": "Ֆինանսներ",
+    "Information Technology": "ՏՏ",
+    "Communication Services": "Կապ",
+    "Utilities": "Կոմունալ",
+    "Real Estate": "Անշարժ գույք",
+    "Other": "Այլ"
+  }
 }

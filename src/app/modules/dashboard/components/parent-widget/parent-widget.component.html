@@ -129,5 +129,11 @@
       [isBlockWidget]="isBlockWidget"
     >
     </ats-portfolio-charts-widget>
+    <ats-market-trends-widget
+      *ngSwitchCase="'market-trends'"
+      [widgetInstance]="widgetInstance"
+      [isBlockWidget]="isBlockWidget"
+    >
+    </ats-market-trends-widget>
   </ng-container>
 </div>

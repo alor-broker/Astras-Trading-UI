@@ -45,6 +45,7 @@ import { MobileHomeScreenWidgetComponent } from "../mobile-home-screen/widgets/m
 import {AiGraphsWidgetComponent} from "../ai-graph/widgets/ai-graphs-widget/ai-graphs-widget.component";
 import { InvestIdeasWidgetComponent } from "../invest-ideas/widgets/invest-ideas-widget/invest-ideas-widget.component";
 import { PortfolioChartsWidgetComponent } from "../portfolio-charts/widgets/portfolio-charts-widget/portfolio-charts-widget.component";
+import { MarketTrendsWidgetComponent } from "../market-trends/widgets/market-trends-widget/market-trends-widget.component";
 
 @NgModule({
   declarations: [
@@ -96,6 +97,7 @@ import { PortfolioChartsWidgetComponent } from "../portfolio-charts/widgets/port
         AiGraphsWidgetComponent,
         InvestIdeasWidgetComponent,
         PortfolioChartsWidgetComponent,
+        MarketTrendsWidgetComponent,
     ],
   exports: [
     DashboardComponent,
