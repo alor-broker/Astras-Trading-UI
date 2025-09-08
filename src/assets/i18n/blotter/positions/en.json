@@ -1,5 +1,8 @@
 {
   "columns": {
+    "icon": {
+      "name": "Icon"
+    },
     "symbol": {
       "name": "Ticker",
       "tooltip": "Exchange identifier of the security",

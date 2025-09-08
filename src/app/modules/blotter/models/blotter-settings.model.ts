@@ -66,6 +66,7 @@ export const allStopOrdersColumns: BaseColumnId[] = [
 ];
 
 export const allPositionsColumns: BaseColumnId[] = [
+  { id: 'icon', displayName: "Значок", isDefault: true },
   { id: 'symbol', displayName: "Тикер", isDefault: true },
   { id: 'shortName', displayName: "Имя", isDefault: true },
   { id: 'avgPrice', displayName: "Средняя", isDefault: true },

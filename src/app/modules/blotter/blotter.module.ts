@@ -27,6 +27,7 @@ import { NzDividerComponent } from "ng-zorro-antd/divider";
 import { TableRowHeightDirective } from "../../shared/directives/table-row-height.directive";
 import { InstrumentBadgeDisplayComponent } from "../../shared/components/instrument-badge-display/instrument-badge-display.component";
 import {SearchFilterComponent} from "./components/search-filter/search-filter.component";
+import { InstrumentIconComponent } from "../../shared/components/instrument-icon/instrument-icon.component";
 
 @NgModule({
   declarations: [
@@ -44,21 +45,22 @@ import {SearchFilterComponent} from "./components/search-filter/search-filter.co
     RepoTradesComponent,
     TradesHistoryComponent
   ],
-  imports: [
-    SharedModule,
-    BlotterRoutingModule,
-    NzInputModule,
-    DragDropModule,
-    NzResizeObserverModule,
-    NzTreeModule,
-    LetDirective,
-    InstrumentsModule,
-    WidgetSettingsComponent,
-    NzDividerComponent,
-    TableRowHeightDirective,
-    InstrumentBadgeDisplayComponent,
-    SearchFilterComponent
-  ],
+    imports: [
+        SharedModule,
+        BlotterRoutingModule,
+        NzInputModule,
+        DragDropModule,
+        NzResizeObserverModule,
+        NzTreeModule,
+        LetDirective,
+        InstrumentsModule,
+        WidgetSettingsComponent,
+        NzDividerComponent,
+        TableRowHeightDirective,
+        InstrumentBadgeDisplayComponent,
+        SearchFilterComponent,
+        InstrumentIconComponent
+    ],
   exports: [
     BlotterWidgetComponent
   ]
