@@ -20,12 +20,6 @@
   "riskCoverageRatioTwoTitle": "НПР2",
 
   "clientTypeTitle": "Уровень риска",
-  "clientTypeValues": {
-    "StandardRisk": "КСУР",
-    "HighRisk": "КПУР",
-    "Special": "КОУР",
-    "LowRisk": "КНУР"
-  },
 
   "riskStatusTitle": "Статус",
   "riskStatusValues": {

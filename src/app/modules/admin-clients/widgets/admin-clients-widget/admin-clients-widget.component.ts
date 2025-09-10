@@ -7,10 +7,15 @@ import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-it
 import { Observable } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { WidgetSettingsCreationHelper } from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
-import { AdminClientsSettings } from "../../models/admin-clients-settings.model";
+import {
+  AdminClientsSettings,
+  AdminClientsTableColumns
+} from "../../models/admin-clients-settings.model";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { SharedModule } from "../../../../shared/shared.module";
 import { AdminClientsComponent } from "../../components/admin-clients/admin-clients.component";
+import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 
 @Component({
   selector: 'ats-admin-clients-widget',
@@ -51,7 +56,14 @@ export class AdminClientsWidgetComponent implements OnInit {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<AdminClientsSettings>(
       this.widgetInstance,
       'AdminClientsSettings',
-      settings => ({...settings}),
+      settings => ({
+        ...settings,
+        refreshIntervalSec: getValueOrDefault(settings.refreshIntervalSec, 60),
+        table: TableSettingHelper.toTableDisplaySettings(
+          settings.table,
+          AdminClientsTableColumns.filter(c => c.isDefault).map(c => c.id)
+        )!
+      }),
       this.widgetSettingsService
     );
 

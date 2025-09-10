@@ -38,7 +38,7 @@ implements OnInit, OnDestroy {
   protected headerSize$ = new BehaviorSubject<ContentSize | null>(null);
   protected readonly filters$ = new BehaviorSubject<F>({} as F);
   protected readonly sort$ = new BehaviorSubject<S | null>(null);
-  protected allColumns!: BaseColumnSettings<T>[];
+  protected readonly abstract allColumns: BaseColumnSettings<T>[];
   tableConfig$!: Observable<TableConfig<T>>;
   tableData$!: Observable<T[]>;
 
@@ -135,7 +135,12 @@ implements OnInit, OnDestroy {
         {
           [this.settingsTableName!]: TableSettingHelper.changeColumnOrder(
             event,
-            TableSettingHelper.toTableDisplaySettings(settings[this.settingsTableName!], settings[this.settingsColumnsName!] ?? [])!,
+            TableSettingHelper.toTableDisplaySettings(
+              settings[this.settingsTableName!],
+              this.settingsColumnsName != null
+                ? settings[this.settingsColumnsName] ?? []
+                : null
+            )!,
             tableConfig.columns
           )
         } as Partial<T>

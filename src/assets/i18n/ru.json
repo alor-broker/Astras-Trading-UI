@@ -109,5 +109,12 @@
     "letterSuffix": "Сокращенный"
   },
 
-  "addToList": "Добавить в список"
+  "addToList": "Добавить в список",
+
+  "clientTypeValues": {
+    "StandardRisk": "КСУР",
+    "HighRisk": "КПУР",
+    "Special": "КОУР",
+    "LowRisk": "КНУР"
+  }
 }

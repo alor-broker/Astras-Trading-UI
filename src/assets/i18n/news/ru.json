@@ -1,5 +1,10 @@
 {
-  "newsColumn": "Новость",
+  "columns": {
+    "header": {
+      "displayName": "Новость"
+    }
+  },
+
   "newsSections": {
     "all": "Все",
     "portfolio": "По портфелю",

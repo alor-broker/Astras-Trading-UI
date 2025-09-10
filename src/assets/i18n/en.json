@@ -109,5 +109,12 @@
     "letterSuffix": "Abbreviated"
   },
 
-  "addToList": "Add to list"
+  "addToList": "Add to list",
+
+  "clientTypeValues": {
+    "StandardRisk": "Standard",
+    "HighRisk": "High",
+    "Special": "Special",
+    "LowRisk": "Low"
+  }
 }

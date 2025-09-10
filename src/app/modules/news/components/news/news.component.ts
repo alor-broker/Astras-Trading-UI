@@ -34,7 +34,6 @@ import {
   filter,
   startWith
 } from "rxjs/operators";
-import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { TableConfig } from "../../../../shared/models/table-config.model";
 import {
@@ -69,6 +68,22 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
 
   selectedNewsListItem: NewsListItem | null = null;
 
+  allColumns = [
+    {
+      id: 'header',
+      name: 'header',
+      displayName: '',
+      transformFn: (data: NewsListItem): string => {
+        const date = new Date(data.publishDate);
+        const displayDate = date.toDateString() == new Date().toDateString()
+          ? date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          : `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+
+        return `[${displayDate}] ${data.header}`;
+      }
+    }
+  ];
+
   constructor(
     private readonly newsService: NewsService,
     private readonly translatorService: TranslatorService,
@@ -95,21 +110,10 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
   protected initTableConfigStream(): Observable<TableConfig<NewsListItem>> {
     return this.translatorService.getTranslator('news').pipe(
       map((translate) => ({
-          columns: [
-            {
-              id: 'header',
-              name: 'header',
-              displayName: translate(['newsColumn']),
-              transformFn: (data: NewsListItem): string => {
-                const date = new Date(data.publishDate);
-                const displayDate = date.toDateString() == new Date().toDateString()
-                  ? date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-                  : `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
-
-                return `[${displayDate}] ${data.header}`;
-              }
-            } as BaseColumnSettings<NewsListItem>
-          ]
+          columns: this.allColumns.map(col => ({
+            ...col,
+            displayName: translate(['columns', col.id, 'displayName'], {fallback: col.displayName})
+          }))
         })
       )
     );
