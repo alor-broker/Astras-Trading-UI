@@ -34,5 +34,7 @@
   "addBadgesBtnLabel": "Добавить предопределённые лейблы",
   "badgesColorsHeaders": "Доступные лейблы",
 
+  "showCurrentTimeLabel": "Показывать текущее время",
+
   "intervalError": "Значение должно быть от {{min}} до {{max}}"
 }

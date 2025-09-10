@@ -1,0 +1,70 @@
+{
+  "columns": {
+    "symbol": {
+      "name": "Թիքեր",
+      "tooltip": "Արժեթղթի բորսայական նույնականացուցիչ",
+      "searchDescription": "Որոնում ըստ Թիքերի"
+    },
+    "shortName": {
+      "name": "Անվանում",
+      "tooltip": "Դիրքի անվանում",
+      "searchDescription": "Որոնում ըստ անվանման"
+    },
+    "avgPrice": {
+      "name": "Միջին",
+      "tooltip": "Միջին գին"
+    },
+    "shareOfPortfolio": {
+      "name": "Բաժին, %",
+      "tooltip": "Պորտֆելի ընդհանուր արժեքի բաժինը"
+    },
+    "qtyT0": {
+      "name": "Քանակ Т0",
+      "tooltip": "Դիրքերի քանակը՝ հաշվի առնելով այսօրվա հաշվարկները"
+    },
+    "qtyT1": {
+      "name": "Քանակ Т1",
+      "tooltip": "Դիրքերի քանակը՝ հաշվի առնելով վաղվա հաշվարկները"
+    },
+    "qtyT2": {
+      "name": "Քանակ Т2",
+      "tooltip": "Դիրքերի քանակը՝ հաշվի առնելով մյուս օրվա հաշվարկները"
+    },
+    "qtyTFuture": {
+      "name": "Քանակ ТFuture",
+      "tooltip": "Դիրքերի քանակը՝ հաշվի առնելով բոլոր հայտերը"
+    },
+    "volume": {
+      "name": "Միջ. ծավալ",
+      "tooltip": "Դիրքի ծավալը, հաշվարկված միջին գնով"
+    },
+    "currentVolume": {
+      "name": "Ընթ. ծավալ",
+      "tooltip": "Դիրքի ծավալը, հաշվարկված ընթացիկ գնով"
+    },
+    "unrealisedPl": {
+      "name": "P/L ընդամենը",
+      "tooltip": "Շահույթի և վնասի հարաբերակցությունը"
+    },
+    "unrealisedPlRatio": {
+      "name": "P/L ընդամենը, %",
+      "tooltip": "Շահույթի և վնասի հարաբերակցությունը տոկոսներով"
+    },
+    "dailyUnrealisedPl": {
+      "name": "P/L օր.",
+      "tooltip": "Շահույթի և վնասի հարաբերակցությունը այսօրվա համար"
+    },
+    "dailyUnrealisedPlRatio": {
+      "name": "P/L օր., %",
+      "tooltip": "Շահույթի և վնասի հարաբերակցությունը տոկոսներով այսօրվա համար"
+    }
+  },
+  "emptyPositions": "Դիրքեր չկան",
+  "emptyPositionsWithFilters": "Նման ֆիլտրներով ոչինչ չի գտնվել",
+  "closePositionTooltip": "Փակել դիրքը",
+  "reversePositionTooltip": "Շրջել դիրքը",
+  "closeAllTooltip": "Փակել ԲՈԼՈՐ դիրքերը",
+  "confirmClose": "Փակե՞լ դիրքը:",
+  "confirmCloseAll": "Փակե՞լ ԲՈԼՈՐ դիրքերը:",
+  "confirmReverse": "Շրջե՞լ դիրքը:"
+}

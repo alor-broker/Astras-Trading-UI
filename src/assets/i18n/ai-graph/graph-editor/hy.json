@@ -1,0 +1,196 @@
+{
+  "panels": {
+    "run": {
+      "title": "Գրաֆի գործարկում"
+    },
+    "nodePropertiesEditor": {
+      "title": "Հատկություններ"
+    }
+  },
+  "nodes": {
+    "const-symbol": {
+      "title": "Գործիք"
+    },
+    "news": {
+      "title": "Նորություններ"
+    },
+    "quotes": {
+      "title": "Գնանշումներ"
+    },
+    "request-to-ai": {
+      "title": "Հարցում AI-ին"
+    },
+    "markdown-output": {
+      "title": "Տեքստ"
+    },
+    "portfolio": {
+      "title": "Պորտֆել"
+    },
+    "history": {
+      "title": "Գների պատմություն"
+    },
+    "portfolio-summary": {
+      "title": "Պորտֆելի ամփոփում"
+    },
+    "portfolio-positions": {
+      "title": "Պորտֆելի դիրքեր"
+    },
+    "reports": {
+      "title": "Հաճախորդների հաշվետվություններ"
+    },
+    "const-portfolio": {
+      "title": "Պորտֆելի ընտրություն"
+    },
+    "trades": {
+      "title": "Գործարքներ"
+    }
+  },
+  "categories": {
+    "base": "Հիմնական",
+    "instrument-selection": "Ընտրություն",
+    "info-sources": "Տեղեկատվական աղբյուրներ",
+    "ai": "AI",
+    "output": "Ելք"
+  },
+  "slots": {
+    "symbol": {
+      "name": "Թիքեր"
+    },
+    "exchange": {
+      "name": "Բորսա"
+    },
+    "instruments": {
+      "name": "Գործիքներ"
+    },
+    "maxRecordsCount": {
+      "name": "Առավելագույն գրառումների քանակը"
+    },
+    "news": {
+      "name": "Նորություններ"
+    },
+    "quotes": {
+      "name": "Գնանշումներ"
+    },
+    "prompt": {
+      "name": "Հարցում"
+    },
+    "in": {
+      "name": "Մուտք"
+    },
+    "out": {
+      "name": "Ելք"
+    },
+    "fromDate": {
+      "name": "Սկսած ամսաթվից"
+    },
+    "includeDate": {
+      "name": "Ավելացնել ամսաթիվը"
+    },
+    "includeHeader": {
+      "name": "Ավելացնել վերնագիրը"
+    },
+    "includeContent": {
+      "name": "Ավելացնել բովանդակությունը"
+    },
+    "portfolio": {
+      "name": "Պորտֆել"
+    },
+    "includePrice": {
+      "name": "Ավելացնել գինը"
+    },
+    "includeVolume": {
+      "name": "Ավելացնել ծավալը"
+    },
+    "includeLastUpdate": {
+      "name": "Ավելացնել թարմացման ժամանակը"
+    },
+    "includeBidAsk": {
+      "name": "Ավելացնել գնման/վաճառքի առաջարկը"
+    },
+    "includeHighLow": {
+      "name": "Ավելացնել առավելագույն/նվազագույնը"
+    },
+    "lastPrice": {
+      "name": "Վերջին գինը"
+    },
+    "volume": {
+      "name": "Ծավալ"
+    },
+    "lastUpdate": {
+      "name": "Թարմացման ժամանակը"
+    },
+    "bidAsk": {
+      "name": "Գնման/Վաճառքի առաջարկ"
+    },
+    "highLow": {
+      "name": "Առավելագույն/Նվազագույն"
+    },
+    "timeframe": {
+      "name": "Ժամանակահատված"
+    },
+    "history": {
+      "name": "Պատմություն"
+    },
+    "summary": {
+      "name": "Ամփոփում"
+    },
+    "positions": {
+      "name": "Դիրքեր"
+    },
+    "buyingPower": {
+      "name": "Գնողունակություն"
+    },
+    "profit": {
+      "name": "Շահույթ"
+    },
+    "portfolioValue": {
+      "name": "Պորտֆելի արժեքը"
+    },
+    "initialMargin": {
+      "name": "Սկզբնական մարժա"
+    },
+    "commission": {
+      "name": "Հանձնաժողով"
+    },
+    "reports": {
+      "name": "Հաշվետվություններ"
+    },
+    "market": {
+      "name": "Շուկա"
+    },
+    "timeRange": {
+      "name": "Ժամանակային միջակայք"
+    },
+    "trades": {
+      "name": "Գործարքներ"
+    }
+  },
+  "labels": {
+    "properties": "Հատկություններ",
+    "resize": "Փոխել չափը",
+    "expand": "Ընդարձակել",
+    "collapse": "Կրճատել",
+    "pin": "Ամրացնել",
+    "unpin": "Արձակել",
+    "alignTo": "Հավասարեցնել ըստ",
+    "distribute": "Բաշխել",
+    "clone": "Պատճենել",
+    "remove": "Հեռացնել",
+    "addNode": "Ավելացնել բլոկ",
+    "categories": "Կատեգորիաներ",
+    "blocks": "Բլոկներ",
+    "disconnectLinks": "Հեռացնել կապերը",
+    "rename": "Վերանվանել",
+    "blockTitle": "Բլոկի անունը"
+  },
+  "alignSideOptions": {
+    "top": "Վերեւ",
+    "bottom": "Ներքեւ",
+    "left": "Ձախ",
+    "right": "Աջ"
+  },
+  "distributeOptions": {
+    "vertically": "Ուղղահայաց",
+    "horizontally": "Հորիզոնական"
+  }
+}

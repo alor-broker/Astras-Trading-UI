@@ -9,7 +9,8 @@
     "watch": "pnpm generate && ng build --watch --configuration development",
     "test": "pnpm generate && ng test",
     "preinstall": "npx only-allow pnpm",
-    "codegen": "graphql-codegen --config codegen.ts",
+    "codegen-hyperion": "graphql-codegen --config hyperion-codegen.ts",
+    "codegen-news": "graphql-codegen --config news-codegen.ts",
     "lint": "ng lint --max-warnings 0",
     "prepare": "husky"
   },
@@ -27,6 +28,7 @@
     "@angular/service-worker": "^19.2.7",
     "@apollo/client": "^3.13.8",
     "@comfyorg/litegraph": "0.8.98",
+    "@date-fns/tz": "^1.3.1",
     "@jsverse/transloco": "^7.6.1",
     "@ngrx/component": "^19.1.0",
     "@ngrx/component-store": "^19.1.0",
@@ -77,6 +79,7 @@
     "@types/json-patch": "^0.0.33",
     "@types/node": "^22.14.1",
     "angular-eslint": "^19.3.0",
+    "browserslist": "^4.25.0",
     "eslint": "^9.25.1",
     "graphql-codegen-typescript-validation-schema": "^0.17.1",
     "husky": "^9.1.7",
@@ -93,5 +96,8 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.31.0"
   },
+  "browserslist": [
+    "defaults"
+  ],
   "packageManager": "pnpm@10.9.0"
 }

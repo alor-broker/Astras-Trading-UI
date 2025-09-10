@@ -1,0 +1,15 @@
+{
+  "settingsDialogTitle": "Պրոֆիլ",
+  "usefulLinksTabTitle": "Օգտակար հղումներ",
+  "generalSettingsTabTitle": "Ընդհանուր",
+  "hotkeysTabTitle": "Թեժ ստեղներ",
+  "notificationsTabTitle": "Ծանուցումներ",
+  "defaultCurrencyHeader": "Պորտֆելների համար լռելյայն արժույթ",
+  "scalperMouseActionsHeader": "Մկնիկի գործողություններ",
+  "hardRebootBtnText": "Վերականգնել բոլոր պարամետրերը",
+  "hardRebootWarningTitle": "Համոզվա՞ծ եք, որ ցանկանում եք ամբողջական վերագործարկում կատարել:",
+  "hardRebootWarningDesc": "Ամբողջական վերագործարկման դեպքում կջնջվեն ձեր բոլոր կարգավորումները, դիտացանկերը, վիդջեթները և այլն:",
+  "exportSettingsBtnText": "Արտահանել կարգավորումները",
+  "yesBtnText": "Այո",
+  "noBtnText": "Ոչ"
+}

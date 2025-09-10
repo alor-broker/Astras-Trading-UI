@@ -54,7 +54,7 @@ class CustomHandler implements TranslocoMissingHandler {
   providers: [
     provideTransloco({
       config: {
-        availableLangs: ['ru', 'en'],
+        availableLangs: ['ru', 'en', 'hy'],
         defaultLang: 'ru',
         reRenderOnLangChange: true,
         prodMode: environment.production,

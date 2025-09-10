@@ -4,8 +4,9 @@ import {
 } from '@angular/core/testing';
 
 import { InfoHeaderComponent } from './info-header.component';
-import { EnvironmentService } from "../../../../../shared/services/environment.service";
 import { InstrumentType } from "../../../../../shared/models/enums/instrument-type.model";
+import { MockComponents } from "ng-mocks";
+import { InstrumentIconComponent } from "../../../../../shared/components/instrument-icon/instrument-icon.component";
 
 describe('InfoHeaderComponent', () => {
   let component: InfoHeaderComponent;
@@ -15,15 +16,8 @@ describe('InfoHeaderComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        InfoHeaderComponent
-      ],
-      providers: [
-        {
-          provide: EnvironmentService,
-          useValue: {
-            alorIconsStorageUrl: ''
-          }
-        }
+        InfoHeaderComponent,
+        ...MockComponents(InstrumentIconComponent)
       ]
     })
       .compileComponents();

@@ -1,6 +1,6 @@
 import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {NodeBase} from "../../graph/nodes/node-base";
-import {EditorType, ExtendedEditors, PortfolioKey, SlotType} from "../../graph/slot-types";
+import {EditorType, ExtendedEditors, Portfolio, SlotType} from "../../graph/slot-types";
 import {
   BooleanPropertyEditorConfig,
   DatePropertyEditorConfig,
@@ -367,7 +367,7 @@ export class NodePropertiesEditorComponent implements OnChanges {
     targetNode: NodeBase,
     label: string
   ): Editor {
-    const value = targetNode.properties[propertyKey] as (PortfolioKey | null);
+    const value = targetNode.properties[propertyKey] as (Portfolio | null);
 
     return this.createEditor<PortfolioPropertyEditorConfig>(
       SlotType.Portfolio,

@@ -1,0 +1,11 @@
+{
+  "title": "Վիդջեթներ",
+  "standardView": "Ստանդարտ տեսք",
+  "categories": {
+    "all": "Բոլորը",
+    "chartsAndOrderbooks": "Գրաֆիկներ & Պատվ. գրքեր",
+    "positionsTradesOrders": "Դիրքեր, գործարքներ և հայտեր",
+    "info": "Տեղեկատվական ռեսուրսներ",
+    "details": "Մանրամասն"
+  }
+}

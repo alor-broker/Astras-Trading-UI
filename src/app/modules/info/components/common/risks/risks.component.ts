@@ -1,5 +1,6 @@
 import {
   Component,
+  DestroyRef,
   Inject,
   Input,
   LOCALE_ID,
@@ -9,9 +10,11 @@ import {
 import {
   BehaviorSubject,
   combineLatest,
+  defer,
   filter,
   Observable,
-  tap
+  tap,
+  timer
 } from "rxjs";
 import { RisksInfo } from "../../../models/risks.model";
 import { DashboardContextService } from "../../../../../shared/services/dashboard-context.service";
@@ -37,6 +40,8 @@ import {
 } from "../../../../../shared/services/translator.service";
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { formatNumber } from "@angular/common";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { REFRESH_TIMEOUT_MS } from "../../../constants/info.constants";
 
 @Component({
     selector: 'ats-risks',
@@ -61,7 +66,8 @@ export class RisksComponent implements OnInit, OnDestroy {
     private readonly risksService: RisksService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly translatorService: TranslatorService,
-    @Inject(LOCALE_ID) private readonly locale: string
+    @Inject(LOCALE_ID) private readonly locale: string,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -78,12 +84,19 @@ export class RisksComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.currentPortfolio$ = this.dashboardContextService.selectedPortfolio$;
 
+    const refreshTimer$ = defer(() => {
+      return timer(0, REFRESH_TIMEOUT_MS).pipe(
+        takeUntilDestroyed(this.destroyRef)
+      );
+    });
+
     const risks$ = combineLatest({
       instrumentKey: this.targetInstrumentKey$,
       selectedPortfolio: this.currentPortfolio$,
       translator: this.translatorService.getTranslator('')
     }).pipe(
       filter(x => x.instrumentKey != null),
+      mapWith(() => refreshTimer$, (source,) => source),
       tap(() => this.isLoading$.next(true)),
       mapWith(
         x => this.risksService.getRisksInfo(x.instrumentKey!, x.selectedPortfolio),

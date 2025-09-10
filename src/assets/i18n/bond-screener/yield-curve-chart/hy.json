@@ -1,0 +1,18 @@
+{
+  "yieldAxisTitle": "Եկամտաբերություն, %",
+  "durationAxisTitle": "Տևողություն, տարի",
+  "durationLabel": "Տևողություն",
+  "yieldLabel": "Եկամտաբերություն",
+  "yearsUnit": "տարի",
+  "durationTypeLabel": "Տևողության տեսակը",
+  "durationTypeOptions": {
+    "maturityDateBased": "Ըստ մարման ժամկետի",
+    "modifiedDuration": "Փոփոխված տևողություն",
+    "macaulayDuration": "Մակոլեյի տևողություն"
+  },
+  "yieldTypeLabel": "Եկամտաբերության տեսակը",
+  "yieldTypeOptions": {
+    "currentYield": "Ընթացիկ եկամտաբերություն ըստ վերջին գնի",
+    "yieldToMaturity": "Եկամտաբերություն մինչև մարումը"
+  }
+}

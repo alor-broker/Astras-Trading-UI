@@ -12,7 +12,8 @@
       "default": "Instrument Select",
       "translations": {
         "ru": "Выбор инструмента",
-        "en": "Instrument Select"
+        "en": "Instrument Select",
+        "hy": "Գործիքի ընտրություն"
       }
     },
     "category": "all",
@@ -43,7 +44,8 @@
       "default": "Orderbook",
       "translations": {
         "ru": "Стакан",
-        "en": "Orderbook"
+        "en": "Orderbook",
+        "hy": "Պատվերների գիրք"
       }
     },
     "hasInstrumentBind": true,
@@ -81,7 +83,8 @@
       "default": "Scalper Orderbook",
       "translations": {
         "ru": "Скальперский стакан",
-        "en": "Scalper Orderbook"
+        "en": "Scalper Orderbook",
+        "hy": "Սկալպինգի պատվերների գիրք"
       }
     },
     "category": "chartsAndOrderbooks",
@@ -113,7 +116,8 @@
       "default": "Chart",
       "translations": {
         "ru": "График",
-        "en": "Chart"
+        "en": "Chart",
+        "hy": "Հիմնական գին"
       }
     },
     "category": "chartsAndOrderbooks",
@@ -151,7 +155,8 @@
       "default": "Tech Chart",
       "translations": {
         "ru": "Тех. анализ",
-        "en": "Tech Chart"
+        "en": "Tech Chart",
+        "hy": "Տեխ. վերլուծություն"
       }
     },
     "hasInstrumentBind": true,
@@ -189,7 +194,8 @@
       "default": "Blotter",
       "translations": {
         "ru": "Блоттер",
-        "en": "Blotter"
+        "en": "Blotter",
+        "hy": "Օպերացիաներ"
       }
     },
     "category": "positionsTradesOrders",
@@ -226,7 +232,8 @@
       "default": "Info",
       "translations": {
         "ru": "Инфо",
-        "en": "Info"
+        "en": "Info",
+        "hy": "Տեղեկ"
       }
     },
     "hasInstrumentBind": true,
@@ -264,7 +271,8 @@
       "default": "News",
       "translations": {
         "ru": "Новости",
-        "en": "News"
+        "en": "News",
+        "hy": "Լուրեր"
       }
     },
     "category": "info",
@@ -301,7 +309,8 @@
       "default": "All Trades",
       "translations": {
         "ru": "Все сделки",
-        "en": "All Trades"
+        "en": "All Trades",
+        "hy": "Բոլոր գործարքները"
       }
     },
     "hasInstrumentBind": true,
@@ -339,7 +348,8 @@
       "default": "Exchange Rate",
       "translations": {
         "ru": "Курсы валют",
-        "en": "Exchange Rate"
+        "en": "Exchange Rate",
+        "hy": "Արտարժույթի Կուրսեր"
       }
     },
     "category": "info",
@@ -376,7 +386,8 @@
       "default": "All Instruments",
       "translations": {
         "ru": "Все инструменты",
-        "en": "All Instruments"
+        "en": "All Instruments",
+        "hy": "Բոլոր գործիքները"
       }
     },
     "category": "details",
@@ -413,7 +424,8 @@
       "default": "Order Submit",
       "translations": {
         "ru": "Выставить заявку",
-        "en": "Order Submit"
+        "en": "Order Submit",
+        "hy": "Տեղադրել Պատվեր"
       }
     },
     "hasInstrumentBind": true,
@@ -458,7 +470,8 @@
       "default": "Orders Basket",
       "translations": {
         "ru": "Корзина заявок",
-        "en": "Orders Basket"
+        "en": "Orders Basket",
+        "hy": "Պատվերների Խուփ"
       }
     },
     "category": "positionsTradesOrders",
@@ -495,7 +508,8 @@
       "default": "Market Map",
       "translations": {
         "ru": "Карта рынка",
-        "en": "Market Map"
+        "en": "Market Map",
+        "hy": "Շուկայի Քարտեզ"
       }
     },
     "category": "info",
@@ -532,7 +546,8 @@
       "default": "Ribbon",
       "translations": {
         "ru": "Лента",
-        "en": "Ribbon"
+        "en": "Ribbon",
+        "hy": "Առևտրային ժապավեն"
       }
     },
     "category": "info",
@@ -562,7 +577,8 @@
       "default": "Events Calendar",
       "translations": {
         "ru": "Календарь событий",
-        "en": "Events Calendar"
+        "en": "Events Calendar",
+        "hy": "Իրադարձությունների Օրացույց"
       }
     },
     "category": "info",
@@ -599,7 +615,8 @@
       "default": "Option Board",
       "translations": {
         "ru": "Опционная доска",
-        "en": "Option Board"
+        "en": "Option Board",
+        "hy": "Օպցիոնների Աղյուսակ"
       }
     },
     "category": "details",
@@ -636,7 +653,8 @@
       "default": "Arbitrage Spread",
       "translations": {
         "ru": "Арбитражная раздвижка",
-        "en": "Arbitrage Spread"
+        "en": "Arbitrage Spread",
+        "hy": "Արբիտրաժային Բացվածք"
       }
     },
     "category": "details",
@@ -667,7 +685,8 @@
       "default": "Portfolio Summary",
       "translations": {
         "ru": "Сводка по портфелю",
-        "en": "Portfolio Summary"
+        "en": "Portfolio Summary",
+        "hy": "Պորտֆելի Ամփոփում"
       }
     },
     "category": "positionsTradesOrders",
@@ -697,7 +716,8 @@
       "default": "Instruments Correlation",
       "translations": {
         "ru": "Корреляция инструментов",
-        "en": "Instruments Correlation"
+        "en": "Instruments Correlation",
+        "hy": "Կորել. Գործիք."
       }
     },
     "category": "info",
@@ -728,7 +748,8 @@
       "default": "Bond Screener",
       "translations": {
         "ru": "Скринер облигаций",
-        "en": "Bond Screener"
+        "en": "Bond Screener",
+        "hy": "Պարտատոմսերի Զտիչ"
       }
     },
     "category": "info",
@@ -779,7 +800,8 @@
       "default": "AI graphs",
       "translations": {
         "ru": "ИИ графы",
-        "en": "AI graphs"
+        "en": "AI graphs",
+        "hy": "AI Ուղիղծիրներ"
       }
     },
     "category": "info",

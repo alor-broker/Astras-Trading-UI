@@ -36,8 +36,14 @@
     "portfolio-positions": {
       "title": "Portfolio Positions"
     },
+    "reports": {
+      "title": "Client Reports"
+    },
     "const-portfolio": {
       "title": "Portfolio Selection"
+    },
+    "trades": {
+      "title": "Trades"
     }
   },
 
@@ -96,7 +102,7 @@
       "name": "Include Price"
     },
     "includeVolume": {
-      "name": "Include Volume"  
+      "name": "Include Volume"
     },
     "includeLastUpdate": {
       "name": "Include Last Update"
@@ -148,6 +154,17 @@
     },
     "commission": {
       "name": "Commission"
+    },    "reports": {
+      "name": "Reports"
+    },
+    "market": {
+      "name": "Market"
+    },
+    "timeRange": {
+      "name": "Time Range"
+    },
+    "trades": {
+      "name": "Trades"
     }
   },
 

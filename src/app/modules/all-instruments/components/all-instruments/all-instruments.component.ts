@@ -182,6 +182,21 @@ implements OnInit, OnDestroy {
       }
     },
     {
+      id: 'tradeAmount',
+      displayName: 'Объём торгов в базовой валюте',
+      width: 80,
+      minWidth: 80,
+      transformFn: (data: AllInstrumentsNodeDisplay): string => data.tradingDetails!.tradeAmount != null ? formatNumber(data.tradingDetails!.tradeAmount, this.locale, '0.0-10') : '',
+      sortChangeFn: (dir): void => this.sortChange(['tradingDetails', 'tradeAmount'], dir),
+      filterData: {
+        filterName: 'tradeAmount',
+        filterType: FilterType.Interval,
+        intervalStartName: 'tradeAmountFrom',
+        intervalEndName: 'tradeAmountTo',
+        inputFieldType: InputFieldType.Number
+      }
+    },
+    {
       id: 'exchange',
       displayName: 'Биржа',
       transformFn: (data: AllInstrumentsNodeDisplay): string => data.basicInformation!.exchange,

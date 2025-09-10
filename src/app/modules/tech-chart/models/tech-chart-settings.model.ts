@@ -34,6 +34,10 @@ export interface TechChartTradesDisplaySettings {
   markerSize: number;
 }
 
+export interface TechChartOrdersSettings {
+  editWithoutConfirmation: boolean;
+}
+
 export interface TechChartSettings extends WidgetSettings {
   chartLayout?: object;
   showTrades?: boolean;
@@ -47,4 +51,6 @@ export interface TechChartSettings extends WidgetSettings {
   isin?: string;
   panels?: ChartPanels;
   trades?: TechChartTradesDisplaySettings;
+  allowCustomTimeframes?: boolean;
+  orders?: TechChartOrdersSettings;
 }

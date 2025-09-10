@@ -1,0 +1,15 @@
+{
+  "emptyPortfolioBtn": "Պորտֆելներ չկան",
+  "emptyPortfolioPopover": "Դիրքերով պորտֆելներ բացակայում են։",
+  "emptyPortfolioPopoverHint": "Դուք կարող եք գումար կամ արժեթղթեր փոխանցել",
+  "emptyPortfolioPopoverLink": "այստեղ",
+  "searchPortfolioPlaceholder": "Որոնում ըստ պորտֆելների",
+  "profile": "Անձնական էջ",
+  "reports": "Հաշվետվություններ",
+  "releases": "Թողարկումներ",
+  "support": "Աջակցություն ТГ-ում",
+  "issuesList": "Առաջարկություններ և դիտողություններ",
+  "videoTutorial": "Ուսուցողական տեսանյութ",
+  "help": "Օգնություն",
+  "exit": "Ելք"
+}

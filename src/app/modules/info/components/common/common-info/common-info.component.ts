@@ -1,5 +1,6 @@
 import {
   Component,
+  DestroyRef,
   Inject,
   LOCALE_ID,
   OnInit
@@ -7,14 +8,16 @@ import {
 import { InstrumentInfoBaseComponent } from "../../instrument-info-base/instrument-info-base.component";
 import {
   combineLatest,
+  defer,
   Observable,
   shareReplay,
   switchMap,
-  tap
+  tap,
+  timer
 } from "rxjs";
 import {
   Instrument,
-  Query
+  Query,
 } from "../../../../../../generated/graphql.types";
 import {
   Descriptor,
@@ -47,6 +50,10 @@ import {
   NzTabSetComponent
 } from "ng-zorro-antd/tabs";
 import { DescriptorsListComponent } from "../../descriptors-list/descriptors-list.component";
+import { RisksComponent } from "../risks/risks.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { mapWith } from "../../../../../shared/utils/observable-helper";
+import { REFRESH_TIMEOUT_MS } from "../../../constants/info.constants";
 
 type InstrumentResponse = Modify<
   Query,
@@ -62,14 +69,15 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<InstrumentResponse>> = object({
 
 @Component({
     selector: 'ats-common-info',
-    imports: [
-        TranslocoDirective,
-        LetDirective,
-        NzEmptyComponent,
-        NzTabSetComponent,
-        NzTabComponent,
-        DescriptorsListComponent
-    ],
+  imports: [
+    TranslocoDirective,
+    LetDirective,
+    NzEmptyComponent,
+    NzTabSetComponent,
+    NzTabComponent,
+    DescriptorsListComponent,
+    RisksComponent
+  ],
     templateUrl: './common-info.component.html',
     styleUrl: './common-info.component.less'
 })
@@ -82,7 +90,8 @@ export class CommonInfoComponent extends InstrumentInfoBaseComponent implements 
     private readonly graphQlService: GraphQlService,
     private readonly translatorService: TranslatorService,
     @Inject(LOCALE_ID)
-    private readonly locale: string
+    private readonly locale: string,
+    private readonly destroyRef: DestroyRef
   ) {
     super();
   }
@@ -93,8 +102,15 @@ export class CommonInfoComponent extends InstrumentInfoBaseComponent implements 
   }
 
   private initDataStream(): void {
+    const refreshTimer$ = defer(() => {
+      return timer(0, 3 * REFRESH_TIMEOUT_MS).pipe(
+        takeUntilDestroyed(this.destroyRef)
+      );
+    });
+
     this.info$ = this.targetInstrumentKey$.pipe(
       filter(i => i != null),
+      mapWith(() => refreshTimer$, (source,) => source),
       tap(() => this.setLoading(true)),
       switchMap(i => {
         return this.graphQlService.watchQueryForSchema<InstrumentResponse>(
@@ -130,8 +146,20 @@ export class CommonInfoComponent extends InstrumentInfoBaseComponent implements 
             items: this.getBasicInformationDescriptors(x.info)
           },
           {
-            title: x.translator(['groupTitles', 'tradingDetails']),
-            items: this.getTradingDetailsDescriptors(x.info)
+            title: x.translator(['groupTitles', 'currency']),
+            items: this.getCurrencyDescriptors(x.info)
+          },
+          {
+            title: x.translator(['groupTitles', 'tradingParameters']),
+            items: this.getTradingParametersDescriptors(x.info)
+          },
+          {
+            title: x.translator(['groupTitles', 'tradingData']),
+            items: this.getTradingDataDescriptors(x.info)
+          },
+          {
+            title: x.translator(['groupTitles', 'additional']),
+            items: this.getAdditionalInfoDescriptors(x.info)
           }
         ];
       })
@@ -141,15 +169,34 @@ export class CommonInfoComponent extends InstrumentInfoBaseComponent implements 
   private getBasicInformationDescriptors(instrument: Instrument): Descriptor[] {
     return DescriptorFiller.basicInformation({
       basicInformation: instrument.basicInformation,
+      boardInformation: instrument.boardInformation,
       financialAttributes: instrument.financialAttributes,
       currencyInformation: instrument.currencyInformation
     });
   }
 
-  private getTradingDetailsDescriptors(instrument: Instrument): Descriptor[] {
-    return DescriptorFiller.tradingDetails({
+  private getCurrencyDescriptors(instrument: Instrument): Descriptor[] {
+    return DescriptorFiller.currencyInformation(instrument.currencyInformation);
+  }
+
+  private getTradingParametersDescriptors(instrument: Instrument): Descriptor[] {
+    return DescriptorFiller.tradingParameters({
       tradingDetails: instrument.tradingDetails,
       currencyInformation: instrument.currencyInformation,
+      locale: this.locale
+    });
+  }
+
+  private getTradingDataDescriptors(instrument: Instrument): Descriptor[] {
+    return DescriptorFiller.tradingData({
+      tradingDetails: instrument.tradingDetails,
+      locale: this.locale
+    });
+  }
+
+  private getAdditionalInfoDescriptors(instrument: Instrument): Descriptor[] {
+    return DescriptorFiller.additionalInformation({
+      additionalInfo: instrument.additionalInformation,
       locale: this.locale
     });
   }

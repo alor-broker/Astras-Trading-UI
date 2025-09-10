@@ -1,0 +1,18 @@
+{
+  "appNotificationsTitle": "Հավելվածի ծանուցումներ",
+  "pushNotificationsTitle": "Push-ծանուցումներ",
+  "orderCreatedLabel": "Հայտը տեղադրվել է",
+  "orderSubmitFailedLabel": "Հայտը տեղադրելու սխալ",
+  "orderFilledLabel": "Հայտը կատարվել է",
+  "orderPartiallyFilledLabel": "Հայտը մասնակիորեն կատարվել է",
+  "orderCancelledLabel": "Հայտը հաջողությամբ չեղարկվել է",
+  "orderCancelFailedLabel": "Հայտը չեղարկելու սխալ",
+  "OrderStatusChangeToCancelledLabel": "Հայտը չեղարկվել է",
+  "orderUpdatedLabel": "Հայտը փոփոխվել է",
+  "orderUpdateFailedLabel": "Հայտը փոփոխելու սխալ",
+  "orderStatusChangedLabel": "Հայտի կարգավիճակի փոփոխություն",
+  "ordersGroupCreatedLabel": "Հայտերի խումբը ստեղծվել է",
+  "hiddenPortfoliosForNotificationsLabel": "Թաքցնել ծանուցումները պորտֆելների համար",
+  "hiddenPortfoliosForNotificationsTooltip": "Վերաբերում է միայն ընտրված պորտֆելի շրջանակներում կատարված հայտերին",
+  "hiddenPortfoliosForNotificationsPlaceholder": "Ընտրեք պորտֆելներ"
+}

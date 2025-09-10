@@ -1,0 +1,12 @@
+{
+  "couponsTable": "Կտրոններ",
+  "amortizationTable": "Մարում",
+  "offersTable": "Առաջարկներ",
+  "date": "Ամսաթիվ",
+  "qty": "Քանակ",
+  "couponType": "Կտրոնի տեսակը",
+  "accruedInterest": "Կուտակված տոկոս",
+  "parFraction": "Անվանական արժեքի %",
+  "type": "Տեսակ",
+  "description": "Նկարագրություն"
+}

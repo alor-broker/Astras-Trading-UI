@@ -3,6 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TermsOfUseDialogComponent } from './terms-of-use-dialog.component';
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { MockProvider } from "ng-mocks";
+import { AiChatTermsOfUseService } from "../../services/ai-chat-terms-of-use.service";
+import { EMPTY } from "rxjs";
 
 describe('TermsOfUseDialogComponent', () => {
   let component: TermsOfUseDialogComponent;
@@ -14,6 +17,14 @@ describe('TermsOfUseDialogComponent', () => {
       declarations:[
         TermsOfUseDialogComponent,
         ...ngZorroMockComponents
+      ],
+      providers:[
+        MockProvider(
+          AiChatTermsOfUseService,
+          {
+            getContent: () => EMPTY
+          }
+        )
       ]
     })
     .compileComponents();

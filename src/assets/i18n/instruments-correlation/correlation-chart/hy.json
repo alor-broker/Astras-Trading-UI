@@ -1,0 +1,26 @@
+{
+  "parametersForm": {
+    "targetListLabel": "Գործիքների ցուցակ",
+    "timeframeLabel": "Վերլուծության ժամանակահատված",
+    "detrendTypeLabel": "Թրենդի հեռացում",
+    "timeframeOptions": {
+      "month": "Ամիս",
+      "quarter": "Եռամսյակ",
+      "halfYear": "Կիսամյակ",
+      "year": "Տարի"
+    },
+    "detrendTypeOptions": {
+      "constant": "Հաստատուն",
+      "linear": "Գծային",
+      "logarithmic": "Լոգարիթմական"
+    }
+  },
+  "cointegrationMark": "Կ",
+  "cointegrationLegend": "Գործիքները կոինտեգրված են",
+  "correlationLabel": "Կոռելյացիա",
+  "errorCodes": {
+    "EMPTY_TICKERS_LIST": "Ընտրված ցուցակը չի պարունակում գործիքներ",
+    "SHORT_TICKERS_LIST": "Ցուցակը պետք է պարունակի առնվազն երկու գործիք",
+    "UNKNOWN": "Չհաջողվեց կատարել վերլուծություն ընտրված պարամետրերի համար"
+  }
+}

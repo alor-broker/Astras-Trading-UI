@@ -1,0 +1,12 @@
+{
+  "dialogTitle": "Գործիքների ներմուծում",
+  "inputStringPlaceholder": "Մուտքագրեք տողը հետևյալ ձևաչափով՝ '[Exchange]:[Ticker1]:[Board1];[Exchange]:[Ticker2]:[Board2]';... կամ բեռնեք ֆայլը",
+  "parseBtnTooltip": "Կարդալ մուտքային տվյալները",
+  "uploadFileBtnTooltip": "Բեռնել ֆայլից",
+  "tickerColLabel": "Թիքեր",
+  "parseStatusColLabel": "Կարգավիճակ",
+  "parseStatus": {
+    "success": "Հաջողությամբ",
+    "notFound": "Չի գտնվել"
+  }
+}

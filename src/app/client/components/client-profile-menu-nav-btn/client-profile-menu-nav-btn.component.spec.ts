@@ -43,7 +43,7 @@ describe('ClientProfileMenuNavBtnComponent', () => {
         MockProvider(
           HelpService,
           {
-            getHelpLink: () => EMPTY
+            getSectionHelp: () => EMPTY
           }
         ),
         MockProvider(SESSION_CONTEXT),

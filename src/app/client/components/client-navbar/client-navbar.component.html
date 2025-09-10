@@ -1,4 +1,7 @@
 <ng-container *transloco="let t; scope: 'dashboard/navbar/common'">
+  @let terminalSettings = terminalSettings$ | async;
+  @let selectedDashboard = selectedDashboard$ | async;
+
   <ats-desktop-navbar
     joyrideStep="step10"
     [title]="t('joyride.step10.title')"
@@ -7,8 +10,8 @@
   >
     <div class="left-side-item">
       <ats-widgets-gallery-nav-btn
-        [atsDisabled]="(selectedDashboard$ | async ) == null"
-        [currentDashboardType]="(selectedDashboard$ | async )?.type ?? null"
+        [atsDisabled]="selectedDashboard == null"
+        [currentDashboardType]="selectedDashboard?.type ?? null"
         joyrideStep="step2"
         [title]="t('joyride.step2.title')"
         [text]="t('joyride.step2.text')"
@@ -17,7 +20,7 @@
 
     <div class="left-side-item">
       <ats-open-orders-dialog-nav-btn
-        [atsDisabled]="(selectedDashboard$ | async )?.selectedPortfolio == null"
+        [atsDisabled]="selectedDashboard?.selectedPortfolio == null"
         joyrideStep="step3"
         [title]="t('joyride.step3.title')"
         [text]="t('joyride.step3.text')"
@@ -41,6 +44,11 @@
       <ats-dashboards-panel></ats-dashboards-panel>
     </div>
 
+    @if(terminalSettings?.showCurrentTime ?? false) {
+      <div class="right-side-item">
+        <ats-current-time></ats-current-time>
+      </div>
+    }
 
     <div class="right-side-item">
       <ats-network-indicator></ats-network-indicator>

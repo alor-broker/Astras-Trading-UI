@@ -1,5 +1,6 @@
 import {
   Component,
+  DestroyRef,
   Inject,
   LOCALE_ID,
   OnInit
@@ -15,14 +16,16 @@ import { TranslocoDirective } from "@jsverse/transloco";
 import { InstrumentInfoBaseComponent } from "../../instrument-info-base/instrument-info-base.component";
 import {
   combineLatest,
+  defer,
   Observable,
   shareReplay,
   switchMap,
-  tap
+  tap,
+  timer
 } from "rxjs";
 import {
   Derivative,
-  Query
+  Query,
 } from "../../../../../../generated/graphql.types";
 import {
   Descriptor,
@@ -56,6 +59,9 @@ import {
   CurrencyPipe,
   formatNumber
 } from "@angular/common";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { mapWith } from "../../../../../shared/utils/observable-helper";
+import { REFRESH_TIMEOUT_MS } from "../../../constants/info.constants";
 
 type DerivativeResponse = Modify<
   Query,
@@ -85,14 +91,15 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<DerivativeResponse>> = object({
 export class DerivativeInfoComponent extends InstrumentInfoBaseComponent implements OnInit {
   info$!: Observable<Derivative | null>;
 
-  commonDescriptors$!: Observable<DescriptorsGroup[] | null>;
+  descriptors$!: Observable<DescriptorsGroup[] | null>;
 
   private readonly currencyPipe = new CurrencyPipe(this.locale);
 
   constructor(
     private readonly graphQlService: GraphQlService,
     private readonly translatorService: TranslatorService,
-    @Inject(LOCALE_ID) private readonly locale: string) {
+    @Inject(LOCALE_ID) private readonly locale: string,
+    private readonly destroyRef: DestroyRef) {
     super();
   }
 
@@ -102,8 +109,15 @@ export class DerivativeInfoComponent extends InstrumentInfoBaseComponent impleme
   }
 
   private initDataStream(): void {
+    const refreshTimer$ = defer(() => {
+      return timer(0, 3 * REFRESH_TIMEOUT_MS).pipe(
+        takeUntilDestroyed(this.destroyRef)
+      );
+    });
+
     this.info$ = this.targetInstrumentKey$.pipe(
       filter(i => i != null),
+      mapWith(() => refreshTimer$, (source,) => source),
       tap(() => this.setLoading(true)),
       switchMap(i => {
         return this.graphQlService.watchQueryForSchema<DerivativeResponse>(
@@ -124,7 +138,7 @@ export class DerivativeInfoComponent extends InstrumentInfoBaseComponent impleme
   }
 
   private initDescriptors(): void {
-    this.commonDescriptors$ = combineLatest({
+    this.descriptors$ = combineLatest({
       info: this.info$,
       translator: this.translatorService.getTranslator('info/descriptors-list')
     }).pipe(
@@ -139,8 +153,20 @@ export class DerivativeInfoComponent extends InstrumentInfoBaseComponent impleme
             items: this.getBasicInformationDescriptors(x.info)
           },
           {
-            title: x.translator(['groupTitles', 'tradingDetails']),
-            items: this.getTradingDetailsDescriptors(x.info)
+            title: x.translator(['groupTitles', 'currency']),
+            items: this.getCurrencyDescriptors(x.info)
+          },
+          {
+            title: x.translator(['groupTitles', 'tradingParameters']),
+            items: this.getTradingParametersDescriptors(x.info)
+          },
+          {
+            title: x.translator(['groupTitles', 'tradingData']),
+            items: this.getTradingDataDescriptors(x.info)
+          },
+          {
+            title: x.translator(['groupTitles', 'additional']),
+            items: this.getAdditionalInfoDescriptors(x.info)
           }
         ];
       })
@@ -151,6 +177,7 @@ export class DerivativeInfoComponent extends InstrumentInfoBaseComponent impleme
     const descriptors: Descriptor[] = [
       ...DescriptorFiller.basicInformation({
         basicInformation: derivative.basicInformation,
+        boardInformation: derivative.boardInformation,
         financialAttributes: derivative.financialAttributes,
         currencyInformation: derivative.currencyInformation
       }),
@@ -215,10 +242,28 @@ export class DerivativeInfoComponent extends InstrumentInfoBaseComponent impleme
     return descriptors;
   }
 
-  private getTradingDetailsDescriptors(derivative: Derivative): Descriptor[] {
-    return DescriptorFiller.tradingDetails({
+  private getCurrencyDescriptors(derivative: Derivative): Descriptor[] {
+    return DescriptorFiller.currencyInformation(derivative.currencyInformation);
+  }
+
+  private getTradingParametersDescriptors(derivative: Derivative): Descriptor[] {
+    return DescriptorFiller.tradingParameters({
       tradingDetails: derivative.tradingDetails,
       currencyInformation: derivative.currencyInformation,
+      locale: this.locale
+    });
+  }
+
+  private getTradingDataDescriptors(derivative: Derivative): Descriptor[] {
+    return DescriptorFiller.tradingData({
+      tradingDetails: derivative.tradingDetails,
+      locale: this.locale
+    });
+  }
+
+  private getAdditionalInfoDescriptors(derivative: Derivative): Descriptor[] {
+    return DescriptorFiller.additionalInformation({
+      additionalInfo: derivative.additionalInformation,
       locale: this.locale
     });
   }

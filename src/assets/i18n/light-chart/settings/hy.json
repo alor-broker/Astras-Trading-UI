@@ -1,0 +1,15 @@
+{
+  "tickerError": "Ընտրեք թիքերը",
+  "tickerLabel": "Թիքեր",
+  "exchangeLabel": "Բորսա",
+  "timeframeLabel": "Ընթացիկ ժամանակային միջակայք",
+  "availableTimeFramesLabel": "Ցուցադրվող ժամանակային միջակայքեր",
+  "timeframeDisplayLabel": "Ժամանակային միջակայքերի ցուցադրում",
+  "timeframeDisplayButtons": "Որպես կոճակներ",
+  "timeframeDisplayMenu": "Որպես ընտրացանկ",
+  "timeframeDisplayHide": "Չցուցադրել",
+  "advanced": "Ընդլայնված",
+  "instrumentGroupLabel": "Առևտրի ռեժիմ",
+  "instrumentGroupError": "Ընտրեք առևտրի ռեժիմ",
+  "selectTimeframesError": "Ընտրեք առնվազն մեկ ցուցադրվող ժամանակային միջակայք"
+}

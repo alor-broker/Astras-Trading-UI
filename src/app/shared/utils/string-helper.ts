@@ -14,4 +14,9 @@ export class StringHelper {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join('');
   }
+
+  static isNullOrEmpty(value: string | null | undefined): boolean {
+    return value == null
+      || value.length === 0;
+  }
 }

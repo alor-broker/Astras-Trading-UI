@@ -1,0 +1,64 @@
+{
+  "fields": {
+    "symbol": {
+      "text": "Թիքեր:"
+    },
+    "exchange": {
+      "text": "Բորսա:"
+    },
+    "volume": {
+      "text": "Ծավալ:"
+    },
+    "avgPrice": {
+      "text": "Միջին գին:"
+    },
+    "profit": {
+      "text": "Շահույթ:"
+    },
+    "dailyProfit": {
+      "text": "Օրվա շահույթ:"
+    },
+    "lastPrice": {
+      "text": "Վերջին գին:"
+    },
+    "lastUpdate": {
+      "text": "Թարմացման ժամանակ:"
+    },
+    "bidAsk": {
+      "text": "Պահանջարկ/Առաջարկ:"
+    },
+    "highLow": {
+      "text": "Առավ./Նվազագ.:"
+    },
+    "buyingPower": {
+      "text": "Գնողունակություն:"
+    },
+    "portfolioValue": {
+      "text": "Պորտֆելի արժեք:"
+    },
+    "initialMargin": {
+      "text": "Սկզբնական մարժա:"
+    },
+    "commission": {
+      "text": "Միջնորդավճար:"
+    },
+    "reportDate": {
+      "text": "Հաշվետվության ամսաթիվ:"
+    },
+    "reportComment": {
+      "text": "Մեկնաբանություն:"
+    },
+    "date": {
+      "text": "Ժամանակ:"
+    },
+    "qty": {
+      "text": "Քանակ:"
+    },
+    "price": {
+      "text": "Գին:"
+    },
+    "side": {
+      "text": "Կողմ:"
+    }
+  }
+}

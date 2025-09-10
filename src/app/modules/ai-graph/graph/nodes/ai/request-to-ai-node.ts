@@ -2,7 +2,10 @@
 import {map} from "rxjs/operators";
 import {NodeBase} from "../node-base";
 import {ExtendedEditors, SlotType} from "../../slot-types";
-import {NodeCategories} from "../node-categories";
+import {
+  NodeCategories,
+  NodeCategoryColors
+} from "../node-categories";
 import {GraphProcessingContextService} from "../../../services/graph-processing-context.service";
 import {INodeInputSlot} from "@comfyorg/litegraph";
 import {StringValueValidationOptions} from "../models";
@@ -14,6 +17,11 @@ export class RequestToAiNode extends NodeBase {
 
   constructor() {
     super(RequestToAiNode.title);
+    this.setColorOption({
+      color: NodeCategoryColors.ai.headerColor,
+      bgcolor: NodeCategoryColors.ai.bodyColor,
+      groupcolor: NodeCategoryColors.ai.headerColor
+    });
 
     this.addProperty(
       this.promptPropertyName,

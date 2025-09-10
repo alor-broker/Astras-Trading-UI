@@ -20,22 +20,27 @@
           @for (item of vm.displayPositions.items; track trackBy(item)) {
             <tr class="item" (click)="openChart(item)">
               <td class="text-start">
-                <div class="d-flex flex-column">
-                <span>
-                  <ats-truncated-text
-                    [maxLength]="20"
-                    [text]="item.targetInstrument.symbol"
-                    className="heading-color text-nowrap fs-6"
-                  ></ats-truncated-text>
-                  <span class="fs-11"> ({{ item.ownedPortfolio.portfolio }})</span>
-                </span>
-
-                  <span>
-                  <ats-truncated-text [maxLength]="30" [text]="item.shortName"
-                                      className="fs-10"></ats-truncated-text>
-                </span>
+                <div class="d-flex flex-row flex-nowrap flex-gap-5 align-items-center">
+                  <ats-instrument-icon [symbol]="item.targetInstrument.symbol" size="large"></ats-instrument-icon>
+                  <div class="d-flex flex-column">
+                    <span>
+                      <ats-truncated-text
+                        [maxLength]="20"
+                        [text]="item.targetInstrument.symbol"
+                        className="heading-color text-nowrap fs-6"
+                      ></ats-truncated-text>
+                      <span class="fs-11"> ({{ item.ownedPortfolio.portfolio }})</span>
+                    </span>
+                    @if (item.targetInstrument.symbol !== item.shortName) {
+                      <span>
+                        <ats-truncated-text
+                          [maxLength]="30"
+                          [text]="item.shortName"
+                          className="fs-10"></ats-truncated-text>
+                    </span>
+                    }
+                  </div>
                 </div>
-
               </td>
 
               <td class="text-start">
@@ -49,8 +54,8 @@
                   'negative-color': item.dailyUnrealisedPl < 0
                   }"
               >
-                @if(calculateDailyUnrealisedPlRatio(item); as dailyUnrealisedPlRatio) {
-                  @if(isFinite(dailyUnrealisedPlRatio)) {
+                @if (calculateDailyUnrealisedPlRatio(item); as dailyUnrealisedPlRatio) {
+                  @if (isFinite(dailyUnrealisedPlRatio)) {
                     {{ dailyUnrealisedPlRatio | percent: '1.1-2' }}
                   }
                 }

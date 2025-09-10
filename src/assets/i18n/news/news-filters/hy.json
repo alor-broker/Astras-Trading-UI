@@ -1,0 +1,11 @@
+{
+  "dialogTitle": "Նորությունների զտիչ",
+  "includedKeywordsHeader": "Հիմնաբառեր",
+  "excludedKeywordsHeader": "Բացառվող բառեր",
+  "symbolsHeader": "Թիքերներ",
+  "newKeywordPlaceholder": "Նոր հիմնաբառ",
+  "newExcludedKeywordsPlaceholder": "Նոր բացառվող բառ",
+  "newSymbolPlaceholder": "Նոր թիքեր",
+  "clear": "Մաքրել",
+  "apply": "Կիրառել"
+}

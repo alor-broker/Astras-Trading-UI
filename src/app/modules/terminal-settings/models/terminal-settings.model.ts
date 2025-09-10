@@ -15,8 +15,9 @@ export interface GeneralSettings {
   timezoneDisplayOption?: TimezoneDisplayOption;
   isLogoutOnUserIdle?: boolean;
   userIdleDurationMin?: number;
-  language?: 'en' | 'ru' | null;
+  language?: 'en' | 'ru' | 'hy' | null;
   badgesBind?: boolean;
   badgesColors?: string[];
   tableRowHeight?: TableRowHeight;
+  showCurrentTime?: boolean;
 }
