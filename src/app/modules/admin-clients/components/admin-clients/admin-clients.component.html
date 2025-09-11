@@ -1,1 +1,76 @@
-<ats-select-client-portfolio-btn></ats-select-client-portfolio-btn>
+<div
+  (nzResizeObserve)="containerSizeChanged($event)"
+  class="h-100"
+  nzResizeObserver
+>
+  <ng-container
+    *ngrxLet="{
+    contentSize: contentSize$,
+    tableConfig: tableConfig$,
+    tableData: tableData$,
+    valuesTranslator: valuesTranslator$,
+    page: page$
+    } as vm"
+  >
+    <nz-table
+      [nzData]="vm.tableData"
+      [nzFrontPagination]="false"
+      [nzTotal]="totalRecords()"
+      [nzShowPagination]="true"
+      [nzPageSizeOptions]="allPageSizes"
+      [nzShowSizeChanger]="true"
+      [nzLoading]="isLoading()"
+      nzTableLayout="fixed"
+      [nzScroll]="{ x: (vm.contentSize?.width ?? 0) - 5 + 'px', y: (vm.contentSize?.height ?? 0) - 5 + 'px' }"
+      atsTableRowHeight
+      (nzPageSizeChange)="changePageOptions({pageSize: $event})"
+      (nzPageIndexChange)="changePageOptions({page: $event})"
+      #table
+    >
+      <thead>
+        <tr (nzResizeObserve)="headerSizeChanged($event)"
+            nzResizeObserver
+            (cdkDropListDropped)="changeColumnOrder($event)"
+            cdkDropList
+            cdkDropListOrientation="horizontal">
+          @for(column of vm.tableConfig.columns; track column.id) {
+            <th
+              (atsWidthChanged)="saveColumnWidth({columnId: column.id, width: $event})"
+              [atsResizeColumn]
+              [minWidth]="column.minWidth ?? 50"
+              [nzWidth]="column.width ? column.width + 'px': null"
+              cdkDrag
+              cdkDragLockAxis="x"
+            >
+              <span
+                [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+                [nzTooltipTitle]="column.tooltip"
+                nz-tooltip
+              >
+                {{column.displayName}}
+              </span>
+            </th>
+          }
+        </tr>
+      </thead>
+
+      <tbody>
+        @for(item of table.data; track item) {
+          <tr>
+            @for(column of vm.tableConfig.columns; track column.id) {
+              <td>
+                <span>
+                  @if(column.translatedTransformFn != null) {
+                    {{column.translatedTransformFn(item, vm.valuesTranslator)}}
+                  } @else if (column.transformFn != null) {
+                    {{column.transformFn(item)}}
+                  }
+                </span>
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </ng-container>
+</div>

@@ -1,45 +1,40 @@
-import {
-  Component,
-  DestroyRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  signal
-} from '@angular/core';
-import { SelectClientPortfolioBtnComponent } from "../../../../admin/components/select-client-portfolio-btn/select-client-portfolio-btn.component";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { AdminClientsService } from "../../services/clients/admin-clients.service";
-import {
-  Client,
-  ClientsSearchFilter,
-  SpectraExtension
-} from "../../services/clients/admin-clients-service.models";
-import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
-import {
-  BehaviorSubject,
-  combineLatest,
-  Observable,
-  shareReplay,
-  switchMap,
-  tap,
-  timer
-} from "rxjs";
-import { TableConfig } from "../../../../shared/models/table-config.model";
-import { AdminClientsSettings, } from "../../models/admin-clients-settings.model";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
-import { map } from "rxjs/operators";
-import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {Component, DestroyRef, Inject, Input, LOCALE_ID, OnDestroy, OnInit, signal} from '@angular/core';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {AdminClientsService} from "../../services/clients/admin-clients.service";
+import {Client, ClientsSearchFilter, SpectraExtension} from "../../services/clients/admin-clients-service.models";
+import {BaseTableComponent} from "../../../../shared/components/base-table/base-table.component";
+import {BehaviorSubject, combineLatest, Observable, shareReplay, switchMap, take, tap, timer} from "rxjs";
+import {TableConfig} from "../../../../shared/models/table-config.model";
+import {AdminClientsSettings,} from "../../models/admin-clients-settings.model";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {map} from "rxjs/operators";
+import {TableSettingHelper} from "../../../../shared/utils/table-setting.helper";
+import {BaseColumnSettings} from "../../../../shared/models/settings/table-settings.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {NzTableCellDirective, NzTableComponent, NzThMeasureDirective, NzTrDirective} from "ng-zorro-antd/table";
+import {LetDirective} from "@ngrx/component";
+import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
+import {SharedModule} from "../../../../shared/shared.module";
+import {formatNumber} from "@angular/common";
+import {TableRowHeightDirective} from "../../../../shared/directives/table-row-height.directive";
 
-type ClientDisplay = Omit<Client, 'spectraExtension'> | SpectraExtension;
+type ClientDisplay = Omit<Client, 'spectraExtension'> & Partial<SpectraExtension>;
 
 @Component({
   selector: 'ats-admin-clients',
   standalone: true,
   imports: [
-    SelectClientPortfolioBtnComponent
+    NzResizeObserverDirective,
+    NzTableComponent,
+    LetDirective,
+    CdkDropList,
+    NzTrDirective,
+    NzTableCellDirective,
+    NzThMeasureDirective,
+    SharedModule,
+    CdkDrag,
+    TableRowHeightDirective
   ],
   templateUrl: './admin-clients.component.html',
   styleUrl: './admin-clients.component.less'
@@ -51,140 +46,179 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
   allColumns: BaseColumnSettings<ClientDisplay>[] = [
     {
       id: "login",
-      displayName: ""
+      displayName: "",
+      transformFn: data => data.login
     },
     {
       id: "clientName",
-      displayName: ""
+      displayName: "",
+      transformFn: data => data.clientName
     },
     {
       id: "portfolio",
-      displayName: ""
+      displayName: "",
+      transformFn: data => data.portfolio
     },
     {
       id: "market",
-      displayName: ""
+      displayName: "",
+      transformFn: data => data.market
     },
     {
       id: "clientRiskType",
-      displayName: ""
+      displayName: "",
+      transformFn: data => data.clientRiskType
     },
     {
       id: "isQualifiedInvestor",
-      displayName: ""
+      displayName: "",
+      translatedTransformFn: (data, translator) => data.isQualifiedInvestor ? translator(['yes']) : translator(['no'])
     },
     {
       id: "buyingPowerAtMorning",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.buyingPowerAtMorning)
     },
     {
       id: "buyingPower",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.buyingPower)
     },
     {
       id: "profit",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.profit)
     },
     {
       id: "profitRate",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.profitRate)
     },
     {
       id: "portfolioEvaluation",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.portfolioEvaluation)
     },
     {
       id: "portfolioLiquidationValue",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.portfolioLiquidationValue)
     },
     {
       id: "initialMargin",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.initialMargin)
     },
     {
       id: "minimalMargin",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.minimalMargin)
     },
     {
       id: "riskBeforeForcePositionClosing",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.riskBeforeForcePositionClosing)
     },
     {
       id: "commission",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.commission)
     },
     {
       id: "correctedMargin",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.correctedMargin)
     },
     {
       id: "turnover",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.turnover)
     },
     {
       id: "moneyFree",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.moneyFree)
     },
     {
       id: "moneyOld",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.moneyOld)
     },
     {
       id: "moneyBlocked",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.moneyBlocked)
     },
     {
       id: "isLimitsSet",
-      displayName: ""
+      displayName: "",
+      translatedTransformFn: (data, translator) => {
+        if (data.isLimitsSet != null) {
+          return data.isLimitsSet ? translator(['yes']) : translator(['no'])
+        }
+
+        return '';
+      }
     },
     {
       id: "moneyAmount",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.moneyAmount)
     },
     {
       id: "moneyPledgeAmount",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.moneyPledgeAmount)
     },
     {
       id: "vmCurrentPositions",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.vmCurrentPositions)
     },
     {
       id: "varMargin",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.varMargin)
     },
     {
       id: "netOptionValue",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.netOptionValue)
     },
     {
       id: "indicativeVarMargin",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.indicativeVarMargin)
     },
     {
       id: "fee",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.fee)
     },
     {
       id: "vmInterCl",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.vmInterCl)
     },
     {
       id: "posRisk",
-      displayName: ""
+      displayName: "",
+      transformFn: data => this.formatNumber(data.posRisk)
     }
   ];
 
-  protected readonly allPageSizes = [15, 25, 50, 100];
+  protected readonly allPageSizes = [10, 25, 50, 100, 200, 500];
 
   protected readonly page$ = new BehaviorSubject<{ page: number, pageSize: number }>({
-    page: 0,
+    page: 1,
     pageSize: this.allPageSizes[0]
   });
 
   protected readonly isLoading = signal(false);
   protected readonly totalRecords = signal(0);
-
+  protected readonly valuesTranslator$ = this.translatorService.getTranslator('admin-clients/admin-clients').pipe(
+    shareReplay(1)
+  );
   private settings$!: Observable<AdminClientsSettings>;
 
   constructor(
@@ -192,7 +226,8 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
     protected readonly destroyRef: DestroyRef,
     private readonly adminClientsService: AdminClientsService,
     private readonly translatorService: TranslatorService,
-    protected readonly widgetLocalStateService: WidgetLocalStateService,
+    @Inject(LOCALE_ID)
+    private readonly locale: string
   ) {
     super(settingsService, destroyRef);
   }
@@ -210,6 +245,14 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
     this.page$.complete();
   }
 
+  formatNumber(value: number | undefined): string {
+    if (value != null) {
+      return formatNumber(value, this.locale);
+    }
+
+    return '';
+  }
+
   protected initTableDataStream(): Observable<ClientDisplay[]> {
     const refresh$ = this.settings$.pipe(
       switchMap(settings => timer(0, settings.refreshIntervalSec * 1000)),
@@ -224,11 +267,31 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
     }).pipe(
       tap(() => {
         this.isLoading.set(true);
-        this.totalRecords.set(0);
       }),
       switchMap(x => {
-
+        return this.adminClientsService.searchClients(
+          null,
+          {
+            page: x.page.page,
+            pageSize: x.page.pageSize
+          },
+          null
+        )
       }),
+      map(result => {
+          if (result == null) {
+            this.totalRecords.set(0);
+            return [];
+          }
+
+          this.totalRecords.set(result.total);
+
+          return result.items.map(i => ({
+            ...i,
+            ...i.spectraExtension
+          }))
+        }
+      ),
       tap(() => {
         this.isLoading.set(false);
       }),
@@ -238,7 +301,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
   protected initTableConfigStream(): Observable<TableConfig<ClientDisplay>> {
     return combineLatest({
       settings: this.settings$,
-      translator: this.translatorService.getTranslator('admin-clients/admin-clients')
+      translator: this.valuesTranslator$
     })
       .pipe(
         map(x => {
@@ -259,5 +322,16 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
           };
         })
       );
+  }
+
+  protected changePageOptions(options: Partial<{ page: number, pageSize: number }>): void {
+    this.page$.pipe(
+      take(1)
+    ).subscribe(page => {
+      this.page$.next({
+        page: options.page ?? page.page,
+        pageSize: options.pageSize ?? page.pageSize
+      });
+    });
   }
 }
