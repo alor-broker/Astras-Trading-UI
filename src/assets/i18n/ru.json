@@ -83,6 +83,9 @@
     },
     "tableColumns": {
       "selectColumnLabel": "Колонки таблицы"
+    },
+    "refreshIntervalSec": {
+      "label": "Интервал обновления, сек."
     }
   },
 

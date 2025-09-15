@@ -13,6 +13,7 @@ export const AdminClientsTableColumns: BaseColumnId[] = [
   { id: "login", isDefault: true},
   { id: "clientName", isDefault: true},
   { id: "portfolio", isDefault: true},
+  { id: "exchange", isDefault: true},
   { id: "market", isDefault: true},
   { id: "clientRiskType", isDefault: false},
   { id: "isQualifiedInvestor", isDefault: false},

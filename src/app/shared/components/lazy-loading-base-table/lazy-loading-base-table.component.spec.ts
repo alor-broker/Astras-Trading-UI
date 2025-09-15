@@ -6,6 +6,7 @@ import { Observable, of } from "rxjs";
 import { TableConfig } from "../../models/table-config.model";
 import { WidgetSettingsService } from "../../services/widget-settings.service";
 import { By } from "@angular/platform-browser";
+import { BaseColumnSettings } from "../../models/settings/table-settings.model";
 
 @Component({
     selector: 'ats-test-comp',
@@ -13,6 +14,8 @@ import { By } from "@angular/platform-browser";
     standalone: false
 })
 class TestComponent extends LazyLoadingBaseTableComponent<any, any> {
+  protected allColumns: BaseColumnSettings<any>[] = [];
+
   protected initTableConfigStream(): Observable<TableConfig<any>> {
     return of({ columns: [] });
   }

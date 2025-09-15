@@ -1,23 +1,27 @@
-<ng-container *transloco="let t;">
-  <ats-widget-skeleton
-    *ngIf="settings$ | async as settings"
-    [content]="contentRef"
-    [header]="headerRef"
-    [isBlockWidget]="isBlockWidget"
-    [showContentScroll]="false"
-    [showSettings]="shouldShowSettings"
-  >
+<ats-widget-skeleton
+  *ngIf="settings$ | async as settings"
+  [content]="contentRef"
+  [header]="headerRef"
+  [isBlockWidget]="isBlockWidget"
+  [settings]="settingsRef"
+  [showContentScroll]="false"
+  [showSettings]="shouldShowSettings"
+>
 
-    <ng-template #headerRef>
-      <ats-widget-header
-        [guid]="guid"
-        [hasSettings]="false"
-        [widgetMeta]="widgetInstance.widgetMeta"
-      ></ats-widget-header>
-    </ng-template>
+  <ng-template #headerRef>
+    <ats-widget-header
+      [guid]="guid"
+      [hasSettings]="true"
+      [widgetMeta]="widgetInstance.widgetMeta"
+      (switchSettings)="onSettingsChange()"
+    ></ats-widget-header>
+  </ng-template>
 
-    <ng-template #contentRef>
-      <ats-admin-clients [guid]="guid"></ats-admin-clients>
-    </ng-template>
-  </ats-widget-skeleton>
-</ng-container>
+  <ng-template #contentRef>
+    <ats-admin-clients [guid]="guid"></ats-admin-clients>
+  </ng-template>
+
+  <ng-template #settingsRef>
+    <ats-admin-clients-settings (settingsChange)="onSettingsChange()" [guid]='guid'></ats-admin-clients-settings>
+  </ng-template>
+</ats-widget-skeleton>

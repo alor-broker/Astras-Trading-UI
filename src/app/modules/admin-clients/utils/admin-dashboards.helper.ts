@@ -1,14 +1,14 @@
-﻿import { ManageDashboardsService } from "../../shared/services/manage-dashboards.service";
-import { PortfolioKey } from "../../shared/models/portfolio-key.model";
-import {
+﻿import {
   combineLatest,
   take
 } from "rxjs";
+import { PortfolioKey } from "../../../shared/models/portfolio-key.model";
+import { ManageDashboardsService } from "../../../shared/services/manage-dashboards.service";
 import {
   AdminDashboardType,
   DefaultDesktopDashboardConfig
-} from "../../shared/models/dashboard/dashboard.model";
-import { GuidGenerator } from "../../shared/utils/guid";
+} from "../../../shared/models/dashboard/dashboard.model";
+import { GuidGenerator } from "../../../shared/utils/guid";
 
 export class AdminDashboardsHelper {
   static openDashboardForPortfolio(

@@ -1,4 +1,7 @@
-﻿import { Market } from "../../../../../generated/graphql.types";
+﻿import {
+  Exchange,
+  Market
+} from "../../../../../generated/graphql.types";
 import { ClientRiskType } from "../../../../shared/models/enums/client-risk-type";
 
 export interface PageFilter {
@@ -7,7 +10,7 @@ export interface PageFilter {
 }
 
 interface ClientFilterFields {
-  market: Market;
+  market: string;
   clientName: string;
   login: string;
   portfolio: string;
@@ -46,6 +49,7 @@ export interface Client {
   turnover: number;
   clientName: string;
   portfolio: string;
+  exchange: Exchange;
   login: string;
   isQualifiedInvestor: boolean;
   clientRiskType: ClientRiskType;

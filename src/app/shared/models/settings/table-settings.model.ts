@@ -1,6 +1,5 @@
 import { NzTableFilterList, NzTableSortFn, NzTableSortOrder } from "ng-zorro-antd/table";
 import { NzOptionComponent } from "ng-zorro-antd/select";
-import {TranslatorFn} from "../../services/translator.service";
 
 export interface BaseColumnId {
   id: string;
@@ -22,7 +21,6 @@ export interface BaseColumnSettings<T> extends Omit<BaseColumnId, 'isDefault'> {
   displayName: string;
   sourceField?: string;
   transformFn?: (data: T) => string | null;
-  translatedTransformFn?: (data: T, translator: TranslatorFn) => string;
   classFn?: (data: T) => string | null;
   width?: number | null;
   filterData?: FilterData;

@@ -79,6 +79,9 @@
     },
     "tableColumns": {
       "selectColumnLabel": "Աղյուսակի սյունակները"
+    },
+    "refreshIntervalSec": {
+      "label": "Թարմացման միջակայք, վրկ."
     }
   },
   "validationErrors": {

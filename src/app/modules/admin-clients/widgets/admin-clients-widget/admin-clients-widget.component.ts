@@ -11,19 +11,19 @@ import {
   AdminClientsSettings,
   AdminClientsTableColumns
 } from "../../models/admin-clients-settings.model";
-import { TranslocoDirective } from "@jsverse/transloco";
 import { SharedModule } from "../../../../shared/shared.module";
 import { AdminClientsComponent } from "../../components/admin-clients/admin-clients.component";
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
+import { AdminClientsSettingsComponent } from "../../components/admin-clients-settings/admin-clients-settings.component";
 
 @Component({
   selector: 'ats-admin-clients-widget',
   standalone: true,
   imports: [
-    TranslocoDirective,
     SharedModule,
-    AdminClientsComponent
+    AdminClientsComponent,
+    AdminClientsSettingsComponent
   ],
   templateUrl: './admin-clients-widget.component.html',
   styleUrl: './admin-clients-widget.component.less'

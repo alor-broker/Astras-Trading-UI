@@ -128,5 +128,9 @@
       "displayName": "Oper. risk",
       "tooltip": "Oper. risk"
     }
+  },
+
+  "contextMenu": {
+    "openDashboard": "Open dashboard"
   }
 }

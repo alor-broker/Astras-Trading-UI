@@ -128,5 +128,9 @@
       "displayName": "Опер. риск",
       "tooltip": "Текущий оперативный риск"
     }
+  },
+
+  "contextMenu": {
+    "openDashboard": "Открыть дашборд"
   }
 }

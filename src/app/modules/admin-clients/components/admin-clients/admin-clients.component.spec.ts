@@ -1,8 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { AdminClientsComponent } from './admin-clients.component';
-import { MockComponents } from "ng-mocks";
-import { SelectClientPortfolioBtnComponent } from "../../../../admin/components/select-client-portfolio-btn/select-client-portfolio-btn.component";
+import { MockProvider } from "ng-mocks";
+import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import { EMPTY } from "rxjs";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { AdminClientsService } from "../../services/clients/admin-clients.service";
+import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
+import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 
 describe('AdminClientsComponent', () => {
   let component: AdminClientsComponent;
@@ -12,12 +20,26 @@ describe('AdminClientsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         AdminClientsComponent,
-        MockComponents(
-          SelectClientPortfolioBtnComponent
-        )
+        TranslocoTestsModule.getModule()
       ],
+      providers: [
+        MockProvider(
+          WidgetSettingsService,
+          {
+            getSettings: () => EMPTY
+          }
+        ),
+        MockProvider(AdminClientsService),
+        MockProvider(
+          WidgetLocalStateService,
+          {
+            getStateRecord: () => EMPTY
+          }
+        ),
+        MockProvider(ManageDashboardsService)
+      ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(AdminClientsComponent);
     component = fixture.componentInstance;
