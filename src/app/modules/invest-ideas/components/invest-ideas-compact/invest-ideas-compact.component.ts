@@ -2,7 +2,8 @@ import {
   Component,
   DestroyRef,
   model,
-  OnInit
+  OnInit,
+  signal
 } from '@angular/core';
 import { LetDirective } from "@ngrx/component";
 import {
@@ -13,104 +14,95 @@ import { NzEmptyComponent } from "ng-zorro-antd/empty";
 import { NzSkeletonComponent } from "ng-zorro-antd/skeleton";
 import { NzTypographyComponent } from "ng-zorro-antd/typography";
 import {
-  BehaviorSubject,
   fromEvent,
-  Observable
+  Observable,
+  switchMap,
+  timer
 } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { Section } from "../../models/ideas-typings.model";
-import { IdeasSectionDetailsComponent } from "../ideas-section-details/ideas-section-details.component";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
+import { Idea } from "../../services/invest-ideas-service-typings";
+import { TranslatorService } from "../../../../shared/services/translator.service";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { InvestIdeasService } from "../../services/invest-ideas.service";
+import { Instrument } from "../../../../shared/models/instruments/instrument.model";
+import { IdeaDetailsComponent } from "../idea-details/idea-details.component";
+import { AsyncPipe } from "@angular/common";
+import { map } from "rxjs/operators";
+
+interface IdeaDisplay extends Idea {
+  instruments: Observable<Instrument | null>[];
+}
 
 @Component({
   selector: 'ats-invest-ideas-compact',
   imports: [
-    IdeasSectionDetailsComponent,
     InstrumentIconComponent,
     LetDirective,
     NzCarouselComponent,
     NzCarouselContentDirective,
     NzEmptyComponent,
     NzSkeletonComponent,
-    NzTypographyComponent
+    NzTypographyComponent,
+    IdeaDetailsComponent,
+    AsyncPipe
   ],
   templateUrl: './invest-ideas-compact.component.html',
   styleUrl: './invest-ideas-compact.component.less'
 })
 export class InvestIdeasCompactComponent implements OnInit {
-  sections$!: Observable<Section[]>;
+  ideas$!: Observable<IdeaDisplay[]>;
 
-  protected selectedSection = model<Section | null>(null);
+  protected selectedIdea = model<Idea | null>(null);
 
-  constructor(private readonly destroyRef: DestroyRef) {
+  protected isLoading = signal<boolean>(false);
+
+  private readonly refreshInterval = 600_000;
+
+  constructor(
+    private readonly investIdeasService: InvestIdeasService,
+    private readonly translatorService: TranslatorService,
+    private readonly instrumentsService: InstrumentsService,
+    private readonly destroyRef: DestroyRef) {
   }
 
   ngOnInit(): void {
     fromEvent(window, 'popstate').pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
-      this.selectedSection.set(null);
+      this.selectedIdea.set(null);
     });
 
-    this.sections$ = new BehaviorSubject<Section[]>([
-      {
-        title: "Искусственный интеллект",
-        description: "Финансовые институты ищут способы автоматизировать рутинные процессы и улучшить качество кредитного скоринга, особенно для клиентов с ограниченной кредитной историей. Инвестиции в компанию, создающую ИИ-решение для автоматической обработки кредитных заявок и альтернативного скоринга на основе анализа больших нетрадиционных данных, открывают доступ к большому и недостаточно охваченному рынку. Ключевым преимуществом является способность алгоритма снижать риски и операционные издержки при одновременном увеличении одобренных кредитов для надежных заемщиков.",
-        ideas: [
-          {
-            instrumentKey: {
-              symbol: "SBER",
-              exchange: "MOEX"
-            },
-            shortName: "Сбербанк"
-          },
-          {
-            instrumentKey: {
-              symbol: "YNDX",
-              exchange: "MOEX"
-            },
-            shortName: "Yandex clA"
-          },
-          {
-            instrumentKey: {
-              symbol: "MTSS",
-              exchange: "MOEX"
-            },
-            shortName: "МТС-ао"
-          },
-          {
-            instrumentKey: {
-              symbol: "RTKM",
-              exchange: "MOEX"
-            },
-            shortName: "Ростел -ао"
-          },
-        ]
-      },
-      {
-        title: "Нефть и газ",
-        description: "Поиск новых, экономически рентабельных месторождений углеводородов становится все сложнее и дороже, требуя анализа огромных объемов геолого-геофизических данных. Инвестиции в компанию, разрабатывающую платформу на основе ИИ и машинного обучения для интерпретации сейсмических данных и прогнозирования потенциала месторождений, позволят значительно повысить точность и скорость разведки. Ключевое преимущество технологии — существенное снижение рисков сухих скважин и оптимизация затрат на геологоразведку, что напрямую влияет на будущую прибыльность проектов.",
-        ideas: [
-          {
-            instrumentKey: {
-              symbol: "NVTK",
-              exchange: "MOEX"
-            },
-            shortName: "Новатэк ао"
-          },
-          {
-            instrumentKey: {
-              symbol: "ROSN",
-              exchange: "MOEX"
-            },
-            shortName: "Роснефть"
+    this.ideas$ = timer(0, this.refreshInterval).pipe(
+      switchMap(() => this.investIdeasService.getIdeas(
+        {
+          pageNum: 1,
+          pageSize: 20,
+        },
+        this.translatorService.getActiveLang()
+      )),
+      map(r => {
+        if (r == null) {
+          return [];
+        }
+
+        return r.list.map(i => {
+            return {
+              title: i.title,
+              body: i.body,
+              symbols: i.symbols,
+              instruments: i.symbols.map(s => this.instrumentsService.getInstrument({
+                symbol: s.ticker,
+                exchange: s.exchange
+              }))
+            };
           }
-        ]
-      }
-    ]);
+        );
+      })
+    );
   }
 
-  openSection(section: Section): void {
-    this.selectedSection.set(section);
+  openIdea(idea: Idea): void {
+    this.selectedIdea.set(idea);
   }
 }

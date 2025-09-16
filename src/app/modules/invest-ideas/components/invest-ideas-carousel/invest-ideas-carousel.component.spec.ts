@@ -8,6 +8,9 @@ import {
 import { HistoryService } from "../../../../shared/services/history.service";
 import { EMPTY } from "rxjs";
 import { NzModalComponent } from "ng-zorro-antd/modal";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { InvestIdeasService } from "../../services/invest-ideas.service";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('InvestIdeasCarouselComponent', () => {
   let component: InvestIdeasCarouselComponent;
@@ -17,7 +20,8 @@ describe('InvestIdeasCarouselComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         InvestIdeasCarouselComponent,
-        MockComponent(NzModalComponent)
+        MockComponent(NzModalComponent),
+        TranslocoTestsModule.getModule()
       ],
       providers: [
         MockProvider(
@@ -25,7 +29,14 @@ describe('InvestIdeasCarouselComponent', () => {
           {
             getLastTwoCandles: () => EMPTY
           }
-        )
+        ),
+        MockProvider(
+          InvestIdeasService,
+          {
+            getIdeas: () => EMPTY
+          }
+        ),
+        MockProvider(InstrumentsService)
       ]
     })
     .compileComponents();

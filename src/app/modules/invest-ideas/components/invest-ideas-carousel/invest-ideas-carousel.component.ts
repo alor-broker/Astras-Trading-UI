@@ -5,16 +5,11 @@ import {
   output
 } from '@angular/core';
 import {
-  BehaviorSubject,
   filter,
   Observable,
   switchMap,
   timer
 } from "rxjs";
-import {
-  Idea,
-  Section
-} from "../../models/ideas-typings.model";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
 import { LetDirective } from "@ngrx/component";
 import {
@@ -29,24 +24,34 @@ import { InstrumentKey } from "../../../../shared/models/instruments/instrument-
 import { map } from "rxjs/operators";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MathHelper } from "../../../../shared/utils/math-helper";
-import { NgClass } from "@angular/common";
+import {
+  AsyncPipe,
+  NgClass
+} from "@angular/common";
 import {
   NzModalComponent,
   NzModalContentDirective
 } from "ng-zorro-antd/modal";
 import { NzIconDirective } from "ng-zorro-antd/icon";
+import { InvestIdeasService } from "../../services/invest-ideas.service";
+import { TranslatorService } from "../../../../shared/services/translator.service";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { Instrument } from "../../../../shared/models/instruments/instrument.model";
 
 interface InstrumentPrice {
   lastPrice: number;
   dayChangePercent: number;
 }
 
-interface IdeaDisplay extends Idea {
+interface InstrumentDisplay {
+  instrument$: Observable<Instrument | null>;
   priceInfo$: Observable<InstrumentPrice>;
 }
 
-interface SectionDisplay extends Section {
-  ideas: IdeaDisplay[];
+interface IdeaDisplay {
+  title: string;
+  body: string;
+  instruments: InstrumentDisplay[];
 }
 
 @Component({
@@ -62,90 +67,64 @@ interface SectionDisplay extends Section {
     NgClass,
     NzModalComponent,
     NzModalContentDirective,
-    NzIconDirective
+    NzIconDirective,
+    AsyncPipe
   ],
   templateUrl: './invest-ideas-carousel.component.html',
   styleUrl: './invest-ideas-carousel.component.less'
 })
 export class InvestIdeasCarouselComponent implements OnInit {
-  protected selectedSection: SectionDisplay | null = null;
-  sections$!: Observable<SectionDisplay[]>;
+  ideas$!: Observable<IdeaDisplay[]>;
 
   instrumentSelected = output<InstrumentKey>();
 
+  protected selectedIdea: IdeaDisplay | null = null;
+
+  private readonly refreshInterval = 600_000;
+
   constructor(
+    private readonly investIdeasService: InvestIdeasService,
     private readonly historyService: HistoryService,
+    private readonly translatorService: TranslatorService,
+    private readonly instrumentsService: InstrumentsService,
     private readonly destroyRef: DestroyRef
   ) {
   }
 
   ngOnInit(): void {
-    this.sections$ = new BehaviorSubject<SectionDisplay[]>([
-      {
-        title: "Искусственный интеллект",
-        description: "Финансовые институты ищут способы автоматизировать рутинные процессы и улучшить качество кредитного скоринга, особенно для клиентов с ограниченной кредитной историей. Инвестиции в компанию, создающую ИИ-решение для автоматической обработки кредитных заявок и альтернативного скоринга на основе анализа больших нетрадиционных данных, открывают доступ к большому и недостаточно охваченному рынку. Ключевым преимуществом является способность алгоритма снижать риски и операционные издержки при одновременном увеличении одобренных кредитов для надежных заемщиков.",
-        ideas: [
-          {
-            instrumentKey: {
-              symbol: "SBER",
-              exchange: "MOEX"
-            },
-            shortName: "Сбербанк",
-            priceInfo$: this.getPriceInfo({symbol: "SBER", exchange: "MOEX"})
-          },
-          {
-            instrumentKey: {
-              symbol: "YNDX",
-              exchange: "MOEX"
-            },
-            shortName: "Yandex clA",
-            priceInfo$: this.getPriceInfo({symbol: "YNDX", exchange: "MOEX"})
-          },
-          {
-            instrumentKey: {
-              symbol: "MTSS",
-              exchange: "MOEX"
-            },
-            shortName: "МТС-ао",
-            priceInfo$: this.getPriceInfo({symbol: "MTSS", exchange: "MOEX"})
-          },
-          {
-            instrumentKey: {
-              symbol: "RTKM",
-              exchange: "MOEX"
-            },
-            shortName: "Ростел -ао",
-            priceInfo$: this.getPriceInfo({symbol: "RTKM", exchange: "MOEX"})
-          },
-        ]
-      },
-      {
-        title: "Нефть и газ",
-        description: "Поиск новых, экономически рентабельных месторождений углеводородов становится все сложнее и дороже, требуя анализа огромных объемов геолого-геофизических данных. Инвестиции в компанию, разрабатывающую платформу на основе ИИ и машинного обучения для интерпретации сейсмических данных и прогнозирования потенциала месторождений, позволят значительно повысить точность и скорость разведки. Ключевое преимущество технологии — существенное снижение рисков сухих скважин и оптимизация затрат на геологоразведку, что напрямую влияет на будущую прибыльность проектов.",
-        ideas: [
-          {
-            instrumentKey: {
-              symbol: "NVTK",
-              exchange: "MOEX"
-            },
-            shortName: "Новатэк ао",
-            priceInfo$: this.getPriceInfo({symbol: "NVTK", exchange: "MOEX"})
-          },
-          {
-            instrumentKey: {
-              symbol: "ROSN",
-              exchange: "MOEX"
-            },
-            shortName: "Роснефть",
-            priceInfo$: this.getPriceInfo({symbol: "ROSN", exchange: "MOEX"})
+    this.ideas$ = timer(0, this.refreshInterval).pipe(
+      switchMap(() => this.investIdeasService.getIdeas(
+        {
+          pageNum: 1,
+          pageSize: 20,
+        },
+        this.translatorService.getActiveLang()
+      )),
+      map(r => {
+        if (r == null) {
+          return [];
+        }
+
+        return r.list.map(i => {
+            return {
+              title: i.title,
+              body: i.body,
+              instruments: i.symbols.map(symbol => {
+                const instrumentKey: InstrumentKey = {symbol: symbol.ticker, exchange: symbol.exchange};
+                return {
+                  instrument$: this.instrumentsService.getInstrument(instrumentKey),
+                  priceInfo$: this.getPriceInfo(instrumentKey)
+                };
+              })
+            };
           }
-        ]
-      }
-    ]);
+        );
+      })
+    );
   }
 
   private getPriceInfo(instrumentKey: InstrumentKey): Observable<InstrumentPrice> {
-    return timer(0, 10_000).pipe(
+    return timer(0, 60_000).pipe(
       switchMap(() => this.historyService.getLastTwoCandles(instrumentKey)),
       map(r => {
         if (r == null || (r.cur == null && r.prev == null)) {

@@ -3,37 +3,35 @@ import {
   computed,
   DestroyRef,
   model,
-  OnDestroy,
-  ViewEncapsulation
+  OnDestroy
 } from '@angular/core';
+import {
+  AsyncPipe,
+  NgClass
+} from "@angular/common";
+import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
+import { LetDirective } from "@ngrx/component";
+import { NzIconDirective } from "ng-zorro-antd/icon";
 import { NzModalComponent } from "ng-zorro-antd/modal";
 import { NzTypographyComponent } from "ng-zorro-antd/typography";
+import {
+  Idea,
+  IdeaSymbol
+} from "../../services/invest-ideas-service-typings";
 import {
   BehaviorSubject,
   Observable,
   switchMap,
   timer
 } from "rxjs";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { map } from "rxjs/operators";
-import { LetDirective } from "@ngrx/component";
-import {
-  AsyncPipe,
-  NgClass
-} from "@angular/common";
-import { NzIconDirective } from "ng-zorro-antd/icon";
-import { SubmitOrderForIdeaComponent } from "../submit-order-for-idea/submit-order-for-idea.component";
-import {
-  Idea,
-  Section
-} from "../../models/ideas-typings.model";
-import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
-import { OrderCommandsModule } from "../../../order-commands/order-commands.module";
-import { InstrumentEqualityComparer } from "../../../../shared/utils/instruments";
 import { ArrayHelper } from "../../../../shared/utils/array-helper";
 import { HistoryService } from "../../../../shared/services/history.service";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { map } from "rxjs/operators";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MathHelper } from "../../../../shared/utils/math-helper";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { SubmitOrderForSymbolComponent } from "../submit-order-for-symbol/submit-order-for-symbol.component";
 
 interface InstrumentPrice {
   lastPrice: number;
@@ -41,58 +39,61 @@ interface InstrumentPrice {
 }
 
 @Component({
-  selector: 'ats-ideas-section-details',
+  selector: 'ats-idea-details',
   imports: [
-    NzModalComponent,
+    AsyncPipe,
     InstrumentIconComponent,
-    NzTypographyComponent,
     LetDirective,
-    NgClass,
     NzIconDirective,
-    OrderCommandsModule,
-    SubmitOrderForIdeaComponent,
-    AsyncPipe
+    NzModalComponent,
+    NzTypographyComponent,
+    NgClass,
+    SubmitOrderForSymbolComponent
   ],
-  templateUrl: './ideas-section-details.component.html',
-  styleUrl: './ideas-section-details.component.less',
-  encapsulation: ViewEncapsulation.None
+  templateUrl: './idea-details.component.html',
+  styleUrl: './idea-details.component.less'
 })
-export class IdeasSectionDetailsComponent implements OnDestroy {
-  readonly displaySection = model<Section | null>(null);
+export class IdeaDetailsComponent implements OnDestroy {
+  readonly displayIdea = model<Idea | null>(null);
 
-  readonly selectedIdea$ = new BehaviorSubject<Idea | null>(null);
+  readonly selectedTicker$ = new BehaviorSubject<IdeaSymbol | null>(null);
 
   readonly sectionItems = computed(() => {
-    const section = this.displaySection();
-    if (section == null) {
+    const idea = this.displayIdea();
+    if (idea == null) {
       return [];
     }
 
-    this.selectedIdea$.next(ArrayHelper.firstOrNull(section.ideas));
-    return section.ideas.map(i => ({
+    this.selectedTicker$.next(ArrayHelper.firstOrNull(idea.symbols));
+    return idea.symbols.map(i => ({
       ...i,
-      priceInfo$: this.getPriceInfo(i.instrumentKey)
+      instrument$: this.instrumentsService.getInstrument({symbol: i.ticker, exchange: i.exchange}),
+      priceInfo$: this.getPriceInfo({symbol: i.ticker, exchange: i.exchange})
     }));
   });
 
-  readonly isInstrumentsEquals = InstrumentEqualityComparer.equals;
-
   constructor(
     private readonly historyService: HistoryService,
+    private readonly instrumentsService: InstrumentsService,
     private readonly destroyRef: DestroyRef
   ) {
   }
 
+  isTickerEquals(a: IdeaSymbol | null, b: IdeaSymbol | null): boolean {
+    return a?.ticker === b?.ticker
+      && a?.exchange === b?.exchange;
+  };
+
   ngOnDestroy(): void {
-    this.selectedIdea$.complete();
+    this.selectedTicker$.complete();
   }
 
   protected close(): void {
-    this.displaySection.set(null);
+    this.displayIdea.set(null);
   }
 
   private getPriceInfo(instrumentKey: InstrumentKey): Observable<InstrumentPrice | null> {
-    return timer(0, 10_000).pipe(
+    return timer(0, 30_000).pipe(
       switchMap(() => this.historyService.getLastTwoCandles(instrumentKey)),
       map(r => {
         if (r == null || (r.cur == null && r.prev == null)) {

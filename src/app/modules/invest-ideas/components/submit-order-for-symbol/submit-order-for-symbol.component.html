@@ -1,9 +1,9 @@
-<ng-container *transloco="let t; scope: 'mobile-home-screen/submit-order-for-idea'">
+<ng-container *transloco="let t; scope: 'invest-ideas/submit-order-for-symbol'">
   @let targetInstrument = targetInstrument$ | async;
   @let selectedPortfolio = this.selectedPortfolio$ | async;
 
   @if (targetInstrument != null && selectedPortfolio != null) {
-    <span class="fs-5 heading-color">{{ t('mobileHomeScreenSubmitOrderForIdea.title') }}
+    <span class="fs-5 heading-color">{{ t('investIdeaSubmitOrderForSymbol.title') }}
       {{ targetInstrument.symbol }}
       @if (targetInstrument.instrumentGroup != null && targetInstrument.instrumentGroup.length > 0) {
         ({{ targetInstrument.instrumentGroup }})

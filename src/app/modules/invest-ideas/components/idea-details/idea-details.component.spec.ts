@@ -1,22 +1,23 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { IdeasSectionDetailsComponent } from './ideas-section-details.component';
+import { IdeaDetailsComponent } from './idea-details.component';
 import {
   MockComponent,
   MockProvider
 } from "ng-mocks";
-import { EMPTY } from "rxjs";
 import { NzModalComponent } from "ng-zorro-antd/modal";
 import { HistoryService } from "../../../../shared/services/history.service";
+import { EMPTY } from "rxjs";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
 
-describe('IdeasSectionDetailsComponent', () => {
-  let component: IdeasSectionDetailsComponent;
-  let fixture: ComponentFixture<IdeasSectionDetailsComponent>;
+describe('IdeaDetailsComponent', () => {
+  let component: IdeaDetailsComponent;
+  let fixture: ComponentFixture<IdeaDetailsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        IdeasSectionDetailsComponent,
+        IdeaDetailsComponent,
         MockComponent(NzModalComponent)
       ],
       providers: [
@@ -25,12 +26,13 @@ describe('IdeasSectionDetailsComponent', () => {
           {
             getLastTwoCandles: () => EMPTY
           }
-        )
+        ),
+        MockProvider(InstrumentsService)
       ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(IdeasSectionDetailsComponent);
+    fixture = TestBed.createComponent(IdeaDetailsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

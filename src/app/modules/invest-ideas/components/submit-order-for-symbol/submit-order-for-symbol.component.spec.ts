@@ -1,30 +1,33 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
-import { SubmitOrderForIdeaComponent } from './submit-order-for-idea.component';
+import { SubmitOrderForSymbolComponent } from './submit-order-for-symbol.component';
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import {
   MockComponents,
   MockProvider
 } from "ng-mocks";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { CompactHeaderComponent } from "../../../order-commands/components/compact-header/compact-header.component";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { EMPTY } from "rxjs";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 
-describe('SubmitOrderForIdeaComponent', () => {
-  let component: SubmitOrderForIdeaComponent;
-  let fixture: ComponentFixture<SubmitOrderForIdeaComponent>;
+describe('SubmitOrderForSymbolComponent', () => {
+  let component: SubmitOrderForSymbolComponent;
+  let fixture: ComponentFixture<SubmitOrderForSymbolComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        SubmitOrderForIdeaComponent,
+        SubmitOrderForSymbolComponent,
         TranslocoTestsModule.getModule(),
         MockComponents(
           CompactHeaderComponent
         )
       ],
-      providers:[
+      providers: [
         MockProvider(
           DashboardContextService,
           {
@@ -39,9 +42,9 @@ describe('SubmitOrderForIdeaComponent', () => {
         )
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
-    fixture = TestBed.createComponent(SubmitOrderForIdeaComponent);
+    fixture = TestBed.createComponent(SubmitOrderForSymbolComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

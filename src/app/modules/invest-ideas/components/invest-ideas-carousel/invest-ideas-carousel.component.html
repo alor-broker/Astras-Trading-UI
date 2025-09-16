@@ -1,12 +1,12 @@
-<div *ngrxLet="sections$ as sections; suspenseTpl: loading" class="h-100 position-relative">
-  @if (sections.length > 0) {
+<div *ngrxLet="ideas$ as ideas; suspenseTpl: loading" class="h-100 position-relative">
+  @if (ideas.length > 0) {
 
-    @if(sections.length > 1) {
+    @if (ideas.length > 1) {
       <span class="nav-buttons left" (click)="carousel.pre()">
-        <nz-icon nzType="left" nzTheme="outline" />
+        <nz-icon nzType="left" nzTheme="outline"/>
       </span>
       <span class="nav-buttons right" (click)="carousel.next()">
-        <nz-icon nzType="right" nzTheme="outline" />
+        <nz-icon nzType="right" nzTheme="outline"/>
       </span>
     }
 
@@ -17,69 +17,71 @@
       [nzEffect]="'fade'"
       #carousel
     >
-      @for (section of sections; track section) {
+      @for (idea of ideas; track idea) {
         <div nz-carousel-content>
           <div class="section mt-10">
             <div class="d-flex flex-column h-100">
               <div class="mb-10">
-                <span nz-typography nzEllipsis class="fs-6 heading-color">{{ section.title }}</span>
+                <span nz-typography nzEllipsis class="fs-6 heading-color">{{ idea.title }}</span>
               </div>
               <div>
                 <p
                   nz-typography
                   nzEllipsis
                   [nzEllipsisRows]="3"
-                  (click)="selectedSection = section"
+                  (click)="selectedIdea = idea"
                   class="cursor-pointer user-select-none"
                 >
-                  {{ section.description }}
+                  {{ idea.body }}
                 </p>
 
                 <nz-modal
-                  [nzTitle]="section.title"
-                  [nzVisible]="section === selectedSection"
+                  [nzTitle]="idea.title"
+                  [nzVisible]="idea === selectedIdea"
                   [nzCancelText]="null"
-                  (nzOnCancel)="selectedSection = null"
-                  (nzOnOk)="selectedSection = null"
+                  (nzOnCancel)="selectedIdea = null"
+                  (nzOnOk)="selectedIdea = null"
                   [nzDraggable]="true"
                 >
                   <ng-container *nzModalContent>
-                    <p>{{ section.description }}</p>
+                    <p>{{ idea.body }}</p>
                   </ng-container>
                 </nz-modal>
               </div>
 
               <div class="flex-fill d-flex flex-column flex-gap-10 show-scroll px-10">
-                @for (idea of section.ideas; track idea) {
-                  <div
-                    class="idea p-5 cursor-pointer"
-                    (click)="instrumentSelected.emit(idea.instrumentKey)"
-                  >
-                    <div class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5">
-                      <ats-instrument-icon [symbol]="idea.instrumentKey.symbol" size="large"></ats-instrument-icon>
-                      <div class="d-flex flex-column">
-                        <span nz-typography nzEllipsis class="heading-color">{{ idea.shortName }}</span>
-                        <span nz-typography nzEllipsis>{{ idea.instrumentKey.symbol }}</span>
+                @for (instrument of idea.instruments; track instrument) {
+                  @if (instrument.instrument$ | async; as instrumentInfo) {
+                    <div
+                      class="idea p-5 cursor-pointer"
+                      (click)="instrumentSelected.emit(instrumentInfo)"
+                    >
+                      <div class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5">
+                        <ats-instrument-icon [symbol]="instrumentInfo.symbol" size="large"></ats-instrument-icon>
+                        <div class="d-flex flex-column">
+                          <span nz-typography nzEllipsis class="heading-color">{{ instrumentInfo.shortName }}</span>
+                          <span nz-typography nzEllipsis>{{ instrumentInfo.symbol }}</span>
+                        </div>
                       </div>
-                    </div>
 
-                    <div class="d-flex flex-column align-items-end" *ngrxLet="idea.priceInfo$ as priceInfo">
-                      @if (priceInfo != null) {
-                        <span class="heading-color">{{ priceInfo.lastPrice }}</span>
-                        <span
-                          [ngClass]="{
+                      <div class="d-flex flex-column align-items-end" *ngrxLet="instrument.priceInfo$ as priceInfo">
+                        @if (priceInfo != null) {
+                          <span class="heading-color">{{ priceInfo.lastPrice }}</span>
+                          <span
+                            [ngClass]="{
                           'positive-color': priceInfo.dayChangePercent >= 0,
                           'negative-color': priceInfo.dayChangePercent < 0
                           }"
-                        >
+                          >
                         @if (priceInfo.dayChangePercent > 0) {
                           <span>+</span>
                         }
-                          <span>{{ priceInfo.dayChangePercent }}%</span>
+                            <span>{{ priceInfo.dayChangePercent }}%</span>
                         </span>
-                      }
+                        }
+                      </div>
                     </div>
-                  </div>
+                  }
                 }
               </div>
             </div>

@@ -1,23 +1,25 @@
-<div *ngrxLet="sections$ as sections; suspenseTpl: loading">
-  @if (sections.length > 0) {
+<div *ngrxLet="ideas$ as ideas; suspenseTpl: loading">
+  @if (ideas.length > 0) {
     <nz-carousel [nzDots]="true">
-      @for (section of sections; track section) {
+      @for (idea of ideas; track idea) {
         <div nz-carousel-content class="p-5">
-          <div class="section" (click)="openSection(section)">
+          <div class="idea" (click)="openIdea(idea)">
             <div class="mb-10">
-              <span nz-typography nzEllipsis class="fs-6 heading-color">{{ section.title }}</span>
+              <span nz-typography nzEllipsis class="fs-6 heading-color">{{ idea.title }}</span>
             </div>
             <div>
-              <p nz-typography nzEllipsis [nzEllipsisRows]="3">{{ section.description }}</p>
+              <p nz-typography nzEllipsis [nzEllipsisRows]="3">{{ idea.body }}</p>
             </div>
             <div class="d-flex flex-row flex-nowrap justify-content-start flex-gap-10">
-              @for (idea of section.ideas; track idea) {
+              @for (instrument of idea.instruments; track instrument) {
                 @if ($index < 4) {
-                  <div class="d-flex flex-column align-items-center flex-gap-5 idea">
-                    <ats-instrument-icon [symbol]="idea.instrumentKey.symbol" size="large"
-                                         shape="rounded-square"></ats-instrument-icon>
-                    <span nz-typography nzEllipsis class="heading-color">{{ idea.shortName }}</span>
-                  </div>
+                  @if (instrument | async; as instrumentInfo) {
+                    <div class="d-flex flex-column align-items-center flex-gap-5 symbol">
+                      <ats-instrument-icon [symbol]="instrumentInfo.symbol" size="large"
+                                           shape="rounded-square"></ats-instrument-icon>
+                      <span nz-typography nzEllipsis class="heading-color">{{ instrumentInfo.shortName }}</span>
+                    </div>
+                  }
                 }
               }
             </div>
@@ -34,4 +36,4 @@
   <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }"></nz-skeleton>
 </ng-template>
 
-<ats-ideas-section-details [(displaySection)]="selectedSection"></ats-ideas-section-details>
+<ats-idea-details [(displayIdea)]="selectedIdea"></ats-idea-details>

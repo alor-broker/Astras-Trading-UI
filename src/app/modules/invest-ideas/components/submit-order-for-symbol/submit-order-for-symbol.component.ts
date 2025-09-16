@@ -5,8 +5,6 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import { Idea } from "../../models/ideas-typings.model";
-import { TranslocoDirective } from "@jsverse/transloco";
 import {
   asyncScheduler,
   BehaviorSubject,
@@ -15,43 +13,45 @@ import {
   subscribeOn,
   switchMap
 } from "rxjs";
-import { AsyncPipe } from "@angular/common";
-import { CompactHeaderComponent } from "../../../order-commands/components/compact-header/compact-header.component";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
-import { OrderCommandsModule } from "../../../order-commands/order-commands.module";
-import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import { IdeaSymbol } from "../../services/invest-ideas-service-typings";
 import { LimitOrderConfig } from "../../../../shared/models/orders/orders-config.model";
+import { LimitOrderFormComponent } from "../../../order-commands/components/order-forms/limit-order-form/limit-order-form.component";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import {
   CommonParameters,
   CommonParametersService
 } from "../../../order-commands/services/common-parameters.service";
-import { ConfirmableOrderCommandsService } from "../../../order-commands/services/confirmable-order-commands.service";
-import { LimitOrderFormComponent } from "../../../order-commands/components/order-forms/limit-order-form/limit-order-form.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { AsyncPipe } from "@angular/common";
+import { CompactHeaderComponent } from "../../../order-commands/components/compact-header/compact-header.component";
+import { OrderCommandsModule } from "../../../order-commands/order-commands.module";
+import { TranslocoDirective } from "@jsverse/transloco";
+import { ConfirmableOrderCommandsService } from "../../../order-commands/services/confirmable-order-commands.service";
 
 @Component({
-  selector: 'ats-submit-order-for-idea',
+  selector: 'ats-submit-order-for-symbol',
   imports: [
-    TranslocoDirective,
     AsyncPipe,
     CompactHeaderComponent,
-    OrderCommandsModule
+    OrderCommandsModule,
+    TranslocoDirective
   ],
-  templateUrl: './submit-order-for-idea.component.html',
-  styleUrl: './submit-order-for-idea.component.less',
+  templateUrl: './submit-order-for-symbol.component.html',
+  styleUrl: './submit-order-for-symbol.component.less',
   providers: [
     CommonParametersService,
     ConfirmableOrderCommandsService
   ]
 })
-export class SubmitOrderForIdeaComponent implements OnInit {
-  protected readonly targetIdea$ = new BehaviorSubject<Idea | null>(null);
+export class SubmitOrderForSymbolComponent implements OnInit {
+  protected readonly targetSymbol$ = new BehaviorSubject<IdeaSymbol | null>(null);
 
   protected readonly selectedPortfolio$ = this.dashboardContextServiced.selectedPortfolio$;
 
-  protected readonly targetInstrument$ = this.targetIdea$.pipe(
+  protected readonly targetInstrument$ = this.targetSymbol$.pipe(
     filter(i => i != null),
-    switchMap(i => this.instrumentsService.getInstrument(i.instrumentKey)),
+    switchMap(i => this.instrumentsService.getInstrument({symbol: i.ticker, exchange: i.exchange})),
     filter(i => i != null),
     shareReplay(1)
   );
@@ -76,8 +76,8 @@ export class SubmitOrderForIdeaComponent implements OnInit {
   }
 
   @Input({required: true})
-  set idea(value: Idea) {
-    this.targetIdea$.next(value);
+  set symbol(value: IdeaSymbol) {
+    this.targetSymbol$.next(value);
   }
 
   ngOnInit(): void {

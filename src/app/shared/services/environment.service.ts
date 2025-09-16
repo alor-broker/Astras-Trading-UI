@@ -92,6 +92,10 @@ export class EnvironmentService {
     return environment.features;
   }
 
+  get investIdeasApiUrl(): string {
+    return environment.investIdeasApiUrl;
+  }
+
   private getDebugStringRecord(key: string): string | null {
     return this.localStorageService.getStringItem(`debug.${key}`);
   }
