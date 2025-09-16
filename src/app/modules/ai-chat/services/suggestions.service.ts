@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
+import {
+  HttpClient,
+  HttpContext
+} from "@angular/common/http";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { TranslatorService } from "../../../shared/services/translator.service";
 import {
@@ -10,6 +13,7 @@ import {
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 import { map } from "rxjs/operators";
 import { startOfToday } from "date-fns";
+import { HttpContextTokens } from "../../../shared/constants/http.constants";
 
 interface Suggestion {
   lang: string;
@@ -28,7 +32,16 @@ export class SuggestionsService {
   }
 
   getSuggestions(): Observable<string[] | null> {
-    const allSuggestions$ = this.httpClient.get<Suggestion[]>('/assets/ai-chat/request-suggestions.json').pipe(
+    const allSuggestions$ = this.httpClient.get<Suggestion[]>(
+      '/assets/ai-chat/request-suggestions.json',
+      {
+        headers: {
+          "Cache-Control": "no-cache",
+          "Pragma": "no-cache"
+        },
+        context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true),
+      }
+    ).pipe(
       catchHttpError<Suggestion[] | null>(null, this.errorHandlerService),
       take(1)
     );
