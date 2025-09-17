@@ -9,7 +9,7 @@ import { Observable } from "rxjs";
 import { EnvironmentService } from "../../../shared/services/environment.service";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class InvestIdeasService {
   private readonly ideasUrl = this.environmentService.investIdeasApiUrl;
   constructor(
