@@ -19,7 +19,7 @@
         #table
         (nzPageIndexChange)="changePageOptions({page: $event})"
         (nzPageSizeChange)="changePageOptions({pageSize: $event})"
-        [nzData]="vm.tableData"
+        [nzData]="vm.tableData ?? []"
         [nzFrontPagination]="false"
         [nzLoading]="isLoading()"
         [nzPageSizeOptions]="allPageSizes"
