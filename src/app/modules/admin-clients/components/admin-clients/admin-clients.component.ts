@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
@@ -26,6 +27,7 @@ import {
   combineLatest,
   defer,
   Observable,
+  observeOn,
   shareReplay,
   subscribeOn,
   switchMap,
@@ -121,7 +123,8 @@ interface ColumnBase {
     TableSearchFilterComponent
   ],
   templateUrl: './admin-clients.component.html',
-  styleUrl: './admin-clients.component.less'
+  styleUrl: './admin-clients.component.less',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, ClientsSearchFilter> implements OnInit, OnDestroy {
   @Input({required: true})
@@ -596,6 +599,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
       page: this.page$
     }).pipe(
       mapWith(() => refreshTimer$, (source,) => source),
+      observeOn(asyncScheduler),
       tap(() => {
         this.isLoading.set(true);
       }),
@@ -631,6 +635,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
       tap(() => {
         this.isLoading.set(false);
       }),
+      subscribeOn(asyncScheduler),
     );
   }
 
