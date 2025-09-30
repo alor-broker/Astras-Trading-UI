@@ -800,6 +800,7 @@
   },
   {
     "typeId": "invest-ideas",
+    "isDemoOnly": true,
     "definition": {
       "adapter": "application",
       "config": {

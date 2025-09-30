@@ -11,7 +11,7 @@
         "position": {
           "x": 0,
           "y": 0,
-          "cols": 14,
+          "cols": 18,
           "rows": 15
         },
         "initialSettings": {
@@ -22,29 +22,20 @@
         }
       },
       {
-        "widgetTypeId": "invest-ideas",
-        "position": {
-          "x": 15,
-          "y": 0,
-          "cols": 10,
-          "rows": 15
-        }
-      },
-      {
         "widgetTypeId": "order-submit",
         "position": {
-          "x": 26,
+          "x": 19,
           "y": 0,
-          "cols": 10,
+          "cols": 14,
           "rows": 15
         }
       },
       {
         "widgetTypeId": "treemap",
         "position": {
-          "x": 37,
+          "x": 34,
           "y": 0,
-          "cols": 13,
+          "cols": 16,
           "rows": 15
         }
       },
@@ -233,7 +224,7 @@
         "initialSettings": {
           "showPortfolioDynamics": true,
           "showNews": true,
-          "showIdeas": true,
+          "showIdeas": false,
           "displayTrendsForMarket": ["FOND"],
           "ignoreTrendsForBoards": ["FQBR"],
           "marketTrendsSectors": [
