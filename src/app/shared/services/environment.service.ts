@@ -14,7 +14,7 @@ export interface LoggerConfig {
 }
 
 export interface RemoteLoggerConfig extends LoggerConfig {
-  environment: 'local' | 'dev' | 'prod';
+  environment: string;
   loggingServerUrl: string;
   authorization: {
     name: string;
