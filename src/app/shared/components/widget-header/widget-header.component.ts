@@ -59,6 +59,8 @@ export class WidgetHeaderComponent implements OnInit {
     assignedInstrument: InstrumentKey | null;
   }[]>;
 
+  readonly currentDashboard$ = this.dashboardContextService.selectedDashboard$;
+
   constructor(
     private readonly settingsService: WidgetSettingsService,
     private readonly manageDashboardService: ManageDashboardsService,

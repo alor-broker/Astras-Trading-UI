@@ -42,6 +42,10 @@ export const DashboardsManageActions = createActionGroup({
     "Remove All": emptyProps(),
     "Copy": props<{
       dashboardGuid: string;
+    }>(),
+    "ChangeLock": props<{
+      dashboardGuid: string;
+      isLocked: boolean;
     }>()
   }
 });

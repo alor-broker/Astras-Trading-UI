@@ -93,6 +93,16 @@ const reducer = createReducer(
       state);
   }),
 
+  on(DashboardsManageActions.changeLock, (state, props) => {
+    return adapter.updateOne({
+        id: props.dashboardGuid,
+        changes: {
+          isLocked: props.isLocked
+        }
+      },
+      state);
+  }),
+
   on(DashboardFavoritesActions.add, (state, props) => {
     const favoritesOrder = Object.values(state.entities).filter(d => d!.isFavorite ?? false).length;
 

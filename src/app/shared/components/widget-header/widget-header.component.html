@@ -96,14 +96,18 @@
       </a>
     </button>
 
-    <button nz-button
-            nzSize="small"
-            class="close-btn"
-            (mousedown)="removeItem($event)"
-            joyrideStep="step6"
-            [title]="t('joyride.step6.title')"
-            [text]="t('joyride.step6.text')">
-      <i nz-icon nzType="close-circle" [nzTheme]="'outline'"></i>
-    </button>
+    @let isDashboardLocked = (currentDashboard$ | async)?.isLocked ?? false;
+
+    @if(!isDashboardLocked) {
+      <button nz-button
+              nzSize="small"
+              class="close-btn"
+              (mousedown)="removeItem($event)"
+              joyrideStep="step6"
+              [title]="t('joyride.step6.title')"
+              [text]="t('joyride.step6.text')">
+        <i nz-icon nzType="close-circle" [nzTheme]="'outline'"></i>
+      </button>
+    }
   </div>
 </div>

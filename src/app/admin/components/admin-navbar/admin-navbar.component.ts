@@ -40,11 +40,6 @@ export class AdminNavbarComponent {
     shareReplay(1)
   );
 
-  readonly dashboardType$ = this.dashboardContextService.selectedDashboard$.pipe(
-    map(d => d.type),
-    shareReplay({bufferSize: 1, refCount: true})
-  );
-
   constructor(
     private readonly dashboardContextService: DashboardContextService
   ) {}
