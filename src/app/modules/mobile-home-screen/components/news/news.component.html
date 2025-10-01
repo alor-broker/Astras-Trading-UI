@@ -9,7 +9,10 @@
       <span class="heading-color">{{ item.header }}</span>
     </div>
   } @empty {
-    <nz-empty nzNotFoundImage="simple"></nz-empty>
+    <nz-empty
+      nzNotFoundImage="simple"
+      [nzNotFoundContent]="t('mobileHomeScreenNews.noItemsToDisplayMessage')">
+    </nz-empty>
   }
 </div>
 <button

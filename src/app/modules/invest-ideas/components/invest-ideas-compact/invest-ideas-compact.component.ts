@@ -29,6 +29,7 @@ import { Instrument } from "../../../../shared/models/instruments/instrument.mod
 import { IdeaDetailsComponent } from "../idea-details/idea-details.component";
 import { AsyncPipe } from "@angular/common";
 import { map } from "rxjs/operators";
+import { TranslocoDirective } from "@jsverse/transloco";
 
 interface IdeaDisplay extends Idea {
   instruments: Observable<Instrument | null>[];
@@ -45,7 +46,8 @@ interface IdeaDisplay extends Idea {
     NzSkeletonComponent,
     NzTypographyComponent,
     IdeaDetailsComponent,
-    AsyncPipe
+    AsyncPipe,
+    TranslocoDirective
   ],
   templateUrl: './invest-ideas-compact.component.html',
   styleUrl: './invest-ideas-compact.component.less'

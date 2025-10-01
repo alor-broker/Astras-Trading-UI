@@ -65,7 +65,10 @@
         </button>
       }
     } @else {
-      <nz-empty nzNotFoundImage="simple"></nz-empty>
+      <nz-empty
+        nzNotFoundImage="simple"
+        [nzNotFoundContent]="t('mobileHomeScreenPositions.noItemsToDisplayMessage')">
+      </nz-empty>
     }
   </ng-container>
 

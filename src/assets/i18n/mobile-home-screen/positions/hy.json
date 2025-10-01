@@ -1,5 +1,7 @@
 {
   "moreItemsButton": {
     "title": "Ցույց տալ ավելին"
-  }
+  },
+
+  "noItemsToDisplayMessage": "Պորտֆելում դեռ բաց դիրքեր չկան"
 }

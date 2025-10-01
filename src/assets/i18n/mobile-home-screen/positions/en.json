@@ -1,5 +1,7 @@
 ﻿{
   "moreItemsButton": {
     "title": "Show more"
-  }
+  },
+
+  "noItemsToDisplayMessage": "You have no open positions"
 }
