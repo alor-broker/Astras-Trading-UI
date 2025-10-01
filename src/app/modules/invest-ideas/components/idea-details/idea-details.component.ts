@@ -3,7 +3,8 @@ import {
   computed,
   DestroyRef,
   model,
-  OnDestroy
+  OnDestroy,
+  ViewEncapsulation
 } from '@angular/core';
 import {
   AsyncPipe,
@@ -51,7 +52,8 @@ interface InstrumentPrice {
     SubmitOrderForSymbolComponent
   ],
   templateUrl: './idea-details.component.html',
-  styleUrl: './idea-details.component.less'
+  styleUrl: './idea-details.component.less',
+  encapsulation: ViewEncapsulation.None
 })
 export class IdeaDetailsComponent implements OnDestroy {
   readonly displayIdea = model<Idea | null>(null);

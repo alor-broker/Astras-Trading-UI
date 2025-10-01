@@ -21,13 +21,11 @@
     </div>
 
     <div class="mt-10">
-      <ats-limit-order-form
-        #limitOrderForm
+      <ats-market-order-form
         [instrument]="targetInstrument"
         [portfolioKey]="selectedPortfolio"
         [activated]="true"
-        [limitOrderConfig]="limitOrderConfig"
-      ></ats-limit-order-form>
+      ></ats-market-order-form>
     </div>
   }
 </ng-container>

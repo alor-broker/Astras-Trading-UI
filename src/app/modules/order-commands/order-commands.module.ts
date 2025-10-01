@@ -58,12 +58,13 @@ import { OrderEvaluationComponent } from "./components/order-evaluation/order-ev
     EditLimitOrderFormComponent,
     EditStopOrderFormComponent
   ],
-    exports: [
-        OrdersDialogWidgetComponent,
-        OrderSubmitWidgetComponent,
-        EditOrderDialogWidgetComponent,
-        LimitOrderFormComponent
-    ],
+  exports: [
+    OrdersDialogWidgetComponent,
+    OrderSubmitWidgetComponent,
+    EditOrderDialogWidgetComponent,
+    LimitOrderFormComponent,
+    MarketOrderFormComponent
+  ],
   imports: [
     CommonModule,
     TranslocoModule,
