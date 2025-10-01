@@ -164,7 +164,7 @@
                   </nz-form-item>
                 </ng-container>
 
-                <div class="d-flex flex-gap-10" *ngIf="limitOrderConfig.isBracketsSupported">
+                <div class="d-flex align-items-start flex-gap-10" *ngIf="limitOrderConfig.isBracketsSupported">
                   <nz-form-item class="compact flex-shrink-2 w-100">
                     <nz-form-label class="flex-fill" nzFor="topOrderPrice">
                       {{t('orderCommandsOrderForms.topOrderPriceLabel')}}
@@ -191,7 +191,7 @@
                     <nz-form-label [nzNoColon]="true" class="flex-fill" nzFor="topOrderSide">
                       {{t('orderCommandsOrderForms.sideLabel')}}
                     </nz-form-label>
-                    <nz-form-control class="flex-fill">
+                    <nz-form-control class="flex-fill" [nzErrorTip]="t('validationErrors.selectValueError')">
                       <nz-select formControlName="topOrderSide">
                         <nz-option [nzLabel]="t('orderCommandsOrderForms.buySideLabel')" [nzValue]="'buy'"></nz-option>
                         <nz-option [nzLabel]="t('orderCommandsOrderForms.sellSideLabel')"
@@ -201,7 +201,7 @@
                   </nz-form-item>
                 </div>
 
-                <div class="d-flex flex-gap-10" *ngIf="limitOrderConfig.isBracketsSupported">
+                <div class="d-flex  align-items-start flex-gap-10" *ngIf="limitOrderConfig.isBracketsSupported">
                   <nz-form-item class="compact flex-shrink-2 w-100">
                     <nz-form-label class="flex-fill" nzFor="bottomOrderPrice">
                       {{t('orderCommandsOrderForms.bottomOrderPriceLabel')}}
@@ -227,7 +227,7 @@
                     <nz-form-label [nzNoColon]="true" class="flex-fill" nzFor="bottomOrderSide">
                       {{t('orderCommandsOrderForms.sideLabel')}}
                     </nz-form-label>
-                    <nz-form-control class="flex-fill">
+                    <nz-form-control class="flex-fill" [nzErrorTip]="t('validationErrors.selectValueError')">
                       <nz-select formControlName="bottomOrderSide">
                         <nz-option [nzLabel]="t('orderCommandsOrderForms.buySideLabel')" [nzValue]="'buy'"></nz-option>
                         <nz-option [nzLabel]="t('orderCommandsOrderForms.sellSideLabel')"
