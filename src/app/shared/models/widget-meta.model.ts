@@ -73,4 +73,6 @@ export interface WidgetMeta {
     galleryOrder: number;
     galleryIcon: string;
   };
+
+  baseSettings?: Record<string, any>;
 }

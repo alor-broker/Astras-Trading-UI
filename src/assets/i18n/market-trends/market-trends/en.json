@@ -13,5 +13,13 @@
 
   "moreItemsButton": {
     "title": "Show more"
+  },
+
+  "resetFiltersButton": {
+    "title": "All"
+  },
+
+  "extendedFilter": {
+    "Penny Stocks": "Penny Stocks"
   }
 }

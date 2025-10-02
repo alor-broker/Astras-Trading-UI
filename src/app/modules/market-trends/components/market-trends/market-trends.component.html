@@ -5,14 +5,27 @@
     class="mt-15"
   >
     @let displaySectors = sectors();
-    @if(displaySectors.length > 0) {
+    @let displayExtendedFilter = extendedFilter();
+
+    @if(displaySectors.length > 0 || displayExtendedFilter.length > 0) {
       <nz-tabset>
+        <nz-tab [nzTitle]="t('marketTrendsMarketTrends.resetFiltersButton.title')" (nzSelect)="resetFilters()">
+        </nz-tab>
+
+        @for (extendedFilter of displayExtendedFilter; track extendedFilter) {
+          <nz-tab
+            [nzTitle]="t('marketTrendsMarketTrends.extendedFilter.' + extendedFilter, {fallback: extendedFilter})"
+            (nzSelect)="changeExtendedFilter(extendedFilter)"
+          ></nz-tab>
+        }
+
         @for (sector of displaySectors; track sector) {
           <nz-tab [nzTitle]="t('marketSectors.' + sector, {fallback: sector})" (nzSelect)="changeSector(sector)">
           </nz-tab>
         }
       </nz-tabset>
     }
+
 
     @if (vm.displayItems != null && vm.displayItems.totalCount > 0) {
       <table class="mt-10">

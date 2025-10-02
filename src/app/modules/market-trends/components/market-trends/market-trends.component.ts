@@ -1,10 +1,8 @@
 import {
   Component,
   input,
-  OnChanges,
   OnInit,
-  output,
-  SimpleChanges
+  output
 } from '@angular/core';
 import { TranslocoDirective } from "@jsverse/transloco";
 import {
@@ -27,10 +25,12 @@ import {
 } from "../../gql-schemas/market-trends.gpl-schemas";
 import {
   BasicInformationFilterInput,
+  InputMaybe,
   InstrumentModelFilterInput,
   Market,
   QueryInstrumentsArgs,
-  SortEnumType
+  SortEnumType,
+  TradingDetailsFilterInput
 } from "../../../../../generated/graphql.types";
 import { map } from "rxjs/operators";
 import {
@@ -50,11 +50,15 @@ import {
   NzTabComponent,
   NzTabSetComponent
 } from "ng-zorro-antd/tabs";
-import { MarketSector } from "../../../../shared/models/market-typings.model";
+import {
+  ExtendedFilter,
+  MarketSector
+} from "../../../../shared/models/market-typings.model";
 
 export interface DisplayParams {
   growOrder: SortEnumType;
   sector: MarketSector | null;
+  extendedFilter: ExtendedFilter | null;
 }
 
 @Component({
@@ -77,7 +81,7 @@ export interface DisplayParams {
   templateUrl: './market-trends.component.html',
   styleUrl: './market-trends.component.less'
 })
-export class MarketTrendsComponent implements OnInit, OnChanges {
+export class MarketTrendsComponent implements OnInit {
   marketFilter = input([Market.Fond]);
 
   ignoredBoardsFilter = input(['FQBR']);
@@ -88,6 +92,8 @@ export class MarketTrendsComponent implements OnInit, OnChanges {
 
   sectors = input<MarketSector[]>([]);
 
+  extendedFilter = input<ExtendedFilter[]>([]);
+
   fixedHeader = input(false);
 
   displayItems$!: Observable<MarketTrendsInstrumentsConnectionType | null>;
@@ -96,7 +102,8 @@ export class MarketTrendsComponent implements OnInit, OnChanges {
 
   readonly itemsDisplayParams$ = new BehaviorSubject<DisplayParams>({
     growOrder: SortEnumType.Desc,
-    sector: null
+    sector: null,
+    extendedFilter: null
   });
 
   readonly SortEnumTypes = SortEnumType;
@@ -110,15 +117,6 @@ export class MarketTrendsComponent implements OnInit, OnChanges {
   constructor(
     private readonly graphQlService: GraphQlService
   ) {
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.sectors != null && changes.sectors.currentValue != null) {
-      const sectors = changes.sectors.currentValue as MarketSector[];
-      if (sectors.length > 0) {
-        this.changeSector(sectors[0]);
-      }
-    }
   }
 
   ngOnInit(): void {
@@ -154,7 +152,32 @@ export class MarketTrendsComponent implements OnInit, OnChanges {
     ).subscribe(p => {
       this.itemsDisplayParams$.next({
         ...p,
-        sector: targetSector === MarketSector.All ? null : targetSector
+        sector: targetSector,
+        extendedFilter: null
+      });
+    });
+  }
+
+  changeExtendedFilter(extendedFilter: ExtendedFilter): void {
+    this.itemsDisplayParams$.pipe(
+      take(1),
+    ).subscribe(p => {
+      this.itemsDisplayParams$.next({
+        ...p,
+        extendedFilter,
+        sector: null
+      });
+    });
+  }
+
+  resetFilters(): void {
+    this.itemsDisplayParams$.pipe(
+      take(1),
+    ).subscribe(p => {
+      this.itemsDisplayParams$.next({
+        ...p,
+        extendedFilter: null,
+        sector: null
       });
     });
   }
@@ -204,6 +227,21 @@ export class MarketTrendsComponent implements OnInit, OnChanges {
       };
     }
 
+    const tradingDetailsFilter: InputMaybe<TradingDetailsFilterInput> = {
+      tradeAmount: {
+        gte: 1_000_000
+      },
+      capitalization: {
+        gte: 500_000_000
+      }
+    };
+
+    if (params.extendedFilter != null && params.extendedFilter === ExtendedFilter.PennyStocks) {
+      tradingDetailsFilter.price = {
+        lte: 1
+      };
+    }
+
     const where: InstrumentModelFilterInput = {
       and: [
         {
@@ -218,14 +256,7 @@ export class MarketTrendsComponent implements OnInit, OnChanges {
           }
         },
         {
-          tradingDetails: {
-            tradeAmount: {
-              gte: 1_000_000
-            },
-            capitalization: {
-              gte: 500_000_000
-            }
-          }
+          tradingDetails: tradingDetailsFilter
         }
       ]
     };

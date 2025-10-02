@@ -61,10 +61,6 @@ export class MobileHomeScreenWidgetComponent implements OnInit {
         return this.widgetInstance.instance.guid;
     }
 
-    onSettingsChange(): void {
-        this.shouldShowSettings = !this.shouldShowSettings;
-    }
-
     ngOnInit(): void {
         WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<MobileHomeScreenSettings>(
             this.widgetInstance,

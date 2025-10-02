@@ -18,7 +18,10 @@ import {
   NzMarks,
   NzSliderComponent
 } from "ng-zorro-antd/slider";
-import { MarketSector } from "../../../../shared/models/market-typings.model";
+import {
+  ExtendedFilter,
+  MarketSector
+} from "../../../../shared/models/market-typings.model";
 import {
   NzColDirective,
   NzRowDirective
@@ -75,13 +78,17 @@ export class MarketTrendsSettingsComponent extends WidgetSettingsBaseComponent<M
         ]
       }
     ),
-    displaySectors: this.formBuilder.nonNullable.control<MarketSector[]>([])
+    displaySectors: this.formBuilder.nonNullable.control<MarketSector[]>([]),
+    extendedFilter: this.formBuilder.nonNullable.control<ExtendedFilter[]>([])
   });
 
   protected settings$!: Observable<MarketTrendsSettings>;
 
   protected readonly allSectors = Object.keys(MarketSector)
     .map(s => MarketSector[s as keyof typeof MarketSector]);
+
+  protected readonly allExtendedFilters = Object.keys(ExtendedFilter)
+    .map(s => ExtendedFilter[s as keyof typeof ExtendedFilter]);
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,
@@ -104,12 +111,14 @@ export class MarketTrendsSettingsComponent extends WidgetSettingsBaseComponent<M
     super.ngOnInit();
   }
 
-  protected getUpdatedSettings(): Partial<MarketTrendsSettings> {
+  protected getUpdatedSettings(initialSettings: MarketTrendsSettings): Partial<MarketTrendsSettings> {
     const formValue = this.form.value;
 
     return {
+      ...initialSettings,
       itemsCount: formValue.itemsCount ?? 20,
-      displaySectors: formValue.displaySectors ?? []
+      displaySectors: formValue.displaySectors ?? [],
+      extendedFilter: formValue.extendedFilter ?? [],
     };
   }
 
@@ -118,5 +127,6 @@ export class MarketTrendsSettingsComponent extends WidgetSettingsBaseComponent<M
 
     this.form.controls.itemsCount.setValue(settings.itemsCount);
     this.form.controls.displaySectors.setValue(settings.displaySectors);
+    this.form.controls.extendedFilter.setValue(settings.extendedFilter);
   }
 }

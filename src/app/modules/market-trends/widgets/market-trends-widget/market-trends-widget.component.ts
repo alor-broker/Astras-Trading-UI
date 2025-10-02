@@ -26,7 +26,10 @@ import { defaultBadgeColor } from "../../../../shared/utils/instruments";
 import { SettingsHelper } from "../../../../shared/utils/settings-helper";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { MarketTrendsSettings } from "../../models/market-trends-settings.model";
-import { MarketSector } from "../../../../shared/models/market-typings.model";
+import {
+  ExtendedFilter,
+  MarketSector
+} from "../../../../shared/models/market-typings.model";
 import { MarketTrendsComponent } from "../../components/market-trends/market-trends.component";
 import { MarketTrendsSettingsComponent } from "../../components/market-trends-settings/market-trends-settings.component";
 
@@ -75,7 +78,11 @@ export class MarketTrendsWidgetComponent implements OnInit {
         badgeColor: getValueOrDefault(settings.badgeColor, defaultBadgeColor),
         displaySectors: getValueOrDefault(
           settings.displaySectors,
-          Object.values(MarketSector)
+          settings.availableSectors ?? Object.values(MarketSector)
+        ),
+        extendedFilter: getValueOrDefault(
+          settings.extendedFilter,
+          settings.availableExtendedFilters ?? Object.values(ExtendedFilter)
         ),
         itemsCount: 20
       }),

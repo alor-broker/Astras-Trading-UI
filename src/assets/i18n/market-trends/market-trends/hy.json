@@ -13,5 +13,13 @@
   },
   "moreItemsButton": {
     "title": "Ցույց տալ ավելին"
+  },
+
+  "resetFiltersButton": {
+    "title": "Բոլոր"
+  },
+
+  "extendedFilter": {
+    "Penny Stocks": "Penny Stocks"
   }
 }

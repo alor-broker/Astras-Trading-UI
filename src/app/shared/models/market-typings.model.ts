@@ -1,5 +1,4 @@
 ﻿export enum MarketSector {
-  All = "All",
   Energy = "Energy",
   Materials = "Materials",
   Industrials = "Industrials",
@@ -12,4 +11,8 @@
   Utilities = "Utilities",
   RealEstate = "Real Estate",
   Other = "Other"
+}
+
+export enum ExtendedFilter {
+  PennyStocks = "Penny Stocks"
 }

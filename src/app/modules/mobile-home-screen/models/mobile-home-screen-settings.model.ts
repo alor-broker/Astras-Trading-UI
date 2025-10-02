@@ -1,6 +1,9 @@
 ﻿import { WidgetSettings } from "../../../shared/models/widget-settings.model";
 import { Market } from "../../../../generated/graphql.types";
-import { MarketSector } from "../../../shared/models/market-typings.model";
+import {
+  ExtendedFilter,
+  MarketSector
+} from "../../../shared/models/market-typings.model";
 
 export interface MobileHomeScreenSettings extends WidgetSettings {
   showPortfolioDynamics?: boolean;
@@ -9,4 +12,5 @@ export interface MobileHomeScreenSettings extends WidgetSettings {
   displayTrendsForMarket?: Market[];
   ignoreTrendsForBoards?: string[];
   marketTrendsSectors?: MarketSector[];
+  extendedFilter?: ExtendedFilter[];
 }

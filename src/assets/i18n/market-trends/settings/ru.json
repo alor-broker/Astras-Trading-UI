@@ -1,4 +1,5 @@
 ﻿{
   "itemsCountLabel": "Кол-во отображаемых записей",
-  "displaySectorsLabel": "Сектора"
+  "displaySectorsLabel": "Сектора",
+  "displayExtendedFiltersLabel": "Расширенные фильтры"
 }
