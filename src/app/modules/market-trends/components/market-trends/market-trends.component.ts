@@ -40,7 +40,6 @@ import {
 } from "@angular/common";
 import { LetDirective } from "@ngrx/component";
 import { NzButtonComponent } from "ng-zorro-antd/button";
-import { TruncatedTextComponent } from "../../../../shared/components/truncated-text/truncated-text.component";
 import { NzEmptyComponent } from "ng-zorro-antd/empty";
 import { NzSkeletonComponent } from "ng-zorro-antd/skeleton";
 import { NzIconDirective } from "ng-zorro-antd/icon";
@@ -68,7 +67,6 @@ export interface DisplayParams {
     TranslocoDirective,
     LetDirective,
     NzButtonComponent,
-    TruncatedTextComponent,
     NgClass,
     PercentPipe,
     NzEmptyComponent,
