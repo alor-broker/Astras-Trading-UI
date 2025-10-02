@@ -54,6 +54,7 @@ import {
   ExtendedFilter,
   MarketSector
 } from "../../../../shared/models/market-typings.model";
+import { NzTypographyComponent } from "ng-zorro-antd/typography";
 
 export interface DisplayParams {
   growOrder: SortEnumType;
@@ -76,7 +77,8 @@ export interface DisplayParams {
     DecimalPipe,
     InstrumentIconComponent,
     NzTabSetComponent,
-    NzTabComponent
+    NzTabComponent,
+    NzTypographyComponent
   ],
   templateUrl: './market-trends.component.html',
   styleUrl: './market-trends.component.less'

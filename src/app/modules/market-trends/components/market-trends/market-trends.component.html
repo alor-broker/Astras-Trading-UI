@@ -7,7 +7,7 @@
     @let displaySectors = sectors();
     @let displayExtendedFilter = extendedFilter();
 
-    @if(displaySectors.length > 0 || displayExtendedFilter.length > 0) {
+    @if (displaySectors.length > 0 || displayExtendedFilter.length > 0) {
       <nz-tabset>
         <nz-tab [nzTitle]="t('marketTrendsMarketTrends.resetFiltersButton.title')" (nzSelect)="resetFilters()">
         </nz-tab>
@@ -31,7 +31,7 @@
       <table class="mt-10">
         <thead [class.fixed]="fixedHeader()">
         <tr class="heading-color">
-          <th class="text-start text-nowrap">{{ t('marketTrendsMarketTrends.columns.ticker.title') }}</th>
+          <th class="text-start text-nowrap" style="width: 50%">{{ t('marketTrendsMarketTrends.columns.ticker.title') }}</th>
           <th
             class="text-start text-nowrap"
             (click)="changeSortOrder()"
@@ -57,20 +57,13 @@
               <td class="text-start">
                 <div class="d-flex flex-row flex-nowrap flex-gap-5 align-items-center">
                   <ats-instrument-icon [symbol]="item.basicInformation.symbol" size="large"></ats-instrument-icon>
-                  <div class="d-flex flex-column">
-                    <span>
-                      <ats-truncated-text
-                        [maxLength]="30"
-                        [text]="item.basicInformation.shortName"
-                        className="heading-color text-nowrap fs-6"
-                      ></ats-truncated-text>
+                  <div class="d-flex flex-column overflow-hidden">
+                    <span class="heading-color text-nowrap fs-6" nz-typography nzEllipsis>
+                      {{ item.basicInformation.shortName }}
                     </span>
 
-                    <span>
-                        <ats-truncated-text
-                          [maxLength]="20"
-                          [text]="item.basicInformation.symbol"
-                          className="fs-10"></ats-truncated-text>
+                    <span class="fs-10" nz-typography nzEllipsis>
+                        {{ item.basicInformation.symbol }}
                       </span>
                   </div>
                 </div>
@@ -95,7 +88,7 @@
     } @else {
       <nz-empty nzNotFoundImage="simple"></nz-empty>
     }
-    @if(showMoreButton()) {
+    @if (showMoreButton()) {
       <button
         nz-button
         nzBlock
