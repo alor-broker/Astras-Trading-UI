@@ -6,7 +6,7 @@
   "gridTypeLabel": "Widgets grid behavior",
   "timezoneLabel": "Displaying time timezone",
   "isLogoutOnUserIdleLabel": "Logout on user idle",
-  "logoutDisclaimer": "Warning! When enabled, if you are inactive in Astras, you will also be logged out in all other ALOR sites in this browser",
+  "logoutDisclaimer": "Warning: When this feature is enabled, inactivity in the terminal will log you out of both the terminal itself and the broker's other platforms in this browser.",
   "userIdleDurationLabel": "User idle duration, min.",
   "badgesBindLabel": "Enable linking instruments to badges",
 
