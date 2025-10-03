@@ -28,17 +28,17 @@ export interface LoggingConfig {
 }
 
 export interface ExternalLinksConfig {
-  reports: string;
-  releases: string;
-  support: string;
-  issuesList: string;
-  help: string;
-  officialSite: string;
-  riskRate: string;
-  personalAccount: string;
-  bankroll: string;
-  services: string;
-  videoTutorial: string;
+  reports?: string;
+  releases?: string;
+  support?: string;
+  issuesList?: string;
+  help?: string;
+  officialSite?: string;
+  riskRate?: string;
+  personalAccount?: string;
+  bankroll?: string;
+  services?: string;
+  videoTutorial?: string;
 }
 
 @Injectable({
@@ -84,7 +84,7 @@ export class EnvironmentService {
     return environment.logging as unknown as LoggingConfig;
   }
 
-  get externalLinks(): ExternalLinksConfig {
+  get externalLinks(): ExternalLinksConfig | undefined {
     return environment.externalLinks;
   }
 

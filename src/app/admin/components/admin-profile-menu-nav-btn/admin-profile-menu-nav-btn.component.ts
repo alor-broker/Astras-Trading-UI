@@ -49,4 +49,8 @@ export class AdminProfileMenuNavBtnComponent {
   logout(): void {
     this.sessionContext.logout();
   }
+
+  isNullOrEmpty(value: string | null | undefined): boolean {
+    return value == null || value.length === 0;
+  }
 }

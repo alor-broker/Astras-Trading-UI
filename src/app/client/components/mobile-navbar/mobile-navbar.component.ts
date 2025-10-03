@@ -186,4 +186,8 @@ export class MobileNavbarComponent implements OnInit {
   }
 
   showNewYearIcon = NewYearHelper.showNewYearIcon;
+
+  isNullOrEmpty(value: string | null | undefined): boolean {
+    return value == null || value.length === 0;
+  }
 }

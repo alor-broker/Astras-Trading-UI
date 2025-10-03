@@ -14,9 +14,14 @@
       <ng-template #subtitle>
         <div class="text-center mt-5">
           <span>{{ t('dashboardSettingsLoadErrorDialog.suggestionText') }}</span>
-          <ats-external-link [href]="supportLink" klass="primary-color">
-            {{ t('dashboardSettingsLoadErrorDialog.support') }}
-          </ats-external-link>
+
+          @if(supportLink != null && supportLink.length > 0) {
+            <ats-external-link [href]="supportLink" klass="primary-color">
+              {{ t('dashboardSettingsLoadErrorDialog.support') }}
+            </ats-external-link>
+          } @else {
+            <span>{{ t('dashboardSettingsLoadErrorDialog.support') }}</span>
+          }
         </div>
 
       </ng-template>

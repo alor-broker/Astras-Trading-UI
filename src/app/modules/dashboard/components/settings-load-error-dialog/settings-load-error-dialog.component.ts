@@ -27,7 +27,7 @@ export class SettingsLoadErrorDialogComponent {
   @Input()
   visible = false;
 
-  readonly supportLink = this.environmentService.externalLinks.support;
+  readonly supportLink = this.environmentService.externalLinks?.support;
 
   constructor(private readonly environmentService: EnvironmentService) {
   }

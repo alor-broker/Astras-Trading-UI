@@ -24,9 +24,14 @@
       </p>
       <p>
         {{t('dashboardEmptyPortfoliosWarningModal.supportPointPt1')}}
-        <ats-external-link klass="link" [href]="supportLink">
+        @if(supportLink != null && supportLink.length > 0) {
+          <ats-external-link klass="link" [href]="supportLink">
+            {{t('dashboardEmptyPortfoliosWarningModal.support')}}
+          </ats-external-link>,
+        } @else {
           {{t('dashboardEmptyPortfoliosWarningModal.support')}}
-        </ats-external-link>,
+        }
+
         {{t('dashboardEmptyPortfoliosWarningModal.supportPointPt2')}}
       </p>
     </div>

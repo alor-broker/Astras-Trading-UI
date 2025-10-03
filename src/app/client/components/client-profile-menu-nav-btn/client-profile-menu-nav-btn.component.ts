@@ -56,4 +56,8 @@ export class ClientProfileMenuNavBtnComponent {
   openTerminalSettings(): void {
     this.modalService.openTerminalSettingsModal();
   }
+
+  isNullOrEmpty(value: string | null | undefined): boolean {
+    return value == null || value.length === 0;
+  }
 }
