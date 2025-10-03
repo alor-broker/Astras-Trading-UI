@@ -22,6 +22,7 @@ import {
 } from "../../../modules/instruments/services/watchlist-collection-broker.service";
 import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instruments/widgets/instrument-select-dialog-widget/instrument-select-dialog-widget.component";
 import {GraphStorageService} from "../../../modules/ai-graph/services/graph-storage.service";
+import { UrgentNotificationDialogComponent } from "../../../modules/urgent-notifications/components/urgent-notification-dialog/urgent-notification-dialog.component";
 
 describe('ClientDashboardComponent', () => {
   let component: ClientDashboardComponent;
@@ -41,7 +42,8 @@ describe('ClientDashboardComponent', () => {
           ClientNavbarComponent,
           SettingsLoadErrorDialogComponent,
           TerminalSettingsWidgetComponent,
-          InstrumentSelectDialogWidgetComponent
+          InstrumentSelectDialogWidgetComponent,
+          UrgentNotificationDialogComponent
         )
       ],
       providers: [

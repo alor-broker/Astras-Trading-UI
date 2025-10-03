@@ -13,8 +13,10 @@
   "orderStatusChangedLabel": "Status of order {{orderId}} changed to {{orderStatus}}",
   "ordersGroupCreatedLabel": "Orders group created",
   "ordersGroupCreatedContent": "Group with orders {{orderIds}} successfully created",
-
   "orderCancelledTitle": "Order cancelled",
   "orderCancelledContent": "Order {{orderId}} on {{exchange}} successfully cancelled",
-  "orderCancelFailedLabel": "Order cancel failed"
+  "orderCancelFailedLabel": "Order cancel failed",
+  "OrderStatusChangeToCancelledLabel": "Order {{orderId}} was cancelled",
+  "ordersGroupUnsupportedLabel": "Order groups are not supported",
+  "ordersGroupUnsupportedContent": "Order group creation is unavailable"
 }
