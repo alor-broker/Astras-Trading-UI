@@ -84,7 +84,7 @@ export class MarketTrendsWidgetComponent implements OnInit {
           settings.extendedFilter,
           settings.availableExtendedFilters ?? Object.values(ExtendedFilter)
         ),
-        itemsCount: 20
+        itemsCount: getValueOrDefault(settings.itemsCount, 20)
       }),
       this.widgetSettingsService
     );

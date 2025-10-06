@@ -890,6 +890,9 @@
       },
       "galleryOrder": 24,
       "enabled": true
+    },
+    "baseSettings": {
+      "availableExtendedFilters": []
     }
   }
 ]

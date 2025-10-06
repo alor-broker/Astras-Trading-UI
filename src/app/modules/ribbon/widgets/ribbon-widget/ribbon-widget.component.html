@@ -7,7 +7,9 @@
       </button>
     </div>
     <div class="content">
-      <ats-ribbon></ats-ribbon>
+      <ats-ribbon
+        [displayItems]="settings.displayItems ?? null"
+      ></ats-ribbon>
     </div>
   </div>
 </ng-container>

@@ -3,31 +3,38 @@
     *ngIf="settings$ | async as settings"
     [content]="contentRef"
     [header]="headerRef"
-    [settings]="settingsRef"
     [isBlockWidget]="isBlockWidget"
+    [settings]="settingsRef"
     [showContentScroll]="true"
     [showSettings]="shouldShowSettings"
   >
     <ng-template #headerRef>
       <ats-widget-header
+        (switchSettings)="onSettingsChange()"
         [badgeShape]="'square'"
         [guid]="guid"
         [hasSettings]="true"
         [selectedBadgeColor]="settings.badgeColor"
         [showBadgesMenu]="(showBadge$ | async) ?? false"
         [widgetMeta]="widgetInstance.widgetMeta"
-        (switchSettings)="onSettingsChange()"
       ></ats-widget-header>
     </ng-template>
 
     <ng-template #contentRef>
       <ats-market-trends
-        [sectors]="settings.displaySectors"
-        [extendedFilter]="settings.extendedFilter"
-        [itemsCount]="settings.itemsCount"
-        [showMoreButton]="false"
-        [fixedHeader]="true"
         (instrumentSelected)="selectInstrument($event)"
+        [extendedFilter]="settings.extendedFilter"
+        [fixedHeader]="true"
+        [itemsCount]="settings.itemsCount"
+        [marketFilters]="{
+        targetMarkets: settings.marketFilters?.targetMarkets,
+        ignoredBoards: settings.marketFilters?.ignoredBoards,
+        instrumentTypes: settings.marketFilters?.instrumentTypes,
+        minTradeAmount: settings.marketFilters?.minTradeAmount,
+        minCapitalization: settings.marketFilters?.minCapitalization
+        }"
+        [sectors]="settings.displaySectors"
+        [showMoreButton]="false"
       ></ats-market-trends>
     </ng-template>
 

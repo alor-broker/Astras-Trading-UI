@@ -61,6 +61,15 @@ export interface DisplayParams {
   extendedFilter: ExtendedFilter | null;
 }
 
+export interface MarketFilters {
+  targetMarkets?: Market[];
+  ignoredBoards?: string[];
+  instrumentTypes?: string[];
+  minTradeAmount?: number;
+  minCapitalization?: number;
+  maxItemPrice?: number;
+}
+
 @Component({
   selector: 'ats-market-trends',
   imports: [
@@ -82,10 +91,6 @@ export interface DisplayParams {
   styleUrl: './market-trends.component.less'
 })
 export class MarketTrendsComponent implements OnInit {
-  marketFilter = input([Market.Fond]);
-
-  ignoredBoardsFilter = input(['FQBR']);
-
   itemsCount = input(10);
 
   showMoreButton = input(true);
@@ -95,6 +100,8 @@ export class MarketTrendsComponent implements OnInit {
   extendedFilter = input<ExtendedFilter[]>([]);
 
   fixedHeader = input(false);
+
+  marketFilters = input<MarketFilters | null>(null);
 
   displayItems$!: Observable<MarketTrendsInstrumentsConnectionType | null>;
 
@@ -201,11 +208,13 @@ export class MarketTrendsComponent implements OnInit {
   private loadMarketTrends(params: DisplayParams): Observable<MarketTrendsInstrumentsConnectionType | null> {
     this.isLoading = true;
 
+    const marketFilters = this.marketFilters();
+
     const basicInformationFilter: BasicInformationFilterInput = {
       and: [
         {
           market: {
-            in: this.marketFilter() ?? [Market.Fond]
+            in: marketFilters?.targetMarkets ?? [Market.Fond]
           },
         },
         {
@@ -215,7 +224,7 @@ export class MarketTrendsComponent implements OnInit {
         },
         {
           type: {
-            eq: "stock"
+            in: marketFilters?.instrumentTypes ?? ['stock']
           }
         }
       ]
@@ -229,16 +238,16 @@ export class MarketTrendsComponent implements OnInit {
 
     const tradingDetailsFilter: InputMaybe<TradingDetailsFilterInput> = {
       tradeAmount: {
-        gte: 1_000_000
+        gte: marketFilters?.minTradeAmount ?? 1_000_000
       },
       capitalization: {
-        gte: 500_000_000
+        gte: marketFilters?.minCapitalization ?? 500_000_000
       }
     };
 
     if (params.extendedFilter != null && params.extendedFilter === ExtendedFilter.PennyStocks) {
       tradingDetailsFilter.price = {
-        lte: 1
+        lte: marketFilters?.maxItemPrice ?? 1
       };
     }
 
@@ -251,7 +260,7 @@ export class MarketTrendsComponent implements OnInit {
         {
           boardInformation: {
             board: {
-              nin: this.ignoredBoardsFilter() ?? ['FQBR']
+              nin: marketFilters?.ignoredBoards ?? ['FQBR']
             }
           }
         },

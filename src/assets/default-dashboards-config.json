@@ -241,9 +241,7 @@
             "Real Estate",
             "Other"
           ],
-          "extendedFilter": [
-            "Penny Stocks"
-          ]
+          "marketTrendsExtendedFilter": []
         }
       },
       {

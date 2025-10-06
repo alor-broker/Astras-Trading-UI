@@ -4,13 +4,21 @@ import {
   ExtendedFilter,
   MarketSector
 } from "../../../shared/models/market-typings.model";
+import { RibbonItem } from "../../ribbon/components/ribbon/ribbon.component";
 
 export interface MobileHomeScreenSettings extends WidgetSettings {
   showPortfolioDynamics?: boolean;
   showNews?: boolean;
   showIdeas?: boolean;
-  displayTrendsForMarket?: Market[];
-  ignoreTrendsForBoards?: string[];
+  marketTrendsMarkets?: Market[];
+  marketTrendsIgnoredBoards?: string[];
+  marketTrendsInstrumentTypes?: string[];
+  marketTrendsMinTradeAmount?: number;
+  marketTrendsMinCapitalization?: number;
+  marketTrendsItemsCount?: number;
   marketTrendsSectors?: MarketSector[];
-  extendedFilter?: ExtendedFilter[];
+  marketTrendsExtendedFilter?: ExtendedFilter[];
+  ribbonSettings?: {
+    displayItems?: RibbonItem[];
+  };
 }
