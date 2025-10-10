@@ -6,6 +6,7 @@ export const environment = {
   clientDataUrl: 'https://lk-api-dev.alorbroker.ru',
   ssoUrl: 'https://login-dev.alor.ru',
   warpUrl: 'https://warp.alor.dev',
+  cmsUrl: 'https://astras-dev.alor.ru/cmsapi',
   remoteSettingsStorageUrl: 'https://astras-dev.alor.ru/identity/v5/UserSettings',
   teamlyDatabaseUrl: 'https://astras-dev.alor.ru/teamly/api/v1/ql/content-database/content',
   alorIconsStorageUrl: 'https://storage.alorbroker.ru/icon/',

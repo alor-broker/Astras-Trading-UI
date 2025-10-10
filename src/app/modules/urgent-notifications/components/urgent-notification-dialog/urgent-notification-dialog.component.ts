@@ -19,14 +19,23 @@ import { switchMap } from "rxjs/operators";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { UrgentNotificationsService } from "../../services/urgent-notifications.service";
 import { LocalStorageService } from "../../../../shared/services/local-storage.service";
+import {
+  isAfter,
+  isBefore
+} from "date-fns";
+import { ExternalLinkComponent } from "../../../../shared/components/external-link/external-link.component";
 
 @Component({
   selector: 'ats-urgent-notification-dialog',
-  imports: [],
+  imports: [
+    ExternalLinkComponent
+  ],
   template: `
     <ng-template let-notification="data">
-      @if (notification.link != null) {
-        <a [href]="notification.link" target="_blank">{{ notification.text }}</a>
+      @if (notification.link != null && notification.link.length > 0) {
+        <ats-external-link [href]="notification.link">
+          {{ notification.text }}
+        </ats-external-link>
       } @else {
         <span>{{ notification.text }}</span>
       }
@@ -44,7 +53,7 @@ export class UrgentNotificationDialogComponent implements OnInit {
 
   private readonly readNotificationsStorageKey = 'readUrgentNotifications';
 
-  private readonly poolIntervalSec = 30;
+  private readonly poolIntervalSec = 60;
 
   private readonly openedNotifications = new Set<string>();
 
@@ -62,62 +71,67 @@ export class UrgentNotificationDialogComponent implements OnInit {
       switchMap(() => this.urgentNotificationsService.getNotifications()),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe(response => {
-      if (response == null || !response.active || response.cards.length === 0) {
-        // ***
-      } else {
-        const readItems = this.getReadNotifications();
+      if(response == null || !response.active || response.cards.length === 0) {
+        return;
+      }
 
-        const newNotifications = response.cards
-          .filter(i => !readItems.includes(i.id))
-          .sort((a, b) => a.cardOrder - b.cardOrder);
+      const readItems = this.getReadNotifications();
 
-        this.openedNotifications.forEach((notificationId) => {
-          this.nzNotificationService.remove(notificationId);
-        });
+      const newNotifications = response.cards
+        .filter(card => {
+          const hasTitle = card.title != null && card.title.length > 0;
+          const isActivatedByTime = card.activeFrom != null
+            ? isAfter(new Date(), card.activeFrom)
+            : true;
+          const isNotExpired = card.activeTo != null
+            ? isBefore(new Date(), card.activeTo)
+            : true;
 
-        this.openedNotifications.clear();
+          return hasTitle && isActivatedByTime && isNotExpired;
+        })
+        .filter(i => !readItems.includes(i.id))
+        .sort((a, b) => (a.cardOrder ?? 0) - (b.cardOrder ?? 0));
 
-        if (newNotifications.length > 0) {
-          this.translatorService.getTranslator('urgent-notifications').pipe(
-            take(1),
-          ).subscribe(translator => {
-            newNotifications.forEach((notification) => {
-              let title = notification.title;
-              const text = notification.text ?? title;
-              if (notification.text == null) {
-                title = translator(['notificationTitle']);
-              }
+      this.openedNotifications.forEach((notificationId) => {
+        this.nzNotificationService.remove(notificationId);
+      });
 
-              const nzNotification = this.nzNotificationService.warning(
-                title,
-                this.template!,
-                {
-                  nzKey: notification.id.toString(),
-                  nzDuration: 0,
-                  nzPlacement: "top",
-                  nzClass: 'urgent-notification',
-                  nzData: {
-                    text,
-                    link: notification.link
-                  }
+      this.openedNotifications.clear();
+
+      if (newNotifications.length > 0) {
+        this.translatorService.getTranslator('urgent-notifications').pipe(
+          take(1),
+        ).subscribe(translator => {
+          newNotifications.forEach((notification) => {
+            const nzNotification = this.nzNotificationService.warning(
+              translator(['notificationTitle']),
+              this.template!,
+              {
+                nzKey: notification.id.toString(),
+                nzDuration: 0,
+                nzPlacement: "top",
+                nzClass: 'urgent-notification',
+                nzData: {
+                  text: notification.title,
+                  link: notification.link
                 }
+              }
+            );
+
+            nzNotification.onClose.pipe(
+              take(1)
+            ).subscribe(() => {
+              this.setReadNotifications(
+                [
+                  ...this.getReadNotifications().slice(-100),
+                  notification.id
+                ]
               );
-
-              nzNotification.onClose.pipe(
-                take(1)
-              ).subscribe(() => {
-                this.setReadNotifications(
-                  [
-                    ...this.getReadNotifications(),
-                    notification.id
-                  ]
-                );
-              });
-
-              this.openedNotifications.add(nzNotification.messageId);
             });
+
+            this.openedNotifications.add(nzNotification.messageId);
           });
-        }
+        });
       }
     });
   }
