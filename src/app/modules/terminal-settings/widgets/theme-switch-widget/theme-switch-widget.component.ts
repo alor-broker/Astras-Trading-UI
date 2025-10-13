@@ -62,7 +62,11 @@ export class ThemeSwitchWidgetComponent implements OnInit {
         },
         true,
         () => {
-          window.location.reload();
+          setTimeout(() => {
+              window.location.reload();
+            },
+            250
+          );
         }
       );
     });

@@ -21,7 +21,8 @@ import { Store } from '@ngrx/store';
 import { PortfolioExtended } from '../../../../shared/models/user/portfolio-extended.model';
 import {
   filter,
-  map
+  map,
+  startWith
 } from 'rxjs/operators';
 import { EntityStatus } from '../../../../shared/models/enums/entity-status';
 import { groupPortfoliosByAgreement } from '../../../../shared/utils/portfolios';
@@ -129,7 +130,8 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
 
     this.availablePortfolios$ = this.store.select(PortfoliosFeature.selectPortfoliosState).pipe(
       filter(p => p.status === EntityStatus.Success),
-      map(portfolios => groupPortfoliosByAgreement(Object.values(portfolios.entities).filter((x): x is PortfolioExtended => !!x)))
+      map(portfolios => groupPortfoliosByAgreement(Object.values(portfolios.entities).filter((x): x is PortfolioExtended => !!x))),
+      startWith(new Map())
     );
   }
 

@@ -7,6 +7,7 @@ import {
 import { EntityStatus } from '../../shared/models/enums/entity-status';
 import { toInstrumentKey } from "../../shared/utils/instruments";
 import {
+  ClientDashboardType,
   CurrentDashboardVersion,
   Dashboard
 } from "../../shared/models/dashboard/dashboard.model";
@@ -51,6 +52,7 @@ const reducer = createReducer(
     ...state,
     dashboard: {
       ...dashboard,
+      type: ClientDashboardType.ClientMobile,
       version: CurrentDashboardVersion
     }
   })),

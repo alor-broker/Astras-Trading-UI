@@ -21,12 +21,7 @@
   "riskCoverageRatioTwoTitle": "RCR2",
 
   "clientTypeTitle": "Risk level",
-  "clientTypeValues": {
-    "StandardRisk": "Standard",
-    "HighRisk": "High",
-    "Special": "Special",
-    "LowRisk": "Low"
-  },
+
 
   "riskStatusTitle": "Status",
   "riskStatusValues": {

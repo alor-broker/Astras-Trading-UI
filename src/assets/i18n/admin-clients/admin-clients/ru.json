@@ -1,0 +1,136 @@
+﻿{
+  "columns": {
+    "login": {
+      "displayName": "Логин",
+      "tooltip": "Логин клиента"
+    },
+    "clientName": {
+      "displayName": "Имя",
+      "tooltip": "Имя клиента"
+    },
+    "portfolio": {
+      "displayName": "Портфель",
+      "tooltip": "Портфель"
+    },
+    "exchange": {
+      "displayName": "Биржа",
+      "tooltip": "Биржа"
+    },
+    "market": {
+      "displayName": "Рынок",
+      "tooltip": "Рынок"
+    },
+    "clientRiskType": {
+      "displayName": "Уровень риска",
+      "tooltip": "Уровень риска"
+    },
+    "isQualifiedInvestor": {
+      "displayName": "Квалифицированный инвестор",
+      "tooltip": "Квалифицированный инвестор"
+    },
+    "buyingPowerAtMorning": {
+      "displayName": "Покуп. сила на утро",
+      "tooltip": "Покуп. сила на утро"
+    },
+    "buyingPower": {
+      "displayName": "Покуп. сила",
+      "tooltip": "Покуп. сила"
+    },
+    "profit": {
+      "displayName": "P/L за день",
+      "tooltip": "P/L за день"
+    },
+    "profitRate": {
+      "displayName": "P/L за день, %",
+      "tooltip": "P/L за день, %"
+    },
+    "portfolioEvaluation": {
+      "displayName": "Оценка ликв. портфеля",
+      "tooltip": "Оценка ликв. портфеля"
+    },
+    "portfolioLiquidationValue": {
+      "displayName": "Оценка портфеля",
+      "tooltip": "Оценка портфеля"
+    },
+    "initialMargin": {
+      "displayName": "Начальная маржа",
+      "tooltip": "Начальная маржа"
+    },
+    "minimalMargin": {
+      "displayName": "Мин. маржа",
+      "tooltip": "Мин. маржа"
+    },
+    "riskBeforeForcePositionClosing": {
+      "displayName": "НПР2 (до закрытия)",
+      "tooltip": "НПР2 (до закрытия)"
+    },
+    "commission": {
+      "displayName": "Комиссия",
+      "tooltip": "Комиссия"
+    },
+    "correctedMargin": {
+      "displayName": "Скорректированная маржа",
+      "tooltip": "Скорректированная маржа"
+    },
+    "turnover": {
+      "displayName": "Оборот",
+      "tooltip": "Оборот"
+    },
+    "moneyFree": {
+      "displayName": "Свободные ДС",
+      "tooltip": "Свободные средства. Сумма рублей и залогов, дисконтированных в рубли, доступная для открытия позиций."
+    },
+    "moneyOld": {
+      "displayName": "Всего ДС (нач.)",
+      "tooltip": "Общее количество рублей и дисконтированных в рубли залогов на начало сессии"
+    },
+    "moneyBlocked": {
+      "displayName": "ГО",
+      "tooltip": "Средства, заблокированные под ГО"
+    },
+    "isLimitsSet": {
+      "displayName": "Денежные и залоговые лимиты",
+      "tooltip": "Наличие установленных денежного и залогового лимитов"
+    },
+    "moneyAmount": {
+      "displayName": "Всего ДС",
+      "tooltip": "Общее количество рублей и дисконтированных в рубли залогов"
+    },
+    "moneyPledgeAmount": {
+      "displayName": "Залоги",
+      "tooltip": "Сумма залогов, дисконтированных в рубли"
+    },
+    "vmCurrentPositions": {
+      "displayName": "Вар. маржа по позициям",
+      "tooltip": "Сагрегированная вармаржа по текущим позициям"
+    },
+    "varMargin": {
+      "displayName": "Итоговая вар. маржа",
+      "tooltip": "Вариационная марж"
+    },
+    "netOptionValue": {
+      "displayName": "NOV",
+      "tooltip": "Сумма произведений теоретических цен опционов, рассчитанных по итогам текущей клиринговой сессии, и объемов соответствующих позиций с учетом знака"
+    },
+    "indicativeVarMargin": {
+      "displayName": "Индикативная маржа",
+      "tooltip": "Индикативная вариационная маржа с учетом текущего индикативного курса валют, руб (рассчитывается аналогично текущей индикативной ВМ, учитывает в т.ч. вар.маржу по закрытым позициям)"
+    },
+    "fee": {
+      "displayName": "Комиссия",
+      "tooltip": "Списанный сбор"
+    },
+    "vmInterCl": {
+      "displayName": "Вар. маржа",
+      "tooltip": "Вариационная маржа, списанная или полученная в пром. клиринг"
+    },
+    "posRisk": {
+      "displayName": "Опер. риск",
+      "tooltip": "Текущий оперативный риск"
+    }
+  },
+
+  "contextMenu": {
+    "openDashboard": "Открыть дашборд"
+  }
+}

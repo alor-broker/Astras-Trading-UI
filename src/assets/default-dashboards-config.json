@@ -191,7 +191,21 @@
     ]
   },
   {
-    "type": "admin",
+    "type": "admin-main",
+    "widgets": [
+      {
+        "widgetTypeId": "admin-clients",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "cols": 50,
+          "rows": 15
+        }
+      }
+    ]
+  },
+  {
+    "type": "admin-selected-portfolio",
     "widgets": [
       {
         "widgetTypeId": "tech-chart",

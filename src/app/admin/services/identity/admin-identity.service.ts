@@ -42,7 +42,8 @@ export class AdminIdentityService {
       'CommandApi',
       'InstrumentApi',
       'RiskApi',
-      'Hyperion'
+      'Hyperion',
+      'AdminComposer'
     ];
 
     return this.httpClient.post<LoginResult>(

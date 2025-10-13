@@ -5,7 +5,12 @@ import {
   Input,
   OnInit
 } from '@angular/core';
-import { combineLatest, map, Observable, shareReplay } from 'rxjs';
+import {
+  combineLatest,
+  map,
+  Observable,
+  shareReplay
+} from 'rxjs';
 import {
   GalleryDisplay,
   WidgetDisplay,
@@ -82,6 +87,9 @@ export class WidgetsGalleryNavBtnComponent implements OnInit {
     this.widgetsGallery$ = combineLatest({
       meta: this.widgetsMetaService.getWidgetsMeta(),
       lang: this.translatorService.getLangChanges(),
+      currentDashboardType: this.currentDashboard$.pipe(
+        map(d => d.type)
+      )
     }).pipe(
       map((s) => {
         const groups = new Map<WidgetCategory, WidgetDisplay[]>();
@@ -91,6 +99,7 @@ export class WidgetsGalleryNavBtnComponent implements OnInit {
           .filter((x) => {
             return x.desktopMeta != null
               && x.desktopMeta.enabled
+              && (s.currentDashboardType == null || x.hideOnDashboardType == null || !x.hideOnDashboardType.includes(s.currentDashboardType))
               && (!(x.isDemoOnly ?? false) || isDemoModeEnabled);
           })
           .sort((a, b) => {

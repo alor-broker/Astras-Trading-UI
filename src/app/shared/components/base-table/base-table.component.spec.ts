@@ -12,6 +12,7 @@ import {
   of
 } from "rxjs";
 import { TableConfig } from "../../models/table-config.model";
+import { BaseColumnSettings } from "../../models/settings/table-settings.model";
 
 @Component({
     selector: 'ats-test-comp',
@@ -19,6 +20,7 @@ import { TableConfig } from "../../models/table-config.model";
     standalone: false
 })
 class TestComponent extends BaseTableComponent<any, any> {
+  protected allColumns: BaseColumnSettings<any>[] = [];
   protected initTableConfigStream(): Observable<TableConfig<any>> {
     return of({ columns: [] });
   }

@@ -28,7 +28,8 @@
       },
       "galleryOrder": 1,
       "enabled": true
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "order-book",
@@ -66,7 +67,8 @@
       "ribbonIcon": "ats-orderbook",
       "enabled": true,
       "galleryOrder": 2
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "scalper-order-book",
@@ -98,7 +100,8 @@
       "hasZeroPaddings": true,
       "galleryOrder": 3,
       "enabled": true
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "light-chart",
@@ -136,7 +139,8 @@
       "ribbonIcon": "sliders",
       "enabled": true,
       "galleryOrder": 4
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "tech-chart",
@@ -174,7 +178,8 @@
       "ribbonIcon": "fund",
       "enabled": true,
       "galleryOrder": 5
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "blotter",
@@ -211,7 +216,8 @@
       "ribbonIcon": "ats-portfolio",
       "enabled": true,
       "galleryOrder": 6
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "instrument-info",
@@ -249,7 +255,8 @@
       "ribbonIcon": "ats-instrument-info",
       "enabled": true,
       "galleryOrder": 7
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "news",
@@ -286,7 +293,8 @@
       "ribbonIcon": "read",
       "enabled": true,
       "galleryOrder": 8
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "all-trades",
@@ -324,7 +332,8 @@
       "ribbonIcon": "ats-trade",
       "enabled": true,
       "galleryOrder": 9
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "exchange-rate",
@@ -361,7 +370,8 @@
       "ribbonIcon": "ats-exchange-rate",
       "enabled": true,
       "galleryOrder": 10
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "all-instruments",
@@ -395,10 +405,11 @@
     },
     "mobileMeta": {
       "galleryIcon": "ats-instruments-search",
-      "ribbonIcon": "aats-instruments-search",
+      "ribbonIcon": "ats-instruments-search",
       "enabled": true,
       "galleryOrder": 11
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "order-submit",
@@ -443,7 +454,8 @@
         }
       },
       "galleryOrder": 12
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "orders-basket",
@@ -480,7 +492,8 @@
       "ribbonIcon": "calculator",
       "enabled": true,
       "galleryOrder": 13
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "treemap",
@@ -517,7 +530,8 @@
       "ribbonIcon": "layout",
       "enabled": true,
       "galleryOrder": 14
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "ribbon",
@@ -547,7 +561,8 @@
       },
       "galleryOrder": 15,
       "enabled": true
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "events-calendar",
@@ -584,7 +599,8 @@
       "ribbonIcon": "calendar",
       "enabled": true,
       "galleryOrder": 16
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "option-board",
@@ -621,7 +637,8 @@
       "ribbonIcon": "table",
       "enabled": true,
       "galleryOrder": 17
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "arbitrage-spread",
@@ -652,7 +669,8 @@
       },
       "galleryOrder": 18,
       "enabled": true
-    }
+    },
+    "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
   },
   {
     "typeId": "portfolio-summary",
@@ -682,7 +700,8 @@
       },
       "galleryOrder": 19,
       "enabled": true
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "instruments-correlation",
@@ -713,7 +732,8 @@
       },
       "galleryOrder": 20,
       "enabled": true
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "bond-screener",
@@ -744,7 +764,8 @@
       },
       "galleryOrder": 21,
       "enabled": true
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "mobile-home-screen",
@@ -794,8 +815,40 @@
         "initialHeight": 18,
         "initialWidth": 10
       },
-      "galleryOrder": 21,
+      "galleryOrder": 50,
       "enabled": true
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
+  },
+  {
+    "typeId": "admin-clients",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "",
+        "componentName": "AdminClientsWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "My clients",
+      "translations": {
+        "ru": "Мои клиенты",
+        "en": "My clients"
+      }
+    },
+    "category": "all",
+    "desktopMeta": {
+      "headerIcon": "user-switch",
+      "galleryIcon": "user-switch",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 100,
+      "enabled": true
+    },
+    "hideOnDashboardType": ["desktop", "mobile", "admin-selected-portfolio"]
   }
 ]

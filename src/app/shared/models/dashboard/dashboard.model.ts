@@ -6,6 +6,18 @@ import { InstrumentKey } from '../instruments/instrument-key.model';
 
 export const CurrentDashboardVersion = '1.0.0';
 
+export enum ClientDashboardType {
+  ClientDesktop = 'desktop',
+  ClientMobile = 'mobile'
+}
+
+export enum AdminDashboardType {
+  AdminMain = 'admin-main',
+  AdminSelectedPortfolio = 'admin-selected-portfolio'
+}
+
+export type DashboardType = ClientDashboardType | AdminDashboardType;
+
 export interface Dashboard {
   guid: string;
   title: string;
@@ -20,6 +32,7 @@ export interface Dashboard {
   isFavorite?: boolean;
   isLocked?: boolean;
   favoritesOrder?: number;
+  type?: DashboardType;
 }
 
 export type InstrumentGroups = Record<string, InstrumentKey>;
@@ -34,17 +47,13 @@ export interface DefaultDesktopDashboardItem extends DefaultDashboardItem {
 }
 
 export interface DefaultDashboardConfig {
-  type: 'desktop' | 'mobile' | 'admin';
+  type: DashboardType;
 }
 
 export interface DefaultDesktopDashboardConfig extends DefaultDashboardConfig {
-  isStandard: boolean;
-  isFavorite: boolean;
-  name: string;
-  widgets: DefaultDesktopDashboardItem[];
-}
-
-export interface DefaultAdminDashboardConfig extends DefaultDashboardConfig {
+  isStandard?: boolean;
+  isFavorite?: boolean;
+  name?: string;
   widgets: DefaultDesktopDashboardItem[];
 }
 

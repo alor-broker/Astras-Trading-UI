@@ -1,0 +1,136 @@
+﻿{
+  "columns": {
+    "login": {
+      "displayName": "Login",
+      "tooltip": "Login"
+    },
+    "clientName": {
+      "displayName": "Client name",
+      "tooltip": "Client name"
+    },
+    "portfolio": {
+      "displayName": "Portfolio",
+      "tooltip": "Portfolio"
+    },
+    "exchange": {
+      "displayName": "Exchange",
+      "tooltip": "Exchange"
+    },
+    "market": {
+      "displayName": "Market",
+      "tooltip": "Market"
+    },
+    "clientRiskType": {
+      "displayName": "Client risk type",
+      "tooltip": "Client risk type"
+    },
+    "isQualifiedInvestor": {
+      "displayName": "Qualified investor",
+      "tooltip": "Qualified investor"
+    },
+    "buyingPowerAtMorning": {
+      "displayName": "Buying power at morning",
+      "tooltip": "Buying power at morning"
+    },
+    "buyingPower": {
+      "displayName": "Buying power",
+      "tooltip": "Buying power"
+    },
+    "profit": {
+      "displayName": "Daily profit",
+      "tooltip": "Daily profit"
+    },
+    "profitRate": {
+      "displayName": "Daily profit rate, %",
+      "tooltip": "Daily profit rate, %"
+    },
+    "portfolioEvaluation": {
+      "displayName": "Portfolio evaluation",
+      "tooltip": "Portfolio evaluation"
+    },
+    "portfolioLiquidationValue": {
+      "displayName": "Portfolio liquidation",
+      "tooltip": "Portfolio liquidation"
+    },
+    "initialMargin": {
+      "displayName": "Initial margin",
+      "tooltip": "Initial margin"
+    },
+    "minimalMargin": {
+      "displayName": "Min. margin",
+      "tooltip": "Min. margin"
+    },
+    "riskBeforeForcePositionClosing": {
+      "displayName": "RCR2 (before closing)",
+      "tooltip": "RCR2 (before closing)"
+    },
+    "commission": {
+      "displayName": "Commission",
+      "tooltip": "Commission"
+    },
+    "correctedMargin": {
+      "displayName": "Corr. margin",
+      "tooltip": "Corr. margin"
+    },
+    "turnover": {
+      "displayName": "Turnover",
+      "tooltip": "Turnover"
+    },
+    "moneyFree": {
+      "displayName": "Free cash",
+      "tooltip": "Free cash"
+    },
+    "moneyOld": {
+      "displayName": "Total cash (initial)",
+      "tooltip": "otal cash (initial)"
+    },
+    "moneyBlocked": {
+      "displayName": "Collaterals for guarantees",
+      "tooltip": "Collaterals for guarantees"
+    },
+    "isLimitsSet": {
+      "displayName": "Cash and pledge limits",
+      "tooltip": "Cash and pledge limits"
+    },
+    "moneyAmount": {
+      "displayName": "Total cash",
+      "tooltip": "Total cash"
+    },
+    "moneyPledgeAmount": {
+      "displayName": "Pledges",
+      "tooltip": "Pledges"
+    },
+    "vmCurrentPositions": {
+      "displayName": "Position variation margin",
+      "tooltip": "Position variation margin"
+    },
+    "varMargin": {
+      "displayName": "Total variation margin",
+      "tooltip": "otal variation margin"
+    },
+    "netOptionValue": {
+      "displayName": "NOV",
+      "tooltip": "NOV"
+    },
+    "indicativeVarMargin": {
+      "displayName": "Indicative margin",
+      "tooltip": "Indicative margin"
+    },
+    "fee": {
+      "displayName": "Fee",
+      "tooltip": "Fee"
+    },
+    "vmInterCl": {
+      "displayName": "Variation margin",
+      "tooltip": "Variation margin"
+    },
+    "posRisk": {
+      "displayName": "Oper. risk",
+      "tooltip": "Oper. risk"
+    }
+  },
+
+  "contextMenu": {
+    "openDashboard": "Open dashboard"
+  }
+}
