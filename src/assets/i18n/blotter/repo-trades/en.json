@@ -30,5 +30,6 @@
     }
   },
   "emptyTrades": "There are no REPO trades today",
-  "emptyTradesWithFilters": "Nothing found with these filters"
+  "emptyTradesWithFilters": "Nothing found with these filters",
+  "emptyRepoTrades": "No REPO trades today"
 }
