@@ -46,7 +46,8 @@ export class AdminDashboardsHelper {
         })),
         selectedPortfolio,
         isSelected: true,
-        type: standardConfig.type
+        type: standardConfig.type,
+        templateId: standardConfig.id
       });
     });
   }

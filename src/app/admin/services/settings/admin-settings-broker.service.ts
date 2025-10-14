@@ -130,6 +130,7 @@ export class AdminSettingsBrokerService {
           this.manageDashboardsService.addDashboardWithTemplate({
             title: "All Clients",
             isSelected: true,
+            templateId: d.id,
             items: d.widgets.map(w => ({
               guid: GuidGenerator.newGuid(),
               widgetType: w.widgetTypeId,
