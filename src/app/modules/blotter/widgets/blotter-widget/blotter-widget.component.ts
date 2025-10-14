@@ -1,16 +1,17 @@
 import {
-  Component, Inject,
+  Component,
+  DestroyRef,
+  Inject,
   Input,
   OnDestroy,
   OnInit
 } from '@angular/core';
-import { NzTabChangeEvent } from 'ng-zorro-antd/tabs';
 import {
-    BehaviorSubject,
-    Observable,
-    of,
-    shareReplay,
-    take
+  BehaviorSubject,
+  filter,
+  Observable,
+  of,
+  shareReplay,
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BlotterService } from '../../services/blotter.service';
@@ -39,6 +40,8 @@ import {
   PUSH_NOTIFICATIONS_CONFIG,
   PushNotificationsConfig
 } from "../../../push-notifications/services/push-notifications-config";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
 
 @Component({
     selector: 'ats-blotter-widget',
@@ -67,11 +70,13 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
   title$!: Observable<string>;
 
   constructor(
+    @Inject(PUSH_NOTIFICATIONS_CONFIG)
+    readonly pushNotificationsConfig: PushNotificationsConfig,
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
     private readonly terminalSettingsService: TerminalSettingsService,
-    @Inject(PUSH_NOTIFICATIONS_CONFIG)
-    readonly pushNotificationsConfig: PushNotificationsConfig
+    private readonly navigationStackService: NavigationStackService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
@@ -144,22 +149,30 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
 
     this.activeTabIndex$ = this.settings$.pipe(
-      map(s => s.activeTabIndex),
-      take(1)
+      map(s => s.activeTabIndex)
     );
 
     this.marketType$ = this.settings$.pipe(
       map(s => getMarketTypeByPortfolio(s.portfolio)),
       shareReplay(1)
     );
+
+    this.navigationStackService.currentState$.pipe(
+      filter(state => state.widgetTarget.typeId === 'blotter'),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(state => {
+      if(state.widgetTarget.parameters?.activeTab === 'summary') {
+        this.onIndexChange(0);
+      }
+    });
   }
 
   onSettingsChange(): void {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 
-  onIndexChange(event: NzTabChangeEvent): void {
-    this.widgetSettingsService.updateSettings(this.widgetInstance.instance.guid, { activeTabIndex: event.index ?? 0 });
+  onIndexChange(index?: number): void {
+    this.widgetSettingsService.updateSettings(this.widgetInstance.instance.guid, { activeTabIndex: index ?? 0 });
   }
 
   ngOnDestroy(): void {

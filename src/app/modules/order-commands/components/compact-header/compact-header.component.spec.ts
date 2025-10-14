@@ -12,8 +12,10 @@ describe('CompactHeaderComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports:[TranslocoTestsModule.getModule()],
-      declarations: [CompactHeaderComponent],
+      imports:[
+        TranslocoTestsModule.getModule(),
+        CompactHeaderComponent
+      ],
       providers: [
         {
           provide: QuotesService,

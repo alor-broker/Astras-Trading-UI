@@ -1,14 +1,62 @@
-<ng-container *ngrxLet="settings$ as settings">
-  <div class="d-flex flex-column flex-gap-25">
-    @if (settings.showPortfolioDynamics ?? true) {
-      <ats-portfolio-dynamics></ats-portfolio-dynamics>
-    }
+<ng-container *transloco="let t; scope: 'mobile-home-screen'">
+  <ng-container *ngrxLet="settings$ as settings">
+    <div class="d-flex flex-column">
+      <ats-ribbon [showScrollButtons]="false" [displayItems]="settings.ribbonSettings?.displayItems ?? null" layout="2row"></ats-ribbon>
 
-    <ats-positions></ats-positions>
+      <div class="bordered mt-15">
+        <ats-portfolio-evaluation (openDetails)="openPortfolioDetails()"></ats-portfolio-evaluation>
+      </div>
 
-    <ats-market-trends
-      [ignoredBoardsFilter]="settings.ignoreTrendsForBoards ?? ['FQBR']"
-      [marketFilter]="settings.displayTrendsForMarket ?? [Market.Fond]"
-    ></ats-market-trends>
-  </div>
+      <div class="mt-10">
+        <ats-positions (instrumentSelected)="openChart($event)"></ats-positions>
+      </div>
+
+      @if (settings.showPortfolioDynamics ?? true) {
+        <div class="bordered mt-20">
+          <nz-collapse nzExpandIconPosition="end" nzGhost>
+            <nz-collapse-panel
+              [nzHeader]="header"
+            >
+              @if (currentAgreement$ | async; as currentAgreement) {
+                <div style="height:250px">
+                  <ats-agreement-dynamics [agreement]="currentAgreement"></ats-agreement-dynamics>
+                </div>
+              }
+            </nz-collapse-panel>
+            <ng-template #header>
+              <span class="section-header">{{ t('mobileHomeScreen.agreementDynamicsTitle') }}</span>
+            </ng-template>
+          </nz-collapse>
+        </div>
+      }
+
+      @if (settings.showNews ?? true) {
+        <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.newsTitle') }}</span>
+        <div class="px-5">
+          <ats-news (showMore)="openNews()"></ats-news>
+        </div>
+      }
+
+      @if (settings.showIdeas ?? true) {
+        <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.ideasTitle') }}</span>
+        <ats-invest-ideas-compact></ats-invest-ideas-compact>
+      }
+
+      <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.marketTrendsTitle') }}</span>
+      <ats-market-trends
+        (instrumentSelected)="openChart($event)"
+        (showMore)="openAllInstruments($event)"
+        [extendedFilter]="settings.extendedFilter ?? []"
+        [itemsCount]="settings.marketTrendsItemsCount ?? 10"
+        [marketFilters]="{
+        targetMarkets: settings.marketTrendsMarkets,
+        ignoredBoards: settings.marketTrendsIgnoredBoards,
+        instrumentTypes: settings.marketTrendsInstrumentTypes,
+        minTradeAmount: settings.marketTrendsMinTradeAmount,
+        minCapitalization: settings.marketTrendsMinCapitalization
+        }"
+        [sectors]="settings.marketTrendsSectors ?? []"
+      ></ats-market-trends>
+    </div>
+  </ng-container>
 </ng-container>

@@ -49,8 +49,6 @@ import { WidgetHeaderComponent } from './components/widget-header/widget-header.
 import { WidgetSkeletonComponent } from './components/widget-skeleton/widget-skeleton.component';
 import { JoyrideModule } from 'ngx-joyride';
 import { ShortNumberComponent } from './components/short-number/short-number.component';
-import { ScrollableRowComponent } from './components/scrollable-row/scrollable-row.component';
-import { ScrollableItemDirective } from "./directives/scrollable-item.directive";
 import { NzResizeObserverModule } from "ng-zorro-antd/cdk/resize-observer";
 import { PushNotificationsProvider } from "../modules/push-notifications/services/push-notifications-provider";
 import { AtsPricePipe } from './pipes/ats-price.pipe';
@@ -77,8 +75,6 @@ import { MergedBadgeComponent } from "./components/merged-badge/merged-badge.com
     WidgetHeaderComponent,
     WidgetSkeletonComponent,
     ShortNumberComponent,
-    ScrollableRowComponent,
-    ScrollableItemDirective,
     AtsPricePipe,
     WidgetHeaderInstrumentSwitchComponent,
     RemoveSelectTitlesDirective,
@@ -181,12 +177,10 @@ import { MergedBadgeComponent } from "./components/merged-badge/merged-badge.com
     WidgetHeaderComponent,
     WidgetSkeletonComponent,
     ShortNumberComponent,
-    ScrollableRowComponent,
     WidgetHeaderInstrumentSwitchComponent,
     PriceDiffComponent,
     // directives
     ResizeColumnDirective,
-    ScrollableItemDirective,
     RemoveSelectTitlesDirective,
     // pipes
     AtsPricePipe

@@ -1,9 +1,85 @@
 ﻿[
   {
+    "id": "home_desktop_dashboard",
+    "type": "desktop",
+    "isStandard": false,
+    "isFavorite": true,
+    "name": "Home",
+    "widgets": [
+      {
+        "widgetTypeId": "light-chart",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "cols": 18,
+          "rows": 15
+        },
+        "initialSettings": {
+          "symbol": "IMOEX",
+          "exchange": "MOEX",
+          "instrumentGroup": "TQBR",
+          "linkToActive": false
+        }
+      },
+      {
+        "widgetTypeId": "order-submit",
+        "position": {
+          "x": 19,
+          "y": 0,
+          "cols": 14,
+          "rows": 15
+        }
+      },
+      {
+        "widgetTypeId": "treemap",
+        "position": {
+          "x": 34,
+          "y": 0,
+          "cols": 16,
+          "rows": 15
+        }
+      },
+      {
+        "widgetTypeId": "portfolio-charts",
+        "position": {
+          "x": 0,
+          "y": 16,
+          "cols": 10,
+          "rows": 14
+        },
+        "initialSettings": {
+          "activeTabIndex": 0
+        }
+      },
+      {
+        "widgetTypeId": "blotter",
+        "position": {
+          "x": 10,
+          "y": 16,
+          "cols": 29,
+          "rows": 14
+        },
+        "initialSettings": {
+          "activeTabIndex": 3
+        }
+      },
+      {
+        "widgetTypeId": "market-trends",
+        "position": {
+          "x": 40,
+          "y": 16,
+          "cols": 10,
+          "rows": 14
+        }
+      }
+    ]
+  },
+  {
+    "id": "default_desktop_dashboard",
     "type": "desktop",
     "isStandard": true,
     "isFavorite": true,
-    "name": "Default Dashboard",
+    "name": "Trading",
     "widgets": [
       {
         "widgetTypeId": "tech-chart",
@@ -41,7 +117,7 @@
           "rows": 12
         },
         "initialSettings": {
-          "activeTabIndex": 3
+          "activeTabIndex": 1
         }
       },
       {
@@ -68,6 +144,7 @@
     ]
   },
   {
+    "id": "lite_desktop_dashboard",
     "type": "desktop",
     "isStandard": false,
     "isFavorite": true,
@@ -133,6 +210,7 @@
     ]
   },
   {
+    "id": "mobile_dashboard",
     "type": "mobile",
     "widgets": [
       {
@@ -145,8 +223,25 @@
         "widgetTypeId": "mobile-home-screen",
         "initialSettings": {
           "showPortfolioDynamics": true,
+          "showNews": true,
+          "showIdeas": false,
           "displayTrendsForMarket": ["FOND"],
-          "ignoreTrendsForBoards": ["FQBR"]
+          "ignoreTrendsForBoards": ["FQBR"],
+          "marketTrendsSectors": [
+            "Energy",
+            "Materials",
+            "Industrials",
+            "Consumer Discretionary",
+            "Consumer Staples",
+            "Health Care",
+            "Financials",
+            "Information Technology",
+            "Communication Services",
+            "Utilities",
+            "Real Estate",
+            "Other"
+          ],
+          "marketTrendsExtendedFilter": []
         }
       },
       {
@@ -168,7 +263,19 @@
         "widgetTypeId": "news"
       },
       {
-        "widgetTypeId": "all-instruments"
+        "widgetTypeId": "all-instruments",
+        "initialSettings": {
+          "allInstrumentsColumns": [
+            "name",
+            "shortName",
+            "dailyGrowthPercent",
+            "tradeAmount",
+            "currency",
+            "price",
+            "priceMax",
+            "priceMin"
+          ]
+        }
       },
       {
         "widgetTypeId": "all-trades"
@@ -191,6 +298,7 @@
     ]
   },
   {
+    "id": "admin-main",
     "type": "admin-main",
     "widgets": [
       {
@@ -205,6 +313,7 @@
     ]
   },
   {
+    "id": "admin-selected-portfolio",
     "type": "admin-selected-portfolio",
     "widgets": [
       {

@@ -3,25 +3,60 @@ import {
   Input,
   OnInit
 } from '@angular/core';
-import { PortfolioDynamicsComponent } from "../portfolio-dynamics/portfolio-dynamics.component";
 import { PositionsComponent } from "../positions/positions.component";
-import { MarketTrendsComponent } from "../market-trends/market-trends.component";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { Observable } from "rxjs";
+import {
+  combineLatest,
+  distinctUntilChanged,
+  Observable
+} from "rxjs";
 import { MobileHomeScreenSettings } from "../../models/mobile-home-screen-settings.model";
 import { LetDirective } from "@ngrx/component";
 import { Market } from "../../../../../generated/graphql.types";
+import { RibbonComponent } from "../../../ribbon/components/ribbon/ribbon.component";
+import { PortfolioEvaluationComponent } from "../portfolio-evaluation/portfolio-evaluation.component";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import {
+  NzCollapseComponent,
+  NzCollapsePanelComponent
+} from "ng-zorro-antd/collapse";
+import { TranslocoDirective } from "@jsverse/transloco";
+import { NewsComponent } from "../news/news.component";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
+import { InvestIdeasCompactComponent } from "../../../invest-ideas/components/invest-ideas-compact/invest-ideas-compact.component";
+import { AgreementDynamicsComponent } from "../../../portfolio-charts/components/agreement-dynamics/agreement-dynamics.component";
+import { AsyncPipe } from "@angular/common";
+import { UserPortfoliosService } from "../../../../shared/services/user-portfolios.service";
+import {
+  filter,
+  map
+} from "rxjs/operators";
+import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
+import {
+  DisplayParams,
+  MarketTrendsComponent
+} from "../../../market-trends/components/market-trends/market-trends.component";
 
 @Component({
-    selector: 'ats-mobile-home-screen-content',
-    imports: [
-        PortfolioDynamicsComponent,
-        PositionsComponent,
-        MarketTrendsComponent,
-        LetDirective
-    ],
-    templateUrl: './mobile-home-screen-content.component.html',
-    styleUrl: './mobile-home-screen-content.component.less'
+  selector: 'ats-mobile-home-screen-content',
+  imports: [
+    PositionsComponent,
+    MarketTrendsComponent,
+    LetDirective,
+    RibbonComponent,
+    PortfolioEvaluationComponent,
+    NzCollapseComponent,
+    NzCollapsePanelComponent,
+    TranslocoDirective,
+    NewsComponent,
+    InvestIdeasCompactComponent,
+    AgreementDynamicsComponent,
+    AsyncPipe
+  ],
+  templateUrl: './mobile-home-screen-content.component.html',
+  styleUrl: './mobile-home-screen-content.component.less'
 })
 export class MobileHomeScreenContentComponent implements OnInit {
   @Input({required: true})
@@ -29,12 +64,79 @@ export class MobileHomeScreenContentComponent implements OnInit {
 
   readonly Market = Market;
 
+  currentAgreement$: Observable<string> | null = null;
+
   protected settings$!: Observable<MobileHomeScreenSettings>;
 
-  constructor(private readonly widgetSettingsService: WidgetSettingsService) {
+  constructor(
+    private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly dashboardContextService: DashboardContextService,
+    private readonly navigationStackService: NavigationStackService,
+    private readonly userPortfoliosService: UserPortfoliosService
+  ) {
   }
 
   ngOnInit(): void {
     this.settings$ = this.widgetSettingsService.getSettings<MobileHomeScreenSettings>(this.guid);
+    this.currentAgreement$ = this.getCurrentAgreement();
+  }
+
+  openPortfolioDetails(): void {
+    this.navigationStackService.pushState({
+      widgetTarget: {
+        typeId: 'blotter',
+        parameters: {
+          activeTab: 'summary'
+        }
+      }
+    });
+  }
+
+  openChart(instrumentKey: InstrumentKey): void {
+    this.dashboardContextService.selectDashboardInstrument(instrumentKey, defaultBadgeColor);
+    this.navigationStackService.pushState({
+      widgetTarget: {
+        typeId: 'light-chart'
+      }
+    });
+  }
+
+  openNews(): void {
+    this.navigationStackService.pushState({
+      widgetTarget: {
+        typeId: 'news',
+        parameters: {
+          section: 'portfolio'
+        }
+      }
+    });
+  }
+
+  openAllInstruments(displayParams: DisplayParams): void {
+    this.navigationStackService.pushState({
+      widgetTarget: {
+        typeId: 'all-instruments',
+        parameters: {
+          sort: {
+            parameter: 'dailyGrowthPercent',
+            order: displayParams.growOrder
+          }
+        }
+      }
+    });
+  }
+
+  private getCurrentAgreement(): Observable<string> {
+    return combineLatest({
+      selectedPortfolio: this.dashboardContextService.selectedPortfolio$,
+      allPortfolios: this.userPortfoliosService.getPortfolios()
+    }).pipe(
+      map(x => {
+        return x.allPortfolios.find(p => isPortfoliosEqual(p, x.selectedPortfolio));
+      }),
+      filter(p => !!p),
+      map(p => p.agreement),
+      distinctUntilChanged((previous, current) => previous === current)
+    );
   }
 }

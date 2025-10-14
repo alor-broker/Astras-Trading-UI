@@ -5,7 +5,6 @@ import {
 } from '@angular/core';
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
 import { Observable } from "rxjs";
-import { InfoSettings } from "../../../info/models/info-settings.model";
 import { WidgetSettingsCreationHelper } from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
 import { InstrumentsCorrelationSettings } from "../../models/instruments-correlation-settings.model";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -42,6 +41,6 @@ export class InstrumentsCorrelationWidgetComponent implements OnInit {
       this.widgetSettingsService
     );
 
-    this.settings$ = this.widgetSettingsService.getSettings<InfoSettings>(this.guid);
+    this.settings$ = this.widgetSettingsService.getSettings<InstrumentsCorrelationSettings>(this.guid);
   }
 }

@@ -1,0 +1,25 @@
+﻿{
+  "columns": {
+    "ticker": {
+      "title": "Тикер"
+    },
+    "dailyGrowthPercent": {
+      "title": "Рост, %"
+    },
+    "lastPrice": {
+      "title": "Цена"
+    }
+  },
+
+  "moreItemsButton": {
+    "title": "Показать еще"
+  },
+
+  "resetFiltersButton": {
+    "title": "Все"
+  },
+
+  "extendedFilter": {
+    "Penny Stocks": "Penny Stocks"
+  }
+}

@@ -1,18 +1,7 @@
 ﻿{
-  "sectionTitle": "Positions",
-  "columns": {
-    "ticker": {
-      "title": "Ticker"
-    },
-    "currentVolume": {
-      "title": "Curr volume"
-    },
-    "dailyPlPerc": {
-      "title": "P/L daily, %"
-    }
-  },
-
   "moreItemsButton": {
     "title": "Show more"
-  }
+  },
+
+  "noItemsToDisplayMessage": "You have no open positions"
 }

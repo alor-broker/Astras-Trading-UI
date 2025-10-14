@@ -25,7 +25,7 @@ import {ExternalLinkComponent} from "../../../shared/components/external-link/ex
     styleUrl: './empty-portfolios-warning-modal.component.less'
 })
 export class EmptyPortfoliosWarningModalComponent implements OnInit {
-  supportLink = this.environmentService.externalLinks.support;
+  supportLink = this.environmentService.externalLinks?.support;
   helpLink$!: Observable<string | null>;
 
   @Input({required: true})

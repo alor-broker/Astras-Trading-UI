@@ -29,7 +29,7 @@
            nzResizeObserver>
         <nz-tabset
           (mousedown)='$event.stopPropagation()'
-          (nzSelectChange)="onIndexChange($event)"
+          (nzSelectChange)="onIndexChange($event.index)"
           *transloco="let t; scope: 'blotter'"
           [nzAnimated]="false"
           [nzSelectedIndex]="activeTabIndex$ | async" [style.height]="(contentSize$ | async)?.height + 'px'"

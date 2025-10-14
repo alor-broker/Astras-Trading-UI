@@ -14,7 +14,7 @@ export interface LoggerConfig {
 }
 
 export interface RemoteLoggerConfig extends LoggerConfig {
-  environment: 'local' | 'dev' | 'prod';
+  environment: string;
   loggingServerUrl: string;
   authorization: {
     name: string;
@@ -28,17 +28,17 @@ export interface LoggingConfig {
 }
 
 export interface ExternalLinksConfig {
-  reports: string;
-  releases: string;
-  support: string;
-  issuesList: string;
-  help: string;
-  officialSite: string;
-  riskRate: string;
-  personalAccount: string;
-  bankroll: string;
-  services: string;
-  videoTutorial: string;
+  reports?: string;
+  releases?: string;
+  support?: string;
+  issuesList?: string;
+  help?: string;
+  officialSite?: string;
+  riskRate?: string;
+  personalAccount?: string;
+  bankroll?: string;
+  services?: string;
+  videoTutorial?: string;
 }
 
 @Injectable({
@@ -88,12 +88,16 @@ export class EnvironmentService {
     return environment.logging as unknown as LoggingConfig;
   }
 
-  get externalLinks(): ExternalLinksConfig {
+  get externalLinks(): ExternalLinksConfig | undefined {
     return environment.externalLinks;
   }
 
   get features(): Record<string, boolean> {
     return environment.features;
+  }
+
+  get investIdeasApiUrl(): string {
+    return environment.investIdeasApiUrl;
   }
 
   private getDebugStringRecord(key: string): string | null {

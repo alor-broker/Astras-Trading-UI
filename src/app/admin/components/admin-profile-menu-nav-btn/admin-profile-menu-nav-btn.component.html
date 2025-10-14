@@ -5,27 +5,36 @@
 
   <nz-dropdown-menu #menu="nzDropdownMenu">
     <ul nz-menu>
-      <li (click)="openThirdPartyLink(externalLinks.releases)" class='menu-item external-link' nz-menu-item>
+      @if(!isNullOrEmpty(externalLinks?.releases)) {
+        <li (click)="openThirdPartyLink(externalLinks?.releases!)" class='menu-item external-link' nz-menu-item>
           <span>
             <i nz-icon nzTheme="outline" nzType="history"></i>
             <ng-container [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.releases')}"
                           [ngTemplateOutlet]="externalLink"></ng-container>
           </span>
-      </li>
-      <li (click)="openThirdPartyLink(externalLinks.support)" class='menu-item external-link' nz-menu-item>
+        </li>
+      }
+
+      @if(!isNullOrEmpty(externalLinks?.support)) {
+        <li (click)="openThirdPartyLink(externalLinks?.support!)" class='menu-item external-link' nz-menu-item>
           <span>
             <i nz-icon nzTheme="outline" nzType="customer-service"></i>
             <ng-container [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.support')}"
                           [ngTemplateOutlet]="externalLink"></ng-container>
           </span>
-      </li>
-      <li (click)="openThirdPartyLink(externalLinks.issuesList)" class='menu-item external-link' nz-menu-item>
+        </li>
+      }
+
+      @if(!isNullOrEmpty(externalLinks?.issuesList)) {
+        <li (click)="openThirdPartyLink(externalLinks?.issuesList!)" class='menu-item external-link' nz-menu-item>
           <span>
             <i nz-icon nzTheme="outline" nzType="bulb"></i>
             <ng-container [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.issuesList')}"
                           [ngTemplateOutlet]="externalLink"></ng-container>
           </span>
-      </li>
+        </li>
+      }
+
       @if (helpLink$ | async; as helpLink) {
         <li
           nz-menu-item

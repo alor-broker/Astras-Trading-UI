@@ -14,6 +14,7 @@ export const environment = {
   remoteSettingsStorageUrl: 'https://astras-dev.alor.ru/identity/v5/UserSettings',
   teamlyDatabaseUrl: 'https://astras-dev.alor.ru/teamly/api/v1/ql/content-database/content',
   alorIconsStorageUrl: 'https://storage.alorbroker.ru/icon/',
+  investIdeasApiUrl: 'https://cabinapi-dev.inviabroker.com/invest-ideas',
   logging: {
     console: {
       minLevel: 'trace'
@@ -46,7 +47,8 @@ export const environment = {
   },
   features: {
     aiChat: true,
-    lowClientRiskCheck: true
+    lowClientRiskCheck: true,
+    releases: true
   },
   internationalization: {
     ru: {

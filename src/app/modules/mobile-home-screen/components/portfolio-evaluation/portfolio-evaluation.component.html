@@ -1,0 +1,27 @@
+<ng-container *transloco="let t; scope: 'mobile-home-screen/portfolio-evaluation'">
+  @if (summary$ | async; as summary) {
+    <div class="d-flex flex-column flex-gap-10 lh-1">
+      <span class="heading-color fs-5">{{ t('mobileHomeScreenPortfolioEvaluation.sectionTitle') }}</span>
+      <span class="heading-color fs-5">{{ summary.portfolioLiquidation }}</span>
+      <div class="d-flex flex-row flex-nowrap justify-content-between align-items-end">
+        <span class="fs-6"
+          [ngClass]="{
+           'positive-color': summary.dailyProfitPercent > 0,
+           'negative-color': summary.dailyProfitPercent < 0
+            }"
+        >
+          @if (summary.dailyProfitPercent > 0) {
+            <span>+</span>
+          }
+          <span>{{ summary.dailyProfit }}</span>
+          <span>&nbsp;({{ summary.dailyProfitPercent }}%)</span>
+          <span>&nbsp;{{ t('mobileHomeScreenPortfolioEvaluation.period.perDay') }}</span>
+        </span>
+        <span (click)="openDetails.emit()">
+          {{ t('mobileHomeScreenPortfolioEvaluation.detailsLink') }}
+          <nz-icon nzType="right" nzTheme="outline" />
+        </span>
+      </div>
+    </div>
+  }
+</ng-container>

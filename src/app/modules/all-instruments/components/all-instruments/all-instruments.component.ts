@@ -5,7 +5,8 @@ import {
   Input,
   LOCALE_ID,
   OnDestroy,
-  OnInit
+  OnInit,
+  ViewChild
 } from '@angular/core';
 import { AllInstrumentsService } from "../../services/all-instruments.service";
 import {
@@ -67,9 +68,13 @@ import {
 } from "../../../../shared/utils/file-export/file-saver";
 import { NzModalService } from "ng-zorro-antd/modal";
 import { AddToWatchlistMenuComponent } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
-import { TableDataRow } from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
+import {
+  InfiniteScrollTableComponent,
+  TableDataRow
+} from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { formatNumber } from "@angular/common";
+import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
 
 interface AllInstrumentsNodeDisplay extends Instrument {
   id: string;
@@ -88,6 +93,9 @@ export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
   InstrumentModelSortInput
 >
 implements OnInit, OnDestroy {
+  @ViewChild('table')
+  table?: InfiniteScrollTableComponent;
+
   @Input({ required: true }) guid!: string;
 
   public allColumns: BaseColumnSettings<AllInstrumentsNodeDisplay>[] = [
@@ -362,7 +370,8 @@ implements OnInit, OnDestroy {
     private readonly translatorService: TranslatorService,
     private readonly modalService: NzModalService,
     protected readonly destroyRef: DestroyRef,
-    @Inject(LOCALE_ID) private readonly locale: string
+    @Inject(LOCALE_ID) private readonly locale: string,
+    private readonly navigationStackService: NavigationStackService,
   ) {
     super(settingsService, destroyRef);
   }
@@ -376,6 +385,19 @@ implements OnInit, OnDestroy {
       );
 
     super.ngOnInit();
+
+    this.navigationStackService.currentState$.pipe(
+      filter(state => state.widgetTarget.typeId === 'all-instruments'),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(state => {
+      if(state.widgetTarget.parameters?.sort?.parameter != null) {
+        const targetColumn = this.allColumns.find(c => c.id === state.widgetTarget.parameters?.sort?.parameter);
+        if(targetColumn != null) {
+          const order = state.widgetTarget.parameters?.sort.order === SortEnumType.Desc ? 'descend' : 'ascend';
+          this.table?.sortChange(order, targetColumn);
+        }
+      }
+    });
   }
 
   openContextMenu($event: MouseEvent, menu: AddToWatchlistMenuComponent, selectedRow: TableDataRow): void {

@@ -84,6 +84,7 @@ export class DashboardsBridgeEffects {
         actions.push(DashboardsManageActions.add({
           guid: GuidGenerator.newGuid(),
           sourceGuid: targetDashboard.guid,
+          templateId: targetDashboard.templateId,
           title: `${targetDashboard.title} ${params.allDashboards.filter(d => d.sourceGuid === targetDashboard.guid).length + 1}`,
           isSelected: true,
           isFavorite: false,

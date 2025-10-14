@@ -3,7 +3,7 @@
   @let selectedDashboard = selectedDashboard$ | async;
 
   <ats-desktop-navbar
-    joyrideStep="step10"
+    [joyrideStep]="externalLinks?.videoTutorial != null &&  externalLinks?.videoTutorial!.length > 0? 'step10': ''"
     [title]="t('joyride.step10.title')"
     stepPosition="center"
     [stepContent]="joyrideStep10Content"
@@ -68,7 +68,7 @@
 
   <ng-template #joyrideStep10Content>
     {{t('joyride.step10.text')}}
-    <ats-external-link [href]="externalLinks.videoTutorial">
+    <ats-external-link [href]="externalLinks?.videoTutorial!">
       {{t('joyride.step10.tutorialVideoText')}}
     </ats-external-link>
   </ng-template>

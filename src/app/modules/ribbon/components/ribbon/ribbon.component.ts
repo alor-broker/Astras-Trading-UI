@@ -1,79 +1,118 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {forkJoin, Observable, timer} from 'rxjs';
-import {IndexDisplay} from '../../models/ribbon-display.model';
-import {map, switchMap} from "rxjs/operators";
-import {HistoryService} from "../../../../shared/services/history.service";
-import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {
+  Component,
+  DestroyRef,
+  input,
+  OnInit
+} from '@angular/core';
+import {
+  forkJoin,
+  Observable,
+  timer
+} from 'rxjs';
+import { IndexDisplay } from '../../models/ribbon-display.model';
+import {
+  map,
+  switchMap
+} from "rxjs/operators";
+import { HistoryService } from "../../../../shared/services/history.service";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { MathHelper } from "../../../../shared/utils/math-helper";
+import { ScrollableRowComponent } from "../../../../shared/components/scrollable-row/scrollable-row.component";
+import {
+  AsyncPipe,
+  DecimalPipe,
+  NgClass,
+  NgForOf,
+  NgTemplateOutlet
+} from "@angular/common";
+import { ScrollableItemDirective } from "../../../../shared/directives/scrollable-item.directive";
+import { NzTypographyComponent } from "ng-zorro-antd/typography";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+
+export interface RibbonItem {
+  displayName?: string;
+  symbol: string;
+  exchange: string;
+  isFutures?: boolean;
+}
 
 @Component({
-    selector: 'ats-ribbon',
-    templateUrl: './ribbon.component.html',
-    styleUrls: ['./ribbon.component.less'],
-    standalone: false
+  selector: 'ats-ribbon',
+  templateUrl: './ribbon.component.html',
+  styleUrls: ['./ribbon.component.less'],
+  imports: [
+    ScrollableRowComponent,
+    NgForOf,
+    ScrollableItemDirective,
+    NzTypographyComponent,
+    AsyncPipe,
+    DecimalPipe,
+    NgClass,
+    NgTemplateOutlet
+  ],
+  standalone: true
 })
 export class RibbonComponent implements OnInit {
-  @Input({required: true})
-  guid!: string;
-
   indices$!: Observable<IndexDisplay[]>;
-  private readonly displayIndices: { displayName: string, instrumentKey: InstrumentKey }[] = [
+
+  layout = input<'singleRow' | '2row'>('singleRow');
+
+  showScrollButtons = input(true);
+
+  displayItems = input<RibbonItem[] | null>(null);
+
+  private readonly defaultIndices: RibbonItem[] = [
     {
-      displayName: 'IMOEX',
-      instrumentKey: {
-        symbol: 'IMOEX',
-        exchange: 'MOEX'
-      }
+      symbol: 'IMOEX',
+      exchange: 'MOEX'
     },
     {
-      displayName: 'RTSI',
-      instrumentKey: {
-        symbol: 'RTSI',
-        exchange: 'MOEX'
-      }
+      symbol: 'RTSI',
+      exchange: 'MOEX'
     },
     {
       displayName: 'USD/РУБ',
-      instrumentKey: {
-        symbol: 'USD000UTSTOM',
-        exchange: 'MOEX'
-      }
+      symbol: 'USD000UTSTOM',
+      exchange: 'MOEX'
     },
     {
       displayName: 'CNY/РУБ',
-      instrumentKey: {
-        symbol: 'CNYRUB_TOM',
-        exchange: 'MOEX'
-      }
+      symbol: 'CNYRUB_TOM',
+      exchange: 'MOEX'
     },
     {
       displayName: 'Oil (Brent)',
-      instrumentKey: {
-        symbol: this.getNextFuturesContract('BR'),
-        exchange: 'MOEX'
-      }
+      symbol: 'BR',
+      exchange: 'MOEX',
+      isFutures: true
     },
     {
       displayName: 'Gold',
-      instrumentKey: {
-        symbol: this.getNextFuturesContract('GOLD'),
-        exchange: 'MOEX'
-      }
+      symbol: 'GOLD',
+      isFutures: true,
+      exchange: 'MOEX'
     }
   ];
 
   constructor(
-    private readonly historyService: HistoryService
+    private readonly historyService: HistoryService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
   ngOnInit(): void {
     this.indices$ = timer(0, 60000).pipe(
       switchMap(() => {
-        const indices$ = this.displayIndices.map(i => {
-          return this.getQuoteInfo(i.instrumentKey).pipe(
+        const displayItems = this.displayItems() ?? this.defaultIndices;
+        const indices$ = displayItems.map(i => {
+          return this.getQuoteInfo(
+            {
+              symbol: (i.isFutures ?? false) ? this.getNextFuturesContract(i.symbol) : i.symbol,
+              exchange: i.exchange
+            }
+          ).pipe(
             map(x => ({
-              name: i.displayName,
+              name: i.displayName ?? i.symbol,
               value: x?.value ?? 0,
               changePercent: x?.percentChange ?? 0
             } as IndexDisplay))
@@ -81,7 +120,8 @@ export class RibbonComponent implements OnInit {
         });
 
         return forkJoin(indices$);
-      })
+      }),
+      takeUntilDestroyed(this.destroyRef)
     );
   }
 

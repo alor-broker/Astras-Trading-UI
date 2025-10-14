@@ -66,46 +66,40 @@ export class DashboardsEffects {
       ofType(DashboardsManageActions.reset),
       switchMap(action => this.store.select(DashboardsFeature.getDashboard(action.dashboardGuid)).pipe(take(1))),
       mapWith(
-        () => this.dashboardService.getDefaultDashboardConfig(),
-        (source, defaultConfig) => ({dashboard: source, defaultConfig})
+        () => this.dashboardService.getDashboardTemplatesConfig(),
+        (targetDashboard, defaultConfig) => ({targetDashboard, defaultConfig})
       ),
-      switchMap(x => {
-          if (x.dashboard == null) {
-            return EMPTY;
-          }
+      switchMap(({targetDashboard, defaultConfig}) => {
+        if(targetDashboard == null) {
+          return EMPTY;
+        }
+        const templates = defaultConfig
+          .filter(d => d.type === (targetDashboard.type ?? ClientDashboardType.ClientDesktop))
+          .map(d => d as DefaultDesktopDashboardConfig);
 
-          const configs = x.defaultConfig
-            .filter(d => d.type === (x.dashboard!.type ?? ClientDashboardType.ClientDesktop))
-            .map(d => d as DefaultDesktopDashboardConfig);
+        let targetTemplate = templates.find(t => t.isStandard);
 
-          if (configs.length === 0) {
-            return EMPTY;
-          }
+        if(targetDashboard.templateId != null) {
+          targetTemplate = templates.find(t => t.id === targetDashboard.templateId) ?? targetTemplate;
+        }
 
-          let standardDashboard: DefaultDesktopDashboardConfig | null = null;
-          if (configs.length > 1) {
-            standardDashboard = configs.find(c => c.isStandard ?? false) ?? null;
-          } else {
-            standardDashboard = configs[0];
-          }
-
-          if (standardDashboard != null) {
-            return of(
-              DashboardItemsActions.removeWidgets({
-                dashboardGuid: x.dashboard.guid,
-                widgetIds: x.dashboard.items.map(i => i.guid)
-              }),
-              DashboardItemsActions.addWidgets({
-                  dashboardGuid: x.dashboard.guid,
-                  widgets: standardDashboard.widgets.map(w => ({
-                    widgetType: w.widgetTypeId,
-                    position: w.position,
-                    initialSettings: w.initialSettings
-                  }))
-                }
-              )
-            );
-          }
+        if(targetTemplate != null) {
+          return of(
+            DashboardItemsActions.removeWidgets({
+              dashboardGuid: targetDashboard.guid,
+              widgetIds: targetDashboard.items.map(i => i.guid)
+            }),
+            DashboardItemsActions.addWidgets({
+              dashboardGuid: targetDashboard.guid,
+                widgets: targetTemplate.widgets.map(w => ({
+                  widgetType: w.widgetTypeId,
+                  position: w.position,
+                  initialSettings: w.initialSettings
+                }))
+              }
+            )
+          );
+        }
 
           return EMPTY;
         }

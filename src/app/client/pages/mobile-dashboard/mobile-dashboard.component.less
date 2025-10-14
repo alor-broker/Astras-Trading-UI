@@ -2,9 +2,27 @@
 
 .themeMixin({
   :host {
-    .content ::ng-deep {
-      background-color: @component-background;
-      color: @text-color;
+    .ant-layout {
+      @end-color: fade(@body-background, 5%);
+      background: @mobile-background-gradient;
+
+      ::ng-deep {
+        .ant-layout-header {
+          background-color: @mobile-layout-header-background;
+        }
+
+        .content {
+          color: @text-color;
+
+          .ant-table {
+            background: transparent;
+
+            .ant-table-thead > tr > th {
+              background: @mobile-body-background-gradient-middle;
+            }
+          }
+        }
+      }
     }
   }
 });
@@ -30,6 +48,7 @@ nz-layout {
 
   ats-widget-header-instrument-switch {
     pointer-events: none;
+
     .search-btn {
       display: none;
     }
@@ -58,6 +77,34 @@ nz-layout {
       ats-mobile-footer {
         height: 100%;
         display: block;
+      }
+    }
+  }
+}
+
+::ng-deep {
+  .ant-modal {
+    &.full-screen {
+      position: absolute;
+      top: 50px;
+      bottom: 50px;
+      left: 0;
+      right: 0;
+
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+
+      .ant-modal-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+
+        .ant-modal-body {
+          flex: 1 1 auto;
+          padding-top: 0;
+          max-height: 100%;
+        }
       }
     }
   }

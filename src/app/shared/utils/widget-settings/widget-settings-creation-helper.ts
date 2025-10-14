@@ -25,6 +25,7 @@ export class WidgetSettingsCreationHelper {
       filter(x => !x)
     ).subscribe(() => {
       const settings = {
+        ...widgetInstance.widgetMeta.baseSettings,
         guid: widgetInstance.instance.guid,
         settingsType,
         ...widgetInstance.instance.initialSettings
@@ -49,6 +50,7 @@ export class WidgetSettingsCreationHelper {
     ).subscribe(instrumentSelection => {
       const groupKey = defaultBadgeColor;
       const settings = {
+        ...widgetInstance.widgetMeta.baseSettings,
         guid: widgetInstance.instance.guid,
         settingsType,
         linkToActive: true,
@@ -75,6 +77,7 @@ export class WidgetSettingsCreationHelper {
       take(1)
     ).subscribe(portfolio => {
       const settings = {
+        ...widgetInstance.widgetMeta.baseSettings,
         guid: widgetInstance.instance.guid,
         settingsType,
         linkToActive: true,

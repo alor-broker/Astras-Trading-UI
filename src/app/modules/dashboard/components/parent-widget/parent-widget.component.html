@@ -117,6 +117,24 @@
       [isBlockWidget]="isBlockWidget"
     >
     </ats-ai-graphs-widget>
+    <ats-invest-ideas-widget
+      *ngSwitchCase="'invest-ideas'"
+      [widgetInstance]="widgetInstance"
+      [isBlockWidget]="isBlockWidget"
+    >
+    </ats-invest-ideas-widget>
+    <ats-portfolio-charts-widget
+      *ngSwitchCase="'portfolio-charts'"
+      [widgetInstance]="widgetInstance"
+      [isBlockWidget]="isBlockWidget"
+    >
+    </ats-portfolio-charts-widget>
+    <ats-market-trends-widget
+      *ngSwitchCase="'market-trends'"
+      [widgetInstance]="widgetInstance"
+      [isBlockWidget]="isBlockWidget"
+    >
+    </ats-market-trends-widget>
 
     <ats-admin-clients-widget
       *ngSwitchCase="'admin-clients'"

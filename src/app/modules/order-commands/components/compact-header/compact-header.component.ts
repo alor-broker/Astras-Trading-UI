@@ -1,16 +1,30 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {BehaviorSubject, combineLatest, Observable, switchMap} from "rxjs";
 import {QuotesService} from "../../../../shared/services/quotes.service";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import {filter, map, startWith} from "rxjs/operators";
+import { TranslocoDirective } from "@jsverse/transloco";
+import {
+  AsyncPipe,
+  NgIf
+} from "@angular/common";
+import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
+import { SharedModule } from "../../../../shared/shared.module";
+import { Instrument } from "../../../../shared/models/instruments/instrument.model";
+import { MathHelper } from "../../../../shared/utils/math-helper";
 
 @Component({
-    selector: 'ats-compact-header',
-    templateUrl: './compact-header.component.html',
-    styleUrls: ['./compact-header.component.less'],
-    standalone: false
+  selector: 'ats-compact-header',
+  templateUrl: './compact-header.component.html',
+  imports: [
+    TranslocoDirective,
+    NgIf,
+    AsyncPipe,
+    NzTooltipDirective,
+    SharedModule
+  ],
+  styleUrls: ['./compact-header.component.less']
 })
 export class CompactHeaderComponent implements OnInit, OnDestroy {
   @Output()
@@ -22,7 +36,7 @@ export class CompactHeaderComponent implements OnInit, OnDestroy {
   priceData$!: Observable<{ bid: number, ask: number }>;
   positionInfo$!: Observable<{ abs: number, quantity: number } | null>;
 
-  readonly instrumentKey$ = new BehaviorSubject<InstrumentKey | null>(null);
+  readonly instrument$ = new BehaviorSubject<Instrument | null>(null);
   readonly portfolioKey$ = new BehaviorSubject<PortfolioKey | null>(null);
 
   constructor(
@@ -31,8 +45,8 @@ export class CompactHeaderComponent implements OnInit, OnDestroy {
   }
 
   @Input({required: true})
-  set instrumentKey(value: InstrumentKey) {
-    this.instrumentKey$.next(value);
+  set instrument(value: Instrument) {
+    this.instrument$.next(value);
   }
 
   @Input({required: true})
@@ -41,13 +55,13 @@ export class CompactHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.instrumentKey$.complete();
+    this.instrument$.complete();
     this.portfolioKey$.complete();
   }
 
   ngOnInit(): void {
-    this.priceData$ = this.instrumentKey$.pipe(
-      filter((i): i is InstrumentKey => !!i),
+    this.priceData$ = this.instrument$.pipe(
+      filter((i): i is Instrument => !!i),
       switchMap(i => this.quotesService.getQuotes(i.symbol, i.exchange, i.instrumentGroup)),
       map(x => ({
         bid: x.bid,
@@ -57,7 +71,7 @@ export class CompactHeaderComponent implements OnInit, OnDestroy {
 
     this.positionInfo$ = combineLatest(
       [
-        this.instrumentKey$,
+        this.instrument$,
         this.portfolioKey$
       ]
     ).pipe(
@@ -76,5 +90,9 @@ export class CompactHeaderComponent implements OnInit, OnDestroy {
       ),
       startWith(null as ({ abs: number, quantity: number } | null))
     );
+  }
+
+  getPriceDecimalSymbolsCount(instrument: Instrument): number | null {
+    return MathHelper.getPrecision(instrument.minstep);
   }
 }

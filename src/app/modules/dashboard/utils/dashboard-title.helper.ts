@@ -5,6 +5,8 @@ export class DashboardTitleHelper {
   static getDisplayTitle(dashboard: Dashboard, translator: TranslatorFn): string {
     const defaultTitles = [
       'Default Dashboard',
+      'Home',
+      'Trading',
       'Lite Dashboard',
       'All Clients'
     ];

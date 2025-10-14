@@ -68,6 +68,16 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
 
   allColumns: BaseColumnSettings<PositionDisplay>[] = [
     {
+      id: 'icon',
+      displayName: 'Значок',
+      sortOrder: null,
+      sortFn: null,
+      hideTitle: true,
+      width: 30,
+      minWidth: 25,
+      order: 0
+    },
+    {
       id: 'symbol',
       displayName: 'Тикер',
       sortOrder: null,
@@ -277,7 +287,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
               ...column.column,
               displayName: x.translator(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
               tooltip: x.translator(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
-              width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
+              width: column.columnSettings!.columnWidth ?? column.column.width ?? this.defaultColumnWidth,
               order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index),
               filterData: column.column.filterData
                 ? {

@@ -6,6 +6,7 @@ import {
 import { OrderEvaluationComponent } from './order-evaluation.component';
 import { Subject } from "rxjs";
 import { EvaluationService } from "../../../../shared/services/evaluation.service";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('OrderEvaluationComponent', () => {
   let component: OrderEvaluationComponent;
@@ -13,7 +14,10 @@ describe('OrderEvaluationComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [OrderEvaluationComponent],
+      imports: [
+        TranslocoTestsModule.getModule(),
+        OrderEvaluationComponent
+      ],
       providers: [
         {
           provide: EvaluationService,

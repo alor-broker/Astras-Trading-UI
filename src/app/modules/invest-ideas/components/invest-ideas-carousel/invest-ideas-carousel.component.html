@@ -1,0 +1,103 @@
+<div *ngrxLet="ideas$ as ideas; suspenseTpl: loading" class="h-100 position-relative">
+  @if (ideas.length > 0) {
+
+    @if (ideas.length > 1) {
+      <span class="nav-buttons left" (click)="carousel.pre()">
+        <nz-icon nzType="left" nzTheme="outline"/>
+      </span>
+      <span class="nav-buttons right" (click)="carousel.next()">
+        <nz-icon nzType="right" nzTheme="outline"/>
+      </span>
+    }
+
+    <div class="h-100 overflow-hidden mx-15">
+      <nz-carousel
+        [nzDots]="true"
+        [nzDotPosition]="'top'"
+        [nzEnableSwipe]="false"
+        [nzEffect]="'fade'"
+        #carousel
+      >
+        @for (idea of ideas; track idea) {
+          <div nz-carousel-content>
+            <div class="section pt-25">
+              <div class="d-flex flex-column h-100">
+                <div class="mb-10">
+                  <span nz-typography nzEllipsis class="fs-6 heading-color">{{ idea.title }}</span>
+                </div>
+                <div>
+                  <p
+                    nz-typography
+                    nzEllipsis
+                    [nzEllipsisRows]="3"
+                    (click)="selectedIdea = idea"
+                    class="cursor-pointer user-select-none"
+                  >
+                    {{ idea.body }}
+                  </p>
+
+                  <nz-modal
+                    [nzTitle]="idea.title"
+                    [nzVisible]="idea === selectedIdea"
+                    [nzCancelText]="null"
+                    (nzOnCancel)="selectedIdea = null"
+                    (nzOnOk)="selectedIdea = null"
+                    [nzDraggable]="true"
+                  >
+                    <ng-container *nzModalContent>
+                      <p>{{ idea.body }}</p>
+                    </ng-container>
+                  </nz-modal>
+                </div>
+
+                <div class="flex-fill d-flex flex-column flex-gap-10 show-scroll">
+                  @for (instrument of idea.instruments; track instrument) {
+                    @if (instrument.instrument$ | async; as instrumentInfo) {
+                      <div
+                        class="idea p-5 cursor-pointer"
+                        (click)="instrumentSelected.emit(instrumentInfo)"
+                      >
+                        <div class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5">
+                          <ats-instrument-icon [symbol]="instrumentInfo.symbol" size="large"></ats-instrument-icon>
+                          <div class="d-flex flex-column">
+                            <span nz-typography nzEllipsis class="heading-color">{{ instrumentInfo.shortName }}</span>
+                            <span nz-typography nzEllipsis>{{ instrumentInfo.symbol }}</span>
+                          </div>
+                        </div>
+
+                        <div class="d-flex flex-column align-items-end" *ngrxLet="instrument.priceInfo$ as priceInfo">
+                          @if (priceInfo != null) {
+                            <span class="heading-color">{{ priceInfo.lastPrice }}</span>
+                            <span
+                              [ngClass]="{
+                          'positive-color': priceInfo.dayChangePercent >= 0,
+                          'negative-color': priceInfo.dayChangePercent < 0
+                          }"
+                            >
+                        @if (priceInfo.dayChangePercent > 0) {
+                          <span>+</span>
+                        }
+                              <span>{{ priceInfo.dayChangePercent }}%</span>
+                        </span>
+                          }
+                        </div>
+                      </div>
+                    }
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </nz-carousel>
+    </div>
+
+  } @else {
+    <nz-empty nzNotFoundImage="simple"></nz-empty>
+  }
+</div>
+
+<ng-template #loading>
+  <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }"></nz-skeleton>
+</ng-template>
+

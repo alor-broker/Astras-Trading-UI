@@ -53,16 +53,12 @@ export class MobileHomeScreenWidgetComponent implements OnInit {
     constructor(
       private readonly widgetSettingsService: WidgetSettingsService,
       private readonly dashboardContextService: DashboardContextService,
-      private readonly userPortfoliosService: UserPortfoliosService
+      private readonly userPortfoliosService: UserPortfoliosService,
     ) {
     }
 
     get guid(): string {
         return this.widgetInstance.instance.guid;
-    }
-
-    onSettingsChange(): void {
-        this.shouldShowSettings = !this.shouldShowSettings;
     }
 
     ngOnInit(): void {

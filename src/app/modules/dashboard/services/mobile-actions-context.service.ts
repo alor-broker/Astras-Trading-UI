@@ -7,7 +7,7 @@ import {Subject} from "rxjs";
 @Injectable()
 export class MobileActionsContextService implements ActionsContext, OnDestroy {
   readonly actionEvents$ = new Subject<{
-    eventType: 'instrumentSelected' | 'openChart';
+    eventType: 'instrumentSelected';
   }>();
 
   constructor(private readonly dashboardContextService: DashboardContextService) {
@@ -22,12 +22,5 @@ export class MobileActionsContextService implements ActionsContext, OnDestroy {
 
   ngOnDestroy(): void {
     this.actionEvents$.complete();
-  }
-
-  openChart(instrumentKey: InstrumentKey, groupKey: string): void {
-    this.dashboardContextService.selectDashboardInstrument(instrumentKey, groupKey);
-    this.actionEvents$.next({
-      eventType: "openChart"
-    });
   }
 }

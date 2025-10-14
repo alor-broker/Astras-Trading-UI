@@ -102,6 +102,10 @@
     "stringMaxLength": "Enter no more than {{max}} symbols"
   },
 
+  "placeholders": {
+    "selectValue": "Select value"
+  },
+
   "lessMoreOptions": {
     "less": "Less",
     "more": "More"
@@ -113,6 +117,21 @@
   },
 
   "addToList": "Add to list",
+
+  "marketSectors": {
+    "Energy": "Energy",
+    "Materials": "Materials",
+    "Industrials": "Industrials",
+    "Consumer Discretionary": "Discretionary",
+    "Consumer Staples": "Staples",
+    "Health Care": "Healthcare",
+    "Financials": "Financials",
+    "Information Technology": "Tech",
+    "Communication Services": "Comms",
+    "Utilities": "Utilities",
+    "Real Estate": "Real Estate",
+    "Other": "Other"
+  },
 
   "clientTypeValues": {
     "StandardRisk": "Standard",

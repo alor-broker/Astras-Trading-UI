@@ -394,7 +394,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     ).subscribe(() => this.updateEvaluation());
   }
 
-  private updateEvaluation(): void {
+  public updateEvaluation(): void {
     this.getInstrumentWithPortfolio().pipe(
       take(1)
     ).subscribe(x => {

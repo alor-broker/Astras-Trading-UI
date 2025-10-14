@@ -16,7 +16,7 @@ export class AdminDashboardsHelper {
     manageDashboardsService: ManageDashboardsService): void {
     combineLatest({
       allDashboards: manageDashboardsService.allDashboards$,
-      defaultConfigs: manageDashboardsService.getDefaultDashboardConfig(),
+      defaultConfigs: manageDashboardsService.getDashboardTemplatesConfig(),
     }).pipe(
       take(1)
     ).subscribe(x => {
@@ -46,7 +46,8 @@ export class AdminDashboardsHelper {
         })),
         selectedPortfolio,
         isSelected: true,
-        type: standardConfig.type
+        type: standardConfig.type,
+        templateId: standardConfig.id
       });
     });
   }

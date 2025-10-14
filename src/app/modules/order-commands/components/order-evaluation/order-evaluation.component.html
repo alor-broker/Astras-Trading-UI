@@ -1,67 +1,82 @@
-<ng-container *ngIf="evaluation$ | async as evaluation">
-  <ng-container *transloco="let t; scope: 'order-commands/order-evaluation'">
-    <nz-descriptions *ngIf="!!evaluation" nzBordered nzSize="small">
-      <nz-descriptions-item
-        [nzSpan]="2"
-        [nzTitle]="t('orderCommandsOrderEvaluation.evaluationCost')"
-      >
+@let evaluation = evaluation$ | async;
+<ng-container *transloco="let t; scope: 'order-commands/order-evaluation'">
+  <nz-descriptions nzBordered nzSize="small">
+    <nz-descriptions-item
+      [nzSpan]="2"
+      [nzTitle]="t('orderCommandsOrderEvaluation.evaluationCost')"
+    >
+      @if(evaluation != null) {
         {{evaluation.orderEvaluation  | currency: evaluation.currency:'symbol-narrow'}}
-      </nz-descriptions-item>
-      <nz-descriptions-item
-        [nzSpan]="2"
-        [nzTitle]="t('orderCommandsOrderEvaluation.evaluationCommission')"
-      >
+      } @else {
+        <span>-</span>
+      }
+    </nz-descriptions-item>
+    <nz-descriptions-item
+      [nzSpan]="2"
+      [nzTitle]="t('orderCommandsOrderEvaluation.evaluationCommission')"
+    >
+      @if(evaluation != null) {
         {{evaluation.commission | currency: evaluation.currency:'symbol-narrow'}}
-      </nz-descriptions-item>
-      <nz-descriptions-item
-        [nzSpan]="2"
-        [nzTitle]="quantityToBuyTitle"
+      } @else {
+        <span>-</span>
+      }
+    </nz-descriptions-item>
+    <nz-descriptions-item
+      [nzSpan]="2"
+      [nzTitle]="quantityToBuyTitle"
+    >
+      <div
+        [nzTooltipTitle]="t('orderCommandsOrderEvaluation.quantityToBuyTooltip')"
+        class="clickable"
+        nz-tooltip
       >
-        <div
-          [nzTooltipTitle]="t('orderCommandsOrderEvaluation.quantityToBuyTooltip')"
-          class="clickable"
-          nz-tooltip
-        >
+        @if(evaluation != null) {
           <span (click)="quantitySelect.emit(evaluation.quantityToBuy)">
-            {{evaluation.quantityToBuy}}
-          </span>
+          {{evaluation.quantityToBuy}}
+        </span>
           /
           <span (click)="quantitySelect.emit(evaluation.notMarginQuantityToBuy)">
-            {{evaluation.notMarginQuantityToBuy}}
-          </span>
-        </div>
-      </nz-descriptions-item>
-      <nz-descriptions-item
-        [nzSpan]="2"
-        [nzTitle]="quantityToSellTitle"
+          {{evaluation.notMarginQuantityToBuy}}
+        </span>
+        } @else {
+          <span>-</span>
+        }
+      </div>
+    </nz-descriptions-item>
+    <nz-descriptions-item
+      [nzSpan]="2"
+      [nzTitle]="quantityToSellTitle"
+    >
+      <div
+        [nzTooltipTitle]="t('orderCommandsOrderEvaluation.quantityToSellTooltip')"
+        class="clickable"
+        nz-tooltip
       >
-        <div
-          [nzTooltipTitle]="t('orderCommandsOrderEvaluation.quantityToSellTooltip')"
-          class="clickable"
-          nz-tooltip
-        >
+        @if(evaluation != null) {
           <span (click)="quantitySelect.emit(evaluation.quantityToSell)">
-            {{evaluation.quantityToSell}}
-          </span>
+          {{evaluation.quantityToSell}}
+        </span>
           /
           <span (click)="quantitySelect.emit(evaluation.notMarginQuantityToSell)">
-            {{evaluation.notMarginQuantityToSell}}
-          </span>
-        </div>
-      </nz-descriptions-item>
-    </nz-descriptions>
-
-    <ng-template #quantityToBuyTitle>
-      <div (click)="quantitySelect.emit(evaluation.quantityToBuy)" class="clickable">
-        {{t('orderCommandsOrderEvaluation.quantityToBuy')}}
+          {{evaluation.notMarginQuantityToSell}}
+        </span>
+        } @else {
+          <span>-</span>
+        }
       </div>
-    </ng-template>
+    </nz-descriptions-item>
+  </nz-descriptions>
 
-    <ng-template #quantityToSellTitle>
-      <div (click)="quantitySelect.emit(evaluation.quantityToSell)" class="clickable">
-        {{t('orderCommandsOrderEvaluation.quantityToSell')}}
-      </div>
-    </ng-template>
-  </ng-container>
+  <ng-template #quantityToBuyTitle>
+    <div (click)="emitQuantitySelect(evaluation?.quantityToBuy ?? null)" class="clickable">
+      {{t('orderCommandsOrderEvaluation.quantityToBuy')}}
+    </div>
+  </ng-template>
+
+  <ng-template #quantityToSellTitle>
+    <div (click)="emitQuantitySelect(evaluation?.quantityToSell ?? null)" class="clickable">
+      {{t('orderCommandsOrderEvaluation.quantityToSell')}}
+    </div>
+  </ng-template>
 </ng-container>
 

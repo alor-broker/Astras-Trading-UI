@@ -80,4 +80,6 @@ export interface WidgetMeta {
    * Used to filter widgets  in gallery by current dashboard type
    */
   hideOnDashboardType?: DashboardType[];
+
+  baseSettings?: Record<string, any>;
 }

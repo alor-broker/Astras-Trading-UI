@@ -33,6 +33,7 @@ export interface Dashboard {
   isLocked?: boolean;
   favoritesOrder?: number;
   type?: DashboardType;
+  templateId?: string;
 }
 
 export type InstrumentGroups = Record<string, InstrumentKey>;
@@ -46,17 +47,22 @@ export interface DefaultDesktopDashboardItem extends DefaultDashboardItem {
   position: DashboardItemPosition;
 }
 
-export interface DefaultDashboardConfig {
+export interface DashboardTemplateConfig {
+  id?: string;
   type: DashboardType;
 }
 
-export interface DefaultDesktopDashboardConfig extends DefaultDashboardConfig {
-  isStandard?: boolean;
-  isFavorite?: boolean;
+export interface DefaultDesktopDashboardConfig extends DashboardTemplateConfig {
+  isStandard: boolean;
+  isFavorite: boolean;
   name?: string;
   widgets: DefaultDesktopDashboardItem[];
 }
 
-export interface DefaultMobileDashboardConfig extends DefaultDashboardConfig {
+export interface DefaultAdminDashboardConfig extends DashboardTemplateConfig {
+  widgets: DefaultDesktopDashboardItem[];
+}
+
+export interface DefaultMobileDashboardConfig extends DashboardTemplateConfig {
   widgets: DefaultDashboardItem[];
 }

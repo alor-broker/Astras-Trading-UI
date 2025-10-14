@@ -5,7 +5,10 @@ import {
 
 import { BlotterWidgetComponent } from './blotter-widget.component';
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { of } from "rxjs";
+import {
+  EMPTY,
+  of
+} from "rxjs";
 import { Store } from "@ngrx/store";
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { BlotterSettings } from '../../models/blotter-settings.model';
@@ -17,6 +20,7 @@ import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skel
 import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import {PUSH_NOTIFICATIONS_CONFIG} from "../../../push-notifications/services/push-notifications-config";
+import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
 
 describe('BlotterWidgetComponent', () => {
   let component: BlotterWidgetComponent;
@@ -78,6 +82,18 @@ describe('BlotterWidgetComponent', () => {
             portfolioOrdersExecuteNotifications: {
               isSupported: true
             }
+          }
+        },
+        {
+          provide: DashboardContextService,
+          useValue: {
+            selectedPortfolio$: of({})
+          }
+        },
+        {
+          provide: NavigationStackService,
+          useValue: {
+            currentState$: EMPTY
           }
         }
       ]

@@ -1,8 +1,13 @@
-import {Component, DestroyRef, OnInit} from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  OnInit
+} from "@angular/core";
 import {
   BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
+  fromEvent,
   Observable,
   shareReplay,
   switchMap,
@@ -24,7 +29,7 @@ import {TranslatorService} from "../../../shared/services/translator.service";
 import {MobileActionsContextService} from "../../../modules/dashboard/services/mobile-actions-context.service";
 import {MobileDashboardService} from "../../../modules/dashboard/services/mobile-dashboard.service";
 import {WidgetsSharedDataService} from "../../../shared/services/widgets-shared-data.service";
-import {map} from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { arraysEqual } from "ng-zorro-antd/core/util";
 import {LetDirective} from "@ngrx/component";
 import {NgForOf, NgIf} from "@angular/common";
@@ -33,6 +38,7 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
 import { WidgetSettings } from "../../../shared/models/widget-settings.model";
 import { isInstrumentDependent } from "../../../shared/utils/settings-helper";
+import { NavigationStackService } from "../../../shared/services/navigation-stack.service";
 @Component({
     selector: 'ats-mobile-dashboard-content',
     templateUrl: './mobile-dashboard-content.component.html',
@@ -51,11 +57,11 @@ export class MobileDashboardContentComponent implements OnInit {
   readonly homeWidgetId = 'mobile-home-screen';
   galleryVisible = false;
   defaultWidgetNames = [
-    'order-submit',
+    this.newOrderWidgetId,
     'blotter',
-    'mobile-home-screen',
-    'order-book',
-    'light-chart'
+    this.homeWidgetId,
+    'light-chart',
+    'all-instruments'
   ];
 
   widgets$!: Observable<WidgetInstance[]>;
@@ -71,7 +77,8 @@ export class MobileDashboardContentComponent implements OnInit {
     private readonly destroyRef: DestroyRef,
     private readonly mobileDashboardService: MobileDashboardService,
     private readonly widgetsSharedDataService: WidgetsSharedDataService,
-    private readonly widgetSettingsService: WidgetSettingsService
+    private readonly widgetSettingsService: WidgetSettingsService,
+    private readonly navigationStackService: NavigationStackService
   ) {
   }
 
@@ -103,7 +110,18 @@ export class MobileDashboardContentComponent implements OnInit {
     this.widgets$
       .pipe(take(1))
       .subscribe(widgets => {
-        this.selectedWidget$.next(widgets.find(w => w.instance.widgetType === this.homeWidgetId) ?? null);
+        const homeWidget = widgets.find(w => w.instance.widgetType === this.homeWidgetId) ?? null;
+
+        if(homeWidget != null) {
+          this.selectedWidget$.next(homeWidget);
+          this.navigationStackService.pushState({
+            isFinal: true,
+            widgetTarget: {
+              typeId: homeWidget.instance.widgetType,
+              instanceId: homeWidget.instance.guid
+            }
+          });
+        }
       });
 
     this.mobileActionsContextService.actionEvents$.pipe(
@@ -112,9 +130,6 @@ export class MobileDashboardContentComponent implements OnInit {
       switch (event.eventType) {
         case "instrumentSelected":
           this.selectWidget(this.newOrderWidgetId);
-          break;
-        case "openChart":
-          this.selectWidget("light-chart");
           break;
       }
     });
@@ -127,9 +142,10 @@ export class MobileDashboardContentComponent implements OnInit {
       });
 
     this.initWidgetsGallery();
+    this.initNavigationProcessing();
   }
 
-  selectWidget(widgetName: string): void {
+  selectWidget(widgetName: string, skipNavigationStackUpdate = true): void {
     this.widgets$
       .pipe(
         take(1),
@@ -158,7 +174,23 @@ export class MobileDashboardContentComponent implements OnInit {
           }
         })
       )
-      .subscribe(newWidget => this.selectedWidget$.next(newWidget));
+      .subscribe(newWidget => {
+        this.selectedWidget$.next(newWidget);
+        if(!skipNavigationStackUpdate) {
+          this.navigationStackService.currentState$.pipe(
+            take(1)
+          ).subscribe(s => {
+            if(s.widgetTarget.typeId !== newWidget.instance.widgetType) {
+              this.navigationStackService.pushState({
+                widgetTarget: {
+                  typeId: newWidget.instance.widgetType,
+                  instanceId: newWidget.instance.guid
+                }
+              });
+            }
+          });
+        }
+      });
   }
 
   private initWidgetsGallery(): void {
@@ -225,5 +257,47 @@ export class MobileDashboardContentComponent implements OnInit {
       }),
       shareReplay(1)
     );
+  }
+
+  private initNavigationProcessing(): void {
+    const initialUrl = window.location.href;
+    history.pushState(
+      {
+      isApp: true
+    },
+      document.title,
+      initialUrl
+    );
+
+    // process back button action
+    this.navigationStackService.currentState$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(currentState => {
+      this.selectedWidget$.pipe(
+        take(1)
+      ).subscribe(selectedWidget => {
+        if(selectedWidget != null && selectedWidget.instance.widgetType != currentState.widgetTarget.typeId) {
+          this.selectWidget(currentState.widgetTarget.typeId, true);
+        }
+      });
+    });
+
+    fromEvent(window, 'popstate').pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe((event: Event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.navigationStackService.popState();
+
+      if(history.state == null || history.state.isApp == null) {
+        history.pushState(
+          {
+            isApp: true
+          },
+          document.title,
+          initialUrl
+        );
+      }
+    });
   }
 }

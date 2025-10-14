@@ -1,0 +1,107 @@
+<ng-container *transloco="let t; scope: 'market-trends/market-trends'">
+
+  <ng-container
+    *ngrxLet="{ itemsDisplayParams: itemsDisplayParams$, displayItems: displayItems$} as vm; suspenseTpl: loading"
+    class="mt-15"
+  >
+    @let displaySectors = sectors();
+    @let displayExtendedFilter = extendedFilter();
+
+    @if (displaySectors.length > 0 || displayExtendedFilter.length > 0) {
+      <nz-tabset>
+        <nz-tab [nzTitle]="t('marketTrendsMarketTrends.resetFiltersButton.title')" (nzSelect)="resetFilters()">
+        </nz-tab>
+
+        @for (extendedFilter of displayExtendedFilter; track extendedFilter) {
+          <nz-tab
+            [nzTitle]="t('marketTrendsMarketTrends.extendedFilter.' + extendedFilter, {fallback: extendedFilter})"
+            (nzSelect)="changeExtendedFilter(extendedFilter)"
+          ></nz-tab>
+        }
+
+        @for (sector of displaySectors; track sector) {
+          <nz-tab [nzTitle]="t('marketSectors.' + sector, {fallback: sector})" (nzSelect)="changeSector(sector)">
+          </nz-tab>
+        }
+      </nz-tabset>
+    }
+
+
+    @if (vm.displayItems != null && vm.displayItems.totalCount > 0) {
+      <table class="mt-10">
+        <thead [class.fixed]="fixedHeader()">
+        <tr class="heading-color">
+          <th class="text-start text-nowrap" style="width: 50%">{{ t('marketTrendsMarketTrends.columns.ticker.title') }}</th>
+          <th
+            class="text-start text-nowrap"
+            (click)="changeSortOrder()"
+          >
+            {{ t('marketTrendsMarketTrends.columns.dailyGrowthPercent.title') }}
+            @if (isLoading) {
+              <span nz-icon nzType="loading" nzTheme="outline"></span>
+            } @else {
+              <span nz-icon
+                    [nzType]="vm.itemsDisplayParams.growOrder === SortEnumTypes.Desc ? 'arrow-down' : 'arrow-up'"
+                    nzTheme="outline"
+              >
+            </span>
+            }
+          </th>
+          <th class="text-end text-nowrap">{{ t('marketTrendsMarketTrends.columns.lastPrice.title') }}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+          @for (item of vm.displayItems.nodes; track trackBy(item)) {
+            <tr class="item" (click)="instrumentSelected.emit(toInstrumentKey(item))">
+              <td class="text-start">
+                <div class="d-flex flex-row flex-nowrap flex-gap-5 align-items-center">
+                  <ats-instrument-icon [symbol]="item.basicInformation.symbol" size="large"></ats-instrument-icon>
+                  <div class="d-flex flex-column overflow-hidden">
+                    <span class="heading-color text-nowrap fs-6" nz-typography nzEllipsis>
+                      {{ item.basicInformation.shortName }}
+                    </span>
+
+                    <span class="fs-10" nz-typography nzEllipsis>
+                        {{ item.basicInformation.symbol }}
+                      </span>
+                  </div>
+                </div>
+              </td>
+
+              <td class="text-start">
+              <span
+                [ngClass]="{
+                  'positive-color': item.tradingDetails.dailyGrowthPercent >= 0,
+                  'negative-color': item.tradingDetails.dailyGrowthPercent < 0
+                  }"
+              >
+                {{ (item.tradingDetails.dailyGrowthPercent / 100) | percent: '1.1-2' }}
+              </span>
+              </td>
+
+              <td class="text-end">{{ item.tradingDetails.price | number: '0.0-10' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <nz-empty nzNotFoundImage="simple"></nz-empty>
+    }
+    @if (showMoreButton()) {
+      <button
+        nz-button
+        nzBlock
+        (click)="processShowMore()"
+        class="mt-5"
+      >
+        {{ t('marketTrendsMarketTrends.moreItemsButton.title') }}
+      </button>
+    }
+
+  </ng-container>
+
+  <ng-template #loading>
+    <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }"></nz-skeleton>
+  </ng-template>
+</ng-container>

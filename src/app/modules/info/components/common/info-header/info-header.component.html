@@ -1,16 +1,12 @@
-<div class="header">
-  <div class='left'>
-    <ats-instrument-icon
-      [symbol]="info.symbol"
-      [size]="64"
-    ></ats-instrument-icon>
-  </div>
-  <div class='middle'>
-    <span class='identifier line'>
-      <p class='ticker'>{{ info.shortName }}</p>
-      <div>
-        <p class='exchange'>{{ info.exchange }}</p>
-      </div>
+<div class="d-flex flex-row justify-content-center align-items-center flex-gap-10">
+  <ats-instrument-icon
+    [size]="64"
+    [symbol]="info.symbol"
+  ></ats-instrument-icon>
+  <div class="overflow-hidden text-nowrap">
+    <span nz-typography nzEllipsis>
+      <span class='fs-5 heading-color'>{{ info.shortName }}</span>
+      <span class='sup'>{{ info.exchange }}</span>
     </span>
   </div>
 </div>

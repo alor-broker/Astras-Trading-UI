@@ -47,7 +47,7 @@ async function translateObject(obj, langName) {
   if (!jsonMatch) {
     throw new Error('Could not find a valid JSON object in the API response.');
   }
-  
+
   return JSON.parse(jsonMatch[0]);
 }
 

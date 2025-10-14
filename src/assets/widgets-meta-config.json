@@ -733,7 +733,7 @@
       "galleryOrder": 20,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": ["admin-main","admin-selected-portfolio"]
   },
   {
     "typeId": "bond-screener",
@@ -765,7 +765,7 @@
       "galleryOrder": 21,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": ["admin-main","admin-selected-portfolio"]
   },
   {
     "typeId": "mobile-home-screen",
@@ -818,7 +818,107 @@
       "galleryOrder": 50,
       "enabled": true
     },
+    "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
+  },
+  {
+    "typeId": "invest-ideas",
+    "isDemoOnly": true,
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "",
+        "componentName": "InstrumentsCorrelationWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Ideas",
+      "translations": {
+        "ru": "Идеи",
+        "en": "Ideas",
+        "hy": "Գաղափարներ"
+      }
+    },
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "bulb",
+      "galleryIcon": "bulb",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 12,
+        "initialWidth": 8
+      },
+      "galleryOrder": 22,
+      "enabled": true
+    },
+    "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
+  },
+  {
+    "typeId": "portfolio-charts",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "",
+        "componentName": "PortfolioChartsWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Portfolio dynamics",
+      "translations": {
+        "ru": "Динамика по портфелю",
+        "en": "Portfolio dynamics",
+        "hy": "Պորտֆելի դինամիկ"
+      }
+    },
+    "category": "positionsTradesOrders",
+    "desktopMeta": {
+      "headerIcon": "area-chart",
+      "galleryIcon": "area-chart",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 12,
+        "initialWidth": 8
+      },
+      "galleryOrder": 23,
+      "enabled": true
+    },
     "hideOnDashboardType": ["admin-main"]
+  },
+  {
+    "typeId": "market-trends",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "",
+        "componentName": "MarketTrendsWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Market trends",
+      "translations": {
+        "ru": "Тенденции рынка",
+        "en": "Market trends",
+        "hy": "Շուկայի միտումներ"
+      }
+    },
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "ats-cup",
+      "galleryIcon": "ats-cup",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 24,
+      "enabled": true
+    },
+    "baseSettings": {
+      "availableExtendedFilters": []
+    },
+    "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
   },
   {
     "typeId": "admin-clients",
@@ -833,7 +933,8 @@
       "default": "My clients",
       "translations": {
         "ru": "Мои клиенты",
-        "en": "My clients"
+        "en": "My clients",
+        "hy": "Իմ հաճախորդները"
       }
     },
     "category": "all",
@@ -843,8 +944,8 @@
       "addOptions": {
         "initialPosition": "auto",
         "isFullWidth": false,
-        "initialHeight": 18,
-        "initialWidth": 10
+        "initialHeight": 15,
+        "initialWidth": 30
       },
       "galleryOrder": 100,
       "enabled": true

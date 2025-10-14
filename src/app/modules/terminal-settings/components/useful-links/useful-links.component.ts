@@ -11,4 +11,8 @@ export class UsefulLinksComponent {
   readonly externalLinks = this.environmentService.externalLinks;
   constructor(private readonly environmentService: EnvironmentService) {
   }
+
+  isNullOrEmpty(value: string | null | undefined): boolean {
+    return value == null || value.length === 0;
+  }
 }

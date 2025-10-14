@@ -43,6 +43,9 @@ import {DashboardsPanelComponent} from "../../client/components/dashboards-panel
 import {NetworkIndicatorComponent} from "./components/network-indicator/network-indicator.component";
 import { MobileHomeScreenWidgetComponent } from "../mobile-home-screen/widgets/mobile-home-screen-widget/mobile-home-screen-widget.component";
 import {AiGraphsWidgetComponent} from "../ai-graph/widgets/ai-graphs-widget/ai-graphs-widget.component";
+import { InvestIdeasWidgetComponent } from "../invest-ideas/widgets/invest-ideas-widget/invest-ideas-widget.component";
+import { PortfolioChartsWidgetComponent } from "../portfolio-charts/widgets/portfolio-charts-widget/portfolio-charts-widget.component";
+import { MarketTrendsWidgetComponent } from "../market-trends/widgets/market-trends-widget/market-trends-widget.component";
 import { AdminClientsWidgetComponent } from "../admin-clients/widgets/admin-clients-widget/admin-clients-widget.component";
 
 @NgModule({
@@ -93,7 +96,10 @@ import { AdminClientsWidgetComponent } from "../admin-clients/widgets/admin-clie
         NetworkIndicatorComponent,
         MobileHomeScreenWidgetComponent,
         AiGraphsWidgetComponent,
-        AdminClientsWidgetComponent,
+        InvestIdeasWidgetComponent,
+        PortfolioChartsWidgetComponent,
+        MarketTrendsWidgetComponent,
+        AdminClientsWidgetComponent
     ],
   exports: [
     DashboardComponent,

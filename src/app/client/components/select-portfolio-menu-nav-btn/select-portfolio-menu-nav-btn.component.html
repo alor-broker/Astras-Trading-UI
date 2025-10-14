@@ -54,11 +54,14 @@
 
       <ng-template #emptyPortfolioPopover>
         <p>{{t('dashboardNavbarCommon.emptyPortfolioPopover')}}</p>
-        <p>{{t('dashboardNavbarCommon.emptyPortfolioPopoverHint')}}
-          <ats-external-link [href]="externalLinks.personalAccount">
-            {{t('dashboardNavbarCommon.emptyPortfolioPopoverLink')}}
-          </ats-external-link>
-        </p>
+
+        @if(externalLinks?.personalAccount != null && externalLinks!.personalAccount!.length > 0) {
+          <p>{{t('dashboardNavbarCommon.emptyPortfolioPopoverHint')}}
+            <ats-external-link [href]="externalLinks?.personalAccount!">
+              {{t('dashboardNavbarCommon.emptyPortfolioPopoverLink')}}
+            </ats-external-link>
+          </p>
+        }
       </ng-template>
     </ng-template>
   </ng-container>

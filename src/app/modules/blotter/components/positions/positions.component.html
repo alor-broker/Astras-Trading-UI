@@ -54,11 +54,12 @@
           </th>
           <th (atsWidthChanged)="saveColumnWidth({columnId: column.id, width: $event})"
               *ngFor='let column of td.tableConfig.columns'
-              [atsResizeColumn]
+              [atsResizeColumn]="column.isResizable !== false"
               [minWidth]="column.minWidth ?? 50"
               [nzCustomFilter]='true'
               [nzFilters]="column.filterData?.filters ?? []"
               [nzShowFilter]="false"
+              [nzShowSort]="column.sortFn != null"
               [nzSortFn]="column.sortFn ?? false"
               [nzSortOrder]="column.sortOrder ?? null"
               (nzSortOrderChange)="saveSortState(column.id, $event)"
@@ -67,6 +68,7 @@
               cdkDrag
               cdkDragLockAxis="x"
           >
+            @if(!(column.hideTitle ?? false)) {
               <span
                 [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
                 [nzTooltipTitle]="column.tooltip"
@@ -74,14 +76,16 @@
               >
                 {{column.displayName}}
               </span>
-            <nz-filter-trigger
-              *ngIf="column.filterData != null"
-              [nzVisible]="!!column.filterData.isOpenedFilter" (nzVisibleChange)="column.filterData.isOpenedFilter = $event"
-              [nzActive]="isFilterApplied(column)"
-              [nzDropdownMenu]="searchMenu"
-            >
-              <i nz-icon nzType="search"></i>
-            </nz-filter-trigger>
+
+              <nz-filter-trigger
+                *ngIf="column.filterData != null"
+                [nzVisible]="!!column.filterData.isOpenedFilter" (nzVisibleChange)="column.filterData.isOpenedFilter = $event"
+                [nzActive]="isFilterApplied(column)"
+                [nzDropdownMenu]="searchMenu"
+              >
+                <i nz-icon nzType="search"></i>
+              </nz-filter-trigger>
+            }
           </th>
         </tr>
       </thead>
@@ -122,6 +126,9 @@
               </a>
             </td>
             <ng-container *ngFor='let column of td.tableConfig.columns'>
+              <td *ngIf='column.id === "icon"'>
+                <ats-instrument-icon [symbol]="pos.symbol" [size]="'default'"></ats-instrument-icon>
+              </td>
               <td *ngIf='column.id === "symbol"' class='fw-bold'>
                 <span class="symbol-name">{{ pos.symbol }}</span>
                 <ats-instrument-badge-display [instrumentKey]="pos"></ats-instrument-badge-display>

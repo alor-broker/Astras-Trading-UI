@@ -119,7 +119,7 @@ export class AdminSettingsBrokerService {
     this.store.dispatch(DashboardsInternalActions.init({ dashboards: dashboards ?? []}));
 
     if((dashboards ?? []).length === 0) {
-      this.manageDashboardsService.getDefaultDashboardConfig().pipe(
+      this.manageDashboardsService.getDashboardTemplatesConfig().pipe(
         take(1)
       ).subscribe(config => {
         const defaultDashboardsConfig = config
@@ -130,6 +130,7 @@ export class AdminSettingsBrokerService {
           this.manageDashboardsService.addDashboardWithTemplate({
             title: "All Clients",
             isSelected: true,
+            templateId: d.id,
             items: d.widgets.map(w => ({
               guid: GuidGenerator.newGuid(),
               widgetType: w.widgetTypeId,

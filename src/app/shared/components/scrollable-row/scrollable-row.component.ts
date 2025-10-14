@@ -1,17 +1,32 @@
-import {Component, ContentChildren, OnDestroy, QueryList, ViewChild} from '@angular/core';
+import {Component, ContentChildren,
+  input, OnDestroy, QueryList, ViewChild} from '@angular/core';
 import {ScrollableItemDirective} from "../../directives/scrollable-item.directive";
 import {CdkScrollable} from "@angular/cdk/overlay";
 import {BehaviorSubject} from "rxjs";
+import { NzResizeObserverDirective } from "ng-zorro-antd/cdk/resize-observer";
+import {
+  AsyncPipe,
+} from "@angular/common";
+import { NzIconDirective } from "ng-zorro-antd/icon";
+import { SwipeDirective } from "../../directives/swipe.directive";
 
 @Component({
-    selector: 'ats-scrollable-row',
-    templateUrl: './scrollable-row.component.html',
-    styleUrls: ['./scrollable-row.component.less'],
-    standalone: false
+  selector: 'ats-scrollable-row',
+  templateUrl: './scrollable-row.component.html',
+  imports: [
+    NzResizeObserverDirective,
+    CdkScrollable,
+    NzIconDirective,
+    AsyncPipe,
+    SwipeDirective
+  ],
+  styleUrls: ['./scrollable-row.component.less']
 })
 export class ScrollableRowComponent implements OnDestroy {
   @ContentChildren(ScrollableItemDirective)
   items!: QueryList<ScrollableItemDirective>;
+
+  showScrollButtons = input(true);
 
   hasScroll$ = new BehaviorSubject(false);
 
@@ -22,9 +37,9 @@ export class ScrollableRowComponent implements OnDestroy {
     this.hasScroll$.complete();
   }
 
-  move($event: MouseEvent, dir: 'left' | 'right'): void {
-    $event.preventDefault();
-    $event.stopPropagation();
+  move($event: MouseEvent | null, dir: 'left' | 'right'): void {
+    $event?.preventDefault();
+    $event?.stopPropagation();
 
     if (dir === "right") {
       this.moveRight();

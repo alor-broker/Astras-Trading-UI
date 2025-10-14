@@ -17,7 +17,7 @@ import {
   withInterceptorsFromDi
 } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
-import { extModules } from "./build-specifics/ext-modules";
+import { extModules, extProvides } from "./build-specifics/ext-modules";
 import { ErrorHandlerService } from "./shared/services/handle-error/error-handler.service";
 import { EffectsModule } from '@ngrx/effects';
 import { ApplicationMetaModule } from './modules/application-meta/application-meta.module';
@@ -109,7 +109,8 @@ import { LocaleService } from "./shared/services/locale.service";
           cache: new InMemoryCache(),
         }
       };
-    })
+    }),
+    ...extProvides
   ]
 })
 export class AppModule {

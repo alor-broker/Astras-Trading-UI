@@ -1,9 +1,19 @@
-<div class="container">
+<div
+  class="container"
+  atsSwipe
+  (swipeLeft)="move(null, 'right')"
+  (swipeRight)="move(null, 'left')"
+>
   <div (nzResizeObserve)="checkScroll()" cdkScrollable class="items" nzResizeObserver>
     <ng-content></ng-content>
   </div>
-  <div (mousedown)="$event.stopPropagation()" *ngIf="hasScroll$ | async" class="scroll-buttons">
-    <span (click)="move($event, 'left')" nz-icon nzTheme="outline" nzType="left"></span>
-    <span (click)="move($event, 'right')" nz-icon nzTheme="outline" nzType="right"></span>
-  </div>
+
+  @if(showScrollButtons() && (hasScroll$ | async)) {
+    <div
+      (mousedown)="$event.stopPropagation()" class="scroll-buttons">
+      <span (click)="move($event, 'left')" nz-icon nzTheme="outline" nzType="left"></span>
+      <span (click)="move($event, 'right')" nz-icon nzTheme="outline" nzType="right"></span>
+    </div>
+  }
+
 </div>

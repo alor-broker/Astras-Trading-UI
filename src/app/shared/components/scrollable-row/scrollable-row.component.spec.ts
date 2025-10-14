@@ -8,7 +8,9 @@ describe('ScrollableRowComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ScrollableRowComponent]
+      imports:[
+        ScrollableRowComponent
+      ]
     })
     .compileComponents();
 

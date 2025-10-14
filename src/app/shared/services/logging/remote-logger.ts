@@ -25,7 +25,7 @@ interface LogEntry {
   device: string;
   browser: string;
   version: string;
-  environment: 'local' | 'dev' | 'prod';
+  environment: string;
 }
 
 @Injectable({

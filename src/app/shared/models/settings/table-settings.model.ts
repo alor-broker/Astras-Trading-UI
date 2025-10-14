@@ -33,6 +33,7 @@ export interface BaseColumnSettings<T> extends Omit<BaseColumnId, 'isDefault'> {
   order?: number | null;
   leftFixed?: boolean;
   isResizable?: boolean;
+  hideTitle?: boolean;
 }
 
 export interface FilterData {

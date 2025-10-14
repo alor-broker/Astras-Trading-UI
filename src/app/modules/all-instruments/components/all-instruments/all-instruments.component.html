@@ -16,6 +16,7 @@
     [tableContainerHeight]="td.contentSize?.height || 0"
     [tableContainerWidth]="td.contentSize?.width || 0"
     (rowContextMenu)="openContextMenu($event.event, contextMenu, $event.row)"
+    #table
   ></ats-infinite-scroll-table>
 
   <div

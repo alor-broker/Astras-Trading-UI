@@ -1,23 +1,35 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {BehaviorSubject, combineLatest, distinctUntilChanged, Observable, of} from "rxjs";
-import {PortfolioExtended} from "../../../../shared/models/user/portfolio-extended.model";
-import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
-import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
-import {filter, map, switchMap, take} from "rxjs/operators";
-import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
-import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
-import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
-import {Position} from "../../../../shared/models/positions/position.model";
-import {LetDirective} from "@ngrx/component";
-import {TruncatedTextComponent} from "../../../../shared/components/truncated-text/truncated-text.component";
-import {DecimalPipe, NgClass, PercentPipe} from "@angular/common";
-import {TranslocoDirective} from "@jsverse/transloco";
-import {NzButtonComponent} from "ng-zorro-antd/button";
-import {NzEmptyComponent} from "ng-zorro-antd/empty";
-import {NzSkeletonComponent} from "ng-zorro-antd/skeleton";
-import {ACTIONS_CONTEXT, ActionsContext} from "../../../../shared/services/actions-context";
-import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  output
+} from '@angular/core';
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable
+} from "rxjs";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import {
+  map,
+  switchMap,
+  take
+} from "rxjs/operators";
+import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
+import { Position } from "../../../../shared/models/positions/position.model";
+import { LetDirective } from "@ngrx/component";
+import { TruncatedTextComponent } from "../../../../shared/components/truncated-text/truncated-text.component";
+import {
+  DecimalPipe,
+  NgClass,
+  PercentPipe
+} from "@angular/common";
+import { TranslocoDirective } from "@jsverse/transloco";
+import { NzButtonComponent } from "ng-zorro-antd/button";
+import { NzEmptyComponent } from "ng-zorro-antd/empty";
+import { NzSkeletonComponent } from "ng-zorro-antd/skeleton";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
+import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 
 enum SortBy {
   Ticker = "ticker"
@@ -37,7 +49,7 @@ interface DisplayPositions {
 type SortFn = (a: Position, b: Position) => number;
 
 @Component({
-    selector: 'ats-positions',
+  selector: 'ats-positions',
   imports: [
     LetDirective,
     TruncatedTextComponent,
@@ -50,13 +62,18 @@ type SortFn = (a: Position, b: Position) => number;
     NzSkeletonComponent,
     InstrumentIconComponent
   ],
-    templateUrl: './positions.component.html',
-    styleUrl: './positions.component.less'
+  templateUrl: './positions.component.html',
+  styleUrl: './positions.component.less'
 })
 export class PositionsComponent implements OnInit, OnDestroy {
   displayPositions$!: Observable<DisplayPositions>;
+
+  readonly instrumentSelected = output<InstrumentKey>();
+
   protected readonly isFinite = isFinite;
+
   private readonly itemsDisplayStep = 20;
+
   readonly itemsDisplayParams$ = new BehaviorSubject<DisplayParams>({
     itemsDisplayCount: this.itemsDisplayStep,
     sortBy: SortBy.Ticker,
@@ -65,10 +82,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly dashboardContextService: DashboardContextService,
-    private readonly userPortfoliosService: UserPortfoliosService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext
+    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService
   ) {
   }
 
@@ -77,8 +91,8 @@ export class PositionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const positions$ = this.getCurrentAgreementPortfolios().pipe(
-      switchMap(portfolios => this.getPositions(portfolios))
+    const positions$ = this.dashboardContextService.selectedPortfolio$.pipe(
+      switchMap(p => this.portfolioSubscriptionsService.getAllPositionsSubscription(p.portfolio, p.exchange))
     );
 
     this.displayPositions$ = combineLatest({
@@ -115,45 +129,6 @@ export class PositionsComponent implements OnInit, OnDestroy {
     return position.dailyUnrealisedPl / Math.abs(position.volume);
   }
 
-  openChart(position: Position): void {
-    this.actionsContext.openChart(position.targetInstrument, defaultBadgeColor);
-  }
-
-  private getCurrentAgreementPortfolios(): Observable<PortfolioExtended[]> {
-    return combineLatest({
-      selectedPortfolio: this.dashboardContextService.selectedPortfolio$,
-      allPortfolios: this.userPortfoliosService.getPortfolios()
-    }).pipe(
-      map(x => {
-        const currentPortfolio = x.allPortfolios.find(p => isPortfoliosEqual(p, x.selectedPortfolio));
-
-        if (currentPortfolio == null) {
-          return null;
-        }
-
-        return {
-          agreement: currentPortfolio.agreement,
-          portfolios: x.allPortfolios.filter(p => p.agreement === currentPortfolio.agreement)
-        };
-      }),
-      filter(p => !!p),
-      distinctUntilChanged((previous, current) => previous.agreement === current.agreement),
-      map(x => x.portfolios)
-    );
-  }
-
-  private getPositions(portfolios: PortfolioKey[]): Observable<Position[]> {
-    if (portfolios.length === 0) {
-      return of([]);
-    }
-
-    return combineLatest(
-      portfolios.map(p => this.portfolioSubscriptionsService.getAllPositionsSubscription(p.portfolio, p.exchange))
-    ).pipe(
-      map(x => x.flat())
-    );
-  }
-
   private getDisplayItems(allPositions: Position[], params: DisplayParams): Position[] {
     const sortFn = this.getSortFn(params);
     const sorted = allPositions
@@ -163,8 +138,8 @@ export class PositionsComponent implements OnInit, OnDestroy {
   }
 
   private getSortFn(params: DisplayParams): SortFn {
-    // For now ony sort by ticker is supported
-    let sortFn = this.sortByTicker;
+    // For now ony sort by pl is supported
+    let sortFn = this.sortByPl;
 
     if (params.sortDesc) {
       sortFn = (a, b): number => {
@@ -175,18 +150,7 @@ export class PositionsComponent implements OnInit, OnDestroy {
     return sortFn;
   }
 
-  private readonly sortByTicker: SortFn = (a, b): number => {
-    const ticketComp = a.targetInstrument.symbol.localeCompare(b.targetInstrument.symbol);
-
-    if (ticketComp === 0) {
-      const exchangeComp = a.targetInstrument.exchange.localeCompare(b.targetInstrument.exchange);
-      if (exchangeComp === 0) {
-        return a.ownedPortfolio.portfolio.localeCompare(b.ownedPortfolio.portfolio);
-      }
-
-      return exchangeComp;
-    }
-
-    return ticketComp;
+  private readonly sortByPl: SortFn = (a, b): number => {
+    return b.dailyUnrealisedPl - a.dailyUnrealisedPl;
   };
 }
