@@ -4,5 +4,10 @@
     "all": "Բոլորը",
     "portfolio": "Ըստ պորտֆելի",
     "symbol": "Ըստ թիքերի"
+  },
+  "columns": {
+    "header": {
+      "displayName": "Նորություն"
+    }
   }
 }

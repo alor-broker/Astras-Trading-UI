@@ -1,11 +1,15 @@
 <ng-container *ngIf="settings$ | async as settings">
   <div *ngIf="isBlockWidget" class="blocked-widget-overlay"></div>
   <div class="widget-body">
-    <div class="manage-block" (mousedown)="$event.stopPropagation()">
-      <button nz-button nzSize="small" (click)="removeWidget($event)">
-        <i nz-icon nzType="close-circle" [nzTheme]="'outline'"></i>
-      </button>
-    </div>
+
+    @let isDashboardLocked = (currentDashboard$ | async)?.isLocked ?? false;
+    @if (!isDashboardLocked) {
+      <div class="manage-block" (mousedown)="$event.stopPropagation()">
+        <button nz-button nzSize="small" (click)="removeWidget($event)">
+          <i nz-icon nzType="close-circle" [nzTheme]="'outline'"></i>
+        </button>
+      </div>
+    }
     <div class="content">
       <ats-ribbon
         [displayItems]="settings.displayItems ?? null"

@@ -1,9 +1,11 @@
 <ng-container *transloco="let tDesktop; scope: 'dashboard/navbar/desktop'">
+  @let isDashboardLocked = (currentDashboard$ | async)?.isLocked ?? false;
   <button
     nz-button
     nzType="text"
     (click)="galleryVisible = true"
-    [disabled]="atsDisabled"
+    [disabled]="atsDisabled || isDashboardLocked"
+    [nz-tooltip]="isDashboardLocked ? tDesktop('dashboardNavbarDesktop.dashboardLockedTooltip') : ''"
   >
     <i nz-icon nzType="appstore-add" nzTheme="outline" [nzRotate]="-90"></i>
     {{ tDesktop("dashboardNavbarDesktop.widgetsLabel") }}

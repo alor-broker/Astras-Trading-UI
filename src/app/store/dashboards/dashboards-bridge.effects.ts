@@ -15,6 +15,7 @@ import {
   DashboardItemsActions,
   DashboardsManageActions
 } from "./dashboards-actions";
+import { ClientDashboardType } from "../../shared/models/dashboard/dashboard.model";
 
 @Injectable()
 export class DashboardsBridgeEffects {
@@ -83,13 +84,15 @@ export class DashboardsBridgeEffects {
         actions.push(DashboardsManageActions.add({
           guid: GuidGenerator.newGuid(),
           sourceGuid: targetDashboard.guid,
+          templateId: targetDashboard.templateId,
           title: `${targetDashboard.title} ${params.allDashboards.filter(d => d.sourceGuid === targetDashboard.guid).length + 1}`,
           isSelected: true,
           isFavorite: false,
           existedItems: widgetsCopy,
           instrumentsSelection: {
             ...targetDashboard.instrumentsSelection
-          }
+          },
+          dashboardType: targetDashboard.type ?? ClientDashboardType.ClientDesktop
         }));
 
         return actions;

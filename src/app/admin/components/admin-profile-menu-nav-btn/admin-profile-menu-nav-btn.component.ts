@@ -32,7 +32,7 @@ import {AsyncPipe, NgTemplateOutlet} from "@angular/common";
 })
 export class AdminProfileMenuNavBtnComponent {
   readonly externalLinks = this.environmentService.externalLinks;
-  readonly helpLink$ = this.helpService.getHelpLink('main');
+  readonly helpLink$ = this.helpService.getSectionHelp('main');
 
   constructor(
     private readonly environmentService: EnvironmentService,

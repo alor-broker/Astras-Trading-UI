@@ -10,7 +10,10 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs';
-import { DefaultDesktopDashboardConfig } from '../../shared/models/dashboard/dashboard.model';
+import {
+  ClientDashboardType,
+  DefaultDesktopDashboardConfig
+} from '../../shared/models/dashboard/dashboard.model';
 import { ManageDashboardsService } from '../../shared/services/manage-dashboards.service';
 import { mapWith } from '../../shared/utils/observable-helper';
 import { MarketService } from '../../shared/services/market.service';
@@ -70,9 +73,8 @@ export class DashboardsEffects {
         if(targetDashboard == null) {
           return EMPTY;
         }
-
         const templates = defaultConfig
-          .filter(d => d.type === 'desktop')
+          .filter(d => d.type === (targetDashboard.type ?? ClientDashboardType.ClientDesktop))
           .map(d => d as DefaultDesktopDashboardConfig);
 
         let targetTemplate = templates.find(t => t.isStandard);
@@ -99,8 +101,9 @@ export class DashboardsEffects {
           );
         }
 
-        return EMPTY;
-      })
+          return EMPTY;
+        }
+      )
     );
   });
 
@@ -123,6 +126,7 @@ export class DashboardsEffects {
       ofType(
         DashboardsManageActions.add,
         DashboardsManageActions.rename,
+        DashboardsManageActions.changeLock,
         DashboardItemsActions.addWidgets,
         DashboardItemsActions.removeWidgets,
         DashboardItemsActions.updateWidgetsPositions,

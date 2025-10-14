@@ -7,7 +7,8 @@ export class DashboardTitleHelper {
       'Default Dashboard',
       'Home',
       'Trading',
-      'Lite Dashboard'
+      'Lite Dashboard',
+      'All Clients'
     ];
 
     for (const defaultTitle of defaultTitles) {

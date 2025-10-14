@@ -83,6 +83,9 @@
     },
     "tableColumns": {
       "selectColumnLabel": "Table columns"
+    },
+    "refreshIntervalSec": {
+      "label": "Update interval, sec."
     }
   },
 
@@ -128,5 +131,12 @@
     "Utilities": "Utilities",
     "Real Estate": "Real Estate",
     "Other": "Other"
+  },
+
+  "clientTypeValues": {
+    "StandardRisk": "Standard",
+    "HighRisk": "High",
+    "Special": "Special",
+    "LowRisk": "Low"
   }
 }

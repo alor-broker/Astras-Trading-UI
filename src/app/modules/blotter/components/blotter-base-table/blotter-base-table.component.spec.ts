@@ -20,23 +20,26 @@ import {
 import { TableNames } from "../../models/blotter-settings.model";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { TableConfig } from "../../../../shared/models/table-config.model";
-import { FilterType } from "../../../../shared/models/settings/table-settings.model";
+import { BaseColumnSettings,
+  FilterType
+} from "../../../../shared/models/settings/table-settings.model";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
 import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
 
 @Component({
-    selector: 'ats-test-comp',
-    template: `
+  selector: 'ats-test-comp',
+  template: `
     <div class="table-container" [style]="{ height: '100%'}">
       <nz-table #nzTable></nz-table>
     </div>
   `,
-    standalone: false
+  standalone: false
 })
 class TestComponent extends BlotterBaseTableComponent<{ id: string }, object> {
+  protected allColumns: BaseColumnSettings<{ id: string }>[] = [];
   protected rowToInstrumentKey(): Observable<InstrumentKey | null> {
       return of(null);
   }

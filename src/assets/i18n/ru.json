@@ -83,6 +83,9 @@
     },
     "tableColumns": {
       "selectColumnLabel": "Колонки таблицы"
+    },
+    "refreshIntervalSec": {
+      "label": "Интервал обновления, сек."
     }
   },
 
@@ -128,5 +131,12 @@
     "Utilities": "Ком. услуги",
     "Real Estate": "Недвижимость",
     "Other": "Другое"
+  },
+
+  "clientTypeValues": {
+    "StandardRisk": "КСУР",
+    "HighRisk": "КПУР",
+    "Special": "КОУР",
+    "LowRisk": "КНУР"
   }
 }

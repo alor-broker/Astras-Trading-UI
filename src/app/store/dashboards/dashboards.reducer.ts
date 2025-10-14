@@ -78,6 +78,7 @@ const reducer = createReducer(
           instrumentsSelection: props.instrumentsSelection ?? null,
           selectedPortfolio: props.selectedPortfolio,
           sourceGuid: props.sourceGuid,
+          type: props.dashboardType,
           templateId: props.templateId
         },
         updatedState);
@@ -88,6 +89,16 @@ const reducer = createReducer(
         id: props.dashboardGuid,
         changes: {
           title: props.title
+        }
+      },
+      state);
+  }),
+
+  on(DashboardsManageActions.changeLock, (state, props) => {
+    return adapter.updateOne({
+        id: props.dashboardGuid,
+        changes: {
+          isLocked: props.isLocked
         }
       },
       state);

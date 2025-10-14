@@ -9,7 +9,6 @@ import { DashboardContextService } from "../../services/dashboard-context.servic
 import { Observable, shareReplay } from "rxjs";
 import { InstrumentKey } from "../../models/instruments/instrument-key.model";
 import { map } from "rxjs/operators";
-import { EnvironmentService } from "../../services/environment.service";
 import { HelpService } from "../../services/help.service";
 import { mapWith } from "../../utils/observable-helper";
 import { TerminalSettingsService } from "../../services/terminal-settings.service";
@@ -60,8 +59,9 @@ export class WidgetHeaderComponent implements OnInit {
     assignedInstrument: InstrumentKey | null;
   }[]>;
 
+  readonly currentDashboard$ = this.dashboardContextService.selectedDashboard$;
+
   constructor(
-    private readonly environmentService: EnvironmentService,
     private readonly settingsService: WidgetSettingsService,
     private readonly manageDashboardService: ManageDashboardsService,
     private readonly dashboardContextService: DashboardContextService,
@@ -112,7 +112,7 @@ export class WidgetHeaderComponent implements OnInit {
       ? WidgetsHelper.getWidgetName(this.widgetMeta.widgetName, this.translatorService.getActiveLang())
       : '';
 
-    this.helpUrl$ = this.helpService.getHelpLink(this.widgetMeta?.typeId ?? '');
+    this.helpUrl$ = this.helpService.getWidgetHelp(this.widgetMeta?.typeId ?? '');
   }
 
   switchBadgeColor(badgeColor: string): void {

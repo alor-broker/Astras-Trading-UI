@@ -26,8 +26,8 @@ import { WidgetSettingsComponent } from "../../shared/components/widget-settings
 import { NzDividerComponent } from "ng-zorro-antd/divider";
 import { TableRowHeightDirective } from "../../shared/directives/table-row-height.directive";
 import { InstrumentBadgeDisplayComponent } from "../../shared/components/instrument-badge-display/instrument-badge-display.component";
-import {SearchFilterComponent} from "./components/search-filter/search-filter.component";
 import { InstrumentIconComponent } from "../../shared/components/instrument-icon/instrument-icon.component";
+import { TableSearchFilterComponent } from "../../shared/components/table-search-filter/table-search-filter.component";
 
 @NgModule({
   declarations: [
@@ -58,7 +58,7 @@ import { InstrumentIconComponent } from "../../shared/components/instrument-icon
         NzDividerComponent,
         TableRowHeightDirective,
         InstrumentBadgeDisplayComponent,
-        SearchFilterComponent,
+        TableSearchFilterComponent,
         InstrumentIconComponent
     ],
   exports: [

@@ -40,7 +40,8 @@ describe('WidgetHeaderComponent', () => {
         {
           provide: DashboardContextService,
           useValue: {
-            instrumentsSelection$: new Subject()
+            instrumentsSelection$: new Subject(),
+            selectedDashboard$: new Subject(),
           }
         },
         {
@@ -60,7 +61,7 @@ describe('WidgetHeaderComponent', () => {
         {
           provide: HelpService,
           useValue: {
-            getHelpLink: jasmine.createSpy('getHelpLink').and.returnValue('')
+            getWidgetHelp: jasmine.createSpy('getWidgetHelp').and.returnValue('')
           }
         },
         {

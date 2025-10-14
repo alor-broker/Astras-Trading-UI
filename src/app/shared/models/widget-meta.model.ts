@@ -1,4 +1,6 @@
-﻿export interface WidgetName {
+﻿import { DashboardType } from "./dashboard/dashboard.model";
+
+export interface WidgetName {
   default: string;
   translations?: Record<string, string>;
 }
@@ -73,6 +75,11 @@ export interface WidgetMeta {
     galleryOrder: number;
     galleryIcon: string;
   };
+
+  /**
+   * Used to filter widgets  in gallery by current dashboard type
+   */
+  hideOnDashboardType?: DashboardType[];
 
   baseSettings?: Record<string, any>;
 }

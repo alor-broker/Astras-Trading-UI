@@ -72,6 +72,10 @@ export class EnvironmentService {
     return this.getDebugStringRecord('warpUrl') ?? environment.warpUrl;
   }
 
+  get cmsUrl(): string | undefined {
+    return this.getDebugStringRecord('cmsUrl') ?? environment.cmsUrl;
+  }
+
   get remoteSettingsStorageUrl(): string {
     return this.getDebugStringRecord('remoteSettingsStorageUrl') ?? environment.remoteSettingsStorageUrl;
   }

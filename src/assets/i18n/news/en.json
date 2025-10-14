@@ -1,5 +1,10 @@
 {
-  "newsColumn": "News",
+  "columns": {
+    "header": {
+      "displayName": "News"
+    }
+  },
+
   "newsSections": {
     "all": "All",
     "portfolio": "By portfolio",

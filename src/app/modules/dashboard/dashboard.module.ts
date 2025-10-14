@@ -46,6 +46,7 @@ import {AiGraphsWidgetComponent} from "../ai-graph/widgets/ai-graphs-widget/ai-g
 import { InvestIdeasWidgetComponent } from "../invest-ideas/widgets/invest-ideas-widget/invest-ideas-widget.component";
 import { PortfolioChartsWidgetComponent } from "../portfolio-charts/widgets/portfolio-charts-widget/portfolio-charts-widget.component";
 import { MarketTrendsWidgetComponent } from "../market-trends/widgets/market-trends-widget/market-trends-widget.component";
+import { AdminClientsWidgetComponent } from "../admin-clients/widgets/admin-clients-widget/admin-clients-widget.component";
 
 @NgModule({
   declarations: [
@@ -98,6 +99,7 @@ import { MarketTrendsWidgetComponent } from "../market-trends/widgets/market-tre
         InvestIdeasWidgetComponent,
         PortfolioChartsWidgetComponent,
         MarketTrendsWidgetComponent,
+        AdminClientsWidgetComponent
     ],
   exports: [
     DashboardComponent,

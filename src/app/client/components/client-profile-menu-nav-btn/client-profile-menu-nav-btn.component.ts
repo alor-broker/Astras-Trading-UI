@@ -34,7 +34,7 @@ import {ModalService} from "../../../shared/services/modal.service";
 })
 export class ClientProfileMenuNavBtnComponent {
   readonly externalLinks = this.environmentService.externalLinks;
-  readonly helpLink$ = this.helpService.getHelpLink('main');
+  readonly helpLink$ = this.helpService.getSectionHelp('main');
 
   constructor(
     private readonly environmentService: EnvironmentService,

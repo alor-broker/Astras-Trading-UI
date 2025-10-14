@@ -21,6 +21,7 @@ import {
   TerminalSettingsWidgetComponent
 } from "../../../modules/terminal-settings/widgets/terminal-settings-widget/terminal-settings-widget.component";
 import {MobileSettingsBrokerService} from "../../../modules/dashboard/services/mobile-settings-broker.service";
+import { UrgentNotificationDialogComponent } from "../../../modules/urgent-notifications/components/urgent-notification-dialog/urgent-notification-dialog.component";
 
 describe('MobileDashboardComponent', () => {
   let component: MobileDashboardComponent;
@@ -38,7 +39,8 @@ describe('MobileDashboardComponent', () => {
           MobileInstrumentsHistoryComponent,
           EmptyPortfoliosWarningModalComponent,
           MobileDashboardContentComponent,
-          TerminalSettingsWidgetComponent
+          TerminalSettingsWidgetComponent,
+          UrgentNotificationDialogComponent
         )
       ],
       providers: [

@@ -1,22 +1,48 @@
-import {DestroyRef, Injectable} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {Actions, ofType} from '@ngrx/effects';
-import {ActionCreator, Store} from '@ngrx/store';
-import {take} from 'rxjs';
-import {LocalStorageAdminConstants} from 'src/app/shared/constants/local-storage.constants';
-import {TerminalSettings} from 'src/app/shared/models/terminal-settings/terminal-settings.model';
-import {GlobalLoadingIndicatorService} from 'src/app/shared/services/global-loading-indicator.service';
-import {LocalStorageService} from 'src/app/shared/services/local-storage.service';
-import {TerminalSettingsService} from 'src/app/shared/services/terminal-settings.service';
-import {GuidGenerator} from 'src/app/shared/utils/guid';
-import {DashboardsInternalActions} from 'src/app/store/dashboards/dashboards-actions';
+import {
+  DestroyRef,
+  Injectable
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  Actions,
+  ofType
+} from '@ngrx/effects';
+import {
+  ActionCreator,
+  Store
+} from '@ngrx/store';
+import {
+  asyncScheduler,
+  subscribeOn,
+  take
+} from 'rxjs';
+import { LocalStorageAdminConstants } from 'src/app/shared/constants/local-storage.constants';
+import { TerminalSettings } from 'src/app/shared/models/terminal-settings/terminal-settings.model';
+import { GlobalLoadingIndicatorService } from 'src/app/shared/services/global-loading-indicator.service';
+import { LocalStorageService } from 'src/app/shared/services/local-storage.service';
+import { TerminalSettingsService } from 'src/app/shared/services/terminal-settings.service';
+import { GuidGenerator } from 'src/app/shared/utils/guid';
+import {
+  DashboardsEventsActions,
+  DashboardsInternalActions
+} from 'src/app/store/dashboards/dashboards-actions';
 import {
   TerminalSettingsEventsActions,
   TerminalSettingsInternalActions,
   TerminalSettingsServicesActions
 } from 'src/app/store/terminal-settings/terminal-settings.actions';
-import {WidgetSettingsInternalActions} from 'src/app/store/widget-settings/widget-settings.actions';
-import {WidgetsLocalStateInternalActions} from "../../../store/widgets-local-state/widgets-local-state.actions";
+import {
+  WidgetSettingsEventsActions,
+  WidgetSettingsInternalActions
+} from 'src/app/store/widget-settings/widget-settings.actions';
+import { WidgetsLocalStateInternalActions } from "../../../store/widgets-local-state/widgets-local-state.actions";
+import {
+  AdminDashboardType,
+  Dashboard,
+  DefaultDesktopDashboardConfig
+} from "../../../shared/models/dashboard/dashboard.model";
+import { ManageDashboardsService } from "../../../shared/services/manage-dashboards.service";
+import { WidgetSettings } from "../../../shared/models/widget-settings.model";
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +53,7 @@ export class AdminSettingsBrokerService {
     private readonly actions$: Actions,
     private readonly localStorageService: LocalStorageService,
     private readonly terminalSettingsService: TerminalSettingsService,
+    private readonly manageDashboardsService: ManageDashboardsService,
     private readonly globalLoadingIndicatorService: GlobalLoadingIndicatorService,
     private readonly destroyRef: DestroyRef
   ) {
@@ -41,7 +68,6 @@ export class AdminSettingsBrokerService {
   }
 
   private initWidgetSettingsBroker(): void {
-    /*
     const saveSettings = (settings: WidgetSettings[]): void => {
       this.localStorageService.setItem(LocalStorageAdminConstants.WidgetsSettingsStorageKey, settings.map(s => [s.guid, s]));
     };
@@ -49,43 +75,83 @@ export class AdminSettingsBrokerService {
     this.addActionSubscription(
       WidgetSettingsEventsActions.updated,
       action => {
-        saveSettings(action.settings);
+        this.manageDashboardsService.allDashboards$.pipe(
+          take(1),
+          subscribeOn(asyncScheduler)
+        ).subscribe(allDashboards => {
+          const mainDashboard = allDashboards.find(d => d.type === AdminDashboardType.AdminMain);
+          if(mainDashboard == null) {
+            return;
+          }
+
+          const mainDashboardItems = new Set(mainDashboard.items.map(i => i.guid));
+
+          saveSettings(action.settings.filter(s => mainDashboardItems.has(s.guid)));
+        });
       }
     );
-*/
+
     const loadingId = GuidGenerator.newGuid();
     this.globalLoadingIndicatorService.registerLoading(loadingId);
 
-    /*
     const savedItems = this.localStorageService.getItem<[string, WidgetSettings][]>(LocalStorageAdminConstants.WidgetsSettingsStorageKey) ?? [];
     const settings = savedItems.map(x => x[1]);
 
     this.store.dispatch(WidgetSettingsInternalActions.init({ settings }));
-    */
 
-    this.store.dispatch(WidgetSettingsInternalActions.init({settings: []}));
     this.globalLoadingIndicatorService.releaseLoading(loadingId);
   }
 
   private initDashboardSettingsBroker(): void {
-    /*
     const saveDashboard = (settings: Dashboard[]): void => this.localStorageService.setItem(LocalStorageAdminConstants.DashboardsSettingsStorageKey, settings);
 
     this.addActionSubscription(
       DashboardsEventsActions.updated,
       action => {
-        saveDashboard(action.dashboards);
+        saveDashboard(action.dashboards.filter(d => d.type === AdminDashboardType.AdminMain));
       }
     );
-*/
+
     const loadingId = GuidGenerator.newGuid();
     this.globalLoadingIndicatorService.registerLoading(loadingId);
 
-    // const dashboards = this.localStorageService.getItem<Dashboard[]>(LocalStorageAdminConstants.DashboardsSettingsStorageKey) ?? null;
+    const dashboards = this.localStorageService.getItem<Dashboard[]>(LocalStorageAdminConstants.DashboardsSettingsStorageKey) ?? null;
+    this.store.dispatch(DashboardsInternalActions.init({ dashboards: dashboards ?? []}));
 
-    // this.store.dispatch(DashboardsInternalActions.init({ dashboards: dashboards ?? []}));
-    this.store.dispatch(DashboardsInternalActions.init({dashboards: []}));
-    this.globalLoadingIndicatorService.releaseLoading(loadingId);
+    if((dashboards ?? []).length === 0) {
+      this.manageDashboardsService.getDashboardTemplatesConfig().pipe(
+        take(1)
+      ).subscribe(config => {
+        const defaultDashboardsConfig = config
+          .filter(d => d.type === AdminDashboardType.AdminMain)
+          .map(d => d as DefaultDesktopDashboardConfig);
+
+        defaultDashboardsConfig.forEach((d) => {
+          this.manageDashboardsService.addDashboardWithTemplate({
+            title: "All Clients",
+            isSelected: true,
+            items: d.widgets.map(w => ({
+              guid: GuidGenerator.newGuid(),
+              widgetType: w.widgetTypeId,
+              position: w.position,
+              initialSettings: w.initialSettings
+            })),
+            isFavorite: true,
+            type: d.type
+          });
+        });
+
+        this.globalLoadingIndicatorService.releaseLoading(loadingId);
+      });
+    } else {
+      const adminDashboard = dashboards!.find(d => d.type === AdminDashboardType.AdminMain);
+
+      if(adminDashboard != null) {
+        this.manageDashboardsService.selectDashboard(adminDashboard.guid);
+      }
+
+      this.globalLoadingIndicatorService.releaseLoading(loadingId);
+    }
   }
 
   private initTerminalSettingsBroker(): void {

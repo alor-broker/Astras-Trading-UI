@@ -298,8 +298,23 @@
     ]
   },
   {
-    "id": "admin_main_dashboard",
-    "type": "admin",
+    "id": "admin-main",
+    "type": "admin-main",
+    "widgets": [
+      {
+        "widgetTypeId": "admin-clients",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "cols": 50,
+          "rows": 15
+        }
+      }
+    ]
+  },
+  {
+    "id": "admin-selected-portfolio",
+    "type": "admin-selected-portfolio",
     "widgets": [
       {
         "widgetTypeId": "tech-chart",

@@ -5,7 +5,12 @@ import {
   Input,
   OnInit
 } from '@angular/core';
-import { combineLatest, map, Observable, shareReplay } from 'rxjs';
+import {
+  combineLatest,
+  map,
+  Observable,
+  shareReplay
+} from 'rxjs';
 import {
   GalleryDisplay,
   WidgetDisplay,
@@ -23,24 +28,29 @@ import { TranslocoDirective } from '@jsverse/transloco';
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {LocalStorageService} from "../../../../shared/services/local-storage.service";
 import {LocalStorageCommonConstants} from "../../../../shared/constants/local-storage.constants";
+import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
 
 @Component({
     selector: 'ats-widgets-gallery-nav-btn',
     templateUrl: './widgets-gallery-nav-btn.component.html',
     styleUrls: ['./widgets-gallery-nav-btn.component.less'],
-    imports: [
-        DashboardModule,
-        NzIconDirective,
-        AsyncPipe,
-        TranslocoDirective,
-        NzButtonComponent,
-        WidgetsGalleryComponent
-    ],
+  imports: [
+    DashboardModule,
+    NzIconDirective,
+    AsyncPipe,
+    TranslocoDirective,
+    NzButtonComponent,
+    WidgetsGalleryComponent,
+    NzTooltipDirective
+  ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WidgetsGalleryNavBtnComponent implements OnInit {
   galleryVisible = false;
   widgetsGallery$!: Observable<GalleryDisplay>;
+
+  readonly currentDashboard$ = this.dashboardContextService.selectedDashboard$;
 
   @Input()
   atsDisabled = false;
@@ -49,7 +59,8 @@ export class WidgetsGalleryNavBtnComponent implements OnInit {
     private readonly manageDashboardsService: ManageDashboardsService,
     private readonly widgetsMetaService: WidgetsMetaService,
     private readonly translatorService: TranslatorService,
-    private readonly localStorageService: LocalStorageService
+    private readonly localStorageService: LocalStorageService,
+    private readonly dashboardContextService: DashboardContextService
   ) {}
 
   ngOnInit(): void {
@@ -76,6 +87,9 @@ export class WidgetsGalleryNavBtnComponent implements OnInit {
     this.widgetsGallery$ = combineLatest({
       meta: this.widgetsMetaService.getWidgetsMeta(),
       lang: this.translatorService.getLangChanges(),
+      currentDashboardType: this.currentDashboard$.pipe(
+        map(d => d.type)
+      )
     }).pipe(
       map((s) => {
         const groups = new Map<WidgetCategory, WidgetDisplay[]>();
@@ -85,6 +99,7 @@ export class WidgetsGalleryNavBtnComponent implements OnInit {
           .filter((x) => {
             return x.desktopMeta != null
               && x.desktopMeta.enabled
+              && (s.currentDashboardType == null || x.hideOnDashboardType == null || !x.hideOnDashboardType.includes(s.currentDashboardType))
               && (!(x.isDemoOnly ?? false) || isDemoModeEnabled);
           })
           .sort((a, b) => {

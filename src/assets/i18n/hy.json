@@ -79,6 +79,9 @@
     },
     "tableColumns": {
       "selectColumnLabel": "Աղյուսակի սյունակները"
+    },
+    "refreshIntervalSec": {
+      "label": "Թարմացման միջակայք, վրկ."
     }
   },
   "validationErrors": {
@@ -93,11 +96,9 @@
     "stringInputLength": "Մուտքագրեք {{min}}-ից {{max}} նիշ",
     "stringMaxLength": "Մուտքագրեք առավելագույնը {{max}} նիշ"
   },
-
   "placeholders": {
     "selectValue": "Ընտրեք արժեքը"
   },
-
   "lessMoreOptions": {
     "less": "Պակաս",
     "more": "Ավելի",
@@ -108,7 +109,6 @@
     "letterSuffix": "Կրճատված"
   },
   "addToList": "Ավելացնել ցուցակում",
-
   "marketSectors": {
     "Energy": "Էներգետիկա",
     "Materials": "Նյութեր",
@@ -122,5 +122,11 @@
     "Utilities": "Կոմունալ",
     "Real Estate": "Անշարժ գույք",
     "Other": "Այլ"
+  },
+  "clientTypeValues": {
+    "StandardRisk": "Ստանդարտ ռիսկ",
+    "HighRisk": "Բարձր ռիսկ",
+    "Special": "Հատուկ",
+    "LowRisk": "Ցածր ռիսկ"
   }
 }

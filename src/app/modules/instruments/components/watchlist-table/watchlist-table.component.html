@@ -265,7 +265,8 @@
           </ng-container>
         }
 
-        @if (menuWidgets$ | async; as menuWidgets) {
+        @let menuWidgets = menuWidgets$ | async;
+        @if (menuWidgets != null && menuWidgets.length > 0) {
           <li [nzTitle]="title" nz-submenu>
             <ng-template #title>
               <span><i nz-icon nzTheme="outline"

@@ -3,8 +3,8 @@ import { NzOptionComponent } from "ng-zorro-antd/select";
 
 export interface BaseColumnId {
   id: string;
-  displayName: string;
   isDefault: boolean;
+  displayName?: string;
 }
 
 export interface ColumnDisplaySettings {
@@ -18,6 +18,7 @@ export interface TableDisplaySettings {
 }
 
 export interface BaseColumnSettings<T> extends Omit<BaseColumnId, 'isDefault'> {
+  displayName: string;
   sourceField?: string;
   transformFn?: (data: T) => string | null;
   classFn?: (data: T) => string | null;

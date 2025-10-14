@@ -111,7 +111,7 @@
     </div>
 
     <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-      <ats-search-filter [columns]="td.tableConfig.columns" (filterChange)="filterChange($event)"></ats-search-filter>
+      <ats-table-search-filter [columns]="td.tableConfig.columns" (filterChange)="filterChange($event)"></ats-table-search-filter>
     </nz-dropdown-menu>
 
     <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>

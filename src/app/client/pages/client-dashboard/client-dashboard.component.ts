@@ -31,23 +31,25 @@ import { EXPORT_SETTINGS_SERVICE_TOKEN } from "../../../shared/services/settings
 import { ExportDesktopSettingsService } from "../../../shared/services/settings/export-desktop-settings.service";
 import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instruments/widgets/instrument-select-dialog-widget/instrument-select-dialog-widget.component";
 import {GraphStorageService} from "../../../modules/ai-graph/services/graph-storage.service";
+import { UrgentNotificationDialogComponent } from "../../../modules/urgent-notifications/components/urgent-notification-dialog/urgent-notification-dialog.component";
 
 @Component({
     selector: 'ats-client-dashboard',
-    imports: [
-        DashboardModule,
-        NzContentComponent,
-        NzHeaderComponent,
-        NzLayoutComponent,
-        TerminalSettingsModule,
-        ClientNavbarComponent,
-        FeedbackModule,
-        ApplicationMetaModule,
-        OrderCommandsModule,
-        SettingsLoadErrorDialogComponent,
-        TerminalSettingsWidgetComponent,
-        InstrumentSelectDialogWidgetComponent
-    ],
+  imports: [
+    DashboardModule,
+    NzContentComponent,
+    NzHeaderComponent,
+    NzLayoutComponent,
+    TerminalSettingsModule,
+    ClientNavbarComponent,
+    FeedbackModule,
+    ApplicationMetaModule,
+    OrderCommandsModule,
+    SettingsLoadErrorDialogComponent,
+    TerminalSettingsWidgetComponent,
+    InstrumentSelectDialogWidgetComponent,
+    UrgentNotificationDialogComponent
+  ],
     templateUrl: './client-dashboard.component.html',
     styleUrl: './client-dashboard.component.less',
     providers: [

@@ -182,7 +182,7 @@
       </ng-template>
     </nz-table>
     <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-      <ats-search-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns"></ats-search-filter>
+      <ats-table-search-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns"></ats-table-search-filter>
     </nz-dropdown-menu>
 
     <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>

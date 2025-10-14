@@ -1,21 +1,21 @@
 const fs = require('fs');
 const path = require('path');
 const { glob } = require('glob');
-const { contentChild } = require('@angular/core');
 
-const LANG_CODE = 'hy';
-const LANG = 'Armenian';
 const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const API_KEY = '';
 const MODEL = 'google/gemini-2.0-flash-001';
-const SKIP_EXISTING = true;
+const LANGUAGES = [
+  { code: 'en', name: 'English' },
+  { code: 'hy', name: 'Armenian' }
+];
 
 async function findAllRuFiles(dir) {
   const pattern = path.join(dir, '**', 'ru.json').replace(/\\/g, '/');
   return await glob(pattern);
 }
 
-async function translateObject(obj) {
+async function translateObject(obj, langName) {
   const headers = {
     'Authorization': `Bearer ${API_KEY}`,
     'Content-Type': 'application/json'
@@ -24,8 +24,8 @@ async function translateObject(obj) {
   const body = JSON.stringify({
     model: MODEL,
     messages: [
-      { role: 'system', content: `You are a helpful assistant that translates JSON file values from Russian to ${LANG}. Return ONLY the translated JSON object, without any extra text or explanations.` },
-      { role: 'user', content: `Translate the values in this JSON object to ${LANG}:\n${JSON.stringify(obj, null, 2)}` }
+      { role: 'system', content: `You are a helpful assistant that translates JSON file values from Russian to ${langName}. All translations are targeted for trading terminal. Return ONLY the translated JSON object, without any extra text or explanations.` },
+      { role: 'user', content: `Translate the values in this JSON object to ${langName}:\n${JSON.stringify(obj, null, 2)}` }
     ]
   });
 
@@ -55,28 +55,41 @@ function removeUTF8BOM(str) {
     return str.replace(/^\uFEFF/, '');
 }
 
-async function processFile(filePath) {
+async function processFile(filePath, langCode, langName) {
   try {
     const dir = path.dirname(filePath);
-    const newFilePath = path.join(dir, `${LANG_CODE}.json`);
+    const newFilePath = path.join(dir, `${langCode}.json`);
 
-    if(SKIP_EXISTING) {
+    const sourceContent = await fs.promises.readFile(filePath, { encoding: 'utf8' });
+    const sourceObj = JSON.parse(removeUTF8BOM(sourceContent));
 
-      if(fs.existsSync(newFilePath)) {
-        console.log(`Skip existing file ${newFilePath}`);
+    if (fs.existsSync(newFilePath)) {
+      const existingContent = await fs.promises.readFile(newFilePath, { encoding: 'utf8' });
+      const existingObj = JSON.parse(removeUTF8BOM(existingContent));
+
+      const missingKeys = findMissingKeys(sourceObj, existingObj);
+
+      if (Object.keys(missingKeys).length === 0) {
+        console.log(`No missing keys in ${newFilePath}. Skipping.`);
         return null;
       }
+
+      console.log(`Found missing keys in ${newFilePath}. Translating...`);
+
+      const translatedMissingKeys = await translateObject(missingKeys, langName);
+
+      const mergedObj = mergeDeep(existingObj, translatedMissingKeys);
+
+      await fs.promises.writeFile(newFilePath, JSON.stringify(mergedObj, null, 2), 'utf8');
+      console.log(`Successfully updated ${newFilePath} with new translations.`);
+    } else {
+      console.log(`Translating ${filePath} to ${langName}...`);
+      const translatedObj = await translateObject(sourceObj, langName);
+
+      await fs.promises.writeFile(newFilePath, JSON.stringify(translatedObj, null, 2), 'utf8');
+      console.log(`Successfully created ${newFilePath}`);
     }
 
-    const content = await fs.promises.readFile(filePath, { encoding: 'utf8' });
-    const jsonObj = JSON.parse(removeUTF8BOM(content));
-
-    console.log(`Translating ${filePath}...`);
-    const translatedObj = await translateObject(jsonObj);
-
-
-    await fs.promises.writeFile(newFilePath, JSON.stringify(translatedObj, null, 2), 'utf8');
-    console.log(`Successfully created ${newFilePath}`);
     return null;
   } catch (error) {
     console.error(`Failed to process ${filePath}:`, error.message);
@@ -84,9 +97,54 @@ async function processFile(filePath) {
   }
 }
 
+function findMissingKeys(source, target) {
+  const missing = {};
+
+  for (const key in source) {
+    if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
+      if (typeof target[key] === 'object' && target[key] !== null) {
+        const nestedMissing = findMissingKeys(source[key], target[key]);
+        if (Object.keys(nestedMissing).length > 0) {
+          missing[key] = nestedMissing;
+        }
+      } else {
+        missing[key] = source[key];
+      }
+    } else if (!(key in target)) {
+      missing[key] = source[key];
+    }
+  }
+
+  return missing;
+}
+
+function mergeDeep(target, source) {
+  const output = { ...target };
+
+  if (isObject(target) && isObject(source)) {
+    Object.keys(source).forEach(key => {
+      if (isObject(source[key])) {
+        if (!(key in target)) {
+          Object.assign(output, { [key]: source[key] });
+        } else {
+          output[key] = mergeDeep(target[key], source[key]);
+        }
+      } else {
+        Object.assign(output, { [key]: source[key] });
+      }
+    });
+  }
+
+  return output;
+}
+
+function isObject(item) {
+  return (item && typeof item === 'object' && !Array.isArray(item));
+}
+
 async function main() {
   if (!API_KEY) {
-    console.error('Error: OPENROUTER_API_KEY variable is not set.');
+    console.error('Error: API_KEY variable is not set.');
     process.exit(1);
   }
 
@@ -105,16 +163,18 @@ async function main() {
 
   const failedFiles = [];
   for (const file of ruFiles) {
-    const result = await processFile(file);
-    if (result) {
-      failedFiles.push(result);
+    for (const lang of LANGUAGES) {
+      const result = await processFile(file, lang.code, lang.name);
+      if (result) {
+        failedFiles.push({ file, lang: lang.code });
+      }
     }
   }
 
   if (failedFiles.length > 0) {
     console.log('\n--- Processing Summary ---');
     console.error('Failed to process the following files:');
-    failedFiles.forEach(file => console.error(`- ${file}`));
+    failedFiles.forEach(item => console.error(`- ${item.file} (lang: ${item.lang})`));
   } else {
     console.log('\nAll files processed successfully!');
   }

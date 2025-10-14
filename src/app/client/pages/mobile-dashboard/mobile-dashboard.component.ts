@@ -27,23 +27,25 @@ import {
 } from "../../../modules/terminal-settings/widgets/terminal-settings-widget/terminal-settings-widget.component";
 import { EXPORT_SETTINGS_SERVICE_TOKEN } from "../../../shared/services/settings/export-settings.service";
 import { ExportMobileSettingsService } from "../../../shared/services/settings/export-mobile-settings.service";
+import { UrgentNotificationDialogComponent } from "../../../modules/urgent-notifications/components/urgent-notification-dialog/urgent-notification-dialog.component";
 
 @Component({
     selector: 'ats-mobile-dashboard',
-    imports: [
-        NzLayoutComponent,
-        NgIf,
-        AsyncPipe,
-        DashboardModule,
-        TerminalSettingsModule,
-        FeedbackModule,
-        ApplicationMetaModule,
-        OrderCommandsModule,
-        MobileNavbarComponent,
-        MobileInstrumentsHistoryComponent,
-        MobileDashboardContentComponent,
-        TerminalSettingsWidgetComponent
-    ],
+  imports: [
+    NzLayoutComponent,
+    NgIf,
+    AsyncPipe,
+    DashboardModule,
+    TerminalSettingsModule,
+    FeedbackModule,
+    ApplicationMetaModule,
+    OrderCommandsModule,
+    MobileNavbarComponent,
+    MobileInstrumentsHistoryComponent,
+    MobileDashboardContentComponent,
+    TerminalSettingsWidgetComponent,
+    UrgentNotificationDialogComponent
+  ],
     templateUrl: './mobile-dashboard.component.html',
     styleUrl: './mobile-dashboard.component.less',
     providers: [

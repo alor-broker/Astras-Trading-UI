@@ -9,6 +9,7 @@ import {
 } from '../../shared/models/dashboard/widget.model';
 import {
   Dashboard,
+  DashboardType,
   InstrumentGroups
 } from '../../shared/models/dashboard/dashboard.model';
 import { PortfolioKey } from '../../shared/models/portfolio-key.model';
@@ -26,6 +27,7 @@ export const DashboardsManageActions = createActionGroup({
       instrumentsSelection?: InstrumentGroups;
       selectedPortfolio?: PortfolioKey;
       sourceGuid?: string;
+      dashboardType: DashboardType;
       templateId?: string;
     }>(),
     "Reset": props<{
@@ -41,6 +43,10 @@ export const DashboardsManageActions = createActionGroup({
     "Remove All": emptyProps(),
     "Copy": props<{
       dashboardGuid: string;
+    }>(),
+    "ChangeLock": props<{
+      dashboardGuid: string;
+      isLocked: boolean;
     }>()
   }
 });

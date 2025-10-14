@@ -1,32 +1,45 @@
-import {DestroyRef, Injectable} from '@angular/core';
 import {
-  DashboardSettingsBrokerService
-} from "../../../shared/services/settings-broker/dashboard-settings-broker.service";
-import {WidgetsSettingsBrokerService} from "../../../shared/services/settings-broker/widgets-settings-broker.service";
-import {WidgetSettingsService} from "../../../shared/services/widget-settings.service";
-import {combineLatest, take} from "rxjs";
-import {ActionCreator} from '@ngrx/store/src/models';
-import {Actions, ofType} from "@ngrx/effects";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {Store} from '@ngrx/store';
-import {ManageDashboardsService} from "../../../shared/services/manage-dashboards.service";
-import {mergeArrays} from "../../../shared/utils/collections";
-import {TerminalSettingsBrokerService} from "../../../shared/services/settings-broker/terminal-settings-broker.service";
-import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
+  DestroyRef,
+  Injectable
+} from '@angular/core';
+import { DashboardSettingsBrokerService } from "../../../shared/services/settings-broker/dashboard-settings-broker.service";
+import { WidgetsSettingsBrokerService } from "../../../shared/services/settings-broker/widgets-settings-broker.service";
+import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
+import {
+  combineLatest,
+  take
+} from "rxjs";
+import { ActionCreator } from '@ngrx/store/src/models';
+import {
+  Actions,
+  ofType
+} from "@ngrx/effects";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Store } from '@ngrx/store';
+import { ManageDashboardsService } from "../../../shared/services/manage-dashboards.service";
+import { mergeArrays } from "../../../shared/utils/collections";
+import { TerminalSettingsBrokerService } from "../../../shared/services/settings-broker/terminal-settings-broker.service";
+import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
 import {
   WidgetSettingsInternalActions,
   WidgetSettingsServiceActions
 } from "../../../store/widget-settings/widget-settings.actions";
-import {DashboardsEventsActions, DashboardsInternalActions} from "../../../store/dashboards/dashboards-actions";
+import {
+  DashboardsEventsActions,
+  DashboardsInternalActions
+} from "../../../store/dashboards/dashboards-actions";
 import {
   TerminalSettingsEventsActions,
   TerminalSettingsInternalActions,
   TerminalSettingsServicesActions
 } from "../../../store/terminal-settings/terminal-settings.actions";
-import {WidgetsLocalStateInternalActions} from "../../../store/widgets-local-state/widgets-local-state.actions";
-import {GlobalLoadingIndicatorService} from "../../../shared/services/global-loading-indicator.service";
-import {GuidGenerator} from "../../../shared/utils/guid";
-import {DefaultDesktopDashboardConfig} from "../../../shared/models/dashboard/dashboard.model";
+import { WidgetsLocalStateInternalActions } from "../../../store/widgets-local-state/widgets-local-state.actions";
+import { GlobalLoadingIndicatorService } from "../../../shared/services/global-loading-indicator.service";
+import { GuidGenerator } from "../../../shared/utils/guid";
+import {
+  ClientDashboardType,
+  DefaultDesktopDashboardConfig
+} from "../../../shared/models/dashboard/dashboard.model";
 
 export interface InitSettingsBrokersOptions {
   onSettingsReadError: () => void;
@@ -85,13 +98,13 @@ export class DesktopSettingsBrokerService {
             this.store.dispatch(DashboardsInternalActions.init({dashboards: []}));
 
             const defaultDashboardsConfig = config
-              .filter(d => d.type === 'desktop')
+              .filter(d => d.type === ClientDashboardType.ClientDesktop)
               .map(d => d as DefaultDesktopDashboardConfig);
 
             defaultDashboardsConfig.forEach((d, index) => {
               this.manageDashboardsService.addDashboardWithTemplate({
                 templateId: d.id,
-                title: d.name,
+                title: d.name ?? 'Dashboard',
                 isSelected: index === 0,
                 items: d.widgets.map(w => ({
                   guid: GuidGenerator.newGuid(),
@@ -99,7 +112,8 @@ export class DesktopSettingsBrokerService {
                   position: w.position,
                   initialSettings: w.initialSettings
                 })),
-                isFavorite: d.isFavorite
+                isFavorite: d.isFavorite,
+                type: d.type
               });
             });
 

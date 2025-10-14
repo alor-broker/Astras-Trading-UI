@@ -133,7 +133,7 @@ export class MobileNavbarComponent implements OnInit {
         }
       });
 
-    this.helpLink$ = this.helpService.getHelpLink('main');
+    this.helpLink$ = this.helpService.getSectionHelp('main');
   }
 
   isFindedPortfolio(portfolio: PortfolioExtended): boolean {
