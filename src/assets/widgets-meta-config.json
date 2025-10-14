@@ -733,7 +733,7 @@
       "galleryOrder": 20,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": ["admin-main","admin-selected-portfolio"]
   },
   {
     "typeId": "bond-screener",
@@ -765,7 +765,7 @@
       "galleryOrder": 21,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": ["admin-main","admin-selected-portfolio"]
   },
   {
     "typeId": "mobile-home-screen",
@@ -818,7 +818,7 @@
       "galleryOrder": 50,
       "enabled": true
     },
-    "hideOnDashboardType": [ "admin-main" ]
+    "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
   },
   {
     "typeId": "invest-ideas",
@@ -850,7 +850,8 @@
       },
       "galleryOrder": 22,
       "enabled": true
-    }
+    },
+    "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
   },
   {
     "typeId": "portfolio-charts",
@@ -881,7 +882,8 @@
       },
       "galleryOrder": 23,
       "enabled": true
-    }
+    },
+    "hideOnDashboardType": ["admin-main"]
   },
   {
     "typeId": "market-trends",
@@ -915,6 +917,39 @@
     },
     "baseSettings": {
       "availableExtendedFilters": []
-    }
+    },
+    "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
+  },
+  {
+    "typeId": "admin-clients",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "",
+        "componentName": "AdminClientsWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "My clients",
+      "translations": {
+        "ru": "Мои клиенты",
+        "en": "My clients",
+        "hy": "Իմ հաճախորդները"
+      }
+    },
+    "category": "all",
+    "desktopMeta": {
+      "headerIcon": "user-switch",
+      "galleryIcon": "user-switch",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 15,
+        "initialWidth": 30
+      },
+      "galleryOrder": 100,
+      "enabled": true
+    },
+    "hideOnDashboardType": ["desktop", "mobile", "admin-selected-portfolio"]
   }
 ]
