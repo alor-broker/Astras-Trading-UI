@@ -41,7 +41,7 @@
               </ats-compact-header>
             </div>
             <div>
-              <nz-tabset nzSize="small" nzTabPosition="top">
+              <nz-tabset nzSize="small" nzTabPosition="top" #orderTabs>
                 <ng-container *ngIf="ordersConfig">
                   <nz-tab
                     *ngIf="ordersConfig.limitOrder.isSupported"
