@@ -9,13 +9,27 @@
       [nzColumn]="columns"
       [nzSize]="columns === 1 ? 'small' : 'default'"
     >
-      <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.portfolioLiquidationTitle')">{{summary.portfolioLiquidationValue}}</nz-descriptions-item>
+      <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.portfolioLiquidationTitle')">
+        <span class="fs-5 fw-bold text-nowrap heading-color">
+          {{summary.portfolioLiquidationValue}}
+        </span>
+      </nz-descriptions-item>
       <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.portfolioEvaluationTitle')">{{summary.portfolioEvaluation}}</nz-descriptions-item>
       <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.profitTitle')">
-        <span [class]="summary.profitRate > 0 ? 'buy' : 'sell'">{{summary.profit}}</span>
+        <span
+          class="fs-5 fw-bold text-nowrap"
+          [class]="summary.profitRate > 0 ? 'buy' : 'sell'"
+        >
+          {{summary.profit}}
+        </span>
       </nz-descriptions-item>
       <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.profitRateTitle')">
-        <span [class]="summary.profitRate > 0 ? 'buy' : 'sell'">{{summary.profitRate}}%</span>
+        <span
+          class="fs-5 fw-bold text-nowrap"
+          [class]="summary.profitRate > 0 ? 'buy' : 'sell'"
+        >
+          {{summary.profitRate}}%
+        </span>
       </nz-descriptions-item>
       <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.buyingPowerAtMorningTitle')">{{summary.buyingPowerAtMorning}}</nz-descriptions-item>
       <nz-descriptions-item [nzTitle]="t('blotterCommonSummary.initialMarginTitle')">{{summary.initialMargin}}</nz-descriptions-item>
