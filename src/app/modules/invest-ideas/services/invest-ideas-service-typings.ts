@@ -6,6 +6,7 @@
 export interface IdeaSymbol {
   ticker: string;
   exchange: string;
+  shortName?: string;
 }
 
 export interface Idea {

@@ -1,12 +1,13 @@
 import {
   Component,
-  DestroyRef,
+  model,
   OnInit,
   output
 } from '@angular/core';
 import {
-  filter,
+  forkJoin,
   Observable,
+  of,
   switchMap,
   timer
 } from "rxjs";
@@ -19,40 +20,17 @@ import {
 import { NzEmptyComponent } from "ng-zorro-antd/empty";
 import { NzSkeletonComponent } from "ng-zorro-antd/skeleton";
 import { NzTypographyComponent } from "ng-zorro-antd/typography";
-import { HistoryService } from "../../../../shared/services/history.service";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { map } from "rxjs/operators";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { MathHelper } from "../../../../shared/utils/math-helper";
 import {
-  AsyncPipe,
-  NgClass
-} from "@angular/common";
-import {
-  NzModalComponent,
-  NzModalContentDirective
-} from "ng-zorro-antd/modal";
+  map,
+  startWith
+} from "rxjs/operators";
 import { NzIconDirective } from "ng-zorro-antd/icon";
 import { InvestIdeasService } from "../../services/invest-ideas.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import { Instrument } from "../../../../shared/models/instruments/instrument.model";
-
-interface InstrumentPrice {
-  lastPrice: number;
-  dayChangePercent: number;
-}
-
-interface InstrumentDisplay {
-  instrument$: Observable<Instrument | null>;
-  priceInfo$: Observable<InstrumentPrice>;
-}
-
-interface IdeaDisplay {
-  title: string;
-  body: string;
-  instruments: InstrumentDisplay[];
-}
+import { Idea } from "../../services/invest-ideas-service-typings";
+import { InvestIdeasDetailsDialogComponent } from "../invest-ideas-details-dialog/invest-ideas-details-dialog.component";
 
 @Component({
   selector: 'ats-invest-ideas-carousel',
@@ -64,30 +42,25 @@ interface IdeaDisplay {
     NzEmptyComponent,
     NzSkeletonComponent,
     NzTypographyComponent,
-    NgClass,
-    NzModalComponent,
-    NzModalContentDirective,
     NzIconDirective,
-    AsyncPipe
+    InvestIdeasDetailsDialogComponent
   ],
   templateUrl: './invest-ideas-carousel.component.html',
   styleUrl: './invest-ideas-carousel.component.less'
 })
 export class InvestIdeasCarouselComponent implements OnInit {
-  ideas$!: Observable<IdeaDisplay[]>;
+  ideas$!: Observable<Idea[]>;
 
   instrumentSelected = output<InstrumentKey>();
 
-  protected selectedIdea: IdeaDisplay | null = null;
+  protected selectedIdea = model<Idea | null>(null);
 
   private readonly refreshInterval = 600_000;
 
   constructor(
     private readonly investIdeasService: InvestIdeasService,
-    private readonly historyService: HistoryService,
     private readonly translatorService: TranslatorService,
-    private readonly instrumentsService: InstrumentsService,
-    private readonly destroyRef: DestroyRef
+    private readonly instrumentsService: InstrumentsService
   ) {
   }
 
@@ -100,51 +73,54 @@ export class InvestIdeasCarouselComponent implements OnInit {
         },
         this.translatorService.getActiveLang()
       )),
-      map(r => {
-        if (r == null) {
-          return [];
+      switchMap(r => {
+        if (r == null || r.list == null) {
+          return of([]);
         }
 
-        return r.list.map(i => {
-            return {
-              title: i.title,
-              body: i.body,
-              instruments: i.symbols.map(symbol => {
-                const instrumentKey: InstrumentKey = {symbol: symbol.ticker, exchange: symbol.exchange};
-                return {
-                  instrument$: this.instrumentsService.getInstrument(instrumentKey),
-                  priceInfo$: this.getPriceInfo(instrumentKey)
-                };
-              })
-            };
+        const ideas = r.list;
+        if (ideas.length === 0) {
+          return of([]);
+        }
+
+        const updates$ = ideas.map(idea => {
+          if (idea.symbols.length === 0) {
+            return of(idea);
           }
+
+          const symbolUpdates$ = idea.symbols.map(symbol => {
+            if (symbol.shortName != null && symbol.shortName.length > 0) {
+              return of(symbol);
+            }
+
+            return this.instrumentsService.getInstrument({
+              symbol: symbol.ticker,
+              exchange: symbol.exchange
+            }).pipe(
+              map(i => {
+                if (i != null) {
+                  symbol.shortName = i.shortName;
+                }
+                return symbol;
+              }),
+              startWith(symbol)
+            );
+          });
+
+          return forkJoin(symbolUpdates$).pipe(
+            map(() => idea)
+          );
+        });
+
+        return forkJoin(updates$).pipe(
+          map(updatedIdeas => updatedIdeas as Idea[])
         );
       })
     );
   }
 
-  private getPriceInfo(instrumentKey: InstrumentKey): Observable<InstrumentPrice> {
-    return timer(0, 60_000).pipe(
-      switchMap(() => this.historyService.getLastTwoCandles(instrumentKey)),
-      map(r => {
-        if (r == null || (r.cur == null && r.prev == null)) {
-          return null;
-        }
-
-        return {
-          lastPrice: r.cur.close ?? r.prev.close,
-          dayChangePercent: this.getDayPercentChange(r.cur.close, r.prev.close)
-        };
-      }),
-      filter(x => x != null),
-      takeUntilDestroyed(this.destroyRef)
-    );
-  }
-
-  private getDayPercentChange(lastPrice?: number, closePrice?: number): number {
-    if (lastPrice == null || closePrice == null) {
-      return 0;
-    }
-    return MathHelper.round((1 - (closePrice / lastPrice)) * 100, 2);
+  selectSymbol(symbol: InstrumentKey): void {
+    this.instrumentSelected.emit(symbol);
+    this.selectedIdea.set(null);
   }
 }

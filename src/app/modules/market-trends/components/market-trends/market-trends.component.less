@@ -9,6 +9,11 @@
             border-bottom: 1px solid @border-color-split;
           }
         }
+
+        &.item:hover {
+          background-color: @table-row-hover-bg;
+          border-radius: @border-radius-base;
+        }
       }
     }
   }
@@ -32,6 +37,7 @@ table {
     }
 
     &.item {
+      cursor: pointer;
       td {
         padding: 5px;
       }
