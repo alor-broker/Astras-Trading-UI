@@ -123,6 +123,7 @@ export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<Or
 
     const newSettings = {
       ...formValue,
+      defaultOrderType: initialSettings.defaultOrderType,
       symbol: formValue.instrument?.symbol!,
       exchange: formValue.instrument?.exchange!,
       limitOrderPriceMoveSteps: formValue.limitOrderPriceMoveSteps?.map((x: number) => Number(x)),

@@ -1,0 +1,19 @@
+@import 'theme-mixin';
+
+.themeMixin({
+  .ats-invest-ideas-details-dialog{
+    .symbol {
+      cursor: pointer;
+      &:hover {
+        background-color: @table-row-hover-bg;
+        border-radius: @border-radius-base;
+      }
+    }
+  }
+});
+
+.ats-invest-ideas-details-dialog {
+  .body {
+    max-height: 500px;
+  }
+}

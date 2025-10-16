@@ -19,7 +19,7 @@
 
     <div class="d-flex flex-column flex-gap-10">
 
-      @let items = sectionItems();
+      @let items = ideaSymbols();
       @let selectedItem = selectedTicker$ | async;
 
       @for (item of items; track item) {

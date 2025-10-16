@@ -20,7 +20,7 @@
       >
         @for (idea of ideas; track idea) {
           <div nz-carousel-content>
-            <div class="section pt-25">
+            <div class="idea pt-25">
               <div class="d-flex flex-column h-100">
                 <div class="mb-10">
                   <span nz-typography nzEllipsis class="fs-6 heading-color">{{ idea.title }}</span>
@@ -30,59 +30,29 @@
                     nz-typography
                     nzEllipsis
                     [nzEllipsisRows]="3"
-                    (click)="selectedIdea = idea"
+                    (click)="selectedIdea.set(idea)"
                     class="cursor-pointer user-select-none"
                   >
                     {{ idea.body }}
                   </p>
-
-                  <nz-modal
-                    [nzTitle]="idea.title"
-                    [nzVisible]="idea === selectedIdea"
-                    [nzCancelText]="null"
-                    (nzOnCancel)="selectedIdea = null"
-                    (nzOnOk)="selectedIdea = null"
-                    [nzDraggable]="true"
-                  >
-                    <ng-container *nzModalContent>
-                      <p>{{ idea.body }}</p>
-                    </ng-container>
-                  </nz-modal>
                 </div>
 
                 <div class="flex-fill d-flex flex-column flex-gap-10 show-scroll">
-                  @for (instrument of idea.instruments; track instrument) {
-                    @if (instrument.instrument$ | async; as instrumentInfo) {
+                  @for (symbol of idea.symbols; track symbol) {
+                    <div
+                      class="symbol p-5 cursor-pointer"
+                      (click)="instrumentSelected.emit({symbol: symbol.ticker, exchange: symbol.exchange})"
+                    >
                       <div
-                        class="idea p-5 cursor-pointer"
-                        (click)="instrumentSelected.emit(instrumentInfo)"
-                      >
-                        <div class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5">
-                          <ats-instrument-icon [symbol]="instrumentInfo.symbol" size="large"></ats-instrument-icon>
-                          <div class="d-flex flex-column">
-                            <span nz-typography nzEllipsis class="heading-color">{{ instrumentInfo.shortName }}</span>
-                            <span nz-typography nzEllipsis>{{ instrumentInfo.symbol }}</span>
-                          </div>
-                        </div>
-
-                        <div class="d-flex flex-column align-items-end" *ngrxLet="instrument.priceInfo$ as priceInfo">
-                          @if (priceInfo != null) {
-                            <span class="heading-color">{{ priceInfo.lastPrice }}</span>
-                            <span
-                              [ngClass]="{
-                          'positive-color': priceInfo.dayChangePercent >= 0,
-                          'negative-color': priceInfo.dayChangePercent < 0
-                          }"
-                            >
-                        @if (priceInfo.dayChangePercent > 0) {
-                          <span>+</span>
-                        }
-                              <span>{{ priceInfo.dayChangePercent }}%</span>
-                        </span>
-                          }
+                        class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5 overflow-hidden">
+                        <ats-instrument-icon [symbol]="symbol.ticker" size="large"></ats-instrument-icon>
+                        <div class="d-flex flex-column overflow-hidden">
+                          <span nz-typography nzEllipsis
+                                class="heading-color">{{ symbol.shortName ?? symbol.ticker }}</span>
+                          <span nz-typography nzEllipsis>{{ symbol.ticker }}</span>
                         </div>
                       </div>
-                    }
+                    </div>
                   }
                 </div>
               </div>
@@ -100,4 +70,6 @@
 <ng-template #loading>
   <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }"></nz-skeleton>
 </ng-template>
+
+<ats-invest-ideas-details-dialog [(displayIdea)]="selectedIdea" (symbolSelected)="selectSymbol($event)"></ats-invest-ideas-details-dialog>
 

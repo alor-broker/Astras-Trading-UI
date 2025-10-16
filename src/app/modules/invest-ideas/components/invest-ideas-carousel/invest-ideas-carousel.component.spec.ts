@@ -1,16 +1,19 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed
+} from '@angular/core/testing';
 
 import { InvestIdeasCarouselComponent } from './invest-ideas-carousel.component';
 import {
   MockComponent,
   MockProvider
 } from "ng-mocks";
-import { HistoryService } from "../../../../shared/services/history.service";
 import { EMPTY } from "rxjs";
 import { NzModalComponent } from "ng-zorro-antd/modal";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { InvestIdeasService } from "../../services/invest-ideas.service";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { InvestIdeasDetailsDialogComponent } from "../invest-ideas-details-dialog/invest-ideas-details-dialog.component";
 
 describe('InvestIdeasCarouselComponent', () => {
   let component: InvestIdeasCarouselComponent;
@@ -21,15 +24,10 @@ describe('InvestIdeasCarouselComponent', () => {
       imports: [
         InvestIdeasCarouselComponent,
         MockComponent(NzModalComponent),
+        MockComponent(InvestIdeasDetailsDialogComponent),
         TranslocoTestsModule.getModule()
       ],
       providers: [
-        MockProvider(
-          HistoryService,
-          {
-            getLastTwoCandles: () => EMPTY
-          }
-        ),
         MockProvider(
           InvestIdeasService,
           {
@@ -39,7 +37,7 @@ describe('InvestIdeasCarouselComponent', () => {
         MockProvider(InstrumentsService)
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(InvestIdeasCarouselComponent);
     component = fixture.componentInstance;

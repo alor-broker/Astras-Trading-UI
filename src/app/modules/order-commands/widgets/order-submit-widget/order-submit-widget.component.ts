@@ -1,20 +1,27 @@
 import {
+  AfterViewInit,
   Component,
   DestroyRef,
   Inject,
   Input,
-  OnInit
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren
 } from '@angular/core';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import { SettingsHelper } from '../../../../shared/utils/settings-helper';
 import {
+  asyncScheduler,
   distinctUntilChanged,
   filter,
   Observable,
   shareReplay,
+  subscribeOn,
   switchMap,
+  take,
   withLatestFrom
 } from 'rxjs';
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
@@ -33,7 +40,11 @@ import { SelectedPriceData } from "../../../../shared/models/orders/selected-ord
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
-import { tap } from "rxjs/operators";
+import {
+  map,
+  startWith,
+  tap
+} from "rxjs/operators";
 import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
@@ -43,6 +54,10 @@ import {
   PushNotificationsConfig
 } from "../../../push-notifications/services/push-notifications-config";
 import {ConfirmableOrderCommandsService} from "../../services/confirmable-order-commands.service";
+import {
+  NzTabComponent,
+  NzTabSetComponent
+} from "ng-zorro-antd/tabs";
 
 @Component({
     selector: 'ats-order-submit-widget',
@@ -54,11 +69,23 @@ import {ConfirmableOrderCommandsService} from "../../services/confirmable-order-
     ],
     standalone: false
 })
-export class OrderSubmitWidgetComponent implements OnInit {
+export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
   currentPortfolio$!: Observable<PortfolioKey>;
   currentInstrument$!: Observable<Instrument>;
 
   shouldShowSettings = false;
+
+  @ViewChildren('orderTabs')
+  orderTabs?: QueryList<NzTabSetComponent>;
+
+  @ViewChild('limitOrderTab', {static: false})
+  limitOrderTab?: NzTabComponent;
+
+  @ViewChild('marketOrderTab', {static: false})
+  marketOrderTab?: NzTabComponent;
+
+  @ViewChild('stopOrderTab', {static: false})
+  stopOrderTab?: NzTabComponent;
 
   @Input({ required: true })
   widgetInstance!: WidgetInstance;
@@ -85,12 +112,20 @@ export class OrderSubmitWidgetComponent implements OnInit {
   ) {
   }
 
+  ngAfterViewInit(): void {
+    this.setDefaultOrderType();
+  }
+
   get guid(): string {
     return this.widgetInstance.instance.guid;
   }
 
   onSettingsChange(): void {
     this.shouldShowSettings = !this.shouldShowSettings;
+
+    if(!this.shouldShowSettings) {
+      this.setDefaultOrderType();
+    }
   }
 
   ngOnInit(): void {
@@ -156,5 +191,41 @@ export class OrderSubmitWidgetComponent implements OnInit {
         isArrayEqual(settings1.workingVolumes, settings2.workingVolumes, (a, b) => a === b)
       );
     } else return false;
+  }
+
+  private setDefaultOrderType(): void {
+    this.orderTabs?.changes.pipe(
+      map(x => x.first as NzTabSetComponent | undefined),
+      startWith(this.orderTabs?.first),
+      filter(t => t != null),
+      take(1)
+    ).subscribe(t => {
+      this.settings$.pipe(
+        take(1),
+        subscribeOn(asyncScheduler)
+      ).subscribe(s => {
+        if(s.defaultOrderType != null) {
+          switch (s.defaultOrderType) {
+            case 'limit':
+              this.activateCommandTab(t, this.limitOrderTab);
+              break;
+            case 'market':
+              this.activateCommandTab(t, this.marketOrderTab);
+              break;
+            case "stop":
+              this.activateCommandTab(t, this.stopOrderTab);
+              break;
+          }
+        }
+      });
+    });
+  }
+
+  private activateCommandTab(tabsSet: NzTabSetComponent, targetTab?: NzTabComponent): void {
+    if (!targetTab || targetTab.position == null) {
+      return;
+    }
+
+    tabsSet.setSelectedIndex(targetTab.position);
   }
 }
