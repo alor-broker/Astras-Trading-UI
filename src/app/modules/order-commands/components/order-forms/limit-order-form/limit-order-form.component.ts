@@ -17,11 +17,13 @@ import { Side } from "../../../../../shared/models/enums/side.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
 import {
+  asyncScheduler,
   BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
   Observable,
   shareReplay,
+  subscribeOn,
   switchMap,
   take
 } from "rxjs";
@@ -127,7 +129,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
         ]
       }
     ),
-    topOrderSide: this.formBuilder.nonNullable.control(Side.Buy),
+    topOrderSide: this.formBuilder.control<Side | null>(null, {validators: [Validators.required]}),
     bottomOrderPrice: this.formBuilder.control<number | null>(
       null,
       {
@@ -137,7 +139,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
         ]
       }
     ),
-    bottomOrderSide: this.formBuilder.nonNullable.control(Side.Buy),
+    bottomOrderSide: this.formBuilder.control<Side | null>(null, {validators: [Validators.required]}),
     reason: this.formBuilder.control<Reason | null>(null)
   });
 
@@ -336,22 +338,22 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
 
     const bracketOrders: NewStopMarketOrder[] = [];
 
-    if (formValue.topOrderPrice != null) {
+    if (formValue.topOrderPrice != null && formValue.topOrderSide != null) {
       bracketOrders.push({
         instrument: limitOrder.instrument,
         quantity: limitOrder.quantity,
-        side: formValue.topOrderSide!,
+        side: formValue.topOrderSide,
         condition: LessMore.MoreOrEqual,
         triggerPrice: Number(formValue.topOrderPrice),
         activate: false
       });
     }
 
-    if (formValue.bottomOrderPrice != null) {
+    if (formValue.bottomOrderPrice != null && formValue.bottomOrderSide != null) {
       bracketOrders.push({
         instrument: limitOrder.instrument,
         quantity: limitOrder.quantity,
-        side: formValue.bottomOrderSide!,
+        side: formValue.bottomOrderSide,
         condition: LessMore.LessOrEqual,
         triggerPrice: Number(formValue.bottomOrderPrice),
         activate: false
@@ -422,6 +424,26 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => this.checkFieldsAvailability());
+
+    this.form.controls.topOrderPrice.valueChanges.pipe(
+      filter(v => v != null),
+      takeUntilDestroyed(this.destroyRef),
+      debounceTime(1000),
+      subscribeOn(asyncScheduler)
+    ).subscribe(() => {
+      this.form.controls.topOrderSide.markAsTouched();
+      this.form.controls.topOrderSide.updateValueAndValidity();
+    });
+
+    this.form.controls.bottomOrderPrice.valueChanges.pipe(
+      filter(v => v != null),
+      takeUntilDestroyed(this.destroyRef),
+      debounceTime(1000),
+      subscribeOn(asyncScheduler)
+    ).subscribe(() => {
+      this.form.controls.bottomOrderSide.markAsTouched();
+      this.form.controls.bottomOrderSide.updateValueAndValidity();
+    });
   }
 
   private checkFieldsAvailability(): void {
@@ -444,6 +466,18 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       this.disableControl(this.form.controls.topOrderSide);
       this.disableControl(this.form.controls.bottomOrderPrice);
       this.disableControl(this.form.controls.bottomOrderSide);
+    } else {
+      if(this.form.controls.topOrderPrice.value != null) {
+        this.enableControl(this.form.controls.topOrderSide);
+      } else {
+        this.disableControl(this.form.controls.topOrderSide);
+      }
+
+      if(this.form.controls.bottomOrderPrice.value != null) {
+        this.enableControl(this.form.controls.bottomOrderSide);
+      } else {
+        this.disableControl(this.form.controls.bottomOrderSide);
+      }
     }
 
     if(this.limitOrderConfig.unsupportedFields.reason) {

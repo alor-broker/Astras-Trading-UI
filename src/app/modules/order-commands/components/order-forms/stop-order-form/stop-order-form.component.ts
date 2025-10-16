@@ -136,11 +136,21 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
         }
       ),
       triggerPrice: this.formBuilder.control<number | null>(null),
-      condition: this.formBuilder.nonNullable.control(LessMore.More),
+      condition: this.formBuilder.control<LessMore | null>(
+        null,
+        {
+          validators: [Validators.required]
+        }
+      ),
       stopEndUnixTime: this.formBuilder.control<Date | null>(null),
       withLimit: this.formBuilder.nonNullable.control(false),
       price: this.formBuilder.control<number | null>(null),
-      side: this.formBuilder.nonNullable.control(Side.Buy),
+      side: this.formBuilder.control<Side | null>(
+        null,
+        {
+          validators: [Validators.required]
+        }
+      ),
     })
   });
 
@@ -336,7 +346,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     formValue: {
       quantity?: number;
       triggerPrice?: number | null;
-      condition?: LessMore;
+      condition?: LessMore | null;
       stopEndUnixTime?: Date | null;
     },
     timezoneConverter: TimezoneConverter
@@ -359,7 +369,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     formValue: {
       quantity?: number;
       triggerPrice?: number | null;
-      condition?: LessMore;
+      condition?: LessMore | null;
       stopEndUnixTime?: Date | null;
       price?: number | null;
       icebergFixed?: number | null;
@@ -445,6 +455,14 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(val => {
       this.form.controls.price.setValue(val);
+    });
+
+    this.form.controls.allowLinkedOrder.valueChanges.pipe(
+      filter(v => v),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => {
+      this.form.controls.linkedOrder.controls.condition.markAsTouched();
+      this.form.controls.linkedOrder.controls.side.markAsTouched();
     });
 
     combineLatest([
