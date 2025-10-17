@@ -73,6 +73,8 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   readonly availableTimeframes: number[] = Object.values(ClusterTimeframe).filter((v): v is number => !isNaN(Number(v)));
   readonly availableIntervalsCount = [1, 2, 5];
 
+  private isAutoScroll = true;
+
   constructor(
     private readonly settingsWriteService: ScalperOrderBookSettingsWriteService,
     private readonly tradeClustersService: TradeClustersService,
@@ -128,7 +130,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
     }
 
     this.ngZone.runOutsideAngular(() => {
-      this.documentRef.body.style.cursor = "all-scroll";
+      this.documentRef.body.style.cursor = "ew-resize";
     });
 
     fromEvent<MouseEvent>(this.documentRef, 'mousemove').pipe(
@@ -154,17 +156,18 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
       const currentLeftOffset = this.getScrollContainer().measureScrollOffset('left');
 
       if (movement < 0 && currentRightOffset > 0) {
+        const updatedOffset = Math.ceil(Math.max(0, currentRightOffset + movement));
         this.scrollContainer.first.scrollTo({
-          right: Math.max(0, currentRightOffset + movement)
+          right: updatedOffset
         });
 
-        return;
-      }
-
-      if (movement > 0 && currentLeftOffset > 0) {
+        this.isAutoScroll = updatedOffset === 0;
+      } else if (movement > 0 && currentLeftOffset > 0) {
         this.scrollContainer.first.scrollTo({
-          left: Math.max(0, currentLeftOffset - movement)
+          left: Math.ceil(Math.max(0, currentLeftOffset - movement))
         });
+
+        this.isAutoScroll = false;
       }
     });
   }
@@ -210,6 +213,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
           && prev.tradesClusterPanelSettings?.timeframe === curr.tradesClusterPanelSettings?.timeframe
           && prev.tradesClusterPanelSettings?.displayIntervalsCount === curr.tradesClusterPanelSettings?.displayIntervalsCount;
       }),
+      tap(() => this.isAutoScroll = true),
       mapWith(
         s => this.tradeClustersService.getHistory(
           s,
@@ -219,7 +223,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
         (settings, history) => ({settings, history})
       ),
       switchMap(x => this.getClusterUpdatesStream(x.settings, x.history ?? [])),
-      tap(() => this.updateScrollOffsets())
+      tap(() => this.updateScrollOffsets(true))
     );
   }
 
@@ -248,14 +252,17 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
       updatesSubscription$
     ]).pipe(
       map(([, updates]) => {
-        const allClusters = !updates
-          ? state
-          : [
-            {
-              ...updates,
-              timestamp: this.getPeriodStart(updates.timestamp, settings.tradesClusterPanelSettings!.timeframe)
-            },
-            ...state.filter(s => s.timestamp !== updates.timestamp)
+        if(updates == null) {
+          return state;
+        }
+
+        const lastTimestamp = this.getPeriodStart(updates.timestamp, settings.tradesClusterPanelSettings!.timeframe);
+        const allClusters = [
+          ...state.filter(s => s.timestamp !== lastTimestamp),
+          {
+            ...updates,
+            timestamp: lastTimestamp
+          }
           ];
 
         const updated = this.toDisplayClusters(allClusters, settings.tradesClusterPanelSettings!);
@@ -292,15 +299,24 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
     return displayClusters;
   }
 
-  private updateScrollOffsets(): void {
+  private updateScrollOffsets(updateStart = false): void {
     const container = this.getScrollContainer() as CdkScrollable | undefined;
     if (!container) {
       return;
     }
 
+    let leftOffset = Math.abs(container.measureScrollOffset('left'));
+    let rightOffset = Math.abs(container.measureScrollOffset('right'));
+
+    if(updateStart && this.isAutoScroll && rightOffset >= 0) {
+      container.scrollTo({right: 0});
+      leftOffset = Math.abs(container.measureScrollOffset('left'));
+      rightOffset = Math.abs(container.measureScrollOffset('right'));
+    }
+
     this.hScrollOffsets$.next(({
-      left: Math.abs(container.measureScrollOffset('left')),
-      right: Math.abs(container.measureScrollOffset('right'))
+      left: leftOffset,
+      right: rightOffset
     }));
   }
 
@@ -313,7 +329,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
       intervals.push(newInterval);
     }
 
-    return intervals;
+    return intervals.reverse();
   }
 
   private getPeriodStart(unixTime: number, timeframe: ClusterTimeframe): number {

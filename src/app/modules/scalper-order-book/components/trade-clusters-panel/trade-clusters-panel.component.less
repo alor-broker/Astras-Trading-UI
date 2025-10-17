@@ -5,11 +5,11 @@
     .container {
       box-sizing: border-box;
       &.has-left-scroll {
-        border-left: @primary-color 1px solid;
+        box-shadow: 5px 0 5px -5px @primary-color inset;
       }
 
       &.has-right-scroll {
-        border-right: @primary-color 1px solid;
+        box-shadow:-5px 0 5px -5px @primary-color inset;
       }
 
       .cluster-wrapper {
