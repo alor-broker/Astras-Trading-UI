@@ -74,6 +74,7 @@ export interface WidgetMeta {
     widgetName?: WidgetName;
     galleryOrder: number;
     galleryIcon: string;
+    showOrderButtons?: boolean;
   };
 
   /**

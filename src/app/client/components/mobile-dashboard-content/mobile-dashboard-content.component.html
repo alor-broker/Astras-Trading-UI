@@ -6,27 +6,42 @@
       widgetsGallery: widgetsGallery$
     } as vm"
   >
-    <div class="d-flex w-100 h-100 overflow-hidden">
-      <div
-        *ngFor="let widget of vm.defaultWidgets"
-        class="overflow-auto w-100"
-        [class.d-none]="vm.selectedWidget?.instance?.widgetType !== widget.instance.widgetType"
-      >
-        <ats-parent-widget
-          [widgetInstance]="widget"
-          [isBlockWidget]="false"
-        ></ats-parent-widget>
+    <div class="d-flex flex-column w-100 h-100 overflow-hidden">
+      <div class="flex-fill overflow-auto">
+        <div
+          *ngFor="let widget of vm.defaultWidgets"
+          class="h-100"
+          [class.d-none]="vm.selectedWidget?.instance?.widgetType !== widget.instance.widgetType"
+        >
+          <ats-parent-widget
+            [widgetInstance]="widget"
+            [isBlockWidget]="false"
+          ></ats-parent-widget>
+        </div>
+
+        <div
+          class="h-100"
+          *ngIf="!defaultWidgetNames.includes(vm.selectedWidget?.instance?.widgetType ?? '')"
+        >
+          <ats-parent-widget
+            [widgetInstance]="vm.selectedWidget!"
+            [isBlockWidget]="false"
+          ></ats-parent-widget>
+        </div>
       </div>
 
-      <div
-        class="overflow-auto w-100"
-        *ngIf="!defaultWidgetNames.includes(vm.selectedWidget?.instance?.widgetType ?? '')"
-      >
-        <ats-parent-widget
-          [widgetInstance]="vm.selectedWidget!"
-          [isBlockWidget]="false"
-        ></ats-parent-widget>
-      </div>
+      @if(vm.selectedWidget?.widgetMeta?.mobileMeta?.showOrderButtons ?? false) {
+        <div class="mb-15 d-flex justify-content-center">
+          <button
+            class='buy-button w-50'
+            nz-button  nzSize="large"
+            *transloco="let t; scope: 'mobile-dashboard-content'"
+            (click)="selectWidget(newOrderWidgetId, false)"
+          >
+            {{t('mobileDashboardContent.orderBtnTitle', {fallback: 'buy'})}}
+          </button>
+        </div>
+      }
     </div>
 
     <div class="widgets-menu">
