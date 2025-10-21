@@ -54,3 +54,4 @@ Thumbs.db
 /.nx/cache/parsed-lock-file.json
 /.nx/cache/project-graph.json
 .aider*
+/scripts/generate-translations.js

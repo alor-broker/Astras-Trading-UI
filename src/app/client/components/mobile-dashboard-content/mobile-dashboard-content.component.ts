@@ -39,18 +39,22 @@ import { WidgetSettingsService } from "../../../shared/services/widget-settings.
 import { WidgetSettings } from "../../../shared/models/widget-settings.model";
 import { isInstrumentDependent } from "../../../shared/utils/settings-helper";
 import { NavigationStackService } from "../../../shared/services/navigation-stack.service";
+import { NzButtonComponent } from "ng-zorro-antd/button";
+import { TranslocoDirective } from "@jsverse/transloco";
 @Component({
     selector: 'ats-mobile-dashboard-content',
     templateUrl: './mobile-dashboard-content.component.html',
     styleUrls: ['./mobile-dashboard-content.component.less'],
-    imports: [
-        LetDirective,
-        NgForOf,
-        DashboardModule,
-        NgIf,
-        NzIconDirective,
-        WidgetsGalleryComponent
-    ]
+  imports: [
+    LetDirective,
+    NgForOf,
+    DashboardModule,
+    NgIf,
+    NzIconDirective,
+    WidgetsGalleryComponent,
+    NzButtonComponent,
+    TranslocoDirective
+  ]
 })
 export class MobileDashboardContentComponent implements OnInit {
   readonly newOrderWidgetId = 'order-submit';

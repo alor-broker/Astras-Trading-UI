@@ -1,5 +1,6 @@
 @import "theme-mixin";
 @import "scrollable-mixin";
+@import "buy-sell-button-mixin";
 
 .themeMixin({
   :host {
@@ -14,6 +15,10 @@
       i {
         font-size: 20px;
       }
+    }
+
+    .buy-button {
+      .buySellButton(@buy-color, @buy-sell-btn-text-color, @buy-color-disabled, @buy-color-background-disabled);
     }
   }
 });

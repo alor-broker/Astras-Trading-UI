@@ -138,7 +138,8 @@
       "galleryIcon": "sliders",
       "ribbonIcon": "sliders",
       "enabled": true,
-      "galleryOrder": 4
+      "galleryOrder": 4,
+      "showOrderButtons": true
     },
     "hideOnDashboardType": ["admin-main"]
   },
