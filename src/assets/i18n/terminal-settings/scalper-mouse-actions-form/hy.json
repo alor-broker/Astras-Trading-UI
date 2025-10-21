@@ -6,8 +6,8 @@
     "scheme2": "Սխեմա 2"
   },
   "schemeDescription": {
-    "buttonLabel": "Սեղմակ",
-    "modifierLabel": "Ձևափոխիչ",
+    "buttonLabel": "Ստեղն",
+    "modifierLabel": "Մոդիֆիկատոր",
     "sideLabel": "Կողմ",
     "actionLabel": "Գործողություն",
     "buttons": {
@@ -25,13 +25,13 @@
       "any": "Ցանկացած"
     },
     "actions": {
-      "limitBuyOrder": "Գնման լիմիտավորված հայտ",
-      "limitSellOrder": "Վաճառքի լիմիտավորված հայտ",
+      "limitBuyOrder": "Գնման Լիմիտային հայտ",
+      "limitSellOrder": "Վաճառքի Լիմիտային հայտ",
       "marketBuyOrder": "Գնման շուկայական հայտ",
       "marketSellOrder": "Վաճառքի շուկայական հայտ",
-      "stopLimitBuyOrder": "Գնման ստոպ-լիմիտ հայտ",
-      "stopLimitSellOrder": "Վաճառքի ստոպ-լիմիտ հայտ",
-      "stopLossOrder": "Ստոպ-լոս հայտ"
+      "stopLimitBuyOrder": "Գնման Սթոփ-լիմիտ հայտ",
+      "stopLimitSellOrder": "Վաճառքի Սթոփ-լիմիտ հայտ",
+      "stopLossOrder": "Սթոփ-լոսս հայտ"
     }
   }
 }

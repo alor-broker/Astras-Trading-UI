@@ -1,12 +1,12 @@
 {
-  "portfolioLiquidationTitle": "Պորտֆելի գնահատում",
+  "portfolioLiquidationTitle": "Պորտֆելի արժեք",
   "portfolioEvaluationTitle": "Պորտֆելի իրացվելիության գնահատում",
-  "profitTitle": "P/L օրվա համար",
-  "profitRateTitle": "P/L օրվա համար, %",
+  "profitTitle": "Օրվա շահույթ/վնաս (P/L)",
+  "profitRateTitle": "Օրվա շահույթ/վնաս % (P/L %)",
   "buyingPowerAtMorningTitle": "Գնման հզորությունը առավոտյան",
   "initialMarginTitle": "Սկզբնական մարժա",
   "correctedMarginTitle": "Ճշգրտված մարժա",
-  "riskBeforeForcePositionClosingTitle": "Ռիսկը մինչև դիրքի պարտադիր փակումը",
+  "riskBeforeForcePositionClosingTitle": "Ռիսկի ծածկման նորմատիվ մինչև հարկադիր փակումը (НПР2)",
   "commissionTitle": "Միջնորդավճար",
-  "buyingPowerTitle": "Գնման հզորություն"
+  "buyingPowerTitle": "Գնման հզորություն (НПР1)"
 }

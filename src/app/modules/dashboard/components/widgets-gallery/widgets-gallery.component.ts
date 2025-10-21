@@ -53,6 +53,9 @@ export class WidgetsGalleryComponent {
   showResetBtn = true;
 
   @Input()
+  closable = false;
+
+  @Input()
   activeWidget: string | null = null;
 
   @Output()

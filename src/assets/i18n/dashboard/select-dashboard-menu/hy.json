@@ -1,5 +1,5 @@
 {
-  "newDashboardTitlePlaceholder": "Նոր վահանակի վերնագիր",
+  "newDashboardTitlePlaceholder": "Նոր վահանակի անվանում",
   "stringLenghtError": "Մուտքագրեք {{min}}-ից մինչև {{max}} նիշ",
   "actionConfirmationTitle": "Հաստատեք գործողությունը",
   "removeConfirmationMessage": "Վստա՞հ եք, որ ցանկանում եք հեռացնել '{{title}}' վահանակը:",
@@ -7,10 +7,10 @@
   "confirmButtonText": "Այո",
   "cancelButtonText": "Ոչ",
   "defaultDashboardNames": {
-    "Default Dashboard": "Կանխադրված վահանակ",
+    "Default Dashboard": "Նախընտրած վահանակ",
     "Home": "Տնային",
     "Trading": "Առևտուր",
-    "Lite Dashboard": "Թեթև վահանակ",
+    "Lite Dashboard": "Պարզ վահանակ",
     "All Clients": "Բոլոր հաճախորդները"
   }
 }
