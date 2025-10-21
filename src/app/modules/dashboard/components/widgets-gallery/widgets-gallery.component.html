@@ -1,11 +1,11 @@
 <ng-container *transloco="let t; scope: 'dashboard/widgets-gallery'">
   <nz-drawer
     (nzOnClose)="close()"
-    [nzClosable]="false"
+    [nzClosable]="closable"
     [nzExtra]="showResetBtn ? extra : ''"
     [nzTitle]="t('dashboardWidgetsGallery.title')"
     [nzVisible]="atsVisible"
-    [nzWidth]="250"
+    [nzWidth]="310"
     nzPlacement="left"
     nzWrapClassName="widget-gallery"
   >

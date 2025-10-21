@@ -1,9 +1,9 @@
 {
-  "title": "Վիդջեթներ",
+  "title": "Գործիքակազմեր",
   "standardView": "Ստանդարտ տեսք",
   "categories": {
     "all": "Բոլորը",
-    "chartsAndOrderbooks": "Գրաֆիկներ & Պատվ. գրքեր",
+    "chartsAndOrderbooks": "Գրաֆիկներ և Գնանշումների ցուցակներ",
     "positionsTradesOrders": "Դիրքեր, գործարքներ և հայտեր",
     "info": "Տեղեկատվական ռեսուրսներ",
     "details": "Մանրամասն"

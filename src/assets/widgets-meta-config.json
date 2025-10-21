@@ -45,7 +45,7 @@
       "translations": {
         "ru": "Стакан",
         "en": "Orderbook",
-        "hy": "Պատվերների գիրք"
+        "hy": "ՊԳնանշումների ցուցակ"
       }
     },
     "hasInstrumentBind": true,
@@ -84,7 +84,7 @@
       "translations": {
         "ru": "Скальперский стакан",
         "en": "Scalper Orderbook",
-        "hy": "Սկալպինգի պատվերների գիրք"
+        "hy": "Թրեյդերների գնանշումների ցուցակ"
       }
     },
     "category": "chartsAndOrderbooks",
@@ -117,7 +117,7 @@
       "translations": {
         "ru": "График",
         "en": "Chart",
-        "hy": "Հիմնական գին"
+        "hy": "Գրաֆիկ"
       }
     },
     "category": "chartsAndOrderbooks",
@@ -195,7 +195,7 @@
       "translations": {
         "ru": "Блоттер",
         "en": "Blotter",
-        "hy": "Օպերացիաներ"
+        "hy": "Գործարքների մատյան"
       }
     },
     "category": "positionsTradesOrders",
@@ -233,7 +233,7 @@
       "translations": {
         "ru": "Инфо",
         "en": "Info",
-        "hy": "Տեղեկ"
+        "hy": "Տեղեկատվություն"
       }
     },
     "hasInstrumentBind": true,
@@ -425,7 +425,7 @@
       "translations": {
         "ru": "Выставить заявку",
         "en": "Order Submit",
-        "hy": "Տեղադրել Պատվեր"
+        "hy": "Հայտի ձևակերպում"
       }
     },
     "hasInstrumentBind": true,
@@ -471,7 +471,7 @@
       "translations": {
         "ru": "Корзина заявок",
         "en": "Orders Basket",
-        "hy": "Պատվերների Խուփ"
+        "hy": "Հայտերի զամբյուղ"
       }
     },
     "category": "positionsTradesOrders",
