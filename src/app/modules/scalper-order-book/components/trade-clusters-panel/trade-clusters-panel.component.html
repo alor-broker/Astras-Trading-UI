@@ -4,7 +4,6 @@
       <div
         (contextmenu)="contextMenu($event, menu)"
         (mousedown)="startScrolling($event)"
-        [dir]="'rtl'"
         [ngClass]="{
         'has-left-scroll': hScrollOffsets.left > 3,
         'has-right-scroll': hScrollOffsets.right > 3
