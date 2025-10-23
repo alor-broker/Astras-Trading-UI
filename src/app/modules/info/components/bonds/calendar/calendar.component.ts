@@ -8,22 +8,27 @@ import { TranslocoDirective } from "@jsverse/transloco";
 import { NzEmptyComponent } from "ng-zorro-antd/empty";
 import { NzTypographyComponent } from "ng-zorro-antd/typography";
 import {
-  CurrencyPipe
+  CurrencyPipe,
+  NgClass,
+  PercentPipe
 } from "@angular/common";
 import { TableRowHeightDirective } from "../../../../../shared/directives/table-row-height.directive";
+import { isBefore } from "date-fns";
 
 @Component({
     selector: 'ats-calendar',
     templateUrl: './calendar.component.html',
     styleUrls: ['./calendar.component.less'],
-    imports: [
-        NzTableModule,
-        TranslocoDirective,
-        NzEmptyComponent,
-        NzTypographyComponent,
-        CurrencyPipe,
-        TableRowHeightDirective
-    ]
+  imports: [
+    NzTableModule,
+    TranslocoDirective,
+    NzEmptyComponent,
+    NzTypographyComponent,
+    CurrencyPipe,
+    TableRowHeightDirective,
+    NgClass,
+    PercentPipe
+  ]
 })
 export class CalendarComponent {
   @Input({required: true})
@@ -31,5 +36,9 @@ export class CalendarComponent {
 
   formatDate(date: string): string {
     return new Date(date).toLocaleDateString();
+  }
+
+  isInPast(date: string): boolean {
+    return isBefore(new Date(date), new Date());
   }
 }

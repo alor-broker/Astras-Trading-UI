@@ -24,11 +24,22 @@
       </thead>
       <tbody>
         @for (coupon of couponsTable.data; track $index) {
-          <tr>
+          <tr
+            [ngClass]="{
+            closest: coupon.isClosest,
+            expired: isInPast(coupon.date)
+            }"
+          >
             <td>{{ formatDate(coupon.date) }}</td>
             <td>{{ coupon.amount | currency: (coupon.currency ?? "RUB") :'symbol-narrow' }}</td>
             <td>{{ coupon.couponType }}</td>
-            <td>{{ coupon.accruedInterest | currency: (coupon.currency ?? "RUB"):'symbol-narrow' }}</td>
+            <td>
+              @if(coupon.accruedInterest !== 0) {
+                {{ coupon.accruedInterest | currency: (coupon.currency ?? "RUB"):'symbol-narrow' }}
+              } @else {
+                -
+              }
+            </td>
           </tr>
         }
       </tbody>
@@ -57,10 +68,15 @@
       <tbody>
 
         @for (amort of amortizationsTable.data; track $index) {
-          <tr>
+          <tr
+            [ngClass]="{
+            closest: amort.isClosest,
+            expired: isInPast(amort.date)
+            }"
+          >
             <td>{{ formatDate(amort.date) }}</td>
             <td>{{ amort.amount | currency: (amort.currency ?? 'RUB'):'symbol-narrow' }}</td>
-            <td>{{ amort.parFraction }}</td>
+            <td>{{ amort.parFraction | percent }}</td>
           </tr>
         }
       </tbody>
@@ -84,12 +100,16 @@
         <th>{{ t('infoCalendar.date') }}</th>
         <th>{{ t('infoCalendar.type') }}</th>
         <th>{{ t('infoCalendar.description') }}</th>
-        <th>{{ t('infoCalendar.accruedInterest') }}</th>
       </tr>
       </thead>
       <tbody>
         @for (offer of offersTable.data; track $index) {
-          <tr>
+          <tr
+            [ngClass]="{
+            closest: offer.isClosest,
+            expired: isInPast(offer.date)
+            }"
+          >
             <td>{{ formatDate(offer.date) }}</td>
             <td>{{ offer.bondEventType }}</td>
             <td>{{ offer.description }}</td>

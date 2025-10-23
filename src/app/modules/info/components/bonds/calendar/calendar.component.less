@@ -1,0 +1,13 @@
+@import 'theme-mixin';
+
+.themeMixin({
+  :host {
+    .closest {
+      background-color: fade(@info-color, 25%);
+    }
+
+    .expired {
+      background-color: @input-disabled-bg;
+    }
+  }
+});
