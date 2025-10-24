@@ -6,10 +6,10 @@ import {
 import {
   createEntityAdapter,
   EntityAdapter,
-  EntityState
+  EntityState,
+  Update
 } from "@ngrx/entity";
 import { EntityStatus } from "../../shared/models/enums/entity-status";
-import { Update } from "@ngrx/entity/src/models";
 import { defaultBadgeColor } from "../../shared/utils/instruments";
 import { WidgetSettings } from '../../shared/models/widget-settings.model';
 import {

@@ -10,7 +10,7 @@
       {{name.firstName}}&nbsp;{{name.lastName}}
     </h1>
     <div class="overflow-hidden">
-      <nz-tabset [style.max-height]="(tabSetHeight$ | async) + 'px'">
+      <nz-tabs [style.max-height]="(tabSetHeight$ | async) + 'px'">
         <nz-tab (nzSelect)="tabChange.emit(tabNames.usefulLinks)" [nzTitle]="t('terminalSettings.usefulLinksTabTitle')">
           <ats-useful-links></ats-useful-links>
         </nz-tab>
@@ -62,7 +62,7 @@
           [nzTitle]="t('terminalSettings.notificationsTabTitle')">
           <ats-instant-notifications-form [formControl]="instantNotificationsSettings"></ats-instant-notifications-form>
         </nz-tab>
-      </nz-tabset>
+      </nz-tabs>
     </div>
   </ng-container>
 </div>

@@ -1,6 +1,6 @@
-﻿import {INodePropertyInfo} from "@comfyorg/litegraph/dist/LGraphNode";
-import {IContextMenuValue} from "@comfyorg/litegraph";
+﻿import {IContextMenuValue} from "@comfyorg/litegraph";
 import {EditorType} from "../slot-types";
+import { INodePropertyInfo } from "node_modules/@comfyorg/litegraph/dist/LGraphNode";
 
 export interface NodeSlotOptions {
   label?: string;

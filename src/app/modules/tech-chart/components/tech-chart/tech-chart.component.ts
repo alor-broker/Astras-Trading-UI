@@ -7,7 +7,8 @@ import {
   Input,
   OnDestroy,
   OnInit,
-  ViewChild
+  ViewChild,
+  DOCUMENT
 } from '@angular/core';
 import {
   combineLatest,
@@ -57,7 +58,6 @@ import { InstrumentKey } from '../../../../shared/models/instruments/instrument-
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { HashMap } from "@jsverse/transloco/lib/types";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-display-option";
@@ -80,11 +80,12 @@ import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/act
 import { InstrumentSearchService } from "../../services/instrument-search.service";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { SearchButtonHelper } from "../../utils/search-button.helper";
-import { DOCUMENT } from "@angular/common";
+
 import { TradesDisplayExtension } from "../../extensions/trades-display.extension";
 import { ChartContext } from "../../extensions/base.extension";
 import { PositionDisplayExtension } from "../../extensions/position-display.extension";
 import { OrdersDisplayExtension } from "../../extensions/orders-display.extension";
+import { HashMap } from "node_modules/@jsverse/transloco/lib/utils/type.utils";
 
 interface ExtendedSettings { widgetSettings: TechChartSettings, instrument: Instrument }
 

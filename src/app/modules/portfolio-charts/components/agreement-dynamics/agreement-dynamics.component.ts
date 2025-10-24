@@ -23,10 +23,6 @@ import { PortfolioDynamics } from "../../../../shared/models/user/portfolio-dyna
 import { LetDirective } from "@ngrx/component";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { NzSkeletonComponent } from "ng-zorro-antd/skeleton";
-import {
-  NgClass,
-  PercentPipe
-} from "@angular/common";
 import { BaseChartDirective } from "ng2-charts";
 import { NzEmptyComponent } from "ng-zorro-antd/empty";
 import { NzSpinComponent } from "ng-zorro-antd/spin";
@@ -41,7 +37,6 @@ import {
 import { AccountService } from "../../../../shared/services/account.service";
 import { ThemeService } from "../../../../shared/services/theme.service";
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import type { Duration } from "date-fns/types";
 import {
   add,
   format
@@ -53,6 +48,10 @@ import {
   ru
 } from "date-fns/locale";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {
+  NgClass,
+  PercentPipe
+} from "@angular/common";
 
 enum TimeRange {
   W1 = "W1",
@@ -78,13 +77,13 @@ interface ChartConfig {
     LetDirective,
     TranslocoDirective,
     NzSkeletonComponent,
-    PercentPipe,
-    NgClass,
     BaseChartDirective,
     NzEmptyComponent,
     NzSpinComponent,
     NzButtonComponent,
-    NzResizeObserverDirective
+    NzResizeObserverDirective,
+    NgClass,
+    PercentPipe
   ],
   templateUrl: './agreement-dynamics.component.html',
   styleUrl: './agreement-dynamics.component.less'
@@ -230,7 +229,7 @@ export class AgreementDynamicsComponent implements OnInit, OnDestroy {
           callbacks: {
             title: (tooltipItems): string => {
               return format(
-                new Date(tooltipItems[0].parsed.x),
+                new Date(tooltipItems[0].parsed.x as unknown as string),
                 'd MMM yyyy',
                 {
                   locale: this.getDateLocale(lang)

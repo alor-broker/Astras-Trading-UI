@@ -9,9 +9,10 @@ import {
   OnInit,
   Output,
   Renderer2,
-  SimpleChange
+  SimpleChange,
+  DOCUMENT
 } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+
 import {
   distinctUntilChanged,
   fromEvent,

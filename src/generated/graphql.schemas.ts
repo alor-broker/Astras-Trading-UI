@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { z } from 'zod'
+import { z } from 'zod/v3'
 import { AdditionalInformation, AdditionalInformationFilterInput, AdditionalInformationSortInput, Amortization, AmortizationFilterInput, AmortizationSortInput, ApplyPolicy, BasicInformation, BasicInformationFilterInput, BasicInformationSortInput, BoardInformation, BoardInformationFilterInput, BoardInformationSortInput, Bond, BondAmortizationsArgs, BondCouponsArgs, BondOffersArgs, BondEventType, BondEventTypeOperationFilterInput, BondFilterInput, BondSortInput, BondVolumes, BondVolumesFilterInput, BondVolumesSortInput, BondYield, BondYieldFilterInput, BondYieldSortInput, BondsConnection, BondsEdge, BooleanOperationFilterInput, CostEstimate, CostEstimateFilterInput, CostEstimateSortInput, Coupon, CouponFilterInput, CouponSortInput, CouponType, CouponTypeOperationFilterInput, CurrenciesConnection, CurrenciesEdge, Currency, CurrencyFilterInput, CurrencyInformation, CurrencyInformationFilterInput, CurrencyInformationSortInput, CurrencySortInput, DateTimeOperationFilterInput, DecimalOperationFilterInput, Derivative, DerivativeFilterInput, DerivativeSortInput, DerivativesConnection, DerivativesEdge, Dividend, DividendFilterInput, DividendSortInput, DividendsAggregateInfo, DividendsAggregateInfoFilterInput, DividendsAggregateInfoSortInput, Exchange, ExchangeOperationFilterInput, FinancialAttributes, FinancialAttributesFilterInput, FinancialAttributesSortInput, InitialMargin, InitialMarginFilterInput, InitialMarginSortInput, Instrument, InstrumentModelFilterInput, InstrumentModelSortInput, InstrumentsConnection, InstrumentsEdge, IntOperationFilterInput, ListFilterInputTypeOfAmortizationFilterInput, ListFilterInputTypeOfCouponFilterInput, ListFilterInputTypeOfDividendFilterInput, ListFilterInputTypeOfOfferFilterInput, ListFilterInputTypeOfValuePerQuarterFilterInput, ListFilterInputTypeOfValuePerYearFilterInput, LongOperationFilterInput, MainIndicators, MainIndicatorsFilterInput, MainIndicatorsSortInput, Market, MarketOperationFilterInput, NetIncome, NetIncomeFilterInput, NullableOfCouponTypeOperationFilterInput, Offer, OfferFilterInput, OfferSortInput, Other, PageInfo, Profitability, ProfitabilityFilterInput, ProfitabilitySortInput, Sales, SalesFilterInput, SortEnumType, Stock, StockDividendsArgs, StockFilterInput, StockSortInput, StocksConnection, StocksEdge, StringOperationFilterInput, Swap, SwapFilterInput, SwapSortInput, SwapsConnection, SwapsEdge, Trading, TradingDetails, TradingDetailsFilterInput, TradingDetailsSortInput, TradingFilterInput, TradingSortInput, ValuePerQuarter, ValuePerQuarterFilterInput, ValuePerYear, ValuePerYearFilterInput } from './graphql.types'
 
 type Properties<T> = Required<{
@@ -180,30 +180,30 @@ export function BoardInformationSortInputSchema(): z.ZodObject<Properties<BoardI
 export function BondSchema(): z.ZodObject<Properties<Bond>> {
   return z.object({
     __typename: z.literal('Bond').optional(),
-    additionalInformation: AdditionalInformationSchema(),
-    amortizations: z.array(AmortizationSchema()).nullish(),
-    basicInformation: BasicInformationSchema(),
-    boardInformation: BoardInformationSchema(),
+    additionalInformation: z.lazy(() => AdditionalInformationSchema()),
+    amortizations: z.array(z.lazy(() => AmortizationSchema())).nullish(),
+    basicInformation: z.lazy(() => BasicInformationSchema()),
+    boardInformation: z.lazy(() => BoardInformationSchema()),
     couponRate: z.number().nullish(),
     couponType: CouponTypeSchema.nullish(),
-    coupons: z.array(CouponSchema()).nullish(),
-    currencyInformation: CurrencyInformationSchema(),
+    coupons: z.array(z.lazy(() => CouponSchema())).nullish(),
+    currencyInformation: z.lazy(() => CurrencyInformationSchema()),
     currentFaceValue: z.number(),
     duration: z.number().nullish(),
     durationMacaulay: z.number().nullish(),
     faceValue: z.number(),
-    financialAttributes: FinancialAttributesSchema(),
+    financialAttributes: z.lazy(() => FinancialAttributesSchema()),
     guaranteed: z.boolean(),
     hasAmortization: z.boolean(),
     hasOffer: z.boolean(),
     issuer: z.string().nullish(),
     maturityDate: z.string().nullish(),
-    offers: z.array(OfferSchema()).nullish(),
+    offers: z.array(z.lazy(() => OfferSchema())).nullish(),
     placementEndDate: z.string().nullish(),
     pledged: z.boolean(),
-    tradingDetails: TradingDetailsSchema(),
-    volumes: BondVolumesSchema().nullish(),
-    yield: BondYieldSchema().nullish()
+    tradingDetails: z.lazy(() => TradingDetailsSchema()),
+    volumes: z.lazy(() => BondVolumesSchema().nullish()),
+    yield: z.lazy(() => BondYieldSchema().nullish())
   })
 }
 
@@ -351,9 +351,9 @@ export function BondYieldSortInputSchema(): z.ZodObject<Properties<BondYieldSort
 export function BondsConnectionSchema(): z.ZodObject<Properties<BondsConnection>> {
   return z.object({
     __typename: z.literal('BondsConnection').optional(),
-    edges: z.array(BondsEdgeSchema()).nullish(),
-    nodes: z.array(BondSchema()).nullish(),
-    pageInfo: PageInfoSchema(),
+    edges: z.array(z.lazy(() => BondsEdgeSchema())).nullish(),
+    nodes: z.array(z.lazy(() => BondSchema())).nullish(),
+    pageInfo: z.lazy(() => PageInfoSchema()),
     totalCount: z.number()
   })
 }
@@ -362,7 +362,7 @@ export function BondsEdgeSchema(): z.ZodObject<Properties<BondsEdge>> {
   return z.object({
     __typename: z.literal('BondsEdge').optional(),
     cursor: z.string(),
-    node: BondSchema()
+    node: z.lazy(() => BondSchema())
   })
 }
 
@@ -460,9 +460,9 @@ export function CouponTypeOperationFilterInputSchema(): z.ZodObject<Properties<C
 export function CurrenciesConnectionSchema(): z.ZodObject<Properties<CurrenciesConnection>> {
   return z.object({
     __typename: z.literal('CurrenciesConnection').optional(),
-    edges: z.array(CurrenciesEdgeSchema()).nullish(),
-    nodes: z.array(CurrencySchema()).nullish(),
-    pageInfo: PageInfoSchema(),
+    edges: z.array(z.lazy(() => CurrenciesEdgeSchema())).nullish(),
+    nodes: z.array(z.lazy(() => CurrencySchema())).nullish(),
+    pageInfo: z.lazy(() => PageInfoSchema()),
     totalCount: z.number()
   })
 }
@@ -471,19 +471,19 @@ export function CurrenciesEdgeSchema(): z.ZodObject<Properties<CurrenciesEdge>> 
   return z.object({
     __typename: z.literal('CurrenciesEdge').optional(),
     cursor: z.string(),
-    node: CurrencySchema()
+    node: z.lazy(() => CurrencySchema())
   })
 }
 
 export function CurrencySchema(): z.ZodObject<Properties<Currency>> {
   return z.object({
     __typename: z.literal('Currency').optional(),
-    additionalInformation: AdditionalInformationSchema(),
-    basicInformation: BasicInformationSchema(),
-    boardInformation: BoardInformationSchema(),
-    currencyInformation: CurrencyInformationSchema(),
-    financialAttributes: FinancialAttributesSchema(),
-    tradingDetails: TradingDetailsSchema()
+    additionalInformation: z.lazy(() => AdditionalInformationSchema()),
+    basicInformation: z.lazy(() => BasicInformationSchema()),
+    boardInformation: z.lazy(() => BoardInformationSchema()),
+    currencyInformation: z.lazy(() => CurrencyInformationSchema()),
+    financialAttributes: z.lazy(() => FinancialAttributesSchema()),
+    tradingDetails: z.lazy(() => TradingDetailsSchema())
   })
 }
 
@@ -572,18 +572,18 @@ export function DecimalOperationFilterInputSchema(): z.ZodObject<Properties<Deci
 export function DerivativeSchema(): z.ZodObject<Properties<Derivative>> {
   return z.object({
     __typename: z.literal('Derivative').optional(),
-    additionalInformation: AdditionalInformationSchema(),
-    basicInformation: BasicInformationSchema(),
-    boardInformation: BoardInformationSchema(),
-    currencyInformation: CurrencyInformationSchema(),
-    financialAttributes: FinancialAttributesSchema(),
-    initialMargin: InitialMarginSchema(),
+    additionalInformation: z.lazy(() => AdditionalInformationSchema()),
+    basicInformation: z.lazy(() => BasicInformationSchema()),
+    boardInformation: z.lazy(() => BoardInformationSchema()),
+    currencyInformation: z.lazy(() => CurrencyInformationSchema()),
+    financialAttributes: z.lazy(() => FinancialAttributesSchema()),
+    initialMargin: z.lazy(() => InitialMarginSchema()),
     marginBuy: z.number().nullish(),
     marginRate: z.number().nullish(),
     marginSell: z.number().nullish(),
     theorPrice: z.number(),
     theorPriceLimit: z.number(),
-    tradingDetails: TradingDetailsSchema(),
+    tradingDetails: z.lazy(() => TradingDetailsSchema()),
     underlyingCurrency: z.string().nullish(),
     volatility: z.number()
   })
@@ -632,9 +632,9 @@ export function DerivativeSortInputSchema(): z.ZodObject<Properties<DerivativeSo
 export function DerivativesConnectionSchema(): z.ZodObject<Properties<DerivativesConnection>> {
   return z.object({
     __typename: z.literal('DerivativesConnection').optional(),
-    edges: z.array(DerivativesEdgeSchema()).nullish(),
-    nodes: z.array(DerivativeSchema()).nullish(),
-    pageInfo: PageInfoSchema(),
+    edges: z.array(z.lazy(() => DerivativesEdgeSchema())).nullish(),
+    nodes: z.array(z.lazy(() => DerivativeSchema())).nullish(),
+    pageInfo: z.lazy(() => PageInfoSchema()),
     totalCount: z.number()
   })
 }
@@ -643,7 +643,7 @@ export function DerivativesEdgeSchema(): z.ZodObject<Properties<DerivativesEdge>
   return z.object({
     __typename: z.literal('DerivativesEdge').optional(),
     cursor: z.string(),
-    node: DerivativeSchema()
+    node: z.lazy(() => DerivativeSchema())
   })
 }
 
@@ -805,12 +805,12 @@ export function InitialMarginSortInputSchema(): z.ZodObject<Properties<InitialMa
 
 export function InstrumentSchema(): z.ZodObject<Properties<Instrument>> {
   return z.object({
-    additionalInformation: AdditionalInformationSchema(),
-    basicInformation: BasicInformationSchema(),
-    boardInformation: BoardInformationSchema(),
-    currencyInformation: CurrencyInformationSchema(),
-    financialAttributes: FinancialAttributesSchema(),
-    tradingDetails: TradingDetailsSchema()
+    additionalInformation: z.lazy(() => AdditionalInformationSchema()),
+    basicInformation: z.lazy(() => BasicInformationSchema()),
+    boardInformation: z.lazy(() => BoardInformationSchema()),
+    currencyInformation: z.lazy(() => CurrencyInformationSchema()),
+    financialAttributes: z.lazy(() => FinancialAttributesSchema()),
+    tradingDetails: z.lazy(() => TradingDetailsSchema())
   })
 }
 
@@ -841,9 +841,9 @@ export function InstrumentModelSortInputSchema(): z.ZodObject<Properties<Instrum
 export function InstrumentsConnectionSchema(): z.ZodObject<Properties<InstrumentsConnection>> {
   return z.object({
     __typename: z.literal('InstrumentsConnection').optional(),
-    edges: z.array(InstrumentsEdgeSchema()).nullish(),
-    nodes: z.array(InstrumentSchema()).nullish(),
-    pageInfo: PageInfoSchema(),
+    edges: z.array(z.lazy(() => InstrumentsEdgeSchema())).nullish(),
+    nodes: z.array(z.lazy(() => InstrumentSchema())).nullish(),
+    pageInfo: z.lazy(() => PageInfoSchema()),
     totalCount: z.number()
   })
 }
@@ -852,7 +852,7 @@ export function InstrumentsEdgeSchema(): z.ZodObject<Properties<InstrumentsEdge>
   return z.object({
     __typename: z.literal('InstrumentsEdge').optional(),
     cursor: z.string(),
-    node: InstrumentSchema()
+    node: z.lazy(() => InstrumentSchema())
   })
 }
 
@@ -980,7 +980,7 @@ export function MarketOperationFilterInputSchema(): z.ZodObject<Properties<Marke
 export function NetIncomeSchema(): z.ZodObject<Properties<NetIncome>> {
   return z.object({
     __typename: z.literal('NetIncome').optional(),
-    year: z.array(ValuePerYearSchema()).nullish()
+    year: z.array(z.lazy(() => ValuePerYearSchema())).nullish()
   })
 }
 
@@ -1052,12 +1052,12 @@ export function OfferSortInputSchema(): z.ZodObject<Properties<OfferSortInput>> 
 export function OtherSchema(): z.ZodObject<Properties<Other>> {
   return z.object({
     __typename: z.literal('Other').optional(),
-    additionalInformation: AdditionalInformationSchema(),
-    basicInformation: BasicInformationSchema(),
-    boardInformation: BoardInformationSchema(),
-    currencyInformation: CurrencyInformationSchema(),
-    financialAttributes: FinancialAttributesSchema(),
-    tradingDetails: TradingDetailsSchema()
+    additionalInformation: z.lazy(() => AdditionalInformationSchema()),
+    basicInformation: z.lazy(() => BasicInformationSchema()),
+    boardInformation: z.lazy(() => BoardInformationSchema()),
+    currencyInformation: z.lazy(() => CurrencyInformationSchema()),
+    financialAttributes: z.lazy(() => FinancialAttributesSchema()),
+    tradingDetails: z.lazy(() => TradingDetailsSchema())
   })
 }
 
@@ -1101,8 +1101,8 @@ export function ProfitabilitySortInputSchema(): z.ZodObject<Properties<Profitabi
 export function SalesSchema(): z.ZodObject<Properties<Sales>> {
   return z.object({
     __typename: z.literal('Sales').optional(),
-    quarter: z.array(ValuePerQuarterSchema()).nullish(),
-    year: z.array(ValuePerYearSchema()).nullish()
+    quarter: z.array(z.lazy(() => ValuePerQuarterSchema())).nullish(),
+    year: z.array(z.lazy(() => ValuePerYearSchema())).nullish()
   })
 }
 
@@ -1118,20 +1118,20 @@ export function SalesFilterInputSchema(): z.ZodObject<Properties<SalesFilterInpu
 export function StockSchema(): z.ZodObject<Properties<Stock>> {
   return z.object({
     __typename: z.literal('Stock').optional(),
-    additionalInformation: AdditionalInformationSchema(),
-    basicInformation: BasicInformationSchema(),
-    boardInformation: BoardInformationSchema(),
-    costEstimate: CostEstimateSchema().nullish(),
-    currencyInformation: CurrencyInformationSchema(),
-    dividends: z.array(DividendSchema()).nullish(),
-    dividendsAggregateInfo: DividendsAggregateInfoSchema().nullish(),
-    financialAttributes: FinancialAttributesSchema(),
-    mainIndicators: MainIndicatorsSchema().nullish(),
-    netIncome: NetIncomeSchema().nullish(),
-    profitability: ProfitabilitySchema().nullish(),
-    sales: SalesSchema().nullish(),
-    trading: TradingSchema().nullish(),
-    tradingDetails: TradingDetailsSchema()
+    additionalInformation: z.lazy(() => AdditionalInformationSchema()),
+    basicInformation: z.lazy(() => BasicInformationSchema()),
+    boardInformation: z.lazy(() => BoardInformationSchema()),
+    costEstimate: z.lazy(() => CostEstimateSchema().nullish()),
+    currencyInformation: z.lazy(() => CurrencyInformationSchema()),
+    dividends: z.array(z.lazy(() => DividendSchema())).nullish(),
+    dividendsAggregateInfo: z.lazy(() => DividendsAggregateInfoSchema().nullish()),
+    financialAttributes: z.lazy(() => FinancialAttributesSchema()),
+    mainIndicators: z.lazy(() => MainIndicatorsSchema().nullish()),
+    netIncome: z.lazy(() => NetIncomeSchema().nullish()),
+    profitability: z.lazy(() => ProfitabilitySchema().nullish()),
+    sales: z.lazy(() => SalesSchema().nullish()),
+    trading: z.lazy(() => TradingSchema().nullish()),
+    tradingDetails: z.lazy(() => TradingDetailsSchema())
   })
 }
 
@@ -1182,9 +1182,9 @@ export function StockSortInputSchema(): z.ZodObject<Properties<StockSortInput>> 
 export function StocksConnectionSchema(): z.ZodObject<Properties<StocksConnection>> {
   return z.object({
     __typename: z.literal('StocksConnection').optional(),
-    edges: z.array(StocksEdgeSchema()).nullish(),
-    nodes: z.array(StockSchema()).nullish(),
-    pageInfo: PageInfoSchema(),
+    edges: z.array(z.lazy(() => StocksEdgeSchema())).nullish(),
+    nodes: z.array(z.lazy(() => StockSchema())).nullish(),
+    pageInfo: z.lazy(() => PageInfoSchema()),
     totalCount: z.number()
   })
 }
@@ -1193,7 +1193,7 @@ export function StocksEdgeSchema(): z.ZodObject<Properties<StocksEdge>> {
   return z.object({
     __typename: z.literal('StocksEdge').optional(),
     cursor: z.string(),
-    node: StockSchema()
+    node: z.lazy(() => StockSchema())
   })
 }
 
@@ -1217,13 +1217,13 @@ export function StringOperationFilterInputSchema(): z.ZodObject<Properties<Strin
 export function SwapSchema(): z.ZodObject<Properties<Swap>> {
   return z.object({
     __typename: z.literal('Swap').optional(),
-    additionalInformation: AdditionalInformationSchema(),
+    additionalInformation: z.lazy(() => AdditionalInformationSchema()),
     baseSwapPrice: z.number(),
-    basicInformation: BasicInformationSchema(),
-    boardInformation: BoardInformationSchema(),
-    currencyInformation: CurrencyInformationSchema(),
-    financialAttributes: FinancialAttributesSchema(),
-    tradingDetails: TradingDetailsSchema()
+    basicInformation: z.lazy(() => BasicInformationSchema()),
+    boardInformation: z.lazy(() => BoardInformationSchema()),
+    currencyInformation: z.lazy(() => CurrencyInformationSchema()),
+    financialAttributes: z.lazy(() => FinancialAttributesSchema()),
+    tradingDetails: z.lazy(() => TradingDetailsSchema())
   })
 }
 
@@ -1256,9 +1256,9 @@ export function SwapSortInputSchema(): z.ZodObject<Properties<SwapSortInput>> {
 export function SwapsConnectionSchema(): z.ZodObject<Properties<SwapsConnection>> {
   return z.object({
     __typename: z.literal('SwapsConnection').optional(),
-    edges: z.array(SwapsEdgeSchema()).nullish(),
-    nodes: z.array(SwapSchema()).nullish(),
-    pageInfo: PageInfoSchema(),
+    edges: z.array(z.lazy(() => SwapsEdgeSchema())).nullish(),
+    nodes: z.array(z.lazy(() => SwapSchema())).nullish(),
+    pageInfo: z.lazy(() => PageInfoSchema()),
     totalCount: z.number()
   })
 }
@@ -1267,7 +1267,7 @@ export function SwapsEdgeSchema(): z.ZodObject<Properties<SwapsEdge>> {
   return z.object({
     __typename: z.literal('SwapsEdge').optional(),
     cursor: z.string(),
-    node: SwapSchema()
+    node: z.lazy(() => SwapSchema())
   })
 }
 

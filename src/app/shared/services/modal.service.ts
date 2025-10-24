@@ -2,8 +2,10 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { NewFeedback } from '../../modules/feedback/models/feedback.model';
 import { ReleaseMeta } from '../../modules/application-meta/models/application-release.model';
-import { NzModalService } from "ng-zorro-antd/modal";
-import { ModalOptions } from "ng-zorro-antd/modal/modal-types";
+import {
+  ModalOptions,
+  NzModalService
+} from "ng-zorro-antd/modal";
 
 @Injectable({
   providedIn: 'root'

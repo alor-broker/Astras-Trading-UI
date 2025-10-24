@@ -21,7 +21,10 @@ import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
-import {NzTabComponent, NzTabSetComponent} from "ng-zorro-antd/tabs";
+import {
+  NzTabComponent,
+  NzTabsComponent
+} from "ng-zorro-antd/tabs";
 import {CommonParameters, CommonParametersService} from "../../services/common-parameters.service";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import {OrderDialogParams, OrderFormType} from "../../../../shared/models/orders/orders-dialog.model";
@@ -57,7 +60,7 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
   tabSetHeight$ = new BehaviorSubject(300);
 
   @ViewChild('orderTabs', {static: false})
-  orderTabs?: NzTabSetComponent;
+  orderTabs?: NzTabsComponent;
 
   @ViewChild('limitOrderTab', {static: false})
   limitOrderTab?: NzTabComponent;

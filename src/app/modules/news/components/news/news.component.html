@@ -15,11 +15,11 @@
   }
 
   <div>
-    <nz-tabset nzSize="small" #tabSet>
+    <nz-tabs nzSize="small" #tabSet>
       <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.All)" (nzSelect)="newsSectionChange(newsSectionEnum.All)"></nz-tab>
       <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.Portfolio)" (nzSelect)="newsSectionChange(newsSectionEnum.Portfolio)"></nz-tab>
       <nz-tab [nzTitle]="t('news.newsSections.' + newsSectionEnum.Symbol)" (nzSelect)="newsSectionChange(newsSectionEnum.Symbol)"></nz-tab>
-    </nz-tabset>
+    </nz-tabs>
   </div>
   <div class="table-container"
        *ngrxLet="{ isLoading: isLoading$, newsListItems: tableData$, contentSize: contentSize$} as vm"

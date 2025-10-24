@@ -5,7 +5,10 @@ import {
 
 import { OrdersBasketWidgetComponent } from './orders-basket-widget.component';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { of } from 'rxjs';
+import {
+  EMPTY,
+  of
+} from 'rxjs';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
@@ -36,7 +39,7 @@ describe('OrdersBasketWidgetComponent', () => {
         {
           provide: TerminalSettingsService,
           useValue: {
-            terminalSettingsService: of({})
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(EMPTY),
           }
         },
         {

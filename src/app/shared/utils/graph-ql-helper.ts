@@ -12,7 +12,7 @@ import {
   StringOperationFilterInput,
   TradingDetails
 } from "../../../generated/graphql.types";
-import { util, ZodArray, ZodLazy, ZodNullable, ZodObject, ZodOptional, ZodRawShape, ZodTypeAny } from "zod";
+import { util, ZodArray, ZodLazy, ZodNullable, ZodObject, ZodOptional, ZodRawShape, ZodTypeAny } from "zod/v3";
 import {
   AdditionalInformationSchema,
   BasicInformationSchema,

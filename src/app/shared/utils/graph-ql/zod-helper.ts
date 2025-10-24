@@ -1,7 +1,7 @@
 ﻿import {
   z,
   ZodObject
-} from "zod";
+} from "zod/v3";
 
 export type ZodPropertiesOf<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any>;

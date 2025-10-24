@@ -1,7 +1,7 @@
-﻿import {Inject, Injectable} from "@angular/core";
+﻿import {Inject, Injectable, DOCUMENT} from "@angular/core";
 import {take} from "rxjs";
 import {filter} from "rxjs/operators";
-import {DOCUMENT} from "@angular/common";
+
 import { AreaHook } from "./area-hook-token";
 import { DeviceService } from "../../device.service";
 

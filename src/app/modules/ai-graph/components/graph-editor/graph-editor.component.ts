@@ -11,19 +11,23 @@ import {
   ViewChildren
 } from '@angular/core';
 import {GraphConfig} from "../../models/graph.model";
-import {LGraph, LGraphCanvas, LGraphNode, LiteGraph} from '@comfyorg/litegraph';
+import {
+  IContextMenuOptions,
+  LGraph,
+  LGraphCanvas,
+  LGraphNode,
+  LiteGraph,
+  SerialisableGraph,
+} from '@comfyorg/litegraph';
 import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
 import {asyncScheduler, BehaviorSubject, subscribeOn, take} from "rxjs";
 import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {LetDirective} from "@ngrx/component";
 import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
-import {IContextMenuOptions} from "@comfyorg/litegraph/dist/interfaces";
-import {SerialisableGraph} from "@comfyorg/litegraph/dist/types/serialisation";
 import {LiteGraphModelsConverter} from "../../graph/lite-graph-models-converter";
 import {NodesRegister} from '../../graph/nodes/nodes-register';
 import {NodePropertyInfo} from "../../graph/nodes/models";
 import {NodeBase} from "../../graph/nodes/node-base";
-import {CanvasMouseEvent} from "@comfyorg/litegraph/dist/types/events";
 import {BackgroundMenuBuilder} from "../../graph/menu/background-menu-builder";
 import {SideMenuComponent} from "../side-menu/side-menu.component";
 import {NzIconDirective} from "ng-zorro-antd/icon";
@@ -35,6 +39,7 @@ import {RunConfigBtnComponent} from "../run-config-btn/run-config-btn.component"
 import {RunStatus} from "../../models/run-results.model";
 import {RunResultsComponent} from "../run-results/run-results.component";
 import {NodePropertiesEditorComponent} from "../node-properties-editor/node-properties-editor.component";
+import { CanvasMouseEvent } from "node_modules/@comfyorg/litegraph/dist/types/events";
 
 @Component({
     selector: 'ats-graph-editor',

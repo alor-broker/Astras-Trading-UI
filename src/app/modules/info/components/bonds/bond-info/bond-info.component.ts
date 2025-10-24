@@ -43,14 +43,14 @@ import {
 import {
   object,
   ZodObject
-} from "zod";
+} from "zod/v3";
 import { BondSchema } from "../../../../../../generated/graphql.schemas";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { LetDirective } from "@ngrx/component";
 import { NzEmptyComponent } from "ng-zorro-antd/empty";
 import {
   NzTabComponent,
-  NzTabSetComponent
+  NzTabsComponent
 } from "ng-zorro-antd/tabs";
 import { RisksComponent } from "../../common/risks/risks.component";
 import { DescriptorsListComponent } from "../../descriptors-list/descriptors-list.component";
@@ -87,11 +87,11 @@ interface BondDescriptors {
     TranslocoDirective,
     LetDirective,
     NzEmptyComponent,
-    NzTabSetComponent,
     NzTabComponent,
     RisksComponent,
     DescriptorsListComponent,
-    CalendarComponent
+    CalendarComponent,
+    NzTabsComponent
   ],
   templateUrl: './bond-info.component.html',
   styleUrl: './bond-info.component.less'
@@ -128,7 +128,7 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
       mapWith(() => refreshTimer$, (source,) => source),
       tap(() => this.setLoading(true)),
       switchMap(i => {
-        return this.graphQlService.watchQueryForSchema<BondResponse>(
+        return this.graphQlService.queryForSchema<BondResponse>(
           ResponseSchema,
           {
             symbol: {value: i.symbol, required: true},

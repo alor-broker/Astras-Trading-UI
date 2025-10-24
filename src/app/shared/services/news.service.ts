@@ -17,7 +17,7 @@ import {
   object,
   TypeOf,
   ZodObject
-} from "zod";
+} from "zod/v3";
 import {
   NewsConnection,
   NewsFilterInput,

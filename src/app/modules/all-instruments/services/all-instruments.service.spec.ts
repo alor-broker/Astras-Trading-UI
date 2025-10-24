@@ -13,7 +13,7 @@ describe('AllInstrumentsService', () => {
         {
           provide: GraphQlService,
           useValue: {
-            watchQuery: jasmine.createSpy('watchQuery').and.returnValue(of({}))
+            watchQuery: jasmine.createSpy('queryForSchema').and.returnValue(of({}))
           }
         }
       ]

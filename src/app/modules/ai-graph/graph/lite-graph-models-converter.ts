@@ -9,11 +9,7 @@ import {
   NodeSlotConfig,
   OutputSlotConfig
 } from "../models/graph.model";
-import {
-  ISerialisedNode,
-  ISerialisedNodeInputSlot,
-  ISerialisedNodeOutputSlot
-} from "@comfyorg/litegraph/dist/types/serialisation";
+import { ISerialisedNode, ISerialisedNodeInputSlot, ISerialisedNodeOutputSlot } from "node_modules/@comfyorg/litegraph/dist/types/serialisation";
 
 export class LiteGraphModelsConverter {
   static toGraphConfig(liteGraphConfig: SerialisableGraph): GraphConfig {

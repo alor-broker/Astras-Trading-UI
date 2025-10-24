@@ -1,5 +1,5 @@
 <ng-container *transloco="let t; scope: 'events-calendar'">
-  <nz-tabset>
+  <nz-tabs>
     <nz-tab [nzTitle]="t('eventsCalendar.calendarViewTabTitle')">
       <div class="portfolio-filter">
         <button
@@ -46,7 +46,7 @@
         <ats-list-view [symbols]="symbols"></ats-list-view>
       </ng-container>
     </nz-tab>
-  </nz-tabset>
+  </nz-tabs>
 
   <nz-dropdown-menu #menu="nzDropdownMenu">
     <ul nz-menu>
