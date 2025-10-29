@@ -5,7 +5,10 @@ import {
   IdeasPagedResponse,
   Page
 } from "./invest-ideas-service-typings";
-import { Observable } from "rxjs";
+import {
+  Observable,
+  of
+} from "rxjs";
 import { EnvironmentService } from "../../../shared/services/environment.service";
 import { catchHttpError } from "../../../shared/utils/observable-helper";
 
@@ -23,6 +26,10 @@ export class InvestIdeasService {
   }
 
   protected getIdeasInternal(page: Page, language: string | null): Observable<IdeasPagedResponse | null> {
+    if(this.ideasUrl.length === 0) {
+      return of(null);
+    }
+
     const params: Record<string, string | number> = {
       ...page
     };

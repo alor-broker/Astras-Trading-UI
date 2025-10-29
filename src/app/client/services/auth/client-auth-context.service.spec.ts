@@ -5,7 +5,6 @@ import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { provideHttpClient } from "@angular/common/http";
 import { NEVER } from "rxjs";
 import { EnvironmentService } from "../../../shared/services/environment.service";
-import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
 
 describe('ClientAuthContextService', () => {
@@ -21,12 +20,6 @@ describe('ClientAuthContextService', () => {
             useValue: {
               clientDataUrl: '',
               ssoUrl: ''
-            }
-          },
-          {
-            provide: ErrorHandlerService,
-            useValue: {
-              handleError: jasmine.createSpy('handleError').and.callThrough()
             }
           },
           {

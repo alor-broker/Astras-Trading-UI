@@ -8,7 +8,6 @@ import {UserContext} from "../../../shared/services/auth/user-context";
 import {SessionContext} from "../../../shared/services/auth/session-context";
 import {LocalStorageSsoConstants} from "../../../shared/constants/local-storage.constants";
 import {EnvironmentService} from "../../../shared/services/environment.service";
-import {ErrorHandlerService} from "../../../shared/services/handle-error/error-handler.service";
 import {LocalStorageService} from "../../../shared/services/local-storage.service";
 import {ApiTokenProviderService} from "../../../shared/services/auth/api-token-provider.service";
 import {HttpContextTokens} from "../../../shared/constants/http.constants";
@@ -56,7 +55,6 @@ export class ClientAuthContextService implements UserContext, SessionContext, On
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService,
     private readonly localStorage: LocalStorageService,
     private readonly apiTokenProviderService: ApiTokenProviderService,
     private readonly window: Window) {
@@ -216,7 +214,7 @@ export class ClientAuthContextService implements UserContext, SessionContext, On
           expirationTime: jwtBody.exp * 1000,
         } as JwtState;
       }),
-      catchHttpError<JwtState | null>(null, this.errorHandlerService),
+      catchHttpError<JwtState | null>(null),
       take(1)
     );
   }
