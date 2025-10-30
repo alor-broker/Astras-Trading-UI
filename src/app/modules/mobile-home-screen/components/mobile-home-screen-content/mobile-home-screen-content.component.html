@@ -37,7 +37,7 @@
         </div>
       }
 
-      @if (settings.showIdeas ?? true) {
+      @if (settings.showIdeas ?? false) {
         <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.ideasTitle') }}</span>
         <ats-invest-ideas-compact></ats-invest-ideas-compact>
       }
