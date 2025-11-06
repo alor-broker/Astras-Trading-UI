@@ -4,7 +4,7 @@ import {DashboardItemPosition, Widget} from './widget.model';
 import { PortfolioKey } from '../portfolio-key.model';
 import { InstrumentKey } from '../instruments/instrument-key.model';
 
-export const CurrentDashboardVersion = '1.0.0';
+export const CurrentDashboardVersion = '1.1.0';
 
 export enum ClientDashboardType {
   ClientDesktop = 'desktop',
