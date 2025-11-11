@@ -30,6 +30,10 @@ import {LocalStorageService} from "../../../../shared/services/local-storage.ser
 import {LocalStorageCommonConstants} from "../../../../shared/constants/local-storage.constants";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
+import {
+  ClientDashboardType,
+  DashboardType
+} from "../../../../shared/models/dashboard/dashboard.model";
 
 @Component({
     selector: 'ats-widgets-gallery-nav-btn',
@@ -94,12 +98,22 @@ export class WidgetsGalleryNavBtnComponent implements OnInit {
       map((s) => {
         const groups = new Map<WidgetCategory, WidgetDisplay[]>();
         const isDemoModeEnabled = this.localStorageService.getItem<boolean>(LocalStorageCommonConstants.DemoModeStorageKey) ?? false;
+        const dashboardTypes: DashboardType[] = [];
+
+        if(s.currentDashboardType != null) {
+          dashboardTypes.push(s.currentDashboardType);
+        } else {
+          dashboardTypes.push(ClientDashboardType.ClientDesktop);
+          dashboardTypes.push(ClientDashboardType.ClientMobile);
+        }
 
         const widgets = s.meta
           .filter((x) => {
+            const isExcludedByDashboardType = dashboardTypes.some(value => (x.hideOnDashboardType ?? []).includes(value));
+
             return x.desktopMeta != null
               && x.desktopMeta.enabled
-              && (s.currentDashboardType == null || x.hideOnDashboardType == null || !x.hideOnDashboardType.includes(s.currentDashboardType))
+              && !isExcludedByDashboardType
               && (!(x.isDemoOnly ?? false) || isDemoModeEnabled);
           })
           .sort((a, b) => {
