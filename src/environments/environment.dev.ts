@@ -36,7 +36,7 @@ export const environment = {
   externalLinks: {
     reports: 'https://lk.alor.ru/reports/broker',
     releases: 'https://warp.alor.dev/ru/releases/astras',
-    support: 'https://t.me/+oM0i9QbtD4cwMzNi',
+    support: 'https://max.ru/join/Dd8GvcIgyG1kwve9hFau13QiGfvyQse5S5YBM7gkskY',
     issuesList: 'https://github.com/alor-broker/Astras-Trading-UI/issues',
     help: 'https://alor.dev/docs/astras',
     officialSite: 'https://www.alorbroker.ru',
