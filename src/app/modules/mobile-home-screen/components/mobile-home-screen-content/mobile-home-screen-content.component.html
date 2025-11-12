@@ -46,7 +46,7 @@
       <ats-market-trends
         (instrumentSelected)="openChart($event)"
         (showMore)="openAllInstruments($event)"
-        [extendedFilter]="settings.extendedFilter ?? []"
+        [extendedFilter]="settings.marketTrendsExtendedFilter ?? []"
         [itemsCount]="settings.marketTrendsItemsCount ?? 10"
         [marketFilters]="{
         targetMarkets: settings.marketTrendsMarkets,
