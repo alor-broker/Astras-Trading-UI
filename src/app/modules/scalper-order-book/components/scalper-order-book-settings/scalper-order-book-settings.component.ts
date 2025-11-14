@@ -467,7 +467,7 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       stopLimitOrdersDistance: Number(formValue.stopLimitOrdersDistance),
       minorLinesStep:Number(formValue.minorLinesStep),
       majorLinesStep:Number(formValue.majorLinesStep),
-    } as Partial<ScalperOrderBookWidgetSettings> & InstrumentKey;
+    } as Partial<ScalperOrderBookWidgetSettings> & InstrumentKey & { instrument?: InstrumentKey };
 
     delete newSettings.instrument;
 

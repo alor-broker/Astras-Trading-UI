@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   ElementRef,
   Inject,
   Input,
@@ -51,7 +50,6 @@ export class InstrumentSelectComponent implements OnInit {
   @Input({ required: true })
   guid!: string;
 
-  autocompleteMinWidth = 250;
   filteredInstruments$: Observable<Instrument[]> = of([]);
   inputValue?: string;
   collection$!: Observable<WatchlistCollection>;
@@ -65,8 +63,7 @@ export class InstrumentSelectComponent implements OnInit {
     private readonly watchlistCollectionService: WatchlistCollectionService,
     private readonly watchInstrumentsService: WatchInstrumentsService,
     @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext,
-    private readonly destroyRef: DestroyRef) {
+    private readonly actionsContext: ActionsContext) {
 
   }
 
@@ -157,14 +154,14 @@ export class InstrumentSelectComponent implements OnInit {
         if (isRemoveWatchlist) {
           this.watchInstrumentsService.unsubscribeFromList(listId);
 
-          this.settingsService.updateSettings(
+          this.settingsService.updateSettings<InstrumentSelectSettings>(
             this.guid,
             {
               activeWatchlistMetas: settings.activeWatchlistMetas?.filter((meta) => meta.id !== listId) ?? []
             }
           );
         } else {
-          this.settingsService.updateSettings(
+          this.settingsService.updateSettings<InstrumentSelectSettings>(
             this.guid,
             {
               activeWatchlistMetas: [{ id: listId, isExpanded: true }, ...(settings.activeWatchlistMetas ?? [])]
@@ -209,7 +206,7 @@ export class InstrumentSelectComponent implements OnInit {
       const defaultList = collection.collection.find(x => x.isDefault ?? false);
 
       if (defaultList) {
-        this.settingsService.updateSettings(this.guid, { activeWatchlistMetas: [{ id: defaultList.id, isExpanded: true }] });
+        this.settingsService.updateSettings<InstrumentSelectSettings>(this.guid, { activeWatchlistMetas: [{ id: defaultList.id, isExpanded: true }] });
       }
     });
   }

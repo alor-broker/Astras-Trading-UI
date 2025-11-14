@@ -455,7 +455,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
         take(1),
         subscribeOn(animationFrameScheduler)
       )
-      .subscribe(settings => this.settingsService.updateSettings(
+      .subscribe(settings => this.settingsService.updateSettings<InstrumentSelectSettings>(
           this.guid,
           {
             activeWatchlistMetas: (settings.activeWatchlistMetas ?? [])

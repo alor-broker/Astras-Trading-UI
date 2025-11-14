@@ -9,13 +9,17 @@ import {
   EntityState
 } from "@ngrx/entity";
 import { EntityStatus } from "../../shared/models/enums/entity-status";
-import { Update } from "@ngrx/entity/src/models";
+import {
+  Update,
+  UpdateStr
+} from "@ngrx/entity/src/models";
 import { defaultBadgeColor } from "../../shared/utils/instruments";
 import { WidgetSettings } from '../../shared/models/widget-settings.model';
 import {
   WidgetSettingsInternalActions,
   WidgetSettingsServiceActions
 } from "./widget-settings.actions";
+import { PortfolioKey } from "../../shared/models/portfolio-key.model";
 
 export interface State extends EntityState<WidgetSettings> {
   status: EntityStatus;
@@ -57,7 +61,7 @@ const reducer = createReducer(
             instrumentGroup: u.instrumentKey.instrumentGroup,
             isin: u.instrumentKey.isin
           }
-        })),
+        } as UpdateStr<WidgetSettings>)),
         state
       );
     }
@@ -93,7 +97,7 @@ const reducer = createReducer(
       settingGuids,
       newPortfolioKey
     }) => {
-      const updates: Update<WidgetSettings>[] = [];
+      const updates: Update<WidgetSettings & PortfolioKey>[] = [];
       settingGuids.forEach(s => updates.push({
         id: s,
         changes: {

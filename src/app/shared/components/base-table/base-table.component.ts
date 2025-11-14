@@ -7,7 +7,10 @@ import {
   withLatestFrom
 } from "rxjs";
 import { ContentSize } from "../../models/dashboard/dashboard-item.model";
-import { BaseColumnSettings } from "../../models/settings/table-settings.model";
+import {
+  BaseColumnSettings,
+  TableDisplaySettings
+} from "../../models/settings/table-settings.model";
 import { TableConfig } from "../../models/table-config.model";
 import { WidgetSettingsService } from "../../services/widget-settings.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -133,13 +136,13 @@ implements OnInit, OnDestroy {
       this.settingsService.updateSettings<T>(
         settings.guid,
         {
-          [this.settingsTableName!]: TableSettingHelper.changeColumnOrder(
+          [this.settingsTableName! as keyof T]: TableSettingHelper.changeColumnOrder(
             event,
             TableSettingHelper.toTableDisplaySettings(
-              settings[this.settingsTableName!],
+              settings[this.settingsTableName! as keyof T] as TableDisplaySettings | undefined,
               this.settingsColumnsName != null
-                ? settings[this.settingsColumnsName] ?? []
-                : null
+                ? (settings[this.settingsColumnsName as keyof T] as string[] | undefined) ?? []
+                : undefined
             )!,
             tableConfig.columns
           )
@@ -152,7 +155,11 @@ implements OnInit, OnDestroy {
     settings$?.pipe(
       take(1)
     ).subscribe(settings => {
-      const tableSettings = TableSettingHelper.toTableDisplaySettings(settings[this.settingsTableName!], settings[this.settingsColumnsName!]);
+      const tableSettings = TableSettingHelper.toTableDisplaySettings(
+        settings[this.settingsTableName! as keyof T] as TableDisplaySettings | undefined,
+        settings[this.settingsColumnsName! as keyof T] as string[] | undefined ?? []
+      );
+
       if (tableSettings) {
         this.settingsService.updateSettings<T>(
           settings.guid,

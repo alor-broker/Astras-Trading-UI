@@ -29,9 +29,6 @@ describe('Widget Settings Store', () => {
     for (let i = 0; i < length; i++) {
       settings.push({
         guid: GuidGenerator.newGuid(),
-        exchange: Math.random() > 0.5 ? 'MOEX' : 'SPBX',
-        width: Math.round(Math.random() * 100),
-        height: Math.round(Math.random() * 100),
         badgeColor: defaultBadgeColor
       });
     }
@@ -112,8 +109,6 @@ describe('Widget Settings Store', () => {
 
       const updatedSettings: WidgetSettings = {
         ...expectedSettings[0],
-        width: Math.random() * 100,
-        height: Math.random() * 100
       };
 
       store.dispatch(WidgetSettingsServiceActions.updateContent({
