@@ -16,6 +16,7 @@
   "no": "No",
   "from": "from",
   "to": "to",
+  "tableView": "Table view",
 
   "maxTagPlaceholder": "and {{count}} more selected",
 

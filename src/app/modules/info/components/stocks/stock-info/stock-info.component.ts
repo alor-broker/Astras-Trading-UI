@@ -56,6 +56,11 @@ import { DividendsComponent } from "../dividends/dividends.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { REFRESH_TIMEOUT_MS } from "../../../constants/info.constants";
+import { DividendsChartComponent } from "../dividends-chart/dividends-chart.component";
+import {
+  NzCollapseComponent,
+  NzCollapsePanelComponent
+} from "ng-zorro-antd/collapse";
 
 type StockResponse = Modify<
   Query,
@@ -71,17 +76,20 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<StockResponse>> = object({
 
 @Component({
     selector: 'ats-stock-info',
-    imports: [
-        NzTabSetComponent,
-        TranslocoDirective,
-        NzTabComponent,
-        LetDirective,
-        NzEmptyComponent,
-        DescriptorsListComponent,
-        RisksComponent,
-        FinanceComponent,
-        DividendsComponent
-    ],
+  imports: [
+    NzTabSetComponent,
+    TranslocoDirective,
+    NzTabComponent,
+    LetDirective,
+    NzEmptyComponent,
+    DescriptorsListComponent,
+    RisksComponent,
+    FinanceComponent,
+    DividendsComponent,
+    DividendsChartComponent,
+    NzCollapseComponent,
+    NzCollapsePanelComponent
+  ],
     templateUrl: './stock-info.component.html',
     styleUrl: './stock-info.component.less'
 })

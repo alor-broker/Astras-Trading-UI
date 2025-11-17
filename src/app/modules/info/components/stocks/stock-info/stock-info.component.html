@@ -25,7 +25,12 @@
         </nz-tab>
 
         <nz-tab [nzTitle]="t('info.dividendsTab')">
-          <ats-dividends [dividends]="vm.info.dividends ?? []"></ats-dividends>
+          <ats-dividends-chart [dividends]="vm.info.dividends ?? []"></ats-dividends-chart>
+          <nz-collapse class="mt-10">
+            <nz-collapse-panel [nzHeader]="t('tableView')">
+              <ats-dividends [dividends]="vm.info.dividends ?? []"></ats-dividends>
+            </nz-collapse-panel>
+          </nz-collapse>
         </nz-tab>
       </nz-tabset>
     }

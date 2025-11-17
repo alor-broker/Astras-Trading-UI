@@ -1,8 +1,8 @@
-@if (dividends.length > 0) {
+@if (dividends().length > 0) {
   <ng-container *transloco="let t; scope: 'info/dividends'">
     <nz-table
       #nzTable
-      [nzData]="dividends"
+      [nzData]="dividends()"
       [nzFrontPagination]="false"
       [nzShowPagination]="false"
       atsTableRowHeight
