@@ -33,6 +33,6 @@ export abstract class InstrumentInfoBaseComponent implements OnDestroy {
   }
 
   setLoading(value: boolean): void {
-    setTimeout(() => this.loadingChange.emit(value));
+    this.loadingChange.emit(value);
   }
 }
