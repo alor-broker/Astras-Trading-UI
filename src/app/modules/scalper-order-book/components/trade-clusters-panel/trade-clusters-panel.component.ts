@@ -70,6 +70,8 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
 
   hScrollOffsets$ = new BehaviorSubject({left: 0, right: 0});
 
+  private lastPanelWidth: number | null = null;
+
   readonly availableTimeframes: number[] = Object.values(ClusterTimeframe).filter((v): v is number => !isNaN(Number(v)));
   readonly availableIntervalsCount = [1, 2, 5];
 
@@ -170,6 +172,20 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
         this.isAutoScroll = false;
       }
     });
+  }
+
+  sizeChanged(entries: ResizeObserverEntry[]): void {
+    let newWidth = this.lastPanelWidth ?? 0;
+    entries.forEach(x => {
+      newWidth = Math.floor(x.contentRect.width);
+    });
+
+    if (newWidth < (this.lastPanelWidth ?? 0)) {
+      this.isAutoScroll = true;
+      this.updateScrollOffsets(true);
+    }
+
+    this.lastPanelWidth = newWidth;
   }
 
   ngAfterViewInit(): void {
