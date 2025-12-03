@@ -8,7 +8,7 @@
     @let displayExtendedFilter = extendedFilter();
 
     @if (displaySectors.length > 0 || displayExtendedFilter.length > 0) {
-      <nz-tabset>
+      <nz-tabs>
         <nz-tab [nzTitle]="t('marketTrendsMarketTrends.resetFiltersButton.title')" (nzSelect)="resetFilters()">
         </nz-tab>
 
@@ -23,7 +23,7 @@
           <nz-tab [nzTitle]="t('marketSectors.' + sector, {fallback: sector})" (nzSelect)="changeSector(sector)">
           </nz-tab>
         }
-      </nz-tabset>
+      </nz-tabs>
     }
 
 

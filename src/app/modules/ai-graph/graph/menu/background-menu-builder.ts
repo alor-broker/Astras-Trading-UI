@@ -1,9 +1,9 @@
 ﻿import {IContextMenuValue, LGraphCanvas, LiteGraph} from "@comfyorg/litegraph";
 import {TranslatorFn} from "../../../../shared/services/translator.service";
 import {ContextMenu} from "../nodes/models";
-import {IContextMenuSubmenu} from "@comfyorg/litegraph/dist/interfaces";
 import {NodeCategories} from "../nodes/node-categories";
 import {NodesRegister} from "../nodes/nodes-register";
+import { IContextMenuSubmenu } from "node_modules/@comfyorg/litegraph/dist/interfaces";
 
 export class BackgroundMenuBuilder {
   static getMenu(translator: TranslatorFn): ContextMenu {

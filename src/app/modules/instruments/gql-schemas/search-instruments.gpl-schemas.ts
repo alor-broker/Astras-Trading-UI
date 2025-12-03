@@ -15,7 +15,7 @@ import {
   object,
   TypeOf,
   ZodObject
-} from "zod";
+} from "zod/v3";
 
 const basicInfoScheme = BasicInformationSchema().pick({
   symbol: true,

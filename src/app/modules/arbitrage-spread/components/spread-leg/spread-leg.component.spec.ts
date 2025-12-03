@@ -9,7 +9,7 @@ import { commonTestProviders } from "../../../../shared/utils/testing/common-tes
 import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
 import { InstrumentSearchMockComponent } from "../../../../shared/utils/testing/instrument-search-mock-component";
 import { InputNumberComponent } from "../../../../shared/components/input-number/input-number.component";
-import { NzToolTipModule } from "ng-zorro-antd/tooltip";
+import { NzTooltipModule } from "ng-zorro-antd/tooltip";
 import { NzEmptyModule } from "ng-zorro-antd/empty";
 
 describe('SpreadLegComponent', () => {
@@ -24,7 +24,7 @@ describe('SpreadLegComponent', () => {
         ...FormsTesting.getTestingModules(),
         InstrumentSearchMockComponent,
         InputNumberComponent,
-        NzToolTipModule,
+        NzTooltipModule,
         NzEmptyModule
       ],
       providers: [...commonTestProviders]

@@ -38,7 +38,7 @@ export class AllInstrumentsService {
       where: parsedFilters
     };
 
-    return this.graphQlService.watchQueryForSchema<TypeOf<typeof allInstrumentsResponseSchema>>(
+    return this.graphQlService.queryForSchema<TypeOf<typeof allInstrumentsResponseSchema>>(
       allInstrumentsResponseSchema,
       {
         first: args.first,

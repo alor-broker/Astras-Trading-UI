@@ -20,6 +20,8 @@ import { LetDirective } from "@ngrx/component";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import { MockComponent } from "ng-mocks";
+import { NzSpaceCompactComponent } from "ng-zorro-antd/space";
 
 describe('OptionBoardChartComponent', () => {
   let component: OptionBoardChartComponent;
@@ -33,7 +35,8 @@ describe('OptionBoardChartComponent', () => {
       ],
       declarations: [
         OptionBoardChartComponent,
-        ...ngZorroMockComponents
+        ...ngZorroMockComponents,
+        MockComponent(NzSpaceCompactComponent)
       ],
       providers: [
         {

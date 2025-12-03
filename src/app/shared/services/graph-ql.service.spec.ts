@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { GraphQlService } from './graph-ql.service';
-import { of, Subject } from "rxjs";
+import { Subject } from "rxjs";
 import { ErrorHandlerService } from "./handle-error/error-handler.service";
 import { Apollo } from "apollo-angular";
 import { TranslatorService } from "./translator.service";
@@ -16,7 +16,6 @@ describe('GraphQlService', () => {
         {
           provide: Apollo,
           useValue: {
-            watchQuery: jasmine.createSpy('watchQuery').and.returnValue({ valueChanges: of({})})
           }
         },
         {

@@ -7,7 +7,7 @@
 >
   <ng-container *transloco="let t; scope: 'instruments/settings'">
     <div>
-      <nz-tabset>
+      <nz-tabs>
         <nz-tab [nzTitle]="t('instrumentsSettings.displaySettingsTab')">
           <div>
             <form [formGroup]="settingsForm" [nzLayout]="'horizontal'" nz-form>
@@ -71,7 +71,7 @@
         <nz-tab [nzTitle]="t('instrumentsSettings.instrumentsListsTab')">
           <ats-watchlist-collection-edit></ats-watchlist-collection-edit>
         </nz-tab>
-      </nz-tabset>
+      </nz-tabs>
     </div>
 
     <ng-template #tagPlaceHolder let-selectedList>

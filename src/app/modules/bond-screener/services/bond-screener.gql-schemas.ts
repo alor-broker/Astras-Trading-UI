@@ -28,7 +28,7 @@ import {
   string,
   TypeOf,
   ZodObject
-} from "zod";
+} from "zod/v3";
 import { GraphQlHelper } from "../../../shared/utils/graph-ql-helper";
 
 export function getBondScreenerResponseSchema(columnIds: string[]): ZodObject<ZodPropertiesOf<unknown>> {

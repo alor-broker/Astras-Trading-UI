@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/core';
 import {
   fakeAsync,
   TestBed,
@@ -16,7 +17,7 @@ import {
   TerminalSettings
 } from "../../../shared/models/terminal-settings/terminal-settings.model";
 import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
-import { DOCUMENT } from "@angular/common";
+
 import { TerminalSettingsHelper } from "../../../shared/utils/terminal-settings-helper";
 
 describe('ScalperHotKeyCommandService', () => {

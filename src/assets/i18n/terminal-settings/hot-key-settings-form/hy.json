@@ -7,7 +7,7 @@
   "cancelOrdersKey": "Հեռացնել լիմիտային հայտերը",
   "cancelOrderbookOrders": "Հեռացնել լիմիտային հայտերը",
   "cancelStopOrdersCurrent": "Հեռացնել սթոփ հայտերը",
-  "closePositionsKey": "Փակել դիրքերը շուկայով",
+  "closePositionsKey": "Փակել դիրքերը շուկայական գնով",
   "centerOrderbookKey": "Սփրեդի հիման վրա կենտրոնացնել գնանշումների ցուցակը",
   "mouseHoverOrderbookHeader": "Գնանշումների ցուցակների համար, որոնց վրա գտնվում է մկնիկը",
   "closeOrderbookPositions": "Փակել դիրքերը շուկայական գնով",

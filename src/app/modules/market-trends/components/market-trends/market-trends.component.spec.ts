@@ -25,7 +25,7 @@ describe('MarketTrendsComponent', () => {
         MockProvider(
           GraphQlService,
           {
-            watchQueryForSchema: () => EMPTY
+            queryForSchema: () => EMPTY
           }
         )
       ]

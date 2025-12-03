@@ -3,7 +3,7 @@ import { BaseTranslatorService } from "../base-translator.service";
 import { InstantNotificationsService } from "../instant-notifications.service";
 import { TranslatorService } from "../translator.service";
 import { SessionInstantNotificationType } from "../../models/terminal-settings/terminal-settings.model";
-import { NzNotificationDataOptions } from "ng-zorro-antd/notification/typings";
+import { NzNotificationDataOptions } from "ng-zorro-antd/notification";
 
 @Injectable({
   providedIn: 'root'

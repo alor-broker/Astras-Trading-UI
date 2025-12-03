@@ -46,6 +46,7 @@ const config: CodegenConfig = {
           'typescript-validation-schema': {
             importFrom: './news-graphql.types',
             schema: 'zod',
+            zodImportPath: 'zod/v3',
             scalarSchemas: {
               'DateTime': 'z.string()',
               'Decimal': 'z.number()',

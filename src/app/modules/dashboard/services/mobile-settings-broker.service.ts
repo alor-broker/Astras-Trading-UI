@@ -3,13 +3,15 @@ import {
   Injectable
 } from '@angular/core';
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
-import { ActionCreator } from '@ngrx/store/src/models';
 import {
   Actions,
   ofType
 } from "@ngrx/effects";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { Store } from '@ngrx/store';
+import {
+  ActionCreator,
+  Store
+} from '@ngrx/store';
 import { WidgetSettings } from "../../../shared/models/widget-settings.model";
 import { Dashboard } from "../../../shared/models/dashboard/dashboard.model";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";

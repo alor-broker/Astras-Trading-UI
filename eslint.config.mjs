@@ -1,15 +1,16 @@
 import tseslint from "typescript-eslint";
-import { defineConfig } from "eslint/config";
+import {defineConfig, globalIgnores} from "eslint/config";
 import angular from "angular-eslint";
 import stylistic from "@stylistic/eslint-plugin";
 
-
 export default defineConfig([
+  globalIgnores([
+    ".angular/**/*",
+    "dist/**/*",
+    "**/charting_library/**/*"
+  ]),
   {
     files: ["**/*.ts"],
-    ignores: [
-      "**/charting_library/*"
-    ],
     languageOptions: {
       parserOptions: {
         project: true
@@ -18,7 +19,7 @@ export default defineConfig([
     extends: [
       ...tseslint.configs.stylistic,
       ...angular.configs.tsRecommended,
-      stylistic.configs['recommended-flat'],
+      stylistic.configs['recommended'],
     ],
     processor: angular.processInlineTemplates,
     rules: {
@@ -38,6 +39,7 @@ export default defineConfig([
           style: "kebab-case",
         },
       ],
+      "@angular-eslint/prefer-inject": "off",
       "@stylistic/semi": ["error", "always"],
       "@stylistic/comma-dangle": "off",
       "@stylistic/quotes": "off",
@@ -150,8 +152,6 @@ export default defineConfig([
         }
       ],
       "@typescript-eslint/no-inferrable-types": "error",
-      "no-loss-of-precision": "off",
-      "@typescript-eslint/no-loss-of-precision": "error",
       "@typescript-eslint/no-misused-new": "error",
       "@typescript-eslint/no-mixed-enums": "error",
       "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",

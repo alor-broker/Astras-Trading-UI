@@ -1,12 +1,13 @@
 ﻿import Fields from "gql-query-builder/build/Fields";
 import {
   ZodArray,
+  ZodLazy,
   ZodNullable,
   ZodObject,
   ZodOptional,
   ZodRawShape,
   ZodType
-} from "zod";
+} from "zod/v3";
 
 export class GqlFieldsExtractor {
   static getOperation(schema: ZodObject<ZodRawShape>): string {
@@ -60,6 +61,10 @@ export class GqlFieldsExtractor {
 
     if (typeDef instanceof ZodArray) {
       return this.getFieldActualType(typeDef.element);
+    }
+
+    if(typeDef instanceof ZodLazy) {
+      return this.getFieldActualType(typeDef.schema);
     }
 
     return typeDef;

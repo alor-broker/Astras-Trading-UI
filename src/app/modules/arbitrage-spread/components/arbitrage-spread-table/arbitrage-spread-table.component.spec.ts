@@ -7,7 +7,7 @@ import { TranslocoTestsModule } from "../../../../shared/utils/testing/transloco
 import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
 import { NzTableModule } from "ng-zorro-antd/table";
 import { NzEmptyModule } from "ng-zorro-antd/empty";
-import { NzToolTipModule } from "ng-zorro-antd/tooltip";
+import { NzTooltipModule } from "ng-zorro-antd/tooltip";
 
 describe('ArbitrageSpreadTableComponent', () => {
   let component: ArbitrageSpreadTableComponent;
@@ -20,7 +20,7 @@ describe('ArbitrageSpreadTableComponent', () => {
         TranslocoTestsModule.getModule(),
         NzTableModule,
         NzEmptyModule,
-        NzToolTipModule
+        NzTooltipModule
       ],
       providers: [
         {

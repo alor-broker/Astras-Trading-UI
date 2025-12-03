@@ -27,6 +27,7 @@ import {NewsService} from "../../../../shared/services/news.service";
 import { NewsFiltersComponent } from "../news-filters/news-filters.component";
 import { NzIconDirective } from "ng-zorro-antd/icon";
 import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
+import { NzTabsComponent } from "ng-zorro-antd/tabs";
 
 describe('NewsComponent', () => {
   let component: NewsComponent;
@@ -44,6 +45,7 @@ describe('NewsComponent', () => {
         MockComponent(NewsDialogComponent),
         MockComponent(NewsFiltersComponent),
         MockDirective(NzIconDirective),
+        MockComponent(NzTabsComponent)
       ],
       imports: [
         TranslocoTestsModule.getModule(),

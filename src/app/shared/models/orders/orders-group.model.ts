@@ -1,8 +1,8 @@
-import { NzTreeNodeOptions } from "ng-zorro-antd/core/tree/nz-tree-base-node";
 import {
   Order,
   StopOrder
 } from "./order.model";
+import { NzTreeNodeOptions } from "ng-zorro-antd/tree";
 
 export enum ExecutionPolicy {
   OnExecuteOrCancel = 'OnExecuteOrCancel',

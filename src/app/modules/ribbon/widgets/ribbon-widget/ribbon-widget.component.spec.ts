@@ -9,8 +9,11 @@ import {ManageDashboardsService} from "../../../../shared/services/manage-dashbo
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
+import {
+  MockComponents
+} from "ng-mocks";
+import { RibbonComponent } from "../../components/ribbon/ribbon.component";
 
 describe('RibbonWidgetComponent', () => {
   let component: RibbonWidgetComponent;
@@ -20,8 +23,9 @@ describe('RibbonWidgetComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         RibbonWidgetComponent,
-        ComponentHelpers.mockComponent({selector: 'ats-ribbon', inputs: ['guid']}),
-        ComponentHelpers.mockComponent({selector: 'ats-ribbon-settings', inputs: ['guid']}),
+        MockComponents(
+          RibbonComponent
+        ),
         ...ngZorroMockComponents
       ],
       providers: [
