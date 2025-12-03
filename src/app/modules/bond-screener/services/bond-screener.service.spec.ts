@@ -13,7 +13,7 @@ describe('BondScreenerService', () => {
         {
           provide: GraphQlService,
           useValue: {
-            watchQuery: jasmine.createSpy('watchQuery').and.returnValue({ valueChanges: of({})})
+            watchQuery: jasmine.createSpy('queryForSchema').and.returnValue({ valueChanges: of({})})
           }
         }
       ]

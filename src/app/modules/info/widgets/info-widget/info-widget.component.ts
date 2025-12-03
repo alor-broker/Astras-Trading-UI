@@ -1,7 +1,8 @@
 import {
   Component,
   Input,
-  OnInit
+  OnInit,
+  signal
 } from '@angular/core';
 import {
   Observable,
@@ -40,7 +41,7 @@ export class InfoWidgetComponent implements OnInit {
 
   InstrumentTypes = InstrumentType;
 
-  isLoading = false;
+  isLoading = signal(false);
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
@@ -88,6 +89,6 @@ export class InfoWidgetComponent implements OnInit {
   }
 
   setLoading(value: boolean): void {
-    this.isLoading = value;
+    this.isLoading.set(value);
   }
 }

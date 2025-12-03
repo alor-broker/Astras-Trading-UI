@@ -40,14 +40,14 @@ import {
 import {
   object,
   ZodObject
-} from "zod";
+} from "zod/v3";
 import { InstrumentSchema, } from "../../../../../../generated/graphql.schemas";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { LetDirective } from "@ngrx/component";
 import { NzEmptyComponent } from "ng-zorro-antd/empty";
 import {
   NzTabComponent,
-  NzTabSetComponent
+  NzTabsComponent
 } from "ng-zorro-antd/tabs";
 import { DescriptorsListComponent } from "../../descriptors-list/descriptors-list.component";
 import { RisksComponent } from "../risks/risks.component";
@@ -73,10 +73,10 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<InstrumentResponse>> = object({
     TranslocoDirective,
     LetDirective,
     NzEmptyComponent,
-    NzTabSetComponent,
     NzTabComponent,
     DescriptorsListComponent,
-    RisksComponent
+    RisksComponent,
+    NzTabsComponent
   ],
     templateUrl: './common-info.component.html',
     styleUrl: './common-info.component.less'
@@ -113,7 +113,7 @@ export class CommonInfoComponent extends InstrumentInfoBaseComponent implements 
       mapWith(() => refreshTimer$, (source,) => source),
       tap(() => this.setLoading(true)),
       switchMap(i => {
-        return this.graphQlService.watchQueryForSchema<InstrumentResponse>(
+        return this.graphQlService.queryForSchema<InstrumentResponse>(
           ResponseSchema,
           {
             symbol: {value: i.symbol, required: true},

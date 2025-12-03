@@ -47,7 +47,7 @@ export interface TechChartSettings extends WidgetSettings {
   positionLineMarkerPosition?: LineMarkerPosition;
   symbol: string;
   exchange?: string;
-  instrumentGroup?: string;
+  instrumentGroup?: string | null;
   isin?: string;
   panels?: ChartPanels;
   trades?: TechChartTradesDisplaySettings;

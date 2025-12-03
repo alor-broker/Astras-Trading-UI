@@ -27,7 +27,7 @@
     <ng-template #contentRef>
       <div (nzResizeObserve)="containerSizeChanged($event)" class="container"
            nzResizeObserver>
-        <nz-tabset
+        <nz-tabs
           (mousedown)='$event.stopPropagation()'
           (nzSelectChange)="onIndexChange($event.index)"
           *transloco="let t; scope: 'blotter'"
@@ -98,7 +98,7 @@
               </span>
             </ng-template>
           </nz-tab>
-        </nz-tabset>
+        </nz-tabs>
       </div>
     </ng-template>
   </ats-widget-skeleton>

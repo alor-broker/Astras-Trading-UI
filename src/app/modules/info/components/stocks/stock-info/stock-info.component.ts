@@ -31,7 +31,7 @@ import {
 import {
   object,
   ZodObject
-} from "zod";
+} from "zod/v3";
 import { StockSchema } from "../../../../../../generated/graphql.schemas";
 import {
   filter,
@@ -43,7 +43,7 @@ import {
 } from "../../../models/instrument-descriptors.model";
 import {
   NzTabComponent,
-  NzTabSetComponent
+  NzTabsComponent
 } from "ng-zorro-antd/tabs";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { LetDirective } from "@ngrx/component";
@@ -77,7 +77,6 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<StockResponse>> = object({
 @Component({
     selector: 'ats-stock-info',
   imports: [
-    NzTabSetComponent,
     TranslocoDirective,
     NzTabComponent,
     LetDirective,
@@ -88,7 +87,8 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<StockResponse>> = object({
     DividendsComponent,
     DividendsChartComponent,
     NzCollapseComponent,
-    NzCollapsePanelComponent
+    NzCollapsePanelComponent,
+    NzTabsComponent
   ],
     templateUrl: './stock-info.component.html',
     styleUrl: './stock-info.component.less'
@@ -124,7 +124,7 @@ export class StockInfoComponent extends InstrumentInfoBaseComponent implements O
       mapWith(() => refreshTimer$, (source,) => source),
       tap(() => this.setLoading(true)),
       switchMap(i => {
-        return this.graphQlService.watchQueryForSchema<StockResponse>(
+        return this.graphQlService.queryForSchema<StockResponse>(
           ResponseSchema,
           {
             symbol: {value: i.symbol, required: true},

@@ -15,7 +15,7 @@
             </nz-option>
           </ng-container>
         </nz-select>
-        <nz-button-group>
+        <nz-space-compact>
           <button (click)="applyZoom(-1)" nz-button>
             <span nz-icon nzTheme="outline" nzType="zoom-out"></span>
           </button>
@@ -23,7 +23,7 @@
           <button (click)="applyZoom(1)" nz-button>
             <span nz-icon nzTheme="outline" nzType="zoom-in"></span>
           </button>
-        </nz-button-group>
+        </nz-space-compact>
       </div>
       <div *ngrxLet="{chartOptions: chartOptions$, chartData: chartData$} as vm"
            class="flex-fill position-relative overflow-hidden">

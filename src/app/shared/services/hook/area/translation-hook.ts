@@ -13,10 +13,10 @@ import { LocaleService } from "../../locale.service";
 import {
   en_US,
   hy_AM,
+  NzI18nInterface,
   NzI18nService,
   ru_RU
 } from "ng-zorro-antd/i18n";
-import { NzI18nInterface } from "ng-zorro-antd/i18n/nz-i18n.interface";
 
 @Injectable()
 export class TranslationHook implements AreaHook {

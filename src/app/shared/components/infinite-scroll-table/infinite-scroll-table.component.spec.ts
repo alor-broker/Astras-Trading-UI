@@ -12,7 +12,7 @@ import { ResizeColumnDirective } from "../../directives/resize-column.directive"
 import { FormControl } from "@angular/forms";
 import { TranslocoTestsModule } from "../../utils/testing/translocoTestsModule";
 import { commonTestProviders } from "../../utils/testing/common-test-providers";
-import { NzToolTipModule } from "ng-zorro-antd/tooltip";
+import { NzTooltipModule } from "ng-zorro-antd/tooltip";
 
 @Component({
     template: `
@@ -91,7 +91,7 @@ describe('InfiniteScrollTableComponent', () => {
         NzTableModule,
         NzDropDownModule,
         TranslocoTestsModule.getModule(),
-        NzToolTipModule
+        NzTooltipModule
       ],
       providers: [...commonTestProviders]
     })

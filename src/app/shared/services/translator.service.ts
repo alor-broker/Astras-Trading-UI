@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from "rxjs";
 import { TranslocoEvents, TranslocoService } from "@jsverse/transloco";
 import { map } from "rxjs/operators";
-import { HashMap } from "@jsverse/transloco/lib/types";
 import { getTranslationPath } from "../utils/translation-helper";
+import { HashMap } from "node_modules/@jsverse/transloco/lib/utils/type.utils";
 
 export type TranslatorFn = (key: string[], params?: HashMap) => string;
 

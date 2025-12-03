@@ -56,7 +56,7 @@ import {
 import {ConfirmableOrderCommandsService} from "../../services/confirmable-order-commands.service";
 import {
   NzTabComponent,
-  NzTabSetComponent
+  NzTabsComponent,
 } from "ng-zorro-antd/tabs";
 
 @Component({
@@ -76,7 +76,7 @@ export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
   shouldShowSettings = false;
 
   @ViewChildren('orderTabs')
-  orderTabs?: QueryList<NzTabSetComponent>;
+  orderTabs?: QueryList<NzTabsComponent>;
 
   @ViewChild('limitOrderTab', {static: false})
   limitOrderTab?: NzTabComponent;
@@ -195,7 +195,7 @@ export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
 
   private setDefaultOrderType(): void {
     this.orderTabs?.changes.pipe(
-      map(x => x.first as NzTabSetComponent | undefined),
+      map(x => x.first as NzTabsComponent | undefined),
       startWith(this.orderTabs?.first),
       filter(t => t != null),
       take(1)
@@ -221,7 +221,7 @@ export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private activateCommandTab(tabsSet: NzTabSetComponent, targetTab?: NzTabComponent): void {
+  private activateCommandTab(tabsSet: NzTabsComponent, targetTab?: NzTabComponent): void {
     if (!targetTab || targetTab.position == null) {
       return;
     }

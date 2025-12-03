@@ -1,8 +1,9 @@
 import {
   Inject,
-  Injectable
+  Injectable,
+  DOCUMENT
 } from '@angular/core';
-import { DOCUMENT } from "@angular/common";
+
 import {
   distinctUntilChanged,
   fromEvent,

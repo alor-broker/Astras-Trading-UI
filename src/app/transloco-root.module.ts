@@ -6,9 +6,9 @@ import {
   provideTransloco,
   Translation,
   TRANSLOCO_MISSING_HANDLER,
-  TranslocoConfig,
   TranslocoLoader,
   TranslocoMissingHandler,
+  TranslocoMissingHandlerData,
   TranslocoModule
 } from '@jsverse/transloco';
 import {
@@ -17,10 +17,10 @@ import {
 } from '@angular/core';
 import { environment } from '../environments/environment';
 import { Observable } from "rxjs";
-import { HashMap } from "@jsverse/transloco/lib/types";
 import { HttpContextTokens } from "./shared/constants/http.constants";
+import { HashMap } from "node_modules/@jsverse/transloco/lib/utils/type.utils";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class TranslocoHttpLoader implements TranslocoLoader {
   constructor(private readonly http: HttpClient) {
   }
@@ -44,9 +44,9 @@ export class TranslocoHttpLoader implements TranslocoLoader {
 }
 
 class CustomHandler implements TranslocoMissingHandler {
-  handle(key: string, config: TranslocoConfig, params?: HashMap): string {
-    return (params?.fallback ?? '') as string;
-  }
+    handle(key: string, data: TranslocoMissingHandlerData, params?: HashMap): string {
+      return (params?.fallback ?? '') as string;
+    }
 }
 
 @NgModule({

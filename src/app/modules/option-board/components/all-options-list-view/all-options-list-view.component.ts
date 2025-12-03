@@ -536,7 +536,7 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
               return null;
             }
 
-            return quote.last_price ?? settings.lastPrice;
+            return quote.last_price;
           }),
           startWith(null)
         );

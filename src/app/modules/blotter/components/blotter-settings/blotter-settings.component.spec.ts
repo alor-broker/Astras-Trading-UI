@@ -14,7 +14,7 @@ import { TranslocoTestsModule } from "../../../../shared/utils/testing/transloco
 import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
 import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
 import { WidgetSettingsComponent } from "../../../../shared/components/widget-settings/widget-settings.component";
-import { NzToolTipModule } from "ng-zorro-antd/tooltip";
+import { NzTooltipModule } from "ng-zorro-antd/tooltip";
 import { RemoveSelectTitlesDirective } from "../../../../shared/directives/remove-select-titles.directive";
 import {PUSH_NOTIFICATIONS_CONFIG} from "../../../push-notifications/services/push-notifications-config";
 import { NzDividerComponent } from "ng-zorro-antd/divider";
@@ -45,7 +45,7 @@ describe('BlotterSettingsComponent', () => {
         TranslocoTestsModule.getModule(),
         ...FormsTesting.getTestingModules(),
         WidgetSettingsComponent,
-        NzToolTipModule,
+        NzTooltipModule,
         NzDividerComponent
       ],
       providers: [

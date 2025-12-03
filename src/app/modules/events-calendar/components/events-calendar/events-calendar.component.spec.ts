@@ -52,7 +52,7 @@ describe('EventsCalendarComponent', () => {
         {
           provide: PositionsService,
           useValue:{
-            currentUser$: jasmine.createSpy('getAllByLogin').and.returnValue(EMPTY),
+            getAllByLogin: jasmine.createSpy('getAllByLogin').and.returnValue(EMPTY),
             getAllByPortfolio: jasmine.createSpy('getAllByPortfolio').and.returnValue(EMPTY),
           }
         },

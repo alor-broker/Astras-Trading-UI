@@ -75,7 +75,7 @@ export class ManageDashboardsService {
       take(1),
       filter((w): w is Widget => !!w)
     ).subscribe(w => {
-      const newSettings = JSON.parse(JSON.stringify(sourceSettings)) as Omit<WidgetSettings , 'guid'>;
+      const newSettings = JSON.parse(JSON.stringify(sourceSettings)) as Omit<WidgetSettings , 'guid'> & Partial<Pick<WidgetSettings, 'guid'>>;
 
       delete newSettings.guid;
 

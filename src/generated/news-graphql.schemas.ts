@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { z } from 'zod'
+import { z } from 'zod/v3'
 import { DateTimeOperationFilterInput, LongOperationFilterInput, News, NewsConnection, NewsEdge, NewsFilterInput, NewsSortInput, PageInfo, SortEnumType, StringOperationFilterInput } from './news-graphql.types'
 
 type Properties<T> = Required<{
@@ -56,7 +56,7 @@ export function NewsSchema(): z.ZodObject<Properties<News>> {
     headline: z.string().nullish(),
     id: z.number(),
     mt: z.string().nullish(),
-    publishDate: z.string().nullish(),
+    publishDate: z.string(),
     rubrics: z.string().nullish(),
     sourceId: z.string().nullish(),
     symbols: z.string().nullish(),
@@ -67,9 +67,9 @@ export function NewsSchema(): z.ZodObject<Properties<News>> {
 export function NewsConnectionSchema(): z.ZodObject<Properties<NewsConnection>> {
   return z.object({
     __typename: z.literal('NewsConnection').optional(),
-    edges: z.array(NewsEdgeSchema()).nullish(),
-    nodes: z.array(NewsSchema().nullable()).nullish(),
-    pageInfo: PageInfoSchema(),
+    edges: z.array(z.lazy(() => NewsEdgeSchema())).nullish(),
+    nodes: z.array(z.lazy(() => NewsSchema().nullable())).nullish(),
+    pageInfo: z.lazy(() => PageInfoSchema()),
     totalCount: z.number()
   })
 }
@@ -78,7 +78,7 @@ export function NewsEdgeSchema(): z.ZodObject<Properties<NewsEdge>> {
   return z.object({
     __typename: z.literal('NewsEdge').optional(),
     cursor: z.string(),
-    node: NewsSchema().nullish()
+    node: z.lazy(() => NewsSchema().nullish())
   })
 }
 

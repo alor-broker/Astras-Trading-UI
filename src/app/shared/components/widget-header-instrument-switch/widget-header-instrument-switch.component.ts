@@ -128,7 +128,7 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit, OnDestroy 
         return;
       }
 
-      this.widgetSettingsService.updateSettings(
+      this.widgetSettingsService.updateSettings<WidgetSettings & InstrumentKey>(
         settings.guid,
         {
           ...toInstrumentKey(instrument)

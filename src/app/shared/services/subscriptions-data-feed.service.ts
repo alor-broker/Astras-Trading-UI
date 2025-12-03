@@ -171,7 +171,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
             ...request,
             token
           } as any));
-        } catch(err) {
+        } catch (err) {
           observer.error(err);
         }
       });

@@ -1,6 +1,11 @@
-﻿import {IFoundSlot, INodeInputSlot, LGraphNode} from "@comfyorg/litegraph";
+﻿import {
+  IFoundSlot,
+  INodeInputSlot,
+  INodeOutputSlot,
+  ISlotType,
+  LGraphNode
+} from "@comfyorg/litegraph";
 import {Observable, of, tap} from "rxjs";
-import {INodeOutputSlot, ISlotType} from "@comfyorg/litegraph/dist/interfaces";
 import {ContextMenu, NodeSlotOptions, OutputDataObject, OutputFormat} from "./models";
 import {GraphProcessingContextService} from "../../services/graph-processing-context.service";
 import {TranslatorFn} from "../../../../shared/services/translator.service";

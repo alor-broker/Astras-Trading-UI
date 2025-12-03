@@ -172,7 +172,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
   }
 
   onIndexChange(index?: number): void {
-    this.widgetSettingsService.updateSettings(this.widgetInstance.instance.guid, { activeTabIndex: index ?? 0 });
+    this.widgetSettingsService.updateSettings<BlotterSettings>(this.widgetInstance.instance.guid, { activeTabIndex: index ?? 0 });
   }
 
   ngOnDestroy(): void {

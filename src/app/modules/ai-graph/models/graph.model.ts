@@ -1,4 +1,4 @@
-﻿import { RenderShape } from "@comfyorg/litegraph/dist/types/globalEnums";
+﻿import { RenderShape } from "@comfyorg/litegraph";
 
 export type SlotType = number | string;
 export type LinkId = number;

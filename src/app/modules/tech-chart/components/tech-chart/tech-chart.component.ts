@@ -7,7 +7,8 @@ import {
   Input,
   OnDestroy,
   OnInit,
-  ViewChild
+  ViewChild,
+  DOCUMENT
 } from '@angular/core';
 import {
   combineLatest,
@@ -57,7 +58,6 @@ import { InstrumentKey } from '../../../../shared/models/instruments/instrument-
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { TechChartSettings } from '../../models/tech-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
-import { HashMap } from "@jsverse/transloco/lib/types";
 import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
 import { TimezoneConverter } from "../../../../shared/utils/timezone-converter";
 import { TimezoneDisplayOption } from "../../../../shared/models/enums/timezone-display-option";
@@ -80,11 +80,12 @@ import { ACTIONS_CONTEXT, ActionsContext } from "../../../../shared/services/act
 import { InstrumentSearchService } from "../../services/instrument-search.service";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { SearchButtonHelper } from "../../utils/search-button.helper";
-import { DOCUMENT } from "@angular/common";
+
 import { TradesDisplayExtension } from "../../extensions/trades-display.extension";
 import { ChartContext } from "../../extensions/base.extension";
 import { PositionDisplayExtension } from "../../extensions/position-display.extension";
 import { OrdersDisplayExtension } from "../../extensions/orders-display.extension";
+import { HashMap } from "node_modules/@jsverse/transloco/lib/utils/type.utils";
 
 interface ExtendedSettings { widgetSettings: TechChartSettings, instrument: Instrument }
 
@@ -256,7 +257,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         settings1.guid == settings2.guid &&
         settings1.symbol == settings2.symbol &&
         settings1.exchange == settings2.exchange &&
-        settings1.chartSettings == settings2.chartSettings &&
+        settings1.chartLayout == settings2.chartLayout &&
         settings1.badgeColor == settings2.badgeColor
       );
     } else return false;
@@ -466,7 +467,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         const chartSymbol = this.chartState!.widget.activeChart().symbol();
 
         if(SyntheticInstrumentsHelper.isSyntheticInstrument(chartSymbol)) {
-          this.settingsService.updateSettings(
+          this.settingsService.updateSettings<TechChartSettings>(
             this.guid,
             {
               linkToActive: false,
@@ -480,7 +481,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
             return;
           }
 
-          this.settingsService.updateSettings(
+          this.settingsService.updateSettings<TechChartSettings>(
             settings.widgetSettings.guid,
             {
               ...instrumentKey

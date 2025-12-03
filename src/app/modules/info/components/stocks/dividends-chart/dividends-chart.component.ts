@@ -148,7 +148,7 @@ export class DividendsChartComponent implements OnChanges {
           callbacks: {
             title: (tooltipItems): string => {
               return format(
-                new Date(tooltipItems[0].parsed.x),
+                new Date(tooltipItems[0].parsed.x as unknown as string),
                 'd MMM yyyy',
                 {
                   locale: this.getDateLocale(lang)

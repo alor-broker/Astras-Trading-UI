@@ -10,7 +10,7 @@ import { LetDirective } from "@ngrx/component";
 import { NzEmptyComponent } from "ng-zorro-antd/empty";
 import {
   NzTabComponent,
-  NzTabSetComponent
+  NzTabsComponent
 } from "ng-zorro-antd/tabs";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { InstrumentInfoBaseComponent } from "../../instrument-info-base/instrument-info-base.component";
@@ -48,7 +48,7 @@ import {
 import {
   object,
   ZodObject
-} from "zod";
+} from "zod/v3";
 import { DerivativeSchema, } from "../../../../../../generated/graphql.schemas";
 import {
   getFutureType,
@@ -77,14 +77,14 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<DerivativeResponse>> = object({
 
 @Component({
     selector: 'ats-derivative-info',
-    imports: [
-        DescriptorsListComponent,
-        LetDirective,
-        NzEmptyComponent,
-        NzTabComponent,
-        NzTabSetComponent,
-        TranslocoDirective
-    ],
+  imports: [
+    DescriptorsListComponent,
+    LetDirective,
+    NzEmptyComponent,
+    NzTabComponent,
+    TranslocoDirective,
+    NzTabsComponent
+  ],
     templateUrl: './derivative-info.component.html',
     styleUrl: './derivative-info.component.less'
 })
@@ -120,7 +120,7 @@ export class DerivativeInfoComponent extends InstrumentInfoBaseComponent impleme
       mapWith(() => refreshTimer$, (source,) => source),
       tap(() => this.setLoading(true)),
       switchMap(i => {
-        return this.graphQlService.watchQueryForSchema<DerivativeResponse>(
+        return this.graphQlService.queryForSchema<DerivativeResponse>(
           ResponseSchema,
           {
             symbol: {value: i.symbol, required: true},

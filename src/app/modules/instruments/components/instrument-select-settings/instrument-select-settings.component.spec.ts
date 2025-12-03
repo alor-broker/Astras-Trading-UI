@@ -13,7 +13,7 @@ import { TranslocoTestsModule } from "../../../../shared/utils/testing/transloco
 import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
 import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
 import { WidgetSettingsComponent } from "../../../../shared/components/widget-settings/widget-settings.component";
-import { NzToolTipModule } from "ng-zorro-antd/tooltip";
+import { NzTooltipModule } from "ng-zorro-antd/tooltip";
 import { RemoveSelectTitlesDirective } from "../../../../shared/directives/remove-select-titles.directive";
 import {
   NzTabsModule
@@ -39,7 +39,7 @@ describe('InstrumentSelectSettingsComponent', () => {
         TranslocoTestsModule.getModule(),
         ...FormsTesting.getTestingModules(),
         WidgetSettingsComponent,
-        NzToolTipModule,
+        NzTooltipModule,
         NzTabsModule
       ],
       providers: [
