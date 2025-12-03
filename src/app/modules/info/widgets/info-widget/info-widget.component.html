@@ -24,7 +24,7 @@
 
     <ng-template #contentRef>
       @if (instrumentSummary$ | async; as instrumentSummary) {
-        <nz-spin [nzSpinning]="isLoading">
+        <nz-spin [nzSpinning]="isLoading()">
           <ats-info-header [info]="instrumentSummary"></ats-info-header>
           @switch (instrumentSummary.typeByCfi) {
             @case (InstrumentTypes.Stock) {
@@ -32,16 +32,20 @@
                               (loadingChange)="setLoading($event)"></ats-stock-info>
             }
             @case (InstrumentTypes.Bond) {
-              <ats-bond-info [instrumentKey]="instrumentSummary"></ats-bond-info>
+              <ats-bond-info [instrumentKey]="instrumentSummary"
+                             (loadingChange)="setLoading($event)"></ats-bond-info>
             }
             @case (InstrumentTypes.Futures) {
-              <ats-derivative-info [instrumentKey]="instrumentSummary"></ats-derivative-info>
+              <ats-derivative-info [instrumentKey]="instrumentSummary"
+                                   (loadingChange)="setLoading($event)"></ats-derivative-info>
             }
             @case (InstrumentTypes.Options) {
-              <ats-derivative-info [instrumentKey]="instrumentSummary"></ats-derivative-info>
+              <ats-derivative-info [instrumentKey]="instrumentSummary"
+                                   (loadingChange)="setLoading($event)"></ats-derivative-info>
             }
             @default {
-              <ats-common-info [instrumentKey]="instrumentSummary"></ats-common-info>
+              <ats-common-info [instrumentKey]="instrumentSummary"
+                               (loadingChange)="setLoading($event)"></ats-common-info>
             }
           }
         </nz-spin>
