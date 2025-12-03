@@ -223,13 +223,12 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
             ],
           },
           options: {
-            onResize: (chart: Chart, { width, height }): void => {
+            onResize: (chart: Chart, { width, height }: { width: number, height: number }): void => {
               this.tilesCount$.next(Math.floor(width * height / this.averageTileSize));
             },
             onHover: (event: ChartEvent, elements: ActiveElement[]): void => {
               this.isCursorOnSector$.next(elements.length === 1);
             },
-
             color: themeColors.chartLabelsColor,
             maintainAspectRatio: false,
             plugins: {
@@ -238,7 +237,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
               },
               tooltip: {
                 position: 'nearest',
-                external: ({ tooltip }): void => {
+                external: ({ tooltip }: { tooltip: any }): void => {
                   // Hide if no tooltip
                   if (tooltip.opacity === 0) {
                     this.isTooltipVisible$.next(false);
@@ -247,7 +246,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                     this.isTooltipVisible$.next(true);
                   }
 
-                  this.newTooltip$.next(tooltip.dataPoints.map(dp => dp.raw as TooltipModelRaw));
+                  this.newTooltip$.next(tooltip.dataPoints.map((dp: any) => dp.raw as TooltipModelRaw));
                 },
                 enabled: false
               },
@@ -274,7 +273,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
               }
             }
           }
-        });
+        } as any);
       });
   }
 
