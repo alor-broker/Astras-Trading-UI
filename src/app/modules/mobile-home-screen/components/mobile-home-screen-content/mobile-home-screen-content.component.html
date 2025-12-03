@@ -37,11 +37,6 @@
         </div>
       }
 
-      @if (settings.showIdeas ?? false) {
-        <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.ideasTitle') }}</span>
-        <ats-invest-ideas-compact></ats-invest-ideas-compact>
-      }
-
       <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.marketTrendsTitle') }}</span>
       <ats-market-trends
         (instrumentSelected)="openChart($event)"
@@ -57,6 +52,11 @@
         }"
         [sectors]="settings.marketTrendsSectors ?? []"
       ></ats-market-trends>
+
+      @if (settings.showIdeas ?? false) {
+        <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.ideasTitle') }}</span>
+        <ats-invest-ideas-compact></ats-invest-ideas-compact>
+      }
     </div>
   </ng-container>
 </ng-container>
