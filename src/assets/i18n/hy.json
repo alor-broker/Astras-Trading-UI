@@ -15,6 +15,8 @@
   "no": "Ոչ",
   "from": "ից",
   "to": "մինչև",
+  "tableView": "Աղյուսակային տեսք",
+
   "maxTagPlaceholder": "և {{count}} այլ ընտրվածներ",
   "joyride": {
     "step1": {

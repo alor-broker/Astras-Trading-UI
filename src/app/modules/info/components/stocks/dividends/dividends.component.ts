@@ -1,6 +1,6 @@
 import {
   Component,
-  Input
+  input
 } from '@angular/core';
 import {
   NzTableModule
@@ -28,8 +28,7 @@ import { TranslocoDirective } from "@jsverse/transloco";
     ]
 })
 export class DividendsComponent {
-  @Input({required: true})
-  dividends: Dividend[] = [];
+  dividends = input<Dividend[]>([]);
 
   formatDate(date: string): string {
     return new Date(date).toLocaleDateString();

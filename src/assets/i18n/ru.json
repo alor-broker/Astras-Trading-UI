@@ -16,6 +16,7 @@
   "no": "Нет",
   "from": "c",
   "to": "по",
+  "tableView": "Табличный вид",
 
   "maxTagPlaceholder": "и ещё {{count}} выбранных",
 
