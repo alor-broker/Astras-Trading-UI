@@ -87,7 +87,7 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
       ...formValue,
       symbol: formValue.instrument?.symbol,
       exchange: formValue.instrument?.exchange
-    } as LightChartSettings;
+    } as LightChartSettings & { instrument?: InstrumentKey };
 
     newSettings.availableTimeFrames = this.sortTimeFrames(newSettings.availableTimeFrames ?? []);
 

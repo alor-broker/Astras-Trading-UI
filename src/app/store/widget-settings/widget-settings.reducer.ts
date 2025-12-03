@@ -16,6 +16,7 @@ import {
   WidgetSettingsInternalActions,
   WidgetSettingsServiceActions
 } from "./widget-settings.actions";
+import { PortfolioKey } from "../../shared/models/portfolio-key.model";
 
 export interface State extends EntityState<WidgetSettings> {
   status: EntityStatus;
@@ -57,7 +58,7 @@ const reducer = createReducer(
             instrumentGroup: u.instrumentKey.instrumentGroup,
             isin: u.instrumentKey.isin
           }
-        })),
+        } as Update<WidgetSettings>)),
         state
       );
     }
@@ -93,7 +94,7 @@ const reducer = createReducer(
       settingGuids,
       newPortfolioKey
     }) => {
-      const updates: Update<WidgetSettings>[] = [];
+      const updates: Update<WidgetSettings & PortfolioKey>[] = [];
       settingGuids.forEach(s => updates.push({
         id: s,
         changes: {

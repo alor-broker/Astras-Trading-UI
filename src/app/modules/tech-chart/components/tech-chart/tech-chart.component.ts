@@ -257,7 +257,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         settings1.guid == settings2.guid &&
         settings1.symbol == settings2.symbol &&
         settings1.exchange == settings2.exchange &&
-        settings1.chartSettings == settings2.chartSettings &&
+        settings1.chartLayout == settings2.chartLayout &&
         settings1.badgeColor == settings2.badgeColor
       );
     } else return false;
@@ -467,7 +467,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         const chartSymbol = this.chartState!.widget.activeChart().symbol();
 
         if(SyntheticInstrumentsHelper.isSyntheticInstrument(chartSymbol)) {
-          this.settingsService.updateSettings(
+          this.settingsService.updateSettings<TechChartSettings>(
             this.guid,
             {
               linkToActive: false,
@@ -481,7 +481,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
             return;
           }
 
-          this.settingsService.updateSettings(
+          this.settingsService.updateSettings<TechChartSettings>(
             settings.widgetSettings.guid,
             {
               ...instrumentKey

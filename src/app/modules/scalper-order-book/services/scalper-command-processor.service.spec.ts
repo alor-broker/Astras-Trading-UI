@@ -128,7 +128,7 @@ describe('ScalperCommandProcessorService', () => {
       } as ScalperOrderBookExtendedSettings),
       currentPortfolio$: new BehaviorSubject<PortfolioKey>({
         portfolio: 'D1234',
-        exchange: orderBookDefaultSettings.ex
+        exchange: orderBookDefaultSettings.exchange
       } as PortfolioKey),
       orderBook$: new BehaviorSubject<OrderBook>({ instrumentKey: defaultInstrumentInfo, rows: { a: [], b: [] } }),
       position$: new BehaviorSubject<Position | null>(null),

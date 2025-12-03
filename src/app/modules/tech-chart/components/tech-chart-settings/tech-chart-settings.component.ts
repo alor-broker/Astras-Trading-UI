@@ -137,7 +137,7 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
       ...this.form!.value,
       symbol: formValue.instrument?.symbol,
       exchange: formValue.instrument?.exchange,
-    } as TechChartSettings;
+    } as TechChartSettings & { instrument?: InstrumentKey }; ;
 
     delete newSettings.instrument;
 
