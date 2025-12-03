@@ -10,6 +10,7 @@
         }"
         cdkScrollable
         class="container"
+        nzResizeObserver (nzResizeObserve)="sizeChanged($event)"
       >
         <div *ngFor="let cluster of (clusters$ | async); trackBy: trackBy" class="cluster-wrapper">
           <ats-trades-cluster [cluster]="cluster"
