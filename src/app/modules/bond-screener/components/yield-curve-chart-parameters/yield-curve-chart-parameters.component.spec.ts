@@ -4,7 +4,7 @@ import { YieldCurveChartParametersComponent } from './yield-curve-chart-paramete
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
 import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
-import { NzToolTipModule } from "ng-zorro-antd/tooltip";
+import { NzTooltipModule } from "ng-zorro-antd/tooltip";
 
 describe('YieldCurveChartParametersComponent', () => {
   let component: YieldCurveChartParametersComponent;
@@ -15,7 +15,7 @@ describe('YieldCurveChartParametersComponent', () => {
       imports: [
         TranslocoTestsModule.getModule(),
         ...FormsTesting.getTestingModules(),
-        NzToolTipModule
+        NzTooltipModule
       ],
       declarations: [
         YieldCurveChartParametersComponent,

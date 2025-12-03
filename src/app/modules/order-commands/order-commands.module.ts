@@ -38,7 +38,7 @@ import { InputNumberComponent } from "../../shared/components/input-number/input
 import { BuySellButtonsComponent } from "./components/buy-sell-buttons/buy-sell-buttons.component";
 import { WidgetSettingsComponent } from "../../shared/components/widget-settings/widget-settings.component";
 import { InstrumentSearchComponent } from "../../shared/components/instrument-search/instrument-search.component";
-import { NzInputNumberComponent } from "ng-zorro-antd/input-number";
+import { NzInputNumberLegacyComponent } from "ng-zorro-antd/input-number-legacy";
 import { InstrumentIconComponent } from "../../shared/components/instrument-icon/instrument-icon.component";
 import { CompactHeaderComponent } from "./components/compact-header/compact-header.component";
 import { OrderEvaluationComponent } from "./components/order-evaluation/order-evaluation.component";
@@ -87,7 +87,7 @@ import { OrderEvaluationComponent } from "./components/order-evaluation/order-ev
     BuySellButtonsComponent,
     WidgetSettingsComponent,
     InstrumentSearchComponent,
-    NzInputNumberComponent,
+    NzInputNumberLegacyComponent,
     InstrumentIconComponent,
     CompactHeaderComponent,
     OrderEvaluationComponent

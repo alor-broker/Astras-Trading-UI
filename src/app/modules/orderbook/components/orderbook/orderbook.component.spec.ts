@@ -19,7 +19,7 @@ import { commonTestProviders } from "../../../../shared/utils/testing/common-tes
 describe('OrderBookComponent', () => {
   let component: OrderBookComponent;
   let fixture: ComponentFixture<OrderBookComponent>;
-  const spyOb = jasmine.createSpyObj('OrderbookService', ['getHorizontalOrderBook', 'unsubscribe']);
+  const spyOb = jasmine.createSpyObj('OrderbookService', ['getOrderBook']);
   const ob: OrderBook = {
     rows: [],
     maxVolume: 10,
@@ -30,7 +30,7 @@ describe('OrderBookComponent', () => {
     bidVolumes: 0,
     askVolumes: 0
   };
-  spyOb.getHorizontalOrderBook.and.returnValue(of(ob));
+  spyOb.getOrderBook.and.returnValue(of(ob));
   const themeServiceSpy = jasmine.createSpyObj('ThemeService', ['getThemeSettings']);
   themeServiceSpy.getThemeSettings.and.returnValue(of({
     theme: ThemeType.dark,

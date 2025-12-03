@@ -9,9 +9,12 @@ import {
   take
 } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
+import {
+  NzNotificationDataOptions,
+  NzNotificationRef,
+  NzNotificationService
+} from 'ng-zorro-antd/notification';
 import {TerminalSettingsService} from "./terminal-settings.service";
-import { NzNotificationDataOptions, NzNotificationRef } from "ng-zorro-antd/notification/typings";
 
 @Injectable({
   providedIn: 'root'

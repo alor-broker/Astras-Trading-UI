@@ -74,7 +74,6 @@ describe('MathHelper', () => {
       expect(MathHelper.roundByMinStepMultiplicity(10.12, 0.25)).toBe(10.00);
       expect(MathHelper.roundByMinStepMultiplicity(10.125, 0.25)).toBe(10.25); // Rounds up on .125 for 0.25 step
       expect(MathHelper.roundByMinStepMultiplicity(10.2, 0.25)).toBe(10.25);
-      // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
       expect(MathHelper.roundByMinStepMultiplicity(1.0000000000000001, 0.00000001)).toBe(1.00000000);
       expect(MathHelper.roundByMinStepMultiplicity(1.000000004, 0.00000001)).toBe(1.00000000);
       expect(MathHelper.roundByMinStepMultiplicity(1.000000005, 0.00000001)).toBe(1.00000001);

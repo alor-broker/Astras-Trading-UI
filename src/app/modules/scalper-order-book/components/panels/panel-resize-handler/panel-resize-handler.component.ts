@@ -5,7 +5,8 @@ import {
   Inject,
   NgZone,
   OnInit,
-  SkipSelf
+  SkipSelf,
+  DOCUMENT
 } from '@angular/core';
 import {
   fromEvent,
@@ -17,7 +18,7 @@ import {
   finalize,
   tap
 } from "rxjs/operators";
-import { DOCUMENT } from "@angular/common";
+
 import {
   PANEL_RESIZE_CONTEXT,
   PanelResizeContext

@@ -53,7 +53,7 @@ export interface News {
   headline?: Maybe<Scalars['String']['output']>;
   id: Scalars['Long']['output'];
   mt?: Maybe<Scalars['String']['output']>;
-  publishDate?: Maybe<Scalars['DateTime']['output']>;
+  publishDate: Scalars['DateTime']['output'];
   rubrics?: Maybe<Scalars['String']['output']>;
   sourceId?: Maybe<Scalars['String']['output']>;
   symbols?: Maybe<Scalars['String']['output']>;

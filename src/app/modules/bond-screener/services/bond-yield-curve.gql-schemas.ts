@@ -18,7 +18,7 @@ import {
   string,
   TypeOf,
   ZodObject
-} from "zod";
+} from "zod/v3";
 
 const GetBondsYieldCurveBasicInformationSchema = BasicInformationSchema().pick({
   symbol: true,

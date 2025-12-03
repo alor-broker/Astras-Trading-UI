@@ -15,7 +15,7 @@ import {
 } from "rxjs/operators";
 import { GraphQLError } from "graphql";
 import { HttpErrorResponse } from "@angular/common/http";
-import { ZodObject } from "zod";
+import { ZodObject } from "zod/v3";
 import { ZodPropertiesOf } from "../utils/graph-ql/zod-helper";
 import {
   GqlQueryBuilder,
@@ -42,53 +42,6 @@ export class GraphQlService {
     private readonly apollo: Apollo,
     private readonly errorHandlerService: ErrorHandlerService
   ) {
-  }
-
-  watchQuery<T>(
-    query: string,
-    variables?: GraphQlVariables,
-    options?: {
-      fetchPolicy: FetchPolicy;
-    }
-  ): Observable<T | null> {
-    try {
-      return this.apollo.watchQuery({
-        query: gql<T, GraphQlVariables>`${query}`,
-        variables,
-        fetchPolicy: options?.fetchPolicy ?? FetchPolicy.Default
-      })
-        .valueChanges
-        .pipe(
-          catchError(err => {
-            if (err.networkError != null) {
-              this.errorHandlerService.handleError(new HttpErrorResponse(err.networkError));
-            } else if (err.graphQLErrors?.length > 0) {
-              err.graphQLErrors.forEach((e: GraphQLError) => {
-                this.errorHandlerService.handleError(new GraphQLError(e.message, e));
-              });
-            } else {
-              this.errorHandlerService.handleError(new GraphQLError(err.message, err));
-            }
-
-            return of(null);
-          }),
-          map((res) => res?.data ?? null)
-        );
-    } catch (err) { // In case of query parsing error
-      this.errorHandlerService.handleError(err as Error);
-      return of(null);
-    }
-  }
-
-  watchQueryForSchema<TResp>(
-    responseSchema: ZodObject<ZodPropertiesOf<TResp>>,
-    variables?: Variables,
-    options?: {
-      fetchPolicy: FetchPolicy;
-    }): Observable<TResp | null> {
-    const query = GqlQueryBuilder.getQuery(responseSchema, variables);
-
-    return this.watchQuery<TResp>(query.query, query.variables, options);
   }
 
   queryForSchema<TResp>(

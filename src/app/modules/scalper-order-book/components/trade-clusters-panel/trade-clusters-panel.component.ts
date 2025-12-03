@@ -8,7 +8,8 @@ import {
   OnDestroy,
   OnInit,
   QueryList,
-  ViewChildren
+  ViewChildren,
+  DOCUMENT
 } from '@angular/core';
 import { ScalperOrderBookDataContext, } from '../../models/scalper-order-book-data-context.model';
 import {
@@ -38,7 +39,7 @@ import {
   TradesClusterPanelSettings
 } from '../../models/scalper-order-book-settings.model';
 import { CdkScrollable } from '@angular/cdk/overlay';
-import { DOCUMENT } from '@angular/common';
+
 import { ContextMenuService } from '../../../../shared/services/context-menu.service';
 import { TradeClustersService } from '../../services/trade-clusters.service';
 import { toUnixTime } from '../../../../shared/utils/datetime';

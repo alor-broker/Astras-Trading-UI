@@ -19,7 +19,7 @@ import { AddToWatchlistMenuComponent } from "../../../instruments/widgets/add-to
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 import {NzSafeAny} from "ng-zorro-antd/core/types";
-import {NzTableSortOrder} from "ng-zorro-antd/table/src/table.types";
+import { NzTableSortOrder } from "ng-zorro-antd/table";
 
 export interface SortState {
   columnId: string;

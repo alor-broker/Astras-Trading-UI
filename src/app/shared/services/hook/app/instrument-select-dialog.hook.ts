@@ -7,9 +7,10 @@ import { filter } from "rxjs/operators";
 import { DomHelper } from "../../../utils/dom-helper";
 import {
   Inject,
-  Injectable
+  Injectable,
+  DOCUMENT
 } from "@angular/core";
-import { DOCUMENT } from "@angular/common";
+
 import { InstrumentSelectDialogService } from "../../../../modules/instruments/services/instrument-select-dialog.service";
 
 @Injectable()

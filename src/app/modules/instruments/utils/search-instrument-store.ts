@@ -79,7 +79,7 @@ export class SearchInstrumentStore extends ComponentStore<SearchInstrumentState>
           ]
         };
 
-        return this.graphQlService.watchQueryForSchema<InstrumentsSearchResponse>(
+        return this.graphQlService.queryForSchema<InstrumentsSearchResponse>(
           InstrumentsSearchResponseScheme,
           {
             first: args.first,

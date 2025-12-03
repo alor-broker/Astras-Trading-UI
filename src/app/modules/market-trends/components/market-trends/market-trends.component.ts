@@ -1,5 +1,6 @@
 import {
   Component,
+  DestroyRef,
   input,
   OnInit,
   output
@@ -11,7 +12,9 @@ import {
 } from "../../../../shared/services/graph-ql.service";
 import {
   BehaviorSubject,
+  defer,
   Observable,
+  shareReplay,
   switchMap,
   take,
   tap,
@@ -47,13 +50,16 @@ import { InstrumentKey } from "../../../../shared/models/instruments/instrument-
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
 import {
   NzTabComponent,
-  NzTabSetComponent
+  NzTabsComponent,
 } from "ng-zorro-antd/tabs";
 import {
   ExtendedFilter,
   MarketSector
 } from "../../../../shared/models/market-typings.model";
 import { NzTypographyComponent } from "ng-zorro-antd/typography";
+import { REFRESH_TIMEOUT_MS } from "../../../info/constants/info.constants";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { mapWith } from "../../../../shared/utils/observable-helper";
 
 export interface DisplayParams {
   growOrder: SortEnumType;
@@ -83,9 +89,9 @@ export interface MarketFilters {
     NzIconDirective,
     DecimalPipe,
     InstrumentIconComponent,
-    NzTabSetComponent,
     NzTabComponent,
-    NzTypographyComponent
+    NzTypographyComponent,
+    NzTabsComponent
   ],
   templateUrl: './market-trends.component.html',
   styleUrl: './market-trends.component.less'
@@ -119,22 +125,25 @@ export class MarketTrendsComponent implements OnInit {
 
   readonly showMore = output<DisplayParams>();
 
-  private readonly refreshInterval = 30_000;
+  private readonly REFRESH_TIMEOUT_MS = 30_000;
 
   constructor(
-    private readonly graphQlService: GraphQlService
+    private readonly graphQlService: GraphQlService,
+    private readonly destroyRef: DestroyRef
   ) {
   }
 
   ngOnInit(): void {
-    const requestTrends = (params: DisplayParams): Observable<MarketTrendsInstrumentsConnectionType | null> => {
-      return timer(0, this.refreshInterval).pipe(
-        switchMap(() => this.loadMarketTrends(params))
+    const refreshTimer$ = defer(() => {
+      return timer(0, REFRESH_TIMEOUT_MS).pipe(
+        takeUntilDestroyed(this.destroyRef)
       );
-    };
+    });
 
     this.displayItems$ = this.itemsDisplayParams$.pipe(
-      switchMap(params => requestTrends(params))
+      mapWith(() => refreshTimer$, (source,) => source),
+      switchMap(params => this.loadMarketTrends(params)),
+      shareReplay()
     );
   }
 
@@ -294,7 +303,7 @@ export class MarketTrendsComponent implements OnInit {
       ]
     };
 
-    return this.graphQlService.watchQueryForSchema<MarketTrendsResponse>(
+    return this.graphQlService.queryForSchema<MarketTrendsResponse>(
       MarketTrendsResponseScheme,
       {
         first: args.first,

@@ -11,7 +11,7 @@ import { LetDirective } from "@ngrx/component";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
 import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
-import { NzToolTipModule } from "ng-zorro-antd/tooltip";
+import { NzTooltipModule } from "ng-zorro-antd/tooltip";
 
 describe('ChartFiltersComponent', () => {
   let component: ChartFiltersComponent;
@@ -23,7 +23,7 @@ describe('ChartFiltersComponent', () => {
         TranslocoTestsModule.getModule(),
         LetDirective,
         ...FormsTesting.getTestingModules(),
-        NzToolTipModule
+        NzTooltipModule
       ],
       declarations: [
         ChartFiltersComponent,

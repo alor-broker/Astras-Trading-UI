@@ -25,10 +25,6 @@ import {
 } from "rxjs/operators";
 import { ThemeService } from "../../../../shared/services/theme.service";
 import { mapWith } from "../../../../shared/utils/observable-helper";
-import {
-  ChartData,
-  ChartOptions,
-} from "chart.js/dist/types";
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import {
@@ -37,6 +33,11 @@ import {
 } from "../../models/option-board.model";
 import { OptionBoardDataContextFactory } from "../../utils/option-board-data-context-factory";
 import { ThemeSettings } from "../../../../shared/models/settings/theme-settings.model";
+import {
+  ChartData,
+  ChartOptions,
+  ScriptableLineSegmentContext
+} from "chart.js";
 
 interface ZoomState {
   currentRange: number;
@@ -273,9 +274,9 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
           pointBorderColor: colors,
           pointBackgroundColor: colors,
           segment: {
-            borderColor: (part): string => {
-              const prevValue = part.p0.parsed.y;
-              const nextValue = part.p1.parsed.y;
+            borderColor: (part: ScriptableLineSegmentContext): string => {
+              const prevValue = part.p0.parsed.y ?? 0;
+              const nextValue = part.p1.parsed.y ?? 0;
 
               if ((prevValue < 0 && nextValue > 0) || (nextValue < 0 && prevValue > 0)) {
                 return theme.themeColors.mixColor;

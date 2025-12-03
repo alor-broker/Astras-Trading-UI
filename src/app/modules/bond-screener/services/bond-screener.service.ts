@@ -66,7 +66,7 @@ export class BondScreenerService {
       order: params.sort
     };
 
-    return this.graphQlService.watchQueryForSchema<TypeOf<typeof bondScreenerResponseSchema>>(
+    return this.graphQlService.queryForSchema<TypeOf<typeof bondScreenerResponseSchema>>(
       bondScreenerResponseSchema,
       {
         first: args.first,
@@ -106,7 +106,7 @@ export class BondScreenerService {
       ]
     };
 
-    return this.graphQlService.watchQueryForSchema<GetBondsYieldCurveResponse>(
+    return this.graphQlService.queryForSchema<GetBondsYieldCurveResponse>(
       GetBondsYieldCurveResponseSchema,
       {
         first: args.first,

@@ -1,9 +1,9 @@
 ﻿import {NodeBase} from "../nodes/node-base";
-import {Direction, IContextMenuValue, LGraphCanvas} from "@comfyorg/litegraph";
+import {Direction,
+  IContextMenuOptions, IContextMenuValue, LGraphCanvas} from "@comfyorg/litegraph";
 import {ContextMenu} from "../nodes/models";
 import {TranslatorFn} from "../../../../shared/services/translator.service";
 import {alignNodes, distributeNodes} from "../utils/arrange";
-import {IContextMenuOptions} from "@comfyorg/litegraph/dist/interfaces";
 
 export class NodeMenuBuilder {
   static getMenu(

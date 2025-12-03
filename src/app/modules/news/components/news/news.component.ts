@@ -46,7 +46,7 @@ import {
 } from "../../../../shared/services/news.service";
 import { PagedResult } from "../../../../shared/models/paging-model";
 import {
-  NzTabSetComponent
+  NzTabsComponent
 } from "ng-zorro-antd/tabs";
 import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
 
@@ -70,7 +70,7 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
   @Output() sectionChange = new EventEmitter<NewsSection>();
 
   @ViewChild('tabSet')
-  tabSet?: NzTabSetComponent;
+  tabSet?: NzTabsComponent;
 
   readonly newsSectionEnum = NewsSection;
 

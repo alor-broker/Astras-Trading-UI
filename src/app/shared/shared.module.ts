@@ -16,12 +16,11 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzModalModule } from 'ng-zorro-antd/modal';
-import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzImageModule } from 'ng-zorro-antd/image';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
-import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
@@ -101,12 +100,11 @@ import { MergedBadgeComponent } from "./components/merged-badge/merged-badge.com
     NzTabsModule,
     NzDropDownModule,
     NzModalModule,
-    NzToolTipModule,
+    NzTooltipModule,
     NzSwitchModule,
     NzImageModule,
     NzAvatarModule,
     NzBadgeModule,
-    NzNotificationModule,
     NzPopconfirmModule,
     NzDescriptionsModule,
     NzEmptyModule,
@@ -146,12 +144,11 @@ import { MergedBadgeComponent } from "./components/merged-badge/merged-badge.com
     NzMenuModule,
     NzDropDownModule,
     NzModalModule,
-    NzToolTipModule,
+    NzTooltipModule,
     NzSwitchModule,
     NzImageModule,
     NzAvatarModule,
     NzBadgeModule,
-    NzNotificationModule,
     NzPopconfirmModule,
     NzDescriptionsModule,
     NzEmptyModule,

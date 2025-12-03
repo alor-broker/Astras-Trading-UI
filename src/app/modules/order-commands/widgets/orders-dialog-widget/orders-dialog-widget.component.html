@@ -26,7 +26,7 @@
                 </div>
 
                 <div>
-                  <nz-tabset #orderTabs nzSize="small" nzTabPosition="top" [style.max-height]="(tabSetHeight$ | async) + 'px'">
+                  <nz-tabs #orderTabs nzSize="small" nzTabPosition="top" [style.max-height]="(tabSetHeight$ | async) + 'px'">
                     <ng-container *ngIf="ordersConfig">
                       <nz-tab
                         *ngIf="ordersConfig.limitOrder.isSupported"
@@ -87,7 +87,7 @@
                         </ats-setup-instrument-notifications>
                       </nz-tab>
                     </ng-container>
-                  </nz-tabset>
+                  </nz-tabs>
                 </div>
               </div>
             </ng-container>

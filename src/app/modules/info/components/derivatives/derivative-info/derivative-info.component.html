@@ -3,7 +3,7 @@
     @if(vm.info == null) {
       <nz-empty nzNotFoundImage="simple"></nz-empty>
     } @else {
-      <nz-tabset
+      <nz-tabs
         (mousedown)='$event.stopPropagation()'
         nzSize="small"
         nzTabPosition="top"
@@ -13,7 +13,7 @@
             <ats-descriptors-list [descriptors]="vm.commonDescriptors"></ats-descriptors-list>
           </nz-tab>
         }
-      </nz-tabset>
+      </nz-tabs>
     }
   </ng-container>
 </ng-container>
