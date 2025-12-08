@@ -17,7 +17,10 @@ import {
   take
 } from 'rxjs';
 import { LocalStorageAdminConstants } from 'src/app/shared/constants/local-storage.constants';
-import { TerminalSettings } from 'src/app/shared/models/terminal-settings/terminal-settings.model';
+import {
+  OrdersInstantNotificationType,
+  TerminalSettings
+} from 'src/app/shared/models/terminal-settings/terminal-settings.model';
 import { GlobalLoadingIndicatorService } from 'src/app/shared/services/global-loading-indicator.service';
 import { LocalStorageService } from 'src/app/shared/services/local-storage.service';
 import { TerminalSettingsService } from 'src/app/shared/services/terminal-settings.service';
@@ -188,11 +191,13 @@ export class AdminSettingsBrokerService {
 
     if (!terminalSettings) {
       this.store.dispatch(TerminalSettingsInternalActions.init({settings: null}));
+      this.setDefaultSettings();
       this.globalLoadingIndicatorService.releaseLoading(loadingId);
       return;
     }
 
     this.store.dispatch(TerminalSettingsInternalActions.init({settings: terminalSettings}));
+    this.setDefaultSettings();
     this.globalLoadingIndicatorService.releaseLoading(loadingId);
   }
 
@@ -203,5 +208,21 @@ export class AdminSettingsBrokerService {
     ).subscribe(action => {
       callback(<U>action);
     });
+  }
+
+  private setDefaultSettings(): void {
+    this.store.dispatch(TerminalSettingsServicesActions.update({
+      updates: {
+        instantNotificationsSettings: {
+          hiddenNotifications: [
+            OrdersInstantNotificationType.OrderFilled,
+            OrdersInstantNotificationType.OrderPartiallyFilled,
+            OrdersInstantNotificationType.OrderStatusChanged,
+            OrdersInstantNotificationType.OrderStatusChangeToCancelled
+          ]
+        }
+      },
+      freezeChanges: false
+    }));
   }
 }
