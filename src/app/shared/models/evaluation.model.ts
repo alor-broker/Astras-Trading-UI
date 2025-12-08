@@ -8,6 +8,7 @@ export interface Evaluation {
   notMarginQuantityToBuy: number;
   orderEvaluation: number;
   commission: number;
+  currency?: string;
 
   price?: number;
 }
