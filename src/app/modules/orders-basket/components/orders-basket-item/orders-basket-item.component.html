@@ -3,7 +3,9 @@
     <ng-container *transloco="let t; scope: 'orders-basket/orders-basket-item'">
       <form [formGroup]="form" nz-form nzLayout="vertical">
         <nz-form-item>
-          <nz-form-label *ngIf="showLabels$ | async" nzFor="instrumentKey" nzRequired>{{t('ordersBasketOrdersBasketItem.tickerLabel')}}</nz-form-label>
+          @if (showLabels$ | async) {
+            <nz-form-label nzFor="instrumentKey" nzRequired>{{t('ordersBasketOrdersBasketItem.tickerLabel')}}</nz-form-label>
+          }
           <nz-form-control [nzErrorTip]="t('ordersBasketOrdersBasketItem.tickerError')">
             <ats-instrument-search
               (instrumentSelected)="onTouched()"
@@ -14,11 +16,13 @@
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
-          <nz-form-label *ngIf="showLabels$ | async" nzFor="quota"
-                         nzRequired>{{t('ordersBasketOrdersBasketItem.quotaLabel')}}</nz-form-label>
+          @if (showLabels$ | async) {
+            <nz-form-label nzFor="quota"
+            nzRequired>{{t('ordersBasketOrdersBasketItem.quotaLabel')}}</nz-form-label>
+          }
           <nz-form-control
             [nzErrorTip]="t('ordersBasketOrdersBasketItem.intervalError', {min: validationOptions.quota.min, max: validationOptions.quota.max})"
-          >
+            >
             <ats-input-number
               [suffix]="suffixTmp"
               formControlName="quota"
@@ -31,8 +35,10 @@
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
-          <nz-form-label *ngIf="showLabels$ | async" nzFor="price"
-                         nzRequired>{{t('ordersBasketOrdersBasketItem.priceLabel')}}</nz-form-label>
+          @if (showLabels$ | async) {
+            <nz-form-label nzFor="price"
+            nzRequired>{{t('ordersBasketOrdersBasketItem.priceLabel')}}</nz-form-label>
+          }
           <nz-form-control
             [nzErrorTip]="priceError">
             <ats-input-number
@@ -42,24 +48,34 @@
               (atsBlur)="onTouched()"
             ></ats-input-number>
             <ng-template #priceError>
-              <span *ngIf="form.get('price')?.errors?.required">{{t('ordersBasketOrdersBasketItem.pricePlaceholder')}}</span>
-              <span *ngIf="form.get('price')?.errors?.min">{{t('ordersBasketOrdersBasketItem.intervalError', {
-                min: validationOptions.price.min,
-                max: validationOptions.price.max
-              })}}</span>
-              <span *ngIf="form.get('price')?.errors?.max">{{t('ordersBasketOrdersBasketItem.intervalError', {
-                min: validationOptions.price.min,
-                max: validationOptions.price.max
-              })}}</span>
-              <span *ngIf="form.get('price')?.errors?.priceStepMultiplicity">
-                {{t('ordersBasketOrdersBasketItem.priceStepMultiplicityError')}} ({{form.get('price')!.errors!.priceStepMultiplicity!.step}})
-              </span>
+              @if (form.get('price')?.errors?.required) {
+                <span>{{t('ordersBasketOrdersBasketItem.pricePlaceholder')}}</span>
+              }
+              @if (form.get('price')?.errors?.min) {
+                <span>{{t('ordersBasketOrdersBasketItem.intervalError', {
+                  min: validationOptions.price.min,
+                  max: validationOptions.price.max
+                })}}</span>
+              }
+              @if (form.get('price')?.errors?.max) {
+                <span>{{t('ordersBasketOrdersBasketItem.intervalError', {
+                  min: validationOptions.price.min,
+                  max: validationOptions.price.max
+                })}}</span>
+              }
+              @if (form.get('price')?.errors?.priceStepMultiplicity) {
+                <span>
+                  {{t('ordersBasketOrdersBasketItem.priceStepMultiplicityError')}} ({{form.get('price')!.errors!.priceStepMultiplicity!.step}})
+                </span>
+              }
             </ng-template>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
-          <nz-form-label *ngIf="showLabels$ | async" nzFor="quantity"
-                         nzRequired>{{t('ordersBasketOrdersBasketItem.quantityLabel')}}</nz-form-label>
+          @if (showLabels$ | async) {
+            <nz-form-label nzFor="quantity"
+            nzRequired>{{t('ordersBasketOrdersBasketItem.quantityLabel')}}</nz-form-label>
+          }
           <nz-form-control [nzValidateStatus]="form.get('quantity')!.valid ? 'success' : 'warning'" nzHasFeedback>
             <input
               (blur)="onTouched()"
@@ -69,17 +85,17 @@
               formControlName="quantity"
               nz-input
               readonly
-            />
+              />
           </nz-form-control>
         </nz-form-item>
       </form>
       <button (click)="delete.emit()"
-              [class.with-labels]="(showLabels$ | async)===true"
-              [disabled]="!enableDelete"
-              id="remove-item-btn"
-              nz-button
-              nzType="link"
-      >
+        [class.with-labels]="(showLabels$ | async)===true"
+        [disabled]="!enableDelete"
+        id="remove-item-btn"
+        nz-button
+        nzType="link"
+        >
         <span nz-icon nzType="close"></span>
       </button>
     </ng-container>

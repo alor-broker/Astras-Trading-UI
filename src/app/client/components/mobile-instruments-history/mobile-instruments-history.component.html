@@ -1,18 +1,23 @@
-<div class="d-flex p-10 history-wrapper" *ngIf="selectedInstrument$ | async as selectedInstrument">
-  <ng-container *ngIf="instruments$ | async as instruments; else emptyHistory">
-    <ng-container *ngIf="instruments.length; else emptyHistory">
-      <nz-tag
-        *ngFor="let instrument of instruments"
-        nzMode="checkable"
-        [nzChecked]="isInstrumentEqual(selectedInstrument, instrument)"
-        (click)="selectInstrument(instrument)"
-      >
-        {{instrument.symbol}} <span *ngIf="instrument.instrumentGroup && instrument.showInstrumentGroup">({{instrument.instrumentGroup}})</span>
-      </nz-tag>
-    </ng-container>
-  </ng-container>
-
-  <ng-template #emptyHistory>
+@if (selectedInstrument$ | async; as selectedInstrument) {
+  <div class="d-flex p-10 history-wrapper">
+    @if (instruments$ | async; as instruments) {
+      @if (instruments.length) {
+        @for (instrument of instruments; track instrument) {
+          <nz-tag
+            nzMode="checkable"
+            [nzChecked]="isInstrumentEqual(selectedInstrument, instrument)"
+            (click)="selectInstrument(instrument)"
+            >
+            {{instrument.symbol}} @if (instrument.instrumentGroup && instrument.showInstrumentGroup) {
+            <span>({{instrument.instrumentGroup}})</span>
+          }
+        </nz-tag>
+      }
+    } @else {
+      <span *transloco="let t; scope: 'dashboard/navbar/mobile'">{{t('dashboardNavbarMobile.emptyHistoryLabel')}}</span>
+    }
+  } @else {
     <span *transloco="let t; scope: 'dashboard/navbar/mobile'">{{t('dashboardNavbarMobile.emptyHistoryLabel')}}</span>
-  </ng-template>
+  }
 </div>
+}

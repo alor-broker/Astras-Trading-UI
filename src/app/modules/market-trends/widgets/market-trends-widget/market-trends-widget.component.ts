@@ -4,10 +4,7 @@ import {
   Input,
   OnInit
 } from '@angular/core';
-import {
-  AsyncPipe,
-  NgIf
-} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { SharedModule } from "../../../../shared/shared.module";
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
 import {
@@ -37,11 +34,10 @@ import { MarketTrendsSettingsComponent } from "../../components/market-trends-se
   selector: 'ats-market-trends-widget',
   imports: [
     AsyncPipe,
-    NgIf,
     SharedModule,
     MarketTrendsComponent,
     MarketTrendsSettingsComponent
-  ],
+],
   templateUrl: './market-trends-widget.component.html',
   styleUrl: './market-trends-widget.component.less'
 })

@@ -1,42 +1,47 @@
-<div
-  (nzResizeObserve)="updateContainerSize($event)"
-  *ngIf="currencyMatrix$ | async as currencyMatrix"
-  class="h-100 w-100"
-  nzResizeObserver
->
-  <ng-container *ngIf="tableScroll$ | async as tableScroll">
-    <nz-table
-      [nzData]="currencyMatrix.currencies"
-      [nzFrontPagination]="false"
-      [nzShowPagination]="false"
-      [nzScroll]="{ x: tableScroll.width + 'px', y: tableScroll.height + 'px' }"
-      atsTableRowHeight
-      class="user-select-none"
+@if (currencyMatrix$ | async; as currencyMatrix) {
+  <div
+    (nzResizeObserve)="updateContainerSize($event)"
+    class="h-100 w-100"
+    nzResizeObserver
     >
-      <thead>
-      <tr>
-        <th nzLeft nzWidth="50px"></th>
-        <th nzWidth="65px" *ngFor="let cur of currencyMatrix.currencies">{{cur}}</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let cur1 of currencyMatrix.currencies">
-        <td nzLeft class="fw-bold">{{cur1}}</td>
-        <ng-container *ngFor="let cur2 of currencyMatrix.currencies">
-          <ng-container *ngIf="currencyMatrix.rates[getCurrencyKey(cur1, cur2)] as rate; else empty">
-            <td
-              (click)="selectInstrument(rate)"
-              [class.selectable]="rate.sourceSymbol"
-            >
-              <ats-price-diff [basePrice]="rate.prevRate" [currentPrice]="rate.rate" format="0.0-4">
-              </ats-price-diff>
-            </td>
-          </ng-container>
-
-          <ng-template #empty><td>-</td></ng-template>
-        </ng-container>
-      </tr>
-      </tbody>
-    </nz-table>
-  </ng-container>
-</div>
+    @if (tableScroll$ | async; as tableScroll) {
+      <nz-table
+        [nzData]="currencyMatrix.currencies"
+        [nzFrontPagination]="false"
+        [nzShowPagination]="false"
+        [nzScroll]="{ x: tableScroll.width + 'px', y: tableScroll.height + 'px' }"
+        atsTableRowHeight
+        class="user-select-none"
+        >
+        <thead>
+          <tr>
+            <th nzLeft nzWidth="50px"></th>
+            @for (cur of currencyMatrix.currencies; track cur) {
+              <th nzWidth="65px">{{cur}}</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (cur1 of currencyMatrix.currencies; track cur1) {
+            <tr>
+              <td nzLeft class="fw-bold">{{cur1}}</td>
+              @for (cur2 of currencyMatrix.currencies; track cur2) {
+                @if (currencyMatrix.rates[getCurrencyKey(cur1, cur2)]; as rate) {
+                  <td
+                    (click)="selectInstrument(rate)"
+                    [class.selectable]="rate.sourceSymbol"
+                    >
+                    <ats-price-diff [basePrice]="rate.prevRate" [currentPrice]="rate.rate" format="0.0-4">
+                    </ats-price-diff>
+                  </td>
+                } @else {
+                  <td>-</td>
+                }
+              }
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    }
+  </div>
+}

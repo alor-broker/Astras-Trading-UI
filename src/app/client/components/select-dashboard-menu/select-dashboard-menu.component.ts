@@ -18,7 +18,7 @@ import {mapWith} from "../../../shared/utils/observable-helper";
 import {map} from "rxjs/operators";
 import {DashboardTitleHelper} from "../../../modules/dashboard/utils/dashboard-title.helper";
 import {TranslocoDirective} from "@jsverse/transloco";
-import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import {NzMenuDirective, NzMenuDividerDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
 import {EditableStringComponent} from "../../../shared/components/editable-string/editable-string.component";
 import {NzButtonComponent} from "ng-zorro-antd/button";
@@ -31,22 +31,20 @@ import {NzInputDirective} from "ng-zorro-antd/input";
     templateUrl: './select-dashboard-menu.component.html',
     styleUrls: ['./select-dashboard-menu.component.less'],
     imports: [
-        TranslocoDirective,
-        NgIf,
-        AsyncPipe,
-        NzMenuDirective,
-        NgForOf,
-        NzMenuItemComponent,
-        EditableStringComponent,
-        NzButtonComponent,
-        NzIconDirective,
-        NzMenuDividerDirective,
-        ReactiveFormsModule,
-        NzFormDirective,
-        NzFormItemComponent,
-        NzFormControlComponent,
-        NzInputDirective
-    ]
+    TranslocoDirective,
+    AsyncPipe,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    EditableStringComponent,
+    NzButtonComponent,
+    NzIconDirective,
+    NzMenuDividerDirective,
+    ReactiveFormsModule,
+    NzFormDirective,
+    NzFormItemComponent,
+    NzFormControlComponent,
+    NzInputDirective
+]
 })
 export class SelectDashboardMenuComponent implements OnInit {
   readonly validationOptions = {

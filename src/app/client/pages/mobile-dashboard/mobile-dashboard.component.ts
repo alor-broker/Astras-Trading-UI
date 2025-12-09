@@ -9,7 +9,7 @@ import {WidgetsLocalStateInternalActions} from "../../../store/widgets-local-sta
 import {LocalStorageCommonConstants} from "../../../shared/constants/local-storage.constants";
 import {map, startWith} from "rxjs/operators";
 import {NzLayoutComponent} from "ng-zorro-antd/layout";
-import {AsyncPipe, NgIf} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import {DashboardModule} from "../../../modules/dashboard/dashboard.module";
 import {TerminalSettingsModule} from "../../../modules/terminal-settings/terminal-settings.module";
 import {FeedbackModule} from "../../../modules/feedback/feedback.module";
@@ -33,7 +33,6 @@ import { UrgentNotificationDialogComponent } from "../../../modules/urgent-notif
     selector: 'ats-mobile-dashboard',
   imports: [
     NzLayoutComponent,
-    NgIf,
     AsyncPipe,
     DashboardModule,
     TerminalSettingsModule,
@@ -45,7 +44,7 @@ import { UrgentNotificationDialogComponent } from "../../../modules/urgent-notif
     MobileDashboardContentComponent,
     TerminalSettingsWidgetComponent,
     UrgentNotificationDialogComponent
-  ],
+],
     templateUrl: './mobile-dashboard.component.html',
     styleUrl: './mobile-dashboard.component.less',
     providers: [

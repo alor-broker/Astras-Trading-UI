@@ -1,146 +1,184 @@
 <div
-     (mouseenter)="isWidgetActivated$.next(true)"
-     (mouseleave)="isWidgetActivated$.next(false)"
-     [class.active]="isWidgetActivated$ | async"
-     class="widget"
-     [class.zero-paddings]="widgetInstance.widgetMeta.desktopMeta?.hasZeroPaddings"
->
-  <ng-container [ngSwitch]="widgetInstance.instance.widgetType">
-    <ats-orderbook-widget *ngSwitchCase="'order-book'"
-                          [widgetInstance]="widgetInstance"
-                          [isBlockWidget]="isBlockWidget"
-    ></ats-orderbook-widget>
-    <ats-scalper-order-book-widget *ngSwitchCase="'scalper-order-book'"
-                                   [widgetInstance]="widgetInstance"
-                                   [isActive]="(isWidgetActivated$ | async) ?? false"
-                                   [isBlockWidget]="isBlockWidget"
-    ></ats-scalper-order-book-widget>
-    <ats-light-chart-widget *ngSwitchCase="'light-chart'"
-                            [widgetInstance]="widgetInstance"
-                            [isBlockWidget]="isBlockWidget"
-    ></ats-light-chart-widget>
-    <ats-instrument-select-widget *ngSwitchCase="'instrument-select'"
-                                  [widgetInstance]="widgetInstance"
-                                  [isBlockWidget]="isBlockWidget"></ats-instrument-select-widget>
-    <ats-blotter-widget *ngSwitchCase="'blotter'"
-                        [widgetInstance]="widgetInstance"
-                        [isBlockWidget]="isBlockWidget"></ats-blotter-widget>
-    <ats-info-widget *ngSwitchCase="'instrument-info'"
-                     [widgetInstance]="widgetInstance"
-                     [isBlockWidget]="isBlockWidget"
-    ></ats-info-widget>
-    <ats-all-trades-widget *ngSwitchCase="'all-trades'"
-                           [widgetInstance]="widgetInstance"
-                           [isBlockWidget]="isBlockWidget"
-    ></ats-all-trades-widget>
-    <ats-news-widget *ngSwitchCase="'news'"
-                     [widgetInstance]="widgetInstance"
-                     [isBlockWidget]="isBlockWidget"
-    ></ats-news-widget>
-    <ats-exchange-rate-widget *ngSwitchCase="'exchange-rate'"
-                              [widgetInstance]="widgetInstance"
-                              [isBlockWidget]="isBlockWidget"
-    ></ats-exchange-rate-widget>
-    <ats-tech-chart-widget *ngSwitchCase="'tech-chart'"
-                           [widgetInstance]="widgetInstance"
-                           [isBlockWidget]="isBlockWidget"
-    ></ats-tech-chart-widget>
-    <ats-all-instruments-widget *ngSwitchCase="'all-instruments'"
-                                [widgetInstance]="widgetInstance"
-                                [isBlockWidget]="isBlockWidget"
-    ></ats-all-instruments-widget>
-    <ats-order-submit-widget *ngSwitchCase="'order-submit'"
-                             [widgetInstance]="widgetInstance"
-                             [isBlockWidget]="isBlockWidget"
-    ></ats-order-submit-widget>
-    <ats-orders-basket-widget
-      *ngSwitchCase="'orders-basket'"
-      [widgetInstance]="widgetInstance"
-      [isBlockWidget]="isBlockWidget">
-    </ats-orders-basket-widget>
-    <ats-treemap-widget
-      *ngSwitchCase="'treemap'"
-      [widgetInstance]="widgetInstance"
-      [isBlockWidget]="isBlockWidget"
-    >
-    </ats-treemap-widget>
-    <ats-ribbon-widget
-      *ngSwitchCase="'ribbon'"
-      [widgetInstance]="widgetInstance"
-      [isBlockWidget]="isBlockWidget"
-    >
-    </ats-ribbon-widget>
-    <ats-events-calendar-widget
-      *ngSwitchCase="'events-calendar'"
-      [widgetInstance]="widgetInstance"
-      [isBlockWidget]="isBlockWidget"
-    >
-    </ats-events-calendar-widget>
-    <ats-option-board-widget
-      *ngSwitchCase="'option-board'"
-      [widgetInstance]="widgetInstance"
-      [isBlockWidget]="isBlockWidget"
-    ></ats-option-board-widget>
-    <ats-arbitrage-spread-widget
-      *ngSwitchCase="'arbitrage-spread'"
-      [widgetInstance]="widgetInstance"
-      [isBlockWidget]="isBlockWidget"
-    >
-    </ats-arbitrage-spread-widget>
-    <ats-portfolio-summary-widget
-      *ngSwitchCase="'portfolio-summary'"
-      [widgetInstance]="widgetInstance"
-      [isBlockWidget]="isBlockWidget"
-    >
-    </ats-portfolio-summary-widget>
-    <ats-instruments-correlation-widget
-      *ngSwitchCase="'instruments-correlation'"
-      [widgetInstance]="widgetInstance"
-      [isBlockWidget]="isBlockWidget"
-    >
-    </ats-instruments-correlation-widget>
-    <ats-bond-screener-widget
-      *ngSwitchCase="'bond-screener'"
-      [widgetInstance]="widgetInstance"
-      [isBlockWidget]="isBlockWidget"
-    >
-    </ats-bond-screener-widget>
-    <ats-mobile-home-screen-widget
-          *ngSwitchCase="'mobile-home-screen'"
-          [widgetInstance]="widgetInstance"
-          [isBlockWidget]="isBlockWidget"
-    >
-    </ats-mobile-home-screen-widget>
-    <ats-ai-graphs-widget
-      *ngSwitchCase="'ai-graphs'"
-      [widgetInstance]="widgetInstance"
-      [isBlockWidget]="isBlockWidget"
-    >
-    </ats-ai-graphs-widget>
-    <ats-invest-ideas-widget
-      *ngSwitchCase="'invest-ideas'"
-      [widgetInstance]="widgetInstance"
-      [isBlockWidget]="isBlockWidget"
-    >
-    </ats-invest-ideas-widget>
-    <ats-portfolio-charts-widget
-      *ngSwitchCase="'portfolio-charts'"
-      [widgetInstance]="widgetInstance"
-      [isBlockWidget]="isBlockWidget"
-    >
-    </ats-portfolio-charts-widget>
-    <ats-market-trends-widget
-      *ngSwitchCase="'market-trends'"
-      [widgetInstance]="widgetInstance"
-      [isBlockWidget]="isBlockWidget"
-    >
-    </ats-market-trends-widget>
-
-    <ats-admin-clients-widget
-      *ngSwitchCase="'admin-clients'"
-      [widgetInstance]="widgetInstance"
-      [isBlockWidget]="isBlockWidget"
-    >
-    </ats-admin-clients-widget>
-  </ng-container>
+  (mouseenter)="isWidgetActivated$.next(true)"
+  (mouseleave)="isWidgetActivated$.next(false)"
+  [class.active]="isWidgetActivated$ | async"
+  class="widget"
+  [class.zero-paddings]="widgetInstance.widgetMeta.desktopMeta?.hasZeroPaddings"
+  >
+  @switch (widgetInstance.instance.widgetType) {
+    @case ('order-book') {
+      <ats-orderbook-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+      ></ats-orderbook-widget>
+    }
+    @case ('scalper-order-book') {
+      <ats-scalper-order-book-widget
+        [widgetInstance]="widgetInstance"
+        [isActive]="(isWidgetActivated$ | async) ?? false"
+        [isBlockWidget]="isBlockWidget"
+      ></ats-scalper-order-book-widget>
+    }
+    @case ('light-chart') {
+      <ats-light-chart-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+      ></ats-light-chart-widget>
+    }
+    @case ('instrument-select') {
+      <ats-instrument-select-widget
+        [widgetInstance]="widgetInstance"
+      [isBlockWidget]="isBlockWidget"></ats-instrument-select-widget>
+    }
+    @case ('blotter') {
+      <ats-blotter-widget
+        [widgetInstance]="widgetInstance"
+      [isBlockWidget]="isBlockWidget"></ats-blotter-widget>
+    }
+    @case ('instrument-info') {
+      <ats-info-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+      ></ats-info-widget>
+    }
+    @case ('all-trades') {
+      <ats-all-trades-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+      ></ats-all-trades-widget>
+    }
+    @case ('news') {
+      <ats-news-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+      ></ats-news-widget>
+    }
+    @case ('exchange-rate') {
+      <ats-exchange-rate-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+      ></ats-exchange-rate-widget>
+    }
+    @case ('tech-chart') {
+      <ats-tech-chart-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+      ></ats-tech-chart-widget>
+    }
+    @case ('all-instruments') {
+      <ats-all-instruments-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+      ></ats-all-instruments-widget>
+    }
+    @case ('order-submit') {
+      <ats-order-submit-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+      ></ats-order-submit-widget>
+    }
+    @case ('orders-basket') {
+      <ats-orders-basket-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget">
+      </ats-orders-basket-widget>
+    }
+    @case ('treemap') {
+      <ats-treemap-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+        >
+      </ats-treemap-widget>
+    }
+    @case ('ribbon') {
+      <ats-ribbon-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+        >
+      </ats-ribbon-widget>
+    }
+    @case ('events-calendar') {
+      <ats-events-calendar-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+        >
+      </ats-events-calendar-widget>
+    }
+    @case ('option-board') {
+      <ats-option-board-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+      ></ats-option-board-widget>
+    }
+    @case ('arbitrage-spread') {
+      <ats-arbitrage-spread-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+        >
+      </ats-arbitrage-spread-widget>
+    }
+    @case ('portfolio-summary') {
+      <ats-portfolio-summary-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+        >
+      </ats-portfolio-summary-widget>
+    }
+    @case ('instruments-correlation') {
+      <ats-instruments-correlation-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+        >
+      </ats-instruments-correlation-widget>
+    }
+    @case ('bond-screener') {
+      <ats-bond-screener-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+        >
+      </ats-bond-screener-widget>
+    }
+    @case ('mobile-home-screen') {
+      <ats-mobile-home-screen-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+        >
+      </ats-mobile-home-screen-widget>
+    }
+    @case ('ai-graphs') {
+      <ats-ai-graphs-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+        >
+      </ats-ai-graphs-widget>
+    }
+    @case ('invest-ideas') {
+      <ats-invest-ideas-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+        >
+      </ats-invest-ideas-widget>
+    }
+    @case ('portfolio-charts') {
+      <ats-portfolio-charts-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+        >
+      </ats-portfolio-charts-widget>
+    }
+    @case ('market-trends') {
+      <ats-market-trends-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+        >
+      </ats-market-trends-widget>
+    }
+    @case ('admin-clients') {
+      <ats-admin-clients-widget
+        [widgetInstance]="widgetInstance"
+        [isBlockWidget]="isBlockWidget"
+        >
+      </ats-admin-clients-widget>
+    }
+  }
 </div>

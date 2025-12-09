@@ -5,7 +5,7 @@
     class="mb-10"
     (click)="addPredefinedLabels()"
     [disabled]="badgesColors.length >= 20"
-  >
+    >
     {{ t('terminalSettingsGeneralSettingsForm.addBadgesBtnLabel') }}
   </button>
 
@@ -15,32 +15,32 @@
         <div
           class="d-flex flex-wrap flex-gap-10"
           cdkDropListGroup
-        >
-          <div
-            *ngFor="let badge of badgesColors"
-            class="position-relative"
-            cdkDropList
-            [cdkDropListData]="badge"
-            (cdkDropListEntered)="changeBadgesOrder($event)">
-            <div cdkDrag (cdkDragStarted)="badgeDragStarts($event)">
-              <nz-color-block
-                [nzColor]="badge"
-              ></nz-color-block>
-
-              <button
-                *ngIf="badge !== defaultBadgeColor"
-                class="badge-btn remove-btn"
-                nz-button
-                nzSize="small"
-                nzType="primary"
-                (click)="removeBadgeColor($event, badge)"
-              >
-                <i nz-icon nzType="close"></i>
-              </button>
-              <div *cdkDragPlaceholder></div>
-
+          >
+          @for (badge of badgesColors; track badge) {
+            <div
+              class="position-relative"
+              cdkDropList
+              [cdkDropListData]="badge"
+              (cdkDropListEntered)="changeBadgesOrder($event)">
+              <div cdkDrag (cdkDragStarted)="badgeDragStarts($event)">
+                <nz-color-block
+                  [nzColor]="badge"
+                ></nz-color-block>
+                @if (badge !== defaultBadgeColor) {
+                  <button
+                    class="badge-btn remove-btn"
+                    nz-button
+                    nzSize="small"
+                    nzType="primary"
+                    (click)="removeBadgeColor($event, badge)"
+                    >
+                    <i nz-icon nzType="close"></i>
+                  </button>
+                }
+                <div *cdkDragPlaceholder></div>
+              </div>
             </div>
-          </div>
+          }
 
           <nz-color-picker
             nzFormat="hex"

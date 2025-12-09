@@ -1,22 +1,23 @@
 <ng-container *transloco="let t; scope: 'order-commands/compact-header'">
-  <ng-container *ngIf="instrument$ | async as instrument">
-    <ng-container *ngIf="portfolioKey$ | async as portfolioKey">
+  @if (instrument$ | async; as instrument) {
+    @if (portfolioKey$ | async; as portfolioKey) {
       <div class="d-flex justify-content-between flex-gap-5">
         <div>
           <label class="portfolio">{{portfolioKey.portfolio}} ({{instrument.exchange}})</label>
-          <ng-container *ngIf="positionInfo$ | async as positionInfo">
+          @if (positionInfo$ | async; as positionInfo) {
             <span>&nbsp;</span>
-            <span
-              (click)="qtySelected.emit(positionInfo.abs)"
-              *ngIf="positionInfo.abs"
-              [class]="positionInfo.quantity > 0 ? 'long' : 'short'"
-              [nzTooltipTitle]="t('orderCommandsCompactHeader.positionTooltip')"
-              class="position-badge"
-              nz-tooltip
-            >{{positionInfo.abs}}</span>
-          </ng-container>
+            @if (positionInfo.abs) {
+              <span
+                (click)="qtySelected.emit(positionInfo.abs)"
+                [class]="positionInfo.quantity > 0 ? 'long' : 'short'"
+                [nzTooltipTitle]="t('orderCommandsCompactHeader.positionTooltip')"
+                class="position-badge"
+                nz-tooltip
+              >{{positionInfo.abs}}</span>
+            }
+          }
         </div>
-        <ng-container *ngIf="priceData$ | async as priceData">
+        @if (priceData$ | async; as priceData) {
           <div>
             <label>Ask: </label>
             <span (click)="priceSelected.emit(priceData.ask)" class="selectable sell">{{priceData.ask | atsPrice: getPriceDecimalSymbolsCount(instrument)}}</span>
@@ -25,8 +26,8 @@
             <label>Bid: </label>
             <span (click)="priceSelected.emit(priceData.bid)" class="selectable buy">{{priceData.bid | atsPrice:  getPriceDecimalSymbolsCount(instrument)}}</span>
           </div>
-        </ng-container>
+        }
       </div>
-    </ng-container>
-  </ng-container>
+    }
+  }
 </ng-container>

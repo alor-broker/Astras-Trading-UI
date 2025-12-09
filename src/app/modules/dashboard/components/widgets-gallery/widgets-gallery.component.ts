@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { WidgetCategory } from "../../../../shared/models/widget-meta.model";
 import {NzDrawerComponent, NzDrawerContentDirective} from "ng-zorro-antd/drawer";
-import {NgForOf, NgIf, NgTemplateOutlet} from "@angular/common";
+import { NgTemplateOutlet } from "@angular/common";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {TranslocoDirective} from "@jsverse/transloco";
 
@@ -33,14 +33,12 @@ export interface GalleryDisplay {
     styleUrls: ['./widgets-gallery.component.less'],
     encapsulation: ViewEncapsulation.None,
     imports: [
-        NzDrawerComponent,
-        NzDrawerContentDirective,
-        NgIf,
-        NgForOf,
-        NgTemplateOutlet,
-        NzIconDirective,
-        TranslocoDirective
-    ]
+    NzDrawerComponent,
+    NzDrawerContentDirective,
+    NgTemplateOutlet,
+    NzIconDirective,
+    TranslocoDirective
+]
 })
 export class WidgetsGalleryComponent {
   @Input({ required: true })

@@ -8,9 +8,11 @@
       [placeholder]="t('terminalSettingsHotKeySettingsForm.hotKeyPlaceholder')"
       nz-input
       readonly
-    />
+      />
     <ng-template #controlError>
-      <span *ngIf="control.errors?.required">{{t('terminalSettingsHotKeySettingsForm.emptyFieldError')}}</span>
+      @if (control.errors?.required) {
+        <span>{{t('terminalSettingsHotKeySettingsForm.emptyFieldError')}}</span>
+      }
     </ng-template>
   </nz-form-control>
 </nz-form-item>

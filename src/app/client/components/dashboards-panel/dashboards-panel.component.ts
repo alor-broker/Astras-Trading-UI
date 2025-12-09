@@ -24,7 +24,7 @@ import {TranslatorService} from "../../../shared/services/translator.service";
 import {DashboardTitleHelper} from "../../../modules/dashboard/utils/dashboard-title.helper";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {CdkDrag, CdkDragDrop, CdkDropList} from "@angular/cdk/drag-drop";
-import {AsyncPipe, NgIf} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import {
   NzSegmentedComponent,
   NzSegmentedItemComponent
@@ -57,13 +57,12 @@ interface DashboardSegmentedOption {
     CdkDrag,
     NzButtonComponent,
     NzDropDownDirective,
-    NgIf,
     NzTypographyComponent,
     NzIconDirective,
     NzDropdownMenuComponent,
     SelectDashboardMenuComponent,
     NzSegmentedItemComponent
-  ],
+],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardsPanelComponent implements OnInit, OnDestroy {

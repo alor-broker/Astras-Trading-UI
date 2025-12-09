@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
-import {AsyncPipe, NgIf} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import {SharedModule} from "../../../../shared/shared.module";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
@@ -13,13 +13,12 @@ import {AiGraphEditorDialogComponent} from "../ai-graph-editor-dialog/ai-graph-e
 @Component({
     selector: 'ats-ai-graphs-widget',
     imports: [
-        AsyncPipe,
-        NgIf,
-        SharedModule,
-        TranslocoDirective,
-        GraphsListComponent,
-        AiGraphEditorDialogComponent
-    ],
+    AsyncPipe,
+    SharedModule,
+    TranslocoDirective,
+    GraphsListComponent,
+    AiGraphEditorDialogComponent
+],
     templateUrl: './ai-graphs-widget.component.html',
     styleUrl: './ai-graphs-widget.component.less'
 })

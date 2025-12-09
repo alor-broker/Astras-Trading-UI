@@ -1,68 +1,67 @@
-<div
-  *ngIf="fullName$ | async as name"
-  class="d-flex flex-column"
-  nzResizeObserver
-  (nzResizeObserve)="calculateTabSetHeight()"
->
-  <ng-container *transloco="let t; scope: 'terminal-settings'">
-    <h1 class="profile-name">
-      <i nz-icon nzType="ats-user"></i>
-      {{name.firstName}}&nbsp;{{name.lastName}}
-    </h1>
-    <div class="overflow-hidden">
-      <nz-tabs [style.max-height]="(tabSetHeight$ | async) + 'px'">
-        <nz-tab (nzSelect)="tabChange.emit(tabNames.usefulLinks)" [nzTitle]="t('terminalSettings.usefulLinksTabTitle')">
-          <ats-useful-links></ats-useful-links>
-        </nz-tab>
-
-        <nz-tab (nzSelect)="tabChange.emit(tabNames.main)" *ngIf="settingsForm"
-                [nzTitle]="t('terminalSettings.generalSettingsTabTitle')">
-          <ng-container *ngIf="settingsForm.controls.generalSettings as generalSettings">
-            <ats-general-settings-form [excludedSettings]="hiddenSections" [formControl]="generalSettings"></ats-general-settings-form>
-          </ng-container>
-          <ng-container *ngIf="settingsForm.controls.portfoliosCurrency as portfoliosCurrency">
-            <h3>{{t('terminalSettings.defaultCurrencyHeader')}}</h3>
-            <ats-portfolios-currency-form [formControl]="portfoliosCurrency"></ats-portfolios-currency-form>
-          </ng-container>
-          <nz-divider></nz-divider>
-          <div nz-row class="mt-10" nzJustify="space-between" [nzGutter]="[10,10]">
-            <div nz-col nzXs="24" nzSm="12">
-              <button (click)="clearDashboard()" id="reset-settings-btn" nz-button nzDanger nzBlock>
-                <i nz-icon nzTheme="outline" nzType="delete"></i>
-                {{t('terminalSettings.hardRebootBtnText')}}
-              </button>
-            </div>
-
-            <div nz-col nzXs="24" nzSm="12">
-              <button (click)="exportSettings()" id="export-settings-btn" nz-button nzBlock [nzLoading]="exportSettingsLoading$ | async">
-                <i nz-icon nzTheme="outline" nzType="upload"></i>
-                {{t('terminalSettings.exportSettingsBtnText')}}
-              </button>
-            </div>
-          </div>
-
-        </nz-tab>
-
-        <nz-tab
-          (nzSelect)="tabChange.emit(tabNames.hotKeys)"
-          *ngIf="!hiddenSections.includes('hotKeysSettings') && settingsForm.controls.hotKeysSettings as hotKeysSettings"
-          [nzTitle]="t('terminalSettings.hotkeysTabTitle')">
-          <ats-hot-key-settings-form [formControl]="hotKeysSettings"></ats-hot-key-settings-form>
-
-          <ng-container *ngIf="settingsForm.controls.scalperOrderBookMouseActions as scalperOrderBookMouseActions">
-            <nz-divider></nz-divider>
-            <h3>{{t('terminalSettings.scalperMouseActionsHeader')}}</h3>
-            <ats-scalper-mouse-actions-form [formControl]="scalperOrderBookMouseActions"></ats-scalper-mouse-actions-form>
-          </ng-container>
-        </nz-tab>
-
-        <nz-tab
-          (nzSelect)="tabChange.emit(tabNames.notifications)"
-          *ngIf="settingsForm.controls.instantNotificationsSettings as instantNotificationsSettings"
-          [nzTitle]="t('terminalSettings.notificationsTabTitle')">
-          <ats-instant-notifications-form [formControl]="instantNotificationsSettings"></ats-instant-notifications-form>
-        </nz-tab>
-      </nz-tabs>
-    </div>
-  </ng-container>
-</div>
+@if (fullName$ | async; as name) {
+  <div
+    class="d-flex flex-column"
+    nzResizeObserver
+    (nzResizeObserve)="calculateTabSetHeight()"
+    >
+    <ng-container *transloco="let t; scope: 'terminal-settings'">
+      <h1 class="profile-name">
+        <i nz-icon nzType="ats-user"></i>
+        {{name.firstName}}&nbsp;{{name.lastName}}
+      </h1>
+      <div class="overflow-hidden">
+        <nz-tabs [style.max-height]="(tabSetHeight$ | async) + 'px'">
+          <nz-tab (nzSelect)="tabChange.emit(tabNames.usefulLinks)" [nzTitle]="t('terminalSettings.usefulLinksTabTitle')">
+            <ats-useful-links></ats-useful-links>
+          </nz-tab>
+          @if (settingsForm) {
+            <nz-tab (nzSelect)="tabChange.emit(tabNames.main)"
+              [nzTitle]="t('terminalSettings.generalSettingsTabTitle')">
+              @if (settingsForm.controls.generalSettings; as generalSettings) {
+                <ats-general-settings-form [excludedSettings]="hiddenSections" [formControl]="generalSettings"></ats-general-settings-form>
+              }
+              @if (settingsForm.controls.portfoliosCurrency; as portfoliosCurrency) {
+                <h3>{{t('terminalSettings.defaultCurrencyHeader')}}</h3>
+                <ats-portfolios-currency-form [formControl]="portfoliosCurrency"></ats-portfolios-currency-form>
+              }
+              <nz-divider></nz-divider>
+              <div nz-row class="mt-10" nzJustify="space-between" [nzGutter]="[10,10]">
+                <div nz-col nzXs="24" nzSm="12">
+                  <button (click)="clearDashboard()" id="reset-settings-btn" nz-button nzDanger nzBlock>
+                    <i nz-icon nzTheme="outline" nzType="delete"></i>
+                    {{t('terminalSettings.hardRebootBtnText')}}
+                  </button>
+                </div>
+                <div nz-col nzXs="24" nzSm="12">
+                  <button (click)="exportSettings()" id="export-settings-btn" nz-button nzBlock [nzLoading]="exportSettingsLoading$ | async">
+                    <i nz-icon nzTheme="outline" nzType="upload"></i>
+                    {{t('terminalSettings.exportSettingsBtnText')}}
+                  </button>
+                </div>
+              </div>
+            </nz-tab>
+          }
+          @if (!hiddenSections.includes('hotKeysSettings') && settingsForm.controls.hotKeysSettings; as hotKeysSettings) {
+            <nz-tab
+              (nzSelect)="tabChange.emit(tabNames.hotKeys)"
+              [nzTitle]="t('terminalSettings.hotkeysTabTitle')">
+              <ats-hot-key-settings-form [formControl]="hotKeysSettings"></ats-hot-key-settings-form>
+              @if (settingsForm.controls.scalperOrderBookMouseActions; as scalperOrderBookMouseActions) {
+                <nz-divider></nz-divider>
+                <h3>{{t('terminalSettings.scalperMouseActionsHeader')}}</h3>
+                <ats-scalper-mouse-actions-form [formControl]="scalperOrderBookMouseActions"></ats-scalper-mouse-actions-form>
+              }
+            </nz-tab>
+          }
+          @if (settingsForm.controls.instantNotificationsSettings; as instantNotificationsSettings) {
+            <nz-tab
+              (nzSelect)="tabChange.emit(tabNames.notifications)"
+              [nzTitle]="t('terminalSettings.notificationsTabTitle')">
+              <ats-instant-notifications-form [formControl]="instantNotificationsSettings"></ats-instant-notifications-form>
+            </nz-tab>
+          }
+        </nz-tabs>
+      </div>
+    </ng-container>
+  </div>
+}

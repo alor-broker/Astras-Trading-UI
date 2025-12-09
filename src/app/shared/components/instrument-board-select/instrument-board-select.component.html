@@ -4,10 +4,10 @@
   nzAllowClear
   nzShowSearch
   [nzPlaceHolder]="placeholder ?? ''"
->
-  <ng-container *ngIf="availableBoards$ | async as availableBoards">
-    <ng-container *ngFor="let board of availableBoards">
+  >
+  @if (availableBoards$ | async; as availableBoards) {
+    @for (board of availableBoards; track board) {
       <nz-option [nzLabel]="board" [nzValue]="board"></nz-option>
-    </ng-container>
-  </ng-container>
+    }
+  }
 </nz-select>

@@ -1,6 +1,6 @@
 <ng-container *transloco="let t; scope: 'scalper-order-book/trades-clusters-panel'">
-  <ng-container *ngIf="settings$ | async as settings">
-    <ng-container *ngIf="hScrollOffsets$ | async as hScrollOffsets">
+  @if (settings$ | async; as settings) {
+    @if (hScrollOffsets$ | async; as hScrollOffsets) {
       <div
         (contextmenu)="contextMenu($event, menu)"
         (mousedown)="startScrolling($event)"
@@ -11,16 +11,16 @@
         cdkScrollable
         class="container"
         nzResizeObserver (nzResizeObserve)="sizeChanged($event)"
-      >
-        <div *ngFor="let cluster of (clusters$ | async); trackBy: trackBy" class="cluster-wrapper">
-          <ats-trades-cluster [cluster]="cluster"
-                              [dataContext]="dataContext"
-                              [xAxisStep]="xAxisStep">
-
-          </ats-trades-cluster>
-        </div>
+        >
+        @for (cluster of (clusters$ | async); track trackBy($index, cluster)) {
+          <div class="cluster-wrapper">
+            <ats-trades-cluster [cluster]="cluster"
+              [dataContext]="dataContext"
+              [xAxisStep]="xAxisStep">
+            </ats-trades-cluster>
+          </div>
+        }
       </div>
-
       <nz-dropdown-menu #menu="nzDropdownMenu">
         <ul nz-menu>
           <li nz-menu-group>
@@ -29,45 +29,48 @@
               <span class="pl-3">{{t('scalperOrderBookTradesClustersPanel.displayPanelsCountMenuLabel')}}</span>
             </span>
             <ul>
-              <ng-container *ngFor="let item of availableIntervalsCount;">
+              @for (item of availableIntervalsCount; track item) {
                 <li (click)="setIntervalsCount(item)" nz-menu-item>
                   <span class="w-100 d-flex justify-content-between align-items-center">
                     <span>{{item}}</span>
-                    <span *ngIf="(settings.tradesClusterPanelSettings?.displayIntervalsCount ?? -1) === item"
-                      nz-icon
-                      nzTheme="outline"
-                      nzType="check">
-                    </span>
+                    @if ((settings.tradesClusterPanelSettings?.displayIntervalsCount ?? -1) === item) {
+                      <span
+                        nz-icon
+                        nzTheme="outline"
+                        nzType="check">
+                      </span>
+                    }
                   </span>
                 </li>
-              </ng-container>
+              }
             </ul>
           </li>
           <li nz-menu-group>
-      <span title>
-        <span nz-icon nzType="clock-circle"></span>
-        <span class="pl-3">{{t('scalperOrderBookTradesClustersPanel.timeframesMenuLabel')}}</span>
-      </span>
+            <span title>
+              <span nz-icon nzType="clock-circle"></span>
+              <span class="pl-3">{{t('scalperOrderBookTradesClustersPanel.timeframesMenuLabel')}}</span>
+            </span>
             <ul>
-              <ng-container *ngFor="let item of availableTimeframes">
+              @for (item of availableTimeframes; track item) {
                 <li (click)="setTimeframe(item)" nz-menu-item>
-              <span class="w-100 d-flex justify-content-between align-items-center">
-                <span>{{t('scalperOrderBookTradesClustersPanel.timeframeOptions.' + item, {fallback: item})}}</span>
-                <span
-                  *ngIf="(settings.tradesClusterPanelSettings?.timeframe ?? -1) === item"
-                  nz-icon
-                  nzTheme="outline"
-                  nzType="check"
-                ></span>
-              </span>
+                  <span class="w-100 d-flex justify-content-between align-items-center">
+                    <span>{{t('scalperOrderBookTradesClustersPanel.timeframeOptions.' + item, {fallback: item})}}</span>
+                    @if ((settings.tradesClusterPanelSettings?.timeframe ?? -1) === item) {
+                      <span
+                        nz-icon
+                        nzTheme="outline"
+                        nzType="check"
+                      ></span>
+                    }
+                  </span>
                 </li>
-              </ng-container>
+              }
             </ul>
           </li>
         </ul>
       </nz-dropdown-menu>
-    </ng-container>
-  </ng-container>
+    }
+  }
 </ng-container>
 
 

@@ -1,6 +1,7 @@
 <div *transloco="let t; scope: 'instruments/settings'">
-  <nz-list *ngIf="collection$ | async as collection" [nzBordered]="true">
-    <nz-list-item>
+  @if (collection$ | async; as collection) {
+    <nz-list [nzBordered]="true">
+      <nz-list-item>
         <form [formGroup]="newListForm" [nzLayout]="'inline'" nz-form>
           <nz-form-item>
             <nz-form-control [nzErrorTip]="t('instrumentsSettings.watchListError')">
@@ -14,56 +15,62 @@
             </nz-form-control>
           </nz-form-item>
         </form>
-      <ul nz-list-item-actions>
-        <nz-list-item-action>
-          <button (click)="addNewList()"
-                  [disabled]="!newListForm.valid"
-                  [nz-tooltip]="t('instrumentsSettings.addWatchlistBtnTooltip')"
-                  nz-button
-                  nzSize='small'
-                  nzType="primary"
-          >
-            <i nz-icon nzType="plus"></i>
-          </button>
-        </nz-list-item-action>
-      </ul>
-    </nz-list-item>
-    <nz-list-item *ngIf="presetCollection$ | async as presetLists">
-        <nz-select
-          [nzPlaceHolder]="t('instrumentsSettings.standardListPlaceholder')"
-          nzBorderless
-          nzShowSearch
-          [(ngModel)]="selectedPresetWatchlist">
-          <nz-option *ngFor="let list of presetLists" [nzLabel]="list.name" [nzValue]="list"></nz-option>
-        </nz-select>
-      <ul nz-list-item-actions>
-        <nz-list-item-action>
-          <button (click)="addPresetList()"
-                  [disabled]="!selectedPresetWatchlist"
-                  [nz-tooltip]="t('instrumentsSettings.addWatchlistBtnTooltip')"
-                  nz-button
-                  nzSize='small'
-                  nzType="primary"
-          >
-            <i nz-icon nzType="plus"></i>
-          </button>
-        </nz-list-item-action>
-      </ul>
-    </nz-list-item>
-    <ng-container *transloco="let tTitle; scope: 'instruments'">
-      <nz-list-item *ngFor="let list of collection">
-      <span
-        (nzContentChange)="changeListTitle($event, list)"
-        [nzContent]="tTitle('instruments.' + getTitleTranslationKey(list), {fallback: list.title})"
-        nz-typography
-        [nzEditable]="hasEditableTitle(list)"
-        [nzEditTooltip]="t('instrumentsSettings.editWatchlistTooltip')"
-      >
-        {{list.title}}
-      </span>
         <ul nz-list-item-actions>
-          <nz-list-item-action *ngIf="isRemovable(list)">
-            <button (nzOnConfirm)="removeList(list.id)"
+          <nz-list-item-action>
+            <button (click)="addNewList()"
+              [disabled]="!newListForm.valid"
+              [nz-tooltip]="t('instrumentsSettings.addWatchlistBtnTooltip')"
+              nz-button
+              nzSize='small'
+              nzType="primary"
+              >
+              <i nz-icon nzType="plus"></i>
+            </button>
+          </nz-list-item-action>
+        </ul>
+      </nz-list-item>
+      @if (presetCollection$ | async; as presetLists) {
+        <nz-list-item>
+          <nz-select
+            [nzPlaceHolder]="t('instrumentsSettings.standardListPlaceholder')"
+            nzBorderless
+            nzShowSearch
+            [(ngModel)]="selectedPresetWatchlist">
+            @for (list of presetLists; track list) {
+              <nz-option [nzLabel]="list.name" [nzValue]="list"></nz-option>
+            }
+          </nz-select>
+          <ul nz-list-item-actions>
+            <nz-list-item-action>
+              <button (click)="addPresetList()"
+                [disabled]="!selectedPresetWatchlist"
+                [nz-tooltip]="t('instrumentsSettings.addWatchlistBtnTooltip')"
+                nz-button
+                nzSize='small'
+                nzType="primary"
+                >
+                <i nz-icon nzType="plus"></i>
+              </button>
+            </nz-list-item-action>
+          </ul>
+        </nz-list-item>
+      }
+      <ng-container *transloco="let tTitle; scope: 'instruments'">
+        @for (list of collection; track list) {
+          <nz-list-item>
+            <span
+              (nzContentChange)="changeListTitle($event, list)"
+              [nzContent]="tTitle('instruments.' + getTitleTranslationKey(list), {fallback: list.title})"
+              nz-typography
+              [nzEditable]="hasEditableTitle(list)"
+              [nzEditTooltip]="t('instrumentsSettings.editWatchlistTooltip')"
+              >
+              {{list.title}}
+            </span>
+            <ul nz-list-item-actions>
+              @if (isRemovable(list)) {
+                <nz-list-item-action>
+                  <button (nzOnConfirm)="removeList(list.id)"
                     nz-button
                     nzDanger
                     [nz-popconfirm]="t('instrumentsSettings.removeConfirmText')"
@@ -71,42 +78,48 @@
                     [nzOkText]="t('yes')"
                     nzSize='small'
                     nzType="primary">
-              <i nz-icon nzType="minus"></i>
-            </button>
-          </nz-list-item-action>
-          <nz-list-item-action>
-            <button
-              nz-button
-              nzSize='small'
-              nzType="text"
-              nz-dropdown
-              [nzDropdownMenu]="menu"
-            >
-              <i nz-icon nzType="more"></i>
-            </button>
-            <nz-dropdown-menu #menu="nzDropdownMenu">
-              <ul nz-menu>
-                <li
-                  nz-menu-item
-                  (click)="exportDialogParams$.next({ listId: list.id})"
-                >
-                  <span><i nzType="upload" nz-icon nzTheme="outline"></i>&nbsp;{{t('instrumentsSettings.exportActionLabel')}}</span>
-                </li>
-                <li
-                  nz-menu-item
-                  *ngIf="canImport(list)"
-                  (click)="importDialogParams$.next({ listId: list.id})"
-                >
-                  <span><i nzType="download" nz-icon nzTheme="outline"></i>&nbsp;{{t('instrumentsSettings.importActionLabel')}}</span>
-                </li>
-              </ul>
-            </nz-dropdown-menu>
-          </nz-list-item-action>
-        </ul>
-      </nz-list-item>
-    </ng-container>
-    <nz-list-empty *ngIf="collection.length === 0"></nz-list-empty>
-  </nz-list>
+                    <i nz-icon nzType="minus"></i>
+                  </button>
+                </nz-list-item-action>
+              }
+              <nz-list-item-action>
+                <button
+                  nz-button
+                  nzSize='small'
+                  nzType="text"
+                  nz-dropdown
+                  [nzDropdownMenu]="menu"
+                  >
+                  <i nz-icon nzType="more"></i>
+                </button>
+                <nz-dropdown-menu #menu="nzDropdownMenu">
+                  <ul nz-menu>
+                    <li
+                      nz-menu-item
+                      (click)="exportDialogParams$.next({ listId: list.id})"
+                      >
+                      <span><i nzType="upload" nz-icon nzTheme="outline"></i>&nbsp;{{t('instrumentsSettings.exportActionLabel')}}</span>
+                    </li>
+                    @if (canImport(list)) {
+                      <li
+                        nz-menu-item
+                        (click)="importDialogParams$.next({ listId: list.id})"
+                        >
+                        <span><i nzType="download" nz-icon nzTheme="outline"></i>&nbsp;{{t('instrumentsSettings.importActionLabel')}}</span>
+                      </li>
+                    }
+                  </ul>
+                </nz-dropdown-menu>
+              </nz-list-item-action>
+            </ul>
+          </nz-list-item>
+        }
+      </ng-container>
+      @if (collection.length === 0) {
+        <nz-list-empty></nz-list-empty>
+      }
+    </nz-list>
+  }
 </div>
 
 <ats-export-watchlist-dialog [dialogParams]="exportDialogParams$ | async"></ats-export-watchlist-dialog>

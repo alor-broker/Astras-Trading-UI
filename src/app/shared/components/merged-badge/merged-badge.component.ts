@@ -2,19 +2,15 @@ import {
   Component,
   Input
 } from '@angular/core';
-import {
-  NgIf,
-  NgStyle
-} from "@angular/common";
+import { NgStyle } from "@angular/common";
 
 @Component({
     selector: 'ats-merged-badge',
     templateUrl: './merged-badge.component.html',
     styleUrls: ['./merged-badge.component.less'],
     imports: [
-        NgIf,
-        NgStyle
-    ]
+    NgStyle
+]
 })
 export class MergedBadgeComponent {
   @Input()

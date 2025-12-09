@@ -2,15 +2,14 @@
   *ngrxLet="{ allVolumes: workingVolumes$, selectedVolume: selectedVolume$} as vm"
   class="d-flex"
   [class]="orientation"
->
-  <ng-container *ngIf="vm.selectedVolume">
+  >
+  @if (vm.selectedVolume) {
+    @for (vol of vm.allVolumes; track vol; let i = $index) {
       <span
-        *ngFor="let vol of vm.allVolumes; let i = index"
         class="working-volume-item d-inline-block cursor-pointer pl-2 pr-2"
         [class.active]="vm.selectedVolume.index === i && vm.selectedVolume.value === vol"
         (click)="selectVolume(i)"
         (dblclick)="openVolumeChange(i, vol)"
-
         nz-popconfirm
         [nzPopconfirmTitle]="workingVolumeChangePopup"
         [nzPopconfirmVisible]="changeVolumeConfirmVisibleIndex === i"
@@ -18,10 +17,11 @@
         (nzOnCancel)="closeVolumeChange()"
         (nzOnConfirm)="applyVolumeChanges(i)"
         (nzPopconfirmVisibleChange)="volumeChangeVisibilityChanged($event)"
-      >
+        >
         {{vol}}
       </span>
-  </ng-container>
+    }
+  }
 </div>
 
 <ng-template #workingVolumeChangePopup>
@@ -30,7 +30,7 @@
       <nz-form-label
         nzFor="changeVolumeControl"
         nzRequired
-      >
+        >
         {{t('scalperOrderBookWorkingVolumesPanel.newVolumeLabel')}}
       </nz-form-label>
 

@@ -1,35 +1,40 @@
-<ng-container *ngIf="settings$ | async as settings">
+@if (settings$ | async; as settings) {
   <nz-table #basicTable [nzData]="ob?.rows ?? []" nzSize="small" [nzFrontPagination]="false" id="order-book-table">
     <thead>
-    <tr>
-      <th nzWidth="20px">Bid</th>
-      <th nzAlign="right">Vol</th>
-      <th>Vol</th>
-      <th nzAlign="right" nzWidth="20px">Ask</th>
-    </tr>
+      <tr>
+        <th nzWidth="20px">Bid</th>
+        <th nzAlign="right">Vol</th>
+        <th>Vol</th>
+        <th nzAlign="right" nzWidth="20px">Ask</th>
+      </tr>
     </thead>
     <tbody (click)="newLimitOrder($event, 0)" cdkDropListGroup>
-    <tr *ngFor='let row of basicTable.data; trackBy: getTrackKey'>
-      <ng-container *ngIf="row.bid || (row.bid === 0); else zeroBid">
-        <td *ngIf="(shouldShowYield$ | async) === false"
-            (click)="newLimitOrder($event, row.bid)"
-            [ngStyle]="{background: 'unset'}">
-          {{row.bid | atsPrice: getPriceDecimalSymbolsCount(settings)}}
-        </td>
-        <td *ngIf="(shouldShowYield$ | async) === true"
-            (click)="newLimitOrder($event, row.bid)"
-            [ngStyle]="{background: 'unset'}">
-          {{row.yieldBid}}
-        </td>
-
-        <td
-          [ngStyle]="getBidStyle(row.bidVolume ?? 0)"
-          (click)="newLimitOrder($event, row.bid)"
-          cdkDropList
-          nzAlign="right"
-          (cdkDropListDropped)="updateOrderPrice($event.item.data, row.bid)"
-        >
-          <button *ngIf='row.bidOrders && row.bidOrderVolume'
+      @for (row of basicTable.data; track $index) {
+        <tr>
+          @if (row.bid || (row.bid === 0)) {
+            @if ((shouldShowYield$ | async) === false) {
+              <td
+                (click)="newLimitOrder($event, row.bid)"
+                [ngStyle]="{background: 'unset'}">
+                {{row.bid | atsPrice: getPriceDecimalSymbolsCount(settings)}}
+              </td>
+            }
+            @if ((shouldShowYield$ | async) === true) {
+              <td
+                (click)="newLimitOrder($event, row.bid)"
+                [ngStyle]="{background: 'unset'}">
+                {{row.yieldBid}}
+              </td>
+            }
+            <td
+              [ngStyle]="getBidStyle(row.bidVolume ?? 0)"
+              (click)="newLimitOrder($event, row.bid)"
+              cdkDropList
+              nzAlign="right"
+              (cdkDropListDropped)="updateOrderPrice($event.item.data, row.bid)"
+              >
+              @if (row.bidOrders && row.bidOrderVolume) {
+                <button
                   nzSize="small"
                   nz-button
                   nzType="primary"
@@ -38,42 +43,43 @@
                   [cdkDragDisabled]="row.bidOrders!.length !== 1"
                   [cdkDragData]="row.bidOrders![0]"
                   (click)="cancelOrder($event, row.bidOrders)">
-            <i *ngIf='row.bidOrderVolume' nz-icon nzType="close-square" nzTheme="outline"></i>
-            {{row.bidOrderVolume}}
-          </button>
-          <span class="cell-value">
-            <ats-short-number
-              *ngIf="settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
-              [value]="row.bidVolume"
-              [allowRounding]="true" ></ats-short-number>
-            <ng-template #defaultVolumeFormat>
-              <span>{{row.bidVolume}}</span>
-            </ng-template>
-          </span>
-        </td>
-      </ng-container>
-
-      <ng-template #zeroBid>
-        <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
-      </ng-template>
-
-      <ng-container *ngIf="row.ask || (row.ask === 0); else zeroAsk">
-        <td [ngStyle]="getAskStyle(row.askVolume ?? 0)"
-            class='row-cell--ask-volume'
-            (click)="newLimitOrder($event, row.ask)"
-            cdkDropList
-            (cdkDropListDropped)="updateOrderPrice($event.item.data, row.ask)"
-        >
-          <span class="cell-value">
-            <ats-short-number
-              *ngIf="settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
-              [value]="row.askVolume"
-              [allowRounding]="true" ></ats-short-number>
-            <ng-template #defaultVolumeFormat>
-              <span>{{row.askVolume}}</span>
-            </ng-template>
-          </span>
-          <button *ngIf='row.askOrders && row.askOrderVolume'
+                  @if (row.bidOrderVolume) {
+                    <i nz-icon nzType="close-square" nzTheme="outline"></i>
+                  }
+                  {{row.bidOrderVolume}}
+                </button>
+              }
+              <span class="cell-value">
+                @if (settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix) {
+                  <ats-short-number
+                    [value]="row.bidVolume"
+                  [allowRounding]="true" ></ats-short-number>
+                } @else {
+                  <span>{{row.bidVolume}}</span>
+                }
+              </span>
+            </td>
+          } @else {
+            <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
+          }
+          @if (row.ask || (row.ask === 0)) {
+            <td [ngStyle]="getAskStyle(row.askVolume ?? 0)"
+              class='row-cell--ask-volume'
+              (click)="newLimitOrder($event, row.ask)"
+              cdkDropList
+              (cdkDropListDropped)="updateOrderPrice($event.item.data, row.ask)"
+              >
+              <span class="cell-value">
+                @if (settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix) {
+                  <ats-short-number
+                    [value]="row.askVolume"
+                  [allowRounding]="true" ></ats-short-number>
+                } @else {
+                  <span>{{row.askVolume}}</span>
+                }
+              </span>
+              @if (row.askOrders && row.askOrderVolume) {
+                <button
                   nzSize="small"
                   nz-button
                   nzType="primary"
@@ -82,29 +88,34 @@
                   [cdkDragDisabled]="row.askOrders!.length !== 1"
                   [cdkDragData]="row.askOrders![0]"
                   (click)="cancelOrder($event, row.askOrders)">
-            {{row.askOrderVolume}}
-            <i *ngIf='row.askOrderVolume' nz-icon nzType="close-square" nzTheme="outline"></i>
-          </button>
-        </td>
-
-        <td *ngIf="(shouldShowYield$ | async) === false"
-            nzAlign="right"
-            (click)="newLimitOrder($event, row.ask)"
-            [ngStyle]="{background: 'unset'}">
-          {{row.ask | atsPrice: getPriceDecimalSymbolsCount(settings)}}
-        </td>
-        <td *ngIf="(shouldShowYield$ | async) === true"
-            nzAlign="right"
-            (click)="newLimitOrder($event, row.ask)"
-            [ngStyle]="{background: 'unset'}">
-          {{row.yieldAsk}}
-        </td>
-      </ng-container>
-
-      <ng-template #zeroAsk>
-        <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
-      </ng-template>
-    </tr>
+                  {{row.askOrderVolume}}
+                  @if (row.askOrderVolume) {
+                    <i nz-icon nzType="close-square" nzTheme="outline"></i>
+                  }
+                </button>
+              }
+            </td>
+            @if ((shouldShowYield$ | async) === false) {
+              <td
+                nzAlign="right"
+                (click)="newLimitOrder($event, row.ask)"
+                [ngStyle]="{background: 'unset'}">
+                {{row.ask | atsPrice: getPriceDecimalSymbolsCount(settings)}}
+              </td>
+            }
+            @if ((shouldShowYield$ | async) === true) {
+              <td
+                nzAlign="right"
+                (click)="newLimitOrder($event, row.ask)"
+                [ngStyle]="{background: 'unset'}">
+                {{row.yieldAsk}}
+              </td>
+            }
+          } @else {
+            <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
+          }
+        </tr>
+      }
     </tbody>
   </nz-table>
-</ng-container>
+}

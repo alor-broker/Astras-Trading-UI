@@ -5,29 +5,31 @@
       selectedWidget: selectedWidget$,
       widgetsGallery: widgetsGallery$
     } as vm"
-  >
+    >
     <div class="d-flex flex-column w-100 h-100 overflow-hidden">
       <div class="flex-fill overflow-auto">
-        <div
-          *ngFor="let widget of vm.defaultWidgets"
-          class="h-100"
-          [class.d-none]="vm.selectedWidget?.instance?.widgetType !== widget.instance.widgetType"
-        >
-          <ats-parent-widget
-            [widgetInstance]="widget"
-            [isBlockWidget]="false"
-          ></ats-parent-widget>
-        </div>
+        @for (widget of vm.defaultWidgets; track widget) {
+          <div
+            class="h-100"
+            [class.d-none]="vm.selectedWidget?.instance?.widgetType !== widget.instance.widgetType"
+            >
+            <ats-parent-widget
+              [widgetInstance]="widget"
+              [isBlockWidget]="false"
+            ></ats-parent-widget>
+          </div>
+        }
 
-        <div
-          class="h-100"
-          *ngIf="!defaultWidgetNames.includes(vm.selectedWidget?.instance?.widgetType ?? '')"
-        >
-          <ats-parent-widget
-            [widgetInstance]="vm.selectedWidget!"
-            [isBlockWidget]="false"
-          ></ats-parent-widget>
-        </div>
+        @if (!defaultWidgetNames.includes(vm.selectedWidget?.instance?.widgetType ?? '')) {
+          <div
+            class="h-100"
+            >
+            <ats-parent-widget
+              [widgetInstance]="vm.selectedWidget!"
+              [isBlockWidget]="false"
+            ></ats-parent-widget>
+          </div>
+        }
       </div>
 
       @if(vm.selectedWidget?.widgetMeta?.mobileMeta?.showOrderButtons ?? false) {
@@ -37,7 +39,7 @@
             nz-button  nzSize="large"
             *transloco="let t; scope: 'mobile-dashboard-content'"
             (click)="selectWidget(newOrderWidgetId, false)"
-          >
+            >
             {{t('mobileDashboardContent.orderBtnTitle', {fallback: 'buy'})}}
           </button>
         </div>
@@ -49,19 +51,19 @@
         class="menu-item "
         [class.active-widget]="!defaultWidgetNames.includes(vm.selectedWidget?.instance?.widgetType ?? '')"
         (click)="galleryVisible = true"
-      >
+        >
         <i nz-icon nzType="ellipsis" nzTheme="outline"></i>
       </div>
 
-      <ng-container *ngFor="let widget of vm.defaultWidgets">
+      @for (widget of vm.defaultWidgets; track widget) {
         <div
           class="menu-item"
           [class.active-widget]="widget.instance.widgetType === vm.selectedWidget?.instance?.widgetType"
           (click)="selectWidget(widget.instance.widgetType)"
-        >
+          >
           <i nz-icon [nzType]="widget.widgetMeta.mobileMeta!.ribbonIcon" class="widget-icon" nzTheme="outline"></i>
         </div>
-      </ng-container>
+      }
     </div>
 
     <ats-widgets-gallery

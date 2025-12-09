@@ -1,111 +1,123 @@
 <div class='panel'>
   <div class="buttons-group overflow-x-hidden">
-    <nz-badge
-      *ngIf="showBadgesMenu"
-      nz-dropdown
-      [nzDropdownMenu]="badgesMenu"
-      [nzColor]="selectedBadgeColor!"
-      [class.square-badge]="badgeShape === 'square'"
-      nzSize="small"
-      class="header-badge"
-    ></nz-badge>
+    @if (showBadgesMenu) {
+      <nz-badge
+        nz-dropdown
+        [nzDropdownMenu]="badgesMenu"
+        [nzColor]="selectedBadgeColor!"
+        [class.square-badge]="badgeShape === 'square'"
+        nzSize="small"
+        class="header-badge"
+      ></nz-badge>
+    }
 
     <nz-dropdown-menu #badgesMenu="nzDropdownMenu">
       <ul nz-menu class="badge-menu">
-        <li nz-menu-item *ngFor="let badge of badgeOptions$ | async" (click)="switchBadgeColor(badge.color)">
-          <nz-badge
-            [nzColor]="badge.color"
-            [class.square-badge]="badgeShape === 'square'"
-          ></nz-badge>
-          <span *ngIf="badge.assignedInstrument">{{badge.assignedInstrument.symbol}}</span>
-          <span *ngIf="badge.assignedInstrument?.instrumentGroup">&nbsp;({{badge.assignedInstrument!.instrumentGroup}})</span>
-        </li>
+        @for (badge of badgeOptions$ | async; track badge) {
+          <li nz-menu-item (click)="switchBadgeColor(badge.color)">
+            <nz-badge
+              [nzColor]="badge.color"
+              [class.square-badge]="badgeShape === 'square'"
+            ></nz-badge>
+            @if (badge.assignedInstrument) {
+              <span>{{badge.assignedInstrument.symbol}}</span>
+            }
+            @if (badge.assignedInstrument?.instrumentGroup) {
+              <span>&nbsp;({{badge.assignedInstrument!.instrumentGroup}})</span>
+            }
+          </li>
+        }
       </ul>
     </nz-dropdown-menu>
 
-    <div class="title" *ngIf="widgetMeta">
-      <i
-        *ngIf="widgetMeta.desktopMeta?.headerIcon"
-        nz-icon
-        class="title-icon pr-8"
-        [nzType]="widgetMeta.desktopMeta!.headerIcon"
-        nzTheme="outline"
-        nz-popover
-        nzPopoverPlacement="bottom"
-        [nzPopoverContent]="getIconTooltip()"
-      ></i>
-      <ng-container *ngIf="!!titleTemplate;else defaultHeader">
-        <ng-container *ngTemplateOutlet="titleTemplate"></ng-container>
-      </ng-container>
-      <ng-template #defaultHeader>
-        <label
-          class="title-text"
-          nz-popover
-          nzPopoverPlacement="bottom"
-          [nzPopoverContent]="title">
-          {{title}}
-        </label>
-      </ng-template>
-    </div>
+    @if (widgetMeta) {
+      <div class="title">
+        @if (widgetMeta.desktopMeta?.headerIcon) {
+          <i
+            nz-icon
+            class="title-icon pr-8"
+            [nzType]="widgetMeta.desktopMeta!.headerIcon"
+            nzTheme="outline"
+            nz-popover
+            nzPopoverPlacement="bottom"
+            [nzPopoverContent]="getIconTooltip()"
+          ></i>
+        }
+        @if (!!titleTemplate) {
+          <ng-container *ngTemplateOutlet="titleTemplate"></ng-container>
+        } @else {
+          <label
+            class="title-text"
+            nz-popover
+            nzPopoverPlacement="bottom"
+            [nzPopoverContent]="title">
+            {{title}}
+          </label>
+        }
+      </div>
+    }
   </div>
 
   <div class="buttons-group" *transloco="let t">
-    <button
-      *ngIf='linkToActive !== undefined'
-      nz-button
-      nzSize="small"
-      (mousedown)="changeLinkToActive($event, !linkToActive)"
-      class="link-to-active-btn"
-    >
-      <i nz-icon
-         [nzType]="'link'"
-         [nzTheme]="'outline'"
-         joyrideStep="step8"
-         [title]="t('joyride.step8.title')"
-         [text]="t('joyride.step8.text')"
-         [class.active]="linkToActive"></i>
-    </button>
-    <button
-      *ngIf="hasSettings"
-      nz-button
-      nzSize="small"
-      (mousedown)="onSwitchSettings($event)"
-    >
-      <i nz-icon
-         nzType="setting"
-         [nzTheme]="'outline'"
-         joyrideStep="step9"
-         [title]="t('joyride.step9.title')"
-         [text]="t('joyride.step9.text')"></i>
-    </button>
+    @if (linkToActive !== undefined) {
+      <button
+        nz-button
+        nzSize="small"
+        (mousedown)="changeLinkToActive($event, !linkToActive)"
+        class="link-to-active-btn"
+        >
+        <i nz-icon
+          [nzType]="'link'"
+          [nzTheme]="'outline'"
+          joyrideStep="step8"
+          [title]="t('joyride.step8.title')"
+          [text]="t('joyride.step8.text')"
+        [class.active]="linkToActive"></i>
+      </button>
+    }
+    @if (hasSettings) {
+      <button
+        nz-button
+        nzSize="small"
+        (mousedown)="onSwitchSettings($event)"
+        >
+        <i nz-icon
+          nzType="setting"
+          [nzTheme]="'outline'"
+          joyrideStep="step9"
+          [title]="t('joyride.step9.title')"
+        [text]="t('joyride.step9.text')"></i>
+      </button>
+    }
 
-    <button
-      *ngIf="helpUrl$ | async as helpUrl"
-      nz-button
-      nzSize="small"
-      (mousedown)="preventMouseEvents($event)"
-    >
-      <a
-        [href]="helpUrl"
-        target="_blank"
-      >
-        <i nz-icon nzType="question-circle" [nzTheme]="'outline'"
-           joyrideStep="step7"
-           [title]="t('joyride.step7.title')"
-           [text]="t('joyride.step7.text')"></i>
-      </a>
-    </button>
+    @if (helpUrl$ | async; as helpUrl) {
+      <button
+        nz-button
+        nzSize="small"
+        (mousedown)="preventMouseEvents($event)"
+        >
+        <a
+          [href]="helpUrl"
+          target="_blank"
+          >
+          <i nz-icon nzType="question-circle" [nzTheme]="'outline'"
+            joyrideStep="step7"
+            [title]="t('joyride.step7.title')"
+          [text]="t('joyride.step7.text')"></i>
+        </a>
+      </button>
+    }
 
     @let isDashboardLocked = (currentDashboard$ | async)?.isLocked ?? false;
 
     @if(!isDashboardLocked) {
       <button nz-button
-              nzSize="small"
-              class="close-btn"
-              (mousedown)="removeItem($event)"
-              joyrideStep="step6"
-              [title]="t('joyride.step6.title')"
-              [text]="t('joyride.step6.text')">
+        nzSize="small"
+        class="close-btn"
+        (mousedown)="removeItem($event)"
+        joyrideStep="step6"
+        [title]="t('joyride.step6.title')"
+        [text]="t('joyride.step6.text')">
         <i nz-icon nzType="close-circle" [nzTheme]="'outline'"></i>
       </button>
     }

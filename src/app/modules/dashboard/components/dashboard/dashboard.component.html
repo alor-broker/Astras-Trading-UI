@@ -1,11 +1,17 @@
-<div class='inner-content' *ngIf="options$ | async as options">
-  <gridster [options]="options" *ngIf="items$ | async as items">
-    <div>
-      <gridster-item [item]="item.gridsterItem" *ngFor="let item of items; trackBy: getItemTrackKey">
-        <div class="widget-container">
-          <ats-parent-widget [widgetInstance]="item.instance" [isBlockWidget]="isBlockWidget"></ats-parent-widget>
+@if (options$ | async; as options) {
+  <div class='inner-content'>
+    @if (items$ | async; as items) {
+      <gridster [options]="options">
+        <div>
+          @for (item of items; track getItemTrackKey($index, item)) {
+            <gridster-item [item]="item.gridsterItem">
+              <div class="widget-container">
+                <ats-parent-widget [widgetInstance]="item.instance" [isBlockWidget]="isBlockWidget"></ats-parent-widget>
+              </div>
+            </gridster-item>
+          }
         </div>
-      </gridster-item>
-    </div>
-  </gridster>
-</div>
+      </gridster>
+    }
+  </div>
+}

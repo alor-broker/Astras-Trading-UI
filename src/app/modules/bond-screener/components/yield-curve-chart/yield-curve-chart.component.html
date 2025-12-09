@@ -7,14 +7,17 @@
       <ng-container *ngrxLet="{loadingStatus: loadingStatus$} as vm">
         <div [hidden]="vm.loadingStatus !== loadingStatuses.Success" [id]="figureId" class="position-relative">
         </div>
-        <nz-empty
-          *ngIf="vm.loadingStatus === loadingStatuses.NoData || vm.loadingStatus === loadingStatuses.Error"
-          class="ant-list-empty-text"
-          nzNotFoundImage="simple"
-        ></nz-empty>
-        <p *ngIf="vm.loadingStatus === loadingStatuses.Loading" class="text-center">
-          <nz-spin nzSimple></nz-spin>
-        </p>
+        @if (vm.loadingStatus === loadingStatuses.NoData || vm.loadingStatus === loadingStatuses.Error) {
+          <nz-empty
+            class="ant-list-empty-text"
+            nzNotFoundImage="simple"
+          ></nz-empty>
+        }
+        @if (vm.loadingStatus === loadingStatuses.Loading) {
+          <p class="text-center">
+            <nz-spin nzSimple></nz-spin>
+          </p>
+        }
       </ng-container>
     </div>
   </div>

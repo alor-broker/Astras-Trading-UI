@@ -7,12 +7,12 @@
           [nz-tooltip]="t('bondScreenerYieldCurveChart.durationTypeLabel')"
           [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
           formControlName="durationType"
-        >
-          <ng-container *ngFor="let durationType of durationTypes">
+          >
+          @for (durationType of durationTypes; track durationType) {
             <nz-option [nzLabel]="t('bondScreenerYieldCurveChart.durationTypeOptions.' + durationType)"
-                       [nzValue]="durationType">
+              [nzValue]="durationType">
             </nz-option>
-          </ng-container>
+          }
         </nz-select>
       </nz-form-control>
     </nz-form-item>
@@ -23,12 +23,12 @@
           [nz-tooltip]="t('bondScreenerYieldCurveChart.yieldTypeLabel')"
           [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
           formControlName="yieldType"
-        >
-          <ng-container *ngFor="let yieldType of yieldTypes">
+          >
+          @for (yieldType of yieldTypes; track yieldType) {
             <nz-option [nzLabel]="t('bondScreenerYieldCurveChart.yieldTypeOptions.' + yieldType)"
-                       [nzValue]="yieldType">
+              [nzValue]="yieldType">
             </nz-option>
-          </ng-container>
+          }
         </nz-select>
       </nz-form-control>
     </nz-form-item>

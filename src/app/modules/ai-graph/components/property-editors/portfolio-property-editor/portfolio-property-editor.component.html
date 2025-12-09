@@ -6,20 +6,22 @@
         </nz-form-label>
         <nz-form-control
           [nzErrorTip]="t('validationErrors.selectValueError')">
-          <nz-select
-            formControlName="property"
-            nzAllowClear
-            nzShowSearch
-            *ngIf="availablePortfolios$ | async as availablePortfolios">
-            <ng-container *ngFor="let agreement of availablePortfolios.keys()">
-              <nz-option-group [nzLabel]="agreement">
-                @for (portfolio of availablePortfolios.get(agreement); track portfolio){
-                  <nz-option [nzValue]="portfolioToStr(portfolio)"
-                             [nzLabel]="portfolio.market + ' ' +  portfolio.portfolio"></nz-option>
-                }
-              </nz-option-group>
-            </ng-container>
-          </nz-select>
+          @if (availablePortfolios$ | async; as availablePortfolios) {
+            <nz-select
+              formControlName="property"
+              nzAllowClear
+              nzShowSearch
+              >
+              @for (agreement of availablePortfolios.keys(); track agreement) {
+                <nz-option-group [nzLabel]="agreement">
+                  @for (portfolio of availablePortfolios.get(agreement); track portfolio){
+                    <nz-option [nzValue]="portfolioToStr(portfolio)"
+                    [nzLabel]="portfolio.market + ' ' +  portfolio.portfolio"></nz-option>
+                  }
+                </nz-option-group>
+              }
+            </nz-select>
+          }
         </nz-form-control>
       </nz-form-item>
     </form>

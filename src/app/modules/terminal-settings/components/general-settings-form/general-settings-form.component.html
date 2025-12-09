@@ -25,42 +25,46 @@
         <nz-form-label nzFor="fontFamily">{{t('terminalSettingsGeneralSettingsForm.fontFamilyLabel')}}</nz-form-label>
         <nz-form-control>
           <nz-select formControlName='fontFamily' [nzPlaceHolder]="t('terminalSettingsGeneralSettingsForm.fontFamilyPlaceholder')">
-            <ng-container *ngFor="let fontFamily of availableFontFamilies">
+            @for (fontFamily of availableFontFamilies; track fontFamily) {
               <nz-option [nzLabel]="fontFamily" [nzValue]="fontFamily"></nz-option>
-            </ng-container>
+            }
           </nz-select>
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item *ngIf="!excludedSettings.includes('gridType')">
-        <nz-form-label nzFor="gridType">{{t('terminalSettingsGeneralSettingsForm.gridTypeLabel')}}</nz-form-label>
-        <nz-form-control>
-          <nz-select formControlName='gridType'>
-            <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.gridTypeFitOption')" [nzValue]="gridTypes.Fit"></nz-option>
-            <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.gridTypeVerticalFixedOption')" [nzValue]="gridTypes.VerticalFixed"></nz-option>
-            <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.gridTypeHorizontalFixedOption')" [nzValue]="gridTypes.HorizontalFixed"></nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
+      @if (!excludedSettings.includes('gridType')) {
+        <nz-form-item>
+          <nz-form-label nzFor="gridType">{{t('terminalSettingsGeneralSettingsForm.gridTypeLabel')}}</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName='gridType'>
+              <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.gridTypeFitOption')" [nzValue]="gridTypes.Fit"></nz-option>
+              <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.gridTypeVerticalFixedOption')" [nzValue]="gridTypes.VerticalFixed"></nz-option>
+              <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.gridTypeHorizontalFixedOption')" [nzValue]="gridTypes.HorizontalFixed"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      }
     </ng-container>
     <nz-form-item>
       <nz-form-label nzFor="timezoneDisplayOption" nzRequired>{{t('terminalSettingsGeneralSettingsForm.timezoneLabel')}}</nz-form-label>
       <nz-form-control>
         <nz-select formControlName='timezoneDisplayOption'>
           <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.mskTimezoneOption')"
-                     [nzValue]="timezoneDisplayOption.MskTime"></nz-option>
+          [nzValue]="timezoneDisplayOption.MskTime"></nz-option>
           <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.localTimezoneOption')"
-                     [nzValue]="timezoneDisplayOption.LocalTime"></nz-option>
+          [nzValue]="timezoneDisplayOption.LocalTime"></nz-option>
         </nz-select>
       </nz-form-control>
     </nz-form-item>
-    <nz-form-item *ngIf="!excludedSettings.includes('showCurrentTime')">
-      <label
-        formControlName="showCurrentTime"
-        nz-checkbox
-      >
-        {{t('terminalSettingsGeneralSettingsForm.showCurrentTimeLabel')}}
-      </label>
-    </nz-form-item>
+    @if (!excludedSettings.includes('showCurrentTime')) {
+      <nz-form-item>
+        <label
+          formControlName="showCurrentTime"
+          nz-checkbox
+          >
+          {{t('terminalSettingsGeneralSettingsForm.showCurrentTimeLabel')}}
+        </label>
+      </nz-form-item>
+    }
 
     <nz-form-item>
       <nz-form-label nzFor="tableRowHeight" nzRequired>{{t('terminalSettingsGeneralSettingsForm.tableRowHeightLabel')}}</nz-form-label>
@@ -86,7 +90,7 @@
       <label
         formControlName="isLogoutOnUserIdle"
         nz-checkbox
-      >
+        >
         {{t('terminalSettingsGeneralSettingsForm.isLogoutOnUserIdleLabel')}}
       </label>
     </nz-form-item>
@@ -98,7 +102,7 @@
     @if (form.controls.isLogoutOnUserIdle.value) {
       <nz-form-item>
         <nz-form-label nzFor="userIdleDurationMin"
-                       nzRequired>{{t('terminalSettingsGeneralSettingsForm.userIdleDurationLabel')}}</nz-form-label>
+        nzRequired>{{t('terminalSettingsGeneralSettingsForm.userIdleDurationLabel')}}</nz-form-label>
         <nz-form-control
           [nzErrorTip]="t(
                   'terminalSettingsGeneralSettingsForm.intervalError',
@@ -106,43 +110,45 @@
                     min: validationSettings.userIdleDurationMin.min,
                     max: validationSettings.userIdleDurationMin.max
                    })"
-        >
+          >
           <ats-input-number formControlName="userIdleDurationMin"></ats-input-number>
         </nz-form-control>
       </nz-form-item>
     }
 
-    <nz-form-item *ngIf="!excludedSettings.includes('badgesBind')">
-      <label
-        formControlName="badgesBind"
-        nz-checkbox
-      >
-        {{t('terminalSettingsGeneralSettingsForm.badgesBindLabel')}}
-        <span
-          [nzPopoverTitle]="badgeBindHint"
-          nz-icon
-          nz-popover
-          nzTheme="outline"
-          nzType="info-circle">
-              </span>
-      </label>
+    @if (!excludedSettings.includes('badgesBind')) {
+      <nz-form-item>
+        <label
+          formControlName="badgesBind"
+          nz-checkbox
+          >
+          {{t('terminalSettingsGeneralSettingsForm.badgesBindLabel')}}
+          <span
+            [nzPopoverTitle]="badgeBindHint"
+            nz-icon
+            nz-popover
+            nzTheme="outline"
+            nzType="info-circle">
+          </span>
+        </label>
+        <ng-template #badgeBindHint>
+          <p> {{t('terminalSettingsGeneralSettingsForm.badgesBindHint1')}} </p>
+          <p>
+            <nz-badge class="square-badge" nzColor="yellow"></nz-badge>
+            - {{t('terminalSettingsGeneralSettingsForm.badgesBindHint2')}}
+          </p>
+          <p>
+            <nz-badge nzColor="yellow"></nz-badge>
+            - {{t('terminalSettingsGeneralSettingsForm.badgesBindHint3')}}
+          </p>
+        </ng-template>
+      </nz-form-item>
+    }
 
-      <ng-template #badgeBindHint>
-        <p> {{t('terminalSettingsGeneralSettingsForm.badgesBindHint1')}} </p>
-        <p>
-          <nz-badge class="square-badge" nzColor="yellow"></nz-badge>
-          - {{t('terminalSettingsGeneralSettingsForm.badgesBindHint2')}}
-        </p>
-        <p>
-          <nz-badge nzColor="yellow"></nz-badge>
-          - {{t('terminalSettingsGeneralSettingsForm.badgesBindHint3')}}
-        </p>
-      </ng-template>
-    </nz-form-item>
-
-    <ats-badges-settings
-      *ngIf="form.controls.badgesBind.value"
-      formControlName="badgesColors"
-    ></ats-badges-settings>
+    @if (form.controls.badgesBind.value) {
+      <ats-badges-settings
+        formControlName="badgesColors"
+      ></ats-badges-settings>
+    }
   </form>
 </ng-container>

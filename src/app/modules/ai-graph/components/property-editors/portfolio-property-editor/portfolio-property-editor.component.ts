@@ -15,7 +15,7 @@ import {Portfolio} from "../../../graph/slot-types";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from "ng-zorro-antd/form";
 import {TranslocoDirective} from "@jsverse/transloco";
-import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import {NzOptionComponent, NzOptionGroupComponent, NzSelectComponent} from "ng-zorro-antd/select";
 import {UserPortfoliosService} from "../../../../../shared/services/user-portfolios.service";
 import { StringHelper } from "../../../../../shared/utils/string-helper";
@@ -24,19 +24,17 @@ import { MarketType } from "../../../../../shared/models/portfolio-key.model";
 @Component({
     selector: 'ats-portfolio-property-editor',
     imports: [
-        NzFormControlComponent,
-        NzFormDirective,
-        NzFormItemComponent,
-        NzFormLabelComponent,
-        ReactiveFormsModule,
-        TranslocoDirective,
-        AsyncPipe,
-        NgForOf,
-        NgIf,
-        NzOptionComponent,
-        NzOptionGroupComponent,
-        NzSelectComponent
-    ],
+    NzFormControlComponent,
+    NzFormDirective,
+    NzFormItemComponent,
+    NzFormLabelComponent,
+    ReactiveFormsModule,
+    TranslocoDirective,
+    AsyncPipe,
+    NzOptionComponent,
+    NzOptionGroupComponent,
+    NzSelectComponent
+],
     templateUrl: './portfolio-property-editor.component.html',
     styleUrl: './portfolio-property-editor.component.less'
 })

@@ -4,23 +4,27 @@
   [showCopy]="showCopy"
   (saveClick)="updateSettings()"
   (copyClick)="createWidgetCopy()"
->
+  >
   <ng-container *transloco="let t; scope: 'light-chart/settings'">
     <ng-container *transloco="let tChart; scope: 'light-chart'">
-      <ng-container *ngIf="deviceInfo$ | async as deviceInfo">
+      @if (deviceInfo$ | async; as deviceInfo) {
         <form nz-form [nzLayout]="'horizontal'" [formGroup]="form">
-          <nz-form-item *ngIf="!deviceInfo.isMobile">
-            <nz-form-control [nzErrorTip]="t('lightChartSettings.tickerError')">
-              <nz-form-label nzRequired nzFor="instrument">{{t('lightChartSettings.tickerLabel')}}</nz-form-label>
-              <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
-            </nz-form-control>
-          </nz-form-item>
-          <nz-form-item *ngIf="!deviceInfo.isMobile">
-            <nz-form-control>
-              <nz-form-label nzRequired nzFor="exchange">{{t('lightChartSettings.exchangeLabel')}}</nz-form-label>
-              <input nz-input type="text" [value]="form.value.instrument?.exchange" disabled/>
-            </nz-form-control>
-          </nz-form-item>
+          @if (!deviceInfo.isMobile) {
+            <nz-form-item>
+              <nz-form-control [nzErrorTip]="t('lightChartSettings.tickerError')">
+                <nz-form-label nzRequired nzFor="instrument">{{t('lightChartSettings.tickerLabel')}}</nz-form-label>
+                <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
+              </nz-form-control>
+            </nz-form-item>
+          }
+          @if (!deviceInfo.isMobile) {
+            <nz-form-item>
+              <nz-form-control>
+                <nz-form-label nzRequired nzFor="exchange">{{t('lightChartSettings.exchangeLabel')}}</nz-form-label>
+                <input nz-input type="text" [value]="form.value.instrument?.exchange" disabled/>
+              </nz-form-control>
+            </nz-form-item>
+          }
           <nz-form-item>
             <nz-form-control [nzErrorTip]="t('lightChartSettings.selectTimeframesError')">
               <nz-form-label nzRequired nzFor="availableTimeFrames">
@@ -33,8 +37,10 @@
                 formControlName="availableTimeFrames"
                 atsRemoveSelectTitles
                 (ngModelChange)="checkCurrentTimeFrame()"
-              >
-                <nz-option *ngFor='let tf of allTimeFrames' [nzValue]="tf" [nzLabel]="tChart('lightChart.timeframes.' + tf)"></nz-option>
+                >
+                @for (tf of allTimeFrames; track tf) {
+                  <nz-option [nzValue]="tf" [nzLabel]="tChart('lightChart.timeframes.' + tf)"></nz-option>
+                }
               </nz-select>
               <ng-template #tagPlaceHolder let-selectedList>{{t('maxTagPlaceholder', { count: selectedList.length })}}</ng-template>
             </nz-form-control>
@@ -43,11 +49,12 @@
             <nz-form-control>
               <nz-form-label nzRequired nzFor="timeFrame">{{t('lightChartSettings.timeframeLabel')}}</nz-form-label>
               <nz-select formControlName='timeFrame'>
-                <nz-option
-                  *ngFor='let tf of this.form.controls.availableTimeFrames.value ?? []'
-                  [nzValue]="tf"
-                  [nzLabel]="tChart('lightChart.timeframes.' + tf)">
-                </nz-option>
+                @for (tf of this.form.controls.availableTimeFrames.value; track tf) {
+                  <nz-option
+                    [nzValue]="tf"
+                    [nzLabel]="tChart('lightChart.timeframes.' + tf)">
+                  </nz-option>
+                }
               </nz-select>
             </nz-form-control>
           </nz-form-item>
@@ -61,22 +68,24 @@
               </nz-select>
             </nz-form-control>
           </nz-form-item>
-          <nz-form-item *ngIf="!deviceInfo.isMobile">
-            <nz-collapse [nzBordered]="false" nzGhost>
-              <nz-collapse-panel [nzHeader]="t('lightChartSettings.advanced')">
-                <nz-form-control [nzErrorTip]="t('lightChartSettings.instrumentGroupError')">
-                  <nz-form-label nzFor="instrumentGroup">{{t('lightChartSettings.instrumentGroupLabel')}}</nz-form-label>
-                  <ats-instrument-board-select
-                    [instrument]="form.value.instrument ?? null"
-                    [placeholder]="t('lightChartSettings.instrumentGroupLabel')"
-                    formControlName="instrumentGroup">
-                  </ats-instrument-board-select>
-                </nz-form-control>
-              </nz-collapse-panel>
-            </nz-collapse>
-          </nz-form-item>
+          @if (!deviceInfo.isMobile) {
+            <nz-form-item>
+              <nz-collapse [nzBordered]="false" nzGhost>
+                <nz-collapse-panel [nzHeader]="t('lightChartSettings.advanced')">
+                  <nz-form-control [nzErrorTip]="t('lightChartSettings.instrumentGroupError')">
+                    <nz-form-label nzFor="instrumentGroup">{{t('lightChartSettings.instrumentGroupLabel')}}</nz-form-label>
+                    <ats-instrument-board-select
+                      [instrument]="form.value.instrument ?? null"
+                      [placeholder]="t('lightChartSettings.instrumentGroupLabel')"
+                      formControlName="instrumentGroup">
+                    </ats-instrument-board-select>
+                  </nz-form-control>
+                </nz-collapse-panel>
+              </nz-collapse>
+            </nz-form-item>
+          }
         </form>
-      </ng-container>
+      }
     </ng-container>
-</ng-container>
+  </ng-container>
 </ats-widget-settings>

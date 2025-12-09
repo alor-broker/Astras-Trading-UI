@@ -1,41 +1,39 @@
 <ng-container *transloco="let t;">
-  <ats-widget-skeleton
-    *ngIf="settings$ | async as settings"
-    [header]="headerRef"
-    [content]="contentRef"
-    [settings]="settingsRef"
-    [isBlockWidget]="isBlockWidget"
-    [showSettings]="shouldShowSettings"
-    [showContentScroll]="false"
-  >
-
-    <ng-template #headerRef>
-      <ats-widget-header
-        (switchSettings)="onSettingsChange()"
-        [guid]="guid"
-        [hasSettings]="true"
-        [linkToActive]="settings.linkToActive"
-        [selectedBadgeColor]="settings.badgeColor"
-        [showBadgesMenu]="(showBadge$ | async) ?? false"
-        [titleTemplate]="titleTemplate"
-        [widgetMeta]="widgetInstance.widgetMeta"
-      ></ats-widget-header>
-      <ng-template #titleTemplate>
-        <ats-widget-header-instrument-switch
-          [widgetGuid]="widgetInstance.instance.guid"
-          [customTitle]="headerTitle$ | async"
-        ></ats-widget-header-instrument-switch>
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [header]="headerRef"
+      [content]="contentRef"
+      [settings]="settingsRef"
+      [isBlockWidget]="isBlockWidget"
+      [showSettings]="shouldShowSettings"
+      [showContentScroll]="false"
+      >
+      <ng-template #headerRef>
+        <ats-widget-header
+          (switchSettings)="onSettingsChange()"
+          [guid]="guid"
+          [hasSettings]="true"
+          [linkToActive]="settings.linkToActive"
+          [selectedBadgeColor]="settings.badgeColor"
+          [showBadgesMenu]="(showBadge$ | async) ?? false"
+          [titleTemplate]="titleTemplate"
+          [widgetMeta]="widgetInstance.widgetMeta"
+        ></ats-widget-header>
+        <ng-template #titleTemplate>
+          <ats-widget-header-instrument-switch
+            [widgetGuid]="widgetInstance.instance.guid"
+            [customTitle]="headerTitle$ | async"
+          ></ats-widget-header-instrument-switch>
+        </ng-template>
       </ng-template>
-    </ng-template>
-
-    <ng-template #contentRef>
-      <ats-tech-chart [guid]="guid" ></ats-tech-chart>
-    </ng-template>
-
-    <ng-template #settingsRef>
-      <ats-tech-chart-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-tech-chart-settings>
-    </ng-template>
-  </ats-widget-skeleton>
+      <ng-template #contentRef>
+        <ats-tech-chart [guid]="guid" ></ats-tech-chart>
+      </ng-template>
+      <ng-template #settingsRef>
+        <ats-tech-chart-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-tech-chart-settings>
+      </ng-template>
+    </ats-widget-skeleton>
+  }
 
 </ng-container>
 

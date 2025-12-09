@@ -1,44 +1,49 @@
-<nz-table
-  #table
-  *ngIf="sortedNotifications$ | async as notifications"
-  [nzData]="notifications"
-  [nzPageSize]="5"
-  [nzShowPagination]="notifications.length > table.nzPageSize"
-  [nzPaginationType]="'small'"
-  class="notifications-table"
-  atsTableRowHeight
->
-  <tbody>
-  <tr *ngFor="let data of table.data">
-    <td>
-      <div (click)="clickNotification(data)"
+@if (sortedNotifications$ | async; as notifications) {
+  <nz-table
+    #table
+    [nzData]="notifications"
+    [nzPageSize]="5"
+    [nzShowPagination]="notifications.length > table.nzPageSize"
+    [nzPaginationType]="'small'"
+    class="notifications-table"
+    atsTableRowHeight
+    >
+    <tbody>
+      @for (data of table.data; track data) {
+        <tr>
+          <td>
+            <div (click)="clickNotification(data)"
            [ngClass]="{
              'notification': true,
              'read': data.isRead
              }"
-      >
-        <div class="read-status">
-          <nz-badge [nzStatus]="data.isRead ? 'default' : 'processing'"></nz-badge>
-        </div>
-        <div class="main">
-          <div class="header">
-            <div class="title">
-              <h4>{{data.title}}</h4>
+              >
+              <div class="read-status">
+                <nz-badge [nzStatus]="data.isRead ? 'default' : 'processing'"></nz-badge>
+              </div>
+              <div class="main">
+                <div class="header">
+                  <div class="title">
+                    <h4>{{data.title}}</h4>
+                  </div>
+                  @if (data.showDate) {
+                    <div class="date">
+                      @if (isTodayDate(data.date)) {
+                        <span>{{data.date | date : 'HH:mm' }}</span>
+                      } @else {
+                        <span>{{data.date | date : 'dd MMM HH:mm' }}</span>
+                      }
+                    </div>
+                  }
+                </div>
+                <div class="body">
+                  <span nz-typography nzType="secondary">{{data.description}}</span>
+                </div>
+              </div>
             </div>
-            <div *ngIf="data.showDate" class="date">
-              @if (isTodayDate(data.date)) {
-                <span>{{data.date | date : 'HH:mm' }}</span>
-              } @else {
-                <span>{{data.date | date : 'dd MMM HH:mm' }}</span>
-              }
-            </div>
-          </div>
-          <div class="body">
-            <span nz-typography nzType="secondary">{{data.description}}</span>
-          </div>
-        </div>
-      </div>
-    </td>
-  </tr>
-  </tbody>
-</nz-table>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
+}

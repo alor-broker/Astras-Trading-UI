@@ -1,42 +1,48 @@
 <ng-container *transloco="let t; scope: 'shared/editable-string'">
-  <div *ngIf="(isEditMode$ | async) === false" class="display-mode">
-    <div class="content">{{content}}</div>
-    <div class="edit-icon">
-      <button (click)="setEditMode(true); $event.stopPropagation();" nz-button nzSize='small' nzType="link">
-        <i nz-icon nzType="edit"></i>
-      </button>
+  @if ((isEditMode$ | async) === false) {
+    <div class="display-mode">
+      <div class="content">{{content}}</div>
+      <div class="edit-icon">
+        <button (click)="setEditMode(true); $event.stopPropagation();" nz-button nzSize='small' nzType="link">
+          <i nz-icon nzType="edit"></i>
+        </button>
+      </div>
     </div>
-  </div>
-  <div *ngIf="(isEditMode$ | async)" class="edit-mode">
-    <form [formGroup]="editForm" nz-form nzLayout="inline">
-      <nz-form-item>
-        <nz-form-control [nzErrorTip]="contentError">
-          <nz-input-group  [nzSuffix]="suffix">
-            <input #editInput
-                   (keyup)="checkInputCompleteOrCancel($event)"
-                   formControlName="content"
-                   nz-input
-                   type="text"
-                   [class]="inputClass"
-                   (click)="$event.stopPropagation()"
-                   (blur)="emitValueIfValid()"
-            />
-            <ng-template #suffix>
-              <span nz-icon nzType="enter"></span>
-            </ng-template>
-          </nz-input-group>
-        </nz-form-control>
-        <ng-template #contentError>
-            <span *ngIf="lengthRestrictions">{{t(
-              'sharedEditableString.stringLengthError',
-              {
+  }
+  @if ((isEditMode$ | async)) {
+    <div class="edit-mode">
+      <form [formGroup]="editForm" nz-form nzLayout="inline">
+        <nz-form-item>
+          <nz-form-control [nzErrorTip]="contentError">
+            <nz-input-group  [nzSuffix]="suffix">
+              <input #editInput
+                (keyup)="checkInputCompleteOrCancel($event)"
+                formControlName="content"
+                nz-input
+                type="text"
+                [class]="inputClass"
+                (click)="$event.stopPropagation()"
+                (blur)="emitValueIfValid()"
+                />
+              <ng-template #suffix>
+                <span nz-icon nzType="enter"></span>
+              </ng-template>
+            </nz-input-group>
+          </nz-form-control>
+          <ng-template #contentError>
+            @if (lengthRestrictions) {
+              <span>{{t(
+                'sharedEditableString.stringLengthError',
+                {
                 min: lengthRestrictions.minLength,
                 max: lengthRestrictions.maxLength
               })}}</span>
-        </ng-template>
-      </nz-form-item>
-    </form>
-  </div>
+            }
+          </ng-template>
+        </nz-form-item>
+      </form>
+    </div>
+  }
 </ng-container>
 
 

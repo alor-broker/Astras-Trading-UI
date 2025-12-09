@@ -24,7 +24,7 @@ import {
   startWith
 } from "rxjs/operators";
 import {TranslocoDirective} from "@jsverse/transloco";
-import {AsyncPipe, NgIf} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzFormControlComponent, NzFormDirective, NzFormItemComponent} from "ng-zorro-antd/form";
@@ -35,18 +35,17 @@ import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
     templateUrl: './editable-string.component.html',
     styleUrls: ['./editable-string.component.less'],
     imports: [
-        TranslocoDirective,
-        AsyncPipe,
-        NgIf,
-        NzIconDirective,
-        ReactiveFormsModule,
-        NzButtonComponent,
-        NzFormDirective,
-        NzFormItemComponent,
-        NzInputGroupComponent,
-        NzFormControlComponent,
-        NzInputDirective
-    ]
+    TranslocoDirective,
+    AsyncPipe,
+    NzIconDirective,
+    ReactiveFormsModule,
+    NzButtonComponent,
+    NzFormDirective,
+    NzFormItemComponent,
+    NzInputGroupComponent,
+    NzFormControlComponent,
+    NzInputDirective
+]
 })
 export class EditableStringComponent implements OnInit, OnDestroy {
   @ViewChildren('editInput')

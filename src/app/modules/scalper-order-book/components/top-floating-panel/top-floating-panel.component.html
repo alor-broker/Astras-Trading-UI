@@ -1,6 +1,6 @@
 <div class="container d-flex flex-column flex-gap-2 p-1 user-select-none" *transloco="let t; scope: 'scalper-order-book/top-floating-panel'">
   <ng-container *ngrxLet="{ settings: settings$ } as vm">
-    <ng-container *ngIf="vm.settings.showInstrumentPriceDayChange">
+    @if (vm.settings.showInstrumentPriceDayChange) {
       <div *ngrxLet="priceDayChangePercent$ as priceDayChangePercent" class="lh-1">
         <span
           [ngClass]="{
@@ -11,21 +11,22 @@
           nz-tooltip
           [nzTooltipTitle]="hideTooltips ? null : t('scalperOrderBookTopFloatingPanel.priceDayChangePercentTooltip')"
           [nzTooltipMouseEnterDelay]="1"
-        >
+          >
           {{ priceDayChangePercent | number: '1.0-2' }}%
         </span>
       </div>
-    </ng-container>
+    }
 
-    <div
-      class="lh-1"
-      *ngIf="currentScaleFactor$ | async as currentScaleFactor"
-      nz-tooltip
-      [nzTooltipTitle]="hideTooltips ? null : t('scalperOrderBookTopFloatingPanel.scaleFactorTooltip')"
-      [nzTooltipMouseEnterDelay]="1"
-    >
-      <span class="fw-bold">x{{currentScaleFactor}}</span>
-    </div>
+    @if (currentScaleFactor$ | async; as currentScaleFactor) {
+      <div
+        class="lh-1"
+        nz-tooltip
+        [nzTooltipTitle]="hideTooltips ? null : t('scalperOrderBookTopFloatingPanel.scaleFactorTooltip')"
+        [nzTooltipMouseEnterDelay]="1"
+        >
+        <span class="fw-bold">x{{currentScaleFactor}}</span>
+      </div>
+    }
   </ng-container>
 </div>
 

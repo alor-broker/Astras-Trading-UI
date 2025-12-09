@@ -16,9 +16,9 @@
         [style.line-height]="xAxisStep + 'px'"
 
         class="position-relative"
-      >
+        >
+        @if (item.isMajorLinePrice || item.isMinorLinePrice) {
           <span
-            *ngIf="item.isMajorLinePrice || item.isMinorLinePrice"
             class="z-1"
             [ngClass]="{
             'grid-line': true,
@@ -26,19 +26,20 @@
             'minor': item.isMinorLinePrice
             }"
           >&nbsp;</span>
+        }
         <span class="position-relative z-5 w-100 d-inline-block">
           <span class="highlighter  z-2" [ngStyle]="getClusterItemHighlightStyle(item, vm.settings.widgetSettings.tradesClusterPanelSettings ?? null, vm.themeColors)">&nbsp;</span>
           <span class="position-relative z-3 px-2">
-          @if (vm.settings.widgetSettings.tradesClusterPanelSettings?.volumeDisplayFormat === numberFormats.LetterSuffix) {
-            <ats-short-number
-              [value]="item?.volume"
-              [allowRounding]="true">
-            </ats-short-number>
-          } @else {
-            <span>{{ item?.volume }}</span>
-          }
+            @if (vm.settings.widgetSettings.tradesClusterPanelSettings?.volumeDisplayFormat === numberFormats.LetterSuffix) {
+              <ats-short-number
+                [value]="item?.volume"
+                [allowRounding]="true">
+              </ats-short-number>
+            } @else {
+              <span>{{ item?.volume }}</span>
+            }
           </span>
-          </span>
+        </span>
       </div>
     }
   </ng-container>

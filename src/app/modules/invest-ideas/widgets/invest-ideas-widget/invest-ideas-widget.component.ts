@@ -4,10 +4,7 @@ import {
   Input,
   OnInit
 } from '@angular/core';
-import {
-  AsyncPipe,
-  NgIf
-} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { SharedModule } from "../../../../shared/shared.module";
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
 import {
@@ -32,10 +29,9 @@ import { getValueOrDefault } from "../../../../shared/utils/object-helper";
   selector: 'ats-invest-ideas-widget',
   imports: [
     AsyncPipe,
-    NgIf,
     SharedModule,
     InvestIdeasCarouselComponent
-  ],
+],
   templateUrl: './invest-ideas-widget.component.html',
   styleUrl: './invest-ideas-widget.component.less'
 })

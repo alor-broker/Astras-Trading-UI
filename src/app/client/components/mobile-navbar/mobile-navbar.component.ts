@@ -21,7 +21,7 @@ import {NzHeaderComponent} from "ng-zorro-antd/layout";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {RouterLink} from "@angular/router";
 import {NzIconDirective} from "ng-zorro-antd/icon";
-import {AsyncPipe, KeyValuePipe, NgForOf, NgIf, NgTemplateOutlet} from "@angular/common";
+import { AsyncPipe, KeyValuePipe, NgTemplateOutlet } from "@angular/common";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzDropDownDirective, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
 import {JoyrideModule} from "ngx-joyride";
@@ -42,33 +42,31 @@ import {ExternalLinkComponent} from "../../../shared/components/external-link/ex
     templateUrl: './mobile-navbar.component.html',
     styleUrls: ['./mobile-navbar.component.less'],
     imports: [
-        NzHeaderComponent,
-        TranslocoDirective,
-        RouterLink,
-        NzIconDirective,
-        NgIf,
-        AsyncPipe,
-        NzButtonComponent,
-        NzDropDownDirective,
-        JoyrideModule,
-        NzPopoverDirective,
-        NzDropdownMenuComponent,
-        NzMenuDirective,
-        NzInputDirective,
-        KeyValuePipe,
-        NgForOf,
-        NzMenuItemComponent,
-        ReactiveFormsModule,
-        DashboardModule,
-        NotificationsModule,
-        NzDrawerComponent,
-        NzDrawerContentDirective,
-        NzMenuDividerDirective,
-        NgTemplateOutlet,
-        InstrumentSearchComponent,
-        NetworkIndicatorComponent,
-        ExternalLinkComponent
-    ]
+    NzHeaderComponent,
+    TranslocoDirective,
+    RouterLink,
+    NzIconDirective,
+    AsyncPipe,
+    NzButtonComponent,
+    NzDropDownDirective,
+    JoyrideModule,
+    NzPopoverDirective,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzInputDirective,
+    KeyValuePipe,
+    NzMenuItemComponent,
+    ReactiveFormsModule,
+    DashboardModule,
+    NotificationsModule,
+    NzDrawerComponent,
+    NzDrawerContentDirective,
+    NzMenuDividerDirective,
+    NgTemplateOutlet,
+    InstrumentSearchComponent,
+    NetworkIndicatorComponent,
+    ExternalLinkComponent
+]
 })
 export class MobileNavbarComponent implements OnInit {
   isSideMenuVisible = false;

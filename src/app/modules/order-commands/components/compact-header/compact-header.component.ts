@@ -5,10 +5,7 @@ import {QuotesService} from "../../../../shared/services/quotes.service";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import {filter, map, startWith} from "rxjs/operators";
 import { TranslocoDirective } from "@jsverse/transloco";
-import {
-  AsyncPipe,
-  NgIf
-} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
 import { SharedModule } from "../../../../shared/shared.module";
 import { Instrument } from "../../../../shared/models/instruments/instrument.model";
@@ -19,11 +16,10 @@ import { MathHelper } from "../../../../shared/utils/math-helper";
   templateUrl: './compact-header.component.html',
   imports: [
     TranslocoDirective,
-    NgIf,
     AsyncPipe,
     NzTooltipDirective,
     SharedModule
-  ],
+],
   styleUrls: ['./compact-header.component.less']
 })
 export class CompactHeaderComponent implements OnInit, OnDestroy {

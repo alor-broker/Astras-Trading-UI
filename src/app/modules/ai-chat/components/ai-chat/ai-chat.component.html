@@ -5,19 +5,24 @@
     (clicked)="startNewConversation()"
     [atsDisabled]="!canRestartConversation"
   ></ats-start-new-conversation-button>
-  <ats-chat-message-container *ngFor="let msg of displayMessages;trackBy:trackByMessage"
-                              [message]="msg"
-  >
-  </ats-chat-message-container>
+  @for (msg of displayMessages; track trackByMessage($index, msg)) {
+    <ats-chat-message-container
+      [message]="msg"
+      >
+    </ats-chat-message-container>
+  }
 
-  <ng-container ngProjectAs="ats-chat-suggested-message-container" *ngIf="showSuggestedMessages">
-    <ats-chat-suggested-message-container
-      *ngFor="let suggestion of (suggestedMessages$ | async) ?? []"
-      [suggestedMessage]="suggestion"
-      (selected)="useSuggestedMessage($event)"
-    >
-    </ats-chat-suggested-message-container>
-  </ng-container>
+  @if (showSuggestedMessages) {
+    <ng-container ngProjectAs="ats-chat-suggested-message-container">
+      @for (suggestion of (suggestedMessages$ | async) ?? []; track $index) {
+        <ats-chat-suggested-message-container
+          [suggestedMessage]="suggestion"
+          (selected)="useSuggestedMessage($event)"
+          >
+        </ats-chat-suggested-message-container>
+      }
+    </ng-container>
+  }
 
 
   <ats-chat-status [status]="chatStatus$ | async"></ats-chat-status>

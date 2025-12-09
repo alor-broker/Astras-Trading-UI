@@ -4,16 +4,20 @@
   'right': message.isMe,
   'left': !message.isMe
   }"
->
-  <div class="avatar" *ngIf="!message.isMe">
-    <nz-avatar nzSize="large" nzIcon="user" [nzSrc]="message.avatarUri"></nz-avatar>
-  </div>
+  >
+  @if (!message.isMe) {
+    <div class="avatar">
+      <nz-avatar nzSize="large" nzIcon="user" [nzSrc]="message.avatarUri"></nz-avatar>
+    </div>
+  }
 
   <div class="content">
-    <ng-container [ngSwitch]="message.messageType">
-      <ats-text-message *ngSwitchCase="messageTypes.Text"
-                        [content]="message.content"
-      ></ats-text-message>
-    </ng-container>
+    @switch (message.messageType) {
+      @case (messageTypes.Text) {
+        <ats-text-message
+          [content]="message.content"
+        ></ats-text-message>
+      }
+    }
   </div>
 </div>

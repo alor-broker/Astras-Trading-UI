@@ -1,39 +1,36 @@
 <ng-container *transloco="let t;">
-  <ats-widget-skeleton
-    *ngIf="settings$ | async as settings"
-    [content]="contentRef"
-    [header]="headerRef"
-    [settings]="settingsRef"
-    [showContentScroll]="false"
-    [showSettings]="shouldShowSettings"
-    [isBlockWidget]="isBlockWidget"
-  >
-
-    <ng-template #headerRef>
-      <ats-widget-header
-        (switchSettings)="onSettingsChange()"
-        [guid]="guid"
-        [hasSettings]="true"
-        [linkToActive]="settings.linkToActive"
-        [selectedBadgeColor]="settings.badgeColor"
-        [showBadgesMenu]="(showBadge$ | async) ?? false"
-        [widgetMeta]="widgetInstance.widgetMeta"
-        [titleTemplate]="titleTemplate"
-      ></ats-widget-header>
-
-      <ng-template #titleTemplate>
-        <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance.instance.guid"></ats-widget-header-instrument-switch>
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [settings]="settingsRef"
+      [showContentScroll]="false"
+      [showSettings]="shouldShowSettings"
+      [isBlockWidget]="isBlockWidget"
+      >
+      <ng-template #headerRef>
+        <ats-widget-header
+          (switchSettings)="onSettingsChange()"
+          [guid]="guid"
+          [hasSettings]="true"
+          [linkToActive]="settings.linkToActive"
+          [selectedBadgeColor]="settings.badgeColor"
+          [showBadgesMenu]="(showBadge$ | async) ?? false"
+          [widgetMeta]="widgetInstance.widgetMeta"
+          [titleTemplate]="titleTemplate"
+        ></ats-widget-header>
+        <ng-template #titleTemplate>
+          <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance.instance.guid"></ats-widget-header-instrument-switch>
+        </ng-template>
       </ng-template>
-    </ng-template>
-
-    <ng-template #contentRef>
-      <ats-all-trades [guid]="guid"></ats-all-trades>
-    </ng-template>
-
-    <ng-template #settingsRef>
-      <ats-all-trades-settings (settingsChange)="onSettingsChange()" [guid]='guid'></ats-all-trades-settings>
-    </ng-template>
-  </ats-widget-skeleton>
+      <ng-template #contentRef>
+        <ats-all-trades [guid]="guid"></ats-all-trades>
+      </ng-template>
+      <ng-template #settingsRef>
+        <ats-all-trades-settings (settingsChange)="onSettingsChange()" [guid]='guid'></ats-all-trades-settings>
+      </ng-template>
+    </ats-widget-skeleton>
+  }
 </ng-container>
 
 

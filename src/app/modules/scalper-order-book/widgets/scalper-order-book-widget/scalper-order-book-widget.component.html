@@ -1,37 +1,36 @@
 <ng-container *transloco="let t;">
-  <ats-widget-skeleton
-    *ngIf="settings$ | async as settings"
-    [content]="contentRef"
-    [header]="headerRef"
-    [settings]="settingsRef"
-    [isBlockWidget]="isBlockWidget"
-    [showSettings]="shouldShowSettings"
-    [showContentScroll]="false"
-  >
-
-    <ng-template #headerRef>
-      <ats-widget-header
-        (switchSettings)="onSettingsChange()"
-        [guid]="guid"
-        [hasSettings]="true"
-        [linkToActive]="settings.linkToActive"
-        [selectedBadgeColor]="settings.badgeColor"
-        [showBadgesMenu]="(showBadge$ | async) ?? false"
-        [widgetMeta]="widgetInstance.widgetMeta"
-        [titleTemplate]="titleTemplate"
-      ></ats-widget-header>
-      <ng-template #titleTemplate>
-        <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance.instance.guid"></ats-widget-header-instrument-switch>
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [settings]="settingsRef"
+      [isBlockWidget]="isBlockWidget"
+      [showSettings]="shouldShowSettings"
+      [showContentScroll]="false"
+      >
+      <ng-template #headerRef>
+        <ats-widget-header
+          (switchSettings)="onSettingsChange()"
+          [guid]="guid"
+          [hasSettings]="true"
+          [linkToActive]="settings.linkToActive"
+          [selectedBadgeColor]="settings.badgeColor"
+          [showBadgesMenu]="(showBadge$ | async) ?? false"
+          [widgetMeta]="widgetInstance.widgetMeta"
+          [titleTemplate]="titleTemplate"
+        ></ats-widget-header>
+        <ng-template #titleTemplate>
+          <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance.instance.guid"></ats-widget-header-instrument-switch>
+        </ng-template>
       </ng-template>
-    </ng-template>
-
-    <ng-template #contentRef>
-      <ats-scalper-order-book [guid]="guid" [isActive]="isActive"></ats-scalper-order-book>
-    </ng-template>
-    <ng-template #settingsRef>
-      <ats-scalper-order-book-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-scalper-order-book-settings>
-    </ng-template>
-  </ats-widget-skeleton>
+      <ng-template #contentRef>
+        <ats-scalper-order-book [guid]="guid" [isActive]="isActive"></ats-scalper-order-book>
+      </ng-template>
+      <ng-template #settingsRef>
+        <ats-scalper-order-book-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-scalper-order-book-settings>
+      </ng-template>
+    </ats-widget-skeleton>
+  }
 
 </ng-container>
 

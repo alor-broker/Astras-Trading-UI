@@ -4,7 +4,7 @@
   [showCopy]="showCopy"
   (saveClick)="updateSettings()"
   (copyClick)="createWidgetCopy()"
->
+  >
   <ng-container *transloco="let t; scope: 'bond-screener/settings'">
     <div>
       <form nz-form [nzLayout]="'horizontal'" [formGroup]="form">
@@ -17,14 +17,15 @@
               nzMode="multiple"
               [nzPlaceHolder]="t('form.tableColumns.selectColumnLabel')"
               formControlName="bondScreenerColumns"
-            >
+              >
               <ng-container *transloco="let tBondScreener; scope: 'bond-screener/bond-screener'">
-                <nz-option
-                  *ngFor="let item of bondScreenerColumns"
-                  [nzLabel]="tBondScreener('bondScreenerBondScreener.columns.' + item.id)"
-                  [nzValue]="item.id"
-                >
-                </nz-option>
+                @for (item of bondScreenerColumns; track item) {
+                  <nz-option
+                    [nzLabel]="tBondScreener('bondScreenerBondScreener.columns.' + item.id)"
+                    [nzValue]="item.id"
+                    >
+                  </nz-option>
+                }
               </ng-container>
             </nz-select>
           </nz-form-control>

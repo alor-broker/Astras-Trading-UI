@@ -1,21 +1,30 @@
 <ng-container *transloco="let t; scope: 'order-commands/order-forms'">
-  <ng-container *ngIf="formInstrument$ | async as formInstrument">
-    <ng-container *ngIf="portfolioKey$ | async as portfolioKey">
+  @if (formInstrument$ | async; as formInstrument) {
+    @if (portfolioKey$ | async; as portfolioKey) {
       <div>
-        <form *ngIf="form" [formGroup]="form" [nzLayout]="'vertical'" nz-form>
-          <nz-form-item class="compact">
-            <nz-form-label nzFor="quantity" nzRequired>{{t('orderCommandsOrderForms.quantityLabel')}}</nz-form-label>
-            <nz-form-control [nzErrorTip]="quantityError">
-              <ats-input-number formControlName="quantity" placeholder="0"></ats-input-number>
-              <span *ngIf="(formInstrument.lotsize ?? 1) !== 1">1 {{t('orderCommandsOrderForms.lot')}} = <ats-short-number
-                [value]="formInstrument.lotsize"></ats-short-number>
+        @if (form) {
+          <form [formGroup]="form" [nzLayout]="'vertical'" nz-form>
+            <nz-form-item class="compact">
+              <nz-form-label nzFor="quantity" nzRequired>{{t('orderCommandsOrderForms.quantityLabel')}}</nz-form-label>
+              <nz-form-control [nzErrorTip]="quantityError">
+                <ats-input-number formControlName="quantity" placeholder="0"></ats-input-number>
+                @if ((formInstrument.lotsize ?? 1) !== 1) {
+                  <span>1 {{t('orderCommandsOrderForms.lot')}} = <ats-short-number
+                  [value]="formInstrument.lotsize"></ats-short-number>
                 {{t('orderCommandsOrderForms.pcs')}}</span>
+              }
             </nz-form-control>
             <ng-template #quantityError>
-              <span
-                *ngIf="form.controls.quantity.errors?.required">{{t('orderCommandsOrderForms.emptyQuantityError')}}</span>
-              <span *ngIf="form.controls.quantity.errors?.min">{{t('validationErrors.tooLittle')}}</span>
-              <span *ngIf="form.controls.quantity.errors?.max">{{t('validationErrors.tooMuch')}}</span>
+              @if (form.controls.quantity.errors?.required) {
+                <span
+                >{{t('orderCommandsOrderForms.emptyQuantityError')}}</span>
+              }
+              @if (form.controls.quantity.errors?.min) {
+                <span>{{t('validationErrors.tooLittle')}}</span>
+              }
+              @if (form.controls.quantity.errors?.max) {
+                <span>{{t('validationErrors.tooMuch')}}</span>
+              }
             </ng-template>
           </nz-form-item>
           <nz-collapse [nzBordered]="false" class="compact" nzGhost>
@@ -24,17 +33,17 @@
                 <nz-form-label nzFor="timeInForce">{{t('orderCommandsOrderForms.timeInForceLabel')}}</nz-form-label>
                 <nz-form-control>
                   <nz-select [nzPlaceHolder]="t('orderCommandsOrderForms.timeInForcePlaceholder')"
-                             formControlName="timeInForce"
-                             nzAllowClear>
-                    <nz-option
-                      *ngFor="let timeInForce of timeInForceEnum | keyvalue"
-                      [nzLabel]="t('orderCommandsOrderForms.timeInForceOptions.' + timeInForce.key)"
-                      [nzValue]="timeInForce.value"
-                    ></nz-option>
+                    formControlName="timeInForce"
+                    nzAllowClear>
+                    @for (timeInForce of timeInForceEnum | keyvalue; track timeInForce) {
+                      <nz-option
+                        [nzLabel]="t('orderCommandsOrderForms.timeInForceOptions.' + timeInForce.key)"
+                        [nzValue]="timeInForce.value"
+                      ></nz-option>
+                    }
                   </nz-select>
                 </nz-form-control>
               </nz-form-item>
-
               <nz-form-item>
                 <nz-form-label nzFor="instrumentGroup">{{t('orderCommandsOrderForms.instrumentGroupLabel')}}</nz-form-label>
                 <nz-form-control [nzErrorTip]="t('orderCommandsOrderForms.instrumentGroupError')">
@@ -48,25 +57,26 @@
             </nz-collapse-panel>
           </nz-collapse>
         </form>
-      </div>
-    </ng-container>
-    <div>
-      <ats-order-evaluation
-        (quantitySelect)="setQuantity($event)"
-        [evaluationProperties]="evaluationRequest$ | async"
-      ></ats-order-evaluation>
+      }
     </div>
-    <div class="mt-8">
-      <ng-container *ngIf="requestProcessing$ | async as requestProcessing">
-        <ats-buy-sell-buttons
-          (btnClick)="submitOrder($event)"
-          [buyBtnDisabled]="!canSubmit || !!requestProcessing.orderSide"
-          [buyBtnLoading]="requestProcessing.orderSide === sides.Buy"
-          [sellBtnDisabled]="!canSubmit || !!requestProcessing.orderSide"
-          [sellBtnLoading]="requestProcessing.orderSide === sides.Sell"
+  }
+  <div>
+    <ats-order-evaluation
+      (quantitySelect)="setQuantity($event)"
+      [evaluationProperties]="evaluationRequest$ | async"
+    ></ats-order-evaluation>
+  </div>
+  <div class="mt-8">
+    @if (requestProcessing$ | async; as requestProcessing) {
+      <ats-buy-sell-buttons
+        (btnClick)="submitOrder($event)"
+        [buyBtnDisabled]="!canSubmit || !!requestProcessing.orderSide"
+        [buyBtnLoading]="requestProcessing.orderSide === sides.Buy"
+        [sellBtnDisabled]="!canSubmit || !!requestProcessing.orderSide"
+        [sellBtnLoading]="requestProcessing.orderSide === sides.Sell"
         >
-        </ats-buy-sell-buttons>
-      </ng-container>
-    </div>
-  </ng-container>
+      </ats-buy-sell-buttons>
+    }
+  </div>
+}
 </ng-container>

@@ -1,31 +1,30 @@
 <ng-container>
-  <ats-widget-skeleton
-    *ngIf="settings$ | async as settings"
-    [content]="contentRef"
-    [header]="headerRef"
-    [isBlockWidget]="isBlockWidget"
-    [settings]="settingsRef"
-    [showContentScroll]="true"
-    [showSettings]="shouldShowSettings"
-  >
-    <ng-template #headerRef>
-      <ats-widget-header
-        (switchSettings)="onSettingsChange()"
-        [badgeShape]="'square'"
-        [guid]="guid"
-        [hasSettings]="true"
-        [selectedBadgeColor]="settings.badgeColor"
-        [showBadgesMenu]="(showBadge$ | async) ?? false"
-        [widgetMeta]="widgetInstance.widgetMeta"
-      ></ats-widget-header>
-    </ng-template>
-
-    <ng-template #contentRef>
-      <ats-market-trends
-        (instrumentSelected)="selectInstrument($event)"
-        [extendedFilter]="settings.extendedFilter"
-        [fixedHeader]="true"
-        [itemsCount]="settings.itemsCount"
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [isBlockWidget]="isBlockWidget"
+      [settings]="settingsRef"
+      [showContentScroll]="true"
+      [showSettings]="shouldShowSettings"
+      >
+      <ng-template #headerRef>
+        <ats-widget-header
+          (switchSettings)="onSettingsChange()"
+          [badgeShape]="'square'"
+          [guid]="guid"
+          [hasSettings]="true"
+          [selectedBadgeColor]="settings.badgeColor"
+          [showBadgesMenu]="(showBadge$ | async) ?? false"
+          [widgetMeta]="widgetInstance.widgetMeta"
+        ></ats-widget-header>
+      </ng-template>
+      <ng-template #contentRef>
+        <ats-market-trends
+          (instrumentSelected)="selectInstrument($event)"
+          [extendedFilter]="settings.extendedFilter"
+          [fixedHeader]="true"
+          [itemsCount]="settings.itemsCount"
         [marketFilters]="{
         targetMarkets: settings.marketFilters?.targetMarkets,
         ignoredBoards: settings.marketFilters?.ignoredBoards,
@@ -33,15 +32,15 @@
         minTradeAmount: settings.marketFilters?.minTradeAmount,
         minCapitalization: settings.marketFilters?.minCapitalization
         }"
-        [sectors]="settings.displaySectors"
-        [showMoreButton]="false"
-      ></ats-market-trends>
-    </ng-template>
-
-    <ng-template #settingsRef>
-      <ats-market-trends-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-market-trends-settings>
-    </ng-template>
-  </ats-widget-skeleton>
+          [sectors]="settings.displaySectors"
+          [showMoreButton]="false"
+        ></ats-market-trends>
+      </ng-template>
+      <ng-template #settingsRef>
+        <ats-market-trends-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-market-trends-settings>
+      </ng-template>
+    </ats-widget-skeleton>
+  }
 
 </ng-container>
 

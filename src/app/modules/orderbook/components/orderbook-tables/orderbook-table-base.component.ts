@@ -161,10 +161,6 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
     };
   }
 
-  getTrackKey(index: number): number {
-    return index;
-  }
-
   getPriceDecimalSymbolsCount(settings: ExtendedOrderbookSettings): number | null {
     return settings.widgetSettings.showPriceWithZeroPadding === true
       ? MathHelper.getPrecision(settings.instrument.minstep)

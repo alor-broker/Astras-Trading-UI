@@ -37,13 +37,7 @@ import {
 import { LetDirective } from "@ngrx/component";
 import { AdminIdentityService } from "../../services/identity/admin-identity.service";
 import { LoginStatus } from "../../services/identity/admin-identity-service.models";
-import {
-  AsyncPipe,
-  NgIf,
-  NgSwitch,
-  NgSwitchCase,
-  NgSwitchDefault
-} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { NzTypographyComponent } from "ng-zorro-antd/typography";
 import { AdminAuthContextService } from "../../services/auth/admin-auth-context.service";
 import { Router } from "@angular/router";
@@ -56,22 +50,18 @@ enum LoginErrorCode {
 @Component({
     selector: 'ats-login-page',
     imports: [
-        NzFormDirective,
-        ReactiveFormsModule,
-        NzFormItemComponent,
-        NzFormControlComponent,
-        NzInputGroupComponent,
-        NzInputDirective,
-        NzButtonComponent,
-        TranslocoDirective,
-        LetDirective,
-        AsyncPipe,
-        NgSwitch,
-        NzTypographyComponent,
-        NgSwitchCase,
-        NgSwitchDefault,
-        NgIf
-    ],
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzFormItemComponent,
+    NzFormControlComponent,
+    NzInputGroupComponent,
+    NzInputDirective,
+    NzButtonComponent,
+    TranslocoDirective,
+    LetDirective,
+    AsyncPipe,
+    NzTypographyComponent
+],
     templateUrl: './login-page.component.html',
     styleUrl: './login-page.component.less'
 })

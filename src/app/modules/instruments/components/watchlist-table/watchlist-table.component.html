@@ -227,11 +227,11 @@
           <ng-container *transloco="let tTitle; scope: 'instruments'">
             @if (canMoveItem(vm.collection)) {
               <li
-                [nzTitle]="title"
+                [nzTitle]="moveToItem"
                 nz-submenu
                 #submenu
               >
-                <ng-template #title>
+                <ng-template #moveToItem>
                   <span><i nz-icon nzTheme="outline"
                            nzType="arrow-right"></i><label>&nbsp;{{ t('instrumentsSelect.contextMenu.moveToItemLabel') }}</label></span>
                 </ng-template>
@@ -246,11 +246,11 @@
             }
 
             <li
-              [nzTitle]="title"
+              [nzTitle]="copyToItem"
               nz-submenu
               #submenu
             >
-              <ng-template #title>
+              <ng-template #copyToItem>
                 <span><i nz-icon nzTheme="outline"
                          nzType="copy"></i>{{ t('instrumentsSelect.contextMenu.copyToItemLabel') }}</span>
               </ng-template>
@@ -267,8 +267,8 @@
 
         @let menuWidgets = menuWidgets$ | async;
         @if (menuWidgets != null && menuWidgets.length > 0) {
-          <li [nzTitle]="title" nz-submenu>
-            <ng-template #title>
+          <li [nzTitle]="addWidgetItem" nz-submenu>
+            <ng-template #addWidgetItem>
               <span><i nz-icon nzTheme="outline"
                        nzType="appstore-add"></i>{{ t('instrumentsSelect.contextMenu.addWidgetItemLabel') }}</span>
             </ng-template>

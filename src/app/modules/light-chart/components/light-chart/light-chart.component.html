@@ -1,18 +1,19 @@
-<div (nzResizeObserve)="containerSizeChanged($event)"
-     *ngIf="settings$ | async as settings"
-     class="container"
-     nzResizeObserver
->
-  <ats-timeframes-panel
-    (changeTimeframe)="changeTimeframe($event)"
-    [availableTimeframes]="(availableTimeFrames$ | async) ?? []"
-    [selectedTimeframe]="settings.timeFrame"
-    [displayMode]="settings.timeFrameDisplayMode ?? timeFrameDisplayModes.Buttons"
-  ></ats-timeframes-panel>
-  <div (mousedown)="$event.stopPropagation()" class="main-chart">
-    <div [id]="guid" class="chart-container"></div>
+@if (settings$ | async; as settings) {
+  <div (nzResizeObserve)="containerSizeChanged($event)"
+    class="container"
+    nzResizeObserver
+    >
+    <ats-timeframes-panel
+      (changeTimeframe)="changeTimeframe($event)"
+      [availableTimeframes]="(availableTimeFrames$ | async) ?? []"
+      [selectedTimeframe]="settings.timeFrame"
+      [displayMode]="settings.timeFrameDisplayMode ?? timeFrameDisplayModes.Buttons"
+    ></ats-timeframes-panel>
+    <div (mousedown)="$event.stopPropagation()" class="main-chart">
+      <div [id]="guid" class="chart-container"></div>
+    </div>
   </div>
-</div>
+}
 
 
 

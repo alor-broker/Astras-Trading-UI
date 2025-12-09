@@ -1,34 +1,32 @@
 <ng-container *transloco="let t;">
-  <ats-widget-skeleton
-    *ngIf="settings$ | async as settings"
-    [content]="contentRef"
-    [header]="headerRef"
-    [settings]="settingsRef"
-    [showContentScroll]="false"
-    [showSettings]="shouldShowSettings"
-    [isBlockWidget]="isBlockWidget"
-  >
-
-    <ng-template #headerRef>
-      <ats-widget-header
-        (switchSettings)="onSettingsChange()"
-        [guid]="guid"
-        [hasSettings]="true"
-        [linkToActive]="settings.linkToActive"
-        [selectedBadgeColor]="settings.badgeColor"
-        [showBadgesMenu]="(showBadge$ | async) ?? false"
-        badgeShape="square"
-        [widgetMeta]="widgetInstance.widgetMeta"
-      ></ats-widget-header>
-    </ng-template>
-
-    <ng-template #contentRef>
-      <ats-all-instruments [guid]="guid"></ats-all-instruments>
-    </ng-template>
-
-    <ng-template #settingsRef>
-      <ats-all-instruments-settings (settingsChange)="onSettingsChange()" [guid]='guid'></ats-all-instruments-settings>
-    </ng-template>
-  </ats-widget-skeleton>
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [settings]="settingsRef"
+      [showContentScroll]="false"
+      [showSettings]="shouldShowSettings"
+      [isBlockWidget]="isBlockWidget"
+      >
+      <ng-template #headerRef>
+        <ats-widget-header
+          (switchSettings)="onSettingsChange()"
+          [guid]="guid"
+          [hasSettings]="true"
+          [linkToActive]="settings.linkToActive"
+          [selectedBadgeColor]="settings.badgeColor"
+          [showBadgesMenu]="(showBadge$ | async) ?? false"
+          badgeShape="square"
+          [widgetMeta]="widgetInstance.widgetMeta"
+        ></ats-widget-header>
+      </ng-template>
+      <ng-template #contentRef>
+        <ats-all-instruments [guid]="guid"></ats-all-instruments>
+      </ng-template>
+      <ng-template #settingsRef>
+        <ats-all-instruments-settings (settingsChange)="onSettingsChange()" [guid]='guid'></ats-all-instruments-settings>
+      </ng-template>
+    </ats-widget-skeleton>
+  }
 
 </ng-container>

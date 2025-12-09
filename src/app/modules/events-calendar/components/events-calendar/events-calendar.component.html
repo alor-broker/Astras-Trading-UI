@@ -9,19 +9,20 @@
           nz-dropdown
           nzTrigger="click"
           [nzDropdownMenu]="menu"
-        >
-          <span *ngIf="selectedPortfolio$ | async as selectedPortfolio; else allPortfolios">
-            {{ selectedPortfolio.portfolio }} ({{selectedPortfolio.exchange}})
-          </span>
-
-          <ng-template #allPortfolios>
+          >
+          @if (selectedPortfolio$ | async; as selectedPortfolio) {
+            <span>
+              {{ selectedPortfolio.portfolio }} ({{selectedPortfolio.exchange}})
+            </span>
+          } @else {
             {{t('eventsCalendar.allPortfolios')}}
-          </ng-template>
+          }
+
         </button>
       </div>
-      <ng-container *ngIf="symbolsOfSelectedPortfolio$ | async as symbols">
+      @if (symbolsOfSelectedPortfolio$ | async; as symbols) {
         <ats-calendar-view [symbols]="symbols"></ats-calendar-view>
-      </ng-container>
+      }
     </nz-tab>
     <nz-tab [nzTitle]="t('eventsCalendar.listViewTabTitle')">
       <div class="portfolio-filter">
@@ -32,19 +33,20 @@
           nz-dropdown
           nzTrigger="click"
           [nzDropdownMenu]="menu"
-        >
-          <span *ngIf="selectedPortfolio$ | async as selectedPortfolio; else allPortfolios">
-            {{ selectedPortfolio.portfolio }} ({{selectedPortfolio.exchange}})
-          </span>
-
-          <ng-template #allPortfolios>
+          >
+          @if (selectedPortfolio$ | async; as selectedPortfolio) {
+            <span>
+              {{ selectedPortfolio.portfolio }} ({{selectedPortfolio.exchange}})
+            </span>
+          } @else {
             {{t('eventsCalendar.allPortfolios')}}
-          </ng-template>
+          }
+
         </button>
       </div>
-      <ng-container *ngIf="symbolsOfSelectedPortfolio$ | async as symbols">
+      @if (symbolsOfSelectedPortfolio$ | async; as symbols) {
         <ats-list-view [symbols]="symbols"></ats-list-view>
-      </ng-container>
+      }
     </nz-tab>
   </nz-tabs>
 
@@ -53,9 +55,11 @@
       <li nz-menu-item (click)="selectPortfolio(null)">
         {{t('eventsCalendar.allPortfolios')}}
       </li>
-      <li nz-menu-item *ngFor="let portfolio of portfolios$ | async; trackBy: portfolioTrackByFn" (click)="selectPortfolio(portfolio)">
-        {{ portfolio.portfolio }} ({{portfolio.exchange}})
-      </li>
+      @for (portfolio of portfolios$ | async; track portfolioTrackByFn($index, portfolio)) {
+        <li nz-menu-item (click)="selectPortfolio(portfolio)">
+          {{ portfolio.portfolio }} ({{portfolio.exchange}})
+        </li>
+      }
     </ul>
   </nz-dropdown-menu>
 </ng-container>

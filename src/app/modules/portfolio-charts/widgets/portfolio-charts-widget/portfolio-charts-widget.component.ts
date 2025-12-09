@@ -3,10 +3,7 @@ import {
   Input,
   OnInit
 } from '@angular/core';
-import {
-  AsyncPipe,
-  NgIf
-} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { SharedModule } from "../../../../shared/shared.module";
 import { TranslocoDirective } from "@jsverse/transloco";
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
@@ -30,11 +27,10 @@ import { UserPortfoliosService } from "../../../../shared/services/user-portfoli
   selector: 'ats-portfolio-charts-widget',
   imports: [
     AsyncPipe,
-    NgIf,
     SharedModule,
     TranslocoDirective,
     AgreementDynamicsComponent
-  ],
+],
   templateUrl: './portfolio-charts-widget.component.html',
   styleUrl: './portfolio-charts-widget.component.less'
 })

@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { NetworkStatus } from '../../../../shared/models/enums/network-status.model';
 import { map } from "rxjs/operators";
 import {TranslocoDirective} from "@jsverse/transloco";
-import {AsyncPipe, DecimalPipe, NgClass, NgIf} from "@angular/common";
+import { AsyncPipe, DecimalPipe, NgClass } from "@angular/common";
 import {LetDirective} from "@ngrx/component";
 import {NzTypographyComponent} from "ng-zorro-antd/typography";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
@@ -20,16 +20,15 @@ type StatusColor = 'warning' | 'danger' | 'success';
     templateUrl: './network-indicator.component.html',
     styleUrls: ['./network-indicator.component.less'],
     imports: [
-        TranslocoDirective,
-        AsyncPipe,
-        NgIf,
-        LetDirective,
-        NzTypographyComponent,
-        NzTooltipDirective,
-        DecimalPipe,
-        NgClass,
-        NzIconDirective
-    ],
+    TranslocoDirective,
+    AsyncPipe,
+    LetDirective,
+    NzTypographyComponent,
+    NzTooltipDirective,
+    DecimalPipe,
+    NgClass,
+    NzIconDirective
+],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NetworkIndicatorComponent implements OnInit {

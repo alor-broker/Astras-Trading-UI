@@ -1,23 +1,23 @@
 <ng-container>
-  <ats-widget-skeleton
-    *ngIf="settings$ | async as settings"
-    [content]="contentRef"
-    [header]="headerRef"
-    [isBlockWidget]="isBlockWidget"
-  >
-    <ng-template #headerRef>
-      <ats-widget-header
-        [guid]="guid"
-        [hasSettings]="false"
-        [showBadgesMenu]="false"
-        [widgetMeta]="widgetInstance.widgetMeta"
-      ></ats-widget-header>
-    </ng-template>
-
-    <ng-template #contentRef>
-      <ats-correlation-chart [guid]="guid"></ats-correlation-chart>
-    </ng-template>
-  </ats-widget-skeleton>
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [isBlockWidget]="isBlockWidget"
+      >
+      <ng-template #headerRef>
+        <ats-widget-header
+          [guid]="guid"
+          [hasSettings]="false"
+          [showBadgesMenu]="false"
+          [widgetMeta]="widgetInstance.widgetMeta"
+        ></ats-widget-header>
+      </ng-template>
+      <ng-template #contentRef>
+        <ats-correlation-chart [guid]="guid"></ats-correlation-chart>
+      </ng-template>
+    </ats-widget-skeleton>
+  }
 
 </ng-container>
 

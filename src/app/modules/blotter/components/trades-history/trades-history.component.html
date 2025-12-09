@@ -13,7 +13,7 @@
         class="table-container"
         (nzResizeObserve)="containerSizeChanged($event)"
         nzResizeObserver
-      >
+        >
         <nz-table
           #nzTable
           [nzData]="td.trades"
@@ -29,84 +29,107 @@
           [nzVirtualForTrackBy]="trackBy"
           [nzFooter]="footer"
           [nzLoading]="isLoading$ | async"
-        >
-          <thead>
-          <tr
-            (nzResizeObserve)="headerSizeChanged($event)"
-            nzResizeObserver
-            cdkDropList
-            cdkDropListOrientation="horizontal"
-            (cdkDropListDropped)="changeColumnOrder($event)"
           >
-            <th nzWidth="5px"></th>
-            <th *ngFor="let column of td.tableConfig.columns"
-                [nzCustomFilter]="column.filterData?.filterType !== filterTypes.Default"
-                [nzShowSort]="!!column.sortFn"
-                [nzSortFn]="column.sortFn ?? false"
-                [nzSortOrder]="column.sortOrder ?? null"
-                (nzSortOrderChange)="saveSortState(column.id, $event)"
-                [nzFilters]="column.filterData?.filters ?? []"
-                [nzShowFilter]="column.filterData?.filterType === filterTypes.Default"
-                [nzFilterMultiple]="column.filterData?.filterType === filterTypes.DefaultMultiple"
-                (nzFilterChange)="defaultFilterChange(column.id, $event)"
-                [nzWidth]="column.width ? column.width + 'px': null"
-                [atsResizeColumn]
-                [minWidth]="column.minWidth ?? 50"
-                (atsWidthChanged)="saveColumnWidth({ columnId: column.id, width: $event })"
-                cdkDrag
-                cdkDragLockAxis="x"
-            >
-            <span
-              nz-tooltip
-              [nzTooltipTitle]="column.tooltip"
-              [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
-            >
-              {{column.displayName}}
-            </span>
-              <nz-filter-trigger
-                *ngIf="column.filterData != null && column.filterData?.filterType !== filterTypes.DefaultMultiple"
-                [nzVisible]="!!column.filterData.isOpenedFilter" (nzVisibleChange)="column.filterData.isOpenedFilter = $event"
-                [nzActive]="isFilterApplied(column)"
-                [nzDropdownMenu]="searchMenu"
+          <thead>
+            <tr
+              (nzResizeObserve)="headerSizeChanged($event)"
+              nzResizeObserver
+              cdkDropList
+              cdkDropListOrientation="horizontal"
+              (cdkDropListDropped)="changeColumnOrder($event)"
               >
-                <i nz-icon nzType="search"></i>
-              </nz-filter-trigger>
-            </th>
-          </tr>
+              <th nzWidth="5px"></th>
+              @for (column of td.tableConfig.columns; track column) {
+                <th
+                  [nzCustomFilter]="column.filterData?.filterType !== filterTypes.Default"
+                  [nzShowSort]="!!column.sortFn"
+                  [nzSortFn]="column.sortFn ?? false"
+                  [nzSortOrder]="column.sortOrder ?? null"
+                  (nzSortOrderChange)="saveSortState(column.id, $event)"
+                  [nzFilters]="column.filterData?.filters ?? []"
+                  [nzShowFilter]="column.filterData?.filterType === filterTypes.Default"
+                  [nzFilterMultiple]="column.filterData?.filterType === filterTypes.DefaultMultiple"
+                  (nzFilterChange)="defaultFilterChange(column.id, $event)"
+                  [nzWidth]="column.width ? column.width + 'px': null"
+                  [atsResizeColumn]
+                  [minWidth]="column.minWidth ?? 50"
+                  (atsWidthChanged)="saveColumnWidth({ columnId: column.id, width: $event })"
+                  cdkDrag
+                  cdkDragLockAxis="x"
+                  >
+                  <span
+                    nz-tooltip
+                    [nzTooltipTitle]="column.tooltip"
+                    [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+                    >
+                    {{column.displayName}}
+                  </span>
+                  @if (column.filterData != null && column.filterData.filterType !== filterTypes.DefaultMultiple) {
+                    <nz-filter-trigger
+                      [nzVisible]="!!column.filterData.isOpenedFilter" (nzVisibleChange)="column.filterData.isOpenedFilter = $event"
+                      [nzActive]="isFilterApplied(column)"
+                      [nzDropdownMenu]="searchMenu"
+                      >
+                      <i nz-icon nzType="search"></i>
+                    </nz-filter-trigger>
+                  }
+                </th>
+              }
+            </tr>
           </thead>
           <tbody>
             <ng-template let-trd nz-virtual-scroll>
               <tr
                 (click)="rowClick(trd)"
                 (contextmenu)="openContextMenu($event, contextMenu, trd)"
-              >
-              <td>
-                <span [class]='trd.side.toString() === "sell" ? "bg-sell" : "bg-buy"'>&nbsp;</span>
-              </td>
-              <ng-container *ngFor='let column of td.tableConfig.columns'>
-                <td *ngIf='column.id === "id"'>{{ trd.id }}</td>
-                <td *ngIf='column.id === "orderNo"'>{{ trd.orderNo }}</td>
-                <td *ngIf='column.id === "symbol"' class='fw-bold'>{{ trd.symbol }}</td>
-                <td *ngIf='column.id === "shortName"'>{{ trd.shortName }}</td>
-                <td *ngIf='column.id === "side"' [class]='trd.side.toString() === "sell" ? "sell" : "buy"'>{{ trd.side }}</td>
-                <td *ngIf='column.id === "qty"'>{{ trd.qty | number }}</td>
-                <td *ngIf='column.id === "price"'>{{ trd.price | number : '0.0-10' }}</td>
-                <td *ngIf='column.id === "date"'>{{ formatDate(trd.displayDate) }}</td>
-                <td *ngIf='column.id === "volume"'>{{ trd.volume | number }}</td>
-              </ng-container>
-            </tr>
-          </ng-template>
+                >
+                <td>
+                  <span [class]='trd.side.toString() === "sell" ? "bg-sell" : "bg-buy"'>&nbsp;</span>
+                </td>
+                @for (column of td.tableConfig.columns; track column) {
+                  @if (column.id === "id") {
+                    <td>{{ trd.id }}</td>
+                  }
+                  @if (column.id === "orderNo") {
+                    <td>{{ trd.orderNo }}</td>
+                  }
+                  @if (column.id === "symbol") {
+                    <td class='fw-bold'>{{ trd.symbol }}</td>
+                  }
+                  @if (column.id === "shortName") {
+                    <td>{{ trd.shortName }}</td>
+                  }
+                  @if (column.id === "side") {
+                    <td [class]='trd.side.toString() === "sell" ? "sell" : "buy"'>{{ trd.side }}</td>
+                  }
+                  @if (column.id === "qty") {
+                    <td>{{ trd.qty | number }}</td>
+                  }
+                  @if (column.id === "price") {
+                    <td>{{ trd.price | number : '0.0-10' }}</td>
+                  }
+                  @if (column.id === "date") {
+                    <td>{{ formatDate(trd.displayDate) }}</td>
+                  }
+                  @if (column.id === "volume") {
+                    <td>{{ trd.volume | number }}</td>
+                  }
+                }
+              </tr>
+            </ng-template>
           </tbody>
           <ng-template #footer>
             <div
               class="export-button-container"
               (nzResizeObserve)="footerSizeChanged($event)"
               nzResizeObserver
-            >
-              <button nz-button nzType="link" *ngIf="canExport(td.trades)" (click)="exportToFile(td.trades)">
-                <i nz-icon nzType="download"></i>
-                {{t('exportToFile')}}
-              </button>
+              >
+              @if (canExport(td.trades)) {
+                <button nz-button nzType="link" (click)="exportToFile(td.trades)">
+                  <i nz-icon nzType="download"></i>
+                  {{t('exportToFile')}}
+                </button>
+              }
             </div>
           </ng-template>
         </nz-table>

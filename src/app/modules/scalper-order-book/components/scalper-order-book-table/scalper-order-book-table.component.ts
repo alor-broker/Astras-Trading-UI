@@ -125,10 +125,6 @@ export class ScalperOrderBookTableComponent implements OnInit {
     };
   }
 
-  getTrackKey(index: number): number {
-    return index;
-  }
-
   ngOnInit(): void {
     this.initDisplayItems();
     this.subscribeToHotkeys();

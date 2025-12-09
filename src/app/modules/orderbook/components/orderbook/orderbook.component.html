@@ -1,45 +1,51 @@
-<ng-container *ngIf="settings$ | async as settings">
-  <div *ngIf="(ob$ | async) as ob" class="show-scroll">
-    <ats-orderbook-chart [guid]='guid' [chartData]="ob.chartData"></ats-orderbook-chart>
-    <div class="volumes" *ngIf="settings.showVolume">
-      <span class="bid-volume">{{ob.bidVolumes}}</span>
-      <span class="ask-volume">{{ob.askVolumes}}</span>
+@if (settings$ | async; as settings) {
+  @if ((ob$ | async); as ob) {
+    <div class="show-scroll">
+      <ats-orderbook-chart [guid]='guid' [chartData]="ob.chartData"></ats-orderbook-chart>
+      @if (settings.showVolume) {
+        <div class="volumes">
+          <span class="bid-volume">{{ob.bidVolumes}}</span>
+          <span class="ask-volume">{{ob.askVolumes}}</span>
+        </div>
+      }
+      @if (spreadDiffData$ | async; as spreadDiffData) {
+        <div class="spread-size-row">
+          <div *transloco="let t; scope: 'orderbook/orderbook'">
+            {{t('orderbookOrderbook.spreadSize')}}:
+          </div>
+          <div class="value-wrapper">
+            <span
+              [ngStyle]="{opacity: 1 - spreadDiffData.colorRatio}"
+              class="value"
+              >
+              {{spreadDiffData.diff | number: '1.1-2'}} ({{spreadDiffData.diffPercents | number: '1.1-3'}}%)
+            </span>
+            <span
+              [ngStyle]="{opacity: spreadDiffData.colorRatio}"
+              class="value red"
+              >
+              {{spreadDiffData.diff}} ({{spreadDiffData.diffPercents}}%)
+            </span>
+          </div>
+          <div></div>
+        </div>
+      }
+      @if (settings.showTable) {
+        @if ((settings.columnsOrder ?? columnsOrderEnum.VolumesAtTheEdges); as columnsOrder) {
+          @if (columnsOrder === columnsOrderEnum.VolumesAtTheEdges) {
+            <ats-orderbook-table-volumes-at-the-edges
+              [guid]="guid"
+              [ob]="ob"
+            ></ats-orderbook-table-volumes-at-the-edges>
+          }
+          @if (columnsOrder === columnsOrderEnum.VolumesAtTheMiddle) {
+            <ats-orderbook-table-volumes-at-the-middle
+              [guid]="guid"
+              [ob]="ob"
+            ></ats-orderbook-table-volumes-at-the-middle>
+          }
+        }
+      }
     </div>
-
-    <div *ngIf="spreadDiffData$ | async as spreadDiffData" class="spread-size-row">
-      <div *transloco="let t; scope: 'orderbook/orderbook'">
-        {{t('orderbookOrderbook.spreadSize')}}:
-      </div>
-      <div class="value-wrapper">
-        <span
-          [ngStyle]="{opacity: 1 - spreadDiffData.colorRatio}"
-          class="value"
-        >
-          {{spreadDiffData.diff | number: '1.1-2'}} ({{spreadDiffData.diffPercents | number: '1.1-3'}}%)
-        </span>
-        <span
-          [ngStyle]="{opacity: spreadDiffData.colorRatio}"
-          class="value red"
-        >
-          {{spreadDiffData.diff}} ({{spreadDiffData.diffPercents}}%)
-        </span>
-      </div>
-      <div></div>
-    </div>
-
-    <ng-container *ngIf="settings.showTable">
-      <ng-container *ngIf="(settings.columnsOrder ?? columnsOrderEnum.VolumesAtTheEdges) as columnsOrder">
-        <ats-orderbook-table-volumes-at-the-edges
-          *ngIf="columnsOrder === columnsOrderEnum.VolumesAtTheEdges"
-          [guid]="guid"
-          [ob]="ob"
-        ></ats-orderbook-table-volumes-at-the-edges>
-        <ats-orderbook-table-volumes-at-the-middle
-          *ngIf="columnsOrder === columnsOrderEnum.VolumesAtTheMiddle"
-          [guid]="guid"
-          [ob]="ob"
-        ></ats-orderbook-table-volumes-at-the-middle>
-      </ng-container>
-    </ng-container>
-  </div>
-</ng-container>
+  }
+}

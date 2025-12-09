@@ -1,20 +1,20 @@
-<nz-layout *ngIf="screenHeight | async as height" [style]="{height: height}">
-  <div class="d-flex flex-column content-wrapper">
-    <div class="fixed-height">
-      <ats-mobile-navbar></ats-mobile-navbar>
+@if (screenHeight | async; as height) {
+  <nz-layout [style]="{height: height}">
+    <div class="d-flex flex-column content-wrapper">
+      <div class="fixed-height">
+        <ats-mobile-navbar></ats-mobile-navbar>
+      </div>
+      <div class="instruments-history fixed-height">
+        <ats-mobile-instruments-history></ats-mobile-instruments-history>
+      </div>
+      <div class="content">
+        <ats-mobile-dashboard-content></ats-mobile-dashboard-content>
+      </div>
     </div>
-
-    <div class="instruments-history fixed-height">
-      <ats-mobile-instruments-history></ats-mobile-instruments-history>
-    </div>
-
-    <div class="content">
-      <ats-mobile-dashboard-content></ats-mobile-dashboard-content>
-    </div>
-  </div>
-  <ats-terminal-settings-widget [hiddenSections]="['hotKeysSettings', 'badgesBind', 'gridType', 'showCurrentTime']"></ats-terminal-settings-widget>
-  <ats-feedback-widget></ats-feedback-widget>
-  <ats-application-updated-widget></ats-application-updated-widget>
-  <ats-edit-order-dialog-widget></ats-edit-order-dialog-widget>
-  <ats-urgent-notification-dialog></ats-urgent-notification-dialog>
-</nz-layout>
+    <ats-terminal-settings-widget [hiddenSections]="['hotKeysSettings', 'badgesBind', 'gridType', 'showCurrentTime']"></ats-terminal-settings-widget>
+    <ats-feedback-widget></ats-feedback-widget>
+    <ats-application-updated-widget></ats-application-updated-widget>
+    <ats-edit-order-dialog-widget></ats-edit-order-dialog-widget>
+    <ats-urgent-notification-dialog></ats-urgent-notification-dialog>
+  </nz-layout>
+}

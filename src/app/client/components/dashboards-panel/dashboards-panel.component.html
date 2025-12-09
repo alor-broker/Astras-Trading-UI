@@ -3,62 +3,62 @@
   cdkDropList
   cdkDropListOrientation="horizontal"
   (cdkDropListDropped)="changeDashboardsOrder($event)"
->
-  <ng-container *ngIf="options$ | async as options">
+  >
+  @if (options$ | async; as options) {
     <nz-segmented
       class="max-w-100 min-w-0"
       [ngModel]="selectedValue$ | async"
       (nzValueChange)="selectDashboard($event)"
-    >
+      >
       @for (option of options; track option.value) {
         <label nz-segmented-item [nzValue]="option.value" [nzDisabled]="option.disabled">
           @if($index !== (options.length - 1)) {
-          <div
-            class="dashboard-label"
-            nz-tooltip
-            [nzTooltipTitle]="options[$index].label"
-            [nzTooltipPlacement]="['bottom', 'bottomLeft', 'bottomRight']"
-            cdkDrag
-            cdkDragLockAxis="x"
-          >
-            {{ options[$index].label }}
-          </div>
-        } @else {
-          <button
-            class="dropdown-btn"
-            id="dashboard-select-btn"
-            nz-button
-            nz-dropdown
-            nzSize="small"
-            nzType="text"
-            [nzClickHide]="false"
-            [nzTrigger]="(dropdownTrigger$ | async) ?? 'hover'"
-            [nzDropdownMenu]="dashboardsMenu"
-            (nzVisibleChange)="changeDashboardSelectionMenuVisibility($event)"
-            [nzVisible]="(isDashboardSelectionMenuVisible$ | async) ?? false"
-          >
-          <span
-            class="dashboard-label"
-            *ngIf="lastSelectedNonFavoriteDashboard$ | async as lastSelectedNonFavoriteDashboard"
-            (click)="selectDashboard(lastSelectedNonFavoriteDashboard.guid)"
-            nz-typography
-            nzEllipsis
-          >
-            {{lastSelectedNonFavoriteDashboard.title}}&nbsp;
-          </span>
-            <span><i nz-icon nzType="down" nzTheme="outline" class="arrow-icon"></i></span>
-
-            <nz-dropdown-menu #dashboardsMenu="nzDropdownMenu">
-              <ats-select-dashboard-menu
-                (hideMenu)="changeDashboardSelectionMenuVisibility(false)"
-                [visibilityChange]="(isDashboardSelectionMenuVisible$ | async) ?? false"
-                (isNewDashboardFocused)="dropdownTrigger$.next($event ? 'click' : 'hover')"
-              ></ats-select-dashboard-menu>
-            </nz-dropdown-menu>
-          </button>
-        }
+            <div
+              class="dashboard-label"
+              nz-tooltip
+              [nzTooltipTitle]="options[$index].label"
+              [nzTooltipPlacement]="['bottom', 'bottomLeft', 'bottomRight']"
+              cdkDrag
+              cdkDragLockAxis="x"
+              >
+              {{ options[$index].label }}
+            </div>
+          } @else {
+            <button
+              class="dropdown-btn"
+              id="dashboard-select-btn"
+              nz-button
+              nz-dropdown
+              nzSize="small"
+              nzType="text"
+              [nzClickHide]="false"
+              [nzTrigger]="(dropdownTrigger$ | async) ?? 'hover'"
+              [nzDropdownMenu]="dashboardsMenu"
+              (nzVisibleChange)="changeDashboardSelectionMenuVisibility($event)"
+              [nzVisible]="(isDashboardSelectionMenuVisible$ | async) ?? false"
+              >
+              @if (lastSelectedNonFavoriteDashboard$ | async; as lastSelectedNonFavoriteDashboard) {
+                <span
+                  class="dashboard-label"
+                  (click)="selectDashboard(lastSelectedNonFavoriteDashboard.guid)"
+                  nz-typography
+                  nzEllipsis
+                  >
+                  {{lastSelectedNonFavoriteDashboard.title}}&nbsp;
+                </span>
+              }
+              <span><i nz-icon nzType="down" nzTheme="outline" class="arrow-icon"></i></span>
+              <nz-dropdown-menu #dashboardsMenu="nzDropdownMenu">
+                <ats-select-dashboard-menu
+                  (hideMenu)="changeDashboardSelectionMenuVisibility(false)"
+                  [visibilityChange]="(isDashboardSelectionMenuVisible$ | async) ?? false"
+                  (isNewDashboardFocused)="dropdownTrigger$.next($event ? 'click' : 'hover')"
+                ></ats-select-dashboard-menu>
+              </nz-dropdown-menu>
+            </button>
+          }
         </label>
       }
     </nz-segmented>
-  </ng-container>
+  }
 </div>

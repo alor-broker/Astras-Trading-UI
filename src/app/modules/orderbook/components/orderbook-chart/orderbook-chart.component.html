@@ -1,9 +1,13 @@
-<div class='chart' *ngIf='shouldShowChart$ | async'>
-  <canvas *ngIf="chartData$ | async as cd"
-    baseChart
-    type="scatter"
-    [datasets]="cd"
-    [legend]="false"
-    [options]="chartOptions">
-  </canvas>
-</div>
+@if (shouldShowChart$ | async) {
+  <div class='chart'>
+    @if (chartData$ | async; as cd) {
+      <canvas
+        baseChart
+        type="scatter"
+        [datasets]="cd"
+        [legend]="false"
+        [options]="chartOptions">
+      </canvas>
+    }
+  </div>
+}

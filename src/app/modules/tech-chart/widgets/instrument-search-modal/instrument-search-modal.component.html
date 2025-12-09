@@ -6,41 +6,44 @@
   (nzAfterOpen)="modalOpened()"
   nzClassName="instrument-search-modal"
   nzDraggable
->
+  >
   <ng-container *nzModalContent>
     <nz-form-item>
       <nz-form-control
         [nzErrorTip]="searchError"
         [nzWarningTip]="searchWarning"
-      >
+        >
         <nz-input-group [nzAddOnAfter]="spreadOperators" [nzSuffix]="loadingIndicator">
           <input #searchInput
-                 [nzBorderless]="false"
-                 (mousedown)="$event.stopPropagation()"
-                 (keyup)="filterChanged()"
-                 [nzAutocomplete]="autoComplete"
-                 class='ant-input'
-                 nz-input
-                 [formControl]="searchControl"
-          />
+            [nzBorderless]="false"
+            (mousedown)="$event.stopPropagation()"
+            (keyup)="filterChanged()"
+            [nzAutocomplete]="autoComplete"
+            class='ant-input'
+            nz-input
+            [formControl]="searchControl"
+            />
 
           <nz-autocomplete
             #autoComplete
             [nzWidth]="searchInput.clientWidth"
-          >
-            <nz-auto-option
-              *ngFor="let option of filteredInstruments$ | async"
-              [nzLabel]="option.symbol"
-              [nzValue]="option.symbol"
-              (selectionChange)="onSelect($event, option)"
             >
-            <span class='search-row'>
-              <nz-tag>{{ option.symbol }}</nz-tag>
-              <span class='row-center'>{{ option.shortName }}&nbsp;</span>
-              <nz-tag *ngIf='option.instrumentGroup'>{{ option.instrumentGroup }}</nz-tag>
-              <nz-tag>{{ option.exchange }}</nz-tag>
-            </span>
-            </nz-auto-option>
+            @for (option of filteredInstruments$ | async; track option) {
+              <nz-auto-option
+                [nzLabel]="option.symbol"
+                [nzValue]="option.symbol"
+                (selectionChange)="onSelect($event, option)"
+                >
+                <span class='search-row'>
+                  <nz-tag>{{ option.symbol }}</nz-tag>
+                  <span class='row-center'>{{ option.shortName }}&nbsp;</span>
+                  @if (option.instrumentGroup) {
+                    <nz-tag>{{ option.instrumentGroup }}</nz-tag>
+                  }
+                  <nz-tag>{{ option.exchange }}</nz-tag>
+                </span>
+              </nz-auto-option>
+            }
           </nz-autocomplete>
 
           <ng-template #loadingIndicator>
@@ -69,10 +72,14 @@
     </nz-form-item>
 
     <ng-template #searchError>
-      <span *ngIf="searchControl.errors?.required">{{t('validationErrors.emptyFieldError')}}</span>
+      @if (searchControl.errors?.required) {
+        <span>{{t('validationErrors.emptyFieldError')}}</span>
+      }
     </ng-template>
     <ng-template #searchWarning>
-      <span *ngIf="searchControl.errors?.expressionInvalid">{{t('techChartInstrumentSearchModal.expressionInvalid')}}</span>
+      @if (searchControl.errors?.expressionInvalid) {
+        <span>{{t('techChartInstrumentSearchModal.expressionInvalid')}}</span>
+      }
     </ng-template>
 
     <p>{{t('techChartInstrumentSearchModal.simpleInstrumentSearchInstruction')}}</p>

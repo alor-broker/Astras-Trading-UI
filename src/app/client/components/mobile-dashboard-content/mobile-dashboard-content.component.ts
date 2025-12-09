@@ -32,7 +32,7 @@ import {WidgetsSharedDataService} from "../../../shared/services/widgets-shared-
 import { map } from "rxjs/operators";
 import { arraysEqual } from "ng-zorro-antd/core/util";
 import {LetDirective} from "@ngrx/component";
-import {NgForOf, NgIf} from "@angular/common";
+
 import {DashboardModule} from "../../../modules/dashboard/dashboard.module";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
@@ -47,14 +47,12 @@ import { TranslocoDirective } from "@jsverse/transloco";
     styleUrls: ['./mobile-dashboard-content.component.less'],
   imports: [
     LetDirective,
-    NgForOf,
     DashboardModule,
-    NgIf,
     NzIconDirective,
     WidgetsGalleryComponent,
     NzButtonComponent,
     TranslocoDirective
-  ]
+]
 })
 export class MobileDashboardContentComponent implements OnInit {
   readonly newOrderWidgetId = 'order-submit';

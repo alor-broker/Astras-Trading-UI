@@ -55,17 +55,18 @@
       }
 
 
-      <li
-        *ngIf="helpLink$ | async as helpLink"
-        nz-menu-item
-        class='menu-item external-link'
-        (click)="openThirdPartyLink(helpLink)"
-      >
+      @if (helpLink$ | async; as helpLink) {
+        <li
+          nz-menu-item
+          class='menu-item external-link'
+          (click)="openThirdPartyLink(helpLink)"
+          >
           <span>
             <i nz-icon nzType="question-circle" nzTheme="outline"></i>
             <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.help')}"></ng-container>
           </span>
-      </li>
+        </li>
+      }
       <li nz-menu-item (click)="logout()" class='menu-item' >
         <span><i nz-icon nzType="logout" nzTheme="outline"></i> <span>&nbsp;{{t('dashboardNavbarCommon.exit')}}</span></span>
       </li>

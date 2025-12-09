@@ -1,36 +1,36 @@
 <div class="summary-container"
-     nzResizeObserver
-     (nzResizeObserve)="containerSizeChanged($event)"
->
-<ng-container *transloco="let t; scope: 'blotter/forward-summary'">
-  <nz-descriptions
-    *ngIf="summary$ | async as summary"
-    nzBordered
-    [nzColumn]="columns"
-    [nzSize]="columns === 1 ? 'small' : 'default'"
+  nzResizeObserver
+  (nzResizeObserve)="containerSizeChanged($event)"
   >
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.portfolioEvaluationTitle')">{{summary.portfolioEvaluation}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyFreeTitle')">{{summary.moneyFree}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyBlockedTitle')">{{summary.moneyBlocked}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.feeTitle')">{{summary.fee}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyAmountTitle')">{{summary.moneyAmount}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.portfolioLiquidationValueTitle')">{{summary.portfolioLiquidationValue}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyPledgeAmountTitle')">{{summary.moneyPledgeAmount}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.vmInterClTitle')">{{summary.vmInterCl}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.vmCurrentPositionsTitle')">{{summary.vmCurrentPositions}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.varMarginTitle')">{{summary.varMargin}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.isLimitsSetTitle')">{{summary.isLimitsSet ? t('yes') : t('no')}}</nz-descriptions-item>
-
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.indicativeVarMarginTitle')">{{summary.indicativeVarMargin}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.netOptionValueTitle')">{{summary.netOptionValue}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.posRiskTitle')">{{summary.posRisk}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.initialMarginTitle')">{{summary.initialMargin}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.minimalMarginTitle')">{{summary.minimalMargin}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.correctedMarginTitle')">{{summary.correctedMargin}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.riskCoverageRatioOneTitle')">{{summary.riskCoverageRatioOne}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.riskCoverageRatioTwoTitle')">{{summary.riskCoverageRatioTwo}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.clientTypeTitle')">{{t('blotterForwardSummary.clientTypeValues.' + summary.clientType, {fallback: summary.clientType})}}</nz-descriptions-item>
-    <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.riskStatusTitle')">{{t('blotterForwardSummary.riskStatusValues.' + summary.riskStatus, {fallback: summary.riskStatus})}}</nz-descriptions-item>
-  </nz-descriptions>
-</ng-container>
+  <ng-container *transloco="let t; scope: 'blotter/forward-summary'">
+    @if (summary$ | async; as summary) {
+      <nz-descriptions
+        nzBordered
+        [nzColumn]="columns"
+        [nzSize]="columns === 1 ? 'small' : 'default'"
+        >
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.portfolioEvaluationTitle')">{{summary.portfolioEvaluation}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyFreeTitle')">{{summary.moneyFree}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyBlockedTitle')">{{summary.moneyBlocked}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.feeTitle')">{{summary.fee}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyAmountTitle')">{{summary.moneyAmount}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.portfolioLiquidationValueTitle')">{{summary.portfolioLiquidationValue}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.moneyPledgeAmountTitle')">{{summary.moneyPledgeAmount}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.vmInterClTitle')">{{summary.vmInterCl}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.vmCurrentPositionsTitle')">{{summary.vmCurrentPositions}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.varMarginTitle')">{{summary.varMargin}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.isLimitsSetTitle')">{{summary.isLimitsSet ? t('yes') : t('no')}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.indicativeVarMarginTitle')">{{summary.indicativeVarMargin}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.netOptionValueTitle')">{{summary.netOptionValue}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.posRiskTitle')">{{summary.posRisk}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.initialMarginTitle')">{{summary.initialMargin}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.minimalMarginTitle')">{{summary.minimalMargin}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.correctedMarginTitle')">{{summary.correctedMargin}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.riskCoverageRatioOneTitle')">{{summary.riskCoverageRatioOne}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.riskCoverageRatioTwoTitle')">{{summary.riskCoverageRatioTwo}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.clientTypeTitle')">{{t('blotterForwardSummary.clientTypeValues.' + summary.clientType, {fallback: summary.clientType})}}</nz-descriptions-item>
+        <nz-descriptions-item [nzTitle]="t('blotterForwardSummary.riskStatusTitle')">{{t('blotterForwardSummary.riskStatusValues.' + summary.riskStatus, {fallback: summary.riskStatus})}}</nz-descriptions-item>
+      </nz-descriptions>
+    }
+  </ng-container>
 </div>

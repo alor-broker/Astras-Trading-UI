@@ -1,60 +1,57 @@
 <ng-container *transloco="let t; scope: 'dashboard/navbar/common'">
   <ng-container *ngrxLet="{portfolios: portfolios$, selectedPortfolio: selectedPortfolio$} as vm">
-    <button
-      *ngIf="vm.selectedPortfolio != null; else emptyPortfolio"
-      class="dropdown-btn"
-      nz-button
-      nz-dropdown
-      nzSize="small"
-      nzType="text"
-      [nzDropdownMenu]="portfoliosDropdown"
-    >
+    @if (vm.selectedPortfolio != null) {
+      <button
+        class="dropdown-btn"
+        nz-button
+        nz-dropdown
+        nzSize="small"
+        nzType="text"
+        [nzDropdownMenu]="portfoliosDropdown"
+        >
         <span>
           {{vm.selectedPortfolio.market}} {{vm.selectedPortfolio.portfolio}}
           <i nz-icon nzType="down" nzTheme="outline" class="arrow-icon"></i>
         </span>
-
-      <nz-dropdown-menu #portfoliosDropdown="nzDropdownMenu">
-        <ul nz-menu class="portfolio-menu">
-          <li>
-            <input
-              type="text"
-              nz-input
-              class="portfolio-search"
-              [placeholder]="t('dashboardNavbarCommon.searchPortfolioPlaceholder')"
-              [formControl]="searchControl"
-            />
-          </li>
-          <ng-container *ngFor="let kvp of vm.portfolios | keyvalue; trackBy: portfolioGroupsTrackByFn">
-            <li nz-menu-item nzDisabled> {{kvp.key}} </li>
-            <ng-container *ngFor="let model of kvp.value; trackBy: portfoliosTrackByFn">
-              <li
-                *ngIf="isFoundPortfolio(model)"
-                nz-menu-item
-                (click)="changePortfolio(model)"
-              >
-                {{model.market}} {{model.portfolio}}
-              </li>
-            </ng-container>
-          </ng-container>
-        </ul>
-      </nz-dropdown-menu>
-    </button>
-
-    <ng-template #emptyPortfolio>
+        <nz-dropdown-menu #portfoliosDropdown="nzDropdownMenu">
+          <ul nz-menu class="portfolio-menu">
+            <li>
+              <input
+                type="text"
+                nz-input
+                class="portfolio-search"
+                [placeholder]="t('dashboardNavbarCommon.searchPortfolioPlaceholder')"
+                [formControl]="searchControl"
+                />
+            </li>
+            @for (kvp of vm.portfolios | keyvalue; track portfolioGroupsTrackByFn($index, kvp)) {
+              <li nz-menu-item nzDisabled> {{kvp.key}} </li>
+              @for (model of kvp.value; track portfoliosTrackByFn($index, model)) {
+                @if (isFoundPortfolio(model)) {
+                  <li
+                    nz-menu-item
+                    (click)="changePortfolio(model)"
+                    >
+                    {{model.market}} {{model.portfolio}}
+                  </li>
+                }
+              }
+            }
+          </ul>
+        </nz-dropdown-menu>
+      </button>
+    } @else {
       <span
         nz-typography
         nzType="danger"
         nz-popover
         nzPopoverPlacement="bottom"
         [nzPopoverContent]="emptyPortfolioPopover"
-      >
+        >
         {{t('dashboardNavbarCommon.emptyPortfolioBtn')}}
       </span>
-
       <ng-template #emptyPortfolioPopover>
         <p>{{t('dashboardNavbarCommon.emptyPortfolioPopover')}}</p>
-
         @if(externalLinks?.personalAccount != null && externalLinks!.personalAccount!.length > 0) {
           <p>{{t('dashboardNavbarCommon.emptyPortfolioPopoverHint')}}
             <ats-external-link [href]="externalLinks?.personalAccount!">
@@ -63,7 +60,8 @@
           </p>
         }
       </ng-template>
-    </ng-template>
+    }
+
   </ng-container>
 </ng-container>
 

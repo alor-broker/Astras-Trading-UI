@@ -1,9 +1,9 @@
 <ng-container *transloco="let t; scope: 'push-notifications/setup-instrument-notifications'">
-  <ng-container *ngIf="(isNotificationsAllowed$ | async) === true">
+  @if ((isNotificationsAllowed$ | async) === true) {
     <nz-spin [nzSpinning]="isLoading$ | async">
       <div class="spin-content">
-        <ng-container *ngIf="currentInstrumentSubscriptions$ | async as currentInstrumentSubscriptions">
-          <ng-container *ngFor="let currentSubscription of currentInstrumentSubscriptions">
+        @if (currentInstrumentSubscriptions$ | async; as currentInstrumentSubscriptions) {
+          @for (currentSubscription of currentInstrumentSubscriptions; track currentSubscription) {
             <div class="d-flex justify-content-between">
               <div class="d-flex flex-row flex-gap-5">
                 <span>{{t('pushNotificationsSetupInstrumentNotifications.priceLabel')}}</span>
@@ -17,10 +17,10 @@
               </div>
             </div>
             <nz-divider></nz-divider>
-          </ng-container>
+          }
           <ng-container>
             <form [formGroup]="newPriceChangeSubscriptionForm"
-                  [nzLayout]="'vertical'" nz-form>
+              [nzLayout]="'vertical'" nz-form>
               <div class="d-flex justify-content-between flex-gap-10">
                 <nz-form-item>
                   <nz-form-control [nzErrorTip]="t('validationErrors.selectValueError')">
@@ -39,12 +39,18 @@
                     ></ats-input-number>
                   </nz-form-control>
                   <ng-template #priceError>
-                  <span
-                    *ngIf="newPriceChangeSubscriptionForm.controls.price.errors?.required">{{t('validationErrors.emptyFieldError')}}</span>
-                    <span
-                      *ngIf="newPriceChangeSubscriptionForm.controls.price.errors?.min">{{t('validationErrors.tooLittle')}}</span>
-                    <span
-                      *ngIf="newPriceChangeSubscriptionForm.controls.price.errors?.max">{{t('validationErrors.tooMuch')}}</span>
+                    @if (newPriceChangeSubscriptionForm.controls.price.errors?.required) {
+                      <span
+                      >{{t('validationErrors.emptyFieldError')}}</span>
+                    }
+                    @if (newPriceChangeSubscriptionForm.controls.price.errors?.min) {
+                      <span
+                      >{{t('validationErrors.tooLittle')}}</span>
+                    }
+                    @if (newPriceChangeSubscriptionForm.controls.price.errors?.max) {
+                      <span
+                      >{{t('validationErrors.tooMuch')}}</span>
+                    }
                   </ng-template>
                 </nz-form-item>
                 <button
@@ -57,12 +63,12 @@
               </div>
             </form>
           </ng-container>
-        </ng-container>
+        }
       </div>
     </nz-spin>
-  </ng-container>
+  }
 
-  <ng-container *ngIf="(isNotificationsAllowed$ | async) === false">
+  @if ((isNotificationsAllowed$ | async) === false) {
     <span nz-typography nzType="warning">{{t('pushNotificationsSetupInstrumentNotifications.notificationsDisabledWarning')}}</span>
-  </ng-container>
+  }
 </ng-container>

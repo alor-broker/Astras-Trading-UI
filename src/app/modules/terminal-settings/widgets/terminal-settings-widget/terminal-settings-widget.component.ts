@@ -9,7 +9,7 @@ import { GuidGenerator } from "../../../../shared/utils/guid";
 import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from "ng-zorro-antd/modal";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {TerminalSettingsModule} from "../../terminal-settings.module";
-import {AsyncPipe, NgIf} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 
 @Component({
@@ -17,15 +17,14 @@ import {NzButtonComponent} from "ng-zorro-antd/button";
     templateUrl: './terminal-settings-widget.component.html',
     styleUrls: ['./terminal-settings-widget.component.less'],
     imports: [
-        NzModalComponent,
-        TranslocoDirective,
-        TerminalSettingsModule,
-        AsyncPipe,
-        NzModalFooterDirective,
-        NgIf,
-        NzModalContentDirective,
-        NzButtonComponent
-    ]
+    NzModalComponent,
+    TranslocoDirective,
+    TerminalSettingsModule,
+    AsyncPipe,
+    NzModalFooterDirective,
+    NzModalContentDirective,
+    NzButtonComponent
+]
 })
 export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
   @Input()

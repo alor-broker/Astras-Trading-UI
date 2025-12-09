@@ -1,37 +1,36 @@
 <ng-container *transloco="let t;">
-  <ats-widget-skeleton
-    *ngIf="settings$ | async as settings"
-    [content]="contentRef"
-    [header]="headerRef"
-    [settings]="settingsRef"
-    [showSettings]="shouldShowSettings"
-    [isBlockWidget]="isBlockWidget"
-    [showContentScroll]="false"
-  >
-    <ng-template #headerRef>
-      <ats-widget-header
-        [guid]="guid"
-        [hasSettings]="true"
-        [selectedBadgeColor]="settings.badgeColor"
-        [showBadgesMenu]="(showBadge$ | async) ?? false"
-        [linkToActive]="settings.linkToActive"
-        [customTitle]="titleText + ' ' + (widgetTitle$ | async)"
-        [widgetMeta]="widgetInstance.widgetMeta"
-        (switchSettings)="onSettingsChange()"
-      ></ats-widget-header>
-    </ng-template>
-
-    <ng-template #contentRef>
-      <ats-news
-        [guid]="guid"
-        (sectionChange)="sectionChange($event)"
-      ></ats-news>
-    </ng-template>
-
-    <ng-template #settingsRef>
-      <ats-news-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-news-settings>
-    </ng-template>
-  </ats-widget-skeleton>
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [settings]="settingsRef"
+      [showSettings]="shouldShowSettings"
+      [isBlockWidget]="isBlockWidget"
+      [showContentScroll]="false"
+      >
+      <ng-template #headerRef>
+        <ats-widget-header
+          [guid]="guid"
+          [hasSettings]="true"
+          [selectedBadgeColor]="settings.badgeColor"
+          [showBadgesMenu]="(showBadge$ | async) ?? false"
+          [linkToActive]="settings.linkToActive"
+          [customTitle]="titleText + ' ' + (widgetTitle$ | async)"
+          [widgetMeta]="widgetInstance.widgetMeta"
+          (switchSettings)="onSettingsChange()"
+        ></ats-widget-header>
+      </ng-template>
+      <ng-template #contentRef>
+        <ats-news
+          [guid]="guid"
+          (sectionChange)="sectionChange($event)"
+        ></ats-news>
+      </ng-template>
+      <ng-template #settingsRef>
+        <ats-news-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-news-settings>
+      </ng-template>
+    </ats-widget-skeleton>
+  }
 
 </ng-container>
 

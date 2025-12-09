@@ -18,13 +18,7 @@ import { HistoryService } from "../../../../shared/services/history.service";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import { ScrollableRowComponent } from "../../../../shared/components/scrollable-row/scrollable-row.component";
-import {
-  AsyncPipe,
-  DecimalPipe,
-  NgClass,
-  NgForOf,
-  NgTemplateOutlet
-} from "@angular/common";
+import { AsyncPipe, DecimalPipe, NgClass, NgTemplateOutlet } from "@angular/common";
 import { ScrollableItemDirective } from "../../../../shared/directives/scrollable-item.directive";
 import { NzTypographyComponent } from "ng-zorro-antd/typography";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -42,14 +36,13 @@ export interface RibbonItem {
   styleUrls: ['./ribbon.component.less'],
   imports: [
     ScrollableRowComponent,
-    NgForOf,
     ScrollableItemDirective,
     NzTypographyComponent,
     AsyncPipe,
     DecimalPipe,
     NgClass,
     NgTemplateOutlet
-  ],
+],
   standalone: true
 })
 export class RibbonComponent implements OnInit {

@@ -19,10 +19,7 @@ import {
 } from "../../models/settings/table-settings.model";
 import { Subscription } from "rxjs";
 import { debounceTime } from "rxjs/operators";
-import {
-  NgForOf,
-  NgIf
-} from "@angular/common";
+
 import { NzButtonComponent } from "ng-zorro-antd/button";
 import { NzInputDirective } from "ng-zorro-antd/input";
 import { SharedModule } from "../../shared.module";
@@ -31,13 +28,11 @@ import { TranslocoDirective } from "@jsverse/transloco";
 @Component({
   selector: 'ats-table-search-filter',
   imports: [
-    NgForOf,
-    NgIf,
     NzButtonComponent,
     NzInputDirective,
     SharedModule,
     TranslocoDirective
-  ],
+],
   templateUrl: './table-search-filter.component.html',
   styleUrl: './table-search-filter.component.less'
 })

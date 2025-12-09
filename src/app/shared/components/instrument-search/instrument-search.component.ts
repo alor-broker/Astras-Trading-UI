@@ -26,11 +26,7 @@ import {
   NzInputGroupComponent
 } from "ng-zorro-antd/input";
 import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
-import {
-  AsyncPipe,
-  NgForOf,
-  NgIf
-} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { NzTypographyComponent } from "ng-zorro-antd/typography";
 import { NzTagComponent } from "ng-zorro-antd/tag";
 import { NzIconDirective } from "ng-zorro-antd/icon";
@@ -40,21 +36,19 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
     templateUrl: './instrument-search.component.html',
     styleUrls: ['./instrument-search.component.less'],
     imports: [
-        TranslocoDirective,
-        NzInputGroupComponent,
-        NzInputDirective,
-        NzAutocompleteTriggerDirective,
-        ReactiveFormsModule,
-        NzTooltipDirective,
-        NgIf,
-        NzTypographyComponent,
-        NzAutocompleteComponent,
-        AsyncPipe,
-        NzAutocompleteOptionComponent,
-        NgForOf,
-        NzTagComponent,
-        NzIconDirective
-    ],
+    TranslocoDirective,
+    NzInputGroupComponent,
+    NzInputDirective,
+    NzAutocompleteTriggerDirective,
+    ReactiveFormsModule,
+    NzTooltipDirective,
+    NzTypographyComponent,
+    NzAutocompleteComponent,
+    AsyncPipe,
+    NzAutocompleteOptionComponent,
+    NzTagComponent,
+    NzIconDirective
+],
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,

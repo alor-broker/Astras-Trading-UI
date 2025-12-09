@@ -4,10 +4,7 @@ import {
     OnInit
 } from '@angular/core';
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
-import {
-    AsyncPipe,
-    NgIf
-} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { SharedModule } from "../../../../shared/shared.module";
 import { TranslocoDirective } from "@jsverse/transloco";
 import {
@@ -29,12 +26,11 @@ import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
 @Component({
     selector: 'ats-mobile-home-screen-widget',
     imports: [
-        AsyncPipe,
-        NgIf,
-        SharedModule,
-        TranslocoDirective,
-        MobileHomeScreenContentComponent
-    ],
+    AsyncPipe,
+    SharedModule,
+    TranslocoDirective,
+    MobileHomeScreenContentComponent
+],
     templateUrl: './mobile-home-screen-widget.component.html',
     styleUrl: './mobile-home-screen-widget.component.less'
 })

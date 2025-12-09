@@ -12,10 +12,7 @@ import {
 } from "rxjs";
 import { map } from "rxjs/operators";
 import { TranslocoDirective } from "@jsverse/transloco";
-import {
-  AsyncPipe,
-  NgIf
-} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
 import { NzButtonComponent } from "ng-zorro-antd/button";
 import { NzIconDirective } from "ng-zorro-antd/icon";
@@ -24,13 +21,12 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
     selector: 'ats-widget-settings',
     templateUrl: './widget-settings.component.html',
     imports: [
-        TranslocoDirective,
-        NgIf,
-        NzTooltipDirective,
-        NzButtonComponent,
-        NzIconDirective,
-        AsyncPipe
-    ],
+    TranslocoDirective,
+    NzTooltipDirective,
+    NzButtonComponent,
+    NzIconDirective,
+    AsyncPipe
+],
     styleUrls: ['./widget-settings.component.less']
 })
 export class WidgetSettingsComponent implements OnInit {
