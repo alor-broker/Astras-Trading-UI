@@ -43,4 +43,6 @@ export interface ForwardRisksView {
   clientType: string;
   /** оценка ликвидного портфеля **/
   portfolioEvaluation: string;
+
+  fortsMoneyDebt: string;
 }

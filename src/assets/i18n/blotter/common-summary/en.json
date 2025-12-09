@@ -8,5 +8,6 @@
   "correctedMarginTitle": "Corrected margin",
   "riskBeforeForcePositionClosingTitle": "RCR2 (before closing)",
   "commissionTitle": "Commission",
-  "buyingPowerTitle": "Buying power"
+  "buyingPowerTitle": "Buying power",
+  "fortsMoneyDebtTitle": "Deposit required"
 }

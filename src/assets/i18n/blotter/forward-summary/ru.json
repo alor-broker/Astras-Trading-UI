@@ -22,6 +22,8 @@
 
   "clientTypeTitle": "Уровень риска",
 
+  "fortsMoneyDebtTitle": "Требуется довнести",
+
   "riskStatusTitle": "Статус",
   "riskStatusValues": {
     "Ok": "Нормальный",

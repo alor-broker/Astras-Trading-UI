@@ -10,7 +10,6 @@
   "vmCurrentPositionsTitle": "Position variation margin",
   "varMarginTitle": "Total variation margin",
   "isLimitsSetTitle": "Cash and pledge limits",
-
   "indicativeVarMarginTitle": "Indicative margin",
   "netOptionValueTitle": "NOV",
   "posRiskTitle": "Oper. risk",
@@ -19,14 +18,12 @@
   "correctedMarginTitle": "Corr. margin",
   "riskCoverageRatioOneTitle": "RCR1",
   "riskCoverageRatioTwoTitle": "RCR2",
-
   "clientTypeTitle": "Risk level",
-
-
   "riskStatusTitle": "Status",
   "riskStatusValues": {
     "Ok": "Normal",
     "Demand": "Limitation",
     "ToClose": "Closing"
-  }
+  },
+  "fortsMoneyDebtTitle": "Deposit required"
 }

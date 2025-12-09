@@ -25,4 +25,6 @@ export interface ForwardRisks {
   netOptionValue: number;
   /** Опер риск **/
   posRisk: number;
+
+  fortsMoneyDebt?: number | null;
 }
