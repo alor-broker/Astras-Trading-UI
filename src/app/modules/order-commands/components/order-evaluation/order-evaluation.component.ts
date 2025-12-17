@@ -65,7 +65,7 @@ export class OrderEvaluationComponent implements OnInit {
 
         return {
           ...evaluation,
-          currency: request.instrumentCurrency ?? 'RUB'
+          currency: evaluation.currency ?? request.instrumentCurrency ?? 'RUB'
         } as EvaluationDisplay;
       })
     );
