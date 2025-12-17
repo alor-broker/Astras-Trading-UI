@@ -140,11 +140,13 @@ export interface InstantNotificationsSettings {
   hiddenPortfoliosForNotifications?: PortfolioKey[];
 }
 
+export type TerminalLanguage = 'en' | 'ru' | 'hy';
+
 export interface TerminalSettings {
   timezoneDisplayOption?: TimezoneDisplayOption;
   isLogoutOnUserIdle?: boolean;
   userIdleDurationMin?: number;
-  language?: 'en' | 'ru' | 'hy' | null;
+  language?: TerminalLanguage | null;
   tableRowHeight?: TableRowHeight;
   badgesBind?: boolean;
   hotKeysSettings?: HotKeysSettings;

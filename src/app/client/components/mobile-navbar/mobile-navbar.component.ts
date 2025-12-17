@@ -36,39 +36,41 @@ import {
   NetworkIndicatorComponent
 } from "../../../modules/dashboard/components/network-indicator/network-indicator.component";
 import {ExternalLinkComponent} from "../../../shared/components/external-link/external-link.component";
+import { LangSwitchWidgetComponent } from "../../../modules/terminal-settings/widgets/lang-switch-widget/lang-switch-widget.component";
 
 @Component({
     selector: 'ats-mobile-navbar',
     templateUrl: './mobile-navbar.component.html',
     styleUrls: ['./mobile-navbar.component.less'],
-    imports: [
-        NzHeaderComponent,
-        TranslocoDirective,
-        RouterLink,
-        NzIconDirective,
-        NgIf,
-        AsyncPipe,
-        NzButtonComponent,
-        NzDropDownDirective,
-        JoyrideModule,
-        NzPopoverDirective,
-        NzDropdownMenuComponent,
-        NzMenuDirective,
-        NzInputDirective,
-        KeyValuePipe,
-        NgForOf,
-        NzMenuItemComponent,
-        ReactiveFormsModule,
-        DashboardModule,
-        NotificationsModule,
-        NzDrawerComponent,
-        NzDrawerContentDirective,
-        NzMenuDividerDirective,
-        NgTemplateOutlet,
-        InstrumentSearchComponent,
-        NetworkIndicatorComponent,
-        ExternalLinkComponent
-    ]
+  imports: [
+    NzHeaderComponent,
+    TranslocoDirective,
+    RouterLink,
+    NzIconDirective,
+    NgIf,
+    AsyncPipe,
+    NzButtonComponent,
+    NzDropDownDirective,
+    JoyrideModule,
+    NzPopoverDirective,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzInputDirective,
+    KeyValuePipe,
+    NgForOf,
+    NzMenuItemComponent,
+    ReactiveFormsModule,
+    DashboardModule,
+    NotificationsModule,
+    NzDrawerComponent,
+    NzDrawerContentDirective,
+    NzMenuDividerDirective,
+    NgTemplateOutlet,
+    InstrumentSearchComponent,
+    NetworkIndicatorComponent,
+    ExternalLinkComponent,
+    LangSwitchWidgetComponent
+  ]
 })
 export class MobileNavbarComponent implements OnInit {
   isSideMenuVisible = false;
