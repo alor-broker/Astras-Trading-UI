@@ -3,10 +3,7 @@ import {
   DestroyRef,
   OnInit
 } from '@angular/core';
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
   AllTradesSettings,
@@ -20,12 +17,32 @@ import { WidgetSettingsBaseComponent } from "../../../../shared/components/widge
 import { Observable } from "rxjs";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
+import { WidgetSettingsComponent } from '../../../../shared/components/widget-settings/widget-settings.component';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NzFormDirective, NzFormItemComponent, NzFormControlComponent, NzFormLabelComponent } from 'ng-zorro-antd/form';
+import { NzRowDirective, NzColDirective } from 'ng-zorro-antd/grid';
+import { NzSelectComponent, NzOptionComponent } from 'ng-zorro-antd/select';
+import { NzSwitchComponent } from 'ng-zorro-antd/switch';
 
 @Component({
     selector: 'ats-all-trades-settings',
     templateUrl: './all-trades-settings.component.html',
     styleUrls: ['./all-trades-settings.component.less'],
-    standalone: false
+    imports: [
+      WidgetSettingsComponent,
+      TranslocoDirective,
+      FormsModule,
+      NzFormDirective,
+      ReactiveFormsModule,
+      NzRowDirective,
+      NzFormItemComponent,
+      NzColDirective,
+      NzFormControlComponent,
+      NzFormLabelComponent,
+      NzSelectComponent,
+      NzOptionComponent,
+      NzSwitchComponent
+    ]
 })
 export class AllTradesSettingsComponent extends WidgetSettingsBaseComponent<AllTradesSettings> implements OnInit {
   readonly form = this.formBuilder.group({

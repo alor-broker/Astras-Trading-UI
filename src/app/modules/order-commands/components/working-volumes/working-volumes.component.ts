@@ -1,16 +1,23 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {BehaviorSubject, filter, Observable, shareReplay, switchMap} from "rxjs";
-import { OrderbookData, OrderbookDataRow, OrderbookRequest } from "../../../orderbook/models/orderbook-data.model";
+import {OrderbookData, OrderbookDataRow, OrderbookRequest} from "../../../orderbook/models/orderbook-data.model";
 import {OrderBookDataFeedHelper} from "../../../orderbook/utils/order-book-data-feed.helper";
 import {map, startWith} from "rxjs/operators";
 import {SubscriptionsDataFeedService} from "../../../../shared/services/subscriptions-data-feed.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-working-volumes',
-    templateUrl: './working-volumes.component.html',
-    styleUrls: ['./working-volumes.component.less'],
-    standalone: false
+  selector: 'ats-working-volumes',
+  templateUrl: './working-volumes.component.html',
+  styleUrls: ['./working-volumes.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzTooltipDirective,
+    AsyncPipe
+  ]
 })
 export class WorkingVolumesComponent implements OnInit {
   readonly instrumentKey$ = new BehaviorSubject<InstrumentKey | null>(null);

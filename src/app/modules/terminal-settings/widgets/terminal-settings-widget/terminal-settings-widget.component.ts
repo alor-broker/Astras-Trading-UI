@@ -8,23 +8,23 @@ import { GlobalLoadingIndicatorService } from "../../../../shared/services/globa
 import { GuidGenerator } from "../../../../shared/utils/guid";
 import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from "ng-zorro-antd/modal";
 import {TranslocoDirective} from "@jsverse/transloco";
-import {TerminalSettingsModule} from "../../terminal-settings.module";
 import { AsyncPipe } from "@angular/common";
 import {NzButtonComponent} from "ng-zorro-antd/button";
+import {TerminalSettingsComponent} from "../../components/terminal-settings/terminal-settings.component";
 
 @Component({
     selector: 'ats-terminal-settings-widget',
     templateUrl: './terminal-settings-widget.component.html',
     styleUrls: ['./terminal-settings-widget.component.less'],
-    imports: [
+  imports: [
     NzModalComponent,
     TranslocoDirective,
-    TerminalSettingsModule,
     AsyncPipe,
     NzModalFooterDirective,
     NzModalContentDirective,
-    NzButtonComponent
-]
+    NzButtonComponent,
+    TerminalSettingsComponent
+  ]
 })
 export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
   @Input()

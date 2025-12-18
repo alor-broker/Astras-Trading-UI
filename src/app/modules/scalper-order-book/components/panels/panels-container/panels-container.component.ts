@@ -38,8 +38,7 @@ export interface ResizedEvent {
             provide: PANELS_CONTAINER_CONTEXT,
             useExisting: PanelsContainerComponent
         }
-    ],
-    standalone: false
+    ]
 })
 export class PanelsContainerComponent implements PanelsContainerContext, AfterViewInit, OnDestroy {
   @ContentChildren(PanelComponent, { emitDistinctChangesOnly: true })

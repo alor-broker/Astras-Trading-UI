@@ -1,14 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { AllTradesComponent } from './all-trades.component';
-import { of } from "rxjs";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { AllTradesService } from '../../../../shared/services/all-trades.service';
+import {AllTradesComponent} from './all-trades.component';
+import {of} from "rxjs";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {AllTradesService} from '../../../../shared/services/all-trades.service';
 import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
 import {TimezoneConverter} from "../../../../shared/utils/timezone-converter";
 import {TimezoneDisplayOption} from "../../../../shared/models/enums/timezone-display-option";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents} from "ng-mocks";
+import {
+  InfiniteScrollTableComponent
+} from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
 
 describe('AllTradesComponent', () => {
   let component: AllTradesComponent;
@@ -19,14 +22,11 @@ describe('AllTradesComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        TranslocoTestsModule.getModule()
-      ],
-      declarations: [
+        TranslocoTestsModule.getModule(),
         AllTradesComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-infinite-scroll-table',
-          inputs: ['tableContainerHeight', 'tableContainerWidth', 'data', 'isLoading', 'tableConfig']
-        })
+        MockComponents(
+          InfiniteScrollTableComponent
+        )
       ],
       providers: [
         {
@@ -50,7 +50,7 @@ describe('AllTradesComponent', () => {
         }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

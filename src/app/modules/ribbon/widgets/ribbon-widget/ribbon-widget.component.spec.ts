@@ -8,12 +8,13 @@ import {
 import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import {
-  MockComponents
+  MockComponents, MockDirectives
 } from "ng-mocks";
 import { RibbonComponent } from "../../components/ribbon/ribbon.component";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzIconDirective} from "ng-zorro-antd/icon";
 
 describe('RibbonWidgetComponent', () => {
   let component: RibbonWidgetComponent;
@@ -21,36 +22,39 @@ describe('RibbonWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        RibbonWidgetComponent,
-        MockComponents(
-          RibbonComponent
-        ),
-        ...ngZorroMockComponents
-      ],
-      providers: [
+    imports: [
+      RibbonWidgetComponent,
+      MockComponents(
+        RibbonComponent,
+        NzButtonComponent
+      ),
+      MockDirectives(
+        NzIconDirective
+      )
+    ],
+    providers: [
         {
-          provide: WidgetSettingsService,
-          useValue: {
-            getSettingsOrNull: jasmine.createSpy('getSettingsOrNull').and.returnValue(of(null)),
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
-            addSettings: jasmine.createSpy('addSettings').and.callThrough()
-          }
+            provide: WidgetSettingsService,
+            useValue: {
+                getSettingsOrNull: jasmine.createSpy('getSettingsOrNull').and.returnValue(of(null)),
+                getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
+                addSettings: jasmine.createSpy('addSettings').and.callThrough()
+            }
         },
         {
-          provide: ManageDashboardsService,
-          useValue: {
-            removeWidget: jasmine.createSpy('removeWidget').and.callThrough()
-          }
+            provide: ManageDashboardsService,
+            useValue: {
+                removeWidget: jasmine.createSpy('removeWidget').and.callThrough()
+            }
         },
         {
-          provide: DashboardContextService,
-          useValue: {
-            selectedDashboard$: new Subject(),
-          }
+            provide: DashboardContextService,
+            useValue: {
+                selectedDashboard$: new Subject(),
+            }
         }
-      ]
-    })
+    ]
+})
       .compileComponents();
 
     fixture = TestBed.createComponent(RibbonWidgetComponent);

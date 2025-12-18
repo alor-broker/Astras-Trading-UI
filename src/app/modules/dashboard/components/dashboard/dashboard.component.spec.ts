@@ -1,15 +1,14 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
-import { Subject } from 'rxjs';
-import { ManageDashboardsService } from 'src/app/shared/services/manage-dashboards.service';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {Subject} from 'rxjs';
+import {ManageDashboardsService} from 'src/app/shared/services/manage-dashboards.service';
 
-import { DashboardComponent } from './dashboard.component';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import {DashboardComponent} from './dashboard.component';
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
 import {WidgetsMetaService} from "../../../../shared/services/widgets-meta.service";
-import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {MockComponents} from "ng-mocks";
+import {GridsterComponent, GridsterItemComponent} from "angular-gridster2";
+import {ParentWidgetComponent} from "../parent-widget/parent-widget.component";
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -18,12 +17,13 @@ describe('DashboardComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         DashboardComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'gridster',
-          inputs: ['options']
-        })
+        MockComponents(
+          GridsterComponent,
+          GridsterItemComponent,
+          ParentWidgetComponent
+        )
       ],
       providers: [
         {

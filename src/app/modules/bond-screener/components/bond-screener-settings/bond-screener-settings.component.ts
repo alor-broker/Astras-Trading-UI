@@ -1,31 +1,40 @@
+import {Component, DestroyRef, OnInit} from '@angular/core';
 import {
-  Component,
-  DestroyRef,
-  OnInit
-} from '@angular/core';
-import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
-import {
-  bondScreenerColumns,
-  BondScreenerSettings
-} from "../../models/bond-screener-settings.model";
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
-import {
-  BaseColumnId,
-  TableDisplaySettings
-} from "../../../../shared/models/settings/table-settings.model";
-import { Observable } from "rxjs";
-import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+  WidgetSettingsBaseComponent
+} from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import {bondScreenerColumns, BondScreenerSettings} from "../../models/bond-screener-settings.model";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {BaseColumnId, TableDisplaySettings} from "../../../../shared/models/settings/table-settings.model";
+import {Observable} from "rxjs";
+import {TableSettingHelper} from "../../../../shared/utils/table-setting.helper";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {WidgetSettingsComponent} from '../../../../shared/components/widget-settings/widget-settings.component';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {NzSwitchComponent} from 'ng-zorro-antd/switch';
 
 @Component({
-    selector: 'ats-bond-screener-settings',
-    templateUrl: './bond-screener-settings.component.html',
-    styleUrls: ['./bond-screener-settings.component.less'],
-    standalone: false
+  selector: 'ats-bond-screener-settings',
+  templateUrl: './bond-screener-settings.component.html',
+  styleUrls: ['./bond-screener-settings.component.less'],
+  imports: [
+    WidgetSettingsComponent,
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormControlComponent,
+    NzFormLabelComponent,
+    NzSelectComponent,
+    NzOptionComponent,
+    NzSwitchComponent
+  ]
 })
 export class BondScreenerSettingsComponent extends WidgetSettingsBaseComponent<BondScreenerSettings> implements OnInit {
   readonly form = this.formBuilder.group({

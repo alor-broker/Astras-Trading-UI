@@ -7,28 +7,22 @@ import {
   Output,
   ViewEncapsulation
 } from '@angular/core';
+import {BehaviorSubject, Observable, of, shareReplay, switchMap} from 'rxjs';
+import {OrderbookService} from '../../services/orderbook.service';
+import {ChartData, OrderBook} from '../../models/orderbook.model';
+import {map, startWith} from 'rxjs/operators';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {MathHelper} from "../../../../shared/utils/math-helper";
+import {ColumnsOrder, OrderbookSettings} from '../../models/orderbook-settings.model';
+import {OrderbookChartComponent} from '../orderbook-chart/orderbook-chart.component';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {AsyncPipe, DecimalPipe, NgStyle} from '@angular/common';
 import {
-  BehaviorSubject,
-  Observable,
-  of,
-  shareReplay,
-  switchMap
-} from 'rxjs';
-import { OrderbookService } from '../../services/orderbook.service';
+  OrderbookTableVolumesAtTheEdgesComponent
+} from '../orderbook-tables/orderbook-table-volumes-at-the-edges/orderbook-table-volumes-at-the-edges.component';
 import {
-  ChartData,
-  OrderBook
-} from '../../models/orderbook.model';
-import {
-  map,
-  startWith
-} from 'rxjs/operators';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { MathHelper } from "../../../../shared/utils/math-helper";
-import {
-  ColumnsOrder,
-  OrderbookSettings
-} from '../../models/orderbook-settings.model';
+  OrderbookTableVolumesAtTheMiddleComponent
+} from '../orderbook-tables/orderbook-table-volumes-at-the-middle/orderbook-table-volumes-at-the-middle.component';
 
 interface Size {
   width: string;
@@ -42,12 +36,20 @@ interface SpreadDiffData {
 }
 
 @Component({
-    selector: 'ats-order-book',
-    templateUrl: './orderbook.component.html',
-    styleUrls: ['./orderbook.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: 'ats-order-book',
+  templateUrl: './orderbook.component.html',
+  styleUrls: ['./orderbook.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  imports: [
+    OrderbookChartComponent,
+    TranslocoDirective,
+    NgStyle,
+    OrderbookTableVolumesAtTheEdgesComponent,
+    OrderbookTableVolumesAtTheMiddleComponent,
+    AsyncPipe,
+    DecimalPipe
+  ]
 })
 export class OrderBookComponent implements OnInit {
   @Input({required: true})
@@ -91,7 +93,7 @@ export class OrderBookComponent implements OnInit {
         bidVolumes: 0,
         askVolumes: 0,
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
 
     this.spreadDiffData$ = this.ob$.pipe(

@@ -1,9 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { MessageInputComponent } from './message-input.component';
-import { NzInputModule } from "ng-zorro-antd/input";
-import { NzButtonModule } from "ng-zorro-antd/button";
-import { FormsModule } from "@angular/forms";
+import {MessageInputComponent} from './message-input.component';
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
+import {MockComponents} from "ng-mocks";
 
 describe('MessageInputComponent', () => {
   let component: MessageInputComponent;
@@ -11,8 +11,13 @@ describe('MessageInputComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [NzInputModule, NzButtonModule, FormsModule],
-      declarations: [MessageInputComponent]
+      imports: [
+        MessageInputComponent,
+        ...FormsTesting.getMocks(),
+        MockComponents(
+          NzButtonComponent
+        )
+      ]
     });
     fixture = TestBed.createComponent(MessageInputComponent);
     component = fixture.componentInstance;

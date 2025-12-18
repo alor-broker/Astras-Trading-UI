@@ -1,26 +1,34 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { BlotterWidgetComponent } from './blotter-widget.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  EMPTY,
-  of
-} from "rxjs";
-import { Store } from "@ngrx/store";
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { BlotterSettings } from '../../models/blotter-settings.model';
+import {BlotterWidgetComponent} from './blotter-widget.component';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {EMPTY, of} from "rxjs";
+import {Store} from "@ngrx/store";
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
+import {BlotterSettings} from '../../models/blotter-settings.model';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 import {PUSH_NOTIFICATIONS_CONFIG} from "../../../push-notifications/services/push-notifications-config";
-import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
+import {NavigationStackService} from "../../../../shared/services/navigation-stack.service";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
+import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {NzTabComponent, NzTabDirective, NzTabsComponent} from "ng-zorro-antd/tabs";
+import {CommonSummaryComponent} from "../../components/common-summary/common-summary.component";
+import {ForwardSummaryComponent} from "../../components/forward-summary/forward-summary.component";
+import {OrdersComponent} from "../../components/orders/orders.component";
+import {StopOrdersComponent} from "../../components/stop-orders/stop-orders.component";
+import {PositionsComponent} from "../../components/positions/positions.component";
+import {TradesComponent} from "../../components/trades/trades.component";
+import {RepoTradesComponent} from "../../components/repo-trades/repo-trades.component";
+import {TradesHistoryComponent} from "../../components/trades-history/trades-history.component";
+import {PushNotificationsComponent} from "../../components/push-notifications/push-notifications.component";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {BlotterSettingsComponent} from "../../components/blotter-settings/blotter-settings.component";
+import {OrdersGroupModalWidgetComponent} from "../orders-group-modal-widget/orders-group-modal-widget.component";
 
 describe('BlotterWidgetComponent', () => {
   let component: BlotterWidgetComponent;
@@ -31,26 +39,36 @@ describe('BlotterWidgetComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     widgetSettingsServiceSpy = jasmine.createSpyObj('WidgetSettingsService', ['getSettings', 'getSettingsOrNull', 'addSettings']);
-    widgetSettingsServiceSpy.getSettings.and.returnValue(of({ activeTabIndex: 0 } as BlotterSettings));
+    widgetSettingsServiceSpy.getSettings.and.returnValue(of({activeTabIndex: 0} as BlotterSettings));
     widgetSettingsServiceSpy.getSettingsOrNull.and.returnValue(of(null));
     widgetSettingsServiceSpy.addSettings.and.callThrough();
 
     await TestBed.configureTestingModule({
-      declarations: [
-        BlotterWidgetComponent,
-        ComponentHelpers.mockComponent({ selector: 'ats-positions', inputs: ['guid'] }),
-        ComponentHelpers.mockComponent({ selector: 'ats-orders', inputs: ['guid'] }),
-        ComponentHelpers.mockComponent({ selector: 'ats-stop-orders', inputs: ['guid'] }),
-        ComponentHelpers.mockComponent({ selector: 'ats-trades', inputs: ['guid'] }),
-        ComponentHelpers.mockComponent({ selector: 'ats-trades-history', inputs: ['guid'] }),
-        ComponentHelpers.mockComponent({ selector: 'ats-repo-trades', inputs: ['guid'] }),
-        ComponentHelpers.mockComponent({ selector: 'ats-orders-group-modal-widget', inputs: ['guid'] }),
-        ComponentHelpers.mockComponent({ selector: 'ats-push-notifications', inputs: ['guid'] }),
-        ...ngZorroMockComponents,
-        widgetSkeletonMock
-      ],
       imports: [
-        TranslocoTestsModule.getModule()
+        TranslocoTestsModule.getModule(),
+        BlotterWidgetComponent,
+        MockComponents(
+          WidgetSkeletonComponent,
+          WidgetHeaderComponent,
+          NzTabsComponent,
+          NzTabComponent,
+          CommonSummaryComponent,
+          ForwardSummaryComponent,
+          OrdersComponent,
+          StopOrdersComponent,
+          PositionsComponent,
+          TradesComponent,
+          RepoTradesComponent,
+          TradesHistoryComponent,
+          PushNotificationsComponent,
+          BlotterSettingsComponent,
+          OrdersGroupModalWidgetComponent
+        ),
+        MockDirectives(
+          NzResizeObserverDirective,
+          NzTabDirective,
+          NzIconDirective
+        )
       ],
       providers: [
         {
@@ -102,7 +120,7 @@ describe('BlotterWidgetComponent', () => {
     TestBed.overrideComponent(BlotterWidgetComponent, {
       set: {
         providers: [
-          { provide: WidgetSettingsService, useValue: widgetSettingsServiceSpy },
+          {provide: WidgetSettingsService, useValue: widgetSettingsServiceSpy},
           {
             provide: Store,
             useValue: {

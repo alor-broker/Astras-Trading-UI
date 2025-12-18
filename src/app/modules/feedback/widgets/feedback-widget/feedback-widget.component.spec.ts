@@ -1,17 +1,16 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
-import { FeedbackWidgetComponent } from './feedback-widget.component';
-import { FeedbackService } from '../../services/feedback.service';
-import { of } from 'rxjs';
-import { ModalService } from '../../../../shared/services/modal.service';
-import { NewFeedback } from '../../models/feedback.model';
-import { FeedbackModule } from '../../feedback.module';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {FeedbackWidgetComponent} from './feedback-widget.component';
+import {FeedbackService} from '../../services/feedback.service';
+import {of} from 'rxjs';
+import {ModalService} from '../../../../shared/services/modal.service';
+import {NewFeedback} from '../../models/feedback.model';
+import {NzNotificationService} from 'ng-zorro-antd/notification';
 import ruFeedback from '../../../../../assets/i18n/feedback/ru.json';
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
+import {MockComponents} from "ng-mocks";
+import {NzTextareaCountComponent} from "ng-zorro-antd/input";
+import {NzRateComponent} from "ng-zorro-antd/rate";
 
 describe('FeedbackWidgetComponent', () => {
   let component: FeedbackWidgetComponent;
@@ -20,15 +19,18 @@ describe('FeedbackWidgetComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        FeedbackModule,
-        NoopAnimationsModule,
         TranslocoTestsModule.getModule({
           langs: {
             'feedback/ru': ruFeedback,
           }
         }),
+        FeedbackWidgetComponent,
+        ...FormsTesting.getMocks(),
+        MockComponents(
+          NzRateComponent,
+          NzTextareaCountComponent
+        )
       ],
-      declarations: [FeedbackWidgetComponent],
       providers: [
         {
           provide: FeedbackService,
@@ -41,7 +43,7 @@ describe('FeedbackWidgetComponent', () => {
           provide: ModalService,
           useValue: {
             shouldShowVoteModal$: of(true),
-            voteParams$: of({ code: 'testCode', description: '' } as NewFeedback),
+            voteParams$: of({code: 'testCode', description: ''} as NewFeedback),
             closeVoteModal: jasmine.createSpy('closeVoteModal').and.callThrough()
           }
         },

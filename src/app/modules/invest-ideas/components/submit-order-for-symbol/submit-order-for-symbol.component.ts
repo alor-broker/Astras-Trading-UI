@@ -1,35 +1,24 @@
+import {Component, Input} from '@angular/core';
+import {BehaviorSubject, filter, shareReplay, switchMap} from "rxjs";
+import {IdeaSymbol} from "../../services/invest-ideas-service-typings";
+import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
+import {InstrumentsService} from "../../../instruments/services/instruments.service";
+import {CommonParameters, CommonParametersService} from "../../../order-commands/services/common-parameters.service";
+import {AsyncPipe} from "@angular/common";
+import {CompactHeaderComponent} from "../../../order-commands/components/compact-header/compact-header.component";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {ConfirmableOrderCommandsService} from "../../../order-commands/services/confirmable-order-commands.service";
 import {
-  Component,
-  DestroyRef,
-  Input
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  filter,
-  shareReplay,
-  switchMap
-} from "rxjs";
-import { IdeaSymbol } from "../../services/invest-ideas-service-typings";
-import { LimitOrderConfig } from "../../../../shared/models/orders/orders-config.model";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
-import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import {
-  CommonParameters,
-  CommonParametersService
-} from "../../../order-commands/services/common-parameters.service";
-import { AsyncPipe } from "@angular/common";
-import { CompactHeaderComponent } from "../../../order-commands/components/compact-header/compact-header.component";
-import { OrderCommandsModule } from "../../../order-commands/order-commands.module";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { ConfirmableOrderCommandsService } from "../../../order-commands/services/confirmable-order-commands.service";
+  MarketOrderFormComponent
+} from "../../../order-commands/components/order-forms/market-order-form/market-order-form.component";
 
 @Component({
   selector: 'ats-submit-order-for-symbol',
   imports: [
     AsyncPipe,
     CompactHeaderComponent,
-    OrderCommandsModule,
-    TranslocoDirective
+    TranslocoDirective,
+    MarketOrderFormComponent
   ],
   templateUrl: './submit-order-for-symbol.component.html',
   styleUrl: './submit-order-for-symbol.component.less',
@@ -50,19 +39,10 @@ export class SubmitOrderForSymbolComponent {
     shareReplay(1)
   );
 
-  protected readonly limitOrderConfig: LimitOrderConfig = {
-    isBracketsSupported: false,
-    unsupportedFields: {
-      reason: true,
-      advanced: true
-    }
-  };
-
   constructor(
     private readonly dashboardContextServiced: DashboardContextService,
     private readonly instrumentsService: InstrumentsService,
     private readonly commonParametersService: CommonParametersService,
-    private readonly destroyRef: DestroyRef
   ) {
   }
 

@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { MobileDashboardComponent } from './mobile-dashboard.component';
+import {MobileDashboardComponent} from './mobile-dashboard.component';
 import {StoreModule} from "@ngrx/store";
 import {EffectsModule} from "@ngrx/effects";
 import {MobileDashboardFeature} from "../../../store/mobile-dashboard/mobile-dashboard.reducer";
@@ -21,7 +21,15 @@ import {
   TerminalSettingsWidgetComponent
 } from "../../../modules/terminal-settings/widgets/terminal-settings-widget/terminal-settings-widget.component";
 import {MobileSettingsBrokerService} from "../../../modules/dashboard/services/mobile-settings-broker.service";
-import { UrgentNotificationDialogComponent } from "../../../modules/urgent-notifications/components/urgent-notification-dialog/urgent-notification-dialog.component";
+import {
+  UrgentNotificationDialogComponent
+} from "../../../modules/urgent-notifications/components/urgent-notification-dialog/urgent-notification-dialog.component";
+import {
+  EditOrderDialogWidgetComponent
+} from "../../../modules/order-commands/widgets/edit-order-dialog-widget/edit-order-dialog-widget.component";
+import {
+  ApplicationUpdatedWidgetComponent
+} from "../../../modules/application-meta/widgets/application-updated-widget/application-updated-widget.component";
 
 describe('MobileDashboardComponent', () => {
   let component: MobileDashboardComponent;
@@ -40,7 +48,9 @@ describe('MobileDashboardComponent', () => {
           EmptyPortfoliosWarningModalComponent,
           MobileDashboardContentComponent,
           TerminalSettingsWidgetComponent,
-          UrgentNotificationDialogComponent
+          UrgentNotificationDialogComponent,
+          EditOrderDialogWidgetComponent,
+          ApplicationUpdatedWidgetComponent
         )
       ],
       providers: [
@@ -54,7 +64,7 @@ describe('MobileDashboardComponent', () => {
         ...commonTestProviders
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(MobileDashboardComponent);
     component = fixture.componentInstance;

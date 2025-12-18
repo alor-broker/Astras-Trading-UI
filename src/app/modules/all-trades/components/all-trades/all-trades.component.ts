@@ -7,10 +7,7 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import {
-  DatePipe,
-  formatNumber
-} from "@angular/common";
+import { DatePipe, formatNumber, AsyncPipe } from "@angular/common";
 import { startOfDay, toUnixTimestampSeconds } from "../../../../shared/utils/datetime";
 import { filter, map, tap, bufferTime } from "rxjs/operators";
 import {
@@ -48,12 +45,18 @@ import {
   LazyLoadingBaseTableComponent
 } from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
 import { toInstrumentKey } from "../../../../shared/utils/instruments";
+import { NzResizeObserverDirective } from 'ng-zorro-antd/cdk/resize-observer';
+import { InfiniteScrollTableComponent } from '../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component';
 
 @Component({
     selector: 'ats-all-trades',
     templateUrl: './all-trades.component.html',
     styleUrls: ['./all-trades.component.less'],
-    standalone: false
+    imports: [
+      NzResizeObserverDirective,
+      InfiniteScrollTableComponent,
+      AsyncPipe
+    ]
 })
 export class AllTradesComponent extends LazyLoadingBaseTableComponent<
     AllTradesItem,

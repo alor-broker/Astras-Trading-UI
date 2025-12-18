@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Input, OnDestroy, OnInit } from '@angular/core';
+import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -12,31 +12,54 @@ import {
   take,
   tap,
 } from "rxjs";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { PushNotificationsService } from "../../services/push-notifications.service";
-import { PriceSparkSubscription, PushSubscriptionType } from "../../models/push-notifications.model";
-import { mapWith } from "../../../../shared/utils/observable-helper";
-import { LessMore } from "../../../../shared/models/enums/less-more.model";
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
-import { inputNumberValidation } from "../../../../shared/utils/validation-options";
-import {
-  filter,
-  map
-} from "rxjs/operators";
-import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import { Instrument } from "../../../../shared/models/instruments/instrument.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { CommonParametersService } from "../../../order-commands/services/common-parameters.service";
-import { QuotesService } from "../../../../shared/services/quotes.service";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {PushNotificationsService} from "../../services/push-notifications.service";
+import {PriceSparkSubscription, PushSubscriptionType} from "../../models/push-notifications.model";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {LessMore} from "../../../../shared/models/enums/less-more.model";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {inputNumberValidation} from "../../../../shared/utils/validation-options";
+import {filter, map} from "rxjs/operators";
+import {InstrumentsService} from "../../../instruments/services/instruments.service";
+import {Instrument} from "../../../../shared/models/instruments/instrument.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {CommonParametersService} from "../../../order-commands/services/common-parameters.service";
+import {QuotesService} from "../../../../shared/services/quotes.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzSpinComponent} from 'ng-zorro-antd/spin';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzDividerComponent} from 'ng-zorro-antd/divider';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzRadioComponent, NzRadioGroupComponent} from 'ng-zorro-antd/radio';
+import {InputNumberComponent} from '../../../../shared/components/input-number/input-number.component';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-setup-instrument-notifications',
-    templateUrl: './setup-instrument-notifications.component.html',
-    styleUrls: ['./setup-instrument-notifications.component.less'],
-    standalone: false
+  selector: 'ats-setup-instrument-notifications',
+  templateUrl: './setup-instrument-notifications.component.html',
+  styleUrls: ['./setup-instrument-notifications.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzSpinComponent,
+    NzButtonComponent,
+    NzIconDirective,
+    NzDividerComponent,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormControlComponent,
+    NzRadioGroupComponent,
+    NzRadioComponent,
+    InputNumberComponent,
+    NzTypographyComponent,
+    AsyncPipe
+  ]
 })
 export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy {
   isNotificationsAllowed$!: Observable<boolean>;
@@ -57,6 +80,11 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
   readonly isLoading$ = new BehaviorSubject(false);
   readonly lessMore = LessMore;
   instrument$!: Observable<Instrument>;
+  @Input()
+  initialValues: {
+    price?: number;
+  } | null = null;
+
   private readonly instrumentKey$ = new BehaviorSubject<InstrumentKey | null>(null);
   private readonly refresh$ = new BehaviorSubject(null);
 
@@ -74,11 +102,6 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
   set instrumentKey(value: InstrumentKey | null) {
     this.instrumentKey$.next(value);
   }
-
-  @Input()
-  initialValues: {
-    price?: number;
-  } | null = null;
 
   @Input()
   set active(value: boolean) {
@@ -124,16 +147,16 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
             selectedPrice: source.commonParameters.price ?? source.initialValues?.price,
             lastPrice: lastPrice ?? 0
           }
-          )
+        )
       ),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe(({ selectedPrice, lastPrice }) => {
-        this.newPriceChangeSubscriptionForm.controls.price.setValue(selectedPrice ?? 0);
-        this.newPriceChangeSubscriptionForm.controls.priceCondition.setValue((selectedPrice != null && selectedPrice > lastPrice)
-          ? LessMore.More
-          : LessMore.Less
-        );
-      });
+    ).subscribe(({selectedPrice, lastPrice}) => {
+      this.newPriceChangeSubscriptionForm.controls.price.setValue(selectedPrice ?? 0);
+      this.newPriceChangeSubscriptionForm.controls.priceCondition.setValue((selectedPrice != null && selectedPrice > lastPrice)
+        ? LessMore.More
+        : LessMore.Less
+      );
+    });
   }
 
   cancelSubscription(id: string): void {

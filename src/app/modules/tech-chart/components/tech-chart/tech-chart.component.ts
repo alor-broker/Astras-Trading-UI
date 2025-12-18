@@ -102,8 +102,7 @@ interface ChartState {
         PositionDisplayExtension,
         OrdersDisplayExtension,
         TradesDisplayExtension
-    ],
-    standalone: false
+    ]
 })
 export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input({required: true})

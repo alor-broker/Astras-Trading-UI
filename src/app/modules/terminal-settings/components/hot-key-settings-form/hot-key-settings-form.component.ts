@@ -1,14 +1,12 @@
-import {
-  Component,
-  DestroyRef,
-  OnInit
-} from '@angular/core';
+import {Component, DestroyRef, OnInit} from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormControl,
   FormGroup,
+  FormsModule,
   NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
   ValidatorFn,
   Validators
 } from '@angular/forms';
@@ -20,23 +18,54 @@ import {
   HotKeysMap,
   HotKeysSettings
 } from '../../../../shared/models/terminal-settings/terminal-settings.model';
-import { distinctUntilChanged } from 'rxjs';
-import { ControlValueAccessorBaseComponent } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
-import { TerminalSettingsHelper } from "../../../../shared/utils/terminal-settings-helper";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {distinctUntilChanged} from 'rxjs';
+import {
+  ControlValueAccessorBaseComponent
+} from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
+import {TerminalSettingsHelper} from "../../../../shared/utils/terminal-settings-helper";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzSwitchComponent} from 'ng-zorro-antd/switch';
+import {NzDividerComponent} from 'ng-zorro-antd/divider';
+import {HotKeyInputComponent} from '../hot-key-input/hot-key-input.component';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
 
 @Component({
-    selector: 'ats-hot-key-settings-form',
-    templateUrl: './hot-key-settings-form.component.html',
-    styleUrls: ['./hot-key-settings-form.component.less'],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            multi: true,
-            useExisting: HotKeySettingsFormComponent
-        }
-    ],
-    standalone: false
+  selector: 'ats-hot-key-settings-form',
+  templateUrl: './hot-key-settings-form.component.html',
+  styleUrls: ['./hot-key-settings-form.component.less'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: HotKeySettingsFormComponent
+    }
+  ],
+  imports: [
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzIconDirective,
+    NzTooltipDirective,
+    NzSwitchComponent,
+    NzDividerComponent,
+    HotKeyInputComponent,
+    NzTypographyComponent,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    NzInputDirective,
+    NzButtonComponent
+  ]
 })
 export class HotKeySettingsFormComponent extends ControlValueAccessorBaseComponent<HotKeysSettings> implements OnInit {
   readonly form = this.formBuilder.group({

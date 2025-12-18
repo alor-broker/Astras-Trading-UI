@@ -1,27 +1,26 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { OptionBoardChartComponent } from './option-board-chart.component';
-import { OptionBoardService } from "../../services/option-board.service";
-import {
-  of,
-  Subject
-} from "rxjs";
-import { ThemeService } from "../../../../shared/services/theme.service";
-import {
-  OptionParameters,
-  OptionSide
-} from "../../models/option-board.model";
+import {OptionBoardChartComponent} from './option-board-chart.component';
+import {OptionBoardService} from "../../services/option-board.service";
+import {of, Subject} from "rxjs";
+import {ThemeService} from "../../../../shared/services/theme.service";
+import {OptionParameters, OptionSide} from "../../models/option-board.model";
 import {
   OptionBoardDataContext,
   OptionsSelection,
   SelectionParameters
 } from "../../models/option-board-data-context.model";
-import { LetDirective } from "@ngrx/component";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import { MockComponent } from "ng-mocks";
-import { NzSpaceCompactComponent } from "ng-zorro-antd/space";
+import {LetDirective} from "@ngrx/component";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzSpaceCompactComponent} from "ng-zorro-antd/space";
+import {NzSpinComponent} from "ng-zorro-antd/spin";
+import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {BaseChartDirective} from "ng2-charts";
 
 describe('OptionBoardChartComponent', () => {
   let component: OptionBoardChartComponent;
@@ -31,12 +30,20 @@ describe('OptionBoardChartComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         LetDirective,
-        TranslocoTestsModule.getModule()
-      ],
-      declarations: [
+        TranslocoTestsModule.getModule(),
         OptionBoardChartComponent,
-        ...ngZorroMockComponents,
-        MockComponent(NzSpaceCompactComponent)
+        MockComponents(
+          NzSpinComponent,
+          NzSelectComponent,
+          NzOptionComponent,
+          NzSpaceCompactComponent,
+          NzButtonComponent,
+          NzEmptyComponent
+        ),
+        MockDirectives(
+          NzIconDirective,
+          BaseChartDirective,
+        )
       ],
       providers: [
         {
@@ -59,7 +66,7 @@ describe('OptionBoardChartComponent', () => {
         }
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(OptionBoardChartComponent);
     component = fixture.componentInstance;

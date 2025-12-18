@@ -1,13 +1,13 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TopPanelComponent } from './top-panel.component';
-import {
-  BehaviorSubject,
-  Subject
-} from "rxjs";
-import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-data-context.model";
-import { LetDirective } from "@ngrx/component";
-import { ComponentHelpers } from 'src/app/shared/utils/testing/component-helpers';
+import {TopPanelComponent} from './top-panel.component';
+import {BehaviorSubject, Subject} from "rxjs";
+import {ScalperOrderBookDataContext} from "../../models/scalper-order-book-data-context.model";
+import {LetDirective} from "@ngrx/component";
+import {MockComponents} from "ng-mocks";
+import {WorkingVolumesPanelComponent} from "../working-volumes-panel/working-volumes-panel.component";
+import {ModifiersIndicatorComponent} from "../modifiers-indicator/modifiers-indicator.component";
+import {ShortLongIndicatorComponent} from "../short-long-indicator/short-long-indicator.component";
 
 describe('TopPanelComponent', () => {
   let component: TopPanelComponent;
@@ -15,12 +15,14 @@ describe('TopPanelComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [LetDirective],
-      declarations: [
+      imports: [
+        LetDirective,
         TopPanelComponent,
-        ComponentHelpers.mockComponent({ selector: 'ats-modifiers-indicator'}),
-        ComponentHelpers.mockComponent({ selector: 'ats-working-volumes-panel', inputs: ['guid', 'isActive', 'orientation']}),
-        ComponentHelpers.mockComponent({ selector: 'ats-short-long-indicator', inputs: ['dataContext', 'orientation']}),
+        MockComponents(
+          WorkingVolumesPanelComponent,
+          ModifiersIndicatorComponent,
+          ShortLongIndicatorComponent
+        )
       ]
     });
     fixture = TestBed.createComponent(TopPanelComponent);
@@ -37,9 +39,12 @@ describe('TopPanelComponent', () => {
       displayRange$: new Subject(),
       workingVolume$: new Subject(),
       scaleFactor$: new BehaviorSubject(1),
-      addLocalOrder: () => {},
-      removeLocalOrder: () => {},
-      destroy: () => {}
+      addLocalOrder: () => {
+      },
+      removeLocalOrder: () => {
+      },
+      destroy: () => {
+      }
     } as ScalperOrderBookDataContext;
 
     fixture.detectChanges();

@@ -13,12 +13,22 @@ import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/setti
 import { BlotterSettings } from '../../models/blotter-settings.model';
 import {PortfolioSummaryService} from "../../../../shared/services/portfolio-summary.service";
 import {ForwardRisksView} from "../../../../shared/models/forward-risks-view.model";
+import { NzResizeObserverDirective } from 'ng-zorro-antd/cdk/resize-observer';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NzDescriptionsComponent, NzDescriptionsItemComponent } from 'ng-zorro-antd/descriptions';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-forward-summary',
     templateUrl: './forward-summary.component.html',
     styleUrls: ['./forward-summary.component.less'],
-    standalone: false
+    imports: [
+      NzResizeObserverDirective,
+      TranslocoDirective,
+      NzDescriptionsComponent,
+      NzDescriptionsItemComponent,
+      AsyncPipe
+    ]
 })
 export class ForwardSummaryComponent implements OnInit {
   @Input()

@@ -1,11 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ApplicationUpdatedWidgetComponent } from './application-updated-widget.component';
-import { of } from 'rxjs';
-import { ModalService } from '../../../../shared/services/modal.service';
-import { ApplicationMetaModule } from '../../application-meta.module';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ApplicationMetaService } from '../../services/application-meta.service';
+import {ApplicationUpdatedWidgetComponent} from './application-updated-widget.component';
+import {of} from 'rxjs';
+import {ModalService} from '../../../../shared/services/modal.service';
+import {ApplicationMetaService} from '../../services/application-meta.service';
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {NzModalComponent, NzModalContentDirective} from "ng-zorro-antd/modal";
+import {NzDividerComponent} from "ng-zorro-antd/divider";
+import {NzCollapseComponent, NzCollapsePanelComponent} from "ng-zorro-antd/collapse";
+import {NzTypographyComponent} from "ng-zorro-antd/typography";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('ApplicationUpdatedWidgetComponent', () => {
   let component: ApplicationUpdatedWidgetComponent;
@@ -20,8 +26,20 @@ describe('ApplicationUpdatedWidgetComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        ApplicationMetaModule,
-        NoopAnimationsModule
+        ApplicationUpdatedWidgetComponent,
+        TranslocoTestsModule.getModule(),
+        MockComponents(
+          NzModalComponent,
+          NzDividerComponent,
+          NzCollapseComponent,
+          NzCollapsePanelComponent,
+          NzTypographyComponent,
+        ),
+        MockDirectives(
+          TranslocoDirective,
+          NzModalContentDirective,
+          NzIconDirective
+        )
       ],
       providers: [
         {

@@ -1,43 +1,31 @@
-import {
-  Component,
-  Inject,
-  Input,
-  OnInit
-} from '@angular/core';
-import { AsyncPipe } from "@angular/common";
-import { SharedModule } from "../../../../shared/shared.module";
-import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
-import {
-  Observable,
-  take
-} from "rxjs";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  ACTIONS_CONTEXT,
-  ActionsContext
-} from "../../../../shared/services/actions-context";
-import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import { WidgetSettingsCreationHelper } from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
-import { getValueOrDefault } from "../../../../shared/utils/object-helper";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { SettingsHelper } from "../../../../shared/utils/settings-helper";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { MarketTrendsSettings } from "../../models/market-trends-settings.model";
-import {
-  ExtendedFilter,
-  MarketSector
-} from "../../../../shared/models/market-typings.model";
-import { MarketTrendsComponent } from "../../components/market-trends/market-trends.component";
-import { MarketTrendsSettingsComponent } from "../../components/market-trends-settings/market-trends-settings.component";
+import {Component, Inject, Input, OnInit} from '@angular/core';
+import {AsyncPipe} from "@angular/common";
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {Observable, take} from "rxjs";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {ACTIONS_CONTEXT, ActionsContext} from "../../../../shared/services/actions-context";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {WidgetSettingsCreationHelper} from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
+import {getValueOrDefault} from "../../../../shared/utils/object-helper";
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {SettingsHelper} from "../../../../shared/utils/settings-helper";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {MarketTrendsSettings} from "../../models/market-trends-settings.model";
+import {ExtendedFilter, MarketSector} from "../../../../shared/models/market-typings.model";
+import {MarketTrendsComponent} from "../../components/market-trends/market-trends.component";
+import {MarketTrendsSettingsComponent} from "../../components/market-trends-settings/market-trends-settings.component";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
 
 @Component({
   selector: 'ats-market-trends-widget',
   imports: [
     AsyncPipe,
-    SharedModule,
     MarketTrendsComponent,
-    MarketTrendsSettingsComponent
-],
+    MarketTrendsSettingsComponent,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent
+  ],
   templateUrl: './market-trends-widget.component.html',
   styleUrl: './market-trends-widget.component.less'
 })

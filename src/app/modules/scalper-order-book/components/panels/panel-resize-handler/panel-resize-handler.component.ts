@@ -27,8 +27,7 @@ import {
 @Component({
     selector: 'ats-panel-resize-handler',
     templateUrl: './panel-resize-handler.component.html',
-    styleUrls: ['./panel-resize-handler.component.less'],
-    standalone: false
+    styleUrls: ['./panel-resize-handler.component.less']
 })
 export class PanelResizeHandlerComponent implements OnInit {
   constructor(

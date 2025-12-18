@@ -24,8 +24,7 @@ export interface HoverItemsGroup<T = any> {
 
 @Directive({
     selector: '[atsHoverItemsGroup]',
-    providers: [{ provide: HOVER_ITEMS_GROUP, useExisting: HoverItemsGroupDirective }],
-    standalone: false
+    providers: [{ provide: HOVER_ITEMS_GROUP, useExisting: HoverItemsGroupDirective }]
 })
 export class HoverItemsGroupDirective<T = any> implements HoverItemsGroup<T>, OnInit {
   @Input()

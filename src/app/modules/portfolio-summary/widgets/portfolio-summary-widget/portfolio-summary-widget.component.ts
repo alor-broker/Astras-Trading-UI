@@ -7,12 +7,21 @@ import {PortfolioSummarySettings} from "../../models/portfolio-summary-settings.
 import {WidgetSettingsCreationHelper} from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
 import {BlotterSettings} from "../../../blotter/models/blotter-settings.model";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {PortfolioSummaryComponent} from '../../components/portfolio-summary/portfolio-summary.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-portfolio-summary-widget',
-    templateUrl: './portfolio-summary-widget.component.html',
-    styleUrls: ['./portfolio-summary-widget.component.less'],
-    standalone: false
+  selector: 'ats-portfolio-summary-widget',
+  templateUrl: './portfolio-summary-widget.component.html',
+  styleUrls: ['./portfolio-summary-widget.component.less'],
+  imports: [
+    NzButtonComponent,
+    NzIconDirective,
+    PortfolioSummaryComponent,
+    AsyncPipe
+  ]
 })
 export class PortfolioSummaryWidgetComponent implements OnInit {
   @Input({required: true})

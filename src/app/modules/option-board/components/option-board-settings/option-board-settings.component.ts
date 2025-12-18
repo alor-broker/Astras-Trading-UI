@@ -1,25 +1,46 @@
+import {Component, DestroyRef, OnInit} from '@angular/core';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {Observable} from "rxjs";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {isInstrumentEqual} from "../../../../shared/utils/settings-helper";
+import {OptionBoardSettings} from "../../models/option-board-settings.model";
 import {
-  Component,
-  DestroyRef,
-  OnInit
-} from '@angular/core';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { Observable } from "rxjs";
+  WidgetSettingsBaseComponent
+} from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {WidgetSettingsComponent} from '../../../../shared/components/widget-settings/widget-settings.component';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {InstrumentSearchComponent} from '../../../../shared/components/instrument-search/instrument-search.component';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {NzCollapseComponent, NzCollapsePanelComponent} from 'ng-zorro-antd/collapse';
 import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
-import { OptionBoardSettings } from "../../models/option-board-settings.model";
-import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+  InstrumentBoardSelectComponent
+} from '../../../../shared/components/instrument-board-select/instrument-board-select.component';
 
 @Component({
-    selector: 'ats-option-board-settings',
-    templateUrl: './option-board-settings.component.html',
-    styleUrls: ['./option-board-settings.component.less'],
-    standalone: false
+  selector: 'ats-option-board-settings',
+  templateUrl: './option-board-settings.component.html',
+  styleUrls: ['./option-board-settings.component.less'],
+  imports: [
+    WidgetSettingsComponent,
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    InstrumentSearchComponent,
+    NzInputDirective,
+    NzCollapseComponent,
+    NzCollapsePanelComponent,
+    InstrumentBoardSelectComponent
+  ]
 })
 export class OptionBoardSettingsComponent extends WidgetSettingsBaseComponent<OptionBoardSettings> implements OnInit {
   readonly form = this.formBuilder.group({

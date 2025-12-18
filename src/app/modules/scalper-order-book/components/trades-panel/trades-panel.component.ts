@@ -40,6 +40,7 @@ import {
 import { Side } from "../../../../shared/models/enums/side.model";
 import { Trade } from "../../../../shared/models/trades/trade.model";
 import { Position } from "../../../../shared/models/positions/position.model";
+import { NzResizeObserverDirective } from 'ng-zorro-antd/cdk/resize-observer';
 
 interface LayerDrawer {
   zIndex: number;
@@ -72,7 +73,7 @@ interface TradeDisplay {
     selector: 'ats-trades-panel',
     templateUrl: './trades-panel.component.html',
     styleUrls: ['./trades-panel.component.less'],
-    standalone: false
+    imports: [NzResizeObserverDirective]
 })
 export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('canvas')

@@ -14,53 +14,82 @@ import {
   TrackByFunction,
   ViewChildren
 } from '@angular/core';
-import { NzTableComponent } from "ng-zorro-antd/table";
-import { filter, Observable, pairwise, shareReplay, switchMap, take } from "rxjs";
-import { ITEM_HEIGHT } from "../../../modules/all-trades/utils/all-trades.utils";
-import { debounceTime, map, startWith } from "rxjs/operators";
-import { NzContextMenuService, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
-import { TableConfig } from '../../models/table-config.model';
-import { BaseColumnSettings, FilterData, FilterType, InputFieldType } from "../../models/settings/table-settings.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
-  FormControl,
-  FormGroup
-} from "@angular/forms";
+  NzFilterTriggerComponent,
+  NzTableCellDirective,
+  NzTableComponent,
+  NzTableVirtualScrollDirective,
+  NzTbodyComponent,
+  NzThAddOnComponent,
+  NzTheadComponent,
+  NzThMeasureDirective,
+  NzTrDirective
+} from "ng-zorro-antd/table";
+import {filter, Observable, pairwise, shareReplay, switchMap, take} from "rxjs";
+import {ITEM_HEIGHT} from "../../../modules/all-trades/utils/all-trades.utils";
+import {debounceTime, map, startWith} from "rxjs/operators";
+import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {TableConfig} from '../../models/table-config.model';
+import {BaseColumnSettings, FilterData, FilterType, InputFieldType} from "../../models/settings/table-settings.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {TableRowHeightDirective} from '../../directives/table-row-height.directive';
+import {CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
+import {ResizeColumnDirective} from '../../directives/resize-column.directive';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {MergedBadgeComponent} from '../merged-badge/merged-badge.component';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {InputNumberComponent} from '../input-number/input-number.component';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
 
 export interface TableDataRow {
   id: string | number;
+
   [propName: string]: any;
 }
 
 @Component({
-    selector: 'ats-infinite-scroll-table',
-    templateUrl: './infinite-scroll-table.component.html',
-    styleUrls: ['./infinite-scroll-table.component.less'],
-    standalone: false
+  selector: 'ats-infinite-scroll-table',
+  templateUrl: './infinite-scroll-table.component.html',
+  styleUrls: ['./infinite-scroll-table.component.less'],
+  imports: [
+    NzTableComponent,
+    TableRowHeightDirective,
+    NzTheadComponent,
+    NzTrDirective,
+    CdkDropList,
+    NzTableCellDirective,
+    NzThMeasureDirective,
+    NzThAddOnComponent,
+    ResizeColumnDirective,
+    CdkDrag,
+    NzTooltipDirective,
+    NzFilterTriggerComponent,
+    NzIconDirective,
+    NzTypographyComponent,
+    NzTbodyComponent,
+    NzTableVirtualScrollDirective,
+    MergedBadgeComponent,
+    NzDropdownMenuComponent,
+    TranslocoDirective,
+    NzSelectComponent,
+    FormsModule,
+    ReactiveFormsModule,
+    NzOptionComponent,
+    NzInputDirective,
+    InputNumberComponent,
+    NzButtonComponent
+  ]
 })
 export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, OnInit {
-  private tableData: TableDataRow[] = [];
-
-  @Input() trackByFn: TrackByFunction<TableDataRow> = (index: number, data: TableDataRow) => data.id;
   @Input() tableContainerHeight = 100;
   @Input() tableContainerWidth = 100;
   @Input() isLoading = false;
   @Input({required: true}) tableConfig: TableConfig<any> | null = null;
-
-  @Input() public set data(value: TableDataRow[]) {
-    if(this.tableData.length > value.length) {
-      this.tableRef$?.pipe(
-        take(1)
-      ).subscribe(x => x.cdkVirtualScrollViewport?.scrollToIndex(0));
-    }
-
-    this.tableData = value;
-  }
-
-  public get data(): TableDataRow[] {
-    return this.tableData;
-  }
-
   @Output()
   rowClick = new EventEmitter();
 
@@ -85,9 +114,6 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   @ViewChildren('headerRow')
   headerRowEl!: QueryList<ElementRef>;
 
-  private visibleItemsCount = 1;
-  private tableRef$?: Observable<NzTableComponent<TableDataRow>>;
-
   filterTypes = FilterType;
   inputFieldType = InputFieldType;
   itemHeight = ITEM_HEIGHT;
@@ -97,12 +123,42 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   sortedColumnId = '';
   sortedColumnOrder: string | null = '';
   selectedRow: TableDataRow | null = null;
+  private tableData: TableDataRow[] = [];
+  private visibleItemsCount = 1;
+  private tableRef$?: Observable<NzTableComponent<TableDataRow>>;
 
   constructor(
     private readonly nzContextMenuService: NzContextMenuService,
     private readonly destroyRef: DestroyRef
   ) {
   }
+
+  public get data(): TableDataRow[] {
+    return this.tableData;
+  }
+
+  @Input() public set data(value: TableDataRow[]) {
+    if (this.tableData.length > value.length) {
+      this.tableRef$?.pipe(
+        take(1)
+      ).subscribe(x => x.cdkVirtualScrollViewport?.scrollToIndex(0));
+    }
+
+    this.tableData = value;
+  }
+
+  private static getElementHeight(el?: any): number {
+    let elHeight = 0;
+    if (el) {
+      elHeight = el.offsetHeight as number;
+      elHeight += parseInt(window.getComputedStyle(el).getPropertyValue('margin-top'));
+      elHeight += parseInt(window.getComputedStyle(el).getPropertyValue('margin-bottom'));
+    }
+
+    return elHeight || 0;
+  }
+
+  @Input() trackByFn: TrackByFunction<TableDataRow> = (index: number, data: TableDataRow) => data.id;
 
   ngOnInit(): void {
     this.filtersForm.valueChanges
@@ -169,10 +225,10 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
       switchMap(x => x.cdkVirtualScrollViewport!.scrolledIndexChange),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe((upperItemIndex: number) => {
-        if (upperItemIndex >= this.data.length - this.visibleItemsCount - 1) {
-          this.scrolled.emit(this.filtersForm.value);
-        }
-      });
+      if (upperItemIndex >= this.data.length - this.visibleItemsCount - 1) {
+        this.scrolled.emit(this.filtersForm.value);
+      }
+    });
 
     this.headerRowEl.changes.pipe(
       map(x => x.first as ElementRef | undefined),
@@ -202,7 +258,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   }
 
   public openedFilterChange(name: string, isOpened: boolean): void {
-      this.activeFilterName = isOpened ? name : '';
+    this.activeFilterName = isOpened ? name : '';
   }
 
   public defaultFilterChange(name: string, value: string): void {
@@ -225,16 +281,5 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
       InfiniteScrollTableComponent.getElementHeight((this.headerRowEl as QueryList<ElementRef> | undefined)?.first.nativeElement);
 
     this.visibleItemsCount = Math.ceil(this.scrollHeight / this.itemHeight);
-  }
-
-  private static getElementHeight(el?: any): number {
-    let elHeight = 0;
-    if (el) {
-      elHeight = el.offsetHeight as number;
-      elHeight += parseInt(window.getComputedStyle(el).getPropertyValue('margin-top'));
-      elHeight += parseInt(window.getComputedStyle(el).getPropertyValue('margin-bottom'));
-    }
-
-    return elHeight || 0;
   }
 }

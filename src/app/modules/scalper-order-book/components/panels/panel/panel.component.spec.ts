@@ -11,23 +11,23 @@ describe('PanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PanelComponent],
-      providers: [
+    imports: [PanelComponent],
+    providers: [
         {
-          provide: PANELS_CONTAINER_CONTEXT,
-          useValue: {
-            onPanelResized: (): void => {
-            },
-            onPanelResizeCompleted: (): void => {
-            },
-            expandPanel: (): void => {
-            },
-            restore: (): void => {
-            },
-          }
+            provide: PANELS_CONTAINER_CONTEXT,
+            useValue: {
+                onPanelResized: (): void => {
+                },
+                onPanelResizeCompleted: (): void => {
+                },
+                expandPanel: (): void => {
+                },
+                restore: (): void => {
+                },
+            }
         }
-      ]
-    })
+    ]
+})
       .compileComponents();
 
     fixture = TestBed.createComponent(PanelComponent);

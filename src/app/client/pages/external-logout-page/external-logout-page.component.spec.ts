@@ -12,16 +12,16 @@ describe('ExternalLogoutPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ExternalLogoutPageComponent],
-      providers: [
+    imports: [ExternalLogoutPageComponent],
+    providers: [
         {
-          provide: ClientAuthContextService,
-          useValue: {
-            forceLogout: jasmine.createSpy('forceLogout').and.callThrough()
-          }
+            provide: ClientAuthContextService,
+            useValue: {
+                forceLogout: jasmine.createSpy('forceLogout').and.callThrough()
+            }
         }
-      ]
-    })
+    ]
+})
       .compileComponents();
 
     fixture = TestBed.createComponent(ExternalLogoutPageComponent);

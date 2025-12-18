@@ -1,14 +1,6 @@
-import {
-  Component,
-  DestroyRef,
-  Inject,
-  Input
-} from '@angular/core';
-import {
-  OptionBoardDataContext,
-  OptionsSelection
-} from "../../models/option-board-data-context.model";
-import { OptionBoardService } from "../../services/option-board.service";
+import {Component, DestroyRef, Inject, Input} from '@angular/core';
+import {OptionBoardDataContext, OptionsSelection} from "../../models/option-board-data-context.model";
+import {OptionBoardService} from "../../services/option-board.service";
 import {
   BehaviorSubject,
   combineLatest,
@@ -21,31 +13,46 @@ import {
   tap,
   timer,
 } from "rxjs";
+import {OptionKey, OptionSide} from "../../models/option-board.model";
+import {debounceTime, map} from "rxjs/operators";
+import {BaseColumnSettings} from "../../../../shared/models/settings/table-settings.model";
+import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {MathHelper} from "../../../../shared/utils/math-helper";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {ActionsContext} from 'src/app/shared/services/actions-context';
+import {ACTIONS_CONTEXT} from "../../../../shared/services/actions-context";
+import {BaseTableComponent} from "../../../../shared/components/base-table/base-table.component";
+import {TableConfig} from "../../../../shared/models/table-config.model";
+import {OptionBoardDataContextFactory} from "../../utils/option-board-data-context-factory";
 import {
-  OptionKey,
-  OptionSide
-} from "../../models/option-board.model";
+  AddToWatchlistMenuComponent
+} from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
+import {NzContextMenuService} from "ng-zorro-antd/dropdown";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {LetDirective} from '@ngrx/component';
 import {
-  debounceTime,
-  map
-} from "rxjs/operators";
-import { BaseColumnSettings } from "../../../../shared/models/settings/table-settings.model";
-import {
-  TranslatorFn,
-  TranslatorService
-} from "../../../../shared/services/translator.service";
-import { mapWith } from "../../../../shared/utils/observable-helper";
-import { MathHelper } from "../../../../shared/utils/math-helper";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { ActionsContext } from 'src/app/shared/services/actions-context';
-import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
-import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
-import { TableConfig } from "../../../../shared/models/table-config.model";
-import { OptionBoardDataContextFactory } from "../../utils/option-board-data-context-factory";
-import { AddToWatchlistMenuComponent } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
-import { NzContextMenuService } from "ng-zorro-antd/dropdown";
+  NzCellFixedDirective,
+  NzTableCellDirective,
+  NzTableComponent,
+  NzTableVirtualScrollDirective,
+  NzTbodyComponent,
+  NzTheadComponent,
+  NzThMeasureDirective,
+  NzTrDirective
+} from 'ng-zorro-antd/table';
+import {TableRowHeightDirective} from '../../../../shared/directives/table-row-height.directive';
+import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {InputNumberComponent} from '../../../../shared/components/input-number/input-number.component';
+import {NzDescriptionsComponent, NzDescriptionsItemComponent} from 'ng-zorro-antd/descriptions';
+import {NzPopoverDirective} from 'ng-zorro-antd/popover';
+import {AsyncPipe, DecimalPipe, TitleCasePipe} from '@angular/common';
 
 interface OptionTranscription {
   ticker: string;
@@ -81,10 +88,35 @@ interface DetailsDisplay extends OptionKey {
 }
 
 @Component({
-    selector: 'ats-selected-options',
-    templateUrl: './selected-options.component.html',
-    styleUrls: ['./selected-options.component.less'],
-    standalone: false
+  selector: 'ats-selected-options',
+  templateUrl: './selected-options.component.html',
+  styleUrls: ['./selected-options.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzResizeObserverDirective,
+    NzEmptyComponent,
+    LetDirective,
+    NzTableComponent,
+    TableRowHeightDirective,
+    NzTheadComponent,
+    NzTrDirective,
+    NzTableCellDirective,
+    NzThMeasureDirective,
+    NzCellFixedDirective,
+    NzPopconfirmDirective,
+    NzTooltipDirective,
+    NzTbodyComponent,
+    NzTableVirtualScrollDirective,
+    NzIconDirective,
+    InputNumberComponent,
+    NzDescriptionsComponent,
+    NzDescriptionsItemComponent,
+    NzPopoverDirective,
+    AddToWatchlistMenuComponent,
+    AsyncPipe,
+    DecimalPipe,
+    TitleCasePipe
+  ]
 })
 export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay> {
   @Input({required: true})
@@ -184,9 +216,71 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
     super(widgetSettingsService, destroyRef);
   }
 
+  formatExpirationDate(date: Date): string {
+    return date.toLocaleDateString();
+  }
+
+  unselectOption($event: Event, option: DetailsDisplay): void {
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    this.dataContext.removeItemFromSelection(option.symbol);
+  }
+
+  clearSelection(): void {
+    this.dataContext.clearCurrentSelection();
+  }
+
+  rowClick(optionKey: OptionKey, $event: Event): void {
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    this.dataContext.settings$.pipe(
+      take(1)
+    ).subscribe(settings => {
+      if (settings.linkToActive === true) {
+        this.widgetSettingsService.updateSettings(settings.guid, {linkToActive: false});
+      }
+
+      this.actionsContext.selectInstrument(
+        {
+          symbol: optionKey.symbol,
+          exchange: optionKey.exchange
+        },
+        settings.badgeColor ?? defaultBadgeColor
+      );
+    });
+  }
+
+  setSelectedOptionQuantity(option: DetailsDisplay, quantity: number | null): void {
+    this.dataContext.currentSelection$.pipe(
+      take(1)
+    ).subscribe(selection => {
+      const targetOption = selection.selectedOptions.find(x => x.symbol === option.symbol && x.exchange === option.exchange);
+      if (targetOption != null) {
+        this.dataContext.setParameters(targetOption, {quantity: quantity ?? 1});
+      }
+    });
+  }
+
+  openContextMenu($event: MouseEvent, menu: AddToWatchlistMenuComponent, selectedRow: DetailsDisplay): void {
+    if (menu.menuRef == null) {
+      $event.preventDefault();
+      return;
+    }
+
+    this.nzContextMenuService.close(true);
+    menu.itemToAdd = {
+      symbol: selectedRow.symbol,
+      exchange: selectedRow.exchange
+    };
+
+    this.nzContextMenuService.create($event, menu.menuRef);
+  }
+
   protected initTableConfigStream(): Observable<TableConfig<DetailsDisplay>> {
     return this.translatorService.getTranslator('option-board/selected-options').pipe(
-      map(t => ({ columns: this.allColumns.map(c => this.toDisplayColumn(c, t)) })),
+      map(t => ({columns: this.allColumns.map(c => this.toDisplayColumn(c, t))})),
       shareReplay(1)
     );
   }
@@ -242,7 +336,7 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
             ...i.details,
             ...i.details.calculations,
             quantity: i.quantity,
-            optionTranscription : this.getOptionTranscription(i.details.symbol, i.instrument.symbol),
+            optionTranscription: this.getOptionTranscription(i.details.symbol, i.instrument.symbol),
             underlyingAssetSymbol: i.instrument.symbol,
             price: MathHelper.roundPrice(i.details.calculations.price, i.instrument.minStep)
           } as DetailsDisplay;
@@ -252,68 +346,6 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
       tap(() => this.isLoading$.next(false)),
       shareReplay(1)
     );
-  }
-
-  formatExpirationDate(date: Date): string {
-    return date.toLocaleDateString();
-  }
-
-  unselectOption($event: Event, option: DetailsDisplay): void {
-    $event.preventDefault();
-    $event.stopPropagation();
-
-    this.dataContext.removeItemFromSelection(option.symbol);
-  }
-
-  clearSelection(): void {
-    this.dataContext.clearCurrentSelection();
-  }
-
-  rowClick(optionKey: OptionKey, $event: Event): void {
-    $event.preventDefault();
-    $event.stopPropagation();
-
-    this.dataContext.settings$.pipe(
-      take(1)
-    ).subscribe(settings => {
-      if (settings.linkToActive === true) {
-        this.widgetSettingsService.updateSettings(settings.guid, {linkToActive: false});
-      }
-
-      this.actionsContext.selectInstrument(
-        {
-          symbol: optionKey.symbol,
-          exchange: optionKey.exchange
-        },
-        settings.badgeColor ?? defaultBadgeColor
-      );
-    });
-  }
-
-  setSelectedOptionQuantity(option: DetailsDisplay, quantity: number | null): void {
-    this.dataContext.currentSelection$.pipe(
-      take(1)
-    ).subscribe(selection => {
-      const targetOption = selection.selectedOptions.find(x => x.symbol === option.symbol && x.exchange === option.exchange);
-      if(targetOption != null) {
-        this.dataContext.setParameters(targetOption, { quantity: quantity ?? 1 });
-      }
-    });
-  }
-
-  openContextMenu($event: MouseEvent, menu: AddToWatchlistMenuComponent, selectedRow: DetailsDisplay): void {
-    if(menu.menuRef == null) {
-      $event.preventDefault();
-      return;
-    }
-
-    this.nzContextMenuService.close(true);
-    menu.itemToAdd = {
-      symbol: selectedRow.symbol,
-      exchange: selectedRow.exchange
-    };
-
-    this.nzContextMenuService.create($event, menu.menuRef);
   }
 
   private getOptionTranscription(optionTicker: string, baseTicker: string): OptionTranscription {

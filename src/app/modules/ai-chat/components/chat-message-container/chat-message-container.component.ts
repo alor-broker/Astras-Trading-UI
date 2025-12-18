@@ -14,6 +14,9 @@ import {
   transition,
   trigger
 } from "@angular/animations";
+import { NgClass } from '@angular/common';
+import { NzAvatarComponent } from 'ng-zorro-antd/avatar';
+import { TextMessageComponent } from '../messages/text-message/text-message.component';
 
 @Component({
     selector: 'ats-chat-message-container',
@@ -25,7 +28,11 @@ import {
             transition(':enter', [style({ transform: 'translateX(-100%)', opacity: 0 }), animate(100)]),
         ]),
     ],
-    standalone: false
+    imports: [
+      NgClass,
+      NzAvatarComponent,
+      TextMessageComponent
+    ]
 })
 export class ChatMessageContainerComponent {
   @Input({ required: true })

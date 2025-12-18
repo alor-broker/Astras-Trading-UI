@@ -17,16 +17,16 @@ describe('TradesPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TradesPanelComponent],
-      providers: [
+    imports: [TradesPanelComponent],
+    providers: [
         {
-          provide: ThemeService,
-          useValue: {
-            getThemeSettings: jasmine.createSpy('getThemeSettings').and.returnValue(new Subject())
-          }
+            provide: ThemeService,
+            useValue: {
+                getThemeSettings: jasmine.createSpy('getThemeSettings').and.returnValue(new Subject())
+            }
         }
-      ]
-    })
+    ]
+})
       .compileComponents();
 
     fixture = TestBed.createComponent(TradesPanelComponent);

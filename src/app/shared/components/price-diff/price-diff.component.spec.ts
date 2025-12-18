@@ -10,16 +10,16 @@ describe('PriceDiffComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [PriceDiffComponent],
-      providers: [
+    imports: [PriceDiffComponent],
+    providers: [
         {
-          provide: ThemeService,
-          useValue: {
-            getThemeSettings: jasmine.createSpy('getThemeSettings').and.returnValue(new Subject())
-          }
+            provide: ThemeService,
+            useValue: {
+                getThemeSettings: jasmine.createSpy('getThemeSettings').and.returnValue(new Subject())
+            }
         }
-      ]
-    });
+    ]
+});
     fixture = TestBed.createComponent(PriceDiffComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

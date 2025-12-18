@@ -17,13 +17,14 @@ import { JoyrideModule } from "ngx-joyride";
 import { EnvironmentService } from "../../../shared/services/environment.service";
 import { SelectPortfolioMenuNavBtnComponent } from "../select-portfolio-menu-nav-btn/select-portfolio-menu-nav-btn.component";
 import { DashboardsPanelComponent } from "../dashboards-panel/dashboards-panel.component";
-import { DashboardModule } from "../../../modules/dashboard/dashboard.module";
 import { NetworkIndicatorComponent } from "../../../modules/dashboard/components/network-indicator/network-indicator.component";
-import { NotificationsModule } from "../../../modules/notifications/notifications.module";
 import { AiChatNavBtnComponent } from "../../../modules/ai-chat/widgets/ai-chat-nav-btn/ai-chat-nav-btn.component";
 import { ExternalLinkComponent } from "../../../shared/components/external-link/external-link.component";
 import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
 import { CurrentTimeComponent } from "../current-time/current-time.component";
+import {
+  NotificationButtonComponent
+} from "../../../modules/notifications/components/notification-button/notification-button.component";
 
 @Component({
     selector: 'ats-client-navbar',
@@ -37,12 +38,11 @@ import { CurrentTimeComponent } from "../current-time/current-time.component";
     JoyrideModule,
     SelectPortfolioMenuNavBtnComponent,
     DashboardsPanelComponent,
-    DashboardModule,
     NetworkIndicatorComponent,
-    NotificationsModule,
     AiChatNavBtnComponent,
     ExternalLinkComponent,
-    CurrentTimeComponent
+    CurrentTimeComponent,
+    NotificationButtonComponent
   ],
     templateUrl: './client-navbar.component.html',
     styleUrl: './client-navbar.component.less',

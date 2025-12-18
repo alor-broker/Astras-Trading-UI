@@ -1,53 +1,65 @@
+import {ChangeDetectionStrategy, Component, ElementRef, Inject, Input, OnInit, ViewChild} from '@angular/core';
 import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  Inject,
-  Input,
-  OnInit,
-  ViewChild
-} from '@angular/core';
-import { NzOptionSelectionChange } from 'ng-zorro-antd/auto-complete';
-import {
-  BehaviorSubject,
-  combineLatest,
-  Observable,
-  of,
-  shareReplay,
-  take,
-} from 'rxjs';
-import {
-  debounceTime,
-  filter,
-  switchMap
-} from 'rxjs/operators';
-import { Instrument } from 'src/app/shared/models/instruments/instrument.model';
-import { SearchFilter } from '../../models/search-filter.model';
-import { InstrumentsService } from '../../services/instruments.service';
-import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { WatchlistCollection } from '../../models/watchlist.model';
-import { InstrumentSelectSettings, WatchlistMeta } from '../../models/instrument-select-settings.model';
-import { WatchListTitleHelper } from "../../utils/watch-list-title.helper";
-import {
-  ACTIONS_CONTEXT,
-  ActionsContext
-} from 'src/app/shared/services/actions-context';
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { WatchInstrumentsService } from "../../services/watch-instruments.service";
+  NzAutocompleteComponent,
+  NzAutocompleteOptionComponent,
+  NzAutocompleteTriggerDirective,
+  NzOptionSelectionChange
+} from 'ng-zorro-antd/auto-complete';
+import {BehaviorSubject, combineLatest, Observable, of, shareReplay, take,} from 'rxjs';
+import {debounceTime, filter, switchMap} from 'rxjs/operators';
+import {Instrument} from 'src/app/shared/models/instruments/instrument.model';
+import {SearchFilter} from '../../models/search-filter.model';
+import {InstrumentsService} from '../../services/instruments.service';
+import {InstrumentKey} from '../../../../shared/models/instruments/instrument-key.model';
+import {WatchlistCollectionService} from '../../services/watchlist-collection.service';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {WatchlistCollection} from '../../models/watchlist.model';
+import {InstrumentSelectSettings, WatchlistMeta} from '../../models/instrument-select-settings.model';
+import {WatchListTitleHelper} from "../../utils/watch-list-title.helper";
+import {ACTIONS_CONTEXT, ActionsContext} from 'src/app/shared/services/actions-context';
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {WatchInstrumentsService} from "../../services/watch-instruments.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {FormsModule} from '@angular/forms';
+import {NzTagComponent} from 'ng-zorro-antd/tag';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzDropdownButtonDirective, NzDropDownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
+import {WatchlistTableComponent} from '../watchlist-table/watchlist-table.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-instrument-select',
-    templateUrl: './instrument-select.component.html',
-    styleUrls: ['./instrument-select.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'ats-instrument-select',
+  templateUrl: './instrument-select.component.html',
+  styleUrls: ['./instrument-select.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    TranslocoDirective,
+    NzInputDirective,
+    FormsModule,
+    NzAutocompleteTriggerDirective,
+    NzAutocompleteComponent,
+    NzAutocompleteOptionComponent,
+    NzTagComponent,
+    NzButtonComponent,
+    NzDropdownButtonDirective,
+    NzDropDownDirective,
+    NzTooltipDirective,
+    NzIconDirective,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    WatchlistTableComponent,
+    AsyncPipe
+  ]
 })
 export class InstrumentSelectComponent implements OnInit {
   @ViewChild('inputEl') inputEl!: ElementRef<HTMLInputElement>;
 
-  @Input({ required: true })
+  @Input({required: true})
   guid!: string;
 
   filteredInstruments$: Observable<Instrument[]> = of([]);
@@ -164,7 +176,7 @@ export class InstrumentSelectComponent implements OnInit {
           this.settingsService.updateSettings<InstrumentSelectSettings>(
             this.guid,
             {
-              activeWatchlistMetas: [{ id: listId, isExpanded: true }, ...(settings.activeWatchlistMetas ?? [])]
+              activeWatchlistMetas: [{id: listId, isExpanded: true}, ...(settings.activeWatchlistMetas ?? [])]
             }
           );
         }
@@ -189,6 +201,11 @@ export class InstrumentSelectComponent implements OnInit {
     return `${Math.min(window.innerWidth - autocompleteRect.right, 0)}px`;
   }
 
+  getAutocompleteWidth(input: HTMLInputElement): number {
+    const inputWidth = input.getBoundingClientRect().width;
+    return Math.max(250, inputWidth);
+  }
+
   private setDefaultWatchList(): void {
     combineLatest([
         this.settings$,
@@ -206,13 +223,13 @@ export class InstrumentSelectComponent implements OnInit {
       const defaultList = collection.collection.find(x => x.isDefault ?? false);
 
       if (defaultList) {
-        this.settingsService.updateSettings<InstrumentSelectSettings>(this.guid, { activeWatchlistMetas: [{ id: defaultList.id, isExpanded: true }] });
+        this.settingsService.updateSettings<InstrumentSelectSettings>(this.guid, {
+          activeWatchlistMetas: [{
+            id: defaultList.id,
+            isExpanded: true
+          }]
+        });
       }
     });
-  }
-
-  getAutocompleteWidth(input: HTMLInputElement): number {
-    const inputWidth = input.getBoundingClientRect().width;
-    return Math.max(250, inputWidth);
   }
 }

@@ -1,25 +1,25 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TechChartSettingsComponent } from './tech-chart-settings.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  EMPTY,
-  of,
-  Subject
-} from "rxjs";
-import { TechChartSettings } from '../../models/tech-chart-settings.model';
+import {TechChartSettingsComponent} from './tech-chart-settings.component';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {EMPTY, of, Subject} from "rxjs";
+import {TechChartSettings} from '../../models/tech-chart-settings.model';
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { ThemeService } from "../../../../shared/services/theme.service";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { InstrumentBoardSelectMockComponent } from "../../../../shared/utils/testing/instrument-board-select-mock-component";
-import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
-import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
-import { WidgetSettingsComponent } from "../../../../shared/components/widget-settings/widget-settings.component";
-import { InstrumentSearchComponent } from "../../../../shared/components/instrument-search/instrument-search.component";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {ThemeService} from "../../../../shared/services/theme.service";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {commonTestProviders} from "../../../../shared/utils/testing/common-test-providers";
+import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
+import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
+import {InstrumentSearchComponent} from "../../../../shared/components/instrument-search/instrument-search.component";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {
+  InstrumentBoardSelectComponent
+} from "../../../../shared/components/instrument-board-select/instrument-board-select.component";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {NzSliderComponent} from "ng-zorro-antd/slider";
+import {NzColorPickerComponent} from "ng-zorro-antd/color-picker";
+import {NzTypographyComponent} from "ng-zorro-antd/typography";
 
 describe('TechChartSettingsComponent', () => {
   let component: TechChartSettingsComponent;
@@ -27,15 +27,21 @@ describe('TechChartSettingsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        TechChartSettingsComponent,
-      ],
       imports: [
         TranslocoTestsModule.getModule(),
-        ...FormsTesting.getTestingModules(),
-        WidgetSettingsComponent,
-        InstrumentBoardSelectMockComponent,
-        InstrumentSearchComponent
+        ...FormsTesting.getMocks(),
+        TechChartSettingsComponent,
+        MockComponents(
+          WidgetSettingsComponent,
+          InstrumentSearchComponent,
+          InstrumentBoardSelectComponent,
+          NzSliderComponent,
+          NzColorPickerComponent,
+          NzTypographyComponent,
+        ),
+        MockDirectives(
+          NzIconDirective
+        )
       ],
       providers: [
         {
@@ -66,7 +72,7 @@ describe('TechChartSettingsComponent', () => {
         ...commonTestProviders
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

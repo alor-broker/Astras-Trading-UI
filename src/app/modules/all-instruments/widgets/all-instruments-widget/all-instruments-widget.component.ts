@@ -15,12 +15,25 @@ import {
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import { TranslocoDirective } from '@jsverse/transloco';
+import { WidgetSkeletonComponent } from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
+import { WidgetHeaderComponent } from '../../../../shared/components/widget-header/widget-header.component';
+import { AllInstrumentsComponent } from '../../components/all-instruments/all-instruments.component';
+import { AllInstrumentsSettingsComponent } from '../../components/all-instruments-settings/all-instruments-settings.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-all-instruments-widget',
     templateUrl: './all-instruments-widget.component.html',
     styleUrls: ['./all-instruments-widget.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      WidgetSkeletonComponent,
+      WidgetHeaderComponent,
+      AllInstrumentsComponent,
+      AllInstrumentsSettingsComponent,
+      AsyncPipe
+    ]
 })
 export class AllInstrumentsWidgetComponent implements OnInit {
   shouldShowSettings = false;

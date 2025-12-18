@@ -1,18 +1,13 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { OrderbookChartComponent } from './orderbook-chart.component';
-import { of } from 'rxjs';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  ThemeColors,
-  ThemeSettings,
-  ThemeType
-} from '../../../../shared/models/settings/theme-settings.model';
-import { ThemeService } from '../../../../shared/services/theme.service';
-import { TranslatorService } from "../../../../shared/services/translator.service";
+import {OrderbookChartComponent} from './orderbook-chart.component';
+import {of} from 'rxjs';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {ThemeColors, ThemeSettings, ThemeType} from '../../../../shared/models/settings/theme-settings.model';
+import {ThemeService} from '../../../../shared/services/theme.service';
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {MockDirectives} from "ng-mocks";
+import {BaseChartDirective} from "ng2-charts";
 
 describe('OrderbookChartComponent', () => {
   let component: OrderbookChartComponent;
@@ -42,13 +37,18 @@ describe('OrderbookChartComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [OrderbookChartComponent],
+      imports: [
+        OrderbookChartComponent,
+        MockDirectives(
+          BaseChartDirective
+        )
+      ],
       providers: [
         {
           provide: WidgetSettingsService,
-          useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }
+          useValue: {getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock))}
         },
-        { provide: ThemeService, useValue: themeServiceSpy },
+        {provide: ThemeService, useValue: themeServiceSpy},
         {
           provide: TranslatorService,
           useValue: {

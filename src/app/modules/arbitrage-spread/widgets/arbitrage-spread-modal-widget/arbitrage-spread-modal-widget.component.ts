@@ -1,13 +1,30 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable, of, take } from "rxjs";
-import { ArbitrageSpreadService } from "../../services/arbitrage-spread.service";
-import { ArbitrageSpread } from "../../models/arbitrage-spread.model";
+import {Component, OnInit} from '@angular/core';
+import {Observable, of, take} from "rxjs";
+import {ArbitrageSpreadService} from "../../services/arbitrage-spread.service";
+import {ArbitrageSpread} from "../../models/arbitrage-spread.model";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from 'ng-zorro-antd/modal';
+import {
+  ArbitrageSpreadManageComponent
+} from '../../components/arbitrage-spread-manage/arbitrage-spread-manage.component';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzWaveDirective} from 'ng-zorro-antd/core/wave';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-arbitrage-spread-modal-widget',
-    templateUrl: './arbitrage-spread-modal-widget.component.html',
-    styleUrls: ['./arbitrage-spread-modal-widget.component.less'],
-    standalone: false
+  selector: 'ats-arbitrage-spread-modal-widget',
+  templateUrl: './arbitrage-spread-modal-widget.component.html',
+  styleUrls: ['./arbitrage-spread-modal-widget.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzModalComponent,
+    NzModalContentDirective,
+    ArbitrageSpreadManageComponent,
+    NzModalFooterDirective,
+    NzButtonComponent,
+    NzWaveDirective,
+    AsyncPipe
+  ]
 })
 export class ArbitrageSpreadModalWidgetComponent implements OnInit {
   isVisible$: Observable<boolean> = of(false);

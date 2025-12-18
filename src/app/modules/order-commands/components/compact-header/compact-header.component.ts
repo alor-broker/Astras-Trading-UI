@@ -4,12 +4,12 @@ import {BehaviorSubject, combineLatest, Observable, switchMap} from "rxjs";
 import {QuotesService} from "../../../../shared/services/quotes.service";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import {filter, map, startWith} from "rxjs/operators";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { AsyncPipe } from "@angular/common";
-import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
-import { SharedModule } from "../../../../shared/shared.module";
-import { Instrument } from "../../../../shared/models/instruments/instrument.model";
-import { MathHelper } from "../../../../shared/utils/math-helper";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {AsyncPipe} from "@angular/common";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {Instrument} from "../../../../shared/models/instruments/instrument.model";
+import {MathHelper} from "../../../../shared/utils/math-helper";
+import {AtsPricePipe} from "../../../../shared/pipes/ats-price.pipe";
 
 @Component({
   selector: 'ats-compact-header',
@@ -18,8 +18,8 @@ import { MathHelper } from "../../../../shared/utils/math-helper";
     TranslocoDirective,
     AsyncPipe,
     NzTooltipDirective,
-    SharedModule
-],
+    AtsPricePipe
+  ],
   styleUrls: ['./compact-header.component.less']
 })
 export class CompactHeaderComponent implements OnInit, OnDestroy {

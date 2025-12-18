@@ -23,58 +23,58 @@ describe('TreemapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TreemapComponent],
-      providers: [
+    imports: [TreemapComponent],
+    providers: [
         {
-          provide: TreemapService,
-          useValue: {
-            getTreemap: jasmine.createSpy('getTreemap').and.returnValue(of([]))
-          }
+            provide: TreemapService,
+            useValue: {
+                getTreemap: jasmine.createSpy('getTreemap').and.returnValue(of([]))
+            }
         },
         {
-          provide: ThemeService,
-          useValue: {
-            getThemeSettings: jasmine.createSpy('getThemeSettings').and.returnValue(of({}))
-          }
+            provide: ThemeService,
+            useValue: {
+                getThemeSettings: jasmine.createSpy('getThemeSettings').and.returnValue(of({}))
+            }
         },
         {
-          provide: QuotesService,
-          useValue: {
-            getLastQuoteInfo: jasmine.createSpy('getLastQuoteInfo').and.returnValue(of({}))
-          }
+            provide: QuotesService,
+            useValue: {
+                getLastQuoteInfo: jasmine.createSpy('getLastQuoteInfo').and.returnValue(of({}))
+            }
         },
         {
-          provide: TranslatorService,
-          useValue: {
-            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
-          }
+            provide: TranslatorService,
+            useValue: {
+                getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => ''))
+            }
         },
         {
-          provide: InstrumentsService,
-          useValue: {
-            getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of({}))
-          }
+            provide: InstrumentsService,
+            useValue: {
+                getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of({}))
+            }
         },
         {
-          provide: ACTIONS_CONTEXT,
-          useValue: {
-            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
-          }
+            provide: ACTIONS_CONTEXT,
+            useValue: {
+                instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
+            }
         },
         {
-          provide: WidgetSettingsService,
-          useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({}))
-          }
+            provide: WidgetSettingsService,
+            useValue: {
+                getSettings: jasmine.createSpy('getSettings').and.returnValue(of({}))
+            }
         },
         {
-          provide: MarketService,
-          useValue: {
-            getMarketSettings: jasmine.createSpy('getMarketSettings').and.returnValue(new Subject())
-          }
+            provide: MarketService,
+            useValue: {
+                getMarketSettings: jasmine.createSpy('getMarketSettings').and.returnValue(new Subject())
+            }
         },
-      ]
-    })
+    ]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(TreemapComponent);

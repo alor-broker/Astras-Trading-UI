@@ -1,14 +1,14 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
-import { of } from 'rxjs';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {of} from 'rxjs';
 
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { CommonSummaryComponent } from './common-summary.component';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {CommonSummaryComponent} from './common-summary.component';
 import {PortfolioSummaryService} from "../../../../shared/services/portfolio-summary.service";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {NzDescriptionsComponent, NzDescriptionsItemComponent} from "ng-zorro-antd/descriptions";
 
 describe('CommonSummaryComponent', () => {
   let component: CommonSummaryComponent;
@@ -29,15 +29,22 @@ describe('CommonSummaryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CommonSummaryComponent],
       imports: [
         TranslocoTestsModule.getModule(),
+        CommonSummaryComponent,
+        MockComponents(
+          NzDescriptionsComponent,
+          NzDescriptionsItemComponent,
+        ),
+        MockDirectives(
+          NzResizeObserverDirective,
+        )
       ],
       providers: [
-        { provide: PortfolioSummaryService, useValue: spyPortfolioSummaryService },
+        {provide: PortfolioSummaryService, useValue: spyPortfolioSummaryService},
         {
           provide: WidgetSettingsService,
-          useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock)) }
+          useValue: {getSettings: jasmine.createSpy('getSettings').and.returnValue(of(settingsMock))}
         },
         {
           provide: TerminalSettingsService,

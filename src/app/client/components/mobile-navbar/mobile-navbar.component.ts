@@ -28,20 +28,21 @@ import {JoyrideModule} from "ngx-joyride";
 import {NzPopoverDirective} from "ng-zorro-antd/popover";
 import {NzMenuDirective, NzMenuDividerDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
 import {NzInputDirective} from "ng-zorro-antd/input";
-import {DashboardModule} from "../../../modules/dashboard/dashboard.module";
-import {NotificationsModule} from "../../../modules/notifications/notifications.module";
 import {NzDrawerComponent, NzDrawerContentDirective} from "ng-zorro-antd/drawer";
 import {InstrumentSearchComponent} from "../../../shared/components/instrument-search/instrument-search.component";
 import {
   NetworkIndicatorComponent
 } from "../../../modules/dashboard/components/network-indicator/network-indicator.component";
 import {ExternalLinkComponent} from "../../../shared/components/external-link/external-link.component";
+import {
+  NotificationButtonComponent
+} from "../../../modules/notifications/components/notification-button/notification-button.component";
 
 @Component({
     selector: 'ats-mobile-navbar',
     templateUrl: './mobile-navbar.component.html',
     styleUrls: ['./mobile-navbar.component.less'],
-    imports: [
+  imports: [
     NzHeaderComponent,
     TranslocoDirective,
     RouterLink,
@@ -57,16 +58,15 @@ import {ExternalLinkComponent} from "../../../shared/components/external-link/ex
     KeyValuePipe,
     NzMenuItemComponent,
     ReactiveFormsModule,
-    DashboardModule,
-    NotificationsModule,
     NzDrawerComponent,
     NzDrawerContentDirective,
     NzMenuDividerDirective,
     NgTemplateOutlet,
     InstrumentSearchComponent,
     NetworkIndicatorComponent,
-    ExternalLinkComponent
-]
+    ExternalLinkComponent,
+    NotificationButtonComponent
+  ]
 })
 export class MobileNavbarComponent implements OnInit {
   isSideMenuVisible = false;

@@ -1,50 +1,37 @@
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick
-} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
-import { BlotterBaseTableComponent } from "./blotter-base-table.component";
-import { Component, DestroyRef } from "@angular/core";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { BlotterService } from "../../services/blotter.service";
-import { By } from "@angular/platform-browser";
-import {
-  EMPTY,
-  Observable,
-  of,
-  Subject,
-  take
-} from "rxjs";
-import { TableNames } from "../../models/blotter-settings.model";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { TableConfig } from "../../../../shared/models/table-config.model";
-import { BaseColumnSettings,
-  FilterType
-} from "../../../../shared/models/settings/table-settings.model";
-import { NzContextMenuService } from "ng-zorro-antd/dropdown";
-import { InstrumentKey } from 'src/app/shared/models/instruments/instrument-key.model';
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
+import {BlotterBaseTableComponent} from "./blotter-base-table.component";
+import {Component, DestroyRef} from "@angular/core";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {BlotterService} from "../../services/blotter.service";
+import {By} from "@angular/platform-browser";
+import {EMPTY, Observable, of, Subject, take} from "rxjs";
+import {TableNames} from "../../models/blotter-settings.model";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {TableConfig} from "../../../../shared/models/table-config.model";
+import {BaseColumnSettings, FilterType} from "../../../../shared/models/settings/table-settings.model";
+import {NzContextMenuService} from "ng-zorro-antd/dropdown";
+import {InstrumentKey} from 'src/app/shared/models/instruments/instrument-key.model';
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import {NzTableComponent} from "ng-zorro-antd/table";
+import {MockComponents} from "ng-mocks";
 
 @Component({
   selector: 'ats-test-comp',
+  imports: [
+    NzTableComponent
+  ],
   template: `
     <div class="table-container" [style]="{ height: '100%'}">
       <nz-table #nzTable></nz-table>
     </div>
-  `,
-  standalone: false
+  `
 })
 class TestComponent extends BlotterBaseTableComponent<{ id: string }, object> {
-  protected allColumns: BaseColumnSettings<{ id: string }>[] = [];
-  protected rowToInstrumentKey(): Observable<InstrumentKey | null> {
-      return of(null);
-  }
-
   settingsTableName = TableNames.OrdersTable;
+  readonly restoreFiltersAndSortOnLoad = false;
+  protected allColumns: BaseColumnSettings<{ id: string }>[] = [];
 
   constructor(
     protected readonly service: BlotterService,
@@ -57,20 +44,24 @@ class TestComponent extends BlotterBaseTableComponent<{ id: string }, object> {
     super(settingsService, translatorService, nzContextMenuService, widgetLocalStateService, destroyRef);
   }
 
+  protected rowToInstrumentKey(): Observable<InstrumentKey | null> {
+    return of(null);
+  }
+
   protected initTableConfigStream(): Observable<TableConfig<any>> {
-    return of({ columns: [] });
+    return of({columns: []});
   }
 
   protected initTableDataStream(): Observable<any[]> {
     return of([]);
   }
-
-  readonly restoreFiltersAndSortOnLoad = false;
 }
 
 @Component({
-    template: '<ats-test-comp [guid]="guid"></ats-test-comp>',
-    standalone: false
+  imports: [
+    TestComponent
+  ],
+  template: '<ats-test-comp [guid]="guid"></ats-test-comp>'
 })
 class TestWrapperComponent {
   guid = 'testGuid';
@@ -90,13 +81,11 @@ describe('BlotterBaseTableComponent', () => {
     settingsServiceSpy.getSettings.and.returnValue(new Subject());
 
     await TestBed.configureTestingModule({
-      declarations: [
-        TestComponent,
-        TestWrapperComponent,
-        ...ngZorroMockComponents
-      ],
       imports: [
         TranslocoTestsModule.getModule(),
+        TestComponent,
+        TestWrapperComponent,
+        MockComponents(NzTableComponent)
       ],
       providers: [
         {
@@ -139,7 +128,7 @@ describe('BlotterBaseTableComponent', () => {
   });
 
   it('should change filter', fakeAsync(() => {
-    const expectedFilter: any = { key1: 'val1', key2: ['val2'] };
+    const expectedFilter: any = {key1: 'val1', key2: ['val2']};
     component.filterChange(expectedFilter);
 
     tick();
@@ -163,16 +152,16 @@ describe('BlotterBaseTableComponent', () => {
     const filterChangeSpy = spyOn(component, 'filterChange').and.callThrough();
 
     component.defaultFilterChange('testKey', ['testValue']);
-    expect(filterChangeSpy).toHaveBeenCalledOnceWith({ testKey: ['testValue'] });
+    expect(filterChangeSpy).toHaveBeenCalledOnceWith({testKey: ['testValue']});
   });
 
   it('should correctly detect if filter applied', fakeAsync(() => {
-    component.filters$.next({ key1: 'val1' });
+    component.filters$.next({key1: 'val1'});
 
     tick();
 
-    expect(component.isFilterApplied({ id: 'key1', displayName: '' })).toBeTrue();
-    expect(component.isFilterApplied({ id: 'key2', displayName: '' })).toBeFalse();
+    expect(component.isFilterApplied({id: 'key1', displayName: ''})).toBeTrue();
+    expect(component.isFilterApplied({id: 'key2', displayName: ''})).toBeFalse();
   }));
 
   it('should correctly filter items', () => {
@@ -195,16 +184,16 @@ describe('BlotterBaseTableComponent', () => {
     ];
     let result: boolean;
 
-    result = component.justifyFilter({ id: 'testId1', someKey: 'someVal' }, { id: 'test' });
+    result = component.justifyFilter({id: 'testId1', someKey: 'someVal'}, {id: 'test'});
     expect(result).toBeTrue();
 
-    result = component.justifyFilter({ id: 'testId1', someKey: 'someVal' }, { id: 'testid', someKey: ['someVal'] });
+    result = component.justifyFilter({id: 'testId1', someKey: 'someVal'}, {id: 'testid', someKey: ['someVal']});
     expect(result).toBeTrue();
 
-    result = component.justifyFilter({ id: 'testId1', someKey: 'someVal' }, { someKey: ['anotherVal'] });
+    result = component.justifyFilter({id: 'testId1', someKey: 'someVal'}, {someKey: ['anotherVal']});
     expect(result).toBeFalse();
 
-    result = component.justifyFilter({ id: 'testId1', someKey: 'someVal' }, { id: 'test', someKey: ['anotherVal'] });
+    result = component.justifyFilter({id: 'testId1', someKey: 'someVal'}, {id: 'test', someKey: ['anotherVal']});
     expect(result).toBeFalse();
   });
 });

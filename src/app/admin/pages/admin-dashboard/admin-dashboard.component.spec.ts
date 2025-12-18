@@ -10,6 +10,13 @@ import {
 } from "../../../modules/instruments/services/watchlist-collection-broker.service";
 import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instruments/widgets/instrument-select-dialog-widget/instrument-select-dialog-widget.component";
 import {GraphStorageService} from "../../../modules/ai-graph/services/graph-storage.service";
+import {DashboardComponent} from "../../../modules/dashboard/components/dashboard/dashboard.component";
+import {
+  OrdersDialogWidgetComponent
+} from "../../../modules/order-commands/widgets/orders-dialog-widget/orders-dialog-widget.component";
+import {
+  EditOrderDialogWidgetComponent
+} from "../../../modules/order-commands/widgets/edit-order-dialog-widget/edit-order-dialog-widget.component";
 
 describe('AdminDashboardComponent', () => {
   let component: AdminDashboardComponent;
@@ -21,7 +28,10 @@ describe('AdminDashboardComponent', () => {
         AdminDashboardComponent,
         ...MockComponents(
           AdminNavbarComponent,
-          InstrumentSelectDialogWidgetComponent
+          InstrumentSelectDialogWidgetComponent,
+          DashboardComponent,
+          OrdersDialogWidgetComponent,
+          EditOrderDialogWidgetComponent,
         )
       ],
       providers: [

@@ -1,14 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { AllInstrumentsSettingsComponent } from './all-instruments-settings.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { of } from "rxjs";
-import { NzSelectModule } from "ng-zorro-antd/select";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { NzFormModule } from "ng-zorro-antd/form";
-import { ReactiveFormsModule } from "@angular/forms";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {AllInstrumentsSettingsComponent} from './all-instruments-settings.component';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {of} from "rxjs";
+import {NzSelectModule} from "ng-zorro-antd/select";
+import {NzFormModule} from "ng-zorro-antd/form";
+import {ReactiveFormsModule} from "@angular/forms";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {MockComponents} from "ng-mocks";
+import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
 
 describe('AllInstrumentsSettingsComponent', () => {
   let component: AllInstrumentsSettingsComponent;
@@ -16,18 +16,14 @@ describe('AllInstrumentsSettingsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        AllInstrumentsSettingsComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-widget-settings',
-          inputs: ['canSave', 'canCopy', 'showCopy']
-        })
-      ],
       imports: [
-        NoopAnimationsModule,
         ReactiveFormsModule,
         NzSelectModule,
-        NzFormModule
+        NzFormModule,
+        AllInstrumentsSettingsComponent,
+        MockComponents(
+          WidgetSettingsComponent
+        )
       ],
       providers: [
         {
@@ -45,7 +41,7 @@ describe('AllInstrumentsSettingsComponent', () => {
         }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

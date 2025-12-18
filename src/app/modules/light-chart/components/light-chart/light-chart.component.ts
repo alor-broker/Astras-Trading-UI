@@ -35,6 +35,9 @@ import {
 } from '../../models/light-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { NzResizeObserverDirective } from 'ng-zorro-antd/cdk/resize-observer';
+import { TimeframesPanelComponent } from '../timeframes-panel/timeframes-panel.component';
+import { AsyncPipe } from '@angular/common';
 
 type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
@@ -44,7 +47,11 @@ type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
     styleUrls: ['./light-chart.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
-    standalone: false
+    imports: [
+      NzResizeObserverDirective,
+      TimeframesPanelComponent,
+      AsyncPipe
+    ]
 })
 export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   availableTimeFrames$!: Observable<TimeframeValue[]>;

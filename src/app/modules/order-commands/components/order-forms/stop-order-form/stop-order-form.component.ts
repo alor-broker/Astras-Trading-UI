@@ -1,69 +1,79 @@
-import {
-  Component,
-  DestroyRef,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import { BaseOrderFormComponent } from "../base-order-form.component";
-import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
-import { CommonParametersService } from "../../../services/common-parameters.service";
-import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
-import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
-import { AtsValidators } from "../../../../../shared/utils/form-validators";
-import { LessMore } from "../../../../../shared/models/enums/less-more.model";
-import {
-  OrderType,
-  TimeInForce
-} from "../../../../../shared/models/orders/order.model";
-import { Side } from "../../../../../shared/models/enums/side.model";
-import {
-  combineLatest,
-  distinctUntilChanged,
-  Observable,
-  switchMap,
-  take
-} from "rxjs";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import {
-  debounceTime,
-  filter,
-  map
-} from "rxjs/operators";
-import { PriceDiffHelper } from "../../../utils/price-diff.helper";
-import { QuotesService } from "../../../../../shared/services/quotes.service";
-import { mapWith } from "../../../../../shared/utils/observable-helper";
-import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
-import {
-  addMonthsUnix,
-  getUtcNow,
-  startOfDay,
-  toUnixTime
-} from "../../../../../shared/utils/datetime";
-import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
-import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
+import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {BaseOrderFormComponent} from "../base-order-form.component";
+import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {CommonParametersService} from "../../../services/common-parameters.service";
+import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
+import {inputNumberValidation} from "../../../../../shared/utils/validation-options";
+import {AtsValidators} from "../../../../../shared/utils/form-validators";
+import {LessMore} from "../../../../../shared/models/enums/less-more.model";
+import {OrderType, TimeInForce} from "../../../../../shared/models/orders/order.model";
+import {Side} from "../../../../../shared/models/enums/side.model";
+import {combineLatest, distinctUntilChanged, Observable, switchMap, take} from "rxjs";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {debounceTime, filter, map} from "rxjs/operators";
+import {PriceDiffHelper} from "../../../utils/price-diff.helper";
+import {QuotesService} from "../../../../../shared/services/quotes.service";
+import {mapWith} from "../../../../../shared/utils/observable-helper";
+import {TimezoneConverterService} from "../../../../../shared/services/timezone-converter.service";
+import {addMonthsUnix, getUtcNow, startOfDay, toUnixTime} from "../../../../../shared/utils/datetime";
+import {TimezoneConverter} from "../../../../../shared/utils/timezone-converter";
+import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
 import {
   NewLinkedOrder,
   NewStopLimitOrder,
   NewStopMarketOrder,
   OrderCommandResult
 } from "../../../../../shared/models/orders/new-order.model";
-import { toInstrumentKey } from "../../../../../shared/utils/instruments";
-import {
-  ExecutionPolicy,
-  SubmitGroupResult
-} from "../../../../../shared/models/orders/orders-group.model";
+import {toInstrumentKey} from "../../../../../shared/utils/instruments";
+import {ExecutionPolicy, SubmitGroupResult} from "../../../../../shared/models/orders/orders-group.model";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {InputNumberComponent} from '../../../../../shared/components/input-number/input-number.component';
+import {ShortNumberComponent} from '../../../../../shared/components/short-number/short-number.component';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {NzDatePickerComponent} from 'ng-zorro-antd/date-picker';
+import {NzRadioComponent, NzRadioGroupComponent} from 'ng-zorro-antd/radio';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzCollapseComponent, NzCollapsePanelComponent} from 'ng-zorro-antd/collapse';
+import {NzCheckboxComponent} from 'ng-zorro-antd/checkbox';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {BuySellButtonsComponent} from '../../buy-sell-buttons/buy-sell-buttons.component';
+import {AsyncPipe, DecimalPipe, KeyValuePipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-stop-order-form',
-    templateUrl: './stop-order-form.component.html',
-    styleUrls: ['./stop-order-form.component.less'],
-    standalone: false
+  selector: 'ats-stop-order-form',
+  templateUrl: './stop-order-form.component.html',
+  styleUrls: ['./stop-order-form.component.less'],
+  imports: [
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzColDirective,
+    NzFormItemComponent,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    InputNumberComponent,
+    ShortNumberComponent,
+    NzSelectComponent,
+    NzOptionComponent,
+    NzDatePickerComponent,
+    NzRadioGroupComponent,
+    NzRadioComponent,
+    NzTooltipDirective,
+    NzCollapseComponent,
+    NzCollapsePanelComponent,
+    NzCheckboxComponent,
+    NzTypographyComponent,
+    BuySellButtonsComponent,
+    AsyncPipe,
+    DecimalPipe,
+    KeyValuePipe
+  ]
 })
 export class StopOrderFormComponent extends BaseOrderFormComponent implements OnInit, OnDestroy {
   readonly sides = Side;

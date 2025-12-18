@@ -6,7 +6,7 @@ import {
   LOCALE_ID,
   OnChanges
 } from '@angular/core';
-import { DecimalPipe } from "@angular/common";
+import { DecimalPipe, NgStyle } from "@angular/common";
 import { ThemeService } from "../../services/theme.service";
 import {
   shareReplay,
@@ -26,7 +26,7 @@ interface PriceDiff {
     templateUrl: './price-diff.component.html',
     styleUrls: ['./price-diff.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [NgStyle]
 })
 export class PriceDiffComponent implements OnChanges {
   @Input({ required: true })

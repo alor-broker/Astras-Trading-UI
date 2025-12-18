@@ -1,16 +1,27 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { WatchlistCollectionEditComponent } from './watchlist-collection-edit.component';
-import { WatchlistCollectionService } from '../../services/watchlist-collection.service';
+import {WatchlistCollectionEditComponent} from './watchlist-collection-edit.component';
+import {WatchlistCollectionService} from '../../services/watchlist-collection.service';
+import {of, Subject} from 'rxjs';
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
 import {
-  of,
-  Subject
-} from 'rxjs';
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+  NzListComponent,
+  NzListEmptyComponent,
+  NzListItemActionComponent,
+  NzListItemActionsComponent,
+  NzListItemComponent
+} from "ng-zorro-antd/list";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {NzTypographyComponent} from "ng-zorro-antd/typography";
+import {NzPopconfirmDirective} from "ng-zorro-antd/popconfirm";
+import {NzDropdownButtonDirective, NzDropDownDirective, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {NzMenuDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
+import {ExportWatchlistDialogComponent} from "../export-watchlist-dialog/export-watchlist-dialog.component";
+import {ImportWatchlistDialogComponent} from "../import-watchlist-dialog/import-watchlist-dialog.component";
 
 describe('WatchlistCollectionEditComponent', () => {
   let component: WatchlistCollectionEditComponent;
@@ -33,16 +44,34 @@ describe('WatchlistCollectionEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        WatchlistCollectionEditComponent,
-        ComponentHelpers.mockComponent({ selector: 'ats-export-watchlist-dialog', inputs: ['dialogParams'] }),
-        ComponentHelpers.mockComponent({ selector: 'ats-import-watchlist-dialog', inputs: ['dialogParams'] })
-      ],
       imports: [
-        TranslocoTestsModule.getModule()
+        TranslocoTestsModule.getModule(),
+        WatchlistCollectionEditComponent,
+        ...FormsTesting.getMocks(),
+        MockComponents(
+          NzListComponent,
+          NzListItemComponent,
+          NzListItemActionsComponent,
+          NzListItemActionComponent,
+          NzButtonComponent,
+          NzTypographyComponent,
+          NzDropdownMenuComponent,
+          NzMenuItemComponent,
+          NzListEmptyComponent,
+          ExportWatchlistDialogComponent,
+          ImportWatchlistDialogComponent
+        ),
+        MockDirectives(
+          NzTooltipDirective,
+          NzIconDirective,
+          NzPopconfirmDirective,
+          NzDropdownButtonDirective,
+          NzDropDownDirective,
+          NzMenuDirective
+        )
       ],
       providers: [
-        { provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy }
+        {provide: WatchlistCollectionService, useValue: watchlistCollectionServiceSpy}
       ]
     })
       .compileComponents();

@@ -1,11 +1,10 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { UsageDisclaimerComponent } from './usage-disclaimer.component';
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {UsageDisclaimerComponent} from './usage-disclaimer.component';
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents} from "ng-mocks";
+import {NzAlertComponent} from "ng-zorro-antd/alert";
+import {MarkdownComponent} from "ngx-markdown";
 
 describe('UsageDisclaimerComponent', () => {
   let component: UsageDisclaimerComponent;
@@ -14,11 +13,12 @@ describe('UsageDisclaimerComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        TranslocoTestsModule.getModule()
-      ],
-      declarations: [
+        TranslocoTestsModule.getModule(),
         UsageDisclaimerComponent,
-        ...ngZorroMockComponents
+        MockComponents(
+          NzAlertComponent,
+          MarkdownComponent
+        )
       ]
     })
       .compileComponents();

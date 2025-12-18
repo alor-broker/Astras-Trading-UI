@@ -1,20 +1,18 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { OrdersBasketWidgetComponent } from './orders-basket-widget.component';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import {
-  EMPTY,
-  of
-} from 'rxjs';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import {OrdersBasketWidgetComponent} from './orders-basket-widget.component';
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {EMPTY, of} from 'rxjs';
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {MockComponents} from "ng-mocks";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
+import {OrdersBasketComponent} from "../../components/orders-basket/orders-basket.component";
+import {OrdersBasketSettingsComponent} from "../../components/orders-basket-settings/orders-basket-settings.component";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('OrdersBasketWidgetComponent', () => {
   let component: OrdersBasketWidgetComponent;
@@ -22,10 +20,15 @@ describe('OrdersBasketWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         OrdersBasketWidgetComponent,
-        ComponentHelpers.mockComponent({ selector: 'ats-orders-basket', inputs: ['guid'] }),
-        widgetSkeletonMock
+        TranslocoTestsModule.getModule(),
+        MockComponents(
+          WidgetSkeletonComponent,
+          WidgetHeaderComponent,
+          OrdersBasketComponent,
+          OrdersBasketSettingsComponent
+        )
       ],
       providers: [
         {

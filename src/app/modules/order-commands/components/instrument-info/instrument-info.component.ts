@@ -5,12 +5,25 @@ import {BehaviorSubject, combineLatest, filter, map, Observable, shareReplay, sw
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import { startWith } from "rxjs/operators";
 import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
+import { TranslocoDirective } from '@jsverse/transloco';
+import { InstrumentIconComponent } from '../../../../shared/components/instrument-icon/instrument-icon.component';
+import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
+import { NzDescriptionsComponent, NzDescriptionsItemComponent } from 'ng-zorro-antd/descriptions';
+import { AsyncPipe, DecimalPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-instrument-info',
     templateUrl: './instrument-info.component.html',
     styleUrls: ['./instrument-info.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      InstrumentIconComponent,
+      NzTooltipDirective,
+      NzDescriptionsComponent,
+      NzDescriptionsItemComponent,
+      AsyncPipe,
+      DecimalPipe
+    ]
 })
 export class InstrumentInfoComponent implements OnInit, OnDestroy {
   viewData$!: Observable<{

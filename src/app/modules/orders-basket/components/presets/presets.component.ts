@@ -1,27 +1,35 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild
-} from '@angular/core';
-import { DataPreset } from "../../models/orders-basket-settings.model";
+import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {DataPreset} from "../../models/orders-basket-settings.model";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzTagComponent} from 'ng-zorro-antd/tag';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'ats-presets',
-    templateUrl: './presets.component.html',
-    styleUrls: ['./presets.component.less'],
-    standalone: false
+  selector: 'ats-presets',
+  templateUrl: './presets.component.html',
+  styleUrls: ['./presets.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzTagComponent,
+    NzTooltipDirective,
+    NzIconDirective,
+    NzPopconfirmDirective,
+    NzInputDirective,
+    FormsModule
+  ]
 })
 export class PresetsComponent {
-  @ViewChild('inputElement', { static: false })
+  @ViewChild('inputElement', {static: false})
   inputElement?: ElementRef<HTMLInputElement>;
 
-  @Input({ required: true })
+  @Input({required: true})
   guid!: string;
 
-  @Input({ required: true })
+  @Input({required: true})
   presets: DataPreset[] = [];
 
   @Input()
@@ -45,7 +53,7 @@ export class PresetsComponent {
   }
 
   showInput(): void {
-    if(!this.canAddPreset) {
+    if (!this.canAddPreset) {
       return;
     }
 
@@ -56,7 +64,7 @@ export class PresetsComponent {
   }
 
   handleInputConfirm(): void {
-    if(this.inputValue.length > 0) {
+    if (this.inputValue.length > 0) {
       this.addPreset.emit({
         title: this.inputValue
       });

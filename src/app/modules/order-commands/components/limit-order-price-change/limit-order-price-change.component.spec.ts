@@ -4,10 +4,12 @@ import { LimitOrderPriceChangeComponent } from './limit-order-price-change.compo
 import {Subject} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
 import {
   ORDER_COMMAND_SERVICE_TOKEN,
 } from "../../../../shared/services/orders/order-command.service";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {NzButtonComponent} from "ng-zorro-antd/button";
 
 describe('LimitOrderPriceChangeComponent', () => {
   let component: LimitOrderPriceChangeComponent;
@@ -15,26 +17,31 @@ describe('LimitOrderPriceChangeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TranslocoTestsModule.getModule()],
-      declarations: [
-        LimitOrderPriceChangeComponent,
-        ...ngZorroMockComponents
-      ],
-      providers: [
+    imports: [
+      TranslocoTestsModule.getModule(),
+      LimitOrderPriceChangeComponent,
+      MockComponents(
+        NzButtonComponent
+      ),
+      MockDirectives(
+        NzTooltipDirective
+      )
+    ],
+    providers: [
         {
-          provide: PortfolioSubscriptionsService,
-          useValue: {
-            getOrdersSubscription: jasmine.createSpy('getOrdersSubscription').and.returnValue(new Subject())
-          }
+            provide: PortfolioSubscriptionsService,
+            useValue: {
+                getOrdersSubscription: jasmine.createSpy('getOrdersSubscription').and.returnValue(new Subject())
+            }
         },
         {
-          provide: ORDER_COMMAND_SERVICE_TOKEN,
-          useValue: {
-            getInstrumentPositionSubscription: jasmine.createSpy('submitLimitOrderEdit').and.returnValue(new Subject())
-          }
+            provide: ORDER_COMMAND_SERVICE_TOKEN,
+            useValue: {
+                getInstrumentPositionSubscription: jasmine.createSpy('submitLimitOrderEdit').and.returnValue(new Subject())
+            }
         }
-      ]
-    })
+    ]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(LimitOrderPriceChangeComponent);

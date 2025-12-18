@@ -1,21 +1,17 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { OptionBoardSettingsComponent } from './option-board-settings.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { Subject } from "rxjs";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { ReactiveFormsModule } from "@angular/forms";
-import { NzSelectModule } from "ng-zorro-antd/select";
-import { NzCollapseModule } from "ng-zorro-antd/collapse";
-import { NzFormModule } from "ng-zorro-antd/form";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { InstrumentSearchMockComponent } from "../../../../shared/utils/testing/instrument-search-mock-component";
-import { InstrumentBoardSelectMockComponent } from "../../../../shared/utils/testing/instrument-board-select-mock-component";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {OptionBoardSettingsComponent} from './option-board-settings.component';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {Subject} from "rxjs";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
+import {MockComponents} from "ng-mocks";
+import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
+import {InstrumentSearchComponent} from "../../../../shared/components/instrument-search/instrument-search.component";
+import {
+  InstrumentBoardSelectComponent
+} from "../../../../shared/components/instrument-board-select/instrument-board-select.component";
 
 describe('OptionBoardSettingsComponent', () => {
   let component: OptionBoardSettingsComponent;
@@ -24,21 +20,14 @@ describe('OptionBoardSettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        BrowserAnimationsModule,
         TranslocoTestsModule.getModule(),
-        ReactiveFormsModule,
-        NzSelectModule,
-        NzCollapseModule,
-        NzFormModule,
-        InstrumentSearchMockComponent,
-        InstrumentBoardSelectMockComponent
-      ],
-      declarations: [
         OptionBoardSettingsComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-widget-settings',
-          inputs: ['canSave', 'canCopy', 'showCopy']
-        })
+        ...FormsTesting.getMocks(),
+        MockComponents(
+          WidgetSettingsComponent,
+          InstrumentSearchComponent,
+          InstrumentBoardSelectComponent
+        )
       ],
       providers: [
         {

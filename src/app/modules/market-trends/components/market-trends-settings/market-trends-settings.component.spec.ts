@@ -17,8 +17,8 @@ describe('MarketTrendsSettingsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         TranslocoTestsModule.getModule(),
-        ...FormsTesting.getTestingModules(),
-        WidgetSettingsComponent
+        ...FormsTesting.getMocks(),
+        WidgetSettingsComponent,
       ],
       providers: [
         {

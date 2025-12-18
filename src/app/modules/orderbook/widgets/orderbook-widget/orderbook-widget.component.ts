@@ -1,29 +1,39 @@
-import {
-  Component,
-  Input,
-  OnInit
-} from '@angular/core';
-import { OrderbookService } from '../../services/orderbook.service';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
-import { Observable } from 'rxjs';
-import { SettingsHelper } from '../../../../shared/utils/settings-helper';
-import {
-  ColumnsOrder,
-  OrderbookSettings
-} from '../../models/orderbook-settings.model';
-import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
+import {Component, Input, OnInit} from '@angular/core';
+import {OrderbookService} from '../../services/orderbook.service';
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
+import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
+import {Observable} from 'rxjs';
+import {SettingsHelper} from '../../../../shared/utils/settings-helper';
+import {ColumnsOrder, OrderbookSettings} from '../../models/orderbook-settings.model';
+import {NumberDisplayFormat} from '../../../../shared/models/enums/number-display-format';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import {getValueOrDefault} from "../../../../shared/utils/object-helper";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {WidgetSkeletonComponent} from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
+import {WidgetHeaderComponent} from '../../../../shared/components/widget-header/widget-header.component';
+import {
+  WidgetHeaderInstrumentSwitchComponent
+} from '../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component';
+import {OrderBookComponent} from '../../components/orderbook/orderbook.component';
+import {OrderbookSettingsComponent} from '../../components/orderbook-settings/orderbook-settings.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-orderbook-widget',
-    templateUrl: './orderbook-widget.component.html',
-    styleUrls: ['./orderbook-widget.component.less'],
-    providers: [OrderbookService],
-    standalone: false
+  selector: 'ats-orderbook-widget',
+  templateUrl: './orderbook-widget.component.html',
+  styleUrls: ['./orderbook-widget.component.less'],
+  providers: [OrderbookService],
+  imports: [
+    TranslocoDirective,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent,
+    WidgetHeaderInstrumentSwitchComponent,
+    OrderBookComponent,
+    OrderbookSettingsComponent,
+    AsyncPipe
+  ]
 })
 export class OrderbookWidgetComponent implements OnInit {
   shouldShowSettings = false;
@@ -44,12 +54,12 @@ export class OrderbookWidgetComponent implements OnInit {
   ) {
   }
 
-  onSettingsChange(): void {
-    this.shouldShowSettings = !this.shouldShowSettings;
-  }
-
   get guid(): string {
     return this.widgetInstance.instance.guid;
+  }
+
+  onSettingsChange(): void {
+    this.shouldShowSettings = !this.shouldShowSettings;
   }
 
   ngOnInit(): void {

@@ -20,12 +20,23 @@ import {
 } from "../scalper-order-book/scalper-order-book.component";
 import { ScalperOrderBookDataProvider } from "../../services/scalper-order-book-data-provider.service";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
+import { TranslocoDirective } from '@jsverse/transloco';
+import { LetDirective } from '@ngrx/component';
+import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
+import { NgClass, AsyncPipe, DecimalPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-top-floating-panel',
     templateUrl: './top-floating-panel.component.html',
     styleUrls: ['./top-floating-panel.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      LetDirective,
+      NzTooltipDirective,
+      NgClass,
+      AsyncPipe,
+      DecimalPipe
+    ]
 })
 export class TopFloatingPanelComponent implements OnInit {
   @Input({ required: true })

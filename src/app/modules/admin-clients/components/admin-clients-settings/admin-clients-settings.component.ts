@@ -1,47 +1,23 @@
+import {Component, DestroyRef, OnInit} from '@angular/core';
 import {
-  Component,
-  DestroyRef,
-  OnInit
-} from '@angular/core';
-import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
-import {
-  AdminClientsSettings,
-  AdminClientsTableColumns
-} from "../../models/admin-clients-settings.model";
-import { Observable } from "rxjs";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators
-} from "@angular/forms";
+  WidgetSettingsBaseComponent
+} from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import {AdminClientsSettings, AdminClientsTableColumns} from "../../models/admin-clients-settings.model";
+import {Observable} from "rxjs";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
 import {
   BaseColumnId,
   ColumnDisplaySettings,
   TableDisplaySettings
 } from "../../../../shared/models/settings/table-settings.model";
-import {
-  NzMarks,
-  NzSliderComponent
-} from "ng-zorro-antd/slider";
-import {
-  NzColDirective,
-  NzRowDirective
-} from "ng-zorro-antd/grid";
-import {
-  NzFormControlComponent,
-  NzFormDirective,
-  NzFormItemComponent,
-  NzFormLabelComponent
-} from "ng-zorro-antd/form";
-import {
-  NzOptionComponent,
-  NzSelectComponent
-} from "ng-zorro-antd/select";
-import { SharedModule } from "../../../../shared/shared.module";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { WidgetSettingsComponent } from "../../../../shared/components/widget-settings/widget-settings.component";
+import {NzMarks, NzSliderComponent} from "ng-zorro-antd/slider";
+import {NzColDirective, NzRowDirective} from "ng-zorro-antd/grid";
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from "ng-zorro-antd/form";
+import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
 
 @Component({
   selector: 'ats-admin-clients-settings',
@@ -55,7 +31,6 @@ import { WidgetSettingsComponent } from "../../../../shared/components/widget-se
     NzRowDirective,
     NzSelectComponent,
     ReactiveFormsModule,
-    SharedModule,
     TranslocoDirective,
     WidgetSettingsComponent,
     NzSliderComponent

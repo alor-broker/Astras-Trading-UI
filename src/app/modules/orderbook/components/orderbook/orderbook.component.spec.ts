@@ -1,20 +1,20 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
-import { of } from 'rxjs';
-import { OrderBook } from '../../models/orderbook.model';
-import { OrderbookService } from '../../services/orderbook.service';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {of} from 'rxjs';
+import {OrderBook} from '../../models/orderbook.model';
+import {OrderbookService} from '../../services/orderbook.service';
 
-import { OrderBookComponent } from './orderbook.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import {OrderBookComponent} from './orderbook.component';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {ThemeColors, ThemeSettings, ThemeType} from '../../../../shared/models/settings/theme-settings.model';
+import {commonTestProviders} from "../../../../shared/utils/testing/common-test-providers";
+import {MockComponents} from "ng-mocks";
+import {OrderbookChartComponent} from "../orderbook-chart/orderbook-chart.component";
 import {
-  ThemeColors,
-  ThemeSettings,
-  ThemeType
-} from '../../../../shared/models/settings/theme-settings.model';
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+  OrderbookTableVolumesAtTheEdgesComponent
+} from "../orderbook-tables/orderbook-table-volumes-at-the-edges/orderbook-table-volumes-at-the-edges.component";
+import {
+  OrderbookTableVolumesAtTheMiddleComponent
+} from "../orderbook-tables/orderbook-table-volumes-at-the-middle/orderbook-table-volumes-at-the-middle.component";
 
 describe('OrderBookComponent', () => {
   let component: OrderBookComponent;
@@ -49,21 +49,6 @@ describe('OrderBookComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        OrderBookComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-orderbook-chart',
-          inputs: ['guid', 'chartData']
-        }),
-        ComponentHelpers.mockComponent({
-          selector: 'ats-orderbook-table-volumes-at-the-edges',
-          inputs: ['guid', 'ob']
-        }),
-        ComponentHelpers.mockComponent({
-          selector: 'ats-orderbook-table-volumes-at-the-middle',
-          inputs: ['guid', 'ob']
-        }),
-      ],
       providers: [
         {
           provide: WidgetSettingsService,
@@ -75,10 +60,16 @@ describe('OrderBookComponent', () => {
             }))
           }
         },
-        { provide: OrderbookService, useValue: spyOb },
+        {provide: OrderbookService, useValue: spyOb},
         ...commonTestProviders
       ],
       imports: [
+        OrderBookComponent,
+        MockComponents(
+          OrderbookChartComponent,
+          OrderbookTableVolumesAtTheEdgesComponent,
+          OrderbookTableVolumesAtTheMiddleComponent,
+        )
       ]
     })
       .compileComponents();

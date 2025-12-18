@@ -1,21 +1,20 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { InfiniteScrollTableComponent } from './infinite-scroll-table.component';
-import { NzTableModule } from "ng-zorro-antd/table";
-import { NzDropDownModule } from "ng-zorro-antd/dropdown";
-import { By } from "@angular/platform-browser";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { TableConfig } from '../../models/table-config.model';
-import { BaseColumnSettings, FilterType } from "../../models/settings/table-settings.model";
-import { ResizeColumnDirective } from "../../directives/resize-column.directive";
-import { FormControl } from "@angular/forms";
-import { TranslocoTestsModule } from "../../utils/testing/translocoTestsModule";
-import { commonTestProviders } from "../../utils/testing/common-test-providers";
-import { NzTooltipModule } from "ng-zorro-antd/tooltip";
+import {InfiniteScrollTableComponent} from './infinite-scroll-table.component';
+import {By} from "@angular/platform-browser";
+import {ChangeDetectorRef, Component, OnInit} from "@angular/core";
+import {TableConfig} from '../../models/table-config.model';
+import {BaseColumnSettings, FilterType} from "../../models/settings/table-settings.model";
+import {FormControl} from "@angular/forms";
+import {TranslocoTestsModule} from "../../utils/testing/translocoTestsModule";
+import {commonTestProviders} from "../../utils/testing/common-test-providers";
+import {MockDirective, MockProvider} from "ng-mocks";
+import {NzContextMenuService} from "ng-zorro-antd/dropdown";
+import {TableRowHeightDirective} from "../../directives/table-row-height.directive";
+import {TerminalSettingsService} from "../../services/terminal-settings.service";
 
 @Component({
-    template: `
+  template: `
     <ats-infinite-scroll-table
       [tableContainerHeight]="tableContainerHeight"
       [tableContainerWidth]="tableContainerWidth"
@@ -29,16 +28,14 @@ import { NzTooltipModule } from "ng-zorro-antd/tooltip";
     >
     </ats-infinite-scroll-table>
   `,
-    standalone: false
+  imports: [
+    InfiniteScrollTableComponent
+  ]
 })
 class TestWrapperComponent implements OnInit {
-  constructor(private readonly cdr: ChangeDetectorRef) {
-  }
-
   tableContainerHeight = 50;
   tableContainerWidth = 50;
   isLoading = true;
-
   tableConfig: TableConfig<any> = {
     columns: [
       {
@@ -50,7 +47,7 @@ class TestWrapperComponent implements OnInit {
         },
         width: 50
       },
-      { id: 'id2', displayName: 'name2' },
+      {id: 'id2', displayName: 'name2'},
     ]
   };
 
@@ -61,13 +58,24 @@ class TestWrapperComponent implements OnInit {
     {id1: 'testName1', id2: 'testName2', id: 4},
   ];
 
+  constructor(private readonly cdr: ChangeDetectorRef) {
+  }
+
   trackByFn = (e: any): string => e.name as string;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  applyFilter(e: any): void { return; }
-  scrolled(): void { return; }
+  applyFilter(e: any): void {
+    return;
+  }
+
+  scrolled(): void {
+    return;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  rowClick(e: any): void { return; }
+  rowClick(e: any): void {
+    return;
+  }
 
   ngOnInit(): void {
     this.cdr.detectChanges();
@@ -81,21 +89,21 @@ describe('InfiniteScrollTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        InfiniteScrollTableComponent,
-        TestWrapperComponent,
-        ResizeColumnDirective
-      ],
       imports: [
-        NoopAnimationsModule,
-        NzTableModule,
-        NzDropDownModule,
         TranslocoTestsModule.getModule(),
-        NzTooltipModule
+        TestWrapperComponent
       ],
-      providers: [...commonTestProviders]
+      providers: [
+        ...commonTestProviders,
+        MockProvider(NzContextMenuService),
+        MockProvider(TerminalSettingsService)
+      ]
     })
-    .compileComponents();
+      .overrideComponent(InfiniteScrollTableComponent, {
+        remove: {imports: [TableRowHeightDirective]},
+        add: {imports: [MockDirective(TableRowHeightDirective)]}
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {
@@ -149,7 +157,7 @@ describe('InfiniteScrollTableComponent', () => {
 
   it('should reset filter', () => {
     component.getFilterControl('name1')?.setValue('testValue');
-    component.resetFilter({filterName: 'name1', filterType: FilterType.Search });
+    component.resetFilter({filterName: 'name1', filterType: FilterType.Search});
     expect(component.getFilterControl('name1')?.value).toBe('');
   });
 });

@@ -1,38 +1,40 @@
-import {
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import {
-  Message,
-  MessageContent,
-  MessageType,
-  TextMessageContent
-} from "../../models/messages-display.model";
-import { OutcomingMessage } from "../message-input/message-input.component";
-import {
-  TranslatorFn,
-  TranslatorService
-} from "../../../../shared/services/translator.service";
-import {
-  BehaviorSubject,
-  delay,
-  Observable,
-  shareReplay,
-  take
-} from "rxjs";
-import { DisplayStatus } from "../chat-status/chat-status.component";
-import { AiChatService } from "../../services/ai-chat.service";
-import { map } from "rxjs/operators";
+import {Component, Input, OnDestroy, OnInit,} from '@angular/core';
+import {Message, MessageContent, MessageType, TextMessageContent} from "../../models/messages-display.model";
+import {MessageInputComponent, OutcomingMessage} from "../message-input/message-input.component";
+import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
+import {BehaviorSubject, delay, Observable, shareReplay, take} from "rxjs";
+import {ChatStatusComponent, DisplayStatus} from "../chat-status/chat-status.component";
+import {AiChatService} from "../../services/ai-chat.service";
+import {map} from "rxjs/operators";
 import {GuidGenerator} from "../../../../shared/utils/guid";
-import { SuggestionsService } from "../../services/suggestions.service";
+import {SuggestionsService} from "../../services/suggestions.service";
+import {ChatContainerComponent} from '../chat-container/chat-container.component';
+import {UsageDisclaimerComponent} from '../usage-disclaimer/usage-disclaimer.component';
+import {
+  StartNewConversationButtonComponent
+} from '../start-new-conversation-button/start-new-conversation-button.component';
+import {ChatMessageContainerComponent} from '../chat-message-container/chat-message-container.component';
+import {
+  ChatSuggestedMessageContainerComponent
+} from '../chat-suggested-message-container/chat-suggested-message-container.component';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-ai-chat',
-    templateUrl: './ai-chat.component.html',
-    styleUrls: ['./ai-chat.component.less'],
-    standalone: false
+  selector: 'ats-ai-chat',
+  templateUrl: './ai-chat.component.html',
+  styleUrls: ['./ai-chat.component.less'],
+  imports: [
+    ChatContainerComponent,
+    UsageDisclaimerComponent,
+    StartNewConversationButtonComponent,
+    ChatMessageContainerComponent,
+    ChatSuggestedMessageContainerComponent,
+    ChatStatusComponent,
+    TranslocoDirective,
+    MessageInputComponent,
+    AsyncPipe
+  ]
 })
 export class AiChatComponent implements OnInit, OnDestroy {
   displayMessages: Message<any>[] = [];
@@ -41,11 +43,12 @@ export class AiChatComponent implements OnInit, OnDestroy {
   suggestedMessages$!: Observable<TextMessageContent[]>;
   showSuggestedMessages = false;
   canRestartConversation = false;
-  private translator$!: Observable<TranslatorFn>;
-  private threadId: string | null = null;
 
   @Input()
   atsDisabled = false;
+
+  private translator$!: Observable<TranslatorFn>;
+  private threadId: string | null = null;
 
   constructor(
     private readonly translatorService: TranslatorService,
@@ -60,7 +63,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.translator$ = this.translatorService.getTranslator('ai-chat').pipe(
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
 
     this.suggestedMessages$ = this.suggestionsService.getSuggestions().pipe(
@@ -71,7 +74,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
 
         return r
           .sort((a, b) => a.length - b.length)
-          .map(s => ({ text: s }));
+          .map(s => ({text: s}));
       })
     );
 
@@ -133,7 +136,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
   }
 
   useSuggestedMessage(content: TextMessageContent): void {
-    if(this.atsDisabled) {
+    if (this.atsDisabled) {
       return;
     }
 

@@ -1,25 +1,21 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnInit,
-  ViewChild
-} from '@angular/core';
-import {
-  combineLatest,
-  Observable,
-  take
-} from "rxjs";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { WatchlistCollectionService } from "../../services/watchlist-collection.service";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { map } from "rxjs/operators";
-import { WatchlistType } from "../../models/watchlist.model";
-import { NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {combineLatest, Observable, take} from "rxjs";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {WatchlistCollectionService} from "../../services/watchlist-collection.service";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {map} from "rxjs/operators";
+import {WatchlistType} from "../../models/watchlist.model";
+import {NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzMenuDirective, NzMenuItemComponent, NzSubMenuComponent} from 'ng-zorro-antd/menu';
+import {NzModalComponent, NzModalContentDirective} from 'ng-zorro-antd/modal';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {AsyncPipe} from '@angular/common';
 
 interface MenuItem {
   title: string;
@@ -29,10 +25,29 @@ interface MenuItem {
 }
 
 @Component({
-    selector: 'ats-add-to-watchlist-menu',
-    templateUrl: './add-to-watchlist-menu.component.html',
-    styleUrl: './add-to-watchlist-menu.component.less',
-    standalone: false
+  selector: 'ats-add-to-watchlist-menu',
+  templateUrl: './add-to-watchlist-menu.component.html',
+  styleUrl: './add-to-watchlist-menu.component.less',
+  imports: [
+    TranslocoDirective,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    NzSubMenuComponent,
+    NzModalComponent,
+    NzModalContentDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormControlComponent,
+    NzInputDirective,
+    NzButtonComponent,
+    NzIconDirective,
+    AsyncPipe
+  ]
 })
 export class AddToWatchlistMenuComponent implements OnInit {
   menuItems$!: Observable<MenuItem[]>;

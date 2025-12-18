@@ -42,6 +42,16 @@ import {
   RulerContext,
 } from "../scalper-order-book-body/scalper-order-book-body.component";
 import { ActiveOrderBookHotKeysTypes } from "../../../../shared/models/terminal-settings/terminal-settings.model";
+import { TranslocoDirective } from '@jsverse/transloco';
+import { TableRulerComponent } from '../table-ruler/table-ruler.component';
+import { HoverItemsGroupDirective } from '../../directives/hover-items-group.directive';
+import { HoverItemDirective } from '../../directives/hover-item.directive';
+import { NgClass, NgStyle, NgTemplateOutlet, AsyncPipe } from '@angular/common';
+import { ShortNumberComponent } from '../../../../shared/components/short-number/short-number.component';
+import { CdkDropListGroup, CdkDropList, CdkDrag } from '@angular/cdk/drag-drop';
+import { LetDirective } from '@ngrx/component';
+import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
+import { AtsPricePipe } from '../../../../shared/pipes/ats-price.pipe';
 
 interface VolumeHighlightArguments {
   rowType: ScalperOrderBookRowType;
@@ -61,7 +71,23 @@ interface DisplayRow extends BodyRow {
     selector: 'ats-scalper-order-book-table',
     templateUrl: './scalper-order-book-table.component.html',
     styleUrls: ['./scalper-order-book-table.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      TableRulerComponent,
+      HoverItemsGroupDirective,
+      HoverItemDirective,
+      NgClass,
+      NgStyle,
+      NgTemplateOutlet,
+      ShortNumberComponent,
+      CdkDropListGroup,
+      CdkDropList,
+      LetDirective,
+      CdkDrag,
+      NzTooltipDirective,
+      AsyncPipe,
+      AtsPricePipe
+    ]
 })
 export class ScalperOrderBookTableComponent implements OnInit {
   readonly numberFormats = NumberDisplayFormat;

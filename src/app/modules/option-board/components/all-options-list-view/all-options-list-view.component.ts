@@ -1,15 +1,9 @@
-import {
-  Component,
-  DestroyRef,
-  Input,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import { OptionBoardDataContext } from "../../models/option-board-data-context.model";
-import { OptionBoardService } from "../../services/option-board.service";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
-import { RecordContent } from "../../../../store/widgets-local-state/widgets-local-state.model";
+import {Component, DestroyRef, Input, OnDestroy, OnInit,} from '@angular/core';
+import {OptionBoardDataContext} from "../../models/option-board-data-context.model";
+import {OptionBoardService} from "../../services/option-board.service";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import {RecordContent} from "../../../../store/widgets-local-state/widgets-local-state.model";
 import {
   InstrumentOptions,
   Option,
@@ -31,41 +25,28 @@ import {
   tap,
   timer
 } from "rxjs";
-import {
-  filter,
-  map,
-  startWith
-} from "rxjs/operators";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { NzSpinComponent } from "ng-zorro-antd/spin";
-import {
-  AsyncPipe,
-  DatePipe,
-  NgTemplateOutlet
-} from "@angular/common";
-import { NzResizeObserverDirective } from "ng-zorro-antd/cdk/resize-observer";
-import { ContentSize } from "../../../../shared/models/dashboard/dashboard-item.model";
-import { LetDirective } from "@ngrx/component";
-import { NzEmptyComponent } from "ng-zorro-antd/empty";
-import {
-  NzOptionComponent,
-  NzSelectComponent
-} from "ng-zorro-antd/select";
-import {
-  FormBuilder,
-  FormsModule,
-  Validators
-} from "@angular/forms";
-import { NzCollapseComponent } from "ng-zorro-antd/collapse";
-import { dateDiffInDays } from "../../../../shared/utils/datetime";
-import { MathHelper } from "../../../../shared/utils/math-helper";
-import { QuotesService } from "../../../../shared/services/quotes.service";
-import { SharedModule } from "../../../../shared/shared.module";
-import { InputNumberComponent } from "../../../../shared/components/input-number/input-number.component";
-import { inputNumberValidation } from "../../../../shared/utils/validation-options";
-import { compareAsc } from 'date-fns';
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { mapWith } from "../../../../shared/utils/observable-helper";
+import {filter, map, startWith} from "rxjs/operators";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {NzSpinComponent} from "ng-zorro-antd/spin";
+import {AsyncPipe, DatePipe, DecimalPipe, NgTemplateOutlet} from "@angular/common";
+import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {LetDirective} from "@ngrx/component";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
+import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {NzCollapseComponent, NzCollapsePanelComponent} from "ng-zorro-antd/collapse";
+import {dateDiffInDays} from "../../../../shared/utils/datetime";
+import {MathHelper} from "../../../../shared/utils/math-helper";
+import {QuotesService} from "../../../../shared/services/quotes.service";
+import {InputNumberComponent} from "../../../../shared/components/input-number/input-number.component";
+import {inputNumberValidation} from "../../../../shared/utils/validation-options";
+import {compareAsc} from 'date-fns';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from "ng-zorro-antd/form";
+import {PriceDiffComponent} from "../../../../shared/components/price-diff/price-diff.component";
+import {NzIconDirective} from "ng-zorro-antd/icon";
 
 interface CellLayout {
   displayParameter: OptionParameters;
@@ -119,25 +100,33 @@ interface DisplaySettings extends RecordContent {
 }
 
 @Component({
-    selector: 'ats-all-options-list-view',
-    imports: [
-        TranslocoDirective,
-        NzSpinComponent,
-        AsyncPipe,
-        NgTemplateOutlet,
-        NzResizeObserverDirective,
-        LetDirective,
-        NzEmptyComponent,
-        NzSelectComponent,
-        FormsModule,
-        NzOptionComponent,
-        NzCollapseComponent,
-        DatePipe,
-        SharedModule,
-        InputNumberComponent
-    ],
-    templateUrl: './all-options-list-view.component.html',
-    styleUrl: './all-options-list-view.component.less'
+  selector: 'ats-all-options-list-view',
+  imports: [
+    TranslocoDirective,
+    NzSpinComponent,
+    AsyncPipe,
+    NgTemplateOutlet,
+    NzResizeObserverDirective,
+    LetDirective,
+    NzEmptyComponent,
+    NzSelectComponent,
+    FormsModule,
+    NzOptionComponent,
+    NzCollapseComponent,
+    DatePipe,
+    InputNumberComponent,
+    ReactiveFormsModule,
+    NzFormItemComponent,
+    NzFormDirective,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    NzCollapsePanelComponent,
+    DecimalPipe,
+    PriceDiffComponent,
+    NzIconDirective
+  ],
+  templateUrl: './all-options-list-view.component.html',
+  styleUrl: './all-options-list-view.component.less'
 })
 export class AllOptionsListViewComponent implements OnInit, OnDestroy {
   @Input({required: true})

@@ -1,16 +1,25 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { OrderbookTableVolumesAtTheMiddleComponent } from './orderbook-table-volumes-at-the-middle.component';
-import { ModalService } from "../../../../../shared/services/modal.service";
-import { OrderbookService } from "../../../services/orderbook.service";
-import { WidgetSettingsService } from "../../../../../shared/services/widget-settings.service";
+import {OrderbookTableVolumesAtTheMiddleComponent} from './orderbook-table-volumes-at-the-middle.component';
+import {ModalService} from "../../../../../shared/services/modal.service";
+import {OrderbookService} from "../../../services/orderbook.service";
+import {WidgetSettingsService} from "../../../../../shared/services/widget-settings.service";
+import {of, Subject} from "rxjs";
+import {InstrumentsService} from '../../../../instruments/services/instruments.service';
+import {ThemeService} from '../../../../../shared/services/theme.service';
+import {MockComponents, MockDirectives} from "ng-mocks";
 import {
-  of,
-  Subject
-} from "rxjs";
-import { InstrumentsService } from '../../../../instruments/services/instruments.service';
-import { ThemeService } from '../../../../../shared/services/theme.service';
-import { ngZorroMockComponents } from "../../../../../shared/utils/testing/ng-zorro-component-mocks";
+  NzCellAlignDirective,
+  NzTableCellDirective,
+  NzTableComponent,
+  NzTbodyComponent,
+  NzTheadComponent,
+  NzThMeasureDirective,
+  NzTrDirective
+} from "ng-zorro-antd/table";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {ShortNumberComponent} from "../../../../../shared/components/short-number/short-number.component";
 
 describe('OrderbookTableVolumesAtTheMiddleComponent', () => {
   let component: OrderbookTableVolumesAtTheMiddleComponent;
@@ -21,16 +30,29 @@ describe('OrderbookTableVolumesAtTheMiddleComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         OrderbookTableVolumesAtTheMiddleComponent,
-        ...ngZorroMockComponents
+        MockComponents(
+          NzTableComponent,
+          NzTheadComponent,
+          NzTbodyComponent,
+          NzButtonComponent,
+          ShortNumberComponent,
+        ),
+        MockDirectives(
+          NzTrDirective,
+          NzTableCellDirective,
+          NzThMeasureDirective,
+          NzCellAlignDirective,
+          NzIconDirective
+        )
       ],
       providers: [
-        { provide: ModalService, useValue: modalSync },
-        { provide: OrderbookService, useValue: spyOb },
+        {provide: ModalService, useValue: modalSync},
+        {provide: OrderbookService, useValue: spyOb},
         {
           provide: InstrumentsService,
-          useValue: { getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of({})) }
+          useValue: {getInstrument: jasmine.createSpy('getInstrument').and.returnValue(of({}))}
         },
         {
           provide: WidgetSettingsService,
@@ -42,14 +64,15 @@ describe('OrderbookTableVolumesAtTheMiddleComponent', () => {
             }))
           }
         },
-        { provide: ThemeService,
+        {
+          provide: ThemeService,
           useValue: {
             getThemeSettings: jasmine.createSpy('getThemeSettings').and.returnValue(new Subject())
           }
         },
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(OrderbookTableVolumesAtTheMiddleComponent);
     component = fixture.componentInstance;

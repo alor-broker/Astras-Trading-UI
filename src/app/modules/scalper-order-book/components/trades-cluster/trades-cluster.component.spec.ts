@@ -8,8 +8,9 @@ import {
 } from 'rxjs';
 import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
 import { LetDirective } from "@ngrx/component";
-import { MockProvider } from "ng-mocks";
+import {MockComponents, MockProvider} from "ng-mocks";
 import { ThemeService } from "../../../../shared/services/theme.service";
+import {ShortNumberComponent} from "../../../../shared/components/short-number/short-number.component";
 
 describe('TradesClusterComponent', () => {
   let component: TradesClusterComponent;
@@ -17,17 +18,19 @@ describe('TradesClusterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LetDirective],
-      declarations: [TradesClusterComponent],
-      providers: [
-        MockProvider(
-          ThemeService,
-          {
+    imports: [
+      LetDirective,
+      TradesClusterComponent,
+      MockComponents(
+        ShortNumberComponent
+      )
+    ],
+    providers: [
+        MockProvider(ThemeService, {
             getThemeSettings: () => EMPTY
-          }
-        )
-      ]
-    })
+        })
+    ]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(TradesClusterComponent);

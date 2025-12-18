@@ -1,7 +1,4 @@
-import {
-  Component,
-  DestroyRef
-} from '@angular/core';
+import {Component, DestroyRef} from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -14,68 +11,110 @@ import {
   take,
   tap
 } from "rxjs";
-import {
-  catchError,
-  filter,
-  map,
-  startWith,
-  switchMap
-} from "rxjs/operators";
+import {catchError, filter, map, startWith, switchMap} from "rxjs/operators";
 import {
   OrderExecuteSubscription,
   PriceSparkSubscription,
   PushSubscriptionType,
   SubscriptionBase
 } from "../../../push-notifications/models/push-notifications.model";
+import {allNotificationsColumns, TableNames} from "../../models/blotter-settings.model";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {BlotterService} from "../../services/blotter.service";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {isArrayEqual} from "../../../../shared/utils/collections";
+import {PushNotificationsService} from "../../../push-notifications/services/push-notifications.service";
+import {BaseColumnSettings, FilterType} from "../../../../shared/models/settings/table-settings.model";
+import {TableSettingHelper} from "../../../../shared/utils/table-setting.helper";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {BlotterBaseTableComponent} from "../blotter-base-table/blotter-base-table.component";
+import {TableConfig} from "../../../../shared/models/table-config.model";
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {ErrorHandlerService} from "../../../../shared/services/handle-error/error-handler.service";
+import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {LetDirective} from '@ngrx/component';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
 import {
-  allNotificationsColumns,
-  TableNames
-} from "../../models/blotter-settings.model";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { BlotterService } from "../../services/blotter.service";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { isArrayEqual } from "../../../../shared/utils/collections";
-import { PushNotificationsService } from "../../../push-notifications/services/push-notifications.service";
+  NzFilterTriggerComponent,
+  NzTableCellDirective,
+  NzTableComponent,
+  NzTableVirtualScrollDirective,
+  NzTbodyComponent,
+  NzThAddOnComponent,
+  NzTheadComponent,
+  NzThMeasureDirective,
+  NzTrDirective
+} from 'ng-zorro-antd/table';
+import {TableRowHeightDirective} from '../../../../shared/directives/table-row-height.directive';
+import {CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {ResizeColumnDirective} from '../../../../shared/directives/resize-column.directive';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {
-  BaseColumnSettings,
-  FilterType
-} from "../../../../shared/models/settings/table-settings.model";
-import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
-import { TableConfig } from "../../../../shared/models/table-config.model";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { ErrorHandlerService } from "../../../../shared/services/handle-error/error-handler.service";
-import { NzContextMenuService } from "ng-zorro-antd/dropdown";
-import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
-import { mapWith } from "../../../../shared/utils/observable-helper";
+  InstrumentBadgeDisplayComponent
+} from '../../../../shared/components/instrument-badge-display/instrument-badge-display.component';
+import {
+  TableSearchFilterComponent
+} from '../../../../shared/components/table-search-filter/table-search-filter.component';
+import {
+  AddToWatchlistMenuComponent
+} from '../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {AsyncPipe} from '@angular/common';
 
 interface NotificationFilter {
   id?: string;
   subscriptionType?: string[];
   instrument?: string;
+
   [key: string]: string | string[] | undefined;
 }
 
 type DisplayNotification = Partial<OrderExecuteSubscription> & Partial<PriceSparkSubscription> & { id: string };
 
 @Component({
-    selector: 'ats-push-notifications',
-    templateUrl: './push-notifications.component.html',
-    styleUrls: ['./push-notifications.component.less'],
-    standalone: false
+  selector: 'ats-push-notifications',
+  templateUrl: './push-notifications.component.html',
+  styleUrls: ['./push-notifications.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzEmptyComponent,
+    LetDirective,
+    NzResizeObserverDirective,
+    NzTableComponent,
+    TableRowHeightDirective,
+    NzTheadComponent,
+    NzTrDirective,
+    CdkDropList,
+    NzTableCellDirective,
+    NzThMeasureDirective,
+    NzTooltipDirective,
+    ResizeColumnDirective,
+    NzThAddOnComponent,
+    CdkDrag,
+    NzFilterTriggerComponent,
+    NzIconDirective,
+    NzTbodyComponent,
+    NzTableVirtualScrollDirective,
+    InstrumentBadgeDisplayComponent,
+    NzDropdownMenuComponent,
+    TableSearchFilterComponent,
+    AddToWatchlistMenuComponent,
+    NzTypographyComponent,
+    AsyncPipe
+  ]
 })
 export class PushNotificationsComponent extends BlotterBaseTableComponent<DisplayNotification, NotificationFilter> {
   readonly subscriptionTypes = PushSubscriptionType;
 
   isNotificationsAllowed$!: Observable<boolean>;
   isLoading$ = new BehaviorSubject<boolean>(false);
-
-  get restoreFiltersAndSortOnLoad(): boolean {
-    return false;
-  }
-
+  settingsTableName = TableNames.NotificationsTable;
   protected readonly allColumns: BaseColumnSettings<DisplayNotification>[] = [
     {
       id: 'id',
@@ -118,8 +157,6 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
     },
   ];
 
-  settingsTableName = TableNames.NotificationsTable;
-
   constructor(
     protected readonly widgetSettingsService: WidgetSettingsService,
     protected readonly blotterService: BlotterService,
@@ -137,6 +174,33 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
       widgetLocalStateService,
       destroyRef
     );
+  }
+
+  get restoreFiltersAndSortOnLoad(): boolean {
+    return false;
+  }
+
+  rowClick(row: DisplayNotification): void {
+    if (row.subscriptionType !== PushSubscriptionType.PriceSpark) {
+      return;
+    }
+    this.settings$
+      .pipe(
+        take(1)
+      )
+      .subscribe(s => this.blotterService.selectNewInstrument(
+        row.instrument!,
+        row.exchange!,
+        null,
+        s.badgeColor ?? defaultBadgeColor
+      ));
+  }
+
+  cancelSubscription(id: string): void {
+    this.isLoading$.next(true);
+    this.pushNotificationsService.cancelSubscription(id).pipe(
+      take(1)
+    ).subscribe();
   }
 
   protected initTableConfigStream(): Observable<TableConfig<DisplayNotification>> {
@@ -161,7 +225,7 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
       mapWith(() => tableState$, (source, output) => ({...source, ...output})),
       takeUntilDestroyed(this.destroyRef),
       tap(x => {
-        if(x.filters != null) {
+        if (x.filters != null) {
           this.filterChange(x.filters);
         }
       }),
@@ -273,7 +337,7 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
   }
 
   protected rowToInstrumentKey(row: DisplayNotification): Observable<InstrumentKey | null> {
-    if(row.instrument != null && row.exchange != null) {
+    if (row.instrument != null && row.exchange != null) {
       return of({
         symbol: row.instrument,
         exchange: row.exchange,
@@ -282,29 +346,6 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
     }
 
     return of(null);
-  }
-
-  rowClick(row: DisplayNotification): void {
-    if (row.subscriptionType !== PushSubscriptionType.PriceSpark) {
-      return;
-    }
-    this.settings$
-      .pipe(
-        take(1)
-      )
-      .subscribe(s => this.blotterService.selectNewInstrument(
-        row.instrument!,
-        row.exchange!,
-        null,
-        s.badgeColor ?? defaultBadgeColor
-      ));
-  }
-
-  cancelSubscription(id: string): void {
-    this.isLoading$.next(true);
-    this.pushNotificationsService.cancelSubscription(id).pipe(
-      take(1)
-    ).subscribe();
   }
 
   private initNotificationStatusCheck(): void {

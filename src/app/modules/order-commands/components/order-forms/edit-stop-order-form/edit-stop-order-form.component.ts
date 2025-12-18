@@ -5,10 +5,7 @@ import {
   OnInit
 } from '@angular/core';
 import { BaseEditOrderFormComponent } from "../base-edit-order-form.component";
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { OrderDetailsService } from "../../../../../shared/services/orders/order-details.service";
 import { InstrumentsService } from "../../../../instruments/services/instruments.service";
 import { CommonParametersService } from "../../../services/common-parameters.service";
@@ -48,12 +45,50 @@ import {
 import { getConditionTypeByString } from "../../../../../shared/utils/order-conditions-helper";
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NzFormDirective, NzFormItemComponent, NzFormLabelComponent, NzFormControlComponent } from 'ng-zorro-antd/form';
+import { NzRowDirective, NzColDirective } from 'ng-zorro-antd/grid';
+import { InputNumberComponent } from '../../../../../shared/components/input-number/input-number.component';
+import { ShortNumberComponent } from '../../../../../shared/components/short-number/short-number.component';
+import { NzSelectComponent, NzOptionComponent } from 'ng-zorro-antd/select';
+import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
+import { NzRadioGroupComponent, NzRadioComponent } from 'ng-zorro-antd/radio';
+import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
+import { NzCollapseComponent, NzCollapsePanelComponent } from 'ng-zorro-antd/collapse';
+import { NzCheckboxComponent } from 'ng-zorro-antd/checkbox';
+import { NzTypographyComponent } from 'ng-zorro-antd/typography';
+import { AsyncPipe, DecimalPipe, KeyValuePipe } from '@angular/common';
 
 @Component({
     selector: 'ats-edit-stop-order-form',
     templateUrl: './edit-stop-order-form.component.html',
     styleUrls: ['./edit-stop-order-form.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      FormsModule,
+      NzFormDirective,
+      ReactiveFormsModule,
+      NzRowDirective,
+      NzColDirective,
+      NzFormItemComponent,
+      NzFormLabelComponent,
+      NzFormControlComponent,
+      InputNumberComponent,
+      ShortNumberComponent,
+      NzSelectComponent,
+      NzOptionComponent,
+      NzDatePickerComponent,
+      NzRadioGroupComponent,
+      NzRadioComponent,
+      NzTooltipDirective,
+      NzCollapseComponent,
+      NzCollapsePanelComponent,
+      NzCheckboxComponent,
+      NzTypographyComponent,
+      AsyncPipe,
+      DecimalPipe,
+      KeyValuePipe
+    ]
 })
 export class EditStopOrderFormComponent extends BaseEditOrderFormComponent implements OnInit {
   currentOrder$!: Observable<StopOrder>;
@@ -71,7 +106,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     hasPriceChanged?: boolean;
   } | null = null;
 
-  form = this.formBuilder.group({
+  readonly form = this.formBuilder.group({
     quantity: this.formBuilder.nonNullable.control(
       1,
       {

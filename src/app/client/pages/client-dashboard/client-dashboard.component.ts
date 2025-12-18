@@ -1,11 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {DashboardModule} from "../../../modules/dashboard/dashboard.module";
 import {NzContentComponent, NzHeaderComponent, NzLayoutComponent} from "ng-zorro-antd/layout";
-import {TerminalSettingsModule} from "../../../modules/terminal-settings/terminal-settings.module";
 import {ClientNavbarComponent} from "../../components/client-navbar/client-navbar.component";
-import {FeedbackModule} from "../../../modules/feedback/feedback.module";
-import {ApplicationMetaModule} from "../../../modules/application-meta/application-meta.module";
-import {OrderCommandsModule} from "../../../modules/order-commands/order-commands.module";
 import {
   SettingsLoadErrorDialogComponent
 } from "../../../modules/dashboard/components/settings-load-error-dialog/settings-load-error-dialog.component";
@@ -32,23 +27,34 @@ import { ExportDesktopSettingsService } from "../../../shared/services/settings/
 import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instruments/widgets/instrument-select-dialog-widget/instrument-select-dialog-widget.component";
 import {GraphStorageService} from "../../../modules/ai-graph/services/graph-storage.service";
 import { UrgentNotificationDialogComponent } from "../../../modules/urgent-notifications/components/urgent-notification-dialog/urgent-notification-dialog.component";
+import { FeedbackWidgetComponent } from '../../../modules/feedback/widgets/feedback-widget/feedback-widget.component';
+import {DashboardComponent} from "../../../modules/dashboard/components/dashboard/dashboard.component";
+import {
+  OrdersDialogWidgetComponent
+} from "../../../modules/order-commands/widgets/orders-dialog-widget/orders-dialog-widget.component";
+import {
+  EditOrderDialogWidgetComponent
+} from "../../../modules/order-commands/widgets/edit-order-dialog-widget/edit-order-dialog-widget.component";
+import {
+  ApplicationUpdatedWidgetComponent
+} from "../../../modules/application-meta/widgets/application-updated-widget/application-updated-widget.component";
 
 @Component({
     selector: 'ats-client-dashboard',
   imports: [
-    DashboardModule,
     NzContentComponent,
     NzHeaderComponent,
     NzLayoutComponent,
-    TerminalSettingsModule,
     ClientNavbarComponent,
-    FeedbackModule,
-    ApplicationMetaModule,
-    OrderCommandsModule,
+    FeedbackWidgetComponent,
     SettingsLoadErrorDialogComponent,
     TerminalSettingsWidgetComponent,
     InstrumentSelectDialogWidgetComponent,
-    UrgentNotificationDialogComponent
+    UrgentNotificationDialogComponent,
+    DashboardComponent,
+    OrdersDialogWidgetComponent,
+    EditOrderDialogWidgetComponent,
+    ApplicationUpdatedWidgetComponent
   ],
     templateUrl: './client-dashboard.component.html',
     styleUrl: './client-dashboard.component.less',

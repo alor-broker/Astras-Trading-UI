@@ -1,21 +1,45 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { RepoTradesComponent } from './repo-trades.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import {RepoTradesComponent} from './repo-trades.component';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {EMPTY, Observable, of} from "rxjs";
-import { BlotterService } from "../../services/blotter.service";
-import { MockServiceBlotter } from "../../utils/mock-blotter-service";
-import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { LetDirective } from "@ngrx/component";
-import { NzContextMenuService } from "ng-zorro-antd/dropdown";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {BlotterService} from "../../services/blotter.service";
+import {MockServiceBlotter} from "../../utils/mock-blotter-service";
+import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {LetDirective} from "@ngrx/component";
+import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
+import {
+  NzFilterTriggerComponent,
+  NzTableCellDirective,
+  NzTableComponent,
+  NzTableVirtualScrollDirective,
+  NzTbodyComponent,
+  NzThAddOnComponent,
+  NzTheadComponent,
+  NzThMeasureDirective,
+  NzTrDirective
+} from "ng-zorro-antd/table";
+import {
+  InstrumentBadgeDisplayComponent
+} from "../../../../shared/components/instrument-badge-display/instrument-badge-display.component";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {
+  TableSearchFilterComponent
+} from "../../../../shared/components/table-search-filter/table-search-filter.component";
+import {
+  AddToWatchlistMenuComponent
+} from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
+import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {TableRowHeightDirective} from "../../../../shared/directives/table-row-height.directive";
+import {NzPopconfirmDirective} from "ng-zorro-antd/popconfirm";
+import {ResizeColumnDirective} from "../../../../shared/directives/resize-column.directive";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {NzIconDirective} from "ng-zorro-antd/icon";
 
 describe('RepoTradesComponent', () => {
   let component: RepoTradesComponent;
@@ -25,23 +49,40 @@ describe('RepoTradesComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         TranslocoTestsModule.getModule(),
-        LetDirective
-      ],
-      declarations: [
+        LetDirective,
         RepoTradesComponent,
-        ...ngZorroMockComponents,
-        ComponentHelpers.mockComponent({ selector: 'ats-table-filter', inputs: ['columns'] }),
-        ComponentHelpers.mockComponent({ selector: 'nz-filter-trigger', inputs: ['nzActive', 'nzDropdownMenu', 'nzVisible'] }),
-        ComponentHelpers.mockComponent({
-          selector: 'ats-add-to-watchlist-menu'
-        })
+        MockComponents(
+          NzEmptyComponent,
+          NzTableComponent,
+          NzTheadComponent,
+          NzThAddOnComponent,
+          NzFilterTriggerComponent,
+          NzTbodyComponent,
+          InstrumentBadgeDisplayComponent,
+          NzButtonComponent,
+          NzDropdownMenuComponent,
+          TableSearchFilterComponent,
+          AddToWatchlistMenuComponent
+        ),
+        MockDirectives(
+          NzResizeObserverDirective,
+          TableRowHeightDirective,
+          NzTrDirective,
+          NzTableCellDirective,
+          NzThMeasureDirective,
+          NzPopconfirmDirective,
+          ResizeColumnDirective,
+          NzTooltipDirective,
+          NzIconDirective,
+          NzTableVirtualScrollDirective,
+        )
       ],
       providers: [
         {
           provide: WidgetSettingsService,
-          useValue: { getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})) }
+          useValue: {getSettings: jasmine.createSpy('getSettings').and.returnValue(of({}))}
         },
-        { provide: BlotterService, useClass: MockServiceBlotter },
+        {provide: BlotterService, useClass: MockServiceBlotter},
         {
           provide: TimezoneConverterService,
           useValue: {

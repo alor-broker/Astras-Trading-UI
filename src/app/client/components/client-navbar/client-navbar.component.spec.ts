@@ -23,6 +23,9 @@ import {EMPTY} from "rxjs";
 import {EnvironmentService} from "../../../shared/services/environment.service";
 import { CurrentTimeComponent } from "../current-time/current-time.component";
 import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
+import {
+  NotificationButtonComponent
+} from "../../../modules/notifications/components/notification-button/notification-button.component";
 
 describe('ClientNavbarComponent', () => {
   let component: ClientNavbarComponent;
@@ -41,7 +44,8 @@ describe('ClientNavbarComponent', () => {
           DashboardsPanelComponent,
           NetworkIndicatorComponent,
           AiChatNavBtnComponent,
-          CurrentTimeComponent
+          CurrentTimeComponent,
+          NotificationButtonComponent
         )
       ],
       providers: [

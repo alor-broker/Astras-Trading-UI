@@ -1,27 +1,30 @@
-import {
-  Component,
-  Input
-} from '@angular/core';
-import {
-  PanelSlots,
-  ScalperOrderBookWidgetSettings
-} from "../../models/scalper-order-book-settings.model";
-import { ScalperOrderBookDataContext, } from "../../models/scalper-order-book-data-context.model";
+import {Component, Input} from '@angular/core';
+import {PanelSlots, ScalperOrderBookWidgetSettings} from "../../models/scalper-order-book-settings.model";
+import {ScalperOrderBookDataContext,} from "../../models/scalper-order-book-data-context.model";
+import {LetDirective} from '@ngrx/component';
+import {WorkingVolumesPanelComponent} from '../working-volumes-panel/working-volumes-panel.component';
+import {ModifiersIndicatorComponent} from '../modifiers-indicator/modifiers-indicator.component';
+import {ShortLongIndicatorComponent} from '../short-long-indicator/short-long-indicator.component';
 
 @Component({
-    selector: 'ats-top-panel',
-    templateUrl: './top-panel.component.html',
-    styleUrls: ['./top-panel.component.less'],
-    standalone: false
+  selector: 'ats-top-panel',
+  templateUrl: './top-panel.component.html',
+  styleUrls: ['./top-panel.component.less'],
+  imports: [
+    LetDirective,
+    WorkingVolumesPanelComponent,
+    ModifiersIndicatorComponent,
+    ShortLongIndicatorComponent
+  ]
 })
 export class TopPanelComponent {
-  @Input({ required: true })
+  @Input({required: true})
   guid!: string;
 
-  @Input({ required: true })
+  @Input({required: true})
   isActive!: boolean;
 
-  @Input({ required: true })
+  @Input({required: true})
   dataContext!: ScalperOrderBookDataContext;
 
   showWorkingVolumes(settings: ScalperOrderBookWidgetSettings): boolean {

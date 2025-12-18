@@ -2,16 +2,16 @@ import {
   AfterViewInit,
   Component,
   DestroyRef,
+  DOCUMENT,
   Inject,
   Input,
   NgZone,
   OnDestroy,
   OnInit,
   QueryList,
-  ViewChildren,
-  DOCUMENT
+  ViewChildren
 } from '@angular/core';
-import { ScalperOrderBookDataContext, } from '../../models/scalper-order-book-data-context.model';
+import {ScalperOrderBookDataContext,} from '../../models/scalper-order-book-data-context.model';
 import {
   BehaviorSubject,
   bufferCount,
@@ -24,36 +24,48 @@ import {
   takeUntil,
   timer,
 } from 'rxjs';
-import { TradesCluster } from '../../models/trades-clusters.model';
-import {
-  finalize,
-  map,
-  startWith,
-  switchMap,
-  tap
-} from 'rxjs/operators';
-import { NzDropdownMenuComponent } from 'ng-zorro-antd/dropdown';
+import {TradesCluster} from '../../models/trades-clusters.model';
+import {finalize, map, startWith, switchMap, tap} from 'rxjs/operators';
+import {NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
 import {
   ClusterTimeframe,
   ScalperOrderBookWidgetSettings,
   TradesClusterPanelSettings
 } from '../../models/scalper-order-book-settings.model';
-import { CdkScrollable } from '@angular/cdk/overlay';
+import {CdkScrollable} from '@angular/cdk/overlay';
 
-import { ContextMenuService } from '../../../../shared/services/context-menu.service';
-import { TradeClustersService } from '../../services/trade-clusters.service';
-import { toUnixTime } from '../../../../shared/utils/datetime';
-import { mapWith } from "../../../../shared/utils/observable-helper";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
-import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
-import { TradesClusterPanelSettingsDefaults } from "../scalper-order-book-settings/constants/settings-defaults";
+import {ContextMenuService} from '../../../../shared/services/context-menu.service';
+import {TradeClustersService} from '../../services/trade-clusters.service';
+import {toUnixTime} from '../../../../shared/utils/datetime';
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {isInstrumentEqual} from "../../../../shared/utils/settings-helper";
+import {ScalperOrderBookSettingsWriteService} from "../../services/scalper-order-book-settings-write.service";
+import {TradesClusterPanelSettingsDefaults} from "../scalper-order-book-settings/constants/settings-defaults";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {AsyncPipe, NgClass} from '@angular/common';
+import {TradesClusterComponent} from '../trades-cluster/trades-cluster.component';
+import {NzMenuDirective, NzMenuGroupComponent, NzMenuItemComponent} from 'ng-zorro-antd/menu';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
 
 @Component({
-    selector: 'ats-trade-clusters-panel',
-    templateUrl: './trade-clusters-panel.component.html',
-    styleUrls: ['./trade-clusters-panel.component.less'],
-    standalone: false
+  selector: 'ats-trade-clusters-panel',
+  templateUrl: './trade-clusters-panel.component.html',
+  styleUrls: ['./trade-clusters-panel.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzResizeObserverDirective,
+    NgClass,
+    TradesClusterComponent,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuGroupComponent,
+    NzIconDirective,
+    NzMenuItemComponent,
+    AsyncPipe,
+    CdkScrollable
+  ]
 })
 export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren(CdkScrollable)
@@ -70,12 +82,9 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   settings$!: Observable<ScalperOrderBookWidgetSettings>;
 
   hScrollOffsets$ = new BehaviorSubject({left: 0, right: 0});
-
-  private lastPanelWidth: number | null = null;
-
   readonly availableTimeframes: number[] = Object.values(ClusterTimeframe).filter((v): v is number => !isNaN(Number(v)));
   readonly availableIntervalsCount = [1, 2, 5];
-
+  private lastPanelWidth: number | null = null;
   private isAutoScroll = true;
 
   constructor(
@@ -269,7 +278,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
       updatesSubscription$
     ]).pipe(
       map(([, updates]) => {
-        if(updates == null) {
+        if (updates == null) {
           return state;
         }
 
@@ -280,7 +289,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
             ...updates,
             timestamp: lastTimestamp
           }
-          ];
+        ];
 
         const updated = this.toDisplayClusters(allClusters, settings.tradesClusterPanelSettings!);
 
@@ -325,7 +334,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
     let leftOffset = Math.abs(container.measureScrollOffset('left'));
     let rightOffset = Math.abs(container.measureScrollOffset('right'));
 
-    if(updateStart && this.isAutoScroll && rightOffset >= 0) {
+    if (updateStart && this.isAutoScroll && rightOffset >= 0) {
       container.scrollTo({right: 0});
       leftOffset = Math.abs(container.measureScrollOffset('left'));
       rightOffset = Math.abs(container.measureScrollOffset('right'));

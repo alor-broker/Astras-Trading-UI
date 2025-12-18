@@ -1,25 +1,21 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { OptionBoardComponent } from './option-board.component';
-import { OptionBoardDataContextFactory } from "../../utils/option-board-data-context-factory";
-import {
-  EMPTY,
-  Subject
-} from "rxjs";
-import {
-  OptionParameters,
-  OptionSide
-} from "../../models/option-board.model";
-import { OptionsSelection } from "../../models/option-board-data-context.model";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { MockProvider } from "ng-mocks";
-import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
-import { LetDirective } from "@ngrx/component";
+import {OptionBoardComponent} from './option-board.component';
+import {OptionBoardDataContextFactory} from "../../utils/option-board-data-context-factory";
+import {EMPTY, Subject} from "rxjs";
+import {OptionParameters, OptionSide} from "../../models/option-board.model";
+import {OptionsSelection} from "../../models/option-board-data-context.model";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents, MockProvider} from "ng-mocks";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import {LetDirective} from "@ngrx/component";
+import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
+import {ViewSelectorComponent} from "../view-selector/view-selector.component";
+import {ViewSelectorItemComponent} from "../view-selector-item/view-selector-item.component";
+import {AllOptionsComponent} from "../all-options/all-options.component";
+import {AllOptionsListViewComponent} from "../all-options-list-view/all-options-list-view.component";
+import {SelectedOptionsComponent} from "../selected-options/selected-options.component";
+import {OptionBoardChartsLayoutComponent} from "../option-board-charts-layout/option-board-charts-layout.component";
 
 describe('OptionBoardComponent', () => {
   let component: OptionBoardComponent;
@@ -29,27 +25,18 @@ describe('OptionBoardComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         TranslocoTestsModule.getModule(),
-        LetDirective
-      ],
-      declarations: [
+        LetDirective,
         OptionBoardComponent,
-        ...ngZorroMockComponents,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-all-options',
-          inputs: ['dataContext']
-        }),
-        ComponentHelpers.mockComponent({
-          selector: 'ats-selected-options',
-          inputs: ['dataContext']
-        }),
-        ComponentHelpers.mockComponent({
-          selector: 'ats-option-board-charts-layout',
-          inputs: ['dataContext']
-        }),
-        ComponentHelpers.mockComponent({
-          selector: 'ats-all-options-list-view',
-          inputs: ['dataContext', 'guid']
-        })
+        MockComponents(
+          NzSelectComponent,
+          NzOptionComponent,
+          ViewSelectorComponent,
+          ViewSelectorItemComponent,
+          AllOptionsComponent,
+          AllOptionsListViewComponent,
+          SelectedOptionsComponent,
+          OptionBoardChartsLayoutComponent,
+        )
       ],
       providers: [
         {
@@ -72,12 +59,9 @@ describe('OptionBoardComponent', () => {
             })
           }
         },
-        MockProvider(
-          WidgetLocalStateService,
-          {
-            getStateRecord: () => EMPTY,
-          }
-        )
+        MockProvider(WidgetLocalStateService, {
+          getStateRecord: () => EMPTY,
+        })
       ]
     })
       .compileComponents();

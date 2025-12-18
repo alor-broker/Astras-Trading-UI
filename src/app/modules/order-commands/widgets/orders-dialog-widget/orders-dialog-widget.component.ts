@@ -1,17 +1,13 @@
-import {
-  Component,
-  Inject,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   asyncScheduler,
   BehaviorSubject,
   distinctUntilChanged,
   filter,
-  Observable, observeOn,
-  shareReplay, subscribeOn,
+  Observable,
+  observeOn,
+  shareReplay,
+  subscribeOn,
   switchMap,
   take,
   tap
@@ -21,14 +17,11 @@ import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
-import {
-  NzTabComponent,
-  NzTabsComponent
-} from "ng-zorro-antd/tabs";
+import {NzTabComponent, NzTabsComponent} from "ng-zorro-antd/tabs";
 import {CommonParameters, CommonParametersService} from "../../services/common-parameters.service";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import {OrderDialogParams, OrderFormType} from "../../../../shared/models/orders/orders-dialog.model";
-import { HelpService } from "../../../../shared/services/help.service";
+import {HelpService} from "../../../../shared/services/help.service";
 import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
@@ -38,16 +31,46 @@ import {
   PushNotificationsConfig
 } from "../../../push-notifications/services/push-notifications-config";
 import {ConfirmableOrderCommandsService} from "../../services/confirmable-order-commands.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzModalComponent, NzModalContentDirective} from 'ng-zorro-antd/modal';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {InstrumentInfoComponent} from '../../components/instrument-info/instrument-info.component';
+import {LimitOrderFormComponent} from '../../components/order-forms/limit-order-form/limit-order-form.component';
+import {MarketOrderFormComponent} from '../../components/order-forms/market-order-form/market-order-form.component';
+import {StopOrderFormComponent} from '../../components/order-forms/stop-order-form/stop-order-form.component';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {
+  SetupInstrumentNotificationsComponent
+} from '../../../push-notifications/components/setup-instrument-notifications/setup-instrument-notifications.component';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-orders-dialog-widget',
-    templateUrl: './orders-dialog-widget.component.html',
-    styleUrls: ['./orders-dialog-widget.component.less'],
-    providers: [
-        CommonParametersService,
-        ConfirmableOrderCommandsService
-    ],
-    standalone: false
+  selector: 'ats-orders-dialog-widget',
+  templateUrl: './orders-dialog-widget.component.html',
+  styleUrls: ['./orders-dialog-widget.component.less'],
+  providers: [
+    CommonParametersService,
+    ConfirmableOrderCommandsService
+  ],
+  imports: [
+    TranslocoDirective,
+    NzModalComponent,
+    NzModalContentDirective,
+    NzResizeObserverDirective,
+    InstrumentInfoComponent,
+    NzTabsComponent,
+    NzTabComponent,
+    LimitOrderFormComponent,
+    MarketOrderFormComponent,
+    StopOrderFormComponent,
+    NzIconDirective,
+    SetupInstrumentNotificationsComponent,
+    NzTypographyComponent,
+    NzButtonComponent,
+    AsyncPipe
+  ]
 })
 export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
   helpUrl$!: Observable<string | null>;

@@ -1,31 +1,60 @@
+import {Component, DestroyRef, OnInit} from "@angular/core";
+import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {Observable, take} from "rxjs";
+import {inputNumberValidation} from "../../../../shared/utils/validation-options";
+import {OrderSubmitSettings} from "../../models/order-submit-settings.model";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {DeviceService} from "../../../../shared/services/device.service";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {isInstrumentEqual} from "../../../../shared/utils/settings-helper";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
 import {
-  Component,
-  DestroyRef,
-  OnInit
-} from "@angular/core";
+  WidgetSettingsBaseComponent
+} from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from "ng-zorro-antd/form";
+import {NzColDirective, NzRowDirective} from "ng-zorro-antd/grid";
+import {InstrumentSearchComponent} from "../../../../shared/components/instrument-search/instrument-search.component";
+import {NzInputDirective} from "ng-zorro-antd/input";
+import {NzSwitchComponent} from "ng-zorro-antd/switch";
+import {NzCollapseComponent, NzCollapsePanelComponent} from "ng-zorro-antd/collapse";
+import {NzTypographyComponent} from "ng-zorro-antd/typography";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzIconDirective} from "ng-zorro-antd/icon";
 import {
-  FormBuilder,
-  FormControl,
-  Validators
-} from "@angular/forms";
-import {
-  Observable,
-  take
-} from "rxjs";
-import { inputNumberValidation } from "../../../../shared/utils/validation-options";
-import { OrderSubmitSettings } from "../../models/order-submit-settings.model";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { DeviceService } from "../../../../shared/services/device.service";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
+  InstrumentBoardSelectComponent
+} from "../../../../shared/components/instrument-board-select/instrument-board-select.component";
+import {AsyncPipe} from "@angular/common";
+import {NzInputNumberComponent} from "ng-zorro-antd/input-number";
 
 @Component({
-    selector: 'ats-order-submit-settings',
-    templateUrl: './order-submit-settings.component.html',
-    styleUrls: ['./order-submit-settings.component.less'],
-    standalone: false
+  selector: 'ats-order-submit-settings',
+  templateUrl: './order-submit-settings.component.html',
+  styleUrls: ['./order-submit-settings.component.less'],
+  imports: [
+    WidgetSettingsComponent,
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    InstrumentSearchComponent,
+    NzInputDirective,
+    NzSwitchComponent,
+    NzCollapseComponent,
+    NzCollapsePanelComponent,
+    NzTypographyComponent,
+    NzButtonComponent,
+    NzIconDirective,
+    InstrumentBoardSelectComponent,
+    AsyncPipe,
+    NzInputNumberComponent
+  ]
 })
 export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<OrderSubmitSettings> implements OnInit {
   readonly form = this.formBuilder.group({

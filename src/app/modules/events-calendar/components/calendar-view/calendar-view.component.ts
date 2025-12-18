@@ -9,7 +9,7 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import {NzCalendarComponent} from "ng-zorro-antd/calendar";
+import { NzCalendarComponent, NzDateFullCellDirective } from "ng-zorro-antd/calendar";
 import {
   BehaviorSubject,
   distinctUntilChanged,
@@ -31,12 +31,27 @@ import {
   formatCurrency,
   getCurrencyFormat
 } from "../../../../shared/utils/formatters";
+import { LetDirective } from '@ngrx/component';
+import { NzPopoverDirective } from 'ng-zorro-antd/popover';
+import { NzDescriptionsComponent, NzDescriptionsItemComponent } from 'ng-zorro-antd/descriptions';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { AsyncPipe, DatePipe } from '@angular/common';
 
 @Component({
     selector: 'ats-calendar-view',
     templateUrl: './calendar-view.component.html',
     styleUrls: ['./calendar-view.component.less'],
-    standalone: false
+    imports: [
+      LetDirective,
+      NzCalendarComponent,
+      NzDateFullCellDirective,
+      NzPopoverDirective,
+      NzDescriptionsComponent,
+      TranslocoDirective,
+      NzDescriptionsItemComponent,
+      AsyncPipe,
+      DatePipe
+    ]
 })
 export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly symbols$ = new BehaviorSubject<string[]>([]);

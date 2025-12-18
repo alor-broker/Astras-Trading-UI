@@ -1,11 +1,21 @@
-import { Component, DestroyRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, ValidatorFn, Validators } from "@angular/forms";
-import { ArbitrageSpread } from "../../models/arbitrage-spread.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { map } from "rxjs/operators";
-import { Observable, shareReplay } from "rxjs";
-import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
-import { UserPortfoliosService } from "../../../../shared/services/user-portfolios.service";
+import {Component, DestroyRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators} from "@angular/forms";
+import {ArbitrageSpread} from "../../models/arbitrage-spread.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {map} from "rxjs/operators";
+import {Observable, shareReplay} from "rxjs";
+import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
+import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzFormControlComponent, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzInputDirective, NzInputGroupComponent, NzInputGroupWhitSuffixOrPrefixDirective} from 'ng-zorro-antd/input';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {SpreadLegComponent} from '../spread-leg/spread-leg.component';
+import {NzSwitchComponent} from 'ng-zorro-antd/switch';
+import {AsyncPipe} from '@angular/common';
 
 interface SpreadFormGroup {
   id: FormControl;
@@ -33,10 +43,28 @@ const calculationFormulaValidator: ValidatorFn = (form) => {
 };
 
 @Component({
-    selector: 'ats-arbitrage-spread-manage',
-    templateUrl: './arbitrage-spread-manage.component.html',
-    styleUrls: ['./arbitrage-spread-manage.component.less'],
-    standalone: false
+  selector: 'ats-arbitrage-spread-manage',
+  templateUrl: './arbitrage-spread-manage.component.html',
+  styleUrls: ['./arbitrage-spread-manage.component.less'],
+  imports: [
+    TranslocoDirective,
+    FormsModule,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormControlComponent,
+    NzFormLabelComponent,
+    NzInputGroupComponent,
+    NzInputGroupWhitSuffixOrPrefixDirective,
+    NzInputDirective,
+    NzIconDirective,
+    NzTooltipDirective,
+    NzTypographyComponent,
+    SpreadLegComponent,
+    NzSwitchComponent,
+    AsyncPipe
+  ]
 })
 export class ArbitrageSpreadManageComponent implements OnInit {
   @Input() spread?: ArbitrageSpread | null;
@@ -45,16 +73,22 @@ export class ArbitrageSpreadManageComponent implements OnInit {
   portfolios$?: Observable<PortfolioKey[]>;
 
   form = new FormGroup<SpreadFormGroup>({
-    id: new FormControl(null),
-    calculationFormula: new FormControl('L1-L2', Validators.pattern(CALCULATION_FORMULA_PATTERN)),
-    firstLeg: new FormControl(null, Validators.required),
-    secondLeg: new FormControl(null, Validators.required),
-    isThirdLeg: new FormControl(false),
-    thirdLeg: new FormControl(null, Validators.required)
-  },
+      id: new FormControl(null),
+      calculationFormula: new FormControl('L1-L2', Validators.pattern(CALCULATION_FORMULA_PATTERN)),
+      firstLeg: new FormControl(null, Validators.required),
+      secondLeg: new FormControl(null, Validators.required),
+      isThirdLeg: new FormControl(false),
+      thirdLeg: new FormControl(null, Validators.required)
+    },
     [
       calculationFormulaValidator
     ]);
+
+  constructor(
+    private readonly userPortfoliosService: UserPortfoliosService,
+    private readonly destroyRef: DestroyRef
+  ) {
+  }
 
   get calculationFormulaControl(): FormControl {
     return this.form.controls.calculationFormula as FormControl;
@@ -64,16 +98,10 @@ export class ArbitrageSpreadManageComponent implements OnInit {
     return this.form.controls.isThirdLeg as FormControl<boolean>;
   }
 
-  constructor(
-    private readonly userPortfoliosService: UserPortfoliosService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
-
   ngOnInit(): void {
     this.portfolios$ = this.userPortfoliosService.getPortfolios()
       .pipe(
-        map(portfolios => portfolios.map(p => ({ portfolio: p.portfolio, exchange: p.exchange }))),
+        map(portfolios => portfolios.map(p => ({portfolio: p.portfolio, exchange: p.exchange}))),
         shareReplay(1)
       );
 

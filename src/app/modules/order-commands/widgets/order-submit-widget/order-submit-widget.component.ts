@@ -9,10 +9,10 @@ import {
   ViewChild,
   ViewChildren
 } from '@angular/core';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
-import { SettingsHelper } from '../../../../shared/utils/settings-helper';
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
+import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
+import {SettingsHelper} from '../../../../shared/utils/settings-helper';
 import {
   asyncScheduler,
   distinctUntilChanged,
@@ -24,27 +24,20 @@ import {
   take,
   withLatestFrom
 } from 'rxjs';
-import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
-import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import { OrderSubmitSettings } from "../../models/order-submit-settings.model";
-import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
-import { Instrument } from "../../../../shared/models/instruments/instrument.model";
-import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
-import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import { isArrayEqual } from "../../../../shared/utils/collections";
-import {
-  CommonParameters,
-  CommonParametersService
-} from "../../services/common-parameters.service";
-import { SelectedPriceData } from "../../../../shared/models/orders/selected-order-price.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { WidgetsSharedDataService } from "../../../../shared/services/widgets-shared-data.service";
-import { getValueOrDefault } from "../../../../shared/utils/object-helper";
-import {
-  map,
-  startWith,
-  tap
-} from "rxjs/operators";
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {OrderSubmitSettings} from "../../models/order-submit-settings.model";
+import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
+import {Instrument} from "../../../../shared/models/instruments/instrument.model";
+import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
+import {InstrumentsService} from "../../../instruments/services/instruments.service";
+import {isArrayEqual} from "../../../../shared/utils/collections";
+import {CommonParameters, CommonParametersService} from "../../services/common-parameters.service";
+import {SelectedPriceData} from "../../../../shared/models/orders/selected-order-price.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {WidgetsSharedDataService} from "../../../../shared/services/widgets-shared-data.service";
+import {getValueOrDefault} from "../../../../shared/utils/object-helper";
+import {map, startWith, tap} from "rxjs/operators";
 import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
@@ -54,20 +47,54 @@ import {
   PushNotificationsConfig
 } from "../../../push-notifications/services/push-notifications-config";
 import {ConfirmableOrderCommandsService} from "../../services/confirmable-order-commands.service";
+import {NzTabComponent, NzTabsComponent,} from "ng-zorro-antd/tabs";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {WidgetSkeletonComponent} from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
+import {WidgetHeaderComponent} from '../../../../shared/components/widget-header/widget-header.component';
 import {
-  NzTabComponent,
-  NzTabsComponent,
-} from "ng-zorro-antd/tabs";
+  WidgetHeaderInstrumentSwitchComponent
+} from '../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component';
+import {CompactHeaderComponent} from '../../components/compact-header/compact-header.component';
+import {WorkingVolumesComponent} from '../../components/working-volumes/working-volumes.component';
+import {LimitOrderFormComponent} from '../../components/order-forms/limit-order-form/limit-order-form.component';
+import {
+  LimitOrderPriceChangeComponent
+} from '../../components/limit-order-price-change/limit-order-price-change.component';
+import {MarketOrderFormComponent} from '../../components/order-forms/market-order-form/market-order-form.component';
+import {StopOrderFormComponent} from '../../components/order-forms/stop-order-form/stop-order-form.component';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {
+  SetupInstrumentNotificationsComponent
+} from '../../../push-notifications/components/setup-instrument-notifications/setup-instrument-notifications.component';
+import {OrderSubmitSettingsComponent} from '../../components/order-submit-settings/order-submit-settings.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-order-submit-widget',
-    templateUrl: './order-submit-widget.component.html',
-    styleUrls: ['./order-submit-widget.component.less'],
-    providers: [
-        CommonParametersService,
-        ConfirmableOrderCommandsService
-    ],
-    standalone: false
+  selector: 'ats-order-submit-widget',
+  templateUrl: './order-submit-widget.component.html',
+  styleUrls: ['./order-submit-widget.component.less'],
+  providers: [
+    CommonParametersService,
+    ConfirmableOrderCommandsService
+  ],
+  imports: [
+    TranslocoDirective,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent,
+    WidgetHeaderInstrumentSwitchComponent,
+    CompactHeaderComponent,
+    NzTabsComponent,
+    NzTabComponent,
+    WorkingVolumesComponent,
+    LimitOrderFormComponent,
+    LimitOrderPriceChangeComponent,
+    MarketOrderFormComponent,
+    StopOrderFormComponent,
+    NzIconDirective,
+    SetupInstrumentNotificationsComponent,
+    OrderSubmitSettingsComponent,
+    AsyncPipe
+  ]
 })
 export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
   currentPortfolio$!: Observable<PortfolioKey>;
@@ -87,10 +114,10 @@ export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
   @ViewChild('stopOrderTab', {static: false})
   stopOrderTab?: NzTabComponent;
 
-  @Input({ required: true })
+  @Input({required: true})
   widgetInstance!: WidgetInstance;
 
-  @Input({ required: true })
+  @Input({required: true})
   isBlockWidget!: boolean;
 
   settings$!: Observable<OrderSubmitSettings>;
@@ -112,18 +139,18 @@ export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
   ) {
   }
 
-  ngAfterViewInit(): void {
-    this.setDefaultOrderType();
-  }
-
   get guid(): string {
     return this.widgetInstance.instance.guid;
+  }
+
+  ngAfterViewInit(): void {
+    this.setDefaultOrderType();
   }
 
   onSettingsChange(): void {
     this.shouldShowSettings = !this.shouldShowSettings;
 
-    if(!this.shouldShowSettings) {
+    if (!this.shouldShowSettings) {
       this.setDefaultOrderType();
     }
   }
@@ -204,7 +231,7 @@ export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
         take(1),
         subscribeOn(asyncScheduler)
       ).subscribe(s => {
-        if(s.defaultOrderType != null) {
+        if (s.defaultOrderType != null) {
           switch (s.defaultOrderType) {
             case 'limit':
               this.activateCommandTab(t, this.limitOrderTab);

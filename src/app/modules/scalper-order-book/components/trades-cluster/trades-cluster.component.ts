@@ -13,6 +13,9 @@ import {ThemeService} from "../../../../shared/services/theme.service";
 import {ThemeColors} from "../../../../shared/models/settings/theme-settings.model";
 import {color} from "d3";
 import {MathHelper} from "../../../../shared/utils/math-helper";
+import { LetDirective } from '@ngrx/component';
+import { NgClass, NgStyle } from '@angular/common';
+import { ShortNumberComponent } from '../../../../shared/components/short-number/short-number.component';
 
 interface DisplayItem {
   volume: number | null;
@@ -28,7 +31,12 @@ interface DisplayItem {
     selector: 'ats-trades-cluster',
     templateUrl: './trades-cluster.component.html',
     styleUrls: ['./trades-cluster.component.less'],
-    standalone: false
+    imports: [
+      LetDirective,
+      NgClass,
+      NgStyle,
+      ShortNumberComponent
+    ]
 })
 export class TradesClusterComponent implements OnInit, OnDestroy {
   readonly numberFormats = NumberDisplayFormat;

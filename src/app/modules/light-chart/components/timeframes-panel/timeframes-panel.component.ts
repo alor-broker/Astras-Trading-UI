@@ -1,37 +1,41 @@
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output
-} from '@angular/core';
-import { TimeFrameDisplayMode } from "../../models/light-chart-settings.model";
-import { TimeframeValue } from "../../models/light-chart.models";
-import {
-  BehaviorSubject,
-  take
-} from "rxjs";
-import { ContentSize } from "../../../../shared/models/dashboard/dashboard-item.model";
-import { filter } from "rxjs/operators";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {Component, DestroyRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output} from '@angular/core';
+import {TimeFrameDisplayMode} from "../../models/light-chart-settings.model";
+import {TimeframeValue} from "../../models/light-chart.models";
+import {BehaviorSubject, take} from "rxjs";
+import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {filter} from "rxjs/operators";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {LetDirective} from '@ngrx/component';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzDropdownButtonDirective, NzDropDownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
 
 @Component({
-    selector: 'ats-timeframes-panel',
-    templateUrl: './timeframes-panel.component.html',
-    styleUrls: ['./timeframes-panel.component.less'],
-    standalone: false
+  selector: 'ats-timeframes-panel',
+  templateUrl: './timeframes-panel.component.html',
+  styleUrls: ['./timeframes-panel.component.less'],
+  imports: [
+    LetDirective,
+    NzResizeObserverDirective,
+    TranslocoDirective,
+    NzButtonComponent,
+    NzDropdownButtonDirective,
+    NzDropDownDirective,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuItemComponent
+  ]
 })
 export class TimeframesPanelComponent implements OnDestroy, OnInit, OnChanges {
-  @Input({ required: true })
+  @Input({required: true})
   availableTimeframes: TimeframeValue[] = [];
 
-  @Input({ required: true })
+  @Input({required: true})
   selectedTimeframe?: TimeframeValue;
 
-  @Input({ required: true })
+  @Input({required: true})
   displayMode = TimeFrameDisplayMode.Buttons;
 
   @Output()
@@ -39,7 +43,7 @@ export class TimeframesPanelComponent implements OnDestroy, OnInit, OnChanges {
 
   readonly actualDisplayMode$ = new BehaviorSubject(this.displayMode);
   timeFrameDisplayModes = TimeFrameDisplayMode;
-  private readonly contentSize$ = new BehaviorSubject<ContentSize>({ height: 0, width: 0 });
+  private readonly contentSize$ = new BehaviorSubject<ContentSize>({height: 0, width: 0});
 
   constructor(private readonly destroyRef: DestroyRef) {
   }

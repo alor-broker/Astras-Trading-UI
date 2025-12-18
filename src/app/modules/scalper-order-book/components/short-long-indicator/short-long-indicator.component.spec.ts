@@ -1,15 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ShortLongIndicatorComponent } from './short-long-indicator.component';
-import { LetDirective } from "@ngrx/component";
-import { EvaluationService } from "../../../../shared/services/evaluation.service";
-import {
-  BehaviorSubject,
-  Subject
-} from "rxjs";
-import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-data-context.model";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import {ShortLongIndicatorComponent} from './short-long-indicator.component';
+import {LetDirective} from "@ngrx/component";
+import {EvaluationService} from "../../../../shared/services/evaluation.service";
+import {BehaviorSubject, Subject} from "rxjs";
+import {ScalperOrderBookDataContext} from "../../models/scalper-order-book-data-context.model";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockDirectives} from "ng-mocks";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 
 describe('ShortLongIndicatorComponent', () => {
   let component: ShortLongIndicatorComponent;
@@ -19,11 +18,12 @@ describe('ShortLongIndicatorComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         LetDirective,
-        TranslocoTestsModule.getModule()
-      ],
-      declarations: [
+        TranslocoTestsModule.getModule(),
         ShortLongIndicatorComponent,
-        ...ngZorroMockComponents
+        MockDirectives(
+          TranslocoDirective,
+          NzTooltipDirective,
+        )
       ],
       providers: [
         {
@@ -49,9 +49,12 @@ describe('ShortLongIndicatorComponent', () => {
       displayRange$: new Subject(),
       workingVolume$: new Subject(),
       scaleFactor$: new BehaviorSubject(1),
-      addLocalOrder: () => {},
-      removeLocalOrder: () => {},
-      destroy: () => {}
+      addLocalOrder: () => {
+      },
+      removeLocalOrder: () => {
+      },
+      destroy: () => {
+      }
     } as ScalperOrderBookDataContext;
 
     fixture.detectChanges();

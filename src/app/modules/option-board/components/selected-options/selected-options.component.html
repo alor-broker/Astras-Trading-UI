@@ -9,9 +9,9 @@
     </ng-template>
     <ng-container
       *ngrxLet="{
-          tableConfig: tableConfig$ | async,
-          details: tableData$ | async,
-          contentSize: contentSize$ | async
+          tableConfig: tableConfig$,
+          details: tableData$,
+          contentSize: contentSize$
         } as vm"
       >
       @if ((vm.contentSize?.width ?? (minOptionTableWidth + 1)) > minOptionTableWidth) {

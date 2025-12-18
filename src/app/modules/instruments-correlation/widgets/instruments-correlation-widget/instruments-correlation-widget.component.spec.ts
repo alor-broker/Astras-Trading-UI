@@ -1,15 +1,14 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { InstrumentsCorrelationWidgetComponent } from './instruments-correlation-widget.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { of } from "rxjs";
-import { Widget } from "../../../../shared/models/dashboard/widget.model";
-import { WidgetMeta } from "../../../../shared/models/widget-meta.model";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
+import {InstrumentsCorrelationWidgetComponent} from './instruments-correlation-widget.component';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {of} from "rxjs";
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import {MockComponents} from "ng-mocks";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
+import {CorrelationChartComponent} from "../../components/correlation-chart/correlation-chart.component";
 
 describe('InstrumentsCorrelationWidgetComponent', () => {
   let component: InstrumentsCorrelationWidgetComponent;
@@ -17,13 +16,13 @@ describe('InstrumentsCorrelationWidgetComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         InstrumentsCorrelationWidgetComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-correlation-chart',
-          inputs: ['guid']
-        }),
-        widgetSkeletonMock
+        MockComponents(
+          WidgetSkeletonComponent,
+          WidgetHeaderComponent,
+          CorrelationChartComponent
+        )
       ],
       providers: [
         {

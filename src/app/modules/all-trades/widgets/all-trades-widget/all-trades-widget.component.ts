@@ -15,12 +15,27 @@ import {
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import { TranslocoDirective } from '@jsverse/transloco';
+import { WidgetSkeletonComponent } from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
+import { WidgetHeaderComponent } from '../../../../shared/components/widget-header/widget-header.component';
+import { WidgetHeaderInstrumentSwitchComponent } from '../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component';
+import { AllTradesComponent } from '../../components/all-trades/all-trades.component';
+import { AllTradesSettingsComponent } from '../../components/all-trades-settings/all-trades-settings.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-all-trades-widget',
     templateUrl: './all-trades-widget.component.html',
     styleUrls: ['./all-trades-widget.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      WidgetSkeletonComponent,
+      WidgetHeaderComponent,
+      WidgetHeaderInstrumentSwitchComponent,
+      AllTradesComponent,
+      AllTradesSettingsComponent,
+      AsyncPipe
+    ]
 })
 export class AllTradesWidgetComponent implements OnInit {
   shouldShowSettings = false;

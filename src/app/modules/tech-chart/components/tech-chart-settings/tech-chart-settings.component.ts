@@ -1,39 +1,67 @@
+import {Component, DestroyRef, OnInit,} from '@angular/core';
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {Observable, take} from "rxjs";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {isInstrumentEqual} from '../../../../shared/utils/settings-helper';
+import {InstrumentKey} from '../../../../shared/models/instruments/instrument-key.model';
+import {LineMarkerPosition, TechChartSettings, TradeDisplayMarker} from '../../models/tech-chart-settings.model';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
 import {
-  Component,
-  DestroyRef,
-  OnInit,
-} from '@angular/core';
+  WidgetSettingsBaseComponent
+} from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import {SyntheticInstrumentsHelper} from "../../utils/synthetic-instruments.helper";
+import {DeviceService} from "../../../../shared/services/device.service";
+import {DeviceInfo} from "../../../../shared/models/device-info.model";
+import {ThemeService} from "../../../../shared/services/theme.service";
+import {map} from "rxjs/operators";
+import {NzMarks, NzSliderComponent} from "ng-zorro-antd/slider";
+import {WidgetSettingsComponent} from '../../../../shared/components/widget-settings/widget-settings.component';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzCollapseComponent, NzCollapsePanelComponent} from 'ng-zorro-antd/collapse';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {InstrumentSearchComponent} from '../../../../shared/components/instrument-search/instrument-search.component';
+import {NzInputDirective} from 'ng-zorro-antd/input';
 import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
-import {
-  Observable,
-  take
-} from "rxjs";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
-import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import {
-  LineMarkerPosition,
-  TechChartSettings,
-  TradeDisplayMarker
-} from '../../models/tech-chart-settings.model';
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
-import { SyntheticInstrumentsHelper } from "../../utils/synthetic-instruments.helper";
-import { DeviceService } from "../../../../shared/services/device.service";
-import { DeviceInfo } from "../../../../shared/models/device-info.model";
-import { ThemeService } from "../../../../shared/services/theme.service";
-import { map } from "rxjs/operators";
-import { NzMarks } from "ng-zorro-antd/slider";
+  InstrumentBoardSelectComponent
+} from '../../../../shared/components/instrument-board-select/instrument-board-select.component';
+import {NzSwitchComponent} from 'ng-zorro-antd/switch';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzColorPickerComponent} from 'ng-zorro-antd/color-picker';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-tech-chart-settings',
-    templateUrl: './tech-chart-settings.component.html',
-    styleUrls: ['./tech-chart-settings.component.less'],
-    standalone: false
+  selector: 'ats-tech-chart-settings',
+  templateUrl: './tech-chart-settings.component.html',
+  styleUrls: ['./tech-chart-settings.component.less'],
+  imports: [
+    WidgetSettingsComponent,
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzCollapseComponent,
+    NzCollapsePanelComponent,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    InstrumentSearchComponent,
+    NzInputDirective,
+    InstrumentBoardSelectComponent,
+    NzSwitchComponent,
+    NzSelectComponent,
+    NzOptionComponent,
+    NzIconDirective,
+    NzSliderComponent,
+    NzColorPickerComponent,
+    NzTypographyComponent,
+    AsyncPipe
+  ]
 })
 export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<TechChartSettings> implements OnInit {
   readonly availableLineMarkerPositions = Object.values(LineMarkerPosition);
@@ -137,7 +165,7 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
       ...this.form!.value,
       symbol: formValue.instrument?.symbol,
       exchange: formValue.instrument?.exchange,
-    } as TechChartSettings & { instrument?: InstrumentKey }; ;
+    } as TechChartSettings & { instrument?: InstrumentKey };
 
     delete newSettings.instrument;
 

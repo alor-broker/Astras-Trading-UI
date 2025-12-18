@@ -1,51 +1,43 @@
-import {
-  Component,
-  Inject,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
-import { InstrumentsService } from "../../../modules/instruments/services/instruments.service";
-import { WidgetSettingsService } from "../../services/widget-settings.service";
-import {
-  BehaviorSubject,
-  combineLatest,
-  Observable,
-  of,
-  shareReplay,
-  switchMap,
-  take
-} from "rxjs";
-import { WidgetSettings } from "../../models/widget-settings.model";
-import { InstrumentKey } from "../../models/instruments/instrument-key.model";
-import { Instrument } from "../../models/instruments/instrument.model";
-import { InstrumentSearchComponent } from "../instrument-search/instrument-search.component";
-import {
-  defaultBadgeColor,
-  toInstrumentKey
-} from "../../utils/instruments";
-import { map } from "rxjs/operators";
-import {
-  ACTIONS_CONTEXT,
-  ActionsContext
-} from "../../services/actions-context";
+import {Component, Inject, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {InstrumentsService} from "../../../modules/instruments/services/instruments.service";
+import {WidgetSettingsService} from "../../services/widget-settings.service";
+import {BehaviorSubject, combineLatest, Observable, of, shareReplay, switchMap, take} from "rxjs";
+import {WidgetSettings} from "../../models/widget-settings.model";
+import {InstrumentKey} from "../../models/instruments/instrument-key.model";
+import {Instrument} from "../../models/instruments/instrument.model";
+import {InstrumentSearchComponent} from "../instrument-search/instrument-search.component";
+import {defaultBadgeColor, toInstrumentKey} from "../../utils/instruments";
+import {map} from "rxjs/operators";
+import {ACTIONS_CONTEXT, ActionsContext} from "../../services/actions-context";
+import {NzPopoverDirective} from 'ng-zorro-antd/popover';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzDropdownButtonDirective, NzDropDownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-widget-header-instrument-switch',
-    templateUrl: './widget-header-instrument-switch.component.html',
-    styleUrls: ['./widget-header-instrument-switch.component.less'],
-    standalone: false
+  selector: 'ats-widget-header-instrument-switch',
+  templateUrl: './widget-header-instrument-switch.component.html',
+  styleUrls: ['./widget-header-instrument-switch.component.less'],
+  imports: [
+    NzPopoverDirective,
+    NzButtonComponent,
+    NzDropdownButtonDirective,
+    NzDropDownDirective,
+    NzIconDirective,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    NzTypographyComponent,
+    InstrumentSearchComponent,
+    AsyncPipe
+  ]
 })
 export class WidgetHeaderInstrumentSwitchComponent implements OnInit, OnDestroy {
-  private readonly explicitTitle$ = new BehaviorSubject<string | null>(null);
-  @Input({ required: true })
+  @Input({required: true})
   widgetGuid!: string;
-
-  @Input()
-  set customTitle(value: string | null) {
-    this.explicitTitle$.next(value);
-  }
 
   @ViewChild(InstrumentSearchComponent)
   searchInput?: InstrumentSearchComponent;
@@ -53,6 +45,7 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit, OnDestroy 
   settings$!: Observable<WidgetSettings & InstrumentKey>;
   instrumentTitle$!: Observable<string>;
   searchVisible = false;
+  private readonly explicitTitle$ = new BehaviorSubject<string | null>(null);
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
@@ -60,6 +53,11 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit, OnDestroy 
     @Inject(ACTIONS_CONTEXT)
     private readonly actionsContext: ActionsContext
   ) {
+  }
+
+  @Input()
+  set customTitle(value: string | null) {
+    this.explicitTitle$.next(value);
   }
 
   ngOnDestroy(): void {

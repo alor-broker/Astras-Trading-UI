@@ -12,20 +12,20 @@ import {
   subscribeOn,
   timer
 } from "rxjs";
-import { CommonModule } from "@angular/common";
 import { TimezoneDisplayOption } from "../../../shared/models/enums/timezone-display-option";
 import { TerminalSettings } from "../../../shared/models/terminal-settings/terminal-settings.model";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { mapWith } from "../../../shared/utils/observable-helper";
 import { TZDate } from "@date-fns/tz";
+import {AsyncPipe, DatePipe} from "@angular/common";
 
 @Component({
   selector: 'ats-current-time',
-  standalone: true,
-  imports: [
-    CommonModule
-  ],
   templateUrl: './current-time.component.html',
+  imports: [
+    AsyncPipe,
+    DatePipe
+  ],
   styleUrl: './current-time.component.less'
 })
 export class CurrentTimeComponent implements OnInit {

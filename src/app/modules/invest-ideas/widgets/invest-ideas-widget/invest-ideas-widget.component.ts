@@ -1,37 +1,28 @@
-import {
-  Component,
-  Inject,
-  Input,
-  OnInit
-} from '@angular/core';
-import { AsyncPipe } from "@angular/common";
-import { SharedModule } from "../../../../shared/shared.module";
-import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
-import {
-  Observable,
-  take
-} from "rxjs";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { WidgetSettingsCreationHelper } from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
-import { InvestIdeasSettings } from "../../models/invest-ideas-settings.model";
-import { InvestIdeasCarouselComponent } from "../../components/invest-ideas-carousel/invest-ideas-carousel.component";
-import {
-  ACTIONS_CONTEXT,
-  ActionsContext
-} from "../../../../shared/services/actions-context";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { SettingsHelper } from "../../../../shared/utils/settings-helper";
-import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import {Component, Inject, Input, OnInit} from '@angular/core';
+import {AsyncPipe} from "@angular/common";
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {Observable, take} from "rxjs";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {WidgetSettingsCreationHelper} from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
+import {InvestIdeasSettings} from "../../models/invest-ideas-settings.model";
+import {InvestIdeasCarouselComponent} from "../../components/invest-ideas-carousel/invest-ideas-carousel.component";
+import {ACTIONS_CONTEXT, ActionsContext} from "../../../../shared/services/actions-context";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {SettingsHelper} from "../../../../shared/utils/settings-helper";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {getValueOrDefault} from "../../../../shared/utils/object-helper";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
 
 @Component({
   selector: 'ats-invest-ideas-widget',
   imports: [
     AsyncPipe,
-    SharedModule,
-    InvestIdeasCarouselComponent
-],
+    InvestIdeasCarouselComponent,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent
+  ],
   templateUrl: './invest-ideas-widget.component.html',
   styleUrl: './invest-ideas-widget.component.less'
 })

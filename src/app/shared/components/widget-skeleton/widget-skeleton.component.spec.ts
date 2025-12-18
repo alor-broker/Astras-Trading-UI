@@ -8,8 +8,8 @@ describe('WidgetSkeletonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [WidgetSkeletonComponent]
-    })
+    imports: [WidgetSkeletonComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(WidgetSkeletonComponent);

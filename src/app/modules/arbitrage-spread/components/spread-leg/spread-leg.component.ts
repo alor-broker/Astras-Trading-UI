@@ -1,41 +1,69 @@
-import { Component, DestroyRef, Input, OnInit } from '@angular/core';
+import {Component, DestroyRef, Input, OnInit} from '@angular/core';
 import {
   ControlValueAccessorBaseComponent
 } from "../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component";
 import {
   FormControl,
   FormGroup,
+  FormsModule,
   NG_VALIDATORS,
-  NG_VALUE_ACCESSOR, ValidationErrors,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+  ValidationErrors,
   Validator,
   Validators
 } from "@angular/forms";
-import { SpreadLeg } from "../../models/arbitrage-spread.model";
-import { inputNumberValidation } from "../../../../shared/utils/validation-options";
-import { Side } from "../../../../shared/models/enums/side.model";
-import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
-import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { Instrument } from "../../../../shared/models/instruments/instrument.model";
+import {SpreadLeg} from "../../models/arbitrage-spread.model";
+import {inputNumberValidation} from "../../../../shared/utils/validation-options";
+import {Side} from "../../../../shared/models/enums/side.model";
+import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
+import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {Instrument} from "../../../../shared/models/instruments/instrument.model";
 import {Exchange} from "../../../../../generated/graphql.types";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzFormControlComponent, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {InstrumentSearchComponent} from '../../../../shared/components/instrument-search/instrument-search.component';
+import {InputNumberComponent} from '../../../../shared/components/input-number/input-number.component';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 
 @Component({
-    selector: 'ats-spread-leg',
-    templateUrl: './spread-leg.component.html',
-    styleUrls: ['./spread-leg.component.less'],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            multi: true,
-            useExisting: SpreadLegComponent
-        },
-        {
-            provide: NG_VALIDATORS,
-            useExisting: SpreadLegComponent,
-            multi: true,
-        },
-    ],
-    standalone: false
+  selector: 'ats-spread-leg',
+  templateUrl: './spread-leg.component.html',
+  styleUrls: ['./spread-leg.component.less'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: SpreadLegComponent
+    },
+    {
+      provide: NG_VALIDATORS,
+      useExisting: SpreadLegComponent,
+      multi: true,
+    },
+  ],
+  imports: [
+    TranslocoDirective,
+    FormsModule,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormControlComponent,
+    NzFormLabelComponent,
+    InstrumentSearchComponent,
+    InputNumberComponent,
+    NzSelectComponent,
+    NzOptionComponent,
+    NzIconDirective,
+    NzTooltipDirective,
+    NzEmptyComponent
+  ]
 })
 export class SpreadLegComponent extends ControlValueAccessorBaseComponent<SpreadLeg> implements OnInit, Validator {
   @Input() isSideNeeded = false;
@@ -92,10 +120,6 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
     this.form.controls.portfolio.reset();
   }
 
-  protected needMarkTouched(): boolean {
-    return this.form.touched;
-  }
-
   writeValue(obj: any): void {
     this.form.patchValue(obj);
   }
@@ -109,6 +133,10 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
   }
 
   validate(): ValidationErrors | null {
-    return (this.form.disabled || this.form.valid) ? null : { required: true };
+    return (this.form.disabled || this.form.valid) ? null : {required: true};
+  }
+
+  protected needMarkTouched(): boolean {
+    return this.form.touched;
   }
 }

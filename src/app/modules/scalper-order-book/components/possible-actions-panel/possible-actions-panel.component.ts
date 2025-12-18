@@ -10,12 +10,17 @@ import {
 import { map } from 'rxjs/operators';
 import { ScalperOrderBookMouseAction } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import { TranslatorService } from '../../../../shared/services/translator.service';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-possible-actions-panel',
     templateUrl: './possible-actions-panel.component.html',
     styleUrls: ['./possible-actions-panel.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      AsyncPipe
+    ]
 })
 export class PossibleActionsPanelComponent implements OnInit {
   currentActions$!: Observable<string[] | null>;

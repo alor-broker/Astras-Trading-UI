@@ -3,12 +3,13 @@ import {
   Input
 } from '@angular/core';
 import { TextMessageContent } from "../../../models/messages-display.model";
+import { MarkdownComponent } from 'ngx-markdown';
 
 @Component({
     selector: 'ats-text-message',
     templateUrl: './text-message.component.html',
     styleUrls: ['./text-message.component.less'],
-    standalone: false
+    imports: [MarkdownComponent]
 })
 export class TextMessageComponent {
   @Input({required: true})

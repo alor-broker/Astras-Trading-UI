@@ -1,27 +1,14 @@
-import {
-  Component,
-  DestroyRef,
-  Inject,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  filter,
-  Observable,
-  of,
-  shareReplay,
-} from 'rxjs';
-import { map } from 'rxjs/operators';
-import { BlotterService } from '../../services/blotter.service';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { MarketType } from "../../../../shared/models/portfolio-key.model";
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
-import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
-import { defaultBadgeColor } from '../../../../shared/utils/instruments';
-import { SettingsHelper } from '../../../../shared/utils/settings-helper';
+import {Component, DestroyRef, Inject, Input, OnDestroy, OnInit} from '@angular/core';
+import {BehaviorSubject, filter, Observable, of, shareReplay,} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {BlotterService} from '../../services/blotter.service';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {MarketType} from "../../../../shared/models/portfolio-key.model";
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
+import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
+import {TableSettingHelper} from '../../../../shared/utils/table-setting.helper';
+import {defaultBadgeColor} from '../../../../shared/utils/instruments';
+import {SettingsHelper} from '../../../../shared/utils/settings-helper';
 import {ContentSize, WidgetInstance} from '../../../../shared/models/dashboard/dashboard-item.model';
 import {
   allNotificationsColumns,
@@ -35,22 +22,61 @@ import {
 } from '../../models/blotter-settings.model';
 import {getMarketTypeByPortfolio} from "../../../../shared/utils/portfolios";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import {getValueOrDefault} from "../../../../shared/utils/object-helper";
 import {
   PUSH_NOTIFICATIONS_CONFIG,
   PushNotificationsConfig
 } from "../../../push-notifications/services/push-notifications-config";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {NavigationStackService} from "../../../../shared/services/navigation-stack.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {WidgetSkeletonComponent} from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
+import {WidgetHeaderComponent} from '../../../../shared/components/widget-header/widget-header.component';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {NzTabComponent, NzTabDirective, NzTabsComponent} from 'ng-zorro-antd/tabs';
+import {CommonSummaryComponent} from '../../components/common-summary/common-summary.component';
+import {ForwardSummaryComponent} from '../../components/forward-summary/forward-summary.component';
+import {OrdersComponent} from '../../components/orders/orders.component';
+import {StopOrdersComponent} from '../../components/stop-orders/stop-orders.component';
+import {PositionsComponent} from '../../components/positions/positions.component';
+import {TradesComponent} from '../../components/trades/trades.component';
+import {RepoTradesComponent} from '../../components/repo-trades/repo-trades.component';
+import {TradesHistoryComponent} from '../../components/trades-history/trades-history.component';
+import {PushNotificationsComponent} from '../../components/push-notifications/push-notifications.component';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {BlotterSettingsComponent} from '../../components/blotter-settings/blotter-settings.component';
+import {OrdersGroupModalWidgetComponent} from '../orders-group-modal-widget/orders-group-modal-widget.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-blotter-widget',
-    templateUrl: './blotter-widget.component.html',
-    styleUrls: ['./blotter-widget.component.less'],
-    providers: [
-        BlotterService
-    ],
-    standalone: false
+  selector: 'ats-blotter-widget',
+  templateUrl: './blotter-widget.component.html',
+  styleUrls: ['./blotter-widget.component.less'],
+  providers: [
+    BlotterService
+  ],
+  imports: [
+    TranslocoDirective,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent,
+    NzResizeObserverDirective,
+    NzTabsComponent,
+    NzTabComponent,
+    NzTabDirective,
+    CommonSummaryComponent,
+    ForwardSummaryComponent,
+    OrdersComponent,
+    StopOrdersComponent,
+    PositionsComponent,
+    TradesComponent,
+    RepoTradesComponent,
+    TradesHistoryComponent,
+    PushNotificationsComponent,
+    NzIconDirective,
+    BlotterSettingsComponent,
+    OrdersGroupModalWidgetComponent,
+    AsyncPipe
+  ]
 })
 export class BlotterWidgetComponent implements OnInit, OnDestroy {
   readonly marketTypes = MarketType;
@@ -118,7 +144,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
         stopOrdersTable: TableSettingHelper.toTableDisplaySettings(
           settings.stopOrdersTable,
           allStopOrdersColumns.filter(c => c.isDefault).map(c => c.id)
-        ) ,
+        ),
         notificationsTable: TableSettingHelper.toTableDisplaySettings(
           settings.notificationsTable,
           allNotificationsColumns.filter(c => c.isDefault).map(c => c.id)
@@ -161,7 +187,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
       filter(state => state.widgetTarget.typeId === 'blotter'),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(state => {
-      if(state.widgetTarget.parameters?.activeTab === 'summary') {
+      if (state.widgetTarget.parameters?.activeTab === 'summary') {
         this.onIndexChange(0);
       }
     });
@@ -172,7 +198,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
   }
 
   onIndexChange(index?: number): void {
-    this.widgetSettingsService.updateSettings<BlotterSettings>(this.widgetInstance.instance.guid, { activeTabIndex: index ?? 0 });
+    this.widgetSettingsService.updateSettings<BlotterSettings>(this.widgetInstance.instance.guid, {activeTabIndex: index ?? 0});
   }
 
   ngOnDestroy(): void {

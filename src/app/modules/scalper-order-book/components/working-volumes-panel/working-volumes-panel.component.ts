@@ -23,10 +23,7 @@ import { WidgetLocalStateService } from "../../../../shared/services/widget-loca
 import { RecordContent } from "../../../../store/widgets-local-state/widgets-local-state.model";
 import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { ScalperOrderBookWidgetSettings } from "../../models/scalper-order-book-settings.model";
-import {
-  FormControl,
-  Validators
-} from "@angular/forms";
+import { FormControl, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {
   SCALPER_ORDERBOOK_SHARED_CONTEXT,
   ScalperOrderBookSharedContext
@@ -36,6 +33,12 @@ import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-comm
 import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-data-context.model";
+import { LetDirective } from '@ngrx/component';
+import { NzPopconfirmDirective } from 'ng-zorro-antd/popconfirm';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NzRowDirective, NzColDirective } from 'ng-zorro-antd/grid';
+import { NzFormItemComponent, NzFormControlComponent, NzFormLabelComponent } from 'ng-zorro-antd/form';
+import { InputNumberComponent } from '../../../../shared/components/input-number/input-number.component';
 
 interface SelectedWorkingVolumeState extends RecordContent {
   lastSelectedVolume?: Record<string, number>;
@@ -45,7 +48,19 @@ interface SelectedWorkingVolumeState extends RecordContent {
     selector: 'ats-working-volumes-panel',
     templateUrl: './working-volumes-panel.component.html',
     styleUrls: ['./working-volumes-panel.component.less'],
-    standalone: false
+    imports: [
+      LetDirective,
+      NzPopconfirmDirective,
+      TranslocoDirective,
+      NzRowDirective,
+      NzFormItemComponent,
+      NzColDirective,
+      NzFormControlComponent,
+      NzFormLabelComponent,
+      InputNumberComponent,
+      FormsModule,
+      ReactiveFormsModule
+    ]
 })
 export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
   readonly validation = {

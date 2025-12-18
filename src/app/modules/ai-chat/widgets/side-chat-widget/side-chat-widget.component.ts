@@ -9,43 +9,44 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import { LocalStorageService } from "../../../../shared/services/local-storage.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { User } from "../../../../shared/models/user/user.model";
-import {
-  fromEvent,
-  Observable,
-  Subscription,
-  take
-} from "rxjs";
-import {
-  USER_CONTEXT,
-  UserContext
-} from "../../../../shared/services/auth/user-context";
-import {
-  filter,
-  map
-} from "rxjs/operators";
+import {LocalStorageService} from "../../../../shared/services/local-storage.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {User} from "../../../../shared/models/user/user.model";
+import {fromEvent, Observable, Subscription, take} from "rxjs";
+import {USER_CONTEXT, UserContext} from "../../../../shared/services/auth/user-context";
+import {filter, map} from "rxjs/operators";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzDrawerComponent} from 'ng-zorro-antd/drawer';
+import {AiChatComponent} from '../../components/ai-chat/ai-chat.component';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {TermsOfUseDialogComponent} from '../../components/terms-of-use-dialog/terms-of-use-dialog.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-side-chat-widget',
-    templateUrl: './side-chat-widget.component.html',
-    styleUrls: ['./side-chat-widget.component.less'],
-    standalone: false
+  selector: 'ats-side-chat-widget',
+  templateUrl: './side-chat-widget.component.html',
+  styleUrls: ['./side-chat-widget.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzDrawerComponent,
+    AiChatComponent,
+    NzTypographyComponent,
+    TermsOfUseDialogComponent,
+    AsyncPipe
+  ]
 })
 export class SideChatWidgetComponent implements OnInit, OnChanges {
-  @Input({ required: true })
+  @Input({required: true})
   atsVisible = false;
 
   @Output()
   atsVisibleChange = new EventEmitter<boolean>();
 
-  private mouseupSub?: Subscription;
   isResizing = false;
   drawerWidth$!: Observable<number>;
-
   isTermOfUseDialogVisible = false;
   isChatDisabled = true;
+  private mouseupSub?: Subscription;
 
   constructor(
     private readonly localStorageService: LocalStorageService,

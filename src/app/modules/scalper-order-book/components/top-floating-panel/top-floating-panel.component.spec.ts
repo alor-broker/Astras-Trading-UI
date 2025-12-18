@@ -1,16 +1,14 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TopFloatingPanelComponent } from './top-floating-panel.component';
-import { Subject } from "rxjs";
-import { QuotesService } from "../../../../shared/services/quotes.service";
-import { LetDirective } from "@ngrx/component";
-import { SCALPER_ORDERBOOK_SHARED_CONTEXT } from "../scalper-order-book/scalper-order-book.component";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { MockProvider } from "ng-mocks";
-import { ScalperOrderBookDataProvider } from "../../services/scalper-order-book-data-provider.service";
+import {TopFloatingPanelComponent} from './top-floating-panel.component';
+import {Subject} from "rxjs";
+import {QuotesService} from "../../../../shared/services/quotes.service";
+import {LetDirective} from "@ngrx/component";
+import {SCALPER_ORDERBOOK_SHARED_CONTEXT} from "../scalper-order-book/scalper-order-book.component";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockDirectives, MockProvider} from "ng-mocks";
+import {ScalperOrderBookDataProvider} from "../../services/scalper-order-book-data-provider.service";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 
 describe('TopFloatingPanelComponent', () => {
   let component: TopFloatingPanelComponent;
@@ -20,16 +18,16 @@ describe('TopFloatingPanelComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         TranslocoTestsModule.getModule(),
-        LetDirective
+        LetDirective,
+        TopFloatingPanelComponent,
+        MockDirectives(
+          NzTooltipDirective
+        )
       ],
-      declarations: [TopFloatingPanelComponent],
       providers: [
-        MockProvider(
-          ScalperOrderBookDataProvider,
-          {
-            getSettingsStream: jasmine.createSpy('getSettings').and.returnValue(new Subject())
-          }
-        ),
+        MockProvider(ScalperOrderBookDataProvider, {
+          getSettingsStream: jasmine.createSpy('getSettings').and.returnValue(new Subject())
+        }),
         {
           provide: QuotesService,
           useValue: {

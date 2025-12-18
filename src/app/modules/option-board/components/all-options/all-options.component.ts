@@ -19,8 +19,18 @@ import {dateDiffInDays} from "../../../../shared/utils/datetime";
 import {mapWith} from "../../../../shared/utils/observable-helper";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
-import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
+import { CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf } from "@angular/cdk/scrolling";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NzSpinComponent } from 'ng-zorro-antd/spin';
+import { NzEmptyComponent } from 'ng-zorro-antd/empty';
+import { NzResizeObserverDirective } from 'ng-zorro-antd/cdk/resize-observer';
+import { NgStyle, AsyncPipe, DecimalPipe, DatePipe } from '@angular/common';
+import { NzPopoverDirective } from 'ng-zorro-antd/popover';
+import { NzTypographyComponent } from 'ng-zorro-antd/typography';
+import { OptionPreviewComponent } from '../option-preview/option-preview.component';
+import { NzIconDirective } from 'ng-zorro-antd/icon';
+import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
 
 interface OptionDisplay extends Option {
   displayValue: string;
@@ -48,7 +58,24 @@ interface LayoutSizes {
     selector: 'ats-all-options',
     templateUrl: './all-options.component.html',
     styleUrls: ['./all-options.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      NzSpinComponent,
+      NzEmptyComponent,
+      NzResizeObserverDirective,
+      NgStyle,
+      CdkVirtualScrollViewport,
+      CdkFixedSizeVirtualScroll,
+      CdkVirtualForOf,
+      NzPopoverDirective,
+      NzTypographyComponent,
+      OptionPreviewComponent,
+      NzIconDirective,
+      NzTooltipDirective,
+      AsyncPipe,
+      DecimalPipe,
+      DatePipe
+    ]
 })
 export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly rowHeight = 30;

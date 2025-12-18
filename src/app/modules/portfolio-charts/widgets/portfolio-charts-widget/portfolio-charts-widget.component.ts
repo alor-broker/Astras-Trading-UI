@@ -1,36 +1,27 @@
-import {
-  Component,
-  Input,
-  OnInit
-} from '@angular/core';
-import { AsyncPipe } from "@angular/common";
-import { SharedModule } from "../../../../shared/shared.module";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
-import {
-  combineLatest,
-  distinctUntilChanged,
-  Observable
-} from "rxjs";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
-import { WidgetSettingsCreationHelper } from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
-import {
-  filter,
-  map
-} from "rxjs/operators";
-import { PortfolioChartsSettings } from "../../models/portfolio-charts-settings";
-import { AgreementDynamicsComponent } from "../../components/agreement-dynamics/agreement-dynamics.component";
-import { UserPortfoliosService } from "../../../../shared/services/user-portfolios.service";
+import {Component, Input, OnInit} from '@angular/core';
+import {AsyncPipe} from "@angular/common";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {combineLatest, distinctUntilChanged, Observable} from "rxjs";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
+import {WidgetSettingsCreationHelper} from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
+import {filter, map} from "rxjs/operators";
+import {PortfolioChartsSettings} from "../../models/portfolio-charts-settings";
+import {AgreementDynamicsComponent} from "../../components/agreement-dynamics/agreement-dynamics.component";
+import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
 
 @Component({
   selector: 'ats-portfolio-charts-widget',
   imports: [
     AsyncPipe,
-    SharedModule,
     TranslocoDirective,
-    AgreementDynamicsComponent
-],
+    AgreementDynamicsComponent,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent
+  ],
   templateUrl: './portfolio-charts-widget.component.html',
   styleUrl: './portfolio-charts-widget.component.less'
 })

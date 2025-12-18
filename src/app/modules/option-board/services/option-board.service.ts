@@ -21,7 +21,7 @@ import {
   parseISO
 } from "date-fns";
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class OptionBoardService {
   private readonly baseUrl = `${this.environmentService.apiUrl}/optionsapi/v1`;
 

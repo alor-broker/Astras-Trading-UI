@@ -18,7 +18,6 @@ import { Board } from "../../../all-instruments/model/boards.model";
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
-import { CommonModule } from '@angular/common';
 import { MarketService } from "../../../../shared/services/market.service";
 import {
   combineLatest,
@@ -49,24 +48,25 @@ import {
 import { NzSpinComponent } from "ng-zorro-antd/spin";
 import { NzEmptyComponent } from "ng-zorro-antd/empty";
 import { SearchResultsListComponent } from "../../components/search-results-list/search-results-list.component";
+import {AsyncPipe} from "@angular/common";
 
 @Component({
     selector: 'ats-instrument-select-dialog-widget',
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        NzFormModule,
-        NzInputModule,
-        NzSelectModule,
-        TranslocoDirective,
-        NzModalComponent,
-        LetDirective,
-        NzModalContentDirective,
-        NzIconDirective,
-        NzSpinComponent,
-        NzEmptyComponent,
-        SearchResultsListComponent
-    ],
+  imports: [
+    ReactiveFormsModule,
+    NzFormModule,
+    NzInputModule,
+    NzSelectModule,
+    TranslocoDirective,
+    NzModalComponent,
+    LetDirective,
+    NzModalContentDirective,
+    NzIconDirective,
+    NzSpinComponent,
+    NzEmptyComponent,
+    SearchResultsListComponent,
+    AsyncPipe
+  ],
     templateUrl: './instrument-select-dialog-widget.component.html',
     styleUrl: './instrument-select-dialog-widget.component.less',
     providers: [

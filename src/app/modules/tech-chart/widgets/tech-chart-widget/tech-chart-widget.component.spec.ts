@@ -1,21 +1,23 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TechChartWidgetComponent } from './tech-chart-widget.component';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import {
-  EMPTY,
-  of
-} from 'rxjs';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import {TechChartWidgetComponent} from './tech-chart-widget.component';
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {EMPTY, of} from 'rxjs';
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import { ThemeService } from "../../../../shared/services/theme.service";
-import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {ThemeService} from "../../../../shared/services/theme.service";
+import {MockComponents} from "ng-mocks";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
+import {
+  WidgetHeaderInstrumentSwitchComponent
+} from "../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component";
+import {TechChartComponent} from "../../components/tech-chart/tech-chart.component";
+import {TechChartSettingsComponent} from "../../components/tech-chart-settings/tech-chart-settings.component";
+import {InstrumentSearchModalComponent} from "../instrument-search-modal/instrument-search-modal.component";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('TechChartWidgetComponent', () => {
   let component: TechChartWidgetComponent;
@@ -23,18 +25,17 @@ describe('TechChartWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
+        TranslocoTestsModule.getModule(),
         TechChartWidgetComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-tech-chart',
-          inputs: ['guid']
-        }),
-        ComponentHelpers.mockComponent({
-          selector: 'ats-tech-chart-settings',
-          inputs: ['guid']
-        }),
-        ComponentHelpers.mockComponent({ selector: 'ats-instrument-search-modal' }),
-        widgetSkeletonMock
+        MockComponents(
+          WidgetSkeletonComponent,
+          WidgetHeaderComponent,
+          WidgetHeaderInstrumentSwitchComponent,
+          TechChartComponent,
+          TechChartSettingsComponent,
+          InstrumentSearchModalComponent,
+        )
       ],
       providers: [
         {

@@ -1,10 +1,15 @@
-import { Component, Input } from '@angular/core';
+import {Component, Input} from '@angular/core';
+import {NzSpinComponent} from 'ng-zorro-antd/spin';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
 
 @Component({
-    selector: 'ats-loading-indicator',
-    templateUrl: './loading-indicator.component.html',
-    styleUrls: ['./loading-indicator.component.less'],
-    standalone: false
+  selector: 'ats-loading-indicator',
+  templateUrl: './loading-indicator.component.html',
+  styleUrls: ['./loading-indicator.component.less'],
+  imports: [
+    NzSpinComponent,
+    NzIconDirective
+  ]
 })
 export class LoadingIndicatorComponent {
   @Input()

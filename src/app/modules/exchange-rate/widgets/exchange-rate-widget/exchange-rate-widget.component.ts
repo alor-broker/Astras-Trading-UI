@@ -1,25 +1,30 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
-import { Observable } from 'rxjs';
-import { ExchangeRateSettings } from '../../models/exchange-rate-settings.model';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
+import {Observable} from 'rxjs';
+import {ExchangeRateSettings} from '../../models/exchange-rate-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
-import { SettingsHelper } from "../../../../shared/utils/settings-helper";
-import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import { getValueOrDefault } from "../../../../shared/utils/object-helper";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import {SettingsHelper} from "../../../../shared/utils/settings-helper";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {getValueOrDefault} from "../../../../shared/utils/object-helper";
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {WidgetSkeletonComponent} from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
+import {WidgetHeaderComponent} from '../../../../shared/components/widget-header/widget-header.component';
+import {ExchangeRateComponent} from '../../components/exchange-rate/exchange-rate.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-exchange-rate-widget',
-    templateUrl: './exchange-rate-widget.component.html',
-    styleUrls: ['./exchange-rate-widget.component.less'],
-    standalone: false
+  selector: 'ats-exchange-rate-widget',
+  templateUrl: './exchange-rate-widget.component.html',
+  styleUrls: ['./exchange-rate-widget.component.less'],
+  imports: [
+    TranslocoDirective,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent,
+    ExchangeRateComponent,
+    AsyncPipe
+  ]
 })
 export class ExchangeRateWidgetComponent implements OnInit {
   @Input({required: true})

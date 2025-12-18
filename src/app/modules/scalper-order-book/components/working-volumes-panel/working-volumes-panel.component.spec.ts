@@ -1,17 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { WorkingVolumesPanelComponent } from './working-volumes-panel.component';
-import {
-  BehaviorSubject,
-  Subject
-} from 'rxjs';
-import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
-import { SCALPER_ORDERBOOK_SHARED_CONTEXT } from "../scalper-order-book/scalper-order-book.component";
-import { LetDirective } from "@ngrx/component";
-import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
-import { MockProvider } from "ng-mocks";
-import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
-import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-data-context.model";
+import {WorkingVolumesPanelComponent} from './working-volumes-panel.component';
+import {BehaviorSubject, Subject} from 'rxjs';
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import {SCALPER_ORDERBOOK_SHARED_CONTEXT} from "../scalper-order-book/scalper-order-book.component";
+import {LetDirective} from "@ngrx/component";
+import {ScalperHotKeyCommandService} from "../../services/scalper-hot-key-command.service";
+import {MockComponents, MockDirectives, MockProvider} from "ng-mocks";
+import {ScalperOrderBookSettingsWriteService} from "../../services/scalper-order-book-settings-write.service";
+import {ScalperOrderBookDataContext} from "../../models/scalper-order-book-data-context.model";
+import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
+import {NzPopconfirmDirective} from "ng-zorro-antd/popconfirm";
+import {InputNumberComponent} from "../../../../shared/components/input-number/input-number.component";
 
 describe('WorkingVolumesPanelComponent', () => {
   let component: WorkingVolumesPanelComponent;
@@ -19,32 +19,32 @@ describe('WorkingVolumesPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports:[LetDirective],
-      declarations: [WorkingVolumesPanelComponent],
+      imports: [
+        LetDirective,
+        WorkingVolumesPanelComponent,
+        ...FormsTesting.getMocks(),
+        MockComponents(
+          InputNumberComponent,
+        ),
+        MockDirectives(
+          NzPopconfirmDirective
+        )
+      ],
       providers: [
         MockProvider(ScalperOrderBookSettingsWriteService),
-        MockProvider(
-          ScalperHotKeyCommandService,
-          {
-            commands$: new Subject()
-          }
-        ),
-        MockProvider(
-          WidgetLocalStateService,
-          {
-            getStateRecord: jasmine.createSpy('getStateRecord').and.returnValue(new Subject()),
-            setStateRecord: jasmine.createSpy('setStateRecord').and.callThrough()
-          }
-        ),
-        MockProvider(
-          SCALPER_ORDERBOOK_SHARED_CONTEXT,
-          {
-            setWorkingVolume: jasmine.createSpy('setWorkingVolume').and.callThrough()
-          }
-        )
+        MockProvider(ScalperHotKeyCommandService, {
+          commands$: new Subject()
+        }),
+        MockProvider(WidgetLocalStateService, {
+          getStateRecord: jasmine.createSpy('getStateRecord').and.returnValue(new Subject()),
+          setStateRecord: jasmine.createSpy('setStateRecord').and.callThrough()
+        }),
+        MockProvider(SCALPER_ORDERBOOK_SHARED_CONTEXT, {
+          setWorkingVolume: jasmine.createSpy('setWorkingVolume').and.callThrough()
+        })
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(WorkingVolumesPanelComponent);
     component = fixture.componentInstance;
@@ -61,9 +61,12 @@ describe('WorkingVolumesPanelComponent', () => {
       displayRange$: new Subject(),
       workingVolume$: new Subject(),
       scaleFactor$: new BehaviorSubject(1),
-      addLocalOrder: () => {},
-      removeLocalOrder: () => {},
-      destroy: () => {}
+      addLocalOrder: () => {
+      },
+      removeLocalOrder: () => {
+      },
+      destroy: () => {
+      }
     } as ScalperOrderBookDataContext;
     fixture.detectChanges();
   });

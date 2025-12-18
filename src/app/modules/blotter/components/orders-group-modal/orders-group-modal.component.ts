@@ -1,28 +1,29 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  ElementRef,
-  Input,
-  QueryList,
-  ViewChildren
-} from '@angular/core';
-import { Observable, switchMap, combineLatest, map, filter, startWith } from "rxjs";
-import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
-import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { BlotterSettings } from "../../models/blotter-settings.model";
-import { mapWith } from "../../../../shared/utils/observable-helper";
+import {AfterViewInit, Component, DestroyRef, ElementRef, Input, QueryList, ViewChildren} from '@angular/core';
+import {combineLatest, filter, map, Observable, startWith, switchMap} from "rxjs";
+import {OrdersGroupService} from "../../../../shared/services/orders/orders-group.service";
+import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {BlotterSettings} from "../../models/blotter-settings.model";
+import {mapWith} from "../../../../shared/utils/observable-helper";
 import {Order, StopOrder} from "../../../../shared/models/orders/order.model";
-import { OrdersGroupTreeNode } from "../../../../shared/models/orders/orders-group.model";
+import {OrdersGroupTreeNode} from "../../../../shared/models/orders/orders-group.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import { getConditionSign, getConditionTypeByString } from "../../../../shared/utils/order-conditions-helper";
+import {getConditionSign, getConditionTypeByString} from "../../../../shared/utils/order-conditions-helper";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzTreeComponent} from 'ng-zorro-antd/tree';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-orders-group-modal',
-    templateUrl: './orders-group-modal.component.html',
-    styleUrls: ['./orders-group-modal.component.less'],
-    standalone: false
+  selector: 'ats-orders-group-modal',
+  templateUrl: './orders-group-modal.component.html',
+  styleUrls: ['./orders-group-modal.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzTreeComponent,
+    NzTooltipDirective,
+    AsyncPipe
+  ]
 })
 export class OrdersGroupModalComponent implements AfterViewInit {
   @Input({required: true})

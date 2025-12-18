@@ -12,12 +12,30 @@ import { SettingsHelper } from "../../../../shared/utils/settings-helper";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import { TranslocoDirective } from '@jsverse/transloco';
+import { WidgetSkeletonComponent } from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
+import { WidgetHeaderComponent } from '../../../../shared/components/widget-header/widget-header.component';
+import { NzTabsComponent, NzTabComponent } from 'ng-zorro-antd/tabs';
+import { BondScreenerComponent } from '../../components/bond-screener/bond-screener.component';
+import { YieldCurveChartComponent } from '../../components/yield-curve-chart/yield-curve-chart.component';
+import { BondScreenerSettingsComponent } from '../../components/bond-screener-settings/bond-screener-settings.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-bond-screener-widget',
     templateUrl: './bond-screener-widget.component.html',
     styleUrls: ['./bond-screener-widget.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      WidgetSkeletonComponent,
+      WidgetHeaderComponent,
+      NzTabsComponent,
+      NzTabComponent,
+      BondScreenerComponent,
+      YieldCurveChartComponent,
+      BondScreenerSettingsComponent,
+      AsyncPipe
+    ]
 })
 export class BondScreenerWidgetComponent implements OnInit {
   shouldShowSettings = false;

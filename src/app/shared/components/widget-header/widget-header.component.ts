@@ -1,23 +1,45 @@
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef } from '@angular/core';
-import { WidgetSettingsService } from '../../services/widget-settings.service';
-import { ManageDashboardsService } from '../../services/manage-dashboards.service';
-import { instrumentsBadges } from '../../utils/instruments';
-import { WidgetMeta } from "../../models/widget-meta.model";
-import { TranslatorService } from "../../services/translator.service";
-import { WidgetsHelper } from "../../utils/widgets";
-import { DashboardContextService } from "../../services/dashboard-context.service";
-import { Observable, shareReplay } from "rxjs";
-import { InstrumentKey } from "../../models/instruments/instrument-key.model";
-import { map } from "rxjs/operators";
-import { HelpService } from "../../services/help.service";
-import { mapWith } from "../../utils/observable-helper";
-import { TerminalSettingsService } from "../../services/terminal-settings.service";
+import {Component, EventEmitter, Input, OnInit, Output, TemplateRef} from '@angular/core';
+import {WidgetSettingsService} from '../../services/widget-settings.service';
+import {ManageDashboardsService} from '../../services/manage-dashboards.service';
+import {instrumentsBadges} from '../../utils/instruments';
+import {WidgetMeta} from "../../models/widget-meta.model";
+import {TranslatorService} from "../../services/translator.service";
+import {WidgetsHelper} from "../../utils/widgets";
+import {DashboardContextService} from "../../services/dashboard-context.service";
+import {Observable, shareReplay} from "rxjs";
+import {InstrumentKey} from "../../models/instruments/instrument-key.model";
+import {map} from "rxjs/operators";
+import {HelpService} from "../../services/help.service";
+import {mapWith} from "../../utils/observable-helper";
+import {TerminalSettingsService} from "../../services/terminal-settings.service";
+import {NzBadgeComponent} from 'ng-zorro-antd/badge';
+import {NzDropDownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzPopoverDirective} from 'ng-zorro-antd/popover';
+import {AsyncPipe, NgTemplateOutlet} from '@angular/common';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {JoyrideModule} from 'ngx-joyride';
 
 @Component({
-    selector: 'ats-widget-header',
-    templateUrl: './widget-header.component.html',
-    styleUrls: ['./widget-header.component.less'],
-    standalone: false
+  selector: 'ats-widget-header',
+  templateUrl: './widget-header.component.html',
+  styleUrls: ['./widget-header.component.less'],
+  imports: [
+    NzBadgeComponent,
+    NzDropDownDirective,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    NzIconDirective,
+    NzPopoverDirective,
+    NgTemplateOutlet,
+    TranslocoDirective,
+    NzButtonComponent,
+    AsyncPipe,
+    JoyrideModule
+  ]
 })
 export class WidgetHeaderComponent implements OnInit {
   @Input({required: true})
@@ -71,14 +93,20 @@ export class WidgetHeaderComponent implements OnInit {
   ) {
   }
 
+  get title(): string {
+    return this.customTitle != null && !!this.customTitle.length
+      ? this.customTitle as string
+      : this.titleText;
+  }
+
   ngOnInit(): void {
     this.badgeOptions$ = this.dashboardContextService.instrumentsSelection$
       .pipe(
         mapWith(
           () => this.terminalSettingsService.getSettings().pipe(map(s => s.badgesColors ?? instrumentsBadges)),
-          (currentSelection, badgesColors) => ({ currentSelection, badgesColors })
+          (currentSelection, badgesColors) => ({currentSelection, badgesColors})
         ),
-        map(({ currentSelection, badgesColors }) => {
+        map(({currentSelection, badgesColors}) => {
           const symbolGroups = Object.values(currentSelection)
             .reduce(
               (prev, cur) => {
@@ -141,11 +169,5 @@ export class WidgetHeaderComponent implements OnInit {
 
   getIconTooltip(): string {
     return this.titleText;
-  }
-
-  get title(): string {
-    return this.customTitle != null && !!this.customTitle.length
-      ? this.customTitle as string
-      : this.titleText;
   }
 }

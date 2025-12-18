@@ -3,12 +3,13 @@ import {
   Input,
   TemplateRef
 } from '@angular/core';
+import { NgTemplateOutlet, NgClass } from '@angular/common';
 
 @Component({
     selector: 'ats-widget-skeleton',
     templateUrl: './widget-skeleton.component.html',
     styleUrls: ['./widget-skeleton.component.less'],
-    standalone: false
+    imports: [NgTemplateOutlet, NgClass]
 })
 export class WidgetSkeletonComponent {
   @Input({required: true})

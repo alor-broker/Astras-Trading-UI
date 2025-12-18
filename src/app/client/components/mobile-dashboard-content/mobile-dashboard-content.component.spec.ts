@@ -1,26 +1,18 @@
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {MobileDashboardContentComponent} from "./mobile-dashboard-content.component";
+import {DashboardContextService} from "../../../shared/services/dashboard-context.service";
+import {EMPTY, of, Subject} from "rxjs";
+import {WidgetsMetaService} from "../../../shared/services/widgets-meta.service";
+import {MobileActionsContextService} from "../../../modules/dashboard/services/mobile-actions-context.service";
+import {MobileDashboardService} from "../../../modules/dashboard/services/mobile-dashboard.service";
+import {TranslocoTestsModule} from "../../../shared/utils/testing/translocoTestsModule";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {MockComponents, MockDirectives, MockProvider} from "ng-mocks";
+import {WidgetSettingsService} from "../../../shared/services/widget-settings.service";
+import {WidgetsSharedDataService} from "../../../shared/services/widgets-shared-data.service";
 import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
-import { MobileDashboardContentComponent } from "./mobile-dashboard-content.component";
-import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
-import {
-  EMPTY,
-  of,
-  Subject
-} from "rxjs";
-import { WidgetsMetaService } from "../../../shared/services/widgets-meta.service";
-import { MobileActionsContextService } from "../../../modules/dashboard/services/mobile-actions-context.service";
-import { MobileDashboardService } from "../../../modules/dashboard/services/mobile-dashboard.service";
-import { TranslocoTestsModule } from "../../../shared/utils/testing/translocoTestsModule";
-import { NzIconDirective } from "ng-zorro-antd/icon";
-import {
-  MockDirective, MockModule,
-  MockProvider
-} from "ng-mocks";
-import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
-import { WidgetsSharedDataService } from "../../../shared/services/widgets-shared-data.service";
-import { DashboardModule } from "../../../modules/dashboard/dashboard.module";
+  NotificationButtonComponent
+} from "../../../modules/notifications/components/notification-button/notification-button.component";
 
 describe('MobileDashboardContentComponent', () => {
   let component: MobileDashboardContentComponent;
@@ -31,8 +23,8 @@ describe('MobileDashboardContentComponent', () => {
       imports: [
         MobileDashboardContentComponent,
         TranslocoTestsModule.getModule(),
-        MockDirective(NzIconDirective),
-        MockModule(DashboardModule)
+        MockComponents(NotificationButtonComponent),
+        MockDirectives(NzIconDirective),
       ],
       providers: [
         MockProvider(

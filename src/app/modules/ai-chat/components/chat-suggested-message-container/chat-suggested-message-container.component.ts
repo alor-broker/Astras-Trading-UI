@@ -13,6 +13,7 @@ import {
   transition,
   trigger
 } from "@angular/animations";
+import { TextMessageComponent } from '../messages/text-message/text-message.component';
 
 @Component({
     selector: 'ats-chat-suggested-message-container',
@@ -25,7 +26,7 @@ import {
             transition(':leave', [animate(200, style({ transform: 'translateX(100%)', opacity: 0 }))]),
         ]),
     ],
-    standalone: false
+    imports: [TextMessageComponent]
 })
 export class ChatSuggestedMessageContainerComponent {
   @Input({ required: true })

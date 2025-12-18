@@ -1,16 +1,7 @@
-import {
-  Component,
-  Inject,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
+import {Component, Inject, Input, OnDestroy, OnInit} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, shareReplay, take, withLatestFrom} from "rxjs";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
-import {
-  Order,
-  OrderType
-} from "../../../../shared/models/orders/order.model";
+import {Order, OrderType} from "../../../../shared/models/orders/order.model";
 import {Side} from "../../../../shared/models/enums/side.model";
 import {mapWith} from "../../../../shared/utils/observable-helper";
 import {filter, map} from "rxjs/operators";
@@ -21,12 +12,22 @@ import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
 } from "../../../../shared/services/orders/order-command.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {AsyncPipe, NgTemplateOutlet} from '@angular/common';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
 
 @Component({
-    selector: 'ats-limit-order-price-change',
-    templateUrl: './limit-order-price-change.component.html',
-    styleUrls: ['./limit-order-price-change.component.less'],
-    standalone: false
+  selector: 'ats-limit-order-price-change',
+  templateUrl: './limit-order-price-change.component.html',
+  styleUrls: ['./limit-order-price-change.component.less'],
+  imports: [
+    TranslocoDirective,
+    NgTemplateOutlet,
+    NzTooltipDirective,
+    NzButtonComponent,
+    AsyncPipe
+  ]
 })
 export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
   readonly orderSides = Side;

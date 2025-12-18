@@ -4,12 +4,29 @@ import { Observable, of, take } from 'rxjs';
 import { ApplicationMetaService } from '../../services/application-meta.service';
 import { filter } from 'rxjs/operators';
 import { ReleaseMeta } from '../../models/application-release.model';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NzModalComponent, NzModalContentDirective } from 'ng-zorro-antd/modal';
+import { NzDividerComponent } from 'ng-zorro-antd/divider';
+import { NzCollapseComponent, NzCollapsePanelComponent } from 'ng-zorro-antd/collapse';
+import { NzTypographyComponent } from 'ng-zorro-antd/typography';
+import { NzIconDirective } from 'ng-zorro-antd/icon';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-application-updated-widget',
     templateUrl: './application-updated-widget.component.html',
     styleUrls: ['./application-updated-widget.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      NzModalComponent,
+      NzModalContentDirective,
+      NzDividerComponent,
+      NzCollapseComponent,
+      NzCollapsePanelComponent,
+      NzTypographyComponent,
+      NzIconDirective,
+      AsyncPipe
+    ]
 })
 export class ApplicationUpdatedWidgetComponent implements OnInit {
   isVisible$: Observable<boolean> = of(false);

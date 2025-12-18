@@ -14,12 +14,22 @@ import { map } from 'rxjs/operators';
 import { MathHelper } from '../../../../shared/utils/math-helper';
 import { ScalperOrderBookPositionState } from '../../models/scalper-order-book.model';
 import { ScalperOrderBookDataProvider } from '../../services/scalper-order-book-data-provider.service';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { LetDirective } from '@ngrx/component';
+import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
+import { NgClass, DecimalPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-current-position-panel',
     templateUrl: './current-position-panel.component.html',
     styleUrls: ['./current-position-panel.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      LetDirective,
+      NzTooltipDirective,
+      NgClass,
+      DecimalPipe
+    ]
 })
 export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
   @Input({required: true})

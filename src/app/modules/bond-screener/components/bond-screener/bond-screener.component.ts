@@ -46,8 +46,9 @@ import {
 } from "../../../../../generated/graphql.types";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { AddToWatchlistMenuComponent } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
-import { TableDataRow } from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
-import { formatNumber } from "@angular/common";
+import { TableDataRow, InfiniteScrollTableComponent } from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
+import { formatNumber, AsyncPipe } from "@angular/common";
+import { NzResizeObserverDirective } from 'ng-zorro-antd/cdk/resize-observer';
 
 interface BondDisplay extends Omit<Bond, 'coupons' | 'offers' | 'amortizations'> {
   id: string;
@@ -59,7 +60,12 @@ interface BondDisplay extends Omit<Bond, 'coupons' | 'offers' | 'amortizations'>
     selector: 'ats-bond-screener',
     templateUrl: './bond-screener.component.html',
     styleUrls: ['./bond-screener.component.less'],
-    standalone: false
+    imports: [
+      NzResizeObserverDirective,
+      InfiniteScrollTableComponent,
+      AddToWatchlistMenuComponent,
+      AsyncPipe
+    ]
 })
 export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
   BondDisplay,

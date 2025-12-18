@@ -7,8 +7,7 @@ import { ClientAuthContextService } from "../../services/auth/client-auth-contex
 @Component({
     selector: 'ats-external-logout-page',
     templateUrl: './external-logout-page.component.html',
-    styleUrl: './external-logout-page.component.less',
-    standalone: false
+    styleUrl: './external-logout-page.component.less'
 })
 export class ExternalLogoutPageComponent implements OnInit {
   constructor(private readonly clientAuthContextService: ClientAuthContextService) {

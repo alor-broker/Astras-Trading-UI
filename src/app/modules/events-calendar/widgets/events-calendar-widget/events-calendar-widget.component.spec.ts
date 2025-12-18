@@ -1,12 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { EventsCalendarWidgetComponent } from './events-calendar-widget.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { of } from "rxjs";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
+import {EventsCalendarWidgetComponent} from './events-calendar-widget.component';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {of} from "rxjs";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
-import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
+import {MockComponents} from "ng-mocks";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
+import {EventsCalendarComponent} from "../../components/events-calendar/events-calendar.component";
 
 describe('EventsCalendarWidgetComponent', () => {
   let component: EventsCalendarWidgetComponent;
@@ -14,9 +17,13 @@ describe('EventsCalendarWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         EventsCalendarWidgetComponent,
-        widgetSkeletonMock
+        MockComponents(
+          WidgetSkeletonComponent,
+          WidgetHeaderComponent,
+          EventsCalendarComponent
+        )
       ],
       providers: [
         {
@@ -35,7 +42,7 @@ describe('EventsCalendarWidgetComponent', () => {
         }
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(EventsCalendarWidgetComponent);
     component = fixture.componentInstance;

@@ -20,32 +20,32 @@ describe('ListViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ListViewComponent],
-      imports: [
+    imports: [
         TranslocoTestsModule.getModule(),
-        LetDirective
-      ],
-      providers: [
+        LetDirective,
+        ListViewComponent
+    ],
+    providers: [
         {
-          provide: EventsCalendarService,
-          useValue: {
-            getEvents: jasmine.createSpy('getEvents').and.returnValue(of({}))
-          }
+            provide: EventsCalendarService,
+            useValue: {
+                getEvents: jasmine.createSpy('getEvents').and.returnValue(of({}))
+            }
         },
         {
-          provide: ACTIONS_CONTEXT,
-          useValue: {
-            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
-          }
+            provide: ACTIONS_CONTEXT,
+            useValue: {
+                instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
+            }
         },
         {
-          provide: MarketService,
-          useValue: {
-            getMarketSettings: jasmine.createSpy('getMarketSettings').and.returnValue(new Subject())
-          }
+            provide: MarketService,
+            useValue: {
+                getMarketSettings: jasmine.createSpy('getMarketSettings').and.returnValue(new Subject())
+            }
         },
-      ]
-    })
+    ]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(ListViewComponent);

@@ -1,48 +1,64 @@
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Inject,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
-import {
-  combineLatest,
-  defer,
-  distinctUntilChanged,
-  Observable,
-  shareReplay,
-  switchMap,
-  take,
-  tap
-} from 'rxjs';
-import { debounceTime, map, mergeMap, startWith } from 'rxjs/operators';
-import { Position } from 'src/app/shared/models/positions/position.model';
-import { MathHelper } from 'src/app/shared/utils/math-helper';
-import { PositionFilter } from '../../models/position-filter.model';
-import { BlotterService } from '../../services/blotter.service';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
-import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { BlotterSettings, ColumnsNames, TableNames } from '../../models/blotter-settings.model';
-import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
-import { CommonOrderCommands } from "../../../../shared/utils/common-order-commands";
-import { MarketType } from "../../../../shared/models/portfolio-key.model";
-import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
-import { TableConfig } from "../../../../shared/models/table-config.model";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { NzContextMenuService } from "ng-zorro-antd/dropdown";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import {Component, DestroyRef, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
+import {combineLatest, defer, distinctUntilChanged, Observable, shareReplay, switchMap, take, tap} from 'rxjs';
+import {debounceTime, map, mergeMap, startWith} from 'rxjs/operators';
+import {Position} from 'src/app/shared/models/positions/position.model';
+import {MathHelper} from 'src/app/shared/utils/math-helper';
+import {PositionFilter} from '../../models/position-filter.model';
+import {BlotterService} from '../../services/blotter.service';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {isEqualPortfolioDependedSettings} from "../../../../shared/utils/settings-helper";
+import {TableSettingHelper} from '../../../../shared/utils/table-setting.helper';
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {BlotterSettings, ColumnsNames, TableNames} from '../../models/blotter-settings.model';
+import {BaseColumnSettings, FilterType} from "../../../../shared/models/settings/table-settings.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {BlotterBaseTableComponent} from "../blotter-base-table/blotter-base-table.component";
+import {CommonOrderCommands} from "../../../../shared/utils/common-order-commands";
+import {MarketType} from "../../../../shared/models/portfolio-key.model";
+import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
+import {TableConfig} from "../../../../shared/models/table-config.model";
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
 } from "../../../../shared/services/orders/order-command.service";
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
-import { mapWith } from "../../../../shared/utils/observable-helper";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {LetDirective} from '@ngrx/component';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {
+  NzFilterTriggerComponent,
+  NzTableCellDirective,
+  NzTableComponent,
+  NzTableVirtualScrollDirective,
+  NzTbodyComponent,
+  NzThAddOnComponent,
+  NzTheadComponent,
+  NzThMeasureDirective,
+  NzTrDirective
+} from 'ng-zorro-antd/table';
+import {TableRowHeightDirective} from '../../../../shared/directives/table-row-height.directive';
+import {CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
+import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {ResizeColumnDirective} from '../../../../shared/directives/resize-column.directive';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {InstrumentIconComponent} from '../../../../shared/components/instrument-icon/instrument-icon.component';
+import {
+  InstrumentBadgeDisplayComponent
+} from '../../../../shared/components/instrument-badge-display/instrument-badge-display.component';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {
+  TableSearchFilterComponent
+} from '../../../../shared/components/table-search-filter/table-search-filter.component';
+import {
+  AddToWatchlistMenuComponent
+} from '../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component';
+import {DecimalPipe} from '@angular/common';
 
 interface PositionDisplay extends Position {
   id: string;
@@ -52,10 +68,38 @@ interface PositionDisplay extends Position {
 }
 
 @Component({
-    selector: 'ats-positions',
-    templateUrl: './positions.component.html',
-    styleUrls: ['./positions.component.less'],
-    standalone: false
+  selector: 'ats-positions',
+  templateUrl: './positions.component.html',
+  styleUrls: ['./positions.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzEmptyComponent,
+    LetDirective,
+    NzResizeObserverDirective,
+    NzTableComponent,
+    TableRowHeightDirective,
+    NzTheadComponent,
+    NzTrDirective,
+    CdkDropList,
+    NzTableCellDirective,
+    NzThMeasureDirective,
+    NzPopconfirmDirective,
+    NzIconDirective,
+    ResizeColumnDirective,
+    NzThAddOnComponent,
+    CdkDrag,
+    NzTooltipDirective,
+    NzFilterTriggerComponent,
+    NzTbodyComponent,
+    NzTableVirtualScrollDirective,
+    InstrumentIconComponent,
+    InstrumentBadgeDisplayComponent,
+    NzButtonComponent,
+    NzDropdownMenuComponent,
+    TableSearchFilterComponent,
+    AddToWatchlistMenuComponent,
+    DecimalPipe
+  ]
 })
 export class PositionsComponent extends BlotterBaseTableComponent<PositionDisplay, PositionFilter> implements OnInit {
   @Input()
@@ -202,12 +246,8 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
   settingsTableName = TableNames.PositionsTable;
   settingsColumnsName = ColumnsNames.PositionsColumns;
   fileSuffix = 'positions';
-
-  get restoreFiltersAndSortOnLoad(): boolean {
-    return true;
-  }
-
   readonly abs = Math.abs;
+
   constructor(
     private readonly service: BlotterService,
     protected readonly settingsService: WidgetSettingsService,
@@ -228,13 +268,17 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
     );
   }
 
+  get restoreFiltersAndSortOnLoad(): boolean {
+    return true;
+  }
+
   ngOnInit(): void {
     super.ngOnInit();
 
     this.portfolioTotalCost$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(s => {
-        if(this.marketType === MarketType.Forward) {
+        if (this.marketType === MarketType.Forward) {
           return this.portfolioSubscriptionsService.getSpectraRisksSubscription(s.portfolio, s.exchange)
             .pipe(map(i => {
               return i.moneyAmount;
@@ -246,8 +290,57 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
             }));
         }
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
+  }
+
+  round(number: number): number {
+    return MathHelper.round(number, 2);
+  }
+
+  rowClick(row: PositionDisplay): void {
+    this.settings$
+      .pipe(
+        take(1)
+      )
+      .subscribe(s => this.service.selectNewInstrument(
+        row.targetInstrument.symbol,
+        row.targetInstrument.exchange,
+        null,
+        s.badgeColor ?? defaultBadgeColor
+      ));
+  }
+
+  closePosition(position: PositionDisplay): void {
+    CommonOrderCommands.closePositionByMarket(position, null, this.orderCommandService);
+  }
+
+  reversePosition(position: PositionDisplay): void {
+    CommonOrderCommands.reversePositionsByMarket(position, null, this.orderCommandService);
+  }
+
+  closeAllPositions(positions: readonly PositionDisplay[]): void {
+    positions
+      .filter(p => !!p.qtyTFutureBatch)
+      .forEach(p => {
+        this.closePosition(p);
+      });
+  }
+
+  getClosablePositions(positions: readonly PositionDisplay[]): PositionDisplay[] {
+    return positions.filter(p => this.canClosePosition(p));
+  }
+
+  showPositionActions(settings: BlotterSettings): boolean {
+    return settings.showPositionActions ?? false;
+  }
+
+  canClosePosition(position: PositionDisplay): boolean {
+    return !position.isCurrency && this.abs(position.qtyTFutureBatch) > 0;
+  }
+
+  canReversePosition(position: PositionDisplay): boolean {
+    return this.canClosePosition(position);
   }
 
   protected initTableConfigStream(): Observable<TableConfig<PositionDisplay>> {
@@ -272,7 +365,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
       mapWith(() => tableState$, (source, output) => ({...source, ...output})),
       takeUntilDestroyed(this.destroyRef),
       tap(x => {
-        if(x.filters != null) {
+        if (x.filters != null) {
           this.filterChange(x.filters);
         }
       }),
@@ -281,12 +374,12 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
 
         return {
           columns: this.allColumns
-            .map(c => ({ column: c, columnSettings: tableSettings?.columns.find(x => x.columnId === c.id) }))
+            .map(c => ({column: c, columnSettings: tableSettings?.columns.find(x => x.columnId === c.id)}))
             .filter(c => !!c.columnSettings)
             .map((column, index) => ({
               ...column.column,
-              displayName: x.translator(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
-              tooltip: x.translator(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
+              displayName: x.translator(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+              tooltip: x.translator(['columns', column.column.id, 'tooltip'], {fallback: column.column.tooltip}),
               width: column.columnSettings!.columnWidth ?? column.column.width ?? this.defaultColumnWidth,
               order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index),
               filterData: column.column.filterData
@@ -329,55 +422,6 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
         map(f => positions.filter(o => this.justifyFilter(o, f)))
       ))
     );
-  }
-
-  round(number: number): number {
-    return MathHelper.round(number, 2);
-  }
-
-  rowClick(row: PositionDisplay): void {
-    this.settings$
-      .pipe(
-        take(1)
-      )
-      .subscribe(s => this.service.selectNewInstrument(
-        row.targetInstrument.symbol,
-        row.targetInstrument.exchange,
-        null,
-        s.badgeColor ?? defaultBadgeColor
-      ));
-  }
-
-  closePosition(position: PositionDisplay): void {
-    CommonOrderCommands.closePositionByMarket(position, null, this.orderCommandService);
-  }
-
-  reversePosition(position: PositionDisplay): void {
-    CommonOrderCommands.reversePositionsByMarket(position, null, this.orderCommandService);
-  }
-
-  closeAllPositions(positions: readonly PositionDisplay[]): void {
-    positions
-      .filter(p => !!p.qtyTFutureBatch)
-      .forEach(p => {
-        this.closePosition(p);
-    });
-  }
-
-  getClosablePositions(positions: readonly PositionDisplay[]): PositionDisplay[] {
-    return positions.filter(p => this.canClosePosition(p));
-  }
-
-  showPositionActions(settings: BlotterSettings): boolean {
-    return settings.showPositionActions ?? false;
-  }
-
-  canClosePosition(position: PositionDisplay): boolean {
-    return !position.isCurrency && this.abs(position.qtyTFutureBatch) > 0;
-  }
-
-  canReversePosition(position: PositionDisplay): boolean {
-    return this.canClosePosition(position);
   }
 
   protected rowToInstrumentKey(row: PositionDisplay): Observable<InstrumentKey | null> {

@@ -1,21 +1,12 @@
-import {
-  Component,
-  DestroyRef,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
-import { CommonParametersService } from "../../../services/common-parameters.service";
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
-import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
-import { AtsValidators } from "../../../../../shared/utils/form-validators";
-import { Side } from "../../../../../shared/models/enums/side.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
+import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
+import {CommonParametersService} from "../../../services/common-parameters.service";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {inputNumberValidation} from "../../../../../shared/utils/validation-options";
+import {AtsValidators} from "../../../../../shared/utils/form-validators";
+import {Side} from "../../../../../shared/models/enums/side.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
 import {
   asyncScheduler,
   BehaviorSubject,
@@ -27,50 +18,77 @@ import {
   switchMap,
   take
 } from "rxjs";
-import {
-  debounceTime,
-  filter,
-  map,
-  startWith
-} from "rxjs/operators";
-import { PriceDiffHelper } from "../../../utils/price-diff.helper";
-import {
-  OrderType, Reason,
-  TimeInForce
-} from "../../../../../shared/models/orders/order.model";
+import {debounceTime, filter, map, startWith} from "rxjs/operators";
+import {PriceDiffHelper} from "../../../utils/price-diff.helper";
+import {OrderType, Reason, TimeInForce} from "../../../../../shared/models/orders/order.model";
 import {
   NewLimitOrder,
   NewLinkedOrder,
   NewStopMarketOrder,
   OrderCommandResult
 } from "../../../../../shared/models/orders/new-order.model";
-import { LessMore } from "../../../../../shared/models/enums/less-more.model";
-import {
-  ExecutionPolicy,
-  SubmitGroupResult
-} from "../../../../../shared/models/orders/orders-group.model";
-import { BaseOrderFormComponent } from "../base-order-form.component";
-import { EvaluationBaseProperties } from "../../../../../shared/models/evaluation-base-properties.model";
-import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
-import { toInstrumentKey } from "../../../../../shared/utils/instruments";
-import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
-import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
-import {
-  addDays,
-  addSeconds,
-  startOfDay,
-  toUnixTime
-} from "../../../../../shared/utils/datetime";
-import { MarketService } from "../../../../../shared/services/market.service";
-import { Market } from "../../../../../../generated/graphql.types";
-import { LimitOrderConfig } from "../../../../../shared/models/orders/orders-config.model";
+import {LessMore} from "../../../../../shared/models/enums/less-more.model";
+import {ExecutionPolicy, SubmitGroupResult} from "../../../../../shared/models/orders/orders-group.model";
+import {BaseOrderFormComponent} from "../base-order-form.component";
+import {EvaluationBaseProperties} from "../../../../../shared/models/evaluation-base-properties.model";
+import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
+import {toInstrumentKey} from "../../../../../shared/utils/instruments";
+import {TimezoneConverterService} from "../../../../../shared/services/timezone-converter.service";
+import {TimezoneConverter} from "../../../../../shared/utils/timezone-converter";
+import {addDays, addSeconds, startOfDay, toUnixTime} from "../../../../../shared/utils/datetime";
+import {MarketService} from "../../../../../shared/services/market.service";
+import {Market} from "../../../../../../generated/graphql.types";
+import {LimitOrderConfig} from "../../../../../shared/models/orders/orders-config.model";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {InputNumberComponent} from '../../../../../shared/components/input-number/input-number.component';
+import {ShortNumberComponent} from '../../../../../shared/components/short-number/short-number.component';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {NzCollapseComponent, NzCollapsePanelComponent} from 'ng-zorro-antd/collapse';
+import {
+  InstrumentBoardSelectComponent
+} from '../../../../../shared/components/instrument-board-select/instrument-board-select.component';
+import {NzDatePickerComponent} from 'ng-zorro-antd/date-picker';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {NzCheckboxComponent} from 'ng-zorro-antd/checkbox';
+import {OrderEvaluationComponent} from '../../order-evaluation/order-evaluation.component';
+import {BuySellButtonsComponent} from '../../buy-sell-buttons/buy-sell-buttons.component';
+import {AsyncPipe, DecimalPipe, KeyValuePipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-limit-order-form',
-    templateUrl: './limit-order-form.component.html',
-    styleUrls: ['./limit-order-form.component.less'],
-    standalone: false
+  selector: 'ats-limit-order-form',
+  templateUrl: './limit-order-form.component.html',
+  styleUrls: ['./limit-order-form.component.less'],
+  imports: [
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzColDirective,
+    NzFormItemComponent,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    InputNumberComponent,
+    ShortNumberComponent,
+    NzTooltipDirective,
+    NzSelectComponent,
+    NzOptionComponent,
+    NzCollapseComponent,
+    NzCollapsePanelComponent,
+    InstrumentBoardSelectComponent,
+    NzDatePickerComponent,
+    NzTypographyComponent,
+    NzCheckboxComponent,
+    OrderEvaluationComponent,
+    BuySellButtonsComponent,
+    AsyncPipe,
+    DecimalPipe,
+    KeyValuePipe
+  ]
 })
 export class LimitOrderFormComponent extends BaseOrderFormComponent implements OnInit, OnDestroy {
   expandAdvancedOptions = false;
@@ -80,12 +98,6 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
   reasonEnum = Reason;
 
   timezones$!: Observable<{ exchangeTimezone: string, displayTimezone: string }>;
-
-  disabledDate = (date: Date): boolean => {
-    const today = startOfDay(new Date());
-    return toUnixTime(date) < toUnixTime(today);
-  };
-
   form = this.formBuilder.group({
     quantity: this.formBuilder.nonNullable.control(
       1,
@@ -144,7 +156,6 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
   });
 
   currentPriceDiffPercent$!: Observable<{ percent: number, sign: number } | null>;
-
   @Input()
   initialValues: {
     price?: number;
@@ -175,6 +186,11 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     return this.form.valid;
   }
 
+  disabledDate = (date: Date): boolean => {
+    const today = startOfDay(new Date());
+    return toUnixTime(date) < toUnixTime(today);
+  };
+
   ngOnInit(): void {
     this.initInstrumentChange();
     this.initCommonParametersUpdate();
@@ -193,6 +209,29 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
   ngOnDestroy(): void {
     super.ngOnDestroy();
     this.evaluationRequest$.complete();
+  }
+
+  public updateEvaluation(): void {
+    this.getInstrumentWithPortfolio().pipe(
+      take(1)
+    ).subscribe(x => {
+      const formValue = this.form.value;
+      if (formValue.price == null || formValue.quantity == null) {
+        this.evaluationRequest$.next(null);
+        return;
+      }
+
+      this.evaluationRequest$.next({
+        portfolio: x.portfolioKey.portfolio,
+        instrument: {
+          ...toInstrumentKey(x.instrument),
+          instrumentGroup: formValue.instrumentGroup ?? x.instrument.instrumentGroup
+        },
+        instrumentCurrency: x.instrument.currency,
+        price: formValue.price as number,
+        lotQuantity: formValue.quantity as number
+      });
+    });
   }
 
   protected changeInstrument(instrument: Instrument): void {
@@ -231,7 +270,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
 
     this.form.controls.instrumentGroup.setValue(instrument.instrumentGroup ?? '');
 
-    if(instrument.market !== Market.Forts) {
+    if (instrument.market !== Market.Forts) {
       this.disableControl(this.form.controls.orderEndUnixTime);
     } else {
       this.enableControl(this.form.controls.orderEndUnixTime);
@@ -318,7 +357,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       limitOrder.icebergVariance = Number(formValue.icebergVariance);
     }
 
-    if(formValue.orderEndUnixTime != null) {
+    if (formValue.orderEndUnixTime != null) {
       let selectedDate = timezoneConverter.terminalToUtc0Date(formValue.orderEndUnixTime, true);
       selectedDate = addDays(selectedDate, 1);
       selectedDate = addSeconds(selectedDate, -1);
@@ -326,7 +365,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       limitOrder.orderEndUnixTime = Math.ceil(selectedDate.getTime() / 1000);
     }
 
-    if(formValue.reason != null) {
+    if (formValue.reason != null) {
       limitOrder.reason = formValue.reason;
     }
 
@@ -396,29 +435,6 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     ).subscribe(() => this.updateEvaluation());
   }
 
-  public updateEvaluation(): void {
-    this.getInstrumentWithPortfolio().pipe(
-      take(1)
-    ).subscribe(x => {
-      const formValue = this.form.value;
-      if (formValue.price == null || formValue.quantity == null) {
-        this.evaluationRequest$.next(null);
-        return;
-      }
-
-      this.evaluationRequest$.next({
-        portfolio: x.portfolioKey.portfolio,
-        instrument: {
-          ...toInstrumentKey(x.instrument),
-          instrumentGroup: formValue.instrumentGroup ?? x.instrument.instrumentGroup
-        },
-        instrumentCurrency: x.instrument.currency,
-        price: formValue.price as number,
-        lotQuantity: formValue.quantity as number
-      });
-    });
-  }
-
   private initFormFieldsCheck(): void {
     this.form.valueChanges.pipe(
       distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),
@@ -455,32 +471,32 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       this.disableControl(this.form.controls.icebergVariance);
     }
 
-    if(this.form.controls.orderEndUnixTime.enabled && this.form.controls.orderEndUnixTime.value !== null) {
+    if (this.form.controls.orderEndUnixTime.enabled && this.form.controls.orderEndUnixTime.value !== null) {
       this.disableControl(this.form.controls.timeInForce);
     } else {
       this.enableControl(this.form.controls.timeInForce);
     }
 
-    if(!this.limitOrderConfig.isBracketsSupported) {
+    if (!this.limitOrderConfig.isBracketsSupported) {
       this.disableControl(this.form.controls.topOrderPrice);
       this.disableControl(this.form.controls.topOrderSide);
       this.disableControl(this.form.controls.bottomOrderPrice);
       this.disableControl(this.form.controls.bottomOrderSide);
     } else {
-      if(this.form.controls.topOrderPrice.value != null) {
+      if (this.form.controls.topOrderPrice.value != null) {
         this.enableControl(this.form.controls.topOrderSide);
       } else {
         this.disableControl(this.form.controls.topOrderSide);
       }
 
-      if(this.form.controls.bottomOrderPrice.value != null) {
+      if (this.form.controls.bottomOrderPrice.value != null) {
         this.enableControl(this.form.controls.bottomOrderSide);
       } else {
         this.disableControl(this.form.controls.bottomOrderSide);
       }
     }
 
-    if(this.limitOrderConfig.unsupportedFields.reason) {
+    if (this.limitOrderConfig.unsupportedFields.reason) {
       this.disableControl(this.form.controls.reason);
     }
 
@@ -499,7 +515,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
           exchangeTimezone: x.marketSettings.exchanges.find(e => e.exchange === x.instrumentWithPortfolio.portfolioKey.exchange)?.settings.timezone ?? ''
         };
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
   }
 }

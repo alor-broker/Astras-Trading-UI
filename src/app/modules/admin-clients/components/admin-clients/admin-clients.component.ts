@@ -10,17 +10,10 @@ import {
   OnInit,
   signal
 } from '@angular/core';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { AdminClientsService } from "../../services/clients/admin-clients.service";
-import {
-  Client,
-  ClientsSearchFilter,
-  SpectraExtension
-} from "../../services/clients/admin-clients-service.models";
-import {
-  BaseTableComponent,
-  Sort
-} from "../../../../shared/components/base-table/base-table.component";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {AdminClientsService} from "../../services/clients/admin-clients.service";
+import {Client, ClientsSearchFilter, SpectraExtension} from "../../services/clients/admin-clients-service.models";
+import {BaseTableComponent, Sort} from "../../../../shared/components/base-table/base-table.component";
 import {
   asyncScheduler,
   BehaviorSubject,
@@ -35,53 +28,41 @@ import {
   tap,
   timer
 } from "rxjs";
-import { TableConfig } from "../../../../shared/models/table-config.model";
+import {TableConfig} from "../../../../shared/models/table-config.model";
+import {AdminClientsSettings, AdminClientsTableColumns,} from "../../models/admin-clients-settings.model";
+import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
+import {distinct, map} from "rxjs/operators";
+import {TableSettingHelper} from "../../../../shared/utils/table-setting.helper";
+import {BaseColumnId, BaseColumnSettings, FilterType} from "../../../../shared/models/settings/table-settings.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
 import {
-  AdminClientsSettings,
-  AdminClientsTableColumns,
-} from "../../models/admin-clients-settings.model";
-import {
-  TranslatorFn,
-  TranslatorService
-} from "../../../../shared/services/translator.service";
-import {
-  distinct,
-  map
-} from "rxjs/operators";
-import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import {
-  BaseColumnId,
-  BaseColumnSettings,
-  FilterType
-} from "../../../../shared/models/settings/table-settings.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { NzResizeObserverDirective } from "ng-zorro-antd/cdk/resize-observer";
-import {
+  NzFilterTriggerComponent,
   NzTableCellDirective,
   NzTableComponent,
+  NzThAddOnComponent,
   NzThMeasureDirective,
   NzTrDirective
 } from "ng-zorro-antd/table";
-import { LetDirective } from "@ngrx/component";
+import {LetDirective} from "@ngrx/component";
+import {CdkDrag, CdkDragDrop, CdkDropList} from "@angular/cdk/drag-drop";
+import {formatNumber} from "@angular/common";
+import {TableRowHeightDirective} from "../../../../shared/directives/table-row-height.directive";
 import {
-  CdkDrag,
-  CdkDragDrop,
-  CdkDropList
-} from "@angular/cdk/drag-drop";
-import { SharedModule } from "../../../../shared/shared.module";
-import { formatNumber } from "@angular/common";
-import { TableRowHeightDirective } from "../../../../shared/directives/table-row-height.directive";
-import { TableSearchFilterComponent } from "../../../../shared/components/table-search-filter/table-search-filter.component";
-import { mapWith } from "../../../../shared/utils/observable-helper";
-import { Market } from "../../../../../generated/graphql.types";
-import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import {
-  NzContextMenuService,
-  NzDropdownMenuComponent
-} from "ng-zorro-antd/dropdown";
-import { AdminDashboardsHelper } from "../../utils/admin-dashboards.helper";
-import { getMarketTypeByPortfolio } from "../../../../shared/utils/portfolios";
+  TableSearchFilterComponent
+} from "../../../../shared/components/table-search-filter/table-search-filter.component";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {Market} from "../../../../../generated/graphql.types";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {AdminDashboardsHelper} from "../../utils/admin-dashboards.helper";
+import {getMarketTypeByPortfolio} from "../../../../shared/utils/portfolios";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {ResizeColumnDirective} from "../../../../shared/directives/resize-column.directive";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {NzMenuDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
 
 type ClientDisplay = Omit<Client, 'spectraExtension'> & Partial<SpectraExtension>;
 
@@ -117,10 +98,18 @@ interface ColumnBase {
     NzTrDirective,
     NzTableCellDirective,
     NzThMeasureDirective,
-    SharedModule,
     CdkDrag,
     TableRowHeightDirective,
-    TableSearchFilterComponent
+    TableSearchFilterComponent,
+    TranslocoDirective,
+    ResizeColumnDirective,
+    NzThAddOnComponent,
+    NzFilterTriggerComponent,
+    NzTooltipDirective,
+    NzDropdownMenuComponent,
+    NzIconDirective,
+    NzMenuDirective,
+    NzMenuItemComponent
   ],
   templateUrl: './admin-clients.component.html',
   styleUrl: './admin-clients.component.less',

@@ -1,13 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { InvestIdeasWidgetComponent } from './invest-ideas-widget.component';
-import { MockProvider } from "ng-mocks";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { EMPTY } from "rxjs";
-import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
-import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import { Widget } from "../../../../shared/models/dashboard/widget.model";
-import { WidgetMeta } from "../../../../shared/models/widget-meta.model";
+import {InvestIdeasWidgetComponent} from './invest-ideas-widget.component';
+import {MockComponents, MockProvider} from "ng-mocks";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {EMPTY} from "rxjs";
+import {ACTIONS_CONTEXT} from "../../../../shared/services/actions-context";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
 
 describe('InvestIdeasWidgetComponent', () => {
   let component: InvestIdeasWidgetComponent;
@@ -15,7 +17,13 @@ describe('InvestIdeasWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InvestIdeasWidgetComponent],
+      imports: [
+        InvestIdeasWidgetComponent,
+        MockComponents(
+          WidgetSkeletonComponent,
+          WidgetHeaderComponent
+        )
+      ],
       providers: [
         MockProvider(
           WidgetSettingsService,
@@ -33,7 +41,7 @@ describe('InvestIdeasWidgetComponent', () => {
         ),
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(InvestIdeasWidgetComponent);
     component = fixture.componentInstance;

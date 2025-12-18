@@ -1,18 +1,7 @@
-import {
-  Component,
-  DestroyRef,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  shareReplay,
-  tap
-} from "rxjs";
-import { ContentSize } from "../../../../shared/models/dashboard/dashboard-item.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {BehaviorSubject, combineLatest, shareReplay, tap} from "rxjs";
+import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {
   axisBottom,
   axisRight,
@@ -25,28 +14,24 @@ import {
   select,
   zoom
 } from "d3";
-import {
-  filter,
-  map,
-  switchMap
-} from "rxjs/operators";
-import { InstrumentsCorrelationService } from "../../services/instruments-correlation.service";
+import {filter, map, switchMap} from "rxjs/operators";
+import {InstrumentsCorrelationService} from "../../services/instruments-correlation.service";
 import {
   InstrumentsCorrelationErrorCodes,
   InstrumentsCorrelationRequest,
   InstrumentsCorrelationResponse
 } from "../../models/instruments-correlation.model";
-import {
-  TranslatorFn,
-  TranslatorService
-} from "../../../../shared/services/translator.service";
-import {
-  BaseType,
-  Selection
-} from "d3-selection";
-import { ScaleBand } from "d3-scale";
-import { MathHelper } from "../../../../shared/utils/math-helper";
-import { G } from "@angular/cdk/keycodes";
+import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
+import {BaseType, Selection} from "d3-selection";
+import {ScaleBand} from "d3-scale";
+import {MathHelper} from "../../../../shared/utils/math-helper";
+import {G} from "@angular/cdk/keycodes";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {ChartFiltersComponent} from '../chart-filters/chart-filters.component';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {LetDirective} from '@ngrx/component';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {NzSpinComponent} from 'ng-zorro-antd/spin';
 
 enum LoadingStatus {
   Initial = 'initial',
@@ -87,22 +72,29 @@ interface CorrelationMatrix {
 }
 
 @Component({
-    selector: 'ats-correlation-chart',
-    templateUrl: './correlation-chart.component.html',
-    styleUrls: ['./correlation-chart.component.less'],
-    standalone: false
+  selector: 'ats-correlation-chart',
+  templateUrl: './correlation-chart.component.html',
+  styleUrls: ['./correlation-chart.component.less'],
+  imports: [
+    TranslocoDirective,
+    ChartFiltersComponent,
+    NzResizeObserverDirective,
+    LetDirective,
+    NzEmptyComponent,
+    NzSpinComponent
+  ]
 })
 export class CorrelationChartComponent implements OnInit, OnDestroy {
   readonly loadingStatus$ = new BehaviorSubject<LoadingStatus>(LoadingStatus.Initial);
   readonly request$ = new BehaviorSubject<InstrumentsCorrelationRequest | null>(null);
   readonly loadingStatuses = LoadingStatus;
 
-  @Input({ required: true })
+  @Input({required: true})
   guid!: string;
 
   loadingError: LoadingError | null = null;
   protected readonly G = G;
-  private readonly contentSize$ = new BehaviorSubject<ContentSize>({ width: 0, height: 0 });
+  private readonly contentSize$ = new BehaviorSubject<ContentSize>({width: 0, height: 0});
 
   constructor(
     private readonly instrumentsCorrelationService: InstrumentsCorrelationService,
@@ -157,7 +149,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
 
         return matrix;
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
 
     combineLatest({
@@ -354,7 +346,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
           .attr("dominant-baseline", "middle")
           .style('user-select', 'none')
           .text(d => {
-            if(d.cellValue.cointegration == null) {
+            if (d.cellValue.cointegration == null) {
               return '-';
             }
 
@@ -662,7 +654,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
       for (const colInstrument of indexes) {
         matrixRow.push({
           correlation: response.data.correlation[rowInstrument][colInstrument],
-          cointegration:response.data.cointegration == null
+          cointegration: response.data.cointegration == null
             ? null
             : response.data.cointegration?.[rowInstrument][colInstrument] === 1
         });

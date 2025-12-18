@@ -1,16 +1,11 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ChatMessageContainerComponent } from './chat-message-container.component';
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import {
-  MessageType,
-  TextMessageContent
-} from "../../models/messages-display.model";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {ChatMessageContainerComponent} from './chat-message-container.component';
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {MessageType, TextMessageContent} from "../../models/messages-display.model";
+import {MockComponents} from "ng-mocks";
+import {NzAvatarComponent} from "ng-zorro-antd/avatar";
+import {TextMessageComponent} from "../messages/text-message/text-message.component";
 
 describe('ChatMessageContainerComponent', () => {
   let component: ChatMessageContainerComponent;
@@ -18,11 +13,13 @@ describe('ChatMessageContainerComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserAnimationsModule],
-      declarations: [
+      imports: [
+        BrowserAnimationsModule,
         ChatMessageContainerComponent,
-        ComponentHelpers.mockComponent({selector: 'ats-text-message', inputs: ['content']}),
-        ...ngZorroMockComponents
+        MockComponents(
+          NzAvatarComponent,
+          TextMessageComponent
+        )
       ]
     });
     fixture = TestBed.createComponent(ChatMessageContainerComponent);

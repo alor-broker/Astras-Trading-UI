@@ -37,6 +37,11 @@ import {
   ACTIONS_CONTEXT,
   ActionsContext
 } from "../../../../shared/services/actions-context";
+import { NzResizeObserverDirective } from 'ng-zorro-antd/cdk/resize-observer';
+import { NzTableComponent, NzTheadComponent, NzTrDirective, NzTableCellDirective, NzThMeasureDirective, NzCellFixedDirective, NzTbodyComponent } from 'ng-zorro-antd/table';
+import { TableRowHeightDirective } from '../../../../shared/directives/table-row-height.directive';
+import { PriceDiffComponent } from '../../../../shared/components/price-diff/price-diff.component';
+import { AsyncPipe } from '@angular/common';
 
 interface CurrencyMatrix {
   currencies: string[];
@@ -47,7 +52,19 @@ interface CurrencyMatrix {
     selector: 'ats-exchange-rate',
     templateUrl: './exchange-rate.component.html',
     styleUrls: ['./exchange-rate.component.less'],
-    standalone: false
+    imports: [
+      NzResizeObserverDirective,
+      NzTableComponent,
+      TableRowHeightDirective,
+      NzTheadComponent,
+      NzTrDirective,
+      NzTableCellDirective,
+      NzThMeasureDirective,
+      NzCellFixedDirective,
+      NzTbodyComponent,
+      PriceDiffComponent,
+      AsyncPipe
+    ]
 })
 export class ExchangeRateComponent implements OnInit, OnDestroy {
   @Input({ required: true })

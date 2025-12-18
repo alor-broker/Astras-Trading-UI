@@ -1,37 +1,62 @@
+import {ChangeDetectionStrategy, Component, DestroyRef, OnInit} from '@angular/core';
 import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  OnInit
-} from '@angular/core';
-import { ControlValueAccessorBaseComponent } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
+  ControlValueAccessorBaseComponent
+} from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
 import {
   MouseActionsSchemes,
   ScalperOrderBookMouseActionsMap,
   ScalperOrderBookMouseActionsMapItem
 } from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import {FormBuilder, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators} from '@angular/forms';
+import {TerminalSettingsHelper} from '../../../../shared/utils/terminal-settings-helper';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {filter} from "rxjs/operators";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
 import {
-  FormBuilder,
-  NG_VALUE_ACCESSOR,
-  Validators
-} from '@angular/forms';
-import { TerminalSettingsHelper } from '../../../../shared/utils/terminal-settings-helper';
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { filter } from "rxjs/operators";
+  NzTableCellDirective,
+  NzTableComponent,
+  NzTbodyComponent,
+  NzTheadComponent,
+  NzThMeasureDirective,
+  NzTrDirective
+} from 'ng-zorro-antd/table';
+import {TableRowHeightDirective} from '../../../../shared/directives/table-row-height.directive';
 
 @Component({
-    selector: 'ats-scalper-mouse-actions-form',
-    templateUrl: './scalper-mouse-actions-form.component.html',
-    styleUrls: ['./scalper-mouse-actions-form.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            multi: true,
-            useExisting: ScalperMouseActionsFormComponent
-        }
-    ],
-    standalone: false
+  selector: 'ats-scalper-mouse-actions-form',
+  templateUrl: './scalper-mouse-actions-form.component.html',
+  styleUrls: ['./scalper-mouse-actions-form.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: ScalperMouseActionsFormComponent
+    }
+  ],
+  imports: [
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    NzSelectComponent,
+    NzOptionComponent,
+    NzTableComponent,
+    TableRowHeightDirective,
+    NzTheadComponent,
+    NzTrDirective,
+    NzTableCellDirective,
+    NzThMeasureDirective,
+    NzTbodyComponent
+  ]
 })
 export class ScalperMouseActionsFormComponent extends ControlValueAccessorBaseComponent<ScalperOrderBookMouseActionsMap> implements OnInit {
   form = this.formBuilder.group({
@@ -53,7 +78,7 @@ export class ScalperMouseActionsFormComponent extends ControlValueAccessorBaseCo
       return;
     }
 
-    this.form.patchValue(value, { emitEvent: false });
+    this.form.patchValue(value, {emitEvent: false});
   }
 
   ngOnInit(): void {

@@ -8,12 +8,21 @@ import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-dat
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { OrderType } from "../../../../shared/models/orders/order.model";
+import { TranslocoDirective } from '@jsverse/transloco';
+import { LetDirective } from '@ngrx/component';
+import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-limit-orders-volume-indicator',
     templateUrl: './limit-orders-volume-indicator.component.html',
     styleUrls: ['./limit-orders-volume-indicator.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      LetDirective,
+      NzTooltipDirective,
+      DecimalPipe
+    ]
 })
 export class LimitOrdersVolumeIndicatorComponent implements OnInit {
   readonly sides = Side;

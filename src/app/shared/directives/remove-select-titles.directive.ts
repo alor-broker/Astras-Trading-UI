@@ -8,10 +8,7 @@ import { NzSelectComponent } from "ng-zorro-antd/select";
 import { Observable } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
-@Directive({
-    selector: 'nz-select[atsRemoveSelectTitles]',
-    standalone: false
-})
+@Directive({ selector: 'nz-select[atsRemoveSelectTitles]' })
 export class RemoveSelectTitlesDirective implements AfterViewInit {
   @Input() valueChanges?: Observable<any>;
 

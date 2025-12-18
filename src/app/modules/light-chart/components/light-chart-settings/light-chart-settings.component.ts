@@ -1,33 +1,55 @@
+import {Component, DestroyRef, OnInit} from '@angular/core';
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {Observable, take} from "rxjs";
+import {isInstrumentEqual} from '../../../../shared/utils/settings-helper';
+import {InstrumentKey} from '../../../../shared/models/instruments/instrument-key.model';
+import {LightChartSettings, TimeFrameDisplayMode} from '../../models/light-chart-settings.model';
+import {DeviceService} from "../../../../shared/services/device.service";
 import {
-  Component,
-  DestroyRef,
-  OnInit
-} from '@angular/core';
+  WidgetSettingsBaseComponent
+} from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {TimeframeValue} from "../../models/light-chart.models";
+import {WidgetSettingsComponent} from '../../../../shared/components/widget-settings/widget-settings.component';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {InstrumentSearchComponent} from '../../../../shared/components/instrument-search/instrument-search.component';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {RemoveSelectTitlesDirective} from '../../../../shared/directives/remove-select-titles.directive';
+import {NzCollapseComponent, NzCollapsePanelComponent} from 'ng-zorro-antd/collapse';
 import {
-  FormBuilder,
-  Validators
-} from '@angular/forms';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  Observable,
-  take
-} from "rxjs";
-import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
-import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import {
-  LightChartSettings,
-  TimeFrameDisplayMode
-} from '../../models/light-chart-settings.model';
-import { DeviceService } from "../../../../shared/services/device.service";
-import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { TimeframeValue } from "../../models/light-chart.models";
+  InstrumentBoardSelectComponent
+} from '../../../../shared/components/instrument-board-select/instrument-board-select.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-light-chart-settings',
-    templateUrl: './light-chart-settings.component.html',
-    styleUrls: ['./light-chart-settings.component.less'],
-    standalone: false
+  selector: 'ats-light-chart-settings',
+  templateUrl: './light-chart-settings.component.html',
+  styleUrls: ['./light-chart-settings.component.less'],
+  imports: [
+    WidgetSettingsComponent,
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormControlComponent,
+    NzFormLabelComponent,
+    InstrumentSearchComponent,
+    NzInputDirective,
+    NzSelectComponent,
+    RemoveSelectTitlesDirective,
+    NzOptionComponent,
+    NzCollapseComponent,
+    NzCollapsePanelComponent,
+    InstrumentBoardSelectComponent,
+    AsyncPipe
+  ]
 })
 export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<LightChartSettings> implements OnInit {
   readonly form = this.formBuilder.group({

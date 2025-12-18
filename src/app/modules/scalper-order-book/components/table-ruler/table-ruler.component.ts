@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   ElementRef,
   Inject,
   Input,
@@ -14,22 +15,17 @@ import {
   ScalperOrderBookDataContext,
   ScalperOrderBookExtendedSettings
 } from '../../models/scalper-order-book-data-context.model';
-import {
-  BehaviorSubject,
-  combineLatest,
-  filter,
-  Observable,
-  Subject,
-} from 'rxjs';
-import { map } from 'rxjs/operators';
-import { MathHelper } from '../../../../shared/utils/math-helper';
-import { PriceUnits } from '../../models/scalper-order-book-settings.model';
+import {BehaviorSubject, combineLatest, filter, Observable, Subject,} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {MathHelper} from '../../../../shared/utils/math-helper';
+import {PriceUnits} from '../../models/scalper-order-book-settings.model';
 import {
   SCALPER_ORDERBOOK_BODY_REF,
   ScalperOrderBookBodyRef
 } from '../scalper-order-book-body/scalper-order-book-body.component';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import { OrderbookDataRow } from "../../../orderbook/models/orderbook-data.model";
+import {OrderbookDataRow} from "../../../orderbook/models/orderbook-data.model";
+import {AsyncPipe, NgClass, NgStyle} from '@angular/common';
 
 interface MarkerDisplay {
   index: number;
@@ -38,10 +34,14 @@ interface MarkerDisplay {
 }
 
 @Component({
-    selector: 'ats-table-ruler',
-    templateUrl: './table-ruler.component.html',
-    styleUrls: ['./table-ruler.component.less'],
-    standalone: false
+  selector: 'ats-table-ruler',
+  templateUrl: './table-ruler.component.html',
+  styleUrls: ['./table-ruler.component.less'],
+  imports: [
+    NgClass,
+    NgStyle,
+    AsyncPipe
+  ]
 })
 export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('marker')
@@ -155,8 +155,7 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
         let bestPrice: number | null = null;
         if (bestAsk != null && markerPrice >= bestAsk.p) {
           bestPrice = bestAsk.p;
-        }
-        else if (bestBid != null && markerPrice <= bestBid.p) {
+        } else if (bestBid != null && markerPrice <= bestBid.p) {
           bestPrice = bestBid.p;
         }
 

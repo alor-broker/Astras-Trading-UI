@@ -1,10 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { PossibleActionsPanelComponent } from './possible-actions-panel.component';
-import { ScalperCommandProcessorService } from '../../services/scalper-command-processor.service';
-import { Subject } from 'rxjs';
-import { TranslatorService } from '../../../../shared/services/translator.service';
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {PossibleActionsPanelComponent} from './possible-actions-panel.component';
+import {ScalperCommandProcessorService} from '../../services/scalper-command-processor.service';
+import {Subject} from 'rxjs';
+import {TranslatorService} from '../../../../shared/services/translator.service';
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('PossibleActionsPanelComponent', () => {
   let component: PossibleActionsPanelComponent;
@@ -12,8 +12,10 @@ describe('PossibleActionsPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TranslocoTestsModule.getModule()],
-      declarations: [PossibleActionsPanelComponent],
+      imports: [
+        TranslocoTestsModule.getModule(),
+        PossibleActionsPanelComponent
+      ],
       providers: [
         {
           provide: ScalperCommandProcessorService,
@@ -24,12 +26,13 @@ describe('PossibleActionsPanelComponent', () => {
         {
           provide: TranslatorService,
           useValue: {
-            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(() => {})
+            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(() => {
+            })
           }
         }
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(PossibleActionsPanelComponent);
     component = fixture.componentInstance;

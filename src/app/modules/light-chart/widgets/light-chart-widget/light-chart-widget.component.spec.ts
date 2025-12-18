@@ -1,17 +1,21 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { LightChartWidgetComponent } from './light-chart-widget.component';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { of } from 'rxjs';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { Widget } from "../../../../shared/models/dashboard/widget.model";
-import { WidgetMeta } from "../../../../shared/models/widget-meta.model";
-import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
+import {LightChartWidgetComponent} from './light-chart-widget.component';
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {of} from 'rxjs';
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents} from "ng-mocks";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
+import {
+  WidgetHeaderInstrumentSwitchComponent
+} from "../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component";
+import {LightChartComponent} from "../../components/light-chart/light-chart.component";
+import {LightChartSettingsComponent} from "../../components/light-chart-settings/light-chart-settings.component";
 
 describe('LightChartWidgetComponent', () => {
   let component: LightChartWidgetComponent;
@@ -20,17 +24,16 @@ describe('LightChartWidgetComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         LightChartWidgetComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-light-chart',
-          inputs: ['guid']
-        }),
-        ComponentHelpers.mockComponent({
-          selector: 'ats-light-chart-settings',
-          inputs: ['guid']
-        }),
-        widgetSkeletonMock
+        TranslocoTestsModule.getModule(),
+        MockComponents(
+          WidgetSkeletonComponent,
+          WidgetHeaderComponent,
+          WidgetHeaderInstrumentSwitchComponent,
+          LightChartComponent,
+          LightChartSettingsComponent
+        )
       ],
       providers: [
         {

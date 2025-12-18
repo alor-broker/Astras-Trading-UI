@@ -9,8 +9,7 @@ import { ClientAuthContextService } from "../../services/auth/client-auth-contex
 @Component({
     selector: 'ats-sso-callback-page',
     templateUrl: './sso-callback-page.component.html',
-    styleUrl: './sso-callback-page.component.less',
-    standalone: false
+    styleUrl: './sso-callback-page.component.less'
 })
 export class SsoCallbackPageComponent implements OnInit {
   @Input()

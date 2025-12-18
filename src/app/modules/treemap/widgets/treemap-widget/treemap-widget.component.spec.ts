@@ -1,13 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TreemapWidgetComponent } from './treemap-widget.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { of } from "rxjs";
+import {TreemapWidgetComponent} from './treemap-widget.component';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {of} from "rxjs";
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents} from "ng-mocks";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
+import {TreemapComponent} from "../../components/treemap/treemap.component";
+import {TreemapSettingsComponent} from "../../components/treemap-settings/treemap-settings.component";
 
 describe('TreemapWidgetComponent', () => {
   let component: TreemapWidgetComponent;
@@ -15,11 +19,15 @@ describe('TreemapWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         TreemapWidgetComponent,
-        ComponentHelpers.mockComponent({ selector: 'ats-treemap', inputs: ['guid'] }),
-        ComponentHelpers.mockComponent({ selector: 'ats-treemap-settings', inputs: ['guid'] }),
-        widgetSkeletonMock
+        TranslocoTestsModule.getModule(),
+        MockComponents(
+          WidgetSkeletonComponent,
+          WidgetHeaderComponent,
+          TreemapComponent,
+          TreemapSettingsComponent
+        )
       ],
       providers: [
         {
@@ -38,7 +46,7 @@ describe('TreemapWidgetComponent', () => {
         }
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(TreemapWidgetComponent);
     component = fixture.componentInstance;

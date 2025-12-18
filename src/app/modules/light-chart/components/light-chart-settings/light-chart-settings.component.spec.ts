@@ -1,23 +1,20 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { LightChartSettingsComponent } from './light-chart-settings.component';
-import { of } from 'rxjs';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { LightChartSettings } from '../../models/light-chart-settings.model';
-import { ReactiveFormsModule } from "@angular/forms";
-import { NzSelectModule } from "ng-zorro-antd/select";
-import { NzCollapseModule } from "ng-zorro-antd/collapse";
-import { NzFormModule } from "ng-zorro-antd/form";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { TimeframeValue } from "../../models/light-chart.models";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { InstrumentSearchMockComponent } from "../../../../shared/utils/testing/instrument-search-mock-component";
-import { InstrumentBoardSelectMockComponent } from "../../../../shared/utils/testing/instrument-board-select-mock-component";
+import {LightChartSettingsComponent} from './light-chart-settings.component';
+import {of} from 'rxjs';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {LightChartSettings} from '../../models/light-chart-settings.model';
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {TimeframeValue} from "../../models/light-chart.models";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
+import {InstrumentSearchComponent} from "../../../../shared/components/instrument-search/instrument-search.component";
+import {RemoveSelectTitlesDirective} from "../../../../shared/directives/remove-select-titles.directive";
+import {
+  InstrumentBoardSelectComponent
+} from "../../../../shared/components/instrument-board-select/instrument-board-select.component";
 
 describe('LightChartSettingsComponent', () => {
   let component: LightChartSettingsComponent;
@@ -37,22 +34,18 @@ describe('LightChartSettingsComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        LightChartSettingsComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-widget-settings',
-          inputs: ['canSave', 'canCopy', 'showCopy']
-        })
-      ],
       imports: [
-        BrowserAnimationsModule,
+        LightChartSettingsComponent,
         TranslocoTestsModule.getModule(),
-        InstrumentSearchMockComponent,
-        InstrumentBoardSelectMockComponent,
-        ReactiveFormsModule,
-        NzSelectModule,
-        NzCollapseModule,
-        NzFormModule
+        ...FormsTesting.getMocks(),
+        MockComponents(
+          WidgetSettingsComponent,
+          InstrumentSearchComponent,
+          InstrumentBoardSelectComponent,
+        ),
+        MockDirectives(
+          RemoveSelectTitlesDirective
+        )
       ],
       providers: [
         {

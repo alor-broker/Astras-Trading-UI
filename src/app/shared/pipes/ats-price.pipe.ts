@@ -1,10 +1,7 @@
 import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 import {DecimalPipe} from "@angular/common";
 
-@Pipe({
-    name: 'atsPrice',
-    standalone: false
-})
+@Pipe({ name: 'atsPrice' })
 export class AtsPricePipe implements PipeTransform {
   private readonly numberPipe = new DecimalPipe(this.locale);
 

@@ -8,12 +8,19 @@ import {
   QueryList,
   ViewChildren
 } from '@angular/core';
-import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
+import {BlotterBaseTableComponent} from "../blotter-base-table/blotter-base-table.component";
+import {DisplayTrade, TradeFilter} from "../../models/trade.model";
 import {
-  DisplayTrade,
-  TradeFilter
-} from "../../models/trade.model";
-import { NzTableComponent } from "ng-zorro-antd/table";
+  NzFilterTriggerComponent,
+  NzTableCellDirective,
+  NzTableComponent,
+  NzTableVirtualScrollDirective,
+  NzTbodyComponent,
+  NzThAddOnComponent,
+  NzTheadComponent,
+  NzThMeasureDirective,
+  NzTrDirective
+} from "ng-zorro-antd/table";
 import {
   BehaviorSubject,
   combineLatest,
@@ -32,39 +39,71 @@ import {
   FilterType,
   TableDisplaySettings
 } from "../../../../shared/models/settings/table-settings.model";
-import {
-  allTradesColumns,
-  ColumnsNames,
-  TableNames
-} from "../../models/blotter-settings.model";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import {
-  debounceTime,
-  filter,
-  map,
-  startWith
-} from "rxjs/operators";
-import { Trade } from "../../../../shared/models/trades/trade.model";
-import { mapWith } from "../../../../shared/utils/observable-helper";
-import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
-import { CdkVirtualScrollViewport } from "@angular/cdk/scrolling";
-import { TradesHistoryService } from "../../../../shared/services/trades-history.service";
-import { TableConfig } from "../../../../shared/models/table-config.model";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { BlotterService } from "../../services/blotter.service";
-import { NzContextMenuService } from "ng-zorro-antd/dropdown";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import {allTradesColumns, ColumnsNames, TableNames} from "../../models/blotter-settings.model";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {TableSettingHelper} from "../../../../shared/utils/table-setting.helper";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {debounceTime, filter, map, startWith} from "rxjs/operators";
+import {Trade} from "../../../../shared/models/trades/trade.model";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {isEqualPortfolioDependedSettings} from "../../../../shared/utils/settings-helper";
+import {CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
+import {TradesHistoryService} from "../../../../shared/services/trades-history.service";
+import {TableConfig} from "../../../../shared/models/table-config.model";
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {BlotterService} from "../../services/blotter.service";
+import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {LetDirective} from '@ngrx/component';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
+import {ResizeColumnDirective} from '../../../../shared/directives/resize-column.directive';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {
+  TableSearchFilterComponent
+} from '../../../../shared/components/table-search-filter/table-search-filter.component';
+import {
+  AddToWatchlistMenuComponent
+} from '../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component';
+import {AsyncPipe, DecimalPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-trades-history',
-    templateUrl: './trades-history.component.html',
-    styleUrls: ['./trades-history.component.less'],
-    standalone: false
+  selector: 'ats-trades-history',
+  templateUrl: './trades-history.component.html',
+  styleUrls: ['./trades-history.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzEmptyComponent,
+    LetDirective,
+    NzResizeObserverDirective,
+    NzTableComponent,
+    NzTheadComponent,
+    NzTrDirective,
+    CdkDropList,
+    NzTableCellDirective,
+    NzThMeasureDirective,
+    NzThAddOnComponent,
+    ResizeColumnDirective,
+    CdkDrag,
+    NzTooltipDirective,
+    NzFilterTriggerComponent,
+    NzIconDirective,
+    NzTbodyComponent,
+    NzTableVirtualScrollDirective,
+    NzButtonComponent,
+    NzDropdownMenuComponent,
+    TableSearchFilterComponent,
+    AddToWatchlistMenuComponent,
+    AsyncPipe,
+    DecimalPipe
+  ]
 })
 export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTrade, TradeFilter> implements AfterViewInit, OnDestroy {
   readonly rowHeight = 20;
@@ -117,8 +156,8 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
         filterName: 'side',
         filterType: FilterType.Default,
         filters: [
-          { text: 'Покупка', value: 'buy' },
-          { text: 'Продажа', value: 'sell' }
+          {text: 'Покупка', value: 'buy'},
+          {text: 'Продажа', value: 'sell'}
         ]
       },
       tooltip: 'Сторона сделки (покупка/продажа)',
@@ -159,15 +198,10 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
   settingsTableName = TableNames.TradesHistoryTable;
   settingsColumnsName = ColumnsNames.TradesColumns;
   fileSuffix = 'tradesHistory';
-
-  get restoreFiltersAndSortOnLoad(): boolean {
-    return false;
-  }
-
-  private readonly loadedHistory$ = new BehaviorSubject<Trade[]>([]);
-
   @ViewChildren('nzTable')
   dataTableQuery!: QueryList<NzTableComponent<DisplayTrade>>;
+
+  private readonly loadedHistory$ = new BehaviorSubject<Trade[]>([]);
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,
@@ -186,6 +220,10 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       widgetLocalStateService,
       destroyRef
     );
+  }
+
+  get restoreFiltersAndSortOnLoad(): boolean {
+    return false;
   }
 
   ngAfterViewInit(): void {
@@ -248,11 +286,11 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       scrollViewport$,
       this.tableData$
     ]).pipe(
-      filter(([,displayTrades]) => displayTrades.length > 0),
+      filter(([, displayTrades]) => displayTrades.length > 0),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(([scrollViewport, displayTrades]) => {
       const itemsCount = Math.ceil(scrollViewport.measureViewportSize('vertical') / this.rowHeight);
-      if(itemsCount > displayTrades.length) {
+      if (itemsCount > displayTrades.length) {
         const lastItem = displayTrades[displayTrades.length - 1];
         this.loadMoreItems(lastItem.date, Math.max(itemsCount, 100));
       }
@@ -272,53 +310,23 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
         month: "2-digit",
         day: "2-digit",
         hour: "2-digit",
-        minute:"2-digit",
+        minute: "2-digit",
         hour12: false
       }
     );
   }
 
-  private loadMoreItems(dateFrom?: Date | null, itemsCount?: number | null): void {
-    this.isLoading$.pipe(
-      take(1),
-      filter(isLoading => !isLoading),
-      tap(() => this.isLoading$.next(true)),
-      withLatestFrom(this.settings$, this.filters$),
-      switchMap(
-        ([, settings, filters]) => this.tradesHistoryService.getTradesHistoryForPortfolio(
-          settings.exchange,
-          settings.portfolio,
-          {
-            filters,
-            dateFrom,
-            limit: itemsCount ?? 50
-          }
-        )
-      ),
-      tap(() => this.isLoading$.next(false)),
-    ).subscribe((loadedItems) => {
-      if (!loadedItems || loadedItems.length === 0) {
-        return;
-      }
-
-      if(dateFrom == null) {
-        this.loadedHistory$.next(loadedItems);
-      } else {
-        this.loadedHistory$.pipe(
-          take(1)
-        ).subscribe(existingItems => {
-          const existingIds = new Set(existingItems.map(x => x.id));
-          const uniqueItems = loadedItems.filter(x => !existingIds.has(x.id));
-
-          if(uniqueItems.length > 0) {
-            this.loadedHistory$.next([
-              ...existingItems,
-              ...uniqueItems
-            ]);
-          }
-        });
-      }
-    });
+  rowClick(row: DisplayTrade): void {
+    this.settings$
+      .pipe(
+        take(1)
+      )
+      .subscribe(s => this.service.selectNewInstrument(
+        row.targetInstrument.symbol,
+        row.targetInstrument.exchange,
+        row.targetInstrument.instrumentGroup ?? null,
+        s.badgeColor ?? defaultBadgeColor
+      ));
   }
 
   protected initTableConfigStream(): Observable<TableConfig<DisplayTrade>> {
@@ -344,7 +352,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
       mapWith(() => tableState$, (source, output) => ({...source, ...output})),
       takeUntilDestroyed(this.destroyRef),
       tap(x => {
-        if(x.filters != null) {
+        if (x.filters != null) {
           this.filterChange(x.filters);
         }
       }),
@@ -390,7 +398,7 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
         displayDate: converter.toTerminalDate(t.date)
       })),
       withLatestFrom(this.filters$),
-      map(([data,filter]) => {
+      map(([data, filter]) => {
         const clearedFilter = {
           ...filter
         };
@@ -405,24 +413,54 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
     );
   }
 
-  rowClick(row: DisplayTrade): void {
-    this.settings$
-      .pipe(
-        take(1)
-      )
-      .subscribe(s => this.service.selectNewInstrument(
-        row.targetInstrument.symbol,
-        row.targetInstrument.exchange,
-        row.targetInstrument.instrumentGroup ?? null,
-        s.badgeColor ?? defaultBadgeColor
-      ));
-  }
-
   protected rowToInstrumentKey(row: DisplayTrade): Observable<InstrumentKey | null> {
     return this.service.getInstrumentToSelect(
       row.targetInstrument.symbol,
       row.targetInstrument.exchange,
       row.targetInstrument.instrumentGroup ?? null,
     );
+  }
+
+  private loadMoreItems(dateFrom?: Date | null, itemsCount?: number | null): void {
+    this.isLoading$.pipe(
+      take(1),
+      filter(isLoading => !isLoading),
+      tap(() => this.isLoading$.next(true)),
+      withLatestFrom(this.settings$, this.filters$),
+      switchMap(
+        ([, settings, filters]) => this.tradesHistoryService.getTradesHistoryForPortfolio(
+          settings.exchange,
+          settings.portfolio,
+          {
+            filters,
+            dateFrom,
+            limit: itemsCount ?? 50
+          }
+        )
+      ),
+      tap(() => this.isLoading$.next(false)),
+    ).subscribe((loadedItems) => {
+      if (!loadedItems || loadedItems.length === 0) {
+        return;
+      }
+
+      if (dateFrom == null) {
+        this.loadedHistory$.next(loadedItems);
+      } else {
+        this.loadedHistory$.pipe(
+          take(1)
+        ).subscribe(existingItems => {
+          const existingIds = new Set(existingItems.map(x => x.id));
+          const uniqueItems = loadedItems.filter(x => !existingIds.has(x.id));
+
+          if (uniqueItems.length > 0) {
+            this.loadedHistory$.next([
+              ...existingItems,
+              ...uniqueItems
+            ]);
+          }
+        });
+      }
+    });
   }
 }

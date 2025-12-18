@@ -1,7 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import { AsyncPipe } from "@angular/common";
-import {SharedModule} from "../../../../shared/shared.module";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {Observable} from "rxjs";
@@ -9,16 +8,19 @@ import {WidgetSettingsCreationHelper} from "../../../../shared/utils/widget-sett
 import {GraphsListComponent} from "../../components/graphs-list/graphs-list.component";
 import {AiGraphsSettings} from "../../models/ai-graphs-settings.model";
 import {AiGraphEditorDialogComponent} from "../ai-graph-editor-dialog/ai-graph-editor-dialog.component";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
 
 @Component({
     selector: 'ats-ai-graphs-widget',
-    imports: [
+  imports: [
     AsyncPipe,
-    SharedModule,
     TranslocoDirective,
     GraphsListComponent,
-    AiGraphEditorDialogComponent
-],
+    AiGraphEditorDialogComponent,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent
+  ],
     templateUrl: './ai-graphs-widget.component.html',
     styleUrl: './ai-graphs-widget.component.less'
 })

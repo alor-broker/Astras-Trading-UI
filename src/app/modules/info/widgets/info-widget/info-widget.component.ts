@@ -21,12 +21,35 @@ import { map } from "rxjs/operators";
 import { InstrumentSummary } from "../../models/instrument-summary.model";
 import { InstrumentType } from "../../../../shared/models/enums/instrument-type.model";
 import { getTypeByCfi } from "../../../../shared/utils/instruments";
+import { TranslocoDirective } from '@jsverse/transloco';
+import { WidgetSkeletonComponent } from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
+import { WidgetHeaderComponent } from '../../../../shared/components/widget-header/widget-header.component';
+import { WidgetHeaderInstrumentSwitchComponent } from '../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component';
+import { NzSpinComponent } from 'ng-zorro-antd/spin';
+import { InfoHeaderComponent } from '../../components/common/info-header/info-header.component';
+import { StockInfoComponent } from '../../components/stocks/stock-info/stock-info.component';
+import { BondInfoComponent } from '../../components/bonds/bond-info/bond-info.component';
+import { DerivativeInfoComponent } from '../../components/derivatives/derivative-info/derivative-info.component';
+import { CommonInfoComponent } from '../../components/common/common-info/common-info.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-info-widget',
     templateUrl: './info-widget.component.html',
     styleUrls: ['./info-widget.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      WidgetSkeletonComponent,
+      WidgetHeaderComponent,
+      WidgetHeaderInstrumentSwitchComponent,
+      NzSpinComponent,
+      InfoHeaderComponent,
+      StockInfoComponent,
+      BondInfoComponent,
+      DerivativeInfoComponent,
+      CommonInfoComponent,
+      AsyncPipe
+    ]
 })
 export class InfoWidgetComponent implements OnInit {
   @Input({required: true})

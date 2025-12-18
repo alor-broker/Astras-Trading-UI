@@ -8,7 +8,7 @@ import { WidgetMeta } from "../../../../shared/models/widget-meta.model";
 import { PortfolioChartsWidgetComponent } from "./portfolio-charts-widget.component";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 import {
-  MockComponent,
+  MockComponents,
   MockProvider
 } from "ng-mocks";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -16,6 +16,8 @@ import { EMPTY } from "rxjs";
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import { UserPortfoliosService } from "../../../../shared/services/user-portfolios.service";
 import { AgreementDynamicsComponent } from "../../components/agreement-dynamics/agreement-dynamics.component";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
 
 describe('PortfolioChartsWidgetComponent', () => {
   let component: PortfolioChartsWidgetComponent;
@@ -26,7 +28,11 @@ describe('PortfolioChartsWidgetComponent', () => {
       imports: [
         PortfolioChartsWidgetComponent,
         TranslocoTestsModule.getModule(),
-        MockComponent(AgreementDynamicsComponent)
+        MockComponents(
+          AgreementDynamicsComponent,
+          WidgetSkeletonComponent,
+          WidgetHeaderComponent
+        )
       ],
       providers: [
         MockProvider(

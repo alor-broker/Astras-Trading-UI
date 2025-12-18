@@ -1,21 +1,30 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  Output
-} from '@angular/core';
-import { AiChatTermsOfUseService } from "../../services/ai-chat-terms-of-use.service";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {AiChatTermsOfUseService} from "../../services/ai-chat-terms-of-use.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from 'ng-zorro-antd/modal';
+import {LetDirective} from '@ngrx/component';
+import {MarkdownComponent} from 'ngx-markdown';
+import {NzSpinComponent} from 'ng-zorro-antd/spin';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
 
 @Component({
-    selector: 'ats-terms-of-use-dialog',
-    templateUrl: './terms-of-use-dialog.component.html',
-    styleUrl: './terms-of-use-dialog.component.less',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'ats-terms-of-use-dialog',
+  templateUrl: './terms-of-use-dialog.component.html',
+  styleUrl: './terms-of-use-dialog.component.less',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    TranslocoDirective,
+    NzModalComponent,
+    NzModalContentDirective,
+    LetDirective,
+    MarkdownComponent,
+    NzSpinComponent,
+    NzModalFooterDirective,
+    NzButtonComponent
+  ]
 })
 export class TermsOfUseDialogComponent {
-  @Input({ required: true })
+  @Input({required: true})
   atsVisible = false;
 
   @Output()
@@ -24,9 +33,9 @@ export class TermsOfUseDialogComponent {
   @Output()
   confirmed = new EventEmitter<boolean>();
 
-  private handleClose(): void {
-    this.atsVisible = false;
-    this.atsVisibleChange.emit(this.atsVisible);
+  protected readonly content$ = this.termsOfUseService.getContent();
+
+  constructor(private readonly termsOfUseService: AiChatTermsOfUseService) {
   }
 
   handleOk(): void {
@@ -39,8 +48,8 @@ export class TermsOfUseDialogComponent {
     this.handleClose();
   }
 
-  protected readonly content$ = this.termsOfUseService.getContent();
-
-  constructor(private readonly termsOfUseService: AiChatTermsOfUseService) {
+  private handleClose(): void {
+    this.atsVisible = false;
+    this.atsVisibleChange.emit(this.atsVisible);
   }
 }

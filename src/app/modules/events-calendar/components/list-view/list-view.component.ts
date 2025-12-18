@@ -30,12 +30,21 @@ import {
   ACTIONS_CONTEXT,
   ActionsContext
 } from "../../../../shared/services/actions-context";
+import { LetDirective } from '@ngrx/component';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { AsyncPipe, DatePipe, KeyValuePipe } from '@angular/common';
 
 @Component({
     selector: 'ats-list-view',
     templateUrl: './list-view.component.html',
     styleUrls: ['./list-view.component.less'],
-    standalone: false
+    imports: [
+      LetDirective,
+      TranslocoDirective,
+      AsyncPipe,
+      DatePipe,
+      KeyValuePipe
+    ]
 })
 export class ListViewComponent implements OnInit, OnDestroy {
   private readonly symbols$ = new BehaviorSubject<string[]>([]);

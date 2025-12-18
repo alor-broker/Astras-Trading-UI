@@ -1,30 +1,32 @@
+import {ChangeDetectorRef, Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {BehaviorSubject, forkJoin, fromEvent, Observable, of, take} from "rxjs";
+import {WatchlistCollectionService} from "../../services/watchlist-collection.service";
+import {filter, map} from "rxjs/operators";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {InstrumentsService} from "../../services/instruments.service";
+import {MarketService} from "../../../../shared/services/market.service";
+import {toInstrumentKey} from "../../../../shared/utils/instruments";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {NzUploadComponent, NzUploadFile} from "ng-zorro-antd/upload";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from 'ng-zorro-antd/modal';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {FormsModule} from '@angular/forms';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {LetDirective} from '@ngrx/component';
 import {
-  ChangeDetectorRef,
-  Component,
-  DestroyRef,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  forkJoin,
-  fromEvent,
-  Observable,
-  of,
-  take
-} from "rxjs";
-import { WatchlistCollectionService } from "../../services/watchlist-collection.service";
-import {
-  filter,
-  map
-} from "rxjs/operators";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { InstrumentsService } from "../../services/instruments.service";
-import { MarketService } from "../../../../shared/services/market.service";
-import { toInstrumentKey } from "../../../../shared/utils/instruments";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { NzUploadFile } from "ng-zorro-antd/upload";
+  NzTableCellDirective,
+  NzTableComponent,
+  NzTbodyComponent,
+  NzTheadComponent,
+  NzThMeasureDirective,
+  NzTrDirective
+} from 'ng-zorro-antd/table';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {NzSpinComponent} from 'ng-zorro-antd/spin';
+import {AsyncPipe} from '@angular/common';
 
 export interface ImportDialogParams {
   listId: string;
@@ -36,10 +38,31 @@ interface ParsedItem {
 }
 
 @Component({
-    selector: 'ats-import-watchlist-dialog',
-    templateUrl: './import-watchlist-dialog.component.html',
-    styleUrls: ['./import-watchlist-dialog.component.less'],
-    standalone: false
+  selector: 'ats-import-watchlist-dialog',
+  templateUrl: './import-watchlist-dialog.component.html',
+  styleUrls: ['./import-watchlist-dialog.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzModalComponent,
+    NzModalContentDirective,
+    NzInputDirective,
+    FormsModule,
+    NzUploadComponent,
+    NzButtonComponent,
+    NzTooltipDirective,
+    NzIconDirective,
+    LetDirective,
+    NzTableComponent,
+    NzTheadComponent,
+    NzTrDirective,
+    NzTableCellDirective,
+    NzThMeasureDirective,
+    NzTbodyComponent,
+    NzTypographyComponent,
+    NzSpinComponent,
+    NzModalFooterDirective,
+    AsyncPipe
+  ]
 })
 export class ImportWatchlistDialogComponent implements OnInit, OnDestroy {
   inputString = '';
@@ -58,7 +81,7 @@ export class ImportWatchlistDialogComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  @Input({ required: true })
+  @Input({required: true})
   set dialogParams(value: ImportDialogParams | null) {
     this.dialogParams$.next(value);
   }

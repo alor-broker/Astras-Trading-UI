@@ -16,12 +16,27 @@ import {
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import { TranslocoDirective } from '@jsverse/transloco';
+import { WidgetSkeletonComponent } from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
+import { WidgetHeaderComponent } from '../../../../shared/components/widget-header/widget-header.component';
+import { WidgetHeaderInstrumentSwitchComponent } from '../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component';
+import { LightChartComponent } from '../../components/light-chart/light-chart.component';
+import { LightChartSettingsComponent } from '../../components/light-chart-settings/light-chart-settings.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-light-chart-widget',
     templateUrl: './light-chart-widget.component.html',
     styleUrls: ['./light-chart-widget.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      WidgetSkeletonComponent,
+      WidgetHeaderComponent,
+      WidgetHeaderInstrumentSwitchComponent,
+      LightChartComponent,
+      LightChartSettingsComponent,
+      AsyncPipe
+    ]
 })
 export class LightChartWidgetComponent implements OnInit {
   shouldShowSettings = false;

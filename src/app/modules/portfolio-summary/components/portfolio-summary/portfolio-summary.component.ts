@@ -8,12 +8,21 @@ import {F} from "@angular/cdk/keycodes";
 import {PortfolioSummaryService} from "../../../../shared/services/portfolio-summary.service";
 import {CommonSummaryView} from "../../../../shared/models/common-summary-view.model";
 import {ForwardRisksView} from "../../../../shared/models/forward-risks-view.model";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {ScrollableRowComponent} from '../../../../shared/components/scrollable-row/scrollable-row.component';
+import {ScrollableItemDirective} from '../../../../shared/directives/scrollable-item.directive';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-portfolio-summary',
-    templateUrl: './portfolio-summary.component.html',
-    styleUrls: ['./portfolio-summary.component.less'],
-    standalone: false
+  selector: 'ats-portfolio-summary',
+  templateUrl: './portfolio-summary.component.html',
+  styleUrls: ['./portfolio-summary.component.less'],
+  imports: [
+    TranslocoDirective,
+    ScrollableRowComponent,
+    ScrollableItemDirective,
+    AsyncPipe
+  ]
 })
 export class PortfolioSummaryComponent implements OnInit {
   readonly marketTypes = MarketType;

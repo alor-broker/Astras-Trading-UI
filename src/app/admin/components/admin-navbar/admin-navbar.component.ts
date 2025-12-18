@@ -3,7 +3,6 @@ import {
   ChangeDetectionStrategy,
   Component
 } from '@angular/core';
-import { DashboardModule } from '../../../modules/dashboard/dashboard.module';
 import { AsyncPipe } from '@angular/common';
 import { WidgetsGalleryNavBtnComponent } from "../../../modules/dashboard/components/widgets-gallery-nav-btn/widgets-gallery-nav-btn.component";
 import { map, shareReplay, startWith } from 'rxjs';
@@ -20,7 +19,6 @@ import { AdminDashboardsPanelComponent } from "../admin-dashboards-panel/admin-d
 @Component({
   selector: 'ats-admin-navbar',
   imports: [
-    DashboardModule,
     AsyncPipe,
     WidgetsGalleryNavBtnComponent,
     OpenOrdersDialogNavBtnComponent,

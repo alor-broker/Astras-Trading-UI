@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {OptionPreviewComponent} from "./option-preview.component";
 import {Option} from "../../models/option-board.model";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('OptionPreviewComponent', () => {
   let component: OptionPreviewComponent;
@@ -9,8 +9,10 @@ describe('OptionPreviewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TranslocoTestsModule.getModule()],
-      declarations: [OptionPreviewComponent]
+      imports: [
+        TranslocoTestsModule.getModule(),
+        OptionPreviewComponent
+      ]
     })
       .compileComponents();
 
@@ -18,9 +20,7 @@ describe('OptionPreviewComponent', () => {
     component = fixture.componentInstance;
 
     component.option = {
-      calculations: {
-
-      }
+      calculations: {}
     } as Option;
 
     fixture.detectChanges();

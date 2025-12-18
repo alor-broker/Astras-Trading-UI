@@ -16,7 +16,11 @@ import {
   SelectionParameters
 } from "../../models/option-board-data-context.model";
 import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import {MockComponents} from "ng-mocks";
+import {NzSpinComponent} from "ng-zorro-antd/spin";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
+import {NzTypographyComponent} from "ng-zorro-antd/typography";
+import {OptionPreviewComponent} from "../option-preview/option-preview.component";
 
 describe('AllOptionsComponent', () => {
   let component: AllOptionsComponent;
@@ -24,20 +28,25 @@ describe('AllOptionsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TranslocoTestsModule.getModule()],
-      declarations: [
-        AllOptionsComponent,
-        ...ngZorroMockComponents
-      ],
-      providers: [
+    imports: [
+      TranslocoTestsModule.getModule(),
+      AllOptionsComponent,
+      MockComponents(
+        NzSpinComponent,
+        NzEmptyComponent,
+        NzTypographyComponent,
+        OptionPreviewComponent
+      )
+    ],
+    providers: [
         {
-          provide: OptionBoardService,
-          useValue: {
-            getInstrumentOptions: jasmine.createSpy('getInstrumentOptions').and.returnValue(new Subject())
-          }
+            provide: OptionBoardService,
+            useValue: {
+                getInstrumentOptions: jasmine.createSpy('getInstrumentOptions').and.returnValue(new Subject())
+            }
         }
-      ]
-    })
+    ]
+})
       .compileComponents();
 
     fixture = TestBed.createComponent(AllOptionsComponent);

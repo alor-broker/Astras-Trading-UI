@@ -4,8 +4,10 @@ import {PortfolioSummaryComponent} from './portfolio-summary.component';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {Subject} from "rxjs";
 import {PortfolioSummaryService} from "../../../../shared/services/portfolio-summary.service";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {ScrollableRowComponent} from "../../../../shared/components/scrollable-row/scrollable-row.component";
+import {ScrollableItemDirective} from "../../../../shared/directives/scrollable-item.directive";
 
 describe('PortfolioSummaryComponent', () => {
   let component: PortfolioSummaryComponent;
@@ -13,15 +15,15 @@ describe('PortfolioSummaryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TranslocoTestsModule.getModule()],
-      declarations: [
+      imports: [
+        TranslocoTestsModule.getModule(),
         PortfolioSummaryComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-scrollable-row'
-        }),
-        ComponentHelpers.mockDirective({
-          selector: '[atsScrollableItem]'
-        })
+        MockComponents(
+          ScrollableRowComponent,
+        ),
+        MockDirectives(
+          ScrollableItemDirective,
+        )
       ],
       providers: [
         {

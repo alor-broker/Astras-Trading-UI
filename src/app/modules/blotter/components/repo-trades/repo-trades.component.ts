@@ -1,42 +1,83 @@
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Output
-} from '@angular/core';
-import {
-  combineLatest,
-  defer,
-  distinctUntilChanged,
-  Observable,
-  switchMap,
-  take
-} from "rxjs";
-import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
-import { allRepoTradesColumns, TableNames } from "../../models/blotter-settings.model";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { BlotterService } from "../../services/blotter.service";
-import { TimezoneConverterService } from "../../../../shared/services/timezone-converter.service";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { debounceTime, map, mergeMap, startWith, tap } from "rxjs/operators";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/settings-helper";
-import { RepoTrade } from "../../../../shared/models/trades/trade.model";
-import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
-import { TradeFilter } from "../../models/trade.model";
-import { TableConfig } from "../../../../shared/models/table-config.model";
-import { NzContextMenuService } from "ng-zorro-antd/dropdown";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { ExportHelper } from "../../utils/export-helper";
+import {Component, DestroyRef, EventEmitter, Output} from '@angular/core';
+import {combineLatest, defer, distinctUntilChanged, Observable, switchMap, take} from "rxjs";
+import {BaseColumnSettings, FilterType} from "../../../../shared/models/settings/table-settings.model";
+import {allRepoTradesColumns, TableNames} from "../../models/blotter-settings.model";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {BlotterService} from "../../services/blotter.service";
+import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {debounceTime, map, mergeMap, startWith, tap} from "rxjs/operators";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {TableSettingHelper} from "../../../../shared/utils/table-setting.helper";
+import {isEqualPortfolioDependedSettings} from "../../../../shared/utils/settings-helper";
+import {RepoTrade} from "../../../../shared/models/trades/trade.model";
+import {BlotterBaseTableComponent} from "../blotter-base-table/blotter-base-table.component";
+import {TradeFilter} from "../../models/trade.model";
+import {TableConfig} from "../../../../shared/models/table-config.model";
+import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {ExportHelper} from "../../utils/export-helper";
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
-import { mapWith } from "../../../../shared/utils/observable-helper";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {LetDirective} from '@ngrx/component';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {
+  NzFilterTriggerComponent,
+  NzTableCellDirective,
+  NzTableComponent,
+  NzTableVirtualScrollDirective,
+  NzTbodyComponent,
+  NzThAddOnComponent,
+  NzTheadComponent,
+  NzThMeasureDirective,
+  NzTrDirective
+} from 'ng-zorro-antd/table';
+import {TableRowHeightDirective} from '../../../../shared/directives/table-row-height.directive';
+import {CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
+import {ResizeColumnDirective} from '../../../../shared/directives/resize-column.directive';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {
+  TableSearchFilterComponent
+} from '../../../../shared/components/table-search-filter/table-search-filter.component';
+import {
+  AddToWatchlistMenuComponent
+} from '../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component';
+import {DecimalPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-repo-trades',
-    templateUrl: './repo-trades.component.html',
-    styleUrls: ['./repo-trades.component.less'],
-    standalone: false
+  selector: 'ats-repo-trades',
+  templateUrl: './repo-trades.component.html',
+  styleUrls: ['./repo-trades.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzEmptyComponent,
+    LetDirective,
+    NzResizeObserverDirective,
+    NzTableComponent,
+    TableRowHeightDirective,
+    NzTheadComponent,
+    NzTrDirective,
+    CdkDropList,
+    NzTableCellDirective,
+    NzThMeasureDirective,
+    NzThAddOnComponent,
+    ResizeColumnDirective,
+    CdkDrag,
+    NzTooltipDirective,
+    NzFilterTriggerComponent,
+    NzIconDirective,
+    NzTbodyComponent,
+    NzTableVirtualScrollDirective,
+    NzButtonComponent,
+    NzDropdownMenuComponent,
+    TableSearchFilterComponent,
+    AddToWatchlistMenuComponent,
+    DecimalPipe
+  ]
 })
 export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, TradeFilter> {
   @Output()
@@ -88,8 +129,8 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
         filterName: 'side',
         filterType: FilterType.DefaultMultiple,
         filters: [
-          { text: 'Покупка', value: 'buy' },
-          { text: 'Продажа', value: 'sell' }
+          {text: 'Покупка', value: 'buy'},
+          {text: 'Продажа', value: 'sell'}
         ]
       },
       tooltip: 'Сторона сделки (покупка/продажа)',
@@ -206,9 +247,6 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
 
   settingsTableName = TableNames.RepoTradesTable;
   fileSuffix = 'repoTrades';
-  get restoreFiltersAndSortOnLoad(): boolean {
-    return true;
-  }
 
   constructor(
     protected readonly settingsService: WidgetSettingsService,
@@ -226,6 +264,18 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       widgetLocalStateService,
       destroyRef
     );
+  }
+
+  get restoreFiltersAndSortOnLoad(): boolean {
+    return true;
+  }
+
+  searchInItem(trade: RepoTrade, key: keyof RepoTrade | keyof RepoTrade['repoSpecificFields'], value?: string): boolean {
+    if (value == null || !value.length) {
+      return true;
+    }
+
+    return ((trade[key as keyof RepoTrade] as unknown) ?? trade.repoSpecificFields[<keyof RepoTrade['repoSpecificFields']>key])!.toString().toLowerCase().includes((value as string).toLowerCase());
   }
 
   protected initTableConfigStream(): Observable<TableConfig<RepoTrade>> {
@@ -251,54 +301,54 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       mapWith(() => tableState$, (source, output) => ({...source, ...output})),
       takeUntilDestroyed(this.destroyRef),
       tap(x => {
-        if(x.filters != null) {
+        if (x.filters != null) {
           this.filterChange(x.filters);
         }
       }),
       map(x => {
         const tableSettings = TableSettingHelper.toTableDisplaySettings(x.tableSettings.repoTradesTable, allRepoTradesColumns.filter(c => c.isDefault).map(c => c.id));
 
-          return {
-            columns: this.allColumns
-              .map(c => ({column: c, columnSettings: tableSettings?.columns.find(x => x.columnId === c.id)}))
-              .filter(c => !!c.columnSettings)
-              .map((column, index) => ({
-                ...column.column,
-                displayName: x.tTrades(
-                  ['columns', column.column.id, 'name'],
-                  {
-                    fallback: x.tRepoTrades(['columns', column.column.id, 'name'], {falback: column.column.displayName})
-                  }
-                ),
-                tooltip: x.tTrades(
-                  ['columns', column.column.id, 'tooltip'],
-                  {
-                    fallback: x.tRepoTrades(['columns', column.column.id, 'tooltip'], {falback: column.column.tooltip})
-                  }
-                ),
-                filterData: column.column.filterData
-                  ? {
-                    ...column.column.filterData,
-                    filterName: x.tTrades(
-                      ['columns', column.column.id, 'name'],
-                      {
-                        fallback: x.tRepoTrades(['columns', column.column.id, 'name'], {falback: column.column.displayName})
-                      }
-                    ),
-                    filters: (column.column.filterData.filters ?? []).map(f => ({
-                      value: f.value as unknown,
-                      text: x.tTrades(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text}),
-                      byDefault: this.isFilterItemApplied(column.column.id, x.filters, f)
-                    })),
-                    initialValue: x.filters?.[column.column.id]
-                  }
-                  : undefined,
-                sortOrder: this.getSort(column.column.id, x.sort),
-                width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
-                order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
-              }))
-              .sort((a, b) => a.order - b.order)
-          };
+        return {
+          columns: this.allColumns
+            .map(c => ({column: c, columnSettings: tableSettings?.columns.find(x => x.columnId === c.id)}))
+            .filter(c => !!c.columnSettings)
+            .map((column, index) => ({
+              ...column.column,
+              displayName: x.tTrades(
+                ['columns', column.column.id, 'name'],
+                {
+                  fallback: x.tRepoTrades(['columns', column.column.id, 'name'], {falback: column.column.displayName})
+                }
+              ),
+              tooltip: x.tTrades(
+                ['columns', column.column.id, 'tooltip'],
+                {
+                  fallback: x.tRepoTrades(['columns', column.column.id, 'tooltip'], {falback: column.column.tooltip})
+                }
+              ),
+              filterData: column.column.filterData
+                ? {
+                  ...column.column.filterData,
+                  filterName: x.tTrades(
+                    ['columns', column.column.id, 'name'],
+                    {
+                      fallback: x.tRepoTrades(['columns', column.column.id, 'name'], {falback: column.column.displayName})
+                    }
+                  ),
+                  filters: (column.column.filterData.filters ?? []).map(f => ({
+                    value: f.value as unknown,
+                    text: x.tTrades(['columns', column.column.id, 'listOfFilter', f.value], {fallback: f.text}),
+                    byDefault: this.isFilterItemApplied(column.column.id, x.filters, f)
+                  })),
+                  initialValue: x.filters?.[column.column.id]
+                }
+                : undefined,
+              sortOrder: this.getSort(column.column.id, x.sort),
+              width: column.columnSettings!.columnWidth ?? this.defaultColumnWidth,
+              order: column.columnSettings!.columnOrder ?? TableSettingHelper.getDefaultColumnOrder(index)
+            }))
+            .sort((a, b) => a.order - b.order)
+        };
       })
     );
   }
@@ -348,7 +398,7 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
           ['date', (value): string => this.formatDate(value)]
         ]);
 
-        const exportedData = (data ?? []).map(trade => ({ ...trade, ...trade.repoSpecificFields }));
+        const exportedData = (data ?? []).map(trade => ({...trade, ...trade.repoSpecificFields}));
 
         ExportHelper.exportToCsv(
           tBlotter(['repoTradesTab']),
@@ -358,13 +408,5 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
           valueTranslators
         );
       });
-  }
-
-  searchInItem(trade: RepoTrade, key: keyof RepoTrade | keyof RepoTrade['repoSpecificFields'], value?: string): boolean {
-    if (value == null || !value.length) {
-      return true;
-    }
-
-    return ((trade[key as keyof RepoTrade] as unknown) ?? trade.repoSpecificFields[<keyof RepoTrade['repoSpecificFields']>key])!.toString().toLowerCase().includes((value as string).toLowerCase());
   }
 }

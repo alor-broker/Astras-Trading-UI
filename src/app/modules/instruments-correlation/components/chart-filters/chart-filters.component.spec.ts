@@ -1,17 +1,13 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ChartFiltersComponent } from './chart-filters.component';
-import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
-import { Subject } from "rxjs";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { LetDirective } from "@ngrx/component";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
-import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
-import { NzTooltipModule } from "ng-zorro-antd/tooltip";
+import {ChartFiltersComponent} from './chart-filters.component';
+import {WatchlistCollectionService} from "../../../instruments/services/watchlist-collection.service";
+import {Subject} from "rxjs";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {LetDirective} from "@ngrx/component";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {commonTestProviders} from "../../../../shared/utils/testing/common-test-providers";
+import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
 
 describe('ChartFiltersComponent', () => {
   let component: ChartFiltersComponent;
@@ -22,11 +18,8 @@ describe('ChartFiltersComponent', () => {
       imports: [
         TranslocoTestsModule.getModule(),
         LetDirective,
-        ...FormsTesting.getTestingModules(),
-        NzTooltipModule
-      ],
-      declarations: [
-        ChartFiltersComponent,
+        ...FormsTesting.getMocks(),
+        ChartFiltersComponent
       ],
       providers: [
         {

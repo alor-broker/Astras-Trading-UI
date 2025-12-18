@@ -1,16 +1,15 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ExchangeRateWidgetComponent } from './exchange-rate-widget.component';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { of } from 'rxjs';
+import {ExchangeRateWidgetComponent} from './exchange-rate-widget.component';
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {of} from 'rxjs';
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
-import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {MockComponents} from "ng-mocks";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
+import {ExchangeRateComponent} from "../../components/exchange-rate/exchange-rate.component";
 
 describe('ExchangeRateWidgetComponent', () => {
   let component: ExchangeRateWidgetComponent;
@@ -18,13 +17,13 @@ describe('ExchangeRateWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         ExchangeRateWidgetComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-exchange-rate',
-          inputs: ['guid']
-        }),
-        widgetSkeletonMock
+        MockComponents(
+          WidgetSkeletonComponent,
+          WidgetHeaderComponent,
+          ExchangeRateComponent
+        )
       ],
       providers: [
         {

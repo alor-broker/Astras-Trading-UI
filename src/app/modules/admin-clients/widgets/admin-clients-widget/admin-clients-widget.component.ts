@@ -11,19 +11,23 @@ import {
   AdminClientsSettings,
   AdminClientsTableColumns
 } from "../../models/admin-clients-settings.model";
-import { SharedModule } from "../../../../shared/shared.module";
 import { AdminClientsComponent } from "../../components/admin-clients/admin-clients.component";
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
 import { AdminClientsSettingsComponent } from "../../components/admin-clients-settings/admin-clients-settings.component";
+import {AsyncPipe} from "@angular/common";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
 
 @Component({
   selector: 'ats-admin-clients-widget',
   standalone: true,
   imports: [
-    SharedModule,
     AdminClientsComponent,
-    AdminClientsSettingsComponent
+    AdminClientsSettingsComponent,
+    AsyncPipe,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent
   ],
   templateUrl: './admin-clients-widget.component.html',
   styleUrl: './admin-clients-widget.component.less'

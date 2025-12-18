@@ -1,13 +1,13 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { OrdersGroupModalWidgetComponent } from './orders-group-modal-widget.component';
-import { BlotterService } from "../../services/blotter.service";
-import { BehaviorSubject } from "rxjs";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {OrdersGroupModalWidgetComponent} from './orders-group-modal-widget.component';
+import {BlotterService} from "../../services/blotter.service";
+import {BehaviorSubject} from "rxjs";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from "ng-zorro-antd/modal";
+import {OrdersGroupModalComponent} from "../../components/orders-group-modal/orders-group-modal.component";
+import {NzButtonComponent} from "ng-zorro-antd/button";
 
 describe('OrdersGroupModalWidgetComponent', () => {
   let component: OrdersGroupModalWidgetComponent;
@@ -15,11 +15,19 @@ describe('OrdersGroupModalWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
+        TranslocoTestsModule.getModule(),
         OrdersGroupModalWidgetComponent,
-        ...ngZorroMockComponents
+        MockComponents(
+          NzModalComponent,
+          OrdersGroupModalComponent,
+          NzButtonComponent,
+        ),
+        MockDirectives(
+          NzModalContentDirective,
+          NzModalFooterDirective
+        )
       ],
-      imports: [TranslocoTestsModule.getModule()],
       providers: [
         {
           provide: BlotterService,

@@ -60,7 +60,7 @@ import {
   TreemapNode,
   TreemapSettings
 } from "../../models/treemap.model";
-import { formatNumber } from "@angular/common";
+import { formatNumber, NgStyle, AsyncPipe } from "@angular/common";
 
 interface TooltipModelRaw {
   _data: {
@@ -87,7 +87,7 @@ interface TooltipData {
     selector: 'ats-treemap',
     templateUrl: './treemap.component.html',
     styleUrls: ['./treemap.component.less'],
-    standalone: false
+    imports: [NgStyle, AsyncPipe]
 })
 export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('treemapWrapper') treemapWrapperEl?: ElementRef<HTMLDivElement>;

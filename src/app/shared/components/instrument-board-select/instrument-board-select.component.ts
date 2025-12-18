@@ -1,35 +1,28 @@
-import {
-  Component,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import { InstrumentsService } from '../../../modules/instruments/services/instruments.service';
-import {
-  ControlValueAccessor,
-  NG_VALUE_ACCESSOR
-} from '@angular/forms';
-import {
-  BehaviorSubject,
-  distinctUntilChanged,
-  Observable,
-  of,
-  switchMap
-} from 'rxjs';
-import { isInstrumentEqual } from "../../utils/settings-helper";
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {InstrumentsService} from '../../../modules/instruments/services/instruments.service';
+import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {BehaviorSubject, distinctUntilChanged, Observable, of, switchMap} from 'rxjs';
+import {isInstrumentEqual} from "../../utils/settings-helper";
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-instrument-board-select',
-    templateUrl: './instrument-board-select.component.html',
-    styleUrls: ['./instrument-board-select.component.less'],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            multi: true,
-            useExisting: InstrumentBoardSelectComponent
-        }
-    ],
-    standalone: false
+  selector: 'ats-instrument-board-select',
+  templateUrl: './instrument-board-select.component.html',
+  styleUrls: ['./instrument-board-select.component.less'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: InstrumentBoardSelectComponent
+    }
+  ],
+  imports: [
+    NzSelectComponent,
+    FormsModule,
+    NzOptionComponent,
+    AsyncPipe
+  ]
 })
 export class InstrumentBoardSelectComponent implements OnInit, OnDestroy, ControlValueAccessor {
   currentValue: string | null = null;

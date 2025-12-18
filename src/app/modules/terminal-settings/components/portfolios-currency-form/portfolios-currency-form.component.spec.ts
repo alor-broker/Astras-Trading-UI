@@ -1,16 +1,15 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { PortfoliosCurrencyFormComponent } from './portfolios-currency-form.component';
-import { MarketService } from '../../../../shared/services/market.service';
-import { Subject } from 'rxjs';
-import { ExchangeRateService } from '../../../../shared/services/exchange-rate.service';
+import {PortfoliosCurrencyFormComponent} from './portfolios-currency-form.component';
+import {MarketService} from '../../../../shared/services/market.service';
+import {Subject} from 'rxjs';
+import {ExchangeRateService} from '../../../../shared/services/exchange-rate.service';
 import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {commonTestProviders} from "../../../../shared/utils/testing/common-test-providers";
+import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
+import {MockComponents} from "ng-mocks";
+import {NzTypographyComponent} from "ng-zorro-antd/typography";
 
 describe('PortfoliosCurrencyFormComponent', () => {
   let component: PortfoliosCurrencyFormComponent;
@@ -19,11 +18,12 @@ describe('PortfoliosCurrencyFormComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        TranslocoTestsModule.getModule()
-      ],
-      declarations: [
+        TranslocoTestsModule.getModule(),
         PortfoliosCurrencyFormComponent,
-        ...ngZorroMockComponents
+        ...FormsTesting.getMocks(),
+        MockComponents(
+          NzTypographyComponent
+        )
       ],
       providers: [
         {

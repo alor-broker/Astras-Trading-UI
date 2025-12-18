@@ -10,8 +10,8 @@ describe('PanelsContainerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PanelsContainerComponent],
-    })
+    imports: [PanelsContainerComponent],
+})
       .compileComponents();
 
     fixture = TestBed.createComponent(PanelsContainerComponent);

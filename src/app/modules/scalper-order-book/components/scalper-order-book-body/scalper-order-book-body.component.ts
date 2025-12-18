@@ -11,7 +11,7 @@ import {
   SkipSelf,
   ViewChild
 } from '@angular/core';
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import {CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {
   BehaviorSubject,
   combineLatest,
@@ -24,45 +24,54 @@ import {
   take,
   withLatestFrom,
 } from 'rxjs';
-import { PriceRowsStore } from '../../utils/price-rows-store';
-import {
-  map,
-  switchMap
-} from 'rxjs/operators';
-import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
-import { ListRange } from '@angular/cdk/collections';
-import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
-import { ScalperOrderBookDataProvider } from '../../services/scalper-order-book-data-provider.service';
-import {
-  PriceRow,
-  ScalperOrderBookRowType
-} from '../../models/scalper-order-book.model';
-import { ScalperOrderBookTableHelper } from '../../utils/scalper-order-book-table.helper';
-import { ScalperOrderBookWidgetSettings } from '../../models/scalper-order-book-settings.model';
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {PriceRowsStore} from '../../utils/price-rows-store';
+import {map, switchMap} from 'rxjs/operators';
+import {ContentSize} from '../../../../shared/models/dashboard/dashboard-item.model';
+import {ListRange} from '@angular/cdk/collections';
+import {ScalperOrderBookDataContext} from '../../models/scalper-order-book-data-context.model';
+import {ScalperOrderBookDataProvider} from '../../services/scalper-order-book-data-provider.service';
+import {PriceRow, ScalperOrderBookRowType} from '../../models/scalper-order-book.model';
+import {ScalperOrderBookTableHelper} from '../../utils/scalper-order-book-table.helper';
+import {ScalperOrderBookWidgetSettings} from '../../models/scalper-order-book-settings.model';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {
   SCALPER_ORDERBOOK_SHARED_CONTEXT,
   ScalperOrderBookSharedContext
 } from "../scalper-order-book/scalper-order-book.component";
-import {
-  CdkDragEnd,
-  Point
-} from "@angular/cdk/drag-drop";
-import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
-import { Side } from "../../../../shared/models/enums/side.model";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
-import { toInstrumentKey } from "../../../../shared/utils/instruments";
+import {CdkDrag, CdkDragEnd, Point} from "@angular/cdk/drag-drop";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import {Side} from "../../../../shared/models/enums/side.model";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {isInstrumentEqual} from "../../../../shared/utils/settings-helper";
+import {toInstrumentKey} from "../../../../shared/utils/instruments";
 import {
   ActiveOrderBookHotKeysTypes,
   AllOrderBooksHotKeysTypes
 } from "../../../../shared/models/terminal-settings/terminal-settings.model";
-import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
-import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
-import { QuotesService } from "../../../../shared/services/quotes.service";
-import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
-import { AllTradesService } from "../../../../shared/services/all-trades.service";
-import { DataContextBuilder } from "../../utils/data-context-builder";
+import {ScalperHotKeyCommandService} from "../../services/scalper-hot-key-command.service";
+import {ScalperOrderBookSettingsWriteService} from "../../services/scalper-order-book-settings-write.service";
+import {QuotesService} from "../../../../shared/services/quotes.service";
+import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
+import {AllTradesService} from "../../../../shared/services/all-trades.service";
+import {DataContextBuilder} from "../../utils/data-context-builder";
+import {TopPanelComponent} from '../top-panel/top-panel.component';
+import {LetDirective} from '@ngrx/component';
+import {NzSpinComponent} from 'ng-zorro-antd/spin';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {PanelsContainerComponent} from '../panels/panels-container/panels-container.component';
+import {PanelComponent} from '../panels/panel/panel.component';
+import {TradeClustersPanelComponent} from '../trade-clusters-panel/trade-clusters-panel.component';
+import {TradesPanelComponent} from '../trades-panel/trades-panel.component';
+import {ScalperOrderBookTableComponent} from '../scalper-order-book-table/scalper-order-book-table.component';
+import {
+  LimitOrdersVolumeIndicatorComponent
+} from '../limit-orders-volume-indicator/limit-orders-volume-indicator.component';
+import {OrdersIndicatorComponent} from '../orders-indicator/orders-indicator.component';
+import {TopFloatingPanelComponent} from '../top-floating-panel/top-floating-panel.component';
+import {BottomFloatingPanelComponent} from '../bottom-floating-panel/bottom-floating-panel.component';
+import {PossibleActionsPanelComponent} from '../possible-actions-panel/possible-actions-panel.component';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {AsyncPipe} from '@angular/common';
 
 export interface ScalperOrderBookBodyRef {
   getElement(): ElementRef<HTMLElement>;
@@ -82,15 +91,36 @@ interface ScaleState {
 }
 
 @Component({
-    selector: 'ats-scalper-order-book-body',
-    templateUrl: './scalper-order-book-body.component.html',
-    styleUrls: ['./scalper-order-book-body.component.less'],
-    providers: [
-        PriceRowsStore,
-        { provide: SCALPER_ORDERBOOK_BODY_REF, useExisting: ScalperOrderBookBodyComponent },
-        { provide: RULER_CONTEX, useExisting: ScalperOrderBookBodyComponent }
-    ],
-    standalone: false
+  selector: 'ats-scalper-order-book-body',
+  templateUrl: './scalper-order-book-body.component.html',
+  styleUrls: ['./scalper-order-book-body.component.less'],
+  providers: [
+    PriceRowsStore,
+    {provide: SCALPER_ORDERBOOK_BODY_REF, useExisting: ScalperOrderBookBodyComponent},
+    {provide: RULER_CONTEX, useExisting: ScalperOrderBookBodyComponent}
+  ],
+  imports: [
+    TopPanelComponent,
+    LetDirective,
+    NzSpinComponent,
+    CdkVirtualScrollViewport,
+    CdkFixedSizeVirtualScroll,
+    NzResizeObserverDirective,
+    CdkVirtualForOf,
+    PanelsContainerComponent,
+    PanelComponent,
+    TradeClustersPanelComponent,
+    TradesPanelComponent,
+    ScalperOrderBookTableComponent,
+    LimitOrdersVolumeIndicatorComponent,
+    OrdersIndicatorComponent,
+    CdkDrag,
+    TopFloatingPanelComponent,
+    BottomFloatingPanelComponent,
+    PossibleActionsPanelComponent,
+    NzEmptyComponent,
+    AsyncPipe
+  ]
 })
 export class ScalperOrderBookBodyComponent implements OnInit,
   AfterViewInit,

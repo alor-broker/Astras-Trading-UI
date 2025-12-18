@@ -1,19 +1,32 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { WidgetSettingsCreationHelper } from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
-import { TreemapSettings } from "../../models/treemap.model";
-import { SettingsHelper } from "../../../../shared/utils/settings-helper";
-import { Observable } from "rxjs";
+import {Component, Input, OnInit} from '@angular/core';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {WidgetSettingsCreationHelper} from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
+import {TreemapSettings} from "../../models/treemap.model";
+import {SettingsHelper} from "../../../../shared/utils/settings-helper";
+import {Observable} from "rxjs";
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import { getValueOrDefault } from "../../../../shared/utils/object-helper";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
+import {getValueOrDefault} from "../../../../shared/utils/object-helper";
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {WidgetSkeletonComponent} from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
+import {WidgetHeaderComponent} from '../../../../shared/components/widget-header/widget-header.component';
+import {TreemapComponent} from '../../components/treemap/treemap.component';
+import {TreemapSettingsComponent} from '../../components/treemap-settings/treemap-settings.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-treemap-widget',
-    templateUrl: './treemap-widget.component.html',
-    styleUrls: ['./treemap-widget.component.less'],
-    standalone: false
+  selector: 'ats-treemap-widget',
+  templateUrl: './treemap-widget.component.html',
+  styleUrls: ['./treemap-widget.component.less'],
+  imports: [
+    TranslocoDirective,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent,
+    TreemapComponent,
+    TreemapSettingsComponent,
+    AsyncPipe
+  ]
 })
 export class TreemapWidgetComponent implements OnInit {
   shouldShowSettings = false;
@@ -26,6 +39,7 @@ export class TreemapWidgetComponent implements OnInit {
 
   settings$!: Observable<TreemapSettings>;
   showBadge$!: Observable<boolean>;
+
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly terminalSettingsService: TerminalSettingsService

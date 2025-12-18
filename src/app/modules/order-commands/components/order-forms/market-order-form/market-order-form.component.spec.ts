@@ -13,16 +13,16 @@ import {NewMarketOrder} from "../../../../../shared/models/orders/new-order.mode
 import {toInstrumentKey} from "../../../../../shared/utils/instruments";
 import {MarketOrderFormComponent} from "./market-order-form.component";
 import {QuotesService} from "../../../../../shared/services/quotes.service";
-import {EvaluationService} from "../../../../../shared/services/evaluation.service";
-import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
-import { TestData } from "../../../../../shared/utils/testing/test-data";
-import { InstrumentBoardSelectMockComponent } from "../../../../../shared/utils/testing/instrument-board-select-mock-component";
-import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
-import { commonTestProviders } from "../../../../../shared/utils/testing/common-test-providers";
-import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
-import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
-import { BuySellButtonsComponent } from "../../buy-sell-buttons/buy-sell-buttons.component";
+import {TranslocoTestsModule} from "../../../../../shared/utils/testing/translocoTestsModule";
+import {TestData} from "../../../../../shared/utils/testing/test-data";
+import {commonTestProviders} from "../../../../../shared/utils/testing/common-test-providers";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
+import {provideAnimations} from "@angular/platform-browser/animations";
+import {
+  InstrumentBoardSelectMockComponent
+} from "../../../../../shared/utils/testing/instrument-board-select-mock-component";
+import {OrderEvaluationComponent} from "../../order-evaluation/order-evaluation.component";
+import {MockComponent} from "ng-mocks";
 
 describe('MarketOrderFormComponent', () => {
   let component: MarketOrderFormComponent;
@@ -77,19 +77,11 @@ describe('MarketOrderFormComponent', () => {
             'order-commands/order-forms/ru': orderCommandsOrderFormsRu,
           }
         }),
-        ...FormsTesting.getTestingModules(),
-        InstrumentBoardSelectMockComponent,
-        InputNumberComponent,
-        BuySellButtonsComponent
-      ],
-      declarations: [
         MarketOrderFormComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-order-evaluation',
-          inputs: ['evaluationProperties']
-        }),
+        InstrumentBoardSelectMockComponent
       ],
       providers: [
+        provideAnimations(),
         {
           provide: CommonParametersService,
           useValue: {
@@ -119,14 +111,11 @@ describe('MarketOrderFormComponent', () => {
             getInstrumentBoards: jasmine.createSpy('getInstrumentBoards').and.returnValue(new Subject())
           }
         },
-        {
-          provide: EvaluationService,
-          useValue: {
-            evaluateOrder: jasmine.createSpy('evaluateOrder').and.returnValue(new Subject())
-          }
-        },
         ...commonTestProviders
       ]
+    }).overrideComponent(MarketOrderFormComponent, {
+      remove: {imports: [OrderEvaluationComponent]},
+      add: {imports: [MockComponent(OrderEvaluationComponent)]}
     })
       .compileComponents();
   });

@@ -17,20 +17,20 @@ describe('TableRulerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TableRulerComponent],
-      providers: [
+    imports: [TableRulerComponent],
+    providers: [
         {
-          provide: SCALPER_ORDERBOOK_BODY_REF,
-          useValue: {
-            getElement: jasmine.createSpy('getElement').and.returnValue({
-              nativeElement: jasmine.createSpy('nativeElement').and.returnValue({
-                x: 0
-              })
-            })
-          }
+            provide: SCALPER_ORDERBOOK_BODY_REF,
+            useValue: {
+                getElement: jasmine.createSpy('getElement').and.returnValue({
+                    nativeElement: jasmine.createSpy('nativeElement').and.returnValue({
+                        x: 0
+                    })
+                })
+            }
         }
-      ]
-    })
+    ]
+})
       .compileComponents();
 
     fixture = TestBed.createComponent(TableRulerComponent);

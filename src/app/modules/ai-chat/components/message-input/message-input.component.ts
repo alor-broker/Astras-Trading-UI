@@ -1,24 +1,26 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild
-} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {FormsModule} from '@angular/forms';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
 
 export interface OutcomingMessage {
   text: string;
 }
 
 @Component({
-    selector: 'ats-message-input',
-    templateUrl: './message-input.component.html',
-    styleUrls: ['./message-input.component.less'],
-    standalone: false
+  selector: 'ats-message-input',
+  templateUrl: './message-input.component.html',
+  styleUrls: ['./message-input.component.less'],
+  imports: [
+    NzInputDirective,
+    FormsModule,
+    NzButtonComponent,
+    NzIconDirective
+  ]
 })
 export class MessageInputComponent {
-  @ViewChild('inputElement', { static: true })
+  @ViewChild('inputElement', {static: true})
   inputElement!: ElementRef<HTMLTextAreaElement>;
 
   @Input()

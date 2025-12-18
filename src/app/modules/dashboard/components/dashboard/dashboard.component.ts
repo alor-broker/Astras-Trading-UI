@@ -3,17 +3,7 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import {
-  CompactType,
-  DisplayGrid,
-  Draggable,
-  GridsterComponent,
-  GridsterConfig,
-  GridsterItem,
-  GridType,
-  PushDirections,
-  Resizable,
-} from 'angular-gridster2';
+import { CompactType, DisplayGrid, Draggable, GridsterComponent, GridsterConfig, GridsterItem, GridType, PushDirections, Resizable, GridsterItemComponent } from 'angular-gridster2';
 import {
   combineLatest,
   map,
@@ -35,6 +25,8 @@ import { WidgetMeta } from "../../../../shared/models/widget-meta.model";
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import { GridType as TerminalGridType } from "../../../../shared/models/terminal-settings/terminal-settings.model";
+import { ParentWidgetComponent } from '../parent-widget/parent-widget.component';
+import { AsyncPipe } from '@angular/common';
 interface Safe extends GridsterConfig {
   draggable: Draggable;
   resizable: Resizable;
@@ -47,7 +39,12 @@ interface WidgetItem { instance: WidgetInstance, gridsterItem: GridsterItem }
     selector: 'ats-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.less'],
-    standalone: false
+    imports: [
+      GridsterComponent,
+      GridsterItemComponent,
+      ParentWidgetComponent,
+      AsyncPipe
+    ]
 })
 export class DashboardComponent implements OnInit {
   @ViewChild(GridsterComponent)

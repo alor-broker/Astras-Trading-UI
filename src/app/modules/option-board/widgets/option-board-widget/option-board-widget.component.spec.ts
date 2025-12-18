@@ -1,21 +1,22 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { OptionBoardWidgetComponent } from './option-board-widget.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import {OptionBoardWidgetComponent} from './option-board-widget.component';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {of, Subject} from "rxjs";
+import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
+import {LOGGER} from "../../../../shared/services/logging/logger-base";
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
+import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents} from "ng-mocks";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
 import {
-  of,
-  Subject
-} from "rxjs";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
-import { LOGGER } from "../../../../shared/services/logging/logger-base";
-import { Widget } from "../../../../shared/models/dashboard/widget.model";
-import { WidgetMeta } from "../../../../shared/models/widget-meta.model";
-import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
+  WidgetHeaderInstrumentSwitchComponent
+} from "../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component";
+import {OptionBoardComponent} from "../../components/option-board/option-board.component";
+import {OptionBoardSettingsComponent} from "../../components/option-board-settings/option-board-settings.component";
 
 describe('OptionBoardWidgetComponent', () => {
   let component: OptionBoardWidgetComponent;
@@ -23,21 +24,16 @@ describe('OptionBoardWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         OptionBoardWidgetComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-widget-header',
-          inputs: ['guid']
-        }),
-        ComponentHelpers.mockComponent({
-          selector: 'ats-option-board',
-          inputs: ['guid']
-        }),
-        ComponentHelpers.mockComponent({
-          selector: 'ats-option-board-settings',
-          inputs: ['guid']
-        }),
-        widgetSkeletonMock
+        TranslocoTestsModule.getModule(),
+        MockComponents(
+          WidgetSkeletonComponent,
+          WidgetHeaderComponent,
+          WidgetHeaderInstrumentSwitchComponent,
+          OptionBoardComponent,
+          OptionBoardSettingsComponent,
+        )
       ],
       providers: [
         {

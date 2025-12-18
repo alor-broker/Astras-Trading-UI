@@ -1,38 +1,21 @@
-import {
-  Component,
-  input,
-  OnChanges,
-  OnDestroy,
-  output,
-  SimpleChange,
-  SimpleChanges
-} from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  UntypedFormGroup
-} from "@angular/forms";
-import {
-  BaseColumnSettings,
-  FilterType
-} from "../../models/settings/table-settings.model";
-import { Subscription } from "rxjs";
-import { debounceTime } from "rxjs/operators";
+import {Component, input, OnChanges, OnDestroy, output, SimpleChange, SimpleChanges} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, UntypedFormGroup} from "@angular/forms";
+import {BaseColumnSettings, FilterType} from "../../models/settings/table-settings.model";
+import {Subscription} from "rxjs";
+import {debounceTime} from "rxjs/operators";
 
-import { NzButtonComponent } from "ng-zorro-antd/button";
-import { NzInputDirective } from "ng-zorro-antd/input";
-import { SharedModule } from "../../shared.module";
-import { TranslocoDirective } from "@jsverse/transloco";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzInputDirective} from "ng-zorro-antd/input";
+import {TranslocoDirective} from "@jsverse/transloco";
 
 @Component({
   selector: 'ats-table-search-filter',
   imports: [
     NzButtonComponent,
     NzInputDirective,
-    SharedModule,
-    TranslocoDirective
-],
+    TranslocoDirective,
+    ReactiveFormsModule
+  ],
   templateUrl: './table-search-filter.component.html',
   styleUrl: './table-search-filter.component.less'
 })

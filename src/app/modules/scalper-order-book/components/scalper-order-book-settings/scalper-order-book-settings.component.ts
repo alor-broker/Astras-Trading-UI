@@ -1,6 +1,6 @@
 import {Component, DestroyRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {distinctUntilChanged, Observable, shareReplay, take} from "rxjs";
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {isInstrumentEqual} from '../../../../shared/utils/settings-helper';
 import {InstrumentKey} from '../../../../shared/models/instruments/instrument-key.model';
 import {
@@ -19,18 +19,65 @@ import {
 } from "../../../../shared/components/widget-settings/widget-settings-base.component";
 import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
 import {inputNumberValidation} from "../../../../shared/utils/validation-options";
-import {NzMarks} from "ng-zorro-antd/slider";
+import {NzMarks, NzSliderComponent} from "ng-zorro-antd/slider";
 import {ScalperOrderBookConstants} from "../../constants/scalper-order-book.constants";
 import {ScalperOrderBookSettingsReadService} from "../../services/scalper-order-book-settings-read.service";
 import {ScalperOrderBookSettingsWriteService} from "../../services/scalper-order-book-settings-write.service";
 import {map} from "rxjs/operators";
 import {TradesClusterPanelSettingsDefaults} from "./constants/settings-defaults";
+import {WidgetSettingsComponent} from '../../../../shared/components/widget-settings/widget-settings.component';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzCollapseComponent, NzCollapsePanelComponent} from 'ng-zorro-antd/collapse';
+import {InstrumentSearchComponent} from '../../../../shared/components/instrument-search/instrument-search.component';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {
+  InstrumentBoardSelectComponent
+} from '../../../../shared/components/instrument-board-select/instrument-board-select.component';
+import {NzSwitchComponent} from 'ng-zorro-antd/switch';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {NzRadioComponent, NzRadioGroupComponent} from 'ng-zorro-antd/radio';
+import {InputNumberComponent} from '../../../../shared/components/input-number/input-number.component';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {NzColorPickerComponent} from 'ng-zorro-antd/color-picker';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
 
 @Component({
-    selector: 'ats-scalper-order-book-settings',
-    templateUrl: './scalper-order-book-settings.component.html',
-    styleUrls: ['./scalper-order-book-settings.component.less'],
-    standalone: false
+  selector: 'ats-scalper-order-book-settings',
+  templateUrl: './scalper-order-book-settings.component.html',
+  styleUrls: ['./scalper-order-book-settings.component.less'],
+  imports: [
+    WidgetSettingsComponent,
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzCollapseComponent,
+    NzCollapsePanelComponent,
+    NzColDirective,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    InstrumentSearchComponent,
+    NzInputDirective,
+    InstrumentBoardSelectComponent,
+    NzSliderComponent,
+    NzSwitchComponent,
+    NzSelectComponent,
+    NzOptionComponent,
+    NzRadioGroupComponent,
+    NzRadioComponent,
+    InputNumberComponent,
+    NzButtonComponent,
+    NzIconDirective,
+    NzTypographyComponent,
+    NzColorPickerComponent,
+    NzTooltipDirective
+  ]
 })
 export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComponent, OnInit {
   @Input({required: true})
@@ -465,8 +512,8 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       fontSize: Number(formValue.fontSize),
       rowHeight: Number(formValue.rowHeight),
       stopLimitOrdersDistance: Number(formValue.stopLimitOrdersDistance),
-      minorLinesStep:Number(formValue.minorLinesStep),
-      majorLinesStep:Number(formValue.majorLinesStep),
+      minorLinesStep: Number(formValue.minorLinesStep),
+      majorLinesStep: Number(formValue.majorLinesStep),
     } as Partial<ScalperOrderBookWidgetSettings> & InstrumentKey & { instrument?: InstrumentKey };
 
     delete newSettings.instrument;
@@ -689,8 +736,8 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       this.form.controls.tradesClusterPanelSettings.disable();
     }
 
-    if(this.form.controls.tradesClusterPanelSettings.enabled) {
-      if(this.form.value?.tradesClusterPanelSettings?.highlightMode === TradesClusterHighlightMode.TargetVolume) {
+    if (this.form.controls.tradesClusterPanelSettings.enabled) {
+      if (this.form.value?.tradesClusterPanelSettings?.highlightMode === TradesClusterHighlightMode.TargetVolume) {
         this.form.controls.tradesClusterPanelSettings.controls.targetVolume.enable();
       } else {
         this.form.controls.tradesClusterPanelSettings.controls.targetVolume.disable({onlySelf: true});

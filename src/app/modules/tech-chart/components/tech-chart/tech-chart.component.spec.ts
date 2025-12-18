@@ -97,90 +97,89 @@ describe('TechChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [],
-      declarations: [TechChartComponent],
-      providers: [
+    imports: [TechChartComponent],
+    providers: [
         { provide: WidgetSettingsService, useValue: widgetSettingsServiceSpy },
         { provide: ThemeService, useValue: themeServiceSpy },
         { provide: InstrumentsService, useValue: instrumentsServiceSpy },
         {
-          provide: SyntheticInstrumentsService,
-          useValue: {
-            getInstrument: jasmine.createSpy('getInstrument').and.returnValue(new Subject())
-          }
+            provide: SyntheticInstrumentsService,
+            useValue: {
+                getInstrument: jasmine.createSpy('getInstrument').and.returnValue(new Subject())
+            }
         },
         { provide: WidgetsSharedDataService, useValue: widgetsSharedDataServiceSpy },
         {
-          provide: OrdersDialogService,
-          useValue: {
-            openNewOrderDialog: jasmine.createSpy('openNewOrderDialog').and.callThrough()
-          }
+            provide: OrdersDialogService,
+            useValue: {
+                openNewOrderDialog: jasmine.createSpy('openNewOrderDialog').and.callThrough()
+            }
         },
         {
-          provide: DashboardContextService,
-          useValue: {
-            selectedDashboard$: new Subject(),
-            selectedPortfolio$: new Subject()
-          }
+            provide: DashboardContextService,
+            useValue: {
+                selectedDashboard$: new Subject(),
+                selectedPortfolio$: new Subject()
+            }
         },
         {
-          provide: TranslatorService,
-          useValue: {
-            getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => '')),
-            getActiveLang: jasmine.createSpy('getActiveLang').and.returnValue('ru')
-          }
+            provide: TranslatorService,
+            useValue: {
+                getTranslator: jasmine.createSpy('getTranslator').and.returnValue(of(() => '')),
+                getActiveLang: jasmine.createSpy('getActiveLang').and.returnValue('ru')
+            }
         },
         {
-          provide: TimezoneConverterService,
-          useValue: {
-            getConverter: jasmine.createSpy('getConverter').and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime))),
-          }
+            provide: TimezoneConverterService,
+            useValue: {
+                getConverter: jasmine.createSpy('getConverter').and.returnValue(of(new TimezoneConverter(TimezoneDisplayOption.MskTime))),
+            }
         },
         {
-          provide: TradesHistoryService,
-          useValue: {
-            getTradesHistoryForSymbol: jasmine.createSpy('getTradesHistoryForSymbol').and.returnValue(new Subject()),
-          }
+            provide: TradesHistoryService,
+            useValue: {
+                getTradesHistoryForSymbol: jasmine.createSpy('getTradesHistoryForSymbol').and.returnValue(new Subject()),
+            }
         },
         {
-          provide: MarketService,
-          useValue: {
-            getAllExchanges: jasmine.createSpy('getAllExchanges').and.returnValue(new Subject())
-          }
+            provide: MarketService,
+            useValue: {
+                getAllExchanges: jasmine.createSpy('getAllExchanges').and.returnValue(new Subject())
+            }
         },
         {
-          provide: ChartTemplatesSettingsBrokerService,
-          useValue: {
-            getSavedTemplates: jasmine.createSpy('getSavedTemplates').and.returnValue(new Subject()),
-            saveChartTemplate: jasmine.createSpy('saveChartTemplate').and.returnValue(new Subject()),
-            removeTemplate: jasmine.createSpy('removeTemplate').and.returnValue(new Subject()),
-          }
+            provide: ChartTemplatesSettingsBrokerService,
+            useValue: {
+                getSavedTemplates: jasmine.createSpy('getSavedTemplates').and.returnValue(new Subject()),
+                saveChartTemplate: jasmine.createSpy('saveChartTemplate').and.returnValue(new Subject()),
+                removeTemplate: jasmine.createSpy('removeTemplate').and.returnValue(new Subject()),
+            }
         },
         {
-          provide: LocalStorageService,
-          useValue: {
-            removeItem: jasmine.createSpy('removeItem').and.callThrough(),
-            getStringItem: jasmine.createSpy('getStringItem').and.returnValue(''),
-            getItem: jasmine.createSpy('getItem').and.returnValue(undefined),
-            onOuterChange: jasmine.createSpy('onOuterChange').and.returnValue(new Subject())
-          }
+            provide: LocalStorageService,
+            useValue: {
+                removeItem: jasmine.createSpy('removeItem').and.callThrough(),
+                getStringItem: jasmine.createSpy('getStringItem').and.returnValue(''),
+                getItem: jasmine.createSpy('getItem').and.returnValue(undefined),
+                onOuterChange: jasmine.createSpy('onOuterChange').and.returnValue(new Subject())
+            }
         },
         {
-          provide: InstrumentSearchService,
-          useValue: {
-            openModal: jasmine.createSpy('openModal').and.callThrough(),
-            modalData$: of(null)
-          }
+            provide: InstrumentSearchService,
+            useValue: {
+                openModal: jasmine.createSpy('openModal').and.callThrough(),
+                modalData$: of(null)
+            }
         },
         {
-          provide: ACTIONS_CONTEXT,
-          useValue: {
-            instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
-          }
+            provide: ACTIONS_CONTEXT,
+            useValue: {
+                instrumentSelected: jasmine.createSpy('instrumentSelected').and.callThrough()
+            }
         },
         ...commonTestProviders
-      ]
-    })
+    ]
+})
       .overrideComponent(
         TechChartComponent,
         {

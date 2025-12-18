@@ -19,6 +19,7 @@ import {
   PANELS_CONTAINER_CONTEXT,
   PanelsContainerContext
 } from "../tokens";
+import { PanelResizeHandlerComponent } from '../panel-resize-handler/panel-resize-handler.component';
 
 @Component({
     selector: 'ats-panel',
@@ -30,7 +31,7 @@ import {
             useExisting: PanelComponent
         }
     ],
-    standalone: false
+    imports: [PanelResizeHandlerComponent]
 })
 export class PanelComponent implements PanelResizeContext, OnInit, OnDestroy {
   readonly resizeEndOutsideAngular$ = new Subject<void>();

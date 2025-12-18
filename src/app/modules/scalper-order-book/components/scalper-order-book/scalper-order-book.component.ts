@@ -13,6 +13,10 @@ import {
 } from 'rxjs';
 import { map } from "rxjs/operators";
 import { ScalperOrderBookDataProvider } from "../../services/scalper-order-book-data-provider.service";
+import { LetDirective } from '@ngrx/component';
+import { NgStyle, AsyncPipe } from '@angular/common';
+import { ScalperOrderBookBodyComponent } from '../scalper-order-book-body/scalper-order-book-body.component';
+import { CurrentPositionPanelComponent } from '../current-position-panel/current-position-panel.component';
 
 export interface ScalperOrderBookSharedContext {
   readonly workingVolume$: Observable<number | null>;
@@ -36,7 +40,13 @@ export const SCALPER_ORDERBOOK_SHARED_CONTEXT = new InjectionToken<ScalperOrderB
             useExisting: ScalperOrderBookComponent
         }
     ],
-    standalone: false
+    imports: [
+      LetDirective,
+      NgStyle,
+      ScalperOrderBookBodyComponent,
+      CurrentPositionPanelComponent,
+      AsyncPipe
+    ]
 })
 export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext, OnInit, OnDestroy {
   @Input({required: true})
