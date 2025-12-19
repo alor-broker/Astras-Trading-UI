@@ -1,0 +1,13 @@
+@if(currentLanguage$ | async; as currentLanguage) {
+  <button nz-button nz-dropdown [nzDropdownMenu]="menu" nzType="text">
+    {{currentLanguage.toUpperCase()}}
+  </button>
+
+  <nz-dropdown-menu #menu="nzDropdownMenu">
+    <ul nz-menu>
+      @for (language of availableLanguages; track language.key) {
+        <li nz-menu-item (click)="changeLanguage(language.key)">{{language.title}} ({{language.key.toUpperCase()}})</li>
+      }
+    </ul>
+  </nz-dropdown-menu>
+}

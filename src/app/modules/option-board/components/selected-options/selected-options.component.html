@@ -16,7 +16,7 @@
       >
       @if ((vm.contentSize?.width ?? (minOptionTableWidth + 1)) > minOptionTableWidth) {
         <nz-table
-          [nzData]="vm.details ?? []"
+          [nzData]="vm.details"
           [nzFrontPagination]="false"
           [nzLoading]="isLoading$ | async"
           [nzNoResult]="empty"

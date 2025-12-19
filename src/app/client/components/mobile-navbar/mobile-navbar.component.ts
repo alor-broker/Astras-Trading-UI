@@ -37,6 +37,7 @@ import {ExternalLinkComponent} from "../../../shared/components/external-link/ex
 import {
   NotificationButtonComponent
 } from "../../../modules/notifications/components/notification-button/notification-button.component";
+import { LangSwitchWidgetComponent } from "../../../modules/terminal-settings/widgets/lang-switch-widget/lang-switch-widget.component";
 
 @Component({
     selector: 'ats-mobile-navbar',
@@ -65,7 +66,8 @@ import {
     InstrumentSearchComponent,
     NetworkIndicatorComponent,
     ExternalLinkComponent,
-    NotificationButtonComponent
+      NotificationButtonComponent,
+      LangSwitchWidgetComponent
   ]
 })
 export class MobileNavbarComponent implements OnInit {
