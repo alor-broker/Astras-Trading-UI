@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, OnInit, Output, input} from '@angular/core';
 import {GraphConfig} from "../../models/graph.model";
 import {GraphProcessingContextService} from "../../services/graph-processing-context.service";
 import {asyncScheduler, subscribeOn, toArray} from "rxjs";
@@ -17,8 +17,7 @@ import {RunStatus, Status} from '../../models/run-results.model';
     styleUrl: './run-config-btn.component.less'
 })
 export class RunConfigBtnComponent implements OnInit {
-  @Input()
-  config: GraphConfig | null = null;
+  readonly config = input<GraphConfig | null>(null);
 
   @Output()
   status = new EventEmitter<RunStatus>();
@@ -43,7 +42,8 @@ export class RunConfigBtnComponent implements OnInit {
   }
 
   protected run(): void {
-    if (this.config == null) {
+    const config = this.config();
+    if (config == null) {
       return;
     }
 
@@ -52,7 +52,7 @@ export class RunConfigBtnComponent implements OnInit {
       results: []
     });
 
-    LiteGraphRunner.run(this.config, this.graphProcessingContextService).pipe(
+    LiteGraphRunner.run(config, this.graphProcessingContextService).pipe(
       toArray(),
       subscribeOn(asyncScheduler)
     ).subscribe(x => {

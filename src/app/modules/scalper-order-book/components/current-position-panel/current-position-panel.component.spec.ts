@@ -6,6 +6,7 @@ import {LetDirective} from "@ngrx/component";
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 import {MockDirectives} from "ng-mocks";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('CurrentPositionPanelComponent', () => {
   let component: CurrentPositionPanelComponent;
@@ -37,6 +38,7 @@ describe('CurrentPositionPanelComponent', () => {
 
     fixture = TestBed.createComponent(CurrentPositionPanelComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

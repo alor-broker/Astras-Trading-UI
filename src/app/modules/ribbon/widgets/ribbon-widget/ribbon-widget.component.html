@@ -1,5 +1,5 @@
 @if (settings$ | async; as settings) {
-  @if (isBlockWidget) {
+  @if (isBlockWidget()) {
     <div class="blocked-widget-overlay"></div>
   }
   <div class="widget-body">

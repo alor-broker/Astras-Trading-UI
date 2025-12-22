@@ -8,6 +8,7 @@ import {ThemeService} from '../../../../shared/services/theme.service';
 import {TranslatorService} from "../../../../shared/services/translator.service";
 import {MockDirectives} from "ng-mocks";
 import {BaseChartDirective} from "ng2-charts";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('OrderbookChartComponent', () => {
   let component: OrderbookChartComponent;
@@ -62,6 +63,15 @@ describe('OrderbookChartComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OrderbookChartComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
+    fixture.componentRef.setInput(
+      'chartData',
+      {
+        asks: [],
+        bids: []
+      }
+    );
+
     fixture.detectChanges();
   });
 

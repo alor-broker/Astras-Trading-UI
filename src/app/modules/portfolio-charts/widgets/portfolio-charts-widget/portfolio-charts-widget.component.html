@@ -4,7 +4,7 @@
       [content]="contentRef"
       [header]="headerRef"
       [showContentScroll]="false"
-      [isBlockWidget]="isBlockWidget"
+      [isBlockWidget]="isBlockWidget()"
       [settings]="settingsRef"
       [showSettings]="false"
       >
@@ -14,7 +14,7 @@
           [hasSettings]="false"
           [showBadgesMenu]="false"
           [customTitle]="title$ | async"
-          [widgetMeta]="widgetInstance.widgetMeta"
+          [widgetMeta]="widgetInstance().widgetMeta"
         ></ats-widget-header>
       </ng-template>
       <ng-template #contentRef>

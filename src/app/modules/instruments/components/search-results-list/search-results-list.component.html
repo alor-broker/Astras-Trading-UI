@@ -1,14 +1,14 @@
 <ng-container *transloco="let t; scope: 'instruments/search-results-list'">
   <ng-container *ngrxLet="{availableInstrumentGroups: availableInstrumentGroups$} as vm">
     <cdk-virtual-scroll-viewport
-      [itemSize]="itemSize"
-      [maxBufferPx]="height * 2"
-      [minBufferPx]="height / 2"
-      [style.height]="height + 'px'"
+      [itemSize]="itemSize()"
+      [maxBufferPx]="height() * 2"
+      [minBufferPx]="height() / 2"
+      [style.height]="height() + 'px'"
     >
-      <ng-container *cdkVirtualFor="let item of items; trackBy: trackByFn">
+      <ng-container *cdkVirtualFor="let item of items(); trackBy: trackByFn">
         <div
-          [style.height]="itemSize + 'px'"
+          [style.height]="itemSize() + 'px'"
           class="item"
           nz-row
           nzAlign="middle"

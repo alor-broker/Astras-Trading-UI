@@ -1,7 +1,7 @@
 <nz-modal
   *transloco="let t; scope: 'dashboard/empty-portfolios-warning-modal'"
   [nzTitle]="t('dashboardEmptyPortfoliosWarningModal.title')"
-  [nzVisible]='atsVisible'
+  [nzVisible]='atsVisible()'
   (nzOnCancel)="handleClose()">
   <ng-container *nzModalContent>
     <div class="empty-portfolios-modal-content">

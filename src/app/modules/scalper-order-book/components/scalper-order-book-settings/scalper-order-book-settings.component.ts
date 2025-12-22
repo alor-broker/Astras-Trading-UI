@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, input, OnInit, Output} from '@angular/core';
 import {distinctUntilChanged, Observable, shareReplay, take} from "rxjs";
 import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {isInstrumentEqual} from '../../../../shared/utils/settings-helper';
@@ -80,8 +80,7 @@ import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
   ]
 })
 export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComponent, OnInit {
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   @Output()
   settingsChange = new EventEmitter<void>();
@@ -492,7 +491,7 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
       };
 
       this.settingsWriteService.updateInstrumentLinkedSettings(updatedSettings.instrumentLinkedSettings, instrumentKey);
-      this.settingsWriteService.updateWidgetSettings(updatedSettings.widgetSettings, this.guid);
+      this.settingsWriteService.updateWidgetSettings(updatedSettings.widgetSettings, this.guid());
 
       this.settingsChange.emit();
     });
@@ -588,7 +587,7 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
   }
 
   private initSettingsStream(): void {
-    this.settings$ = this.settingsReadService.readSettings(this.guid).pipe(
+    this.settings$ = this.settingsReadService.readSettings(this.guid()).pipe(
       map(x => x.widgetSettings),
       shareReplay(1)
     );

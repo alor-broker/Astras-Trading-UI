@@ -16,7 +16,7 @@
       />
   </nz-input-group>
   <ng-template #suffixIcon>
-    @if (showHelpTooltip) {
+    @if (showHelpTooltip()) {
       <span [nzTooltipTitle]="searchHelp" nz-icon nz-tooltip nzType="question-circle" class="search-tooltip-icon"></span>
     }
   </ng-template>
@@ -46,7 +46,7 @@
   </ng-template>
   <nz-autocomplete
     #auto
-    [nzWidth]="optionsBoxWidth"
+    [nzWidth]="optionsBoxWidth()"
     [nzOverlayClassName]="(isMobile$ | async) ? 'autocomplete-overlay' : ''"
     >
     @for (option of filteredInstruments$ | async; track option) {

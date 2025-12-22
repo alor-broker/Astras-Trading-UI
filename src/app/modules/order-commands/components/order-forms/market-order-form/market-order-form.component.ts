@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, DestroyRef, input, OnDestroy, OnInit} from '@angular/core';
 import {BaseOrderFormComponent} from "../base-order-form.component";
 import {BehaviorSubject, combineLatest, distinctUntilChanged, Observable, shareReplay, switchMap, take} from "rxjs";
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -62,10 +62,9 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
   readonly evaluationRequest$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   readonly sides = Side;
 
-  @Input()
-  initialValues: {
+  readonly initialValues = input<{
     quantity?: number;
-  } | null = null;
+  } | null>(null);
 
   timeInForceEnum = TimeInForce;
 
@@ -118,9 +117,11 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
   protected changeInstrument(newInstrument: Instrument): void {
     this.form.reset();
 
-    if (this.initialValues) {
-      if (this.initialValues.quantity != null) {
-        this.form.controls.quantity.setValue(this.initialValues.quantity);
+    const initialValues = this.initialValues();
+
+    if (initialValues != null) {
+      if (initialValues.quantity != null) {
+        this.form.controls.quantity.setValue(initialValues.quantity);
       }
     }
 
@@ -195,7 +196,7 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
       formChanges$,
       positionChanges$,
       lastPrice$,
-      this.isActivated$
+      this.activatedChanges$
     ]).pipe(
       filter(([, , , isActivated]) => isActivated),
       takeUntilDestroyed(this.destroyRef),

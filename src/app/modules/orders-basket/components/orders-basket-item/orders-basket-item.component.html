@@ -9,8 +9,8 @@
           <nz-form-control [nzErrorTip]="t('ordersBasketOrdersBasketItem.tickerError')">
             <ats-instrument-search
               (instrumentSelected)="onTouched()"
-              [exchange]="exchange"
-              [optionsBoxWidth]="(itemsContainerWidth$ | async) ?? 100"
+              [exchange]="exchange()"
+              [optionsBoxWidth]="(widthChanges$ | async) ?? 100"
               formControlName="instrumentKey"
             ></ats-instrument-search>
           </nz-form-control>
@@ -91,7 +91,7 @@
       </form>
       <button (click)="delete.emit()"
         [class.with-labels]="(showLabels$ | async)===true"
-        [disabled]="!enableDelete"
+        [disabled]="!enableDelete()"
         id="remove-item-btn"
         nz-button
         nzType="link"

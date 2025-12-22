@@ -1,4 +1,4 @@
-<ng-container *ngrxLet="{ descriptors: descriptors$, stockInfo: stockInfo$} as vm">
+<ng-container *ngrxLet="{ descriptors: descriptors$, stockInfo: stockInfoChanges$} as vm">
   @if (vm.stockInfo != null) {
     @if (vm.descriptors.length === 0) {
       <nz-empty nzNotFoundImage="simple"></nz-empty>

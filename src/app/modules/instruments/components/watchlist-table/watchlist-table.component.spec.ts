@@ -38,6 +38,7 @@ import {PriceDiffComponent} from "../../../../shared/components/price-diff/price
 import {ShortNumberComponent} from "../../../../shared/components/short-number/short-number.component";
 import {NzMenuDirective, NzMenuItemComponent, NzSubMenuComponent} from "ng-zorro-antd/menu";
 import {NzTypographyComponent} from "ng-zorro-antd/typography";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('WatchlistTableComponent', () => {
   let component: WatchlistTableComponent;
@@ -147,7 +148,7 @@ describe('WatchlistTableComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WatchlistTableComponent);
     component = fixture.componentInstance;
-    component.guid = 'testGuid';
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

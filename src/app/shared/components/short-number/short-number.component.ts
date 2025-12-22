@@ -1,8 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Input,
-  OnChanges
+  OnChanges,
+  input
 } from '@angular/core';
 import {
   getNumberAbbreviation,
@@ -22,18 +22,18 @@ import { DecimalPipe } from '@angular/common';
     ]
 })
 export class ShortNumberComponent implements OnChanges {
-  @Input() allowRounding = false;
-  @Input() roundPrecision = 2;
-  @Input() suffixForm: 'short' | 'long' = 'short';
-  @Input({required: true}) value?: number | null | undefined;
+  readonly allowRounding = input(false);
+  readonly roundPrecision = input(2);
+  readonly suffixForm = input<'short' | 'long'>('short');
+  readonly value = input.required<number | null | undefined>();
 
   displayData: NumberAbbreviation | null = null;
 
   ngOnChanges(): void {
     this.displayData = getNumberAbbreviation(
-      this.value,
-      this.allowRounding,
-      this.roundPrecision
+      this.value(),
+      this.allowRounding(),
+      this.roundPrecision()
     );
   }
 }

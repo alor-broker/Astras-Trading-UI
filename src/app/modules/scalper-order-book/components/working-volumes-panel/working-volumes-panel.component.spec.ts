@@ -12,6 +12,7 @@ import {ScalperOrderBookDataContext} from "../../models/scalper-order-book-data-
 import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
 import {NzPopconfirmDirective} from "ng-zorro-antd/popconfirm";
 import {InputNumberComponent} from "../../../../shared/components/input-number/input-number.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('WorkingVolumesPanelComponent', () => {
   let component: WorkingVolumesPanelComponent;
@@ -49,25 +50,30 @@ describe('WorkingVolumesPanelComponent', () => {
     fixture = TestBed.createComponent(WorkingVolumesPanelComponent);
     component = fixture.componentInstance;
 
-    component.dataContext = {
-      extendedSettings$: new Subject(),
-      orderBook$: new Subject(),
-      position$: new Subject(),
-      currentOrders$: new Subject(),
-      currentPortfolio$: new Subject(),
-      trades$: new Subject(),
-      ownTrades$: new Subject(),
-      orderBookBody$: new Subject(),
-      displayRange$: new Subject(),
-      workingVolume$: new Subject(),
-      scaleFactor$: new BehaviorSubject(1),
-      addLocalOrder: () => {
-      },
-      removeLocalOrder: () => {
-      },
-      destroy: () => {
-      }
-    } as ScalperOrderBookDataContext;
+    fixture.componentRef.setInput(
+      'dataContext',
+      {
+        extendedSettings$: new Subject(),
+        orderBook$: new Subject(),
+        position$: new Subject(),
+        currentOrders$: new Subject(),
+        currentPortfolio$: new Subject(),
+        trades$: new Subject(),
+        ownTrades$: new Subject(),
+        orderBookBody$: new Subject(),
+        displayRange$: new Subject(),
+        workingVolume$: new Subject(),
+        scaleFactor$: new BehaviorSubject(1),
+        addLocalOrder: () => {
+        },
+        removeLocalOrder: () => {
+        },
+        destroy: () => {
+        }
+      } as ScalperOrderBookDataContext
+    );
+
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

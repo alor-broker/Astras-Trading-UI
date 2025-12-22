@@ -1,57 +1,26 @@
-import {
-  Component,
-  DestroyRef,
-  ElementRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  filter,
-  Observable,
-  switchMap,
-  timer
-} from "rxjs";
-import {
-  ChartData,
-  ChartOptions
-} from "chart.js";
-import { PortfolioDynamics } from "../../../../shared/models/user/portfolio-dynamics.model";
-import { LetDirective } from "@ngrx/component";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { NzSkeletonComponent } from "ng-zorro-antd/skeleton";
-import { BaseChartDirective } from "ng2-charts";
-import { NzEmptyComponent } from "ng-zorro-antd/empty";
-import { NzSpinComponent } from "ng-zorro-antd/spin";
-import { NzButtonComponent } from "ng-zorro-antd/button";
-import { NzResizeObserverDirective } from "ng-zorro-antd/cdk/resize-observer";
-import { ContentSize } from "../../../../shared/models/dashboard/dashboard-item.model";
-import {
-  debounceTime,
-  map,
-  tap
-} from "rxjs/operators";
-import { AccountService } from "../../../../shared/services/account.service";
-import { ThemeService } from "../../../../shared/services/theme.service";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import {
-  add,
-  format
-} from "date-fns";
-import { ThemeColors } from "../../../../shared/models/settings/theme-settings.model";
-import { color } from "d3";
-import {
-  enUS,
-  ru
-} from "date-fns/locale";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import {
-  NgClass,
-  PercentPipe
-} from "@angular/common";
+import {Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {BehaviorSubject, combineLatest, filter, Observable, switchMap, timer} from "rxjs";
+import {ChartData, ChartOptions} from "chart.js";
+import {PortfolioDynamics} from "../../../../shared/models/user/portfolio-dynamics.model";
+import {LetDirective} from "@ngrx/component";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {NzSkeletonComponent} from "ng-zorro-antd/skeleton";
+import {BaseChartDirective} from "ng2-charts";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
+import {NzSpinComponent} from "ng-zorro-antd/spin";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {debounceTime, map, tap} from "rxjs/operators";
+import {AccountService} from "../../../../shared/services/account.service";
+import {ThemeService} from "../../../../shared/services/theme.service";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {add, format} from "date-fns";
+import {ThemeColors} from "../../../../shared/models/settings/theme-settings.model";
+import {color} from "d3";
+import {enUS, ru} from "date-fns/locale";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {NgClass, PercentPipe} from "@angular/common";
 
 enum TimeRange {
   W1 = "W1",
@@ -89,25 +58,22 @@ interface ChartConfig {
   styleUrl: './agreement-dynamics.component.less'
 })
 export class AgreementDynamicsComponent implements OnInit, OnDestroy {
-  private readonly refreshIntervalSec = 60;
-
   @ViewChild('utilsCanvas')
   utilsCanvas!: ElementRef<HTMLCanvasElement>;
 
   chartConfig$!: Observable<ChartConfig | null>;
 
   readonly selectedTimeRange$ = new BehaviorSubject<TimeRange>(TimeRange.W1);
-
   readonly availableTimeRanges = Object.values(TimeRange);
-
   isLoading = false;
-
-  private readonly targetAgreement$ = new BehaviorSubject<string | null>(null);
-
+  readonly agreement = input<string>();
+  private readonly refreshIntervalSec = 60;
   private readonly containerSize$ = new BehaviorSubject<ContentSize>({
     height: 0,
     width: 0,
   });
+
+  private readonly agreementChanges$ = toObservable(this.agreement);
 
   constructor(
     private readonly accountService: AccountService,
@@ -117,13 +83,7 @@ export class AgreementDynamicsComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  @Input({required: true})
-  set agreement(value: string) {
-    this.targetAgreement$.next(value);
-  }
-
   ngOnDestroy(): void {
-    this.targetAgreement$.complete();
     this.selectedTimeRange$.complete();
   }
 
@@ -136,7 +96,7 @@ export class AgreementDynamicsComponent implements OnInit, OnDestroy {
 
     const chartData$ = combineLatest({
       refresh$: refresh$,
-      currentAgreement: this.targetAgreement$.pipe(filter(a => a != null)),
+      currentAgreement: this.agreementChanges$.pipe(filter(a => a != null)),
       selectedTimeRange: this.selectedTimeRange$,
     }).pipe(
       tap(() => this.isLoading = true),

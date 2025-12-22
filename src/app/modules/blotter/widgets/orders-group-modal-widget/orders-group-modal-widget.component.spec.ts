@@ -8,6 +8,7 @@ import {MockComponents, MockDirectives} from "ng-mocks";
 import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from "ng-zorro-antd/modal";
 import {OrdersGroupModalComponent} from "../../components/orders-group-modal/orders-group-modal.component";
 import {NzButtonComponent} from "ng-zorro-antd/button";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('OrdersGroupModalWidgetComponent', () => {
   let component: OrdersGroupModalWidgetComponent;
@@ -42,6 +43,7 @@ describe('OrdersGroupModalWidgetComponent', () => {
 
     fixture = TestBed.createComponent(OrdersGroupModalWidgetComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

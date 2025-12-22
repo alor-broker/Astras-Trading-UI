@@ -3,7 +3,7 @@ import {
   Component,
   DestroyRef,
   EventEmitter,
-  Input,
+  input,
   OnDestroy,
   OnInit,
   Output,
@@ -79,7 +79,7 @@ interface NewsListState {
   ]
 })
 export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, NewsFilters> implements AfterViewInit, OnInit, OnDestroy {
-  @Input({required: true}) guid!: string;
+  readonly guid = input.required<string>();
 
   @Output() sectionChange = new EventEmitter<NewsSection>();
 
@@ -140,7 +140,7 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
   }
 
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<NewsSettings>(this.guid)
+    this.settings$ = this.widgetSettingsService.getSettings<NewsSettings>(this.guid())
       .pipe(
         shareReplay(1),
         takeUntilDestroyed(this.destroyRef)
@@ -181,7 +181,7 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
   applyAllFilters(filters: NewsFilters | null): void {
     this.isAllFiltersVisible = false;
     this.widgetSettingsService.updateSettings<NewsSettings>(
-      this.guid,
+      this.guid(),
       {
         allNewsFilters: filters
       }

@@ -1,7 +1,7 @@
 import {
   Component,
-  Input,
-  OnInit
+  OnInit,
+  input
 } from '@angular/core';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
@@ -46,14 +46,11 @@ import { AsyncPipe } from '@angular/common';
 export class ScalperOrderBookWidgetComponent implements OnInit {
   shouldShowSettings = false;
 
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
-  @Input()
-  isActive = false;
+  readonly isActive = input(false);
 
   settings$!: Observable<ScalperOrderBookWidgetSettings>;
   showBadge$!: Observable<boolean>;
@@ -65,7 +62,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
   }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   onSettingsChange(): void {
@@ -74,7 +71,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<ScalperOrderBookWidgetSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'ScalperOrderBookSettings',
       settings => ({
         ...settings,

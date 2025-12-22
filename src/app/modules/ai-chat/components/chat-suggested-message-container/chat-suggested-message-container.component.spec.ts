@@ -23,6 +23,12 @@ describe('ChatSuggestedMessageContainerComponent', () => {
 
     fixture = TestBed.createComponent(ChatSuggestedMessageContainerComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput(
+      'suggestedMessage',
+      {
+        text: ''
+      }
+    );
     fixture.detectChanges();
   });
 

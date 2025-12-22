@@ -1,6 +1,6 @@
 import {
   Component,
-  Input
+  input
 } from '@angular/core';
 import { OptionBoardDataContext } from "../../models/option-board-data-context.model";
 import { TranslocoDirective } from '@jsverse/transloco';
@@ -18,6 +18,5 @@ import { NzAlertComponent } from 'ng-zorro-antd/alert';
     ]
 })
 export class OptionBoardChartsLayoutComponent {
-  @Input({required: true})
-  dataContext!: OptionBoardDataContext;
+  readonly dataContext = input.required<OptionBoardDataContext>();
 }

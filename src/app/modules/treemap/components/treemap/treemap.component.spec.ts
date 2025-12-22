@@ -16,6 +16,7 @@ import { InstrumentsService } from "../../../instruments/services/instruments.se
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { MarketService } from "../../../../shared/services/market.service";
 import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('TreemapComponent', () => {
   let component: TreemapComponent;
@@ -79,6 +80,7 @@ describe('TreemapComponent', () => {
 
     fixture = TestBed.createComponent(TreemapComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

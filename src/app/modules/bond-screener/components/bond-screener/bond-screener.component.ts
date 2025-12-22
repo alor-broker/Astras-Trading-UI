@@ -2,10 +2,10 @@ import {
   Component,
   DestroyRef,
   Inject,
-  Input,
   LOCALE_ID,
   OnDestroy,
-  OnInit
+  OnInit,
+  input
 } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, shareReplay, switchMap, take, tap } from 'rxjs';
 import { TableConfig } from '../../../../shared/models/table-config.model';
@@ -73,7 +73,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
   PageInfo,
   BondSortInput
 > implements OnInit, OnDestroy {
-  @Input({required: true}) guid!: string;
+  readonly guid = input.required<string>();
 
   bondsList$ = new BehaviorSubject<BondDisplay[]>([]);
   settings$!: Observable<BondScreenerSettings>;
@@ -537,7 +537,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<BondScreenerSettings>(this.guid)
+    this.settings$ = this.settingsService.getSettings<BondScreenerSettings>(this.guid())
       .pipe(shareReplay(1));
 
     super.ngOnInit();
@@ -597,10 +597,10 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
 
     const row = selectedRow as BondDisplay;
     if(menu.menuRef != null) {
-      menu.itemToAdd = {
+      menu.itemToAdd.set({
         symbol: row.basicInformation!.symbol,
         exchange:  row.basicInformation!.exchange
-      };
+      });
 
       this.nzContextMenuService.create($event, menu.menuRef);
     }

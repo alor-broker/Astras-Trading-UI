@@ -13,6 +13,7 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzMenuDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
 import {NzTypographyComponent} from "ng-zorro-antd/typography";
 import {InstrumentSearchComponent} from "../instrument-search/instrument-search.component";
+import {GuidGenerator} from "../../utils/guid";
 
 describe('WidgetHeaderInstrumentSwitchComponent', () => {
   let component: WidgetHeaderInstrumentSwitchComponent;
@@ -60,6 +61,7 @@ describe('WidgetHeaderInstrumentSwitchComponent', () => {
       ]
     });
     fixture = TestBed.createComponent(WidgetHeaderInstrumentSwitchComponent);
+    fixture.componentRef.setInput('widgetGuid', GuidGenerator.newGuid());
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

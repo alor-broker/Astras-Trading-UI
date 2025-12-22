@@ -124,7 +124,6 @@ describe('EditLimitOrderFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(EditLimitOrderFormComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   afterEach(() => {
@@ -132,6 +131,9 @@ describe('EditLimitOrderFormComponent', () => {
   });
 
   it('should create', () => {
+    fixture.componentRef.setInput('orderId', '111');
+    fixture.componentRef.setInput('portfolioKey', getDefaultPortfolio());
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
@@ -151,10 +153,18 @@ describe('EditLimitOrderFormComponent', () => {
       } as unknown as Order)
     );
 
-    component.orderId = '111';
-    component.portfolioKey = portfolio;
-    tick();
+    fixture.componentRef.setInput(
+      'orderId',
+      '111'
+    );
+
+    fixture.componentRef.setInput(
+      'portfolioKey',
+      portfolio
+    );
+
     fixture.detectChanges();
+    tick();
 
     const cases: { control: string, setValue: () => any, expectedError?: string }[] = [
       {
@@ -214,8 +224,15 @@ describe('EditLimitOrderFormComponent', () => {
         } as unknown as Order)
       );
 
-      component.orderId = '111';
-      component.portfolioKey = portfolio;
+      fixture.componentRef.setInput(
+        'orderId',
+        '111'
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
 
       fixture.detectChanges();
 
@@ -243,8 +260,16 @@ describe('EditLimitOrderFormComponent', () => {
 
       orderDetailsServiceSpy.getLimitOrderDetails.and.returnValue(new BehaviorSubject(order));
 
-      component.orderId = '111';
-      component.portfolioKey = portfolio;
+      fixture.componentRef.setInput(
+        'orderId',
+        '111'
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
+
       fixture.detectChanges();
       tick();
 
@@ -276,8 +301,16 @@ describe('EditLimitOrderFormComponent', () => {
       orderDetailsServiceSpy.getLimitOrderDetails.and.returnValue(new BehaviorSubject(order));
       instrumentsServiceSpy.getInstrument.and.returnValue(new BehaviorSubject(instrument));
 
-      component.orderId = order.id;
-      component.portfolioKey = portfolio;
+      fixture.componentRef.setInput(
+        'orderId',
+        order.id
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
+
       fixture.detectChanges();
       tick();
 

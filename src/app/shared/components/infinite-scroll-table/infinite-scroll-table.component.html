@@ -1,17 +1,18 @@
-@if (tableConfig) {
+@let config = tableConfig();
+@if (config) {
   <nz-table
     #dataTable
     atsTableRowHeight
     nzTableLayout="fixed"
     [nzVirtualItemSize]="itemHeight"
-    [nzVirtualForTrackBy]="trackByFn"
+    [nzVirtualForTrackBy]="trackByFn()"
     [nzVirtualMinBufferPx]="scrollHeight"
     [nzVirtualMaxBufferPx]="scrollHeight"
     [nzData]="data"
     [nzShowPagination]="false"
     [nzFrontPagination]="false"
     [nzScroll]="{y: scrollHeight + 'px'}"
-    [nzLoading]="isLoading"
+    [nzLoading]="isLoading()"
     >
     <thead>
       <tr
@@ -20,7 +21,7 @@
         cdkDropList
         cdkDropListOrientation="horizontal"
         >
-        @for (column of tableConfig.columns; track column.id) {
+        @for (column of config.columns; track column.id) {
           <th
             cdkDrag
             cdkDragLockAxis="x"
@@ -80,9 +81,9 @@
         <tr
           (click)="rowClick.emit(data)"
           (contextmenu)="rowContextMenu.emit({ event: $event, row: data})"
-          [class]="tableConfig.rowConfig?.rowClass && tableConfig.rowConfig?.rowClass(data)"
+          [class]="config?.rowConfig?.rowClass && config?.rowConfig?.rowClass(data)"
           >
-          @for (column of tableConfig.columns; track column.id) {
+          @for (column of config?.columns ?? []; track column.id) {
             <td [class]="column.classFn && column.classFn(data)">
               <div
                 class="table-cell"
@@ -105,7 +106,7 @@
   </nz-table>
   <nz-dropdown-menu #searchMenu="nzDropdownMenu">
     <div class="ant-table-filter-dropdown custom-filter" *transloco="let t; scope: 'shared/infinite-scroll-table'">
-      @for (column of tableConfig.columns; track column.id) {
+      @for (column of config?.columns ?? []; track column.id) {
         @if (!!column.filterData && activeFilterName === column.filterData.filterName) {
           <div
             class="d-flex flex-column justify-content-start"

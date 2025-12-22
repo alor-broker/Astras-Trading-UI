@@ -18,6 +18,7 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import {
   InstrumentBoardSelectComponent
 } from "../../../../shared/components/instrument-board-select/instrument-board-select.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('OrderSubmitSettingsComponent', () => {
   let component: OrderSubmitSettingsComponent;
@@ -64,6 +65,7 @@ describe('OrderSubmitSettingsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OrderSubmitSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

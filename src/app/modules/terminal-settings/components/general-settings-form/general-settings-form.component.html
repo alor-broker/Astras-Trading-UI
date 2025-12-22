@@ -31,7 +31,7 @@
           </nz-select>
         </nz-form-control>
       </nz-form-item>
-      @if (!excludedSettings.includes('gridType')) {
+      @if (!excludedSettings().includes('gridType')) {
         <nz-form-item>
           <nz-form-label nzFor="gridType">{{t('terminalSettingsGeneralSettingsForm.gridTypeLabel')}}</nz-form-label>
           <nz-form-control>
@@ -55,7 +55,7 @@
         </nz-select>
       </nz-form-control>
     </nz-form-item>
-    @if (!excludedSettings.includes('showCurrentTime')) {
+    @if (!excludedSettings().includes('showCurrentTime')) {
       <nz-form-item>
         <label
           formControlName="showCurrentTime"
@@ -116,7 +116,7 @@
       </nz-form-item>
     }
 
-    @if (!excludedSettings.includes('badgesBind')) {
+    @if (!excludedSettings().includes('badgesBind')) {
       <nz-form-item>
         <label
           formControlName="badgesBind"

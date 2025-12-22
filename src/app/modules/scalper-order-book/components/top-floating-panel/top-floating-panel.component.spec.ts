@@ -9,6 +9,7 @@ import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTe
 import {MockDirectives, MockProvider} from "ng-mocks";
 import {ScalperOrderBookDataProvider} from "../../services/scalper-order-book-data-provider.service";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('TopFloatingPanelComponent', () => {
   let component: TopFloatingPanelComponent;
@@ -44,6 +45,7 @@ describe('TopFloatingPanelComponent', () => {
     });
     fixture = TestBed.createComponent(TopFloatingPanelComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

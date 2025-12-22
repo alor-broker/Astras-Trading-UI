@@ -1,4 +1,4 @@
-<a [class]="klass" [target]="target" [rel]="rel" [href]="href">
+<a [class]="klass()" [target]="target()" [rel]="rel()" [href]="href()">
   <ng-content></ng-content>
   <span nz-icon nzType="ats-external-link" nzTheme="outline"></span>
 </a>

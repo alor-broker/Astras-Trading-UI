@@ -1,6 +1,6 @@
 <ng-container *transloco="let t; scope: 'orders-basket/presets'">
   <div class="d-flex flex-row flex-wrap justify-content-start flex-gap-8">
-    @for (preset of presets; track preset) {
+    @for (preset of presets(); track preset) {
       <nz-tag
         (click)="presetSelected.emit(preset)"
         nz-tooltip
@@ -27,7 +27,7 @@
     @if (!inputVisible) {
       <nz-tag
         (click)="showInput()"
-        [class.disabled]="!canAddPreset"
+        [class.disabled]="!canAddPreset()"
         class="editable-tag"
         nz-tooltip
         [nzTooltipTitle]="t('ordersBasketPresets.savePresetTooltip')"

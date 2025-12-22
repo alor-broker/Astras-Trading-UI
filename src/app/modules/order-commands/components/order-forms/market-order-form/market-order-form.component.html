@@ -1,5 +1,5 @@
 <ng-container *transloco="let t; scope: 'order-commands/order-forms'">
-  @if (formInstrument$ | async; as formInstrument) {
+  @if (instrumentChanges$ | async; as formInstrument) {
     <div>
       <form [formGroup]="form" [nzLayout]="'vertical'" nz-form>
         <nz-form-item class="compact">

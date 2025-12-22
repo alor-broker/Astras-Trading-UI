@@ -3,7 +3,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
-  Input,
+  input,
   OnDestroy,
   OnInit,
   QueryList,
@@ -19,18 +19,18 @@ import {dateDiffInDays} from "../../../../shared/utils/datetime";
 import {mapWith} from "../../../../shared/utils/observable-helper";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
-import { CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf } from "@angular/cdk/scrolling";
+import {CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import { TranslocoDirective } from '@jsverse/transloco';
-import { NzSpinComponent } from 'ng-zorro-antd/spin';
-import { NzEmptyComponent } from 'ng-zorro-antd/empty';
-import { NzResizeObserverDirective } from 'ng-zorro-antd/cdk/resize-observer';
-import { NgStyle, AsyncPipe, DecimalPipe, DatePipe } from '@angular/common';
-import { NzPopoverDirective } from 'ng-zorro-antd/popover';
-import { NzTypographyComponent } from 'ng-zorro-antd/typography';
-import { OptionPreviewComponent } from '../option-preview/option-preview.component';
-import { NzIconDirective } from 'ng-zorro-antd/icon';
-import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzSpinComponent} from 'ng-zorro-antd/spin';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {AsyncPipe, DatePipe, DecimalPipe, NgStyle} from '@angular/common';
+import {NzPopoverDirective} from 'ng-zorro-antd/popover';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {OptionPreviewComponent} from '../option-preview/option-preview.component';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
 
 interface OptionDisplay extends Option {
   displayValue: string;
@@ -55,34 +55,33 @@ interface LayoutSizes {
 }
 
 @Component({
-    selector: 'ats-all-options',
-    templateUrl: './all-options.component.html',
-    styleUrls: ['./all-options.component.less'],
-    imports: [
-      TranslocoDirective,
-      NzSpinComponent,
-      NzEmptyComponent,
-      NzResizeObserverDirective,
-      NgStyle,
-      CdkVirtualScrollViewport,
-      CdkFixedSizeVirtualScroll,
-      CdkVirtualForOf,
-      NzPopoverDirective,
-      NzTypographyComponent,
-      OptionPreviewComponent,
-      NzIconDirective,
-      NzTooltipDirective,
-      AsyncPipe,
-      DecimalPipe,
-      DatePipe
-    ]
+  selector: 'ats-all-options',
+  templateUrl: './all-options.component.html',
+  styleUrls: ['./all-options.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzSpinComponent,
+    NzEmptyComponent,
+    NzResizeObserverDirective,
+    NgStyle,
+    CdkVirtualScrollViewport,
+    CdkFixedSizeVirtualScroll,
+    CdkVirtualForOf,
+    NzPopoverDirective,
+    NzTypographyComponent,
+    OptionPreviewComponent,
+    NzIconDirective,
+    NzTooltipDirective,
+    AsyncPipe,
+    DecimalPipe,
+    DatePipe
+  ]
 })
 export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly rowHeight = 30;
   readonly isLoading$ = new BehaviorSubject(false);
 
-  @Input({required: true})
-  dataContext!: OptionBoardDataContext;
+  readonly dataContext = input.required<OptionBoardDataContext>();
 
   @ViewChildren(CdkVirtualScrollViewport)
   bodyScrollContainerQuery!: QueryList<CdkVirtualScrollViewport>;
@@ -158,7 +157,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   updateOptionSelection(option: OptionDisplay, underlyingAsset: UnderlyingAsset): void {
-    this.dataContext.updateOptionSelection(option, underlyingAsset);
+    this.dataContext().updateOptionSelection(option, underlyingAsset);
   }
 
   isOptionSelected(option: OptionDisplay, selectedOptions: OptionsSelection | null): boolean {
@@ -179,8 +178,8 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     this.optionsMatrix$ = combineLatest([
-      this.dataContext.settings$,
-      this.dataContext.selectedSide$
+      this.dataContext().settings$,
+      this.dataContext().selectedSide$
     ]).pipe(
       tap(() => {
         afterRefreshActions.push((x) => this.scrollToPrice(x));
@@ -191,7 +190,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.optionBoardService.getInstrumentOptions(settings.symbol, settings.exchange, optionSide)
       ),
       mapWith(
-        () => this.dataContext.selectedParameter$,
+        () => this.dataContext().selectedParameter$,
         (options, parameter) => ({options, parameter})
       ),
       tap(() => this.isLoading$.next(true)),

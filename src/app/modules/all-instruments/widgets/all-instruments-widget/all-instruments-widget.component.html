@@ -6,18 +6,18 @@
       [settings]="settingsRef"
       [showContentScroll]="false"
       [showSettings]="shouldShowSettings"
-      [isBlockWidget]="isBlockWidget"
+      [isBlockWidget]="isBlockWidget()"
       >
       <ng-template #headerRef>
         <ats-widget-header
           (switchSettings)="onSettingsChange()"
           [guid]="guid"
           [hasSettings]="true"
-          [linkToActive]="settings.linkToActive"
+          [linkToActive]="settings.linkToActive ?? null"
           [selectedBadgeColor]="settings.badgeColor"
           [showBadgesMenu]="(showBadge$ | async) ?? false"
           badgeShape="square"
-          [widgetMeta]="widgetInstance.widgetMeta"
+          [widgetMeta]="widgetInstance().widgetMeta"
         ></ats-widget-header>
       </ng-template>
       <ng-template #contentRef>

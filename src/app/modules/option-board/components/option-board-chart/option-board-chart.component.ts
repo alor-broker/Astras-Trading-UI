@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, DestroyRef, input, OnDestroy, OnInit} from '@angular/core';
 import {OptionBoardDataContext} from "../../models/option-board-data-context.model";
 import {BehaviorSubject, combineLatest, Observable, of, shareReplay, take, tap, timer, withLatestFrom} from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
@@ -66,8 +66,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
     ChartType.ProfitLossByAssetPrice,
   ];
 
-  @Input({required: true})
-  dataContext!: OptionBoardDataContext;
+  readonly dataContext = input.required<OptionBoardDataContext>();
 
   chartData$!: Observable<ChartData<'line', (number | null)[], number> | null>;
   chartOptions$!: Observable<ChartOptions<'line'>>;
@@ -179,13 +178,13 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
       takeUntilDestroyed(this.destroyRef)
     );
 
-    const selectionParameters$ = this.dataContext.selectionParameters$.pipe(
+    const selectionParameters$ = this.dataContext().selectionParameters$.pipe(
       debounceTime(2000),
       shareReplay(1)
     );
 
     combineLatest([
-      this.dataContext.currentSelection$,
+      this.dataContext().currentSelection$,
       selectionParameters$,
       this.selectedChartType$
     ]).pipe(
@@ -195,7 +194,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
     });
 
     this.chartData$ = combineLatest({
-      selection: this.dataContext.currentSelection$,
+      selection: this.dataContext().currentSelection$,
       parameters: selectionParameters$,
       currentChartType: this.selectedChartType$,
       zoomState: this.zoomState$

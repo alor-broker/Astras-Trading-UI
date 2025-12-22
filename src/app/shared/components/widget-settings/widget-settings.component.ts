@@ -1,9 +1,9 @@
 import {
   Component,
   EventEmitter,
-  Input,
   OnInit,
-  Output
+  Output,
+  input
 } from '@angular/core';
 import { DeviceService } from "../../services/device.service";
 import {
@@ -30,17 +30,14 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
     styleUrls: ['./widget-settings.component.less']
 })
 export class WidgetSettingsComponent implements OnInit {
-  @Input({ required: true })
-  canSave = false;
+  readonly canSave = input.required<boolean>();
 
   @Output()
   saveClick = new EventEmitter();
 
-  @Input()
-  showCopy = false;
+  readonly showCopy = input(false);
 
-  @Input({ required: true })
-  canCopy = false;
+  readonly canCopy = input.required<boolean>();
 
   @Output()
   copyClick = new EventEmitter();

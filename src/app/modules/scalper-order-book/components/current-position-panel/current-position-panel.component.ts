@@ -1,8 +1,8 @@
 import {
   Component,
-  Input,
   OnDestroy,
-  OnInit
+  OnInit,
+  input
 } from '@angular/core';
 import {
   BehaviorSubject,
@@ -32,11 +32,9 @@ import { NgClass, DecimalPipe } from '@angular/common';
     ]
 })
 export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
-  @Input()
-  hideTooltips = false;
+  readonly hideTooltips = input(false);
 
   orderBookPosition$!: Observable<ScalperOrderBookPositionState>;
 
@@ -64,7 +62,7 @@ export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
   }
 
   private getPositionStateStream(): Observable<ScalperOrderBookPositionState> {
-    const settings$ = this.dataContextService.getSettingsStream(this.guid);
+    const settings$ = this.dataContextService.getSettingsStream(this.guid());
 
     return combineLatest([
       settings$,

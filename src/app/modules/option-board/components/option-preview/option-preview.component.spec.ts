@@ -19,9 +19,12 @@ describe('OptionPreviewComponent', () => {
     fixture = TestBed.createComponent(OptionPreviewComponent);
     component = fixture.componentInstance;
 
-    component.option = {
-      calculations: {}
-    } as Option;
+    fixture.componentRef.setInput(
+      'option',
+      {
+        calculations: {}
+      } as Option
+    );
 
     fixture.detectChanges();
   });

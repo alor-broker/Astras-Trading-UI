@@ -10,6 +10,7 @@ import {commonTestProviders} from "../../../../shared/utils/testing/common-test-
 import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
 import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
 import {MockComponents} from "ng-mocks";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('TreemapSettingsComponent', () => {
   let component: TreemapSettingsComponent;
@@ -44,6 +45,7 @@ describe('TreemapSettingsComponent', () => {
       ]
     });
     fixture = TestBed.createComponent(TreemapSettingsComponent);
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

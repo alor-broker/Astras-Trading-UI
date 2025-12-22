@@ -1,16 +1,17 @@
+@let targetNewsItem = newsItem();
 <nz-modal
-  [nzTitle]="header"
-  nzClosable="true"
-  [nzVisible]='newsItem != null'
+  (nzOnCancel)="handleCancel()"
   [nzFooter]='null'
   [nzMaskClosable]='true'
-  (nzOnCancel)="handleCancel()"
+  [nzTitle]="header"
+  [nzVisible]='targetNewsItem != null'
+  nzClosable="true"
   nzDraggable
 >
   <ng-template #header>
-    <div class="header">{{newsItem?.header}}</div>
+    <div class="header">{{ targetNewsItem?.header }}</div>
   </ng-template>
   <ng-container *nzModalContent>
-    <div class="scrollable show-scroll" [innerHTML]="newsItem?.content"></div>
+    <div [innerHTML]="targetNewsItem?.content" class="scrollable show-scroll"></div>
   </ng-container>
 </nz-modal>

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, input, OnInit} from '@angular/core';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {AsyncPipe} from "@angular/common";
 import {TranslocoDirective} from "@jsverse/transloco";
@@ -28,11 +28,9 @@ import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skel
 })
 export class MobileHomeScreenWidgetComponent implements OnInit {
   shouldShowSettings = false;
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<MobileHomeScreenSettings>;
 
@@ -46,12 +44,12 @@ export class MobileHomeScreenWidgetComponent implements OnInit {
   }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<MobileHomeScreenSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'MobileHomeScreenSettings',
       settings => ({...settings}),
       this.widgetSettingsService

@@ -15,8 +15,8 @@
         @for (cluster of (clusters$ | async); track trackBy($index, cluster)) {
           <div class="cluster-wrapper">
             <ats-trades-cluster [cluster]="cluster"
-              [dataContext]="dataContext"
-              [xAxisStep]="xAxisStep">
+              [dataContext]="dataContext()"
+              [xAxisStep]="xAxisStep()">
             </ats-trades-cluster>
           </div>
         }

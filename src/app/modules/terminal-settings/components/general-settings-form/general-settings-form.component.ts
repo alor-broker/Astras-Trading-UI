@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Input, OnInit} from '@angular/core';
+import {Component, DestroyRef, OnInit, input} from '@angular/core';
 import {
   ControlValueAccessorBaseComponent
 } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
@@ -68,7 +68,7 @@ import {BadgesSettingsComponent} from '../badges-settings/badges-settings.compon
   ]
 })
 export class GeneralSettingsFormComponent extends ControlValueAccessorBaseComponent<GeneralSettings> implements OnInit {
-  @Input() excludedSettings: string[] = [];
+  readonly excludedSettings = input<string[]>([]);
 
   readonly validationSettings = validationSettings;
 

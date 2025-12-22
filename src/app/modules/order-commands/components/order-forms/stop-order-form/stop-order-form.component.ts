@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, DestroyRef, input, OnDestroy, OnInit} from '@angular/core';
 import {BaseOrderFormComponent} from "../base-order-form.component";
 import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -81,8 +81,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
   readonly conditionType = LessMore;
   readonly timeInForceEnum = TimeInForce;
 
-  @Input()
-  initialValues: {
+  initialValues = input<{
     price?: number;
     quantity?: number;
     stopOrder?: Partial<{
@@ -93,7 +92,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
       // For example, trigger price, condition and limit order price should not be recalculated when form is called from scalper orderbook
       disableCalculations: boolean | null;
     }>;
-  } | null = null;
+  } | null>(null);
 
   form = this.formBuilder.group({
     quantity: this.formBuilder.nonNullable.control(
@@ -203,27 +202,28 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     this.setPriceValidators(this.form.controls.linkedOrder.controls.triggerPrice, newInstrument);
     this.setPriceValidators(this.form.controls.linkedOrder.controls.price, newInstrument);
 
-    if (this.initialValues) {
-      if (this.initialValues.quantity != null) {
-        this.form.controls.quantity.setValue(this.initialValues.quantity);
+    const initialValues = this.initialValues();
+    if (initialValues) {
+      if (initialValues.quantity != null) {
+        this.form.controls.quantity.setValue(initialValues.quantity);
       }
 
-      if (this.initialValues.price != null) {
-        this.form.controls.triggerPrice.setValue(this.initialValues.price);
-        this.form.controls.price.setValue(this.initialValues.price);
+      if (initialValues.price != null) {
+        this.form.controls.triggerPrice.setValue(initialValues.price);
+        this.form.controls.price.setValue(initialValues.price);
       }
 
-      if (this.initialValues.stopOrder) {
-        if (this.initialValues.stopOrder.triggerPrice != null) {
-          this.form.controls.triggerPrice.setValue(this.initialValues.stopOrder.triggerPrice);
+      if (initialValues.stopOrder) {
+        if (initialValues.stopOrder.triggerPrice != null) {
+          this.form.controls.triggerPrice.setValue(initialValues.stopOrder.triggerPrice);
         }
 
-        if (this.initialValues.stopOrder.limit != null) {
-          this.form.controls.withLimit.setValue(this.initialValues.stopOrder.limit);
+        if (initialValues.stopOrder.limit != null) {
+          this.form.controls.withLimit.setValue(initialValues.stopOrder.limit);
         }
 
-        if (this.initialValues.stopOrder.condition != null) {
-          this.form.controls.condition.setValue(this.initialValues.stopOrder.condition);
+        if (initialValues.stopOrder.condition != null) {
+          this.form.controls.condition.setValue(initialValues.stopOrder.condition);
         }
       }
     }
@@ -460,7 +460,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
 
   private initFieldDependencies(): void {
     this.form.controls.triggerPrice.valueChanges.pipe(
-      filter(() => !(this.initialValues?.stopOrder?.disableCalculations ?? false)),
+      filter(() => !(this.initialValues()?.stopOrder?.disableCalculations ?? false)),
       distinctUntilChanged((prev, curr) => prev === curr),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(val => {
@@ -476,10 +476,10 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     });
 
     combineLatest([
-      this.isActivated$,
+      this.activatedChanges$,
       this.form.controls.price.valueChanges
     ]).pipe(
-      filter(() => !(this.initialValues?.stopOrder?.disableCalculations ?? false)),
+      filter(() => !(this.initialValues()?.stopOrder?.disableCalculations ?? false)),
       filter(([isActivated, v]) => isActivated && this.form.controls.condition.untouched && !!(v ?? 0)),
       map(([, price]) => price),
       distinctUntilChanged((prev, curr) => prev === curr),
@@ -509,4 +509,6 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     const convertedNow = timezoneConverter.toTerminalDate(now);
     this.canSelectNow = convertedNow.toUTCString() === now.toUTCString();
   }
+
+  protected readonly input = input;
 }

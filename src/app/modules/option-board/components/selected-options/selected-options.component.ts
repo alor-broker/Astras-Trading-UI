@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, Input} from '@angular/core';
+import {Component, DestroyRef, Inject, input} from '@angular/core';
 import {OptionBoardDataContext, OptionsSelection} from "../../models/option-board-data-context.model";
 import {OptionBoardService} from "../../services/option-board.service";
 import {
@@ -119,8 +119,7 @@ interface DetailsDisplay extends OptionKey {
   ]
 })
 export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay> {
-  @Input({required: true})
-  dataContext!: OptionBoardDataContext;
+  readonly dataContext = input.required<OptionBoardDataContext>();
 
   readonly minOptionTableWidth = 400;
   isLoading$ = new BehaviorSubject<boolean>(false);
@@ -224,18 +223,18 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
     $event.preventDefault();
     $event.stopPropagation();
 
-    this.dataContext.removeItemFromSelection(option.symbol);
+    this.dataContext().removeItemFromSelection(option.symbol);
   }
 
   clearSelection(): void {
-    this.dataContext.clearCurrentSelection();
+    this.dataContext().clearCurrentSelection();
   }
 
   rowClick(optionKey: OptionKey, $event: Event): void {
     $event.preventDefault();
     $event.stopPropagation();
 
-    this.dataContext.settings$.pipe(
+    this.dataContext().settings$.pipe(
       take(1)
     ).subscribe(settings => {
       if (settings.linkToActive === true) {
@@ -253,12 +252,12 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
   }
 
   setSelectedOptionQuantity(option: DetailsDisplay, quantity: number | null): void {
-    this.dataContext.currentSelection$.pipe(
+    this.dataContext().currentSelection$.pipe(
       take(1)
     ).subscribe(selection => {
       const targetOption = selection.selectedOptions.find(x => x.symbol === option.symbol && x.exchange === option.exchange);
       if (targetOption != null) {
-        this.dataContext.setParameters(targetOption, {quantity: quantity ?? 1});
+        this.dataContext().setParameters(targetOption, {quantity: quantity ?? 1});
       }
     });
   }
@@ -270,10 +269,12 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
     }
 
     this.nzContextMenuService.close(true);
-    menu.itemToAdd = {
-      symbol: selectedRow.symbol,
-      exchange: selectedRow.exchange
-    };
+    menu.itemToAdd.set(
+      {
+        symbol: selectedRow.symbol,
+        exchange: selectedRow.exchange
+      }
+    );
 
     this.nzContextMenuService.create($event, menu.menuRef);
   }
@@ -292,12 +293,12 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
       takeUntilDestroyed(this.destroyRef)
     );
 
-    const selectionParameters$ = this.dataContext.selectionParameters$.pipe(
+    const selectionParameters$ = this.dataContext().selectionParameters$.pipe(
       debounceTime(2000)
     );
 
     return combineLatest({
-      currentSelection: this.dataContext.currentSelection$,
+      currentSelection: this.dataContext().currentSelection$,
       selectionParameters: selectionParameters$
     }).pipe(
       mapWith(() => refreshTimer$, source => source),

@@ -123,7 +123,7 @@ export class BondInfoComponent extends InstrumentInfoBaseComponent implements On
       );
     });
 
-    this.info$ = this.targetInstrumentKey$.pipe(
+    this.info$ = this.instrumentKeyChanges$.pipe(
       filter(i => i != null),
       mapWith(() => refreshTimer$, (source,) => source),
       tap(() => this.setLoading(true)),

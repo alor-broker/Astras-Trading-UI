@@ -12,6 +12,7 @@ import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabe
 import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
 import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
 import {NzSliderComponent} from "ng-zorro-antd/slider";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('AdminClientsSettingsComponent', () => {
   let component: AdminClientsSettingsComponent;
@@ -52,6 +53,7 @@ describe('AdminClientsSettingsComponent', () => {
 
     fixture = TestBed.createComponent(AdminClientsSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

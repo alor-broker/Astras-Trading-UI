@@ -37,6 +37,7 @@ import { OrdersDisplayExtension } from "../../extensions/orders-display.extensio
 import { TradesDisplayExtension } from "../../extensions/trades-display.extension";
 import { TestData } from "../../../../shared/utils/testing/test-data";
 import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('TechChartComponent', () => {
   let component: TechChartComponent;
@@ -211,6 +212,7 @@ describe('TechChartComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TechChartComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

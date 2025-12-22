@@ -1,6 +1,6 @@
 import {
   Component,
-  Input
+  input
 } from '@angular/core';
 import {
   NzModalComponent,
@@ -24,8 +24,7 @@ import {ExternalLinkComponent} from "../../../../shared/components/external-link
     styleUrl: './settings-load-error-dialog.component.less'
 })
 export class SettingsLoadErrorDialogComponent {
-  @Input()
-  visible = false;
+  readonly visible = input(false);
 
   readonly supportLink = this.environmentService.externalLinks?.support;
 

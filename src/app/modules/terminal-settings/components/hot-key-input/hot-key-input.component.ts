@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {
   ControlValueAccessorBaseComponent
 } from "../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component";
@@ -33,8 +33,7 @@ import {NzInputDirective} from 'ng-zorro-antd/input';
   ]
 })
 export class HotKeyInputComponent extends ControlValueAccessorBaseComponent<HotKeyMeta> {
-  @Input({required: true})
-  actionName!: string;
+  readonly actionName = input.required<string>();
 
   readonly control = this.formBuilder.nonNullable.control<string | null>(null);
   value: HotKeyMeta | null = null;

@@ -1,9 +1,9 @@
 import {
   Component,
   InjectionToken,
-  Input,
   OnDestroy,
-  OnInit
+  OnInit,
+  input
 } from '@angular/core';
 import {
   BehaviorSubject,
@@ -49,11 +49,9 @@ export const SCALPER_ORDERBOOK_SHARED_CONTEXT = new InjectionToken<ScalperOrderB
     ]
 })
 export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext, OnInit, OnDestroy {
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
-  @Input()
-  isActive = false;
+  readonly isActive = input(false);
 
   workingVolume$ = new BehaviorSubject<number>(1);
   scaleFactor$ = new BehaviorSubject<number>(1);
@@ -70,7 +68,7 @@ export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext,
   }
 
   ngOnInit(): void {
-    const settings$ = this.dataContextService.getSettingsStream(this.guid).pipe(
+    const settings$ = this.dataContextService.getSettingsStream(this.guid()).pipe(
       map(s => s.widgetSettings),
       shareReplay({bufferSize: 1, refCount: true})
     );

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Output, input} from '@angular/core';
 import {Side} from "../../../../shared/models/enums/side.model";
 import { NzButtonComponent } from "ng-zorro-antd/button";
 import { TranslocoDirective } from "@jsverse/transloco";
@@ -15,17 +15,13 @@ import { TranslocoDirective } from "@jsverse/transloco";
 export class BuySellButtonsComponent {
   readonly sides = Side;
 
-  @Input()
-  buyBtnDisabled = false;
+  readonly buyBtnDisabled = input(false);
 
-  @Input()
-  sellBtnDisabled = false;
+  readonly sellBtnDisabled = input(false);
 
-  @Input()
-  buyBtnLoading = false;
+  readonly buyBtnLoading = input(false);
 
-  @Input()
-  sellBtnLoading = false;
+  readonly sellBtnLoading = input(false);
 
   @Output()
   readonly btnClick = new EventEmitter<Side>();

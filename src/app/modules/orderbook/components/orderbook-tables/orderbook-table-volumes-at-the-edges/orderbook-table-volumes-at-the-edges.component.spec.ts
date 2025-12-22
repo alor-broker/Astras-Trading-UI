@@ -19,6 +19,7 @@ import {
 } from "ng-zorro-antd/table";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {ShortNumberComponent} from "../../../../../shared/components/short-number/short-number.component";
+import {GuidGenerator} from "../../../../../shared/utils/guid";
 
 describe('OrderbookTableVolumesAtTheEdgesComponent', () => {
   let component: OrderbookTableVolumesAtTheEdgesComponent;
@@ -78,6 +79,7 @@ describe('OrderbookTableVolumesAtTheEdgesComponent', () => {
 
     fixture = TestBed.createComponent(OrderbookTableVolumesAtTheEdgesComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

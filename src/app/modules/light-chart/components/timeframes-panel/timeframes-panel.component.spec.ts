@@ -34,6 +34,14 @@ describe('TimeframesPanelComponent', () => {
     });
     fixture = TestBed.createComponent(TimeframesPanelComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput(
+      'availableTimeframes',
+      []
+    );
+    fixture.componentRef.setInput(
+      'selectedTimeframe',
+      undefined
+    );
     fixture.detectChanges();
   });
 

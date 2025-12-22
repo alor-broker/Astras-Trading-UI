@@ -3,7 +3,7 @@
     <ats-widget-skeleton
       [content]="content"
       [header]="header"
-      [isBlockWidget]="isBlockWidget"
+      [isBlockWidget]="isBlockWidget()"
       [showContentScroll]="true"
       >
       <ng-template #header>
@@ -11,7 +11,7 @@
           [guid]="guid"
           [hasSettings]="false"
           [showBadgesMenu]="false"
-          [widgetMeta]="widgetInstance.widgetMeta"
+          [widgetMeta]="widgetInstance().widgetMeta"
         ></ats-widget-header>
       </ng-template>
       <ng-template #content>

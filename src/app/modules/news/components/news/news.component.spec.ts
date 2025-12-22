@@ -20,6 +20,7 @@ import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
 import {
   InfiniteScrollTableComponent
 } from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('NewsComponent', () => {
   let component: NewsComponent;
@@ -89,7 +90,7 @@ describe('NewsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NewsComponent);
     component = fixture.componentInstance;
-    component.guid = 'testGuid';
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

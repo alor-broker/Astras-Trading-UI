@@ -4,11 +4,11 @@ import {
   DestroyRef,
   ElementRef,
   Inject,
-  Input,
   LOCALE_ID,
   OnDestroy,
   OnInit,
-  ViewChild
+  ViewChild,
+  input
 } from '@angular/core';
 import {
   ActiveElement,
@@ -91,8 +91,7 @@ interface TooltipData {
 })
 export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('treemapWrapper') treemapWrapperEl?: ElementRef<HTMLDivElement>;
-  @Input({ required: true })
-  guid!: string;
+  readonly guid = input.required<string>();
 
   isCursorOnSector$ = new BehaviorSubject(false);
   // this widget works  with MOEX exchange only
@@ -126,7 +125,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<TreemapSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<TreemapSettings>(this.guid()).pipe(
       shareReplay({bufferSize: 1, refCount: true})
     );
 
@@ -172,7 +171,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
         takeUntilDestroyed(this.destroy)
       )
       .subscribe(({ treemap, themeColors }) => {
-        const ctx = (<HTMLCanvasElement>document.getElementById(this.guid)).getContext('2d');
+        const ctx = (<HTMLCanvasElement>document.getElementById(this.guid())).getContext('2d');
 
         if (ctx == null) {
           return;

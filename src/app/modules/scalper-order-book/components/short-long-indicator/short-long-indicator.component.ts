@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, DestroyRef, input, OnDestroy, OnInit} from '@angular/core';
 import {EvaluationService} from "../../../../shared/services/evaluation.service";
 import {ScalperOrderBookDataContext} from "../../models/scalper-order-book-data-context.model";
 import {
@@ -37,14 +37,11 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
-  @Input({required: true})
-  dataContext!: ScalperOrderBookDataContext;
+  readonly dataContext = input.required<ScalperOrderBookDataContext>();
 
-  @Input()
-  hideTooltips = false;
+  readonly hideTooltips = input(false);
 
-  @Input()
-  orientation: 'vertical' | 'horizontal' = 'vertical';
+  readonly orientation = input<'vertical' | 'horizontal'>('vertical');
 
   shortLongValues$ = new BehaviorSubject<{ short: number, long: number } | null>(null);
 
@@ -59,7 +56,7 @@ export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const widgetSettings$ = this.dataContext.extendedSettings$.pipe(
+    const widgetSettings$ = this.dataContext().extendedSettings$.pipe(
       map(s => s.widgetSettings),
       distinctUntilChanged((prev, curr) => isInstrumentEqual(prev, curr)),
       shareReplay({bufferSize: 1, refCount: true})
@@ -77,7 +74,7 @@ export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
       shareReplay({bufferSize: 1, refCount: true})
     );
 
-    const currentOrders$ = this.dataContext.currentOrders$.pipe(
+    const currentOrders$ = this.dataContext().currentOrders$.pipe(
       startWith([])
     );
 
@@ -92,8 +89,8 @@ export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
     const dataStream$ = defer(() => {
       return combineLatest({
         instrumentKey: instrumentKey$,
-        orderBook: this.dataContext.orderBook$,
-        portfolioKey: this.dataContext.currentPortfolio$
+        orderBook: this.dataContext().orderBook$,
+        portfolioKey: this.dataContext().currentPortfolio$
       }).pipe(
         filter(x => isInstrumentEqual(x.instrumentKey, x.orderBook.instrumentKey)),
         filter(x => x.orderBook.rows.a.length > 0 || x.orderBook.rows.b.length > 0),

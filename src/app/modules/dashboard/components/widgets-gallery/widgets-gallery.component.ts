@@ -1,13 +1,7 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  ViewEncapsulation,
-} from '@angular/core';
-import { WidgetCategory } from "../../../../shared/models/widget-meta.model";
+import {Component, EventEmitter, input, model, Output, ViewEncapsulation} from '@angular/core';
+import {WidgetCategory} from "../../../../shared/models/widget-meta.model";
 import {NzDrawerComponent, NzDrawerContentDirective} from "ng-zorro-antd/drawer";
-import { NgTemplateOutlet } from "@angular/common";
+import {NgTemplateOutlet} from "@angular/common";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {TranslocoDirective} from "@jsverse/transloco";
 
@@ -28,33 +22,28 @@ export interface GalleryDisplay {
 }
 
 @Component({
-    selector: 'ats-widgets-gallery',
-    templateUrl: './widgets-gallery.component.html',
-    styleUrls: ['./widgets-gallery.component.less'],
-    encapsulation: ViewEncapsulation.None,
-    imports: [
+  selector: 'ats-widgets-gallery',
+  templateUrl: './widgets-gallery.component.html',
+  styleUrls: ['./widgets-gallery.component.less'],
+  encapsulation: ViewEncapsulation.None,
+  imports: [
     NzDrawerComponent,
     NzDrawerContentDirective,
     NgTemplateOutlet,
     NzIconDirective,
     TranslocoDirective
-]
+  ]
 })
 export class WidgetsGalleryComponent {
-  @Input({ required: true })
-  atsVisible = false;
+  atsVisible = model(false);
 
-  @Input({ required: true })
-  gallery: GalleryDisplay | null = null;
+  readonly gallery = input<GalleryDisplay | null>(null);
 
-  @Input()
-  showResetBtn = true;
+  readonly showResetBtn = input(true);
 
-  @Input()
-  closable = false;
+  readonly closable = input(false);
 
-  @Input()
-  activeWidget: string | null = null;
+  readonly activeWidget = input<string | null>(null);
 
   @Output()
   selected = new EventEmitter<string>();
@@ -62,12 +51,8 @@ export class WidgetsGalleryComponent {
   @Output()
   resetDashboard = new EventEmitter<void>();
 
-  @Output()
-  atsVisibleChange = new EventEmitter<boolean>();
-
   close(): void {
-    this.atsVisible = false;
-    this.atsVisibleChange.emit(this.atsVisible);
+    this.atsVisible.set(false);
   }
 
   reset(): void {

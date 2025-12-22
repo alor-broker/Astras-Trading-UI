@@ -15,6 +15,7 @@ import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {RemoveSelectTitlesDirective} from "../../../../shared/directives/remove-select-titles.directive";
 import {PUSH_NOTIFICATIONS_CONFIG} from "../../../push-notifications/services/push-notifications-config";
 import {MockComponents, MockDirectives} from "ng-mocks";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('BlotterSettingsComponent', () => {
   let component: BlotterSettingsComponent;
@@ -80,6 +81,7 @@ describe('BlotterSettingsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BlotterSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

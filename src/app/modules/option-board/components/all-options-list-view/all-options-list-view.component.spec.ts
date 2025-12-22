@@ -22,10 +22,30 @@ import {NzSelectComponent} from "ng-zorro-antd/select";
 import {InputNumberComponent} from "../../../../shared/components/input-number/input-number.component";
 import {PriceDiffComponent} from "../../../../shared/components/price-diff/price-diff.component";
 import {NzIconDirective} from "ng-zorro-antd/icon";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('AllOptionsListViewComponent', () => {
   let component: AllOptionsListViewComponent;
   let fixture: ComponentFixture<AllOptionsListViewComponent>;
+
+  const dataContext = {
+    settings$: new Subject(),
+    selectedSide$: new Subject<OptionSide>(),
+    selectedParameter$: new Subject<OptionParameters>(),
+    optionsSelection$: new Subject<OptionsSelection[]>(),
+    currentSelection$: new Subject<OptionsSelection>(),
+    selectionParameters$: new Subject<Map<string, Partial<SelectionParameters>>>(),
+    updateOptionSelection: () => {
+    },
+    clearCurrentSelection: () => {
+    },
+    removeItemFromSelection: () => {
+    },
+    setParameters: () => {
+    },
+    destroy: () => {
+    }
+  } as OptionBoardDataContext;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -73,24 +93,8 @@ describe('AllOptionsListViewComponent', () => {
     fixture = TestBed.createComponent(AllOptionsListViewComponent);
     component = fixture.componentInstance;
 
-    component.dataContext = {
-      settings$: new Subject(),
-      selectedSide$: new Subject<OptionSide>(),
-      selectedParameter$: new Subject<OptionParameters>(),
-      optionsSelection$: new Subject<OptionsSelection[]>(),
-      currentSelection$: new Subject<OptionsSelection>(),
-      selectionParameters$: new Subject<Map<string, Partial<SelectionParameters>>>(),
-      updateOptionSelection: () => {
-      },
-      clearCurrentSelection: () => {
-      },
-      removeItemFromSelection: () => {
-      },
-      setParameters: () => {
-      },
-      destroy: () => {
-      }
-    } as OptionBoardDataContext;
+    fixture.componentRef.setInput('dataContext', dataContext);
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 
@@ -98,7 +102,7 @@ describe('AllOptionsListViewComponent', () => {
     expect(component).toBeTruthy();
   });
   it('should call updateOptionSelection on updateOptionSelection()', () => {
-    const spy = spyOn(component.dataContext, 'updateOptionSelection');
+    const spy = spyOn(dataContext, 'updateOptionSelection');
     const optionKey = {symbol: 'SYM', exchange: 'EX'};
     const underlyingAsset = {symbol: 'SYM', minStep: 1} as any;
 
@@ -136,7 +140,7 @@ describe('AllOptionsListViewComponent', () => {
     const setStateSpy = jasmine.createSpy();
     (component as any).widgetLocalStateService.setStateRecord = setStateSpy;
 
-    component['guid'] = 'test-guid';
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
 
     (component as any).changeCellLayout(OptionSide.Call, 0, OptionParameters.Delta);
 

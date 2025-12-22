@@ -3,7 +3,7 @@
     <ats-widget-skeleton
       [content]="contentRef"
       [header]="headerRef"
-      [isBlockWidget]="isBlockWidget"
+      [isBlockWidget]="isBlockWidget()"
       [settings]="settingsRef"
       [showSettings]="shouldShowSettings"
       >
@@ -15,7 +15,7 @@
           [selectedBadgeColor]="settings.badgeColor"
           [showBadgesMenu]="(showBadge$ | async) ?? false"
           badgeShape="square"
-          [widgetMeta]="widgetInstance.widgetMeta"
+          [widgetMeta]="widgetInstance().widgetMeta"
         ></ats-widget-header>
       </ng-template>
       <ng-template #contentRef>

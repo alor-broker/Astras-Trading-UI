@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit, input} from '@angular/core';
 import {distinctUntilChanged, Observable, shareReplay, switchMap} from "rxjs";
 import {PortfolioSummarySettings} from "../../models/portfolio-summary-settings.model";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
@@ -26,8 +26,7 @@ import {AsyncPipe} from '@angular/common';
 })
 export class PortfolioSummaryComponent implements OnInit {
   readonly marketTypes = MarketType;
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   settings$!: Observable<PortfolioSummarySettings>;
   commonSummary$!: Observable<CommonSummaryView>;
@@ -41,7 +40,7 @@ export class PortfolioSummaryComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<PortfolioSummarySettings>(this.guid).pipe(
+    this.settings$ = this.widgetSettingsService.getSettings<PortfolioSummarySettings>(this.guid()).pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       shareReplay(1)
     );

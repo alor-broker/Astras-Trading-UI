@@ -1,14 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Inject,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, DestroyRef, Inject, model, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {LocalStorageService} from "../../../../shared/services/local-storage.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {User} from "../../../../shared/models/user/user.model";
@@ -36,11 +26,7 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class SideChatWidgetComponent implements OnInit, OnChanges {
-  @Input({required: true})
-  atsVisible = false;
-
-  @Output()
-  atsVisibleChange = new EventEmitter<boolean>();
+  atsVisible = model(false);
 
   isResizing = false;
   drawerWidth$!: Observable<number>;
@@ -79,8 +65,7 @@ export class SideChatWidgetComponent implements OnInit, OnChanges {
   }
 
   close(): void {
-    this.atsVisible = false;
-    this.atsVisibleChange.emit(this.atsVisible);
+    this.atsVisible.set(false);
   }
 
   setTermsOfUseAgreement(isConfirmed: boolean): void {
@@ -92,8 +77,7 @@ export class SideChatWidgetComponent implements OnInit, OnChanges {
         this.isChatDisabled = false;
       });
     } else if (this.isChatDisabled) {
-      this.atsVisible = false;
-      this.atsVisibleChange.emit(this.atsVisible);
+      this.atsVisible.set(false);
     }
   }
 

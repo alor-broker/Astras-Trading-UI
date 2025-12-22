@@ -1,13 +1,14 @@
 <ng-container *transloco="let t; scope: 'info/calendar'">
-  @if (bond.coupons == null && bond.amortizations == null && bond.offers == null) {
+  @let targetBond = bond();
+  @if (targetBond.coupons == null && targetBond.amortizations == null && targetBond.offers == null) {
     <nz-empty nzNotFoundImage="simple"></nz-empty>
   }
 
-  @if (bond.coupons != null) {
+  @if (targetBond.coupons != null) {
     <h5 nz-typography>{{ t('infoCalendar.couponsTable') }}</h5>
     <nz-table
       #couponsTable
-      [nzData]="bond.coupons"
+      [nzData]="targetBond.coupons"
       nzTableLayout="fixed"
       atsTableRowHeight
       [nzFrontPagination]="false"
@@ -47,11 +48,11 @@
     <br/>
   }
 
-  @if (bond.amortizations != null) {
+  @if (targetBond.amortizations != null) {
     <h5 nz-typography>{{ t('infoCalendar.amortizationTable') }}</h5>
     <nz-table
       #amortizationsTable
-      [nzData]="bond.amortizations"
+      [nzData]="targetBond.amortizations"
       nzTableLayout="fixed"
       atsTableRowHeight
       [nzFrontPagination]="false"
@@ -84,11 +85,11 @@
     <br/>
   }
 
-  @if (bond.offers != null) {
+  @if (targetBond.offers != null) {
     <h5 nz-typography>{{ t('infoCalendar.offersTable') }}</h5>
     <nz-table
       #offersTable
-      [nzData]="bond.offers"
+      [nzData]="targetBond.offers"
       nzTableLayout="fixed"
       atsTableRowHeight
       [nzFrontPagination]="false"

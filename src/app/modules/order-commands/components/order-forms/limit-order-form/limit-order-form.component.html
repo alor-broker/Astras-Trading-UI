@@ -1,5 +1,5 @@
 <ng-container *transloco="let t; scope: 'order-commands/order-forms'">
-  @if (formInstrument$ | async; as formInstrument) {
+  @if (instrumentChanges$ | async; as formInstrument) {
     <div>
       <form [formGroup]="form" [nzLayout]="'vertical'" class="overflow-x-hidden" nz-form>
         <div [nzGutter]="12" nz-row>
@@ -89,7 +89,7 @@
               </nz-form-item>
             </div>
           }
-          @if (!limitOrderConfig.unsupportedFields.advanced) {
+          @if (!limitOrderConfig().unsupportedFields.advanced) {
             <nz-collapse [nzBordered]="false" class="compact" nzGhost>
               <nz-collapse-panel [nzActive]="expandAdvancedOptions" [nzHeader]="t('orderCommandsOrderForms.advanced')">
                 <nz-form-item class="compact">
@@ -193,7 +193,7 @@
                     </nz-form-control>
                   </nz-form-item>
                 }
-                @if (limitOrderConfig.isBracketsSupported) {
+                @if (limitOrderConfig().isBracketsSupported) {
                   <div class="d-flex align-items-start flex-gap-10">
                     <nz-form-item class="compact flex-shrink-2 w-100">
                       <nz-form-label class="flex-fill" nzFor="topOrderPrice">
@@ -234,7 +234,7 @@
                     </nz-form-item>
                   </div>
                 }
-                @if (limitOrderConfig.isBracketsSupported) {
+                @if (limitOrderConfig().isBracketsSupported) {
                   <div class="d-flex  align-items-start flex-gap-10">
                     <nz-form-item class="compact flex-shrink-2 w-100">
                       <nz-form-label class="flex-fill" nzFor="bottomOrderPrice">

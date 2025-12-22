@@ -55,16 +55,21 @@ describe('InstrumentSelectWidgetComponent', () => {
     fixture = TestBed.createComponent(InstrumentSelectWidgetComponent);
     component = fixture.componentInstance;
 
-    component.widgetInstance = {
-      instance: {
-        guid: 'guid'
-      } as Widget,
-      widgetMeta: {
-        widgetName: {
-          translations: {}
-        }
-      } as WidgetMeta
-    };
+    fixture.componentRef.setInput(
+      'widgetInstance',
+      {
+        instance: {
+          guid: 'guid'
+        } as Widget,
+        widgetMeta: {widgetName: {}} as WidgetMeta
+      }
+    );
+
+    fixture.componentRef.setInput(
+      'isBlockWidget',
+      false
+    );
+
     fixture.detectChanges();
   });
 

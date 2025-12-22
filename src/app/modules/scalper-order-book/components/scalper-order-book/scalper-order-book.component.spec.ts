@@ -8,6 +8,7 @@ import {ScalperOrderBookDataProvider} from "../../services/scalper-order-book-da
 import {MockComponents, MockProvider} from "ng-mocks";
 import {ScalperOrderBookBodyComponent} from "../scalper-order-book-body/scalper-order-book-body.component";
 import {CurrentPositionPanelComponent} from "../current-position-panel/current-position-panel.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -34,6 +35,7 @@ describe('ScalperOrderBookComponent', () => {
 
     fixture = TestBed.createComponent(ScalperOrderBookComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

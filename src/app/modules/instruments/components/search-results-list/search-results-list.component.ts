@@ -1,8 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Input,
-  OnInit
+  OnInit,
+  input
 } from '@angular/core';
 import { SearchResultItem } from "../../utils/search-instrument-store";
 import {
@@ -64,14 +64,11 @@ import { TranslocoDirective } from "@jsverse/transloco";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchResultsListComponent implements OnInit {
-  @Input({required: true})
-  items: SearchResultItem[] = [];
+  readonly items = input.required<SearchResultItem[]>();
 
-  @Input()
-  itemSize = 40;
+  readonly itemSize = input(40);
 
-  @Input()
-  height = 200;
+  readonly height = input(200);
 
   availableInstrumentGroups$!: Observable<string[]>;
 

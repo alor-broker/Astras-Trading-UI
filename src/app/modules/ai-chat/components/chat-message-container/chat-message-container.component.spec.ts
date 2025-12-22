@@ -25,14 +25,17 @@ describe('ChatMessageContainerComponent', () => {
     fixture = TestBed.createComponent(ChatMessageContainerComponent);
     component = fixture.componentInstance;
 
-    component.message = {
-      date: new Date(),
-      isMe: false,
-      messageType: MessageType.Text,
-      content: {
-        text: 'text'
-      } as TextMessageContent
-    };
+    fixture.componentRef.setInput(
+      'message',
+      {
+        date: new Date(),
+        isMe: false,
+        messageType: MessageType.Text,
+        content: {
+          text: 'text'
+        } as TextMessageContent
+      }
+    );
 
     fixture.detectChanges();
   });

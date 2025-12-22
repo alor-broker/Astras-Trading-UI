@@ -1,7 +1,7 @@
-import {Component, Inject, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, input, OnInit, ViewChild} from '@angular/core';
 import {InstrumentsService} from "../../../modules/instruments/services/instruments.service";
 import {WidgetSettingsService} from "../../services/widget-settings.service";
-import {BehaviorSubject, combineLatest, Observable, of, shareReplay, switchMap, take} from "rxjs";
+import {combineLatest, Observable, of, shareReplay, switchMap, take} from "rxjs";
 import {WidgetSettings} from "../../models/widget-settings.model";
 import {InstrumentKey} from "../../models/instruments/instrument-key.model";
 import {Instrument} from "../../models/instruments/instrument.model";
@@ -16,6 +16,7 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {AsyncPipe} from '@angular/common';
+import {toObservable} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-widget-header-instrument-switch',
@@ -35,9 +36,8 @@ import {AsyncPipe} from '@angular/common';
     AsyncPipe
   ]
 })
-export class WidgetHeaderInstrumentSwitchComponent implements OnInit, OnDestroy {
-  @Input({required: true})
-  widgetGuid!: string;
+export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
+  readonly widgetGuid = input.required<string>();
 
   @ViewChild(InstrumentSearchComponent)
   searchInput?: InstrumentSearchComponent;
@@ -45,7 +45,8 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit, OnDestroy 
   settings$!: Observable<WidgetSettings & InstrumentKey>;
   instrumentTitle$!: Observable<string>;
   searchVisible = false;
-  private readonly explicitTitle$ = new BehaviorSubject<string | null>(null);
+  readonly customTitle = input<string | null>(null);
+  private readonly customTitleChanges$ = toObservable(this.customTitle);
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
@@ -55,22 +56,13 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit, OnDestroy 
   ) {
   }
 
-  @Input()
-  set customTitle(value: string | null) {
-    this.explicitTitle$.next(value);
-  }
-
-  ngOnDestroy(): void {
-    this.explicitTitle$.complete();
-  }
-
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<WidgetSettings & InstrumentKey>(this.widgetGuid).pipe(
+    this.settings$ = this.widgetSettingsService.getSettings<WidgetSettings & InstrumentKey>(this.widgetGuid()).pipe(
       shareReplay(1)
     );
 
     this.instrumentTitle$ = combineLatest({
-      explicitTitle: this.explicitTitle$,
+      explicitTitle: this.customTitleChanges$,
       settings: this.settings$
     }).pipe(
       switchMap(x => {

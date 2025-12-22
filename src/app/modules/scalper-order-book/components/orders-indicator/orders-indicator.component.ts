@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
@@ -14,12 +14,9 @@ import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
   ]
 })
 export class OrdersIndicatorComponent {
-  @Input({required: true})
-  direction: 'up' | 'down' = 'up';
+  readonly direction = input.required<'up' | 'down'>();
 
-  @Input({required: true})
-  visible = false;
+  readonly visible = input.required<boolean>();
 
-  @Input()
-  hideTooltips = false;
+  readonly hideTooltips = input(false);
 }

@@ -18,6 +18,18 @@ describe('PromptPropertyEditorComponent', () => {
 
     fixture = TestBed.createComponent(PromptPropertyEditorComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput(
+      'config',
+      {
+        label: 'label',
+        applyValueCallback: () => {},
+        initialValue: null,
+        validation: {
+          minLength: 1,
+          maxLength: 1
+        }
+      }
+    );
     fixture.detectChanges();
   });
 

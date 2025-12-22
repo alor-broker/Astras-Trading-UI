@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, Inject, OnInit, Output, input} from '@angular/core';
 import {combineLatest, defer, distinctUntilChanged, Observable, shareReplay, switchMap, take, tap} from 'rxjs';
 import {debounceTime, map, mergeMap, startWith} from 'rxjs/operators';
 import {Position} from 'src/app/shared/models/positions/position.model';
@@ -102,8 +102,7 @@ interface PositionDisplay extends Position {
   ]
 })
 export class PositionsComponent extends BlotterBaseTableComponent<PositionDisplay, PositionFilter> implements OnInit {
-  @Input()
-  marketType?: MarketType | null;
+  readonly marketType = input<MarketType | null>();
 
   portfolioTotalCost$!: Observable<number>;
 
@@ -278,7 +277,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
     this.portfolioTotalCost$ = this.settings$.pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(s => {
-        if (this.marketType === MarketType.Forward) {
+        if (this.marketType() === MarketType.Forward) {
           return this.portfolioSubscriptionsService.getSpectraRisksSubscription(s.portfolio, s.exchange)
             .pipe(map(i => {
               return i.moneyAmount;

@@ -1,5 +1,5 @@
 @if (settings$ | async; as settings) {
-  <nz-table #basicTable [nzData]="ob?.rows ?? []" nzSize="small" [nzFrontPagination]="false" id="order-book-table">
+  <nz-table #basicTable [nzData]="ob()?.rows ?? []" nzSize="small" [nzFrontPagination]="false" id="order-book-table">
     <thead>
       <tr>
         <th nzWidth="20px">Bid</th>

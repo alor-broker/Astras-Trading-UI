@@ -1,10 +1,10 @@
-import {Component, Inject, Input, OnDestroy, OnInit} from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, shareReplay, take, withLatestFrom} from "rxjs";
+import {Component, Inject, input, OnInit} from '@angular/core';
+import {combineLatest, Observable, shareReplay, take, withLatestFrom} from "rxjs";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {Order, OrderType} from "../../../../shared/models/orders/order.model";
 import {Side} from "../../../../shared/models/enums/side.model";
 import {mapWith} from "../../../../shared/utils/observable-helper";
-import {filter, map} from "rxjs/operators";
+import {filter, map, startWith} from "rxjs/operators";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
@@ -16,6 +16,7 @@ import {TranslocoDirective} from '@jsverse/transloco';
 import {AsyncPipe, NgTemplateOutlet} from '@angular/common';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {toObservable} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-limit-order-price-change',
@@ -29,14 +30,23 @@ import {NzButtonComponent} from 'ng-zorro-antd/button';
     AsyncPipe
   ]
 })
-export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
+export class LimitOrderPriceChangeComponent implements OnInit {
   readonly orderSides = Side;
   activeLimitOrders$!: Observable<Order[]>;
-  @Input({required: true})
-  steps: number[] = [];
+  readonly steps = input.required<number[]>();
+  readonly instrument = input.required<Instrument>();
+  readonly currentPortfolio = input.required<PortfolioKey>();
+  protected readonly instrumentChanges$ = toObservable(this.instrument)
+    .pipe(
+      startWith(null),
+      shareReplay(1)
+    );
 
-  private readonly instrument$ = new BehaviorSubject<Instrument | null>(null);
-  private readonly portfolioKey$ = new BehaviorSubject<PortfolioKey | null>(null);
+  protected readonly currentPortfolioChanges$ = toObservable(this.currentPortfolio)
+    .pipe(
+      startWith(null),
+      shareReplay(1)
+    );
 
   constructor(
     private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
@@ -45,18 +55,8 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  @Input({required: true})
-  set portfolioKey(value: PortfolioKey) {
-    this.portfolioKey$.next(value);
-  }
-
-  @Input({required: true})
-  set instrument(value: Instrument) {
-    this.instrument$.next(value);
-  }
-
   get sortedSteps(): number[] {
-    return [...this.steps].sort((a, b) => a - b);
+    return [...this.steps()].sort((a, b) => a - b);
   }
 
   ngOnInit(): void {
@@ -68,11 +68,6 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
       map(s => s.orders.allOrders.filter(o => o.targetInstrument.symbol === s.instrument.symbol && o.type === OrderType.Limit && o.status === 'working')),
       shareReplay({bufferSize: 1, refCount: true})
     );
-  }
-
-  ngOnDestroy(): void {
-    this.instrument$.complete();
-    this.portfolioKey$.complete();
   }
 
   hasOrdersWithSide(orders: Order[], side: Side): boolean {
@@ -109,8 +104,8 @@ export class LimitOrderPriceChangeComponent implements OnInit, OnDestroy {
 
   protected getInstrumentWithPortfolio(): Observable<{ instrument: Instrument, portfolioKey: PortfolioKey }> {
     return combineLatest({
-      instrument: this.instrument$,
-      portfolioKey: this.portfolioKey$
+      instrument: this.instrumentChanges$,
+      portfolioKey: this.currentPortfolioChanges$
     }).pipe(
       filter(x => !!x.instrument && !!x.portfolioKey),
       map(x => ({instrument: x.instrument!, portfolioKey: x.portfolioKey!}))

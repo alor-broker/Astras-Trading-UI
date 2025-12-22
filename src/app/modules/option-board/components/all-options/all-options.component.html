@@ -49,7 +49,7 @@
                       >
                       <span>{{priceIndex}}</span>
                     </div>
-                    @if (dataContext.currentSelection$ | async; as optionsSelection) {
+                    @if (dataContext().currentSelection$ | async; as optionsSelection) {
                       @for (dateIndex of optionsMatrix.dateIndex; track getDateTrackKey(j, dateIndex); let j = $index) {
                         <div
                           [ngStyle]="{ width: layoutSizes.optionCellWidth + 'px', height: rowHeight + 'px'}"

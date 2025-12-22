@@ -2,10 +2,10 @@ import {
   Component,
   DestroyRef,
   Inject,
-  Input,
   OnDestroy,
   OnInit,
-  SkipSelf
+  SkipSelf,
+  input
 } from '@angular/core';
 import {
   BehaviorSubject,
@@ -70,17 +70,13 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
     }
   };
 
-  @Input()
-  isActive = false;
+  readonly isActive = input(false);
 
-  @Input({ required: true })
-  guid!: string;
+  readonly guid = input.required<string>();
 
-  @Input()
-  orientation: 'vertical' | 'horizontal' = 'vertical';
+  readonly orientation = input<'vertical' | 'horizontal'>('vertical');
 
-  @Input({ required: true })
-  dataContext!: ScalperOrderBookDataContext;
+  readonly dataContext = input.required<ScalperOrderBookDataContext>();
 
   workingVolumes$!: Observable<number[]>;
   readonly selectedVolume$ = new BehaviorSubject<{ index: number, value: number } | null>(null);
@@ -110,7 +106,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.dataContext.extendedSettings$.pipe(
+    this.settings$ = this.dataContext().extendedSettings$.pipe(
       map(x => x.widgetSettings),
       shareReplay({ bufferSize: 1, refCount: true })
     );
@@ -121,7 +117,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
     );
 
     this.lastSelectedVolumeState$ = this.widgetLocalStateService.getStateRecord<SelectedWorkingVolumeState>(
-      this.guid,
+      this.guid(),
       this.lastSelectedVolumeStateKey
     ).pipe(
       shareReplay({ bufferSize: 1, refCount: true })
@@ -220,7 +216,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
       take(1)
     ).subscribe(x => {
       this.widgetLocalStateService.setStateRecord<SelectedWorkingVolumeState>(
-        this.guid,
+        this.guid(),
         this.lastSelectedVolumeStateKey,
         {
           lastSelectedVolume: {
@@ -234,7 +230,7 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
 
   private initVolumeSwitchByHotKey(): void {
     this.hotKeyCommandService.commands$.pipe(
-      filter(x => x.type === 'workingVolumes' && x.index != null && this.isActive),
+      filter(x => x.type === 'workingVolumes' && x.index != null && this.isActive()),
       withLatestFrom(this.workingVolumes$),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(([command, workingVolumes]) => {

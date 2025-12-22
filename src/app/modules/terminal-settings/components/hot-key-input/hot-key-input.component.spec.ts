@@ -20,6 +20,7 @@ describe('HotKeyInputComponent', () => {
 
     fixture = TestBed.createComponent(HotKeyInputComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('actionName', 'test');
     fixture.detectChanges();
   });
 

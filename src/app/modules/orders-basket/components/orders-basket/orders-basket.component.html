@@ -5,7 +5,7 @@
         @if (settings.showPresetsPanel) {
           <div class="mb-5">
             <ats-presets
-              [guid]="guid"
+              [guid]="guid()"
               [presets]="(currentPresets$ | async) ?? []"
               [canAddPreset]="form.valid"
               (addPreset)="savePreset($event.title)"

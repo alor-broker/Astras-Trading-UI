@@ -1,7 +1,7 @@
 <ng-container *transloco="let t; scope: 'shared/editable-string'">
   @if ((isEditMode$ | async) === false) {
     <div class="display-mode">
-      <div class="content">{{content}}</div>
+      <div class="content">{{content()}}</div>
       <div class="edit-icon">
         <button (click)="setEditMode(true); $event.stopPropagation();" nz-button nzSize='small' nzType="link">
           <i nz-icon nzType="edit"></i>
@@ -20,7 +20,7 @@
                 formControlName="content"
                 nz-input
                 type="text"
-                [class]="inputClass"
+                [class]="inputClass()"
                 (click)="$event.stopPropagation()"
                 (blur)="emitValueIfValid()"
                 />
@@ -30,12 +30,13 @@
             </nz-input-group>
           </nz-form-control>
           <ng-template #contentError>
-            @if (lengthRestrictions) {
+            @let restrictions = lengthRestrictions();
+            @if (restrictions) {
               <span>{{t(
                 'sharedEditableString.stringLengthError',
                 {
-                min: lengthRestrictions.minLength,
-                max: lengthRestrictions.maxLength
+                min: restrictions.minLength,
+                max: restrictions.maxLength
               })}}</span>
             }
           </ng-template>

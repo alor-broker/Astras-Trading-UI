@@ -18,6 +18,7 @@ import {NzSliderComponent} from "ng-zorro-antd/slider";
 import {NzSwitchComponent} from "ng-zorro-antd/switch";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzPopoverDirective} from "ng-zorro-antd/popover";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('OrderbookSettingsComponent', () => {
   let component: OrderbookSettingsComponent;
@@ -73,6 +74,7 @@ describe('OrderbookSettingsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OrderbookSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

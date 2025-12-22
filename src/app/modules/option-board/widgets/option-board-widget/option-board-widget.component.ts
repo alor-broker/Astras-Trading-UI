@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, input, OnInit} from '@angular/core';
 import {Observable, take} from "rxjs";
 import {OptionBoardSettings} from "../../models/option-board-settings.model";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
@@ -37,11 +37,9 @@ export class OptionBoardWidgetComponent implements OnInit {
   shouldShowSettings = false;
   deviceInfo$!: Observable<DeviceInfo>;
 
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<OptionBoardSettings>;
   showBadge$!: Observable<boolean>;
@@ -55,7 +53,7 @@ export class OptionBoardWidgetComponent implements OnInit {
   }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   onSettingsChange(): void {
@@ -64,7 +62,7 @@ export class OptionBoardWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<OptionBoardSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'OptionBoardSettings',
       settings => ({
         ...settings

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, input, OnInit} from '@angular/core';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
@@ -24,11 +24,9 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class PortfolioSummaryWidgetComponent implements OnInit {
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<PortfolioSummarySettings>;
 
@@ -42,7 +40,7 @@ export class PortfolioSummaryWidgetComponent implements OnInit {
   }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   removeWidget($event: MouseEvent | TouchEvent): void {
@@ -53,7 +51,7 @@ export class PortfolioSummaryWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createPortfolioLinkedWidgetSettingsIfMissing<PortfolioSummarySettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'PortfolioSummarySettings',
       settings => ({
         ...settings,

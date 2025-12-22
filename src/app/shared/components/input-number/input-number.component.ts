@@ -1,73 +1,50 @@
 import {
   ChangeDetectorRef,
   Component,
+  DestroyRef,
   ElementRef,
   EventEmitter,
   forwardRef,
-  Input,
+  input,
   Output,
   TemplateRef,
   ViewChild
 } from '@angular/core';
-import {
-  FormsModule,
-  NG_VALUE_ACCESSOR
-} from "@angular/forms";
-import {
-  ControlValueAccessorBaseComponent
-} from "../control-value-accessor-base/control-value-accessor-base.component";
-import { MathHelper } from "../../utils/math-helper";
-import {
-  NzInputDirective,
-  NzInputGroupComponent
-} from "ng-zorro-antd/input";
-import { NgTemplateOutlet } from "@angular/common";
+import {FormsModule, NG_VALUE_ACCESSOR} from "@angular/forms";
+import {ControlValueAccessorBaseComponent} from "../control-value-accessor-base/control-value-accessor-base.component";
+import {MathHelper} from "../../utils/math-helper";
+import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
+import {NgTemplateOutlet} from "@angular/common";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {filter} from "rxjs";
 
 @Component({
-    selector: 'ats-input-number',
-    templateUrl: './input-number.component.html',
-    styleUrls: ['./input-number.component.less'],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef(() => InputNumberComponent),
-            multi: true
-        }
-    ],
-    imports: [
-        NzInputGroupComponent,
-        NzInputDirective,
-        FormsModule,
-        NgTemplateOutlet
-    ]
+  selector: 'ats-input-number',
+  templateUrl: './input-number.component.html',
+  styleUrls: ['./input-number.component.less'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => InputNumberComponent),
+      multi: true
+    }
+  ],
+  imports: [
+    NzInputGroupComponent,
+    NzInputDirective,
+    FormsModule,
+    NgTemplateOutlet
+  ]
 })
 export class InputNumberComponent extends ControlValueAccessorBaseComponent<number> {
-  private readonly minus = '-';
-  @Input()
-  step = 1;
-
-  @Input()
-  placeholder = '';
-
-  @Input()
-  readonly = false;
-
-  @Input()
-  allowNegative = false;
-
-  @Input()
-  suffix: TemplateRef<any> | null = null;
-
-  @Input()
-  focused = false;
-
-  @Input()
-  allowDecimal = true;
-
-  @Input()
-  set initialValue(value: number) {
-    this.writeValue(value);
-  }
+  readonly step = input(1);
+  readonly placeholder = input('');
+  readonly readonly = input(false);
+  readonly allowNegative = input(false);
+  readonly suffix = input<TemplateRef<any> | null>(null);
+  readonly focused = input(false);
+  readonly allowDecimal = input(true);
+  readonly initialValue = input<number>();
 
   @Output()
   atsBlur = new EventEmitter();
@@ -82,18 +59,28 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   inputElement!: ElementRef<HTMLInputElement>;
 
   value?: number | null;
-  displayValue?: string | null;
 
-  constructor(private readonly cdr: ChangeDetectorRef) {
+  displayValue?: string | null;
+  private readonly minus = '-';
+
+  constructor(
+    private readonly cdr: ChangeDetectorRef,
+    private readonly destroyRef: DestroyRef
+  ) {
     super();
+
+    toObservable(this.initialValue).pipe(
+      filter((value) => value != undefined),
+      takeUntilDestroyed(destroyRef)
+    ).subscribe((value) => this.writeValue(value));
   }
 
   writeValue(value: number | null): void {
-    if(value === this.value) {
+    if (value === this.value) {
       return;
     }
 
-    if(Number(this.displayValue) === Number(value)) {
+    if (Number(this.displayValue) === Number(value)) {
       return;
     }
 
@@ -102,7 +89,7 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
     this.setValue(value);
 
     this.setDisplayValue(value);
-    if(this.focused) {
+    if (this.focused()) {
       setTimeout(() => {
         this.inputElement?.nativeElement.select();
       });
@@ -127,13 +114,13 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
 
     parsedValue = this.removeExtraSymbol('.', parsedValue);
 
-    if(this.allowNegative) {
+    if (this.allowNegative()) {
       parsedValue = this.removeExtraSign(parsedValue);
     } else {
       parsedValue = parsedValue.replace(/-/g, '');
     }
 
-    if(!this.allowDecimal) {
+    if (!this.allowDecimal()) {
       parsedValue = parsedValue.replace(/\./g, '');
     }
 
@@ -141,7 +128,7 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
       ? Number(parsedValue)
       : null;
 
-    if(parsedValue === this.minus && this.allowNegative) {
+    if (parsedValue === this.minus && this.allowNegative()) {
       newValue = null;
     } else if (newValue != null && Number.isNaN(newValue)) {
       newValue = this.value ?? null;
@@ -194,12 +181,12 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   }
 
   private stepChange(multiplier: number): void {
-    const valueStep = this.step || 1;
+    const valueStep = this.step() || 1;
     const move = valueStep * multiplier;
     const currentValue = this.value ?? 0;
 
     let newValue = MathHelper.roundByMinStepMultiplicity(currentValue + move, valueStep);
-    newValue = (newValue > 0 || this.allowNegative) ? newValue : 0;
+    newValue = (newValue > 0 || this.allowNegative()) ? newValue : 0;
 
     this.setDisplayValue(newValue);
     this.setValue(newValue);
@@ -236,7 +223,7 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
 
   private removeExtraSign(input: string): string {
     let startSymbol = '';
-    if(input.startsWith(this.minus)) {
+    if (input.startsWith(this.minus)) {
       startSymbol = this.minus;
     }
 

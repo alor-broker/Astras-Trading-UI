@@ -1,7 +1,7 @@
 @if (settings$ | async; as settings) {
   @if ((ob$ | async); as ob) {
     <div class="show-scroll">
-      <ats-orderbook-chart [guid]='guid' [chartData]="ob.chartData"></ats-orderbook-chart>
+      <ats-orderbook-chart [guid]='guid()' [chartData]="ob.chartData"></ats-orderbook-chart>
       @if (settings.showVolume) {
         <div class="volumes">
           <span class="bid-volume">{{ob.bidVolumes}}</span>
@@ -34,13 +34,13 @@
         @if ((settings.columnsOrder ?? columnsOrderEnum.VolumesAtTheEdges); as columnsOrder) {
           @if (columnsOrder === columnsOrderEnum.VolumesAtTheEdges) {
             <ats-orderbook-table-volumes-at-the-edges
-              [guid]="guid"
+              [guid]="guid()"
               [ob]="ob"
             ></ats-orderbook-table-volumes-at-the-edges>
           }
           @if (columnsOrder === columnsOrderEnum.VolumesAtTheMiddle) {
             <ats-orderbook-table-volumes-at-the-middle
-              [guid]="guid"
+              [guid]="guid()"
               [ob]="ob"
             ></ats-orderbook-table-volumes-at-the-middle>
           }

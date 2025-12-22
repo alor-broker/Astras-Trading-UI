@@ -4,7 +4,7 @@ import {
   DestroyRef,
   ElementRef,
   Inject,
-  Input,
+  input,
   OnDestroy,
   OnInit,
   QueryList,
@@ -15,7 +15,7 @@ import {
   ScalperOrderBookDataContext,
   ScalperOrderBookExtendedSettings
 } from '../../models/scalper-order-book-data-context.model';
-import {BehaviorSubject, combineLatest, filter, Observable, Subject,} from 'rxjs';
+import {BehaviorSubject, combineLatest, filter, Observable,} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {MathHelper} from '../../../../shared/utils/math-helper';
 import {PriceUnits} from '../../models/scalper-order-book-settings.model';
@@ -23,7 +23,7 @@ import {
   SCALPER_ORDERBOOK_BODY_REF,
   ScalperOrderBookBodyRef
 } from '../scalper-order-book-body/scalper-order-book-body.component';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {OrderbookDataRow} from "../../../orderbook/models/orderbook-data.model";
 import {AsyncPipe, NgClass, NgStyle} from '@angular/common';
 
@@ -48,16 +48,15 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
   markerElRef!: QueryList<ElementRef<HTMLElement>>;
 
   readonly priceUnits = PriceUnits;
-  @Input({required: true})
-  xAxisStep!: number;
+  readonly xAxisStep = input.required<number>();
 
-  @Input({required: true})
-  dataContext!: ScalperOrderBookDataContext;
+  readonly dataContext = input.required<ScalperOrderBookDataContext>();
 
   displayMarker$!: Observable<MarkerDisplay | null>;
   markerPosition$ = new BehaviorSubject<'left' | 'right'>('left');
   settings$!: Observable<ScalperOrderBookExtendedSettings>;
-  private readonly activeRow$ = new Subject<{ price: number } | null>();
+  readonly activeRow = input<{ price: number } | null>(null);
+  private readonly activeRowChanges$ = toObservable(this.activeRow);
 
   constructor(
     @Inject(SCALPER_ORDERBOOK_BODY_REF)
@@ -66,11 +65,6 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly elementRef: ElementRef<HTMLElement>,
     private readonly destroyRef: DestroyRef
   ) {
-  }
-
-  @Input()
-  set activeRow(value: { price: number } | null) {
-    this.activeRow$.next(value);
   }
 
   ngAfterViewInit(): void {
@@ -104,7 +98,7 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initMarkerData(): void {
-    this.settings$ = this.dataContext.extendedSettings$.pipe(
+    this.settings$ = this.dataContext().extendedSettings$.pipe(
       map(x => {
         if (!!x.widgetSettings.rulerSettings) {
           return x;
@@ -123,10 +117,10 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     this.displayMarker$ = combineLatest([
-      this.dataContext.orderBookBody$,
-      this.dataContext.displayRange$,
-      this.dataContext.orderBook$,
-      this.activeRow$,
+      this.dataContext().orderBookBody$,
+      this.dataContext().displayRange$,
+      this.dataContext().orderBook$,
+      this.activeRowChanges$,
       this.settings$
     ]).pipe(
       filter(([, displayRange, , ,]) => !!displayRange),

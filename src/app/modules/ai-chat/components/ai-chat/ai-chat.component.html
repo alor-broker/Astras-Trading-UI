@@ -28,7 +28,7 @@
   <ats-chat-status [status]="chatStatus$ | async"></ats-chat-status>
 
   <ats-message-input
-    [atsDisabled]="atsDisabled"
+    [atsDisabled]="atsDisabled()"
     (send)="sendMessage($event)"
     *transloco="let t; scope: 'ai-chat/message-input'"
     [messagePlaceholder]="t('aiChatMessageInput.textPlaceholder')"

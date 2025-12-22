@@ -9,6 +9,7 @@ import {commonTestProviders} from "../../../../shared/utils/testing/common-test-
 import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
 import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
 import {MockComponents} from "ng-mocks";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('BondScreenerSettingsComponent', () => {
   let component: BondScreenerSettingsComponent;
@@ -43,6 +44,7 @@ describe('BondScreenerSettingsComponent', () => {
     });
     fixture = TestBed.createComponent(BondScreenerSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

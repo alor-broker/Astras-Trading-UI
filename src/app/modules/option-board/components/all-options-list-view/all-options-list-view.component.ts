@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Input, OnDestroy, OnInit,} from '@angular/core';
+import {Component, DestroyRef, input, OnDestroy, OnInit} from '@angular/core';
 import {OptionBoardDataContext} from "../../models/option-board-data-context.model";
 import {OptionBoardService} from "../../services/option-board.service";
 import {TranslatorService} from "../../../../shared/services/translator.service";
@@ -129,11 +129,9 @@ interface DisplaySettings extends RecordContent {
   styleUrl: './all-options-list-view.component.less'
 })
 export class AllOptionsListViewComponent implements OnInit, OnDestroy {
-  @Input({required: true})
-  dataContext!: OptionBoardDataContext;
+  readonly dataContext = input.required<OptionBoardDataContext>();
 
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   protected readonly settingsValidationOptions = {
     highlightedSpreadItemsCount: {
@@ -219,7 +217,7 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.dataContext.updateOptionSelection(optionKey, underlyingAsset);
+    this.dataContext().updateOptionSelection(optionKey, underlyingAsset);
   }
 
   protected updateContentSize(entries: ResizeObserverEntry[]): void {
@@ -243,7 +241,7 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
       if (target != null) {
         target.displayParameter = newValue;
         this.widgetLocalStateService.setStateRecord(
-          this.guid,
+          this.guid(),
           this.StorageKeys.rowLayout,
           layout
         );
@@ -375,7 +373,7 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
 
   private initLayout(): void {
     this.rowLayout$ = this.widgetLocalStateService.getStateRecord<OptionsRowLayout>(
-      this.guid,
+      this.guid(),
       this.StorageKeys.rowLayout
     ).pipe(
       map(record => {
@@ -406,7 +404,7 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
   }
 
   private initDataStream(): void {
-    this.expirations$ = this.dataContext.settings$.pipe(
+    this.expirations$ = this.dataContext().settings$.pipe(
       tap(() => this.isLoading$.next(true)),
       switchMap(s => this.optionBoardService.getExpirations(s.symbol, s.exchange)),
       map(items => {
@@ -427,7 +425,7 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
       shareReplay({bufferSize: 1, refCount: true})
     );
 
-    this.selectedOptionKeys$ = this.dataContext.currentSelection$.pipe(
+    this.selectedOptionKeys$ = this.dataContext().currentSelection$.pipe(
       map(selectedOptions => {
         return new Set(selectedOptions.selectedOptions.map(o => this.encodeToString(o)));
       })
@@ -517,7 +515,7 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
   }
 
   private initCurrentPrice(): void {
-    this.currentPrice$ = this.dataContext.settings$.pipe(
+    this.currentPrice$ = this.dataContext().settings$.pipe(
       switchMap(settings => {
         return this.quotesService.getQuotes(settings.symbol, settings.exchange).pipe(
           map(quote => {
@@ -539,7 +537,7 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
   }
 
   private initDisplaySettingsFormSaving(): void {
-    this.widgetLocalStateService.getStateRecord<DisplaySettings>(this.guid, this.StorageKeys.displaySettings).pipe(
+    this.widgetLocalStateService.getStateRecord<DisplaySettings>(this.guid(), this.StorageKeys.displaySettings).pipe(
       take(1)
     ).subscribe(saved => {
       if (saved != null) {
@@ -554,7 +552,7 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
         takeUntilDestroyed(this.destroyRef)
       ).subscribe(settings => {
         this.widgetLocalStateService.setStateRecord<DisplaySettings>(
-          this.guid,
+          this.guid(),
           this.StorageKeys.displaySettings,
           {
             strikesCount: settings.strikesCount!,

@@ -41,6 +41,7 @@ import {ResizeColumnDirective} from "../../../../shared/directives/resize-column
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('TradesComponent', () => {
   let component: TradesComponent;
@@ -123,7 +124,7 @@ describe('TradesComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TradesComponent);
     component = fixture.componentInstance;
-    component.guid = 'testGuid';
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
   });
 
   afterEach(() => fixture.destroy());

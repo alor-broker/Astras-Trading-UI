@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, DestroyRef, Inject, input, OnDestroy, OnInit} from '@angular/core';
 import {BehaviorSubject, filter, Observable, of, shareReplay,} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {BlotterService} from '../../services/blotter.service';
@@ -82,11 +82,9 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
   readonly marketTypes = MarketType;
   shouldShowSettings = false;
 
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   activeTabIndex$ = of(0);
   marketType$?: Observable<MarketType | undefined>;
@@ -107,7 +105,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
   }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   get isNotificationsSupported(): boolean {
@@ -117,7 +115,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createPortfolioLinkedWidgetSettingsIfMissing<BlotterSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'BlotterSettings',
       settings => ({
         ...settings,
@@ -198,7 +196,7 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
   }
 
   onIndexChange(index?: number): void {
-    this.widgetSettingsService.updateSettings<BlotterSettings>(this.widgetInstance.instance.guid, {activeTabIndex: index ?? 0});
+    this.widgetSettingsService.updateSettings<BlotterSettings>(this.guid, {activeTabIndex: index ?? 0});
   }
 
   ngOnDestroy(): void {

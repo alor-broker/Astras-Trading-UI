@@ -1,39 +1,30 @@
-﻿import { WidgetSettings } from "../../models/widget-settings.model";
-import {
-  Observable,
-  shareReplay,
-  take
-} from "rxjs";
-import { WidgetSettingsService } from "../../services/widget-settings.service";
-import { ManageDashboardsService } from "../../services/manage-dashboards.service";
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+﻿import {WidgetSettings} from "../../models/widget-settings.model";
+import {Observable, shareReplay, take} from "rxjs";
+import {WidgetSettingsService} from "../../services/widget-settings.service";
+import {ManageDashboardsService} from "../../services/manage-dashboards.service";
+import {Component, DestroyRef, EventEmitter, input, InputSignal, OnInit, Output} from "@angular/core";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+
 export interface WidgetSettingsFormComponent {
-  guid: string;
+  guid: InputSignal<string>;
   readonly showCopy: boolean;
   readonly canSave: boolean;
   readonly canCopy: boolean;
+
   updateSettings(): void;
+
   createWidgetCopy(): void;
 }
 
 @Component({
-    template: '',
-    standalone: false
+  template: '',
+  standalone: false
 })
 export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> implements WidgetSettingsFormComponent, OnInit {
-  @Input({ required: true })
-  guid!: string;
-
   @Output()
   settingsChange = new EventEmitter<void>();
+
+  readonly guid = input.required<string>();
 
   protected abstract settings$: Observable<T>;
 
@@ -89,7 +80,7 @@ export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> impl
   }
 
   protected initSettingsStream(): void {
-    this.settings$ = this.settingsService.getSettings<T>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<T>(this.guid()).pipe(
       shareReplay(1)
     );
   }

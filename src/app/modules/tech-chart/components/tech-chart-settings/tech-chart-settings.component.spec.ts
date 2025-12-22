@@ -20,6 +20,7 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzSliderComponent} from "ng-zorro-antd/slider";
 import {NzColorPickerComponent} from "ng-zorro-antd/color-picker";
 import {NzTypographyComponent} from "ng-zorro-antd/typography";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('TechChartSettingsComponent', () => {
   let component: TechChartSettingsComponent;
@@ -78,6 +79,7 @@ describe('TechChartSettingsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TechChartSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

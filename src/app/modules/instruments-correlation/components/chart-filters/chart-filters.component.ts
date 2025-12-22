@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, OnInit, Output, input} from '@angular/core';
 import {DetrendType, InstrumentsCorrelationRequest} from "../../models/instruments-correlation.model";
 import {combineLatest, Observable, shareReplay, take} from "rxjs";
 import {Watchlist, WatchlistType} from "../../../instruments/models/watchlist.model";
@@ -37,8 +37,7 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class ChartFiltersComponent implements OnInit {
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   readonly timeframes = [
     {
@@ -92,7 +91,7 @@ export class ChartFiltersComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<InstrumentsCorrelationSettings>(this.guid).pipe(
+    this.settings$ = this.widgetSettingsService.getSettings<InstrumentsCorrelationSettings>(this.guid()).pipe(
       shareReplay({bufferSize: 1, refCount: true})
     );
 
@@ -164,7 +163,7 @@ export class ChartFiltersComponent implements OnInit {
 
     const formValue = this.parametersForm.value;
     this.widgetSettingsService.updateSettings<InstrumentsCorrelationSettings>(
-      this.guid,
+      this.guid(),
       {
         lastRequestParams: {
           listId: formValue.targetListId!,

@@ -1,7 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Input
+  input
 } from '@angular/core';
 import {take} from "rxjs";
 import {defaultBadgeColor, toInstrumentKey} from "../../../../shared/utils/instruments";
@@ -25,8 +25,7 @@ import {filter, map} from "rxjs/operators";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OpenOrdersDialogNavBtnComponent {
-  @Input()
-  atsDisabled = false;
+  readonly atsDisabled = input(false);
 
   constructor(
     private readonly ordersDialogService: OrdersDialogService,

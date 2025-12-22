@@ -7,7 +7,7 @@
     class="container lh-1"
     >
     <div
-      [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookCurrentPositionState.avgPositionPriceTooltip')"
+      [nz-tooltip]="hideTooltips() ? null : t('scalperOrderBookCurrentPositionState.avgPositionPriceTooltip')"
       [nzTooltipMouseEnterDelay]="1"
       class="p-2"
       >
@@ -18,7 +18,7 @@
         'positive': vm.orderBookPosition.qty > 0,
         'negative': vm.orderBookPosition.qty < 0
         }"
-      [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookCurrentPositionState.lotsQtyTooltip')"
+      [nz-tooltip]="hideTooltips() ? null : t('scalperOrderBookCurrentPositionState.lotsQtyTooltip')"
       [nzTooltipMouseEnterDelay]="1"
       class="p-2"
       >
@@ -29,7 +29,7 @@
         'positive': (vm.orderBookPosition.lossOrProfitPoints ?? 0) > 0,
         'negative': (vm.orderBookPosition.lossOrProfitPoints ?? 0) < 0
         }"
-      [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookCurrentPositionState.lossOrProfitTooltip')"
+      [nz-tooltip]="hideTooltips() ? null : t('scalperOrderBookCurrentPositionState.lossOrProfitTooltip')"
       [nzTooltipMouseEnterDelay]="1"
       (click)="changeLossOrProfitDisplayType()"
       class="p-2"

@@ -53,12 +53,15 @@ describe('AllInstrumentsWidgetComponent', () => {
     fixture = TestBed.createComponent(AllInstrumentsWidgetComponent);
     component = fixture.componentInstance;
 
-    component.widgetInstance = {
-      instance: {
-        guid: 'guid'
-      } as Widget,
-      widgetMeta: {} as WidgetMeta
-    };
+    fixture.componentRef.setInput(
+      'widgetInstance',
+      {
+        instance: {
+          guid: 'guid'
+        } as Widget,
+        widgetMeta: {widgetName: {}} as WidgetMeta
+      }
+    );
 
     fixture.detectChanges();
   });

@@ -13,6 +13,7 @@ import { ManageDashboardsService } from "../../../../shared/services/manage-dash
 import {MockComponents} from "ng-mocks";
 import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
 import {NzSwitchComponent} from "ng-zorro-antd/switch";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('AllTradesSettingsComponent', () => {
   let component: AllTradesSettingsComponent;
@@ -53,6 +54,7 @@ describe('AllTradesSettingsComponent', () => {
 
     fixture = TestBed.createComponent(AllTradesSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

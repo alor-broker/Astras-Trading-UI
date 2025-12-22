@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, model, Output} from '@angular/core';
 import {AiChatTermsOfUseService} from "../../services/ai-chat-terms-of-use.service";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from 'ng-zorro-antd/modal';
@@ -24,11 +24,7 @@ import {NzButtonComponent} from 'ng-zorro-antd/button';
   ]
 })
 export class TermsOfUseDialogComponent {
-  @Input({required: true})
-  atsVisible = false;
-
-  @Output()
-  atsVisibleChange = new EventEmitter<boolean>();
+  atsVisible = model(false);
 
   @Output()
   confirmed = new EventEmitter<boolean>();
@@ -49,7 +45,6 @@ export class TermsOfUseDialogComponent {
   }
 
   private handleClose(): void {
-    this.atsVisible = false;
-    this.atsVisibleChange.emit(this.atsVisible);
+    this.atsVisible.set(false);
   }
 }

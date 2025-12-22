@@ -1,21 +1,22 @@
+@let displayMessage = message();
 <div
   class="d-flex flex-column flex-gap-5 align-items-start"
   [ngClass]="{
-  'right': message.isMe,
-  'left': !message.isMe
+  'right': displayMessage.isMe,
+  'left': !displayMessage.isMe
   }"
   >
-  @if (!message.isMe) {
+  @if (!displayMessage.isMe) {
     <div class="avatar">
-      <nz-avatar nzSize="large" nzIcon="user" [nzSrc]="message.avatarUri"></nz-avatar>
+      <nz-avatar nzSize="large" nzIcon="user" [nzSrc]="displayMessage.avatarUri"></nz-avatar>
     </div>
   }
 
   <div class="content">
-    @switch (message.messageType) {
+    @switch (displayMessage.messageType) {
       @case (messageTypes.Text) {
         <ats-text-message
-          [content]="message.content"
+          [content]="displayMessage.content"
         ></ats-text-message>
       }
     }

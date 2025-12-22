@@ -4,71 +4,51 @@ import {
   ContentChildren,
   DestroyRef,
   EventEmitter,
-  Input,
+  input,
   NgZone,
   OnDestroy,
   Output,
   QueryList,
 } from '@angular/core';
-import { PanelComponent } from "../panel/panel.component";
-import {
-  map,
-  startWith
-} from "rxjs/operators";
-import {
-  ReplaySubject,
-  take
-} from "rxjs";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import {
-  PANELS_CONTAINER_CONTEXT,
-  PanelsContainerContext
-} from "../tokens";
+import {PanelComponent} from "../panel/panel.component";
+import {map, startWith} from "rxjs/operators";
+import {ReplaySubject, take} from "rxjs";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {PANELS_CONTAINER_CONTEXT, PanelsContainerContext} from "../tokens";
 
 export interface ResizedEvent {
   clientX: number;
 }
 
 @Component({
-    selector: 'ats-panels-container',
-    templateUrl: './panels-container.component.html',
-    styleUrls: ['./panels-container.component.less'],
-    providers: [
-        {
-            provide: PANELS_CONTAINER_CONTEXT,
-            useExisting: PanelsContainerComponent
-        }
-    ]
+  selector: 'ats-panels-container',
+  templateUrl: './panels-container.component.html',
+  styleUrls: ['./panels-container.component.less'],
+  providers: [
+    {
+      provide: PANELS_CONTAINER_CONTEXT,
+      useExisting: PanelsContainerComponent
+    }
+  ]
 })
 export class PanelsContainerComponent implements PanelsContainerContext, AfterViewInit, OnDestroy {
-  @ContentChildren(PanelComponent, { emitDistinctChangesOnly: true })
+  @ContentChildren(PanelComponent, {emitDistinctChangesOnly: true})
   panelsQuery!: QueryList<PanelComponent>;
 
   @Output()
   widthUpdated = new EventEmitter<Record<string, number>>();
 
+  readonly initialWidths = input.required<Record<string, number>>();
+
   private lastAppliedWidths: Map<string, number> | null = null;
   private animationId = -1;
   private readonly panels = new ReplaySubject<PanelComponent[]>(1);
+  private readonly initialWidthsChanges$ = toObservable(this.initialWidths);
 
   constructor(
     private readonly ngZone: NgZone,
     private readonly destroyRef: DestroyRef) {
   }
-
-  @Input({ required: true })
-  set initialWidths(value: Record<string, number>) {
-    if (this.isWidthsChanged(value)) {
-      this.panels.pipe(
-        take(1)
-      ).subscribe(panels => {
-        const widths = this.normalizeSavedWidths(value, panels);
-
-        this.applyWidths(widths);
-        this.lastAppliedWidths = widths;
-      });
-    }
-  };
 
   ngOnDestroy(): void {
     this.panels.complete();
@@ -82,6 +62,21 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
       startWith(getPanels()),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => this.panels.next(x));
+
+    this.initialWidthsChanges$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(value => {
+      if (this.isWidthsChanged(value)) {
+        this.panels.pipe(
+          take(1)
+        ).subscribe(panels => {
+          const widths = this.normalizeSavedWidths(value, panels);
+
+          this.applyWidths(widths);
+          this.lastAppliedWidths = widths;
+        });
+      }
+    });
   }
 
   onPanelResized(panel: PanelComponent, event: ResizedEvent): void {
@@ -110,12 +105,12 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
         return;
       }
 
-      if (panels.some(p => p.isExpanded && p.id !== panel.id)) {
+      if (panels.some(p => p.isExpanded && p.id() !== panel.id())) {
         // only one panel can be expanded
         return;
       }
 
-      const panelIndex = panels.findIndex(p => p.id === panel.id);
+      const panelIndex = panels.findIndex(p => p.id() === panel.id());
       if (panelIndex < 0) {
         return;
       }
@@ -129,8 +124,9 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
       const rightNeighborPanel = panels[rightNeighborIndex];
 
       const newWidths = new Map(this.lastAppliedWidths);
-      newWidths.set(panel.id, this.roundWidth(newWidths.get(panel.id)! + newWidths.get(rightNeighborPanel.id)!));
-      newWidths.set(rightNeighborPanel.id, 0);
+      const id = rightNeighborPanel.id();
+      newWidths.set(panel.id(), this.roundWidth(newWidths.get(panel.id())! + newWidths.get(id)!));
+      newWidths.set(id, 0);
 
       this.ngZone.run(() => this.applyWidths(newWidths));
     });
@@ -152,9 +148,9 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
 
   private normalizeSavedWidths(rawWidths: Record<string, number>, panels: PanelComponent[]): Map<string, number> {
     const mappedWidths = panels.map(p => ({
-      panelId: p.id,
-      width: (rawWidths[p.id] as number | undefined) ?? null,
-      defaultWidth: p.defaultWidthPercent
+      panelId: p.id(),
+      width: (rawWidths[p.id()] as number | undefined) ?? null,
+      defaultWidth: p.defaultWidthPercent()
     }));
 
     const getFullFilledWidths = (items: { panelId: string, width: number }[]): Map<string, number> => {
@@ -172,10 +168,10 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
     };
 
     if (mappedWidths.filter(p => p.width == null).length === 0) {
-      return getFullFilledWidths(mappedWidths.map(m => ({ ...m, width: m.width! })));
+      return getFullFilledWidths(mappedWidths.map(m => ({...m, width: m.width!})));
     }
 
-    return getFullFilledWidths(mappedWidths.map(m => ({ ...m, width: m.defaultWidth })));
+    return getFullFilledWidths(mappedWidths.map(m => ({...m, width: m.defaultWidth})));
   }
 
   private applyWidths(widths: Map<string, number>): void {
@@ -185,7 +181,7 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
       cancelAnimationFrame(this.animationId);
       this.animationId = requestAnimationFrame(() => {
         for (const panel of panels) {
-          const panelWidth = widths.get(panel.id);
+          const panelWidth = widths.get(panel.id());
           if (panelWidth != null) {
             panel.applyWidth(panelWidth, '%');
           }
@@ -212,7 +208,7 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
       const currentWidth = bounds.right - bounds.left;
 
       return {
-        id: p.id,
+        id: p.id(),
         panel: p,
         currentBounds: bounds,
         currentWidth: currentWidth,
@@ -220,7 +216,7 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
       };
     });
 
-    const panelIndex = panelsMap.findIndex(p => p.id === resizedPanel.id);
+    const panelIndex = panelsMap.findIndex(p => p.id === resizedPanel.id());
     if (panelIndex < 0) {
       return null;
     }
@@ -237,11 +233,11 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
 
     if (event.clientX < targetPanel.currentBounds.right) {
       // decrease width
-      targetPanel.updatedWidth = Math.max(targetPanel.panel.minWidthPx, event.clientX - targetPanel.currentBounds.left);
+      targetPanel.updatedWidth = Math.max(targetPanel.panel.minWidthPx(), event.clientX - targetPanel.currentBounds.left);
       rightNeighborPanel.updatedWidth = rightNeighborPanel.currentBounds.right - (targetPanel.currentBounds.left + targetPanel.updatedWidth);
     } else {
       // increase width
-      rightNeighborPanel.updatedWidth = Math.max(rightNeighborPanel.panel.minWidthPx, rightNeighborPanel.currentBounds.right - event.clientX);
+      rightNeighborPanel.updatedWidth = Math.max(rightNeighborPanel.panel.minWidthPx(), rightNeighborPanel.currentBounds.right - event.clientX);
       targetPanel.updatedWidth = rightNeighborPanel.currentBounds.right - rightNeighborPanel.updatedWidth - targetPanel.currentBounds.left;
     }
 
@@ -251,7 +247,7 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
   }
 
   private isWidthsChanged(newWidths: Record<string, number>): boolean {
-    if(this.lastAppliedWidths === null) {
+    if (this.lastAppliedWidths === null) {
       return true;
     }
 

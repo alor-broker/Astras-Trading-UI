@@ -1,37 +1,28 @@
-import {
-  Component,
-  Input
-} from '@angular/core';
-import { ScalperOrderBookDataContext } from "../../models/scalper-order-book-data-context.model";
-import {
-  PanelSlots,
-  ScalperOrderBookWidgetSettings
-} from "../../models/scalper-order-book-settings.model";
-import { LetDirective } from '@ngrx/component';
-import { ModifiersIndicatorComponent } from '../modifiers-indicator/modifiers-indicator.component';
-import { ShortLongIndicatorComponent } from '../short-long-indicator/short-long-indicator.component';
-import { WorkingVolumesPanelComponent } from '../working-volumes-panel/working-volumes-panel.component';
+import {Component, input} from '@angular/core';
+import {ScalperOrderBookDataContext} from "../../models/scalper-order-book-data-context.model";
+import {PanelSlots, ScalperOrderBookWidgetSettings} from "../../models/scalper-order-book-settings.model";
+import {LetDirective} from '@ngrx/component';
+import {ModifiersIndicatorComponent} from '../modifiers-indicator/modifiers-indicator.component';
+import {ShortLongIndicatorComponent} from '../short-long-indicator/short-long-indicator.component';
+import {WorkingVolumesPanelComponent} from '../working-volumes-panel/working-volumes-panel.component';
 
 @Component({
-    selector: 'ats-bottom-floating-panel',
-    templateUrl: './bottom-floating-panel.component.html',
-    styleUrls: ['./bottom-floating-panel.component.less'],
-    imports: [
-      LetDirective,
-      ModifiersIndicatorComponent,
-      ShortLongIndicatorComponent,
-      WorkingVolumesPanelComponent
-    ]
+  selector: 'ats-bottom-floating-panel',
+  templateUrl: './bottom-floating-panel.component.html',
+  styleUrls: ['./bottom-floating-panel.component.less'],
+  imports: [
+    LetDirective,
+    ModifiersIndicatorComponent,
+    ShortLongIndicatorComponent,
+    WorkingVolumesPanelComponent
+  ]
 })
 export class BottomFloatingPanelComponent {
-  @Input({ required: true })
-  guid!: string;
+  readonly guid = input.required<string>();
 
-  @Input({ required: true })
-  isActive!: boolean;
+  readonly isActive = input.required<boolean>();
 
-  @Input({ required: true })
-  dataContext!: ScalperOrderBookDataContext;
+  readonly dataContext = input.required<ScalperOrderBookDataContext>();
 
   showWorkingVolumes(settings: ScalperOrderBookWidgetSettings): boolean {
     return (settings.showWorkingVolumesPanel ?? true)

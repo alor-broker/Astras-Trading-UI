@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, DestroyRef, input, OnInit, ViewChild} from '@angular/core';
 import {BehaviorSubject, map, Observable,} from 'rxjs';
 import {ChartDataset, ChartOptions, ComplexFillTarget, ScatterControllerDatasetOptions} from 'chart.js';
 import {MathHelper} from 'src/app/shared/utils/math-helper';
@@ -8,7 +8,7 @@ import {WidgetSettingsService} from "../../../../shared/services/widget-settings
 import {ThemeService} from '../../../../shared/services/theme.service';
 import {OrderbookSettings} from '../../models/orderbook-settings.model';
 import {TranslatorService} from "../../../../shared/services/translator.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {AsyncPipe} from '@angular/common';
 
 @Component({
@@ -20,13 +20,9 @@ import {AsyncPipe} from '@angular/common';
     AsyncPipe
   ]
 })
-export class OrderbookChartComponent implements OnInit, OnChanges {
-  @Input({required: true})
-  chartData!: ChartData;
-
-  @Input({required: true})
-  guid!: string;
-
+export class OrderbookChartComponent implements OnInit {
+  readonly chartData = input.required<ChartData>();
+  readonly guid = input.required<string>();
   @ViewChild(BaseChartDirective)
   chart?: BaseChartDirective;
 
@@ -75,6 +71,7 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
     },
   };
 
+  private readonly chartDataChanges$ = toObservable(this.chartData);
   private readonly initialData: ChartDataset[] = [
     {
       fill: {
@@ -107,7 +104,7 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.shouldShowChart$ = this.widgetSettings.getSettings<OrderbookSettings>(this.guid).pipe(
+    this.shouldShowChart$ = this.widgetSettings.getSettings<OrderbookSettings>(this.guid()).pipe(
       map((s) => s.showChart)
     );
 
@@ -137,11 +134,17 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
           return `${t(['volume'])}: ${context.parsed.y}; ${t(['price'])}: ${context.parsed.x}`;
         };
       });
+
+    this.chartDataChanges$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(chartData => {
+      this.updateChart(chartData);
+    });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    const bids = changes.chartData.currentValue.bids as ChartPoint[];
-    const asks = changes.chartData.currentValue.asks as ChartPoint[];
+  updateChart(chartData: ChartData): void {
+    const bids = chartData.bids as ChartPoint[];
+    const asks = chartData.asks as ChartPoint[];
 
     this.initialData[0].data = bids;
     this.initialData[1].data = asks;

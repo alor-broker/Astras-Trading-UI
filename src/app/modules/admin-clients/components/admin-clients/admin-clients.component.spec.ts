@@ -25,6 +25,7 @@ import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzMenuDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('AdminClientsComponent', () => {
   let component: AdminClientsComponent;
@@ -76,6 +77,7 @@ describe('AdminClientsComponent', () => {
 
     fixture = TestBed.createComponent(AdminClientsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

@@ -8,6 +8,7 @@ import {LetDirective} from "@ngrx/component";
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 import {commonTestProviders} from "../../../../shared/utils/testing/common-test-providers";
 import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('ChartFiltersComponent', () => {
   let component: ChartFiltersComponent;
@@ -39,6 +40,7 @@ describe('ChartFiltersComponent', () => {
     });
     fixture = TestBed.createComponent(ChartFiltersComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

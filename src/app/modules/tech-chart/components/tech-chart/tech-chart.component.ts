@@ -4,11 +4,11 @@ import {
   DestroyRef,
   ElementRef,
   Inject,
-  Input,
   OnDestroy,
   OnInit,
   ViewChild,
-  DOCUMENT
+  DOCUMENT,
+  input
 } from '@angular/core';
 import {
   combineLatest,
@@ -105,8 +105,7 @@ interface ChartState {
     ]
 })
 export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   @ViewChild('chartContainer', { static: true })
   chartContainer?: ElementRef<HTMLElement>;
@@ -236,7 +235,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         filter((x): x is Instrument => !!x)
       );
 
-    this.settings$ = this.settingsService.getSettings<TechChartSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<TechChartSettings>(this.guid()).pipe(
       distinctUntilChanged((previous, current) => this.isEqualTechChartSettings(previous, current)),
       mapWith(
         settings => getInstrumentInfo(settings),
@@ -467,7 +466,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
         if(SyntheticInstrumentsHelper.isSyntheticInstrument(chartSymbol)) {
           this.settingsService.updateSettings<TechChartSettings>(
-            this.guid,
+            this.guid(),
             {
               linkToActive: false,
               symbol: chartSymbol
@@ -511,7 +510,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private saveChartLayout(widget: IChartingLibraryWidget): void {
     widget.save(state => {
       this.settingsService.updateSettings<TechChartSettings>(
-        this.guid,
+        this.guid(),
         {
           chartLayout: state
         }

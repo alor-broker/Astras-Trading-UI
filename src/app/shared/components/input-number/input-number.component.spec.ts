@@ -237,7 +237,10 @@ describe('InputNumberComponent', () => {
   );
 
   it('should allow negative when configured', () => {
-    component.allowNegative = true;
+    fixture.componentRef.setInput(
+      'allowNegative',
+      true
+    );
 
     const cases: { input: string, displayValue: string, formValue: number }[] = [
       {
@@ -286,7 +289,11 @@ describe('InputNumberComponent', () => {
     const initialValue = 5.102;
     const step = 0.001;
 
-    component.step = step;
+    fixture.componentRef.setInput(
+      'step',
+      step
+    );
+
     component.writeValue(initialValue);
 
     expect(component.inputElement.nativeElement.value).toBe(initialValue.toString());
@@ -323,7 +330,10 @@ describe('InputNumberComponent', () => {
     const initialValue = 5.102;
     const step = 0.001;
 
-    component.step = step;
+    fixture.componentRef.setInput(
+      'step',
+      step
+    );
     component.writeValue(initialValue);
 
     expect(component.inputElement.nativeElement.value).toBe(initialValue.toString());
@@ -359,8 +369,10 @@ describe('InputNumberComponent', () => {
 
   it('should not process mouse wheel when field is not focused', () => {
     const initialValue = +(TestingHelpers.getRandomInt(1, 100).toString() + '.' + TestingHelpers.getRandomInt(100, 999).toString());
-
-    component.step = 0.001;
+    fixture.componentRef.setInput(
+      'step',
+      0.001
+    );
     component.writeValue(initialValue);
 
     component.inputElement.nativeElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 1}));

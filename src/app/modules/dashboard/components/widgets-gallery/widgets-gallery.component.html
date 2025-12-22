@@ -1,20 +1,21 @@
 <ng-container *transloco="let t; scope: 'dashboard/widgets-gallery'">
   <nz-drawer
     (nzOnClose)="close()"
-    [nzClosable]="closable"
-    [nzExtra]="showResetBtn ? extra : ''"
+    [nzClosable]="closable()"
+    [nzExtra]="showResetBtn() ? extra : ''"
     [nzTitle]="t('dashboardWidgetsGallery.title')"
-    [nzVisible]="atsVisible"
+    [nzVisible]="atsVisible()"
     [nzWidth]="310"
     nzPlacement="left"
     nzWrapClassName="widget-gallery"
     >
     <ng-container *nzDrawerContent>
-      @if (gallery) {
-        @for (widget of gallery.allCategory.widgets; track widget.typeId) {
+      @let currentGallery = gallery();
+      @if (currentGallery) {
+        @for (widget of currentGallery.allCategory.widgets; track widget.typeId) {
           <ng-container [ngTemplateOutletContext]="{widget}" [ngTemplateOutlet]="widgetTemplate"></ng-container>
         }
-        @for (group of gallery.groups; track group) {
+        @for (group of currentGallery.groups; track group) {
           <div>
             <div class="divider">
               <span
@@ -42,7 +43,7 @@
     <div
       (click)="selectWidget(widget)"
       class="cursor-pointer user-select-none d-flex flex-row flex-nowrap align-items-center gallery-item"
-      [class.active-item]="activeWidget === widget.typeId"
+      [class.active-item]="activeWidget() === widget.typeId"
       >
       <i [nzType]="widget.icon" class="fs-5 mr-10" nz-icon nzTheme="outline"></i>&nbsp;{{widget.name}}
     </div>

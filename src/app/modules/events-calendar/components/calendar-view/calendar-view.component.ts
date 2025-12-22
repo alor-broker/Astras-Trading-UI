@@ -3,72 +3,53 @@ import {
   Component,
   DestroyRef,
   Inject,
-  Input,
+  input,
   LOCALE_ID,
   OnDestroy,
   OnInit,
   ViewChild
 } from '@angular/core';
-import { NzCalendarComponent, NzDateFullCellDirective } from "ng-zorro-antd/calendar";
-import {
-  BehaviorSubject,
-  distinctUntilChanged,
-  Observable,
-  shareReplay,
-  switchMap,
-  tap
-} from "rxjs";
+import {NzCalendarComponent, NzDateFullCellDirective} from "ng-zorro-antd/calendar";
+import {BehaviorSubject, distinctUntilChanged, Observable, shareReplay, switchMap, tap} from "rxjs";
 import {CalendarEvent, CalendarEvents} from "../../models/events-calendar.model";
 import {EventsCalendarService} from "../../services/events-calendar.service";
 import {addMonths, endOfMonth, getISOStringDate, startOfDay, startOfMonth} from "../../../../shared/utils/datetime";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import { MarketService } from "../../../../shared/services/market.service";
-import {
-  CurrencySettings
-} from "../../../../shared/models/market-settings.model";
-import { map } from "rxjs/operators";
-import {
-  formatCurrency,
-  getCurrencyFormat
-} from "../../../../shared/utils/formatters";
-import { LetDirective } from '@ngrx/component';
-import { NzPopoverDirective } from 'ng-zorro-antd/popover';
-import { NzDescriptionsComponent, NzDescriptionsItemComponent } from 'ng-zorro-antd/descriptions';
-import { TranslocoDirective } from '@jsverse/transloco';
-import { AsyncPipe, DatePipe } from '@angular/common';
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {MarketService} from "../../../../shared/services/market.service";
+import {CurrencySettings} from "../../../../shared/models/market-settings.model";
+import {map} from "rxjs/operators";
+import {formatCurrency, getCurrencyFormat} from "../../../../shared/utils/formatters";
+import {LetDirective} from '@ngrx/component';
+import {NzPopoverDirective} from 'ng-zorro-antd/popover';
+import {NzDescriptionsComponent, NzDescriptionsItemComponent} from 'ng-zorro-antd/descriptions';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {AsyncPipe, DatePipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-calendar-view',
-    templateUrl: './calendar-view.component.html',
-    styleUrls: ['./calendar-view.component.less'],
-    imports: [
-      LetDirective,
-      NzCalendarComponent,
-      NzDateFullCellDirective,
-      NzPopoverDirective,
-      NzDescriptionsComponent,
-      TranslocoDirective,
-      NzDescriptionsItemComponent,
-      AsyncPipe,
-      DatePipe
-    ]
+  selector: 'ats-calendar-view',
+  templateUrl: './calendar-view.component.html',
+  styleUrls: ['./calendar-view.component.less'],
+  imports: [
+    LetDirective,
+    NzCalendarComponent,
+    NzDateFullCellDirective,
+    NzPopoverDirective,
+    NzDescriptionsComponent,
+    TranslocoDirective,
+    NzDescriptionsItemComponent,
+    AsyncPipe,
+    DatePipe
+  ]
 })
 export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
-  private readonly symbols$ = new BehaviorSubject<string[]>([]);
-
-  @Input()
-  set symbols(value: string[]) {
-    this.symbols$.next(value);
-  }
-
+  readonly symbols = input<string[]>([]);
   @ViewChild('startPeriodCalendar') startPeriodCalendarComp?: NzCalendarComponent;
   @ViewChild('endPeriodCalendar') endPeriodCalendarComp?: NzCalendarComponent;
-
   events$ = new BehaviorSubject<CalendarEvents>({});
   selectedDate$ = new BehaviorSubject<Date>(new Date());
   selectedDateEvents$ = new BehaviorSubject<CalendarEvent | null>(null);
-
   currencySettings$!: Observable<CurrencySettings>;
+  private readonly symbolsChanges$ = toObservable(this.symbols);
 
   constructor(
     private readonly service: EventsCalendarService,
@@ -93,7 +74,7 @@ export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(
         distinctUntilChanged((prev, curr) => prev.toString() === curr.toString()),
         tap(date => this.changeCalendarsDate(date)),
-        switchMap(() => this.symbols$),
+        switchMap(() => this.symbolsChanges$),
         switchMap(symbols => this.service.getEvents({
             dateFrom: getISOStringDate(startOfMonth(this.startPeriodCalendarComp!.activeDate.nativeDate)),
             dateTo: getISOStringDate(endOfMonth(this.endPeriodCalendarComp!.activeDate.nativeDate)),
@@ -108,7 +89,6 @@ export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.symbols$.complete();
     this.events$.complete();
     this.selectedDateEvents$.complete();
   }

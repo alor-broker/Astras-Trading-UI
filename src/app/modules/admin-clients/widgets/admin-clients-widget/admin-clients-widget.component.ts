@@ -1,7 +1,7 @@
 import {
   Component,
-  Input,
-  OnInit
+  OnInit,
+  input
 } from '@angular/core';
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
 import { Observable } from "rxjs";
@@ -35,11 +35,9 @@ import {WidgetHeaderComponent} from "../../../../shared/components/widget-header
 export class AdminClientsWidgetComponent implements OnInit {
   shouldShowSettings = false;
 
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<AdminClientsSettings>;
 
@@ -49,7 +47,7 @@ export class AdminClientsWidgetComponent implements OnInit {
   }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   onSettingsChange(): void {
@@ -58,7 +56,7 @@ export class AdminClientsWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<AdminClientsSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'AdminClientsSettings',
       settings => ({
         ...settings,

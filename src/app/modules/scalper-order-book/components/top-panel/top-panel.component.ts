@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {PanelSlots, ScalperOrderBookWidgetSettings} from "../../models/scalper-order-book-settings.model";
 import {ScalperOrderBookDataContext,} from "../../models/scalper-order-book-data-context.model";
 import {LetDirective} from '@ngrx/component';
@@ -18,14 +18,11 @@ import {ShortLongIndicatorComponent} from '../short-long-indicator/short-long-in
   ]
 })
 export class TopPanelComponent {
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
-  @Input({required: true})
-  isActive!: boolean;
+  readonly isActive = input.required<boolean>();
 
-  @Input({required: true})
-  dataContext!: ScalperOrderBookDataContext;
+  readonly dataContext = input.required<ScalperOrderBookDataContext>();
 
   showWorkingVolumes(settings: ScalperOrderBookWidgetSettings): boolean {
     return (settings.showWorkingVolumesPanel ?? true)

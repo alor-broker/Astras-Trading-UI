@@ -11,6 +11,7 @@ import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
 import {MockComponents} from "ng-mocks";
 import {NzSwitchComponent} from "ng-zorro-antd/switch";
 import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('OrdersBasketSettingsComponent', () => {
   let component: OrdersBasketSettingsComponent;
@@ -46,6 +47,7 @@ describe('OrdersBasketSettingsComponent', () => {
     });
     fixture = TestBed.createComponent(OrdersBasketSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

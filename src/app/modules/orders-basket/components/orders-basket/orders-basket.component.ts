@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, DestroyRef, Inject, OnDestroy, OnInit, input} from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -75,8 +75,7 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class OrdersBasketComponent implements OnInit, OnDestroy {
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   readonly form = this.formBuilder.group({
     budget: this.formBuilder.control<number | null>(
@@ -221,7 +220,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       };
 
       this.widgetSettingsService.updateSettings<OrdersBasketSettings>(
-        this.guid,
+        this.guid(),
         {
           presets: [
             ...s.presets ?? [],
@@ -237,7 +236,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       take(1)
     ).subscribe(s => {
       this.widgetSettingsService.updateSettings<OrdersBasketSettings>(
-        this.guid,
+        this.guid(),
         {
           presets: (s.presets ?? []).filter(p => p.id !== presetId)
         }
@@ -250,7 +249,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   }
 
   private getWidgetSettings(): Observable<OrdersBasketSettings> {
-    return this.widgetSettingsService.getSettings<OrdersBasketSettings>(this.guid);
+    return this.widgetSettingsService.getSettings<OrdersBasketSettings>(this.guid());
   }
 
   private isEqualSettings(settings1?: OrdersBasketSettings, settings2?: OrdersBasketSettings): boolean {

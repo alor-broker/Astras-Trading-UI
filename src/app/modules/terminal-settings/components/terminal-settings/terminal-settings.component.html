@@ -18,7 +18,7 @@
             <nz-tab (nzSelect)="tabChange.emit(tabNames.main)"
               [nzTitle]="t('terminalSettings.generalSettingsTabTitle')">
               @if (settingsForm.controls.generalSettings; as generalSettings) {
-                <ats-general-settings-form [excludedSettings]="hiddenSections" [formControl]="generalSettings"></ats-general-settings-form>
+                <ats-general-settings-form [excludedSettings]="hiddenSections()" [formControl]="generalSettings"></ats-general-settings-form>
               }
               @if (settingsForm.controls.portfoliosCurrency; as portfoliosCurrency) {
                 <h3>{{t('terminalSettings.defaultCurrencyHeader')}}</h3>
@@ -41,7 +41,7 @@
               </div>
             </nz-tab>
           }
-          @if (!hiddenSections.includes('hotKeysSettings') && settingsForm.controls.hotKeysSettings; as hotKeysSettings) {
+          @if (!hiddenSections().includes('hotKeysSettings') && settingsForm.controls.hotKeysSettings; as hotKeysSettings) {
             <nz-tab
               (nzSelect)="tabChange.emit(tabNames.hotKeys)"
               [nzTitle]="t('terminalSettings.hotkeysTabTitle')">

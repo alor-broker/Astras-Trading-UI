@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {NzSpinComponent} from 'ng-zorro-antd/spin';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 
@@ -12,9 +12,7 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
   ]
 })
 export class LoadingIndicatorComponent {
-  @Input()
-  isLoading: boolean | null = false;
+  readonly isLoading = input<boolean | null>(false);
 
-  @Input()
-  className?: string | null;
+  readonly className = input<string | null>();
 }

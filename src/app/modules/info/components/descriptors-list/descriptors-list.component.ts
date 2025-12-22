@@ -1,7 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Input
+  input
 } from '@angular/core';
 import { DescriptorsGroup } from "../../models/instrument-descriptors.model";
 import { TranslocoDirective } from "@jsverse/transloco";
@@ -20,6 +20,5 @@ import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DescriptorsListComponent {
-  @Input()
-  descriptors: DescriptorsGroup[] = [];
+  readonly descriptors = input<DescriptorsGroup[]>([]);
 }

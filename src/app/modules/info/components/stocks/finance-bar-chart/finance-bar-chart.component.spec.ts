@@ -1,16 +1,9 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FinanceBarChartComponent } from './finance-bar-chart.component';
-import { of } from 'rxjs';
-import {
-  ThemeColors,
-  ThemeSettings,
-  ThemeType
-} from '../../../../../shared/models/settings/theme-settings.model';
-import { ThemeService } from '../../../../../shared/services/theme.service';
+import {FinanceBarChartComponent} from './finance-bar-chart.component';
+import {of} from 'rxjs';
+import {ThemeColors, ThemeSettings, ThemeType} from '../../../../../shared/models/settings/theme-settings.model';
+import {ThemeService} from '../../../../../shared/services/theme.service';
 import {
   AdditionalInformation,
   BasicInformation,
@@ -19,8 +12,8 @@ import {
   FinancialAttributes,
   TradingDetails
 } from "../../../../../../generated/graphql.types";
-import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
-import { MockProvider } from "ng-mocks";
+import {TranslocoTestsModule} from "../../../../../shared/utils/testing/translocoTestsModule";
+import {MockProvider} from "ng-mocks";
 
 describe('FinanceBarChartComponent', () => {
   let component: FinanceBarChartComponent;
@@ -68,16 +61,21 @@ describe('FinanceBarChartComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FinanceBarChartComponent);
     component = fixture.componentInstance;
-    component.stockInfo = {
-      ...finance,
-      additionalInformation: {} as AdditionalInformation,
-      basicInformation: {} as BasicInformation,
-      boardInformation: {} as BoardInformation,
-      currencyInformation: {} as CurrencyInformation,
-      financialAttributes: {} as FinancialAttributes,
-      tradingDetails: {} as TradingDetails,
-      dividends: []
-    };
+
+    fixture.componentRef.setInput(
+      'stockInfo',
+      {
+        ...finance,
+        additionalInformation: {} as AdditionalInformation,
+        basicInformation: {} as BasicInformation,
+        boardInformation: {} as BoardInformation,
+        currencyInformation: {} as CurrencyInformation,
+        financialAttributes: {} as FinancialAttributes,
+        tradingDetails: {} as TradingDetails,
+        dividends: []
+      }
+    );
+
     fixture.detectChanges();
   });
 

@@ -1,7 +1,7 @@
 ﻿import {
   Component,
   forwardRef,
-  Input
+  input
 } from "@angular/core";
 import {
   ControlValueAccessor,
@@ -19,8 +19,8 @@ import {
   }]
 })
 export class InstrumentBoardSelectMockComponent implements ControlValueAccessor {
-  @Input() instrument: any;
-  @Input() placeholder: any;
+  readonly instrument = input<any>();
+  readonly placeholder = input<any>();
 
   registerOnChange(): void {
     return;

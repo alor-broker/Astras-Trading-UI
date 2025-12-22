@@ -16,6 +16,7 @@ import {MockComponents, MockDirectives} from "ng-mocks";
 import {NzSelectComponent} from "ng-zorro-antd/select";
 import {NzSwitchComponent} from "ng-zorro-antd/switch";
 import {WatchlistCollectionEditComponent} from "../watchlist-collection-edit/watchlist-collection-edit.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('InstrumentSelectSettingsComponent', () => {
   let component: InstrumentSelectSettingsComponent;
@@ -65,6 +66,7 @@ describe('InstrumentSelectSettingsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(InstrumentSelectSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

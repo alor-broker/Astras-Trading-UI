@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, input, model, Output, ViewChild} from '@angular/core';
 import {NzInputDirective} from 'ng-zorro-antd/input';
 import {FormsModule} from '@angular/forms';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
@@ -23,25 +23,21 @@ export class MessageInputComponent {
   @ViewChild('inputElement', {static: true})
   inputElement!: ElementRef<HTMLTextAreaElement>;
 
-  @Input()
-  atsDisabled = false;
+  readonly atsDisabled = input(false);
 
-  @Input()
-  text = '';
+  text = model('');
 
-  @Input()
-  messagePlaceholder = '';
+  readonly messagePlaceholder = input('');
 
-  @Input()
-  messageMaxLength = 2000;
+  readonly messageMaxLength = input(2000);
 
   @Output()
   send = new EventEmitter<OutcomingMessage>();
 
   sendMessage(): void {
-    if (this.text.length > 0) {
+    if (this.text().length > 0) {
       this.send.emit({
-        text: this.text
+        text: this.text()
       });
 
       this.setText('');
@@ -54,10 +50,12 @@ export class MessageInputComponent {
   }
 
   private setText(text: string): void {
-    this.text = text.slice(0, this.messageMaxLength);
+    this.text.set(text.slice(0, this.messageMaxLength()));
 
-    if (this.inputElement.nativeElement.value !== this.text) {
-      this.inputElement.nativeElement.value = this.text;
+    const textValue = this.text();
+
+    if (this.inputElement.nativeElement.value !== textValue) {
+      this.inputElement.nativeElement.value = textValue;
     }
 
     this.inputElement.nativeElement.style.height = 'auto';

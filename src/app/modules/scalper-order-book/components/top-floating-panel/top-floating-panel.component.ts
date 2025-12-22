@@ -1,9 +1,9 @@
 import {
   Component,
   Inject,
-  Input,
   OnInit,
-  SkipSelf
+  SkipSelf,
+  input
 } from '@angular/core';
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import {
@@ -39,11 +39,9 @@ import { NgClass, AsyncPipe, DecimalPipe } from '@angular/common';
     ]
 })
 export class TopFloatingPanelComponent implements OnInit {
-  @Input({ required: true })
-  guid!: string;
+  readonly guid = input.required<string>();
 
-  @Input()
-  hideTooltips = false;
+  readonly hideTooltips = input(false);
 
   settings$!: Observable<ScalperOrderBookWidgetSettings>;
   priceDayChangePercent$!: Observable<number>;
@@ -59,7 +57,7 @@ export class TopFloatingPanelComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.dataContextService.getSettingsStream(this.guid).pipe(
+    this.settings$ = this.dataContextService.getSettingsStream(this.guid()).pipe(
       map(x => x.widgetSettings),
       shareReplay({ bufferSize: 1, refCount: true })
     );

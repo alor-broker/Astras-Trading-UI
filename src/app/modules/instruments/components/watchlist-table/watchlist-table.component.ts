@@ -1,4 +1,4 @@
-import {Component, DestroyRef, ElementRef, Inject, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, DestroyRef, ElementRef, Inject, input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   animationFrameScheduler,
   BehaviorSubject,
@@ -118,7 +118,7 @@ type SortFn = (a: WatchedInstrument, b: WatchedInstrument) => number;
 })
 export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist>
   implements OnInit, OnDestroy {
-  @Input({required: true}) guid!: string;
+  readonly guid = input.required<string>();
 
   @ViewChild('tableContainer') tableContainer!: ElementRef<HTMLDivElement>;
   @ViewChild('tableCmp') tableCmp!: NzTableComponent<DisplayWatchlist>;
@@ -232,7 +232,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid)
+    this.settings$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid())
       .pipe(
         shareReplay(1),
       );
@@ -354,7 +354,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
         subscribeOn(animationFrameScheduler)
       )
       .subscribe(settings => this.settingsService.updateSettings<InstrumentSelectSettings>(
-          this.guid,
+          this.guid(),
           {
             activeWatchlistMetas: (settings.activeWatchlistMetas ?? [])
               .map(wm => wm.id === listId ? {...wm, isExpanded} : wm)

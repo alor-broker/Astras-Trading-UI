@@ -137,7 +137,6 @@ describe('EditStopOrderFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(EditStopOrderFormComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   afterEach(() => {
@@ -145,6 +144,9 @@ describe('EditStopOrderFormComponent', () => {
   });
 
   it('should create', () => {
+    fixture.componentRef.setInput('orderId', '111');
+    fixture.componentRef.setInput('portfolioKey', getDefaultPortfolio());
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
@@ -166,8 +168,16 @@ describe('EditStopOrderFormComponent', () => {
 
     orderDetailsServiceSpy.getStopOrderDetails.and.returnValue(new BehaviorSubject(order));
 
-    component.orderId = order.id;
-    component.portfolioKey = portfolio;
+    fixture.componentRef.setInput(
+      'orderId',
+      order.id
+    );
+
+    fixture.componentRef.setInput(
+      'portfolioKey',
+      portfolio
+    );
+
     fixture.detectChanges();
 
     const cases: { control: string, setValue: () => any, expectedError?: string }[] = [
@@ -239,8 +249,15 @@ describe('EditStopOrderFormComponent', () => {
 
       orderDetailsServiceSpy.getStopOrderDetails.and.returnValue(new BehaviorSubject(order));
 
-      component.orderId = order.id;
-      component.portfolioKey = portfolio;
+      fixture.componentRef.setInput(
+        'orderId',
+        order.id
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
 
       fixture.detectChanges();
 
@@ -273,8 +290,16 @@ describe('EditStopOrderFormComponent', () => {
 
       orderDetailsServiceSpy.getStopOrderDetails.and.returnValue(of(order));
 
-      component.orderId = order.id;
-      component.portfolioKey = portfolioKey;
+      fixture.componentRef.setInput(
+        'orderId',
+        order.id
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolioKey
+      );
+
       fixture.detectChanges();
       tick();
 
@@ -315,8 +340,15 @@ describe('EditStopOrderFormComponent', () => {
         exchange: order.targetInstrument.exchange
       }));
 
-      component.orderId = order.id;
-      component.portfolioKey = portfolio;
+      fixture.componentRef.setInput(
+        'orderId',
+        order.id
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
 
       tick();
       fixture.detectChanges();

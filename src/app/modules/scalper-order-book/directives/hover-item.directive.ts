@@ -3,9 +3,9 @@ import {
   Directive,
   ElementRef,
   Inject,
-  Input,
   OnInit,
-  SkipSelf
+  SkipSelf,
+  input
 } from '@angular/core';
 import {
   HOVER_ITEMS_GROUP,
@@ -18,8 +18,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Directive({ selector: '[atsHoverItem]' })
 export class HoverItemDirective<T = any> implements OnInit {
-  @Input()
-  atsHoverItemData?: T;
+  readonly atsHoverItemData = input<T>();
 
   constructor(
     private readonly el: ElementRef,

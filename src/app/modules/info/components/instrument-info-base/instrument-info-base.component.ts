@@ -1,11 +1,5 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  Output
-} from '@angular/core';
-import { BehaviorSubject } from "rxjs";
+import {Component, EventEmitter, input, Output} from '@angular/core';
+import {toObservable} from "@angular/core/rxjs-interop";
 
 export interface TargetInstrumentKey {
   symbol: string;
@@ -14,23 +8,15 @@ export interface TargetInstrumentKey {
 }
 
 @Component({
-    template: '',
-    standalone: false
+  template: '',
+  standalone: false
 })
-export abstract class InstrumentInfoBaseComponent implements OnDestroy {
-  readonly targetInstrumentKey$ = new BehaviorSubject<TargetInstrumentKey | null>(null);
-
+export abstract class InstrumentInfoBaseComponent {
   @Output()
   loadingChange = new EventEmitter<boolean>();
 
-  @Input({required: true})
-  set instrumentKey(value: TargetInstrumentKey) {
-    this.targetInstrumentKey$.next(value);
-  };
-
-  ngOnDestroy(): void {
-    this.targetInstrumentKey$.complete();
-  }
+  readonly instrumentKey = input.required<TargetInstrumentKey>();
+  protected readonly instrumentKeyChanges$ = toObservable(this.instrumentKey);
 
   setLoading(value: boolean): void {
     this.loadingChange.emit(value);

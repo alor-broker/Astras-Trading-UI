@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, input, OnDestroy, OnInit, Output} from '@angular/core';
 import {
   ControlValueAccessor,
   FormBuilder,
@@ -13,17 +13,7 @@ import {
 } from '@angular/forms';
 import {InstrumentKey} from '../../../../shared/models/instruments/instrument-key.model';
 import {inputNumberValidation} from '../../../../shared/utils/validation-options';
-import {
-  BehaviorSubject,
-  combineLatest,
-  distinctUntilChanged,
-  filter,
-  Observable,
-  of,
-  shareReplay,
-  Subscription,
-  switchMap,
-} from 'rxjs';
+import {combineLatest, distinctUntilChanged, filter, Observable, of, shareReplay, Subscription, switchMap,} from 'rxjs';
 import {map,} from 'rxjs/operators';
 import {InstrumentsService} from '../../../instruments/services/instruments.service';
 import {isInstrumentEqual} from '../../../../shared/utils/settings-helper';
@@ -31,7 +21,7 @@ import {Instrument} from '../../../../shared/models/instruments/instrument.model
 import {QuotesService} from '../../../../shared/services/quotes.service';
 import {OrdersBasketItem} from '../../models/orders-basket-form.model';
 import {AtsValidators} from '../../../../shared/utils/form-validators';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {toInstrumentKey} from "../../../../shared/utils/instruments";
 import {AsyncPipe, NgClass} from '@angular/common';
 import {TranslocoDirective} from '@jsverse/transloco';
@@ -79,11 +69,9 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
   ]
 })
 export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValueAccessor, Validator {
-  @Input({required: true})
-  exchange!: string;
+  readonly exchange = input.required<string>();
 
-  @Input()
-  enableDelete = true;
+  readonly enableDelete = input(true);
 
   @Output()
   delete = new EventEmitter();
@@ -132,13 +120,15 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     id: this.formBuilder.nonNullable.control("", Validators.required)
   });
 
-  itemsContainerWidth$ = new BehaviorSubject<number | null>(null);
   instrument$!: Observable<Instrument | null>;
   displayMode$?: Observable<'table-item' | 'compact' | 'ultra-compact'>;
   showLabels$?: Observable<boolean>;
-  itemIndex$ = new BehaviorSubject<number>(0);
+
+  readonly width = input<number | null>(null);
+  readonly itemIndex = input<number>(0);
+  protected readonly widthChanges$ = toObservable(this.width);
+  protected readonly itemIndexChanges$ = toObservable(this.itemIndex);
   private readonly onChangeSubs: Subscription[] = [];
-  private readonly totalBudget$ = new BehaviorSubject<number | null>(null);
 
   constructor(
     private readonly instrumentsService: InstrumentsService,
@@ -146,21 +136,6 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     private readonly formBuilder: FormBuilder,
     private readonly destroyRef: DestroyRef
   ) {
-  }
-
-  @Input()
-  set width(value: number | null) {
-    this.itemsContainerWidth$.next(value);
-  }
-
-  @Input()
-  set itemIndex(value: number) {
-    this.itemIndex$.next(value);
-  }
-
-  @Input()
-  set totalBudget(value: number | null) {
-    this.totalBudget$.next(value);
   }
 
   validate(): ValidationErrors | null {
@@ -200,10 +175,6 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     for (const sub of this.onChangeSubs) {
       sub.unsubscribe();
     }
-
-    this.itemsContainerWidth$.complete();
-    this.itemIndex$.complete();
-    this.totalBudget$.complete();
   }
 
   registerOnChange(onChange: any): void {
@@ -237,7 +208,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
   };
 
   private initSizeDependedState(): void {
-    this.displayMode$ = this.itemsContainerWidth$.pipe(
+    this.displayMode$ = this.widthChanges$.pipe(
       filter(w => !!(w ?? 0)),
       map(w => {
         if (w! < 250) {
@@ -254,7 +225,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
 
     this.showLabels$ = combineLatest([
       this.displayMode$,
-      this.itemIndex$
+      this.itemIndexChanges$,
     ]).pipe(
       map(([displayMode, itemIndex]) => displayMode === 'compact' || displayMode === 'ultra-compact' || itemIndex === 0),
       shareReplay(1)

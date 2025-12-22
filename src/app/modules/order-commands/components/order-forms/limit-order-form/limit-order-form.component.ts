@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, DestroyRef, input, OnDestroy, OnInit} from '@angular/core';
 import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
 import {CommonParametersService} from "../../../services/common-parameters.service";
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -156,8 +156,8 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
   });
 
   currentPriceDiffPercent$!: Observable<{ percent: number, sign: number } | null>;
-  @Input()
-  initialValues: {
+
+  readonly initialValues = input<{
     price?: number;
     quantity?: number;
     bracket?: {
@@ -166,10 +166,9 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       bottomOrderPrice?: number | null;
       bottomOrderSide?: Side | null;
     };
-  } | null = null;
+  } | null>(null);
 
-  @Input({required: true})
-  limitOrderConfig!: LimitOrderConfig;
+  readonly limitOrderConfig = input.required<LimitOrderConfig>();
 
   constructor(
     private readonly formBuilder: FormBuilder,
@@ -239,31 +238,32 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
 
     this.setPriceValidators(this.form.controls.price, instrument);
 
-    if (this.initialValues) {
-      if (this.initialValues.price != null) {
-        this.form.controls.price.setValue(this.initialValues.price);
+    const initialValues = this.initialValues();
+    if (initialValues != null) {
+      if (initialValues.price != null) {
+        this.form.controls.price.setValue(initialValues.price);
       }
 
-      if (this.initialValues.quantity != null) {
-        this.form.controls.quantity.setValue(this.initialValues.quantity);
+      if (initialValues.quantity != null) {
+        this.form.controls.quantity.setValue(initialValues.quantity);
       }
 
-      if (this.initialValues.bracket) {
+      if (initialValues.bracket) {
         this.expandAdvancedOptions = true;
-        if (this.initialValues.bracket.topOrderPrice != null) {
-          this.form.controls.topOrderPrice.setValue(this.initialValues.bracket.topOrderPrice as number);
+        if (initialValues.bracket.topOrderPrice != null) {
+          this.form.controls.topOrderPrice.setValue(initialValues.bracket.topOrderPrice as number);
         }
 
-        if (this.initialValues.bracket.topOrderSide != null) {
-          this.form.controls.topOrderSide.setValue(this.initialValues.bracket.topOrderSide);
+        if (initialValues.bracket.topOrderSide != null) {
+          this.form.controls.topOrderSide.setValue(initialValues.bracket.topOrderSide);
         }
 
-        if (this.initialValues.bracket.bottomOrderPrice != null) {
-          this.form.controls.bottomOrderPrice.setValue(this.initialValues.bracket.bottomOrderPrice as number);
+        if (initialValues.bracket.bottomOrderPrice != null) {
+          this.form.controls.bottomOrderPrice.setValue(initialValues.bracket.bottomOrderPrice as number);
         }
 
-        if (this.initialValues.bracket.bottomOrderSide != null) {
-          this.form.controls.bottomOrderSide.setValue(this.initialValues.bracket.bottomOrderSide);
+        if (initialValues.bracket.bottomOrderSide != null) {
+          this.form.controls.bottomOrderSide.setValue(initialValues.bracket.bottomOrderSide);
         }
       }
     }
@@ -427,7 +427,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
     combineLatest([
       formChanges$,
       positionChanges$,
-      this.isActivated$
+      this.activatedChanges$
     ]).pipe(
       filter(([, , isActivated]) => isActivated),
       takeUntilDestroyed(this.destroyRef),
@@ -477,7 +477,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       this.enableControl(this.form.controls.timeInForce);
     }
 
-    if (!this.limitOrderConfig.isBracketsSupported) {
+    if (!this.limitOrderConfig().isBracketsSupported) {
       this.disableControl(this.form.controls.topOrderPrice);
       this.disableControl(this.form.controls.topOrderSide);
       this.disableControl(this.form.controls.bottomOrderPrice);
@@ -496,7 +496,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
       }
     }
 
-    if (this.limitOrderConfig.unsupportedFields.reason) {
+    if (this.limitOrderConfig().unsupportedFields.reason) {
       this.disableControl(this.form.controls.reason);
     }
 

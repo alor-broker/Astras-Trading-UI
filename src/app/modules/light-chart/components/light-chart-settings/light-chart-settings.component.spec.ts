@@ -15,6 +15,7 @@ import {RemoveSelectTitlesDirective} from "../../../../shared/directives/remove-
 import {
   InstrumentBoardSelectComponent
 } from "../../../../shared/components/instrument-board-select/instrument-board-select.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('LightChartSettingsComponent', () => {
   let component: LightChartSettingsComponent;
@@ -69,6 +70,7 @@ describe('LightChartSettingsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LightChartSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

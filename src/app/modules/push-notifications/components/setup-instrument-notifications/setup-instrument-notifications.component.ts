@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, DestroyRef, input, OnDestroy, OnInit} from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -22,7 +22,7 @@ import {inputNumberValidation} from "../../../../shared/utils/validation-options
 import {filter, map} from "rxjs/operators";
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {CommonParametersService} from "../../../order-commands/services/common-parameters.service";
 import {QuotesService} from "../../../../shared/services/quotes.service";
 import {TranslocoDirective} from '@jsverse/transloco';
@@ -78,15 +78,21 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
   });
 
   readonly isLoading$ = new BehaviorSubject(false);
+  readonly refresh$ = new BehaviorSubject(null);
+
   readonly lessMore = LessMore;
   instrument$!: Observable<Instrument>;
-  @Input()
-  initialValues: {
+  readonly initialValues = input<{
     price?: number;
-  } | null = null;
+  } | null>(null);
 
-  private readonly instrumentKey$ = new BehaviorSubject<InstrumentKey | null>(null);
-  private readonly refresh$ = new BehaviorSubject(null);
+  readonly instrumentKey = input<InstrumentKey | null>(null);
+
+  readonly active = input<boolean>(false);
+
+  private readonly instrumentKeyChanges$ = toObservable(this.instrumentKey).pipe(shareReplay(1));
+
+  private readonly activeChanges$ = toObservable(this.active);
 
   constructor(
     private readonly pushNotificationsService: PushNotificationsService,
@@ -98,20 +104,8 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
   ) {
   }
 
-  @Input()
-  set instrumentKey(value: InstrumentKey | null) {
-    this.instrumentKey$.next(value);
-  }
-
-  @Input()
-  set active(value: boolean) {
-    if (value) {
-      this.refresh$.next(null);
-    }
-  }
-
   ngOnDestroy(): void {
-    this.instrumentKey$.complete();
+    this.isLoading$.complete();
     this.refresh$.complete();
   }
 
@@ -134,10 +128,16 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
       )
       .subscribe(() => this.refresh$.next(null));
 
+    this.activeChanges$.pipe(
+      filter(x => x),
+      takeUntilDestroyed(this.destroyRef)
+    )
+      .subscribe(() => this.refresh$.next(null));
+
     combineLatest({
-      initialValues: of(this.initialValues),
+      initialValues: of(this.initialValues()),
       commonParameters: this.commonParametersService.parameters$,
-      instrumentKey: this.instrumentKey$
+      instrumentKey: this.instrumentKeyChanges$
     }).pipe(
       filter(x => x.instrumentKey != null),
       mapWith(
@@ -168,7 +168,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
   }
 
   addSubscription(): void {
-    this.instrumentKey$.pipe(
+    this.instrumentKeyChanges$.pipe(
       take(1),
       filter((x): x is InstrumentKey => !!x),
       switchMap((instrumentKey: InstrumentKey) => {
@@ -207,7 +207,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
         filter(x => x),
         delay(0), // Needs to prevent ExpressionChangedAfterItHasBeenChecked error
         switchMap(() => this.refresh$),
-        switchMap(() => this.instrumentKey$),
+        switchMap(() => this.instrumentKeyChanges$),
         tap(() => this.isLoading$.next(true)),
         mapWith(instrumentKey => {
             if (!instrumentKey) {
@@ -231,7 +231,7 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
   }
 
   private initInstrument(): void {
-    this.instrument$ = this.instrumentKey$.pipe(
+    this.instrument$ = this.instrumentKeyChanges$.pipe(
       filter((i): i is InstrumentKey => !!i),
       switchMap(instrumentKey => this.instrumentService.getInstrument(instrumentKey)),
       filter((i): i is Instrument => !!i),

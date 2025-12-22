@@ -19,10 +19,12 @@ describe('TextMessageComponent', () => {
     });
     fixture = TestBed.createComponent(TextMessageComponent);
     component = fixture.componentInstance;
-
-    component.content = {
-      text: 'text'
-    };
+    fixture.componentRef.setInput(
+      'content',
+      {
+        text: 'text'
+      }
+    );
 
     fixture.detectChanges();
   });

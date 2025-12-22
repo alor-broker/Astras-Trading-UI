@@ -3,7 +3,7 @@ import {
   Component,
   DestroyRef,
   Inject,
-  Input,
+  input,
   OnInit,
   QueryList,
   ViewChild,
@@ -114,11 +114,9 @@ export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
   @ViewChild('stopOrderTab', {static: false})
   stopOrderTab?: NzTabComponent;
 
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<OrderSubmitSettings>;
   showBadge$!: Observable<boolean>;
@@ -140,7 +138,7 @@ export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
   }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   ngAfterViewInit(): void {
@@ -157,7 +155,7 @@ export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<OrderSubmitSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'OrderSubmitSettings',
       settings => ({
         ...settings,

@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, DestroyRef, Inject, input, OnDestroy, OnInit} from '@angular/core';
 import {BehaviorSubject, combineLatest, defer, interval, Observable, shareReplay, switchMap, take, tap} from "rxjs";
 import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
@@ -72,8 +72,7 @@ interface ItemPosition {
 export class YieldCurveChartComponent implements OnInit, OnDestroy {
   readonly loadingStatus$ = new BehaviorSubject<LoadingStatus>(LoadingStatus.Initial);
   readonly loadingStatuses = LoadingStatus;
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   readonly chartParameters$ = new BehaviorSubject<ChartParameters>({
     durationType: DurationType.MaturityDateBased,
@@ -99,7 +98,7 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
   }
 
   get figureId(): string {
-    return `f_${this.guid.replace(/-/g, '')}`;
+    return `f_${this.guid().replace(/-/g, '')}`;
   }
 
   ngOnDestroy(): void {
@@ -109,7 +108,7 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<BondScreenerSettings>(this.guid)
+    this.settings$ = this.widgetSettingsService.getSettings<BondScreenerSettings>(this.guid())
       .pipe(shareReplay(1));
 
     this.loadingStatus$.next(LoadingStatus.Loading);

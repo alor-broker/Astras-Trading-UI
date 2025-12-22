@@ -12,8 +12,8 @@
           'max-volume': item?.isMaxVolume,
           'hovered': isRulerHovered(item, vm.hoveredPriceRow)
           }"
-        [style.height]="xAxisStep + 'px'"
-        [style.line-height]="xAxisStep + 'px'"
+        [style.height]="xAxisStep() + 'px'"
+        [style.line-height]="xAxisStep() + 'px'"
 
         class="position-relative"
         >

@@ -1,4 +1,4 @@
-<ng-container *ngrxLet="dataContext.extendedSettings$ as extendedSettings">
+<ng-container *ngrxLet="dataContext().extendedSettings$ as extendedSettings">
   <div class="container d-flex flex-column p-1 user-select-none flex-gap-2">
     @if (showWorkingVolumes(extendedSettings.widgetSettings)) {
       <div class="d-flex justify-content-center">
@@ -8,7 +8,7 @@
     @if (showShortLongIndicators(extendedSettings.widgetSettings)) {
       <div class="d-flex">
         <ats-short-long-indicator
-          [dataContext]="dataContext"
+          [dataContext]="dataContext()"
           [hideTooltips]="extendedSettings.widgetSettings.hideTooltips ?? false"
           orientation="vertical"
         ></ats-short-long-indicator>
@@ -17,9 +17,9 @@
     @if (showWorkingVolumes(extendedSettings.widgetSettings)) {
       <div class="d-flex">
         <ats-working-volumes-panel
-          [guid]="guid"
-          [isActive]="isActive"
-          [dataContext]="dataContext"
+          [guid]="guid()"
+          [isActive]="isActive()"
+          [dataContext]="dataContext()"
           orientation="vertical"
         ></ats-working-volumes-panel>
       </div>

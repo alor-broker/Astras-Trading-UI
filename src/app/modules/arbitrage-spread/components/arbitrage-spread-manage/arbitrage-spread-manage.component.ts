@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, OnInit, Output, input} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators} from "@angular/forms";
 import {ArbitrageSpread} from "../../models/arbitrage-spread.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
@@ -67,7 +67,7 @@ const calculationFormulaValidator: ValidatorFn = (form) => {
   ]
 })
 export class ArbitrageSpreadManageComponent implements OnInit {
-  @Input() spread?: ArbitrageSpread | null;
+  readonly spread = input<ArbitrageSpread | null>();
   @Output() formChange = new EventEmitter();
 
   portfolios$?: Observable<PortfolioKey[]>;
@@ -107,18 +107,19 @@ export class ArbitrageSpreadManageComponent implements OnInit {
 
     this.form.controls.thirdLeg.disable();
 
-    if (this.spread) {
-      this.form.controls.calculationFormula.setValue(this.spread.calculationFormula ?? 'L1-L2');
-      this.form.controls.firstLeg.setValue(this.spread.firstLeg);
-      this.form.controls.secondLeg.setValue(this.spread.secondLeg);
+    const spread = this.spread();
+    if (spread) {
+      this.form.controls.calculationFormula.setValue(spread.calculationFormula ?? 'L1-L2');
+      this.form.controls.firstLeg.setValue(spread.firstLeg);
+      this.form.controls.secondLeg.setValue(spread.secondLeg);
 
-      if (this.spread.isThirdLeg) {
+      if (spread.isThirdLeg) {
         this.form.controls.isThirdLeg.setValue(true);
         this.form.controls.thirdLeg.enable();
-        this.form.controls.thirdLeg.setValue(this.spread.thirdLeg);
+        this.form.controls.thirdLeg.setValue(spread.thirdLeg);
       }
 
-      this.form.controls.id.patchValue(this.spread.id);
+      this.form.controls.id.patchValue(spread.id);
     }
 
     this.form.valueChanges

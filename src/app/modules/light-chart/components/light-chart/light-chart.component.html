@@ -10,7 +10,7 @@
       [displayMode]="settings.timeFrameDisplayMode ?? timeFrameDisplayModes.Buttons"
     ></ats-timeframes-panel>
     <div (mousedown)="$event.stopPropagation()" class="main-chart">
-      <div [id]="guid" class="chart-container"></div>
+      <div [id]="guid()" class="chart-container"></div>
     </div>
   </div>
 }

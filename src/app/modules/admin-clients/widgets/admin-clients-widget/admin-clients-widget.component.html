@@ -2,7 +2,7 @@
   <ats-widget-skeleton
     [content]="contentRef"
     [header]="headerRef"
-    [isBlockWidget]="isBlockWidget"
+    [isBlockWidget]="isBlockWidget()"
     [settings]="settingsRef"
     [showContentScroll]="false"
     [showSettings]="shouldShowSettings"
@@ -11,7 +11,7 @@
       <ats-widget-header
         [guid]="guid"
         [hasSettings]="true"
-        [widgetMeta]="widgetInstance.widgetMeta"
+        [widgetMeta]="widgetInstance().widgetMeta"
         (switchSettings)="onSettingsChange()"
       ></ats-widget-header>
     </ng-template>

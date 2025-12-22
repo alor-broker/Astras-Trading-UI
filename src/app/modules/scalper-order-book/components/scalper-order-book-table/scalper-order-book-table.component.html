@@ -1,11 +1,11 @@
 <ng-container *transloco="let t; scope: 'scalper-order-book/scalper-order-book-table'">
-  @if (dataContext.extendedSettings$ | async; as settings) {
+  @if (dataContext().extendedSettings$ | async; as settings) {
     @if (settings.widgetSettings.showRuler) {
       <div class="position-absolute start">
         <ats-table-ruler
           [activeRow]="hoveredRow$ | async"
-          [dataContext]="dataContext"
-          [xAxisStep]="rowHeight"
+          [dataContext]="dataContext()"
+          [xAxisStep]="rowHeight()"
           >
         </ats-table-ruler>
       </div>
@@ -13,7 +13,7 @@
     @if (displayItems$ | async; as displayItems) {
       <div
         [atsHoverItemsGroup]="true"
-        (hoveredItemChanged)="updateHoveredItem($event?.item?.atsHoverItemData ?? null)"
+        (hoveredItemChanged)="updateHoveredItem($event?.item?.atsHoverItemData() ?? null)"
         id="table-body-container"
         class="user-select-none"
         >
@@ -21,8 +21,8 @@
           @for (row of displayItems; track $index) {
             <div (mousedown)="mouseDown($event, row)"
               (contextmenu)="$event.preventDefault()"
-              [style.height]="rowHeight + 'px'"
-              [style.line-height]="rowHeight + 'px'"
+              [style.height]="rowHeight() + 'px'"
+              [style.line-height]="rowHeight() + 'px'"
               class="table-row"
               [class.hovered]="(hoveredRow$ | async)?.price === row.price"
               atsHoverItem
@@ -77,8 +77,8 @@
             <div (mousedown)="mouseDown($event, row)"
               (contextmenu)="$event.preventDefault()"
               (dblclick)="$event.stopPropagation()"
-              [style.height]="rowHeight + 'px'"
-              [style.line-height]="rowHeight + 'px'"
+              [style.height]="rowHeight() + 'px'"
+              [style.line-height]="rowHeight() + 'px'"
               class="table-row"
               [class.hovered]="(hoveredRow$ | async)?.price === row.price"
               atsHoverItem
@@ -115,8 +115,8 @@
           @for (row of displayItems; track $index) {
             <div (dblclick)="$event.stopPropagation()"
               (contextmenu)="$event.preventDefault()"
-              [style.height]="rowHeight + 'px'"
-              [style.line-height]="rowHeight + 'px'"
+              [style.height]="rowHeight() + 'px'"
+              [style.line-height]="rowHeight() + 'px'"
               class="table-row"
               [class.hovered]="(hoveredRow$ | async)?.price === row.price"
               atsHoverItem
@@ -171,7 +171,7 @@
                     'multiple': orders.orders.length > 1,
                     'dirty': isDirty
                     }"
-                      [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookScalperOrderBookTable.limitOrderTooltip')"
+                      [nz-tooltip]="hideTooltips() ? null : t('scalperOrderBookScalperOrderBookTable.limitOrderTooltip')"
                       [nzTooltipMouseEnterDelay]="1"
                       [nzTooltipPlacement]="['right', 'left']"
                       [nzTooltipTrigger]="isDirty ? null : 'hover'"
@@ -194,7 +194,7 @@
                     'multiple': orders.orders.length > 1,
                     'dirty': isDirty
                     }"
-                      [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookScalperOrderBookTable.' + tooltipKey)"
+                      [nz-tooltip]="hideTooltips() ? null : t('scalperOrderBookScalperOrderBookTable.' + tooltipKey)"
                       [nzTooltipMouseEnterDelay]="1"
                       [nzTooltipPlacement]="['right', 'left']"
                       [nzTooltipTrigger]="isDirty ? null : 'hover'"

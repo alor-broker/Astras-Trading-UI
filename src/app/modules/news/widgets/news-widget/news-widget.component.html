@@ -5,7 +5,7 @@
       [header]="headerRef"
       [settings]="settingsRef"
       [showSettings]="shouldShowSettings"
-      [isBlockWidget]="isBlockWidget"
+      [isBlockWidget]="isBlockWidget()"
       [showContentScroll]="false"
       >
       <ng-template #headerRef>
@@ -14,9 +14,9 @@
           [hasSettings]="true"
           [selectedBadgeColor]="settings.badgeColor"
           [showBadgesMenu]="(showBadge$ | async) ?? false"
-          [linkToActive]="settings.linkToActive"
+          [linkToActive]="settings.linkToActive ?? null"
           [customTitle]="titleText + ' ' + (widgetTitle$ | async)"
-          [widgetMeta]="widgetInstance.widgetMeta"
+          [widgetMeta]="widgetInstance().widgetMeta"
           (switchSettings)="onSettingsChange()"
         ></ats-widget-header>
       </ng-template>

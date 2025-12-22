@@ -42,7 +42,7 @@ describe('CorrelationChartComponent', () => {
     });
     fixture = TestBed.createComponent(CorrelationChartComponent);
     component = fixture.componentInstance;
-    component.guid = GuidGenerator.newGuid();
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

@@ -1,5 +1,5 @@
-import {Component, Input} from '@angular/core';
-import {BehaviorSubject, filter, shareReplay, switchMap} from "rxjs";
+import {Component, input} from '@angular/core';
+import {filter, shareReplay, switchMap} from "rxjs";
 import {IdeaSymbol} from "../../services/invest-ideas-service-typings";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
@@ -11,6 +11,7 @@ import {ConfirmableOrderCommandsService} from "../../../order-commands/services/
 import {
   MarketOrderFormComponent
 } from "../../../order-commands/components/order-forms/market-order-form/market-order-form.component";
+import {toObservable} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-submit-order-for-symbol',
@@ -28,11 +29,10 @@ import {
   ]
 })
 export class SubmitOrderForSymbolComponent {
-  protected readonly targetSymbol$ = new BehaviorSubject<IdeaSymbol | null>(null);
-
+  readonly symbol = input.required<IdeaSymbol>();
   protected readonly selectedPortfolio$ = this.dashboardContextServiced.selectedPortfolio$;
-
-  protected readonly targetInstrument$ = this.targetSymbol$.pipe(
+  private readonly symbolChanges$ = toObservable(this.symbol);
+  protected readonly targetInstrument$ = this.symbolChanges$.pipe(
     filter(i => i != null),
     switchMap(i => this.instrumentsService.getInstrument({symbol: i.ticker, exchange: i.exchange})),
     filter(i => i != null),
@@ -44,11 +44,6 @@ export class SubmitOrderForSymbolComponent {
     private readonly instrumentsService: InstrumentsService,
     private readonly commonParametersService: CommonParametersService,
   ) {
-  }
-
-  @Input({required: true})
-  set symbol(value: IdeaSymbol) {
-    this.targetSymbol$.next(value);
   }
 
   setCommonParameters(params: Partial<CommonParameters>): void {

@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, input} from '@angular/core';
 import {BehaviorSubject, Observable, of, take} from 'rxjs';
 import {ModalService} from 'src/app/shared/services/modal.service';
 import {TerminalSettings} from "../../../../shared/models/terminal-settings/terminal-settings.model";
@@ -27,8 +27,7 @@ import {TerminalSettingsComponent} from "../../components/terminal-settings/term
   ]
 })
 export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
-  @Input()
-  hiddenSections: string[] = [];
+  readonly hiddenSections = input<string[]>([]);
 
   settingsFormValue: TerminalSettings | null = null;
   isVisible$: Observable<boolean> = of(false);

@@ -8,10 +8,10 @@
     <ng-container>
       @if (actualDisplayMode === timeFrameDisplayModes.Buttons) {
         <div #buttonsContainer class="position-absolute z-3 d-flex flex-nowrap flex-row flex-gap-1">
-          @for (timeframe of availableTimeframes; track timeframe) {
+          @for (timeframe of availableTimeframes(); track timeframe) {
             <button
               (click)="changeTimeframe.emit(timeframe)"
-              [nzType]="selectedTimeframe === timeframe ? 'primary': 'default'"
+              [nzType]="selectedTimeframe() === timeframe ? 'primary': 'default'"
               nz-button
               >
               {{t('lightChart.timeframes.' + timeframe)}}
@@ -27,13 +27,13 @@
           nz-button
           nz-dropdown
           nzShape="round">
-          {{t('lightChart.timeframes.' + selectedTimeframe)}}
+          {{t('lightChart.timeframes.' + selectedTimeframe())}}
         </button>
         <nz-dropdown-menu #timeFramesMenu="nzDropdownMenu">
           <ul nz-menu nzSelectable>
-            @for (timeframe of availableTimeframes; track timeframe) {
+            @for (timeframe of availableTimeframes(); track timeframe) {
               <li (click)="changeTimeframe.emit(timeframe)"
-                [nzSelected]="timeframe === selectedTimeframe"
+                [nzSelected]="timeframe === selectedTimeframe()"
                 nz-menu-item>
                 {{t('lightChart.timeframes.' + timeframe)}}
               </li>

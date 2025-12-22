@@ -16,6 +16,7 @@ import {AllOptionsComponent} from "../all-options/all-options.component";
 import {AllOptionsListViewComponent} from "../all-options-list-view/all-options-list-view.component";
 import {SelectedOptionsComponent} from "../selected-options/selected-options.component";
 import {OptionBoardChartsLayoutComponent} from "../option-board-charts-layout/option-board-charts-layout.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('OptionBoardComponent', () => {
   let component: OptionBoardComponent;
@@ -68,6 +69,7 @@ describe('OptionBoardComponent', () => {
 
     fixture = TestBed.createComponent(OptionBoardComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

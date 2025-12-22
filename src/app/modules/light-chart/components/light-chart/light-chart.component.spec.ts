@@ -13,6 +13,7 @@ import {TranslatorService} from "../../../../shared/services/translator.service"
 import {MockComponents, MockDirectives} from "ng-mocks";
 import {TimeframesPanelComponent} from "../timeframes-panel/timeframes-panel.component";
 import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('LightChartComponent', () => {
   let component: LightChartComponent;
@@ -85,6 +86,7 @@ describe('LightChartComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LightChartComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

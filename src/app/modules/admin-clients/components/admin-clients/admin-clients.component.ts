@@ -4,11 +4,11 @@ import {
   DestroyRef,
   ElementRef,
   Inject,
-  Input,
   LOCALE_ID,
   OnDestroy,
   OnInit,
-  signal
+  signal,
+  input
 } from '@angular/core';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {AdminClientsService} from "../../services/clients/admin-clients.service";
@@ -116,8 +116,7 @@ interface ColumnBase {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, ClientsSearchFilter> implements OnInit, OnDestroy {
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   allColumns: BaseColumnSettings<ClientDisplay>[] = [];
 
@@ -509,12 +508,12 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<AdminClientsSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<AdminClientsSettings>(this.guid()).pipe(
       shareReplay({bufferSize: 1, refCount: true})
     );
 
     this.tableState$ = this.widgetLocalStateService.getStateRecord<TableState>(
-      this.guid,
+      this.guid(),
       this.tableStateStorageKey
     );
 
@@ -812,7 +811,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
       subscribeOn(asyncScheduler)
     ).subscribe(currentState => {
       this.widgetLocalStateService.setStateRecord<TableState>(
-        this.guid,
+        this.guid(),
         this.tableStateStorageKey,
         {
           ...currentState,

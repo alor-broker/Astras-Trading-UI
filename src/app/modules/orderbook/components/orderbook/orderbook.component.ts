@@ -2,10 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input,
   OnInit,
   Output,
-  ViewEncapsulation
+  ViewEncapsulation,
+  input
 } from '@angular/core';
 import {BehaviorSubject, Observable, of, shareReplay, switchMap} from 'rxjs';
 import {OrderbookService} from '../../services/orderbook.service';
@@ -52,8 +52,7 @@ interface SpreadDiffData {
   ]
 })
 export class OrderBookComponent implements OnInit {
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
@@ -77,7 +76,7 @@ export class OrderBookComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid()).pipe(
       shareReplay(1)
     );
 

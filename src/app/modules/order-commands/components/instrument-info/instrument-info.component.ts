@@ -1,31 +1,32 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, input, OnInit, Output} from '@angular/core';
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
-import {BehaviorSubject, combineLatest, filter, map, Observable, shareReplay, switchMap} from "rxjs";
-import { QuotesService } from "../../../../shared/services/quotes.service";
-import { startWith } from "rxjs/operators";
-import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
-import { TranslocoDirective } from '@jsverse/transloco';
-import { InstrumentIconComponent } from '../../../../shared/components/instrument-icon/instrument-icon.component';
-import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
-import { NzDescriptionsComponent, NzDescriptionsItemComponent } from 'ng-zorro-antd/descriptions';
-import { AsyncPipe, DecimalPipe } from '@angular/common';
+import {combineLatest, filter, map, Observable, shareReplay, switchMap} from "rxjs";
+import {QuotesService} from "../../../../shared/services/quotes.service";
+import {startWith} from "rxjs/operators";
+import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {InstrumentIconComponent} from '../../../../shared/components/instrument-icon/instrument-icon.component';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzDescriptionsComponent, NzDescriptionsItemComponent} from 'ng-zorro-antd/descriptions';
+import {AsyncPipe, DecimalPipe} from '@angular/common';
+import {toObservable} from "@angular/core/rxjs-interop";
 
 @Component({
-    selector: 'ats-instrument-info',
-    templateUrl: './instrument-info.component.html',
-    styleUrls: ['./instrument-info.component.less'],
-    imports: [
-      TranslocoDirective,
-      InstrumentIconComponent,
-      NzTooltipDirective,
-      NzDescriptionsComponent,
-      NzDescriptionsItemComponent,
-      AsyncPipe,
-      DecimalPipe
-    ]
+  selector: 'ats-instrument-info',
+  templateUrl: './instrument-info.component.html',
+  styleUrls: ['./instrument-info.component.less'],
+  imports: [
+    TranslocoDirective,
+    InstrumentIconComponent,
+    NzTooltipDirective,
+    NzDescriptionsComponent,
+    NzDescriptionsItemComponent,
+    AsyncPipe,
+    DecimalPipe
+  ]
 })
-export class InstrumentInfoComponent implements OnInit, OnDestroy {
+export class InstrumentInfoComponent implements OnInit {
   viewData$!: Observable<{
     instrumentKey: InstrumentKey;
     position: { abs: number, quantity: number } | null;
@@ -48,8 +49,21 @@ export class InstrumentInfoComponent implements OnInit, OnDestroy {
   @Output()
   qtySelected = new EventEmitter<number>();
 
-  private readonly instrumentKey$ = new BehaviorSubject<InstrumentKey | null>(null);
-  private readonly portfolioKey$ = new BehaviorSubject<PortfolioKey | null>(null);
+  readonly instrumentKey = input.required<InstrumentKey>();
+
+  readonly currentPortfolio = input.required<PortfolioKey>();
+
+  protected readonly instrumentKeyChanges$ = toObservable(this.instrumentKey)
+    .pipe(
+      startWith(null),
+      shareReplay(1)
+    );
+
+  protected readonly currentPortfolioChanges$ = toObservable(this.currentPortfolio)
+    .pipe(
+      startWith(null),
+      shareReplay(1)
+    );
 
   constructor(
     private readonly quoteService: QuotesService,
@@ -57,29 +71,14 @@ export class InstrumentInfoComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  @Input({required: true})
-  set instrumentKey(value: InstrumentKey) {
-    this.instrumentKey$.next(value);
-  }
-
-  @Input({required: true})
-  set currentPortfolio(value: PortfolioKey) {
-    this.portfolioKey$.next(value);
-  }
-
-  ngOnDestroy(): void {
-    this.instrumentKey$.complete();
-    this.portfolioKey$.complete();
-  }
-
   ngOnInit(): void {
-    const instrumentKey$ = this.instrumentKey$
+    const instrumentKey$ = this.instrumentKeyChanges$
       .pipe(
         filter((i): i is InstrumentKey => !!i),
         shareReplay(1)
       );
 
-    const portfolioKey$ = this.portfolioKey$
+    const portfolioKey$ = this.currentPortfolioChanges$
       .pipe(
         filter((p): p is PortfolioKey => !!p),
         shareReplay(1)
@@ -93,7 +92,7 @@ export class InstrumentInfoComponent implements OnInit, OnDestroy {
     ).pipe(
       switchMap(([instrument, portfolio]) => this.portfolioSubscriptionsService.getInstrumentPositionSubscription(portfolio, instrument)),
       map(p => {
-        if(p == null) {
+        if (p == null) {
           return null;
         }
 

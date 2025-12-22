@@ -5,17 +5,17 @@
       [header]="headerRef"
       [showContentScroll]="false"
       [showSettings]="false"
-      [isBlockWidget]="isBlockWidget"
+      [isBlockWidget]="isBlockWidget()"
       >
       <ng-template #headerRef>
         <ats-widget-header
           [guid]="guid"
           [hasSettings]="false"
-          [widgetMeta]="widgetInstance.widgetMeta"
+          [widgetMeta]="widgetInstance().widgetMeta"
         ></ats-widget-header>
       </ng-template>
       <ng-template #contentRef>
-        <ats-graphs-list (editGraph)="graphEditor.targetGraphId = $event"></ats-graphs-list>
+        <ats-graphs-list (editGraph)="graphEditor.targetGraphId.set($event)"></ats-graphs-list>
         <ats-ai-graph-editor-dialog [targetGraphId]="null" #graphEditor></ats-ai-graph-editor-dialog>
       </ng-template>
     </ats-widget-skeleton>

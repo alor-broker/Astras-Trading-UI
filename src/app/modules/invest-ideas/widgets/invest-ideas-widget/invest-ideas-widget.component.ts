@@ -1,4 +1,4 @@
-import {Component, Inject, Input, OnInit} from '@angular/core';
+import {Component, Inject, input, OnInit} from '@angular/core';
 import {AsyncPipe} from "@angular/common";
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {Observable, take} from "rxjs";
@@ -27,11 +27,9 @@ import {WidgetHeaderComponent} from "../../../../shared/components/widget-header
   styleUrl: './invest-ideas-widget.component.less'
 })
 export class InvestIdeasWidgetComponent implements OnInit {
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<InvestIdeasSettings>;
 
@@ -46,12 +44,12 @@ export class InvestIdeasWidgetComponent implements OnInit {
   }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<InvestIdeasSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'InvestIdeasSettings',
       settings => ({
         ...settings,

@@ -25,6 +25,8 @@ describe('OrdersIndicatorComponent', () => {
 
     fixture = TestBed.createComponent(OrdersIndicatorComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('direction', 'up');
+    fixture.componentRef.setInput('visible', true);
     fixture.detectChanges();
   });
 

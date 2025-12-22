@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, TemplateRef} from '@angular/core';
+import {Component, EventEmitter, input, OnInit, Output, TemplateRef} from '@angular/core';
 import {WidgetSettingsService} from '../../services/widget-settings.service';
 import {ManageDashboardsService} from '../../services/manage-dashboards.service';
 import {instrumentsBadges} from '../../utils/instruments';
@@ -42,32 +42,23 @@ import {JoyrideModule} from 'ngx-joyride';
   ]
 })
 export class WidgetHeaderComponent implements OnInit {
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
-  @Input()
-  showBadgesMenu = false;
+  readonly showBadgesMenu = input(false);
 
-  @Input()
-  selectedBadgeColor?: string | null = null;
+  readonly selectedBadgeColor = input<(string | null) | undefined>(null);
 
-  @Input()
-  badgeShape: 'circle' | 'square' = 'circle';
+  readonly badgeShape = input<'circle' | 'square'>('circle');
 
-  @Input()
-  widgetMeta?: WidgetMeta;
+  readonly widgetMeta = input<WidgetMeta | null>(null);
 
-  @Input()
-  customTitle: string | null = null;
+  readonly customTitle = input<string | null>(null);
 
-  @Input()
-  linkToActive?: boolean;
+  readonly linkToActive = input<boolean | null>(null);
 
-  @Input()
-  hasSettings = false;
+  readonly hasSettings = input(false);
 
-  @Input()
-  titleTemplate: TemplateRef<any> | null = null;
+  readonly titleTemplate = input<TemplateRef<any> | null>(null);
 
   @Output()
   switchSettings = new EventEmitter();
@@ -94,8 +85,9 @@ export class WidgetHeaderComponent implements OnInit {
   }
 
   get title(): string {
-    return this.customTitle != null && !!this.customTitle.length
-      ? this.customTitle as string
+    const customTitle = this.customTitle();
+    return customTitle != null && customTitle.length > 0
+      ? customTitle as string
       : this.titleText;
   }
 
@@ -136,25 +128,27 @@ export class WidgetHeaderComponent implements OnInit {
         shareReplay(1)
       );
 
-    this.titleText = !!this.widgetMeta
-      ? WidgetsHelper.getWidgetName(this.widgetMeta.widgetName, this.translatorService.getActiveLang())
+    const widgetMeta = this.widgetMeta();
+
+    this.titleText = widgetMeta != null
+      ? WidgetsHelper.getWidgetName(widgetMeta.widgetName, this.translatorService.getActiveLang())
       : '';
 
-    this.helpUrl$ = this.helpService.getWidgetHelp(this.widgetMeta?.typeId ?? '');
+    this.helpUrl$ = this.helpService.getWidgetHelp(widgetMeta?.typeId ?? '');
   }
 
   switchBadgeColor(badgeColor: string): void {
-    this.settingsService.updateSettings(this.guid, {badgeColor});
+    this.settingsService.updateSettings(this.guid(), {badgeColor});
   }
 
   changeLinkToActive(event: MouseEvent | TouchEvent, linkToActive: boolean): void {
     this.preventMouseEvents(event);
-    this.settingsService.updateIsLinked(this.guid, linkToActive);
+    this.settingsService.updateIsLinked(this.guid(), linkToActive);
   }
 
   removeItem(event: MouseEvent | TouchEvent): void {
     this.preventMouseEvents(event);
-    this.manageDashboardService.removeWidget(this.guid);
+    this.manageDashboardService.removeWidget(this.guid());
   }
 
   onSwitchSettings(event: MouseEvent | TouchEvent): void {

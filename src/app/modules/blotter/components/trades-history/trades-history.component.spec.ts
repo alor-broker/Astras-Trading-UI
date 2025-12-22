@@ -43,6 +43,7 @@ import {NzPopconfirmDirective} from "ng-zorro-antd/popconfirm";
 import {ResizeColumnDirective} from "../../../../shared/directives/resize-column.directive";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {NzIconDirective} from "ng-zorro-antd/icon";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('TradesHistoryComponent', () => {
   let component: TradesHistoryComponent;
@@ -120,7 +121,7 @@ describe('TradesHistoryComponent', () => {
     });
     fixture = TestBed.createComponent(TradesHistoryComponent);
     component = fixture.componentInstance;
-    component.guid = 'testGuid';
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

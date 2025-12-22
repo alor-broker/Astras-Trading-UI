@@ -1,11 +1,11 @@
 <ng-container *transloco="let t; scope: 'scalper-order-book/orders-indicator'">
-  @if (visible) {
+  @if (visible()) {
     <span
-      [nzType]="direction === 'up' ? 'up-square' : 'down-square'"
+      [nzType]="direction() === 'up' ? 'up-square' : 'down-square'"
       nz-icon nzTheme="outline"
-    [nz-tooltip]="hideTooltips
+    [nz-tooltip]="hideTooltips()
       ? null
-      : direction === 'up' ? t('scalperOrderBookOrdersIndicator.upTooltip') : t('scalperOrderBookOrdersIndicator.downTooltip')"
+      : direction() === 'up' ? t('scalperOrderBookOrdersIndicator.upTooltip') : t('scalperOrderBookOrdersIndicator.downTooltip')"
       >
     </span>
   }

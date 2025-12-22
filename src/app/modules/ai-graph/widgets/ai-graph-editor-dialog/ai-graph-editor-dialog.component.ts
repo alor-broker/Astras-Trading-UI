@@ -1,39 +1,33 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, model, OnInit} from '@angular/core';
 import {TranslocoDirective} from "@jsverse/transloco";
 import {NzModalComponent, NzModalContentDirective} from "ng-zorro-antd/modal";
 import {GraphStorageService} from "../../services/graph-storage.service";
-import {BehaviorSubject, combineLatest, map, Observable, shareReplay, take, tap} from 'rxjs';
+import {combineLatest, map, Observable, shareReplay, take, tap} from 'rxjs';
 import {Graph, GraphConfig} from "../../models/graph.model";
 import {LetDirective} from "@ngrx/component";
 import {GraphEditorComponent} from "../../components/graph-editor/graph-editor.component";
+import {toObservable} from "@angular/core/rxjs-interop";
 
 @Component({
-    selector: 'ats-ai-graph-editor-dialog',
-    imports: [
-        TranslocoDirective,
-        NzModalComponent,
-        NzModalContentDirective,
-        LetDirective,
-        GraphEditorComponent
-    ],
-    templateUrl: './ai-graph-editor-dialog.component.html',
-    styleUrl: './ai-graph-editor-dialog.component.less'
+  selector: 'ats-ai-graph-editor-dialog',
+  imports: [
+    TranslocoDirective,
+    NzModalComponent,
+    NzModalContentDirective,
+    LetDirective,
+    GraphEditorComponent
+  ],
+  templateUrl: './ai-graph-editor-dialog.component.html',
+  styleUrl: './ai-graph-editor-dialog.component.less'
 })
-export class AiGraphEditorDialogComponent implements OnInit, OnDestroy {
+export class AiGraphEditorDialogComponent implements OnInit {
   targetGraph$!: Observable<Graph | null>;
   protected latestVersion: GraphConfig | null = null;
-  private readonly targetGraphId$ = new BehaviorSubject<string | null>(null);
+
+  readonly targetGraphId = model<string | null>();
+  private readonly targetGraphIdChanges = toObservable(this.targetGraphId);
 
   constructor(private readonly graphStorageService: GraphStorageService) {
-  }
-
-  @Input({required: true})
-  set targetGraphId(value: string | null) {
-    this.targetGraphId$.next(value);
-  };
-
-  ngOnDestroy(): void {
-    this.targetGraphId$.complete();
   }
 
   closeDialog(): void {
@@ -44,13 +38,13 @@ export class AiGraphEditorDialogComponent implements OnInit, OnDestroy {
         this.saveChanges(g, this.latestVersion);
       }
 
-      this.targetGraphId = null;
+      this.targetGraphId.set(null);
     });
   }
 
   ngOnInit(): void {
     this.targetGraph$ = combineLatest({
-      targetGraphId: this.targetGraphId$,
+      targetGraphId: this.targetGraphIdChanges,
       allGraphs: this.graphStorageService.getAllGraphs()
     }).pipe(
       map(x => {

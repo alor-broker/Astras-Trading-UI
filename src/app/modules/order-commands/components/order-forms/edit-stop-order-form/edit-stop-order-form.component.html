@@ -57,7 +57,7 @@
               <nz-form-control [nzErrorTip]="triggerPriceError">
                 <ats-input-number
                   [allowNegative]="true"
-                  [focused]="!initialValues?.hasPriceChanged"
+                  [focused]="!initialValues()?.hasPriceChanged"
                   [step]="formInstrument.minstep"
                   formControlName="triggerPrice"
                   placeholder="0"

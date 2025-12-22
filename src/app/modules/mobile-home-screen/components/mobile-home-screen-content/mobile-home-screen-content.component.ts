@@ -1,39 +1,29 @@
+import {Component, input, OnInit} from '@angular/core';
+import {PositionsComponent} from "../positions/positions.component";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {combineLatest, distinctUntilChanged, Observable} from "rxjs";
+import {MobileHomeScreenSettings} from "../../models/mobile-home-screen-settings.model";
+import {LetDirective} from "@ngrx/component";
+import {Market} from "../../../../../generated/graphql.types";
+import {RibbonComponent} from "../../../ribbon/components/ribbon/ribbon.component";
+import {PortfolioEvaluationComponent} from "../portfolio-evaluation/portfolio-evaluation.component";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {NzCollapseComponent, NzCollapsePanelComponent} from "ng-zorro-antd/collapse";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {NewsComponent} from "../news/news.component";
+import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
+import {NavigationStackService} from "../../../../shared/services/navigation-stack.service";
 import {
-  Component,
-  Input,
-  OnInit
-} from '@angular/core';
-import { PositionsComponent } from "../positions/positions.component";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+  InvestIdeasCompactComponent
+} from "../../../invest-ideas/components/invest-ideas-compact/invest-ideas-compact.component";
 import {
-  combineLatest,
-  distinctUntilChanged,
-  Observable
-} from "rxjs";
-import { MobileHomeScreenSettings } from "../../models/mobile-home-screen-settings.model";
-import { LetDirective } from "@ngrx/component";
-import { Market } from "../../../../../generated/graphql.types";
-import { RibbonComponent } from "../../../ribbon/components/ribbon/ribbon.component";
-import { PortfolioEvaluationComponent } from "../portfolio-evaluation/portfolio-evaluation.component";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import {
-  NzCollapseComponent,
-  NzCollapsePanelComponent
-} from "ng-zorro-antd/collapse";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { NewsComponent } from "../news/news.component";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
-import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
-import { InvestIdeasCompactComponent } from "../../../invest-ideas/components/invest-ideas-compact/invest-ideas-compact.component";
-import { AgreementDynamicsComponent } from "../../../portfolio-charts/components/agreement-dynamics/agreement-dynamics.component";
-import { AsyncPipe } from "@angular/common";
-import { UserPortfoliosService } from "../../../../shared/services/user-portfolios.service";
-import {
-  filter,
-  map
-} from "rxjs/operators";
-import { isPortfoliosEqual } from "../../../../shared/utils/portfolios";
+  AgreementDynamicsComponent
+} from "../../../portfolio-charts/components/agreement-dynamics/agreement-dynamics.component";
+import {AsyncPipe} from "@angular/common";
+import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
+import {filter, map} from "rxjs/operators";
+import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
 import {
   DisplayParams,
   MarketTrendsComponent
@@ -59,8 +49,7 @@ import {
   styleUrl: './mobile-home-screen-content.component.less'
 })
 export class MobileHomeScreenContentComponent implements OnInit {
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   readonly Market = Market;
 
@@ -77,7 +66,7 @@ export class MobileHomeScreenContentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<MobileHomeScreenSettings>(this.guid);
+    this.settings$ = this.widgetSettingsService.getSettings<MobileHomeScreenSettings>(this.guid());
     this.currentAgreement$ = this.getCurrentAgreement();
   }
 

@@ -123,12 +123,12 @@ describe('InfiniteScrollTableComponent', () => {
   });
 
   it('should provide inputs', () => {
-    expect(component.trackByFn).toBe(wrapperComp.trackByFn);
-    expect(component.tableContainerHeight).toBe(wrapperComp.tableContainerHeight);
-    expect(component.tableContainerWidth).toBe(wrapperComp.tableContainerWidth);
+    expect(component.trackByFn()).toBe(wrapperComp.trackByFn);
+    expect(component.tableContainerHeight()).toBe(wrapperComp.tableContainerHeight);
+    expect(component.tableContainerWidth()).toBe(wrapperComp.tableContainerWidth);
     expect(component.data).toBe(wrapperComp.testData);
-    expect(component.isLoading).toBe(wrapperComp.isLoading);
-    expect(component.tableConfig).toEqual(wrapperComp.tableConfig);
+    expect(component.isLoading()).toBe(wrapperComp.isLoading);
+    expect(component.tableConfig()).toEqual(wrapperComp.tableConfig);
   });
 
   it('should call functions when outputs emitted', () => {

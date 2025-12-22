@@ -1,7 +1,7 @@
 <div class="d-flex flex-column h-100">
   <div>
     @if (dataContext) {
-      <ats-top-panel [guid]="guid" [isActive]="isActive" [dataContext]="dataContext"></ats-top-panel>
+      <ats-top-panel [guid]="guid()" [isActive]="isActive()" [dataContext]="dataContext"></ats-top-panel>
     }
   </div>
   <div class="flex-fill">
@@ -66,7 +66,7 @@
                     >
                     <ats-scalper-order-book-table
                       [dataContext]="dataContext"
-                      [isActive]="isActive"
+                      [isActive]="isActive()"
                       [rowHeight]="shared.rowHeight"
                       [hideTooltips]="vm.extendedSettings.widgetSettings.hideTooltips ?? false"
                       (mouseenter)="isTableHovered$.next(true)"
@@ -124,7 +124,7 @@
             #topFloatingPanelContainer
             >
             <ats-top-floating-panel
-              [guid]="guid"
+              [guid]="guid()"
               [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
             ></ats-top-floating-panel>
           </div>
@@ -137,7 +137,7 @@
             (cdkDragEnded)="saveFloatingPanelPosition($event, bottomFloatingPanelPositionStateKey)"
             #bottomFloatingPanelContainer
             >
-            <ats-bottom-floating-panel [guid]="guid" [isActive]="isActive" [dataContext]="dataContext"></ats-bottom-floating-panel>
+            <ats-bottom-floating-panel [guid]="guid()" [isActive]="isActive()" [dataContext]="dataContext"></ats-bottom-floating-panel>
           </div>
 
           <div class="position-absolute bottom-0 w-100" id="possible-actions-panel-container">

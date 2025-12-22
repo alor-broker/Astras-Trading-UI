@@ -23,8 +23,8 @@
               <ats-portfolio-property-editor [config]="editor.config"></ats-portfolio-property-editor>
             }
             @case (ExtendedEditors.Prompt) {
-              @if (targetNode) {
-                <ats-prompt-property-editor [config]="editor.config" [targetNode]="targetNode"></ats-prompt-property-editor>
+              @if (targetNode()) {
+                <ats-prompt-property-editor [config]="editor.config" [targetNode]="targetNode()!"></ats-prompt-property-editor>
               }
             }
             @case (ExtendedEditors.Select) {

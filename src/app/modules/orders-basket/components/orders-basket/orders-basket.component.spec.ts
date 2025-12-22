@@ -15,6 +15,7 @@ import {NzTypographyComponent} from "ng-zorro-antd/typography";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {InputNumberComponent} from "../../../../shared/components/input-number/input-number.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('OrdersBasketComponent', () => {
   let component: OrdersBasketComponent;
@@ -63,6 +64,7 @@ describe('OrdersBasketComponent', () => {
 
     fixture = TestBed.createComponent(OrdersBasketComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

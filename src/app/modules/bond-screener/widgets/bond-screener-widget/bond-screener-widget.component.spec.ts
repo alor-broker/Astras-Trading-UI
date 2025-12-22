@@ -54,16 +54,20 @@ describe('BondScreenerWidgetComponent', () => {
     fixture = TestBed.createComponent(BondScreenerWidgetComponent);
     component = fixture.componentInstance;
 
-    component.widgetInstance = {
-      instance: {
-        guid: 'guid'
-      } as Widget,
-      widgetMeta: {
-        widgetName: {
-          translations: {}
-        }
-      } as WidgetMeta
-    };
+    fixture.componentRef.setInput(
+      'widgetInstance',
+      {
+        instance: {
+          guid: 'guid'
+        } as Widget,
+        widgetMeta: {
+          widgetName: {
+            translations: {}
+          }
+        } as WidgetMeta
+      }
+    );
+
     fixture.detectChanges();
   });
 

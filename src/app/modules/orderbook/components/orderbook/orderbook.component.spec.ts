@@ -15,6 +15,7 @@ import {
 import {
   OrderbookTableVolumesAtTheMiddleComponent
 } from "../orderbook-tables/orderbook-table-volumes-at-the-middle/orderbook-table-volumes-at-the-middle.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('OrderBookComponent', () => {
   let component: OrderBookComponent;
@@ -78,6 +79,7 @@ describe('OrderBookComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OrderBookComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
   afterEach(() => fixture?.destroy());

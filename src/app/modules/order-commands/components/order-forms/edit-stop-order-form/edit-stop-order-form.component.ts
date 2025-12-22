@@ -1,8 +1,8 @@
 import {
   Component,
   DestroyRef,
-  Input,
-  OnInit
+  OnInit,
+  input
 } from '@angular/core';
 import { BaseEditOrderFormComponent } from "../base-edit-order-form.component";
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -98,13 +98,12 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
 
   currentPriceDiffPercent$!: Observable<{ percent: number, sign: number } | null>;
 
-  @Input()
-  initialValues: {
+  readonly initialValues = input<{
     triggerPrice?: number;
     price?: number;
     quantity?: number;
     hasPriceChanged?: boolean;
-  } | null = null;
+} | null>(null);
 
   readonly form = this.formBuilder.group({
     quantity: this.formBuilder.nonNullable.control(
@@ -159,8 +158,8 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
 
   ngOnInit(): void {
     this.currentOrder$ = combineLatest({
-      orderId: this.orderId$,
-      portfolioKey: this.portfolioKey$
+      orderId: this.orderIdChanges$,
+      portfolioKey: this.portfolioKeyChanges$
     }).pipe(
       filter(x => x.orderId != null && !!x.orderId.length && !!x.portfolioKey),
       switchMap(x => this.orderDetailsService.getStopOrderDetails(x.orderId!, x.portfolioKey!)),
@@ -193,10 +192,11 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       this.setPriceValidators(this.form.controls.triggerPrice, x.currentInstrument);
       this.setPriceValidators(this.form.controls.price, x.currentInstrument);
 
-      this.form.controls.quantity.setValue(this.initialValues?.quantity ?? x.currentOrder.qtyBatch);
-      this.form.controls.triggerPrice.setValue(this.initialValues?.triggerPrice ?? this.initialValues?.price ?? x.currentOrder.triggerPrice);
+      const initialValues = this.initialValues();
+      this.form.controls.quantity.setValue(initialValues?.quantity ?? x.currentOrder.qtyBatch);
+      this.form.controls.triggerPrice.setValue(initialValues?.triggerPrice ?? initialValues?.price ?? x.currentOrder.triggerPrice);
       this.form.controls.condition.setValue(getConditionTypeByString(x.currentOrder.conditionType) ?? LessMore.More);
-      this.form.controls.price.setValue(this.initialValues?.price ?? x.currentOrder.price);
+      this.form.controls.price.setValue(initialValues?.price ?? x.currentOrder.price);
 
       this.form.controls.withLimit.setValue(x.currentOrder.type === OrderType.StopLimit);
 
@@ -329,7 +329,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
   private prepareUpdateStream(): Observable<boolean> {
     return combineLatest({
       currentOrder: this.currentOrder$,
-      portfolioKey: this.portfolioKey$,
+      portfolioKey: this.portfolioKeyChanges$,
       tc: this.timezoneConverterService.getConverter()
     }).pipe(
       filter(x => !!x.portfolioKey),

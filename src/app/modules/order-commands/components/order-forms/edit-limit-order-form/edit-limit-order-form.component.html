@@ -36,7 +36,7 @@
               <nz-form-control [nzErrorTip]="priceError">
                 <ats-input-number
                   [allowNegative]="true"
-                  [focused]="!initialValues?.hasPriceChanged"
+                  [focused]="!initialValues()?.hasPriceChanged"
                   [step]="formInstrument.minstep"
                   [suffix]="priceDiff"
                   formControlName="price"

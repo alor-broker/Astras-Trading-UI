@@ -5,7 +5,7 @@
     [nzContent]="content"
     [nzSize]="'default'"
     [nzTitle]="t('aiChatSideChatWidget.title')"
-    [nzVisible]="atsVisible"
+    [nzVisible]="atsVisible()"
     [nzWrapClassName]="'ai-chat' + (isResizing ? ' resizing' : '')"
     [nzExtra]="extra"
     nzPlacement="right"

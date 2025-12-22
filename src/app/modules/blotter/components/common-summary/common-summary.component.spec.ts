@@ -9,6 +9,7 @@ import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTe
 import {MockComponents, MockDirectives} from "ng-mocks";
 import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
 import {NzDescriptionsComponent, NzDescriptionsItemComponent} from "ng-zorro-antd/descriptions";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('CommonSummaryComponent', () => {
   let component: CommonSummaryComponent;
@@ -61,6 +62,7 @@ describe('CommonSummaryComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(CommonSummaryComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

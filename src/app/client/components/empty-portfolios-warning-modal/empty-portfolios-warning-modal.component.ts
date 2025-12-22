@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, model, OnInit} from '@angular/core';
 import {Observable} from "rxjs";
 import {EnvironmentService} from "../../../shared/services/environment.service";
 import {HelpService} from "../../../shared/services/help.service";
@@ -10,26 +10,25 @@ import {NzButtonComponent} from "ng-zorro-antd/button";
 import {ExternalLinkComponent} from "../../../shared/components/external-link/external-link.component";
 
 @Component({
-    selector: 'ats-empty-portfolios-warning-modal',
-    imports: [
-        NzModalComponent,
-        AsyncPipe,
-        TranslocoDirective,
-        NzModalContentDirective,
-        NzTypographyComponent,
-        NzModalFooterDirective,
-        NzButtonComponent,
-        ExternalLinkComponent
-    ],
-    templateUrl: './empty-portfolios-warning-modal.component.html',
-    styleUrl: './empty-portfolios-warning-modal.component.less'
+  selector: 'ats-empty-portfolios-warning-modal',
+  imports: [
+    NzModalComponent,
+    AsyncPipe,
+    TranslocoDirective,
+    NzModalContentDirective,
+    NzTypographyComponent,
+    NzModalFooterDirective,
+    NzButtonComponent,
+    ExternalLinkComponent
+  ],
+  templateUrl: './empty-portfolios-warning-modal.component.html',
+  styleUrl: './empty-portfolios-warning-modal.component.less'
 })
 export class EmptyPortfoliosWarningModalComponent implements OnInit {
   supportLink = this.environmentService.externalLinks?.support;
   helpLink$!: Observable<string | null>;
 
-  @Input({required: true})
-  atsVisible = false;
+  readonly atsVisible = model(false);
 
   constructor(
     private readonly environmentService: EnvironmentService,
@@ -42,6 +41,6 @@ export class EmptyPortfoliosWarningModalComponent implements OnInit {
   }
 
   handleClose(): void {
-    this.atsVisible = false;
+    this.atsVisible.set(false);
   }
 }

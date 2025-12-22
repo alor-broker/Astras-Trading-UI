@@ -1,7 +1,7 @@
 import {
   Component,
-  Input,
-  OnInit
+  OnInit,
+  input
 } from '@angular/core';
 import {
   distinctUntilChanged,
@@ -31,11 +31,9 @@ import { AsyncPipe } from '@angular/common';
     ]
 })
 export class ForwardSummaryComponent implements OnInit {
-  @Input()
-  shouldShowSettings!: boolean;
+  readonly shouldShowSettings = input<boolean>(false);
 
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   summary$!: Observable<ForwardRisksView>;
   columns = 1;
@@ -47,7 +45,7 @@ export class ForwardSummaryComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+    this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid()).pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getForwardRisks(settings))
     );

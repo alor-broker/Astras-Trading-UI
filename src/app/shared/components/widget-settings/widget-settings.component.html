@@ -4,11 +4,11 @@
       <h3 class="mb-0">{{t('settingsHeader')}}</h3>
     </div>
     @if ((isMobile$ | async) === false) {
-      @if (showCopy) {
+      @if (showCopy()) {
         <div>
           <button
             (click)="copyClick.emit()"
-            [disabled]="!canCopy"
+            [disabled]="!canCopy()"
             [nzTooltipMouseEnterDelay]="0.5"
             [nzTooltipTitle]="t('sharedWidgetSettings.copyTooltip')"
             nz-button
@@ -28,7 +28,7 @@
   <footer>
     <button
       (click)="saveClick.emit()"
-      [disabled]="!canSave"
+      [disabled]="!canSave()"
       nz-button
       nzType="primary"
       >

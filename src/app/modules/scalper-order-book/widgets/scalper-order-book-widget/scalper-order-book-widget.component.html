@@ -4,7 +4,7 @@
       [content]="contentRef"
       [header]="headerRef"
       [settings]="settingsRef"
-      [isBlockWidget]="isBlockWidget"
+      [isBlockWidget]="isBlockWidget()"
       [showSettings]="shouldShowSettings"
       [showContentScroll]="false"
       >
@@ -13,18 +13,18 @@
           (switchSettings)="onSettingsChange()"
           [guid]="guid"
           [hasSettings]="true"
-          [linkToActive]="settings.linkToActive"
+          [linkToActive]="settings.linkToActive ?? null"
           [selectedBadgeColor]="settings.badgeColor"
           [showBadgesMenu]="(showBadge$ | async) ?? false"
-          [widgetMeta]="widgetInstance.widgetMeta"
+          [widgetMeta]="widgetInstance().widgetMeta"
           [titleTemplate]="titleTemplate"
         ></ats-widget-header>
         <ng-template #titleTemplate>
-          <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance.instance.guid"></ats-widget-header-instrument-switch>
+          <ats-widget-header-instrument-switch [widgetGuid]="guid"></ats-widget-header-instrument-switch>
         </ng-template>
       </ng-template>
       <ng-template #contentRef>
-        <ats-scalper-order-book [guid]="guid" [isActive]="isActive"></ats-scalper-order-book>
+        <ats-scalper-order-book [guid]="guid" [isActive]="isActive()"></ats-scalper-order-book>
       </ng-template>
       <ng-template #settingsRef>
         <ats-scalper-order-book-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-scalper-order-book-settings>

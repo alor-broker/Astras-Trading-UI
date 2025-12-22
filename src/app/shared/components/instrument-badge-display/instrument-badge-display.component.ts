@@ -2,8 +2,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  Input,
-  OnInit
+  OnInit,
+  input
 } from '@angular/core';
 import { InstrumentKey } from "../../models/instruments/instrument-key.model";
 import {
@@ -34,8 +34,7 @@ import { LetDirective } from "@ngrx/component";
     ]
 })
 export class InstrumentBadgeDisplayComponent implements OnInit {
-  @Input({required: true})
-  instrumentKey!: InstrumentKey;
+  readonly instrumentKey = input.required<InstrumentKey>();
 
   selectedInstruments$!: Observable<InstrumentGroups>;
   badgesColors$!: Observable<string[]>;
@@ -84,12 +83,13 @@ export class InstrumentBadgeDisplayComponent implements OnInit {
   }
 
   private isBadgeApplicable(selectedInstrument: InstrumentKey): boolean {
-    return this.instrumentKey.symbol === selectedInstrument.symbol
-      && this.instrumentKey.exchange === selectedInstrument.exchange
+    const instrumentKey = this.instrumentKey();
+    return instrumentKey.symbol === selectedInstrument.symbol
+      && instrumentKey.exchange === selectedInstrument.exchange
       && (
-        this.instrumentKey.instrumentGroup == null
+        instrumentKey.instrumentGroup == null
         || selectedInstrument.instrumentGroup == null
-        || this.instrumentKey.instrumentGroup === selectedInstrument.instrumentGroup
+        || instrumentKey.instrumentGroup === selectedInstrument.instrumentGroup
       );
   }
 }

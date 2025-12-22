@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, effect, input} from '@angular/core';
 import {NodeBase} from "../../graph/nodes/node-base";
 import {EditorType, ExtendedEditors, Portfolio, SlotType} from "../../graph/slot-types";
 import {
@@ -55,25 +55,24 @@ interface EditorsSection {
 }
 
 @Component({
-    selector: 'ats-node-properties-editor',
-    imports: [
-        NzEmptyComponent,
-        TranslocoDirective,
-        StringPropertyEditorComponent,
-        NumberPropertyEditorComponent,
-        BooleanPropertyEditorComponent,
-        TextPropertyEditorComponent,
-        DatePropertyEditorComponent,
-        PortfolioPropertyEditorComponent,
-        PromptPropertyEditorComponent,
-        SelectPropertyEditorComponent
-    ],
-    templateUrl: './node-properties-editor.component.html',
-    styleUrl: './node-properties-editor.component.less'
+  selector: 'ats-node-properties-editor',
+  imports: [
+    NzEmptyComponent,
+    TranslocoDirective,
+    StringPropertyEditorComponent,
+    NumberPropertyEditorComponent,
+    BooleanPropertyEditorComponent,
+    TextPropertyEditorComponent,
+    DatePropertyEditorComponent,
+    PortfolioPropertyEditorComponent,
+    PromptPropertyEditorComponent,
+    SelectPropertyEditorComponent
+  ],
+  templateUrl: './node-properties-editor.component.html',
+  styleUrl: './node-properties-editor.component.less'
 })
-export class NodePropertiesEditorComponent implements OnChanges {
-  @Input()
-  targetNode: NodeBase | null = null;
+export class NodePropertiesEditorComponent {
+  readonly targetNode = input<NodeBase | null>(null);
 
   protected sections: EditorsSection[] = [];
 
@@ -81,16 +80,14 @@ export class NodePropertiesEditorComponent implements OnChanges {
   protected readonly ExtendedEditors = ExtendedEditors;
 
   constructor(private readonly translatorService: TranslatorService) {
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.targetNode != null) {
-      if (changes.targetNode.currentValue == null) {
+    effect(() => {
+      const targetNode = this.targetNode();
+      if (targetNode == null) {
         this.sections = [];
       } else {
         this.initSections();
       }
-    }
+    });
   }
 
   private initSections(): void {
@@ -105,14 +102,16 @@ export class NodePropertiesEditorComponent implements OnChanges {
   }
 
   private initTitleEditor(translator: TranslatorFn): void {
-    if (this.targetNode?.titleLocked === false) {
+    const node = this.targetNode();
+
+    if (node != null && !node.titleLocked) {
       this.sections.push({
         editors: [
           this.createEditor<StringPropertyEditorConfig>(
             SlotType.String,
             {
               label: translator(['labels', 'blockTitle'], {falback: 'Block Title'}),
-              initialValue: this.targetNode.getTitle(),
+              initialValue: node.getTitle(),
               validation: {
                 minLength: 1,
                 maxLength: 100
@@ -134,9 +133,9 @@ export class NodePropertiesEditorComponent implements OnChanges {
 
   private initNodePropertiesEditor(translator: TranslatorFn): void {
     const editors: Editor[] = [];
+    const node = this.targetNode();
 
-    if (this.targetNode != null) {
-      const node = this.targetNode;
+    if (node != null) {
       for (const propertyKey in node.properties) {
         const info = node.getPropertyInfo(propertyKey) as NodePropertyInfo;
 
@@ -170,8 +169,9 @@ export class NodePropertiesEditorComponent implements OnChanges {
   }
 
   private applyChanges(change: (node: NodeBase) => void): void {
-    if (this.targetNode != null) {
-      change(this.targetNode);
+    const targetNode = this.targetNode();
+    if (targetNode != null) {
+      change(targetNode);
       const canvas = LGraphCanvas.active_canvas;
       canvas.setDirty(true, true);
       canvas.graph?.afterChange();

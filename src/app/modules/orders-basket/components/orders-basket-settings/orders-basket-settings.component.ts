@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, OnInit, Output} from '@angular/core';
 import {OrdersBasketSettings} from "../../models/orders-basket-settings.model";
 import {
   WidgetSettingsBaseComponent
@@ -32,9 +32,6 @@ import {NzSwitchComponent} from 'ng-zorro-antd/switch';
   ]
 })
 export class OrdersBasketSettingsComponent extends WidgetSettingsBaseComponent<OrdersBasketSettings> implements OnInit {
-  @Input({required: true})
-  guid!: string;
-
   @Output()
   settingsChange = new EventEmitter<void>();
 

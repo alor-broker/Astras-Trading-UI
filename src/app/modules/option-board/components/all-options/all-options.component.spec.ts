@@ -51,24 +51,27 @@ describe('AllOptionsComponent', () => {
 
     fixture = TestBed.createComponent(AllOptionsComponent);
     component = fixture.componentInstance;
-    component.dataContext = {
-      settings$: new Subject(),
-      selectedSide$: new Subject<OptionSide>(),
-      selectedParameter$: new Subject<OptionParameters>(),
-      optionsSelection$: new Subject<OptionsSelection[]>(),
-      currentSelection$: new Subject<OptionsSelection>(),
-      selectionParameters$: new Subject<Map<string, Partial<SelectionParameters>>>(),
-      updateOptionSelection: () => {
-      },
-      clearCurrentSelection: () => {
-      },
-      removeItemFromSelection: () => {
-      },
-      setParameters: () => {
-      },
-      destroy: () => {
-      }
-    } as OptionBoardDataContext;
+    fixture.componentRef.setInput(
+      'dataContext',
+      {
+        settings$: new Subject(),
+        selectedSide$: new Subject<OptionSide>(),
+        selectedParameter$: new Subject<OptionParameters>(),
+        optionsSelection$: new Subject<OptionsSelection[]>(),
+        currentSelection$: new Subject<OptionsSelection>(),
+        selectionParameters$: new Subject<Map<string, Partial<SelectionParameters>>>(),
+        updateOptionSelection: () => {
+        },
+        clearCurrentSelection: () => {
+        },
+        removeItemFromSelection: () => {
+        },
+        setParameters: () => {
+        },
+        destroy: () => {
+        }
+      } as OptionBoardDataContext
+    );
 
     fixture.detectChanges();
   });

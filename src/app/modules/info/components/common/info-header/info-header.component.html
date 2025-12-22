@@ -1,12 +1,14 @@
+@let targetInfo = info();
+
 <div class="d-flex flex-row justify-content-center align-items-center flex-gap-10">
   <ats-instrument-icon
     [size]="64"
-    [symbol]="info.symbol"
+    [symbol]="targetInfo.symbol"
   ></ats-instrument-icon>
   <div class="overflow-hidden text-nowrap">
     <span nz-typography nzEllipsis>
-      <span class='fs-5 heading-color'>{{ info.shortName }}</span>
-      <span class='sup'>{{ info.exchange }}</span>
+      <span class='fs-5 heading-color'>{{ targetInfo.shortName }}</span>
+      <span class='sup'>{{ targetInfo.exchange }}</span>
     </span>
   </div>
 </div>

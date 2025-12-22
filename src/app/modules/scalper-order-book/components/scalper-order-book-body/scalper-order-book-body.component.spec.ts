@@ -29,6 +29,7 @@ import {TopFloatingPanelComponent} from "../top-floating-panel/top-floating-pane
 import {BottomFloatingPanelComponent} from "../bottom-floating-panel/bottom-floating-panel.component";
 import {PossibleActionsPanelComponent} from "../possible-actions-panel/possible-actions-panel.component";
 import {NzEmptyComponent} from "ng-zorro-antd/empty";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('ScalperOrderBookBodyComponent', () => {
   let component: ScalperOrderBookBodyComponent;
@@ -99,6 +100,7 @@ describe('ScalperOrderBookBodyComponent', () => {
 
     fixture = TestBed.createComponent(ScalperOrderBookBodyComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

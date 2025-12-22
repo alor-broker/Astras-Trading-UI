@@ -5,11 +5,11 @@ import {
   ElementRef,
   Inject,
   InjectionToken,
-  Input,
   OnDestroy,
   OnInit,
   SkipSelf,
-  ViewChild
+  ViewChild,
+  input
 } from '@angular/core';
 import {CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {
@@ -146,11 +146,9 @@ export class ScalperOrderBookBodyComponent implements OnInit,
   @ViewChild('bottomFloatingPanelContainer', {static: false})
   bottomFloatingPanelContainer?: ElementRef<HTMLDivElement>;
 
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
-  @Input()
-  isActive = false;
+  readonly isActive = input(false);
 
   readonly isLoading$ = new BehaviorSubject(false);
   dataContext!: ScalperOrderBookDataContext;
@@ -270,7 +268,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
   saveFloatingPanelPosition(event: CdkDragEnd, stateKey: string): void {
     const position = event.source.getFreeDragPosition();
     this.widgetLocalStateService.setStateRecord<Point>(
-      this.guid,
+      this.guid(),
       stateKey,
       position
     );
@@ -302,7 +300,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
         })
       ),
       switchMap(s => s.enabled ? interval(s.interval * 1000) : NEVER),
-      filter(() => !this.isActive),
+      filter(() => !this.isActive()),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.alignTable();
@@ -386,7 +384,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
     const setScaleFactor = (scaleFactor: number, instrumentKey: InstrumentKey): void => {
       this.scalperOrderBookSharedContext.setScaleFactor(scaleFactor);
       this.widgetLocalStateService.setStateRecord<ScaleState>(
-        this.guid,
+        this.guid(),
         getStorageKey(instrumentKey),
         {
           scaleFactor
@@ -424,7 +422,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
     ).subscribe(settings => {
       const storageKey = getStorageKey(settings);
 
-      this.widgetLocalStateService.getStateRecord<ScaleState>(this.guid, storageKey).pipe(
+      this.widgetLocalStateService.getStateRecord<ScaleState>(this.guid(), storageKey).pipe(
         take(1)
       ).subscribe(savedValue => {
         if (savedValue != null) {
@@ -438,7 +436,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
 
   private initContext(): void {
     this.dataContext = DataContextBuilder.buildContext({
-        widgetGuid: this.guid,
+        widgetGuid: this.guid(),
         bodyStreams: {
           contentSize$: this.contentSize$,
           rowHeight$: this.rowHeight$,
@@ -576,7 +574,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
   }
 
   private initFloatingPanelPosition(stateKey: string, geContainerBounds: () => DOMRect | null): Observable<Point> {
-    const savedPosition$ = this.widgetLocalStateService.getStateRecord<Point>(this.guid, stateKey).pipe(
+    const savedPosition$ = this.widgetLocalStateService.getStateRecord<Point>(this.guid(), stateKey).pipe(
       map(p => p ?? {x: 0, y: 0})
     );
 

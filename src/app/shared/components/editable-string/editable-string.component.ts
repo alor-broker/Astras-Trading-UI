@@ -1,40 +1,31 @@
 import {
-  Component, DestroyRef,
+  Component,
+  DestroyRef,
   ElementRef,
   EventEmitter,
-  Input,
+  input,
   OnDestroy,
   OnInit,
   Output,
   QueryList,
   ViewChildren
 } from '@angular/core';
-import {
-  BehaviorSubject,
-  filter,
-  take,
-} from 'rxjs';
-import {
-  FormBuilder, ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
+import {BehaviorSubject, filter, take,} from 'rxjs';
+import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {
-  map,
-  startWith
-} from "rxjs/operators";
+import {map, startWith} from "rxjs/operators";
 import {TranslocoDirective} from "@jsverse/transloco";
-import { AsyncPipe } from "@angular/common";
+import {AsyncPipe} from "@angular/common";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzFormControlComponent, NzFormDirective, NzFormItemComponent} from "ng-zorro-antd/form";
 import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
 
 @Component({
-    selector: 'ats-editable-string',
-    templateUrl: './editable-string.component.html',
-    styleUrls: ['./editable-string.component.less'],
-    imports: [
+  selector: 'ats-editable-string',
+  templateUrl: './editable-string.component.html',
+  styleUrls: ['./editable-string.component.less'],
+  imports: [
     TranslocoDirective,
     AsyncPipe,
     NzIconDirective,
@@ -45,23 +36,20 @@ import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
     NzInputGroupComponent,
     NzFormControlComponent,
     NzInputDirective
-]
+  ]
 })
 export class EditableStringComponent implements OnInit, OnDestroy {
   @ViewChildren('editInput')
   editInput!: QueryList<ElementRef<HTMLInputElement>>;
 
-  @Input({required: true})
-  content: string | null = null;
+  readonly content = input.required<string | null>();
 
-  @Input()
-  lengthRestrictions?: {
+  readonly lengthRestrictions = input<{
     minLength: number;
     maxLength: number;
-  };
+  } | null>(null);
 
-  @Input()
-  inputClass = '';
+  readonly inputClass = input('');
 
   @Output()
   contentChanged = new EventEmitter<string>();
@@ -101,7 +89,7 @@ export class EditableStringComponent implements OnInit, OnDestroy {
       event.preventDefault();
     }
 
-    if(event.key === "Esc") {
+    if (event.key === "Esc") {
       this.setEditMode(false);
       event.stopPropagation();
       event.preventDefault();
@@ -120,15 +108,16 @@ export class EditableStringComponent implements OnInit, OnDestroy {
     this.editForm.reset();
     this.editForm.controls.content.clearValidators();
 
-    if (this.lengthRestrictions) {
+    const lengthRestrictions = this.lengthRestrictions();
+    if (lengthRestrictions) {
       this.editForm.controls.content.addValidators([
         Validators.required,
-        Validators.minLength(this.lengthRestrictions.minLength),
-        Validators.maxLength(this.lengthRestrictions.maxLength)
+        Validators.minLength(lengthRestrictions.minLength),
+        Validators.maxLength(lengthRestrictions.maxLength)
       ]);
     }
 
-    this.editForm.controls.content.setValue(this.content ?? '');
+    this.editForm.controls.content.setValue(this.content() ?? '');
 
     this.editInput.changes.pipe(
       map(x => x.first as ElementRef | undefined),

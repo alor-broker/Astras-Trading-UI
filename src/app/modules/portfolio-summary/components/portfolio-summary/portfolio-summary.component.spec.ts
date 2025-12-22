@@ -8,6 +8,7 @@ import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTe
 import {MockComponents, MockDirectives} from "ng-mocks";
 import {ScrollableRowComponent} from "../../../../shared/components/scrollable-row/scrollable-row.component";
 import {ScrollableItemDirective} from "../../../../shared/directives/scrollable-item.directive";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('PortfolioSummaryComponent', () => {
   let component: PortfolioSummaryComponent;
@@ -45,6 +46,7 @@ describe('PortfolioSummaryComponent', () => {
 
     fixture = TestBed.createComponent(PortfolioSummaryComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

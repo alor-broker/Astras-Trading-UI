@@ -51,6 +51,7 @@ describe('OrdersBasketItemComponent', () => {
 
     fixture = TestBed.createComponent(OrdersBasketItemComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('exchange', 'exch');
     fixture.detectChanges();
   });
 

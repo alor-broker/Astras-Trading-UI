@@ -1,12 +1,12 @@
-import {ChangeDetectorRef, Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
-import {BehaviorSubject, forkJoin, fromEvent, Observable, of, take} from "rxjs";
+import {ChangeDetectorRef, Component, DestroyRef, model, OnInit} from '@angular/core';
+import {forkJoin, fromEvent, Observable, of, shareReplay, take} from "rxjs";
 import {WatchlistCollectionService} from "../../services/watchlist-collection.service";
 import {filter, map} from "rxjs/operators";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {InstrumentsService} from "../../services/instruments.service";
 import {MarketService} from "../../../../shared/services/market.service";
 import {toInstrumentKey} from "../../../../shared/utils/instruments";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {NzUploadComponent, NzUploadFile} from "ng-zorro-antd/upload";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from 'ng-zorro-antd/modal';
@@ -64,11 +64,16 @@ interface ParsedItem {
     AsyncPipe
   ]
 })
-export class ImportWatchlistDialogComponent implements OnInit, OnDestroy {
+export class ImportWatchlistDialogComponent implements OnInit {
   inputString = '';
   parsedResults$: Observable<ParsedItem[] | null> | null = null;
-  private readonly dialogParams$ = new BehaviorSubject<ImportDialogParams | null>(null);
-  isVisible$ = this.dialogParams$.pipe(
+
+  readonly dialogParams = model<ImportDialogParams | null>(null);
+  private readonly dialogParamsChanges$ = toObservable(this.dialogParams).pipe(
+    shareReplay(1),
+  );
+
+  isVisible$ = this.dialogParamsChanges$.pipe(
     map(p => !!p)
   );
 
@@ -81,17 +86,8 @@ export class ImportWatchlistDialogComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  @Input({required: true})
-  set dialogParams(value: ImportDialogParams | null) {
-    this.dialogParams$.next(value);
-  }
-
-  ngOnDestroy(): void {
-    this.dialogParams$.complete();
-  }
-
   ngOnInit(): void {
-    this.dialogParams$.pipe(
+    this.dialogParamsChanges$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.inputString = '';
@@ -100,7 +96,7 @@ export class ImportWatchlistDialogComponent implements OnInit, OnDestroy {
   }
 
   closeDialog(): void {
-    this.dialogParams = null;
+    this.dialogParams.set(null);
   }
 
   parseInput(): void {
@@ -176,7 +172,7 @@ export class ImportWatchlistDialogComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.dialogParams$.pipe(
+      this.dialogParamsChanges$.pipe(
         take(1),
         filter(x => !!x)
       ).subscribe(dialogParams => {

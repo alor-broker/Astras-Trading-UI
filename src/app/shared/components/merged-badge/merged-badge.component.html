@@ -1,8 +1,8 @@
-@if (colors.length > 0) {
+@if (colors().length > 0) {
   <div
      [ngStyle]="{
-     'width': width + 'px',
-     'height': width + 'px',
+     'width': width() + 'px',
+     'height': width() + 'px',
      'background': getBackgroundStyle()
      }"
     class="badge"

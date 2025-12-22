@@ -3,22 +3,22 @@
     <ats-widget-skeleton
       [content]="contentRef"
       [header]="headerRef"
-      [isBlockWidget]="isBlockWidget"
+      [isBlockWidget]="isBlockWidget()"
       [showContentScroll]="true"
       >
       <ng-template #headerRef>
         <ats-widget-header
           [guid]="guid"
           [hasSettings]="false"
-          [linkToActive]="settings.linkToActive"
+          [linkToActive]="settings.linkToActive ?? null"
           [selectedBadgeColor]="settings.badgeColor"
           [showBadgesMenu]="(showBadge$ | async) ?? false"
           [titleTemplate]="titleTemplate"
-          [widgetMeta]="widgetInstance.widgetMeta"
+          [widgetMeta]="widgetInstance().widgetMeta"
         ></ats-widget-header>
         <ng-template #titleTemplate>
           <ats-widget-header-instrument-switch
-          [widgetGuid]="widgetInstance.instance.guid"></ats-widget-header-instrument-switch>
+          [widgetGuid]="guid"></ats-widget-header-instrument-switch>
         </ng-template>
       </ng-template>
       <ng-template #contentRef>

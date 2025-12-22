@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, ElementRef, Inject, Input, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, Inject, OnInit, ViewChild, input} from '@angular/core';
 import {
   NzAutocompleteComponent,
   NzAutocompleteOptionComponent,
@@ -59,8 +59,7 @@ import {AsyncPipe} from '@angular/common';
 export class InstrumentSelectComponent implements OnInit {
   @ViewChild('inputEl') inputEl!: ElementRef<HTMLInputElement>;
 
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   filteredInstruments$: Observable<Instrument[]> = of([]);
   inputValue?: string;
@@ -123,7 +122,7 @@ export class InstrumentSelectComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<InstrumentSelectSettings>(this.guid()).pipe(
       shareReplay(1)
     );
 
@@ -167,14 +166,14 @@ export class InstrumentSelectComponent implements OnInit {
           this.watchInstrumentsService.unsubscribeFromList(listId);
 
           this.settingsService.updateSettings<InstrumentSelectSettings>(
-            this.guid,
+            this.guid(),
             {
               activeWatchlistMetas: settings.activeWatchlistMetas?.filter((meta) => meta.id !== listId) ?? []
             }
           );
         } else {
           this.settingsService.updateSettings<InstrumentSelectSettings>(
-            this.guid,
+            this.guid(),
             {
               activeWatchlistMetas: [{id: listId, isExpanded: true}, ...(settings.activeWatchlistMetas ?? [])]
             }
@@ -223,7 +222,7 @@ export class InstrumentSelectComponent implements OnInit {
       const defaultList = collection.collection.find(x => x.isDefault ?? false);
 
       if (defaultList) {
-        this.settingsService.updateSettings<InstrumentSelectSettings>(this.guid, {
+        this.settingsService.updateSettings<InstrumentSelectSettings>(this.guid(), {
           activeWatchlistMetas: [{
             id: defaultList.id,
             isExpanded: true

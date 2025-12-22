@@ -3,9 +3,9 @@ import {
   Directive,
   EventEmitter,
   InjectionToken,
-  Input,
   OnInit,
-  Output
+  Output,
+  input
 } from '@angular/core';
 import {
   BehaviorSubject,
@@ -27,8 +27,7 @@ export interface HoverItemsGroup<T = any> {
     providers: [{ provide: HOVER_ITEMS_GROUP, useExisting: HoverItemsGroupDirective }]
 })
 export class HoverItemsGroupDirective<T = any> implements HoverItemsGroup<T>, OnInit {
-  @Input()
-  atsHoverItemsGroup?: boolean = true;
+  readonly atsHoverItemsGroup = input<boolean | undefined>(true);
 
   @Output()
   hoveredItemChanged = new EventEmitter<{ item: HoverItemDirective<T> } | null>();
@@ -53,7 +52,7 @@ export class HoverItemsGroupDirective<T = any> implements HoverItemsGroup<T>, On
   }
 
   ngOnInit(): void {
-    if(!(this.atsHoverItemsGroup ?? false)) {
+    if(!(this.atsHoverItemsGroup() ?? false)) {
       return;
     }
 

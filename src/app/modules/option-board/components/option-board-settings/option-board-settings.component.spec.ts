@@ -12,6 +12,7 @@ import {InstrumentSearchComponent} from "../../../../shared/components/instrumen
 import {
   InstrumentBoardSelectComponent
 } from "../../../../shared/components/instrument-board-select/instrument-board-select.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('OptionBoardSettingsComponent', () => {
   let component: OptionBoardSettingsComponent;
@@ -49,6 +50,7 @@ describe('OptionBoardSettingsComponent', () => {
 
     fixture = TestBed.createComponent(OptionBoardSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

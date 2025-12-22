@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Output, input} from '@angular/core';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
@@ -17,8 +17,7 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
   ]
 })
 export class StartNewConversationButtonComponent {
-  @Input()
-  atsDisabled = false;
+  readonly atsDisabled = input(false);
 
   @Output()
   clicked = new EventEmitter();

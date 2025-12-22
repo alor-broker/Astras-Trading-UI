@@ -1,6 +1,6 @@
 <ng-container *transloco="let t; scope: 'order-commands/compact-header'">
-  @if (instrument$ | async; as instrument) {
-    @if (portfolioKey$ | async; as portfolioKey) {
+  @if (instrumentChanges$ | async; as instrument) {
+    @if (currentPortfolioChanges$ | async; as portfolioKey) {
       <div class="d-flex justify-content-between flex-gap-5">
         <div>
           <label class="portfolio">{{portfolioKey.portfolio}} ({{instrument.exchange}})</label>

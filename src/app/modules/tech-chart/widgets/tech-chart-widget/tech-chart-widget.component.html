@@ -4,7 +4,7 @@
       [header]="headerRef"
       [content]="contentRef"
       [settings]="settingsRef"
-      [isBlockWidget]="isBlockWidget"
+      [isBlockWidget]="isBlockWidget()"
       [showSettings]="shouldShowSettings"
       [showContentScroll]="false"
       >
@@ -13,15 +13,15 @@
           (switchSettings)="onSettingsChange()"
           [guid]="guid"
           [hasSettings]="true"
-          [linkToActive]="settings.linkToActive"
+          [linkToActive]="settings.linkToActive ?? null"
           [selectedBadgeColor]="settings.badgeColor"
           [showBadgesMenu]="(showBadge$ | async) ?? false"
           [titleTemplate]="titleTemplate"
-          [widgetMeta]="widgetInstance.widgetMeta"
+          [widgetMeta]="widgetInstance().widgetMeta"
         ></ats-widget-header>
         <ng-template #titleTemplate>
           <ats-widget-header-instrument-switch
-            [widgetGuid]="widgetInstance.instance.guid"
+            [widgetGuid]="widgetInstance().instance.guid"
             [customTitle]="headerTitle$ | async"
           ></ats-widget-header-instrument-switch>
         </ng-template>

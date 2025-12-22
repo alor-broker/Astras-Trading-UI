@@ -24,6 +24,7 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzTypographyComponent} from "ng-zorro-antd/typography";
 import {NzColorPickerComponent} from "ng-zorro-antd/color-picker";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('ScalperOrderBookSettingsComponent', () => {
   let component: ScalperOrderBookSettingsComponent;
@@ -78,6 +79,7 @@ describe('ScalperOrderBookSettingsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ScalperOrderBookSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

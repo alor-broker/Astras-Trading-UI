@@ -1,5 +1,5 @@
 import {AsyncPipe} from '@angular/common';
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, input} from '@angular/core';
 import {combineLatest, map, Observable, shareReplay} from 'rxjs';
 import {
   GalleryDisplay,
@@ -41,8 +41,7 @@ export class WidgetsGalleryNavBtnComponent implements OnInit {
 
   readonly currentDashboard$ = this.dashboardContextService.selectedDashboard$;
 
-  @Input()
-  atsDisabled = false;
+  readonly atsDisabled = input(false);
 
   constructor(
     private readonly manageDashboardsService: ManageDashboardsService,

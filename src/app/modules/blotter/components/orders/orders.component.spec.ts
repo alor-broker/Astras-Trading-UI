@@ -45,6 +45,7 @@ import {
 import {
   AddToWatchlistMenuComponent
 } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('OrdersComponent', () => {
   let component: OrdersComponent;
@@ -142,7 +143,7 @@ describe('OrdersComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OrdersComponent);
     component = fixture.componentInstance;
-    component.guid = 'testGuid';
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

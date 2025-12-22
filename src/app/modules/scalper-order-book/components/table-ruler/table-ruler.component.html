@@ -5,9 +5,9 @@
         <div
           [ngClass]="markerPosition"
           [ngStyle]="{
-          'height': xAxisStep + 'px',
-          'line-height': xAxisStep + 'px',
-          'top': displayMarker.index * xAxisStep + 'px'
+          'height': xAxisStep() + 'px',
+          'line-height': xAxisStep() + 'px',
+          'top': displayMarker.index * xAxisStep() + 'px'
           }"
           class="marker-container"
           >

@@ -24,6 +24,7 @@ import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzMenuDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
 import {WatchlistTableComponent} from "../watchlist-table/watchlist-table.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('InstrumentSelectComponent', () => {
   let component: InstrumentSelectComponent;
@@ -90,6 +91,7 @@ describe('InstrumentSelectComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(InstrumentSelectComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

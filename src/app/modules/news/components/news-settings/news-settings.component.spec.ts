@@ -10,6 +10,7 @@ import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
 import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
 import {MockComponents} from "ng-mocks";
 import {NzSliderComponent} from "ng-zorro-antd/slider";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('NewsSettingsComponent', () => {
   let component: NewsSettingsComponent;
@@ -45,6 +46,7 @@ describe('NewsSettingsComponent', () => {
       ]
     });
     fixture = TestBed.createComponent(NewsSettingsComponent);
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

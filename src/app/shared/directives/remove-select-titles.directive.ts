@@ -2,7 +2,7 @@ import {
   AfterViewInit,
   DestroyRef,
   Directive,
-  Input
+  input
 } from '@angular/core';
 import { NzSelectComponent } from "ng-zorro-antd/select";
 import { Observable } from "rxjs";
@@ -10,7 +10,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Directive({ selector: 'nz-select[atsRemoveSelectTitles]' })
 export class RemoveSelectTitlesDirective implements AfterViewInit {
-  @Input() valueChanges?: Observable<any>;
+  readonly valueChanges = input<Observable<any>>();
 
   constructor(
     private readonly destroyRef: DestroyRef,
@@ -21,7 +21,7 @@ export class RemoveSelectTitlesDirective implements AfterViewInit {
     this.elementRef.nzOpenChange
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(isOpen => this.selectOpenStateChange(isOpen));
-    this.valueChanges
+    this.valueChanges()
       ?.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.removeNativeTitles());
 

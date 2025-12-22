@@ -6,7 +6,7 @@
       [settings]="settingsRef"
       [showSettings]="shouldShowSettings"
       [showContentScroll]="false"
-      [isBlockWidget]="isBlockWidget"
+      [isBlockWidget]="isBlockWidget()"
       >
       <ng-template #headerRef>
         @if (deviceInfo$ | async; as deviceInfo) {
@@ -17,12 +17,12 @@
             [linkToActive]="settings.linkToActive!"
             [selectedBadgeColor]="settings.badgeColor!"
             [showBadgesMenu]="(showBadge$ | async) ?? false"
-            [widgetMeta]="widgetInstance.widgetMeta"
+            [widgetMeta]="widgetInstance().widgetMeta"
             [titleTemplate]="titleTemplate"
           ></ats-widget-header>
         }
         <ng-template #titleTemplate>
-          <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance.instance.guid"></ats-widget-header-instrument-switch>
+          <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance().instance.guid"></ats-widget-header-instrument-switch>
         </ng-template>
       </ng-template>
       <ng-template #contentRef>

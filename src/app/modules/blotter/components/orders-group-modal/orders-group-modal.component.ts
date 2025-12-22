@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, DestroyRef, ElementRef, Input, QueryList, ViewChildren} from '@angular/core';
+import {AfterViewInit, Component, DestroyRef, ElementRef, input, QueryList, ViewChildren} from '@angular/core';
 import {combineLatest, filter, map, Observable, startWith, switchMap} from "rxjs";
 import {OrdersGroupService} from "../../../../shared/services/orders/orders-group.service";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
@@ -26,11 +26,8 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class OrdersGroupModalComponent implements AfterViewInit {
-  @Input({required: true})
-  guid!: string;
-
-  @Input()
-  groupId?: string;
+  readonly guid = input.required<string>();
+  readonly groupId = input.required<string>();
 
   @ViewChildren('ordersGroupTree', {read: ElementRef})
   ordersGroupTree!: QueryList<ElementRef>;
@@ -46,7 +43,7 @@ export class OrdersGroupModalComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    const allOrders$ = this.widgetSettingsService.getSettings<BlotterSettings>(this.guid)
+    const allOrders$ = this.widgetSettingsService.getSettings<BlotterSettings>(this.guid())
       .pipe(
         switchMap((s) => combineLatest([
           this.portfolioSubscriptionsService.getOrdersSubscription(s.portfolio, s.exchange),
@@ -100,7 +97,7 @@ export class OrdersGroupModalComponent implements AfterViewInit {
 
                 },
                 key: group.id,
-                expanded: this.groupId != null && (group.id === this.groupId),
+                expanded: this.groupId() != null && (group.id === this.groupId()),
                 selectable: false,
                 status: group.status,
                 children: groupOrders

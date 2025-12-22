@@ -1,6 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, input, OnInit} from '@angular/core';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
-import { AsyncPipe } from "@angular/common";
+import {AsyncPipe} from "@angular/common";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {Observable} from "rxjs";
@@ -12,7 +12,7 @@ import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skel
 import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
 
 @Component({
-    selector: 'ats-ai-graphs-widget',
+  selector: 'ats-ai-graphs-widget',
   imports: [
     AsyncPipe,
     TranslocoDirective,
@@ -21,15 +21,13 @@ import {WidgetHeaderComponent} from "../../../../shared/components/widget-header
     WidgetSkeletonComponent,
     WidgetHeaderComponent
   ],
-    templateUrl: './ai-graphs-widget.component.html',
-    styleUrl: './ai-graphs-widget.component.less'
+  templateUrl: './ai-graphs-widget.component.html',
+  styleUrl: './ai-graphs-widget.component.less'
 })
 export class AiGraphsWidgetComponent implements OnInit {
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<AiGraphsSettings>;
 
@@ -37,12 +35,12 @@ export class AiGraphsWidgetComponent implements OnInit {
   }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<AiGraphsSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'AiGraphsSettings',
       settings => ({
         ...settings

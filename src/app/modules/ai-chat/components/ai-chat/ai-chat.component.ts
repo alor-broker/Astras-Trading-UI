@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit,} from '@angular/core';
+import {Component, OnDestroy, OnInit, input} from '@angular/core';
 import {Message, MessageContent, MessageType, TextMessageContent} from "../../models/messages-display.model";
 import {MessageInputComponent, OutcomingMessage} from "../message-input/message-input.component";
 import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
@@ -44,8 +44,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
   showSuggestedMessages = false;
   canRestartConversation = false;
 
-  @Input()
-  atsDisabled = false;
+  readonly atsDisabled = input(false);
 
   private translator$!: Observable<TranslatorFn>;
   private threadId: string | null = null;
@@ -136,7 +135,7 @@ export class AiChatComponent implements OnInit, OnDestroy {
   }
 
   useSuggestedMessage(content: TextMessageContent): void {
-    if (this.atsDisabled) {
+    if (this.atsDisabled()) {
       return;
     }
 

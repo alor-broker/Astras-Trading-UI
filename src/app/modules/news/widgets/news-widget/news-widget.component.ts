@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, input, OnInit} from '@angular/core';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
 import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import {NewsSettings} from '../../models/news-settings.model';
@@ -36,11 +36,9 @@ import {AsyncPipe} from '@angular/common';
 export class NewsWidgetComponent implements OnInit {
   shouldShowSettings = false;
 
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<NewsSettings>;
   showBadge$!: Observable<boolean>;
@@ -57,7 +55,7 @@ export class NewsWidgetComponent implements OnInit {
   }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   onSettingsChange(): void {
@@ -66,7 +64,7 @@ export class NewsWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<NewsSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'NewsSettings',
       settings => ({
         ...settings,
@@ -78,7 +76,7 @@ export class NewsWidgetComponent implements OnInit {
 
     this.settings$ = this.widgetSettingsService.getSettings<NewsSettings>(this.guid);
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
-    this.titleText = WidgetsHelper.getWidgetName(this.widgetInstance.widgetMeta.widgetName, this.translatorService.getActiveLang());
+    this.titleText = WidgetsHelper.getWidgetName(this.widgetInstance().widgetMeta.widgetName, this.translatorService.getActiveLang());
   }
 
   sectionChange(section: NewsSection): void {

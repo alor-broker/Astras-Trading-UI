@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, input, OnInit, Output} from '@angular/core';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
 import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import {Observable} from 'rxjs';
@@ -27,11 +27,9 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class ExchangeRateWidgetComponent implements OnInit {
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
   settings$!: Observable<ExchangeRateSettings>;
@@ -44,12 +42,12 @@ export class ExchangeRateWidgetComponent implements OnInit {
   }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<ExchangeRateSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'ExchangeRateSettings',
       settings => ({
         ...settings,

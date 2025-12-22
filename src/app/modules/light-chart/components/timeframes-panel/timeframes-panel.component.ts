@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, OnChanges, OnDestroy, OnInit, Output, input} from '@angular/core';
 import {TimeFrameDisplayMode} from "../../models/light-chart-settings.model";
 import {TimeframeValue} from "../../models/light-chart.models";
 import {BehaviorSubject, take} from "rxjs";
@@ -29,19 +29,16 @@ import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
   ]
 })
 export class TimeframesPanelComponent implements OnDestroy, OnInit, OnChanges {
-  @Input({required: true})
-  availableTimeframes: TimeframeValue[] = [];
+  readonly availableTimeframes = input.required<TimeframeValue[]>();
 
-  @Input({required: true})
-  selectedTimeframe?: TimeframeValue;
+  readonly selectedTimeframe = input.required<TimeframeValue | undefined>();
 
-  @Input({required: true})
-  displayMode = TimeFrameDisplayMode.Buttons;
+  readonly displayMode = input<TimeFrameDisplayMode>(TimeFrameDisplayMode.Buttons);
 
   @Output()
   changeTimeframe = new EventEmitter<TimeframeValue>();
 
-  readonly actualDisplayMode$ = new BehaviorSubject(this.displayMode);
+  readonly actualDisplayMode$ = new BehaviorSubject(this.displayMode());
   timeFrameDisplayModes = TimeFrameDisplayMode;
   private readonly contentSize$ = new BehaviorSubject<ContentSize>({height: 0, width: 0});
 
@@ -64,7 +61,7 @@ export class TimeframesPanelComponent implements OnDestroy, OnInit, OnChanges {
 
   ngOnInit(): void {
     this.contentSize$.pipe(
-      filter(() => this.displayMode === TimeFrameDisplayMode.Buttons),
+      filter(() => this.displayMode() === TimeFrameDisplayMode.Buttons),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.checkDisplayMode();
@@ -76,9 +73,10 @@ export class TimeframesPanelComponent implements OnDestroy, OnInit, OnChanges {
   }
 
   private checkDisplayMode(): void {
-    this.actualDisplayMode$.next(this.displayMode);
+    const displayMode = this.displayMode();
+    this.actualDisplayMode$.next(displayMode);
 
-    if (this.displayMode !== TimeFrameDisplayMode.Buttons) {
+    if (displayMode !== TimeFrameDisplayMode.Buttons) {
       return;
     }
 
@@ -86,7 +84,7 @@ export class TimeframesPanelComponent implements OnDestroy, OnInit, OnChanges {
       take(1)
     ).subscribe(cs => {
       const avgItemsSize = 33;
-      const allItemsWidth = avgItemsSize * this.availableTimeframes.length;
+      const allItemsWidth = avgItemsSize * this.availableTimeframes().length;
 
       if (allItemsWidth > cs.width) {
         this.actualDisplayMode$.next(TimeFrameDisplayMode.Menu);

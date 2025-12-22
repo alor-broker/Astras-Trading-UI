@@ -4,11 +4,11 @@ import {
   Component,
   DestroyRef,
   EventEmitter,
-  Input,
   OnDestroy,
   OnInit,
   Output,
   ViewEncapsulation,
+  input
 } from '@angular/core';
 import {
   combineLatest,
@@ -57,8 +57,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   availableTimeFrames$!: Observable<TimeframeValue[]>;
   timeFrameDisplayModes = TimeFrameDisplayMode;
 
-  @Input({ required: true })
-  guid!: string;
+  readonly guid = input.required<string>();
 
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
@@ -78,7 +77,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<LightChartSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<LightChartSettings>(this.guid()).pipe(
       map(x => x as LightChartSettingsExtended),
       switchMap(settings => {
         return this.instrumentsService.getInstrument({
@@ -108,11 +107,11 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   changeTimeframe(timeframe: TimeframeValue): void {
-    this.settingsService.updateSettings<LightChartSettings>(this.guid, { timeFrame: timeframe });
+    this.settingsService.updateSettings<LightChartSettings>(this.guid(), { timeFrame: timeframe });
   }
 
   ngAfterViewInit(): void {
-    if (this.guid) {
+    if (this.guid()) {
       this.initChart();
     }
   }
@@ -153,7 +152,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
         const timeFrame = options.widgetSettings.timeFrame as TimeframeValue;
 
         this.chart = LightChartWrapper.create({
-          containerId: this.guid,
+          containerId: this.guid(),
           instrumentKey: options.widgetSettings,
           timeFrame: timeFrame,
           instrumentDetails: {

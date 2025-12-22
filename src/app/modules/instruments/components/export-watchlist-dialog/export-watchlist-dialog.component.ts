@@ -1,5 +1,5 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {BehaviorSubject, Observable, shareReplay, switchMap, take} from "rxjs";
+import {Component, model, OnInit} from '@angular/core';
+import {Observable, shareReplay, switchMap, take} from "rxjs";
 import {filter, map} from "rxjs/operators";
 import {WatchlistCollectionService} from "../../services/watchlist-collection.service";
 import {Watchlist} from "../../models/watchlist.model";
@@ -14,6 +14,7 @@ import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {AsyncPipe} from '@angular/common';
+import {toObservable} from "@angular/core/rxjs-interop";
 
 export interface ExportDialogParams {
   listId: string;
@@ -41,10 +42,14 @@ interface ExportResult {
     AsyncPipe
   ]
 })
-export class ExportWatchlistDialogComponent implements OnInit, OnDestroy {
+export class ExportWatchlistDialogComponent implements OnInit {
   exportResult$!: Observable<ExportResult>;
-  private readonly dialogParams$ = new BehaviorSubject<ExportDialogParams | null>(null);
-  isVisible$ = this.dialogParams$.pipe(
+  readonly dialogParams = model<ExportDialogParams | null>(null);
+  private readonly dialogParamsChanges$ = toObservable(this.dialogParams).pipe(
+    shareReplay(1)
+  );
+
+  isVisible$ = this.dialogParamsChanges$.pipe(
     map(p => !!p)
   );
 
@@ -54,17 +59,8 @@ export class ExportWatchlistDialogComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  @Input({required: true})
-  set dialogParams(value: ExportDialogParams | null) {
-    this.dialogParams$.next(value);
-  }
-
-  ngOnDestroy(): void {
-    this.dialogParams$.complete();
-  }
-
   ngOnInit(): void {
-    this.exportResult$ = this.dialogParams$.pipe(
+    this.exportResult$ = this.dialogParamsChanges$.pipe(
       filter((p): p is ExportDialogParams => !!p),
       switchMap(p => this.getExportResult(p.listId)),
       shareReplay({bufferSize: 1, refCount: true})
@@ -72,7 +68,7 @@ export class ExportWatchlistDialogComponent implements OnInit, OnDestroy {
   }
 
   closeDialog(): void {
-    this.dialogParams = null;
+    this.dialogParams.set(null);
   }
 
   copyToClipboard(results: string): void {

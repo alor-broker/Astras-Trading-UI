@@ -1,9 +1,9 @@
 import {
   Component,
   EventEmitter,
-  Input,
   OnInit,
-  Output
+  Output,
+  input
 } from '@angular/core';
 import {
   distinctUntilChanged,
@@ -34,11 +34,9 @@ import { AsyncPipe } from '@angular/common';
     ]
 })
 export class CommonSummaryComponent implements OnInit {
-  @Input()
-  shouldShowSettings!: boolean;
+  readonly shouldShowSettings = input.required<boolean>();
 
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   @Output()
   shouldShowSettingsChange = new EventEmitter<boolean>();
@@ -53,7 +51,7 @@ export class CommonSummaryComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+    this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid()).pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getCommonSummary(settings))
     );

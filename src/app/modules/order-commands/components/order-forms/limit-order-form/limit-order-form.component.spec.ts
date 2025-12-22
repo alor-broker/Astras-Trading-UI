@@ -138,22 +138,49 @@ describe('LimitOrderFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LimitOrderFormComponent);
     component = fixture.componentInstance;
-    component.limitOrderConfig = {
-      isBracketsSupported: true,
-      unsupportedFields: {}
-    };
-
-    fixture.detectChanges();
+    fixture.componentRef.setInput(
+      'limitOrderConfig',
+      {
+        isBracketsSupported: true,
+        unsupportedFields: {}
+      }
+    );
   });
 
   it('should create', () => {
+    fixture.componentRef.setInput(
+      'instrument',
+      getDefaultInstrument()
+    );
+
+    fixture.componentRef.setInput(
+      'portfolioKey',
+      getDefaultPortfolio()
+    );
+
+    fixture.componentRef.setInput(
+      'activated',
+      true
+    );
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('should show form errors', fakeAsync(() => {
-    component.instrument = getDefaultInstrument();
-    component.portfolioKey = getDefaultPortfolio();
-    component.activated = true;
+    fixture.componentRef.setInput(
+      'instrument',
+      getDefaultInstrument()
+    );
+
+    fixture.componentRef.setInput(
+      'portfolioKey',
+      getDefaultPortfolio()
+    );
+
+    fixture.componentRef.setInput(
+      'activated',
+      true
+    );
     fixture.detectChanges();
 
     const cases: { control: string, setValue: () => any, expectedError?: string }[] = [
@@ -203,9 +230,20 @@ describe('LimitOrderFormComponent', () => {
   }));
 
   it('should disable submission', () => {
-      component.instrument = getDefaultInstrument();
-      component.portfolioKey = getDefaultPortfolio();
-      component.activated = true;
+      fixture.componentRef.setInput(
+        'instrument',
+        getDefaultInstrument()
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        getDefaultPortfolio()
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
       fixture.detectChanges();
 
       component.form.controls.price.setValue(null);
@@ -227,10 +265,24 @@ describe('LimitOrderFormComponent', () => {
         }
       };
 
-      component.initialValues = initialValues;
-      component.instrument = getDefaultInstrument();
-      component.portfolioKey = getDefaultPortfolio();
-      component.activated = true;
+      fixture.componentRef.setInput(
+        'initialValues',
+        initialValues
+      );
+      fixture.componentRef.setInput(
+        'instrument',
+        getDefaultInstrument()
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        getDefaultPortfolio()
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
       fixture.detectChanges();
 
       tick();
@@ -250,9 +302,20 @@ describe('LimitOrderFormComponent', () => {
   it('should update evaluation', fakeAsync(() => {
       const instrument = getDefaultInstrument();
       const portfolio = getDefaultPortfolio();
-      component.instrument = instrument;
-      component.portfolioKey = portfolio;
-      component.activated = true;
+      fixture.componentRef.setInput(
+        'instrument',
+        instrument
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
       fixture.detectChanges();
 
       tick(1000);
@@ -289,9 +352,22 @@ describe('LimitOrderFormComponent', () => {
   it('should pass correct order to service', fakeAsync(() => {
       const instrument = getDefaultInstrument();
       const portfolio = getDefaultPortfolio();
-      component.instrument = instrument;
-      component.portfolioKey = portfolio;
-      component.activated = true;
+
+      fixture.componentRef.setInput(
+        'instrument',
+        instrument
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
+
       fixture.detectChanges();
 
       const expectedOrder: NewLimitOrder = {

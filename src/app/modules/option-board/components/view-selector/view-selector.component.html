@@ -1,7 +1,7 @@
-@if (layout === 'row') {
-  <nz-radio-group (ngModelChange)="selectionChange.emit($event)" [ngModel]="selectedView">
+@if (layout() === 'row') {
+  <nz-radio-group (ngModelChange)="selectionChange.emit($event)" [ngModel]="selectedView()">
     @for (item of items; track item) {
-      <label [nzValue]="item.value" nz-radio-button [nzDisabled]="item.disabled">
+      <label [nzValue]="item.value()" nz-radio-button [nzDisabled]="item.disabled()">
         <ng-container [ngTemplateOutlet]="item.content"></ng-container>
       </label>
     }
@@ -16,9 +16,9 @@
       @for (item of items; track item) {
         <li
           nz-menu-item
-          [nzDisabled]="item.disabled"
-          [nzSelected]="item.value === selectedView"
-          (click)="item.disabled ? $event.stopPropagation() : selectionChange.emit(item.value)"
+          [nzDisabled]="item.disabled()"
+          [nzSelected]="item.value() === selectedView()"
+          (click)="item.disabled() ? $event.stopPropagation() : selectionChange.emit(item.value())"
         >
           <ng-container [ngTemplateOutlet]="item.content"></ng-container>
         </li>

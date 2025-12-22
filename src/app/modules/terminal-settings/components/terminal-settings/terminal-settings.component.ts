@@ -1,4 +1,4 @@
-import {Component, DestroyRef, ElementRef, EventEmitter, Inject, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, ElementRef, EventEmitter, Inject, OnDestroy, OnInit, Output, input} from '@angular/core';
 import {BehaviorSubject, Observable, of, take} from 'rxjs';
 import {FullName} from '../../../../shared/models/user/full-name.model';
 import {
@@ -63,8 +63,7 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class TerminalSettingsComponent implements OnInit, OnDestroy {
-  @Input()
-  hiddenSections: string[] = [];
+  readonly hiddenSections = input<string[]>([]);
 
   @Output() formChange = new EventEmitter<{ value: TerminalSettings | null, isInitial: boolean }>();
   @Output() tabChange = new EventEmitter<number>();

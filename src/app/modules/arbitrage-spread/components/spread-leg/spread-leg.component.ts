@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Input, OnInit} from '@angular/core';
+import {Component, DestroyRef, OnInit, input} from '@angular/core';
 import {
   ControlValueAccessorBaseComponent
 } from "../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component";
@@ -66,8 +66,8 @@ import {NzEmptyComponent} from 'ng-zorro-antd/empty';
   ]
 })
 export class SpreadLegComponent extends ControlValueAccessorBaseComponent<SpreadLeg> implements OnInit, Validator {
-  @Input() isSideNeeded = false;
-  @Input() portfolios: PortfolioKey[] = [];
+  readonly isSideNeeded = input(false);
+  readonly portfolios = input<PortfolioKey[]>([]);
 
   form = new FormGroup({
     instrument: new FormControl<Instrument | null>(null, [
@@ -97,7 +97,7 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
   }
 
   ngOnInit(): void {
-    if (!this.isSideNeeded) {
+    if (!this.isSideNeeded()) {
       this.form.controls.side.disable();
     }
 
@@ -113,7 +113,7 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
       return [];
     }
 
-    return this.portfolios.filter(p => p.exchange === selectedInstrument.exchange || (p.exchange === Exchange.United as string));
+    return this.portfolios().filter(p => p.exchange === selectedInstrument.exchange || (p.exchange === Exchange.United as string));
   }
 
   instrumentChange(): void {

@@ -1,41 +1,24 @@
-import {
-  Component,
-  DestroyRef,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import {
-  ChartConfiguration,
-  ChartData,
-  ChartDataset,
-  ChartType
-} from 'chart.js';
-import { MathHelper } from 'src/app/shared/utils/math-helper';
-import { ThemeService } from '../../../../../shared/services/theme.service';
-import { ThemeSettings } from '../../../../../shared/models/settings/theme-settings.model';
-import {
-  TranslatorFn,
-  TranslatorService
-} from "../../../../../shared/services/translator.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { Stock } from "../../../../../../generated/graphql.types";
-import { BaseChartDirective } from "ng2-charts";
-import {
-  BehaviorSubject,
-  combineLatest
-} from "rxjs";
-import { filter } from "rxjs/operators";
+import {Component, DestroyRef, input, OnInit} from '@angular/core';
+import {ChartConfiguration, ChartData, ChartDataset, ChartType} from 'chart.js';
+import {MathHelper} from 'src/app/shared/utils/math-helper';
+import {ThemeService} from '../../../../../shared/services/theme.service';
+import {ThemeSettings} from '../../../../../shared/models/settings/theme-settings.model';
+import {TranslatorFn, TranslatorService} from "../../../../../shared/services/translator.service";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {Stock} from "../../../../../../generated/graphql.types";
+import {BaseChartDirective} from "ng2-charts";
+import {combineLatest} from "rxjs";
+import {filter} from "rxjs/operators";
 
 @Component({
-    selector: 'ats-finance-bar-chart',
-    templateUrl: './finance-bar-chart.component.html',
-    styleUrls: ['./finance-bar-chart.component.less'],
-    imports: [
-        BaseChartDirective
-    ]
+  selector: 'ats-finance-bar-chart',
+  templateUrl: './finance-bar-chart.component.html',
+  styleUrls: ['./finance-bar-chart.component.less'],
+  imports: [
+    BaseChartDirective
+  ]
 })
-export class FinanceBarChartComponent implements OnInit, OnDestroy {
+export class FinanceBarChartComponent implements OnInit {
   yearChartOptions: ChartConfiguration['options'] = {
     responsive: true,
     scales: {
@@ -91,7 +74,8 @@ export class FinanceBarChartComponent implements OnInit, OnDestroy {
     datasets: []
   };
 
-  private readonly stockInfo$ = new BehaviorSubject<Stock | null>(null);
+  readonly stockInfo = input.required<Stock>();
+  private readonly stockInfoChanges$ = toObservable(this.stockInfo);
 
   constructor(
     private readonly themeService: ThemeService,
@@ -100,15 +84,10 @@ export class FinanceBarChartComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  @Input({required: true})
-  set stockInfo(value: Stock) {
-    this.stockInfo$.next(value);
-  };
-
   ngOnInit(): void {
     combineLatest({
       theme: this.themeService.getThemeSettings(),
-      stockInfo: this.stockInfo$,
+      stockInfo: this.stockInfoChanges$,
       translator: this.translatorService.getTranslator('info/finance')
     }).pipe(
       filter(x => x.stockInfo != null),
@@ -117,10 +96,6 @@ export class FinanceBarChartComponent implements OnInit, OnDestroy {
       this.yearChartData = this.getYearPlotData(x.stockInfo!, x.theme, x.translator);
       this.quarterChartData = this.getQuarterPlotData(x.stockInfo!, x.theme, x.translator);
     });
-  }
-
-  ngOnDestroy(): void {
-    this.stockInfo$.complete();
   }
 
   private getQuarterPlotData(

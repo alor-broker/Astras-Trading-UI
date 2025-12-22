@@ -36,6 +36,7 @@ describe('SearchResultsListComponent', () => {
 
     fixture = TestBed.createComponent(SearchResultsListComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('items', []);
     fixture.detectChanges();
   });
 

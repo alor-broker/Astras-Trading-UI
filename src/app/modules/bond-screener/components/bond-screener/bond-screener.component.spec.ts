@@ -17,6 +17,7 @@ import {
   AddToWatchlistMenuComponent
 } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
 import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('BondScreenerComponent', () => {
   let component: BondScreenerComponent;
@@ -78,6 +79,7 @@ describe('BondScreenerComponent', () => {
     });
     fixture = TestBed.createComponent(BondScreenerComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

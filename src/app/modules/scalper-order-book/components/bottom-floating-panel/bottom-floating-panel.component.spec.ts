@@ -27,25 +27,29 @@ describe('BottomFloatingPanelComponent', () => {
     });
     fixture = TestBed.createComponent(BottomFloatingPanelComponent);
     component = fixture.componentInstance;
-    component.dataContext = {
-      extendedSettings$: new Subject(),
-      orderBook$: new Subject(),
-      position$: new Subject(),
-      currentOrders$: new Subject(),
-      currentPortfolio$: new Subject(),
-      trades$: new Subject(),
-      ownTrades$: new Subject(),
-      orderBookBody$: new Subject(),
-      displayRange$: new Subject(),
-      workingVolume$: new Subject(),
-      scaleFactor$: new BehaviorSubject(1),
-      addLocalOrder: () => {
-      },
-      removeLocalOrder: () => {
-      },
-      destroy: () => {
-      }
-    } as ScalperOrderBookDataContext;
+
+    fixture.componentRef.setInput(
+      'dataContext',
+      {
+        extendedSettings$: new Subject(),
+        orderBook$: new Subject(),
+        position$: new Subject(),
+        currentOrders$: new Subject(),
+        currentPortfolio$: new Subject(),
+        trades$: new Subject(),
+        ownTrades$: new Subject(),
+        orderBookBody$: new Subject(),
+        displayRange$: new Subject(),
+        workingVolume$: new Subject(),
+        scaleFactor$: new BehaviorSubject(1),
+        addLocalOrder: () => {
+        },
+        removeLocalOrder: () => {
+        },
+        destroy: () => {
+        }
+      } as ScalperOrderBookDataContext
+    );
 
     fixture.detectChanges();
   });

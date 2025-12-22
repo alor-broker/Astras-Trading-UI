@@ -4,7 +4,7 @@
     [nzVisible]='isVisible$ | async'
     (nzOnCancel)="handleClose()">
     <ng-container *nzModalContent>
-      <ats-terminal-settings [hiddenSections]="hiddenSections" (formChange)="formChange($event)" (tabChange)="selectedTab = $event"></ats-terminal-settings>
+      <ats-terminal-settings [hiddenSections]="hiddenSections()" (formChange)="formChange($event)" (tabChange)="selectedTab = $event"></ats-terminal-settings>
     </ng-container>
     <div *nzModalFooter>
       @if (isSaveAvailable) {

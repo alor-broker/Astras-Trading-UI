@@ -1,7 +1,7 @@
 <div
   *ngrxLet="{ allVolumes: workingVolumes$, selectedVolume: selectedVolume$} as vm"
   class="d-flex"
-  [class]="orientation"
+  [class]="orientation()"
   >
   @if (vm.selectedVolume) {
     @for (vol of vm.allVolumes; track vol; let i = $index) {

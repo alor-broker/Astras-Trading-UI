@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, Input, LOCALE_ID, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, DestroyRef, Inject, input, LOCALE_ID, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {AllInstrumentsService} from "../../services/all-instruments.service";
 import {
   BehaviorSubject,
@@ -97,7 +97,7 @@ export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
   @ViewChild('table')
   table?: InfiniteScrollTableComponent;
 
-  @Input({required: true}) guid!: string;
+  readonly guid = input.required<string>();
 
   public allColumns: BaseColumnSettings<AllInstrumentsNodeDisplay>[] = [
     {
@@ -376,7 +376,7 @@ export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<AllInstrumentsSettings>(this.guid)
+    this.settings$ = this.settingsService.getSettings<AllInstrumentsSettings>(this.guid())
       .pipe(
         tap(() => this.resetLoadedData()),
         shareReplay(1),
@@ -404,10 +404,12 @@ export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
 
     const row = selectedRow as AllInstrumentsNodeDisplay;
     if (menu.menuRef != null) {
-      menu.itemToAdd = {
-        symbol: row.basicInformation!.symbol,
-        exchange: row.basicInformation!.exchange
-      };
+      menu.itemToAdd.set(
+        {
+          symbol: row.basicInformation!.symbol,
+          exchange: row.basicInformation!.exchange
+        }
+      );
 
       this.nzContextMenuService.create($event, menu.menuRef);
     }

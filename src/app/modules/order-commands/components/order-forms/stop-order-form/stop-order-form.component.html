@@ -1,34 +1,33 @@
 <ng-container *transloco="let t; scope: 'order-commands/order-forms'">
-  @if (formInstrument$ | async; as formInstrument) {
-    @if (portfolioKey$ | async; as portfolioKey) {
-      <div>
-        @if (form) {
-          <form [formGroup]="form" [nzLayout]="'vertical'" nz-form class="overflow-x-hidden">
-            <div [nzGutter]="12" nz-row>
-              <div [nzSm]="12" [nzXs]="24" nz-col>
-                <nz-form-item class="compact">
-                  <nz-form-label nzFor="quantity" nzRequired>
-                    {{t('orderCommandsOrderForms.quantityLabel')}}
-                  </nz-form-label>
-                  <nz-form-control [nzErrorTip]="quantityError">
-                    <ats-input-number formControlName="quantity" placeholder="0"></ats-input-number>
-                    @if ((formInstrument.lotsize ?? 1) !== 1) {
-                      <span>
-                        1 {{t('orderCommandsOrderForms.lot')}} = <ats-short-number
+  @if (instrumentChanges$ | async; as formInstrument) {
+    <div>
+      @if (form) {
+        <form [formGroup]="form" [nzLayout]="'vertical'" class="overflow-x-hidden" nz-form>
+          <div [nzGutter]="12" nz-row>
+            <div [nzSm]="12" [nzXs]="24" nz-col>
+              <nz-form-item class="compact">
+                <nz-form-label nzFor="quantity" nzRequired>
+                  {{ t('orderCommandsOrderForms.quantityLabel') }}
+                </nz-form-label>
+                <nz-form-control [nzErrorTip]="quantityError">
+                  <ats-input-number formControlName="quantity" placeholder="0"></ats-input-number>
+                  @if ((formInstrument.lotsize ?? 1) !== 1) {
+                    <span>
+                        1 {{ t('orderCommandsOrderForms.lot') }} = <ats-short-number
                       [value]="formInstrument.lotsize"></ats-short-number>
-                      {{t('orderCommandsOrderForms.pcs')}}
+                      {{ t('orderCommandsOrderForms.pcs') }}
                     </span>
                   }
                   <ng-template #quantityError>
                     @if (form.controls.quantity.errors?.required) {
                       <span
-                      >{{t('orderCommandsOrderForms.emptyQuantityError')}}</span>
+                      >{{ t('orderCommandsOrderForms.emptyQuantityError') }}</span>
                     }
                     @if (form.controls.quantity.errors?.min) {
-                      <span>{{t('validationErrors.tooLittle')}}</span>
+                      <span>{{ t('validationErrors.tooLittle') }}</span>
                     }
                     @if (form.controls.quantity.errors?.max) {
-                      <span>{{t('validationErrors.tooMuch')}}</span>
+                      <span>{{ t('validationErrors.tooMuch') }}</span>
                     }
                   </ng-template>
                 </nz-form-control>
@@ -37,13 +36,16 @@
             <div [nzSm]="12" [nzXs]="24" nz-col>
               <nz-form-item class="compact">
                 <nz-form-label nzFor="condition"
-                nzRequired>{{t('orderCommandsOrderForms.conditionLabel')}}</nz-form-label>
+                               nzRequired>{{ t('orderCommandsOrderForms.conditionLabel') }}
+                </nz-form-label>
                 <nz-form-control [nzErrorTip]="t('orderCommandsOrderForms.conditionError')">
                   <nz-select formControlName="condition">
                     <nz-option [nzLabel]="t('orderCommandsOrderForms.more')" [nzValue]="conditionType.More"></nz-option>
-                    <nz-option [nzLabel]="t('orderCommandsOrderForms.moreOrEqual')" [nzValue]="conditionType.MoreOrEqual"></nz-option>
+                    <nz-option [nzLabel]="t('orderCommandsOrderForms.moreOrEqual')"
+                               [nzValue]="conditionType.MoreOrEqual"></nz-option>
                     <nz-option [nzLabel]="t('orderCommandsOrderForms.less')" [nzValue]="conditionType.Less"></nz-option>
-                    <nz-option [nzLabel]="t('orderCommandsOrderForms.lessOrEqual')" [nzValue]="conditionType.LessOrEqual"></nz-option>
+                    <nz-option [nzLabel]="t('orderCommandsOrderForms.lessOrEqual')"
+                               [nzValue]="conditionType.LessOrEqual"></nz-option>
                   </nz-select>
                 </nz-form-control>
               </nz-form-item>
@@ -51,25 +53,26 @@
             <div [nzSm]="12" [nzXs]="24" nz-col>
               <nz-form-item class="compact">
                 <nz-form-label nzFor="triggerPrice"
-                nzRequired>{{t('orderCommandsOrderForms.triggerPriceLabel')}}</nz-form-label>
+                               nzRequired>{{ t('orderCommandsOrderForms.triggerPriceLabel') }}
+                </nz-form-label>
                 <nz-form-control [nzErrorTip]="triggerPriceError">
                   <ats-input-number [allowNegative]="true" [step]="formInstrument.minstep"
-                  formControlName="triggerPrice" placeholder="0"></ats-input-number>
+                                    formControlName="triggerPrice" placeholder="0"></ats-input-number>
                 </nz-form-control>
                 <ng-template #triggerPriceError>
                   @if (form.controls.triggerPrice.errors?.required) {
                     <span
-                    >{{t('orderCommandsOrderForms.emptyPriceError')}}</span>
+                    >{{ t('orderCommandsOrderForms.emptyPriceError') }}</span>
                   }
                   @if (form.controls.triggerPrice.errors?.min) {
-                    <span>{{t('validationErrors.tooLittle')}}</span>
+                    <span>{{ t('validationErrors.tooLittle') }}</span>
                   }
                   @if (form.controls.triggerPrice.errors?.max) {
-                    <span>{{t('validationErrors.tooMuch')}}</span>
+                    <span>{{ t('validationErrors.tooMuch') }}</span>
                   }
                   @if (form.controls.triggerPrice.errors?.priceStepMultiplicity) {
                     <span>
-                      {{t('orderCommandsOrderForms.priceStepMultiplicityError')}} ({{formInstrument.minstep}})
+                      {{ t('orderCommandsOrderForms.priceStepMultiplicityError') }} ({{ formInstrument.minstep }})
                     </span>
                   }
                 </ng-template>
@@ -77,7 +80,8 @@
             </div>
             <div [nzSm]="12" [nzXs]="24" nz-col>
               <nz-form-item class="compact">
-                <nz-form-label nzFor="stopEndUnixTime">{{t('orderCommandsOrderForms.stopEndTimeLabel')}}</nz-form-label>
+                <nz-form-label nzFor="stopEndUnixTime">{{ t('orderCommandsOrderForms.stopEndTimeLabel') }}
+                </nz-form-label>
                 <nz-form-control [nzErrorTip]="t('orderCommandsOrderForms.stopEndTimeError')">
                   <nz-date-picker
                     [nzDisabledDate]="disabledDate"
@@ -86,7 +90,7 @@
                     formControlName="stopEndUnixTime"
                     nzFormat="yyyy-MM-dd HH:mm:ss"
                     nzShowTime
-                    >
+                  >
                   </nz-date-picker>
                 </nz-form-control>
               </nz-form-item>
@@ -96,7 +100,8 @@
             <div [nzSm]="12" [nzXs]="24" nz-col>
               <nz-form-item class="compact">
                 <nz-form-label nzFor="withLimit"
-                nzRequired>{{t('orderCommandsOrderForms.withLimitLabel')}}</nz-form-label>
+                               nzRequired>{{ t('orderCommandsOrderForms.withLimitLabel') }}
+                </nz-form-label>
                 <nz-form-control>
                   <nz-radio-group formControlName="withLimit">
                     <label [nzValue]="true" nz-radio-button>Limit</label>
@@ -108,7 +113,7 @@
             @if (form.value.withLimit) {
               <div [nzSm]="12" [nzXs]="24" nz-col>
                 <nz-form-item class="compact">
-                  <nz-form-label nzFor="price" nzRequired>{{t('orderCommandsOrderForms.priceLabel')}}</nz-form-label>
+                  <nz-form-label nzFor="price" nzRequired>{{ t('orderCommandsOrderForms.priceLabel') }}</nz-form-label>
                   <nz-form-control [nzErrorTip]="priceError">
                     <ats-input-number
                       [allowNegative]="true"
@@ -120,25 +125,26 @@
                     <ng-template #priceDiff>
                       @if (currentPriceDiffPercent$ | async; as currentPriceDiffPercent) {
                         <span [class]="currentPriceDiffPercent.sign > 0 ? 'profit' : 'loss'"
-                          [nzTooltipTitle]="t('orderCommandsOrderForms.priceDifferenceTooltip')" nz-tooltip>
-                          {{(currentPriceDiffPercent.percent | number) + ' %'}}
+                              [nzTooltipTitle]="t('orderCommandsOrderForms.priceDifferenceTooltip')" nz-tooltip>
+                          {{ (currentPriceDiffPercent.percent | number) + ' %' }}
                         </span>
                       }
                     </ng-template>
                     <ng-template #priceError>
                       @if (form.controls.price.errors?.required) {
                         <span
-                        >{{t('orderCommandsOrderForms.emptyPriceError')}}</span>
+                        >{{ t('orderCommandsOrderForms.emptyPriceError') }}</span>
                       }
                       @if (form.controls.price.errors?.min) {
-                        <span>{{t('validationErrors.tooLittle')}}</span>
+                        <span>{{ t('validationErrors.tooLittle') }}</span>
                       }
                       @if (form.controls.price.errors?.max) {
-                        <span>{{t('validationErrors.tooMuch')}}</span>
+                        <span>{{ t('validationErrors.tooMuch') }}</span>
                       }
                       @if (form.controls.price.errors?.priceStepMultiplicity) {
                         <span>
-                        {{t('orderCommandsOrderForms.priceStepMultiplicityError')}} ({{formInstrument.minstep}})</span>
+                        {{ t('orderCommandsOrderForms.priceStepMultiplicityError') }} ({{ formInstrument.minstep }}
+                          )</span>
                       }
                     </ng-template>
                   </nz-form-control>
@@ -150,10 +156,11 @@
             <nz-collapse-panel [nzHeader]="t('orderCommandsOrderForms.advanced')">
               @if (form.value.withLimit) {
                 <nz-form-item class="compact">
-                  <nz-form-label nzFor="timeInForce">{{t('orderCommandsOrderForms.timeInForceLabel')}}</nz-form-label>
+                  <nz-form-label nzFor="timeInForce">{{ t('orderCommandsOrderForms.timeInForceLabel') }}</nz-form-label>
                   <nz-form-control>
-                    <nz-select [nzPlaceHolder]="t('orderCommandsOrderForms.timeInForcePlaceholder')" formControlName="timeInForce"
-                      nzAllowClear>
+                    <nz-select [nzPlaceHolder]="t('orderCommandsOrderForms.timeInForcePlaceholder')"
+                               formControlName="timeInForce"
+                               nzAllowClear>
                       @for (timeInForce of timeInForceEnum | keyvalue; track timeInForce) {
                         <nz-option
                           [nzLabel]="t('orderCommandsOrderForms.timeInForceOptions.' + timeInForce.key)"
@@ -167,44 +174,45 @@
                   <label
                     formControlName="isIceberg"
                     nz-checkbox
-                    >
-                    {{t('orderCommandsOrderForms.isIcebergLabel')}}
+                  >
+                    {{ t('orderCommandsOrderForms.isIcebergLabel') }}
                   </label>
                 </nz-form-item>
                 @if (form.controls.isIceberg.value) {
                   <nz-form-item class="compact">
                     <nz-form-label
-                    nzFor="icebergFixed">{{t('orderCommandsOrderForms.icebergFixedLabel')}}</nz-form-label>
+                      nzFor="icebergFixed">{{ t('orderCommandsOrderForms.icebergFixedLabel') }}
+                    </nz-form-label>
                     <nz-form-control [nzErrorTip]="icebergFixedError">
                       <ats-input-number formControlName="icebergFixed" placeholder="0"></ats-input-number>
                     </nz-form-control>
                   </nz-form-item>
                   <ng-template #icebergFixedError>
                     @if (form.controls.icebergFixed.errors?.min) {
-                      <span>{{t('validationErrors.tooLittle')}}</span>
+                      <span>{{ t('validationErrors.tooLittle') }}</span>
                     }
                     @if (form.controls.icebergFixed.errors?.max) {
-                      <span>{{t('validationErrors.tooMuch')}}</span>
+                      <span>{{ t('validationErrors.tooMuch') }}</span>
                     }
                   </ng-template>
                   @if (form.errors?.icebergFixedNotBiggerThanQuantity) {
                     <span nz-typography nzType="danger">
-                      {{t('orderCommandsOrderForms.notBiggerThanError', {fieldName: t('orderCommandsOrderForms.quantityLabel')})}}
+                      {{ t('orderCommandsOrderForms.notBiggerThanError', {fieldName: t('orderCommandsOrderForms.quantityLabel')}) }}
                     </span>
                   }
                   <nz-form-item class="compact">
                     <nz-form-label nzFor="icebergVariance">
-                      {{t('orderCommandsOrderForms.icebergVarianceLabel')}}
+                      {{ t('orderCommandsOrderForms.icebergVarianceLabel') }}
                     </nz-form-label>
                     <nz-form-control [nzErrorTip]="icebergVarianceError">
                       <ats-input-number formControlName="icebergVariance" placeholder="0"></ats-input-number>
                     </nz-form-control>
                     <ng-template #icebergVarianceError>
                       @if (form.controls.icebergVariance.errors?.min) {
-                        <span>{{t('validationErrors.tooLittle')}}</span>
+                        <span>{{ t('validationErrors.tooLittle') }}</span>
                       }
                       @if (form.controls.icebergVariance.errors?.max) {
-                        <span>{{t('validationErrors.tooMuch')}}</span>
+                        <span>{{ t('validationErrors.tooMuch') }}</span>
                       }
                     </ng-template>
                   </nz-form-item>
@@ -214,8 +222,8 @@
                 <label
                   formControlName="allowLinkedOrder"
                   nz-checkbox
-                  >
-                  {{t('orderCommandsOrderForms.allowLinkedOrderLabel')}}
+                >
+                  {{ t('orderCommandsOrderForms.allowLinkedOrderLabel') }}
                 </label>
               </nz-form-item>
               @if (form.controls.allowLinkedOrder.value) {
@@ -225,184 +233,192 @@
                       <nz-form-item class="compact">
                         <nz-form-control [nzErrorTip]="linkedOrderQuantityError">
                           <nz-form-label [nzNoColon]="true" nzFor="quantity" nzRequired>
-                            {{t('orderCommandsOrderForms.quantityLabel')}}
+                            {{ t('orderCommandsOrderForms.quantityLabel') }}
                             @if ((formInstrument.lotsize ?? 1) !== 1) {
                               <span class="lot-size-hint">
-                                &nbsp;1 {{t('orderCommandsOrderForms.lot')}} = <ats-short-number
-                              [value]="formInstrument.lotsize"></ats-short-number>
-                              {{t('orderCommandsOrderForms.pcs')}}
+                                &nbsp;1 {{ t('orderCommandsOrderForms.lot') }} = <ats-short-number
+                                [value]="formInstrument.lotsize"></ats-short-number>
+                                {{ t('orderCommandsOrderForms.pcs') }}
                             </span>
-                          }
-                        </nz-form-label>
-                        <ats-input-number formControlName="quantity" placeholder="0"></ats-input-number>
-                        @if (form.errors?.requiredIfTrueLinkedOrderQuantity) {
-                          <span nz-typography nzType="danger">
-                            {{t('orderCommandsOrderForms.emptyQuantityError')}}
-                          </span>
-                        }
-                      </nz-form-control>
-                      <ng-template #linkedOrderQuantityError>
-                        @if (form.controls.linkedOrder.controls.quantity.errors?.min) {
-                          <span
-                          >{{t('validationErrors.tooLittle')}}</span>
-                        }
-                        @if (form.controls.linkedOrder.controls.quantity.errors?.max) {
-                          <span
-                          >{{t('validationErrors.tooMuch')}}</span>
-                        }
-                      </ng-template>
-                    </nz-form-item>
-                  </div>
-                  <div [nzSm]="12" [nzXs]="24" nz-col>
-                    <nz-form-item class="compact">
-                      <nz-form-control [nzErrorTip]="t('orderCommandsOrderForms.conditionError')">
-                        <nz-form-label [nzNoColon]="true" nzFor="condition"
-                        nzRequired>{{t('orderCommandsOrderForms.conditionLabel')}}</nz-form-label>
-                        <nz-select formControlName="condition">
-                          <nz-option [nzLabel]="t('orderCommandsOrderForms.more')" [nzValue]="conditionType.More"></nz-option>
-                          <nz-option [nzLabel]="t('orderCommandsOrderForms.moreOrEqual')" [nzValue]="conditionType.MoreOrEqual"></nz-option>
-                          <nz-option [nzLabel]="t('orderCommandsOrderForms.less')" [nzValue]="conditionType.Less"></nz-option>
-                          <nz-option [nzLabel]="t('orderCommandsOrderForms.lessOrEqual')" [nzValue]="conditionType.LessOrEqual"></nz-option>
-                        </nz-select>
-                      </nz-form-control>
-                    </nz-form-item>
-                  </div>
-                  <div [nzSm]="12" [nzXs]="24" nz-col>
-                    <nz-form-item class="compact">
-                      <nz-form-control [nzErrorTip]="linkedOrderTriggerPriceError">
-                        <nz-form-label [nzNoColon]="true" nzFor="triggerPrice"
-                        nzRequired>{{t('orderCommandsOrderForms.triggerPriceLabel')}}</nz-form-label>
-                        <ats-input-number [allowNegative]="true" [step]="formInstrument.minstep"
-                        formControlName="triggerPrice" placeholder="0"></ats-input-number>
-                        @if (form.errors?.requiredIfTrueLinkedOrderTriggerPrice) {
-                          <span nz-typography
-                            nzType="danger">
-                            {{t('orderCommandsOrderForms.emptyPriceError')}}
-                          </span>
-                        }
-                      </nz-form-control>
-                      <ng-template #linkedOrderTriggerPriceError>
-                        @if (form.controls.linkedOrder.controls.triggerPrice.errors?.min) {
-                          <span
-                          >{{t('validationErrors.tooLittle')}}</span>
-                        }
-                        @if (form.controls.linkedOrder.controls.triggerPrice.errors?.max) {
-                          <span
-                          >{{t('validationErrors.tooMuch')}}</span>
-                        }
-                        @if (form.controls.linkedOrder.controls.triggerPrice.errors?.priceStepMultiplicity) {
-                          <span>
-                            {{t('orderCommandsOrderForms.priceStepMultiplicityError')}} ({{formInstrument.minstep}})
-                          </span>
-                        }
-                      </ng-template>
-                    </nz-form-item>
-                  </div>
-                  <div [nzSm]="12" [nzXs]="24" nz-col>
-                    <nz-form-item class="compact">
-                      <nz-form-control [nzErrorTip]="t('orderCommandsOrderForms.stopEndTimeError')">
-                        <nz-form-label [nzNoColon]="true"
-                        nzFor="stopEndUnixTime">{{t('orderCommandsOrderForms.stopEndTimeLabel')}}</nz-form-label>
-                        <nz-date-picker
-                          [nzDisabledDate]="disabledDate"
-                          [nzPlaceHolder]="t('orderCommandsOrderForms.stopEndTimePlaceholder')"
-                          [nzShowNow]="canSelectNow"
-                          formControlName="stopEndUnixTime"
-                          nzFormat="yyyy-MM-dd HH:mm:ss"
-                          nzShowTime
-                          >
-                        </nz-date-picker>
-                      </nz-form-control>
-                    </nz-form-item>
-                  </div>
-                </div>
-                <div [nzGutter]="12" nz-row>
-                  <div [nzSm]="12" [nzXs]="24" nz-col>
-                    <nz-form-item class="compact">
-                      <nz-form-label [nzNoColon]="true" nzFor="withLimit" nzRequired>
-                        {{t('orderCommandsOrderForms.withLimitLabel')}}
-                      </nz-form-label>
-                      <nz-form-control>
-                        <nz-radio-group formControlName="withLimit">
-                          <label [nzValue]="true" nz-radio-button>Limit</label>
-                          <label [nzValue]="false" nz-radio-button>Market</label>
-                        </nz-radio-group>
-                      </nz-form-control>
-                    </nz-form-item>
-                  </div>
-                  @if (form.value.linkedOrder?.withLimit) {
-                    <div [nzSm]="12" [nzXs]="24" nz-col>
-                      <nz-form-item class="compact">
-                        <nz-form-control [nzErrorTip]="linkedOrderPriceError">
-                          <nz-form-label [nzNoColon]="true" nzFor="price" nzRequired>
-                            {{t('orderCommandsOrderForms.priceLabel')}}
+                            }
                           </nz-form-label>
-                          <ats-input-number
-                            [allowNegative]="true"
-                            [step]="formInstrument.minstep"
-                            formControlName="price"
-                            placeholder="0"
-                          ></ats-input-number>
-                          @if (form.errors?.requiredIfTrueLinkedOrderPrice) {
+                          <ats-input-number formControlName="quantity" placeholder="0"></ats-input-number>
+                          @if (form.errors?.requiredIfTrueLinkedOrderQuantity) {
                             <span nz-typography nzType="danger">
-                              {{t('orderCommandsOrderForms.emptyPriceError')}}
-                            </span>
+                            {{ t('orderCommandsOrderForms.emptyQuantityError') }}
+                          </span>
                           }
                         </nz-form-control>
-                        <ng-template #linkedOrderPriceError>
-                          @if (form.controls.linkedOrder.controls.price.errors?.min) {
+                        <ng-template #linkedOrderQuantityError>
+                          @if (form.controls.linkedOrder.controls.quantity.errors?.min) {
                             <span
-                            >{{t('validationErrors.tooLittle')}}</span>
+                            >{{ t('validationErrors.tooLittle') }}</span>
                           }
-                          @if (form.controls.linkedOrder.controls.price.errors?.max) {
+                          @if (form.controls.linkedOrder.controls.quantity.errors?.max) {
                             <span
-                            >{{t('validationErrors.tooMuch')}}</span>
-                          }
-                          @if (form.controls.linkedOrder.controls.price.errors?.priceStepMultiplicity) {
-                            <span>
-                              {{t('orderCommandsOrderForms.priceStepMultiplicityError')}} ({{formInstrument.minstep}})
-                            </span>
+                            >{{ t('validationErrors.tooMuch') }}</span>
                           }
                         </ng-template>
                       </nz-form-item>
                     </div>
-                  }
-                </div>
-                <div [nzGutter]="12" nz-row>
-                  <div [nzSm]="24" [nzXs]="24" nz-col>
-                    <nz-form-item class="compact">
-                      <nz-form-control>
-                        <nz-form-label [nzNoColon]="true"
-                        nzFor="side">{{t('orderCommandsOrderForms.sideLabel')}}</nz-form-label>
-                        <nz-select formControlName="side">
-                          <nz-option [nzLabel]="t('orderCommandsOrderForms.buySideLabel')"
-                          [nzValue]="'buy'"></nz-option>
-                          <nz-option [nzLabel]="t('orderCommandsOrderForms.sellSideLabel')"
-                          [nzValue]="'sell'"></nz-option>
-                        </nz-select>
-                      </nz-form-control>
-                    </nz-form-item>
+                    <div [nzSm]="12" [nzXs]="24" nz-col>
+                      <nz-form-item class="compact">
+                        <nz-form-control [nzErrorTip]="t('orderCommandsOrderForms.conditionError')">
+                          <nz-form-label [nzNoColon]="true" nzFor="condition"
+                                         nzRequired>{{ t('orderCommandsOrderForms.conditionLabel') }}
+                          </nz-form-label>
+                          <nz-select formControlName="condition">
+                            <nz-option [nzLabel]="t('orderCommandsOrderForms.more')"
+                                       [nzValue]="conditionType.More"></nz-option>
+                            <nz-option [nzLabel]="t('orderCommandsOrderForms.moreOrEqual')"
+                                       [nzValue]="conditionType.MoreOrEqual"></nz-option>
+                            <nz-option [nzLabel]="t('orderCommandsOrderForms.less')"
+                                       [nzValue]="conditionType.Less"></nz-option>
+                            <nz-option [nzLabel]="t('orderCommandsOrderForms.lessOrEqual')"
+                                       [nzValue]="conditionType.LessOrEqual"></nz-option>
+                          </nz-select>
+                        </nz-form-control>
+                      </nz-form-item>
+                    </div>
+                    <div [nzSm]="12" [nzXs]="24" nz-col>
+                      <nz-form-item class="compact">
+                        <nz-form-control [nzErrorTip]="linkedOrderTriggerPriceError">
+                          <nz-form-label [nzNoColon]="true" nzFor="triggerPrice"
+                                         nzRequired>{{ t('orderCommandsOrderForms.triggerPriceLabel') }}
+                          </nz-form-label>
+                          <ats-input-number [allowNegative]="true" [step]="formInstrument.minstep"
+                                            formControlName="triggerPrice" placeholder="0"></ats-input-number>
+                          @if (form.errors?.requiredIfTrueLinkedOrderTriggerPrice) {
+                            <span nz-typography
+                                  nzType="danger">
+                            {{ t('orderCommandsOrderForms.emptyPriceError') }}
+                          </span>
+                          }
+                        </nz-form-control>
+                        <ng-template #linkedOrderTriggerPriceError>
+                          @if (form.controls.linkedOrder.controls.triggerPrice.errors?.min) {
+                            <span
+                            >{{ t('validationErrors.tooLittle') }}</span>
+                          }
+                          @if (form.controls.linkedOrder.controls.triggerPrice.errors?.max) {
+                            <span
+                            >{{ t('validationErrors.tooMuch') }}</span>
+                          }
+                          @if (form.controls.linkedOrder.controls.triggerPrice.errors?.priceStepMultiplicity) {
+                            <span>
+                            {{ t('orderCommandsOrderForms.priceStepMultiplicityError') }} ({{ formInstrument.minstep }})
+                          </span>
+                          }
+                        </ng-template>
+                      </nz-form-item>
+                    </div>
+                    <div [nzSm]="12" [nzXs]="24" nz-col>
+                      <nz-form-item class="compact">
+                        <nz-form-control [nzErrorTip]="t('orderCommandsOrderForms.stopEndTimeError')">
+                          <nz-form-label [nzNoColon]="true"
+                                         nzFor="stopEndUnixTime">{{ t('orderCommandsOrderForms.stopEndTimeLabel') }}
+                          </nz-form-label>
+                          <nz-date-picker
+                            [nzDisabledDate]="disabledDate"
+                            [nzPlaceHolder]="t('orderCommandsOrderForms.stopEndTimePlaceholder')"
+                            [nzShowNow]="canSelectNow"
+                            formControlName="stopEndUnixTime"
+                            nzFormat="yyyy-MM-dd HH:mm:ss"
+                            nzShowTime
+                          >
+                          </nz-date-picker>
+                        </nz-form-control>
+                      </nz-form-item>
+                    </div>
+                  </div>
+                  <div [nzGutter]="12" nz-row>
+                    <div [nzSm]="12" [nzXs]="24" nz-col>
+                      <nz-form-item class="compact">
+                        <nz-form-label [nzNoColon]="true" nzFor="withLimit" nzRequired>
+                          {{ t('orderCommandsOrderForms.withLimitLabel') }}
+                        </nz-form-label>
+                        <nz-form-control>
+                          <nz-radio-group formControlName="withLimit">
+                            <label [nzValue]="true" nz-radio-button>Limit</label>
+                            <label [nzValue]="false" nz-radio-button>Market</label>
+                          </nz-radio-group>
+                        </nz-form-control>
+                      </nz-form-item>
+                    </div>
+                    @if (form.value.linkedOrder?.withLimit) {
+                      <div [nzSm]="12" [nzXs]="24" nz-col>
+                        <nz-form-item class="compact">
+                          <nz-form-control [nzErrorTip]="linkedOrderPriceError">
+                            <nz-form-label [nzNoColon]="true" nzFor="price" nzRequired>
+                              {{ t('orderCommandsOrderForms.priceLabel') }}
+                            </nz-form-label>
+                            <ats-input-number
+                              [allowNegative]="true"
+                              [step]="formInstrument.minstep"
+                              formControlName="price"
+                              placeholder="0"
+                            ></ats-input-number>
+                            @if (form.errors?.requiredIfTrueLinkedOrderPrice) {
+                              <span nz-typography nzType="danger">
+                              {{ t('orderCommandsOrderForms.emptyPriceError') }}
+                            </span>
+                            }
+                          </nz-form-control>
+                          <ng-template #linkedOrderPriceError>
+                            @if (form.controls.linkedOrder.controls.price.errors?.min) {
+                              <span
+                              >{{ t('validationErrors.tooLittle') }}</span>
+                            }
+                            @if (form.controls.linkedOrder.controls.price.errors?.max) {
+                              <span
+                              >{{ t('validationErrors.tooMuch') }}</span>
+                            }
+                            @if (form.controls.linkedOrder.controls.price.errors?.priceStepMultiplicity) {
+                              <span>
+                              {{ t('orderCommandsOrderForms.priceStepMultiplicityError') }}({{ formInstrument.minstep }}
+                                )
+                            </span>
+                            }
+                          </ng-template>
+                        </nz-form-item>
+                      </div>
+                    }
+                  </div>
+                  <div [nzGutter]="12" nz-row>
+                    <div [nzSm]="24" [nzXs]="24" nz-col>
+                      <nz-form-item class="compact">
+                        <nz-form-control>
+                          <nz-form-label [nzNoColon]="true"
+                                         nzFor="side">{{ t('orderCommandsOrderForms.sideLabel') }}
+                          </nz-form-label>
+                          <nz-select formControlName="side">
+                            <nz-option [nzLabel]="t('orderCommandsOrderForms.buySideLabel')"
+                                       [nzValue]="'buy'"></nz-option>
+                            <nz-option [nzLabel]="t('orderCommandsOrderForms.sellSideLabel')"
+                                       [nzValue]="'sell'"></nz-option>
+                          </nz-select>
+                        </nz-form-control>
+                      </nz-form-item>
+                    </div>
                   </div>
                 </div>
-              </div>
-            }
-          </nz-collapse-panel>
-        </nz-collapse>
-      </form>
+              }
+            </nz-collapse-panel>
+          </nz-collapse>
+        </form>
+      }
+    </div>
+  }
+  <div class="mt-8">
+    @if (requestProcessing$ | async; as requestProcessing) {
+      <ats-buy-sell-buttons
+        (btnClick)="submitOrder($event)"
+        [buyBtnDisabled]="!canSubmit || !!requestProcessing.orderSide"
+        [buyBtnLoading]="requestProcessing.orderSide === sides.Buy"
+        [sellBtnDisabled]="!canSubmit || !!requestProcessing.orderSide"
+        [sellBtnLoading]="requestProcessing.orderSide === sides.Sell"
+      >
+      </ats-buy-sell-buttons>
     }
   </div>
-}
-<div class="mt-8">
-  @if (requestProcessing$ | async; as requestProcessing) {
-    <ats-buy-sell-buttons
-      (btnClick)="submitOrder($event)"
-      [buyBtnDisabled]="!canSubmit || !!requestProcessing.orderSide"
-      [buyBtnLoading]="requestProcessing.orderSide === sides.Buy"
-      [sellBtnDisabled]="!canSubmit || !!requestProcessing.orderSide"
-      [sellBtnLoading]="requestProcessing.orderSide === sides.Sell"
-      >
-    </ats-buy-sell-buttons>
-  }
-</div>
-}
 </ng-container>

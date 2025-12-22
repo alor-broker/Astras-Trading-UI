@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, input, model, OnInit, ViewChild} from '@angular/core';
 import {combineLatest, Observable, take} from "rxjs";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {WatchlistCollectionService} from "../../services/watchlist-collection.service";
@@ -54,11 +54,9 @@ export class AddToWatchlistMenuComponent implements OnInit {
 
   showNewListDialog = false;
 
-  @Input()
-  itemToAdd: InstrumentKey | null = null;
+  readonly itemToAdd = model<InstrumentKey | null>(null);
 
-  @Input()
-  allowAddToNewList = true;
+  readonly allowAddToNewList = input(true);
 
   @ViewChild(NzDropdownMenuComponent)
   menuRef: NzDropdownMenuComponent | null = null;
@@ -88,11 +86,12 @@ export class AddToWatchlistMenuComponent implements OnInit {
   }
 
   selectItem(item: MenuItem): void {
-    if (item.itemId == null || this.itemToAdd == null) {
+    const itemToAdd = this.itemToAdd();
+    if (item.itemId == null || itemToAdd == null) {
       return;
     }
 
-    this.watchlistCollectionService.addItemsToList(item.itemId, [this.itemToAdd]);
+    this.watchlistCollectionService.addItemsToList(item.itemId, [itemToAdd]);
   }
 
   addItemToNewList(): void {
@@ -100,7 +99,9 @@ export class AddToWatchlistMenuComponent implements OnInit {
       return;
     }
 
-    if (this.itemToAdd == null) {
+    const itemToAdd = this.itemToAdd();
+
+    if (itemToAdd == null) {
       return;
     }
 
@@ -122,7 +123,7 @@ export class AddToWatchlistMenuComponent implements OnInit {
       this.watchlistCollectionService.createNewList(
         newListTitle,
         [
-          this.itemToAdd!
+          itemToAdd
         ]
       );
 
@@ -173,7 +174,7 @@ export class AddToWatchlistMenuComponent implements OnInit {
           });
         }
 
-        if (this.allowAddToNewList) {
+        if (this.allowAddToNewList()) {
           menu.push({
             title: x.translator(['addToNewList']),
             selectItem: () => {

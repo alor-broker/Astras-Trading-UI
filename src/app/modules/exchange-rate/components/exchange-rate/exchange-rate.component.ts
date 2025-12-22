@@ -1,9 +1,9 @@
 import {
   Component,
   Inject,
-  Input,
   OnDestroy,
-  OnInit
+  OnInit,
+  input
 } from '@angular/core';
 import {
   CurrencyPair,
@@ -67,8 +67,7 @@ interface CurrencyMatrix {
     ]
 })
 export class ExchangeRateComponent implements OnInit, OnDestroy {
-  @Input({ required: true })
-  guid!: string;
+  readonly guid = input.required<string>();
 
   readonly tableScroll$ = new BehaviorSubject<ContentSize | null>({ width: 50, height: 50 });
 
@@ -111,7 +110,7 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
     this.marketService.getMarketSettings().pipe(
       take(1)
     ).subscribe(marketSettings => {
-      this.settingsService.getSettings<ExchangeRateSettings>(this.guid).pipe(
+      this.settingsService.getSettings<ExchangeRateSettings>(this.guid()).pipe(
         take(1)
       ).subscribe(s => {
         this.actionsContext.selectInstrument({

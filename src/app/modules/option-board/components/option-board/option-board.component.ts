@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, input} from '@angular/core';
 import {OptionParameters, OptionSide} from "../../models/option-board.model";
 import {BehaviorSubject, take} from "rxjs";
 import {OptionBoardDataContextFactory} from "../../utils/option-board-data-context-factory";
@@ -52,8 +52,7 @@ export class OptionBoardComponent implements OnInit, OnDestroy {
   readonly ComponentTabs = ComponentTabs;
   optionSides = Object.values(OptionSide);
   parameters = Object.values(OptionParameters);
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   selectedTab$ = new BehaviorSubject(ComponentTabs.AllOptions);
   dataContext!: OptionBoardDataContext;
@@ -71,10 +70,10 @@ export class OptionBoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.dataContext = this.contextFactory.create(this.guid);
+    this.dataContext = this.contextFactory.create(this.guid());
 
     this.widgetLocalStateService.getStateRecord<BoardViewRecord>(
-      this.guid,
+      this.guid(),
       this.BoardViewStorageKey
     ).pipe(
       take(1),
@@ -89,7 +88,7 @@ export class OptionBoardComponent implements OnInit, OnDestroy {
 
     if ([ComponentTabs.AllOptions, ComponentTabs.OptionsByExpiration].includes(tab as ComponentTabs)) {
       this.widgetLocalStateService.setStateRecord<BoardViewRecord>(
-        this.guid,
+        this.guid(),
         this.BoardViewStorageKey,
         {
           boardView: tab

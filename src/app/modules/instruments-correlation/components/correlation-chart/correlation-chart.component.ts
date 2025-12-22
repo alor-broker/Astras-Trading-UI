@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, DestroyRef, input, OnDestroy, OnInit} from '@angular/core';
 import {BehaviorSubject, combineLatest, shareReplay, tap} from "rxjs";
 import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
@@ -89,8 +89,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
   readonly request$ = new BehaviorSubject<InstrumentsCorrelationRequest | null>(null);
   readonly loadingStatuses = LoadingStatus;
 
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   loadingError: LoadingError | null = null;
   protected readonly G = G;
@@ -104,7 +103,7 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
   }
 
   get figureId(): string {
-    return `f_${this.guid.replace(/-/g, '')}`;
+    return `f_${this.guid().replace(/-/g, '')}`;
   }
 
   sizeChanged(entries: ResizeObserverEntry[]): void {

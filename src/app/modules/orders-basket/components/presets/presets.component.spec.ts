@@ -8,6 +8,7 @@ import {NzTagComponent} from "ng-zorro-antd/tag";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzPopconfirmDirective} from "ng-zorro-antd/popconfirm";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('PresetsComponent', () => {
   let component: PresetsComponent;
@@ -31,6 +32,8 @@ describe('PresetsComponent', () => {
     });
     fixture = TestBed.createComponent(PresetsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
+    fixture.componentRef.setInput('presets', []);
     fixture.detectChanges();
   });
 

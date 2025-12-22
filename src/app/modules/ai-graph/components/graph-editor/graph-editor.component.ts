@@ -4,7 +4,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  Input,
+  input,
   OnDestroy,
   Output,
   QueryList,
@@ -39,28 +39,27 @@ import {RunConfigBtnComponent} from "../run-config-btn/run-config-btn.component"
 import {RunStatus} from "../../models/run-results.model";
 import {RunResultsComponent} from "../run-results/run-results.component";
 import {NodePropertiesEditorComponent} from "../node-properties-editor/node-properties-editor.component";
-import { CanvasMouseEvent } from "node_modules/@comfyorg/litegraph/dist/types/events";
+import {CanvasMouseEvent} from "node_modules/@comfyorg/litegraph/dist/types/events";
 
 @Component({
-    selector: 'ats-graph-editor',
-    imports: [
-        NzResizeObserverDirective,
-        LetDirective,
-        SideMenuComponent,
-        NzIconDirective,
-        SideMenuTitleDirective,
-        SideMenuContentDirective,
-        TranslocoDirective,
-        RunConfigBtnComponent,
-        RunResultsComponent,
-        NodePropertiesEditorComponent
-    ],
-    templateUrl: './graph-editor.component.html',
-    styleUrl: './graph-editor.component.less'
+  selector: 'ats-graph-editor',
+  imports: [
+    NzResizeObserverDirective,
+    LetDirective,
+    SideMenuComponent,
+    NzIconDirective,
+    SideMenuTitleDirective,
+    SideMenuContentDirective,
+    TranslocoDirective,
+    RunConfigBtnComponent,
+    RunResultsComponent,
+    NodePropertiesEditorComponent
+  ],
+  templateUrl: './graph-editor.component.html',
+  styleUrl: './graph-editor.component.less'
 })
 export class GraphEditorComponent implements AfterViewInit, OnDestroy {
-  @Input()
-  initialConfig: GraphConfig | null = null;
+  readonly initialConfig = input<GraphConfig | null>(null);
 
   @Output()
   updateConfig = new EventEmitter<GraphConfig>();
@@ -194,8 +193,9 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
       }
     };
 
-    if (this.initialConfig != null) {
-      graph.configure(this.fromConfig(this.initialConfig), false);
+    const initialConfig = this.initialConfig();
+    if (initialConfig != null) {
+      graph.configure(this.fromConfig(initialConfig), false);
     }
 
     this.currentConfig = this.toConfig(graph.asSerialisable());
@@ -267,7 +267,7 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   private showNodePropertiesEditor(node: NodeBase): void {
-    if(!node.pinned) {
+    if (!node.pinned) {
       this.nodeToEdit = node;
       this.isRunMenuVisible = false;
       this.cdr.markForCheck();

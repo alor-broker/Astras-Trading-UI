@@ -4,7 +4,7 @@ import {
   DestroyRef,
   DOCUMENT,
   Inject,
-  Input,
+  input,
   NgZone,
   OnDestroy,
   OnInit,
@@ -71,11 +71,9 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   @ViewChildren(CdkScrollable)
   scrollContainer!: QueryList<CdkScrollable>;
 
-  @Input({required: true})
-  xAxisStep!: number;
+  readonly xAxisStep = input.required<number>();
 
-  @Input({required: true})
-  dataContext!: ScalperOrderBookDataContext;
+  readonly dataContext = input.required<ScalperOrderBookDataContext>();
 
   clusters$!: Observable<TradesCluster[]>;
 
@@ -215,7 +213,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   }
 
   private initSettings(): void {
-    this.settings$ = this.dataContext.extendedSettings$.pipe(
+    this.settings$ = this.dataContext().extendedSettings$.pipe(
       map(x => {
         const settings = x.widgetSettings;
 

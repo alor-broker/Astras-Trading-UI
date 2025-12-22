@@ -9,6 +9,7 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
 import {MockComponents} from "ng-mocks";
 import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('AllInstrumentsSettingsComponent', () => {
   let component: AllInstrumentsSettingsComponent;
@@ -47,6 +48,7 @@ describe('AllInstrumentsSettingsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AllInstrumentsSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

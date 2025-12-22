@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, input, OnInit} from '@angular/core';
 import {AsyncPipe} from "@angular/common";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
@@ -26,11 +26,9 @@ import {WidgetHeaderComponent} from "../../../../shared/components/widget-header
   styleUrl: './portfolio-charts-widget.component.less'
 })
 export class PortfolioChartsWidgetComponent implements OnInit {
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   title$!: Observable<string>;
 
@@ -46,12 +44,12 @@ export class PortfolioChartsWidgetComponent implements OnInit {
   }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createPortfolioLinkedWidgetSettingsIfMissing<PortfolioChartsSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'PortfolioChartsSettings',
       settings => ({
         ...settings,

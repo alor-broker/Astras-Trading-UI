@@ -6,7 +6,6 @@ import {Subject} from "rxjs";
 import {BondScreenerService} from "../../services/bond-screener.service";
 import {ACTIONS_CONTEXT} from "../../../../shared/services/actions-context";
 import {LetDirective} from "@ngrx/component";
-import {GuidGenerator} from "../../../../shared/utils/guid";
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 import {MockComponents, MockDirectives} from "ng-mocks";
 import {
@@ -58,7 +57,10 @@ describe('YieldCurveChartComponent', () => {
     });
     fixture = TestBed.createComponent(YieldCurveChartComponent);
     component = fixture.componentInstance;
-    component.guid = GuidGenerator.newGuid();
+    fixture.componentRef.setInput(
+      'guid',
+      'testGuid'
+    );
     fixture.detectChanges();
   });
 

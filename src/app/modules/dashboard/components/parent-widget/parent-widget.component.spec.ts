@@ -2,6 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {ParentWidgetComponent} from './parent-widget.component';
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
+import {Widget} from "../../../../shared/models/dashboard/widget.model";
 
 describe('ParentWidgetComponent', () => {
   let component: ParentWidgetComponent;
@@ -17,16 +18,15 @@ describe('ParentWidgetComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ParentWidgetComponent);
     component = fixture.componentInstance;
-    component.widgetInstance = {
-      instance: {
-        guid: '123',
-        position: {x: 0, y: 0, rows: 1, cols: 1},
-        widgetType: 'test-widget'
-      },
-      widgetMeta: {
-
-      } as WidgetMeta
-    };
+    fixture.componentRef.setInput(
+      'widgetInstance',
+      {
+        instance: {
+          guid: 'guid'
+        } as Widget,
+        widgetMeta: {widgetName: {}} as WidgetMeta
+      }
+    );
     fixture.detectChanges();
   });
 

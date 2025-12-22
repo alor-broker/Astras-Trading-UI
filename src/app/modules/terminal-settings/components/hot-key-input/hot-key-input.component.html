@@ -1,5 +1,5 @@
 <nz-form-item *transloco="let t; scope: 'terminal-settings/hot-key-settings-form'">
-  <nz-form-label [nzFor]="actionName">{{t('terminalSettingsHotKeySettingsForm.' + actionName)}}</nz-form-label>
+  <nz-form-label [nzFor]="actionName()">{{t('terminalSettingsHotKeySettingsForm.' + actionName())}}</nz-form-label>
   <nz-form-control [nzErrorTip]="controlError">
     <input
       (keydown)="hotkeyChange($event)"

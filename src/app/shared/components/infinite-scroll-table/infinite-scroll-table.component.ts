@@ -5,6 +5,7 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  input,
   OnChanges,
   OnInit,
   Output,
@@ -86,10 +87,12 @@ export interface TableDataRow {
   ]
 })
 export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, OnInit {
-  @Input() tableContainerHeight = 100;
-  @Input() tableContainerWidth = 100;
-  @Input() isLoading = false;
-  @Input({required: true}) tableConfig: TableConfig<any> | null = null;
+  readonly tableContainerHeight = input(100);
+  readonly tableContainerWidth = input(100);
+  readonly isLoading = input(false);
+
+  readonly tableConfig = input<TableConfig<any> | null>(null);
+
   @Output()
   rowClick = new EventEmitter();
 
@@ -123,6 +126,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   sortedColumnId = '';
   sortedColumnOrder: string | null = '';
   selectedRow: TableDataRow | null = null;
+  readonly trackByFn = input<TrackByFunction<TableDataRow>>((index: number, data: TableDataRow) => data.id);
   private tableData: TableDataRow[] = [];
   private visibleItemsCount = 1;
   private tableRef$?: Observable<NzTableComponent<TableDataRow>>;
@@ -157,8 +161,6 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
 
     return elHeight || 0;
   }
-
-  @Input() trackByFn: TrackByFunction<TableDataRow> = (index: number, data: TableDataRow) => data.id;
 
   ngOnInit(): void {
     this.filtersForm.valueChanges
@@ -196,7 +198,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
     }
 
     if ((changes.tableConfig as SimpleChange | undefined)?.currentValue) {
-      (this.tableConfig?.columns ?? [])
+      (this.tableConfig()?.columns ?? [])
         .filter(col => !!col.filterData)
         .map(col => col.filterData!)
         .forEach(filter => {
@@ -239,7 +241,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   }
 
   public getWidthArr(): string[] {
-    return (this.tableConfig?.columns ?? []).map(col => (col.width ?? 0) ? `${col.width}px` : 'auto');
+    return (this.tableConfig()?.columns ?? []).map(col => (col.width ?? 0) ? `${col.width}px` : 'auto');
   }
 
   public getFilterControl(filterName: string): FormControl | null {
@@ -277,7 +279,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   }
 
   private calculateScrollHeight(): void {
-    this.scrollHeight = this.tableContainerHeight -
+    this.scrollHeight = this.tableContainerHeight() -
       InfiniteScrollTableComponent.getElementHeight((this.headerRowEl as QueryList<ElementRef> | undefined)?.first.nativeElement);
 
     this.visibleItemsCount = Math.ceil(this.scrollHeight / this.itemHeight);

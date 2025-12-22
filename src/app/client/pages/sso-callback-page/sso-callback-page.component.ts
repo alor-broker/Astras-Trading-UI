@@ -1,7 +1,7 @@
 import {
   Component,
-  Input,
-  OnInit
+  OnInit,
+  input
 } from '@angular/core';
 import { Router } from "@angular/router";
 import { ClientAuthContextService } from "../../services/auth/client-auth-context.service";
@@ -12,8 +12,7 @@ import { ClientAuthContextService } from "../../services/auth/client-auth-contex
     styleUrl: './sso-callback-page.component.less'
 })
 export class SsoCallbackPageComponent implements OnInit {
-  @Input()
-  refreshToken?: string;
+  readonly refreshToken = input<string>();
 
   constructor(
     private readonly router: Router,
@@ -22,7 +21,7 @@ export class SsoCallbackPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.clientAuthContextService.setRefreshToken((this.refreshToken ?? '').trim());
+    this.clientAuthContextService.setRefreshToken((this.refreshToken() ?? '').trim());
     this.router.navigate(['/dashboard']);
   }
 }

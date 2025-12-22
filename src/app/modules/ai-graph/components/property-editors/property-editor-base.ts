@@ -1,4 +1,4 @@
-﻿import {Component, Input} from "@angular/core";
+﻿import {Component, input} from "@angular/core";
 import {PropertyEditorConfig} from "../../models/property-editor.model";
 
 @Component({
@@ -6,10 +6,9 @@ import {PropertyEditorConfig} from "../../models/property-editor.model";
     standalone: false
 })
 export abstract class PropertyEditorBaseComponent<T extends PropertyEditorConfig<any>> {
-  @Input({required: true})
-  config!: PropertyEditorConfig;
+  readonly config = input.required<PropertyEditorConfig>();
 
   protected getTypedConfig(): T {
-    return this.config as T;
+    return this.config() as T;
   }
 }

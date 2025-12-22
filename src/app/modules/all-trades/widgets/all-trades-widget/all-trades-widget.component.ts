@@ -1,53 +1,47 @@
-import {
-  Component,
-  Input,
-  OnInit
-} from '@angular/core';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { Observable } from 'rxjs';
-import { SettingsHelper } from '../../../../shared/utils/settings-helper';
-import {
-  AllTradesSettings,
-  allTradesWidgetColumns
-} from '../../models/all-trades-settings.model';
+import {Component, input, OnInit} from '@angular/core';
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
+import {Observable} from 'rxjs';
+import {SettingsHelper} from '../../../../shared/utils/settings-helper';
+import {AllTradesSettings, allTradesWidgetColumns} from '../../models/all-trades-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import { getValueOrDefault } from "../../../../shared/utils/object-helper";
-import { TranslocoDirective } from '@jsverse/transloco';
-import { WidgetSkeletonComponent } from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
-import { WidgetHeaderComponent } from '../../../../shared/components/widget-header/widget-header.component';
-import { WidgetHeaderInstrumentSwitchComponent } from '../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component';
-import { AllTradesComponent } from '../../components/all-trades/all-trades.component';
-import { AllTradesSettingsComponent } from '../../components/all-trades-settings/all-trades-settings.component';
-import { AsyncPipe } from '@angular/common';
+import {getValueOrDefault} from "../../../../shared/utils/object-helper";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {WidgetSkeletonComponent} from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
+import {WidgetHeaderComponent} from '../../../../shared/components/widget-header/widget-header.component';
+import {
+  WidgetHeaderInstrumentSwitchComponent
+} from '../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component';
+import {AllTradesComponent} from '../../components/all-trades/all-trades.component';
+import {AllTradesSettingsComponent} from '../../components/all-trades-settings/all-trades-settings.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-all-trades-widget',
-    templateUrl: './all-trades-widget.component.html',
-    styleUrls: ['./all-trades-widget.component.less'],
-    imports: [
-      TranslocoDirective,
-      WidgetSkeletonComponent,
-      WidgetHeaderComponent,
-      WidgetHeaderInstrumentSwitchComponent,
-      AllTradesComponent,
-      AllTradesSettingsComponent,
-      AsyncPipe
-    ]
+  selector: 'ats-all-trades-widget',
+  templateUrl: './all-trades-widget.component.html',
+  styleUrls: ['./all-trades-widget.component.less'],
+  imports: [
+    TranslocoDirective,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent,
+    WidgetHeaderInstrumentSwitchComponent,
+    AllTradesComponent,
+    AllTradesSettingsComponent,
+    AsyncPipe
+  ]
 })
 export class AllTradesWidgetComponent implements OnInit {
   shouldShowSettings = false;
 
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<AllTradesSettings>;
   showBadge$!: Observable<boolean>;
+
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,
     private readonly dashboardContextService: DashboardContextService,
@@ -55,7 +49,7 @@ export class AllTradesWidgetComponent implements OnInit {
   }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   onSettingsChange(): void {
@@ -64,7 +58,7 @@ export class AllTradesWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<AllTradesSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'AllTradesSettings',
       settings => ({
         ...settings,

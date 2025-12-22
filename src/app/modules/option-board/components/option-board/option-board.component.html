@@ -58,7 +58,7 @@
         </div>
 
         <div class="tab" [hidden]="vm.selectedTab !== ComponentTabs.OptionsByExpiration">
-          <ats-all-options-list-view [guid]="guid" [dataContext]="dataContext"></ats-all-options-list-view>
+          <ats-all-options-list-view [guid]="guid()" [dataContext]="dataContext"></ats-all-options-list-view>
         </div>
 
         <div class="tab" [hidden]="vm.selectedTab !== ComponentTabs.SelectedOptions">

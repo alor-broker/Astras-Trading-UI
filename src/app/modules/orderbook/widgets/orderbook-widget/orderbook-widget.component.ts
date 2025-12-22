@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, input, OnInit} from '@angular/core';
 import {OrderbookService} from '../../services/orderbook.service';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
 import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
@@ -38,11 +38,9 @@ import {AsyncPipe} from '@angular/common';
 export class OrderbookWidgetComponent implements OnInit {
   shouldShowSettings = false;
 
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<OrderbookSettings>;
   showBadge$!: Observable<boolean>;
@@ -55,7 +53,7 @@ export class OrderbookWidgetComponent implements OnInit {
   }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   onSettingsChange(): void {
@@ -64,7 +62,7 @@ export class OrderbookWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<OrderbookSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'OrderbookSettings',
       settings => ({
         ...settings,

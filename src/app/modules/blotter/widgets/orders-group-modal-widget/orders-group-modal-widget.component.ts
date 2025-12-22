@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit, input} from '@angular/core';
 import {Observable, of} from "rxjs";
 import {BlotterService} from "../../services/blotter.service";
 import {TranslocoDirective} from '@jsverse/transloco';
@@ -22,8 +22,7 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class OrdersGroupModalWidgetComponent implements OnInit {
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   isVisible$: Observable<boolean> = of(false);
   groupId$: Observable<string | null> = of(null);

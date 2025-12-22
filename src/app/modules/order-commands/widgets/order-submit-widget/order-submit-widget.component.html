@@ -3,7 +3,7 @@
     <ats-widget-skeleton
       [content]="contentRef"
       [header]="headerRef"
-      [isBlockWidget]="isBlockWidget"
+      [isBlockWidget]="isBlockWidget()"
       [settings]="settingsRef"
       [showContentScroll]="true"
       [showSettings]="shouldShowSettings"
@@ -13,15 +13,15 @@
           (switchSettings)="onSettingsChange()"
           [guid]="guid"
           [hasSettings]="true"
-          [linkToActive]="settings.linkToActive"
+          [linkToActive]="settings.linkToActive ?? null"
           [selectedBadgeColor]="settings.badgeColor"
           [showBadgesMenu]="(showBadge$ | async) ?? false"
           [titleTemplate]="titleTemplate"
-          [widgetMeta]="widgetInstance.widgetMeta"
+          [widgetMeta]="widgetInstance().widgetMeta"
         ></ats-widget-header>
         <ng-template #titleTemplate>
           <ats-widget-header-instrument-switch
-          [widgetGuid]="widgetInstance.instance.guid"></ats-widget-header-instrument-switch>
+          [widgetGuid]="widgetInstance().instance.guid"></ats-widget-header-instrument-switch>
         </ng-template>
       </ng-template>
       <ng-template #contentRef>
@@ -67,7 +67,7 @@
                             class="mt-8">
                             <ats-limit-order-price-change
                               [instrument]="currentInstrument"
-                              [portfolioKey]="currentPortfolio"
+                              [currentPortfolio]="currentPortfolio"
                               [steps]="settings.limitOrderPriceMoveSteps"
                             ></ats-limit-order-price-change>
                           </div>

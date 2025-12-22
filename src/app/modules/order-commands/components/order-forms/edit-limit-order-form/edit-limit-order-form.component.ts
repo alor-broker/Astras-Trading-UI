@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, DestroyRef, OnDestroy, OnInit, input} from '@angular/core';
 import {BaseEditOrderFormComponent} from "../base-edit-order-form.component";
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonParametersService} from "../../../services/common-parameters.service";
@@ -64,12 +64,11 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
   readonly evaluationRequest$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   currentPriceDiffPercent$!: Observable<{ percent: number, sign: number } | null>;
 
-  @Input()
-  initialValues: {
+  readonly initialValues = input<{
     price?: number;
     quantity?: number;
     hasPriceChanged?: boolean;
-  } | null = null;
+} | null>(null);
 
   readonly form = this.formBuilder.group({
     quantity: this.formBuilder.nonNullable.control(
@@ -118,8 +117,8 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
 
   ngOnInit(): void {
     this.currentOrder$ = combineLatest({
-      orderId: this.orderId$,
-      portfolioKey: this.portfolioKey$
+      orderId: this.orderIdChanges$,
+      portfolioKey: this.portfolioKeyChanges$
     }).pipe(
       filter(x => x.orderId != null && x.portfolioKey != null),
       switchMap(x => this.orderDetailsService.getLimitOrderDetails(x.orderId!, x.portfolioKey!)),
@@ -137,7 +136,6 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
   }
 
   ngOnDestroy(): void {
-    super.ngOnDestroy();
     this.evaluationRequest$.complete();
   }
 
@@ -164,8 +162,9 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
         AtsValidators.priceStepMultiplicity(x.currentInstrument.minstep)
       ]);
 
-      this.form.controls.price.setValue(this.initialValues?.price ?? x.currentOrder.price);
-      this.form.controls.quantity.setValue(this.initialValues?.quantity ?? (x.currentOrder.qty - (x.currentOrder.filledQtyBatch ?? 0)));
+      const initialValues = this.initialValues();
+      this.form.controls.price.setValue(initialValues?.price ?? x.currentOrder.price);
+      this.form.controls.quantity.setValue(initialValues?.quantity ?? (x.currentOrder.qty - (x.currentOrder.filledQtyBatch ?? 0)));
 
       this.form.controls.timeInForce.setValue(x.currentOrder.timeInForce ?? null);
 
@@ -307,7 +306,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
   private prepareUpdateStream(): Observable<boolean> {
     return combineLatest({
       currentOrder: this.currentOrder$,
-      portfolioKey: this.portfolioKey$
+      portfolioKey: this.portfolioKeyChanges$
     }).pipe(
       filter(x => !!(x.currentOrder as Order | null) && !!x.portfolioKey),
       filter(() => this.form.valid),

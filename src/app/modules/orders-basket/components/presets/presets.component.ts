@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Output, ViewChild, input} from '@angular/core';
 import {DataPreset} from "../../models/orders-basket-settings.model";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzTagComponent} from 'ng-zorro-antd/tag';
@@ -26,14 +26,11 @@ export class PresetsComponent {
   @ViewChild('inputElement', {static: false})
   inputElement?: ElementRef<HTMLInputElement>;
 
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
-  @Input({required: true})
-  presets: DataPreset[] = [];
+  readonly presets = input.required<DataPreset[]>();
 
-  @Input()
-  canAddPreset = false;
+  readonly canAddPreset = input(false);
 
   inputVisible = false;
   inputValue = '';
@@ -53,7 +50,7 @@ export class PresetsComponent {
   }
 
   showInput(): void {
-    if (!this.canAddPreset) {
+    if (!this.canAddPreset()) {
       return;
     }
 

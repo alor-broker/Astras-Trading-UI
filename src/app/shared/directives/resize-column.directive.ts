@@ -4,13 +4,13 @@ import {
   ElementRef,
   EventEmitter,
   Inject,
-  Input,
   NgZone,
   OnInit,
   Output,
   Renderer2,
   SimpleChange,
-  DOCUMENT
+  DOCUMENT,
+  input
 } from '@angular/core';
 
 import {
@@ -29,11 +29,9 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Directive({ selector: 'th[atsResizeColumn]' })
 export class ResizeColumnDirective implements OnInit {
-  @Input()
-  minWidth = 0;
+  readonly minWidth = input(0);
 
-  @Input()
-  atsResizeColumn?: boolean = true;
+  readonly atsResizeColumn = input<boolean | undefined>(true);
 
   @Output()
   atsWidthChanged = new EventEmitter<number>();
@@ -55,7 +53,7 @@ export class ResizeColumnDirective implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!(this.atsResizeColumn ?? false)) {
+    if (!(this.atsResizeColumn() ?? false)) {
       return;
     }
 
@@ -86,7 +84,7 @@ export class ResizeColumnDirective implements OnInit {
             }),
             map(({ clientX }) => width + clientX - right),
             map(w => Math.round(w)),
-            map(w => w > 0 && w >= this.minWidth ? w : this.minWidth),
+            map(w => w > 0 && w >= this.minWidth() ? w : this.minWidth()),
             distinctUntilChanged(),
             takeUntil(fromEvent(this.documentRef, 'mouseup')),
             finalize(() => {

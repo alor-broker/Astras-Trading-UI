@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, input, OnInit, Output} from '@angular/core';
 import {Observable} from "rxjs";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {WidgetSettingsCreationHelper} from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
@@ -29,11 +29,9 @@ import {ArbitrageSpreadService} from "../../services/arbitrage-spread.service";
   providers: [ArbitrageSpreadService]
 })
 export class ArbitrageSpreadWidgetComponent implements OnInit {
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
   settings$!: Observable<ArbitrageSpreadSettings>;
@@ -44,12 +42,12 @@ export class ArbitrageSpreadWidgetComponent implements OnInit {
   }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<ArbitrageSpreadSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'ArbitrationExtensionSettings',
       settings => ({
         ...settings,

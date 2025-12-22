@@ -9,6 +9,7 @@ import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTe
 import {MockComponents, MockDirectives} from "ng-mocks";
 import {NzTreeComponent} from "ng-zorro-antd/tree";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('OrdersGroupModalComponent', () => {
   let component: OrdersGroupModalComponent;
@@ -52,6 +53,8 @@ describe('OrdersGroupModalComponent', () => {
 
     fixture = TestBed.createComponent(OrdersGroupModalComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
+    fixture.componentRef.setInput('groupId', '1');
     fixture.detectChanges();
   });
 

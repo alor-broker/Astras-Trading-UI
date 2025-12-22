@@ -4,11 +4,11 @@ import {
   ElementRef,
   HostListener,
   Inject,
-  Input,
   OnDestroy,
   OnInit,
   Renderer2,
-  SkipSelf
+  SkipSelf,
+  input
 } from '@angular/core';
 import { Subject } from "rxjs";
 import { ResizedEvent } from "../panels-container/panels-container.component";
@@ -35,20 +35,15 @@ import { PanelResizeHandlerComponent } from '../panel-resize-handler/panel-resiz
 })
 export class PanelComponent implements PanelResizeContext, OnInit, OnDestroy {
   readonly resizeEndOutsideAngular$ = new Subject<void>();
-  @Input()
-  canResize = false;
+  readonly canResize = input(false);
 
-  @Input({ required: true })
-  id!: string;
+  readonly id = input.required<string>();
 
-  @Input({ required: true })
-  defaultWidthPercent!: number;
+  readonly defaultWidthPercent = input.required<number>();
 
-  @Input()
-  minWidthPx = 5;
+  readonly minWidthPx = input(5);
 
-  @Input()
-  expandable = false;
+  readonly expandable = input(false);
 
   readonly resizedOutsideAngular$ = new Subject<ResizedEvent>();
   private expanded = false;
@@ -96,7 +91,7 @@ export class PanelComponent implements PanelResizeContext, OnInit, OnDestroy {
 
   @HostListener('dblclick')
   expand(): void {
-    if (!this.expandable) {
+    if (!this.expandable()) {
       return;
     }
 

@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {Option, OptionParameters} from "../../models/option-board.model";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {TranslocoDirective} from '@jsverse/transloco';
@@ -16,9 +16,7 @@ import {DecimalPipe, NgTemplateOutlet} from '@angular/common';
 })
 export class OptionPreviewComponent {
   optionParameter = OptionParameters;
-
-  @Input({required: true})
-  option!: Option;
+  readonly option = input.required<Option>();
 
   formatNumberParameter(value: number, decimals = 2): number {
     return MathHelper.round(value, decimals);

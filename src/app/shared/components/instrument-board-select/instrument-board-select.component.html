@@ -3,7 +3,7 @@
   [ngModel]="currentValue"
   nzAllowClear
   nzShowSearch
-  [nzPlaceHolder]="placeholder ?? ''"
+  [nzPlaceHolder]="placeholder() ?? ''"
   >
   @if (availableBoards$ | async; as availableBoards) {
     @for (board of availableBoards; track board) {
