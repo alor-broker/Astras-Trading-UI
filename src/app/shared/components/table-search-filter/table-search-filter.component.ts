@@ -22,7 +22,7 @@ import {TranslocoDirective} from "@jsverse/transloco";
 export class TableSearchFilterComponent implements OnChanges, OnDestroy {
   filtersForm?: UntypedFormGroup;
 
-  columns = input.required<BaseColumnSettings<any>[]>();
+  readonly columns = input.required<BaseColumnSettings<any>[]>();
 
   filterChange = output<Record<string, string>>();
 

@@ -8,8 +8,8 @@ import {
   OnDestroy,
   OnInit,
   SkipSelf,
-  ViewChild,
-  input
+  input,
+  viewChild
 } from '@angular/core';
 import {CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {
@@ -137,14 +137,11 @@ export class ScalperOrderBookBodyComponent implements OnInit,
 
   rowHeight$!: Observable<number>;
 
-  @ViewChild(CdkVirtualScrollViewport)
-  scrollContainer!: CdkVirtualScrollViewport;
+  readonly scrollContainer = viewChild.required(CdkVirtualScrollViewport);
 
-  @ViewChild('topFloatingPanelContainer', {static: false})
-  topFloatingPanelContainer?: ElementRef<HTMLDivElement>;
+  readonly topFloatingPanelContainer = viewChild<ElementRef<HTMLDivElement>>('topFloatingPanelContainer');
 
-  @ViewChild('bottomFloatingPanelContainer', {static: false})
-  bottomFloatingPanelContainer?: ElementRef<HTMLDivElement>;
+  readonly bottomFloatingPanelContainer = viewChild<ElementRef<HTMLDivElement>>('bottomFloatingPanelContainer');
 
   readonly guid = input.required<string>();
 
@@ -217,17 +214,17 @@ export class ScalperOrderBookBodyComponent implements OnInit,
 
     this.topFloatingPanelPosition$ = this.initFloatingPanelPosition(
       this.topFloatingPanelPositionStateKey,
-      () => this.topFloatingPanelContainer?.nativeElement.getBoundingClientRect() ?? null
+      () => this.topFloatingPanelContainer()?.nativeElement.getBoundingClientRect() ?? null
     );
 
     this.bottomFloatingPanelPosition$ = this.initFloatingPanelPosition(
       this.bottomFloatingPanelPositionStateKey,
-      () => this.bottomFloatingPanelContainer?.nativeElement.getBoundingClientRect() ?? null
+      () => this.bottomFloatingPanelContainer()?.nativeElement.getBoundingClientRect() ?? null
     );
   }
 
   ngAfterViewInit(): void {
-    this.scrollContainer.renderedRangeStream.pipe(
+    this.scrollContainer().renderedRangeStream.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => this.renderItemsRange$.next({
         start: x.start,
@@ -315,8 +312,8 @@ export class ScalperOrderBookBodyComponent implements OnInit,
       this.rowHeight$
     ]).pipe(
       map(([orderBookBody, currentOrders, , rowHeight]) => {
-        const topOffset = this.scrollContainer.measureScrollOffset('top');
-        const bottomOffset = topOffset + this.scrollContainer.getViewportSize();
+        const topOffset = this.scrollContainer().measureScrollOffset('top');
+        const bottomOffset = topOffset + this.scrollContainer().getViewportSize();
 
         const topVisibleIndex = Math.ceil(topOffset / rowHeight);
         const bottomVisibleIndex = Math.round(bottomOffset / rowHeight) - 1;
@@ -457,7 +454,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
         changeNotifications: {
           priceRowsRegenerationStarted: () => this.isLoading$.next(true),
           priceRowsRegenerationCompleted: () => {
-            this.scrollContainer.checkViewportSize();
+            this.scrollContainer().checkViewportSize();
             this.alignTable();
             this.isLoading$.next(false);
           }
@@ -485,7 +482,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
   }
 
   private getContainerHeight(): number {
-    return this.scrollContainer.measureViewportSize('vertical');
+    return this.scrollContainer().measureViewportSize('vertical');
   }
 
   private alignTable(): void {
@@ -524,7 +521,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
             const visibleItemsCount = viewPortSize / x.rowHeight;
             const centerCorrection = Math.floor(visibleItemsCount / 2) - 1;
 
-            this.scrollContainer.scrollToIndex(targetIndex! - centerCorrection);
+            this.scrollContainer().scrollToIndex(targetIndex! - centerCorrection);
           }
         });
       });
@@ -533,7 +530,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
 
   private initTableScrolling(): void {
     combineLatest({
-      index: this.scrollContainer.scrolledIndexChange,
+      index: this.scrollContainer().scrolledIndexChange,
       rowHeight: this.rowHeight$
     }).pipe(
       withLatestFrom(this.isLoading$),
@@ -545,14 +542,14 @@ export class ScalperOrderBookBodyComponent implements OnInit,
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
       const bufferItemsCount = 10;
-      const topScrollOffset = this.scrollContainer.measureScrollOffset('top');
-      const bottomScrollOffset = this.scrollContainer.measureScrollOffset('bottom');
+      const topScrollOffset = this.scrollContainer().measureScrollOffset('top');
+      const bottomScrollOffset = this.scrollContainer().measureScrollOffset('bottom');
 
       if ((topScrollOffset / x.rowHeight) < bufferItemsCount) {
         this.isLoading$.next(true);
         this.priceRowsStore.extendTop(bufferItemsCount, (addedItemsCount: number) => {
           ScalperOrderBookTableHelper.scrollTableToIndex(
-            this.scrollContainer,
+            this.scrollContainer(),
             x.rowHeight,
             x.index + addedItemsCount,
             false,

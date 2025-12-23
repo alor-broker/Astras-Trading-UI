@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, DestroyRef, input, OnDestroy, OnInit, output, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, DestroyRef, input, OnDestroy, OnInit, output, viewChild} from '@angular/core';
 import {NewsSection} from "../../models/news.model";
 import {
   BehaviorSubject,
@@ -74,8 +74,7 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
 
   readonly sectionChange = output<NewsSection>();
 
-  @ViewChild('tabSet')
-  tabSet?: NzTabsComponent;
+  readonly tabSet = viewChild<NzTabsComponent>('tabSet');
 
   readonly newsSectionEnum = NewsSection;
 
@@ -121,11 +120,12 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
     this.selectedSection$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(selectedTab => {
+      const tabSet = this.tabSet();
       if (
         selectedTab === NewsSection.Portfolio
-        && this.tabSet != null
-        && (this.tabSet.nzSelectedIndex ?? -1) !== 1) {
-        setTimeout(() => this.tabSet?.setSelectedIndex(1));
+        && tabSet != null
+        && (tabSet.nzSelectedIndex ?? -1) !== 1) {
+        setTimeout(() => tabSet.setSelectedIndex(1));
       }
     });
   }

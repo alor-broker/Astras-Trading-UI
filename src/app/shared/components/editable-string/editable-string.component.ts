@@ -1,18 +1,8 @@
-import {
-  Component,
-  DestroyRef,
-  ElementRef,
-  input,
-  OnDestroy,
-  OnInit,
-  QueryList,
-  ViewChildren,
-  output
-} from '@angular/core';
+import {Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, output, viewChildren} from '@angular/core';
 import {BehaviorSubject, filter, take,} from 'rxjs';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {map, startWith} from "rxjs/operators";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {map} from "rxjs/operators";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {AsyncPipe} from "@angular/common";
 import {NzIconDirective} from "ng-zorro-antd/icon";
@@ -38,11 +28,8 @@ import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
   ]
 })
 export class EditableStringComponent implements OnInit, OnDestroy {
-  @ViewChildren('editInput')
-  editInput!: QueryList<ElementRef<HTMLInputElement>>;
-
+  readonly editInput = viewChildren<ElementRef<HTMLInputElement>>('editInput');
   readonly content = input.required<string | null>();
-
   readonly lengthRestrictions = input<{
     minLength: number;
     maxLength: number;
@@ -53,9 +40,12 @@ export class EditableStringComponent implements OnInit, OnDestroy {
   readonly contentChanged = output<string>();
 
   isEditMode$ = new BehaviorSubject(false);
+
   editForm = this.formBuilder.group({
     content: this.formBuilder.nonNullable.control('')
   });
+
+  private readonly editInputChanges$ = toObservable(this.editInput);
 
   constructor(
     private readonly formBuilder: FormBuilder,
@@ -117,9 +107,8 @@ export class EditableStringComponent implements OnInit, OnDestroy {
 
     this.editForm.controls.content.setValue(this.content() ?? '');
 
-    this.editInput.changes.pipe(
-      map(x => x.first as ElementRef | undefined),
-      startWith(this.editInput.first),
+    this.editInputChanges$.pipe(
+      map(x => x.length > 0 ? x[0] : undefined),
       filter(x => !!x),
       take(1)
     ).subscribe(elRef => {

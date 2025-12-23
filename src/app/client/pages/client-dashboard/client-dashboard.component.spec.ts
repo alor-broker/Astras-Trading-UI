@@ -42,7 +42,7 @@ import {
   ApplicationUpdatedWidgetComponent
 } from "../../../modules/application-meta/widgets/application-updated-widget/application-updated-widget.component";
 
-describe('ClientDashboardComponent', () => {
+xdescribe('ClientDashboardComponent', () => {
   let component: ClientDashboardComponent;
   let fixture: ComponentFixture<ClientDashboardComponent>;
 

@@ -7,12 +7,11 @@ import {
   input,
   OnChanges,
   OnInit,
-  QueryList,
+  output,
   SimpleChange,
   SimpleChanges,
   TrackByFunction,
-  ViewChildren,
-  output
+  viewChildren
 } from '@angular/core';
 import {
   NzFilterTriggerComponent,
@@ -37,7 +36,7 @@ import {
   FilterType,
   InputFieldType
 } from "../../models/settings/table-settings.model";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TableRowHeightDirective} from '../../directives/table-row-height.directive';
 import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
@@ -111,14 +110,10 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   readonly rowContextMenu = output<{
     event: MouseEvent;
     row: TableDataRow;
-}>();
+  }>();
 
-  @ViewChildren('dataTable')
-  dataTableQuery!: QueryList<NzTableComponent<TableDataRow>>;
-
-  @ViewChildren('headerRow')
-  headerRowEl!: QueryList<ElementRef>;
-
+  readonly dataTableQuery = viewChildren<NzTableComponent<TableDataRow>>('dataTable');
+  readonly headerRowEl = viewChildren<ElementRef>('headerRow');
   filterTypes = FilterType;
   inputFieldType = InputFieldType;
   itemHeight = ITEM_HEIGHT;
@@ -129,6 +124,8 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   sortedColumnOrder: string | null = '';
   selectedRow: TableDataRow | null = null;
   readonly trackByFn = input<TrackByFunction<TableDataRow>>((index: number, data: TableDataRow) => data.id);
+  private readonly dataTableQueryChanges$ = toObservable(this.dataTableQuery);
+  private readonly headerRowElChanges$ = toObservable(this.headerRowEl);
   private tableData: TableDataRow[] = [];
   private visibleItemsCount = 1;
   private tableRef$?: Observable<NzTableComponent<TableDataRow>>;
@@ -143,6 +140,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
     return this.tableData;
   }
 
+  // eslint-disable-next-line @angular-eslint/prefer-signals
   @Input() public set data(value: TableDataRow[]) {
     if (this.tableData.length > value.length) {
       this.tableRef$?.pipe(
@@ -217,9 +215,8 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   }
 
   public ngAfterViewInit(): void {
-    this.tableRef$ = this.dataTableQuery.changes.pipe(
-      map(x => x.first as NzTableComponent<any> | undefined),
-      startWith(this.dataTableQuery.first),
+    this.tableRef$ = this.dataTableQueryChanges$.pipe(
+      map(x => x.length > 0 ? x[0] : undefined),
       filter((x): x is NzTableComponent<any> => !!x),
       shareReplay(1)
     );
@@ -234,9 +231,8 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
       }
     });
 
-    this.headerRowEl.changes.pipe(
-      map(x => x.first as ElementRef | undefined),
-      startWith(this.headerRowEl.first),
+    this.headerRowElChanges$.pipe(
+      map(x => x.length > 0 ? x[0] : undefined),
       filter(x => !!x),
       take(1)
     ).subscribe(() => this.calculateScrollHeight());
@@ -282,7 +278,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
 
   private calculateScrollHeight(): void {
     this.scrollHeight = this.tableContainerHeight() -
-      InfiniteScrollTableComponent.getElementHeight((this.headerRowEl as QueryList<ElementRef> | undefined)?.first.nativeElement);
+      InfiniteScrollTableComponent.getElementHeight(this.headerRowEl()[0]?.nativeElement);
 
     this.visibleItemsCount = Math.ceil(this.scrollHeight / this.itemHeight);
   }

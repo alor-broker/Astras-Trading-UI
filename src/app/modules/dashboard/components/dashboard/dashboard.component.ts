@@ -1,7 +1,7 @@
 import {
   Component,
   OnInit,
-  ViewChild
+  viewChild
 } from '@angular/core';
 import { CompactType, DisplayGrid, Draggable, GridsterComponent, GridsterConfig, GridsterItem, GridType, PushDirections, Resizable, GridsterItemComponent } from 'angular-gridster2';
 import {
@@ -47,8 +47,7 @@ interface WidgetItem { instance: WidgetInstance, gridsterItem: GridsterItem }
     ]
 })
 export class DashboardComponent implements OnInit {
-  @ViewChild(GridsterComponent)
-  gridster?: GridsterComponent;
+  readonly gridster = viewChild(GridsterComponent);
 
   options$!: Observable<Safe>;
   items$?: Observable<WidgetItem[]>;
@@ -223,13 +222,14 @@ export class DashboardComponent implements OnInit {
             newPosition.cols = notPositionedItem.initialSize.cols;
           }
 
-          if (widgetMeta.desktopMeta?.addOptions.initialHeightPx != null && this.gridster?.curRowHeight != null) {
+          const gridster = this.gridster();
+          if (widgetMeta.desktopMeta?.addOptions.initialHeightPx != null && gridster?.curRowHeight != null) {
             const expectedHeight = widgetMeta.desktopMeta.addOptions.initialHeightPx;
             let rowsHeight: number;
-            if(this.gridster.curRowHeight > expectedHeight) {
+            if(gridster.curRowHeight > expectedHeight) {
               rowsHeight = 1;
             } else {
-              rowsHeight = Math.ceil(expectedHeight / this.gridster.curRowHeight);
+              rowsHeight = Math.ceil(expectedHeight / gridster.curRowHeight);
             }
 
             newPosition.rows = rowsHeight;
@@ -238,7 +238,7 @@ export class DashboardComponent implements OnInit {
           const positionedItems = items.filter(x => !!x.position);
 
           if (widgetMeta.desktopMeta?.addOptions.isFullWidth ?? false) {
-            newPosition.cols = this.gridster?.columns ?? options.minCols ?? this.dashboardSize.width;
+            newPosition.cols = gridster?.columns ?? options.minCols ?? this.dashboardSize.width;
           }
 
           const topOffset = newPosition.y + newPosition.rows;
@@ -256,8 +256,8 @@ export class DashboardComponent implements OnInit {
                   });
                 });
             }
-          } else if(widgetMeta.desktopMeta?.addOptions.initialPosition === "below" && this.gridster!.grid.length > 0) {
-            newPosition.y = Math.max(...this.gridster!.grid.map(x => x.item.y + x.item.rows));
+          } else if(widgetMeta.desktopMeta?.addOptions.initialPosition === "below" && gridster!.grid.length > 0) {
+            newPosition.y = Math.max(...gridster!.grid.map(x => x.item.y + x.item.rows));
           }
         }
 

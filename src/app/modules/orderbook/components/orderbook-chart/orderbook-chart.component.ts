@@ -1,4 +1,4 @@
-import {Component, DestroyRef, input, OnInit, ViewChild} from '@angular/core';
+import {Component, DestroyRef, input, OnInit, viewChild} from '@angular/core';
 import {BehaviorSubject, map, Observable,} from 'rxjs';
 import {ChartDataset, ChartOptions, ComplexFillTarget, ScatterControllerDatasetOptions} from 'chart.js';
 import {MathHelper} from 'src/app/shared/utils/math-helper';
@@ -23,8 +23,7 @@ import {AsyncPipe} from '@angular/common';
 export class OrderbookChartComponent implements OnInit {
   readonly chartData = input.required<ChartData>();
   readonly guid = input.required<string>();
-  @ViewChild(BaseChartDirective)
-  chart?: BaseChartDirective;
+  readonly chart = viewChild(BaseChartDirective);
 
   shouldShowChart$?: Observable<boolean>;
   chartData$ = new BehaviorSubject<ChartDataset[]>([]);
@@ -176,6 +175,6 @@ export class OrderbookChartComponent implements OnInit {
         x.min = minPrice;
       }
     }
-    this.chart?.render();
+    this.chart()?.render();
   }
 }

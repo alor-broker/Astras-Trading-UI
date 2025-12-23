@@ -597,13 +597,14 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     this.nzContextMenuService.close(true);
 
     const row = selectedRow as BondDisplay;
-    if(menu.menuRef != null) {
+    const menuRef = menu.menuRef();
+    if(menuRef != null) {
       menu.itemToAdd.set({
         symbol: row.basicInformation!.symbol,
         exchange:  row.basicInformation!.exchange
       });
 
-      this.nzContextMenuService.create($event, menu.menuRef);
+      this.nzContextMenuService.create($event, menuRef);
     }
   }
 

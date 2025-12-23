@@ -5,9 +5,7 @@ import {
   Inject,
   input,
   OnInit,
-  QueryList,
-  ViewChild,
-  ViewChildren
+  viewChild, viewChildren
 } from '@angular/core';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
 import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
@@ -34,10 +32,10 @@ import {InstrumentsService} from "../../../instruments/services/instruments.serv
 import {isArrayEqual} from "../../../../shared/utils/collections";
 import {CommonParameters, CommonParametersService} from "../../services/common-parameters.service";
 import {SelectedPriceData} from "../../../../shared/models/orders/selected-order-price.model";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {WidgetsSharedDataService} from "../../../../shared/services/widgets-shared-data.service";
 import {getValueOrDefault} from "../../../../shared/utils/object-helper";
-import {map, startWith, tap} from "rxjs/operators";
+import {map, tap} from "rxjs/operators";
 import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
@@ -102,17 +100,14 @@ export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
 
   shouldShowSettings = false;
 
-  @ViewChildren('orderTabs')
-  orderTabs?: QueryList<NzTabsComponent>;
+  readonly orderTabs = viewChildren<NzTabsComponent>('orderTabs');
+  private readonly orderTabsChanges$ = toObservable(this.orderTabs);
 
-  @ViewChild('limitOrderTab', {static: false})
-  limitOrderTab?: NzTabComponent;
+  readonly limitOrderTab = viewChild<NzTabComponent>('limitOrderTab');
 
-  @ViewChild('marketOrderTab', {static: false})
-  marketOrderTab?: NzTabComponent;
+  readonly marketOrderTab = viewChild<NzTabComponent>('marketOrderTab');
 
-  @ViewChild('stopOrderTab', {static: false})
-  stopOrderTab?: NzTabComponent;
+  readonly stopOrderTab = viewChild<NzTabComponent>('stopOrderTab');
 
   readonly widgetInstance = input.required<WidgetInstance>();
 
@@ -219,9 +214,8 @@ export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
   }
 
   private setDefaultOrderType(): void {
-    this.orderTabs?.changes.pipe(
-      map(x => x.first as NzTabsComponent | undefined),
-      startWith(this.orderTabs?.first),
+    this.orderTabsChanges$.pipe(
+      map(x => x.length > 0 ? x[0] : undefined),
       filter(t => t != null),
       take(1)
     ).subscribe(t => {
@@ -232,13 +226,13 @@ export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
         if (s.defaultOrderType != null) {
           switch (s.defaultOrderType) {
             case 'limit':
-              this.activateCommandTab(t, this.limitOrderTab);
+              this.activateCommandTab(t, this.limitOrderTab());
               break;
             case 'market':
-              this.activateCommandTab(t, this.marketOrderTab);
+              this.activateCommandTab(t, this.marketOrderTab());
               break;
             case "stop":
-              this.activateCommandTab(t, this.stopOrderTab);
+              this.activateCommandTab(t, this.stopOrderTab());
               break;
           }
         }

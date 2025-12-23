@@ -52,9 +52,9 @@ export class NewsFiltersComponent implements OnChanges {
     }
   };
 
-  isVisible = input.required<boolean>();
+  readonly isVisible = input.required<boolean>();
 
-  currentFilters = input<Filters | null>();
+  readonly currentFilters = input<Filters | null>();
 
   closed = output<Filters | null>();
 

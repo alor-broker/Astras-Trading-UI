@@ -55,7 +55,7 @@ export class InfoWidgetComponent implements OnInit {
 
   InstrumentTypes = InstrumentType;
 
-  isLoading = signal(false);
+  readonly isLoading = signal(false);
 
   constructor(
     private readonly widgetSettingsService: WidgetSettingsService,

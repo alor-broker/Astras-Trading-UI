@@ -1,4 +1,4 @@
-import {Component, Inject, input, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, input, OnInit, viewChild} from '@angular/core';
 import {InstrumentsService} from "../../../modules/instruments/services/instruments.service";
 import {WidgetSettingsService} from "../../services/widget-settings.service";
 import {combineLatest, Observable, of, shareReplay, switchMap, take} from "rxjs";
@@ -39,8 +39,7 @@ import {toObservable} from "@angular/core/rxjs-interop";
 export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
   readonly widgetGuid = input.required<string>();
 
-  @ViewChild(InstrumentSearchComponent)
-  searchInput?: InstrumentSearchComponent;
+  readonly searchInput = viewChild(InstrumentSearchComponent);
 
   settings$!: Observable<WidgetSettings & InstrumentKey>;
   instrumentTitle$!: Observable<string>;
@@ -92,9 +91,9 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
   }
 
   searchVisibilityChanged(isVisible: boolean): void {
-    this.searchInput?.writeValue(null);
+    this.searchInput()?.writeValue(null);
     if (isVisible) {
-      this.searchInput?.setFocus();
+      this.searchInput()?.setFocus();
     }
   }
 

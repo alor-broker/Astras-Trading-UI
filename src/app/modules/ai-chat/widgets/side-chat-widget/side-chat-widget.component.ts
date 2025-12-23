@@ -26,7 +26,7 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class SideChatWidgetComponent implements OnInit, OnChanges {
-  atsVisible = model(false);
+  readonly atsVisible = model(false);
 
   isResizing = false;
   drawerWidth$!: Observable<number>;

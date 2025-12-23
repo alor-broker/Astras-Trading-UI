@@ -17,6 +17,17 @@ import { LetDirective } from '@ngrx/component';
 import { NgStyle, AsyncPipe } from '@angular/common';
 import { ScalperOrderBookBodyComponent } from '../scalper-order-book-body/scalper-order-book-body.component';
 import { CurrentPositionPanelComponent } from '../current-position-panel/current-position-panel.component';
+import {ScalperCommandProcessorService} from "../../services/scalper-command-processor.service";
+import {CancelOrdersCommand} from "../../commands/cancel-orders-command";
+import {ClosePositionByMarketCommand} from "../../commands/close-position-by-market-command";
+import {SubmitMarketOrderCommand} from "../../commands/submit-market-order-command";
+import {ReversePositionByMarketCommand} from "../../commands/reverse-position-by-market-command";
+import {SubmitStopLimitOrderCommand} from "../../commands/submit-stop-limit-order-command";
+import {SetStopLossCommand} from "../../commands/set-stop-loss-command";
+import {SubmitLimitOrderCommand} from "../../commands/submit-limit-order-command";
+import {SubmitBestPriceOrderCommand} from "../../commands/submit-best-price-order-command";
+import {GetBestOfferCommand} from "../../commands/get-best-offer-command";
+import {UpdateOrdersCommand} from "../../commands/update-orders-command";
 
 export interface ScalperOrderBookSharedContext {
   readonly workingVolume$: Observable<number | null>;
@@ -38,7 +49,18 @@ export const SCALPER_ORDERBOOK_SHARED_CONTEXT = new InjectionToken<ScalperOrderB
         {
             provide: SCALPER_ORDERBOOK_SHARED_CONTEXT,
             useExisting: ScalperOrderBookComponent
-        }
+        },
+      CancelOrdersCommand,
+      ClosePositionByMarketCommand,
+      SubmitMarketOrderCommand,
+      ReversePositionByMarketCommand,
+      SubmitStopLimitOrderCommand,
+      SetStopLossCommand,
+      SubmitLimitOrderCommand,
+      SubmitBestPriceOrderCommand,
+      GetBestOfferCommand,
+      UpdateOrdersCommand,
+      ScalperCommandProcessorService
     ],
     imports: [
       LetDirective,

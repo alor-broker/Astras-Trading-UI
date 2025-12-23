@@ -81,7 +81,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
   readonly conditionType = LessMore;
   readonly timeInForceEnum = TimeInForce;
 
-  initialValues = input<{
+  readonly initialValues = input<{
     price?: number;
     quantity?: number;
     stopOrder?: Partial<{

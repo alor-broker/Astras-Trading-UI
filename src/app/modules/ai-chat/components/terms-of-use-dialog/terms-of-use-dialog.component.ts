@@ -24,7 +24,7 @@ import {NzButtonComponent} from 'ng-zorro-antd/button';
   ]
 })
 export class TermsOfUseDialogComponent {
-  atsVisible = model(false);
+  readonly atsVisible = model(false);
 
   readonly confirmed = output<boolean>();
 

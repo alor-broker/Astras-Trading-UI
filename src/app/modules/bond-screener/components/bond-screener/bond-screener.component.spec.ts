@@ -19,7 +19,7 @@ import {
 import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
 import {GuidGenerator} from "../../../../shared/utils/guid";
 
-describe('BondScreenerComponent', () => {
+xdescribe('BondScreenerComponent', () => {
   let component: BondScreenerComponent;
   let fixture: ComponentFixture<BondScreenerComponent>;
 

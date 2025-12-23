@@ -3,11 +3,10 @@ import {
   DestroyRef,
   OnInit,
   TemplateRef,
-  ViewChild,
   ViewEncapsulation,
+  viewChild
 } from '@angular/core';
 import {
-  NzNotificationComponent,
   NzNotificationService
 } from "ng-zorro-antd/notification";
 import {
@@ -45,11 +44,7 @@ import { ExternalLinkComponent } from "../../../../shared/components/external-li
   encapsulation: ViewEncapsulation.None
 })
 export class UrgentNotificationDialogComponent implements OnInit {
-  @ViewChild(TemplateRef, {static: false})
-  template?: TemplateRef<{
-    $implicit: NzNotificationComponent;
-    data: { link: string | null, text: string };
-  }>;
+  readonly template = viewChild.required(TemplateRef);
 
   private readonly readNotificationsStorageKey = 'readUrgentNotifications';
 
@@ -105,7 +100,7 @@ export class UrgentNotificationDialogComponent implements OnInit {
           newNotifications.forEach((notification) => {
             const nzNotification = this.nzNotificationService.warning(
               translator(['notificationTitle']),
-              this.template!,
+              this.template(),
               {
                 nzKey: notification.id.toString(),
                 nzDuration: 0,

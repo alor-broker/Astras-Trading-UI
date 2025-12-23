@@ -1,4 +1,4 @@
-import {Component, ElementRef, ViewChild, input, output} from '@angular/core';
+import {Component, ElementRef, input, output, viewChild} from '@angular/core';
 import {DataPreset} from "../../models/orders-basket-settings.model";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzTagComponent} from 'ng-zorro-antd/tag';
@@ -23,8 +23,7 @@ import {FormsModule} from '@angular/forms';
   ]
 })
 export class PresetsComponent {
-  @ViewChild('inputElement', {static: false})
-  inputElement?: ElementRef<HTMLInputElement>;
+  readonly inputElement = viewChild<ElementRef<HTMLInputElement>>('inputElement');
 
   readonly guid = input.required<string>();
 
@@ -55,7 +54,7 @@ export class PresetsComponent {
 
     this.inputVisible = true;
     setTimeout(() => {
-      this.inputElement?.nativeElement.focus();
+      this.inputElement()?.nativeElement.focus();
     }, 10);
   }
 

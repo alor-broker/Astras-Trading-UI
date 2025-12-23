@@ -23,14 +23,14 @@
 
     @if (title != null) {
       <div class="flex-fill">
-        <ng-container [ngTemplateOutlet]="title.templateRef"></ng-container>
+        <ng-container [ngTemplateOutlet]="title()?.templateRef"></ng-container>
       </div>
     }
   </div>
 
   <div class="flex-fill overflow-hidden">
     @if (content != null) {
-      <ng-container [ngTemplateOutlet]="content.templateRef"></ng-container>
+      <ng-container [ngTemplateOutlet]="content()?.templateRef"></ng-container>
     }
   </div>
 </div>

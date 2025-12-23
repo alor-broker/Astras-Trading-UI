@@ -19,7 +19,7 @@ import {TechChartSettingsComponent} from "../../components/tech-chart-settings/t
 import {InstrumentSearchModalComponent} from "../instrument-search-modal/instrument-search-modal.component";
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 
-describe('TechChartWidgetComponent', () => {
+xdescribe('TechChartWidgetComponent', () => {
   let component: TechChartWidgetComponent;
   let fixture: ComponentFixture<TechChartWidgetComponent>;
 

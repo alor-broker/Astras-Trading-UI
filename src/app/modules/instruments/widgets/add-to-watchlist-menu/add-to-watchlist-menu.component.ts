@@ -1,4 +1,4 @@
-import {Component, ElementRef, input, model, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, input, model, OnInit, viewChild} from '@angular/core';
 import {combineLatest, Observable, take} from "rxjs";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {WatchlistCollectionService} from "../../services/watchlist-collection.service";
@@ -58,11 +58,9 @@ export class AddToWatchlistMenuComponent implements OnInit {
 
   readonly allowAddToNewList = input(true);
 
-  @ViewChild(NzDropdownMenuComponent)
-  menuRef: NzDropdownMenuComponent | null = null;
+  readonly menuRef = viewChild(NzDropdownMenuComponent);
 
-  @ViewChild('titleInput')
-  titleInputEl?: ElementRef<HTMLInputElement>;
+  readonly titleInputEl = viewChild<ElementRef<HTMLInputElement>>('titleInput');
 
   readonly newListForm = this.formBuilder.group({
     title: this.formBuilder.nonNullable.control(
@@ -133,7 +131,7 @@ export class AddToWatchlistMenuComponent implements OnInit {
 
   afterNewListDialogOpen(): void {
     setTimeout(() => {
-      this.titleInputEl?.nativeElement.focus();
+      this.titleInputEl()?.nativeElement.focus();
     });
   }
 

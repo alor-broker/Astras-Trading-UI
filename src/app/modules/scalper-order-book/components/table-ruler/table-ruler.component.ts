@@ -7,9 +7,8 @@ import {
   input,
   OnDestroy,
   OnInit,
-  QueryList,
   SkipSelf,
-  ViewChildren
+  viewChildren
 } from '@angular/core';
 import {
   ScalperOrderBookDataContext,
@@ -44,18 +43,15 @@ interface MarkerDisplay {
   ]
 })
 export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChildren('marker')
-  markerElRef!: QueryList<ElementRef<HTMLElement>>;
-
+  readonly markerElRef = viewChildren<ElementRef<HTMLElement>>('marker');
   readonly priceUnits = PriceUnits;
   readonly xAxisStep = input.required<number>();
-
   readonly dataContext = input.required<ScalperOrderBookDataContext>();
-
   displayMarker$!: Observable<MarkerDisplay | null>;
   markerPosition$ = new BehaviorSubject<'left' | 'right'>('left');
   settings$!: Observable<ScalperOrderBookExtendedSettings>;
   readonly activeRow = input<{ price: number } | null>(null);
+  private readonly markerElRefChanges$ = toObservable(this.markerElRef);
   private readonly activeRowChanges$ = toObservable(this.activeRow);
 
   constructor(
@@ -68,16 +64,16 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.markerElRef.changes.pipe(
+    this.markerElRefChanges$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
-      const containerBounds = this.bodyRef.getElement().nativeElement.getBoundingClientRect();
-      const elementBounds = this.elementRef.nativeElement.getBoundingClientRect();
-      const markerBounds = x.first?.nativeElement?.getBoundingClientRect() as DOMRect | undefined;
-
+      const markerBounds = x[0]?.nativeElement?.getBoundingClientRect() as DOMRect | undefined;
       if (!markerBounds) {
         return;
       }
+
+      const containerBounds = this.bodyRef.getElement().nativeElement.getBoundingClientRect();
+      const elementBounds = this.elementRef.nativeElement.getBoundingClientRect();
 
       const leftSpace = elementBounds.x - containerBounds.x;
 

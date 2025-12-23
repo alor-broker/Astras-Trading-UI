@@ -45,9 +45,9 @@ interface ChartSettings {
   styleUrl: './dividends-chart.component.less'
 })
 export class DividendsChartComponent implements OnChanges {
-  dividends = input<Dividend[]>([]);
+  readonly dividends = input<Dividend[]>([]);
 
-  protected chartSettings = signal<ChartSettings | null>(null);
+  protected readonly chartSettings = signal<ChartSettings | null>(null);
 
   private readonly themeColors$ = this.themeService.getThemeSettings().pipe(
     map(s => s.themeColors),

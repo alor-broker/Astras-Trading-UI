@@ -1,4 +1,4 @@
-import {Component, DestroyRef, ElementRef, Inject, input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, DestroyRef, ElementRef, Inject, input, OnDestroy, OnInit, viewChild} from '@angular/core';
 import {
   animationFrameScheduler,
   BehaviorSubject,
@@ -120,8 +120,8 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
   implements OnInit, OnDestroy {
   readonly guid = input.required<string>();
 
-  @ViewChild('tableContainer') tableContainer!: ElementRef<HTMLDivElement>;
-  @ViewChild('tableCmp') tableCmp!: NzTableComponent<DisplayWatchlist>;
+  readonly tableContainer = viewChild.required<ElementRef<HTMLDivElement>>('tableContainer');
+  readonly tableCmp = viewChild.required<NzTableComponent<DisplayWatchlist>>('tableCmp');
   readonly listTypes = WatchlistType;
   settings$!: Observable<InstrumentSelectSettings>;
   currentWatchlist$!: Observable<Watchlist[]>;
@@ -374,7 +374,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
         subscribeOn(animationFrameScheduler)
       )
       .subscribe(e => {
-        const tableContainerRect = this.tableContainer.nativeElement.getBoundingClientRect();
+        const tableContainerRect = this.tableContainer().nativeElement.getBoundingClientRect();
 
         const upperTrigger = tableContainerRect.top;
         const lowerTrigger = tableContainerRect.bottom;
@@ -597,9 +597,9 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
   };
 
   private moveScroll(multiplier: number): void {
-    const initialScroll = this.tableCmp.cdkVirtualScrollViewport?.measureScrollOffset('top') ?? 0;
+    const initialScroll = this.tableCmp().cdkVirtualScrollViewport?.measureScrollOffset('top') ?? 0;
 
-    this.tableCmp.cdkVirtualScrollViewport?.scrollTo({top: initialScroll + (10 * multiplier)});
+    this.tableCmp().cdkVirtualScrollViewport?.scrollTo({top: initialScroll + (10 * multiplier)});
   }
 
   private stopScroll(): void {

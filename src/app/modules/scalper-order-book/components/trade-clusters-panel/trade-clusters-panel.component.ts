@@ -8,8 +8,7 @@ import {
   NgZone,
   OnDestroy,
   OnInit,
-  QueryList,
-  ViewChildren
+  viewChildren,
 } from '@angular/core';
 import {ScalperOrderBookDataContext,} from '../../models/scalper-order-book-data-context.model';
 import {
@@ -17,6 +16,7 @@ import {
   bufferCount,
   combineLatest,
   distinctUntilChanged,
+  filter,
   fromEvent,
   Observable,
   shareReplay,
@@ -38,7 +38,7 @@ import {ContextMenuService} from '../../../../shared/services/context-menu.servi
 import {TradeClustersService} from '../../services/trade-clusters.service';
 import {toUnixTime} from '../../../../shared/utils/datetime';
 import {mapWith} from "../../../../shared/utils/observable-helper";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {isInstrumentEqual} from "../../../../shared/utils/settings-helper";
 import {ScalperOrderBookSettingsWriteService} from "../../services/scalper-order-book-settings-write.service";
 import {TradesClusterPanelSettingsDefaults} from "../scalper-order-book-settings/constants/settings-defaults";
@@ -68,20 +68,15 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
   ]
 })
 export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChildren(CdkScrollable)
-  scrollContainer!: QueryList<CdkScrollable>;
-
+  readonly scrollContainer = viewChildren<CdkScrollable>(CdkScrollable);
   readonly xAxisStep = input.required<number>();
-
   readonly dataContext = input.required<ScalperOrderBookDataContext>();
-
   clusters$!: Observable<TradesCluster[]>;
-
   settings$!: Observable<ScalperOrderBookWidgetSettings>;
-
   hScrollOffsets$ = new BehaviorSubject({left: 0, right: 0});
   readonly availableTimeframes: number[] = Object.values(ClusterTimeframe).filter((v): v is number => !isNaN(Number(v)));
   readonly availableIntervalsCount = [1, 2, 5];
+  private readonly scrollContainerChanges$ = toObservable(this.scrollContainer);
   private lastPanelWidth: number | null = null;
   private isAutoScroll = true;
 
@@ -134,8 +129,13 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
       return;
     }
 
-    if (this.getScrollContainer().measureScrollOffset('right') === 0
-      && this.getScrollContainer().measureScrollOffset('left') === 0) {
+    const scrollContainer = this.getScrollContainer();
+    if (scrollContainer == null) {
+      return;
+    }
+
+    if (scrollContainer.measureScrollOffset('right') === 0
+      && scrollContainer.measureScrollOffset('left') === 0) {
       return;
     }
 
@@ -157,23 +157,24 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
         });
       })
     ).subscribe(([x1, x2]) => {
-      if (!(this.scrollContainer as QueryList<CdkScrollable> | undefined)) {
+      const scrollContainer = this.getScrollContainer();
+      if (scrollContainer == null) {
         return;
       }
 
       const movement = x2 - x1;
-      const currentRightOffset = this.getScrollContainer().measureScrollOffset('right');
-      const currentLeftOffset = this.getScrollContainer().measureScrollOffset('left');
+      const currentRightOffset = scrollContainer.measureScrollOffset('right');
+      const currentLeftOffset = scrollContainer.measureScrollOffset('left');
 
       if (movement < 0 && currentRightOffset > 0) {
         const updatedOffset = Math.ceil(Math.max(0, currentRightOffset + movement));
-        this.scrollContainer.first.scrollTo({
+        scrollContainer.scrollTo({
           right: updatedOffset
         });
 
         this.isAutoScroll = updatedOffset === 0;
       } else if (movement > 0 && currentLeftOffset > 0) {
-        this.scrollContainer.first.scrollTo({
+        scrollContainer.scrollTo({
           left: Math.ceil(Math.max(0, currentLeftOffset - movement))
         });
 
@@ -197,19 +198,12 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   }
 
   ngAfterViewInit(): void {
-    const initScrollWatching = (): void => {
-      this.getScrollContainer().elementScrolled().pipe(
-        takeUntilDestroyed(this.destroyRef)
-      ).subscribe(() => this.updateScrollOffsets());
-    };
-
-    if (this.scrollContainer.length > 0) {
-      initScrollWatching();
-    } else {
-      this.scrollContainer.changes.pipe(
-        take(1)
-      ).subscribe(() => initScrollWatching());
-    }
+    this.scrollContainerChanges$.pipe(
+      map(x => x.length > 0 ? x[0] : null),
+      filter(x => x != null),
+      switchMap(x => x.elementScrolled()),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => this.updateScrollOffsets());
   }
 
   private initSettings(): void {
@@ -298,8 +292,8 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
     );
   }
 
-  private getScrollContainer(): CdkScrollable {
-    return this.scrollContainer!.first;
+  private getScrollContainer(): CdkScrollable | null {
+    return this.scrollContainer()[0] ?? null;
   }
 
   private toDisplayClusters(

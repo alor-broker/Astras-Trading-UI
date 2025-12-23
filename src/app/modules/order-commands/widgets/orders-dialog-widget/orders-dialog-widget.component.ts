@@ -1,4 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit, viewChild} from '@angular/core';
 import {
   asyncScheduler,
   BehaviorSubject,
@@ -82,17 +82,13 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
   commonParameters$ = this.commonParametersService.parameters$;
   tabSetHeight$ = new BehaviorSubject(300);
 
-  @ViewChild('orderTabs', {static: false})
-  orderTabs?: NzTabsComponent;
+  readonly orderTabs = viewChild<NzTabsComponent>('orderTabs');
 
-  @ViewChild('limitOrderTab', {static: false})
-  limitOrderTab?: NzTabComponent;
+  readonly limitOrderTab = viewChild<NzTabComponent>('limitOrderTab');
 
-  @ViewChild('marketOrderTab', {static: false})
-  marketOrderTab?: NzTabComponent;
+  readonly marketOrderTab = viewChild<NzTabComponent>('marketOrderTab');
 
-  @ViewChild('stopOrderTab', {static: false})
-  stopOrderTab?: NzTabComponent;
+  readonly stopOrderTab = viewChild<NzTabComponent>('stopOrderTab');
 
   readonly ordersConfig = this.orderCommandService.getOrdersConfig();
 
@@ -151,13 +147,13 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
 
       switch (params.initialValues.orderType) {
         case OrderFormType.Limit:
-          this.activateCommandTab(this.limitOrderTab);
+          this.activateCommandTab(this.limitOrderTab());
           break;
         case OrderFormType.Market:
-          this.activateCommandTab(this.marketOrderTab);
+          this.activateCommandTab(this.marketOrderTab());
           break;
         case OrderFormType.Stop:
-          this.activateCommandTab(this.stopOrderTab);
+          this.activateCommandTab(this.stopOrderTab());
           break;
         default:
           throw new Error(`Unknown order type ${params.initialValues.orderType}`);
@@ -189,6 +185,6 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.orderTabs?.setSelectedIndex(targetTab.position);
+    this.orderTabs()?.setSelectedIndex(targetTab.position);
   }
 }

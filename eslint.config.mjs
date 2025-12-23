@@ -40,6 +40,15 @@ export default defineConfig([
         },
       ],
       "@angular-eslint/prefer-inject": "off",
+      "@angular-eslint/prefer-signals": [
+        "error",
+        {
+          "preferReadonlySignalProperties": true,
+          "preferInputSignals": true,
+          "preferQuerySignals": true,
+          "useTypeChecking": true
+        }
+      ],
       "@stylistic/semi": ["error", "always"],
       "@stylistic/comma-dangle": "off",
       "@stylistic/quotes": "off",

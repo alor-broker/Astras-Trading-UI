@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, ElementRef, Inject, OnInit, ViewChild, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, Inject, OnInit, input, viewChild} from '@angular/core';
 import {
   NzAutocompleteComponent,
   NzAutocompleteOptionComponent,
@@ -57,7 +57,7 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class InstrumentSelectComponent implements OnInit {
-  @ViewChild('inputEl') inputEl!: ElementRef<HTMLInputElement>;
+  readonly inputEl = viewChild.required<ElementRef<HTMLInputElement>>('inputEl');
 
   readonly guid = input.required<string>();
 
@@ -115,8 +115,8 @@ export class InstrumentSelectComponent implements OnInit {
     if (event.isUserInput) {
       this.watch(val);
       setTimeout(() => {
-        this.inputEl.nativeElement.value = '';
-        this.inputEl.nativeElement.blur();
+        this.inputEl().nativeElement.value = '';
+        this.inputEl().nativeElement.blur();
       }, 0);
     }
   }

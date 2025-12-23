@@ -1,5 +1,5 @@
-import {AfterViewInit, Component, DestroyRef, ElementRef, input, QueryList, ViewChildren} from '@angular/core';
-import {combineLatest, filter, map, Observable, startWith, switchMap} from "rxjs";
+import {AfterViewInit, Component, DestroyRef, ElementRef, input, viewChildren} from '@angular/core';
+import {combineLatest, filter, map, Observable, switchMap} from "rxjs";
 import {OrdersGroupService} from "../../../../shared/services/orders/orders-group.service";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
@@ -7,7 +7,7 @@ import {BlotterSettings} from "../../models/blotter-settings.model";
 import {mapWith} from "../../../../shared/utils/observable-helper";
 import {Order, StopOrder} from "../../../../shared/models/orders/order.model";
 import {OrdersGroupTreeNode} from "../../../../shared/models/orders/orders-group.model";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {getConditionSign, getConditionTypeByString} from "../../../../shared/utils/order-conditions-helper";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzTreeComponent} from 'ng-zorro-antd/tree';
@@ -29,10 +29,9 @@ export class OrdersGroupModalComponent implements AfterViewInit {
   readonly guid = input.required<string>();
   readonly groupId = input.required<string>();
 
-  @ViewChildren('ordersGroupTree', {read: ElementRef})
-  ordersGroupTree!: QueryList<ElementRef>;
-
+  readonly ordersGroupTree = viewChildren<ElementRef<HTMLElement>>('ordersGroupTree');
   groups$?: Observable<OrdersGroupTreeNode[]>;
+  private readonly ordersGroupTreeChanges$ = toObservable(this.ordersGroupTree);
 
   constructor(
     private readonly service: OrdersGroupService,
@@ -115,9 +114,8 @@ export class OrdersGroupModalComponent implements AfterViewInit {
         })
       );
 
-    this.ordersGroupTree.changes.pipe(
-      map(q => q.first as ElementRef<HTMLElement> | undefined),
-      startWith(this.ordersGroupTree.first),
+    this.ordersGroupTreeChanges$.pipe(
+      map(x => x.length > 0 ? x[0] : undefined),
       filter((el): el is ElementRef<HTMLElement> => !!el),
       takeUntilDestroyed(this.destroyRef)
     )

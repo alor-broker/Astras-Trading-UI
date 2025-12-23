@@ -7,8 +7,8 @@ import {
   LOCALE_ID,
   OnDestroy,
   OnInit,
-  ViewChild,
-  input
+  input,
+  viewChild
 } from '@angular/core';
 import {
   ActiveElement,
@@ -90,7 +90,7 @@ interface TooltipData {
     imports: [NgStyle, AsyncPipe]
 })
 export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
-  @ViewChild('treemapWrapper') treemapWrapperEl?: ElementRef<HTMLDivElement>;
+  readonly treemapWrapperEl = viewChild<ElementRef<HTMLDivElement>>('treemapWrapper');
   readonly guid = input.required<string>();
 
   isCursorOnSector$ = new BehaviorSubject(false);
@@ -135,7 +135,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.tilesCount$.next(
-      Math.floor(this.treemapWrapperEl!.nativeElement.clientWidth * this.treemapWrapperEl!.nativeElement.clientHeight / this.averageTileSize)
+      Math.floor(this.treemapWrapperEl()!.nativeElement.clientWidth * this.treemapWrapperEl()!.nativeElement.clientHeight / this.averageTileSize)
     );
 
     const getDataStream = (limit: number): Observable<TreemapNode[]> => {

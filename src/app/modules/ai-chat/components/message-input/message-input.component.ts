@@ -1,4 +1,4 @@
-import {Component, ElementRef, input, model, ViewChild, output} from '@angular/core';
+import {Component, ElementRef, input, model, output, viewChild} from '@angular/core';
 import {NzInputDirective} from 'ng-zorro-antd/input';
 import {FormsModule} from '@angular/forms';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
@@ -20,12 +20,11 @@ export interface OutcomingMessage {
   ]
 })
 export class MessageInputComponent {
-  @ViewChild('inputElement', {static: true})
-  inputElement!: ElementRef<HTMLTextAreaElement>;
+  readonly inputElement = viewChild.required<ElementRef<HTMLTextAreaElement>>('inputElement');
 
   readonly atsDisabled = input(false);
 
-  text = model('');
+  readonly text = model('');
 
   readonly messagePlaceholder = input('');
 
@@ -40,7 +39,7 @@ export class MessageInputComponent {
       });
 
       this.setText('');
-      this.inputElement.nativeElement.blur();
+      this.inputElement().nativeElement.blur();
     }
   }
 
@@ -53,11 +52,12 @@ export class MessageInputComponent {
 
     const textValue = this.text();
 
-    if (this.inputElement.nativeElement.value !== textValue) {
-      this.inputElement.nativeElement.value = textValue;
+    const inputElement = this.inputElement();
+    if (inputElement.nativeElement.value !== textValue) {
+      inputElement.nativeElement.value = textValue;
     }
 
-    this.inputElement.nativeElement.style.height = 'auto';
-    this.inputElement.nativeElement.style.height = this.inputElement.nativeElement.scrollHeight + 'px';
+    inputElement.nativeElement.style.height = 'auto';
+    inputElement.nativeElement.style.height = inputElement.nativeElement.scrollHeight + 'px';
   }
 }

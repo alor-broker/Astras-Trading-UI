@@ -45,13 +45,13 @@ interface ValidationOptions {
   styleUrl: './keyword-filter.component.less'
 })
 export class KeywordFilterComponent implements OnChanges {
-  validationOptions = input.required<ValidationOptions>();
+  readonly validationOptions = input.required<ValidationOptions>();
 
-  currentKeywords = input<string[]>();
+  readonly currentKeywords = input<string[]>();
 
-  newKeywordPlaceholder = input<string>();
+  readonly newKeywordPlaceholder = input<string>();
 
-  tagColor = input<string>();
+  readonly tagColor = input<string>();
 
   keywordAdded = output<string>();
 

@@ -35,7 +35,7 @@ export interface GalleryDisplay {
   ]
 })
 export class WidgetsGalleryComponent {
-  atsVisible = model(false);
+  readonly atsVisible = model(false);
 
   readonly gallery = input<GalleryDisplay | null>(null);
 

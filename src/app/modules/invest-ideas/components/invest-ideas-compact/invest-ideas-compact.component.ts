@@ -55,9 +55,9 @@ interface IdeaDisplay extends Idea {
 export class InvestIdeasCompactComponent implements OnInit {
   ideas$!: Observable<IdeaDisplay[]>;
 
-  protected selectedIdea = model<Idea | null>(null);
+  protected readonly selectedIdea = model<Idea | null>(null);
 
-  protected isLoading = signal<boolean>(false);
+  protected readonly isLoading = signal<boolean>(false);
 
   private readonly refreshInterval = 600_000;
 

@@ -97,17 +97,17 @@ export interface MarketFilters {
   styleUrl: './market-trends.component.less'
 })
 export class MarketTrendsComponent implements OnInit {
-  itemsCount = input(10);
+  readonly itemsCount = input(10);
 
-  showMoreButton = input(true);
+  readonly showMoreButton = input(true);
 
-  sectors = input<MarketSector[]>([]);
+  readonly sectors = input<MarketSector[]>([]);
 
-  extendedFilter = input<ExtendedFilter[]>([]);
+  readonly extendedFilter = input<ExtendedFilter[]>([]);
 
-  fixedHeader = input(false);
+  readonly fixedHeader = input(false);
 
-  marketFilters = input<MarketFilters | null>(null);
+  readonly marketFilters = input<MarketFilters | null>(null);
 
   displayItems$!: Observable<MarketTrendsInstrumentsConnectionType | null>;
 

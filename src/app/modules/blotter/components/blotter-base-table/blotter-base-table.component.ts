@@ -91,13 +91,14 @@ export abstract class BlotterBaseTableComponent<T extends { id: string }, F exte
 
     this.rowToInstrumentKey(selectedRow)
       .subscribe(instrument => {
-        if (instrument == null || menu.menuRef == null) {
+        const menuRef = menu.menuRef();
+        if (instrument == null || menuRef == null) {
           $event.preventDefault();
           return;
         }
 
         menu.itemToAdd.set(instrument);
-        this.nzContextMenuService.create($event, menu.menuRef);
+        this.nzContextMenuService.create($event, menuRef);
       });
   }
 

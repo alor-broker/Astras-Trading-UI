@@ -17,9 +17,9 @@ import { NzAvatarComponent } from "ng-zorro-antd/avatar";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InstrumentIconComponent {
-  symbol = input.required<string>();
-  size = input<'large' | 'small' | 'default' | number>();
-  shape = input<'square' | 'circle' | 'rounded-square'>('circle');
+  readonly symbol = input.required<string>();
+  readonly size = input<'large' | 'small' | 'default' | number>();
+  readonly shape = input<'square' | 'circle' | 'rounded-square'>('circle');
 
   readonly iconUrl = computed(() => `${this.environmentService.alorIconsStorageUrl}/${this.symbol()}.png`);
 

@@ -1,4 +1,4 @@
-import {Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, viewChild} from '@angular/core';
 import {BehaviorSubject, combineLatest, filter, Observable, switchMap, timer} from "rxjs";
 import {ChartData, ChartOptions} from "chart.js";
 import {PortfolioDynamics} from "../../../../shared/models/user/portfolio-dynamics.model";
@@ -58,8 +58,7 @@ interface ChartConfig {
   styleUrl: './agreement-dynamics.component.less'
 })
 export class AgreementDynamicsComponent implements OnInit, OnDestroy {
-  @ViewChild('utilsCanvas')
-  utilsCanvas!: ElementRef<HTMLCanvasElement>;
+  readonly utilsCanvas = viewChild.required<ElementRef<HTMLCanvasElement>>('utilsCanvas');
 
   chartConfig$!: Observable<ChartConfig | null>;
 
@@ -267,7 +266,7 @@ export class AgreementDynamicsComponent implements OnInit, OnDestroy {
   }
 
   private createFillCanvasGradient(themeColors: ThemeColors, contentSize: ContentSize): CanvasGradient {
-    const gradient = this.utilsCanvas.nativeElement.getContext('2d')!.createLinearGradient(0, 0, 0, contentSize.height);
+    const gradient = this.utilsCanvas().nativeElement.getContext('2d')!.createLinearGradient(0, 0, 0, contentSize.height);
 
     const baseColor = color(themeColors.primaryColor);
     if (baseColor != null) {

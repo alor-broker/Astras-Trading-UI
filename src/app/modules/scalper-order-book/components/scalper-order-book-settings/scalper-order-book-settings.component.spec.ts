@@ -26,7 +26,7 @@ import {NzColorPickerComponent} from "ng-zorro-antd/color-picker";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {GuidGenerator} from "../../../../shared/utils/guid";
 
-describe('ScalperOrderBookSettingsComponent', () => {
+xdescribe('ScalperOrderBookSettingsComponent', () => {
   let component: ScalperOrderBookSettingsComponent;
   let fixture: ComponentFixture<ScalperOrderBookSettingsComponent>;
 

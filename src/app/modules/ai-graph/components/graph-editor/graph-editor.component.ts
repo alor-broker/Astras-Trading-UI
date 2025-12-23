@@ -4,9 +4,9 @@ import {
   Component,
   ElementRef,
   input,
-  OnDestroy, output,
-  QueryList,
-  ViewChildren,
+  OnDestroy,
+  output,
+  viewChildren,
 } from '@angular/core';
 import {GraphConfig} from "../../models/graph.model";
 import {
@@ -32,12 +32,13 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
 import {SideMenuTitleDirective} from "../../directives/side-menu-title.directive";
 import {SideMenuContentDirective} from "../../directives/side-menu-content.directive";
 import {TranslocoDirective} from "@jsverse/transloco";
-import {filter, map, startWith} from "rxjs/operators";
+import {filter, map} from "rxjs/operators";
 import {RunConfigBtnComponent} from "../run-config-btn/run-config-btn.component";
 import {RunStatus} from "../../models/run-results.model";
 import {RunResultsComponent} from "../run-results/run-results.component";
 import {NodePropertiesEditorComponent} from "../node-properties-editor/node-properties-editor.component";
 import {CanvasMouseEvent} from "node_modules/@comfyorg/litegraph/dist/types/events";
+import {toObservable} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-graph-editor',
@@ -61,13 +62,9 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
 
   readonly updateConfig = output<GraphConfig>();
 
-  @ViewChildren('canvas')
-  canvasQuery!: QueryList<ElementRef<HTMLCanvasElement>>;
-
+  readonly canvasQuery = viewChildren<ElementRef<HTMLCanvasElement>>('canvas');
   protected nodeToEdit: NodeBase | null = null;
-
   protected runStatus: RunStatus | null = null;
-
   protected containerSize$ = new BehaviorSubject<{
     css: ContentSize;
     canvas: ContentSize;
@@ -81,7 +78,9 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
   });
 
   protected currentConfig: GraphConfig | null = null;
+
   protected isRunMenuVisible = false;
+  private readonly canvasQueryChanges$ = toObservable(this.canvasQuery);
   private graphCanvas?: LGraphCanvas;
 
   constructor(
@@ -99,9 +98,8 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.canvasQuery.changes.pipe(
-      map(x => x.first as ElementRef<HTMLCanvasElement> | undefined),
-      startWith(this.canvasQuery.first),
+    this.canvasQueryChanges$.pipe(
+      map(x => x.length > 0 ? x[0] : undefined),
       filter((x): x is ElementRef<HTMLCanvasElement> => !!x),
       map(x => x.nativeElement),
       take(1)

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component, TemplateRef, ViewChild } from "@angular/core";
+import { Component, TemplateRef, viewChild } from "@angular/core";
 
 import { WidgetSkeletonComponent } from './widget-skeleton.component';
 
@@ -8,7 +8,7 @@ import { WidgetSkeletonComponent } from './widget-skeleton.component';
   standalone: true
 })
 class TestTemplateHolderComponent {
-  @ViewChild('mockTemplate', {static: true}) mockTemplate!: TemplateRef<any>;
+  readonly mockTemplate = viewChild.required<TemplateRef<any>>('mockTemplate');
 }
 
 describe('WidgetSkeletonComponent', () => {
@@ -22,7 +22,7 @@ describe('WidgetSkeletonComponent', () => {
     .compileComponents();
 
     const templateHolderFixture = TestBed.createComponent(TestTemplateHolderComponent);
-    const mockTemplate = templateHolderFixture.componentInstance.mockTemplate;
+    const mockTemplate = templateHolderFixture.componentInstance.mockTemplate();
 
     fixture = TestBed.createComponent(WidgetSkeletonComponent);
     component = fixture.componentInstance;

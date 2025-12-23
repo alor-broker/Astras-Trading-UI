@@ -1,4 +1,4 @@
-import {Component, ContentChild, HostBinding, input, model} from '@angular/core';
+import {Component, contentChild, HostBinding, input, model} from '@angular/core';
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NgClass, NgTemplateOutlet} from "@angular/common";
@@ -56,11 +56,9 @@ export class SideMenuComponent {
     minWidthPx: 350
   });
 
-  @ContentChild(SideMenuTitleDirective)
-  title?: SideMenuTitleDirective;
+  readonly title = contentChild(SideMenuTitleDirective);
 
-  @ContentChild(SideMenuContentDirective)
-  content?: SideMenuContentDirective;
+  readonly content = contentChild(SideMenuContentDirective);
 
   @HostBinding('class.left')
   get left(): boolean {

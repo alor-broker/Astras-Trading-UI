@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, input, LOCALE_ID, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, DestroyRef, Inject, input, LOCALE_ID, OnDestroy, OnInit, viewChild} from '@angular/core';
 import {AllInstrumentsService} from "../../services/all-instruments.service";
 import {
   BehaviorSubject,
@@ -94,8 +94,7 @@ export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
   InstrumentModelSortInput
 >
   implements OnInit, OnDestroy {
-  @ViewChild('table')
-  table?: InfiniteScrollTableComponent;
+  readonly table = viewChild<InfiniteScrollTableComponent>('table');
 
   readonly guid = input.required<string>();
 
@@ -393,7 +392,7 @@ export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
         const targetColumn = this.allColumns.find(c => c.id === state.widgetTarget.parameters?.sort?.parameter);
         if (targetColumn != null) {
           const order = state.widgetTarget.parameters?.sort.order === SortEnumType.Desc ? 'descend' : 'ascend';
-          this.table?.sortChange(order, targetColumn);
+          this.table()?.sortChange(order, targetColumn);
         }
       }
     });
@@ -403,7 +402,8 @@ export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
     this.nzContextMenuService.close(true);
 
     const row = selectedRow as AllInstrumentsNodeDisplay;
-    if (menu.menuRef != null) {
+    const menuRef = menu.menuRef();
+    if (menuRef != null) {
       menu.itemToAdd.set(
         {
           symbol: row.basicInformation!.symbol,
@@ -411,7 +411,7 @@ export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
         }
       );
 
-      this.nzContextMenuService.create($event, menu.menuRef);
+      this.nzContextMenuService.create($event, menuRef);
     }
   }
 

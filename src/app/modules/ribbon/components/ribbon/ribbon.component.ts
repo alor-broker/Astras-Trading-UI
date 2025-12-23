@@ -48,11 +48,11 @@ export interface RibbonItem {
 export class RibbonComponent implements OnInit {
   indices$!: Observable<IndexDisplay[]>;
 
-  layout = input<'singleRow' | '2row'>('singleRow');
+  readonly layout = input<'singleRow' | '2row'>('singleRow');
 
-  showScrollButtons = input(true);
+  readonly showScrollButtons = input(true);
 
-  displayItems = input<RibbonItem[] | null>(null);
+  readonly displayItems = input<RibbonItem[] | null>(null);
 
   private readonly defaultIndices: RibbonItem[] = [
     {

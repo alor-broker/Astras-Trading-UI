@@ -1,11 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  OnDestroy, output,
-  QueryList,
-  ViewChildren,
-} from '@angular/core';
+import {AfterViewInit, Component, DestroyRef, OnDestroy, output, viewChildren,} from '@angular/core';
 import {BlotterBaseTableComponent} from "../blotter-base-table/blotter-base-table.component";
 import {DisplayTrade, TradeFilter} from "../../models/trade.model";
 import {
@@ -42,7 +35,7 @@ import {WidgetSettingsService} from "../../../../shared/services/widget-settings
 import {TimezoneConverterService} from "../../../../shared/services/timezone-converter.service";
 import {TranslatorService} from "../../../../shared/services/translator.service";
 import {TableSettingHelper} from "../../../../shared/utils/table-setting.helper";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {debounceTime, filter, map, startWith} from "rxjs/operators";
 import {Trade} from "../../../../shared/models/trades/trade.model";
 import {mapWith} from "../../../../shared/utils/observable-helper";
@@ -195,8 +188,9 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
   settingsTableName = TableNames.TradesHistoryTable;
   settingsColumnsName = ColumnsNames.TradesColumns;
   fileSuffix = 'tradesHistory';
-  @ViewChildren('nzTable')
-  dataTableQuery!: QueryList<NzTableComponent<DisplayTrade>>;
+
+  readonly dataTableQuery = viewChildren<NzTableComponent<DisplayTrade>>('nzTable');
+  private readonly dataTableQueryChanges$ = toObservable(this.dataTableQuery);
 
   private readonly loadedHistory$ = new BehaviorSubject<Trade[]>([]);
 
@@ -224,9 +218,8 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
   }
 
   ngAfterViewInit(): void {
-    const scrollViewport$ = this.dataTableQuery.changes.pipe(
-      map(x => x.first as NzTableComponent<DisplayTrade>),
-      startWith(this.dataTableQuery.first),
+    const scrollViewport$ = this.dataTableQueryChanges$.pipe(
+      map(x => x.length > 0 ? x[0] : undefined),
       filter((x: NzTableComponent<DisplayTrade> | undefined): x is NzTableComponent<DisplayTrade> => !!x),
       map(x => x.cdkVirtualScrollViewport),
       filter((x): x is CdkVirtualScrollViewport => !!x),

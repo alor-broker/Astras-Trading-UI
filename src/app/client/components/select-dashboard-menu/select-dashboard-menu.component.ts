@@ -62,7 +62,7 @@ export class SelectDashboardMenuComponent implements OnInit {
 
   readonly isNewDashboardFocused = output<boolean>();
 
-  visibilityChange = input<boolean>();
+  readonly visibilityChange = input<boolean>();
 
   constructor(
     private readonly formBuilder: FormBuilder,

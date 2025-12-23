@@ -1,40 +1,29 @@
-import {
-  AfterViewInit,
-  Component,
-  ContentChildren,
-  DestroyRef,
-  ElementRef,
-  QueryList,
-  ViewChild
-} from '@angular/core';
-import { ChatMessageContainerComponent } from "../chat-message-container/chat-message-container.component";
-import {
-  startWith
-} from "rxjs/operators";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {AfterViewInit, Component, contentChildren, DestroyRef, ElementRef, viewChild} from '@angular/core';
+import {ChatMessageContainerComponent} from "../chat-message-container/chat-message-container.component";
+import {startWith} from "rxjs/operators";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 
 @Component({
-    selector: 'ats-chat-container',
-    templateUrl: './chat-container.component.html',
-    styleUrls: ['./chat-container.component.less']
+  selector: 'ats-chat-container',
+  templateUrl: './chat-container.component.html',
+  styleUrls: ['./chat-container.component.less']
 })
 export class ChatContainerComponent implements AfterViewInit {
-  @ViewChild('messagesContainer')
-  messagesContainer!: ElementRef<HTMLDivElement>;
+  readonly messagesContainer = viewChild.required<ElementRef<HTMLDivElement>>('messagesContainer');
 
-  @ContentChildren(ChatMessageContainerComponent)
-  messages!: QueryList<ChatMessageContainerComponent>;
+  readonly messages = contentChildren(ChatMessageContainerComponent);
+  private readonly messagesChanges$ = toObservable(this.messages);
 
   constructor(private readonly DestroyRef: DestroyRef) {
   }
 
   ngAfterViewInit(): void {
-    this.messages.changes.pipe(
+    this.messagesChanges$.pipe(
       startWith(0),
       takeUntilDestroyed(this.DestroyRef)
     ).subscribe(() => {
       setTimeout(() => {
-        this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+        this.messagesContainer().nativeElement.scrollTop = this.messagesContainer().nativeElement.scrollHeight;
       });
     });
   }

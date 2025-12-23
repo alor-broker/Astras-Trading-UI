@@ -1,16 +1,14 @@
 import {
   AfterViewInit,
   Component,
-  ContentChildren,
+  contentChildren,
   DestroyRef,
   input,
   NgZone,
   OnDestroy,
-  QueryList,
-  output
+  output,
 } from '@angular/core';
 import {PanelComponent} from "../panel/panel.component";
-import {map, startWith} from "rxjs/operators";
 import {ReplaySubject, take} from "rxjs";
 import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {PANELS_CONTAINER_CONTEXT, PanelsContainerContext} from "../tokens";
@@ -31,13 +29,10 @@ export interface ResizedEvent {
   ]
 })
 export class PanelsContainerComponent implements PanelsContainerContext, AfterViewInit, OnDestroy {
-  @ContentChildren(PanelComponent, {emitDistinctChangesOnly: true})
-  panelsQuery!: QueryList<PanelComponent>;
-
+  readonly panelsQuery = contentChildren<PanelComponent>(PanelComponent);
   readonly widthUpdated = output<Record<string, number>>();
-
   readonly initialWidths = input.required<Record<string, number>>();
-
+  private readonly panelsQueryChanges$ = toObservable(this.panelsQuery);
   private lastAppliedWidths: Map<string, number> | null = null;
   private animationId = -1;
   private readonly panels = new ReplaySubject<PanelComponent[]>(1);
@@ -53,13 +48,9 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
   }
 
   ngAfterViewInit(): void {
-    const getPanels = (): PanelComponent[] => this.panelsQuery.map(item => item);
-
-    this.panelsQuery.changes.pipe(
-      map(() => getPanels()),
-      startWith(getPanels()),
+    this.panelsQueryChanges$.pipe(
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(x => this.panels.next(x));
+    ).subscribe(x => this.panels.next([...x]));
 
     this.initialWidthsChanges$.pipe(
       takeUntilDestroyed(this.destroyRef)

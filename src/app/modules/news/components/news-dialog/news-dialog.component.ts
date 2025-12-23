@@ -12,7 +12,7 @@ import {NewsListItem} from "../../../../shared/services/news.service";
   ]
 })
 export class NewsDialogComponent {
-  newsItem = model<NewsListItem | null>(null);
+  readonly newsItem = model<NewsListItem | null>(null);
 
   handleCancel(): void {
     this.newsItem.set(null);

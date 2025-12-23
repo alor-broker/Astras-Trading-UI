@@ -6,8 +6,8 @@ import {
   forwardRef,
   input,
   TemplateRef,
-  ViewChild,
-  output
+  output,
+  viewChild
 } from '@angular/core';
 import {FormsModule, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {ControlValueAccessorBaseComponent} from "../control-value-accessor-base/control-value-accessor-base.component";
@@ -51,8 +51,7 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
 
   readonly valueChanged = output<number | null>();
 
-  @ViewChild('inputElement', {static: true})
-  inputElement!: ElementRef<HTMLInputElement>;
+  readonly inputElement = viewChild.required<ElementRef<HTMLInputElement>>('inputElement');
 
   value?: number | null;
 
@@ -87,7 +86,7 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
     this.setDisplayValue(value);
     if (this.focused()) {
       setTimeout(() => {
-        this.inputElement?.nativeElement.select();
+        this.inputElement()?.nativeElement.select();
       });
     }
 
@@ -173,7 +172,7 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
 
   private setDisplayValue(value: number | string | null): void {
     this.displayValue = value?.toString() ?? '';
-    this.inputElement.nativeElement.value = this.displayValue;
+    this.inputElement().nativeElement.value = this.displayValue;
   }
 
   private stepChange(multiplier: number): void {

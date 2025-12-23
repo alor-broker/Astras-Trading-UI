@@ -53,7 +53,7 @@ export class InvestIdeasCarouselComponent implements OnInit {
 
   instrumentSelected = output<InstrumentKey>();
 
-  protected selectedIdea = model<Idea | null>(null);
+  protected readonly selectedIdea = model<Idea | null>(null);
 
   private readonly refreshInterval = 600_000;
 

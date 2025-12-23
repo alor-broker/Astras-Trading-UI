@@ -1,9 +1,8 @@
 import {
   Component,
-  ContentChildren,
-  QueryList,
   input,
-  output
+  output,
+  contentChildren
 } from '@angular/core';
 import { ViewSelectorItemComponent } from "../view-selector-item/view-selector-item.component";
 import { NgTemplateOutlet } from "@angular/common";
@@ -43,8 +42,7 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
 export class ViewSelectorComponent {
   readonly layout = input<'row' | 'menu'>('row');
 
-  @ContentChildren(ViewSelectorItemComponent)
-  items!: QueryList<ViewSelectorItemComponent>;
+  readonly items = contentChildren(ViewSelectorItemComponent);
 
   readonly selectedView = input<string | null>(null);
 

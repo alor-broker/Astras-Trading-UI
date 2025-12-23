@@ -1,4 +1,4 @@
-import {Component, ElementRef, input, OnDestroy, OnInit, ViewChild, output} from '@angular/core';
+import {Component, ElementRef, input, OnDestroy, OnInit, output, viewChild} from '@angular/core';
 import {SearchFilter} from '../../../modules/instruments/models/search-filter.model';
 import {
   NzAutocompleteComponent,
@@ -50,8 +50,7 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
   ]
 })
 export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValueAccessor {
-  @ViewChild('searchInput')
-  searchInput?: ElementRef<HTMLInputElement>;
+  readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
   readonly optionsBoxWidth = input<number>();
 
@@ -165,7 +164,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   }
 
   setFocus(): void {
-    setTimeout(() => this.searchInput?.nativeElement.focus());
+    setTimeout(() => this.searchInput()?.nativeElement.focus());
   }
 
   private emitValue(value: InstrumentKey | null): void {

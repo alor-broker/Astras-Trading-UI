@@ -11,8 +11,8 @@ describe('InputNumberComponent', () => {
   const inputValueSymbolBySymbol = (value: string): void => {
     component.writeValue(null);
     for (const symbol of value) {
-      component.inputElement.nativeElement.value += symbol;
-      component.inputElement.nativeElement.dispatchEvent(new Event('input'));
+      component.inputElement().nativeElement.value += symbol;
+      component.inputElement().nativeElement.dispatchEvent(new Event('input'));
     }
   };
 
@@ -20,8 +20,8 @@ describe('InputNumberComponent', () => {
     component.writeValue(null);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const symbol of value) {
-      component.inputElement.nativeElement.value = value;
-      component.inputElement.nativeElement.dispatchEvent(new Event('input'));
+      component.inputElement().nativeElement.value = value;
+      component.inputElement().nativeElement.dispatchEvent(new Event('input'));
     }
   };
 
@@ -64,7 +64,7 @@ describe('InputNumberComponent', () => {
 
     for (const testCase of cases) {
       component.writeValue(testCase.value);
-      expect(component.inputElement.nativeElement.value)
+      expect(component.inputElement().nativeElement.value)
         .withContext(`Value: ${testCase.value}. Expected value: ${testCase.displayValue}`)
         .toBe(testCase.displayValue);
     }
@@ -142,7 +142,7 @@ describe('InputNumberComponent', () => {
       for (const testCase of cases) {
         inputValueSymbolBySymbol(testCase.input);
 
-        expect(component.inputElement.nativeElement.value)
+        expect(component.inputElement().nativeElement.value)
           .withContext(`Input: ${testCase.input}. Expected display value: ${testCase.displayValue}`)
           .toBe(testCase.displayValue);
 
@@ -225,7 +225,7 @@ describe('InputNumberComponent', () => {
       for (const testCase of cases) {
         inputValue(testCase.input);
 
-        expect(component.inputElement.nativeElement.value)
+        expect(component.inputElement().nativeElement.value)
           .withContext(`Input: ${testCase.input}. Expected display value: ${testCase.displayValue}`)
           .toBe(testCase.displayValue);
 
@@ -263,7 +263,7 @@ describe('InputNumberComponent', () => {
     for (const testCase of cases) {
       inputValueSymbolBySymbol(testCase.input);
 
-      expect(component.inputElement.nativeElement.value)
+      expect(component.inputElement().nativeElement.value)
         .withContext(`Input: ${testCase.input}. Expected display value: ${testCase.displayValue}`)
         .toBe(testCase.displayValue);
 
@@ -275,7 +275,7 @@ describe('InputNumberComponent', () => {
     for (const testCase of cases) {
       inputValue(testCase.input);
 
-      expect(component.inputElement.nativeElement.value)
+      expect(component.inputElement().nativeElement.value)
         .withContext(`Input: ${testCase.input}. Expected display value: ${testCase.displayValue}`)
         .toBe(testCase.displayValue);
 
@@ -296,32 +296,32 @@ describe('InputNumberComponent', () => {
 
     component.writeValue(initialValue);
 
-    expect(component.inputElement.nativeElement.value).toBe(initialValue.toString());
+    expect(component.inputElement().nativeElement.value).toBe(initialValue.toString());
 
-    component.inputElement.nativeElement.dispatchEvent(new KeyboardEvent('keydown', {code: 'ArrowDown'}));
+    component.inputElement().nativeElement.dispatchEvent(new KeyboardEvent('keydown', {code: 'ArrowDown'}));
     let expectedValue = MathHelper.round(initialValue - step, 3);
-    expect(component.inputElement.nativeElement.value)
+    expect(component.inputElement().nativeElement.value)
       .withContext('ArrowDown')
       .toBe(expectedValue.toString());
 
     component.writeValue(initialValue);
-    component.inputElement.nativeElement.dispatchEvent(new KeyboardEvent('keydown', {code: 'ArrowDown', shiftKey: true}));
+    component.inputElement().nativeElement.dispatchEvent(new KeyboardEvent('keydown', {code: 'ArrowDown', shiftKey: true}));
     expectedValue = MathHelper.round(initialValue - (step * 10), 3);
-    expect(component.inputElement.nativeElement.value)
+    expect(component.inputElement().nativeElement.value)
       .withContext('ArrowDown + Shift')
       .toBe(expectedValue.toString());
 
     component.writeValue(initialValue);
-    component.inputElement.nativeElement.dispatchEvent(new KeyboardEvent('keydown', {code: 'ArrowUp'}));
+    component.inputElement().nativeElement.dispatchEvent(new KeyboardEvent('keydown', {code: 'ArrowUp'}));
     expectedValue = MathHelper.round(initialValue + step, 3);
-    expect(component.inputElement.nativeElement.value)
+    expect(component.inputElement().nativeElement.value)
       .withContext('ArrowUp')
       .toBe(expectedValue.toString());
 
     component.writeValue(initialValue);
-    component.inputElement.nativeElement.dispatchEvent(new KeyboardEvent('keydown', {code: 'ArrowUp', shiftKey: true}));
+    component.inputElement().nativeElement.dispatchEvent(new KeyboardEvent('keydown', {code: 'ArrowUp', shiftKey: true}));
     expectedValue = MathHelper.round(initialValue + (step * 10), 3);
-    expect(component.inputElement.nativeElement.value)
+    expect(component.inputElement().nativeElement.value)
       .withContext('ArrowUp + Shift')
       .toBe(expectedValue.toString());
   });
@@ -336,33 +336,33 @@ describe('InputNumberComponent', () => {
     );
     component.writeValue(initialValue);
 
-    expect(component.inputElement.nativeElement.value).toBe(initialValue.toString());
+    expect(component.inputElement().nativeElement.value).toBe(initialValue.toString());
 
-    component.inputElement.nativeElement.focus();
-    component.inputElement.nativeElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 1}));
+    component.inputElement().nativeElement.focus();
+    component.inputElement().nativeElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 1}));
     let expectedValue = MathHelper.round(initialValue - step, 3);
-    expect(component.inputElement.nativeElement.value)
+    expect(component.inputElement().nativeElement.value)
       .withContext('deltaY > 0')
       .toBe(expectedValue.toString());
 
     component.writeValue(initialValue);
-    component.inputElement.nativeElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 1, shiftKey: true}));
+    component.inputElement().nativeElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 1, shiftKey: true}));
     expectedValue = MathHelper.round(initialValue - (step * 10), 3);
-    expect(component.inputElement.nativeElement.value)
+    expect(component.inputElement().nativeElement.value)
       .withContext('deltaY > 0 + Shift')
       .toBe(expectedValue.toString());
 
     component.writeValue(initialValue);
-    component.inputElement.nativeElement.dispatchEvent(new WheelEvent('wheel', {deltaY: -1}));
+    component.inputElement().nativeElement.dispatchEvent(new WheelEvent('wheel', {deltaY: -1}));
     expectedValue = MathHelper.round(initialValue + step, 3);
-    expect(component.inputElement.nativeElement.value)
+    expect(component.inputElement().nativeElement.value)
       .withContext('deltaY < 0')
       .toBe(expectedValue.toString());
 
     component.writeValue(initialValue);
-    component.inputElement.nativeElement.dispatchEvent(new WheelEvent('wheel', {deltaY: -1, shiftKey: true}));
+    component.inputElement().nativeElement.dispatchEvent(new WheelEvent('wheel', {deltaY: -1, shiftKey: true}));
     expectedValue = MathHelper.round(initialValue + (step * 10), 3);
-    expect(component.inputElement.nativeElement.value)
+    expect(component.inputElement().nativeElement.value)
       .withContext('deltaY < 0 + Shift')
       .toBe(expectedValue.toString());
   });
@@ -375,8 +375,8 @@ describe('InputNumberComponent', () => {
     );
     component.writeValue(initialValue);
 
-    component.inputElement.nativeElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 1}));
+    component.inputElement().nativeElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 1}));
 
-    expect(component.inputElement.nativeElement.value).toBe(initialValue.toString());
+    expect(component.inputElement().nativeElement.value).toBe(initialValue.toString());
   });
 });

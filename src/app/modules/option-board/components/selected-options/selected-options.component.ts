@@ -263,7 +263,8 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
   }
 
   openContextMenu($event: MouseEvent, menu: AddToWatchlistMenuComponent, selectedRow: DetailsDisplay): void {
-    if (menu.menuRef == null) {
+    const menuRef = menu.menuRef();
+    if (menuRef == null) {
       $event.preventDefault();
       return;
     }
@@ -276,7 +277,7 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
       }
     );
 
-    this.nzContextMenuService.create($event, menu.menuRef);
+    this.nzContextMenuService.create($event, menuRef);
   }
 
   protected initTableConfigStream(): Observable<TableConfig<DetailsDisplay>> {

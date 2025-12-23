@@ -6,9 +6,9 @@ import {
   Inject,
   OnDestroy,
   OnInit,
-  ViewChild,
   DOCUMENT,
-  input
+  input,
+  viewChild
 } from '@angular/core';
 import {
   combineLatest,
@@ -107,8 +107,7 @@ interface ChartState {
 export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly guid = input.required<string>();
 
-  @ViewChild('chartContainer', { static: true })
-  chartContainer?: ElementRef<HTMLElement>;
+  readonly chartContainer = viewChild<ElementRef<HTMLElement>>('chartContainer');
 
   private readonly selectedPriceProviderName = 'selectedPrice';
   private chartState?: ChartState;
@@ -289,7 +288,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
 
-    if (!this.chartContainer) {
+    const chartContainer = this.chartContainer();
+    if (!chartContainer) {
       return;
     }
 
@@ -315,7 +315,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       // debug
       debug: false,
       // base options
-      container: this.chartContainer.nativeElement,
+      container: chartContainer.nativeElement,
       symbol: selectedInstrumentSymbol,
       interval: (chartLayout?.charts?.[0]?.panes?.[0]?.sources?.[0]?.state?.interval ?? '1D') as ResolutionString,
       locale: this.translatorService.getActiveLang() as LanguageCode,
@@ -406,13 +406,13 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const validKeyCodeRegExp = new RegExp('^Key[A-Z]$');
 
-    fromEvent<MouseEvent>(this.chartContainer!.nativeElement, 'mouseenter')
+    fromEvent<MouseEvent>(this.chartContainer()!.nativeElement, 'mouseenter')
       .pipe(
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(() => this.isChartFocused = true);
 
-    fromEvent<MouseEvent>(this.chartContainer!.nativeElement, 'mouseleave')
+    fromEvent<MouseEvent>(this.chartContainer()!.nativeElement, 'mouseleave')
       .pipe(
         takeUntilDestroyed(this.destroyRef)
       )

@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, viewChild} from '@angular/core';
 import {InstrumentSearchService} from "../../services/instrument-search.service";
 import {BehaviorSubject, Observable, of, take, tap} from "rxjs";
 import {
@@ -63,7 +63,9 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
   readonly minusSign = '－'; // This is not character that on keyboard
   isVisible$!: Observable<boolean>;
   filteredInstruments$!: Observable<Instrument[] | null>;
-  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
+
+  readonly searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
+
   autocompleteLoading$ = new BehaviorSubject(false);
   private readonly specialSymbolsRegEx = new RegExp(`[${this.minusSign}+*/\\]\\[]`, 'g');
   private readonly filter$ = new BehaviorSubject<SearchFilter | null>(null);
@@ -111,7 +113,7 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
   filterChanged(): void {
     // Get part of the search string from first special symbol to left from caret to first special symbol to right from caret
     const inputVal = this.searchControl.value ?? '';
-    const caretPos = this.searchInput.nativeElement.selectionStart ?? 0;
+    const caretPos = this.searchInput().nativeElement.selectionStart ?? 0;
 
     const strBeforeCaret = inputVal.slice(0, caretPos);
     const strAfterCaret = inputVal.slice(caretPos);
@@ -145,7 +147,7 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
   onSelect(event: NzOptionSelectionChange, val: InstrumentKey): void {
     if (event.isUserInput) {
       const inputVal = this.searchControl.value ?? '';
-      const caretPos = this.searchInput.nativeElement.selectionStart ?? 0;
+      const caretPos = this.searchInput().nativeElement.selectionStart ?? 0;
 
       setTimeout(() => {
         // Get string part that will be replaced by new instrument
@@ -176,7 +178,7 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
 
   addSpreadOperator(operator: string): void {
     this.searchControl.setValue(this.searchControl.value + operator);
-    this.searchInput.nativeElement.focus();
+    this.searchInput().nativeElement.focus();
   }
 
   modalOpened(): void {
@@ -187,11 +189,11 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
       .subscribe(params => {
         this.searchControl.setValue(params?.value ?? null);
         setTimeout(() => {
-          this.searchInput.nativeElement.focus();
+          this.searchInput().nativeElement.focus();
           this.filterChanged();
           if (params?.needTextSelection ?? true) {
-            this.searchInput.nativeElement.selectionStart = 0;
-            this.searchInput.nativeElement.selectionEnd = this.searchControl.value?.length ?? 0;
+            this.searchInput().nativeElement.selectionStart = 0;
+            this.searchInput().nativeElement.selectionEnd = this.searchControl.value?.length ?? 0;
           }
         }, 0);
       });
