@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, input} from '@angular/core';
+import { Component, DestroyRef, input, inject } from '@angular/core';
 import {OptionBoardDataContext, OptionsSelection} from "../../models/option-board-data-context.model";
 import {OptionBoardService} from "../../services/option-board.service";
 import {
@@ -119,6 +119,13 @@ interface DetailsDisplay extends OptionKey {
   ]
 })
 export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay> {
+  private readonly optionBoardService = inject(OptionBoardService);
+  private readonly translatorService = inject(TranslatorService);
+  protected readonly widgetSettingsService: WidgetSettingsService;
+  protected readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+  protected readonly nzContextMenuService = inject(NzContextMenuService);
+  protected readonly destroyRef: DestroyRef;
+
   readonly dataContext = input.required<OptionBoardDataContext>();
 
   readonly minOptionTableWidth = 400;
@@ -203,16 +210,14 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
     },
   ];
 
-  constructor(
-    private readonly optionBoardService: OptionBoardService,
-    private readonly translatorService: TranslatorService,
-    protected readonly widgetSettingsService: WidgetSettingsService,
-    @Inject(ACTIONS_CONTEXT)
-    protected readonly actionsContext: ActionsContext,
-    protected readonly nzContextMenuService: NzContextMenuService,
-    protected readonly destroyRef: DestroyRef
-  ) {
+  constructor() {
+    const widgetSettingsService = inject(WidgetSettingsService);
+    const destroyRef = inject(DestroyRef);
+
     super(widgetSettingsService, destroyRef);
+
+    this.widgetSettingsService = widgetSettingsService;
+    this.destroyRef = destroyRef;
   }
 
   formatExpirationDate(date: Date): string {

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { environment } from "../../../environments/environment";
 import {
   HttpClient,
@@ -26,15 +26,12 @@ interface HelpLinks {
   providedIn: 'root'
 })
 export class HelpService {
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+
   private readonly helpUrl = environment.externalLinks.help;
 
   private helpLinks: Observable<HelpLinks> | null = null;
-
-  constructor(
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) {
-  }
 
   getWidgetHelp(widgetId: string): Observable<string | null> {
     return this.getHelpLinks().pipe(

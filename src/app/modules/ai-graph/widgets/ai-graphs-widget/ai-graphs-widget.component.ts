@@ -1,4 +1,4 @@
-import {Component, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {AsyncPipe} from "@angular/common";
 import {TranslocoDirective} from "@jsverse/transloco";
@@ -25,14 +25,13 @@ import {WidgetHeaderComponent} from "../../../../shared/components/widget-header
   styleUrl: './ai-graphs-widget.component.less'
 })
 export class AiGraphsWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+
   readonly widgetInstance = input.required<WidgetInstance>();
 
   readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<AiGraphsSettings>;
-
-  constructor(private readonly widgetSettingsService: WidgetSettingsService) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

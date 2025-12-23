@@ -1,12 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  Inject,
-  LOCALE_ID,
-  OnDestroy,
-  OnInit,
-  input
-} from '@angular/core';
+import { Component, DestroyRef, LOCALE_ID, OnDestroy, OnInit, input, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, shareReplay, switchMap, take, tap } from 'rxjs';
 import { TableConfig } from '../../../../shared/models/table-config.model';
 import {
@@ -73,6 +65,16 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
   PageInfo,
   BondSortInput
 > implements OnInit, OnDestroy {
+  protected readonly settingsService: WidgetSettingsService;
+  private readonly service = inject(BondScreenerService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly nzContextMenuService = inject(NzContextMenuService);
+  protected readonly destroyRef: DestroyRef;
+  private readonly locale = inject(LOCALE_ID);
+
   readonly guid = input.required<string>();
 
   bondsList$ = new BehaviorSubject<BondDisplay[]>([]);
@@ -521,19 +523,14 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
 
   settingsTableName = 'bondScreenerTable';
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    private readonly service: BondScreenerService,
-    private readonly translatorService: TranslatorService,
-    @Inject(ACTIONS_CONTEXT) private readonly actionsContext: ActionsContext,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly nzContextMenuService: NzContextMenuService,
-    protected readonly destroyRef: DestroyRef,
-    @Inject(LOCALE_ID)
-    private readonly locale: string
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.destroyRef = destroyRef;
   }
 
   ngOnInit(): void {

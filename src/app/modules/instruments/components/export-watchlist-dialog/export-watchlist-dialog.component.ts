@@ -1,4 +1,4 @@
-import {Component, model, OnInit} from '@angular/core';
+import { Component, model, OnInit, inject } from '@angular/core';
 import {Observable, shareReplay, switchMap, take} from "rxjs";
 import {filter, map} from "rxjs/operators";
 import {WatchlistCollectionService} from "../../services/watchlist-collection.service";
@@ -43,6 +43,9 @@ interface ExportResult {
   ]
 })
 export class ExportWatchlistDialogComponent implements OnInit {
+  private readonly watchlistCollectionService = inject(WatchlistCollectionService);
+  private readonly translatorService = inject(TranslatorService);
+
   exportResult$!: Observable<ExportResult>;
   readonly dialogParams = model<ExportDialogParams | null>(null);
   private readonly dialogParamsChanges$ = toObservable(this.dialogParams).pipe(
@@ -52,12 +55,6 @@ export class ExportWatchlistDialogComponent implements OnInit {
   isVisible$ = this.dialogParamsChanges$.pipe(
     map(p => !!p)
   );
-
-  constructor(
-    private readonly watchlistCollectionService: WatchlistCollectionService,
-    private readonly translatorService: TranslatorService
-  ) {
-  }
 
   ngOnInit(): void {
     this.exportResult$ = this.dialogParamsChanges$.pipe(

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { LightChartDatafeed } from './light-chart-datafeed';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { HistoryService } from '../../../shared/services/history.service';
@@ -9,11 +9,8 @@ import { SubscriptionsDataFeedService } from '../../../shared/services/subscript
   providedIn: 'root'
 })
 export class LightChartDatafeedFactoryService {
-  constructor(
-    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
-    private readonly historyService: HistoryService
-  ) {
-  }
+  private readonly subscriptionsDataFeedService = inject(SubscriptionsDataFeedService);
+  private readonly historyService = inject(HistoryService);
 
   getDatafeed(instrumentKey: InstrumentKey, timeFrame: TimeframeValue): LightChartDatafeed {
     return new LightChartDatafeed(

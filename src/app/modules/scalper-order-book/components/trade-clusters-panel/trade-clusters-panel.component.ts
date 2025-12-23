@@ -1,15 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  DOCUMENT,
-  Inject,
-  input,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  viewChildren,
-} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, DOCUMENT, input, NgZone, OnDestroy, OnInit, viewChildren, inject } from '@angular/core';
 import {ScalperOrderBookDataContext,} from '../../models/scalper-order-book-data-context.model';
 import {
   BehaviorSubject,
@@ -68,6 +57,13 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
   ]
 })
 export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterViewInit {
+  private readonly settingsWriteService = inject(ScalperOrderBookSettingsWriteService);
+  private readonly tradeClustersService = inject(TradeClustersService);
+  private readonly contextMenuService = inject(ContextMenuService);
+  private readonly documentRef = inject<Document>(DOCUMENT);
+  private readonly ngZone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly scrollContainer = viewChildren<CdkScrollable>(CdkScrollable);
   readonly xAxisStep = input.required<number>();
   readonly dataContext = input.required<ScalperOrderBookDataContext>();
@@ -79,17 +75,6 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
   private readonly scrollContainerChanges$ = toObservable(this.scrollContainer);
   private lastPanelWidth: number | null = null;
   private isAutoScroll = true;
-
-  constructor(
-    private readonly settingsWriteService: ScalperOrderBookSettingsWriteService,
-    private readonly tradeClustersService: TradeClustersService,
-    private readonly contextMenuService: ContextMenuService,
-    @Inject(DOCUMENT)
-    private readonly documentRef: Document,
-    private readonly ngZone: NgZone,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.hScrollOffsets$.complete();

@@ -1,5 +1,5 @@
 import {AsyncPipe} from '@angular/common';
-import {ChangeDetectionStrategy, Component, OnInit, input} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, input, inject } from '@angular/core';
 import {combineLatest, map, Observable, shareReplay} from 'rxjs';
 import {
   GalleryDisplay,
@@ -36,21 +36,18 @@ import {ClientDashboardType, DashboardType} from "../../../../shared/models/dash
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WidgetsGalleryNavBtnComponent implements OnInit {
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
+  private readonly widgetsMetaService = inject(WidgetsMetaService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+
   galleryVisible = false;
   widgetsGallery$!: Observable<GalleryDisplay>;
 
   readonly currentDashboard$ = this.dashboardContextService.selectedDashboard$;
 
   readonly atsDisabled = input(false);
-
-  constructor(
-    private readonly manageDashboardsService: ManageDashboardsService,
-    private readonly widgetsMetaService: WidgetsMetaService,
-    private readonly translatorService: TranslatorService,
-    private readonly localStorageService: LocalStorageService,
-    private readonly dashboardContextService: DashboardContextService
-  ) {
-  }
 
   ngOnInit(): void {
     this.initWidgetsGallery();

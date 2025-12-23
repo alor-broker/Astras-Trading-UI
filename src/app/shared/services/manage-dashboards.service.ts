@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Observable,
   shareReplay,
@@ -39,14 +39,11 @@ import { HttpContextTokens } from "../constants/http.constants";
   providedIn: 'root',
 })
 export class ManageDashboardsService {
-  private defaultConfig$?: Observable<DashboardTemplateConfig[]>;
+  private readonly httpClient = inject(HttpClient);
+  private readonly store = inject(Store);
+  private readonly dashboardContextService = inject(DashboardContextService);
 
-  constructor(
-    private readonly httpClient: HttpClient,
-    private readonly store: Store,
-    private readonly dashboardContextService: DashboardContextService
-  ) {
-  }
+  private defaultConfig$?: Observable<DashboardTemplateConfig[]>;
 
   get allDashboards$(): Observable<Dashboard[]> {
     return DashboardsStreams.getAllDashboards(this.store);

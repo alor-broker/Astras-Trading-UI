@@ -1,14 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  Inject,
-  input,
-  LOCALE_ID,
-  OnDestroy,
-  OnInit,
-  viewChild
-} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, input, LOCALE_ID, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
 import {NzCalendarComponent, NzDateFullCellDirective} from "ng-zorro-antd/calendar";
 import {BehaviorSubject, distinctUntilChanged, Observable, shareReplay, switchMap, tap} from "rxjs";
 import {CalendarEvent, CalendarEvents} from "../../models/events-calendar.model";
@@ -42,6 +32,11 @@ import {AsyncPipe, DatePipe} from '@angular/common';
   ]
 })
 export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly service = inject(EventsCalendarService);
+  private readonly marketService = inject(MarketService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly locale = inject(LOCALE_ID);
+
   readonly symbols = input<string[]>([]);
   readonly startPeriodCalendarComp = viewChild<NzCalendarComponent>('startPeriodCalendar');
   readonly endPeriodCalendarComp = viewChild<NzCalendarComponent>('endPeriodCalendar');
@@ -50,15 +45,6 @@ export class CalendarViewComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedDateEvents$ = new BehaviorSubject<CalendarEvent | null>(null);
   currencySettings$!: Observable<CurrencySettings>;
   private readonly symbolsChanges$ = toObservable(this.symbols);
-
-  constructor(
-    private readonly service: EventsCalendarService,
-    private readonly marketService: MarketService,
-    private readonly destroyRef: DestroyRef,
-    @Inject(LOCALE_ID)
-    private readonly locale: string
-  ) {
-  }
 
   ngOnInit(): void {
     this.currencySettings$ = this.marketService.getMarketSettings().pipe(

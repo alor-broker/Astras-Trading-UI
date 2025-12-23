@@ -1,7 +1,4 @@
-import {
-  DestroyRef,
-  Injectable
-} from '@angular/core';
+import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   Actions,
@@ -51,16 +48,13 @@ import { WidgetSettings } from "../../../shared/models/widget-settings.model";
   providedIn: 'root'
 })
 export class AdminSettingsBrokerService {
-  constructor(
-    private readonly store: Store,
-    private readonly actions$: Actions,
-    private readonly localStorageService: LocalStorageService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly manageDashboardsService: ManageDashboardsService,
-    private readonly globalLoadingIndicatorService: GlobalLoadingIndicatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
+  private readonly store = inject(Store);
+  private readonly actions$ = inject(Actions);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
+  private readonly globalLoadingIndicatorService = inject(GlobalLoadingIndicatorService);
+  private readonly destroyRef = inject(DestroyRef);
 
   initSettingsBrokers(): void {
     this.initTerminalSettingsBroker();

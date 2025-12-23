@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { NotificationsProvider } from '../../notifications/services/notifications-provider';
 import {
   Observable,
@@ -15,13 +15,10 @@ import { EnvironmentService } from "../../../shared/services/environment.service
 
 @Injectable()
 export class ApplicationReleaseNotificationProvider implements NotificationsProvider {
-  constructor(
-    private readonly applicationMetaService: ApplicationMetaService,
-    private readonly modalService: ModalService,
-    private readonly translatorService: TranslatorService,
-    private readonly environmentService: EnvironmentService
-  ) {
-  }
+  private readonly applicationMetaService = inject(ApplicationMetaService);
+  private readonly modalService = inject(ModalService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly environmentService = inject(EnvironmentService);
 
   getNotifications(): Observable<NotificationMeta[]> {
     if(this.environmentService.features.releases ?? true) {

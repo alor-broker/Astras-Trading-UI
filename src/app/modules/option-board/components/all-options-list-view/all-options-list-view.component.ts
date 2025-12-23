@@ -1,4 +1,4 @@
-import {Component, DestroyRef, input, OnDestroy, OnInit} from '@angular/core';
+import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
 import {OptionBoardDataContext} from "../../models/option-board-data-context.model";
 import {OptionBoardService} from "../../services/option-board.service";
 import {TranslatorService} from "../../../../shared/services/translator.service";
@@ -129,6 +129,13 @@ interface DisplaySettings extends RecordContent {
   styleUrl: './all-options-list-view.component.less'
 })
 export class AllOptionsListViewComponent implements OnInit, OnDestroy {
+  private readonly optionBoardService = inject(OptionBoardService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly widgetLocalStateService = inject(WidgetLocalStateService);
+  private readonly quotesService = inject(QuotesService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly dataContext = input.required<OptionBoardDataContext>();
 
   readonly guid = input.required<string>();
@@ -189,16 +196,6 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
     rowLayout: 'row-layout',
     displaySettings: 'display-settings'
   };
-
-  constructor(
-    private readonly optionBoardService: OptionBoardService,
-    private readonly translatorService: TranslatorService,
-    private readonly widgetLocalStateService: WidgetLocalStateService,
-    private readonly quotesService: QuotesService,
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.isLoading$.complete();

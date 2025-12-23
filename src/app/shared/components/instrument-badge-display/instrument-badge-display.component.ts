@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  OnInit,
-  input
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, input, inject } from '@angular/core';
 import { InstrumentKey } from "../../models/instruments/instrument-key.model";
 import {
   combineLatest,
@@ -34,17 +28,14 @@ import { LetDirective } from "@ngrx/component";
     ]
 })
 export class InstrumentBadgeDisplayComponent implements OnInit {
+  private readonly currentDashboardService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly instrumentKey = input.required<InstrumentKey>();
 
   selectedInstruments$!: Observable<InstrumentGroups>;
   badgesColors$!: Observable<string[]>;
-
-  constructor(
-    private readonly currentDashboardService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.selectedInstruments$ = combineLatest([

@@ -1,4 +1,4 @@
-import {Component, input, OnInit, output} from '@angular/core';
+import { Component, input, OnInit, output, inject } from '@angular/core';
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {filter, Observable, shareReplay, switchMap} from "rxjs";
 import {OrderbookData, OrderbookDataRow, OrderbookRequest} from "../../../orderbook/models/orderbook-data.model";
@@ -21,6 +21,8 @@ import {toObservable} from "@angular/core/rxjs-interop";
   ]
 })
 export class WorkingVolumesComponent implements OnInit {
+  private readonly subscriptionsDataFeedService = inject(SubscriptionsDataFeedService);
+
   currentAskBid$!: Observable<{
     ask: { volume: number, price: number } | null;
     bid: { volume: number, price: number } | null;
@@ -39,9 +41,6 @@ export class WorkingVolumesComponent implements OnInit {
     startWith(null),
     shareReplay(1)
   );
-
-  constructor(private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService) {
-  }
 
   get sortedVolumes(): number[] {
     return [...this.workingVolumes()].sort((a, b) => a - b);

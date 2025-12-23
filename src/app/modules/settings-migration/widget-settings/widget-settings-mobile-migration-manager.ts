@@ -1,6 +1,4 @@
-﻿import {
-  Injectable
-} from "@angular/core";
+﻿import { Injectable, inject } from "@angular/core";
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
 import { MobileMigrationManagerBase } from "../mobile-migration-manager-base";
 
@@ -8,12 +6,18 @@ import { MobileMigrationManagerBase } from "../mobile-migration-manager-base";
   providedIn: 'root'
 })
 export class WidgetSettingsMobileMigrationManager extends MobileMigrationManagerBase {
+  protected readonly localStorageService: LocalStorageService;
+
   protected migrations = [
     // UpdateBadgesWidgetsSettingsMigration is obsolete. Keep here just as example
     // inject(UpdateBadgesWidgetsSettingsMigration)
   ];
 
-  constructor(protected readonly localStorageService: LocalStorageService) {
+  constructor() {
+    const localStorageService = inject(LocalStorageService);
+
     super(localStorageService);
+
+    this.localStorageService = localStorageService;
   }
 }

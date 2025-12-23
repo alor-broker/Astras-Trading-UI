@@ -1,4 +1,4 @@
-import {Component, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {Observable} from "rxjs";
 import {WidgetSettingsCreationHelper} from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
@@ -21,14 +21,13 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class InstrumentsCorrelationWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+
   readonly widgetInstance = input.required<WidgetInstance>();
 
   readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<InstrumentsCorrelationSettings>;
-
-  constructor(private readonly widgetSettingsService: WidgetSettingsService) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

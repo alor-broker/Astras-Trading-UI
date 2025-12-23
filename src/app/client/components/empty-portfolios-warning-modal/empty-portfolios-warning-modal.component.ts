@@ -1,4 +1,4 @@
-import {Component, model, OnInit} from '@angular/core';
+import { Component, model, OnInit, inject } from '@angular/core';
 import {Observable} from "rxjs";
 import {EnvironmentService} from "../../../shared/services/environment.service";
 import {HelpService} from "../../../shared/services/help.service";
@@ -25,16 +25,13 @@ import {ExternalLinkComponent} from "../../../shared/components/external-link/ex
   styleUrl: './empty-portfolios-warning-modal.component.less'
 })
 export class EmptyPortfoliosWarningModalComponent implements OnInit {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly helpService = inject(HelpService);
+
   supportLink = this.environmentService.externalLinks?.support;
   helpLink$!: Observable<string | null>;
 
   readonly atsVisible = model(false);
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly helpService: HelpService
-  ) {
-  }
 
   ngOnInit(): void {
     this.helpLink$ = this.helpService.getSectionHelp('main');

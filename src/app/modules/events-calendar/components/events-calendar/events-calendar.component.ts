@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, input} from '@angular/core';
+import { Component, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {BehaviorSubject, combineLatest, forkJoin, map, Observable, shareReplay, switchMap, take} from "rxjs";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {Store} from "@ngrx/store";
@@ -38,18 +38,15 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class EventsCalendarComponent implements OnInit, OnDestroy {
+  private readonly store = inject(Store);
+  private readonly positionsService = inject(PositionsService);
+  private readonly marketService = inject(MarketService);
+
   readonly guid = input.required<string>();
 
   portfolios$!: Observable<PortfolioKey[]>;
   selectedPortfolio$ = new BehaviorSubject<PortfolioKey | null>(null);
   symbolsOfSelectedPortfolio$?: Observable<string[]>;
-
-  constructor(
-    private readonly store: Store,
-    private readonly positionsService: PositionsService,
-    private readonly marketService: MarketService
-  ) {
-  }
 
   ngOnInit(): void {
     this.portfolios$ = this.store.select(PortfoliosFeature.selectPortfoliosState)

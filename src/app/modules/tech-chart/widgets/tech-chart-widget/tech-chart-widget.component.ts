@@ -1,4 +1,4 @@
-import {Component, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
 import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
 import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
@@ -43,6 +43,11 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class TechChartWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly themeService = inject(ThemeService);
+
   shouldShowSettings = false;
 
   readonly widgetInstance = input.required<WidgetInstance>();
@@ -52,14 +57,6 @@ export class TechChartWidgetComponent implements OnInit {
   settings$!: Observable<TechChartSettings>;
   showBadge$!: Observable<boolean>;
   headerTitle$!: Observable<string | null>;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly themeService: ThemeService,
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

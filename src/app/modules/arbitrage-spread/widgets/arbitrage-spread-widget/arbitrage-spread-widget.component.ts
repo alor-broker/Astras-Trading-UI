@@ -1,4 +1,4 @@
-import {Component, input, OnInit, output} from '@angular/core';
+import { Component, input, OnInit, output, inject } from '@angular/core';
 import {Observable} from "rxjs";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {WidgetSettingsCreationHelper} from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
@@ -29,17 +29,14 @@ import {ArbitrageSpreadService} from "../../services/arbitrage-spread.service";
   providers: [ArbitrageSpreadService]
 })
 export class ArbitrageSpreadWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+
   readonly widgetInstance = input.required<WidgetInstance>();
 
   readonly isBlockWidget = input.required<boolean>();
 
   public readonly shouldShowSettingsChange = output<boolean>();
   settings$!: Observable<ArbitrageSpreadSettings>;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

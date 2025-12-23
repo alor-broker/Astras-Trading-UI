@@ -1,10 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  Inject,
-  LOCALE_ID,
-  OnInit
-} from '@angular/core';
+import { Component, DestroyRef, LOCALE_ID, OnInit, inject } from '@angular/core';
 import { DescriptorsListComponent } from "../../descriptors-list/descriptors-list.component";
 import { LetDirective } from "@ngrx/component";
 import { NzEmptyComponent } from "ng-zorro-antd/empty";
@@ -89,19 +83,16 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<DerivativeResponse>> = object({
     styleUrl: './derivative-info.component.less'
 })
 export class DerivativeInfoComponent extends InstrumentInfoBaseComponent implements OnInit {
+  private readonly graphQlService = inject(GraphQlService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly locale = inject(LOCALE_ID);
+  private readonly destroyRef = inject(DestroyRef);
+
   info$!: Observable<Derivative | null>;
 
   descriptors$!: Observable<DescriptorsGroup[] | null>;
 
   private readonly currencyPipe = new CurrencyPipe(this.locale);
-
-  constructor(
-    private readonly graphQlService: GraphQlService,
-    private readonly translatorService: TranslatorService,
-    @Inject(LOCALE_ID) private readonly locale: string,
-    private readonly destroyRef: DestroyRef) {
-    super();
-  }
 
   ngOnInit(): void {
     this.initDataStream();

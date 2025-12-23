@@ -1,15 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  ElementRef,
-  Inject,
-  LOCALE_ID,
-  OnDestroy,
-  OnInit,
-  input,
-  viewChild
-} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, LOCALE_ID, OnDestroy, OnInit, input, viewChild, inject } from '@angular/core';
 import {
   ActiveElement,
   Chart,
@@ -90,6 +79,17 @@ interface TooltipData {
     imports: [NgStyle, AsyncPipe]
 })
 export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
+  private readonly treemapService = inject(TreemapService);
+  private readonly themeService = inject(ThemeService);
+  private readonly quotesService = inject(QuotesService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+  private readonly settingsService = inject(WidgetSettingsService);
+  private readonly marketService = inject(MarketService);
+  private readonly destroy = inject(DestroyRef);
+  private readonly locale = inject(LOCALE_ID);
+
   readonly treemapWrapperEl = viewChild<ElementRef<HTMLDivElement>>('treemapWrapper');
   readonly guid = input.required<string>();
 
@@ -107,22 +107,6 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   isTooltipVisible$ = new BehaviorSubject(true);
 
   private settings$!: Observable<TreemapSettings>;
-
-  constructor(
-    private readonly treemapService: TreemapService,
-    private readonly themeService: ThemeService,
-    private readonly quotesService: QuotesService,
-    private readonly translatorService: TranslatorService,
-    private readonly instrumentsService: InstrumentsService,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext,
-    private readonly settingsService: WidgetSettingsService,
-    private readonly marketService: MarketService,
-    private readonly destroy: DestroyRef,
-    @Inject(LOCALE_ID)
-    private readonly locale: string
-  ) {
-  }
 
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<TreemapSettings>(this.guid()).pipe(

@@ -1,7 +1,7 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {BlotterBaseTableComponent} from "./blotter-base-table.component";
-import {Component, DestroyRef} from "@angular/core";
+import { Component, DestroyRef, inject } from "@angular/core";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {BlotterService} from "../../services/blotter.service";
 import {By} from "@angular/platform-browser";
@@ -29,19 +29,31 @@ import {MockComponents} from "ng-mocks";
   `
 })
 class TestComponent extends BlotterBaseTableComponent<{ id: string }, object> {
+  protected readonly service = inject(BlotterService);
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly translatorService: TranslatorService;
+  protected readonly nzContextMenuService: NzContextMenuService;
+  protected readonly widgetLocalStateService: WidgetLocalStateService;
+  protected readonly destroyRef: DestroyRef;
+
   settingsTableName = TableNames.OrdersTable;
   readonly restoreFiltersAndSortOnLoad = false;
   protected allColumns: BaseColumnSettings<{ id: string }>[] = [];
 
-  constructor(
-    protected readonly service: BlotterService,
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly translatorService: TranslatorService,
-    protected readonly nzContextMenuService: NzContextMenuService,
-    protected readonly widgetLocalStateService: WidgetLocalStateService,
-    protected readonly destroyRef: DestroyRef
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const translatorService = inject(TranslatorService);
+    const nzContextMenuService = inject(NzContextMenuService);
+    const widgetLocalStateService = inject(WidgetLocalStateService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, translatorService, nzContextMenuService, widgetLocalStateService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.translatorService = translatorService;
+    this.nzContextMenuService = nzContextMenuService;
+    this.widgetLocalStateService = widgetLocalStateService;
+    this.destroyRef = destroyRef;
   }
 
   protected rowToInstrumentKey(): Observable<InstrumentKey | null> {

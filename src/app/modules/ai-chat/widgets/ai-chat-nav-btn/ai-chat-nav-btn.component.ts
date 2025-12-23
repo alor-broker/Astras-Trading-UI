@@ -1,7 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {NzIconDirective} from "ng-zorro-antd/icon";
@@ -24,9 +21,8 @@ import { SideChatWidgetComponent } from '../side-chat-widget/side-chat-widget.co
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AiChatNavBtnComponent {
+  private readonly environmentService = inject(EnvironmentService);
+
   aiChatAvailable = this.environmentService.features.aiChat;
   aiChatVisible = false;
-
-  constructor(private readonly environmentService: EnvironmentService) {
-  }
 }

@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, DestroyRef, model, OnInit} from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, model, OnInit, inject } from '@angular/core';
 import {forkJoin, fromEvent, Observable, of, shareReplay, take} from "rxjs";
 import {WatchlistCollectionService} from "../../services/watchlist-collection.service";
 import {filter, map} from "rxjs/operators";
@@ -65,6 +65,12 @@ interface ParsedItem {
   ]
 })
 export class ImportWatchlistDialogComponent implements OnInit {
+  private readonly marketService = inject(MarketService);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly watchlistCollectionService = inject(WatchlistCollectionService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
+
   inputString = '';
   parsedResults$: Observable<ParsedItem[] | null> | null = null;
 
@@ -76,15 +82,6 @@ export class ImportWatchlistDialogComponent implements OnInit {
   isVisible$ = this.dialogParamsChanges$.pipe(
     map(p => !!p)
   );
-
-  constructor(
-    private readonly marketService: MarketService,
-    private readonly instrumentsService: InstrumentsService,
-    private readonly watchlistCollectionService: WatchlistCollectionService,
-    private readonly cdr: ChangeDetectorRef,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.dialogParamsChanges$.pipe(

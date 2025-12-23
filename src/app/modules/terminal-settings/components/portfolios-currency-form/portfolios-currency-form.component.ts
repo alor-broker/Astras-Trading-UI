@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {
   ControlValueAccessorBaseComponent
 } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
@@ -45,6 +45,12 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseComponent<PortfolioCurrencySettings[]> implements OnInit {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly marketService = inject(MarketService);
+  private readonly exchangeRateService = inject(ExchangeRateService);
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly form = this.formBuilder.array([
     this.formBuilder.group({
       portfolio: this.formBuilder.nonNullable.control({portfolio: '', exchange: ''}),
@@ -53,16 +59,6 @@ export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseCom
   ]);
 
   currencies$!: Observable<CurrencyPair[]>;
-
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly marketService: MarketService,
-    private readonly exchangeRateService: ExchangeRateService,
-    private readonly userPortfoliosService: UserPortfoliosService,
-    private readonly destroyRef: DestroyRef
-  ) {
-    super();
-  }
 
   writeValue(value: PortfolioCurrencySettings[] | null): void {
     this.setFormValue(value);

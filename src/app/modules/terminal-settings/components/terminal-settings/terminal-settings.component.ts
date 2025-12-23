@@ -1,4 +1,4 @@
-import {Component, DestroyRef, ElementRef, Inject, OnDestroy, OnInit, input, output} from '@angular/core';
+import { Component, DestroyRef, ElementRef, OnDestroy, OnInit, input, output, inject } from '@angular/core';
 import {BehaviorSubject, Observable, of, take} from 'rxjs';
 import {FullName} from '../../../../shared/models/user/full-name.model';
 import {
@@ -63,6 +63,15 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class TerminalSettingsComponent implements OnInit, OnDestroy {
+  private readonly accountService = inject(AccountService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly modal = inject(ModalService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly exportSettingsService = inject<ExportSettingsService>(EXPORT_SETTINGS_SERVICE_TOKEN);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly elRef = inject(ElementRef);
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly hiddenSections = input<string[]>([]);
 
   readonly formChange = output<{
@@ -89,19 +98,6 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
 
   tabSetHeight$ = new BehaviorSubject(300);
   exportSettingsLoading$ = new BehaviorSubject<boolean>(false);
-
-  constructor(
-    private readonly accountService: AccountService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly modal: ModalService,
-    private readonly translatorService: TranslatorService,
-    @Inject(EXPORT_SETTINGS_SERVICE_TOKEN)
-    private readonly exportSettingsService: ExportSettingsService,
-    private readonly destroyRef: DestroyRef,
-    private readonly elRef: ElementRef,
-    private readonly formBuilder: FormBuilder
-  ) {
-  }
 
   ngOnInit(): void {
     this.fullName$ = this.accountService.getFullName();

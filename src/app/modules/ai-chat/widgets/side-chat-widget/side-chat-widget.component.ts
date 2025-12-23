@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, model, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import { Component, DestroyRef, model, OnChanges, OnInit, SimpleChanges, inject } from '@angular/core';
 import {LocalStorageService} from "../../../../shared/services/local-storage.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {User} from "../../../../shared/models/user/user.model";
@@ -26,6 +26,10 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class SideChatWidgetComponent implements OnInit, OnChanges {
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly userContext = inject<UserContext>(USER_CONTEXT);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly atsVisible = model(false);
 
   isResizing = false;
@@ -33,14 +37,6 @@ export class SideChatWidgetComponent implements OnInit, OnChanges {
   isTermOfUseDialogVisible = false;
   isChatDisabled = true;
   private mouseupSub?: Subscription;
-
-  constructor(
-    private readonly localStorageService: LocalStorageService,
-    @Inject(USER_CONTEXT)
-    private readonly userContext: UserContext,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.atsVisible != null) {

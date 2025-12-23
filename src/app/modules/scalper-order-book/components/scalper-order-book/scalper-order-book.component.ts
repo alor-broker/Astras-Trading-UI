@@ -1,10 +1,4 @@
-import {
-  Component,
-  InjectionToken,
-  OnDestroy,
-  OnInit,
-  input
-} from '@angular/core';
+import { Component, InjectionToken, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {
   BehaviorSubject,
   distinctUntilChanged,
@@ -71,6 +65,8 @@ export const SCALPER_ORDERBOOK_SHARED_CONTEXT = new InjectionToken<ScalperOrderB
     ]
 })
 export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext, OnInit, OnDestroy {
+  private readonly dataContextService = inject(ScalperOrderBookDataProvider);
+
   readonly guid = input.required<string>();
 
   readonly isActive = input(false);
@@ -81,9 +77,6 @@ export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext,
   gridSettings$!: Observable<{ rowHeight: number, fontSize: number }>;
 
   hideTooltips$!: Observable<boolean>;
-
-  constructor(private readonly dataContextService: ScalperOrderBookDataProvider) {
-  }
 
   setScaleFactor(value: number): void {
     this.scaleFactor$.next(value);

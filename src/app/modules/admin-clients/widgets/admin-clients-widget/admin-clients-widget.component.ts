@@ -1,8 +1,4 @@
-import {
-  Component,
-  OnInit,
-  input
-} from '@angular/core';
+import { Component, OnInit, input, inject } from '@angular/core';
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
 import { Observable } from "rxjs";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
@@ -33,6 +29,8 @@ import {WidgetHeaderComponent} from "../../../../shared/components/widget-header
   styleUrl: './admin-clients-widget.component.less'
 })
 export class AdminClientsWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+
   shouldShowSettings = false;
 
   readonly widgetInstance = input.required<WidgetInstance>();
@@ -40,11 +38,6 @@ export class AdminClientsWidgetComponent implements OnInit {
   readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<AdminClientsSettings>;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

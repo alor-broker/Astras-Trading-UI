@@ -1,4 +1,4 @@
-import {Component, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {Observable} from "rxjs";
 import {InstrumentSelectSettings} from "../../../instruments/models/instrument-select-settings.model";
@@ -36,6 +36,9 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class BondScreenerWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+
   shouldShowSettings = false;
 
   readonly widgetInstance = input.required<WidgetInstance>();
@@ -44,12 +47,6 @@ export class BondScreenerWidgetComponent implements OnInit {
 
   settings$!: Observable<InstrumentSelectSettings>;
   showBadge$!: Observable<boolean>;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly terminalSettingsService: TerminalSettingsService
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

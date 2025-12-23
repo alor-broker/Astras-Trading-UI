@@ -1,10 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  Inject,
-  LOCALE_ID,
-  OnInit
-} from '@angular/core';
+import { Component, DestroyRef, LOCALE_ID, OnInit, inject } from '@angular/core';
 import {
   FetchPolicy,
   GraphQlService
@@ -94,18 +88,14 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<StockResponse>> = object({
     styleUrl: './stock-info.component.less'
 })
 export class StockInfoComponent extends InstrumentInfoBaseComponent implements OnInit {
+  private readonly graphQlService = inject(GraphQlService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly locale = inject(LOCALE_ID);
+  private readonly destroyRef = inject(DestroyRef);
+
   info$!: Observable<Stock | null>;
 
   descriptors!: Observable<DescriptorsGroup[] | null>;
-
-  constructor(
-    private readonly graphQlService: GraphQlService,
-    private readonly translatorService: TranslatorService,
-    @Inject(LOCALE_ID)
-    private readonly locale: string,
-    private readonly destroyRef: DestroyRef) {
-    super();
-  }
 
   ngOnInit(): void {
     this.initDataStream();

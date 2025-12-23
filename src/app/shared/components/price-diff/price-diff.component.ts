@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Inject, input, LOCALE_ID, OnChanges} from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, LOCALE_ID, OnChanges, inject } from '@angular/core';
 import {DecimalPipe, NgStyle} from "@angular/common";
 import {ThemeService} from "../../services/theme.service";
 import {shareReplay, take} from "rxjs";
@@ -19,6 +19,9 @@ interface PriceDiff {
   imports: [NgStyle]
 })
 export class PriceDiffComponent implements OnChanges {
+  private readonly locale = inject(LOCALE_ID);
+  private readonly themeService = inject(ThemeService);
+
   readonly basePrice = input(0);
 
   readonly currentPrice = input.required<number>();
@@ -33,13 +36,6 @@ export class PriceDiffComponent implements OnChanges {
     map(x => x.themeColors),
     shareReplay({bufferSize: 1, refCount: true})
   );
-
-  constructor(
-    @Inject(LOCALE_ID) private readonly locale: string,
-    private readonly themeService: ThemeService
-  ) {
-
-  }
 
   ngOnChanges(): void {
     this.update();

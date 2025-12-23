@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, ElementRef, Inject, OnInit, input, viewChild} from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, input, viewChild, inject } from '@angular/core';
 import {
   NzAutocompleteComponent,
   NzAutocompleteOptionComponent,
@@ -57,6 +57,12 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class InstrumentSelectComponent implements OnInit {
+  private readonly service = inject(InstrumentsService);
+  private readonly settingsService = inject(WidgetSettingsService);
+  private readonly watchlistCollectionService = inject(WatchlistCollectionService);
+  private readonly watchInstrumentsService = inject(WatchInstrumentsService);
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+
   readonly inputEl = viewChild.required<ElementRef<HTMLInputElement>>('inputEl');
 
   readonly guid = input.required<string>();
@@ -67,16 +73,6 @@ export class InstrumentSelectComponent implements OnInit {
   settings$!: Observable<InstrumentSelectSettings>;
   getTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
   private readonly filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
-
-  constructor(
-    private readonly service: InstrumentsService,
-    private readonly settingsService: WidgetSettingsService,
-    private readonly watchlistCollectionService: WatchlistCollectionService,
-    private readonly watchInstrumentsService: WatchInstrumentsService,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext) {
-
-  }
 
   onChange(value: string): void {
     const existing = this.filter$.getValue();

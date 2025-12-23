@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, viewChild} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
 import {BehaviorSubject, combineLatest, distinctUntilChanged, filter, Observable,} from 'rxjs';
 import {ContentSize} from '../../../../shared/models/dashboard/dashboard-item.model';
 import {color, ScaleLinear, scaleLinear} from 'd3';
@@ -51,6 +51,9 @@ interface TradeDisplay {
   imports: [NzResizeObserverDirective]
 })
 export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly themeService = inject(ThemeService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly canvas = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
 
   readonly xAxisStep = input.required<number>();
@@ -80,11 +83,6 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly contentSize$ = new BehaviorSubject<ContentSize>({width: 0, height: 0});
   private displayPriceItems$!: Observable<BodyRow[]>;
-
-  constructor(
-    private readonly themeService: ThemeService,
-    private readonly destroyRef: DestroyRef) {
-  }
 
   ngAfterViewInit(): void {
     const panelSettings$ = this.dataContext().extendedSettings$.pipe(

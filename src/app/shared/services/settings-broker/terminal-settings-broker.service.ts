@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   BehaviorSubject,
   Observable,
@@ -26,15 +26,12 @@ export interface ReadTerminalSettingsResult {
   providedIn: 'root'
 })
 export class TerminalSettingsBrokerService {
+  private readonly remoteStorageService = inject(RemoteStorageService);
+  private readonly terminalSettingsDesktopMigrationManager = inject(TerminalSettingsDesktopMigrationManager);
+
   private readonly saveRequestDelay = 10;
   private readonly saveQuery$ = new Subject<TerminalSettings>();
   private saveStream$?: Observable<boolean>;
-
-  constructor(
-    private readonly remoteStorageService: RemoteStorageService,
-    private readonly terminalSettingsDesktopMigrationManager: TerminalSettingsDesktopMigrationManager
-  ) {
-  }
 
   private get settingsKey(): string {
     return 'terminal-settings';

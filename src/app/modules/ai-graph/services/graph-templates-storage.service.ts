@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   HttpClient,
   HttpContext
@@ -14,12 +14,9 @@ import { HttpContextTokens } from "../../../shared/constants/http.constants";
   providedIn: 'root'
 })
 export class GraphTemplatesStorageService {
-  private allTemplates$: Observable<GraphTemplate[]> | null = null;
+  private readonly httpClient = inject(HttpClient);
 
-  constructor(
-    private readonly httpClient: HttpClient
-  ) {
-  }
+  private allTemplates$: Observable<GraphTemplate[]> | null = null;
 
   getAllTemplates(): Observable<GraphTemplate[]> {
     this.allTemplates$ ??= this.httpClient.get<GraphTemplate[]>(

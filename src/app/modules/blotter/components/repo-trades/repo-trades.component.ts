@@ -1,4 +1,4 @@
-import {Component, DestroyRef, output} from '@angular/core';
+import { Component, DestroyRef, output, inject } from '@angular/core';
 import {combineLatest, defer, distinctUntilChanged, Observable, switchMap, take} from "rxjs";
 import {BaseColumnSettings, FilterType} from "../../../../shared/models/settings/table-settings.model";
 import {allRepoTradesColumns, TableNames} from "../../models/blotter-settings.model";
@@ -80,6 +80,14 @@ import {DecimalPipe} from '@angular/common';
   ]
 })
 export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, TradeFilter> {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly service = inject(BlotterService);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+  protected readonly translatorService: TranslatorService;
+  protected readonly nzContextMenuService: NzContextMenuService;
+  protected readonly widgetLocalStateService: WidgetLocalStateService;
+  protected readonly destroyRef: DestroyRef;
+
   readonly shouldShowSettingsChange = output<boolean>();
 
   allColumns: BaseColumnSettings<RepoTrade>[] = [
@@ -247,15 +255,13 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
   settingsTableName = TableNames.RepoTradesTable;
   fileSuffix = 'repoTrades';
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly service: BlotterService,
-    private readonly timezoneConverterService: TimezoneConverterService,
-    protected readonly translatorService: TranslatorService,
-    protected readonly nzContextMenuService: NzContextMenuService,
-    protected readonly widgetLocalStateService: WidgetLocalStateService,
-    protected readonly destroyRef: DestroyRef
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const translatorService = inject(TranslatorService);
+    const nzContextMenuService = inject(NzContextMenuService);
+    const widgetLocalStateService = inject(WidgetLocalStateService);
+    const destroyRef = inject(DestroyRef);
+
     super(
       settingsService,
       translatorService,
@@ -263,6 +269,12 @@ export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, Tr
       widgetLocalStateService,
       destroyRef
     );
+
+    this.settingsService = settingsService;
+    this.translatorService = translatorService;
+    this.nzContextMenuService = nzContextMenuService;
+    this.widgetLocalStateService = widgetLocalStateService;
+    this.destroyRef = destroyRef;
   }
 
   get restoreFiltersAndSortOnLoad(): boolean {

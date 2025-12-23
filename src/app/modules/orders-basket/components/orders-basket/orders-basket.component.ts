@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, OnDestroy, OnInit, input} from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -75,6 +75,12 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class OrdersBasketComponent implements OnInit, OnDestroy {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  private readonly evaluationService = inject(EvaluationService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly guid = input.required<string>();
 
   readonly form = this.formBuilder.group({
@@ -109,16 +115,6 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   itemsContainerWidth$ = new Subject<number>();
 
   private readonly savedBaskets = new Map<string, OrdersBasket>();
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
-    private readonly evaluationService: EvaluationService,
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.formSubscriptions?.unsubscribe();

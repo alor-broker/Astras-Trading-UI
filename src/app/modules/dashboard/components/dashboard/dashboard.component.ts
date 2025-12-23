@@ -1,8 +1,4 @@
-import {
-  Component,
-  OnInit,
-  viewChild
-} from '@angular/core';
+import { Component, OnInit, viewChild, inject } from '@angular/core';
 import { CompactType, DisplayGrid, Draggable, GridsterComponent, GridsterConfig, GridsterItem, GridType, PushDirections, Resizable, GridsterItemComponent } from 'angular-gridster2';
 import {
   combineLatest,
@@ -47,6 +43,11 @@ interface WidgetItem { instance: WidgetInstance, gridsterItem: GridsterItem }
     ]
 })
 export class DashboardComponent implements OnInit {
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly widgetsMetaService = inject(WidgetsMetaService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+
   readonly gridster = viewChild(GridsterComponent);
 
   options$!: Observable<Safe>;
@@ -57,14 +58,6 @@ export class DashboardComponent implements OnInit {
     itemDefaultWidth: 10,
     itemDefaultHeight: 18
   };
-
-  constructor(
-    private readonly manageDashboardsService: ManageDashboardsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly widgetsMetaService: WidgetsMetaService,
-    private readonly terminalSettingsService: TerminalSettingsService
-  ) {
-  }
 
   ngOnInit(): void {
     this.options$ = this.terminalSettingsService.getSettings().pipe(

@@ -1,4 +1,4 @@
-import {Component, DestroyRef, input, OnDestroy, OnInit} from '@angular/core';
+import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
 import {BehaviorSubject, combineLatest, shareReplay, tap} from "rxjs";
 import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
@@ -85,6 +85,10 @@ interface CorrelationMatrix {
   ]
 })
 export class CorrelationChartComponent implements OnInit, OnDestroy {
+  private readonly instrumentsCorrelationService = inject(InstrumentsCorrelationService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly loadingStatus$ = new BehaviorSubject<LoadingStatus>(LoadingStatus.Initial);
   readonly request$ = new BehaviorSubject<InstrumentsCorrelationRequest | null>(null);
   readonly loadingStatuses = LoadingStatus;
@@ -94,13 +98,6 @@ export class CorrelationChartComponent implements OnInit, OnDestroy {
   loadingError: LoadingError | null = null;
   protected readonly G = G;
   private readonly contentSize$ = new BehaviorSubject<ContentSize>({width: 0, height: 0});
-
-  constructor(
-    private readonly instrumentsCorrelationService: InstrumentsCorrelationService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   get figureId(): string {
     return `f_${this.guid().replace(/-/g, '')}`;

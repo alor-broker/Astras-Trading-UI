@@ -1,4 +1,4 @@
-import {Component, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {Observable, take} from "rxjs";
 import {OptionBoardSettings} from "../../models/option-board-settings.model";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
@@ -34,6 +34,11 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class OptionBoardWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly deviceService = inject(DeviceService);
+
   shouldShowSettings = false;
   deviceInfo$!: Observable<DeviceInfo>;
 
@@ -43,14 +48,6 @@ export class OptionBoardWidgetComponent implements OnInit {
 
   settings$!: Observable<OptionBoardSettings>;
   showBadge$!: Observable<boolean>;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly deviceService: DeviceService
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

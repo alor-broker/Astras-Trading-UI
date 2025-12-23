@@ -1,4 +1,4 @@
-import {Component, OnInit, input} from '@angular/core';
+import { Component, OnInit, input, inject } from '@angular/core';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
 import {Observable} from 'rxjs';
 import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
@@ -23,19 +23,16 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class RibbonWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly manageDashboardService = inject(ManageDashboardsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+
   readonly widgetInstance = input.required<WidgetInstance>();
 
   readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<RibbonSettings>;
   readonly currentDashboard$ = this.dashboardContextService.selectedDashboard$;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly manageDashboardService: ManageDashboardsService,
-    private readonly dashboardContextService: DashboardContextService,
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

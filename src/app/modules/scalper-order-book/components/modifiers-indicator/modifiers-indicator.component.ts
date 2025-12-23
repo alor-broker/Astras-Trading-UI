@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {Observable} from "rxjs";
 import {ScalperHotKeyCommandService} from "../../services/scalper-hot-key-command.service";
 import {ModifierKeys} from "../../models/scalper-command";
@@ -15,12 +15,9 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class ModifiersIndicatorComponent implements OnInit {
-  modifierKeyPressed$!: Observable<ModifierKeys>;
+  private readonly hotkeysService = inject(ScalperHotKeyCommandService);
 
-  constructor(
-    private readonly hotkeysService: ScalperHotKeyCommandService,
-  ) {
-  }
+  modifierKeyPressed$!: Observable<ModifierKeys>;
 
   ngOnInit(): void {
     this.modifierKeyPressed$ = this.hotkeysService.modifiers$;

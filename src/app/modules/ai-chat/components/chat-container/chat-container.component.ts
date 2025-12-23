@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, contentChildren, DestroyRef, ElementRef, viewChild} from '@angular/core';
+import { AfterViewInit, Component, contentChildren, DestroyRef, ElementRef, viewChild, inject } from '@angular/core';
 import {ChatMessageContainerComponent} from "../chat-message-container/chat-message-container.component";
 import {startWith} from "rxjs/operators";
 import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
@@ -9,13 +9,12 @@ import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
   styleUrls: ['./chat-container.component.less']
 })
 export class ChatContainerComponent implements AfterViewInit {
+  private readonly DestroyRef = inject(DestroyRef);
+
   readonly messagesContainer = viewChild.required<ElementRef<HTMLDivElement>>('messagesContainer');
 
   readonly messages = contentChildren(ChatMessageContainerComponent);
   private readonly messagesChanges$ = toObservable(this.messages);
-
-  constructor(private readonly DestroyRef: DestroyRef) {
-  }
 
   ngAfterViewInit(): void {
     this.messagesChanges$.pipe(

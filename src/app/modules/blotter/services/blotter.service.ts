@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   BehaviorSubject,
   interval,
@@ -32,22 +29,18 @@ import {PortfolioKey} from "../../../shared/models/portfolio-key.model";
 
 @Injectable()
 export class BlotterService {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly notification = inject(OrdersNotificationsService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly http = inject(HttpClient);
+  private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly marketService = inject(MarketService);
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+
   private readonly shouldShowOrderGroupModal = new BehaviorSubject<boolean>(false);
   private readonly orderGroupParams = new BehaviorSubject<string | null>(null);
   shouldShowOrderGroupModal$ = this.shouldShowOrderGroupModal.asObservable();
   orderGroupParams$ = this.orderGroupParams.asObservable();
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly notification: OrdersNotificationsService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly http: HttpClient,
-    private readonly errorHandler: ErrorHandlerService,
-    private readonly marketService: MarketService,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext
-  ) {
-  }
 
   selectNewInstrument(symbol: string, exchange: string, board: string | null, badgeColor: string): void {
     this.getInstrumentToSelect(symbol, exchange, board)

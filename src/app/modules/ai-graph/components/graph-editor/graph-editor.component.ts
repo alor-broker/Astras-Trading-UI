@@ -1,13 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  input,
-  OnDestroy,
-  output,
-  viewChildren,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, input, OnDestroy, output, viewChildren, inject } from '@angular/core';
 import {GraphConfig} from "../../models/graph.model";
 import {
   IContextMenuOptions,
@@ -58,6 +49,9 @@ import {toObservable} from "@angular/core/rxjs-interop";
   styleUrl: './graph-editor.component.less'
 })
 export class GraphEditorComponent implements AfterViewInit, OnDestroy {
+  private readonly translatorService = inject(TranslatorService);
+  private readonly cdr = inject(ChangeDetectorRef);
+
   readonly initialConfig = input<GraphConfig | null>(null);
 
   readonly updateConfig = output<GraphConfig>();
@@ -82,12 +76,6 @@ export class GraphEditorComponent implements AfterViewInit, OnDestroy {
   protected isRunMenuVisible = false;
   private readonly canvasQueryChanges$ = toObservable(this.canvasQuery);
   private graphCanvas?: LGraphCanvas;
-
-  constructor(
-    private readonly translatorService: TranslatorService,
-    private readonly cdr: ChangeDetectorRef
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.containerSize$.complete();

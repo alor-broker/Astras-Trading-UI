@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, input} from '@angular/core';
+import { Component, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {BehaviorSubject, Observable, of, take} from 'rxjs';
 import {ModalService} from 'src/app/shared/services/modal.service';
 import {TerminalSettings} from "../../../../shared/models/terminal-settings/terminal-settings.model";
@@ -27,6 +27,10 @@ import {TerminalSettingsComponent} from "../../components/terminal-settings/term
   ]
 })
 export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly globalLoadingIndicatorService = inject(GlobalLoadingIndicatorService);
+  private readonly modalService = inject(ModalService);
+
   readonly hiddenSections = input<string[]>([]);
 
   settingsFormValue: TerminalSettings | null = null;
@@ -34,13 +38,6 @@ export class TerminalSettingsWidgetComponent implements OnInit, OnDestroy {
   selectedTab = TabNames.usefulLinks;
   isLoading$ = new BehaviorSubject(false);
   private initialSettingsFormValue!: TerminalSettings;
-
-  constructor(
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly globalLoadingIndicatorService: GlobalLoadingIndicatorService,
-    private readonly modalService: ModalService
-  ) {
-  }
 
   get isSettingsHasChanges(): boolean {
     return !!this.settingsFormValue &&

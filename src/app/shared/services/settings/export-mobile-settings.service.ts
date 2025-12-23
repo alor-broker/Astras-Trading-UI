@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   ExportSettingsService,
   SettingsExportToFileResult
@@ -24,11 +21,8 @@ import { InstrumentKey } from "../../models/instruments/instrument-key.model";
 
 @Injectable()
 export class ExportMobileSettingsService implements ExportSettingsService {
-  constructor(
-    @Inject(USER_CONTEXT)
-    private readonly userContext: UserContext,
-    private readonly localStorageService: LocalStorageService) {
-  }
+  private readonly userContext = inject<UserContext>(USER_CONTEXT);
+  private readonly localStorageService = inject(LocalStorageService);
 
   private get filename(): string {
     return `ASTRAS_MOBILE_${Date.now()}`;

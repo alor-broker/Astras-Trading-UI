@@ -1,4 +1,4 @@
-import {Component, DestroyRef, input, OnDestroy, OnInit} from '@angular/core';
+import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
 import {BaseOrderFormComponent} from "../base-order-form.component";
 import {BehaviorSubject, combineLatest, distinctUntilChanged, Observable, shareReplay, switchMap, take} from "rxjs";
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -59,6 +59,13 @@ import {AsyncPipe, KeyValuePipe} from '@angular/common';
   ]
 })
 export class MarketOrderFormComponent extends BaseOrderFormComponent implements OnInit, OnDestroy {
+  private readonly formBuilder = inject(FormBuilder);
+  protected commonParametersService: CommonParametersService;
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly quotesService = inject(QuotesService);
+  private readonly orderCommandService = inject(ConfirmableOrderCommandsService);
+  protected readonly destroyRef: DestroyRef;
+
   readonly evaluationRequest$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   readonly sides = Side;
 
@@ -83,14 +90,14 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
     timeInForce: this.formBuilder.control<TimeInForce | null>(null),
   });
 
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    protected commonParametersService: CommonParametersService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly quotesService: QuotesService,
-    private readonly orderCommandService: ConfirmableOrderCommandsService,
-    protected readonly destroyRef: DestroyRef) {
+  constructor() {
+    const commonParametersService = inject(CommonParametersService);
+    const destroyRef = inject(DestroyRef);
+
     super(commonParametersService, destroyRef);
+
+    this.commonParametersService = commonParametersService;
+    this.destroyRef = destroyRef;
   }
 
   get canSubmit(): boolean {

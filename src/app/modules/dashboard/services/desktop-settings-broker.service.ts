@@ -1,7 +1,4 @@
-import {
-  DestroyRef,
-  Injectable
-} from '@angular/core';
+import { DestroyRef, Injectable, inject } from '@angular/core';
 import { DashboardSettingsBrokerService } from "../../../shared/services/settings-broker/dashboard-settings-broker.service";
 import { WidgetsSettingsBrokerService } from "../../../shared/services/settings-broker/widgets-settings-broker.service";
 import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
@@ -51,19 +48,16 @@ export interface InitSettingsBrokersOptions {
   providedIn: 'root'
 })
 export class DesktopSettingsBrokerService {
-  constructor(
-    private readonly store: Store,
-    private readonly actions$: Actions,
-    private readonly dashboardSettingsBrokerService: DashboardSettingsBrokerService,
-    private readonly manageDashboardsService: ManageDashboardsService,
-    private readonly widgetsSettingsBrokerService: WidgetsSettingsBrokerService,
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly terminalSettingsBrokerService: TerminalSettingsBrokerService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly globalLoadingIndicatorService: GlobalLoadingIndicatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
+  private readonly store = inject(Store);
+  private readonly actions$ = inject(Actions);
+  private readonly dashboardSettingsBrokerService = inject(DashboardSettingsBrokerService);
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
+  private readonly widgetsSettingsBrokerService = inject(WidgetsSettingsBrokerService);
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly terminalSettingsBrokerService = inject(TerminalSettingsBrokerService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly globalLoadingIndicatorService = inject(GlobalLoadingIndicatorService);
+  private readonly destroyRef = inject(DestroyRef);
 
   initSettingsBrokers(options: InitSettingsBrokersOptions): void {
     this.initTerminalSettingsBroker(options);

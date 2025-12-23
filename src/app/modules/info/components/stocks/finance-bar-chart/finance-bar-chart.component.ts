@@ -1,4 +1,4 @@
-import {Component, DestroyRef, input, OnInit} from '@angular/core';
+import { Component, DestroyRef, input, OnInit, inject } from '@angular/core';
 import {ChartConfiguration, ChartData, ChartDataset, ChartType} from 'chart.js';
 import {MathHelper} from 'src/app/shared/utils/math-helper';
 import {ThemeService} from '../../../../../shared/services/theme.service';
@@ -19,6 +19,10 @@ import {filter} from "rxjs/operators";
   ]
 })
 export class FinanceBarChartComponent implements OnInit {
+  private readonly themeService = inject(ThemeService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly destroyRef = inject(DestroyRef);
+
   yearChartOptions: ChartConfiguration['options'] = {
     responsive: true,
     scales: {
@@ -76,13 +80,6 @@ export class FinanceBarChartComponent implements OnInit {
 
   readonly stockInfo = input.required<Stock>();
   private readonly stockInfoChanges$ = toObservable(this.stockInfo);
-
-  constructor(
-    private readonly themeService: ThemeService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     combineLatest({

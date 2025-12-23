@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {
   WidgetSettingsBaseComponent
 } from "../../../../shared/components/widget-settings/widget-settings-base.component";
@@ -38,6 +38,11 @@ import {AsyncPipe} from "@angular/common";
   styleUrl: './market-trends-settings.component.less'
 })
 export class MarketTrendsSettingsComponent extends WidgetSettingsBaseComponent<MarketTrendsSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly validation = {
     itemsCount: {
       min: 5,
@@ -73,13 +78,16 @@ export class MarketTrendsSettingsComponent extends WidgetSettingsBaseComponent<M
   protected readonly allExtendedFilters = Object.keys(ExtendedFilter)
     .map(s => ExtendedFilter[s as keyof typeof ExtendedFilter]);
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly formBuilder: FormBuilder
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {

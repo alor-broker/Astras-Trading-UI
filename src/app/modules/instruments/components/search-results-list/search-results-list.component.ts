@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  input
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, input, inject } from '@angular/core';
 import { SearchResultItem } from "../../utils/search-instrument-store";
 import {
   NzColDirective,
@@ -64,6 +59,9 @@ import { TranslocoDirective } from "@jsverse/transloco";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchResultsListComponent implements OnInit {
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+
   readonly items = input.required<SearchResultItem[]>();
 
   readonly itemSize = input(40);
@@ -71,12 +69,6 @@ export class SearchResultsListComponent implements OnInit {
   readonly height = input(200);
 
   availableInstrumentGroups$!: Observable<string[]>;
-
-  constructor(
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly dashboardContextService: DashboardContextService
-  ) {
-  }
 
   ngOnInit(): void {
     const isBadgesEnabled$ = this.terminalSettingsService.getSettings().pipe(

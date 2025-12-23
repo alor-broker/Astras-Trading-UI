@@ -1,7 +1,4 @@
-import {
-  Component,
-  OnInit
-} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ScalperCommandProcessorService } from '../../services/scalper-command-processor.service';
 import {
   combineLatest,
@@ -23,13 +20,10 @@ import { AsyncPipe } from '@angular/common';
     ]
 })
 export class PossibleActionsPanelComponent implements OnInit {
-  currentActions$!: Observable<string[] | null>;
+  private readonly commandProcessorService = inject(ScalperCommandProcessorService);
+  private readonly translatorService = inject(TranslatorService);
 
-  constructor(
-    private readonly commandProcessorService: ScalperCommandProcessorService,
-    private readonly translatorService: TranslatorService
-  ) {
-  }
+  currentActions$!: Observable<string[] | null>;
 
   ngOnInit(): void {
     this.currentActions$ = combineLatest([

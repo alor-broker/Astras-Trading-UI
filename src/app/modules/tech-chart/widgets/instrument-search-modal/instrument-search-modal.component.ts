@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, viewChild} from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
 import {InstrumentSearchService} from "../../services/instrument-search.service";
 import {BehaviorSubject, Observable, of, take, tap} from "rxjs";
 import {
@@ -60,6 +60,9 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
+  private readonly instrumentSearchService = inject(InstrumentSearchService);
+  private readonly instrumentsService = inject(InstrumentsService);
+
   readonly minusSign = '－'; // This is not character that on keyboard
   isVisible$!: Observable<boolean>;
   filteredInstruments$!: Observable<Instrument[] | null>;
@@ -69,12 +72,6 @@ export class InstrumentSearchModalComponent implements OnInit, OnDestroy {
   autocompleteLoading$ = new BehaviorSubject(false);
   private readonly specialSymbolsRegEx = new RegExp(`[${this.minusSign}+*/\\]\\[]`, 'g');
   private readonly filter$ = new BehaviorSubject<SearchFilter | null>(null);
-
-  constructor(
-    private readonly instrumentSearchService: InstrumentSearchService,
-    private readonly instrumentsService: InstrumentsService
-  ) {
-  }
 
   ngOnInit(): void {
     this.isVisible$ = this.instrumentSearchService.isModalOpened$;

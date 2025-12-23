@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {Observable, take} from "rxjs";
@@ -52,6 +52,12 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<LightChartSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly deviceService = inject(DeviceService);
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly form = this.formBuilder.group({
     instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
     timeFrame: this.formBuilder.nonNullable.control(TimeframeValue.Day, Validators.required),
@@ -65,14 +71,16 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
   deviceInfo$!: Observable<any>;
   protected settings$!: Observable<LightChartSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly deviceService: DeviceService,
-    private readonly formBuilder: FormBuilder
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {

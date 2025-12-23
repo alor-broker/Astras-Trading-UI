@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, DestroyRef, ElementRef, input, viewChildren} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, input, viewChildren, inject } from '@angular/core';
 import {combineLatest, filter, map, Observable, switchMap} from "rxjs";
 import {OrdersGroupService} from "../../../../shared/services/orders/orders-group.service";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
@@ -26,20 +26,17 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class OrdersGroupModalComponent implements AfterViewInit {
+  private readonly service = inject(OrdersGroupService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly guid = input.required<string>();
   readonly groupId = input.required<string>();
 
   readonly ordersGroupTree = viewChildren<ElementRef<HTMLElement>>('ordersGroupTree');
   groups$?: Observable<OrdersGroupTreeNode[]>;
   private readonly ordersGroupTreeChanges$ = toObservable(this.ordersGroupTree);
-
-  constructor(
-    private readonly service: OrdersGroupService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngAfterViewInit(): void {
     const allOrders$ = this.widgetSettingsService.getSettings<BlotterSettings>(this.guid())

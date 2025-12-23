@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, OnInit, input, output} from '@angular/core';
+import { Component, DestroyRef, OnInit, input, output, inject } from '@angular/core';
 import {combineLatest, defer, distinctUntilChanged, Observable, shareReplay, switchMap, take, tap} from 'rxjs';
 import {debounceTime, map, mergeMap, startWith} from 'rxjs/operators';
 import {Position} from 'src/app/shared/models/positions/position.model';
@@ -102,6 +102,15 @@ interface PositionDisplay extends Position {
   ]
 })
 export class PositionsComponent extends BlotterBaseTableComponent<PositionDisplay, PositionFilter> implements OnInit {
+  private readonly service = inject(BlotterService);
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly translatorService: TranslatorService;
+  protected readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  protected readonly nzContextMenuService: NzContextMenuService;
+  protected readonly widgetLocalStateService: WidgetLocalStateService;
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  protected readonly destroyRef: DestroyRef;
+
   readonly marketType = input<MarketType | null>();
 
   portfolioTotalCost$!: Observable<number>;
@@ -246,17 +255,13 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
   fileSuffix = 'positions';
   readonly abs = Math.abs;
 
-  constructor(
-    private readonly service: BlotterService,
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly translatorService: TranslatorService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    protected readonly orderCommandService: OrderCommandService,
-    protected readonly nzContextMenuService: NzContextMenuService,
-    protected readonly widgetLocalStateService: WidgetLocalStateService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    protected readonly destroyRef: DestroyRef
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const translatorService = inject(TranslatorService);
+    const nzContextMenuService = inject(NzContextMenuService);
+    const widgetLocalStateService = inject(WidgetLocalStateService);
+    const destroyRef = inject(DestroyRef);
+
     super(
       settingsService,
       translatorService,
@@ -264,6 +269,12 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
       widgetLocalStateService,
       destroyRef
     );
+
+    this.settingsService = settingsService;
+    this.translatorService = translatorService;
+    this.nzContextMenuService = nzContextMenuService;
+    this.widgetLocalStateService = widgetLocalStateService;
+    this.destroyRef = destroyRef;
   }
 
   get restoreFiltersAndSortOnLoad(): boolean {

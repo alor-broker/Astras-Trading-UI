@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BaseTranslatorService } from "../../../shared/services/base-translator.service";
 import { InstantNotificationsService } from "../../../shared/services/instant-notifications.service";
 import { TranslatorService } from "../../../shared/services/translator.service";
@@ -11,13 +11,17 @@ import {
 })
 export class ScalperOrderBookInstantTranslatableNotificationsService
 extends BaseTranslatorService {
+  private readonly notificationsService = inject(InstantNotificationsService);
+  protected readonly translatorService: TranslatorService;
+
   protected translationsPath = 'scalper-order-book/scalper-order-book-notifications';
 
-  constructor(
-    private readonly notificationsService: InstantNotificationsService,
-    protected readonly translatorService: TranslatorService
-  ) {
+  constructor() {
+    const translatorService = inject(TranslatorService);
+
     super(translatorService);
+
+    this.translatorService = translatorService;
   }
 
   emptyPositions(): void {

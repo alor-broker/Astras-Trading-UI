@@ -1,4 +1,4 @@
-import {DestroyRef, Injectable} from '@angular/core';
+import { DestroyRef, Injectable, inject } from '@angular/core';
 import {BehaviorSubject, combineLatest, forkJoin, Observable, of, shareReplay, switchMap, take} from "rxjs";
 import {Watchlist, WatchlistCollection} from "../models/watchlist.model";
 import {RemoteStorageService} from "../../../shared/services/settings-broker/remote-storage.service";
@@ -31,6 +31,11 @@ export interface WatchlistCollectionBrokerConfig {
   providedIn: 'root'
 })
 export class WatchlistCollectionBrokerService {
+  private readonly remoteStorageService = inject(RemoteStorageService);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly applicationMetaService = inject(ApplicationMetaService);
+  readonly destroyRef = inject(DestroyRef);
+
   private readonly store = new WatchlistCollectionStore();
   private collection$: Observable<Watchlist[]> | null = null;
 
@@ -38,12 +43,9 @@ export class WatchlistCollectionBrokerService {
   private readonly watchlistCollectionStorageKey = 'watchlistCollection';
   private readonly config$ = new BehaviorSubject<WatchlistCollectionBrokerConfig | null>(null);
 
-  constructor(
-    private readonly remoteStorageService: RemoteStorageService,
-    private readonly localStorageService: LocalStorageService,
-    private readonly applicationMetaService: ApplicationMetaService,
-    readonly destroyRef: DestroyRef
-  ) {
+  constructor() {
+    const destroyRef = this.destroyRef;
+
     destroyRef.onDestroy(() => {
       this.store.ngOnDestroy();
       this.config$.complete();

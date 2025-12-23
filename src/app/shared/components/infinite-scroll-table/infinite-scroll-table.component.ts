@@ -1,18 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  ElementRef,
-  Input,
-  input,
-  OnChanges,
-  OnInit,
-  output,
-  SimpleChange,
-  SimpleChanges,
-  TrackByFunction,
-  viewChildren
-} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, Input, input, OnChanges, OnInit, output, SimpleChange, SimpleChanges, TrackByFunction, viewChildren, inject } from '@angular/core';
 import {
   NzFilterTriggerComponent,
   NzTableCellDirective,
@@ -91,6 +77,9 @@ export interface TableDataRow {
   ]
 })
 export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, OnInit {
+  private readonly nzContextMenuService = inject(NzContextMenuService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly tableContainerHeight = input(100);
   readonly tableContainerWidth = input(100);
   readonly isLoading = input(false);
@@ -129,12 +118,6 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   private tableData: TableDataRow[] = [];
   private visibleItemsCount = 1;
   private tableRef$?: Observable<NzTableComponent<TableDataRow>>;
-
-  constructor(
-    private readonly nzContextMenuService: NzContextMenuService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   public get data(): TableDataRow[] {
     return this.tableData;

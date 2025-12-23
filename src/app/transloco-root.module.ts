@@ -11,10 +11,7 @@ import {
   TranslocoMissingHandlerData,
   TranslocoModule
 } from '@jsverse/transloco';
-import {
-  Injectable,
-  NgModule
-} from '@angular/core';
+import { Injectable, NgModule, inject } from '@angular/core';
 import { environment } from '../environments/environment';
 import { Observable } from "rxjs";
 import { HttpContextTokens } from "./shared/constants/http.constants";
@@ -22,8 +19,7 @@ import { HashMap } from "node_modules/@jsverse/transloco/lib/utils/type.utils";
 
 @Injectable({providedIn: 'root'})
 export class TranslocoHttpLoader implements TranslocoLoader {
-  constructor(private readonly http: HttpClient) {
-  }
+  private readonly http = inject(HttpClient);
 
   getTranslation(langPath: string): Observable<Translation> {
     const path = langPath.startsWith('/')

@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, OnInit, output} from '@angular/core';
+import { Component, DestroyRef, OnInit, output, inject } from '@angular/core';
 import {combineLatest, defer, distinctUntilChanged, Observable, switchMap, take,} from 'rxjs';
 import {debounceTime, map, startWith, tap} from 'rxjs/operators';
 import {OrderFilter} from '../../models/order-filter.model';
@@ -99,6 +99,17 @@ interface DisplayOrder extends Order {
   ]
 })
 export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, OrderFilter> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  private readonly service = inject(BlotterService);
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+  protected readonly translatorService: TranslatorService;
+  protected readonly nzContextMenuService: NzContextMenuService;
+  protected readonly widgetLocalStateService: WidgetLocalStateService;
+  private readonly ordersGroupService = inject(OrdersGroupService);
+  private readonly ordersDialogService = inject(OrdersDialogService);
+  protected readonly destroyRef: DestroyRef;
+
   readonly shouldShowSettingsChange = output<boolean>();
 
   isModalOpened = DomHelper.isModalOpen;
@@ -249,19 +260,13 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
   fileSuffix = 'orders';
   private orders: Order[] = [];
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    private readonly service: BlotterService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
-    private readonly timezoneConverterService: TimezoneConverterService,
-    protected readonly translatorService: TranslatorService,
-    protected readonly nzContextMenuService: NzContextMenuService,
-    protected readonly widgetLocalStateService: WidgetLocalStateService,
-    private readonly ordersGroupService: OrdersGroupService,
-    private readonly ordersDialogService: OrdersDialogService,
-    protected readonly destroyRef: DestroyRef
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const translatorService = inject(TranslatorService);
+    const nzContextMenuService = inject(NzContextMenuService);
+    const widgetLocalStateService = inject(WidgetLocalStateService);
+    const destroyRef = inject(DestroyRef);
+
     super(
       settingsService,
       translatorService,
@@ -269,6 +274,12 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       widgetLocalStateService,
       destroyRef
     );
+
+    this.settingsService = settingsService;
+    this.translatorService = translatorService;
+    this.nzContextMenuService = nzContextMenuService;
+    this.widgetLocalStateService = widgetLocalStateService;
+    this.destroyRef = destroyRef;
   }
 
   get restoreFiltersAndSortOnLoad(): boolean {

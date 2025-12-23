@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {MobileActionsContextService} from "../../../modules/dashboard/services/mobile-actions-context.service";
 import {ACTIONS_CONTEXT} from "../../../shared/services/actions-context";
 import {fromEvent, Observable} from "rxjs";
@@ -62,13 +62,10 @@ import {
   ]
 })
 export class MobileDashboardComponent implements OnInit {
-  screenHeight!: Observable<number>;
+  private readonly mobileSettingsBrokerService = inject(MobileSettingsBrokerService);
+  private readonly store = inject(Store);
 
-  constructor(
-    private readonly mobileSettingsBrokerService: MobileSettingsBrokerService,
-    private readonly store: Store
-  ) {
-  }
+  screenHeight!: Observable<number>;
 
   ngOnInit(): void {
     this.mobileSettingsBrokerService.initSettingsBrokers();

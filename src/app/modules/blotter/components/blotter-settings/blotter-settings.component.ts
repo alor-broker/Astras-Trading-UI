@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, OnInit,} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {Observable, take} from "rxjs";
@@ -67,6 +67,14 @@ import {AsyncPipe} from '@angular/common';
     AsyncPipe]
 })
 export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<BlotterSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly store = inject(Store);
+  private readonly deviceService = inject(DeviceService);
+  private readonly formBuilder = inject(FormBuilder);
+  readonly pushNotificationsConfig = inject<PushNotificationsConfig>(PUSH_NOTIFICATIONS_CONFIG);
+
   form = this.formBuilder.group({
     portfolio: this.formBuilder.nonNullable.control('', Validators.required),
     exchange: this.formBuilder.nonNullable.control(
@@ -109,17 +117,16 @@ export class BlotterSettingsComponent extends WidgetSettingsBaseComponent<Blotte
 
   protected settings$!: Observable<BlotterSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly store: Store,
-    private readonly deviceService: DeviceService,
-    private readonly formBuilder: FormBuilder,
-    @Inject(PUSH_NOTIFICATIONS_CONFIG)
-    readonly pushNotificationsConfig: PushNotificationsConfig
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {

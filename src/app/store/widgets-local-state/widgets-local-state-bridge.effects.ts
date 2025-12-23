@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Actions,
   createEffect,
@@ -18,6 +18,9 @@ import { WidgetsLocalStateInternalActions } from "./widgets-local-state.actions"
 
 @Injectable()
 export class WidgetsLocalStateBridgeEffects {
+  private readonly actions$ = inject(Actions);
+  private readonly localStorageService = inject(LocalStorageService);
+
   reset$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(TerminalSettingsServicesActions.reset),
@@ -34,9 +37,4 @@ export class WidgetsLocalStateBridgeEffects {
       map(action => WidgetsLocalStateInternalActions.removeForWidgets({ widgetsGuids: action.widgetIds }))
     );
   });
-
-  constructor(
-    private readonly actions$: Actions,
-    private readonly localStorageService: LocalStorageService) {
-  }
 }

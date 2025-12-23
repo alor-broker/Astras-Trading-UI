@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit, input, output} from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, input, output, inject } from '@angular/core';
 import {GraphConfig} from "../../models/graph.model";
 import {GraphProcessingContextService} from "../../services/graph-processing-context.service";
 import {asyncScheduler, subscribeOn, toArray} from "rxjs";
@@ -17,6 +17,9 @@ import {RunStatus, Status} from '../../models/run-results.model';
     styleUrl: './run-config-btn.component.less'
 })
 export class RunConfigBtnComponent implements OnInit {
+  private readonly graphProcessingContextService = inject(GraphProcessingContextService);
+  private readonly cdr = inject(ChangeDetectorRef);
+
   readonly config = input<GraphConfig | null>(null);
 
   readonly status = output<RunStatus>();
@@ -26,12 +29,6 @@ export class RunConfigBtnComponent implements OnInit {
     status: Status.Initial,
     results: []
   };
-
-  constructor(
-    private readonly graphProcessingContextService: GraphProcessingContextService,
-    private readonly cdr: ChangeDetectorRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.setStatus({

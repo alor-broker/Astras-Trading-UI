@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {Observable} from "rxjs";
 import {BaseColumnSettings} from "../../../../shared/models/settings/table-settings.model";
 import {ArbitrageSpreadService} from "../../services/arbitrage-spread.service";
@@ -56,6 +56,8 @@ import {AsyncPipe, DecimalPipe} from '@angular/common';
   ]
 })
 export class ArbitrageSpreadTableComponent implements OnInit {
+  private readonly service = inject(ArbitrageSpreadService);
+
   items$?: Observable<ArbitrageSpread[]>;
 
   tableInnerWidth = 1000;
@@ -71,11 +73,6 @@ export class ArbitrageSpreadTableComponent implements OnInit {
   ];
 
   getAbs = Math.abs;
-
-  constructor(
-    private readonly service: ArbitrageSpreadService,
-  ) {
-  }
 
   ngOnInit(): void {
     this.items$ = this.service.getSpreadsSubscription();

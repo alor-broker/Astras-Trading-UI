@@ -1,10 +1,4 @@
-import {
-  Component,
-  input,
-  OnChanges,
-  output,
-  SimpleChanges
-} from '@angular/core';
+import { Component, input, OnChanges, output, SimpleChanges, inject } from '@angular/core';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -45,6 +39,8 @@ interface ValidationOptions {
   styleUrl: './keyword-filter.component.less'
 })
 export class KeywordFilterComponent implements OnChanges {
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly validationOptions = input.required<ValidationOptions>();
 
   readonly currentKeywords = input<string[]>();
@@ -62,9 +58,6 @@ export class KeywordFilterComponent implements OnChanges {
   });
 
   protected displayKeywords: string[] = [];
-
-  constructor(private readonly formBuilder: FormBuilder) {
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.validationOptions != null && changes.validationOptions.currentValue != null) {

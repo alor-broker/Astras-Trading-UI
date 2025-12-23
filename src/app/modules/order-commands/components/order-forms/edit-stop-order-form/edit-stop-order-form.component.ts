@@ -1,9 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  OnInit,
-  input
-} from '@angular/core';
+import { Component, DestroyRef, OnInit, input, inject } from '@angular/core';
 import { BaseEditOrderFormComponent } from "../base-edit-order-form.component";
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { OrderDetailsService } from "../../../../../shared/services/orders/order-details.service";
@@ -91,6 +86,15 @@ import { AsyncPipe, DecimalPipe, KeyValuePipe } from '@angular/common';
     ]
 })
 export class EditStopOrderFormComponent extends BaseEditOrderFormComponent implements OnInit {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly orderDetailsService = inject(OrderDetailsService);
+  protected readonly instrumentService: InstrumentsService;
+  private readonly commonParametersService = inject(CommonParametersService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+  private readonly orderCommandService = inject(ConfirmableOrderCommandsService);
+  protected readonly destroyRef: DestroyRef;
+
   currentOrder$!: Observable<StopOrder>;
   canSelectNow = true;
   readonly conditionType = LessMore;
@@ -144,16 +148,14 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     )
   });
 
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly orderDetailsService: OrderDetailsService,
-    protected readonly instrumentService: InstrumentsService,
-    private readonly commonParametersService: CommonParametersService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly orderCommandService: ConfirmableOrderCommandsService,
-    protected readonly destroyRef: DestroyRef) {
+  constructor() {
+    const instrumentService = inject(InstrumentsService);
+    const destroyRef = inject(DestroyRef);
+
     super(instrumentService, destroyRef);
+
+    this.instrumentService = instrumentService;
+    this.destroyRef = destroyRef;
   }
 
   ngOnInit(): void {

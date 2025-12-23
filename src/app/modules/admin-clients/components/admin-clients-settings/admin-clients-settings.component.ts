@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {
   WidgetSettingsBaseComponent
 } from "../../../../shared/components/widget-settings/widget-settings-base.component";
@@ -39,6 +39,11 @@ import {WidgetSettingsComponent} from "../../../../shared/components/widget-sett
   styleUrl: './admin-clients-settings.component.less'
 })
 export class AdminClientsSettingsComponent extends WidgetSettingsBaseComponent<AdminClientsSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly validation = {
     refreshIntervalSec: {
       min: 30,
@@ -69,13 +74,16 @@ export class AdminClientsSettingsComponent extends WidgetSettingsBaseComponent<A
 
   protected settings$!: Observable<AdminClientsSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly formBuilder: FormBuilder
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {

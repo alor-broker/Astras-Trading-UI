@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit,} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Observable, take} from "rxjs";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
@@ -64,6 +64,13 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<TechChartSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly deviceService = inject(DeviceService);
+  private readonly themeService = inject(ThemeService);
+
   readonly availableLineMarkerPositions = Object.values(LineMarkerPosition);
   readonly TradeDisplayMarkers = TradeDisplayMarker;
 
@@ -114,15 +121,16 @@ export class TechChartSettingsComponent extends WidgetSettingsBaseComponent<Tech
   deviceInfo$!: Observable<DeviceInfo>;
   protected settings$!: Observable<TechChartSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly formBuilder: FormBuilder,
-    private readonly deviceService: DeviceService,
-    private readonly themeService: ThemeService
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {

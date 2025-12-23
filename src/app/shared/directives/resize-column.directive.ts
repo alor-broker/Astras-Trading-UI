@@ -1,16 +1,4 @@
-import {
-  DestroyRef,
-  Directive,
-  ElementRef,
-  Inject,
-  NgZone,
-  OnInit,
-  Renderer2,
-  SimpleChange,
-  DOCUMENT,
-  input,
-  output
-} from '@angular/core';
+import { DestroyRef, Directive, ElementRef, NgZone, OnInit, Renderer2, SimpleChange, DOCUMENT, input, output, inject } from '@angular/core';
 
 import {
   distinctUntilChanged,
@@ -28,6 +16,13 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Directive({ selector: 'th[atsResizeColumn]' })
 export class ResizeColumnDirective implements OnInit {
+  private readonly el = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
+  private readonly dir = inject(NzThMeasureDirective);
+  private readonly documentRef = inject<Document>(DOCUMENT);
+  private readonly ngZone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly minWidth = input(0);
 
   readonly atsResizeColumn = input<boolean | undefined>(true);
@@ -41,14 +36,7 @@ export class ResizeColumnDirective implements OnInit {
 
   private readonly column: HTMLElement;
 
-  constructor(
-    private readonly el: ElementRef,
-    private readonly renderer: Renderer2,
-    private readonly dir: NzThMeasureDirective,
-    @Inject(DOCUMENT)
-    private readonly documentRef: Document,
-    private readonly ngZone: NgZone,
-    private readonly destroyRef: DestroyRef) {
+  constructor() {
     this.column = this.el.nativeElement as HTMLElement;
   }
 

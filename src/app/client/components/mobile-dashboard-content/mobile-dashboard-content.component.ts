@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit} from "@angular/core";
+import { Component, DestroyRef, OnInit, inject } from "@angular/core";
 import {
   BehaviorSubject,
   combineLatest,
@@ -52,6 +52,16 @@ import {ParentWidgetComponent} from "../../../modules/dashboard/components/paren
   ]
 })
 export class MobileDashboardContentComponent implements OnInit {
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly widgetsMetaService = inject(WidgetsMetaService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly mobileActionsContextService = inject(MobileActionsContextService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly mobileDashboardService = inject(MobileDashboardService);
+  private readonly widgetsSharedDataService = inject(WidgetsSharedDataService);
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly navigationStackService = inject(NavigationStackService);
+
   readonly newOrderWidgetId = 'order-submit';
   readonly homeWidgetId = 'mobile-home-screen';
   galleryVisible = false;
@@ -67,19 +77,6 @@ export class MobileDashboardContentComponent implements OnInit {
   defaultWidgets$!: Observable<WidgetInstance[]>;
   selectedWidget$ = new BehaviorSubject<WidgetInstance | null>(null);
   widgetsGallery$!: Observable<GalleryDisplay>;
-
-  constructor(
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly widgetsMetaService: WidgetsMetaService,
-    private readonly translatorService: TranslatorService,
-    private readonly mobileActionsContextService: MobileActionsContextService,
-    private readonly destroyRef: DestroyRef,
-    private readonly mobileDashboardService: MobileDashboardService,
-    private readonly widgetsSharedDataService: WidgetsSharedDataService,
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly navigationStackService: NavigationStackService
-  ) {
-  }
 
   ngOnInit(): void {
     const currentDashboardWidgets$ = this.dashboardContextService.selectedDashboard$.pipe(

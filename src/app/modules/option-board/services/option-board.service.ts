@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {
   InstrumentOptions,
@@ -23,15 +23,12 @@ import {
 
 @Injectable({providedIn: 'root'})
 export class OptionBoardService {
-  private readonly baseUrl = `${this.environmentService.apiUrl}/optionsapi/v1`;
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly cacheService = inject(CacheService);
 
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly cacheService: CacheService
-  ) {
-  }
+  private readonly baseUrl = `${this.environmentService.apiUrl}/optionsapi/v1`;
 
   getInstrumentOptions(symbol: string, exchange: string, side: OptionSide): Observable<InstrumentOptions | null> {
     return this.httpClient.get<InstrumentOptions>(

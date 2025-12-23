@@ -1,4 +1,4 @@
-﻿import { Injectable } from "@angular/core";
+﻿import { Injectable, inject } from "@angular/core";
 import {
   Actions,
   createEffect,
@@ -18,6 +18,10 @@ import { TerminalSettingsServicesActions } from "./terminal-settings.actions";
 
 @Injectable()
 export class TerminalSettingsBridgeEffects {
+  private readonly actions$ = inject(Actions);
+  private readonly applicationMetaService = inject(ApplicationMetaService);
+  private readonly localStorageService = inject(LocalStorageService);
+
   reset$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(TerminalSettingsServicesActions.reset),
@@ -33,10 +37,4 @@ export class TerminalSettingsBridgeEffects {
       map(() => DashboardsManageActions.removeAll())
     );
   });
-
-  constructor(
-    private readonly actions$: Actions,
-    private readonly applicationMetaService: ApplicationMetaService,
-    private readonly localStorageService: LocalStorageService) {
-  }
 }

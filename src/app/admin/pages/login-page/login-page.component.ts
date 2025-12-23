@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, contentChildren, ElementRef, OnDestroy} from '@angular/core';
+import { AfterViewInit, Component, contentChildren, ElementRef, OnDestroy, inject } from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NzFormControlComponent, NzFormDirective, NzFormItemComponent} from "ng-zorro-antd/form";
 import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
@@ -39,6 +39,11 @@ enum LoginErrorCode {
   styleUrl: './login-page.component.less'
 })
 export class LoginPageComponent implements OnDestroy, AfterViewInit {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly adminIdentityService = inject(AdminIdentityService);
+  private readonly adminAuthContextService = inject(AdminAuthContextService);
+  private readonly router = inject(Router);
+
   readonly isLoading$ = new BehaviorSubject(false);
   readonly loginError$ = new BehaviorSubject<LoginErrorCode | null>(null);
   readonly LoginErrorCodes = LoginErrorCode;
@@ -60,14 +65,6 @@ export class LoginPageComponent implements OnDestroy, AfterViewInit {
   });
 
   private readonly userNameControlQueryChanges$ = toObservable(this.userNameControlQuery);
-
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly adminIdentityService: AdminIdentityService,
-    private readonly adminAuthContextService: AdminAuthContextService,
-    private readonly router: Router
-  ) {
-  }
 
   ngAfterViewInit(): void {
     this.userNameControlQueryChanges$.pipe(

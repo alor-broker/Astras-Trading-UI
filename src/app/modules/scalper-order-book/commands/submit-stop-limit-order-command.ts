@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { Side } from "../../../shared/models/enums/side.model";
 import { CommandBase } from "./command-base";
@@ -41,13 +38,8 @@ export interface SubmitStopLimitOrderCommandArgs {
 
 @Injectable()
 export class SubmitStopLimitOrderCommand extends CommandBase<SubmitStopLimitOrderCommandArgs> {
-  constructor(
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
-    private readonly ordersDialogService: OrdersDialogService
-  ) {
-    super();
-  }
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  private readonly ordersDialogService = inject(OrdersDialogService);
 
   execute(args: SubmitStopLimitOrderCommandArgs): void {
     let orderPrice = args.triggerPrice;

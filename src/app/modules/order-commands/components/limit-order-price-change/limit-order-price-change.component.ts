@@ -1,4 +1,4 @@
-import {Component, Inject, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {combineLatest, Observable, shareReplay, take, withLatestFrom} from "rxjs";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {Order, OrderType} from "../../../../shared/models/orders/order.model";
@@ -31,6 +31,9 @@ import {toObservable} from "@angular/core/rxjs-interop";
   ]
 })
 export class LimitOrderPriceChangeComponent implements OnInit {
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+
   readonly orderSides = Side;
   activeLimitOrders$!: Observable<Order[]>;
   readonly steps = input.required<number[]>();
@@ -47,13 +50,6 @@ export class LimitOrderPriceChangeComponent implements OnInit {
       startWith(null),
       shareReplay(1)
     );
-
-  constructor(
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
-  ) {
-  }
 
   get sortedSteps(): number[] {
     return [...this.steps()].sort((a, b) => a - b);

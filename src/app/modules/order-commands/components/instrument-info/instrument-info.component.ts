@@ -1,4 +1,4 @@
-import {Component, input, OnInit, output} from '@angular/core';
+import { Component, input, OnInit, output, inject } from '@angular/core';
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {combineLatest, filter, map, Observable, shareReplay, switchMap} from "rxjs";
@@ -27,6 +27,9 @@ import {toObservable} from "@angular/core/rxjs-interop";
   ]
 })
 export class InstrumentInfoComponent implements OnInit {
+  private readonly quoteService = inject(QuotesService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+
   viewData$!: Observable<{
     instrumentKey: InstrumentKey;
     position: { abs: number, quantity: number } | null;
@@ -62,12 +65,6 @@ export class InstrumentInfoComponent implements OnInit {
       startWith(null),
       shareReplay(1)
     );
-
-  constructor(
-    private readonly quoteService: QuotesService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService
-  ) {
-  }
 
   ngOnInit(): void {
     const instrumentKey$ = this.instrumentKeyChanges$

@@ -1,8 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, inject } from '@angular/core';
 import {take} from "rxjs";
 import {defaultBadgeColor, toInstrumentKey} from "../../../../shared/utils/instruments";
 import {OrderFormType} from "../../../../shared/models/orders/orders-dialog.model";
@@ -25,12 +21,10 @@ import {filter, map} from "rxjs/operators";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OpenOrdersDialogNavBtnComponent {
-  readonly atsDisabled = input(false);
+  private readonly ordersDialogService = inject(OrdersDialogService);
+  private readonly dashboardContextService = inject(DashboardContextService);
 
-  constructor(
-    private readonly ordersDialogService: OrdersDialogService,
-    private readonly dashboardContextService: DashboardContextService) {
-  }
+  readonly atsDisabled = input(false);
 
   openDialog(): void {
     this.dashboardContextService.selectedDashboard$.pipe(

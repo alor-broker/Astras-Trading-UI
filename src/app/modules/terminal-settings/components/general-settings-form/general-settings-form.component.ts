@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit, input} from '@angular/core';
+import { Component, DestroyRef, OnInit, input, inject } from '@angular/core';
 import {
   ControlValueAccessorBaseComponent
 } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
@@ -68,6 +68,9 @@ import {BadgesSettingsComponent} from '../badges-settings/badges-settings.compon
   ]
 })
 export class GeneralSettingsFormComponent extends ControlValueAccessorBaseComponent<GeneralSettings> implements OnInit {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly excludedSettings = input<string[]>([]);
 
   readonly validationSettings = validationSettings;
@@ -109,13 +112,6 @@ export class GeneralSettingsFormComponent extends ControlValueAccessorBaseCompon
     tableRowHeight: this.formBuilder.nonNullable.control(TableRowHeight.Medium),
     showCurrentTime: this.formBuilder.nonNullable.control(false),
   });
-
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-    super();
-  }
 
   writeValue(value: GeneralSettings | null): void {
     this.form.reset();

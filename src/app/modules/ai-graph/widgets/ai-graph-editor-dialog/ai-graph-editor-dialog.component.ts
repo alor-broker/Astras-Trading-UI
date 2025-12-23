@@ -1,4 +1,4 @@
-import {Component, model, OnInit} from '@angular/core';
+import { Component, model, OnInit, inject } from '@angular/core';
 import {TranslocoDirective} from "@jsverse/transloco";
 import {NzModalComponent, NzModalContentDirective} from "ng-zorro-antd/modal";
 import {GraphStorageService} from "../../services/graph-storage.service";
@@ -21,14 +21,13 @@ import {toObservable} from "@angular/core/rxjs-interop";
   styleUrl: './ai-graph-editor-dialog.component.less'
 })
 export class AiGraphEditorDialogComponent implements OnInit {
+  private readonly graphStorageService = inject(GraphStorageService);
+
   targetGraph$!: Observable<Graph | null>;
   protected latestVersion: GraphConfig | null = null;
 
   readonly targetGraphId = model<string | null>();
   private readonly targetGraphIdChanges = toObservable(this.targetGraphId);
-
-  constructor(private readonly graphStorageService: GraphStorageService) {
-  }
 
   closeDialog(): void {
     this.targetGraph$.pipe(

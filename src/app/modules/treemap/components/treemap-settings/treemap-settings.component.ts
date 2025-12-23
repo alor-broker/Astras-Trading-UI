@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {
   WidgetSettingsBaseComponent
 } from "../../../../shared/components/widget-settings/widget-settings-base.component";
@@ -32,6 +32,11 @@ import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
   ]
 })
 export class TreemapSettingsComponent extends WidgetSettingsBaseComponent<TreemapSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly validation = {
     refreshIntervalSec: {
       min: 30,
@@ -59,13 +64,16 @@ export class TreemapSettingsComponent extends WidgetSettingsBaseComponent<Treema
 
   protected settings$!: Observable<TreemapSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly formBuilder: FormBuilder
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {

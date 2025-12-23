@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, input, OnDestroy, OnInit} from '@angular/core';
+import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
 import {BehaviorSubject, combineLatest, defer, interval, Observable, shareReplay, switchMap, take, tap} from "rxjs";
 import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
@@ -70,6 +70,12 @@ interface ItemPosition {
   ]
 })
 export class YieldCurveChartComponent implements OnInit, OnDestroy {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly bondScreenerService = inject(BondScreenerService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly loadingStatus$ = new BehaviorSubject<LoadingStatus>(LoadingStatus.Initial);
   readonly loadingStatuses = LoadingStatus;
   readonly guid = input.required<string>();
@@ -86,16 +92,6 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
   private readonly contentSize$ = new BehaviorSubject<ContentSize>({width: 0, height: 0});
   private settings$!: Observable<BondScreenerSettings>;
   private zoomed = false;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly bondScreenerService: BondScreenerService,
-    private readonly translatorService: TranslatorService,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   get figureId(): string {
     return `f_${this.guid().replace(/-/g, '')}`;

@@ -1,4 +1,4 @@
-import {Component, DestroyRef, input, OnDestroy, OnInit} from '@angular/core';
+import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
 import {BaseOrderFormComponent} from "../base-order-form.component";
 import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -76,6 +76,14 @@ import {AsyncPipe, DecimalPipe, KeyValuePipe} from '@angular/common';
   ]
 })
 export class StopOrderFormComponent extends BaseOrderFormComponent implements OnInit, OnDestroy {
+  private readonly formBuilder = inject(FormBuilder);
+  protected readonly commonParametersService: CommonParametersService;
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly orderCommandService = inject(ConfirmableOrderCommandsService);
+  private readonly quotesService = inject(QuotesService);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+  protected readonly destroyRef: DestroyRef;
+
   readonly sides = Side;
   canSelectNow = true;
   readonly conditionType = LessMore;
@@ -165,15 +173,14 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
 
   currentPriceDiffPercent$!: Observable<{ percent: number, sign: number } | null>;
 
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    protected readonly commonParametersService: CommonParametersService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly orderCommandService: ConfirmableOrderCommandsService,
-    private readonly quotesService: QuotesService,
-    private readonly timezoneConverterService: TimezoneConverterService,
-    protected readonly destroyRef: DestroyRef) {
+  constructor() {
+    const commonParametersService = inject(CommonParametersService);
+    const destroyRef = inject(DestroyRef);
+
     super(commonParametersService, destroyRef);
+
+    this.commonParametersService = commonParametersService;
+    this.destroyRef = destroyRef;
   }
 
   get canSubmit(): boolean {

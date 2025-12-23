@@ -1,4 +1,4 @@
-import {Component, DestroyRef, input, OnInit, output} from '@angular/core';
+import { Component, DestroyRef, input, OnInit, output, inject } from '@angular/core';
 import {distinctUntilChanged, Observable, shareReplay, take} from "rxjs";
 import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {isInstrumentEqual} from '../../../../shared/utils/settings-helper';
@@ -80,6 +80,12 @@ import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
   ]
 })
 export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComponent, OnInit {
+  private readonly settingsReadService = inject(ScalperOrderBookSettingsReadService);
+  private readonly settingsWriteService = inject(ScalperOrderBookSettingsWriteService);
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly guid = input.required<string>();
 
   readonly settingsChange = output();
@@ -374,15 +380,6 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
   });
 
   protected settings$!: Observable<ScalperOrderBookWidgetSettings>;
-
-  constructor(
-    private readonly settingsReadService: ScalperOrderBookSettingsReadService,
-    private readonly settingsWriteService: ScalperOrderBookSettingsWriteService,
-    private readonly manageDashboardsService: ManageDashboardsService,
-    private readonly destroyRef: DestroyRef,
-    private readonly formBuilder: FormBuilder,
-  ) {
-  }
 
   get canCopy(): boolean {
     return this.canSave;

@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {Observable, of, shareReplay} from 'rxjs';
 import {ModalService} from '../../../../shared/services/modal.service';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -38,6 +38,12 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class FeedbackWidgetComponent implements OnInit {
+  private readonly modalService = inject(ModalService);
+  private readonly feedbackService = inject(FeedbackService);
+  private readonly notificationService = inject(NzNotificationService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   isVisible$: Observable<boolean> = of(false);
   readonly commentMaxLength = 5000;
   readonly maxStarsCount = 5;
@@ -49,15 +55,6 @@ export class FeedbackWidgetComponent implements OnInit {
   });
 
   voteParams$!: Observable<NewFeedback>;
-
-  constructor(
-    private readonly modalService: ModalService,
-    private readonly feedbackService: FeedbackService,
-    private readonly notificationService: NzNotificationService,
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.isVisible$ = this.modalService.shouldShowVoteModal$;

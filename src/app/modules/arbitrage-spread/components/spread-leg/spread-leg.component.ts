@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit, input} from '@angular/core';
+import { Component, DestroyRef, OnInit, input, inject } from '@angular/core';
 import {
   ControlValueAccessorBaseComponent
 } from "../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component";
@@ -66,6 +66,8 @@ import {NzEmptyComponent} from 'ng-zorro-antd/empty';
   ]
 })
 export class SpreadLegComponent extends ControlValueAccessorBaseComponent<SpreadLeg> implements OnInit, Validator {
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly isSideNeeded = input(false);
   readonly portfolios = input<PortfolioKey[]>([]);
 
@@ -89,12 +91,6 @@ export class SpreadLegComponent extends ControlValueAccessorBaseComponent<Spread
 
   isPortfoliosEqual = isPortfoliosEqual;
   sideEnum = Side;
-
-  constructor(
-    private readonly destroyRef: DestroyRef
-  ) {
-    super();
-  }
 
   ngOnInit(): void {
     if (!this.isSideNeeded()) {

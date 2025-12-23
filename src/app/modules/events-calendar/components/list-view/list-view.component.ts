@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, input, LOCALE_ID, OnDestroy, OnInit} from '@angular/core';
+import { Component, DestroyRef, input, LOCALE_ID, OnDestroy, OnInit, inject } from '@angular/core';
 import {formatCurrency, getCurrencyFormat} from "../../../../shared/utils/formatters";
 import {CalendarEvents} from "../../models/events-calendar.model";
 import {BehaviorSubject, Observable, shareReplay, switchMap} from "rxjs";
@@ -28,23 +28,18 @@ import {AsyncPipe, DatePipe, KeyValuePipe} from '@angular/common';
   ]
 })
 export class ListViewComponent implements OnInit, OnDestroy {
+  private readonly service = inject(EventsCalendarService);
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly marketService = inject(MarketService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly locale = inject(LOCALE_ID);
+
   readonly symbols = input<string[]>([]);
   events$ = new BehaviorSubject<CalendarEvents>({});
   activeLang$!: Observable<string>;
   currencySettings$!: Observable<CurrencySettings>;
   private readonly symbolsChanges$ = toObservable(this.symbols);
-
-  constructor(
-    private readonly service: EventsCalendarService,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext,
-    private readonly translatorService: TranslatorService,
-    private readonly marketService: MarketService,
-    private readonly destroyRef: DestroyRef,
-    @Inject(LOCALE_ID)
-    private readonly locale: string
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.events$.complete();

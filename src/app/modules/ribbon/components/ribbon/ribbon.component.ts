@@ -1,9 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  input,
-  OnInit
-} from '@angular/core';
+import { Component, DestroyRef, input, OnInit, inject } from '@angular/core';
 import {
   forkJoin,
   Observable,
@@ -46,6 +41,9 @@ export interface RibbonItem {
   standalone: true
 })
 export class RibbonComponent implements OnInit {
+  private readonly historyService = inject(HistoryService);
+  private readonly destroyRef = inject(DestroyRef);
+
   indices$!: Observable<IndexDisplay[]>;
 
   readonly layout = input<'singleRow' | '2row'>('singleRow');
@@ -86,12 +84,6 @@ export class RibbonComponent implements OnInit {
       exchange: 'MOEX'
     }
   ];
-
-  constructor(
-    private readonly historyService: HistoryService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.indices$ = timer(0, 60000).pipe(

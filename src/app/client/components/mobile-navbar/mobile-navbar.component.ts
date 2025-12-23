@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { Observable } from "rxjs";
 import {SESSION_CONTEXT, SessionContext} from "../../../shared/services/auth/session-context";
 import {Store} from "@ngrx/store";
@@ -71,6 +71,13 @@ import { LangSwitchWidgetComponent } from "../../../modules/terminal-settings/wi
   ]
 })
 export class MobileNavbarComponent implements OnInit {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly store = inject(Store);
+  private readonly sessionContext = inject<SessionContext>(SESSION_CONTEXT);
+  private readonly modal = inject(ModalService);
+  private readonly helpService = inject(HelpService);
+
   isSideMenuVisible = false;
   readonly externalLinks = this.environmentService.externalLinks;
   helpLink$!: Observable<string | null>;
@@ -79,17 +86,6 @@ export class MobileNavbarComponent implements OnInit {
   selectedDashboard$!: Observable<Dashboard>;
   portfolioSearchControl = new FormControl('');
   instrumentSearchControl = new FormControl('');
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly store: Store,
-    @Inject(SESSION_CONTEXT)
-    private readonly sessionContext: SessionContext,
-    private readonly modal: ModalService,
-    private readonly helpService: HelpService
-  ) {
-  }
 
   ngOnInit(): void {
     this.selectedDashboard$ = this.dashboardContextService.selectedDashboard$;

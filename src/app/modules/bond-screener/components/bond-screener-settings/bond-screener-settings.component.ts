@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {
   WidgetSettingsBaseComponent
 } from "../../../../shared/components/widget-settings/widget-settings-base.component";
@@ -37,6 +37,11 @@ import {NzSwitchComponent} from 'ng-zorro-antd/switch';
   ]
 })
 export class BondScreenerSettingsComponent extends WidgetSettingsBaseComponent<BondScreenerSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly form = this.formBuilder.group({
     bondScreenerColumns: this.formBuilder.nonNullable.control<string[]>([], Validators.required),
     hideExpired: this.formBuilder.nonNullable.control(true)
@@ -46,13 +51,16 @@ export class BondScreenerSettingsComponent extends WidgetSettingsBaseComponent<B
 
   protected settings$!: Observable<BondScreenerSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly formBuilder: FormBuilder
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {

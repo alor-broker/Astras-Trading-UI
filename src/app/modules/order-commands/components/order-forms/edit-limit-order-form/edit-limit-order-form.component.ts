@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnDestroy, OnInit, input} from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {BaseEditOrderFormComponent} from "../base-edit-order-form.component";
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonParametersService} from "../../../services/common-parameters.service";
@@ -59,6 +59,14 @@ import {AsyncPipe, DecimalPipe, KeyValuePipe} from '@angular/common';
   ]
 })
 export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent implements OnInit, OnDestroy {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly orderDetailsService = inject(OrderDetailsService);
+  protected readonly instrumentService: InstrumentsService;
+  private readonly commonParametersService = inject(CommonParametersService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly orderCommandService = inject(ConfirmableOrderCommandsService);
+  protected readonly destroyRef: DestroyRef;
+
   timeInForceEnum = TimeInForce;
   currentOrder$!: Observable<Order>;
   readonly evaluationRequest$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
@@ -104,15 +112,14 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
     )
   });
 
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly orderDetailsService: OrderDetailsService,
-    protected readonly instrumentService: InstrumentsService,
-    private readonly commonParametersService: CommonParametersService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly orderCommandService: ConfirmableOrderCommandsService,
-    protected readonly destroyRef: DestroyRef) {
+  constructor() {
+    const instrumentService = inject(InstrumentsService);
+    const destroyRef = inject(DestroyRef);
+
     super(instrumentService, destroyRef);
+
+    this.instrumentService = instrumentService;
+    this.destroyRef = destroyRef;
   }
 
   ngOnInit(): void {

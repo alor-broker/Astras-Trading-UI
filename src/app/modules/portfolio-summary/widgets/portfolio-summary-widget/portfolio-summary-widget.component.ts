@@ -1,4 +1,4 @@
-import {Component, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
@@ -24,6 +24,10 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class PortfolioSummaryWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly manageDashboardService = inject(ManageDashboardsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+
   readonly widgetInstance = input.required<WidgetInstance>();
 
   readonly isBlockWidget = input.required<boolean>();
@@ -31,13 +35,6 @@ export class PortfolioSummaryWidgetComponent implements OnInit {
   settings$!: Observable<PortfolioSummarySettings>;
 
   readonly currentDashboard$ = this.dashboardContextService.selectedDashboard$;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly manageDashboardService: ManageDashboardsService,
-    private readonly dashboardContextService: DashboardContextService,
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

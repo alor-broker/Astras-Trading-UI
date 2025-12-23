@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {Observable} from "rxjs";
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -43,6 +43,11 @@ import {
   ]
 })
 export class OptionBoardSettingsComponent extends WidgetSettingsBaseComponent<OptionBoardSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly form = this.formBuilder.group({
     instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
     instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null),
@@ -50,13 +55,16 @@ export class OptionBoardSettingsComponent extends WidgetSettingsBaseComponent<Op
 
   protected settings$!: Observable<OptionBoardSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly formBuilder: FormBuilder,
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {

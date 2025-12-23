@@ -1,15 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  ElementRef,
-  Inject,
-  input,
-  OnDestroy,
-  OnInit,
-  SkipSelf,
-  viewChildren
-} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, viewChildren, inject } from '@angular/core';
 import {
   ScalperOrderBookDataContext,
   ScalperOrderBookExtendedSettings
@@ -43,6 +32,10 @@ interface MarkerDisplay {
   ]
 })
 export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly bodyRef = inject<ScalperOrderBookBodyRef>(SCALPER_ORDERBOOK_BODY_REF, { skipSelf: true });
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly markerElRef = viewChildren<ElementRef<HTMLElement>>('marker');
   readonly priceUnits = PriceUnits;
   readonly xAxisStep = input.required<number>();
@@ -53,15 +46,6 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly activeRow = input<{ price: number } | null>(null);
   private readonly markerElRefChanges$ = toObservable(this.markerElRef);
   private readonly activeRowChanges$ = toObservable(this.activeRow);
-
-  constructor(
-    @Inject(SCALPER_ORDERBOOK_BODY_REF)
-    @SkipSelf()
-    private readonly bodyRef: ScalperOrderBookBodyRef,
-    private readonly elementRef: ElementRef<HTMLElement>,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngAfterViewInit(): void {
     this.markerElRefChanges$.pipe(

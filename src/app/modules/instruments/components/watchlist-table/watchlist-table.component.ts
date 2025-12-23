@@ -1,4 +1,4 @@
-import {Component, DestroyRef, ElementRef, Inject, input, OnDestroy, OnInit, viewChild} from '@angular/core';
+import { Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
 import {
   animationFrameScheduler,
   BehaviorSubject,
@@ -118,6 +118,17 @@ type SortFn = (a: WatchedInstrument, b: WatchedInstrument) => number;
 })
 export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist>
   implements OnInit, OnDestroy {
+  protected readonly settingsService: WidgetSettingsService;
+  private readonly watchInstrumentsService = inject(WatchInstrumentsService);
+  private readonly watchlistCollectionService = inject(WatchlistCollectionService);
+  private readonly nzContextMenuService = inject(NzContextMenuService);
+  private readonly dashboardService = inject(ManageDashboardsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly widgetsMetaService = inject(WidgetsMetaService);
+  private readonly translatorService = inject(TranslatorService);
+  protected readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+  protected readonly destroyRef: DestroyRef;
+
   readonly guid = input.required<string>();
 
   readonly tableContainer = viewChild.required<ElementRef<HTMLDivElement>>('tableContainer');
@@ -215,20 +226,14 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
   private scrollIntervalId: number | null = null;
   private watchlistToDrop: string | null = null;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    private readonly watchInstrumentsService: WatchInstrumentsService,
-    private readonly watchlistCollectionService: WatchlistCollectionService,
-    private readonly nzContextMenuService: NzContextMenuService,
-    private readonly dashboardService: ManageDashboardsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly widgetsMetaService: WidgetsMetaService,
-    private readonly translatorService: TranslatorService,
-    @Inject(ACTIONS_CONTEXT)
-    protected readonly actionsContext: ActionsContext,
-    protected readonly destroyRef: DestroyRef
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.destroyRef = destroyRef;
   }
 
   ngOnInit(): void {

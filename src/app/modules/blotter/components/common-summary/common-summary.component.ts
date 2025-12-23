@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnInit,
-  input,
-  output
-} from '@angular/core';
+import { Component, OnInit, input, output, inject } from '@angular/core';
 import {
   distinctUntilChanged,
   Observable,
@@ -33,6 +28,9 @@ import { AsyncPipe } from '@angular/common';
     ]
 })
 export class CommonSummaryComponent implements OnInit {
+  private readonly settingsService = inject(WidgetSettingsService);
+  private readonly service = inject(PortfolioSummaryService);
+
   readonly shouldShowSettings = input.required<boolean>();
 
   readonly guid = input.required<string>();
@@ -41,12 +39,6 @@ export class CommonSummaryComponent implements OnInit {
 
   summary$: Observable<CommonSummaryView> = of();
   columns = 1;
-
-  constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly service: PortfolioSummaryService,
-  ) {
-  }
 
   ngOnInit(): void {
     this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid()).pipe(

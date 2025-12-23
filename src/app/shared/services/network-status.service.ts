@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  Optional
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   combineLatest,
   NEVER,
@@ -19,14 +16,10 @@ import { WsOrdersConnector } from "../../client/services/orders/ws-orders-connec
   providedIn: 'root'
 })
 export class NetworkStatusService {
-  private networkStatus$?: Observable<NetworkStatus>;
+  private readonly subscriptionsDataFeedService = inject(SubscriptionsDataFeedService);
+  private readonly wsOrdersConnector = inject(WsOrdersConnector, { optional: true });
 
-  constructor(
-    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
-    @Optional()
-    private readonly wsOrdersConnector?: WsOrdersConnector
-  ) {
-  }
+  private networkStatus$?: Observable<NetworkStatus>;
 
   get status$(): Observable<NetworkStatus> {
     this.networkStatus$ ??= combineLatest([

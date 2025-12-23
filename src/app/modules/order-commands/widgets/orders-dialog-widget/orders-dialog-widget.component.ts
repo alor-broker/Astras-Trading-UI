@@ -1,4 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit, viewChild} from '@angular/core';
+import { Component, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
 import {
   asyncScheduler,
   BehaviorSubject,
@@ -73,6 +73,14 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
+  private readonly ordersDialogService = inject(OrdersDialogService);
+  private readonly currentDashboardService = inject(DashboardContextService);
+  private readonly instrumentService = inject(InstrumentsService);
+  private readonly commonParametersService = inject(CommonParametersService);
+  private readonly helpService = inject(HelpService);
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  readonly pushNotificationsConfig = inject<PushNotificationsConfig>(PUSH_NOTIFICATIONS_CONFIG);
+
   helpUrl$!: Observable<string | null>;
   dialogParams$!: Observable<OrderDialogParams | null>;
 
@@ -91,19 +99,6 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
   readonly stopOrderTab = viewChild<NzTabComponent>('stopOrderTab');
 
   readonly ordersConfig = this.orderCommandService.getOrdersConfig();
-
-  constructor(
-    private readonly ordersDialogService: OrdersDialogService,
-    private readonly currentDashboardService: DashboardContextService,
-    private readonly instrumentService: InstrumentsService,
-    private readonly commonParametersService: CommonParametersService,
-    private readonly helpService: HelpService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
-    @Inject(PUSH_NOTIFICATIONS_CONFIG)
-    readonly pushNotificationsConfig: PushNotificationsConfig
-  ) {
-  }
 
   ngOnInit(): void {
     this.dialogParams$ = this.ordersDialogService.newOrderDialogParameters$.pipe(

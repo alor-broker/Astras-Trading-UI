@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {NzContentComponent, NzHeaderComponent, NzLayoutComponent,} from 'ng-zorro-antd/layout';
 import {AdminNavbarComponent} from '../../components/admin-navbar/admin-navbar.component';
 import {AdminSettingsBrokerService} from '../../services/settings/admin-settings-broker.service';
@@ -40,13 +40,10 @@ import {
     ]
 })
 export class AdminDashboardComponent implements OnInit, ActionsContext {
-  constructor(
-    private readonly adminSettingsBrokerService: AdminSettingsBrokerService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly watchlistCollectionBrokerService: WatchlistCollectionBrokerService,
-    private readonly graphStorageService: GraphStorageService
-  ) {
-  }
+  private readonly adminSettingsBrokerService = inject(AdminSettingsBrokerService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly watchlistCollectionBrokerService = inject(WatchlistCollectionBrokerService);
+  private readonly graphStorageService = inject(GraphStorageService);
 
   ngOnInit(): void {
     this.adminSettingsBrokerService.initSettingsBrokers();

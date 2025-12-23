@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, input, LOCALE_ID, OnDestroy, OnInit} from '@angular/core';
+import { Component, DestroyRef, input, LOCALE_ID, OnDestroy, OnInit, inject } from '@angular/core';
 import {BehaviorSubject, combineLatest, defer, filter, Observable, tap, timer} from "rxjs";
 import {RisksInfo} from "../../../models/risks.model";
 import {DashboardContextService} from "../../../../../shared/services/dashboard-context.service";
@@ -31,6 +31,12 @@ import {REFRESH_TIMEOUT_MS} from "../../../constants/info.constants";
   ]
 })
 export class RisksComponent implements OnInit, OnDestroy {
+  private readonly risksService = inject(RisksService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly locale = inject(LOCALE_ID);
+  private readonly destroyRef = inject(DestroyRef);
+
   currentPortfolio$!: Observable<PortfolioKey>;
   isLoading$ = new BehaviorSubject<boolean>(true);
   descriptors$!: Observable<DescriptorsGroup | null>;
@@ -38,15 +44,6 @@ export class RisksComponent implements OnInit, OnDestroy {
   readonly activated = input<boolean>(false);
   private readonly instrumentKeyChanges$ = toObservable(this.instrumentKey);
   private readonly activatedChanges$ = toObservable(this.activated);
-
-  constructor(
-    private readonly risksService: RisksService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly translatorService: TranslatorService,
-    @Inject(LOCALE_ID) private readonly locale: string,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.currentPortfolio$ = this.dashboardContextService.selectedPortfolio$;

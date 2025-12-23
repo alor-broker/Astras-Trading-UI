@@ -1,4 +1,4 @@
-import {Component, Inject, input, LOCALE_ID, OnInit} from '@angular/core';
+import { Component, input, LOCALE_ID, OnInit, inject } from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {
   CostEstimate,
@@ -30,16 +30,13 @@ import {toObservable} from "@angular/core/rxjs-interop";
   ]
 })
 export class FinanceComponent implements OnInit {
+  private readonly translatorService = inject(TranslatorService);
+  private readonly locale = inject(LOCALE_ID);
+
   descriptors$!: Observable<DescriptorsGroup[]>;
   readonly stockInfo = input.required<Stock>();
   private readonly currencyPipe = new CurrencyPipe(this.locale);
   protected readonly stockInfoChanges$ = toObservable(this.stockInfo);
-
-  constructor(
-    private readonly translatorService: TranslatorService,
-    @Inject(LOCALE_ID) private readonly locale: string
-  ) {
-  }
 
   ngOnInit(): void {
     this.descriptors$ = combineLatest({

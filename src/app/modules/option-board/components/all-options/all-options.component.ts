@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, viewChildren} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, viewChildren, inject } from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, shareReplay, switchMap, take, tap, timer} from "rxjs";
 import {OptionBoardDataContext, OptionsSelection} from "../../models/option-board-data-context.model";
 import {OptionBoardService} from "../../services/option-board.service";
@@ -68,6 +68,10 @@ interface LayoutSizes {
   ]
 })
 export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly optionBoardService = inject(OptionBoardService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly rowHeight = 30;
   readonly isLoading$ = new BehaviorSubject(false);
 
@@ -98,13 +102,6 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
     [OptionParameters.Ask, (option: Option): string => option.ask.toString()],
     [OptionParameters.Bid, (option: Option): string => option.bid.toString()]
   ]);
-
-  constructor(
-    private readonly optionBoardService: OptionBoardService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngAfterViewInit(): void {
     this.setBodyScrollContainer();

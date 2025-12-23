@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, input, OnDestroy, OnInit} from '@angular/core';
+import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
 import {BehaviorSubject, filter, Observable, of, shareReplay,} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {BlotterService} from '../../services/blotter.service';
@@ -79,6 +79,13 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class BlotterWidgetComponent implements OnInit, OnDestroy {
+  readonly pushNotificationsConfig = inject<PushNotificationsConfig>(PUSH_NOTIFICATIONS_CONFIG);
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly navigationStackService = inject(NavigationStackService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly marketTypes = MarketType;
   shouldShowSettings = false;
 
@@ -92,17 +99,6 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
   settings$!: Observable<BlotterSettings>;
   contentSize$ = new BehaviorSubject<ContentSize | null>(null);
   title$!: Observable<string>;
-
-  constructor(
-    @Inject(PUSH_NOTIFICATIONS_CONFIG)
-    readonly pushNotificationsConfig: PushNotificationsConfig,
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly navigationStackService: NavigationStackService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

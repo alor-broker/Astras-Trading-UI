@@ -1,4 +1,4 @@
-import {Component, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {WidgetSettingsCreationHelper} from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
 import {Observable} from "rxjs";
 import {EventsCalendarSettings} from "../../models/events-calendar-settings.model";
@@ -23,17 +23,14 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class EventsCalendarWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+
   readonly widgetInstance = input.required<WidgetInstance>();
 
   readonly isBlockWidget = input.required<boolean>();
 
   shouldShowSettings = false;
   settings$!: Observable<EventsCalendarSettings>;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

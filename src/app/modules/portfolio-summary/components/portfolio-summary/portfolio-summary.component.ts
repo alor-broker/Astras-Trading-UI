@@ -1,4 +1,4 @@
-import {Component, OnInit, input} from '@angular/core';
+import { Component, OnInit, input, inject } from '@angular/core';
 import {distinctUntilChanged, Observable, shareReplay, switchMap} from "rxjs";
 import {PortfolioSummarySettings} from "../../models/portfolio-summary-settings.model";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
@@ -25,6 +25,9 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class PortfolioSummaryComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly portfolioSummaryService = inject(PortfolioSummaryService);
+
   readonly marketTypes = MarketType;
   readonly guid = input.required<string>();
 
@@ -32,12 +35,6 @@ export class PortfolioSummaryComponent implements OnInit {
   commonSummary$!: Observable<CommonSummaryView>;
   forwardSummary$!: Observable<ForwardRisksView>;
   protected readonly F = F;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly portfolioSummaryService: PortfolioSummaryService,
-  ) {
-  }
 
   ngOnInit(): void {
     this.settings$ = this.widgetSettingsService.getSettings<PortfolioSummarySettings>(this.guid()).pipe(

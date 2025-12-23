@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { Observable, of, take } from 'rxjs';
 import { ApplicationMetaService } from '../../services/application-meta.service';
@@ -29,16 +29,13 @@ import { AsyncPipe } from '@angular/common';
     ]
 })
 export class ApplicationUpdatedWidgetComponent implements OnInit {
+  private readonly modalService = inject(ModalService);
+  private readonly applicationMetaService = inject(ApplicationMetaService);
+
   isVisible$: Observable<boolean> = of(false);
   currentVersion$: Observable<ReleaseMeta | null> = of(null);
 
   isProblemCollapseActive = false;
-
-  constructor(
-    private readonly modalService: ModalService,
-    private readonly applicationMetaService: ApplicationMetaService
-  ) {
-  }
 
   ngOnInit(): void {
     this.isVisible$ = this.modalService.shouldShowApplicationUpdatedModal$;

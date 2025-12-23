@@ -1,4 +1,4 @@
-import {Component, input, OnInit, signal} from '@angular/core';
+import { Component, input, OnInit, signal, inject } from '@angular/core';
 import {Observable, shareReplay, switchMap} from 'rxjs';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
 import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
@@ -45,6 +45,11 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class InfoWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly instrumentService = inject(InstrumentsService);
+
   readonly widgetInstance = input.required<WidgetInstance>();
 
   readonly isBlockWidget = input.required<boolean>();
@@ -56,14 +61,6 @@ export class InfoWidgetComponent implements OnInit {
   InstrumentTypes = InstrumentType;
 
   readonly isLoading = signal(false);
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly instrumentService: InstrumentsService
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { ErrorHandlerService } from "../../../shared/services/handle-error/error-handler.service";
 import {
@@ -14,12 +14,11 @@ import { catchHttpError } from "../../../shared/utils/observable-helper";
 
 @Injectable({providedIn: 'root'})
 export class InvestIdeasService {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+
   private readonly ideasUrl = this.environmentService.investIdeasApiUrl;
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) { }
 
   getIdeas(page: Page, language: string | null): Observable<IdeasPagedResponse | null> {
     return this.getIdeasInternal(page, language);

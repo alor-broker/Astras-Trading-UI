@@ -1,8 +1,4 @@
-import {
-  Component,
-  OnInit,
-  input
-} from '@angular/core';
+import { Component, OnInit, input, inject } from '@angular/core';
 import {
   distinctUntilChanged,
   Observable,
@@ -31,18 +27,15 @@ import { AsyncPipe } from '@angular/common';
     ]
 })
 export class ForwardSummaryComponent implements OnInit {
+  private readonly settingsService = inject(WidgetSettingsService);
+  private readonly service = inject(PortfolioSummaryService);
+
   readonly shouldShowSettings = input<boolean>(false);
 
   readonly guid = input.required<string>();
 
   summary$!: Observable<ForwardRisksView>;
   columns = 1;
-
-  constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly service: PortfolioSummaryService,
-  ) {
-  }
 
   ngOnInit(): void {
     this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid()).pipe(

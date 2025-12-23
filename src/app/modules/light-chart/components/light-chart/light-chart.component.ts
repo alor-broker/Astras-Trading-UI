@@ -1,14 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  OnDestroy,
-  OnInit,
-  ViewEncapsulation,
-  input,
-  output
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, OnDestroy, OnInit, ViewEncapsulation, input, output, inject } from '@angular/core';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -53,6 +43,14 @@ type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
     ]
 })
 export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
+  private readonly settingsService = inject(WidgetSettingsService);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+  private readonly themeService = inject(ThemeService);
+  private readonly lightChartDatafeedFactoryService = inject(LightChartDatafeedFactoryService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly destroyRef = inject(DestroyRef);
+
   availableTimeFrames$!: Observable<TimeframeValue[]>;
   timeFrameDisplayModes = TimeFrameDisplayMode;
 
@@ -62,17 +60,6 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
   settings$!: Observable<LightChartSettingsExtended>;
   private chart?: LightChartWrapper;
-
-  constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly instrumentsService: InstrumentsService,
-    private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly themeService: ThemeService,
-    private readonly lightChartDatafeedFactoryService: LightChartDatafeedFactoryService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<LightChartSettings>(this.guid()).pipe(

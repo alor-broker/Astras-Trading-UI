@@ -1,4 +1,4 @@
-import {Component, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {InstrumentsService} from '../../../modules/instruments/services/instruments.service';
 import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {distinctUntilChanged, Observable, of, switchMap} from 'rxjs';
@@ -26,14 +26,13 @@ import {toObservable} from "@angular/core/rxjs-interop";
   ]
 })
 export class InstrumentBoardSelectComponent implements OnInit, ControlValueAccessor {
+  private readonly instrumentsService = inject(InstrumentsService);
+
   currentValue: string | null = null;
   availableBoards$!: Observable<string[]>;
   readonly placeholder = input<string>();
   readonly instrument = input<{ symbol: string, exchange: string } | null>(null);
   private readonly instrumentChanges$ = toObservable(this.instrument);
-
-  constructor(private readonly instrumentsService: InstrumentsService) {
-  }
 
   ngOnInit(): void {
     this.availableBoards$ = this.instrumentChanges$.pipe(

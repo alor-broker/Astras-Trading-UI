@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit} from "@angular/core";
+import { Component, DestroyRef, OnInit, inject } from "@angular/core";
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Observable, take} from "rxjs";
 import {inputNumberValidation} from "../../../../shared/utils/validation-options";
@@ -57,6 +57,12 @@ import {NzInputNumberComponent} from "ng-zorro-antd/input-number";
   ]
 })
 export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<OrderSubmitSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly deviceService = inject(DeviceService);
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly form = this.formBuilder.group({
     instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
     instrumentGroup: this.formBuilder.nonNullable.control<string | null>(null),
@@ -81,14 +87,16 @@ export class OrderSubmitSettingsComponent extends WidgetSettingsBaseComponent<Or
 
   protected settings$!: Observable<OrderSubmitSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly deviceService: DeviceService,
-    private readonly formBuilder: FormBuilder,
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {

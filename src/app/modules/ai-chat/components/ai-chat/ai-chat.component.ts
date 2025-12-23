@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, input} from '@angular/core';
+import { Component, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {Message, MessageContent, MessageType, TextMessageContent} from "../../models/messages-display.model";
 import {MessageInputComponent, OutcomingMessage} from "../message-input/message-input.component";
 import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
@@ -37,6 +37,10 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class AiChatComponent implements OnInit, OnDestroy {
+  private readonly translatorService = inject(TranslatorService);
+  private readonly aiChatService = inject(AiChatService);
+  private readonly suggestionsService = inject(SuggestionsService);
+
   displayMessages: Message<any>[] = [];
 
   readonly chatStatus$ = new BehaviorSubject<DisplayStatus | null>(null);
@@ -48,13 +52,6 @@ export class AiChatComponent implements OnInit, OnDestroy {
 
   private translator$!: Observable<TranslatorFn>;
   private threadId: string | null = null;
-
-  constructor(
-    private readonly translatorService: TranslatorService,
-    private readonly aiChatService: AiChatService,
-    private readonly suggestionsService: SuggestionsService
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.chatStatus$.complete();

@@ -1,15 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  ElementRef,
-  Inject,
-  LOCALE_ID,
-  OnDestroy,
-  OnInit,
-  signal,
-  input
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, LOCALE_ID, OnDestroy, OnInit, signal, input, inject } from '@angular/core';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {AdminClientsService} from "../../services/clients/admin-clients.service";
 import {Client, ClientsSearchFilter, SpectraExtension} from "../../services/clients/admin-clients-service.models";
@@ -116,6 +105,16 @@ interface ColumnBase {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, ClientsSearchFilter> implements OnInit, OnDestroy {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly adminClientsService = inject(AdminClientsService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly locale = inject(LOCALE_ID);
+  private readonly hostElement = inject(ElementRef);
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
+  protected readonly widgetLocalStateService = inject(WidgetLocalStateService);
+  private readonly nzContextMenuService = inject(NzContextMenuService);
+
   readonly guid = input.required<string>();
 
   allColumns: BaseColumnSettings<ClientDisplay>[] = [];
@@ -492,19 +491,14 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
 
   private tableState$!: Observable<TableState | null>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly adminClientsService: AdminClientsService,
-    private readonly translatorService: TranslatorService,
-    @Inject(LOCALE_ID)
-    private readonly locale: string,
-    private readonly hostElement: ElementRef,
-    private readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly widgetLocalStateService: WidgetLocalStateService,
-    private readonly nzContextMenuService: NzContextMenuService,
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.destroyRef = destroyRef;
   }
 
   ngOnInit(): void {

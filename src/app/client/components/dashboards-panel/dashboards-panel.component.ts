@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnDestroy, OnInit, inject } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -66,19 +60,16 @@ interface DashboardSegmentedOption {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardsPanelComponent implements OnInit, OnDestroy {
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly allDashboardsValue = 'all_dashboards';
   options$!: Observable<DashboardSegmentedOption[]>;
   isDashboardSelectionMenuVisible$ = new BehaviorSubject(false);
   lastSelectedNonFavoriteDashboard$ = new BehaviorSubject<Dashboard | null>(null);
   dropdownTrigger$ = new BehaviorSubject<'click' | 'hover'>('hover');
   selectedValue$!: Observable<string>;
-
-  constructor(
-    private readonly manageDashboardsService: ManageDashboardsService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     const allDashboards$ = combineLatest({

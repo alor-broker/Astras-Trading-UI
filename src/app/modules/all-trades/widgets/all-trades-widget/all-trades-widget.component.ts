@@ -1,4 +1,4 @@
-import {Component, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
 import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
@@ -33,6 +33,10 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class AllTradesWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+
   shouldShowSettings = false;
 
   readonly widgetInstance = input.required<WidgetInstance>();
@@ -41,12 +45,6 @@ export class AllTradesWidgetComponent implements OnInit {
 
   settings$!: Observable<AllTradesSettings>;
   showBadge$!: Observable<boolean>;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

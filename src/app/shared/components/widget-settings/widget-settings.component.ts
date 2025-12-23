@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnInit,
-  input,
-  output
-} from '@angular/core';
+import { Component, OnInit, input, output, inject } from '@angular/core';
 import { DeviceService } from "../../services/device.service";
 import {
   Observable,
@@ -29,6 +24,8 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
     styleUrls: ['./widget-settings.component.less']
 })
 export class WidgetSettingsComponent implements OnInit {
+  private readonly deviceService = inject(DeviceService);
+
   readonly canSave = input.required<boolean>();
 
   readonly saveClick = output();
@@ -40,9 +37,6 @@ export class WidgetSettingsComponent implements OnInit {
   readonly copyClick = output();
 
   isMobile$!: Observable<boolean>;
-
-  constructor(private readonly deviceService: DeviceService) {
-  }
 
   ngOnInit(): void {
     this.isMobile$ = this.deviceService.deviceInfo$.pipe(

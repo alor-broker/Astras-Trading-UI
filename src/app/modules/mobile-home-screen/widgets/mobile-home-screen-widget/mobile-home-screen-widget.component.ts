@@ -1,4 +1,4 @@
-import {Component, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {AsyncPipe} from "@angular/common";
 import {TranslocoDirective} from "@jsverse/transloco";
@@ -27,6 +27,10 @@ import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skel
   styleUrl: './mobile-home-screen-widget.component.less'
 })
 export class MobileHomeScreenWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
+
   shouldShowSettings = false;
   readonly widgetInstance = input.required<WidgetInstance>();
 
@@ -35,13 +39,6 @@ export class MobileHomeScreenWidgetComponent implements OnInit {
   settings$!: Observable<MobileHomeScreenSettings>;
 
   title$!: Observable<string>;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly userPortfoliosService: UserPortfoliosService,
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

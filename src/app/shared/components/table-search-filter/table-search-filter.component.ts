@@ -1,4 +1,4 @@
-import {Component, input, OnChanges, OnDestroy, output, SimpleChange, SimpleChanges} from '@angular/core';
+import { Component, input, OnChanges, OnDestroy, output, SimpleChange, SimpleChanges, inject } from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, UntypedFormGroup} from "@angular/forms";
 import {BaseColumnSettings, FilterType} from "../../models/settings/table-settings.model";
 import {Subscription} from "rxjs";
@@ -20,6 +20,8 @@ import {TranslocoDirective} from "@jsverse/transloco";
   styleUrl: './table-search-filter.component.less'
 })
 export class TableSearchFilterComponent implements OnChanges, OnDestroy {
+  private readonly formBuilder = inject(FormBuilder);
+
   filtersForm?: UntypedFormGroup;
 
   readonly columns = input.required<BaseColumnSettings<any>[]>();
@@ -27,9 +29,6 @@ export class TableSearchFilterComponent implements OnChanges, OnDestroy {
   filterChange = output<Record<string, string>>();
 
   private changesSubscription?: Subscription;
-
-  constructor(private readonly formBuilder: FormBuilder) {
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes.columns as SimpleChange | undefined)) {

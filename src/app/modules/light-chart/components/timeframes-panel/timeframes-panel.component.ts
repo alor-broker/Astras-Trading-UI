@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnChanges, OnDestroy, OnInit, input, output} from '@angular/core';
+import { Component, DestroyRef, OnChanges, OnDestroy, OnInit, input, output, inject } from '@angular/core';
 import {TimeFrameDisplayMode} from "../../models/light-chart-settings.model";
 import {TimeframeValue} from "../../models/light-chart.models";
 import {BehaviorSubject, take} from "rxjs";
@@ -29,6 +29,8 @@ import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
   ]
 })
 export class TimeframesPanelComponent implements OnDestroy, OnInit, OnChanges {
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly availableTimeframes = input.required<TimeframeValue[]>();
 
   readonly selectedTimeframe = input.required<TimeframeValue | undefined>();
@@ -40,9 +42,6 @@ export class TimeframesPanelComponent implements OnDestroy, OnInit, OnChanges {
   readonly actualDisplayMode$ = new BehaviorSubject(this.displayMode());
   timeFrameDisplayModes = TimeFrameDisplayMode;
   private readonly contentSize$ = new BehaviorSubject<ContentSize>({height: 0, width: 0});
-
-  constructor(private readonly destroyRef: DestroyRef) {
-  }
 
   containerSizeChanged(entries: ResizeObserverEntry[]): void {
     entries.forEach(x => {

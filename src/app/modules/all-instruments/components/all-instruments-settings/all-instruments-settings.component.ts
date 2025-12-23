@@ -1,8 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  OnInit,
-} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import {
@@ -43,6 +39,11 @@ import { NzSelectComponent, NzOptionComponent } from 'ng-zorro-antd/select';
     ]
 })
 export class AllInstrumentsSettingsComponent extends WidgetSettingsBaseComponent<AllInstrumentsSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly form = this.formBuilder.group({
     allInstrumentsColumns: this.formBuilder.nonNullable.control<string[]>([], Validators.required),
   });
@@ -51,13 +52,16 @@ export class AllInstrumentsSettingsComponent extends WidgetSettingsBaseComponent
 
   protected settings$!: Observable<AllInstrumentsSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly formBuilder: FormBuilder
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {

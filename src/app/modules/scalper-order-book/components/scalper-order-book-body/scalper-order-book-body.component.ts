@@ -1,16 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  ElementRef,
-  Inject,
-  InjectionToken,
-  OnDestroy,
-  OnInit,
-  SkipSelf,
-  input,
-  viewChild
-} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, InjectionToken, OnDestroy, OnInit, input, viewChild, inject } from '@angular/core';
 import {CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {
   BehaviorSubject,
@@ -127,6 +115,18 @@ export class ScalperOrderBookBodyComponent implements OnInit,
   OnDestroy,
   ScalperOrderBookBodyRef,
   RulerContext {
+  private readonly scalperOrderBookSharedContext = inject<ScalperOrderBookSharedContext>(SCALPER_ORDERBOOK_SHARED_CONTEXT, { skipSelf: true });
+  private readonly scalperOrderBookDataProvider = inject(ScalperOrderBookDataProvider);
+  private readonly settingsWriteService = inject(ScalperOrderBookSettingsWriteService);
+  private readonly priceRowsStore = inject(PriceRowsStore);
+  private readonly quotesService = inject(QuotesService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly allTradesService = inject(AllTradesService);
+  private readonly hotkeysService = inject(ScalperHotKeyCommandService);
+  private readonly widgetLocalStateService = inject(WidgetLocalStateService);
+  private readonly ref = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly maxScaleFactor = 10;
   readonly sides = Side;
   readonly panelIds = {
@@ -161,22 +161,6 @@ export class ScalperOrderBookBodyComponent implements OnInit,
   private readonly hoveredPriceRow$ = new BehaviorSubject<{ price: number } | null>(null);
   private lastContainerHeight = 0;
   private widgetSettings$!: Observable<ScalperOrderBookWidgetSettings>;
-
-  constructor(
-    @Inject(SCALPER_ORDERBOOK_SHARED_CONTEXT)
-    @SkipSelf()
-    private readonly scalperOrderBookSharedContext: ScalperOrderBookSharedContext,
-    private readonly scalperOrderBookDataProvider: ScalperOrderBookDataProvider,
-    private readonly settingsWriteService: ScalperOrderBookSettingsWriteService,
-    private readonly priceRowsStore: PriceRowsStore,
-    private readonly quotesService: QuotesService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly allTradesService: AllTradesService,
-    private readonly hotkeysService: ScalperHotKeyCommandService,
-    private readonly widgetLocalStateService: WidgetLocalStateService,
-    private readonly ref: ElementRef<HTMLElement>,
-    private readonly destroyRef: DestroyRef) {
-  }
 
   get hoveredRow$(): Observable<{ price: number } | null> {
     return this.hoveredPriceRow$.asObservable();

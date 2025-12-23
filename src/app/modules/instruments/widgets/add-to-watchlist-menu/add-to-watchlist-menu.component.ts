@@ -1,4 +1,4 @@
-import {Component, ElementRef, input, model, OnInit, viewChild} from '@angular/core';
+import { Component, ElementRef, input, model, OnInit, viewChild, inject } from '@angular/core';
 import {combineLatest, Observable, take} from "rxjs";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {WatchlistCollectionService} from "../../services/watchlist-collection.service";
@@ -50,6 +50,10 @@ interface MenuItem {
   ]
 })
 export class AddToWatchlistMenuComponent implements OnInit {
+  private readonly watchlistCollectionService = inject(WatchlistCollectionService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly formBuilder = inject(FormBuilder);
+
   menuItems$!: Observable<MenuItem[]>;
 
   showNewListDialog = false;
@@ -71,13 +75,6 @@ export class AddToWatchlistMenuComponent implements OnInit {
       ]
     )
   });
-
-  constructor(
-    private readonly watchlistCollectionService: WatchlistCollectionService,
-    private readonly translatorService: TranslatorService,
-    private readonly formBuilder: FormBuilder
-  ) {
-  }
 
   ngOnInit(): void {
     this.menuItems$ = this.getMenuItems();

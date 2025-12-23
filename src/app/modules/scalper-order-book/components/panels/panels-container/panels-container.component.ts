@@ -1,13 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  contentChildren,
-  DestroyRef,
-  input,
-  NgZone,
-  OnDestroy,
-  output,
-} from '@angular/core';
+import { AfterViewInit, Component, contentChildren, DestroyRef, input, NgZone, OnDestroy, output, inject } from '@angular/core';
 import {PanelComponent} from "../panel/panel.component";
 import {ReplaySubject, take} from "rxjs";
 import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
@@ -29,6 +20,9 @@ export interface ResizedEvent {
   ]
 })
 export class PanelsContainerComponent implements PanelsContainerContext, AfterViewInit, OnDestroy {
+  private readonly ngZone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly panelsQuery = contentChildren<PanelComponent>(PanelComponent);
   readonly widthUpdated = output<Record<string, number>>();
   readonly initialWidths = input.required<Record<string, number>>();
@@ -37,11 +31,6 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
   private animationId = -1;
   private readonly panels = new ReplaySubject<PanelComponent[]>(1);
   private readonly initialWidthsChanges$ = toObservable(this.initialWidths);
-
-  constructor(
-    private readonly ngZone: NgZone,
-    private readonly destroyRef: DestroyRef) {
-  }
 
   ngOnDestroy(): void {
     this.panels.complete();

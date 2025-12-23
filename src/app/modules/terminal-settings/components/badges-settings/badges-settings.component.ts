@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {additionalInstrumentsBadges, defaultBadgeColor, instrumentsBadges} from "../../../../shared/utils/instruments";
 import {
   CdkDrag,
@@ -52,6 +52,8 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
   ]
 })
 export class BadgesSettingsComponent extends ControlValueAccessorBaseComponent<string[]> {
+  private readonly formBuilder = inject(FormBuilder);
+
   newBadgeColorControl = this.formBuilder.nonNullable.control('');
 
   defaultBadgeColor = defaultBadgeColor;
@@ -59,10 +61,6 @@ export class BadgesSettingsComponent extends ControlValueAccessorBaseComponent<s
   draggedBadge: string | null = null;
 
   badgesColors: string[] = [];
-
-  constructor(private readonly formBuilder: FormBuilder) {
-    super();
-  }
 
   writeValue(colors: string[] | null): void {
     const colorsArray = colors ?? [];

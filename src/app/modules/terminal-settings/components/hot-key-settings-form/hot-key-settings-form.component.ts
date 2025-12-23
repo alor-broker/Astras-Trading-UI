@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -68,19 +68,15 @@ import {NzButtonComponent} from 'ng-zorro-antd/button';
   ]
 })
 export class HotKeySettingsFormComponent extends ControlValueAccessorBaseComponent<HotKeysSettings> implements OnInit {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly form = this.formBuilder.group({
     allOrderBooksHotKeys: this.formBuilder.nonNullable.array([this.createCommandHotKeyControl('', null)]),
     activeOrderBookHotKeys: this.formBuilder.nonNullable.array([this.createCommandHotKeyControl('', null)]),
     workingVolumes: this.formBuilder.array([this.createWorkingVolumeControl(null)]),
     extraHotKeys: this.formBuilder.nonNullable.control(false)
   });
-
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-    super();
-  }
 
   writeValue(value: HotKeysSettings | null): void {
     if (value == null) {

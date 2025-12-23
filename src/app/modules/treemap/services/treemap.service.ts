@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { TreemapNode } from "../models/treemap.model";
@@ -10,13 +10,11 @@ import { EnvironmentService } from "../../../shared/services/environment.service
   providedIn: 'root'
 })
 export class TreemapService {
-  private readonly baseUrl = this.environmentService.apiUrl + '/instruments/v1/TreeMap';
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly http = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
 
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly http: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) { }
+  private readonly baseUrl = this.environmentService.apiUrl + '/instruments/v1/TreeMap';
 
   getTreemap(limit: number): Observable<TreemapNode[]> {
     return this.http.get<TreemapNode[]>(this.baseUrl, {

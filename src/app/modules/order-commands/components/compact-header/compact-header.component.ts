@@ -1,4 +1,4 @@
-import {Component, input, OnInit, output} from '@angular/core';
+import { Component, input, OnInit, output, inject } from '@angular/core';
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {combineLatest, Observable, shareReplay, switchMap} from "rxjs";
 import {QuotesService} from "../../../../shared/services/quotes.service";
@@ -24,6 +24,9 @@ import {toObservable} from "@angular/core/rxjs-interop";
   styleUrls: ['./compact-header.component.less']
 })
 export class CompactHeaderComponent implements OnInit {
+  private readonly quotesService = inject(QuotesService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+
   readonly priceSelected = output<number>();
 
   readonly qtySelected = output<number>();
@@ -43,11 +46,6 @@ export class CompactHeaderComponent implements OnInit {
       startWith(null),
       shareReplay(1)
     );
-
-  constructor(
-    private readonly quotesService: QuotesService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService) {
-  }
 
   ngOnInit(): void {
     this.priceData$ = this.instrumentChanges$.pipe(

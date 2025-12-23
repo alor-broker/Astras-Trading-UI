@@ -7,11 +7,17 @@ import {AddHomeScreenMobileDashboardSettings} from "./migrations/add-home-screen
   providedIn: 'root'
 })
 export class DashboardSettingsMobileMigrationManager extends MobileMigrationManagerBase {
+  protected readonly localStorageService: LocalStorageService;
+
   protected migrations = [
     inject(AddHomeScreenMobileDashboardSettings)
   ];
 
-  constructor(protected readonly localStorageService: LocalStorageService) {
+  constructor() {
+    const localStorageService = inject(LocalStorageService);
+
     super(localStorageService);
+
+    this.localStorageService = localStorageService;
   }
 }

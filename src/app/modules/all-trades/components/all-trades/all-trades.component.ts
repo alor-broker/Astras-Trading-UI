@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, input, LOCALE_ID, OnDestroy, OnInit,} from '@angular/core';
+import { Component, DestroyRef, input, LOCALE_ID, OnDestroy, OnInit, inject } from '@angular/core';
 import {AsyncPipe, DatePipe, formatNumber} from "@angular/common";
 import {startOfDay, toUnixTimestampSeconds} from "../../../../shared/utils/datetime";
 import {bufferTime, filter, map, tap} from "rxjs/operators";
@@ -47,6 +47,13 @@ export class AllTradesComponent extends LazyLoadingBaseTableComponent<
   AllTradesPagination
 >
   implements OnInit, OnDestroy {
+  private readonly allTradesService = inject(AllTradesService);
+  protected readonly settingsService: WidgetSettingsService;
+  private readonly translatorService = inject(TranslatorService);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+  protected readonly destroyRef: DestroyRef;
+  private readonly locale = inject(LOCALE_ID);
+
   readonly guid = input.required<string>();
   public readonly tradesList$ = new BehaviorSubject<AllTradesItem[]>([]);
   protected settingsTableName = 'allTradesTable';
@@ -155,15 +162,14 @@ export class AllTradesComponent extends LazyLoadingBaseTableComponent<
 
   private readonly NEW_TRADES_PERIOD = 50;
 
-  constructor(
-    private readonly allTradesService: AllTradesService,
-    protected readonly settingsService: WidgetSettingsService,
-    private readonly translatorService: TranslatorService,
-    private readonly timezoneConverterService: TimezoneConverterService,
-    protected readonly destroyRef: DestroyRef,
-    @Inject(LOCALE_ID) private readonly locale: string
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.destroyRef = destroyRef;
   }
 
   private get defaultPagination(): AllTradesPagination {

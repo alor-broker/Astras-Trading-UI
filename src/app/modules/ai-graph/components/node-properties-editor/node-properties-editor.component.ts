@@ -1,4 +1,4 @@
-import {Component, effect, input} from '@angular/core';
+import { Component, effect, input, inject } from '@angular/core';
 import {NodeBase} from "../../graph/nodes/node-base";
 import {EditorType, ExtendedEditors, Portfolio, SlotType} from "../../graph/slot-types";
 import {
@@ -72,6 +72,8 @@ interface EditorsSection {
   styleUrl: './node-properties-editor.component.less'
 })
 export class NodePropertiesEditorComponent {
+  private readonly translatorService = inject(TranslatorService);
+
   readonly targetNode = input<NodeBase | null>(null);
 
   protected sections: EditorsSection[] = [];
@@ -79,7 +81,7 @@ export class NodePropertiesEditorComponent {
   protected readonly SlotTypes = SlotType;
   protected readonly ExtendedEditors = ExtendedEditors;
 
-  constructor(private readonly translatorService: TranslatorService) {
+  constructor() {
     effect(() => {
       const targetNode = this.targetNode();
       if (targetNode == null) {

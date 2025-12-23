@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, input} from '@angular/core';
+import { Component, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {OptionParameters, OptionSide} from "../../models/option-board.model";
 import {BehaviorSubject, take} from "rxjs";
 import {OptionBoardDataContextFactory} from "../../utils/option-board-data-context-factory";
@@ -49,6 +49,9 @@ interface BoardViewRecord extends RecordContent {
   ]
 })
 export class OptionBoardComponent implements OnInit, OnDestroy {
+  private readonly contextFactory = inject(OptionBoardDataContextFactory);
+  private readonly widgetLocalStateService = inject(WidgetLocalStateService);
+
   readonly ComponentTabs = ComponentTabs;
   optionSides = Object.values(OptionSide);
   parameters = Object.values(OptionParameters);
@@ -57,12 +60,6 @@ export class OptionBoardComponent implements OnInit, OnDestroy {
   selectedTab$ = new BehaviorSubject(ComponentTabs.AllOptions);
   dataContext!: OptionBoardDataContext;
   private readonly BoardViewStorageKey = 'board-view';
-
-  constructor(
-    private readonly contextFactory: OptionBoardDataContextFactory,
-    private readonly widgetLocalStateService: WidgetLocalStateService
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.selectedTab$.complete();

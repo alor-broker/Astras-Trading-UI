@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import {CommonParameters, CommonParametersService} from "../../services/common-parameters.service";
 import {BehaviorSubject, Observable, shareReplay, take} from "rxjs";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
@@ -46,18 +46,15 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class EditOrderDialogWidgetComponent implements OnInit, OnDestroy {
+  private readonly ordersDialogService = inject(OrdersDialogService);
+  private readonly commonParametersService = inject(CommonParametersService);
+
   readonly formState$ = new BehaviorSubject<OrderFormState | null>(null);
   readonly busy$ = new BehaviorSubject<boolean>(false);
   readonly orderTypes = OrderFormType;
   readonly dialogParams$ = this.ordersDialogService.editOrderDialogParameters$;
   currentPortfolio$!: Observable<PortfolioKey>;
   currentInstrument$!: Observable<InstrumentKey>;
-
-  constructor(
-    private readonly ordersDialogService: OrdersDialogService,
-    private readonly commonParametersService: CommonParametersService
-  ) {
-  }
 
   cancelEditing(): void {
     this.dialogParams$.pipe(

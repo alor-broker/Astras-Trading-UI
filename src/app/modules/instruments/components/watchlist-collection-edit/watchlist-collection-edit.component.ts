@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {WatchlistCollectionService} from '../../services/watchlist-collection.service';
 import {map} from 'rxjs/operators';
 import {filter, Observable, shareReplay, Subject} from 'rxjs';
@@ -78,6 +78,9 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class WatchlistCollectionEditComponent implements OnInit {
+  private readonly watchlistCollectionService = inject(WatchlistCollectionService);
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly exportDialogParams$ = new Subject<ExportDialogParams | null>();
   readonly importDialogParams$ = new Subject<ImportDialogParams | null>();
 
@@ -96,12 +99,6 @@ export class WatchlistCollectionEditComponent implements OnInit {
   selectedPresetWatchlist?: PresetWatchlist | null = null;
 
   getTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
-
-  constructor(
-    private readonly watchlistCollectionService: WatchlistCollectionService,
-    private readonly formBuilder: FormBuilder
-  ) {
-  }
 
   ngOnInit(): void {
     this.collection$ = this.watchlistCollectionService.getWatchlistCollection().pipe(

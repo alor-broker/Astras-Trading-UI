@@ -1,4 +1,4 @@
-import {Component, DestroyRef, input, OnDestroy, OnInit} from '@angular/core';
+import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -62,6 +62,13 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy {
+  private readonly pushNotificationsService = inject(PushNotificationsService);
+  private readonly commonParametersService = inject(CommonParametersService);
+  private readonly quoteService = inject(QuotesService);
+  private readonly instrumentService = inject(InstrumentsService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   isNotificationsAllowed$!: Observable<boolean>;
   currentInstrumentSubscriptions$!: Observable<PriceSparkSubscription[]>;
 
@@ -93,16 +100,6 @@ export class SetupInstrumentNotificationsComponent implements OnInit, OnDestroy 
   private readonly instrumentKeyChanges$ = toObservable(this.instrumentKey).pipe(shareReplay(1));
 
   private readonly activeChanges$ = toObservable(this.active);
-
-  constructor(
-    private readonly pushNotificationsService: PushNotificationsService,
-    private readonly commonParametersService: CommonParametersService,
-    private readonly quoteService: QuotesService,
-    private readonly instrumentService: InstrumentsService,
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.isLoading$.complete();

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, OnInit} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {
   ControlValueAccessorBaseComponent
 } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
@@ -59,19 +59,15 @@ import {TableRowHeightDirective} from '../../../../shared/directives/table-row-h
   ]
 })
 export class ScalperMouseActionsFormComponent extends ControlValueAccessorBaseComponent<ScalperOrderBookMouseActionsMap> implements OnInit {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   form = this.formBuilder.group({
     mapName: this.formBuilder.control<MouseActionsSchemes | null>(null, Validators.required),
     actions: this.formBuilder.control<ScalperOrderBookMouseActionsMapItem[]>([], Validators.required)
   });
 
   availableDefaultSchemes = Object.values(MouseActionsSchemes);
-
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-    super();
-  }
 
   writeValue(value: ScalperOrderBookMouseActionsMap | null): void {
     if (!value) {

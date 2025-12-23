@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { forkJoin, Observable, switchMap } from "rxjs";
 import {InstrumentKey} from "../../../shared/models/instruments/instrument-key.model";
 import {MobileDashboardService} from "../../../modules/dashboard/services/mobile-dashboard.service";
@@ -26,15 +26,12 @@ interface InstrumentKeyViewData extends InstrumentKey {
 ]
 })
 export class MobileInstrumentsHistoryComponent implements OnInit {
+  private readonly mobileDashboardService = inject(MobileDashboardService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly instrumentsService = inject(InstrumentsService);
+
   instruments$!: Observable<InstrumentKeyViewData[] | undefined>;
   selectedInstrument$!: Observable<InstrumentKey | null | undefined>;
-
-  constructor(
-    private readonly mobileDashboardService: MobileDashboardService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly instrumentsService: InstrumentsService
-  ) {
-  }
 
   ngOnInit(): void {
     this.instruments$ = this.mobileDashboardService.getInstrumentsHistory()

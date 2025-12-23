@@ -1,12 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  Inject,
-  OnDestroy,
-  OnInit,
-  SkipSelf,
-  input
-} from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -63,6 +55,12 @@ interface SelectedWorkingVolumeState extends RecordContent {
     ]
 })
 export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
+  private readonly settingsWriteService = inject(ScalperOrderBookSettingsWriteService);
+  private readonly hotKeyCommandService = inject(ScalperHotKeyCommandService);
+  private readonly scalperOrderBookSharedContext = inject<ScalperOrderBookSharedContext>(SCALPER_ORDERBOOK_SHARED_CONTEXT, { skipSelf: true });
+  private readonly widgetLocalStateService = inject(WidgetLocalStateService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly validation = {
     volume: {
       min: 1,
@@ -93,17 +91,6 @@ export class WorkingVolumesPanelComponent implements OnInit, OnDestroy {
   private readonly lastSelectedVolumeStateKey = 'last-selected-volume';
   private lastSelectedVolumeState$!: Observable<SelectedWorkingVolumeState | null>;
   private settings$!: Observable<ScalperOrderBookWidgetSettings>;
-
-  constructor(
-    private readonly settingsWriteService: ScalperOrderBookSettingsWriteService,
-    private readonly hotKeyCommandService: ScalperHotKeyCommandService,
-    @Inject(SCALPER_ORDERBOOK_SHARED_CONTEXT)
-    @SkipSelf()
-    private readonly scalperOrderBookSharedContext: ScalperOrderBookSharedContext,
-    private readonly widgetLocalStateService: WidgetLocalStateService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.settings$ = this.dataContext().extendedSettings$.pipe(

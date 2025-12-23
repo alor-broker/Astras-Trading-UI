@@ -1,4 +1,4 @@
-import {Component, input, OnInit, TemplateRef, output} from '@angular/core';
+import { Component, input, OnInit, TemplateRef, output, inject } from '@angular/core';
 import {WidgetSettingsService} from '../../services/widget-settings.service';
 import {ManageDashboardsService} from '../../services/manage-dashboards.service';
 import {instrumentsBadges} from '../../utils/instruments';
@@ -42,6 +42,13 @@ import {JoyrideModule} from 'ngx-joyride';
   ]
 })
 export class WidgetHeaderComponent implements OnInit {
+  private readonly settingsService = inject(WidgetSettingsService);
+  private readonly manageDashboardService = inject(ManageDashboardsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly helpService = inject(HelpService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+
   readonly guid = input.required<string>();
 
   readonly showBadgesMenu = input(false);
@@ -72,16 +79,6 @@ export class WidgetHeaderComponent implements OnInit {
   }[]>;
 
   readonly currentDashboard$ = this.dashboardContextService.selectedDashboard$;
-
-  constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly manageDashboardService: ManageDashboardsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly translatorService: TranslatorService,
-    private readonly helpService: HelpService,
-    private readonly terminalSettingsService: TerminalSettingsService
-  ) {
-  }
 
   get title(): string {
     const customTitle = this.customTitle();

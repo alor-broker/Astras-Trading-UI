@@ -1,4 +1,4 @@
-import {Component, input} from '@angular/core';
+import { Component, input, inject } from '@angular/core';
 import {filter, shareReplay, switchMap} from "rxjs";
 import {IdeaSymbol} from "../../services/invest-ideas-service-typings";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
@@ -29,6 +29,10 @@ import {toObservable} from "@angular/core/rxjs-interop";
   ]
 })
 export class SubmitOrderForSymbolComponent {
+  private readonly dashboardContextServiced = inject(DashboardContextService);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly commonParametersService = inject(CommonParametersService);
+
   readonly symbol = input.required<IdeaSymbol>();
   protected readonly selectedPortfolio$ = this.dashboardContextServiced.selectedPortfolio$;
   private readonly symbolChanges$ = toObservable(this.symbol);
@@ -38,13 +42,6 @@ export class SubmitOrderForSymbolComponent {
     filter(i => i != null),
     shareReplay(1)
   );
-
-  constructor(
-    private readonly dashboardContextServiced: DashboardContextService,
-    private readonly instrumentsService: InstrumentsService,
-    private readonly commonParametersService: CommonParametersService,
-  ) {
-  }
 
   setCommonParameters(params: Partial<CommonParameters>): void {
     this.commonParametersService.setParameters(params);

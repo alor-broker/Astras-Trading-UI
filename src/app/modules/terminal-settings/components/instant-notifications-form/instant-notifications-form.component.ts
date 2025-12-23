@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   InstantNotificationsSettings,
@@ -54,6 +54,8 @@ import {AsyncPipe} from '@angular/common';
 export class InstantNotificationsFormComponent
   extends ControlValueAccessorBaseComponent<InstantNotificationsSettings>
   implements OnInit {
+  private readonly store = inject(Store);
+
   editableNotificationTypes: { value: OrdersInstantNotificationType, enabled: boolean }[] = [];
   currentValue: InstantNotificationsSettings | null = null;
   excludedPortfolios: PortfolioKey[] = [];
@@ -66,12 +68,6 @@ export class InstantNotificationsFormComponent
   ];
 
   private isTouched = false;
-
-  constructor(
-    private readonly store: Store
-  ) {
-    super();
-  }
 
   ngOnInit(): void {
     this.portfolios$ = this.store.select(PortfoliosFeature.selectPortfoliosState).pipe(

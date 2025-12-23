@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {InfiniteScrollTableComponent} from './infinite-scroll-table.component';
 import {By} from "@angular/platform-browser";
-import {ChangeDetectorRef, Component, OnInit} from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit, inject } from "@angular/core";
 import {TableConfig} from '../../models/table-config.model';
 import {BaseColumnSettings, FilterType} from "../../models/settings/table-settings.model";
 import {FormControl} from "@angular/forms";
@@ -31,6 +31,8 @@ import {TerminalSettingsService} from "../../services/terminal-settings.service"
   ]
 })
 class TestWrapperComponent implements OnInit {
+  private readonly cdr = inject(ChangeDetectorRef);
+
   tableContainerHeight = 50;
   tableContainerWidth = 50;
   isLoading = true;
@@ -55,9 +57,6 @@ class TestWrapperComponent implements OnInit {
     {id1: 'testName1', id2: 'testName2', id: 3},
     {id1: 'testName1', id2: 'testName2', id: 4},
   ];
-
-  constructor(private readonly cdr: ChangeDetectorRef) {
-  }
 
   trackByFn = (e: any): string => e.name as string;
 

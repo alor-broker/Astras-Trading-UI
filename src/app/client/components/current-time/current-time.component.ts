@@ -1,8 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  OnInit
-} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
 import {
   asyncScheduler,
@@ -29,13 +25,10 @@ import {AsyncPipe, DatePipe} from "@angular/common";
   styleUrl: './current-time.component.less'
 })
 export class CurrentTimeComponent implements OnInit {
-  time$!: Observable<Date>;
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  constructor(
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
+  time$!: Observable<Date>;
 
   ngOnInit(): void {
     const timezone$ = this.terminalSettingsService.getSettings().pipe(

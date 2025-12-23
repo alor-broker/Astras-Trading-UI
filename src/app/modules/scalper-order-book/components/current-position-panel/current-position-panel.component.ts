@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  input
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -32,6 +27,8 @@ import { NgClass, DecimalPipe } from '@angular/common';
     ]
 })
 export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
+  private readonly dataContextService = inject(ScalperOrderBookDataProvider);
+
   readonly guid = input.required<string>();
 
   readonly hideTooltips = input(false);
@@ -39,11 +36,6 @@ export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
   orderBookPosition$!: Observable<ScalperOrderBookPositionState>;
 
   lossOrProfitDisplayType$ = new BehaviorSubject<'points' | 'percentage'>('points');
-
-  constructor(
-    private readonly dataContextService: ScalperOrderBookDataProvider
-  ) {
-  }
 
   changeLossOrProfitDisplayType(): void {
     this.lossOrProfitDisplayType$.pipe(

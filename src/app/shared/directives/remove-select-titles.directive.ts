@@ -1,21 +1,14 @@
-import {
-  AfterViewInit,
-  DestroyRef,
-  Directive,
-  input
-} from '@angular/core';
+import { AfterViewInit, DestroyRef, Directive, input, inject } from '@angular/core';
 import { NzSelectComponent } from "ng-zorro-antd/select";
 import { Observable } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Directive({ selector: 'nz-select[atsRemoveSelectTitles]' })
 export class RemoveSelectTitlesDirective implements AfterViewInit {
-  readonly valueChanges = input<Observable<any>>();
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly elementRef = inject(NzSelectComponent);
 
-  constructor(
-    private readonly destroyRef: DestroyRef,
-    private readonly elementRef: NzSelectComponent
-  ) { }
+  readonly valueChanges = input<Observable<any>>();
 
   ngAfterViewInit(): void {
     this.elementRef.nzOpenChange

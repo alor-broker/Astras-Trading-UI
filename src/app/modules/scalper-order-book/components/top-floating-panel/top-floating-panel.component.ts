@@ -1,10 +1,4 @@
-import {
-  Component,
-  Inject,
-  OnInit,
-  SkipSelf,
-  input
-} from '@angular/core';
+import { Component, OnInit, input, inject } from '@angular/core';
 import { QuotesService } from "../../../../shared/services/quotes.service";
 import {
   distinctUntilChanged,
@@ -39,6 +33,10 @@ import { NgClass, AsyncPipe, DecimalPipe } from '@angular/common';
     ]
 })
 export class TopFloatingPanelComponent implements OnInit {
+  private readonly dataContextService = inject(ScalperOrderBookDataProvider);
+  private readonly quotesService = inject(QuotesService);
+  private readonly scalperOrderBookSharedContext = inject<ScalperOrderBookSharedContext>(SCALPER_ORDERBOOK_SHARED_CONTEXT, { skipSelf: true });
+
   readonly guid = input.required<string>();
 
   readonly hideTooltips = input(false);
@@ -46,15 +44,6 @@ export class TopFloatingPanelComponent implements OnInit {
   settings$!: Observable<ScalperOrderBookWidgetSettings>;
   priceDayChangePercent$!: Observable<number>;
   currentScaleFactor$!: Observable<number | null>;
-
-  constructor(
-    private readonly dataContextService: ScalperOrderBookDataProvider,
-    private readonly quotesService: QuotesService,
-    @Inject(SCALPER_ORDERBOOK_SHARED_CONTEXT)
-    @SkipSelf()
-    private readonly scalperOrderBookSharedContext: ScalperOrderBookSharedContext,
-  ) {
-  }
 
   ngOnInit(): void {
     this.settings$ = this.dataContextService.getSettingsStream(this.guid()).pipe(

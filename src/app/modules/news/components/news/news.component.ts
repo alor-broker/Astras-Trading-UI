@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, DestroyRef, input, OnDestroy, OnInit, output, viewChild} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, input, OnDestroy, OnInit, output, viewChild, inject } from '@angular/core';
 import {NewsSection} from "../../models/news.model";
 import {
   BehaviorSubject,
@@ -70,6 +70,14 @@ interface NewsListState {
   ]
 })
 export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, NewsFilters> implements AfterViewInit, OnInit, OnDestroy {
+  private readonly newsService = inject(NewsService);
+  private readonly translatorService = inject(TranslatorService);
+  protected readonly widgetSettingsService: WidgetSettingsService;
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly positionsService = inject(PositionsService);
+  private readonly navigationStackService = inject(NavigationStackService);
+  protected readonly destroyRef: DestroyRef;
+
   readonly guid = input.required<string>();
 
   readonly sectionChange = output<NewsSection>();
@@ -104,16 +112,14 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
 
   protected settings$!: Observable<NewsSettings>;
 
-  constructor(
-    private readonly newsService: NewsService,
-    private readonly translatorService: TranslatorService,
-    protected readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly positionsService: PositionsService,
-    private readonly navigationStackService: NavigationStackService,
-    protected readonly destroyRef: DestroyRef
-  ) {
+  constructor() {
+    const widgetSettingsService = inject(WidgetSettingsService);
+    const destroyRef = inject(DestroyRef);
+
     super(widgetSettingsService, destroyRef);
+
+    this.widgetSettingsService = widgetSettingsService;
+    this.destroyRef = destroyRef;
   }
 
   ngAfterViewInit(): void {

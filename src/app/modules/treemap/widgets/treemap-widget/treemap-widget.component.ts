@@ -1,4 +1,4 @@
-import {Component, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {WidgetSettingsCreationHelper} from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
 import {TreemapSettings} from "../../models/treemap.model";
@@ -29,6 +29,9 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class TreemapWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+
   shouldShowSettings = false;
 
   readonly widgetInstance = input.required<WidgetInstance>();
@@ -37,12 +40,6 @@ export class TreemapWidgetComponent implements OnInit {
 
   settings$!: Observable<TreemapSettings>;
   showBadge$!: Observable<boolean>;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly terminalSettingsService: TerminalSettingsService
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

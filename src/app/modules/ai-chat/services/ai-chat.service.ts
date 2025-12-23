@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import {
   NewMessageRequest,
@@ -37,17 +37,13 @@ interface TerminalContext {
   providedIn: 'root'
 })
 export class AiChatService {
+  private readonly httpClient = inject(HttpClient);
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly loggerService = inject(LoggerService);
+
   private readonly baseUrl = `${this.environmentService.apiUrl}/aichat`;
-
-  constructor(
-    private readonly httpClient: HttpClient,
-    private readonly environmentService: EnvironmentService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly loggerService: LoggerService
-  ) {
-
-  }
 
   sendMessage(message: NewMessageRequest): Observable<ReplyResponse | null> {
     return this.getTerminalContext().pipe(

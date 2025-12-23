@@ -1,16 +1,15 @@
 import { ApplicationErrorHandler } from "./error-handler";
 import { HttpErrorResponse } from "@angular/common/http";
 import { NzNotificationService } from "ng-zorro-antd/notification";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 
 @Injectable()
 export class HttpErrorHandler implements ApplicationErrorHandler {
+  private readonly notification = inject(NzNotificationService);
+
   private readonly apiAccessibilityErrorStatusCodes: number[] = [
     404
   ];
-
-  constructor(private readonly notification: NzNotificationService) {
-  }
 
   handleError(error: Error | HttpErrorResponse): void {
     if (!(error instanceof HttpErrorResponse)) {

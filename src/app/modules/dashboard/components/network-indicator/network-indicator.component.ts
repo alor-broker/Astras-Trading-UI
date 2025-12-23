@@ -1,8 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { NetworkStatusService } from '../../../../shared/services/network-status.service';
 import { Observable } from 'rxjs';
 import { NetworkStatus } from '../../../../shared/models/enums/network-status.model';
@@ -32,12 +28,11 @@ type StatusColor = 'warning' | 'danger' | 'success';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NetworkIndicatorComponent implements OnInit {
+  private readonly networkStatusService = inject(NetworkStatusService);
+
   statuses = NetworkStatus;
   networkStatus$!: Observable<NetworkStatus>;
   lastDelay$!: Observable<{ delaySec: number, color: StatusColor }>;
-
-  constructor(private readonly networkStatusService: NetworkStatusService) {
-  }
 
   ngOnInit(): void {
     this.networkStatus$ = this.networkStatusService.status$;

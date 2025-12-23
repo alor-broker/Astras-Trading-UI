@@ -1,4 +1,4 @@
-import {Component, DestroyRef, input, OnDestroy, OnInit} from '@angular/core';
+import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
 import {EvaluationService} from "../../../../shared/services/evaluation.service";
 import {ScalperOrderBookDataContext} from "../../models/scalper-order-book-data-context.model";
 import {
@@ -37,6 +37,9 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
+  private readonly evaluationService = inject(EvaluationService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly dataContext = input.required<ScalperOrderBookDataContext>();
 
   readonly hideTooltips = input(false);
@@ -44,12 +47,6 @@ export class ShortLongIndicatorComponent implements OnInit, OnDestroy {
   readonly orientation = input<'vertical' | 'horizontal'>('vertical');
 
   shortLongValues$ = new BehaviorSubject<{ short: number, long: number } | null>(null);
-
-  constructor(
-    private readonly evaluationService: EvaluationService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.shortLongValues$.complete();

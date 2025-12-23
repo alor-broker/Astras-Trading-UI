@@ -1,4 +1,4 @@
-import {Component, OnInit, input} from '@angular/core';
+import { Component, OnInit, input, inject } from '@angular/core';
 import {Observable, of} from "rxjs";
 import {BlotterService} from "../../services/blotter.service";
 import {TranslocoDirective} from '@jsverse/transloco';
@@ -22,15 +22,12 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class OrdersGroupModalWidgetComponent implements OnInit {
+  private readonly service = inject(BlotterService);
+
   readonly guid = input.required<string>();
 
   isVisible$: Observable<boolean> = of(false);
   groupId$: Observable<string | null> = of(null);
-
-  constructor(
-    private readonly service: BlotterService
-  ) {
-  }
 
   ngOnInit(): void {
     this.isVisible$ = this.service.shouldShowOrderGroupModal$;

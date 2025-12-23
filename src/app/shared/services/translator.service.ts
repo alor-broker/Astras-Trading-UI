@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from "rxjs";
 import { TranslocoEvents, TranslocoService } from "@jsverse/transloco";
 import { map } from "rxjs/operators";
@@ -11,9 +11,7 @@ export type TranslatorFn = (key: string[], params?: HashMap) => string;
   providedIn: 'root'
 })
 export class TranslatorService {
-  constructor(
-    private readonly translocoService: TranslocoService
-  ) {}
+  private readonly translocoService = inject(TranslocoService);
 
   getActiveLang(): string {
     return this.translocoService.getActiveLang();

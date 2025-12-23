@@ -1,10 +1,6 @@
+import { Injectable, inject } from "@angular/core";
 import {
-  Inject,
-  Injectable
-} from "@angular/core";
-import {
-  LOGGER,
-  LoggerBase
+  LOGGER
 } from './logger-base';
 import { LogLevel } from "../environment.service";
 
@@ -12,11 +8,7 @@ import { LogLevel } from "../environment.service";
   providedIn: 'root'
 })
 export class LoggerService {
-  constructor(
-    @Inject(LOGGER)
-    private readonly loggers: LoggerBase[]
-  ) {
-  }
+  private readonly loggers = inject(LOGGER);
 
   public info(message: string): void {
     this.logMessage(LogLevel.info, message);

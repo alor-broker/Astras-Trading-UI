@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {NzContentComponent, NzHeaderComponent, NzLayoutComponent} from "ng-zorro-antd/layout";
 import {ClientNavbarComponent} from "../../components/client-navbar/client-navbar.component";
 import {
@@ -70,19 +70,16 @@ import {
     ]
 })
 export class ClientDashboardComponent implements OnInit, ActionsContext {
-  showSettingsLoadDialog = false;
+  private readonly store = inject(Store);
+  private readonly onboarding = inject(OnboardingService);
+  private readonly deviceService = inject(DeviceService);
+  private readonly router = inject(Router);
+  private readonly desktopSettingsBrokerService = inject(DesktopSettingsBrokerService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly watchlistCollectionBrokerService = inject(WatchlistCollectionBrokerService);
+  private readonly graphStorageService = inject(GraphStorageService);
 
-  constructor(
-    private readonly store: Store,
-    private readonly onboarding: OnboardingService,
-    private readonly deviceService: DeviceService,
-    private readonly router: Router,
-    private readonly desktopSettingsBrokerService: DesktopSettingsBrokerService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly watchlistCollectionBrokerService: WatchlistCollectionBrokerService,
-    private readonly graphStorageService: GraphStorageService
-  ) {
-  }
+  showSettingsLoadDialog = false;
 
   ngOnInit(): void {
     this.watchlistCollectionBrokerService.setConfig({

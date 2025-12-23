@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
 
@@ -19,6 +19,9 @@ import { ClientDashboardType } from "../../shared/models/dashboard/dashboard.mod
 
 @Injectable()
 export class DashboardsBridgeEffects {
+  private readonly store = inject(Store);
+  private readonly actions$ = inject(Actions);
+
   removeSettings$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(DashboardItemsActions.removeWidgets),
@@ -99,9 +102,4 @@ export class DashboardsBridgeEffects {
       })
     );
   });
-
-  constructor(
-    private readonly store: Store,
-    private readonly actions$: Actions) {
-  }
 }

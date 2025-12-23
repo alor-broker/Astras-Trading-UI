@@ -1,4 +1,4 @@
-import {Component, DestroyRef, input, OnDestroy, OnInit} from '@angular/core';
+import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
 import {OptionBoardDataContext} from "../../models/option-board-data-context.model";
 import {BehaviorSubject, combineLatest, Observable, of, shareReplay, take, tap, timer, withLatestFrom} from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
@@ -56,6 +56,11 @@ enum ChartType {
   ]
 })
 export class OptionBoardChartComponent implements OnInit, OnDestroy {
+  private readonly optionBoardService = inject(OptionBoardService);
+  private readonly themeService = inject(ThemeService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly isLoading$ = new BehaviorSubject<boolean>(false);
   readonly zoomState$ = new BehaviorSubject<ZoomState | null>(null);
   readonly selectedChartType$ = new BehaviorSubject<ChartType>(ChartType.ProfitLossByAssetPrice);
@@ -73,14 +78,6 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
 
   private readonly zoomStep = 0.1;
   private readonly defaultRange = 0.1;
-
-  constructor(
-    private readonly optionBoardService: OptionBoardService,
-    private readonly themeService: ThemeService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.isLoading$.complete();

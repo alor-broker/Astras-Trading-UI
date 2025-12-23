@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit, input, output} from '@angular/core';
+import { Component, DestroyRef, OnInit, input, output, inject } from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators} from "@angular/forms";
 import {ArbitrageSpread} from "../../models/arbitrage-spread.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
@@ -67,6 +67,9 @@ const calculationFormulaValidator: ValidatorFn = (form) => {
   ]
 })
 export class ArbitrageSpreadManageComponent implements OnInit {
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly spread = input<ArbitrageSpread | null>();
   readonly formChange = output<{ value: ArbitrageSpread, isValid: boolean }>();
 
@@ -83,12 +86,6 @@ export class ArbitrageSpreadManageComponent implements OnInit {
     [
       calculationFormulaValidator
     ]);
-
-  constructor(
-    private readonly userPortfoliosService: UserPortfoliosService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   get calculationFormulaControl(): FormControl {
     return this.form.controls.calculationFormula as FormControl;

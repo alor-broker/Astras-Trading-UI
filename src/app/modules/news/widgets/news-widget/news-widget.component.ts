@@ -1,4 +1,4 @@
-import {Component, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
 import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import {NewsSettings} from '../../models/news-settings.model';
@@ -34,6 +34,12 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class NewsWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly dashboardService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly translatorService = inject(TranslatorService);
+
   shouldShowSettings = false;
 
   readonly widgetInstance = input.required<WidgetInstance>();
@@ -44,15 +50,6 @@ export class NewsWidgetComponent implements OnInit {
   showBadge$!: Observable<boolean>;
   widgetTitle$: Observable<string> = of('');
   titleText!: string;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly instrumentsService: InstrumentsService,
-    private readonly translatorService: TranslatorService
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

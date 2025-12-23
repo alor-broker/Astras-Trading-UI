@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  OnInit
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {Observable, shareReplay} from "rxjs";
 import {PortfolioExtended} from "../../../shared/models/user/portfolio-extended.model";
 import {PortfoliosFeature} from "../../../store/portfolios/portfolios.reducer";
@@ -59,20 +54,17 @@ import {ExternalLinkComponent} from "../../../shared/components/external-link/ex
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SelectPortfolioMenuNavBtnComponent implements OnInit {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly store = inject(Store);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly externalLinks = this.environmentService.externalLinks;
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
 
   showEmptyPortfoliosWarning = false;
   readonly searchControl = new FormControl('');
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly store: Store,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.selectedPortfolio$ = this.dashboardContextService.selectedDashboard$.pipe(

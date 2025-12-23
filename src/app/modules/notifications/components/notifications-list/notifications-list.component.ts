@@ -1,4 +1,4 @@
-import {Component, OnInit, output} from '@angular/core';
+import { Component, OnInit, output, inject } from '@angular/core';
 import {NotificationsService} from "../../services/notifications.service";
 import {Observable} from "rxjs";
 import {NotificationMeta} from "../../models/notification.model";
@@ -28,14 +28,11 @@ import {NzTypographyComponent} from 'ng-zorro-antd/typography';
   ]
 })
 export class NotificationsListComponent implements OnInit {
+  private readonly notificationsService = inject(NotificationsService);
+
   sortedNotifications$!: Observable<NotificationMeta[]>;
 
   readonly notificationClicked = output();
-
-  constructor(
-    private readonly notificationsService: NotificationsService,
-  ) {
-  }
 
   ngOnInit(): void {
     this.sortedNotifications$ = this.notificationsService.getNotifications()

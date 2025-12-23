@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnChanges, SimpleChanges} from '@angular/core';
+import { Component, DestroyRef, OnChanges, SimpleChanges, inject } from '@angular/core';
 import {PropertyEditorBaseComponent} from "../property-editor-base";
 import {PortfolioPropertyEditorConfig} from "../../../models/property-editor.model";
 import {
@@ -39,19 +39,16 @@ import { MarketType } from "../../../../../shared/models/portfolio-key.model";
     styleUrl: './portfolio-property-editor.component.less'
 })
 export class PortfolioPropertyEditorComponent extends PropertyEditorBaseComponent<PortfolioPropertyEditorConfig> implements OnChanges {
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly separator = ':';
   protected availablePortfolios$!: Observable<Map<string, PortfolioExtended[]>>;
 
   protected readonly form = this.formBuilder.group({
     property: this.formBuilder.control<string | null>(null)
   });
-
-  constructor(
-    private readonly userPortfoliosService: UserPortfoliosService,
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef) {
-    super();
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.availablePortfolios$ ??= this.userPortfoliosService.getPortfolios().pipe(

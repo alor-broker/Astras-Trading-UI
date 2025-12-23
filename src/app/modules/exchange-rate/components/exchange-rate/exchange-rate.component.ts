@@ -1,10 +1,4 @@
-import {
-  Component,
-  Inject,
-  OnDestroy,
-  OnInit,
-  input
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {
   CurrencyPair,
   ExchangeRateService
@@ -67,22 +61,18 @@ interface CurrencyMatrix {
     ]
 })
 export class ExchangeRateComponent implements OnInit, OnDestroy {
+  private readonly settingsService = inject(WidgetSettingsService);
+  private readonly exchangeRateService = inject(ExchangeRateService);
+  private readonly quotesService = inject(QuotesService);
+  private readonly marketService = inject(MarketService);
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+
   readonly guid = input.required<string>();
 
   readonly tableScroll$ = new BehaviorSubject<ContentSize | null>({ width: 50, height: 50 });
 
   currencyMatrix$!: Observable<CurrencyMatrix>;
   round = MathHelper.round;
-
-  constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly exchangeRateService: ExchangeRateService,
-    private readonly quotesService: QuotesService,
-    private readonly marketService: MarketService,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext
-  ) {
-  }
 
   ngOnInit(): void {
     this.currencyMatrix$ = this.exchangeRateService.getCurrencyPairs().pipe(

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Observable,
   take
@@ -19,11 +19,8 @@ import {
   providedIn: 'root'
 })
 export class TerminalSettingsService {
-  constructor(
-    private readonly store: Store,
-    private readonly actions$: Actions
-  ) {
-  }
+  private readonly store = inject(Store);
+  private readonly actions$ = inject(Actions);
 
   getSettings(ignoreStatus = false): Observable<TerminalSettings> {
     return TerminalSettingsStreams.getSettings(this.store, ignoreStatus);

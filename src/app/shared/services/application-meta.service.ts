@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {LocalStorageService} from "./local-storage.service";
 import {Observable, of} from "rxjs";
 import {ApplicationMeta} from "../models/application-meta.model";
@@ -7,10 +7,9 @@ import {ApplicationMeta} from "../models/application-meta.model";
   providedIn: 'root'
 })
 export class ApplicationMetaService {
-  private readonly applicationMetaStorageKey = 'application-meta';
+  private readonly localStorage = inject(LocalStorageService);
 
-  constructor(private readonly localStorage: LocalStorageService) {
-  }
+  private readonly applicationMetaStorageKey = 'application-meta';
 
   getMeta(): Observable<ApplicationMeta> {
     const savedMeta = this.getSavedMeta();

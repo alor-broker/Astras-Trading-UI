@@ -1,4 +1,4 @@
-import {Component, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {AsyncPipe} from "@angular/common";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
@@ -26,6 +26,10 @@ import {WidgetHeaderComponent} from "../../../../shared/components/widget-header
   styleUrl: './portfolio-charts-widget.component.less'
 })
 export class PortfolioChartsWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
+
   readonly widgetInstance = input.required<WidgetInstance>();
 
   readonly isBlockWidget = input.required<boolean>();
@@ -35,13 +39,6 @@ export class PortfolioChartsWidgetComponent implements OnInit {
   settings$!: Observable<PortfolioChartsSettings>;
 
   currentAgreement$: Observable<string> | null = null;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly userPortfoliosService: UserPortfoliosService
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

@@ -1,4 +1,4 @@
-import {Component, effect, input, OnInit, output} from '@angular/core';
+import { Component, effect, input, OnInit, output, inject } from '@angular/core';
 import {Observable, take} from 'rxjs';
 import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Dashboard} from "../../../shared/models/dashboard/dashboard.model";
@@ -38,6 +38,11 @@ import {NzInputDirective} from "ng-zorro-antd/input";
   ]
 })
 export class SelectDashboardMenuComponent implements OnInit {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly dashboardService = inject(ManageDashboardsService);
+  private readonly modal = inject(NzModalService);
+  private readonly translatorService = inject(TranslatorService);
+
   readonly validationOptions = {
     title: {
       minLength: 1,
@@ -64,12 +69,7 @@ export class SelectDashboardMenuComponent implements OnInit {
 
   readonly visibilityChange = input<boolean>();
 
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly dashboardService: ManageDashboardsService,
-    private readonly modal: NzModalService,
-    private readonly translatorService: TranslatorService
-  ) {
+  constructor() {
     effect(() => {
       this.visibilityChange();
       this.newDashboardForm.reset();

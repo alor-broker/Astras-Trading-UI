@@ -1,4 +1,4 @@
-import {Component, DestroyRef, input, OnInit, viewChild} from '@angular/core';
+import { Component, DestroyRef, input, OnInit, viewChild, inject } from '@angular/core';
 import {BehaviorSubject, map, Observable,} from 'rxjs';
 import {ChartDataset, ChartOptions, ComplexFillTarget, ScatterControllerDatasetOptions} from 'chart.js';
 import {MathHelper} from 'src/app/shared/utils/math-helper';
@@ -21,6 +21,11 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class OrderbookChartComponent implements OnInit {
+  private readonly widgetSettings = inject(WidgetSettingsService);
+  private readonly themeService = inject(ThemeService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly chartData = input.required<ChartData>();
   readonly guid = input.required<string>();
   readonly chart = viewChild(BaseChartDirective);
@@ -93,14 +98,6 @@ export class OrderbookChartComponent implements OnInit {
       label: 'Offers',
     },
   ];
-
-  constructor(
-    private readonly widgetSettings: WidgetSettingsService,
-    private readonly themeService: ThemeService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.shouldShowChart$ = this.widgetSettings.getSettings<OrderbookSettings>(this.guid()).pipe(

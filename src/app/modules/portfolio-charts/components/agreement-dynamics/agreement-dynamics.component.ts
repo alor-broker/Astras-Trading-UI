@@ -1,4 +1,4 @@
-import {Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, viewChild} from '@angular/core';
+import { Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
 import {BehaviorSubject, combineLatest, filter, Observable, switchMap, timer} from "rxjs";
 import {ChartData, ChartOptions} from "chart.js";
 import {PortfolioDynamics} from "../../../../shared/models/user/portfolio-dynamics.model";
@@ -58,6 +58,11 @@ interface ChartConfig {
   styleUrl: './agreement-dynamics.component.less'
 })
 export class AgreementDynamicsComponent implements OnInit, OnDestroy {
+  private readonly accountService = inject(AccountService);
+  private readonly themeService = inject(ThemeService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly utilsCanvas = viewChild.required<ElementRef<HTMLCanvasElement>>('utilsCanvas');
 
   chartConfig$!: Observable<ChartConfig | null>;
@@ -73,14 +78,6 @@ export class AgreementDynamicsComponent implements OnInit, OnDestroy {
   });
 
   private readonly agreementChanges$ = toObservable(this.agreement);
-
-  constructor(
-    private readonly accountService: AccountService,
-    private readonly themeService: ThemeService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.selectedTimeRange$.complete();

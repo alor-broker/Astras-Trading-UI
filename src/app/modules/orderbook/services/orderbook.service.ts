@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   combineLatest,
   Observable
@@ -41,15 +38,11 @@ import {
 
 @Injectable()
 export class OrderbookService {
-  constructor(
-    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly currentDashboardService: DashboardContextService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
-    private readonly quotesService: QuotesService
-  ) {
-  }
+  private readonly subscriptionsDataFeedService = inject(SubscriptionsDataFeedService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly currentDashboardService = inject(DashboardContextService);
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  private readonly quotesService = inject(QuotesService);
 
   getOrderBook(settings: OrderbookSettings): Observable<OrderBook> {
     const ob$ = this.subscriptionsDataFeedService.subscribe<OrderbookRequest, OrderbookData>(

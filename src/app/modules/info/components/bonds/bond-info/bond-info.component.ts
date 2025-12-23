@@ -1,10 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  Inject,
-  LOCALE_ID,
-  OnInit
-} from '@angular/core';
+import { Component, DestroyRef, LOCALE_ID, OnInit, inject } from '@angular/core';
 import { InstrumentInfoBaseComponent } from "../../instrument-info-base/instrument-info-base.component";
 import {
   combineLatest,
@@ -97,19 +91,16 @@ interface BondDescriptors {
   styleUrl: './bond-info.component.less'
 })
 export class BondInfoComponent extends InstrumentInfoBaseComponent implements OnInit {
+  private readonly graphQlService = inject(GraphQlService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly locale = inject(LOCALE_ID);
+  private readonly destroyRef = inject(DestroyRef);
+
   info$!: Observable<Bond | null>;
 
   descriptors$!: Observable<BondDescriptors | null>;
 
   private readonly currencyPipe = new CurrencyPipe(this.locale);
-
-  constructor(
-    private readonly graphQlService: GraphQlService,
-    private readonly translatorService: TranslatorService,
-    @Inject(LOCALE_ID) private readonly locale: string,
-    private readonly destroyRef: DestroyRef) {
-    super();
-  }
 
   ngOnInit(): void {
     this.initDataStream();

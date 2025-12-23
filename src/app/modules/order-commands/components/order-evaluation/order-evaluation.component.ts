@@ -1,4 +1,4 @@
-import {Component, input, OnInit, output} from '@angular/core';
+import { Component, input, OnInit, output, inject } from '@angular/core';
 import {Observable, of, shareReplay, switchMap} from "rxjs";
 import {EvaluationBaseProperties} from "../../../../shared/models/evaluation-base-properties.model";
 import {EvaluationService} from "../../../../shared/services/evaluation.service";
@@ -26,6 +26,8 @@ type EvaluationDisplay = Evaluation & { currency: string };
   styleUrls: ['./order-evaluation.component.less']
 })
 export class OrderEvaluationComponent implements OnInit {
+  private readonly evaluationService = inject(EvaluationService);
+
   evaluation$!: Observable<EvaluationDisplay | null>;
 
   readonly quantitySelect = output<number>();
@@ -35,9 +37,6 @@ export class OrderEvaluationComponent implements OnInit {
     startWith(null),
     shareReplay(1)
   );
-
-  constructor(private readonly evaluationService: EvaluationService) {
-  }
 
   ngOnInit(): void {
     const getEvaluationDisplay = (request: EvaluationBaseProperties): Observable<EvaluationDisplay | null> => this.evaluationService.evaluateOrder(request).pipe(

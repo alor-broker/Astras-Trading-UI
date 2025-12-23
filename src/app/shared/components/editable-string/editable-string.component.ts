@@ -1,4 +1,4 @@
-import {Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, output, viewChildren} from '@angular/core';
+import { Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, output, viewChildren, inject } from '@angular/core';
 import {BehaviorSubject, filter, take,} from 'rxjs';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
@@ -28,6 +28,9 @@ import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
   ]
 })
 export class EditableStringComponent implements OnInit, OnDestroy {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly editInput = viewChildren<ElementRef<HTMLInputElement>>('editInput');
   readonly content = input.required<string | null>();
   readonly lengthRestrictions = input<{
@@ -46,12 +49,6 @@ export class EditableStringComponent implements OnInit, OnDestroy {
   });
 
   private readonly editInputChanges$ = toObservable(this.editInput);
-
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.isEditMode$.pipe(

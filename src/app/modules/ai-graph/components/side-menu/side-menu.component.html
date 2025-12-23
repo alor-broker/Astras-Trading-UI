@@ -29,8 +29,9 @@
   </div>
 
   <div class="flex-fill overflow-hidden">
-    @if (content != null) {
-      <ng-container [ngTemplateOutlet]="content()?.templateRef" />
+    @let menuContent = content();
+    @if (menuContent != null) {
+      <ng-container [ngTemplateOutlet]="menuContent.templateRef" />
     }
   </div>
 </div>

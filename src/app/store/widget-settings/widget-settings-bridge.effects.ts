@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Actions,
   createEffect
@@ -30,6 +30,10 @@ import {WidgetSettingsStreams} from "./widget-settings.streams";
 
 @Injectable()
 export class WidgetSettingsBridgeEffects {
+  private readonly actions$ = inject(Actions);
+  private readonly store = inject(Store);
+  private readonly dashboardContextService = inject(DashboardContextService);
+
   newInstrumentSelected$ = createEffect(() => {
     const dashboardSettingsUpdate$ = this.dashboardContextService.selectedDashboard$.pipe(
       filter(d => !!d.instrumentsSelection),
@@ -114,11 +118,4 @@ export class WidgetSettingsBridgeEffects {
         }),
       );
   });
-
-  constructor(
-    private readonly actions$: Actions,
-    private readonly store: Store,
-    private readonly dashboardContextService: DashboardContextService
-  ) {
-  }
 }

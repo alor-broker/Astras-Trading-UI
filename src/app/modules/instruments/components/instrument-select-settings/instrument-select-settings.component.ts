@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {allInstrumentsColumns, InstrumentSelectSettings} from '../../models/instrument-select-settings.model';
@@ -47,6 +47,11 @@ import {WatchlistCollectionEditComponent} from '../watchlist-collection-edit/wat
   ]
 })
 export class InstrumentSelectSettingsComponent extends WidgetSettingsBaseComponent<InstrumentSelectSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly settingsForm = this.formBuilder.group({
     instrumentColumns: this.formBuilder.nonNullable.control<string[]>([], Validators.required),
     showFavorites: this.formBuilder.nonNullable.control(false),
@@ -70,13 +75,16 @@ export class InstrumentSelectSettingsComponent extends WidgetSettingsBaseCompone
 
   protected settings$!: Observable<InstrumentSelectSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly formBuilder: FormBuilder,
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {

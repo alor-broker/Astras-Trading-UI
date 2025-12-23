@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  ViewEncapsulation,
-  input,
-  output
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation, input, output, inject } from '@angular/core';
 import {BehaviorSubject, Observable, of, shareReplay, switchMap} from 'rxjs';
 import {OrderbookService} from '../../services/orderbook.service';
 import {ChartData, OrderBook} from '../../models/orderbook.model';
@@ -51,6 +44,9 @@ interface SpreadDiffData {
   ]
 })
 export class OrderBookComponent implements OnInit {
+  private readonly settingsService = inject(WidgetSettingsService);
+  private readonly service = inject(OrderbookService);
+
   readonly guid = input.required<string>();
 
   readonly shouldShowSettingsChange = output<boolean>();
@@ -66,12 +62,6 @@ export class OrderBookComponent implements OnInit {
 
   private readonly minSpreadDiffPercentForColorChange = 0.3;
   private readonly maxSpreadDiffPercentForColorChange = 1;
-
-  constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly service: OrderbookService
-  ) {
-  }
 
   ngOnInit(): void {
     this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid()).pipe(

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {EnvironmentService} from 'src/app/shared/services/environment.service';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
@@ -16,10 +16,9 @@ import {ExternalLinkComponent} from '../../../../shared/components/external-link
   ]
 })
 export class UsefulLinksComponent {
-  readonly externalLinks = this.environmentService.externalLinks;
+  private readonly environmentService = inject(EnvironmentService);
 
-  constructor(private readonly environmentService: EnvironmentService) {
-  }
+  readonly externalLinks = this.environmentService.externalLinks;
 
   isNullOrEmpty(value: string | null | undefined): boolean {
     return value == null || value.length === 0;

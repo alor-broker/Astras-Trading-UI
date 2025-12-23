@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit, output} from '@angular/core';
+import { Component, DestroyRef, OnInit, output, inject } from '@angular/core';
 import {combineLatest, defer, distinctUntilChanged, Observable, switchMap, take, tap} from 'rxjs';
 import {debounceTime, map, mergeMap, startWith} from 'rxjs/operators';
 import {BlotterService} from '../../services/blotter.service';
@@ -79,6 +79,14 @@ import {DecimalPipe} from '@angular/common';
   ]
 })
 export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, TradeFilter> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly service = inject(BlotterService);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+  protected readonly translatorService: TranslatorService;
+  protected readonly nzContextMenuService: NzContextMenuService;
+  protected readonly widgetLocalStateService: WidgetLocalStateService;
+  protected readonly destroyRef: DestroyRef;
+
   readonly shouldShowSettingsChange = output<boolean>();
 
   allColumns: BaseColumnSettings<DisplayTrade>[] = [
@@ -184,15 +192,13 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
   settingsColumnsName = ColumnsNames.TradesColumns;
   fileSuffix = 'trades';
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly service: BlotterService,
-    private readonly timezoneConverterService: TimezoneConverterService,
-    protected readonly translatorService: TranslatorService,
-    protected readonly nzContextMenuService: NzContextMenuService,
-    protected readonly widgetLocalStateService: WidgetLocalStateService,
-    protected readonly destroyRef: DestroyRef
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const translatorService = inject(TranslatorService);
+    const nzContextMenuService = inject(NzContextMenuService);
+    const widgetLocalStateService = inject(WidgetLocalStateService);
+    const destroyRef = inject(DestroyRef);
+
     super(
       settingsService,
       translatorService,
@@ -200,6 +206,12 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
       widgetLocalStateService,
       destroyRef
     );
+
+    this.settingsService = settingsService;
+    this.translatorService = translatorService;
+    this.nzContextMenuService = nzContextMenuService;
+    this.widgetLocalStateService = widgetLocalStateService;
+    this.destroyRef = destroyRef;
   }
 
   get restoreFiltersAndSortOnLoad(): boolean {

@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit, output} from '@angular/core';
+import { Component, DestroyRef, OnInit, output, inject } from '@angular/core';
 import {OrdersBasketSettings} from "../../models/orders-basket-settings.model";
 import {
   WidgetSettingsBaseComponent
@@ -32,6 +32,11 @@ import {NzSwitchComponent} from 'ng-zorro-antd/switch';
   ]
 })
 export class OrdersBasketSettingsComponent extends WidgetSettingsBaseComponent<OrdersBasketSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly settingsChange = output<void>();
 
   readonly form = this.formBuilder.group({
@@ -40,13 +45,16 @@ export class OrdersBasketSettingsComponent extends WidgetSettingsBaseComponent<O
 
   protected settings$!: Observable<OrdersBasketSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly formBuilder: FormBuilder,
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get canSave(): boolean {

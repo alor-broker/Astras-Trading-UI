@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { Side } from "../../../shared/models/enums/side.model";
 import { OrderbookData } from "../../orderbook/models/orderbook-data.model";
@@ -23,9 +23,7 @@ export interface GetBestOfferCommandArgs {
 
 @Injectable()
 export class GetBestOfferCommand extends CommandBase<GetBestOfferCommandArgs> {
-  constructor(private readonly submitLimitOrderCommand: SubmitLimitOrderCommand) {
-    super();
-  }
+  private readonly submitLimitOrderCommand = inject(SubmitLimitOrderCommand);
 
   execute(args: GetBestOfferCommandArgs): void {
     const orderBook = args.orderBook;

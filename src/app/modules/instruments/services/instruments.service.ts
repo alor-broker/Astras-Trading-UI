@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { InstrumentSearchResponse } from '../../../shared/models/instruments/instrument-search-response.model';
@@ -15,15 +15,12 @@ import { EnvironmentService } from "../../../shared/services/environment.service
   providedIn: 'root'
 })
 export class InstrumentsService {
-  private readonly url = this.environmentService.apiUrl + '/md/v2/Securities';
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly http = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly cacheService = inject(CacheService);
 
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly http: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly cacheService: CacheService
-  ) {
-  }
+  private readonly url = this.environmentService.apiUrl + '/md/v2/Securities';
 
   getInstrument(instrument: InstrumentKey): Observable<Instrument | null> {
     const params: Record<string, string> = {};

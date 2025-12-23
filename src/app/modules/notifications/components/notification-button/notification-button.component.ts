@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import {NotificationsService} from '../../services/notifications.service';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -26,13 +26,10 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class NotificationButtonComponent implements OnInit {
+  private readonly notificationsService = inject(NotificationsService);
+
   isTableVisible = false;
   notReadNotificationsCount$!: Observable<number>;
-
-  constructor(
-    private readonly notificationsService: NotificationsService
-  ) {
-  }
 
   ngOnInit(): void {
     this.notReadNotificationsCount$ = this.notificationsService.getNotifications()

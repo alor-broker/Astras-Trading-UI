@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, input, LOCALE_ID, OnDestroy, OnInit, viewChild} from '@angular/core';
+import { Component, DestroyRef, input, LOCALE_ID, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
 import {AllInstrumentsService} from "../../services/all-instruments.service";
 import {
   BehaviorSubject,
@@ -94,6 +94,19 @@ export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
   InstrumentModelSortInput
 >
   implements OnInit, OnDestroy {
+  protected readonly settingsService: WidgetSettingsService;
+  private readonly service = inject(AllInstrumentsService);
+  private readonly boardsService = inject(BoardsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  protected readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+  private readonly nzContextMenuService = inject(NzContextMenuService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly modalService = inject(NzModalService);
+  protected readonly destroyRef: DestroyRef;
+  private readonly locale = inject(LOCALE_ID);
+  private readonly navigationStackService = inject(NavigationStackService);
+
   readonly table = viewChild<InfiniteScrollTableComponent>('table');
 
   readonly guid = input.required<string>();
@@ -356,22 +369,14 @@ export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
   private readonly maxLoadingChunkSize = 1000;
   private updatesSub?: Subscription;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    private readonly service: AllInstrumentsService,
-    private readonly boardsService: BoardsService,
-    private readonly dashboardContextService: DashboardContextService,
-    @Inject(ACTIONS_CONTEXT)
-    protected readonly actionsContext: ActionsContext,
-    private readonly nzContextMenuService: NzContextMenuService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly translatorService: TranslatorService,
-    private readonly modalService: NzModalService,
-    protected readonly destroyRef: DestroyRef,
-    @Inject(LOCALE_ID) private readonly locale: string,
-    private readonly navigationStackService: NavigationStackService,
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.destroyRef = destroyRef;
   }
 
   ngOnInit(): void {

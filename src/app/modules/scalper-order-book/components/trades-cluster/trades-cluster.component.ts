@@ -1,4 +1,4 @@
-import {Component, Inject, input, OnInit, Optional, SkipSelf} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {TradesCluster} from '../../models/trades-clusters.model';
 import {combineLatest, filter, Observable, of, shareReplay} from 'rxjs';
 import {
@@ -40,6 +40,9 @@ interface DisplayItem {
   ]
 })
 export class TradesClusterComponent implements OnInit {
+  private readonly themeService = inject(ThemeService);
+  private readonly rulerContext = inject<RulerContext>(RULER_CONTEX, { skipSelf: true, optional: true });
+
   readonly numberFormats = NumberDisplayFormat;
 
   readonly xAxisStep = input.required<number>();
@@ -60,15 +63,6 @@ export class TradesClusterComponent implements OnInit {
     startWith(null),
     shareReplay(1)
   );
-
-  constructor(
-    private readonly themeService: ThemeService,
-    @Inject(RULER_CONTEX)
-    @SkipSelf()
-    @Optional()
-    private readonly rulerContext?: RulerContext,
-  ) {
-  }
 
   ngOnInit(): void {
     this.settings$ = this.dataContext().extendedSettings$;

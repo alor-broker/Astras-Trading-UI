@@ -1,9 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  OnInit,
-  output
-} from '@angular/core';
+import { Component, DestroyRef, OnInit, output, inject } from '@angular/core';
 import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
 import {
   NewsListItem,
@@ -39,6 +34,11 @@ import { TranslocoDirective } from "@jsverse/transloco";
   styleUrl: './news.component.less'
 })
 export class NewsComponent implements OnInit {
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly newsService = inject(NewsService);
+  private readonly positionsService = inject(PositionsService);
+  protected readonly destroyRef = inject(DestroyRef);
+
   items$!: Observable<NewsListItem[]>;
 
   isLoading = true;
@@ -48,14 +48,6 @@ export class NewsComponent implements OnInit {
   protected readonly displayRecordsCount = 5;
 
   private readonly refreshIntervalSec = 30;
-
-  constructor(
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly newsService: NewsService,
-    private readonly positionsService: PositionsService,
-    protected readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.items$ = this.dashboardContextService.selectedPortfolio$.pipe(

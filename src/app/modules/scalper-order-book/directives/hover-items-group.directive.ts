@@ -1,11 +1,4 @@
-import {
-  DestroyRef,
-  Directive,
-  InjectionToken,
-  OnInit,
-  input,
-  output
-} from '@angular/core';
+import { DestroyRef, Directive, InjectionToken, OnInit, input, output, inject } from '@angular/core';
 import {
   BehaviorSubject,
   take,
@@ -26,6 +19,8 @@ export interface HoverItemsGroup<T = any> {
     providers: [{ provide: HOVER_ITEMS_GROUP, useExisting: HoverItemsGroupDirective }]
 })
 export class HoverItemsGroupDirective<T = any> implements HoverItemsGroup<T>, OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly atsHoverItemsGroup = input<boolean | undefined>(true);
 
   readonly hoveredItemChanged = output<{
@@ -33,9 +28,6 @@ export class HoverItemsGroupDirective<T = any> implements HoverItemsGroup<T>, On
 } | null>();
 
   private readonly hoveredItem$ = new BehaviorSubject<{ item: HoverItemDirective<T> } | null>(null);
-
-  constructor(private readonly destroyRef: DestroyRef) {
-  }
 
   removeItemHover(item: HoverItemDirective<T>): void {
     this.hoveredItem$.pipe(

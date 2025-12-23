@@ -1,4 +1,4 @@
-import {Component, DestroyRef, Inject, input, OnInit, SkipSelf} from '@angular/core';
+import { Component, DestroyRef, input, OnInit, inject } from '@angular/core';
 import {BodyRow, CurrentOrderDisplay, ScalperOrderBookRowType,} from '../../models/scalper-order-book.model';
 import {combineLatest, Observable,} from 'rxjs';
 import {
@@ -73,6 +73,13 @@ interface DisplayRow extends BodyRow {
   ]
 })
 export class ScalperOrderBookTableComponent implements OnInit {
+  private readonly cancelOrdersCommand = inject(CancelOrdersCommand);
+  private readonly themeService = inject(ThemeService);
+  private readonly commandProcessorService = inject(ScalperCommandProcessorService);
+  private readonly hotkeysService = inject(ScalperHotKeyCommandService);
+  private readonly rulerContext = inject<RulerContext>(RULER_CONTEX, { skipSelf: true });
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly numberFormats = NumberDisplayFormat;
   readonly rowTypes = ScalperOrderBookRowType;
   readonly orderTypes = OrderType;
@@ -91,18 +98,6 @@ export class ScalperOrderBookTableComponent implements OnInit {
   showGrowingVolume = false;
 
   readonly hoveredRow$ = this.rulerContext.hoveredRow$;
-
-  constructor(
-    private readonly cancelOrdersCommand: CancelOrdersCommand,
-    private readonly themeService: ThemeService,
-    private readonly commandProcessorService: ScalperCommandProcessorService,
-    private readonly hotkeysService: ScalperHotKeyCommandService,
-    @Inject(RULER_CONTEX)
-    @SkipSelf()
-    private readonly rulerContext: RulerContext,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   getPriceCellClasses(row: BodyRow): any {
     return {

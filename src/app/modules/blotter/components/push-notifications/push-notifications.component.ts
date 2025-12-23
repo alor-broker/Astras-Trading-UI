@@ -1,4 +1,4 @@
-import {Component, DestroyRef} from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -110,6 +110,15 @@ type DisplayNotification = Partial<OrderExecuteSubscription> & Partial<PriceSpar
   ]
 })
 export class PushNotificationsComponent extends BlotterBaseTableComponent<DisplayNotification, NotificationFilter> {
+  protected readonly widgetSettingsService: WidgetSettingsService;
+  protected readonly blotterService = inject(BlotterService);
+  private readonly pushNotificationsService = inject(PushNotificationsService);
+  protected readonly translatorService: TranslatorService;
+  protected readonly nzContextMenuService: NzContextMenuService;
+  protected readonly widgetLocalStateService: WidgetLocalStateService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+
   readonly subscriptionTypes = PushSubscriptionType;
 
   isNotificationsAllowed$!: Observable<boolean>;
@@ -157,16 +166,13 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
     },
   ];
 
-  constructor(
-    protected readonly widgetSettingsService: WidgetSettingsService,
-    protected readonly blotterService: BlotterService,
-    private readonly pushNotificationsService: PushNotificationsService,
-    protected readonly translatorService: TranslatorService,
-    protected readonly nzContextMenuService: NzContextMenuService,
-    protected readonly widgetLocalStateService: WidgetLocalStateService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) {
+  constructor() {
+    const widgetSettingsService = inject(WidgetSettingsService);
+    const translatorService = inject(TranslatorService);
+    const nzContextMenuService = inject(NzContextMenuService);
+    const widgetLocalStateService = inject(WidgetLocalStateService);
+    const destroyRef = inject(DestroyRef);
+
     super(
       widgetSettingsService,
       translatorService,
@@ -174,6 +180,12 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
       widgetLocalStateService,
       destroyRef
     );
+
+    this.widgetSettingsService = widgetSettingsService;
+    this.translatorService = translatorService;
+    this.nzContextMenuService = nzContextMenuService;
+    this.widgetLocalStateService = widgetLocalStateService;
+    this.destroyRef = destroyRef;
   }
 
   get restoreFiltersAndSortOnLoad(): boolean {

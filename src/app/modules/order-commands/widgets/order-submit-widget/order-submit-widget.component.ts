@@ -1,12 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  Inject,
-  input,
-  OnInit,
-  viewChild, viewChildren
-} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, input, OnInit, viewChild, viewChildren, inject } from '@angular/core';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
 import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
 import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
@@ -95,6 +87,16 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly instrumentService = inject(InstrumentsService);
+  private readonly commonParametersService = inject(CommonParametersService);
+  private readonly widgetsSharedDataService = inject(WidgetsSharedDataService);
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  readonly pushNotificationsConfig = inject<PushNotificationsConfig>(PUSH_NOTIFICATIONS_CONFIG);
+  private readonly destroyRef = inject(DestroyRef);
+
   currentPortfolio$!: Observable<PortfolioKey>;
   currentInstrument$!: Observable<Instrument>;
 
@@ -116,21 +118,6 @@ export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
   settings$!: Observable<OrderSubmitSettings>;
   showBadge$!: Observable<boolean>;
   readonly ordersConfig = this.orderCommandService.getOrdersConfig();
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly instrumentService: InstrumentsService,
-    private readonly commonParametersService: CommonParametersService,
-    private readonly widgetsSharedDataService: WidgetsSharedDataService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
-    @Inject(PUSH_NOTIFICATIONS_CONFIG)
-    readonly pushNotificationsConfig: PushNotificationsConfig,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

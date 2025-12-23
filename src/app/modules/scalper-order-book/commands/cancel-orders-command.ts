@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { CommandBase } from "./command-base";
 import { OrderType } from "../../../shared/models/orders/order.model";
 import {
@@ -20,12 +17,7 @@ export interface CancelOrdersCommandArgs {
 
 @Injectable()
 export class CancelOrdersCommand extends CommandBase<CancelOrdersCommandArgs> {
-  constructor(
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService
-  ) {
-    super();
-  }
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
 
   execute(args: CancelOrdersCommandArgs): void {
     this.orderCommandService.cancelOrders(args.ordersToCancel).subscribe();

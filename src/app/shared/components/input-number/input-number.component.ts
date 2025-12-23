@@ -1,14 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  DestroyRef,
-  ElementRef,
-  forwardRef,
-  input,
-  TemplateRef,
-  output,
-  viewChild
-} from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, ElementRef, forwardRef, input, TemplateRef, output, viewChild, inject } from '@angular/core';
 import {FormsModule, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {ControlValueAccessorBaseComponent} from "../control-value-accessor-base/control-value-accessor-base.component";
 import {MathHelper} from "../../utils/math-helper";
@@ -36,6 +26,9 @@ import {filter} from "rxjs";
   ]
 })
 export class InputNumberComponent extends ControlValueAccessorBaseComponent<number> {
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly step = input(1);
   readonly placeholder = input('');
   readonly readonly = input(false);
@@ -58,11 +51,9 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   displayValue?: string | null;
   private readonly minus = '-';
 
-  constructor(
-    private readonly cdr: ChangeDetectorRef,
-    private readonly destroyRef: DestroyRef
-  ) {
+  constructor() {
     super();
+    const destroyRef = this.destroyRef;
 
     toObservable(this.initialValue).pipe(
       filter((value) => value != undefined),

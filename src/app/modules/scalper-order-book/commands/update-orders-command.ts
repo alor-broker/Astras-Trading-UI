@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { CurrentOrderDisplay } from "../models/scalper-order-book.model";
 import { CommandBase } from "./command-base";
 import { OrdersDialogService } from "../../../shared/services/orders/orders-dialog.service";
@@ -22,13 +19,8 @@ export interface UpdateOrdersCommandArgs {
 
 @Injectable()
 export class UpdateOrdersCommand extends CommandBase<UpdateOrdersCommandArgs> {
-  constructor(
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
-    private readonly ordersDialogService: OrdersDialogService
-  ) {
-    super();
-  }
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  private readonly ordersDialogService = inject(OrdersDialogService);
 
   execute(args: UpdateOrdersCommandArgs): void {
     if (args.ordersToUpdate.length === 0) {

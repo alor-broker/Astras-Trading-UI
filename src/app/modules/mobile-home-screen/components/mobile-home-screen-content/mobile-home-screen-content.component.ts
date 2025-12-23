@@ -1,4 +1,4 @@
-import {Component, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {PositionsComponent} from "../positions/positions.component";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {combineLatest, distinctUntilChanged, Observable} from "rxjs";
@@ -49,6 +49,11 @@ import {
   styleUrl: './mobile-home-screen-content.component.less'
 })
 export class MobileHomeScreenContentComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly navigationStackService = inject(NavigationStackService);
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
+
   readonly guid = input.required<string>();
 
   readonly Market = Market;
@@ -56,14 +61,6 @@ export class MobileHomeScreenContentComponent implements OnInit {
   currentAgreement$: Observable<string> | null = null;
 
   protected settings$!: Observable<MobileHomeScreenSettings>;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly navigationStackService: NavigationStackService,
-    private readonly userPortfoliosService: UserPortfoliosService
-  ) {
-  }
 
   ngOnInit(): void {
     this.settings$ = this.widgetSettingsService.getSettings<MobileHomeScreenSettings>(this.guid());

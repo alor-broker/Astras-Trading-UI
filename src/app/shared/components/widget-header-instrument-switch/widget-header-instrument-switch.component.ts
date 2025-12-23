@@ -1,4 +1,4 @@
-import {Component, Inject, input, OnInit, viewChild} from '@angular/core';
+import { Component, input, OnInit, viewChild, inject } from '@angular/core';
 import {InstrumentsService} from "../../../modules/instruments/services/instruments.service";
 import {WidgetSettingsService} from "../../services/widget-settings.service";
 import {combineLatest, Observable, of, shareReplay, switchMap, take} from "rxjs";
@@ -37,6 +37,10 @@ import {toObservable} from "@angular/core/rxjs-interop";
   ]
 })
 export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly instrumentService = inject(InstrumentsService);
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+
   readonly widgetGuid = input.required<string>();
 
   readonly searchInput = viewChild(InstrumentSearchComponent);
@@ -46,14 +50,6 @@ export class WidgetHeaderInstrumentSwitchComponent implements OnInit {
   searchVisible = false;
   readonly customTitle = input<string | null>(null);
   private readonly customTitleChanges$ = toObservable(this.customTitle);
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly instrumentService: InstrumentsService,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext
-  ) {
-  }
 
   ngOnInit(): void {
     this.settings$ = this.widgetSettingsService.getSettings<WidgetSettings & InstrumentKey>(this.widgetGuid()).pipe(

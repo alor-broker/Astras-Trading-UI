@@ -1,10 +1,4 @@
-import {
-  Component,
-  input,
-  OnChanges,
-  output,
-  SimpleChanges
-} from '@angular/core';
+import { Component, input, OnChanges, output, SimpleChanges, inject } from '@angular/core';
 import {
   NzModalComponent,
   NzModalContentDirective
@@ -41,6 +35,8 @@ export interface Filters {
   styleUrl: './news-filters.component.less'
 })
 export class NewsFiltersComponent implements OnChanges {
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly validationOptions = {
     keyword: {
       minLength: 2,
@@ -63,9 +59,6 @@ export class NewsFiltersComponent implements OnChanges {
   protected excludedKeywords: string[] = [];
 
   protected symbols: string[] = [];
-
-  constructor(private readonly formBuilder: FormBuilder) {
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.currentFilters != null) {

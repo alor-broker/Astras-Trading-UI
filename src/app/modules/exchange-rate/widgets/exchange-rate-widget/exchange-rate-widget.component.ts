@@ -1,4 +1,4 @@
-import {Component, input, OnInit, output} from '@angular/core';
+import { Component, input, OnInit, output, inject } from '@angular/core';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
 import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import {Observable} from 'rxjs';
@@ -27,6 +27,9 @@ import {AsyncPipe} from '@angular/common';
   ]
 })
 export class ExchangeRateWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+
   readonly widgetInstance = input.required<WidgetInstance>();
 
   readonly isBlockWidget = input.required<boolean>();
@@ -34,12 +37,6 @@ export class ExchangeRateWidgetComponent implements OnInit {
   public readonly shouldShowSettingsChange = output<boolean>();
   settings$!: Observable<ExchangeRateSettings>;
   showBadge$!: Observable<boolean>;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly terminalSettingsService: TerminalSettingsService
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

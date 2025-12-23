@@ -1,4 +1,4 @@
-import {Component, ElementRef, input, OnDestroy, OnInit, output, viewChild} from '@angular/core';
+import { Component, ElementRef, input, OnDestroy, OnInit, output, viewChild, inject } from '@angular/core';
 import {SearchFilter} from '../../../modules/instruments/models/search-filter.model';
 import {
   NzAutocompleteComponent,
@@ -50,6 +50,9 @@ import {NzIconDirective} from "ng-zorro-antd/icon";
   ]
 })
 export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValueAccessor {
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly deviceService = inject(DeviceService);
+
   readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
   readonly optionsBoxWidth = input<number>();
@@ -66,12 +69,6 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
   searchControl = new FormControl<string | null>(null);
   private readonly filter$: BehaviorSubject<SearchFilter | null> = new BehaviorSubject<SearchFilter | null>(null);
   private touched = false;
-
-  constructor(
-    private readonly instrumentsService: InstrumentsService,
-    private readonly deviceService: DeviceService
-  ) {
-  }
 
   get isExchangeSpecified(): boolean {
     const exchange = this.exchange();

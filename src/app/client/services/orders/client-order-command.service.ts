@@ -36,7 +36,7 @@ import { map } from "rxjs/operators";
 import { OptionalProperty } from "../../../shared/utils/types";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
 import { toUnixTimestampSeconds } from "../../../shared/utils/datetime";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
 import {
   CreateOrderGroupReq,
@@ -58,15 +58,17 @@ interface GroupItem {
 
 @Injectable()
 export class ClientOrderCommandService implements OrderCommandService {
-  constructor(
-    private readonly ordersConnector: WsOrdersConnector,
-    private readonly instrumentsService: InstrumentsService,
-    private readonly instantNotificationsService: OrderInstantTranslatableNotificationsService,
-    private readonly httpClient: HttpClient,
-    private readonly environmentService: EnvironmentService,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly eventBusService: EventBusService
-  ) {
+  private readonly ordersConnector = inject(WsOrdersConnector);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly instantNotificationsService = inject(OrderInstantTranslatableNotificationsService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly eventBusService = inject(EventBusService);
+
+  constructor() {
+    const ordersConnector = this.ordersConnector;
+
     ordersConnector.warmUp();
   }
 

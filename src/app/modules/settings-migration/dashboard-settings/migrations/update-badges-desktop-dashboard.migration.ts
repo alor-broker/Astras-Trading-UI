@@ -6,7 +6,7 @@ import {
   Observable,
   of
 } from "rxjs";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { map } from "rxjs/operators";
 import { instrumentsBadges } from "../../../../shared/utils/instruments";
 import { MigrationBase } from "../../migration-base";
@@ -25,6 +25,8 @@ import {
   providedIn: "root"
 })
 export class UpdateBadgesDesktopDashboardMigration extends MigrationBase {
+  private readonly marketService = inject(MarketService);
+
   static OldToNewBadgesMap: { oldColor: string, newColor: string }[] = [
     { oldColor: 'yellow', newColor: instrumentsBadges[0] },
     { oldColor: 'blue', newColor: instrumentsBadges[5] },
@@ -32,10 +34,6 @@ export class UpdateBadgesDesktopDashboardMigration extends MigrationBase {
     { oldColor: 'red', newColor: instrumentsBadges[1] },
     { oldColor: 'orange', newColor: instrumentsBadges[2] },
   ];
-
-  constructor(private readonly marketService: MarketService) {
-    super();
-  }
 
   get migrationId(): string {
     return "update_badge_colors_dashboard";

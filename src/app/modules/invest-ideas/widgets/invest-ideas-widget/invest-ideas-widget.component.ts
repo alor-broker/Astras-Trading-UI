@@ -1,4 +1,4 @@
-import {Component, Inject, input, OnInit} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {AsyncPipe} from "@angular/common";
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {Observable, take} from "rxjs";
@@ -27,6 +27,10 @@ import {WidgetHeaderComponent} from "../../../../shared/components/widget-header
   styleUrl: './invest-ideas-widget.component.less'
 })
 export class InvestIdeasWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+
   readonly widgetInstance = input.required<WidgetInstance>();
 
   readonly isBlockWidget = input.required<boolean>();
@@ -34,14 +38,6 @@ export class InvestIdeasWidgetComponent implements OnInit {
   settings$!: Observable<InvestIdeasSettings>;
 
   showBadge$!: Observable<boolean>;
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext,
-    private readonly terminalSettingsService: TerminalSettingsService
-  ) {
-  }
 
   get guid(): string {
     return this.widgetInstance().instance.guid;

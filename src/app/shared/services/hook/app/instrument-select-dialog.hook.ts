@@ -5,23 +5,16 @@ import {
 } from "rxjs";
 import { filter } from "rxjs/operators";
 import { DomHelper } from "../../../utils/dom-helper";
-import {
-  Inject,
-  Injectable,
-  DOCUMENT
-} from "@angular/core";
+import { Injectable, DOCUMENT, inject } from "@angular/core";
 
 import { InstrumentSelectDialogService } from "../../../../modules/instruments/services/instrument-select-dialog.service";
 
 @Injectable()
 export class InstrumentSelectDialogHook implements AppHook {
-  private subscription: Subscription | null = null;
+  private readonly document = inject<Document>(DOCUMENT);
+  private readonly instrumentSelectDialogService = inject(InstrumentSelectDialogService);
 
-  constructor(
-    @Inject(DOCUMENT) private readonly document: Document,
-    private readonly instrumentSelectDialogService: InstrumentSelectDialogService
-  ) {
-  }
+  private subscription: Subscription | null = null;
 
   onInit(): void {
     this.subscription = fromEvent<KeyboardEvent>(this.document.body, 'keydown').pipe(

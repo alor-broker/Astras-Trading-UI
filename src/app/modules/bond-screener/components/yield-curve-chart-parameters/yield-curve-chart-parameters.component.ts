@@ -1,9 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  OnInit,
-  output
-} from '@angular/core';
+import { Component, DestroyRef, OnInit, output, inject } from '@angular/core';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {
   DurationType,
@@ -33,6 +28,9 @@ export interface ChartParameters {
     imports: [TranslocoDirective, FormsModule, NzFormDirective, ReactiveFormsModule, NzRowDirective, NzFormItemComponent, NzColDirective, NzFormControlComponent, NzSpaceCompactItemDirective, NzSelectComponent, NzTooltipDirective, NzOptionComponent]
 })
 export class YieldCurveChartParametersComponent implements OnInit {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly durationTypes = Object.values(DurationType);
   readonly yieldTypes = Object.values(YieldType);
 
@@ -48,12 +46,6 @@ export class YieldCurveChartParametersComponent implements OnInit {
   });
 
   readonly parametersChanged = output<ChartParameters>();
-
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.parametersForm.valueChanges.pipe(

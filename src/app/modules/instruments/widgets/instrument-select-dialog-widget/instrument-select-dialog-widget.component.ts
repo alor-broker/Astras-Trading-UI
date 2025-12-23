@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, DestroyRef, ElementRef, OnDestroy, OnInit, viewChildren} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, OnDestroy, OnInit, viewChildren, inject } from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Exchange} from "../../../../../generated/graphql.types";
 import {Board} from "../../../all-instruments/model/boards.model";
@@ -45,6 +45,13 @@ import {AsyncPipe} from "@angular/common";
   ]
 })
 export class InstrumentSelectDialogWidgetComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly marketService = inject(MarketService);
+  private readonly boardsService = inject(BoardsService);
+  private readonly instrumentSelectDialogService = inject(InstrumentSelectDialogService);
+  private readonly searchInstrumentStore = inject(SearchInstrumentStore);
+  private readonly destroyRef = inject(DestroyRef);
+
   exchanges$!: Observable<string[]>;
   boards$!: Observable<Board[]>;
   selectParams$ = this.instrumentSelectDialogService.selectParams$;
@@ -75,16 +82,6 @@ export class InstrumentSelectDialogWidgetComponent implements OnInit, AfterViewI
   });
 
   private readonly instrumentNameControlQueryChanges$ = toObservable(this.instrumentNameControlQuery);
-
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly marketService: MarketService,
-    private readonly boardsService: BoardsService,
-    private readonly instrumentSelectDialogService: InstrumentSelectDialogService,
-    private readonly searchInstrumentStore: SearchInstrumentStore,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.searchInstrumentStore.ngOnDestroy();

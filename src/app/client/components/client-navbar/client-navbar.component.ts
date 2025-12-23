@@ -1,7 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { DesktopNavbarComponent } from "../../../modules/dashboard/components/desktop-navbar/desktop-navbar.component";
 import { WidgetsGalleryNavBtnComponent } from "../../../modules/dashboard/components/widgets-gallery-nav-btn/widgets-gallery-nav-btn.component";
 import { AsyncPipe } from "@angular/common";
@@ -49,6 +46,10 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClientNavbarComponent {
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly environmentService = inject(EnvironmentService);
+
   readonly externalLinks = this.environmentService.externalLinks;
   readonly terminalSettings$ = this.terminalSettingsService.getSettings();
 
@@ -56,11 +57,4 @@ export class ClientNavbarComponent {
     startWith(null),
     shareReplay(1)
   );
-
-  constructor(
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly environmentService: EnvironmentService,
-  ) {
-  }
 }

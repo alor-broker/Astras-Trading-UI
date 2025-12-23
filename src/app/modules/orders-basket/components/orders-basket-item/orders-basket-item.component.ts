@@ -1,4 +1,4 @@
-import {Component, DestroyRef, input, OnDestroy, OnInit, output} from '@angular/core';
+import { Component, DestroyRef, input, OnDestroy, OnInit, output, inject } from '@angular/core';
 import {
   ControlValueAccessor,
   FormBuilder,
@@ -69,6 +69,11 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
   ]
 })
 export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValueAccessor, Validator {
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly quotesService = inject(QuotesService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly exchange = input.required<string>();
 
   readonly enableDelete = input(true);
@@ -128,14 +133,6 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
   protected readonly widthChanges$ = toObservable(this.width);
   protected readonly itemIndexChanges$ = toObservable(this.itemIndex);
   private readonly onChangeSubs: Subscription[] = [];
-
-  constructor(
-    private readonly instrumentsService: InstrumentsService,
-    private readonly quotesService: QuotesService,
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   validate(): ValidationErrors | null {
     if (this.form.valid) {

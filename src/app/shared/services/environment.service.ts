@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { environment } from "../../../environments/environment";
 import { LocalStorageService } from "./local-storage.service";
 
@@ -45,8 +45,7 @@ export interface ExternalLinksConfig {
   providedIn: 'root'
 })
 export class EnvironmentService {
-  constructor(private readonly localStorageService: LocalStorageService) {
-  }
+  private readonly localStorageService = inject(LocalStorageService);
 
   get apiUrl(): string {
     return this.getDebugStringRecord('apiUrl') ?? environment.apiUrl;

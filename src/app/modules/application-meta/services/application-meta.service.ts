@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { LocalStorageService } from '../../../shared/services/local-storage.service';
 import { merge, Observable, of, shareReplay, Subject, take } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -12,6 +12,11 @@ import { EnvironmentService } from 'src/app/shared/services/environment.service'
   providedIn: 'root'
 })
 export class ApplicationMetaService {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+
   private readonly releasesApiBaseUrl = `${this.environmentService.warpUrl}/api/releases`;
 
   private readonly update$ = new Subject();
@@ -23,14 +28,6 @@ export class ApplicationMetaService {
       }),
       shareReplay(1)
     );
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly localStorageService: LocalStorageService,
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) {
-  }
 
   getCurrentVersion(): Observable<ReleaseMeta | null> {
     return this.httpClient.get<ReleasesMeta>(

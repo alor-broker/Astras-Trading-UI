@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {InstrumentKey} from '../../../shared/models/instruments/instrument-key.model';
 import {ClusterTimeframe} from '../models/scalper-order-book-settings.model';
@@ -30,12 +30,10 @@ interface ClustersSubscriptionRequest extends SubscriptionRequest {
   providedIn: 'root'
 })
 export class TradeClustersService {
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly subscriptionsService: SubscriptionsDataFeedService,
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService) {
-  }
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly subscriptionsService = inject(SubscriptionsDataFeedService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
 
   getHistory(
     instrumentKey: InstrumentKey,

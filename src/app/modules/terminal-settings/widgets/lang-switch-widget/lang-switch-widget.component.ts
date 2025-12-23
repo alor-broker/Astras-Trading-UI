@@ -1,7 +1,4 @@
-import {
-  Component,
-  OnInit
-} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import { GlobalLoadingIndicatorService } from "../../../../shared/services/global-loading-indicator.service";
 import {
@@ -39,6 +36,9 @@ import { GuidGenerator } from "../../../../shared/utils/guid";
   styleUrl: './lang-switch-widget.component.less',
 })
 export class LangSwitchWidgetComponent implements OnInit {
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly globalLoadingIndicatorService = inject(GlobalLoadingIndicatorService);
+
   readonly availableLanguages = Object.keys(environment.internationalization).map(k => {
     const language = (environment.internationalization as unknown as any)[k] as { title: string };
     return {
@@ -48,12 +48,6 @@ export class LangSwitchWidgetComponent implements OnInit {
   });
 
   protected currentLanguage$!: Observable<TerminalLanguage | null>;
-
-  constructor(
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly globalLoadingIndicatorService: GlobalLoadingIndicatorService
-  ) {
-  }
 
   ngOnInit(): void {
     this.currentLanguage$ = this.terminalSettingsService.getSettings().pipe(
