@@ -16,7 +16,7 @@
                 <nz-option-group [nzLabel]="agreement">
                   @for (portfolio of availablePortfolios.get(agreement); track portfolio){
                     <nz-option [nzValue]="portfolioToStr(portfolio)"
-                    [nzLabel]="portfolio.market + ' ' +  portfolio.portfolio"></nz-option>
+                    [nzLabel]="portfolio.market + ' ' +  portfolio.portfolio" />
                   }
                 </nz-option-group>
               }

@@ -16,7 +16,7 @@
                 </button>
               </div>
             </div>
-            <nz-divider></nz-divider>
+            <nz-divider />
           }
           <ng-container>
             <form [formGroup]="newPriceChangeSubscriptionForm"
@@ -32,11 +32,10 @@
                 </nz-form-item>
                 <nz-form-item  class="stretched-field">
                   <nz-form-control [nzErrorTip]="priceError">
-                    <ats-input-number
-                      [step]="(instrument$ | async)?.minstep ?? 1"
+                    <ats-input-number [step]="(instrument$ | async)?.minstep ?? 1"
                       formControlName="price"
                       [placeholder]="t('pushNotificationsSetupInstrumentNotifications.priceLabel')"
-                    ></ats-input-number>
+                     />
                   </nz-form-control>
                   <ng-template #priceError>
                     @if (newPriceChangeSubscriptionForm.controls.price.errors?.required) {

@@ -1,6 +1,5 @@
 @let idea = displayIdea();
-<nz-modal
-  (nzOnCancel)="close()"
+<nz-modal (nzOnCancel)="close()"
   [nzAutofocus]="null"
   [nzContent]="content"
   [nzFooter]="null"
@@ -8,8 +7,7 @@
   [nzTitle]="idea?.title"
   [nzVisible]="displayIdea() !== null"
   nzClassName="ats-invest-ideas-details-dialog"
->
-</nz-modal>
+ />
 
 <ng-template #content>
   <div class="body show-scroll">
@@ -26,7 +24,7 @@
             (click)="symbolSelected.emit({symbol: item.ticker, exchange: item.exchange})"
           >
             <div class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5">
-              <ats-instrument-icon [symbol]="item.ticker" size="large"></ats-instrument-icon>
+              <ats-instrument-icon [symbol]="item.ticker" size="large" />
               <div class="d-flex flex-column">
               <span nz-typography nzEllipsis class="heading-color">
                 {{ item.shortName ?? item.ticker }}

@@ -7,7 +7,7 @@
   >
   @if (availableBoards$ | async; as availableBoards) {
     @for (board of availableBoards; track board) {
-      <nz-option [nzLabel]="board" [nzValue]="board"></nz-option>
+      <nz-option [nzLabel]="board" [nzValue]="board" />
     }
   }
 </nz-select>

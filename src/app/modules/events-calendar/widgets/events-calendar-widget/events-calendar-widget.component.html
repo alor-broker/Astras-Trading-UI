@@ -7,15 +7,14 @@
       [showContentScroll]="true"
       >
       <ng-template #header>
-        <ats-widget-header
-          [guid]="guid"
+        <ats-widget-header [guid]="guid"
           [hasSettings]="false"
           [showBadgesMenu]="false"
           [widgetMeta]="widgetInstance().widgetMeta"
-        ></ats-widget-header>
+         />
       </ng-template>
       <ng-template #content>
-        <ats-events-calendar [guid]="guid"></ats-events-calendar>
+        <ats-events-calendar [guid]="guid" />
       </ng-template>
     </ats-widget-skeleton>
   }

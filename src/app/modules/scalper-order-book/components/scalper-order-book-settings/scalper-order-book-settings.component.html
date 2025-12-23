@@ -15,7 +15,7 @@
                 <nz-form-item>
                   <nz-form-label nzRequired nzFor="instrument">{{t('scalperOrderBookSettings.tickerLabel')}}</nz-form-label>
                   <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.tickerError')">
-                    <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
+                    <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)" />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
@@ -27,11 +27,9 @@
                 <nz-form-item>
                   <nz-form-label nzFor="instrumentGroup">{{t('scalperOrderBookSettings.instrumentGroupLabel')}}</nz-form-label>
                   <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.instrumentGroupError')">
-                    <ats-instrument-board-select
-                      [instrument]="form.value.instrument ?? null"
+                    <ats-instrument-board-select [instrument]="form.value.instrument ?? null"
                       [placeholder]="t('scalperOrderBookSettings.instrumentGroupLabel')"
-                      formControlName="instrumentGroup">
-                    </ats-instrument-board-select>
+                      formControlName="instrumentGroup" />
                   </nz-form-control>
                 </nz-form-item>
               </nz-collapse-panel>
@@ -41,32 +39,30 @@
                     {{t('scalperOrderBookSettings.depthLabel')}}
                   </nz-form-label>
                   <nz-form-control>
-                    <nz-slider
-                      [nzMin]="validationOptions.depth.min"
+                    <nz-slider [nzMin]="validationOptions.depth.min"
                       [nzMax]="validationOptions.depth.max"
                       [nzStep]="1"
                       [nzMarks]="getSliderMarks(validationOptions.depth.min, validationOptions.depth.max)"
                       formControlName="depth"
-                      >
-                    </nz-slider>
+                       />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="showZeroVolumeItems">{{t('scalperOrderBookSettings.showZeroVolumeItemsLabel')}}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='showZeroVolumeItems'></nz-switch>
+                    <nz-switch formControlName='showZeroVolumeItems' />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="showSpreadItems">{{t('scalperOrderBookSettings.showSpreadItemsLabel')}}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='showSpreadItems'></nz-switch>
+                    <nz-switch formControlName='showSpreadItems' />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="showLimitOrdersVolumeIndicators">{{t('scalperOrderBookSettings.showLimitOrdersVolumeIndicatorsLabel')}}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='showLimitOrdersVolumeIndicators'></nz-switch>
+                    <nz-switch formControlName='showLimitOrdersVolumeIndicators' />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
@@ -74,10 +70,9 @@
                   <nz-form-control>
                     <nz-select formControlName='volumeDisplayFormat'>
                       @for (option of availableNumberFormats; track option) {
-                        <nz-option
-                          [nzLabel]="t('numberDisplayFormatOptions.' + option, { fallback: option })"
+                        <nz-option [nzLabel]="t('numberDisplayFormatOptions.' + option, { fallback: option })"
                           [nzValue]="option"
-                        ></nz-option>
+                         />
                       }
                     </nz-select>
                   </nz-form-control>
@@ -85,7 +80,7 @@
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="showRuler">{{t('scalperOrderBookSettings.showRulerLabel')}}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='showRuler'></nz-switch>
+                    <nz-switch formControlName='showRuler' />
                   </nz-form-control>
                 </nz-form-item>
                 @if (showRulerOptions()) {
@@ -116,7 +111,7 @@
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="enableAutoAlign">{{t('scalperOrderBookSettings.enableAutoAlignLabel')}}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='enableAutoAlign'></nz-switch>
+                    <nz-switch formControlName='enableAutoAlign' />
                   </nz-form-control>
                 </nz-form-item>
                 @if (form.controls.enableAutoAlign.value) {
@@ -138,7 +133,7 @@
                       max: validationOptions.autoAlignIntervalSec.max
                       })"
                             >
-                            <ats-input-number formControlName="autoAlignIntervalSec" [allowDecimal]="true" [step]="0.1"></ats-input-number>
+                            <ats-input-number formControlName="autoAlignIntervalSec" [allowDecimal]="true" [step]="0.1" />
                           </nz-form-control>
                         </nz-form-item>
                       </nz-collapse-panel>
@@ -148,13 +143,13 @@
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="showPriceWithZeroPadding">{{t('scalperOrderBookSettings.showPriceWithZeroPaddingLabel')}}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='showPriceWithZeroPadding'></nz-switch>
+                    <nz-switch formControlName='showPriceWithZeroPadding' />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="hideTooltips">{{t('scalperOrderBookSettings.hideTooltipsLabel')}}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName="hideTooltips"></nz-switch>
+                    <nz-switch formControlName="hideTooltips" />
                   </nz-form-control>
                 </nz-form-item>
               </nz-collapse-panel>
@@ -163,28 +158,24 @@
                   <nz-form-label nzFor="fontSize" nzRequired>{{ t('scalperOrderBookSettings.fontSizeLabel') }}
                   </nz-form-label>
                   <nz-form-control>
-                    <nz-slider
-                      [nzMin]="validationOptions.fontSize.min"
+                    <nz-slider [nzMin]="validationOptions.fontSize.min"
                       [nzMax]="validationOptions.fontSize.max"
                       [nzStep]="1"
                       [nzMarks]="getSliderMarks(validationOptions.fontSize.min, validationOptions.fontSize.max)"
                       formControlName="fontSize"
-                      >
-                    </nz-slider>
+                       />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
                   <nz-form-label nzFor="rowHeight" nzRequired>{{ t('scalperOrderBookSettings.rowHeightLabel') }}
                   </nz-form-label>
                   <nz-form-control>
-                    <nz-slider
-                      [nzMin]="validationOptions.rowHeight.min"
+                    <nz-slider [nzMin]="validationOptions.rowHeight.min"
                       [nzMax]="validationOptions.rowHeight.max"
                       [nzStep]="1"
                       [nzMarks]="getSliderMarks(validationOptions.rowHeight.min, validationOptions.rowHeight.max)"
                       formControlName="rowHeight"
-                      >
-                    </nz-slider>
+                       />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
@@ -198,7 +189,7 @@
                       max: validationOptions.minorLinesStep.max
                       })"
                     >
-                    <ats-input-number formControlName="minorLinesStep" [allowDecimal]="false"></ats-input-number>
+                    <ats-input-number formControlName="minorLinesStep" [allowDecimal]="false" />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
@@ -212,7 +203,7 @@
                       max: validationOptions.majorLinesStep.max
                       })"
                     >
-                    <ats-input-number formControlName="majorLinesStep" [allowDecimal]="false"></ats-input-number>
+                    <ats-input-number formControlName="majorLinesStep" [allowDecimal]="false" />
                   </nz-form-control>
                 </nz-form-item>
               </nz-collapse-panel>
@@ -220,19 +211,19 @@
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="disableHotkeys">{{t('scalperOrderBookSettings.disableHotkeysLabel')}}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='disableHotkeys'></nz-switch>
+                    <nz-switch formControlName='disableHotkeys' />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="enableMouseClickSilentOrders">{{t('scalperOrderBookSettings.enableMouseClickSilentOrdersLabel')}}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='enableMouseClickSilentOrders'></nz-switch>
+                    <nz-switch formControlName='enableMouseClickSilentOrders' />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="allowMargin">{{t('scalperOrderBookSettings.allowMarginLabel')}}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='allowMargin'></nz-switch>
+                    <nz-switch formControlName='allowMargin' />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
@@ -247,7 +238,7 @@
                       max: validationOptions.stopLimitOrdersDistance.max
                       })"
                     >
-                    <ats-input-number formControlName="stopLimitOrdersDistance" [allowDecimal]="false" [allowNegative]="false"></ats-input-number>
+                    <ats-input-number formControlName="stopLimitOrdersDistance" [allowDecimal]="false" [allowNegative]="false" />
                   </nz-form-control>
                 </nz-form-item>
               </nz-collapse-panel>
@@ -255,7 +246,7 @@
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="showShortLongIndicators">{{t('scalperOrderBookSettings.showShortLongIndicatorsLabel')}}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='showShortLongIndicators'></nz-switch>
+                    <nz-switch formControlName='showShortLongIndicators' />
                   </nz-form-control>
                 </nz-form-item>
                 @if (form.controls.showShortLongIndicators.value) {
@@ -270,10 +261,9 @@
                           <nz-form-control>
                             <nz-select formControlName='shortLongIndicatorsPanelSlot'>
                               @for (option of shortLongPanelSlots; track option) {
-                                <nz-option
-                                  [nzLabel]="t('scalperOrderBookSettings.panelSlotOptions.' + option, { fallback: option })"
+                                <nz-option [nzLabel]="t('scalperOrderBookSettings.panelSlotOptions.' + option, { fallback: option })"
                                   [nzValue]="option"
-                                ></nz-option>
+                                 />
                               }
                             </nz-select>
                           </nz-form-control>
@@ -282,14 +272,12 @@
                           <nz-form-control>
                             <nz-form-label nzFor="shortLongIndicatorsUpdateIntervalSec" nzRequired>{{ t('scalperOrderBookSettings.shortLongIndicatorsUpdateIntervalSecLabel') }}
                             </nz-form-label>
-                            <nz-slider
-                              [nzMin]="validationOptions.shortLongIndicators.min"
+                            <nz-slider [nzMin]="validationOptions.shortLongIndicators.min"
                               [nzMax]="validationOptions.shortLongIndicators.max"
                               [nzStep]="1"
                               [nzMarks]="getSliderMarks(validationOptions.shortLongIndicators.min, validationOptions.shortLongIndicators.max)"
                               formControlName="shortLongIndicatorsUpdateIntervalSec"
-                              >
-                            </nz-slider>
+                               />
                           </nz-form-control>
                         </nz-form-item>
                       </nz-collapse-panel>
@@ -299,13 +287,13 @@
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="showInstrumentPriceDayChange">{{t('scalperOrderBookSettings.showInstrumentPriceDayChangeLabel')}}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='showInstrumentPriceDayChange'></nz-switch>
+                    <nz-switch formControlName='showInstrumentPriceDayChange' />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="showTradesPanel">{{t('scalperOrderBookSettings.showTradesPanelLabel')}}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='showTradesPanel'></nz-switch>
+                    <nz-switch formControlName='showTradesPanel' />
                   </nz-form-control>
                 </nz-form-item>
                 @if (form.controls.showTradesPanel.value) {
@@ -328,13 +316,13 @@
                       max: validationOptions.tradesPanelSettings.minTradeVolumeFilter.max
                       })"
                             >
-                            <ats-input-number formControlName="minTradeVolumeFilter" [allowDecimal]="false"></ats-input-number>
+                            <ats-input-number formControlName="minTradeVolumeFilter" [allowDecimal]="false" />
                           </nz-form-control>
                         </nz-form-item>
                         <nz-form-item class="one-row">
                           <nz-form-label nzFor="hideFilteredTrades">{{t('scalperOrderBookSettings.hideFilteredTradesLabel')}}</nz-form-label>
                           <nz-form-control>
-                            <nz-switch formControlName='hideFilteredTrades'></nz-switch>
+                            <nz-switch formControlName='hideFilteredTrades' />
                           </nz-form-control>
                         </nz-form-item>
                         <nz-form-item>
@@ -349,13 +337,13 @@
                       max: validationOptions.tradesPanelSettings.tradesAggregationPeriodMs.max
                       })"
                             >
-                            <ats-input-number formControlName="tradesAggregationPeriodMs" [allowDecimal]="false"></ats-input-number>
+                            <ats-input-number formControlName="tradesAggregationPeriodMs" [allowDecimal]="false" />
                           </nz-form-control>
                         </nz-form-item>
                         <nz-form-item class="one-row">
                           <nz-form-label nzFor="showOwnTrades">{{t('scalperOrderBookSettings.showOwnTradesLabel')}}</nz-form-label>
                           <nz-form-control>
-                            <nz-switch formControlName='showOwnTrades'></nz-switch>
+                            <nz-switch formControlName='showOwnTrades' />
                           </nz-form-control>
                         </nz-form-item>
                       </nz-collapse-panel>
@@ -365,7 +353,7 @@
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="showTradesClustersPanel">{{t('scalperOrderBookSettings.showTradesClustersPanelLabel')}}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='showTradesClustersPanel'></nz-switch>
+                    <nz-switch formControlName='showTradesClustersPanel' />
                   </nz-form-control>
                 </nz-form-item>
                 @if (form.controls.showTradesClustersPanel.value) {
@@ -381,10 +369,9 @@
                           <nz-form-control>
                             <nz-select formControlName='highlightMode'>
                               @for (option of availableTradesClusterHighlightModes; track option) {
-                                <nz-option
-                                  [nzLabel]="t('scalperOrderBookSettings.tradesClusterHighlightOptions.' + option, { fallback: option })"
+                                <nz-option [nzLabel]="t('scalperOrderBookSettings.tradesClusterHighlightOptions.' + option, { fallback: option })"
                                   [nzValue]="option"
-                                ></nz-option>
+                                 />
                               }
                             </nz-select>
                           </nz-form-control>
@@ -399,7 +386,7 @@
                  max: validationOptions.tradesClusterPanelSettings.targetVolume.max
                  })"
                               >
-                              <ats-input-number formControlName="targetVolume" [allowDecimal]="false"></ats-input-number>
+                              <ats-input-number formControlName="targetVolume" [allowDecimal]="false" />
                             </nz-form-control>
                           </nz-form-item>
                         }
@@ -413,7 +400,7 @@
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="showWorkingVolumesPanel">{{t('scalperOrderBookSettings.showWorkingVolumesPanelLabel')}}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='showWorkingVolumesPanel'></nz-switch>
+                    <nz-switch formControlName='showWorkingVolumesPanel' />
                   </nz-form-control>
                 </nz-form-item>
                 @if (form.value.showWorkingVolumesPanel) {
@@ -422,10 +409,9 @@
                     <nz-form-control>
                       <nz-select formControlName='workingVolumesPanelSlot'>
                         @for (option of workingVolumesPanelSlots; track option) {
-                          <nz-option
-                            [nzLabel]="t('scalperOrderBookSettings.panelSlotOptions.' + option, { fallback: option })"
+                          <nz-option [nzLabel]="t('scalperOrderBookSettings.panelSlotOptions.' + option, { fallback: option })"
                             [nzValue]="option"
-                          ></nz-option>
+                           />
                         }
                       </nz-select>
                     </nz-form-control>
@@ -437,7 +423,7 @@
                       <div class="working-volume-option">
                         <nz-form-label nzFor="workingVolume1" nzRequired>{{t('scalperOrderBookSettings.workingVolumeLabel')}} {{i + 1}}</nz-form-label>
                         <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.intervalError', { min: validationOptions.workingVolume.min, max: validationOptions.workingVolume.max })">
-                          <ats-input-number [formControl]="ctrl" placeholder="1" [allowDecimal]="false"></ats-input-number>
+                          <ats-input-number [formControl]="ctrl" placeholder="1" [allowDecimal]="false" />
                         </nz-form-control>
                         <button
                           (click)="removeWorkingVolume($event, i)"
@@ -464,10 +450,9 @@
                   <nz-form-control>
                     <nz-select formControlName='volumeHighlightMode'>
                       @for (option of availableVolumeHighlightModes; track option) {
-                        <nz-option
-                          [nzLabel]="t('scalperOrderBookSettings.highlightHighVolumeOptions.' + option, { fallback: option })"
+                        <nz-option [nzLabel]="t('scalperOrderBookSettings.highlightHighVolumeOptions.' + option, { fallback: option })"
                           [nzValue]="option"
-                        ></nz-option>
+                         />
                       }
                     </nz-select>
                     @if (form.value.volumeHighlightMode === volumeHighlightModes.BiggestVolume) {
@@ -500,7 +485,7 @@
                  max: validationOptions.volumeHighlightOption.volumeHighlightFullness.max
                  })"
                               >
-                              <ats-input-number formControlName="volumeHighlightFullness" [allowDecimal]="false"></ats-input-number>
+                              <ats-input-number formControlName="volumeHighlightFullness" [allowDecimal]="false" />
                             </nz-form-control>
                           </nz-form-item>
                         }
@@ -516,15 +501,14 @@
                     })"
                                 >
                                 <nz-form-label nzFor="boundary" nzRequired>{{t('scalperOrderBookSettings.volumeLabel')}}</nz-form-label>
-                                <ats-input-number formControlName="boundary" [allowDecimal]="false"></ats-input-number>
+                                <ats-input-number formControlName="boundary" [allowDecimal]="false" />
                               </nz-form-control>
                               <nz-form-control [nzErrorTip]="t('scalperOrderBookSettings.colorError')">
-                                <nz-color-picker
-                                  nz-tooltip
+                                <nz-color-picker nz-tooltip
                                   [nzTooltipTitle]="t('scalperOrderBookSettings.colorLabel')"
                                   class="color-picker"
                                   formControlName="color"
-                                ></nz-color-picker>
+                                 />
                               </nz-form-control>
                               <button (click)="removeVolumeHighlightOption($event, i)"
                                 class="volume-highlight-options-remove-btn"
@@ -571,13 +555,12 @@
                           {{t('scalperOrderBookSettings.topOrderPriceRatioLabel')}}
                         </nz-form-label>
                         <nz-form-control [nzErrorTip]="topOrderPriceRatioError">
-                          <ats-input-number
-                            formControlName="topOrderPriceRatio"
+                          <ats-input-number formControlName="topOrderPriceRatio"
                         [step]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
                           ? validationOptions.bracket.triggerPrice.stepsStep
                           : validationOptions.bracket.triggerPrice.percentsStep"
                             [allowDecimal]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Percents"
-                          ></ats-input-number>
+                           />
                         </nz-form-control>
                         <ng-template #topOrderPriceRatioError>
                           @if (form.controls.bracketsSettings.controls.topOrderPriceRatio.errors?.min ||
@@ -597,13 +580,12 @@
                           {{t('scalperOrderBookSettings.topOrderPriceGapRatioLabel')}}
                         </nz-form-label>
                         <nz-form-control [nzErrorTip]="topOrderPriceGapRatioError">
-                          <ats-input-number
-                            formControlName="topOrderPriceGapRatio"
+                          <ats-input-number formControlName="topOrderPriceGapRatio"
                         [step]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
                           ? validationOptions.bracket.limitPrice.stepsStep
                           : validationOptions.bracket.limitPrice.percentsStep"
                             [allowDecimal]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Percents"
-                          ></ats-input-number>
+                           />
                         </nz-form-control>
                         <ng-template #topOrderPriceGapRatioError>
                           @if (form.controls.bracketsSettings.controls.topOrderPriceGapRatio.errors?.min ||
@@ -623,13 +605,12 @@
                           {{t('scalperOrderBookSettings.bottomOrderPriceRatioLabel')}}
                         </nz-form-label>
                         <nz-form-control [nzErrorTip]="bottomOrderPriceRatioError">
-                          <ats-input-number
-                            formControlName="bottomOrderPriceRatio"
+                          <ats-input-number formControlName="bottomOrderPriceRatio"
                         [step]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
                           ? validationOptions.bracket.triggerPrice.stepsStep
                           : validationOptions.bracket.triggerPrice.percentsStep"
                             [allowDecimal]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Percents"
-                          ></ats-input-number>
+                           />
                         </nz-form-control>
                         <ng-template #bottomOrderPriceRatioError>
                           @if (form.controls.bracketsSettings.controls.bottomOrderPriceRatio.errors?.min ||
@@ -649,13 +630,12 @@
                           {{t('scalperOrderBookSettings.bottomOrderPriceGapRatioLabel')}}
                         </nz-form-label>
                         <nz-form-control [nzErrorTip]="bottomOrderPriceGapRatioError">
-                          <ats-input-number
-                            formControlName="bottomOrderPriceGapRatio"
+                          <ats-input-number formControlName="bottomOrderPriceGapRatio"
                         [step]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Points
                           ? validationOptions.bracket.limitPrice.stepsStep
                           : validationOptions.bracket.limitPrice.percentsStep"
                             [allowDecimal]="form.controls.bracketsSettings.controls.orderPriceUnits.value === orderPriceUnits.Percents"
-                          ></ats-input-number>
+                           />
                         </nz-form-control>
                         <ng-template #bottomOrderPriceGapRatioError>
                           @if (form.controls.bracketsSettings.controls.bottomOrderPriceGapRatio.errors?.min ||
@@ -674,7 +654,7 @@
                         <nz-form-label
                         nzFor="useBracketsWhenClosingPosition">{{t('scalperOrderBookSettings.useBracketsWhenClosingPositionLabel')}}</nz-form-label>
                         <nz-form-control>
-                          <nz-switch formControlName='useBracketsWhenClosingPosition'></nz-switch>
+                          <nz-switch formControlName='useBracketsWhenClosingPosition' />
                         </nz-form-control>
                       </nz-form-item>
                     </nz-collapse-panel>

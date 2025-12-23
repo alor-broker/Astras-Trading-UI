@@ -13,7 +13,7 @@
     </div>
   </ng-template>
   <ng-container *nzModalContent>
-    <ats-orders-group-modal [groupId]="(groupId$ | async)!" [guid]="guid()"></ats-orders-group-modal>
+    <ats-orders-group-modal [groupId]="(groupId$ | async)!" [guid]="guid()" />
   </ng-container>
   <ng-container *nzModalFooter>
     <button nz-button nzType="primary" (click)="handleCancel()">{{t('okBtnText')}}</button>

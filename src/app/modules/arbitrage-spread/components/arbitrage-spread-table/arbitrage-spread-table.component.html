@@ -119,7 +119,7 @@
         <td>
           <nz-form-item class="compact">
             <nz-form-control>
-              <ats-input-number placeholder="0" [ngModel]="volumes[spread.id!]" (ngModelChange)="volumeChange($event, spread.id!)"></ats-input-number>
+              <ats-input-number placeholder="0" [ngModel]="volumes[spread.id!]" (ngModelChange)="volumeChange($event, spread.id!)" />
             </nz-form-control>
           </nz-form-item>
         </td>
@@ -154,10 +154,8 @@
 }
 
 <ng-template #empty>
-  <nz-empty
-    [nzNotFoundContent]="t('arbitrageSpreadArbitrageSpreadTable.emptyListText')"
+  <nz-empty [nzNotFoundContent]="t('arbitrageSpreadArbitrageSpreadTable.emptyListText')"
     class="ant-list-empty-text"
-    nzNotFoundImage="simple">
-  </nz-empty>
+    nzNotFoundImage="simple" />
 </ng-template>
 </ng-container>

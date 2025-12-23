@@ -81,10 +81,9 @@
         </thead>
 
         <nz-dropdown-menu #filtersMenu="nzDropdownMenu">
-          <ats-table-search-filter
-            (filterChange)="applyFilters($event)"
+          <ats-table-search-filter (filterChange)="applyFilters($event)"
             [columns]="vm.tableConfig.columns"
-          ></ats-table-search-filter>
+           />
         </nz-dropdown-menu>
 
         <tbody>

@@ -10,8 +10,7 @@
           >
           @for (durationType of durationTypes; track durationType) {
             <nz-option [nzLabel]="t('bondScreenerYieldCurveChart.durationTypeOptions.' + durationType)"
-              [nzValue]="durationType">
-            </nz-option>
+              [nzValue]="durationType" />
           }
         </nz-select>
       </nz-form-control>
@@ -26,8 +25,7 @@
           >
           @for (yieldType of yieldTypes; track yieldType) {
             <nz-option [nzLabel]="t('bondScreenerYieldCurveChart.yieldTypeOptions.' + yieldType)"
-              [nzValue]="yieldType">
-            </nz-option>
+              [nzValue]="yieldType" />
           }
         </nz-select>
       </nz-form-control>

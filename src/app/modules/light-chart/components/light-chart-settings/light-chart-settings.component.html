@@ -13,7 +13,7 @@
             <nz-form-item>
               <nz-form-control [nzErrorTip]="t('lightChartSettings.tickerError')">
                 <nz-form-label nzRequired nzFor="instrument">{{t('lightChartSettings.tickerLabel')}}</nz-form-label>
-                <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
+                <ats-instrument-search formControlName="instrument" (instrumentSelected)="instrumentSelected($event)" />
               </nz-form-control>
             </nz-form-item>
           }
@@ -39,7 +39,7 @@
                 (ngModelChange)="checkCurrentTimeFrame()"
                 >
                 @for (tf of allTimeFrames; track tf) {
-                  <nz-option [nzValue]="tf" [nzLabel]="tChart('lightChart.timeframes.' + tf)"></nz-option>
+                  <nz-option [nzValue]="tf" [nzLabel]="tChart('lightChart.timeframes.' + tf)" />
                 }
               </nz-select>
               <ng-template #tagPlaceHolder let-selectedList>{{t('maxTagPlaceholder', { count: selectedList.length })}}</ng-template>
@@ -50,10 +50,8 @@
               <nz-form-label nzRequired nzFor="timeFrame">{{t('lightChartSettings.timeframeLabel')}}</nz-form-label>
               <nz-select formControlName='timeFrame'>
                 @for (tf of this.form.controls.availableTimeFrames.value; track tf) {
-                  <nz-option
-                    [nzValue]="tf"
-                    [nzLabel]="tChart('lightChart.timeframes.' + tf)">
-                  </nz-option>
+                  <nz-option [nzValue]="tf"
+                    [nzLabel]="tChart('lightChart.timeframes.' + tf)" />
                 }
               </nz-select>
             </nz-form-control>
@@ -62,9 +60,9 @@
             <nz-form-control>
               <nz-form-label nzFor="timeFrameDisplayMode" nzRequired>{{t('lightChartSettings.timeframeDisplayLabel')}}</nz-form-label>
               <nz-select formControlName='timeFrameDisplayMode'>
-                <nz-option [nzLabel]="t('lightChartSettings.timeframeDisplayButtons')" [nzValue]="timeFrameDisplayModes.Buttons"></nz-option>
-                <nz-option [nzLabel]="t('lightChartSettings.timeframeDisplayMenu')" [nzValue]="timeFrameDisplayModes.Menu"></nz-option>
-                <nz-option [nzLabel]="t('lightChartSettings.timeframeDisplayHide')" [nzValue]="timeFrameDisplayModes.Hide"></nz-option>
+                <nz-option [nzLabel]="t('lightChartSettings.timeframeDisplayButtons')" [nzValue]="timeFrameDisplayModes.Buttons" />
+                <nz-option [nzLabel]="t('lightChartSettings.timeframeDisplayMenu')" [nzValue]="timeFrameDisplayModes.Menu" />
+                <nz-option [nzLabel]="t('lightChartSettings.timeframeDisplayHide')" [nzValue]="timeFrameDisplayModes.Hide" />
               </nz-select>
             </nz-form-control>
           </nz-form-item>
@@ -74,11 +72,9 @@
                 <nz-collapse-panel [nzHeader]="t('lightChartSettings.advanced')">
                   <nz-form-control [nzErrorTip]="t('lightChartSettings.instrumentGroupError')">
                     <nz-form-label nzFor="instrumentGroup">{{t('lightChartSettings.instrumentGroupLabel')}}</nz-form-label>
-                    <ats-instrument-board-select
-                      [instrument]="form.value.instrument ?? null"
+                    <ats-instrument-board-select [instrument]="form.value.instrument ?? null"
                       [placeholder]="t('lightChartSettings.instrumentGroupLabel')"
-                      formControlName="instrumentGroup">
-                    </ats-instrument-board-select>
+                      formControlName="instrumentGroup" />
                   </nz-form-control>
                 </nz-collapse-panel>
               </nz-collapse>

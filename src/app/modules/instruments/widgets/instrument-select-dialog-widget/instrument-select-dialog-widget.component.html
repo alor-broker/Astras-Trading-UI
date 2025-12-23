@@ -39,10 +39,8 @@
                     formControlName="exchange"
                     nzAllowClear>
                     @for (exchange of exchanges$ | async; track exchange) {
-                      <nz-option
-                        [nzLabel]="exchange"
-                        [nzValue]="exchange">
-                      </nz-option>
+                      <nz-option [nzLabel]="exchange"
+                        [nzValue]="exchange" />
                     }
                   </nz-select>
                 </nz-form-control>
@@ -58,10 +56,8 @@
                     nzShowSearch
                     nzPlaceHolder="{{ t('form.instrumentGroup.label') }}">
                     @for (board of boards$ | async; track board) {
-                      <nz-option
-                        [nzLabel]="getBoardLabel(board)"
-                        [nzValue]="board">
-                      </nz-option>
+                      <nz-option [nzLabel]="getBoardLabel(board)"
+                        [nzValue]="board" />
                     }
                   </nz-select>
                 </nz-form-control>
@@ -75,11 +71,11 @@
             <nz-spin [nzSpinning]="searchState.status === SearchStatuses.Loading">
               @if((searchState.status === SearchStatuses.Failed || searchState.status === SearchStatuses.Success)
                 && (searchState.results == null || searchState.results.length === 0)) {
-                <nz-empty [nzNotFoundContent]="t('instrumentsInstrumentSelectDialog.emptyResultsMessage')" nzNotFoundImage="simple"></nz-empty>
+                <nz-empty [nzNotFoundContent]="t('instrumentsInstrumentSelectDialog.emptyResultsMessage')" nzNotFoundImage="simple" />
               }
 
               @if(searchState.status === SearchStatuses.Success && searchState.results != null && searchState.results.length > 0) {
-                <ats-search-results-list [items]="searchState.results"></ats-search-results-list>
+                <ats-search-results-list [items]="searchState.results" />
               }
             </nz-spin>
           </ng-container>

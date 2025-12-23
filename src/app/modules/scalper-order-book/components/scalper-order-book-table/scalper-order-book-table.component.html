@@ -2,12 +2,10 @@
   @if (dataContext().extendedSettings$ | async; as settings) {
     @if (settings.widgetSettings.showRuler) {
       <div class="position-absolute start">
-        <ats-table-ruler
-          [activeRow]="hoveredRow$ | async"
+        <ats-table-ruler [activeRow]="hoveredRow$ | async"
           [dataContext]="dataContext()"
           [xAxisStep]="rowHeight()"
-          >
-        </ats-table-ruler>
+           />
       </div>
     }
     @if (displayItems$ | async; as displayItems) {
@@ -51,18 +49,17 @@
                     } @else {
                       @if (showGrowingVolume && (row.growingVolume ?? 0) > 0) {
                         <span class="growing-volume">
-                          <ng-container [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.growingVolume}"></ng-container>
+                          <ng-container [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.growingVolume}" />
                         </span>
                       }
-                      <ng-container [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.volume}"></ng-container>
+                      <ng-container [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.volume}" />
                     }
                   </span>
                   <ng-template #volumeDisplay let-volume='volume'>
                     @if (settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix) {
-                      <ats-short-number
-                        [value]="volume"
+                      <ats-short-number [value]="volume"
                         [allowRounding]="true"
-                      ></ats-short-number>
+                       />
                     } @else {
                       <span>{{volume}}</span>
                     }
@@ -139,26 +136,20 @@
             }"
                   >&nbsp;</span>
                 }
-                <ng-container
-            *ngTemplateOutlet="limitOrdersDisplay; context: {
+                <ng-container *ngTemplateOutlet="limitOrdersDisplay; context: {
             orders:  getFilteredOrders(row.currentOrders, orderTypes.Limit)
             }"
-                  >
-                </ng-container>
-                <ng-container
-            *ngTemplateOutlet="stopOrdersDisplay; context: {
+                   />
+                <ng-container *ngTemplateOutlet="stopOrdersDisplay; context: {
             orders:  getFilteredOrders(row.currentOrders, orderTypes.StopLimit),
             orderSymbol: 'SL',
             tooltipKey: 'stopLimitOrderTooltip'
-            }">
-                </ng-container>
-                <ng-container
-            *ngTemplateOutlet="stopOrdersDisplay; context: {
+            }" />
+                <ng-container *ngTemplateOutlet="stopOrdersDisplay; context: {
             orders:  getFilteredOrders(row.currentOrders, orderTypes.StopMarket),
             orderSymbol: 'SM',
             tooltipKey: 'stopMarketOrderTooltip'
-            }">
-                </ng-container>
+            }" />
                 <ng-template #limitOrdersDisplay let-orders="orders">
                   @if (orders.volume > 0) {
                     <span (click)="cancelOrders($event, orders.orders)"

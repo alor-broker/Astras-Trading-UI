@@ -9,8 +9,7 @@
       [showContentScroll]="false"
       >
       <ng-template #headerRef>
-        <ats-widget-header
-          (switchSettings)="onSettingsChange()"
+        <ats-widget-header (switchSettings)="onSettingsChange()"
           [guid]="guid"
           [hasSettings]="true"
           [linkToActive]="settings.linkToActive ?? null"
@@ -18,23 +17,22 @@
           [showBadgesMenu]="(showBadge$ | async) ?? false"
           [titleTemplate]="titleTemplate"
           [widgetMeta]="widgetInstance().widgetMeta"
-        ></ats-widget-header>
+         />
         <ng-template #titleTemplate>
-          <ats-widget-header-instrument-switch
-            [widgetGuid]="widgetInstance().instance.guid"
+          <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance().instance.guid"
             [customTitle]="headerTitle$ | async"
-          ></ats-widget-header-instrument-switch>
+           />
         </ng-template>
       </ng-template>
       <ng-template #contentRef>
-        <ats-tech-chart [guid]="guid" ></ats-tech-chart>
+        <ats-tech-chart [guid]="guid"  />
       </ng-template>
       <ng-template #settingsRef>
-        <ats-tech-chart-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-tech-chart-settings>
+        <ats-tech-chart-settings (settingsChange)="onSettingsChange()" [guid]="guid" />
       </ng-template>
     </ats-widget-skeleton>
   }
 
 </ng-container>
 
-<ats-instrument-search-modal></ats-instrument-search-modal>
+<ats-instrument-search-modal />

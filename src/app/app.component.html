@@ -1,10 +1,9 @@
-<router-outlet></router-outlet>
+<router-outlet />
 @if (isLoading$ | async) {
   <div
     class="loading-indicator-container"
   >
-    <nz-spin [nzSize]="'large'" nzSpinning="true">
-    </nz-spin>
+    <nz-spin [nzSize]="'large'" nzSpinning="true" />
   </div>
 }
 

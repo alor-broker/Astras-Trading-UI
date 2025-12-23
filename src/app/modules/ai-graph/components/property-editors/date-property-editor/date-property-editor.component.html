@@ -4,12 +4,11 @@
       <nz-form-item>
         <nz-form-label [nzRequired]="config.validation.required">{{ config.label }}</nz-form-label>
         <nz-form-control>
-          <nz-date-picker
-            formControlName="property"
+          <nz-date-picker formControlName="property"
             nzFormat="yyyy-MM-dd"
             class="w-100"
             [nzDisabledDate]="disabledDate"
-          ></nz-date-picker>
+           />
         </nz-form-control>
       </nz-form-item>
     </form>

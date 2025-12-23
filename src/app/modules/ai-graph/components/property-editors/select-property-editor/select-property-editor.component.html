@@ -8,7 +8,7 @@
           [nzErrorTip]="t('validationErrors.selectValueError')">
           <nz-select formControlName="property">
             @for (value of config.validation.allowedValues; track value) {
-              <nz-option [nzValue]="value" [nzLabel]="value"></nz-option>
+              <nz-option [nzValue]="value" [nzLabel]="value" />
             }
           </nz-select>
         </nz-form-control>

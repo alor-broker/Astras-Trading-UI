@@ -37,7 +37,7 @@
             nzShowSearch
             [(ngModel)]="selectedPresetWatchlist">
             @for (list of presetLists; track list) {
-              <nz-option [nzLabel]="list.name" [nzValue]="list"></nz-option>
+              <nz-option [nzLabel]="list.name" [nzValue]="list" />
             }
           </nz-select>
           <ul nz-list-item-actions>
@@ -116,11 +116,11 @@
         }
       </ng-container>
       @if (collection.length === 0) {
-        <nz-list-empty></nz-list-empty>
+        <nz-list-empty />
       }
     </nz-list>
   }
 </div>
 
-<ats-export-watchlist-dialog [dialogParams]="exportDialogParams$ | async"></ats-export-watchlist-dialog>
-<ats-import-watchlist-dialog [dialogParams]="importDialogParams$ | async"></ats-import-watchlist-dialog>
+<ats-export-watchlist-dialog [dialogParams]="exportDialogParams$ | async" />
+<ats-import-watchlist-dialog [dialogParams]="importDialogParams$ | async" />

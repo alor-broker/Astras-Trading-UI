@@ -2,7 +2,7 @@
   <nz-radio-group (ngModelChange)="selectionChange.emit($event)" [ngModel]="selectedView()">
     @for (item of items(); track item) {
       <label [nzValue]="item.value()" nz-radio-button [nzDisabled]="item.disabled()">
-        <ng-container [ngTemplateOutlet]="item.content()"></ng-container>
+        <ng-container [ngTemplateOutlet]="item.content()" />
       </label>
     }
   </nz-radio-group>
@@ -20,7 +20,7 @@
           [nzSelected]="item.value() === selectedView()"
           (click)="item.disabled() ? $event.stopPropagation() : selectionChange.emit(item.value())"
         >
-          <ng-container [ngTemplateOutlet]="item.content()"></ng-container>
+          <ng-container [ngTemplateOutlet]="item.content()" />
         </li>
       }
     </ul>

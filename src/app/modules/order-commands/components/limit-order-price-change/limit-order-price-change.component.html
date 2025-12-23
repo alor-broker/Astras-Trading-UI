@@ -6,14 +6,14 @@
             disabledTooltip:  t('orderCommandsLimitOrderPriceChange.noBuyOrdersTooltip'),
             disabled: !hasOrdersWithSide(activeLimitOrders, orderSides.Buy),
             side:orderSides.Buy
-            }"></ng-container>
+            }" />
       </div>
       <div class="sell">
       <ng-container *ngTemplateOutlet="buttonsGroup context: {
             disabledTooltip:  t('orderCommandsLimitOrderPriceChange.noSellOrdersTooltip'),
             disabled: !hasOrdersWithSide(activeLimitOrders, orderSides.Sell),
             side:orderSides.Sell
-            }"></ng-container>
+            }" />
       </div>
     </div>
   }

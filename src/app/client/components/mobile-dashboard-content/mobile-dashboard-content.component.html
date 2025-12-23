@@ -13,10 +13,9 @@
             class="h-100"
             [class.d-none]="vm.selectedWidget?.instance?.widgetType !== widget.instance.widgetType"
             >
-            <ats-parent-widget
-              [widgetInstance]="widget"
+            <ats-parent-widget [widgetInstance]="widget"
               [isBlockWidget]="false"
-            ></ats-parent-widget>
+             />
           </div>
         }
 
@@ -24,10 +23,9 @@
           <div
             class="h-100"
             >
-            <ats-parent-widget
-              [widgetInstance]="vm.selectedWidget!"
+            <ats-parent-widget [widgetInstance]="vm.selectedWidget!"
               [isBlockWidget]="false"
-            ></ats-parent-widget>
+             />
           </div>
         }
       </div>
@@ -66,13 +64,12 @@
       }
     </div>
 
-    <ats-widgets-gallery
-      [gallery]="vm.widgetsGallery"
+    <ats-widgets-gallery [gallery]="vm.widgetsGallery"
       [showResetBtn]="false"
       [closable]="true"
       [activeWidget]="vm.selectedWidget?.instance?.widgetType ?? null"
       [(atsVisible)]="galleryVisible"
       (selected)="selectWidget($event)"
-    ></ats-widgets-gallery>
+     />
   </ng-container>
 </div>

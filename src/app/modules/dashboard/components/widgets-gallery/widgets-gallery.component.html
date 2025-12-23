@@ -13,7 +13,7 @@
       @let currentGallery = gallery();
       @if (currentGallery) {
         @for (widget of currentGallery.allCategory.widgets; track widget.typeId) {
-          <ng-container [ngTemplateOutletContext]="{widget}" [ngTemplateOutlet]="widgetTemplate"></ng-container>
+          <ng-container [ngTemplateOutletContext]="{widget}" [ngTemplateOutlet]="widgetTemplate" />
         }
         @for (group of currentGallery.groups; track group) {
           <div>
@@ -22,7 +22,7 @@
               class="divider-text user-select-none">{{t('dashboardWidgetsGallery.categories.' + group.category, { fallback: group.category })}}</span>
             </div>
             @for (widget of group.widgets; track widget.typeId) {
-              <ng-container [ngTemplateOutletContext]="{widget}" [ngTemplateOutlet]="widgetTemplate"></ng-container>
+              <ng-container [ngTemplateOutletContext]="{widget}" [ngTemplateOutlet]="widgetTemplate" />
             }
           </div>
         }

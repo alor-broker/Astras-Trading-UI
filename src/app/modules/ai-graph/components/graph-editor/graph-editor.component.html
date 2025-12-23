@@ -5,7 +5,7 @@
     </ng-template>
 
     <ng-template atsSideMenuContent>
-      <ats-node-properties-editor [targetNode]="nodeToEdit"></ats-node-properties-editor>
+      <ats-node-properties-editor [targetNode]="nodeToEdit" />
     </ng-template>
   </ats-side-menu>
   <div
@@ -37,12 +37,12 @@
     <ng-template atsSideMenuTitle>
       <div class="d-flex flex-row flex-nowrap justify-content-between align-items-center">
         <span>{{ t('aiGraphGraphEditor.panels.run.title', {fallback: 'Run Graph'}) }}</span>
-        <ats-run-config-btn (status)="runStatus = $event" [config]="currentConfig"></ats-run-config-btn>
+        <ats-run-config-btn (status)="runStatus = $event" [config]="currentConfig" />
       </div>
     </ng-template>
 
     <ng-template atsSideMenuContent>
-      <ats-run-results [runStatus]="runStatus"></ats-run-results>
+      <ats-run-results [runStatus]="runStatus" />
     </ng-template>
   </ats-side-menu>
 </ng-container>

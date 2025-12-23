@@ -8,7 +8,7 @@
             formControlName="mapName">
             @for (scheme of availableDefaultSchemes; track scheme) {
               <nz-option [nzLabel]="t('terminalSettingsScalperMouseActionsForm.schemes.' + scheme)"
-              [nzValue]="scheme"></nz-option>
+              [nzValue]="scheme" />
             }
           </nz-select>
         </nz-form-control>

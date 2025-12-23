@@ -9,8 +9,7 @@
       [showSettings]="shouldShowSettings"
       >
       <ng-template #headerRef>
-        <ats-widget-header
-          (switchSettings)="onSettingsChange()"
+        <ats-widget-header (switchSettings)="onSettingsChange()"
           [guid]="guid"
           [hasSettings]="true"
           [linkToActive]="settings.linkToActive ?? null"
@@ -18,10 +17,9 @@
           [showBadgesMenu]="(showBadge$ | async) ?? false"
           [titleTemplate]="titleTemplate"
           [widgetMeta]="widgetInstance().widgetMeta"
-        ></ats-widget-header>
+         />
         <ng-template #titleTemplate>
-          <ats-widget-header-instrument-switch
-          [widgetGuid]="widgetInstance().instance.guid"></ats-widget-header-instrument-switch>
+          <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance().instance.guid" />
         </ng-template>
       </ng-template>
       <ng-template #contentRef>
@@ -29,13 +27,11 @@
           @if (currentPortfolio$ | async; as currentPortfolio) {
             @if (currentInstrument$ | async; as currentInstrument) {
               <div>
-                <ats-compact-header
-                  (priceSelected)="setCommonParameters({price: $event})"
+                <ats-compact-header (priceSelected)="setCommonParameters({price: $event})"
                   (qtySelected)="setCommonParameters({quantity: $event})"
                   [currentPortfolio]="currentPortfolio"
                   [instrument]="currentInstrument"
-                  >
-                </ats-compact-header>
+                   />
               </div>
               <div>
                 <nz-tabs nzSize="small" nzTabPosition="top" #orderTabs>
@@ -47,29 +43,26 @@
                         >
                         @if (settings.showVolumePanel && settings.workingVolumes.length > 0) {
                           <div class="mb-3">
-                            <ats-working-volumes
-                              (itemSelected)="setCommonParameters({price: $event.price, quantity: $event.volume})"
+                            <ats-working-volumes (itemSelected)="setCommonParameters({price: $event.price, quantity: $event.volume})"
                               [instrumentKey]="currentInstrument"
                               [workingVolumes]="settings.workingVolumes"
-                            ></ats-working-volumes>
+                             />
                           </div>
                         }
                         <div>
-                          <ats-limit-order-form
-                            [activated]="limitOrderTab.isActive"
+                          <ats-limit-order-form [activated]="limitOrderTab.isActive"
                             [instrument]="currentInstrument"
                             [portfolioKey]="currentPortfolio"
                             [limitOrderConfig]="ordersConfig.limitOrder.orderConfig!"
-                          ></ats-limit-order-form>
+                           />
                         </div>
                         @if (settings.enableLimitOrdersFastEditing && settings.limitOrderPriceMoveSteps.length > 0) {
                           <div
                             class="mt-8">
-                            <ats-limit-order-price-change
-                              [instrument]="currentInstrument"
+                            <ats-limit-order-price-change [instrument]="currentInstrument"
                               [currentPortfolio]="currentPortfolio"
                               [steps]="settings.limitOrderPriceMoveSteps"
-                            ></ats-limit-order-price-change>
+                             />
                           </div>
                         }
                       </nz-tab>
@@ -81,18 +74,16 @@
                         >
                         @if (settings.showVolumePanel && settings.workingVolumes.length > 0) {
                           <div class="mb-3">
-                            <ats-working-volumes
-                              (itemSelected)="setCommonParameters({price: $event.price, quantity: $event.volume})"
+                            <ats-working-volumes (itemSelected)="setCommonParameters({price: $event.price, quantity: $event.volume})"
                               [instrumentKey]="currentInstrument"
                               [workingVolumes]="settings.workingVolumes"
-                            ></ats-working-volumes>
+                             />
                           </div>
                         }
-                        <ats-market-order-form
-                          [activated]="marketOrderTab.isActive"
+                        <ats-market-order-form [activated]="marketOrderTab.isActive"
                           [instrument]="currentInstrument"
                           [portfolioKey]="currentPortfolio"
-                        ></ats-market-order-form>
+                         />
                       </nz-tab>
                     }
                     @if (ordersConfig.stopOrder.isSupported) {
@@ -102,18 +93,16 @@
                         >
                         @if (settings.showVolumePanel && settings.workingVolumes.length > 0) {
                           <div class="mb-3">
-                            <ats-working-volumes
-                              (itemSelected)="setCommonParameters({price: $event.price, quantity: $event.volume})"
+                            <ats-working-volumes (itemSelected)="setCommonParameters({price: $event.price, quantity: $event.volume})"
                               [instrumentKey]="currentInstrument"
                               [workingVolumes]="settings.workingVolumes"
-                            ></ats-working-volumes>
+                             />
                           </div>
                         }
-                        <ats-stop-order-form
-                          [instrument]="currentInstrument"
+                        <ats-stop-order-form [instrument]="currentInstrument"
                           [portfolioKey]="currentPortfolio"
                           [activated]="stopOrderTab.isActive"
-                        ></ats-stop-order-form>
+                         />
                       </nz-tab>
                     }
                     @if (pushNotificationsConfig.priceChangeNotifications.isSupported) {
@@ -127,11 +116,9 @@
                             <span class="pl-2">{{toc('orderCommands.notificationsTabTitle')}}</span>
                           </span>
                         </ng-template>
-                        <ats-setup-instrument-notifications
-                          [active]="notificationsTab.isActive"
+                        <ats-setup-instrument-notifications [active]="notificationsTab.isActive"
                           [instrumentKey]="currentInstrument"
-                          >
-                        </ats-setup-instrument-notifications>
+                           />
                       </nz-tab>
                     }
                   }
@@ -142,7 +129,7 @@
         </ng-container>
       </ng-template>
       <ng-template #settingsRef>
-        <ats-order-submit-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-order-submit-settings>
+        <ats-order-submit-settings (settingsChange)="onSettingsChange()" [guid]="guid" />
       </ng-template>
     </ats-widget-skeleton>
   }

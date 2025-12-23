@@ -15,23 +15,23 @@
         >
           <div class="d-flex flex-column" nz-col nzSpan="8">
             <ats-truncated-text [maxLength]="25" [text]="item.shortName"
-                                className="heading-color text-nowrap"></ats-truncated-text>
+                                className="heading-color text-nowrap" />
             <ats-truncated-text [maxLength]="25" [text]="item.symbol"
-                                className="fs-10 text-nowrap"></ats-truncated-text>
+                                className="fs-10 text-nowrap" />
           </div>
           <div nz-col nzSpan="3">
             <div class="d-flex flex-column align-items-center">
               <ats-truncated-text [maxLength]="10" [text]="item.board"
-                                  className="heading-color text-nowrap"></ats-truncated-text>
+                                  className="heading-color text-nowrap" />
               <ats-truncated-text [maxLength]="10" [text]="item.exchange"
-                                  className="fs-10 text-nowrap"></ats-truncated-text>
+                                  className="fs-10 text-nowrap" />
             </div>
           </div>
           <div nz-col nzSpan="4">
-            <ats-truncated-text [maxLength]="10" [text]="item.market"></ats-truncated-text>
+            <ats-truncated-text [maxLength]="10" [text]="item.market" />
           </div>
           <div class="d-flex justify-content-end align-items-center flex-gap-5 flex-nowrap" nz-col nzSpan="9">
-            <ats-instrument-badge-display [instrumentKey]="toInstrumentKey(item)"></ats-instrument-badge-display>
+            <ats-instrument-badge-display [instrumentKey]="toInstrumentKey(item)" />
 
             @if(vm.availableInstrumentGroups.length === 1) {
               <button

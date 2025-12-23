@@ -15,8 +15,7 @@ import {TerminalSettingsService} from "../../services/terminal-settings.service"
 
 @Component({
   template: `
-    <ats-infinite-scroll-table
-      [tableContainerHeight]="tableContainerHeight"
+    <ats-infinite-scroll-table [tableContainerHeight]="tableContainerHeight"
       [tableContainerWidth]="tableContainerWidth"
       [data]="testData"
       [isLoading]="isLoading"
@@ -25,8 +24,7 @@ import {TerminalSettingsService} from "../../services/terminal-settings.service"
       (scrolled)="scrolled()"
       (filterApplied)="applyFilter($event)"
       (rowClick)="rowClick($event)"
-    >
-    </ats-infinite-scroll-table>
+     />
   `,
   imports: [
     InfiniteScrollTableComponent

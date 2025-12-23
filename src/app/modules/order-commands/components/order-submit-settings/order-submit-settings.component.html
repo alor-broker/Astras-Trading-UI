@@ -14,7 +14,7 @@
             </nz-form-label>
             <nz-form-control [nzErrorTip]="t('orderCommandsOrderSubmitSettings.tickerError')">
               <ats-instrument-search (instrumentSelected)="instrumentSelected($event)"
-              formControlName="instrument"></ats-instrument-search>
+              formControlName="instrument" />
             </nz-form-control>
           </nz-form-item>
         }
@@ -32,7 +32,7 @@
             {{ t('orderCommandsOrderSubmitSettings.limitOrdersFastEditingLabel') }}
           </nz-form-label>
           <nz-form-control>
-            <nz-switch formControlName='enableLimitOrdersFastEditing'></nz-switch>
+            <nz-switch formControlName='enableLimitOrdersFastEditing' />
           </nz-form-control>
         </nz-form-item>
         @if (form.getRawValue().enableLimitOrdersFastEditing) {
@@ -57,7 +57,7 @@
                           [nzMax]="validationOptions.limitOrderPriceMoveStep.max"
                           [nzMin]="validationOptions.limitOrderPriceMoveStep.min"
                           [nzPrecision]="0"
-                        ></nz-input-number>
+                         />
                       </nz-form-control>
                       <button
                         (click)="removeLimitOrderPriceMoveStep($event, i)"
@@ -85,7 +85,7 @@
             {{ t('orderCommandsOrderSubmitSettings.showVolumePanel') }}
           </nz-form-label>
           <nz-form-control>
-            <nz-switch formControlName='showVolumePanel'></nz-switch>
+            <nz-switch formControlName='showVolumePanel' />
           </nz-form-control>
         </nz-form-item>
         @if (form.getRawValue().showVolumePanel) {
@@ -109,7 +109,7 @@
                           [nzMax]="validationOptions.workingVolume.max"
                           [nzMin]="validationOptions.workingVolume.min"
                           [nzPrecision]="0"
-                        ></nz-input-number>
+                         />
                       </nz-form-control>
                       <button
                         (click)="removeWorkingVolume($event, i)"
@@ -137,11 +137,9 @@
               <nz-form-label nzFor="instrumentGroup">{{ t('orderCommandsOrderSubmitSettings.instrumentGroupLabel') }}
               </nz-form-label>
               <nz-form-control [nzErrorTip]="t('orderCommandsOrderSubmitSettings.instrumentGroupError')">
-                <ats-instrument-board-select
-                  [instrument]="form.value.instrument ?? null"
+                <ats-instrument-board-select [instrument]="form.value.instrument ?? null"
                   [placeholder]="t('orderCommandsOrderSubmitSettings.instrumentGroupLabel')"
-                  formControlName="instrumentGroup">
-                </ats-instrument-board-select>
+                  formControlName="instrumentGroup" />
               </nz-form-control>
             </nz-collapse-panel>
           </nz-collapse>

@@ -1,10 +1,8 @@
 <div class="container" *transloco="let t; scope: 'blotter/trades'">
   <ng-template #empty>
-    <nz-empty
-      class="ant-list-empty-text"
+    <nz-empty class="ant-list-empty-text"
       nzNotFoundImage="simple"
-      [nzNotFoundContent]="isFilterDisabled() ? t('blotterTrades.emptyTrades') : t('blotterTrades.emptyTradesWithFilters')">
-    </nz-empty>
+      [nzNotFoundContent]="isFilterDisabled() ? t('blotterTrades.emptyTrades') : t('blotterTrades.emptyTradesWithFilters')" />
   </ng-template>
 
   <ng-container *ngrxLet="{ contentSize: contentSize$, tableConfig: tableConfig$, settings: settings$, trades: tableData$ } as td">
@@ -130,9 +128,9 @@
     </div>
 
     <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-      <ats-table-search-filter [columns]="td.tableConfig.columns" (filterChange)="filterChange($event)"></ats-table-search-filter>
+      <ats-table-search-filter [columns]="td.tableConfig.columns" (filterChange)="filterChange($event)" />
     </nz-dropdown-menu>
 
-    <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>
+    <ats-add-to-watchlist-menu #contextMenu />
   </ng-container>
 </div>

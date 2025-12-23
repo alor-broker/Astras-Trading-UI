@@ -4,11 +4,9 @@
     *ngrxLet="{ contentSize: contentSize$, tableConfig: tableConfig$, settings: settings$, orders: tableData$ } as td"
     >
     <ng-template #empty>
-      <nz-empty
-        [nzNotFoundContent]="isFilterDisabled() ? t('blotterBlotterCommon.emptyOrders') : t('blotterBlotterCommon.emptyOrdersWithFilters')"
+      <nz-empty [nzNotFoundContent]="isFilterDisabled() ? t('blotterBlotterCommon.emptyOrders') : t('blotterBlotterCommon.emptyOrdersWithFilters')"
         class="ant-list-empty-text"
-        nzNotFoundImage="simple">
-      </nz-empty>
+        nzNotFoundImage="simple" />
     </ng-template>
 
     <div
@@ -133,7 +131,7 @@
                 @if (column.id === "symbol") {
                   <td class='fw-bold'>
                     <span class="symbol-name">{{ ord.symbol }}</span>
-                    <ats-instrument-badge-display [instrumentKey]="ord"></ats-instrument-badge-display>
+                    <ats-instrument-badge-display [instrumentKey]="ord" />
                   </td>
                 }
                 @if (column.id === "side") {
@@ -210,10 +208,10 @@
     </div>
 
     <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-      <ats-table-search-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns"></ats-table-search-filter>
+      <ats-table-search-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns" />
     </nz-dropdown-menu>
 
-    <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>
+    <ats-add-to-watchlist-menu #contextMenu />
 
   </div>
 </ng-container>

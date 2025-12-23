@@ -5,15 +5,14 @@
         <li (click)="selectDashboard(dashboard.guid)" nz-menu-item>
           <div class="dashboard-selection-row">
             <div class="title">
-              <ats-editable-string
-                (contentChanged)="renameDashboard(dashboard.guid, $event)"
+              <ats-editable-string (contentChanged)="renameDashboard(dashboard.guid, $event)"
                 [content]="dashboard.title"
             [lengthRestrictions]="{
               minLength: validationOptions.title.minLength,
               maxLength: validationOptions.title.maxLength
             }"
                 inputClass="edit-title-input"
-              ></ats-editable-string>
+               />
             </div>
             <span class="actions">
               <button

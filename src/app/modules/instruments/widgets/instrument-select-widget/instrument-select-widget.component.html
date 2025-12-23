@@ -8,22 +8,21 @@
       [showSettings]="shouldShowSettings"
       >
       <ng-template #headerRef>
-        <ats-widget-header
-          (switchSettings)="onSettingsChange()"
+        <ats-widget-header (switchSettings)="onSettingsChange()"
           [guid]="guid"
           [hasSettings]="true"
           [selectedBadgeColor]="settings.badgeColor"
           [showBadgesMenu]="(showBadge$ | async) ?? false"
           badgeShape="square"
           [widgetMeta]="widgetInstance().widgetMeta"
-        ></ats-widget-header>
+         />
       </ng-template>
       <ng-template #contentRef>
-        <ats-instrument-select [guid]="guid"></ats-instrument-select>
+        <ats-instrument-select [guid]="guid" />
       </ng-template>
       <ng-template #settingsRef>
         <ats-instrument-select-settings (settingsChange)="onSettingsChange()"
-        [guid]='guid'></ats-instrument-select-settings>
+        [guid]='guid' />
       </ng-template>
     </ats-widget-skeleton>
   }

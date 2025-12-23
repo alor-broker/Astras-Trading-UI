@@ -1,38 +1,32 @@
 <ats-chat-container>
-  <ats-usage-disclaimer></ats-usage-disclaimer>
+  <ats-usage-disclaimer />
 
-  <ats-start-new-conversation-button
-    (clicked)="startNewConversation()"
+  <ats-start-new-conversation-button (clicked)="startNewConversation()"
     [atsDisabled]="!canRestartConversation"
-  ></ats-start-new-conversation-button>
+   />
   @for (msg of displayMessages; track trackByMessage($index, msg)) {
-    <ats-chat-message-container
-      [message]="msg"
-      >
-    </ats-chat-message-container>
+    <ats-chat-message-container [message]="msg"
+       />
   }
 
   @if (showSuggestedMessages) {
     <ng-container ngProjectAs="ats-chat-suggested-message-container">
       @for (suggestion of (suggestedMessages$ | async) ?? []; track $index) {
-        <ats-chat-suggested-message-container
-          [suggestedMessage]="suggestion"
+        <ats-chat-suggested-message-container [suggestedMessage]="suggestion"
           (selected)="useSuggestedMessage($event)"
-          >
-        </ats-chat-suggested-message-container>
+           />
       }
     </ng-container>
   }
 
 
-  <ats-chat-status [status]="chatStatus$ | async"></ats-chat-status>
+  <ats-chat-status [status]="chatStatus$ | async" />
 
-  <ats-message-input
-    [atsDisabled]="atsDisabled()"
+  <ats-message-input [atsDisabled]="atsDisabled()"
     (send)="sendMessage($event)"
     *transloco="let t; scope: 'ai-chat/message-input'"
     [messagePlaceholder]="t('aiChatMessageInput.textPlaceholder')"
-  ></ats-message-input>
+   />
 </ats-chat-container>
 
 

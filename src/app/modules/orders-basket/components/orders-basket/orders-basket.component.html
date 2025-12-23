@@ -4,15 +4,13 @@
       <ng-container *transloco="let t; scope: 'orders-basket/orders-basket'">
         @if (settings.showPresetsPanel) {
           <div class="mb-5">
-            <ats-presets
-              [guid]="guid()"
+            <ats-presets [guid]="guid()"
               [presets]="(currentPresets$ | async) ?? []"
               [canAddPreset]="form.valid"
               (addPreset)="savePreset($event.title)"
               (removePreset)="removePreset($event.id)"
               (presetSelected)="applyPreset($event)"
-              >
-            </ats-presets>
+               />
           </div>
         }
         <form [formGroup]="form" nz-form nzLayout="vertical">
@@ -20,14 +18,13 @@
             @for (itemControl of form.controls.items.controls; track itemControl; let i = $index) {
               <div class="basket-item">
                 <div class="item-control">
-                  <ats-orders-basket-item
-                    (delete)="form.controls.items.removeAt(i)"
+                  <ats-orders-basket-item (delete)="form.controls.items.removeAt(i)"
                     [enableDelete]="form.controls.items.controls.length > 1"
                     [exchange]="settings.exchange"
                     [formControl]="itemControl"
                     [itemIndex]="i"
                     [width]="itemsContainerWidth$ | async"
-                  ></ats-orders-basket-item>
+                   />
                 </div>
               </div>
             }
@@ -51,10 +48,9 @@
               <nz-form-item>
                 <nz-form-label nzRequired>{{t('ordersBasketOrdersBasket.budgetLabel')}}</nz-form-label>
                 <nz-form-control [nzErrorTip]="budgetError">
-                  <ats-input-number
-                    formControlName="budget"
+                  <ats-input-number formControlName="budget"
                     [placeholder]="t('ordersBasketOrdersBasket.budgetPlaceholder')"
-                  ></ats-input-number>
+                   />
                   <ng-template #budgetError>
                     @if (form.controls.budget.errors?.required) {
                       <span>{{t('ordersBasketOrdersBasket.budgetPlaceholder')}}</span>
@@ -71,7 +67,7 @@
             </div>
             <div>
               <nz-form-item>
-                <nz-form-label>&nbsp;</nz-form-label>
+                <nz-form-label />
                 <nz-form-control>
                   <button
                     (click)="submitOrders()"

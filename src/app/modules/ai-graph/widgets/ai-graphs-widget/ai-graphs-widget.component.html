@@ -8,15 +8,14 @@
       [isBlockWidget]="isBlockWidget()"
       >
       <ng-template #headerRef>
-        <ats-widget-header
-          [guid]="guid"
+        <ats-widget-header [guid]="guid"
           [hasSettings]="false"
           [widgetMeta]="widgetInstance().widgetMeta"
-        ></ats-widget-header>
+         />
       </ng-template>
       <ng-template #contentRef>
-        <ats-graphs-list (editGraph)="graphEditor.targetGraphId.set($event)"></ats-graphs-list>
-        <ats-ai-graph-editor-dialog [targetGraphId]="null" #graphEditor></ats-ai-graph-editor-dialog>
+        <ats-graphs-list (editGraph)="graphEditor.targetGraphId.set($event)" />
+        <ats-ai-graph-editor-dialog [targetGraphId]="null" #graphEditor />
       </ng-template>
     </ats-widget-skeleton>
   }

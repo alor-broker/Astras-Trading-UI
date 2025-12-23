@@ -158,7 +158,7 @@
                     @case ('symbol') {
                       <td class="pl-15">
                         <span class="ticker-name">{{ inst.instrument.symbol }}</span>
-                        <ats-instrument-badge-display [instrumentKey]="inst.instrument"></ats-instrument-badge-display>
+                        <ats-instrument-badge-display [instrumentKey]="inst.instrument" />
                       </td>
                     }
                     @case ('shortName') {
@@ -167,12 +167,10 @@
                     @case ('price') {
                       <td>
                         @if ((inst.price ?? null) !== null && (inst.prevTickPrice ?? null) !== null) {
-                          <ats-price-diff
-                            [currentPrice]="inst.price!"
+                          <ats-price-diff [currentPrice]="inst.price!"
                             [basePrice]="inst.prevTickPrice!"
                             [showChangeForce]="false"
-                          >
-                          </ats-price-diff>
+                           />
                         }
                       </td>
                     }
@@ -193,7 +191,7 @@
                     @case ('volume') {
                       <td style="white-space: nowrap;">
                         <ats-short-number [allowRounding]="true" [roundPrecision]="3"
-                                          [value]="inst.volume"></ats-short-number>
+                                          [value]="inst.volume" />
                       </td>
                     }
                     @case ('openPrice') {

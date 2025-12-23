@@ -9,10 +9,9 @@
                              nzRequired>{{ t('orderCommandsOrderForms.quantityLabel') }}
               </nz-form-label>
               <nz-form-control [nzErrorTip]="quantityError">
-                <ats-input-number formControlName="quantity" placeholder="0"></ats-input-number>
+                <ats-input-number formControlName="quantity" placeholder="0" />
                 @if ((formInstrument.lotsize ?? 1) !== 1) {
-                  <span>1 {{ t('orderCommandsOrderForms.lot') }} = <ats-short-number
-                    [value]="formInstrument.lotsize"></ats-short-number>
+                  <span>1 {{ t('orderCommandsOrderForms.lot') }} = <ats-short-number [value]="formInstrument.lotsize" />
                     {{ t('orderCommandsOrderForms.pcs') }}</span>
                 }
                 <ng-template #quantityError>
@@ -34,13 +33,12 @@
             <nz-form-item class="compact">
               <nz-form-label nzFor="price" nzRequired>{{ t('orderCommandsOrderForms.priceLabel') }}</nz-form-label>
               <nz-form-control [nzErrorTip]="priceError">
-                <ats-input-number
-                  [allowNegative]="true"
+                <ats-input-number [allowNegative]="true"
                   [step]="formInstrument.minstep"
                   [suffix]="priceDiff"
                   formControlName="price"
                   placeholder="0"
-                ></ats-input-number>
+                 />
                 <ng-template #priceDiff>
                   @if (currentPriceDiffPercent$ | async; as currentPriceDiffPercent) {
                     <span [class]="currentPriceDiffPercent.sign > 0 ? 'profit' : 'loss'"
@@ -79,10 +77,9 @@
                 <nz-form-control>
                   <nz-select formControlName="reason" nzAllowClear>
                     @for (reason of reasonEnum | keyvalue; track reason) {
-                      <nz-option
-                        [nzLabel]="t('orderCommandsOrderForms.reasonOptions.' + reason.key)"
+                      <nz-option [nzLabel]="t('orderCommandsOrderForms.reasonOptions.' + reason.key)"
                         [nzValue]="reason.value"
-                      ></nz-option>
+                       />
                     }
                   </nz-select>
                 </nz-form-control>
@@ -97,11 +94,9 @@
                     <nz-form-label
                       nzFor="instrumentGroup">{{ t('orderCommandsOrderForms.instrumentGroupLabel') }}
                     </nz-form-label>
-                    <ats-instrument-board-select
-                      [instrument]="formInstrument"
+                    <ats-instrument-board-select [instrument]="formInstrument"
                       [placeholder]="t('orderCommandsOrderForms.instrumentGroupPlaceholder')"
-                      formControlName="instrumentGroup">
-                    </ats-instrument-board-select>
+                      formControlName="instrumentGroup" />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item class="compact">
@@ -111,10 +106,9 @@
                                formControlName="timeInForce"
                                nzAllowClear>
                       @for (timeInForce of timeInForceEnum | keyvalue; track timeInForce) {
-                        <nz-option
-                          [nzLabel]="t('orderCommandsOrderForms.timeInForceOptions.' + timeInForce.key)"
+                        <nz-option [nzLabel]="t('orderCommandsOrderForms.timeInForceOptions.' + timeInForce.key)"
                           [nzValue]="timeInForce.value"
-                        ></nz-option>
+                         />
                       }
                     </nz-select>
                   </nz-form-control>
@@ -124,15 +118,13 @@
                     <nz-form-label nzFor="orderEndUnixTime">{{ t('orderCommandsOrderForms.orderEndUnixTimeLabel') }}
                     </nz-form-label>
                     <nz-form-control>
-                      <nz-date-picker
-                        [nzDisabledDate]="disabledDate"
+                      <nz-date-picker [nzDisabledDate]="disabledDate"
                         [nzPlaceHolder]="t('orderCommandsOrderForms.selectDatePlaceholder')"
                         [nzShowNow]="false"
                         class="w-100"
                         formControlName="orderEndUnixTime"
                         nzFormat="yyyy-MM-dd"
-                      >
-                      </nz-date-picker>
+                       />
                     </nz-form-control>
                     @if (timezones$ | async; as timezones) {
                       @if (timezones.displayTimezone !== timezones.exchangeTimezone && form.controls.orderEndUnixTime.value !== null) {
@@ -160,7 +152,7 @@
                       nzFor="icebergFixed">{{ t('orderCommandsOrderForms.icebergFixedLabel') }}
                     </nz-form-label>
                     <nz-form-control [nzErrorTip]="icebergFixedError">
-                      <ats-input-number formControlName="icebergFixed" placeholder="0"></ats-input-number>
+                      <ats-input-number formControlName="icebergFixed" placeholder="0" />
                       <ng-template #icebergFixedError>
                         @if (form.controls.icebergFixed.errors?.min) {
                           <span>{{ t('validationErrors.tooLittle') }}</span>
@@ -181,7 +173,7 @@
                       {{ t('orderCommandsOrderForms.icebergVarianceLabel') }}
                     </nz-form-label>
                     <nz-form-control [nzErrorTip]="icebergVarianceError">
-                      <ats-input-number formControlName="icebergVariance" placeholder="0"></ats-input-number>
+                      <ats-input-number formControlName="icebergVariance" placeholder="0" />
                       <ng-template #icebergVarianceError>
                         @if (form.controls.icebergFixed.errors?.min) {
                           <span>{{ t('validationErrors.tooLittle') }}</span>
@@ -201,12 +193,11 @@
                       </nz-form-label>
                       <nz-form-control [nzErrorTip]="topOrderPriceError" class="flex-fill"
                       >
-                        <ats-input-number
-                          [allowNegative]="true"
+                        <ats-input-number [allowNegative]="true"
                           [step]="formInstrument.minstep"
                           formControlName="topOrderPrice"
                           placeholder="0"
-                        ></ats-input-number>
+                         />
                       </nz-form-control>
                     </nz-form-item>
                     <ng-template #topOrderPriceError>
@@ -226,9 +217,9 @@
                       <nz-form-control [nzErrorTip]="t('validationErrors.selectValueError')" class="flex-fill">
                         <nz-select formControlName="topOrderSide">
                           <nz-option [nzLabel]="t('orderCommandsOrderForms.buySideLabel')"
-                                     [nzValue]="'buy'"></nz-option>
+                                     [nzValue]="'buy'" />
                           <nz-option [nzLabel]="t('orderCommandsOrderForms.sellSideLabel')"
-                                     [nzValue]="'sell'"></nz-option>
+                                     [nzValue]="'sell'" />
                         </nz-select>
                       </nz-form-control>
                     </nz-form-item>
@@ -241,12 +232,11 @@
                         {{ t('orderCommandsOrderForms.bottomOrderPriceLabel') }}
                       </nz-form-label>
                       <nz-form-control [nzErrorTip]="bottomOrderPriceError" class="flex-fill">
-                        <ats-input-number
-                          [allowNegative]="true"
+                        <ats-input-number [allowNegative]="true"
                           [step]="formInstrument.minstep"
                           formControlName="bottomOrderPrice"
                           placeholder="0"
-                        ></ats-input-number>
+                         />
                       </nz-form-control>
                     </nz-form-item>
                     <ng-template #bottomOrderPriceError>
@@ -266,9 +256,9 @@
                       <nz-form-control [nzErrorTip]="t('validationErrors.selectValueError')" class="flex-fill">
                         <nz-select formControlName="bottomOrderSide">
                           <nz-option [nzLabel]="t('orderCommandsOrderForms.buySideLabel')"
-                                     [nzValue]="'buy'"></nz-option>
+                                     [nzValue]="'buy'" />
                           <nz-option [nzLabel]="t('orderCommandsOrderForms.sellSideLabel')"
-                                     [nzValue]="'sell'"></nz-option>
+                                     [nzValue]="'sell'" />
                         </nz-select>
                       </nz-form-control>
                     </nz-form-item>
@@ -281,21 +271,18 @@
       </form>
     </div>
     <div class="mt-10">
-      <ats-order-evaluation
-        (quantitySelect)="setQuantity($event)"
+      <ats-order-evaluation (quantitySelect)="setQuantity($event)"
         [evaluationProperties]="evaluationRequest$ | async"
-      ></ats-order-evaluation>
+       />
     </div>
     <div class="mt-8">
       @if (requestProcessing$ | async; as requestProcessing) {
-        <ats-buy-sell-buttons
-          (btnClick)="submitOrder($event)"
+        <ats-buy-sell-buttons (btnClick)="submitOrder($event)"
           [buyBtnDisabled]="!canSubmit || !!requestProcessing.orderSide"
           [buyBtnLoading]="requestProcessing.orderSide === sides.Buy"
           [sellBtnDisabled]="!canSubmit || !!requestProcessing.orderSide"
           [sellBtnLoading]="requestProcessing.orderSide === sides.Sell"
-        >
-        </ats-buy-sell-buttons>
+         />
       }
     </div>
   }

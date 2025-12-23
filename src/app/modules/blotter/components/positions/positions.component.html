@@ -1,10 +1,8 @@
 <div *transloco="let t; scope: 'blotter/positions'" class="container">
   <ng-template #empty>
-    <nz-empty
-      [nzNotFoundContent]="isFilterDisabled() ? t('blotterPositions.emptyPositions') : t('blotterPositions.emptyPositionsWithFilters')"
+    <nz-empty [nzNotFoundContent]="isFilterDisabled() ? t('blotterPositions.emptyPositions') : t('blotterPositions.emptyPositionsWithFilters')"
       class="ant-list-empty-text"
-      nzNotFoundImage="simple">
-    </nz-empty>
+      nzNotFoundImage="simple" />
   </ng-template>
   <div
     *ngrxLet="{ positions: tableData$, contentSize: contentSize$, tableConfig: tableConfig$, settings: settings$, portfolioTotalCost: portfolioTotalCost$} as td"
@@ -137,13 +135,13 @@
             @for (column of td.tableConfig.columns; track column) {
               @if (column.id === "icon") {
                 <td>
-                  <ats-instrument-icon [symbol]="pos.symbol" [size]="'default'"></ats-instrument-icon>
+                  <ats-instrument-icon [symbol]="pos.symbol" [size]="'default'" />
                 </td>
               }
               @if (column.id === "symbol") {
                 <td class='fw-bold'>
                   <span class="symbol-name">{{ pos.symbol }}</span>
-                  <ats-instrument-badge-display [instrumentKey]="pos"></ats-instrument-badge-display>
+                  <ats-instrument-badge-display [instrumentKey]="pos" />
                 </td>
               }
               @if (column.id === "shortName") {
@@ -221,10 +219,10 @@
       </ng-template>
     </nz-table>
     <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-      <ats-table-search-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns"></ats-table-search-filter>
+      <ats-table-search-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns" />
     </nz-dropdown-menu>
 
-    <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>
+    <ats-add-to-watchlist-menu #contextMenu />
   </div>
 
 </div>

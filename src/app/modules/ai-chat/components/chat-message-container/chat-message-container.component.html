@@ -8,16 +8,15 @@
   >
   @if (!displayMessage.isMe) {
     <div class="avatar">
-      <nz-avatar nzSize="large" nzIcon="user" [nzSrc]="displayMessage.avatarUri"></nz-avatar>
+      <nz-avatar nzSize="large" nzIcon="user" [nzSrc]="displayMessage.avatarUri" />
     </div>
   }
 
   <div class="content">
     @switch (displayMessage.messageType) {
       @case (messageTypes.Text) {
-        <ats-text-message
-          [content]="displayMessage.content"
-        ></ats-text-message>
+        <ats-text-message [content]="displayMessage.content"
+         />
       }
     }
   </div>

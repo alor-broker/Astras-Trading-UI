@@ -4,8 +4,7 @@
   nzResizeObserver
   >
   @if (tableConfig$ | async; as tableConfig) {
-    <ats-infinite-scroll-table
-      (filterApplied)="applyFilter($event)"
+    <ats-infinite-scroll-table (filterApplied)="applyFilter($event)"
       (rowClick)="rowClick($event)"
       (scrolled)="scrolled()"
       (orderColumnChange)="changeColumnOrder($event)"
@@ -16,8 +15,8 @@
       [tableContainerHeight]="(contentSize$ | async)?.height || 0"
       [tableContainerWidth]="(contentSize$ | async)?.width || 0"
       (rowContextMenu)="openContextMenu($event.event, contextMenu, $event.row)"
-    ></ats-infinite-scroll-table>
+     />
   }
 
-  <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>
+  <ats-add-to-watchlist-menu #contextMenu />
 </div>

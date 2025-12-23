@@ -10,8 +10,7 @@
       >
       <ng-template #headerRef>
         @if (deviceInfo$ | async; as deviceInfo) {
-          <ats-widget-header
-            (switchSettings)="onSettingsChange()"
+          <ats-widget-header (switchSettings)="onSettingsChange()"
             [guid]="guid"
             [hasSettings]="!deviceInfo.isMobile"
             [linkToActive]="settings.linkToActive!"
@@ -19,17 +18,17 @@
             [showBadgesMenu]="(showBadge$ | async) ?? false"
             [widgetMeta]="widgetInstance().widgetMeta"
             [titleTemplate]="titleTemplate"
-          ></ats-widget-header>
+           />
         }
         <ng-template #titleTemplate>
-          <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance().instance.guid"></ats-widget-header-instrument-switch>
+          <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance().instance.guid" />
         </ng-template>
       </ng-template>
       <ng-template #contentRef>
-        <ats-option-board [guid]="guid"></ats-option-board>
+        <ats-option-board [guid]="guid" />
       </ng-template>
       <ng-template #settingsRef>
-        <ats-option-board-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-option-board-settings>
+        <ats-option-board-settings (settingsChange)="onSettingsChange()" [guid]="guid" />
       </ng-template>
     </ats-widget-skeleton>
   }

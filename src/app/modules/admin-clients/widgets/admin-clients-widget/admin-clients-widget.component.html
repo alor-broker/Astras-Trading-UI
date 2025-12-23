@@ -8,18 +8,17 @@
     [showSettings]="shouldShowSettings"
     >
     <ng-template #headerRef>
-      <ats-widget-header
-        [guid]="guid"
+      <ats-widget-header [guid]="guid"
         [hasSettings]="true"
         [widgetMeta]="widgetInstance().widgetMeta"
         (switchSettings)="onSettingsChange()"
-      ></ats-widget-header>
+       />
     </ng-template>
     <ng-template #contentRef>
-      <ats-admin-clients [guid]="guid"></ats-admin-clients>
+      <ats-admin-clients [guid]="guid" />
     </ng-template>
     <ng-template #settingsRef>
-      <ats-admin-clients-settings (settingsChange)="onSettingsChange()" [guid]='guid'></ats-admin-clients-settings>
+      <ats-admin-clients-settings (settingsChange)="onSettingsChange()" [guid]='guid' />
     </ng-template>
   </ats-widget-skeleton>
 }

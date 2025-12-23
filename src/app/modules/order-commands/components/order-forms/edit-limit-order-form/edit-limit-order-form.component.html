@@ -9,10 +9,9 @@
                              nzRequired>{{ t('orderCommandsOrderForms.quantityLabel') }}
               </nz-form-label>
               <nz-form-control [nzErrorTip]="quantityError">
-                <ats-input-number formControlName="quantity" placeholder="0"></ats-input-number>
+                <ats-input-number formControlName="quantity" placeholder="0" />
                 @if ((formInstrument.lotsize ?? 1) !== 1) {
-                  <span>1 {{ t('orderCommandsOrderForms.lot') }} = <ats-short-number
-                    [value]="formInstrument.lotsize"></ats-short-number>
+                  <span>1 {{ t('orderCommandsOrderForms.lot') }} = <ats-short-number [value]="formInstrument.lotsize" />
                     {{ t('orderCommandsOrderForms.pcs') }}</span>
                 }
                 <ng-template #quantityError>
@@ -34,14 +33,13 @@
             <nz-form-item class="compact">
               <nz-form-label nzFor="price" nzRequired>{{ t('orderCommandsOrderForms.priceLabel') }}</nz-form-label>
               <nz-form-control [nzErrorTip]="priceError">
-                <ats-input-number
-                  [allowNegative]="true"
+                <ats-input-number [allowNegative]="true"
                   [focused]="!initialValues()?.hasPriceChanged"
                   [step]="formInstrument.minstep"
                   [suffix]="priceDiff"
                   formControlName="price"
                   placeholder="0"
-                ></ats-input-number>
+                 />
                 <ng-template #priceDiff>
                   @if (currentPriceDiffPercent$ | async; as currentPriceDiffPercent) {
                     <span [class]="currentPriceDiffPercent.sign > 0 ? 'profit' : 'loss'"
@@ -82,10 +80,9 @@
                              formControlName="timeInForce"
                              nzAllowClear>
                     @for (timeInForce of timeInForceEnum | keyvalue; track timeInForce) {
-                      <nz-option
-                        [nzLabel]="t('orderCommandsOrderForms.timeInForceOptions.' + timeInForce.key)"
+                      <nz-option [nzLabel]="t('orderCommandsOrderForms.timeInForceOptions.' + timeInForce.key)"
                         [nzValue]="timeInForce.value"
-                      ></nz-option>
+                       />
                     }
                   </nz-select>
                 </nz-form-control>
@@ -104,7 +101,7 @@
                     nzFor="icebergFixed">{{ t('orderCommandsOrderForms.icebergFixedLabel') }}
                   </nz-form-label>
                   <nz-form-control [nzErrorTip]="icebergFixedError">
-                    <ats-input-number formControlName="icebergFixed" placeholder="0"></ats-input-number>
+                    <ats-input-number formControlName="icebergFixed" placeholder="0" />
                   </nz-form-control>
                 </nz-form-item>
                 <ng-template #icebergFixedError>
@@ -126,7 +123,7 @@
                     {{ t('orderCommandsOrderForms.icebergVarianceLabel') }}
                   </nz-form-label>
                   <nz-form-control [nzErrorTip]="icebergVarianceError">
-                    <ats-input-number formControlName="icebergVariance" placeholder="0"></ats-input-number>
+                    <ats-input-number formControlName="icebergVariance" placeholder="0" />
                   </nz-form-control>
                   <ng-template #icebergVarianceError>
                     @if (form.controls.icebergFixed.errors?.min) {
@@ -146,10 +143,9 @@
       </form>
     </div>
     <div>
-      <ats-order-evaluation
-        (quantitySelect)="setQuantity($event)"
+      <ats-order-evaluation (quantitySelect)="setQuantity($event)"
         [evaluationProperties]="evaluationRequest$ | async"
-      ></ats-order-evaluation>
+       />
     </div>
   }
 </ng-container>

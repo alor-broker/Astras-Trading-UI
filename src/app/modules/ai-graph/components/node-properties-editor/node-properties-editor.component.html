@@ -5,30 +5,30 @@
         <div class="w-100 mb-5">
           @switch (editor.type) {
             @case (SlotTypes.String) {
-              <ats-string-property-editor [config]="editor.config"></ats-string-property-editor>
+              <ats-string-property-editor [config]="editor.config" />
             }
             @case (ExtendedEditors.MultilineText) {
-              <ats-text-property-editor [config]="editor.config"></ats-text-property-editor>
+              <ats-text-property-editor [config]="editor.config" />
             }
             @case (SlotTypes.Number) {
-              <ats-number-property-editor [config]="editor.config"></ats-number-property-editor>
+              <ats-number-property-editor [config]="editor.config" />
             }
             @case (SlotTypes.Boolean) {
-              <ats-boolean-property-editor [config]="editor.config"></ats-boolean-property-editor>
+              <ats-boolean-property-editor [config]="editor.config" />
             }
             @case (SlotTypes.Date) {
-              <ats-date-property-editor [config]="editor.config"></ats-date-property-editor>
+              <ats-date-property-editor [config]="editor.config" />
             }
             @case (SlotTypes.Portfolio) {
-              <ats-portfolio-property-editor [config]="editor.config"></ats-portfolio-property-editor>
+              <ats-portfolio-property-editor [config]="editor.config" />
             }
             @case (ExtendedEditors.Prompt) {
               @if (targetNode()) {
-                <ats-prompt-property-editor [config]="editor.config" [targetNode]="targetNode()!"></ats-prompt-property-editor>
+                <ats-prompt-property-editor [config]="editor.config" [targetNode]="targetNode()!" />
               }
             }
             @case (ExtendedEditors.Select) {
-              <ats-select-property-editor [config]="editor.config"></ats-select-property-editor>
+              <ats-select-property-editor [config]="editor.config" />
             }
           }
         </div>
@@ -36,6 +36,6 @@
     </div>
   } @empty {
     <nz-empty nzNotFoundImage="simple"
-              [nzNotFoundContent]="t('aiGraphNodePropertiesEditor.nothingToEditMessage')"></nz-empty>
+              [nzNotFoundContent]="t('aiGraphNodePropertiesEditor.nothingToEditMessage')" />
   }
 </ng-container>

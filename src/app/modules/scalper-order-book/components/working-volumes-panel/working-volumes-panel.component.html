@@ -34,12 +34,11 @@
         {{t('scalperOrderBookWorkingVolumesPanel.newVolumeLabel')}}
       </nz-form-label>
 
-      <ats-input-number
-        [formControl]="changeVolumeControl"
+      <ats-input-number [formControl]="changeVolumeControl"
         [focused] = true
         (atsEnter)="applyVolumeChanges(changeVolumeConfirmVisibleIndex!)"
         class="working-volume-input"
-      ></ats-input-number>
+       />
     </nz-form-control>
   </nz-form-item>
 </ng-template>

@@ -28,7 +28,7 @@ class TestComponent extends LazyLoadingBaseTableComponent<any, any> {
   imports: [
     TestComponent
   ],
-  template: '<ats-test-comp></ats-test-comp>'
+  template: '<ats-test-comp />'
 })
 class TestWrapperComponent {}
 

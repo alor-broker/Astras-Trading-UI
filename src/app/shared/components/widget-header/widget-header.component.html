@@ -1,24 +1,22 @@
 <div class='panel'>
   <div class="buttons-group overflow-x-hidden">
     @if (showBadgesMenu()) {
-      <nz-badge
-        [class.square-badge]="badgeShape() === 'square'"
+      <nz-badge [class.square-badge]="badgeShape() === 'square'"
         [nzColor]="selectedBadgeColor()!"
         [nzDropdownMenu]="badgesMenu"
         class="header-badge"
         nz-dropdown
         nzSize="small"
-      ></nz-badge>
+       />
     }
 
     <nz-dropdown-menu #badgesMenu="nzDropdownMenu">
       <ul class="badge-menu" nz-menu>
         @for (badge of badgeOptions$ | async; track badge) {
           <li (click)="switchBadgeColor(badge.color)" nz-menu-item>
-            <nz-badge
-              [class.square-badge]="badgeShape() === 'square'"
+            <nz-badge [class.square-badge]="badgeShape() === 'square'"
               [nzColor]="badge.color"
-            ></nz-badge>
+             />
             @if (badge.assignedInstrument) {
               <span>{{ badge.assignedInstrument.symbol }}</span>
             }
@@ -47,7 +45,7 @@
 
         @let currentTemplateTitle = titleTemplate();
         @if (currentTemplateTitle != null) {
-          <ng-container *ngTemplateOutlet="currentTemplateTitle"></ng-container>
+          <ng-container *ngTemplateOutlet="currentTemplateTitle" />
         } @else {
           <label
             [nzPopoverContent]="title"

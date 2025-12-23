@@ -9,8 +9,7 @@
       [showContentScroll]="true"
       >
       <ng-template #headerRef>
-        <ats-widget-header
-          (switchSettings)="onSettingsChange()"
+        <ats-widget-header (switchSettings)="onSettingsChange()"
           [guid]="guid"
           [hasSettings]="true"
           [linkToActive]="settings.linkToActive ?? null"
@@ -18,16 +17,16 @@
           [showBadgesMenu]="(showBadge$ | async) ?? false"
           [widgetMeta]="widgetInstance().widgetMeta"
           [titleTemplate]="titleTemplate"
-        ></ats-widget-header>
+         />
         <ng-template #titleTemplate>
-          <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance().instance.guid"></ats-widget-header-instrument-switch>
+          <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance().instance.guid" />
         </ng-template>
       </ng-template>
       <ng-template #contentRef>
-        <ats-order-book [guid]="guid"></ats-order-book>
+        <ats-order-book [guid]="guid" />
       </ng-template>
       <ng-template #settingsRef>
-        <ats-orderbook-settings [guid]="guid" (settingsChange)="onSettingsChange()"></ats-orderbook-settings>
+        <ats-orderbook-settings [guid]="guid" (settingsChange)="onSettingsChange()" />
       </ng-template>
     </ats-widget-skeleton>
   }

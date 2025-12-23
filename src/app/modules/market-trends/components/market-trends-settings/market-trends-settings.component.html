@@ -11,14 +11,12 @@
         <nz-form-control>
           <nz-form-label nzFor="itemsCount" nzRequired>{{ t('marketTrendsSettings.itemsCountLabel') }}
           </nz-form-label>
-          <nz-slider
-            [nzMarks]="marks"
+          <nz-slider [nzMarks]="marks"
             [nzMax]="validation.itemsCount.max"
             [nzMin]="validation.itemsCount.min"
             [nzStep]="1"
             formControlName="itemsCount"
-          >
-          </nz-slider>
+           />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -35,11 +33,9 @@
           >
             @let availableSectors = (settings$ | async)?.availableSectors ?? allSectors;
             @for(item of availableSectors; track item) {
-              <nz-option
-                [nzLabel]="t('marketSectors.' + item, {fallback: item})"
+              <nz-option [nzLabel]="t('marketSectors.' + item, {fallback: item})"
                 [nzValue]="item"
-              >
-              </nz-option>
+               />
             }
 
           </nz-select>
@@ -62,11 +58,9 @@
             >
               <ng-container *transloco="let tMarketTrends; scope: 'market-trends/market-trends'">
                 @for(item of availableExtendedFilters; track item) {
-                  <nz-option
-                    [nzLabel]="tMarketTrends('marketTrendsMarketTrends.extendedFilter.' + item, {fallback: item})"
+                  <nz-option [nzLabel]="tMarketTrends('marketTrendsMarketTrends.extendedFilter.' + item, {fallback: item})"
                     [nzValue]="item"
-                  >
-                  </nz-option>
+                   />
                 }
 
               </ng-container>

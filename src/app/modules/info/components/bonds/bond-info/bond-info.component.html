@@ -1,7 +1,7 @@
 <ng-container *transloco="let t; scope: 'info'">
   <ng-container *ngrxLet="{ descriptors: descriptors$, targetInstrumentKey: instrumentKeyChanges$, info: info$ } as vm">
     @if(vm.info == null) {
-      <nz-empty nzNotFoundImage="simple"></nz-empty>
+      <nz-empty nzNotFoundImage="simple" />
     } @else {
       <nz-tabs
         (mousedown)='$event.stopPropagation()'
@@ -10,24 +10,24 @@
       >
         @if (vm.descriptors?.common != null && vm.descriptors!.common.length > 0) {
           <nz-tab [nzTitle]="t('info.instrumentTab')">
-            <ats-descriptors-list [descriptors]="vm.descriptors!.common"></ats-descriptors-list>
+            <ats-descriptors-list [descriptors]="vm.descriptors!.common" />
           </nz-tab>
         }
 
         @if (vm.targetInstrumentKey != null) {
           <nz-tab [nzTitle]="t('info.risksTab')" #risksTab>
-            <ats-risks [instrumentKey]="vm.targetInstrumentKey" [activated]="risksTab.isActive"></ats-risks>
+            <ats-risks [instrumentKey]="vm.targetInstrumentKey" [activated]="risksTab.isActive" />
           </nz-tab>
         }
 
         @if (vm.descriptors?.aboutIssue != null && vm.descriptors!.aboutIssue.length > 0) {
           <nz-tab [nzTitle]="t('info.issueTab')">
-            <ats-descriptors-list [descriptors]="vm.descriptors!.aboutIssue"></ats-descriptors-list>
+            <ats-descriptors-list [descriptors]="vm.descriptors!.aboutIssue" />
           </nz-tab>
         }
 
         <nz-tab [nzTitle]="t('info.paymentsTab')">
-          <ats-calendar [bond]="vm.info!"></ats-calendar>
+          <ats-calendar [bond]="vm.info!" />
         </nz-tab>
 
       </nz-tabs>

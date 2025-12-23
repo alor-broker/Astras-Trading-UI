@@ -23,9 +23,8 @@
               [cdkDropListData]="badge"
               (cdkDropListEntered)="changeBadgesOrder($event)">
               <div cdkDrag (cdkDragStarted)="badgeDragStarts($event)">
-                <nz-color-block
-                  [nzColor]="badge"
-                ></nz-color-block>
+                <nz-color-block [nzColor]="badge"
+                 />
                 @if (badge !== defaultBadgeColor) {
                   <button
                     class="badge-btn remove-btn"
@@ -42,13 +41,12 @@
             </div>
           }
 
-          <nz-color-picker
-            nzFormat="hex"
+          <nz-color-picker nzFormat="hex"
             [nzFlipFlop]="newBadgeTrigger"
             [formControl]="newBadgeColorControl"
             [nzDisabledAlpha]="true"
             (nzOnOpenChange)="addNewBadgeColor($event)"
-          ></nz-color-picker>
+           />
 
           <ng-template #newBadgeTrigger>
             <button nz-button  class="badge-btn" [style.background-color]="newBadgeColorControl.value">

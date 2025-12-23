@@ -31,10 +31,8 @@
           <span class="highlighter  z-2" [ngStyle]="getClusterItemHighlightStyle(item, vm.settings.widgetSettings.tradesClusterPanelSettings ?? null, vm.themeColors)">&nbsp;</span>
           <span class="position-relative z-3 px-2">
             @if (vm.settings.widgetSettings.tradesClusterPanelSettings?.volumeDisplayFormat === numberFormats.LetterSuffix) {
-              <ats-short-number
-                [value]="item?.volume"
-                [allowRounding]="true">
-              </ats-short-number>
+              <ats-short-number [value]="item?.volume"
+                [allowRounding]="true" />
             } @else {
               <span>{{ item?.volume }}</span>
             }

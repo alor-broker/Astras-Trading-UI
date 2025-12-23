@@ -1,11 +1,9 @@
 <ng-container *transloco="let t; scope: 'blotter/notifications'">
   <div class="container">
     <ng-template #empty>
-      <nz-empty
-        [nzNotFoundContent]="isFilterDisabled() ? t('blotterNotifications.emptyList') : t('blotterNotifications.emptyListWithFilters')"
+      <nz-empty [nzNotFoundContent]="isFilterDisabled() ? t('blotterNotifications.emptyList') : t('blotterNotifications.emptyListWithFilters')"
         class="ant-list-empty-text"
-        nzNotFoundImage="simple">
-      </nz-empty>
+        nzNotFoundImage="simple" />
     </ng-template>
 
     @if ((isNotificationsAllowed$ | async) === true) {
@@ -107,7 +105,7 @@
                     @if (column.id === "instrument") {
                       <td class='fw-bold'>
                         <span class="symbol-name">{{ notification.instrument }}</span>
-                        <ats-instrument-badge-display [instrumentKey]="{symbol: notification.instrument, exchange: notification.exchange}"></ats-instrument-badge-display>
+                        <ats-instrument-badge-display [instrumentKey]="{symbol: notification.instrument, exchange: notification.exchange}" />
                       </td>
                     }
                     @if (column.id === "priceCondition") {
@@ -124,9 +122,9 @@
           </nz-table>
         </div>
         <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-          <ats-table-search-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns"></ats-table-search-filter>
+          <ats-table-search-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns" />
         </nz-dropdown-menu>
-        <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>
+        <ats-add-to-watchlist-menu #contextMenu />
       </ng-container>
     }
 

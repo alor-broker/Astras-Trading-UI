@@ -9,19 +9,16 @@
 
     @if (displaySectors.length > 0 || displayExtendedFilter.length > 0) {
       <nz-tabs>
-        <nz-tab [nzTitle]="t('marketTrendsMarketTrends.resetFiltersButton.title')" (nzSelect)="resetFilters()">
-        </nz-tab>
+        <nz-tab [nzTitle]="t('marketTrendsMarketTrends.resetFiltersButton.title')" (nzSelect)="resetFilters()" />
 
         @for (extendedFilter of displayExtendedFilter; track extendedFilter) {
-          <nz-tab
-            [nzTitle]="t('marketTrendsMarketTrends.extendedFilter.' + extendedFilter, {fallback: extendedFilter})"
+          <nz-tab [nzTitle]="t('marketTrendsMarketTrends.extendedFilter.' + extendedFilter, {fallback: extendedFilter})"
             (nzSelect)="changeExtendedFilter(extendedFilter)"
-          ></nz-tab>
+           />
         }
 
         @for (sector of displaySectors; track sector) {
-          <nz-tab [nzTitle]="t('marketSectors.' + sector, {fallback: sector})" (nzSelect)="changeSector(sector)">
-          </nz-tab>
+          <nz-tab [nzTitle]="t('marketSectors.' + sector, {fallback: sector})" (nzSelect)="changeSector(sector)" />
         }
       </nz-tabs>
     }
@@ -56,7 +53,7 @@
             <tr class="item" (click)="instrumentSelected.emit(toInstrumentKey(item))">
               <td class="text-start">
                 <div class="d-flex flex-row flex-nowrap flex-gap-5 align-items-center">
-                  <ats-instrument-icon [symbol]="item.basicInformation.symbol" size="large"></ats-instrument-icon>
+                  <ats-instrument-icon [symbol]="item.basicInformation.symbol" size="large" />
                   <div class="d-flex flex-column overflow-hidden">
                     <span class="heading-color text-nowrap fs-6" nz-typography nzEllipsis>
                       {{ item.basicInformation.shortName }}
@@ -86,7 +83,7 @@
         </tbody>
       </table>
     } @else {
-      <nz-empty nzNotFoundImage="simple"></nz-empty>
+      <nz-empty nzNotFoundImage="simple" />
     }
     @if (showMoreButton()) {
       <button
@@ -102,6 +99,6 @@
   </ng-container>
 
   <ng-template #loading>
-    <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }"></nz-skeleton>
+    <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }" />
   </ng-template>
 </ng-container>

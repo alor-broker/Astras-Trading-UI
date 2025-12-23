@@ -47,10 +47,9 @@
           </nz-autocomplete>
 
           <ng-template #loadingIndicator>
-            <ats-loading-indicator
-              [isLoading]="autocompleteLoading$ | async"
+            <ats-loading-indicator [isLoading]="autocompleteLoading$ | async"
               className="autocomplete-loader"
-            ></ats-loading-indicator>
+             />
           </ng-template>
 
           <ng-template #spreadOperators>

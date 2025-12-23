@@ -1,11 +1,9 @@
 <ng-container *transloco="let t; scope: 'option-board/selected-options'">
   <div (nzResizeObserve)="containerSizeChanged($event)" class="h-100 w-100" nzResizeObserver>
     <ng-template #empty>
-      <nz-empty
-        [nzNotFoundContent]="t('optionBoardSelectedOptions.noSelectionMessage')"
+      <nz-empty [nzNotFoundContent]="t('optionBoardSelectedOptions.noSelectionMessage')"
         class="ant-list-empty-text"
-        nzNotFoundImage="simple">
-      </nz-empty>
+        nzNotFoundImage="simple" />
     </ng-template>
     <ng-container
       *ngrxLet="{
@@ -76,13 +74,12 @@
                   }
                   @if (column.id === "quantity") {
                     <td>
-                      <ats-input-number
-                        [step]="1"
+                      <ats-input-number [step]="1"
                         [allowNegative]="true"
                         [allowDecimal]="false"
                         [initialValue]="option.quantity ?? 1"
                         (valueChanged)="setSelectedOptionQuantity(option, $event)"
-                      ></ats-input-number>
+                       />
                     </td>
                   }
                   @if (column.id === "underlyingAssetSymbol") {
@@ -238,7 +235,7 @@
       }
 
 
-      <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>
+      <ats-add-to-watchlist-menu #contextMenu />
     </ng-container>
   </div>
 </ng-container>

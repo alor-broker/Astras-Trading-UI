@@ -3,11 +3,9 @@
     <nz-spin [nzSpinning]="isLoading$ | async" [nzTip]="t('optionBoard.loadingLabel', { fallback: 'Loading...'})">
       @if (optionsMatrix$ | async; as optionsMatrix) {
         @if (optionsMatrix.priceIndex.length === 0) {
-          <nz-empty
-            [nzNotFoundContent]="t('optionBoard.noOptionsWithSelectedTypeMessage')"
+          <nz-empty [nzNotFoundContent]="t('optionBoard.noOptionsWithSelectedTypeMessage')"
             class="ant-list-empty-text"
-            nzNotFoundImage="simple">
-          </nz-empty>
+            nzNotFoundImage="simple" />
         }
         @if (layoutSizes$ | async; as layoutSizes) {
           <div (nzResizeObserve)="updateContainerSize($event)" class="h-100 w-100 d-flex flex-column" nzResizeObserver>
@@ -71,7 +69,7 @@
                               nzEllipsis>{{option.displayValue | number : '0.0-10'}}</span>
                             </div>
                             <ng-template #popoverContent>
-                              <ats-option-preview [option]="option"></ats-option-preview>
+                              <ats-option-preview [option]="option" />
                             </ng-template>
                           }
                           @if (!optionsMatrix.options[i][j]) {

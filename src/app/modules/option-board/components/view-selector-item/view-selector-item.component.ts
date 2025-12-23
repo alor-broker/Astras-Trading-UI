@@ -10,7 +10,7 @@ import {
     imports: [],
     template: `
     <ng-template>
-      <ng-content></ng-content>
+      <ng-content />
     </ng-template>`,
     preserveWhitespaces: false
 })

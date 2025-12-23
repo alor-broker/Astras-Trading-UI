@@ -6,15 +6,14 @@
       [isBlockWidget]="isBlockWidget()"
       >
       <ng-template #headerRef>
-        <ats-widget-header
-          [guid]="guid"
+        <ats-widget-header [guid]="guid"
           [hasSettings]="false"
           [showBadgesMenu]="false"
           [widgetMeta]="widgetInstance().widgetMeta"
-        ></ats-widget-header>
+         />
       </ng-template>
       <ng-template #contentRef>
-        <ats-correlation-chart [guid]="guid"></ats-correlation-chart>
+        <ats-correlation-chart [guid]="guid" />
       </ng-template>
     </ats-widget-skeleton>
   }

@@ -7,12 +7,11 @@
             <nz-form-label nzFor="instrumentKey" nzRequired>{{t('ordersBasketOrdersBasketItem.tickerLabel')}}</nz-form-label>
           }
           <nz-form-control [nzErrorTip]="t('ordersBasketOrdersBasketItem.tickerError')">
-            <ats-instrument-search
-              (instrumentSelected)="onTouched()"
+            <ats-instrument-search (instrumentSelected)="onTouched()"
               [exchange]="exchange()"
               [optionsBoxWidth]="(widthChanges$ | async) ?? 100"
               formControlName="instrumentKey"
-            ></ats-instrument-search>
+             />
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
@@ -23,13 +22,12 @@
           <nz-form-control
             [nzErrorTip]="t('ordersBasketOrdersBasketItem.intervalError', {min: validationOptions.quota.min, max: validationOptions.quota.max})"
             >
-            <ats-input-number
-              [suffix]="suffixTmp"
+            <ats-input-number [suffix]="suffixTmp"
               formControlName="quota"
               [step]="0.1"
               [placeholder]="t('ordersBasketOrdersBasketItem.quotaPlaceholder')"
               (atsBlur)="onTouched()"
-            ></ats-input-number>
+             />
 
             <ng-template #suffixTmp>%</ng-template>
           </nz-form-control>
@@ -41,12 +39,11 @@
           }
           <nz-form-control
             [nzErrorTip]="priceError">
-            <ats-input-number
-              formControlName="price"
+            <ats-input-number formControlName="price"
               [step]="(instrument$ | async)?.minstep ?? 0.1"
               [placeholder]="t('ordersBasketOrdersBasketItem.pricePlaceholder')"
               (atsBlur)="onTouched()"
-            ></ats-input-number>
+             />
             <ng-template #priceError>
               @if (form.get('price')?.errors?.required) {
                 <span>{{t('ordersBasketOrdersBasketItem.pricePlaceholder')}}</span>

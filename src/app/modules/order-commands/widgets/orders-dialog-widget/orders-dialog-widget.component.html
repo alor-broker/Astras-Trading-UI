@@ -16,13 +16,11 @@
             @if (dialogParams$ | async; as dialogParams) {
               <div nzResizeObserver (nzResizeObserve)="calculateTabSetHeight($event)">
                 <div class="instrument-info">
-                  <ats-instrument-info
-                    (priceSelected)="setCommonParameters({price: $event})"
+                  <ats-instrument-info (priceSelected)="setCommonParameters({price: $event})"
                     (qtySelected)="setCommonParameters({quantity: $event})"
                     [currentPortfolio]="currentPortfolio"
                     [instrumentKey]="currentInstrument"
-                    >
-                  </ats-instrument-info>
+                     />
                 </div>
                 <div>
                   <nz-tabs #orderTabs nzSize="small" nzTabPosition="top" [style.max-height]="(tabSetHeight$ | async) + 'px'">
@@ -31,40 +29,37 @@
                         <nz-tab
                           #limitOrderTab
                           [nzTitle]="t('orderCommands.limitOrderTabTitle')">
-                          <ats-limit-order-form
-                            (submitted)="closeDialog()"
+                          <ats-limit-order-form (submitted)="closeDialog()"
                             [activated]="limitOrderTab.isActive"
                             [initialValues]="dialogParams.initialValues"
                             [instrument]="currentInstrument"
                             [portfolioKey]="currentPortfolio"
                             [limitOrderConfig]="ordersConfig.limitOrder.orderConfig!"
-                          ></ats-limit-order-form>
+                           />
                         </nz-tab>
                       }
                       @if (ordersConfig.marketOrder.isSupported) {
                         <nz-tab
                           #marketOrderTab
                           [nzTitle]="t('orderCommands.marketOrderTabTitle')">
-                          <ats-market-order-form
-                            (submitted)="closeDialog()"
+                          <ats-market-order-form (submitted)="closeDialog()"
                             [activated]="marketOrderTab.isActive"
                             [instrument]="currentInstrument"
                             [portfolioKey]="currentPortfolio"
                             [initialValues]="dialogParams.initialValues"
-                          ></ats-market-order-form>
+                           />
                         </nz-tab>
                       }
                       @if (ordersConfig.stopOrder.isSupported) {
                         <nz-tab
                           #stopOrderTab
                           [nzTitle]="t('orderCommands.stopOrderTabTitle')">
-                          <ats-stop-order-form
-                            (submitted)="closeDialog()"
+                          <ats-stop-order-form (submitted)="closeDialog()"
                             [activated]="stopOrderTab.isActive"
                             [instrument]="currentInstrument"
                             [portfolioKey]="currentPortfolio"
                             [initialValues]="dialogParams.initialValues"
-                          ></ats-stop-order-form>
+                           />
                         </nz-tab>
                       }
                       @if (pushNotificationsConfig.priceChangeNotifications.isSupported) {
@@ -78,12 +73,10 @@
                               <span class="pl-2">{{t('orderCommands.notificationsTabTitle')}}</span>
                             </span>
                           </ng-template>
-                          <ats-setup-instrument-notifications
-                            [active]="notificationsTab.isActive"
+                          <ats-setup-instrument-notifications [active]="notificationsTab.isActive"
                             [instrumentKey]="currentInstrument"
                             [initialValues]="dialogParams.initialValues"
-                            >
-                          </ats-setup-instrument-notifications>
+                             />
                         </nz-tab>
                       }
                     }

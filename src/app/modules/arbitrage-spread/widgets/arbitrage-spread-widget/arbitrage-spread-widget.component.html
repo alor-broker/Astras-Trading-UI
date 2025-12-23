@@ -7,18 +7,17 @@
       [showContentScroll]="true"
       >
       <ng-template #header>
-        <ats-widget-header
-          [guid]="guid"
+        <ats-widget-header [guid]="guid"
           [hasSettings]="false"
           [showBadgesMenu]="false"
           [widgetMeta]="widgetInstance().widgetMeta"
-        ></ats-widget-header>
+         />
       </ng-template>
       <ng-template #content>
-        <ats-arbitrage-spread></ats-arbitrage-spread>
+        <ats-arbitrage-spread />
       </ng-template>
     </ats-widget-skeleton>
   }
 </ng-container>
 
-<ats-arbitrage-spread-modal-widget></ats-arbitrage-spread-modal-widget>
+<ats-arbitrage-spread-modal-widget />

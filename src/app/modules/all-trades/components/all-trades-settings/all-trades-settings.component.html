@@ -21,11 +21,9 @@
                 >
                 <ng-container *transloco="let tTrades; scope: 'all-trades/all-trades'">
                   @for (item of allTradesColumns; track item) {
-                    <nz-option
-                      [nzLabel]="tTrades('allTradesAllTrades.columns.' + item.id + '.displayName')"
+                    <nz-option [nzLabel]="tTrades('allTradesAllTrades.columns.' + item.id + '.displayName')"
                       [nzValue]="item.id"
-                      >
-                    </nz-option>
+                       />
                   }
                 </ng-container>
               </nz-select>
@@ -37,7 +35,7 @@
               {{t('allTradesAllTradesSettings.highlightRowsBySide')}}
             </nz-form-label>
             <nz-form-control>
-              <nz-switch formControlName='highlightRowsBySide'></nz-switch>
+              <nz-switch formControlName='highlightRowsBySide' />
             </nz-form-control>
           </nz-form-item>
         </form>

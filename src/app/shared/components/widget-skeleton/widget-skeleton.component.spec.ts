@@ -4,7 +4,7 @@ import { Component, TemplateRef, viewChild } from "@angular/core";
 import { WidgetSkeletonComponent } from './widget-skeleton.component';
 
 @Component({
-  template: `<ng-template #mockTemplate></ng-template>`,
+  template: `<ng-template #mockTemplate />`,
   standalone: true
 })
 class TestTemplateHolderComponent {

@@ -50,10 +50,9 @@
                   </nz-form-label>
                   <nz-select formControlName="priceChangeTimeframe">
                     @for (timeframe of priceChangeTimeFrames; track timeframe) {
-                      <nz-option
-                        [nzLabel]="t('instrumentsSettings.timeframes.' + timeframe.name)"
+                      <nz-option [nzLabel]="t('instrumentsSettings.timeframes.' + timeframe.name)"
                         [nzValue]="timeframe.value"
-                      ></nz-option>
+                       />
                     }
                   </nz-select>
                 </nz-form-control>
@@ -64,14 +63,14 @@
                   {{t('instrumentsSettings.showFavoritesLabel')}}
                 </nz-form-label>
                 <nz-form-control>
-                  <nz-switch formControlName='showFavorites'></nz-switch>
+                  <nz-switch formControlName='showFavorites' />
                 </nz-form-control>
               </nz-form-item>
             </form>
           </div>
         </nz-tab>
         <nz-tab [nzTitle]="t('instrumentsSettings.instrumentsListsTab')">
-          <ats-watchlist-collection-edit></ats-watchlist-collection-edit>
+          <ats-watchlist-collection-edit />
         </nz-tab>
       </nz-tabs>
     </div>

@@ -1,7 +1,6 @@
 @let idea = displayIdea();
 
-<nz-modal
-  (nzOnCancel)="close()"
+<nz-modal (nzOnCancel)="close()"
   [nzAutofocus]="null"
   [nzClosable]="false"
   [nzContent]="content"
@@ -10,8 +9,7 @@
   [nzTitle]="modalTitle"
   [nzVisible]="displayIdea() !== null"
   nzClassName="full-screen ats-idea-details"
->
-</nz-modal>
+ />
 
 <ng-template #content>
   @if (idea != null) {
@@ -29,7 +27,7 @@
           (click)="selectedTicker$.next(item)"
         >
           <div class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5">
-            <ats-instrument-icon [symbol]="item.ticker" size="large"></ats-instrument-icon>
+            <ats-instrument-icon [symbol]="item.ticker" size="large" />
             <div class="d-flex flex-column">
               <span nz-typography nzEllipsis class="heading-color" *ngrxLet="item.instrument$ as instrument">
                 @if (instrument != null) {
@@ -66,7 +64,7 @@
     @if (selectedItem != null) {
       <div class="mt-15">
         <div>
-          <ats-submit-order-for-symbol [symbol]="selectedItem"></ats-submit-order-for-symbol>
+          <ats-submit-order-for-symbol [symbol]="selectedItem" />
         </div>
       </div>
     }

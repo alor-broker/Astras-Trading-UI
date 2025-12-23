@@ -17,7 +17,7 @@
     </div>
   </ng-template>
   <ng-container *nzModalContent>
-    <ats-arbitrage-spread-manage [spread]="spreadInfo$ | async" (formChange)="formChange($event)"></ats-arbitrage-spread-manage>
+    <ats-arbitrage-spread-manage [spread]="spreadInfo$ | async" (formChange)="formChange($event)" />
   </ng-container>
   <ng-container *nzModalFooter>
     <button

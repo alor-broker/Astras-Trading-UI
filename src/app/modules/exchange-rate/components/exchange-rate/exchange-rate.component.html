@@ -31,8 +31,7 @@
                     (click)="selectInstrument(rate)"
                     [class.selectable]="rate.sourceSymbol"
                     >
-                    <ats-price-diff [basePrice]="rate.prevRate" [currentPrice]="rate.rate" format="0.0-4">
-                    </ats-price-diff>
+                    <ats-price-diff [basePrice]="rate.prevRate" [currentPrice]="rate.rate" format="0.0-4" />
                   </td>
                 } @else {
                   <td>-</td>

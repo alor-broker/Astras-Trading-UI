@@ -2,22 +2,20 @@
   <ng-container *ngrxLet="currencySettings$ as currencySettings">
     <div class="calendars">
       <div class="calendar-wrapper">
-        <nz-calendar
-          #startPeriodCalendar
+        <nz-calendar #startPeriodCalendar
           [nzDateFullCell]="startPeriodCalendarDateCell"
           [nzFullscreen]="false"
           [nzDisabledDate]="disable"
           (nzSelectChange)="onDateChange($event)"
-        ></nz-calendar>
+         />
       </div>
       <div class="calendar-wrapper">
-        <nz-calendar
-          #endPeriodCalendar
+        <nz-calendar #endPeriodCalendar
           class="end-period-calendar"
           [nzDateFullCell]="endPeriodCalendarDateCell"
           [nzFullscreen]="false"
           [nzDisabledDate]="disable"
-        ></nz-calendar>
+         />
       </div>
     </div>
     <ng-template #startPeriodCalendarDateCell let-date>

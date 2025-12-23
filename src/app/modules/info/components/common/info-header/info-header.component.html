@@ -1,10 +1,9 @@
 @let targetInfo = info();
 
 <div class="d-flex flex-row justify-content-center align-items-center flex-gap-10">
-  <ats-instrument-icon
-    [size]="64"
+  <ats-instrument-icon [size]="64"
     [symbol]="targetInfo.symbol"
-  ></ats-instrument-icon>
+   />
   <div class="overflow-hidden text-nowrap">
     <span nz-typography nzEllipsis>
       <span class='fs-5 heading-color'>{{ targetInfo.shortName }}</span>

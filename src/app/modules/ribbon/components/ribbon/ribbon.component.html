@@ -1,7 +1,7 @@
 <ats-scrollable-row [showScrollButtons]="showScrollButtons()">
   @for (index of indices$ | async; track index) {
     <div atsScrollableItem>
-      <ng-container [ngTemplateOutlet]="layout() === 'singleRow' ? singleRow : twoRow"></ng-container>
+      <ng-container [ngTemplateOutlet]="layout() === 'singleRow' ? singleRow : twoRow" />
       <ng-template #singleRow>
         <div class="row">
           <span nz-typography><strong>{{ index.name }}</strong></span>

@@ -9,19 +9,17 @@
       [showSettings]="shouldShowSettings"
       >
       <ng-template #headerRef>
-        <ats-widget-header
-          (switchSettings)="onSettingsChange()"
+        <ats-widget-header (switchSettings)="onSettingsChange()"
           [badgeShape]="'square'"
           [guid]="guid"
           [hasSettings]="true"
           [selectedBadgeColor]="settings.badgeColor"
           [showBadgesMenu]="(showBadge$ | async) ?? false"
           [widgetMeta]="widgetInstance().widgetMeta"
-        ></ats-widget-header>
+         />
       </ng-template>
       <ng-template #contentRef>
-        <ats-market-trends
-          (instrumentSelected)="selectInstrument($event)"
+        <ats-market-trends (instrumentSelected)="selectInstrument($event)"
           [extendedFilter]="settings.extendedFilter"
           [fixedHeader]="true"
           [itemsCount]="settings.itemsCount"
@@ -34,10 +32,10 @@
         }"
           [sectors]="settings.displaySectors"
           [showMoreButton]="false"
-        ></ats-market-trends>
+         />
       </ng-template>
       <ng-template #settingsRef>
-        <ats-market-trends-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-market-trends-settings>
+        <ats-market-trends-settings (settingsChange)="onSettingsChange()" [guid]="guid" />
       </ng-template>
     </ats-widget-skeleton>
   }

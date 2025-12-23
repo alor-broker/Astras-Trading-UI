@@ -4,9 +4,9 @@
       <nz-form-label nzFor="language" nzRequired>{{t('terminalSettingsGeneralSettingsForm.langLabel')}}</nz-form-label>
       <nz-form-control>
         <nz-select formControlName='language'>
-          <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.notSelectedOption')" [nzValue]="''" nzDisabled nzHide></nz-option>
+          <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.notSelectedOption')" [nzValue]="''" nzDisabled nzHide />
           @for (option of availableLanguages; track option.key) {
-            <nz-option [nzValue]="option.key" [nzLabel]="option.title"></nz-option>
+            <nz-option [nzValue]="option.key" [nzLabel]="option.title" />
           }
         </nz-select>
       </nz-form-control>
@@ -16,8 +16,8 @@
         <nz-form-label nzFor="theme" nzRequired>{{t('terminalSettingsGeneralSettingsForm.themeLabel')}}</nz-form-label>
         <nz-form-control>
           <nz-select formControlName='theme'>
-            <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.darkThemeOption')" [nzValue]="themeTypes.dark"></nz-option>
-            <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.lightThemeOption')" [nzValue]="themeTypes.default"></nz-option>
+            <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.darkThemeOption')" [nzValue]="themeTypes.dark" />
+            <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.lightThemeOption')" [nzValue]="themeTypes.default" />
           </nz-select>
         </nz-form-control>
       </nz-form-item>
@@ -26,7 +26,7 @@
         <nz-form-control>
           <nz-select formControlName='fontFamily' [nzPlaceHolder]="t('terminalSettingsGeneralSettingsForm.fontFamilyPlaceholder')">
             @for (fontFamily of availableFontFamilies; track fontFamily) {
-              <nz-option [nzLabel]="fontFamily" [nzValue]="fontFamily"></nz-option>
+              <nz-option [nzLabel]="fontFamily" [nzValue]="fontFamily" />
             }
           </nz-select>
         </nz-form-control>
@@ -36,9 +36,9 @@
           <nz-form-label nzFor="gridType">{{t('terminalSettingsGeneralSettingsForm.gridTypeLabel')}}</nz-form-label>
           <nz-form-control>
             <nz-select formControlName='gridType'>
-              <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.gridTypeFitOption')" [nzValue]="gridTypes.Fit"></nz-option>
-              <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.gridTypeVerticalFixedOption')" [nzValue]="gridTypes.VerticalFixed"></nz-option>
-              <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.gridTypeHorizontalFixedOption')" [nzValue]="gridTypes.HorizontalFixed"></nz-option>
+              <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.gridTypeFitOption')" [nzValue]="gridTypes.Fit" />
+              <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.gridTypeVerticalFixedOption')" [nzValue]="gridTypes.VerticalFixed" />
+              <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.gridTypeHorizontalFixedOption')" [nzValue]="gridTypes.HorizontalFixed" />
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -49,9 +49,9 @@
       <nz-form-control>
         <nz-select formControlName='timezoneDisplayOption'>
           <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.mskTimezoneOption')"
-          [nzValue]="timezoneDisplayOption.MskTime"></nz-option>
+          [nzValue]="timezoneDisplayOption.MskTime" />
           <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.localTimezoneOption')"
-          [nzValue]="timezoneDisplayOption.LocalTime"></nz-option>
+          [nzValue]="timezoneDisplayOption.LocalTime" />
         </nz-select>
       </nz-form-control>
     </nz-form-item>
@@ -70,18 +70,15 @@
       <nz-form-label nzFor="tableRowHeight" nzRequired>{{t('terminalSettingsGeneralSettingsForm.tableRowHeightLabel')}}</nz-form-label>
       <nz-form-control>
         <nz-select formControlName='tableRowHeight'>
-          <nz-option
-            [nzLabel]="t('terminalSettingsGeneralSettingsForm.tableRowHeight.low')"
+          <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.tableRowHeight.low')"
             [nzValue]="tableRowHeight.Low"
-          ></nz-option>
-          <nz-option
-            [nzLabel]="t('terminalSettingsGeneralSettingsForm.tableRowHeight.medium')"
+           />
+          <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.tableRowHeight.medium')"
             [nzValue]="tableRowHeight.Medium"
-          ></nz-option>
-          <nz-option
-            [nzLabel]="t('terminalSettingsGeneralSettingsForm.tableRowHeight.high')"
+           />
+          <nz-option [nzLabel]="t('terminalSettingsGeneralSettingsForm.tableRowHeight.high')"
             [nzValue]="tableRowHeight.High"
-          ></nz-option>
+           />
         </nz-select>
       </nz-form-control>
     </nz-form-item>
@@ -111,7 +108,7 @@
                     max: validationSettings.userIdleDurationMin.max
                    })"
           >
-          <ats-input-number formControlName="userIdleDurationMin"></ats-input-number>
+          <ats-input-number formControlName="userIdleDurationMin" />
         </nz-form-control>
       </nz-form-item>
     }
@@ -134,11 +131,11 @@
         <ng-template #badgeBindHint>
           <p> {{t('terminalSettingsGeneralSettingsForm.badgesBindHint1')}} </p>
           <p>
-            <nz-badge class="square-badge" nzColor="yellow"></nz-badge>
+            <nz-badge class="square-badge" nzColor="yellow" />
             - {{t('terminalSettingsGeneralSettingsForm.badgesBindHint2')}}
           </p>
           <p>
-            <nz-badge nzColor="yellow"></nz-badge>
+            <nz-badge nzColor="yellow" />
             - {{t('terminalSettingsGeneralSettingsForm.badgesBindHint3')}}
           </p>
         </ng-template>
@@ -146,9 +143,8 @@
     }
 
     @if (form.controls.badgesBind.value) {
-      <ats-badges-settings
-        formControlName="badgesColors"
-      ></ats-badges-settings>
+      <ats-badges-settings formControlName="badgesColors"
+       />
     }
   </form>
 </ng-container>

@@ -9,13 +9,13 @@
           </div>
           <div>
             <nz-switch (click)="toggleNotificationType(notificationType.value)" [ngModel]="notificationType.enabled"
-            [nzControl]="true"></nz-switch>
+            [nzControl]="true" />
           </div>
         </div>
       }
     </div>
 
-    <nz-divider class="compact"></nz-divider>
+    <nz-divider class="compact" />
 
     <h3>{{t('terminalSettingsInstantNotificationsForm.pushNotificationsTitle')}}</h3>
     @if (portfolios$ | async; as portfolios) {
@@ -39,9 +39,8 @@
             (ngModelChange)="excludedPortfoliosChange($event)"
             >
             @for (p of portfolios; track p) {
-              <nz-option
-                [nzValue]="p"
-              [nzLabel]="p.portfolio + ' (' + p.exchange + ')'"></nz-option>
+              <nz-option [nzValue]="p"
+              [nzLabel]="p.portfolio + ' (' + p.exchange + ')'" />
             }
           </nz-select>
         </nz-form-control>

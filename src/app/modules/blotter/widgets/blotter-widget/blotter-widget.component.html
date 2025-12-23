@@ -9,8 +9,7 @@
       [showSettings]="shouldShowSettings"
       >
       <ng-template #headerRef>
-        <ats-widget-header
-          (switchSettings)="onSettingsChange()"
+        <ats-widget-header (switchSettings)="onSettingsChange()"
           [guid]="guid"
           [hasSettings]="true"
           [linkToActive]="settings.linkToActive ?? null"
@@ -19,7 +18,7 @@
           [customTitle]="title$ | async"
           badgeShape="square"
           [widgetMeta]="widgetInstance().widgetMeta"
-        ></ats-widget-header>
+         />
       </ng-template>
       <ng-template #contentRef>
         <div (nzResizeObserve)="containerSizeChanged($event)" class="container"
@@ -38,13 +37,11 @@
                   @if (marketType$ | async; as marketType) {
                     <div class="h-100 show-scroll">
                       @if (!marketType || marketType !== marketTypes.Forward) {
-                        <ats-common-summary
-                          [(shouldShowSettings)]="shouldShowSettings"
-                        [guid]="guid"></ats-common-summary>
+                        <ats-common-summary [(shouldShowSettings)]="shouldShowSettings"
+                        [guid]="guid" />
                       }
                       @if (marketType === marketTypes.Forward) {
-                        <ats-forward-summary
-                        [guid]="guid"></ats-forward-summary>
+                        <ats-forward-summary [guid]="guid" />
                       }
                     </div>
                   }
@@ -54,43 +51,42 @@
             @if (settings.showOrders ?? true) {
               <nz-tab [nzTitle]="t('blotter.ordersTab')" nzForceRender>
                 <ng-template nz-tab>
-                  <ats-orders [guid]="guid"></ats-orders>
+                  <ats-orders [guid]="guid" />
                 </ng-template>
               </nz-tab>
             }
             @if (settings.showStopOrders ?? true) {
               <nz-tab [nzTitle]="t('blotter.stopOrdersTab')" nzForceRender>
                 <ng-template nz-tab>
-                  <ats-stop-orders [guid]="guid"></ats-stop-orders>
+                  <ats-stop-orders [guid]="guid" />
                 </ng-template>
               </nz-tab>
             }
             @if (settings.showPositions ?? true) {
               <nz-tab [nzTitle]="t('blotter.positionsTab')" nzForceRender>
                 <ng-template nz-tab>
-                  <ats-positions [marketType]="marketType$ | async" [guid]="guid"></ats-positions>
+                  <ats-positions [marketType]="marketType$ | async" [guid]="guid" />
                 </ng-template>
               </nz-tab>
             }
             @if (settings.showTrades ?? true) {
               <nz-tab [nzTitle]="t('blotter.tradesTab')" nzForceRender>
                 <ng-template nz-tab>
-                  <ats-trades [guid]="guid"></ats-trades>
+                  <ats-trades [guid]="guid" />
                 </ng-template>
               </nz-tab>
             }
             @if (settings.showRepoTrades) {
               <nz-tab [nzTitle]="t('blotter.repoTradesTab')" nzForceRender>
                 <ng-template nz-tab>
-                  <ats-repo-trades [guid]="guid"></ats-repo-trades>
+                  <ats-repo-trades [guid]="guid" />
                 </ng-template>
               </nz-tab>
             }
             @if (settings.showHistoryTrades ?? true) {
               <nz-tab [nzTitle]="t('blotter.tradesHistoryTab')" nzForceRender>
                 <ng-template nz-tab>
-                  <ats-trades-history [guid]="guid">
-                  </ats-trades-history>
+                  <ats-trades-history [guid]="guid" />
                 </ng-template>
               </nz-tab>
             }
@@ -100,8 +96,7 @@
                 nzForceRender
                 >
                 <ng-template nz-tab>
-                  <ats-push-notifications [guid]="guid">
-                  </ats-push-notifications>
+                  <ats-push-notifications [guid]="guid" />
                 </ng-template>
                 <ng-template #titleTemplate>
                   <span>
@@ -119,7 +114,7 @@
 </ng-container>
 
 <ng-template #settingsRef>
-  <ats-blotter-settings (settingsChange)="onSettingsChange()" [guid]='guid'></ats-blotter-settings>
+  <ats-blotter-settings (settingsChange)="onSettingsChange()" [guid]='guid' />
 </ng-template>
 
-<ats-orders-group-modal-widget [guid]="guid"></ats-orders-group-modal-widget>
+<ats-orders-group-modal-widget [guid]="guid" />

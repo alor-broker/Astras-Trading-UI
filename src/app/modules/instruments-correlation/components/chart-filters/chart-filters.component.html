@@ -11,8 +11,7 @@
             >
             @for (list of availableLists$ | async; track list) {
               <nz-option [nzLabel]="tTitle('instruments.' + getTitleTranslationKey(list), {fallback: list.title})"
-                [nzValue]="list.id">
-              </nz-option>
+                [nzValue]="list.id" />
             }
           </nz-select>
         </ng-container>
@@ -28,8 +27,7 @@
           >
           @for (timeframe of timeframes; track timeframe) {
             <nz-option [nzLabel]="t('instrumentsCorrelationCorrelationChart.parametersForm.timeframeOptions.' + timeframe.key)"
-              [nzValue]="timeframe.value">
-            </nz-option>
+              [nzValue]="timeframe.value" />
           }
         </nz-select>
       </nz-form-control>
@@ -44,8 +42,7 @@
           >
           @for (detrendType of detrendTypes; track detrendType) {
             <nz-option [nzLabel]="t('instrumentsCorrelationCorrelationChart.parametersForm.detrendTypeOptions.' + detrendType)"
-              [nzValue]="detrendType">
-            </nz-option>
+              [nzValue]="detrendType" />
           }
         </nz-select>
       </nz-form-control>

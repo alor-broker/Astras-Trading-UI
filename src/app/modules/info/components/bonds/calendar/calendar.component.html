@@ -1,7 +1,7 @@
 <ng-container *transloco="let t; scope: 'info/calendar'">
   @let targetBond = bond();
   @if (targetBond.coupons == null && targetBond.amortizations == null && targetBond.offers == null) {
-    <nz-empty nzNotFoundImage="simple"></nz-empty>
+    <nz-empty nzNotFoundImage="simple" />
   }
 
   @if (targetBond.coupons != null) {

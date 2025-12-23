@@ -44,17 +44,16 @@
 
       <h2>{{t('arbitrageSpreadArbitrageSpreadManage.firstLegTitle')}}</h2>
 
-      <ats-spread-leg formControlName="firstLeg" [portfolios]="(portfolios$ | async) ?? []"></ats-spread-leg>
+      <ats-spread-leg formControlName="firstLeg" [portfolios]="(portfolios$ | async) ?? []" />
     </div>
 
     <div class="d-flex flex-column mt-10">
       <h2>{{t('arbitrageSpreadArbitrageSpreadManage.secondLegTitle')}}</h2>
 
-      <ats-spread-leg
-        formControlName="secondLeg"
+      <ats-spread-leg formControlName="secondLeg"
         [isSideNeeded]="true"
         [portfolios]="(portfolios$ | async) ?? []"
-      ></ats-spread-leg>
+       />
     </div>
 
     <nz-form-item class="mt-10">
@@ -62,17 +61,16 @@
         {{t('arbitrageSpreadArbitrageSpreadManage.isThirdLegLabel')}}
       </nz-form-label>
       <nz-form-control>
-        <nz-switch [formControl]="isThirdLegControl"></nz-switch>
+        <nz-switch [formControl]="isThirdLegControl" />
       </nz-form-control>
     </nz-form-item>
 
     @if (isThirdLegControl.value) {
       <div class="d-flex flex-column mt-10">
-        <ats-spread-leg
-          formControlName="thirdLeg"
+        <ats-spread-leg formControlName="thirdLeg"
           [isSideNeeded]="true"
           [portfolios]="(portfolios$ | async) ?? []"
-        ></ats-spread-leg>
+         />
       </div>
     }
   </div>

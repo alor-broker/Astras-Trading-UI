@@ -18,7 +18,7 @@
                     <nz-form-label nzRequired nzFor="instrument">{{ t('orderbookSettings.tickerLabel') }}</nz-form-label>
                     <nz-form-control [nzErrorTip]="t('orderbookSettings.tickerError')">
                       <ats-instrument-search formControlName="instrument"
-                      (instrumentSelected)="instrumentSelected($event)"></ats-instrument-search>
+                      (instrumentSelected)="instrumentSelected($event)" />
                     </nz-form-control>
                   </nz-form-item>
                   <nz-form-item>
@@ -30,11 +30,9 @@
                   <nz-form-item>
                     <nz-form-label nzFor="instrumentGroup">{{ t('orderbookSettings.instrumentGroupLabel') }}</nz-form-label>
                     <nz-form-control [nzErrorTip]="t('orderbookSettings.instrumentGroupError')">
-                      <ats-instrument-board-select
-                        [instrument]="form.value.instrument ?? null"
+                      <ats-instrument-board-select [instrument]="form.value.instrument ?? null"
                         [placeholder]="t('orderbookSettings.instrumentGroupLabel')"
-                        formControlName="instrumentGroup">
-                      </ats-instrument-board-select>
+                        formControlName="instrumentGroup" />
                     </nz-form-control>
                   </nz-form-item>
                 </nz-collapse-panel>
@@ -45,14 +43,12 @@
                     {{ t('orderbookSettings.depthLabel') }}
                   </nz-form-label>
                   <nz-form-control>
-                    <nz-slider
-                      [nzMin]="validationOptions.depth.min"
+                    <nz-slider [nzMin]="validationOptions.depth.min"
                       [nzMax]="validationOptions.depth.max"
                       [nzStep]="1"
                       [nzMarks]="getSliderMarks(validationOptions.depth.min, validationOptions.depth.max)"
                       formControlName="depth"
-                      >
-                    </nz-slider>
+                       />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
@@ -61,9 +57,9 @@
                   <nz-form-control>
                     <nz-select formControlName="columnsOrder">
                       <nz-option [nzValue]="columnsOrderEnum.VolumesAtTheEdges"
-                      [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheEdges')"></nz-option>
+                      [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheEdges')" />
                       <nz-option [nzValue]="columnsOrderEnum.VolumesAtTheMiddle"
-                      [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheMiddle')"></nz-option>
+                      [nzLabel]="t('orderbookSettings.columnOrders.volumesAtTheMiddle')" />
                     </nz-select>
                   </nz-form-control>
                 </nz-form-item>
@@ -73,10 +69,9 @@
                   <nz-form-control>
                     <nz-select formControlName='volumeDisplayFormat'>
                       @for (option of availableNumberFormats; track option) {
-                        <nz-option
-                          [nzLabel]="t('numberDisplayFormatOptions.' + option, { fallback: option })"
+                        <nz-option [nzLabel]="t('numberDisplayFormatOptions.' + option, { fallback: option })"
                           [nzValue]="option"
-                        ></nz-option>
+                         />
                       }
                     </nz-select>
                   </nz-form-control>
@@ -84,19 +79,19 @@
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="showChart">{{ t('orderbookSettings.displayChartLabel') }}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='showChart'></nz-switch>
+                    <nz-switch formControlName='showChart' />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="showTable">{{ t('orderbookSettings.displayTableLabel') }}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='showTable'></nz-switch>
+                    <nz-switch formControlName='showTable' />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item class="one-row">
                   <nz-form-label nzFor="showVolume">{{ t('orderbookSettings.displayVolumeLabel') }}</nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='showVolume'></nz-switch>
+                    <nz-switch formControlName='showVolume' />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item class="one-row">
@@ -105,7 +100,7 @@
                     nzFor="showYieldForBonds">{{ t('orderbookSettings.displayYieldForBondsLabel') }}
                   </nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='showYieldForBonds'></nz-switch>
+                    <nz-switch formControlName='showYieldForBonds' />
                   </nz-form-control>
                 </nz-form-item>
                 <nz-form-item class="one-row">
@@ -113,7 +108,7 @@
                     nzNoColon>{{ t('orderbookSettings.showPriceWithZeroPaddingLabel') }}
                   </nz-form-label>
                   <nz-form-control>
-                    <nz-switch formControlName='showPriceWithZeroPadding'></nz-switch>
+                    <nz-switch formControlName='showPriceWithZeroPadding' />
                   </nz-form-control>
                 </nz-form-item>
               </nz-collapse-panel>
@@ -132,7 +127,7 @@
                       ></span>
                     </nz-form-label>
                     <nz-form-control>
-                      <nz-switch formControlName='useOrderWidget'></nz-switch>
+                      <nz-switch formControlName='useOrderWidget' />
                     </nz-form-control>
                   </nz-form-item>
                 </nz-collapse-panel>

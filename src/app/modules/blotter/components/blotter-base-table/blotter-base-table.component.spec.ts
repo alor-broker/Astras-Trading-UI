@@ -24,7 +24,7 @@ import {MockComponents} from "ng-mocks";
   ],
   template: `
     <div class="table-container" [style]="{ height: '100%'}">
-      <nz-table #nzTable></nz-table>
+      <nz-table #nzTable />
     </div>
   `
 })
@@ -61,7 +61,7 @@ class TestComponent extends BlotterBaseTableComponent<{ id: string }, object> {
   imports: [
     TestComponent
   ],
-  template: '<ats-test-comp [guid]="guid"></ats-test-comp>'
+  template: '<ats-test-comp [guid]="guid" />'
 })
 class TestWrapperComponent {
   guid = 'testGuid';

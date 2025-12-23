@@ -95,7 +95,7 @@
                 <span>{{ column.transformFn ? column.transformFn(data) : data[column.id] }}</span>
                 @if (data['badges']?.length && column.showBadges) {
                   <span>&nbsp;</span>
-                  <ats-merged-badge [colors]="data['badges']"></ats-merged-badge>
+                  <ats-merged-badge [colors]="data['badges']" />
                 }
               </div>
             </td>
@@ -121,11 +121,9 @@
                 [nzDropdownMatchSelectWidth]="false"
                 >
                 @for (item of column.filterData.filters; track item.value) {
-                  <nz-option
-                    [nzLabel]="item.text"
+                  <nz-option [nzLabel]="item.text"
                     [nzValue]="item.value"
-                    >
-                  </nz-option>
+                     />
                 }
               </nz-select>
             }
@@ -143,11 +141,10 @@
                   />
               }
               @if (column.filterData.inputFieldType === inputFieldType.Number) {
-                <ats-input-number
-                  class="mb-10"
+                <ats-input-number class="mb-10"
                   [formControl]="getFilterControl(column.filterData.filterName)!"
                   [placeholder]="column.displayName"
-                ></ats-input-number>
+                 />
               }
             }
             @if (column.filterData.filterType === filterTypes.Interval) {
@@ -168,16 +165,14 @@
                   />
               }
               @if (column.filterData.inputFieldType === inputFieldType.Number) {
-                <ats-input-number
-                  class="mb-10"
+                <ats-input-number class="mb-10"
                   [placeholder]="column.displayName + ', ' + t('from')"
                   [formControl]="getFilterControl(column.filterData.intervalStartName!)!"
-                ></ats-input-number>
-                <ats-input-number
-                  class="mb-10"
+                 />
+                <ats-input-number class="mb-10"
                   [placeholder]="column.displayName + ', ' + t('to')"
                   [formControl]="getFilterControl(column.filterData.intervalEndName!)!"
-                ></ats-input-number>
+                 />
               }
             }
             <button

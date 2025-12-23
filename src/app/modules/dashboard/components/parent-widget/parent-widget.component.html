@@ -9,178 +9,137 @@
   >
   @switch (targetWidgetInstance.instance.widgetType) {
     @case ('order-book') {
-      <ats-orderbook-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-orderbook-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-      ></ats-orderbook-widget>
+       />
     }
     @case ('scalper-order-book') {
-      <ats-scalper-order-book-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-scalper-order-book-widget [widgetInstance]="targetWidgetInstance"
         [isActive]="(isWidgetActivated$ | async) ?? false"
         [isBlockWidget]="isBlockWidget()"
-      ></ats-scalper-order-book-widget>
+       />
     }
     @case ('light-chart') {
-      <ats-light-chart-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-light-chart-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-      ></ats-light-chart-widget>
+       />
     }
     @case ('instrument-select') {
-      <ats-instrument-select-widget
-        [widgetInstance]="targetWidgetInstance"
-      [isBlockWidget]="isBlockWidget()"></ats-instrument-select-widget>
+      <ats-instrument-select-widget [widgetInstance]="targetWidgetInstance"
+      [isBlockWidget]="isBlockWidget()" />
     }
     @case ('blotter') {
-      <ats-blotter-widget
-        [widgetInstance]="targetWidgetInstance"
-      [isBlockWidget]="isBlockWidget()"></ats-blotter-widget>
+      <ats-blotter-widget [widgetInstance]="targetWidgetInstance"
+      [isBlockWidget]="isBlockWidget()" />
     }
     @case ('instrument-info') {
-      <ats-info-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-info-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-      ></ats-info-widget>
+       />
     }
     @case ('all-trades') {
-      <ats-all-trades-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-all-trades-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-      ></ats-all-trades-widget>
+       />
     }
     @case ('news') {
-      <ats-news-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-news-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-      ></ats-news-widget>
+       />
     }
     @case ('exchange-rate') {
-      <ats-exchange-rate-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-exchange-rate-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-      ></ats-exchange-rate-widget>
+       />
     }
     @case ('tech-chart') {
-      <ats-tech-chart-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-tech-chart-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-      ></ats-tech-chart-widget>
+       />
     }
     @case ('all-instruments') {
-      <ats-all-instruments-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-all-instruments-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-      ></ats-all-instruments-widget>
+       />
     }
     @case ('order-submit') {
-      <ats-order-submit-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-order-submit-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-      ></ats-order-submit-widget>
+       />
     }
     @case ('orders-basket') {
-      <ats-orders-basket-widget
-        [widgetInstance]="targetWidgetInstance"
-        [isBlockWidget]="isBlockWidget()">
-      </ats-orders-basket-widget>
+      <ats-orders-basket-widget [widgetInstance]="targetWidgetInstance"
+        [isBlockWidget]="isBlockWidget()" />
     }
     @case ('treemap') {
-      <ats-treemap-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-treemap-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-        >
-      </ats-treemap-widget>
+         />
     }
     @case ('ribbon') {
-      <ats-ribbon-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-ribbon-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-        >
-      </ats-ribbon-widget>
+         />
     }
     @case ('events-calendar') {
-      <ats-events-calendar-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-events-calendar-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-        >
-      </ats-events-calendar-widget>
+         />
     }
     @case ('option-board') {
-      <ats-option-board-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-option-board-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-      ></ats-option-board-widget>
+       />
     }
     @case ('arbitrage-spread') {
-      <ats-arbitrage-spread-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-arbitrage-spread-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-        >
-      </ats-arbitrage-spread-widget>
+         />
     }
     @case ('portfolio-summary') {
-      <ats-portfolio-summary-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-portfolio-summary-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-        >
-      </ats-portfolio-summary-widget>
+         />
     }
     @case ('instruments-correlation') {
-      <ats-instruments-correlation-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-instruments-correlation-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-        >
-      </ats-instruments-correlation-widget>
+         />
     }
     @case ('bond-screener') {
-      <ats-bond-screener-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-bond-screener-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-        >
-      </ats-bond-screener-widget>
+         />
     }
     @case ('mobile-home-screen') {
-      <ats-mobile-home-screen-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-mobile-home-screen-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-        >
-      </ats-mobile-home-screen-widget>
+         />
     }
     @case ('ai-graphs') {
-      <ats-ai-graphs-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-ai-graphs-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-        >
-      </ats-ai-graphs-widget>
+         />
     }
     @case ('invest-ideas') {
-      <ats-invest-ideas-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-invest-ideas-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-        >
-      </ats-invest-ideas-widget>
+         />
     }
     @case ('portfolio-charts') {
-      <ats-portfolio-charts-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-portfolio-charts-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-        >
-      </ats-portfolio-charts-widget>
+         />
     }
     @case ('market-trends') {
-      <ats-market-trends-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-market-trends-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-        >
-      </ats-market-trends-widget>
+         />
     }
     @case ('admin-clients') {
-      <ats-admin-clients-widget
-        [widgetInstance]="targetWidgetInstance"
+      <ats-admin-clients-widget [widgetInstance]="targetWidgetInstance"
         [isBlockWidget]="isBlockWidget()"
-        >
-      </ats-admin-clients-widget>
+         />
     }
   }
 </div>

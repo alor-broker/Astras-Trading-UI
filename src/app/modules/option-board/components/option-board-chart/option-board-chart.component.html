@@ -2,7 +2,7 @@
   <div *ngrxLet="isLoading$ as isLoading" class="w-100 h-100 position-relative">
     @if (isLoading) {
       <div class="loading-indicator-container">
-        <nz-spin [nzSimple]="true" [nzSpinning]="true"></nz-spin>
+        <nz-spin [nzSimple]="true" [nzSpinning]="true" />
       </div>
     }
 
@@ -11,10 +11,8 @@
         <nz-select (ngModelChange)="selectedChartType$.next($event)"
           [ngModel]="selectedChartType$ | async">
           @for (chartType of chartTypes; track chartType) {
-            <nz-option
-              [nzLabel]="t('optionBoardOptionBoardChart.' + chartType + '.chartTitle', { fallback: chartType})"
-              [nzValue]="chartType">
-            </nz-option>
+            <nz-option [nzLabel]="t('optionBoardOptionBoardChart.' + chartType + '.chartTitle', { fallback: chartType})"
+              [nzValue]="chartType" />
           }
         </nz-select>
         <nz-space-compact>
@@ -40,10 +38,8 @@
             </canvas>
           </div>
         } @else {
-          <nz-empty
-            class="ant-list-empty-text"
-            nzNotFoundImage="simple">
-          </nz-empty>
+          <nz-empty class="ant-list-empty-text"
+            nzNotFoundImage="simple" />
         }
       </div>
     </div>

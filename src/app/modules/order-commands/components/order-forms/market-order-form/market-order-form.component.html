@@ -5,10 +5,9 @@
         <nz-form-item class="compact">
           <nz-form-label nzFor="quantity" nzRequired>{{ t('orderCommandsOrderForms.quantityLabel') }}</nz-form-label>
           <nz-form-control [nzErrorTip]="quantityError">
-            <ats-input-number formControlName="quantity" placeholder="0"></ats-input-number>
+            <ats-input-number formControlName="quantity" placeholder="0" />
             @if ((formInstrument.lotsize ?? 1) !== 1) {
-              <span>1 {{ t('orderCommandsOrderForms.lot') }} = <ats-short-number
-                [value]="formInstrument.lotsize"></ats-short-number>
+              <span>1 {{ t('orderCommandsOrderForms.lot') }} = <ats-short-number [value]="formInstrument.lotsize" />
                 {{ t('orderCommandsOrderForms.pcs') }}</span>
             }
           </nz-form-control>
@@ -34,10 +33,9 @@
                            formControlName="timeInForce"
                            nzAllowClear>
                   @for (timeInForce of timeInForceEnum | keyvalue; track timeInForce) {
-                    <nz-option
-                      [nzLabel]="t('orderCommandsOrderForms.timeInForceOptions.' + timeInForce.key)"
+                    <nz-option [nzLabel]="t('orderCommandsOrderForms.timeInForceOptions.' + timeInForce.key)"
                       [nzValue]="timeInForce.value"
-                    ></nz-option>
+                     />
                   }
                 </nz-select>
               </nz-form-control>
@@ -46,11 +44,9 @@
               <nz-form-label nzFor="instrumentGroup">{{ t('orderCommandsOrderForms.instrumentGroupLabel') }}
               </nz-form-label>
               <nz-form-control [nzErrorTip]="t('orderCommandsOrderForms.instrumentGroupError')">
-                <ats-instrument-board-select
-                  [instrument]="formInstrument"
+                <ats-instrument-board-select [instrument]="formInstrument"
                   [placeholder]="t('orderCommandsOrderForms.instrumentGroupPlaceholder')"
-                  formControlName="instrumentGroup">
-                </ats-instrument-board-select>
+                  formControlName="instrumentGroup" />
               </nz-form-control>
             </nz-form-item>
           </nz-collapse-panel>
@@ -58,21 +54,18 @@
       </form>
     </div>
     <div>
-      <ats-order-evaluation
-        (quantitySelect)="setQuantity($event)"
+      <ats-order-evaluation (quantitySelect)="setQuantity($event)"
         [evaluationProperties]="evaluationRequest$ | async"
-      ></ats-order-evaluation>
+       />
     </div>
     <div class="mt-8">
       @if (requestProcessing$ | async; as requestProcessing) {
-        <ats-buy-sell-buttons
-          (btnClick)="submitOrder($event)"
+        <ats-buy-sell-buttons (btnClick)="submitOrder($event)"
           [buyBtnDisabled]="!canSubmit || !!requestProcessing.orderSide"
           [buyBtnLoading]="requestProcessing.orderSide === sides.Buy"
           [sellBtnDisabled]="!canSubmit || !!requestProcessing.orderSide"
           [sellBtnLoading]="requestProcessing.orderSide === sides.Sell"
-        >
-        </ats-buy-sell-buttons>
+         />
       }
     </div>
   }

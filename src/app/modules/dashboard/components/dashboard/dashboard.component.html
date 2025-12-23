@@ -6,7 +6,7 @@
           @for (item of items; track getItemTrackKey($index, item)) {
             <gridster-item [item]="item.gridsterItem">
               <div class="widget-container">
-                <ats-parent-widget [widgetInstance]="item.instance" [isBlockWidget]="isBlockWidget"></ats-parent-widget>
+                <ats-parent-widget [widgetInstance]="item.instance" [isBlockWidget]="isBlockWidget" />
               </div>
             </gridster-item>
           }

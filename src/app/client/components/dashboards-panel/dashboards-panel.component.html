@@ -49,11 +49,10 @@
               }
               <span><i nz-icon nzType="down" nzTheme="outline" class="arrow-icon"></i></span>
               <nz-dropdown-menu #dashboardsMenu="nzDropdownMenu">
-                <ats-select-dashboard-menu
-                  (hideMenu)="changeDashboardSelectionMenuVisibility(false)"
+                <ats-select-dashboard-menu (hideMenu)="changeDashboardSelectionMenuVisibility(false)"
                   [visibilityChange]="(isDashboardSelectionMenuVisible$ | async) ?? false"
                   (isNewDashboardFocused)="dropdownTrigger$.next($event ? 'click' : 'hover')"
-                ></ats-select-dashboard-menu>
+                 />
               </nz-dropdown-menu>
             </button>
           }

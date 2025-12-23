@@ -2,14 +2,14 @@
   <div class="show-scroll h-100">
     @let currentStatus = runStatus();
     @if(currentStatus == null || currentStatus.status === Statuses.Initial) {
-      <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="t('aiGraphRunResults.runGraphMessage')"></nz-empty>
+      <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="t('aiGraphRunResults.runGraphMessage')" />
     } @else {
       @if (currentStatus.status === Statuses.Error) {
-        <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="t('aiGraphRunResults.graphRunErrorMessage')"></nz-empty>
+        <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="t('aiGraphRunResults.graphRunErrorMessage')" />
       }
 
       @if (currentStatus.status === Statuses.Loading) {
-        <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="t('aiGraphRunResults.loadingMessage')"></nz-empty>
+        <nz-empty nzNotFoundImage="simple" [nzNotFoundContent]="t('aiGraphRunResults.loadingMessage')" />
       }
 
       @if (currentStatus.status === Statuses.Success) {
@@ -22,7 +22,7 @@
           }
         } @empty {
           <nz-empty nzNotFoundImage="simple"
-                    [nzNotFoundContent]="t('aiGraphRunResults.noResultsToDisplayMessage')"></nz-empty>
+                    [nzNotFoundContent]="t('aiGraphRunResults.noResultsToDisplayMessage')" />
         }
       }
     }

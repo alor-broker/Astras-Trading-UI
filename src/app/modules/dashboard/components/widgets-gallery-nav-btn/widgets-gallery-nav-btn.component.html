@@ -12,9 +12,8 @@
   </button>
 </ng-container>
 
-<ats-widgets-gallery
-  [gallery]="widgetsGallery$ | async"
+<ats-widgets-gallery [gallery]="widgetsGallery$ | async"
   [(atsVisible)]="galleryVisible"
   (selected)="addWidget($event)"
   (resetDashboard)="resetDashboard()"
-></ats-widgets-gallery>
+ />

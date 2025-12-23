@@ -15,10 +15,9 @@
             <nz-form-control>
               <nz-select [formControl]="ctrl.controls.currency">
                 @for (cur of currencies; track cur) {
-                  <nz-option
-                    [nzLabel]="cur.firstCode"
+                  <nz-option [nzLabel]="cur.firstCode"
                     [nzValue]="cur.symbolTom"
-                  ></nz-option>
+                   />
                 }
               </nz-select>
             </nz-form-control>

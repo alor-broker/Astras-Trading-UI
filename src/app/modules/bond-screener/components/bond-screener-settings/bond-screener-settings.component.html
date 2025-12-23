@@ -20,11 +20,9 @@
               >
               <ng-container *transloco="let tBondScreener; scope: 'bond-screener/bond-screener'">
                 @for (item of bondScreenerColumns; track item) {
-                  <nz-option
-                    [nzLabel]="tBondScreener('bondScreenerBondScreener.columns.' + item.id)"
+                  <nz-option [nzLabel]="tBondScreener('bondScreenerBondScreener.columns.' + item.id)"
                     [nzValue]="item.id"
-                    >
-                  </nz-option>
+                     />
                 }
               </ng-container>
             </nz-select>
@@ -34,7 +32,7 @@
         <nz-form-item>
           <nz-form-label nzFor="hideExpired">{{t('bondScreenerSettings.hideExpired')}}</nz-form-label>
           <nz-form-control>
-            <nz-switch formControlName='hideExpired'></nz-switch>
+            <nz-switch formControlName='hideExpired' />
           </nz-form-control>
         </nz-form-item>
       </form>

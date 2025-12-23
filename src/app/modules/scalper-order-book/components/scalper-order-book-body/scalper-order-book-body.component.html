@@ -1,7 +1,7 @@
 <div class="d-flex flex-column h-100">
   <div>
     @if (dataContext) {
-      <ats-top-panel [guid]="guid()" [isActive]="isActive()" [dataContext]="dataContext"></ats-top-panel>
+      <ats-top-panel [guid]="guid()" [isActive]="isActive()" [dataContext]="dataContext" />
     }
   </div>
   <div class="flex-fill">
@@ -40,10 +40,9 @@
                       [defaultWidthPercent]="25"
                       [expandable]="vm.extendedSettings.widgetSettings.showTradesPanel ?? false"
                       >
-                      <ats-trade-clusters-panel
-                        [dataContext]="dataContext"
+                      <ats-trade-clusters-panel [dataContext]="dataContext"
                         [xAxisStep]="shared.rowHeight"
-                      ></ats-trade-clusters-panel>
+                       />
                     </ats-panel>
                   }
                   @if (vm.extendedSettings.widgetSettings.showTradesPanel) {
@@ -53,10 +52,9 @@
                       [minWidthPx]="40"
                       [defaultWidthPercent]="25"
                       >
-                      <ats-trades-panel
-                        [dataContext]="dataContext"
+                      <ats-trades-panel [dataContext]="dataContext"
                         [xAxisStep]="shared.rowHeight"
-                      ></ats-trades-panel>
+                       />
                     </ats-panel>
                   }
                   <ats-panel
@@ -64,15 +62,13 @@
                     [minWidthPx]="75"
                     [defaultWidthPercent]="50"
                     >
-                    <ats-scalper-order-book-table
-                      [dataContext]="dataContext"
+                    <ats-scalper-order-book-table [dataContext]="dataContext"
                       [isActive]="isActive()"
                       [rowHeight]="shared.rowHeight"
                       [hideTooltips]="vm.extendedSettings.widgetSettings.hideTooltips ?? false"
                       (mouseenter)="isTableHovered$.next(true)"
                       (mouseleave)="isTableHovered$.next(false)"
-                      >
-                    </ats-scalper-order-book-table>
+                       />
                   </ats-panel>
                 </ats-panels-container>
               }
@@ -83,36 +79,32 @@
         <ng-container *ngrxLet="dataContext.extendedSettings$ as settings">
           @if (settings.widgetSettings.showLimitOrdersVolumeIndicators) {
             <div class="position-absolute top-0 start-50 translate-middle-x lh-1">
-              <ats-limit-orders-volume-indicator
-                [dataContext]="dataContext"
+              <ats-limit-orders-volume-indicator [dataContext]="dataContext"
                 [side]="sides.Sell"
                 [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
-              ></ats-limit-orders-volume-indicator>
+               />
             </div>
           }
           @if (settings.widgetSettings.showLimitOrdersVolumeIndicators) {
             <div class="position-absolute bottom-0 start-50 translate-middle-x lh-1">
-              <ats-limit-orders-volume-indicator
-                [dataContext]="dataContext"
+              <ats-limit-orders-volume-indicator [dataContext]="dataContext"
                 [side]="sides.Buy"
                 [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
-              ></ats-limit-orders-volume-indicator>
+               />
             </div>
           }
 
           <div class="position-absolute top-0 end-0">
-            <ats-orders-indicator
-              [visible]="(hiddenOrdersIndicators$ | async)?.up ?? false"
+            <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.up ?? false"
               [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
               direction="up"
-            ></ats-orders-indicator>
+             />
           </div>
           <div class="position-absolute bottom-0 end-0">
-            <ats-orders-indicator
-              [visible]="(hiddenOrdersIndicators$ | async)?.down ?? false"
+            <ats-orders-indicator [visible]="(hiddenOrdersIndicators$ | async)?.down ?? false"
               [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
               direction="down"
-            ></ats-orders-indicator>
+             />
           </div>
 
           <div
@@ -123,10 +115,9 @@
             (cdkDragEnded)="saveFloatingPanelPosition($event, topFloatingPanelPositionStateKey)"
             #topFloatingPanelContainer
             >
-            <ats-top-floating-panel
-              [guid]="guid()"
+            <ats-top-floating-panel [guid]="guid()"
               [hideTooltips]="settings.widgetSettings.hideTooltips ?? false"
-            ></ats-top-floating-panel>
+             />
           </div>
 
           <div
@@ -137,21 +128,20 @@
             (cdkDragEnded)="saveFloatingPanelPosition($event, bottomFloatingPanelPositionStateKey)"
             #bottomFloatingPanelContainer
             >
-            <ats-bottom-floating-panel [guid]="guid()" [isActive]="isActive()" [dataContext]="dataContext"></ats-bottom-floating-panel>
+            <ats-bottom-floating-panel [guid]="guid()" [isActive]="isActive()" [dataContext]="dataContext" />
           </div>
 
           <div class="position-absolute bottom-0 w-100" id="possible-actions-panel-container">
-            <ats-possible-actions-panel></ats-possible-actions-panel>
+            <ats-possible-actions-panel />
           </div>
         </ng-container>
         @if ((dataContext.orderBookBody$  | async)?.length === 0 && !shared.isLoading) {
           <div
             class="position-absolute top-0 w-100"
             >
-            <nz-empty
-              class="ant-list-empty-text"
+            <nz-empty class="ant-list-empty-text"
               nzNotFoundImage="simple"
-            ></nz-empty>
+             />
           </div>
         }
       </nz-spin>

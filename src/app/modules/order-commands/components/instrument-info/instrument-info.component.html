@@ -2,10 +2,9 @@
   @if (viewData$ | async; as data) {
     <div class="content">
       <div class='instrument-logo'>
-        <ats-instrument-icon
-          [symbol]="data.instrumentKey.symbol"
+        <ats-instrument-icon [symbol]="data.instrumentKey.symbol"
           [size]="64"
-        ></ats-instrument-icon>
+         />
         @if (data.position != null && data.position.abs > 0) {
           <span
             class="badge"

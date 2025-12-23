@@ -51,9 +51,8 @@
               }
               <span class="cell-value">
                 @if (settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix) {
-                  <ats-short-number
-                    [value]="row.bidVolume"
-                  [allowRounding]="true" ></ats-short-number>
+                  <ats-short-number [value]="row.bidVolume"
+                  [allowRounding]="true"  />
                 } @else {
                   <span>{{row.bidVolume}}</span>
                 }
@@ -71,9 +70,8 @@
               >
               <span class="cell-value">
                 @if (settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix) {
-                  <ats-short-number
-                    [value]="row.askVolume"
-                  [allowRounding]="true" ></ats-short-number>
+                  <ats-short-number [value]="row.askVolume"
+                  [allowRounding]="true"  />
                 } @else {
                   <span>{{row.askVolume}}</span>
                 }

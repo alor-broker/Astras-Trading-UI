@@ -4,8 +4,7 @@
   (nzResizeObserve)="containerSizeChanged($event)"
   nzResizeObserver
   >
-  <ats-infinite-scroll-table
-    (filterApplied)="applyFilter($event)"
+  <ats-infinite-scroll-table (filterApplied)="applyFilter($event)"
     (rowClick)="rowClick($event)"
     (scrolled)="scrolled()"
     (orderColumnChange)="changeColumnOrder($event)"
@@ -17,7 +16,7 @@
     [tableContainerWidth]="td.contentSize?.width || 0"
     (rowContextMenu)="openContextMenu($event.event, contextMenu, $event.row)"
     #table
-  ></ats-infinite-scroll-table>
+   />
 
   <div
     class="export-button-container"
@@ -33,5 +32,5 @@
     }
   </div>
 
-  <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>
+  <ats-add-to-watchlist-menu #contextMenu />
 </div>

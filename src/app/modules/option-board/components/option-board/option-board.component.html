@@ -8,8 +8,7 @@
               [ngModel]="dataContext.selectedParameter$ | async">
               @for (parameter of parameters; track parameter) {
                 <nz-option [nzLabel]="t('optionBoard.parameterOptions.' + parameter, { fallback: parameter})"
-                  [nzValue]="parameter">
-                </nz-option>
+                  [nzValue]="parameter" />
               }
             </nz-select>
           </div>
@@ -18,8 +17,7 @@
             <nz-select (ngModelChange)="dataContext.selectedSide$.next($event)"
               [ngModel]="dataContext.selectedSide$ | async">
               @for (side of optionSides; track side) {
-                <nz-option [nzLabel]="t('optionBoard.sideOptions.' + side, { fallback: side})" [nzValue]="side">
-                </nz-option>
+                <nz-option [nzLabel]="t('optionBoard.sideOptions.' + side, { fallback: side})" [nzValue]="side" />
               }
             </nz-select>
           </div>
@@ -54,19 +52,19 @@
 
       <div class="body flex-fill w-100 mt-10">
         <div class="tab" [hidden]="vm.selectedTab !== ComponentTabs.AllOptions">
-          <ats-all-options [dataContext]="dataContext"></ats-all-options>
+          <ats-all-options [dataContext]="dataContext" />
         </div>
 
         <div class="tab" [hidden]="vm.selectedTab !== ComponentTabs.OptionsByExpiration">
-          <ats-all-options-list-view [guid]="guid()" [dataContext]="dataContext"></ats-all-options-list-view>
+          <ats-all-options-list-view [guid]="guid()" [dataContext]="dataContext" />
         </div>
 
         <div class="tab" [hidden]="vm.selectedTab !== ComponentTabs.SelectedOptions">
-          <ats-selected-options [dataContext]="dataContext"></ats-selected-options>
+          <ats-selected-options [dataContext]="dataContext" />
         </div>
 
         <div class="tab" [hidden]="vm.selectedTab !== ComponentTabs.Charts">
-          <ats-option-board-charts-layout [dataContext]="dataContext"></ats-option-board-charts-layout>
+          <ats-option-board-charts-layout [dataContext]="dataContext" />
         </div>
       </div>
     </div>

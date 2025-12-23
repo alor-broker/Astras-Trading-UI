@@ -33,7 +33,7 @@ class TestComponent extends BaseTableComponent<any, any> {
   imports: [
     TestComponent
   ],
-  template: '<ats-test-comp></ats-test-comp>'
+  template: '<ats-test-comp />'
 })
 class TestWrapperComponent {}
 

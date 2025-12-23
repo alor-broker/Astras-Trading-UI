@@ -21,7 +21,7 @@
         </button>
       </div>
       @if (symbolsOfSelectedPortfolio$ | async; as symbols) {
-        <ats-calendar-view [symbols]="symbols"></ats-calendar-view>
+        <ats-calendar-view [symbols]="symbols" />
       }
     </nz-tab>
     <nz-tab [nzTitle]="t('eventsCalendar.listViewTabTitle')">
@@ -45,7 +45,7 @@
         </button>
       </div>
       @if (symbolsOfSelectedPortfolio$ | async; as symbols) {
-        <ats-list-view [symbols]="symbols"></ats-list-view>
+        <ats-list-view [symbols]="symbols" />
       }
     </nz-tab>
   </nz-tabs>

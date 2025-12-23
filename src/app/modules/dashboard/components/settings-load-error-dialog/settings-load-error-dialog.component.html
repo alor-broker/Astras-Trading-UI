@@ -6,11 +6,10 @@
     nzClosable="false"
     nzMaskClosable="false">
     <ng-container *nzModalContent>
-      <nz-result
-        [nzSubTitle]="subtitle"
+      <nz-result [nzSubTitle]="subtitle"
         [nzTitle]="t('dashboardSettingsLoadErrorDialog.errorText')"
         nzStatus="404"
-      ></nz-result>
+       />
       <ng-template #subtitle>
         <div class="text-center mt-5">
           <span>{{ t('dashboardSettingsLoadErrorDialog.suggestionText') }}</span>

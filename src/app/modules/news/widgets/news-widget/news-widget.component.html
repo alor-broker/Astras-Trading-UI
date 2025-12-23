@@ -9,8 +9,7 @@
       [showContentScroll]="false"
       >
       <ng-template #headerRef>
-        <ats-widget-header
-          [guid]="guid"
+        <ats-widget-header [guid]="guid"
           [hasSettings]="true"
           [selectedBadgeColor]="settings.badgeColor"
           [showBadgesMenu]="(showBadge$ | async) ?? false"
@@ -18,16 +17,15 @@
           [customTitle]="titleText + ' ' + (widgetTitle$ | async)"
           [widgetMeta]="widgetInstance().widgetMeta"
           (switchSettings)="onSettingsChange()"
-        ></ats-widget-header>
+         />
       </ng-template>
       <ng-template #contentRef>
-        <ats-news
-          [guid]="guid"
+        <ats-news [guid]="guid"
           (sectionChange)="sectionChange($event)"
-        ></ats-news>
+         />
       </ng-template>
       <ng-template #settingsRef>
-        <ats-news-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-news-settings>
+        <ats-news-settings (settingsChange)="onSettingsChange()" [guid]="guid" />
       </ng-template>
     </ats-widget-skeleton>
   }

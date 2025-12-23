@@ -12,19 +12,19 @@
       <div class="overflow-hidden">
         <nz-tabs [style.max-height]="(tabSetHeight$ | async) + 'px'">
           <nz-tab (nzSelect)="tabChange.emit(tabNames.usefulLinks)" [nzTitle]="t('terminalSettings.usefulLinksTabTitle')">
-            <ats-useful-links></ats-useful-links>
+            <ats-useful-links />
           </nz-tab>
           @if (settingsForm) {
             <nz-tab (nzSelect)="tabChange.emit(tabNames.main)"
               [nzTitle]="t('terminalSettings.generalSettingsTabTitle')">
               @if (settingsForm.controls.generalSettings; as generalSettings) {
-                <ats-general-settings-form [excludedSettings]="hiddenSections()" [formControl]="generalSettings"></ats-general-settings-form>
+                <ats-general-settings-form [excludedSettings]="hiddenSections()" [formControl]="generalSettings" />
               }
               @if (settingsForm.controls.portfoliosCurrency; as portfoliosCurrency) {
                 <h3>{{t('terminalSettings.defaultCurrencyHeader')}}</h3>
-                <ats-portfolios-currency-form [formControl]="portfoliosCurrency"></ats-portfolios-currency-form>
+                <ats-portfolios-currency-form [formControl]="portfoliosCurrency" />
               }
-              <nz-divider></nz-divider>
+              <nz-divider />
               <div nz-row class="mt-10" nzJustify="space-between" [nzGutter]="[10,10]">
                 <div nz-col nzXs="24" nzSm="12">
                   <button (click)="clearDashboard()" id="reset-settings-btn" nz-button nzDanger nzBlock>
@@ -45,11 +45,11 @@
             <nz-tab
               (nzSelect)="tabChange.emit(tabNames.hotKeys)"
               [nzTitle]="t('terminalSettings.hotkeysTabTitle')">
-              <ats-hot-key-settings-form [formControl]="hotKeysSettings"></ats-hot-key-settings-form>
+              <ats-hot-key-settings-form [formControl]="hotKeysSettings" />
               @if (settingsForm.controls.scalperOrderBookMouseActions; as scalperOrderBookMouseActions) {
-                <nz-divider></nz-divider>
+                <nz-divider />
                 <h3>{{t('terminalSettings.scalperMouseActionsHeader')}}</h3>
-                <ats-scalper-mouse-actions-form [formControl]="scalperOrderBookMouseActions"></ats-scalper-mouse-actions-form>
+                <ats-scalper-mouse-actions-form [formControl]="scalperOrderBookMouseActions" />
               }
             </nz-tab>
           }
@@ -57,7 +57,7 @@
             <nz-tab
               (nzSelect)="tabChange.emit(tabNames.notifications)"
               [nzTitle]="t('terminalSettings.notificationsTabTitle')">
-              <ats-instant-notifications-form [formControl]="instantNotificationsSettings"></ats-instant-notifications-form>
+              <ats-instant-notifications-form [formControl]="instantNotificationsSettings" />
             </nz-tab>
           }
         </nz-tabs>

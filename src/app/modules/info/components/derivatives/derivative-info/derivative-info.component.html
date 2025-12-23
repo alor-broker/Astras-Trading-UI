@@ -1,7 +1,7 @@
 <ng-container *transloco="let t; scope: 'info'">
   <ng-container *ngrxLet="{ commonDescriptors: descriptors$, info: info$ } as vm">
     @if(vm.info == null) {
-      <nz-empty nzNotFoundImage="simple"></nz-empty>
+      <nz-empty nzNotFoundImage="simple" />
     } @else {
       <nz-tabs
         (mousedown)='$event.stopPropagation()'
@@ -10,7 +10,7 @@
       >
         @if (vm.commonDescriptors != null) {
           <nz-tab [nzTitle]="t('info.instrumentTab')">
-            <ats-descriptors-list [descriptors]="vm.commonDescriptors"></ats-descriptors-list>
+            <ats-descriptors-list [descriptors]="vm.commonDescriptors" />
           </nz-tab>
         }
       </nz-tabs>

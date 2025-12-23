@@ -25,7 +25,7 @@
                         <nz-option-group [nzLabel]="agreement">
                           @if (availablePortfolios.get(agreement); as portfolios) {
                             @for (portfolio of portfolios; track portfolio) {
-                              <nz-option [nzValue]="toPortfolioKey(portfolio)" [nzLabel]="portfolio.market + ' ' +  portfolio.portfolio"></nz-option>
+                              <nz-option [nzValue]="toPortfolioKey(portfolio)" [nzLabel]="portfolio.market + ' ' +  portfolio.portfolio" />
                             }
                           }
                         </nz-option-group>
@@ -48,22 +48,22 @@
               </nz-form-control>
             </nz-form-item>
           }
-          <nz-divider></nz-divider>
+          <nz-divider />
           <nz-form-item>
             <nz-form-label nzFor="showSummary">
               {{t('blotterSettings.showSummaryLabel')}}
             </nz-form-label>
             <nz-form-control>
-              <nz-switch formControlName='showSummary'></nz-switch>
+              <nz-switch formControlName='showSummary' />
             </nz-form-control>
           </nz-form-item>
-          <nz-divider></nz-divider>
+          <nz-divider />
           <nz-form-item>
             <nz-form-label nzFor="showOrders">
               {{t('blotterSettings.showOrdersLabel')}}
             </nz-form-label>
             <nz-form-control>
-              <nz-switch formControlName='showOrders'></nz-switch>
+              <nz-switch formControlName='showOrders' />
             </nz-form-control>
           </nz-form-item>
           @if (form.value.showOrders) {
@@ -106,7 +106,7 @@
               {{t('blotterSettings.showStopOrdersLabel')}}
             </nz-form-label>
             <nz-form-control>
-              <nz-switch formControlName='showStopOrders'></nz-switch>
+              <nz-switch formControlName='showStopOrders' />
             </nz-form-control>
           </nz-form-item>
           @if (form.value.showStopOrders) {
@@ -146,15 +146,15 @@
           }
           <nz-form-item>
             <nz-form-label nzFor="cancelOrdersWithoutConfirmation">{{t('blotterSettings.cancelWithoutConfirmLabel')}}</nz-form-label>
-            <nz-switch formControlName='cancelOrdersWithoutConfirmation'></nz-switch>
+            <nz-switch formControlName='cancelOrdersWithoutConfirmation' />
           </nz-form-item>
-          <nz-divider></nz-divider>
+          <nz-divider />
           <nz-form-item>
             <nz-form-label nzFor="showPositions">
               {{t('blotterSettings.showPositionsLabel')}}
             </nz-form-label>
             <nz-form-control>
-              <nz-switch formControlName='showPositions'></nz-switch>
+              <nz-switch formControlName='showPositions' />
             </nz-form-control>
           </nz-form-item>
           @if (form.value.showPositions) {
@@ -198,23 +198,23 @@
                 {{t('blotterSettings.showPositionActionsLabel')}}
               </nz-form-label>
               <nz-form-control>
-                <nz-switch formControlName='showPositionActions'></nz-switch>
+                <nz-switch formControlName='showPositionActions' />
               </nz-form-control>
             </nz-form-item>
           }
           @if (form.value.showPositions) {
             <nz-form-item>
               <nz-form-label nzFor="isSoldPositionsHidden">{{t('blotterSettings.hideSoldLabel')}}</nz-form-label>
-              <nz-switch formControlName='isSoldPositionsHidden'></nz-switch>
+              <nz-switch formControlName='isSoldPositionsHidden' />
             </nz-form-item>
           }
-          <nz-divider></nz-divider>
+          <nz-divider />
           <nz-form-item>
             <nz-form-label nzFor="showTrades">
               {{t('blotterSettings.showTradesLabel')}}
             </nz-form-label>
             <nz-form-control>
-              <nz-switch formControlName='showTrades'></nz-switch>
+              <nz-switch formControlName='showTrades' />
             </nz-form-control>
           </nz-form-item>
           @if (form.value.showTrades) {
@@ -257,7 +257,7 @@
               {{t('blotterSettings.showRepoTradesLabel')}}
             </nz-form-label>
             <nz-form-control>
-              <nz-switch formControlName='showRepoTrades'></nz-switch>
+              <nz-switch formControlName='showRepoTrades' />
             </nz-form-control>
           </nz-form-item>
           <ng-container *transloco="let tRepoTrades; scope: 'blotter/repo-trades'">
@@ -311,7 +311,7 @@
               {{t('blotterSettings.showHistoryTradesLabel')}}
             </nz-form-label>
             <nz-form-control>
-              <nz-switch formControlName='showHistoryTrades'></nz-switch>
+              <nz-switch formControlName='showHistoryTrades' />
             </nz-form-control>
           </nz-form-item>
           @if (form.value.showHistoryTrades) {
@@ -349,14 +349,14 @@
               </nz-form-control>
             </nz-form-item>
           }
-          <nz-divider></nz-divider>
+          <nz-divider />
           @if (isNotificationsSupported) {
             <nz-form-item>
               <nz-form-label nzFor="showNotifications">
                 {{t('blotterSettings.showNotificationsLabel')}}
               </nz-form-label>
               <nz-form-control>
-                <nz-switch formControlName='showNotifications'></nz-switch>
+                <nz-switch formControlName='showNotifications' />
               </nz-form-control>
             </nz-form-item>
             @if (form.value.showNotifications) {
