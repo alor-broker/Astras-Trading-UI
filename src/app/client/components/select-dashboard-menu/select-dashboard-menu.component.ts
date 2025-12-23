@@ -1,4 +1,4 @@
-import {Component, effect, EventEmitter, input, OnInit, Output} from '@angular/core';
+import {Component, effect, input, OnInit, output} from '@angular/core';
 import {Observable, take} from 'rxjs';
 import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Dashboard} from "../../../shared/models/dashboard/dashboard.model";
@@ -58,11 +58,9 @@ export class SelectDashboardMenuComponent implements OnInit {
 
   allDashboards$!: Observable<Dashboard[]>;
 
-  @Output()
-  hideMenu = new EventEmitter();
+  readonly hideMenu = output();
 
-  @Output()
-  isNewDashboardFocused = new EventEmitter<boolean>();
+  readonly isNewDashboardFocused = output<boolean>();
 
   visibilityChange = input<boolean>();
 

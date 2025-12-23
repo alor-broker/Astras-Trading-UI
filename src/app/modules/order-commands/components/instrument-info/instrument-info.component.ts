@@ -1,4 +1,4 @@
-import {Component, EventEmitter, input, OnInit, Output} from '@angular/core';
+import {Component, input, OnInit, output} from '@angular/core';
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {combineLatest, filter, map, Observable, shareReplay, switchMap} from "rxjs";
@@ -43,11 +43,9 @@ export class InstrumentInfoComponent implements OnInit {
     };
   }>;
 
-  @Output()
-  priceSelected = new EventEmitter<number>();
+  readonly priceSelected = output<number>();
 
-  @Output()
-  qtySelected = new EventEmitter<number>();
+  readonly qtySelected = output<number>();
 
   readonly instrumentKey = input.required<InstrumentKey>();
 

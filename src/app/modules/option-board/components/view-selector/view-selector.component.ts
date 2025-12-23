@@ -1,10 +1,9 @@
 import {
   Component,
   ContentChildren,
-  EventEmitter,
-  Output,
   QueryList,
-  input
+  input,
+  output
 } from '@angular/core';
 import { ViewSelectorItemComponent } from "../view-selector-item/view-selector-item.component";
 import { NgTemplateOutlet } from "@angular/common";
@@ -49,6 +48,5 @@ export class ViewSelectorComponent {
 
   readonly selectedView = input<string | null>(null);
 
-  @Output()
-  selectionChange = new EventEmitter<string>();
+  readonly selectionChange = output<string>();
 }

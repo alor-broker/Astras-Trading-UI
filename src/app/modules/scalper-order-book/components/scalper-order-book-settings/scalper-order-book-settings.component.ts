@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, input, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, input, OnInit, output} from '@angular/core';
 import {distinctUntilChanged, Observable, shareReplay, take} from "rxjs";
 import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {isInstrumentEqual} from '../../../../shared/utils/settings-helper';
@@ -82,8 +82,7 @@ import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
 export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComponent, OnInit {
   readonly guid = input.required<string>();
 
-  @Output()
-  settingsChange = new EventEmitter<void>();
+  readonly settingsChange = output();
 
   readonly volumeHighlightModes = VolumeHighlightMode;
 

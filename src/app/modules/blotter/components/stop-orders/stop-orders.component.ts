@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, Inject, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, Inject, OnInit, output} from '@angular/core';
 import {combineLatest, defer, distinctUntilChanged, Observable, switchMap, take,} from 'rxjs';
 import {debounceTime, map, startWith, tap} from 'rxjs/operators';
 import {OrderFilter} from '../../models/order-filter.model';
@@ -102,8 +102,7 @@ interface DisplayOrder extends StopOrder {
 })
 export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder, OrderFilter> implements OnInit {
   readonly orderTypes = OrderType;
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
+  readonly shouldShowSettingsChange = output<boolean>();
 
   isModalOpened = DomHelper.isModalOpen;
 

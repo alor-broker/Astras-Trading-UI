@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, Inject, OnInit, Output, input} from '@angular/core';
+import {Component, DestroyRef, Inject, OnInit, input, output} from '@angular/core';
 import {combineLatest, defer, distinctUntilChanged, Observable, shareReplay, switchMap, take, tap} from 'rxjs';
 import {debounceTime, map, mergeMap, startWith} from 'rxjs/operators';
 import {Position} from 'src/app/shared/models/positions/position.model';
@@ -106,8 +106,7 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
 
   portfolioTotalCost$!: Observable<number>;
 
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
+  readonly shouldShowSettingsChange = output<boolean>();
 
   allColumns: BaseColumnSettings<PositionDisplay>[] = [
     {

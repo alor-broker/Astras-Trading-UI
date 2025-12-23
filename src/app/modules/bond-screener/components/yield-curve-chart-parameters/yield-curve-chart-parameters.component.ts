@@ -1,9 +1,8 @@
 import {
   Component,
   DestroyRef,
-  EventEmitter,
   OnInit,
-  Output
+  output
 } from '@angular/core';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {
@@ -48,8 +47,7 @@ export class YieldCurveChartParametersComponent implements OnInit {
     )
   });
 
-  @Output()
-  parametersChanged = new EventEmitter<ChartParameters>();
+  readonly parametersChanged = output<ChartParameters>();
 
   constructor(
     private readonly formBuilder: FormBuilder,

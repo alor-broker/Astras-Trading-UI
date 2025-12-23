@@ -1,14 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  EventEmitter,
-  input,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import {AfterViewInit, Component, DestroyRef, input, OnDestroy, OnInit, output, ViewChild} from '@angular/core';
 import {NewsSection} from "../../models/news.model";
 import {
   BehaviorSubject,
@@ -46,7 +36,8 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {LetDirective} from '@ngrx/component';
 import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
 import {
-  InfiniteScrollTableComponent
+  InfiniteScrollTableComponent,
+  TableDataRow
 } from '../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component';
 import {NewsDialogComponent} from '../news-dialog/news-dialog.component';
 import {NewsFiltersComponent} from '../news-filters/news-filters.component';
@@ -81,7 +72,7 @@ interface NewsListState {
 export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, NewsFilters> implements AfterViewInit, OnInit, OnDestroy {
   readonly guid = input.required<string>();
 
-  @Output() sectionChange = new EventEmitter<NewsSection>();
+  readonly sectionChange = output<NewsSection>();
 
   @ViewChild('tabSet')
   tabSet?: NzTabsComponent;
@@ -160,8 +151,8 @@ export class NewsComponent extends LazyLoadingBaseTableComponent<NewsListItem, N
     });
   }
 
-  rowClick(newsItem: NewsListItem): void {
-    this.selectedNewsListItem = newsItem;
+  rowClick(row: TableDataRow): void {
+    this.selectedNewsListItem = row as NewsListItem;
   }
 
   scrolled(): void {

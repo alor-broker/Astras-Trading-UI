@@ -1,11 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   OnInit,
-  Output,
   ViewEncapsulation,
-  input
+  input,
+  output
 } from '@angular/core';
 import {BehaviorSubject, Observable, of, shareReplay, switchMap} from 'rxjs';
 import {OrderbookService} from '../../services/orderbook.service';
@@ -54,8 +53,7 @@ interface SpreadDiffData {
 export class OrderBookComponent implements OnInit {
   readonly guid = input.required<string>();
 
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
+  readonly shouldShowSettingsChange = output<boolean>();
 
   ob$: Observable<OrderBook | null> = of(null);
   spreadDiffData$: Observable<SpreadDiffData | null> = of(null);

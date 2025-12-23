@@ -1,4 +1,4 @@
-import {Component, EventEmitter, input, OnInit, Output} from '@angular/core';
+import {Component, input, OnInit, output} from '@angular/core';
 import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
 import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import {Observable} from 'rxjs';
@@ -31,7 +31,7 @@ export class ExchangeRateWidgetComponent implements OnInit {
 
   readonly isBlockWidget = input.required<boolean>();
 
-  @Output() public shouldShowSettingsChange = new EventEmitter<boolean>();
+  public readonly shouldShowSettingsChange = output<boolean>();
   settings$!: Observable<ExchangeRateSettings>;
   showBadge$!: Observable<boolean>;
 

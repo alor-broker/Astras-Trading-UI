@@ -3,12 +3,10 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
-  EventEmitter,
   input,
-  OnDestroy,
-  Output,
+  OnDestroy, output,
   QueryList,
-  ViewChildren
+  ViewChildren,
 } from '@angular/core';
 import {GraphConfig} from "../../models/graph.model";
 import {
@@ -61,8 +59,7 @@ import {CanvasMouseEvent} from "node_modules/@comfyorg/litegraph/dist/types/even
 export class GraphEditorComponent implements AfterViewInit, OnDestroy {
   readonly initialConfig = input<GraphConfig | null>(null);
 
-  @Output()
-  updateConfig = new EventEmitter<GraphConfig>();
+  readonly updateConfig = output<GraphConfig>();
 
   @ViewChildren('canvas')
   canvasQuery!: QueryList<ElementRef<HTMLCanvasElement>>;

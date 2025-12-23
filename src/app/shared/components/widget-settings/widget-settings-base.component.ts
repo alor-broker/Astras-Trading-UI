@@ -2,7 +2,7 @@
 import {Observable, shareReplay, take} from "rxjs";
 import {WidgetSettingsService} from "../../services/widget-settings.service";
 import {ManageDashboardsService} from "../../services/manage-dashboards.service";
-import {Component, DestroyRef, EventEmitter, input, InputSignal, OnInit, Output} from "@angular/core";
+import {Component, DestroyRef, input, InputSignal, OnInit, output} from "@angular/core";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 export interface WidgetSettingsFormComponent {
@@ -21,8 +21,7 @@ export interface WidgetSettingsFormComponent {
   standalone: false
 })
 export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> implements WidgetSettingsFormComponent, OnInit {
-  @Output()
-  settingsChange = new EventEmitter<void>();
+  readonly settingsChange = output();
 
   readonly guid = input.required<string>();
 

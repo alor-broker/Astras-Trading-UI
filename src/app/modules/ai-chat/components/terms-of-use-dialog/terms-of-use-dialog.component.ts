@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, model, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, model, output} from '@angular/core';
 import {AiChatTermsOfUseService} from "../../services/ai-chat-terms-of-use.service";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from 'ng-zorro-antd/modal';
@@ -26,8 +26,7 @@ import {NzButtonComponent} from 'ng-zorro-antd/button';
 export class TermsOfUseDialogComponent {
   atsVisible = model(false);
 
-  @Output()
-  confirmed = new EventEmitter<boolean>();
+  readonly confirmed = output<boolean>();
 
   protected readonly content$ = this.termsOfUseService.getContent();
 

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, input, model, Output, ViewEncapsulation} from '@angular/core';
+import {Component, input, model, ViewEncapsulation, output} from '@angular/core';
 import {WidgetCategory} from "../../../../shared/models/widget-meta.model";
 import {NzDrawerComponent, NzDrawerContentDirective} from "ng-zorro-antd/drawer";
 import {NgTemplateOutlet} from "@angular/common";
@@ -45,11 +45,9 @@ export class WidgetsGalleryComponent {
 
   readonly activeWidget = input<string | null>(null);
 
-  @Output()
-  selected = new EventEmitter<string>();
+  readonly selected = output<string>();
 
-  @Output()
-  resetDashboard = new EventEmitter<void>();
+  readonly resetDashboard = output();
 
   close(): void {
     this.atsVisible.set(false);

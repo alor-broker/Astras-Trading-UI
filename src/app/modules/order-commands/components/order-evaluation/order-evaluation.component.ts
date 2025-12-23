@@ -1,4 +1,4 @@
-import {Component, EventEmitter, input, OnInit, Output} from '@angular/core';
+import {Component, input, OnInit, output} from '@angular/core';
 import {Observable, of, shareReplay, switchMap} from "rxjs";
 import {EvaluationBaseProperties} from "../../../../shared/models/evaluation-base-properties.model";
 import {EvaluationService} from "../../../../shared/services/evaluation.service";
@@ -28,7 +28,7 @@ type EvaluationDisplay = Evaluation & { currency: string };
 export class OrderEvaluationComponent implements OnInit {
   evaluation$!: Observable<EvaluationDisplay | null>;
 
-  @Output() quantitySelect = new EventEmitter<number>();
+  readonly quantitySelect = output<number>();
 
   readonly evaluationProperties = input.required<EvaluationBaseProperties | null>();
   private readonly evaluationPropertiesChanges$ = toObservable(this.evaluationProperties).pipe(

@@ -1,11 +1,10 @@
 import {
   DestroyRef,
   Directive,
-  EventEmitter,
   InjectionToken,
   OnInit,
-  Output,
-  input
+  input,
+  output
 } from '@angular/core';
 import {
   BehaviorSubject,
@@ -29,8 +28,9 @@ export interface HoverItemsGroup<T = any> {
 export class HoverItemsGroupDirective<T = any> implements HoverItemsGroup<T>, OnInit {
   readonly atsHoverItemsGroup = input<boolean | undefined>(true);
 
-  @Output()
-  hoveredItemChanged = new EventEmitter<{ item: HoverItemDirective<T> } | null>();
+  readonly hoveredItemChanged = output<{
+    item: HoverItemDirective<T>;
+} | null>();
 
   private readonly hoveredItem$ = new BehaviorSubject<{ item: HoverItemDirective<T> } | null>(null);
 

@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, OnInit, Output, input} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, input, output} from '@angular/core';
 import {GraphConfig} from "../../models/graph.model";
 import {GraphProcessingContextService} from "../../services/graph-processing-context.service";
 import {asyncScheduler, subscribeOn, toArray} from "rxjs";
@@ -19,8 +19,7 @@ import {RunStatus, Status} from '../../models/run-results.model';
 export class RunConfigBtnComponent implements OnInit {
   readonly config = input<GraphConfig | null>(null);
 
-  @Output()
-  status = new EventEmitter<RunStatus>();
+  readonly status = output<RunStatus>();
 
   readonly Statuses = Status;
   protected currentStatus: RunStatus = {

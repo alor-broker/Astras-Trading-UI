@@ -567,10 +567,11 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     this.filters$.next(cleanedFilters);
   }
 
-  rowClick(row: BondDisplay): void {
+  rowClick(row: TableDataRow): void {
+    const targetRow = row as BondDisplay;
     const instrument = {
-      symbol: row.basicInformation!.symbol,
-      exchange: row.basicInformation!.exchange,
+      symbol: targetRow.basicInformation!.symbol,
+      exchange: targetRow.basicInformation!.exchange,
     };
 
     this.settings$.pipe(

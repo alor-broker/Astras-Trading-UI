@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, OnInit, output} from '@angular/core';
 import {OrdersBasketSettings} from "../../models/orders-basket-settings.model";
 import {
   WidgetSettingsBaseComponent
@@ -32,8 +32,7 @@ import {NzSwitchComponent} from 'ng-zorro-antd/switch';
   ]
 })
 export class OrdersBasketSettingsComponent extends WidgetSettingsBaseComponent<OrdersBasketSettings> implements OnInit {
-  @Output()
-  settingsChange = new EventEmitter<void>();
+  readonly settingsChange = output<void>();
 
   readonly form = this.formBuilder.group({
     showPresetsPanel: this.formBuilder.nonNullable.control<boolean | null>(false)

@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, input, OnDestroy, OnInit, output} from '@angular/core';
 import {
   ControlValueAccessor,
   FormBuilder,
@@ -73,8 +73,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
 
   readonly enableDelete = input(true);
 
-  @Output()
-  delete = new EventEmitter();
+  readonly delete = output();
 
   readonly validationOptions = {
     quota: {

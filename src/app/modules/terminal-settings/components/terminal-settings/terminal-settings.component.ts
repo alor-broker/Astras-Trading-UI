@@ -1,4 +1,4 @@
-import {Component, DestroyRef, ElementRef, EventEmitter, Inject, OnDestroy, OnInit, Output, input} from '@angular/core';
+import {Component, DestroyRef, ElementRef, Inject, OnDestroy, OnInit, input, output} from '@angular/core';
 import {BehaviorSubject, Observable, of, take} from 'rxjs';
 import {FullName} from '../../../../shared/models/user/full-name.model';
 import {
@@ -65,8 +65,12 @@ import {AsyncPipe} from '@angular/common';
 export class TerminalSettingsComponent implements OnInit, OnDestroy {
   readonly hiddenSections = input<string[]>([]);
 
-  @Output() formChange = new EventEmitter<{ value: TerminalSettings | null, isInitial: boolean }>();
-  @Output() tabChange = new EventEmitter<number>();
+  readonly formChange = output<{
+    value: TerminalSettings | null;
+    isInitial: boolean;
+}>();
+
+  readonly tabChange = output<number>();
   tabNames = TabNames;
 
   readonly settingsForm = this.formBuilder.group({

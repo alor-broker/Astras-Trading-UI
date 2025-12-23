@@ -1,9 +1,8 @@
 import {
   Component,
-  EventEmitter,
   OnInit,
-  Output,
-  input
+  input,
+  output
 } from '@angular/core';
 import {
   distinctUntilChanged,
@@ -38,8 +37,7 @@ export class CommonSummaryComponent implements OnInit {
 
   readonly guid = input.required<string>();
 
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
+  readonly shouldShowSettingsChange = output<boolean>();
 
   summary$: Observable<CommonSummaryView> = of();
   columns = 1;

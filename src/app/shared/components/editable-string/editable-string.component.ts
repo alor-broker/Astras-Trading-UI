@@ -2,13 +2,12 @@ import {
   Component,
   DestroyRef,
   ElementRef,
-  EventEmitter,
   input,
   OnDestroy,
   OnInit,
-  Output,
   QueryList,
-  ViewChildren
+  ViewChildren,
+  output
 } from '@angular/core';
 import {BehaviorSubject, filter, take,} from 'rxjs';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -51,8 +50,7 @@ export class EditableStringComponent implements OnInit, OnDestroy {
 
   readonly inputClass = input('');
 
-  @Output()
-  contentChanged = new EventEmitter<string>();
+  readonly contentChanged = output<string>();
 
   isEditMode$ = new BehaviorSubject(false);
   editForm = this.formBuilder.group({
@@ -98,7 +96,7 @@ export class EditableStringComponent implements OnInit, OnDestroy {
 
   emitValueIfValid(): void {
     if (this.editForm.valid ?? false) {
-      this.contentChanged.emit(this.editForm!.value.content);
+      this.contentChanged.emit(this.editForm!.value.content ?? '');
     }
 
     this.setEditMode(false);

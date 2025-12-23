@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, OnInit, Output, input} from '@angular/core';
+import {Component, DestroyRef, OnInit, input, output} from '@angular/core';
 import {DetrendType, InstrumentsCorrelationRequest} from "../../models/instruments-correlation.model";
 import {combineLatest, Observable, shareReplay, take} from "rxjs";
 import {Watchlist, WatchlistType} from "../../../instruments/models/watchlist.model";
@@ -58,8 +58,7 @@ export class ChartFiltersComponent implements OnInit {
     },
   ];
 
-  @Output()
-  filterChanged = new EventEmitter<InstrumentsCorrelationRequest>();
+  readonly filterChanged = output<InstrumentsCorrelationRequest>();
 
   readonly detrendTypes = Object.values(DetrendType);
 

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, input, Output} from '@angular/core';
+import {Component, input, output} from '@angular/core';
 import {toObservable} from "@angular/core/rxjs-interop";
 
 export interface TargetInstrumentKey {
@@ -12,8 +12,7 @@ export interface TargetInstrumentKey {
   standalone: false
 })
 export abstract class InstrumentInfoBaseComponent {
-  @Output()
-  loadingChange = new EventEmitter<boolean>();
+  readonly loadingChange = output<boolean>();
 
   readonly instrumentKey = input.required<TargetInstrumentKey>();
   protected readonly instrumentKeyChanges$ = toObservable(this.instrumentKey);

@@ -3,12 +3,11 @@ import {
   Component,
   ContentChildren,
   DestroyRef,
-  EventEmitter,
   input,
   NgZone,
   OnDestroy,
-  Output,
   QueryList,
+  output
 } from '@angular/core';
 import {PanelComponent} from "../panel/panel.component";
 import {map, startWith} from "rxjs/operators";
@@ -35,8 +34,7 @@ export class PanelsContainerComponent implements PanelsContainerContext, AfterVi
   @ContentChildren(PanelComponent, {emitDistinctChangesOnly: true})
   panelsQuery!: QueryList<PanelComponent>;
 
-  @Output()
-  widthUpdated = new EventEmitter<Record<string, number>>();
+  readonly widthUpdated = output<Record<string, number>>();
 
   readonly initialWidths = input.required<Record<string, number>>();
 

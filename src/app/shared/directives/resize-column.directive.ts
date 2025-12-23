@@ -2,15 +2,14 @@ import {
   DestroyRef,
   Directive,
   ElementRef,
-  EventEmitter,
   Inject,
   NgZone,
   OnInit,
-  Output,
   Renderer2,
   SimpleChange,
   DOCUMENT,
-  input
+  input,
+  output
 } from '@angular/core';
 
 import {
@@ -33,11 +32,12 @@ export class ResizeColumnDirective implements OnInit {
 
   readonly atsResizeColumn = input<boolean | undefined>(true);
 
-  @Output()
-  atsWidthChanged = new EventEmitter<number>();
+  readonly atsWidthChanged = output<number>();
 
-  @Output()
-  atsWidthChanging = new EventEmitter<{ columnWidth: number, delta: number | null }>();
+  readonly atsWidthChanging = output<{
+    columnWidth: number;
+    delta: number | null;
+}>();
 
   private readonly column: HTMLElement;
 

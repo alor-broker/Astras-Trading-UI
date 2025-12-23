@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, OnInit, output} from '@angular/core';
 import {combineLatest, defer, distinctUntilChanged, Observable, switchMap, take, tap} from 'rxjs';
 import {debounceTime, map, mergeMap, startWith} from 'rxjs/operators';
 import {BlotterService} from '../../services/blotter.service';
@@ -79,8 +79,7 @@ import {DecimalPipe} from '@angular/common';
   ]
 })
 export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, TradeFilter> implements OnInit {
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
+  readonly shouldShowSettingsChange = output<boolean>();
 
   allColumns: BaseColumnSettings<DisplayTrade>[] = [
     {

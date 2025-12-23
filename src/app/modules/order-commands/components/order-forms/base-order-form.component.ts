@@ -1,7 +1,7 @@
 ﻿import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
 import {BehaviorSubject, combineLatest, Observable, shareReplay, take} from "rxjs";
-import {Component, DestroyRef, EventEmitter, input, OnDestroy, Output} from "@angular/core";
+import {Component, DestroyRef, input, OnDestroy, output} from "@angular/core";
 import {Side} from "../../../../shared/models/enums/side.model";
 import {filter, finalize, map, startWith, switchMap} from "rxjs/operators";
 import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
@@ -21,8 +21,7 @@ import {CommonParameters, CommonParametersService} from "../../services/common-p
 export abstract class BaseOrderFormComponent implements OnDestroy {
   readonly requestProcessing$ = new BehaviorSubject<{ orderSide?: Side }>({});
 
-  @Output()
-  submitted = new EventEmitter();
+  readonly submitted = output();
 
   readonly portfolioKey = input.required<PortfolioKey>();
   readonly instrument = input.required<Instrument>();

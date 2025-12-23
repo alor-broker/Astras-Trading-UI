@@ -1,9 +1,8 @@
 import {
   Component,
-  EventEmitter,
   OnInit,
-  Output,
-  input
+  input,
+  output
 } from '@angular/core';
 import { DeviceService } from "../../services/device.service";
 import {
@@ -32,15 +31,13 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
 export class WidgetSettingsComponent implements OnInit {
   readonly canSave = input.required<boolean>();
 
-  @Output()
-  saveClick = new EventEmitter();
+  readonly saveClick = output();
 
   readonly showCopy = input(false);
 
   readonly canCopy = input.required<boolean>();
 
-  @Output()
-  copyClick = new EventEmitter();
+  readonly copyClick = output();
 
   isMobile$!: Observable<boolean>;
 

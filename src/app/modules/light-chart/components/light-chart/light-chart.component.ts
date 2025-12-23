@@ -3,12 +3,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  EventEmitter,
   OnDestroy,
   OnInit,
-  Output,
   ViewEncapsulation,
-  input
+  input,
+  output
 } from '@angular/core';
 import {
   combineLatest,
@@ -59,8 +58,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
   readonly guid = input.required<string>();
 
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
+  readonly shouldShowSettingsChange = output<boolean>();
 
   settings$!: Observable<LightChartSettingsExtended>;
   private chart?: LightChartWrapper;

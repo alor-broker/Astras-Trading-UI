@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, OnInit, output} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {Observable, take} from "rxjs";
@@ -69,8 +69,7 @@ export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<Orde
 
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
 
-  @Output()
-  settingsChange = new EventEmitter<void>();
+  readonly settingsChange = output<void>();
 
   readonly form = this.formBuilder.group({
     instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),

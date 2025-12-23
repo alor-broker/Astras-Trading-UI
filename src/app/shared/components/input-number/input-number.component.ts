@@ -3,12 +3,11 @@ import {
   Component,
   DestroyRef,
   ElementRef,
-  EventEmitter,
   forwardRef,
   input,
-  Output,
   TemplateRef,
-  ViewChild
+  ViewChild,
+  output
 } from '@angular/core';
 import {FormsModule, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {ControlValueAccessorBaseComponent} from "../control-value-accessor-base/control-value-accessor-base.component";
@@ -46,14 +45,11 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   readonly allowDecimal = input(true);
   readonly initialValue = input<number>();
 
-  @Output()
-  atsBlur = new EventEmitter();
+  readonly atsBlur = output();
 
-  @Output()
-  atsEnter = new EventEmitter();
+  readonly atsEnter = output();
 
-  @Output()
-  valueChanged = new EventEmitter<number | null>();
+  readonly valueChanged = output<number | null>();
 
   @ViewChild('inputElement', {static: true})
   inputElement!: ElementRef<HTMLInputElement>;

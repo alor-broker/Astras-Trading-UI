@@ -132,7 +132,7 @@ describe('InfiniteScrollTableComponent', () => {
   });
 
   it('should call functions when outputs emitted', () => {
-    const testData = {testData: 'testData'};
+    const testData = {id: '1', testData: 'testData'};
     const rowClickSpy = spyOn(wrapperComp, 'rowClick').and.callThrough();
     const scrolledSpy = spyOn(wrapperComp, 'scrolled').and.callThrough();
     const filterAppliedSpy = spyOn(wrapperComp, 'applyFilter').and.callThrough();

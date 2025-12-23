@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, input, model, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, input, model, ViewChild, output} from '@angular/core';
 import {NzInputDirective} from 'ng-zorro-antd/input';
 import {FormsModule} from '@angular/forms';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
@@ -31,8 +31,7 @@ export class MessageInputComponent {
 
   readonly messageMaxLength = input(2000);
 
-  @Output()
-  send = new EventEmitter<OutcomingMessage>();
+  readonly send = output<OutcomingMessage>();
 
   sendMessage(): void {
     if (this.text().length > 0) {

@@ -2,11 +2,9 @@ import {
   AfterViewInit,
   Component,
   DestroyRef,
-  EventEmitter,
-  OnDestroy,
-  Output,
+  OnDestroy, output,
   QueryList,
-  ViewChildren
+  ViewChildren,
 } from '@angular/core';
 import {BlotterBaseTableComponent} from "../blotter-base-table/blotter-base-table.component";
 import {DisplayTrade, TradeFilter} from "../../models/trade.model";
@@ -107,8 +105,7 @@ import {AsyncPipe, DecimalPipe} from '@angular/common';
 })
 export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTrade, TradeFilter> implements AfterViewInit, OnDestroy {
   readonly rowHeight = 20;
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
+  readonly shouldShowSettingsChange = output<boolean>();
 
   allColumns: BaseColumnSettings<DisplayTrade>[] = [
     {

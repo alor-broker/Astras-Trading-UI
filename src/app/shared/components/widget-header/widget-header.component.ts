@@ -1,4 +1,4 @@
-import {Component, EventEmitter, input, OnInit, Output, TemplateRef} from '@angular/core';
+import {Component, input, OnInit, TemplateRef, output} from '@angular/core';
 import {WidgetSettingsService} from '../../services/widget-settings.service';
 import {ManageDashboardsService} from '../../services/manage-dashboards.service';
 import {instrumentsBadges} from '../../utils/instruments';
@@ -60,8 +60,7 @@ export class WidgetHeaderComponent implements OnInit {
 
   readonly titleTemplate = input<TemplateRef<any> | null>(null);
 
-  @Output()
-  switchSettings = new EventEmitter();
+  readonly switchSettings = output();
 
   titleText!: string;
 

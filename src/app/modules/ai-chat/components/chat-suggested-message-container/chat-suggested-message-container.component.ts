@@ -1,9 +1,8 @@
 import {
   Component,
-  EventEmitter,
   HostBinding,
-  Output,
-  input
+  input,
+  output
 } from '@angular/core';
 import { TextMessageContent } from "../../models/messages-display.model";
 import {
@@ -31,8 +30,7 @@ import { TextMessageComponent } from '../messages/text-message/text-message.comp
 export class ChatSuggestedMessageContainerComponent {
   readonly suggestedMessage = input.required<TextMessageContent>();
 
-  @Output()
-  selected = new EventEmitter<TextMessageContent>();
+  readonly selected = output<TextMessageContent>();
 
   @HostBinding('@flyInOut')
   readonly flyInOut = true;

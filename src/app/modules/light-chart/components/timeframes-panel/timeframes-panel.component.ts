@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, OnChanges, OnDestroy, OnInit, Output, input} from '@angular/core';
+import {Component, DestroyRef, OnChanges, OnDestroy, OnInit, input, output} from '@angular/core';
 import {TimeFrameDisplayMode} from "../../models/light-chart-settings.model";
 import {TimeframeValue} from "../../models/light-chart.models";
 import {BehaviorSubject, take} from "rxjs";
@@ -35,8 +35,7 @@ export class TimeframesPanelComponent implements OnDestroy, OnInit, OnChanges {
 
   readonly displayMode = input<TimeFrameDisplayMode>(TimeFrameDisplayMode.Buttons);
 
-  @Output()
-  changeTimeframe = new EventEmitter<TimeframeValue>();
+  readonly changeTimeframe = output<TimeframeValue>();
 
   readonly actualDisplayMode$ = new BehaviorSubject(this.displayMode());
   timeFrameDisplayModes = TimeFrameDisplayMode;

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, input, OnInit, Output} from '@angular/core';
+import {Component, input, OnInit, output} from '@angular/core';
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {filter, Observable, shareReplay, switchMap} from "rxjs";
 import {OrderbookData, OrderbookDataRow, OrderbookRequest} from "../../../orderbook/models/orderbook-data.model";
@@ -28,8 +28,10 @@ export class WorkingVolumesComponent implements OnInit {
 
   readonly workingVolumes = input<number[]>([]);
 
-  @Output()
-  itemSelected = new EventEmitter<{ volume: number, price?: number }>();
+  readonly itemSelected = output<{
+    volume: number;
+    price?: number;
+}>();
 
   readonly instrumentKey = input<InstrumentKey>();
 

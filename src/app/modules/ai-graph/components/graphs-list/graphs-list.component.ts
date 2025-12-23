@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, OnInit, output} from '@angular/core';
 import {combineLatest, Observable, take} from "rxjs";
 import {LetDirective} from "@ngrx/component";
 import {NzSpinComponent} from "ng-zorro-antd/spin";
@@ -78,8 +78,7 @@ export class GraphsListComponent implements OnInit {
     }
   );
 
-  @Output()
-  editGraph = new EventEmitter<string>();
+  readonly editGraph = output<string>();
 
   constructor(
     private readonly graphStorageService: GraphStorageService,

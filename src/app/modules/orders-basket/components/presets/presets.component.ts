@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Output, ViewChild, input} from '@angular/core';
+import {Component, ElementRef, ViewChild, input, output} from '@angular/core';
 import {DataPreset} from "../../models/orders-basket-settings.model";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzTagComponent} from 'ng-zorro-antd/tag';
@@ -34,14 +34,13 @@ export class PresetsComponent {
 
   inputVisible = false;
   inputValue = '';
-  @Output()
-  presetSelected = new EventEmitter<DataPreset>();
+  readonly presetSelected = output<DataPreset>();
 
-  @Output()
-  addPreset = new EventEmitter<{ title: string }>();
+  readonly addPreset = output<{
+    title: string;
+}>();
 
-  @Output()
-  removePreset = new EventEmitter<DataPreset>();
+  readonly removePreset = output<DataPreset>();
 
   sliceTagName(tag: string): string {
     return tag.length > 20

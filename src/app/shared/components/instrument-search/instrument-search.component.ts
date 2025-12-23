@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, input, OnDestroy, OnInit, ViewChild, output} from '@angular/core';
 import {SearchFilter} from '../../../modules/instruments/models/search-filter.model';
 import {
   NzAutocompleteComponent,
@@ -61,8 +61,7 @@ export class InstrumentSearchComponent implements OnInit, OnDestroy, ControlValu
 
   filteredInstruments$: Observable<Instrument[]> = of([]);
   selectedValue?: InstrumentKey | null;
-  @Output()
-  instrumentSelected = new EventEmitter<InstrumentKey | null>();
+  readonly instrumentSelected = output<InstrumentKey | null>();
 
   isMobile$!: Observable<boolean>;
   searchControl = new FormControl<string | null>(null);

@@ -455,14 +455,15 @@ export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
     this.filters$.next(cleanedFilters);
   }
 
-  rowClick(row: AllInstrumentsNodeDisplay): void {
+  rowClick(row: TableDataRow): void {
+    const node = row as AllInstrumentsNodeDisplay;
     this.settings$.pipe(
       take(1)
     ).subscribe(s => {
       this.actionsContext.selectInstrument({
-        symbol: row.basicInformation!.symbol!,
-        exchange: row.basicInformation!.exchange!,
-        instrumentGroup: row.boardInformation?.board
+        symbol: node.basicInformation!.symbol!,
+        exchange: node.basicInformation!.exchange!,
+        instrumentGroup: node.boardInformation?.board
       }, s.badgeColor ?? defaultBadgeColor);
     });
   }

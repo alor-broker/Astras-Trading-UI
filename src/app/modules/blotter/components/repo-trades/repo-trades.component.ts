@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, Output} from '@angular/core';
+import {Component, DestroyRef, output} from '@angular/core';
 import {combineLatest, defer, distinctUntilChanged, Observable, switchMap, take} from "rxjs";
 import {BaseColumnSettings, FilterType} from "../../../../shared/models/settings/table-settings.model";
 import {allRepoTradesColumns, TableNames} from "../../models/blotter-settings.model";
@@ -80,8 +80,7 @@ import {DecimalPipe} from '@angular/common';
   ]
 })
 export class RepoTradesComponent extends BlotterBaseTableComponent<RepoTrade, TradeFilter> {
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
+  readonly shouldShowSettingsChange = output<boolean>();
 
   allColumns: BaseColumnSettings<RepoTrade>[] = [
     {

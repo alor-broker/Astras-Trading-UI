@@ -1,4 +1,4 @@
-import {Component, DestroyRef, EventEmitter, OnInit, Output, input} from '@angular/core';
+import {Component, DestroyRef, OnInit, input, output} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators} from "@angular/forms";
 import {ArbitrageSpread} from "../../models/arbitrage-spread.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
@@ -68,7 +68,7 @@ const calculationFormulaValidator: ValidatorFn = (form) => {
 })
 export class ArbitrageSpreadManageComponent implements OnInit {
   readonly spread = input<ArbitrageSpread | null>();
-  @Output() formChange = new EventEmitter();
+  readonly formChange = output<{ value: ArbitrageSpread, isValid: boolean }>();
 
   portfolios$?: Observable<PortfolioKey[]>;
 
@@ -126,7 +126,7 @@ export class ArbitrageSpreadManageComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.formChange.emit({
-          value: this.form.value,
+          value: this.form.value as ArbitrageSpread,
           isValid: this.form.valid
         });
       });

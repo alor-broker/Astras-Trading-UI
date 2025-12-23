@@ -3,17 +3,16 @@ import {
   Component,
   DestroyRef,
   ElementRef,
-  EventEmitter,
   Input,
   input,
   OnChanges,
   OnInit,
-  Output,
   QueryList,
   SimpleChange,
   SimpleChanges,
   TrackByFunction,
-  ViewChildren
+  ViewChildren,
+  output
 } from '@angular/core';
 import {
   NzFilterTriggerComponent,
@@ -31,11 +30,17 @@ import {ITEM_HEIGHT} from "../../../modules/all-trades/utils/all-trades.utils";
 import {debounceTime, map, startWith} from "rxjs/operators";
 import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
 import {TableConfig} from '../../models/table-config.model';
-import {BaseColumnSettings, FilterData, FilterType, InputFieldType} from "../../models/settings/table-settings.model";
+import {
+  BaseColumnSettings,
+  DefaultTableFilters,
+  FilterData,
+  FilterType,
+  InputFieldType
+} from "../../models/settings/table-settings.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TableRowHeightDirective} from '../../directives/table-row-height.directive';
-import {CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
+import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
 import {ResizeColumnDirective} from '../../directives/resize-column.directive';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
@@ -93,23 +98,20 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
 
   readonly tableConfig = input<TableConfig<any> | null>(null);
 
-  @Output()
-  rowClick = new EventEmitter();
+  readonly rowClick = output<TableDataRow>();
 
-  @Output()
-  scrolled = new EventEmitter();
+  readonly scrolled = output();
 
-  @Output()
-  filterApplied = new EventEmitter();
+  readonly filterApplied = output<DefaultTableFilters>();
 
-  @Output()
-  orderColumnChange = new EventEmitter();
+  readonly orderColumnChange = output<CdkDragDrop<any>>();
 
-  @Output()
-  columnWidthChange = new EventEmitter();
+  readonly columnWidthChange = output<{ columnId: string, width: number }>();
 
-  @Output()
-  rowContextMenu = new EventEmitter<{ event: MouseEvent, row: TableDataRow }>();
+  readonly rowContextMenu = output<{
+    event: MouseEvent;
+    row: TableDataRow;
+}>();
 
   @ViewChildren('dataTable')
   dataTableQuery!: QueryList<NzTableComponent<TableDataRow>>;
@@ -228,7 +230,7 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
       takeUntilDestroyed(this.destroyRef)
     ).subscribe((upperItemIndex: number) => {
       if (upperItemIndex >= this.data.length - this.visibleItemsCount - 1) {
-        this.scrolled.emit(this.filtersForm.value);
+        this.scrolled.emit();
       }
     });
 
