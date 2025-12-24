@@ -1,17 +1,7 @@
-import { AfterViewInit, Component, DestroyRef, OnDestroy, output, viewChildren, inject } from '@angular/core';
+import {AfterViewInit, Component, DestroyRef, inject, OnDestroy, output, viewChildren} from '@angular/core';
 import {BlotterBaseTableComponent} from "../blotter-base-table/blotter-base-table.component";
 import {DisplayTrade, TradeFilter} from "../../models/trade.model";
-import {
-  NzFilterTriggerComponent,
-  NzTableCellDirective,
-  NzTableComponent,
-  NzTableVirtualScrollDirective,
-  NzTbodyComponent,
-  NzThAddOnComponent,
-  NzTheadComponent,
-  NzThMeasureDirective,
-  NzTrDirective
-} from "ng-zorro-antd/table";
+import {NzTableComponent, NzTableModule} from "ng-zorro-antd/table";
 import {
   BehaviorSubject,
   combineLatest,
@@ -74,41 +64,23 @@ import {AsyncPipe, DecimalPipe} from '@angular/common';
     NzEmptyComponent,
     LetDirective,
     NzResizeObserverDirective,
-    NzTableComponent,
-    NzTheadComponent,
-    NzTrDirective,
     CdkDropList,
-    NzTableCellDirective,
-    NzThMeasureDirective,
-    NzThAddOnComponent,
     ResizeColumnDirective,
     CdkDrag,
     NzTooltipDirective,
-    NzFilterTriggerComponent,
     NzIconDirective,
-    NzTbodyComponent,
-    NzTableVirtualScrollDirective,
     NzButtonComponent,
     NzDropdownMenuComponent,
     TableSearchFilterComponent,
     AddToWatchlistMenuComponent,
     AsyncPipe,
-    DecimalPipe
+    DecimalPipe,
+    NzTableModule
   ]
 })
 export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTrade, TradeFilter> implements AfterViewInit, OnDestroy {
-  protected readonly settingsService: WidgetSettingsService;
-  private readonly service = inject(BlotterService);
-  private readonly timezoneConverterService = inject(TimezoneConverterService);
-  protected readonly translatorService: TranslatorService;
-  protected readonly nzContextMenuService: NzContextMenuService;
-  protected readonly widgetLocalStateService: WidgetLocalStateService;
-  private readonly tradesHistoryService = inject(TradesHistoryService);
-  protected readonly destroyRef: DestroyRef;
-
   readonly rowHeight = 20;
   readonly shouldShowSettingsChange = output<boolean>();
-
   allColumns: BaseColumnSettings<DisplayTrade>[] = [
     {
       id: 'id',
@@ -193,12 +165,18 @@ export class TradesHistoryComponent extends BlotterBaseTableComponent<DisplayTra
   ];
 
   isLoading$ = new BehaviorSubject<boolean>(false);
-
   settingsTableName = TableNames.TradesHistoryTable;
   settingsColumnsName = ColumnsNames.TradesColumns;
   fileSuffix = 'tradesHistory';
-
   readonly dataTableQuery = viewChildren<NzTableComponent<DisplayTrade>>('nzTable');
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly translatorService: TranslatorService;
+  protected readonly nzContextMenuService: NzContextMenuService;
+  protected readonly widgetLocalStateService: WidgetLocalStateService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly service = inject(BlotterService);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+  private readonly tradesHistoryService = inject(TradesHistoryService);
   private readonly dataTableQueryChanges$ = toObservable(this.dataTableQuery);
 
   private readonly loadedHistory$ = new BehaviorSubject<Trade[]>([]);

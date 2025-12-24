@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, output, inject } from '@angular/core';
+import {Component, DestroyRef, inject, OnInit, output} from '@angular/core';
 import {combineLatest, defer, distinctUntilChanged, Observable, switchMap, take, tap} from 'rxjs';
 import {debounceTime, map, mergeMap, startWith} from 'rxjs/operators';
 import {BlotterService} from '../../services/blotter.service';
@@ -22,17 +22,7 @@ import {TranslocoDirective} from '@jsverse/transloco';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {LetDirective} from '@ngrx/component';
 import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
-import {
-  NzFilterTriggerComponent,
-  NzTableCellDirective,
-  NzTableComponent,
-  NzTableVirtualScrollDirective,
-  NzTbodyComponent,
-  NzThAddOnComponent,
-  NzTheadComponent,
-  NzThMeasureDirective,
-  NzTrDirective
-} from 'ng-zorro-antd/table';
+import {NzTableModule} from 'ng-zorro-antd/table';
 import {TableRowHeightDirective} from '../../../../shared/directives/table-row-height.directive';
 import {CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
 import {ResizeColumnDirective} from '../../../../shared/directives/resize-column.directive';
@@ -56,39 +46,22 @@ import {DecimalPipe} from '@angular/common';
     NzEmptyComponent,
     LetDirective,
     NzResizeObserverDirective,
-    NzTableComponent,
     TableRowHeightDirective,
-    NzTheadComponent,
-    NzTrDirective,
     CdkDropList,
-    NzTableCellDirective,
-    NzThMeasureDirective,
-    NzThAddOnComponent,
     ResizeColumnDirective,
     CdkDrag,
     NzTooltipDirective,
-    NzFilterTriggerComponent,
     NzIconDirective,
-    NzTbodyComponent,
-    NzTableVirtualScrollDirective,
     NzButtonComponent,
     NzDropdownMenuComponent,
     TableSearchFilterComponent,
     AddToWatchlistMenuComponent,
-    DecimalPipe
+    DecimalPipe,
+    NzTableModule
   ]
 })
 export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, TradeFilter> implements OnInit {
-  protected readonly settingsService: WidgetSettingsService;
-  protected readonly service = inject(BlotterService);
-  private readonly timezoneConverterService = inject(TimezoneConverterService);
-  protected readonly translatorService: TranslatorService;
-  protected readonly nzContextMenuService: NzContextMenuService;
-  protected readonly widgetLocalStateService: WidgetLocalStateService;
-  protected readonly destroyRef: DestroyRef;
-
   readonly shouldShowSettingsChange = output<boolean>();
-
   allColumns: BaseColumnSettings<DisplayTrade>[] = [
     {
       id: 'id',
@@ -191,6 +164,13 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
   settingsTableName = TableNames.TradesTable;
   settingsColumnsName = ColumnsNames.TradesColumns;
   fileSuffix = 'trades';
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly service = inject(BlotterService);
+  protected readonly translatorService: TranslatorService;
+  protected readonly nzContextMenuService: NzContextMenuService;
+  protected readonly widgetLocalStateService: WidgetLocalStateService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
 
   constructor() {
     const settingsService = inject(WidgetSettingsService);

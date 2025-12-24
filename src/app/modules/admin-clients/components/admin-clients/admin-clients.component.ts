@@ -1,4 +1,15 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, LOCALE_ID, OnDestroy, OnInit, signal, input, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  input,
+  LOCALE_ID,
+  OnDestroy,
+  OnInit,
+  signal
+} from '@angular/core';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {AdminClientsService} from "../../services/clients/admin-clients.service";
 import {Client, ClientsSearchFilter, SpectraExtension} from "../../services/clients/admin-clients-service.models";
@@ -25,14 +36,7 @@ import {TableSettingHelper} from "../../../../shared/utils/table-setting.helper"
 import {BaseColumnId, BaseColumnSettings, FilterType} from "../../../../shared/models/settings/table-settings.model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
-import {
-  NzFilterTriggerComponent,
-  NzTableCellDirective,
-  NzTableComponent,
-  NzThAddOnComponent,
-  NzThMeasureDirective,
-  NzTrDirective
-} from "ng-zorro-antd/table";
+import {NzTableModule} from "ng-zorro-antd/table";
 import {LetDirective} from "@ngrx/component";
 import {CdkDrag, CdkDragDrop, CdkDropList} from "@angular/cdk/drag-drop";
 import {formatNumber} from "@angular/common";
@@ -81,55 +85,45 @@ interface ColumnBase {
   standalone: true,
   imports: [
     NzResizeObserverDirective,
-    NzTableComponent,
     LetDirective,
     CdkDropList,
-    NzTrDirective,
-    NzTableCellDirective,
-    NzThMeasureDirective,
     CdkDrag,
     TableRowHeightDirective,
     TableSearchFilterComponent,
     TranslocoDirective,
     ResizeColumnDirective,
-    NzThAddOnComponent,
-    NzFilterTriggerComponent,
     NzTooltipDirective,
     NzDropdownMenuComponent,
     NzIconDirective,
     NzMenuDirective,
-    NzMenuItemComponent
+    NzMenuItemComponent,
+    NzTableModule
   ],
   templateUrl: './admin-clients.component.html',
   styleUrl: './admin-clients.component.less',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, ClientsSearchFilter> implements OnInit, OnDestroy {
+  readonly guid = input.required<string>();
+  allColumns: BaseColumnSettings<ClientDisplay>[] = [];
   protected readonly settingsService: WidgetSettingsService;
   protected readonly destroyRef: DestroyRef;
-  private readonly adminClientsService = inject(AdminClientsService);
-  private readonly translatorService = inject(TranslatorService);
-  private readonly locale = inject(LOCALE_ID);
-  private readonly hostElement = inject(ElementRef);
-  private readonly manageDashboardsService = inject(ManageDashboardsService);
   protected readonly widgetLocalStateService = inject(WidgetLocalStateService);
-  private readonly nzContextMenuService = inject(NzContextMenuService);
-
-  readonly guid = input.required<string>();
-
-  allColumns: BaseColumnSettings<ClientDisplay>[] = [];
-
   protected readonly allPageSizes = [10, 25, 50, 100, 200, 500];
-
   protected readonly page$ = new BehaviorSubject<{ page: number, pageSize: number }>({
     page: 1,
     pageSize: this.allPageSizes[0]
   });
 
   protected readonly isLoading = signal(false);
-
   protected readonly totalRecords = signal(0);
-
+  protected settingsTableName = 'table';
+  protected settingsColumnsName = '';
+  protected readonly FilterType = FilterType;
+  protected readonly filterTypes = FilterType;
+  protected selectedItem: ClientDisplay | null = null;
+  private readonly adminClientsService = inject(AdminClientsService);
+  private readonly translatorService = inject(TranslatorService);
   protected readonly valuesTranslator$ = combineLatest({
     commonTranslator: this.translatorService.getTranslator(''),
     adminClientsTranslator: this.translatorService.getTranslator('admin-clients/admin-clients')
@@ -137,16 +131,10 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
     shareReplay(1)
   );
 
-  protected settingsTableName = 'table';
-
-  protected settingsColumnsName = '';
-
-  protected readonly FilterType = FilterType;
-
-  protected readonly filterTypes = FilterType;
-
-  protected selectedItem: ClientDisplay | null = null;
-
+  private readonly locale = inject(LOCALE_ID);
+  private readonly hostElement = inject(ElementRef);
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
+  private readonly nzContextMenuService = inject(NzContextMenuService);
   private readonly columnFillers: { columnId: string, filler: ColumnConfigFiller<ClientDisplay> }[] = [
     {
       columnId: "login",

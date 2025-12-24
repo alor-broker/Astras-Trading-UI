@@ -1,15 +1,20 @@
-import { AfterViewInit, Component, DestroyRef, ElementRef, Input, input, OnChanges, OnInit, output, SimpleChange, SimpleChanges, TrackByFunction, viewChildren, inject } from '@angular/core';
 import {
-  NzFilterTriggerComponent,
-  NzTableCellDirective,
-  NzTableComponent,
-  NzTableVirtualScrollDirective,
-  NzTbodyComponent,
-  NzThAddOnComponent,
-  NzTheadComponent,
-  NzThMeasureDirective,
-  NzTrDirective
-} from "ng-zorro-antd/table";
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  Input,
+  input,
+  OnChanges,
+  OnInit,
+  output,
+  SimpleChange,
+  SimpleChanges,
+  TrackByFunction,
+  viewChildren
+} from '@angular/core';
+import {NzTableComponent, NzTableModule} from "ng-zorro-antd/table";
 import {filter, Observable, pairwise, shareReplay, switchMap, take} from "rxjs";
 import {ITEM_HEIGHT} from "../../../modules/all-trades/utils/all-trades.utils";
 import {debounceTime, map, startWith} from "rxjs/operators";
@@ -48,22 +53,13 @@ export interface TableDataRow {
   templateUrl: './infinite-scroll-table.component.html',
   styleUrls: ['./infinite-scroll-table.component.less'],
   imports: [
-    NzTableComponent,
     TableRowHeightDirective,
-    NzTheadComponent,
-    NzTrDirective,
     CdkDropList,
-    NzTableCellDirective,
-    NzThMeasureDirective,
-    NzThAddOnComponent,
     ResizeColumnDirective,
     CdkDrag,
     NzTooltipDirective,
-    NzFilterTriggerComponent,
     NzIconDirective,
     NzTypographyComponent,
-    NzTbodyComponent,
-    NzTableVirtualScrollDirective,
     MergedBadgeComponent,
     NzDropdownMenuComponent,
     TranslocoDirective,
@@ -73,29 +69,20 @@ export interface TableDataRow {
     NzOptionComponent,
     NzInputDirective,
     InputNumberComponent,
-    NzButtonComponent
+    NzButtonComponent,
+    NzTableModule
   ]
 })
 export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, OnInit {
-  private readonly nzContextMenuService = inject(NzContextMenuService);
-  private readonly destroyRef = inject(DestroyRef);
-
   readonly tableContainerHeight = input(100);
   readonly tableContainerWidth = input(100);
   readonly isLoading = input(false);
-
   readonly tableConfig = input<TableConfig<any> | null>(null);
-
   readonly rowClick = output<TableDataRow>();
-
   readonly scrolled = output();
-
   readonly filterApplied = output<DefaultTableFilters>();
-
   readonly orderColumnChange = output<CdkDragDrop<any>>();
-
   readonly columnWidthChange = output<{ columnId: string, width: number }>();
-
   readonly rowContextMenu = output<{
     event: MouseEvent;
     row: TableDataRow;
@@ -113,6 +100,8 @@ export class InfiniteScrollTableComponent implements OnChanges, AfterViewInit, O
   sortedColumnOrder: string | null = '';
   selectedRow: TableDataRow | null = null;
   readonly trackByFn = input<TrackByFunction<TableDataRow>>((index: number, data: TableDataRow) => data.id);
+  private readonly nzContextMenuService = inject(NzContextMenuService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly dataTableQueryChanges$ = toObservable(this.dataTableQuery);
   private readonly headerRowElChanges$ = toObservable(this.headerRowEl);
   private tableData: TableDataRow[] = [];

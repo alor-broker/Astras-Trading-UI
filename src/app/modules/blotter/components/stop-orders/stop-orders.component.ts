@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, output, inject } from '@angular/core';
+import {Component, DestroyRef, inject, OnInit, output} from '@angular/core';
 import {combineLatest, defer, distinctUntilChanged, Observable, switchMap, take,} from 'rxjs';
 import {debounceTime, map, startWith, tap} from 'rxjs/operators';
 import {OrderFilter} from '../../models/order-filter.model';
@@ -33,17 +33,7 @@ import {TranslocoDirective} from '@jsverse/transloco';
 import {LetDirective} from '@ngrx/component';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
-import {
-  NzFilterTriggerComponent,
-  NzTableCellDirective,
-  NzTableComponent,
-  NzTableVirtualScrollDirective,
-  NzTbodyComponent,
-  NzThAddOnComponent,
-  NzTheadComponent,
-  NzThMeasureDirective,
-  NzTrDirective
-} from 'ng-zorro-antd/table';
+import {NzTableModule} from 'ng-zorro-antd/table';
 import {TableRowHeightDirective} from '../../../../shared/directives/table-row-height.directive';
 import {CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
 import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
@@ -76,47 +66,26 @@ interface DisplayOrder extends StopOrder {
     LetDirective,
     NzEmptyComponent,
     NzResizeObserverDirective,
-    NzTableComponent,
     TableRowHeightDirective,
-    NzTheadComponent,
-    NzTrDirective,
     CdkDropList,
-    NzTableCellDirective,
-    NzThMeasureDirective,
     NzPopconfirmDirective,
     ResizeColumnDirective,
-    NzThAddOnComponent,
     CdkDrag,
     NzTooltipDirective,
-    NzFilterTriggerComponent,
     NzIconDirective,
-    NzTbodyComponent,
-    NzTableVirtualScrollDirective,
     InstrumentBadgeDisplayComponent,
     NzButtonComponent,
     NzDropdownMenuComponent,
     TableSearchFilterComponent,
     AddToWatchlistMenuComponent,
-    DecimalPipe
+    DecimalPipe,
+    NzTableModule
   ]
 })
 export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder, OrderFilter> implements OnInit {
-  protected readonly service = inject(BlotterService);
-  protected readonly settingsService: WidgetSettingsService;
-  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
-  private readonly ordersDialogService = inject(OrdersDialogService);
-  private readonly timezoneConverterService = inject(TimezoneConverterService);
-  protected readonly translatorService: TranslatorService;
-  protected readonly nzContextMenuService: NzContextMenuService;
-  protected readonly widgetLocalStateService: WidgetLocalStateService;
-  private readonly ordersGroupService = inject(OrdersGroupService);
-  protected readonly destroyRef: DestroyRef;
-
   readonly orderTypes = OrderType;
   readonly shouldShowSettingsChange = output<boolean>();
-
   isModalOpened = DomHelper.isModalOpen;
-
   allColumns: BaseColumnSettings<DisplayOrder>[] = [
     {
       id: 'id',
@@ -287,6 +256,16 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
   settingsTableName = TableNames.StopOrdersTable;
   settingsColumnsName = ColumnsNames.StopOrdersColumns;
   fileSuffix = 'stopOrders';
+  protected readonly service = inject(BlotterService);
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly translatorService: TranslatorService;
+  protected readonly nzContextMenuService: NzContextMenuService;
+  protected readonly widgetLocalStateService: WidgetLocalStateService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  private readonly ordersDialogService = inject(OrdersDialogService);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+  private readonly ordersGroupService = inject(OrdersGroupService);
   private orders: StopOrder[] = [];
 
   constructor() {

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, input, output, inject } from '@angular/core';
+import {Component, DestroyRef, inject, input, OnInit, output} from '@angular/core';
 import {combineLatest, defer, distinctUntilChanged, Observable, shareReplay, switchMap, take, tap} from 'rxjs';
 import {debounceTime, map, mergeMap, startWith} from 'rxjs/operators';
 import {Position} from 'src/app/shared/models/positions/position.model';
@@ -30,17 +30,7 @@ import {TranslocoDirective} from '@jsverse/transloco';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {LetDirective} from '@ngrx/component';
 import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
-import {
-  NzFilterTriggerComponent,
-  NzTableCellDirective,
-  NzTableComponent,
-  NzTableVirtualScrollDirective,
-  NzTbodyComponent,
-  NzThAddOnComponent,
-  NzTheadComponent,
-  NzThMeasureDirective,
-  NzTrDirective
-} from 'ng-zorro-antd/table';
+import {NzTableModule} from 'ng-zorro-antd/table';
 import {TableRowHeightDirective} from '../../../../shared/directives/table-row-height.directive';
 import {CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
 import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
@@ -76,47 +66,27 @@ interface PositionDisplay extends Position {
     NzEmptyComponent,
     LetDirective,
     NzResizeObserverDirective,
-    NzTableComponent,
     TableRowHeightDirective,
-    NzTheadComponent,
-    NzTrDirective,
     CdkDropList,
-    NzTableCellDirective,
-    NzThMeasureDirective,
     NzPopconfirmDirective,
     NzIconDirective,
     ResizeColumnDirective,
-    NzThAddOnComponent,
     CdkDrag,
     NzTooltipDirective,
-    NzFilterTriggerComponent,
-    NzTbodyComponent,
-    NzTableVirtualScrollDirective,
     InstrumentIconComponent,
     InstrumentBadgeDisplayComponent,
     NzButtonComponent,
     NzDropdownMenuComponent,
     TableSearchFilterComponent,
     AddToWatchlistMenuComponent,
-    DecimalPipe
+    DecimalPipe,
+    NzTableModule
   ]
 })
 export class PositionsComponent extends BlotterBaseTableComponent<PositionDisplay, PositionFilter> implements OnInit {
-  private readonly service = inject(BlotterService);
-  protected readonly settingsService: WidgetSettingsService;
-  protected readonly translatorService: TranslatorService;
-  protected readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
-  protected readonly nzContextMenuService: NzContextMenuService;
-  protected readonly widgetLocalStateService: WidgetLocalStateService;
-  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
-  protected readonly destroyRef: DestroyRef;
-
   readonly marketType = input<MarketType | null>();
-
   portfolioTotalCost$!: Observable<number>;
-
   readonly shouldShowSettingsChange = output<boolean>();
-
   allColumns: BaseColumnSettings<PositionDisplay>[] = [
     {
       id: 'icon',
@@ -254,6 +224,14 @@ export class PositionsComponent extends BlotterBaseTableComponent<PositionDispla
   settingsColumnsName = ColumnsNames.PositionsColumns;
   fileSuffix = 'positions';
   readonly abs = Math.abs;
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly translatorService: TranslatorService;
+  protected readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  protected readonly nzContextMenuService: NzContextMenuService;
+  protected readonly widgetLocalStateService: WidgetLocalStateService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly service = inject(BlotterService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
 
   constructor() {
     const settingsService = inject(WidgetSettingsService);

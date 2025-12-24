@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
+import {Component, DestroyRef, ElementRef, inject, input, OnDestroy, OnInit, viewChild} from '@angular/core';
 import {
   animationFrameScheduler,
   BehaviorSubject,
@@ -42,17 +42,7 @@ import {
 } from "../../../../shared/utils/file-export/csv-formatter";
 import {FileSaver, FileType} from "../../../../shared/utils/file-export/file-saver";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {
-  NzTableCellDirective,
-  NzTableComponent,
-  NzTableVirtualScrollDirective,
-  NzTbodyComponent,
-  NzTdAddOnComponent,
-  NzThAddOnComponent,
-  NzTheadComponent,
-  NzThMeasureDirective,
-  NzTrDirective
-} from "ng-zorro-antd/table";
+import {NzTableComponent, NzTableModule} from "ng-zorro-antd/table";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {LetDirective} from '@ngrx/component';
@@ -88,22 +78,13 @@ type SortFn = (a: WatchedInstrument, b: WatchedInstrument) => number;
     TranslocoDirective,
     LetDirective,
     NzResizeObserverDirective,
-    NzTableComponent,
     TableRowHeightDirective,
-    NzTheadComponent,
-    NzTrDirective,
     CdkDropList,
-    NzTableCellDirective,
-    NzThMeasureDirective,
-    NzThAddOnComponent,
     NzTooltipDirective,
     NzIconDirective,
     NgClass,
     ResizeColumnDirective,
     CdkDrag,
-    NzTbodyComponent,
-    NzTableVirtualScrollDirective,
-    NzTdAddOnComponent,
     InstrumentBadgeDisplayComponent,
     PriceDiffComponent,
     ShortNumberComponent,
@@ -113,24 +94,13 @@ type SortFn = (a: WatchedInstrument, b: WatchedInstrument) => number;
     NzMenuItemComponent,
     NzTypographyComponent,
     AsyncPipe,
-    DecimalPipe
+    DecimalPipe,
+    NzTableModule
   ]
 })
 export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist>
   implements OnInit, OnDestroy {
-  protected readonly settingsService: WidgetSettingsService;
-  private readonly watchInstrumentsService = inject(WatchInstrumentsService);
-  private readonly watchlistCollectionService = inject(WatchlistCollectionService);
-  private readonly nzContextMenuService = inject(NzContextMenuService);
-  private readonly dashboardService = inject(ManageDashboardsService);
-  private readonly dashboardContextService = inject(DashboardContextService);
-  private readonly widgetsMetaService = inject(WidgetsMetaService);
-  private readonly translatorService = inject(TranslatorService);
-  protected readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
-  protected readonly destroyRef: DestroyRef;
-
   readonly guid = input.required<string>();
-
   readonly tableContainer = viewChild.required<ElementRef<HTMLDivElement>>('tableContainer');
   readonly tableCmp = viewChild.required<NzTableComponent<DisplayWatchlist>>('tableCmp');
   readonly listTypes = WatchlistType;
@@ -193,7 +163,6 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
   ];
 
   openedLists$!: Observable<string[]>;
-
   sortFns: Record<string, SortFn> = {
     symbol: this.getSortFn('instrument.symbol'),
     price: this.getSortFn('price'),
@@ -218,10 +187,19 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
   }[]>;
 
   getListTitleTranslationKey = WatchListTitleHelper.getTitleTranslationKey;
-
   selectedItem: { listId: string, instrument: WatchedInstrument } | null = null;
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+  protected readonly destroyRef: DestroyRef;
   protected settingsTableName = 'instrumentTable';
   protected settingsColumnsName = 'instrumentColumns';
+  private readonly watchInstrumentsService = inject(WatchInstrumentsService);
+  private readonly watchlistCollectionService = inject(WatchlistCollectionService);
+  private readonly nzContextMenuService = inject(NzContextMenuService);
+  private readonly dashboardService = inject(ManageDashboardsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly widgetsMetaService = inject(WidgetsMetaService);
+  private readonly translatorService = inject(TranslatorService);
   private isDragStarted = false;
   private scrollIntervalId: number | null = null;
   private watchlistToDrop: string | null = null;

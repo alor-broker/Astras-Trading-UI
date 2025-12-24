@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -39,17 +39,7 @@ import {TranslocoDirective} from '@jsverse/transloco';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {LetDirective} from '@ngrx/component';
 import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
-import {
-  NzFilterTriggerComponent,
-  NzTableCellDirective,
-  NzTableComponent,
-  NzTableVirtualScrollDirective,
-  NzTbodyComponent,
-  NzThAddOnComponent,
-  NzTheadComponent,
-  NzThMeasureDirective,
-  NzTrDirective
-} from 'ng-zorro-antd/table';
+import {NzTableModule} from 'ng-zorro-antd/table';
 import {TableRowHeightDirective} from '../../../../shared/directives/table-row-height.directive';
 import {CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
@@ -86,44 +76,32 @@ type DisplayNotification = Partial<OrderExecuteSubscription> & Partial<PriceSpar
     NzEmptyComponent,
     LetDirective,
     NzResizeObserverDirective,
-    NzTableComponent,
     TableRowHeightDirective,
-    NzTheadComponent,
-    NzTrDirective,
     CdkDropList,
-    NzTableCellDirective,
-    NzThMeasureDirective,
     NzTooltipDirective,
     ResizeColumnDirective,
-    NzThAddOnComponent,
     CdkDrag,
-    NzFilterTriggerComponent,
     NzIconDirective,
-    NzTbodyComponent,
-    NzTableVirtualScrollDirective,
     InstrumentBadgeDisplayComponent,
     NzDropdownMenuComponent,
     TableSearchFilterComponent,
     AddToWatchlistMenuComponent,
     NzTypographyComponent,
-    AsyncPipe
+    AsyncPipe,
+    NzTableModule
   ]
 })
 export class PushNotificationsComponent extends BlotterBaseTableComponent<DisplayNotification, NotificationFilter> {
+  readonly subscriptionTypes = PushSubscriptionType;
+  isNotificationsAllowed$!: Observable<boolean>;
+  isLoading$ = new BehaviorSubject<boolean>(false);
+  settingsTableName = TableNames.NotificationsTable;
   protected readonly widgetSettingsService: WidgetSettingsService;
   protected readonly blotterService = inject(BlotterService);
-  private readonly pushNotificationsService = inject(PushNotificationsService);
   protected readonly translatorService: TranslatorService;
   protected readonly nzContextMenuService: NzContextMenuService;
   protected readonly widgetLocalStateService: WidgetLocalStateService;
   protected readonly destroyRef: DestroyRef;
-  private readonly errorHandlerService = inject(ErrorHandlerService);
-
-  readonly subscriptionTypes = PushSubscriptionType;
-
-  isNotificationsAllowed$!: Observable<boolean>;
-  isLoading$ = new BehaviorSubject<boolean>(false);
-  settingsTableName = TableNames.NotificationsTable;
   protected readonly allColumns: BaseColumnSettings<DisplayNotification>[] = [
     {
       id: 'id',
@@ -165,6 +143,9 @@ export class PushNotificationsComponent extends BlotterBaseTableComponent<Displa
       }
     },
   ];
+
+  private readonly pushNotificationsService = inject(PushNotificationsService);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
 
   constructor() {
     const widgetSettingsService = inject(WidgetSettingsService);
