@@ -60,14 +60,15 @@
   </div>
 
   <div *transloco="let t" class="buttons-group">
-    @if (linkToActive !== undefined) {
+    @let isLinkToActive = linkToActive();
+    @if (isLinkToActive !== null) {
       <button
         (mousedown)="changeLinkToActive($event, !linkToActive)"
         class="link-to-active-btn"
         nz-button
         nzSize="small"
       >
-        <i [class.active]="linkToActive()"
+        <i [class.active]="isLinkToActive"
            [nzTheme]="'outline'"
            [nzType]="'link'"
            [text]="t('joyride.step8.text')"

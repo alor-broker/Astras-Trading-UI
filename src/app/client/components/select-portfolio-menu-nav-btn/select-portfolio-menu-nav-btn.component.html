@@ -2,44 +2,42 @@
   <ng-container *ngrxLet="{portfolios: portfolios$, selectedPortfolio: selectedPortfolio$} as vm">
     @if (vm.selectedPortfolio != null) {
       <button
-        class="dropdown-btn"
+        class="dropdown-btn d-flex align-items-center"
         nz-button
         nz-dropdown
         nzSize="small"
         nzType="text"
         [nzDropdownMenu]="portfoliosDropdown"
         >
-        <span>
-          {{vm.selectedPortfolio.market}} {{vm.selectedPortfolio.portfolio}}
-          <i nz-icon nzType="down" nzTheme="outline" class="arrow-icon"></i>
-        </span>
-        <nz-dropdown-menu #portfoliosDropdown="nzDropdownMenu">
-          <ul nz-menu class="portfolio-menu">
-            <li>
-              <input
-                type="text"
-                nz-input
-                class="portfolio-search"
-                [placeholder]="t('dashboardNavbarCommon.searchPortfolioPlaceholder')"
-                [formControl]="searchControl"
-                />
-            </li>
-            @for (kvp of vm.portfolios | keyvalue; track portfolioGroupsTrackByFn($index, kvp)) {
-              <li nz-menu-item nzDisabled> {{kvp.key}} </li>
-              @for (model of kvp.value; track portfoliosTrackByFn($index, model)) {
-                @if (isFoundPortfolio(model)) {
-                  <li
-                    nz-menu-item
-                    (click)="changePortfolio(model)"
-                    >
-                    {{model.market}} {{model.portfolio}}
-                  </li>
-                }
+        <span>{{vm.selectedPortfolio.market}} {{vm.selectedPortfolio.portfolio}}</span>
+        <nz-icon nzType="down" nzTheme="outline" class="arrow-icon"/>
+      </button>
+      <nz-dropdown-menu #portfoliosDropdown="nzDropdownMenu">
+        <ul nz-menu class="portfolio-menu">
+          <li>
+            <input
+              type="text"
+              nz-input
+              class="portfolio-search"
+              [placeholder]="t('dashboardNavbarCommon.searchPortfolioPlaceholder')"
+              [formControl]="searchControl"
+            />
+          </li>
+          @for (kvp of vm.portfolios | keyvalue; track portfolioGroupsTrackByFn($index, kvp)) {
+            <li nz-menu-item nzDisabled> {{kvp.key}} </li>
+            @for (model of kvp.value; track portfoliosTrackByFn($index, model)) {
+              @if (isFoundPortfolio(model)) {
+                <li
+                  nz-menu-item
+                  (click)="changePortfolio(model)"
+                >
+                  {{model.market}} {{model.portfolio}}
+                </li>
               }
             }
-          </ul>
-        </nz-dropdown-menu>
-      </button>
+          }
+        </ul>
+      </nz-dropdown-menu>
     } @else {
       <span
         nz-typography
