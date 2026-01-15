@@ -1,11 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation, input, output, inject } from '@angular/core';
-import {BehaviorSubject, Observable, of, shareReplay, switchMap} from 'rxjs';
+import {ChangeDetectionStrategy, Component, inject, input, OnInit, output, ViewEncapsulation} from '@angular/core';
+import {BehaviorSubject, filter, Observable, of, shareReplay, switchMap} from 'rxjs';
 import {OrderbookService} from '../../services/orderbook.service';
 import {ChartData, OrderBook} from '../../models/orderbook.model';
 import {map, startWith} from 'rxjs/operators';
-import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {MathHelper} from "../../../../shared/utils/math-helper";
-import {ColumnsOrder, OrderbookSettings} from '../../models/orderbook-settings.model';
+import {ColumnsOrder} from '../../models/orderbook-settings.model';
 import {OrderbookChartComponent} from '../orderbook-chart/orderbook-chart.component';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {AsyncPipe, DecimalPipe, NgStyle} from '@angular/common';
@@ -15,6 +14,28 @@ import {
 import {
   OrderbookTableVolumesAtTheMiddleComponent
 } from '../orderbook-tables/orderbook-table-volumes-at-the-middle/orderbook-table-volumes-at-the-middle.component';
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {NumberDisplayFormat} from "../../../../shared/models/enums/number-display-format";
+import {toObservable} from "@angular/core/rxjs-interop";
+import {Instrument} from "../../../../shared/models/instruments/instrument.model";
+import {InstrumentsService} from "../../../instruments/services/instruments.service";
+import {getTypeByCfi} from "../../../../shared/utils/instruments";
+import {InstrumentType} from "../../../../shared/models/enums/instrument-type.model";
+
+export interface OrderbookComponentSettings {
+  targetInstrument: InstrumentKey;
+  display: {
+    depth?: number;
+    showChart: boolean;
+    showTable: boolean;
+    showYieldForBonds: boolean;
+    showVolume?: boolean;
+    columnsOrder?: ColumnsOrder;
+    volumeDisplayFormat?: NumberDisplayFormat;
+    showPriceWithZeroPadding?: boolean;
+    showSpread?: boolean;
+  };
+}
 
 interface Size {
   width: string;
@@ -26,6 +47,8 @@ interface SpreadDiffData {
   diff: number;
   colorRatio: number;
 }
+
+type InstrumentExtended = Instrument & { isBond: boolean };
 
 @Component({
   selector: 'ats-order-book',
@@ -44,32 +67,40 @@ interface SpreadDiffData {
   ]
 })
 export class OrderBookComponent implements OnInit {
-  private readonly settingsService = inject(WidgetSettingsService);
-  private readonly service = inject(OrderbookService);
+  readonly settings = input.required<OrderbookComponentSettings>();
 
-  readonly guid = input.required<string>();
-
-  readonly shouldShowSettingsChange = output<boolean>();
+  readonly NumberDisplayFormat = NumberDisplayFormat;
 
   ob$: Observable<OrderBook | null> = of(null);
+
   spreadDiffData$: Observable<SpreadDiffData | null> = of(null);
+
   columnsOrderEnum = ColumnsOrder;
-  settings$!: Observable<OrderbookSettings>;
+
   sizes: BehaviorSubject<Size> = new BehaviorSubject<Size>({
     width: '100%',
     height: '100%',
   });
 
+  readonly rowSelected = output<number>();
+
+  protected targetInstrument$!: Observable<InstrumentExtended>;
+
+  private readonly settingsChanges$ = toObservable(this.settings).pipe(
+    shareReplay(1)
+  );
+
+  private readonly service = inject(OrderbookService);
+
+  private readonly instrumentsService = inject(InstrumentsService);
+
   private readonly minSpreadDiffPercentForColorChange = 0.3;
+
   private readonly maxSpreadDiffPercentForColorChange = 1;
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid()).pipe(
-      shareReplay(1)
-    );
-
-    this.ob$ = this.settings$.pipe(
-      switchMap(settings => this.service.getOrderBook(settings)),
+    this.ob$ = this.settingsChanges$.pipe(
+      switchMap(settings => this.service.getOrderBook(settings.targetInstrument, settings.display.depth ?? 10)),
       startWith(<OrderBook>{
         rows: [],
         maxVolume: 1,
@@ -81,6 +112,17 @@ export class OrderBookComponent implements OnInit {
         askVolumes: 0,
       }),
       shareReplay({bufferSize: 1, refCount: true})
+    );
+
+    this.targetInstrument$ = this.settingsChanges$.pipe(
+      switchMap(s => this.instrumentsService.getInstrument(s.targetInstrument)),
+      filter(instrument => instrument !== null),
+      map(instrument => ({
+          ...instrument,
+          isBond: getTypeByCfi(instrument.cfiCode) === InstrumentType.Bond
+        })
+      ),
+      shareReplay(1)
     );
 
     this.spreadDiffData$ = this.ob$.pipe(

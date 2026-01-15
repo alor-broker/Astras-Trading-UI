@@ -1,37 +1,24 @@
-import { Component, DestroyRef, input, OnInit, viewChild, inject } from '@angular/core';
-import {BehaviorSubject, map, Observable,} from 'rxjs';
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, input, model, OnInit, viewChild} from '@angular/core';
 import {ChartDataset, ChartOptions, ComplexFillTarget, ScatterControllerDatasetOptions} from 'chart.js';
 import {MathHelper} from 'src/app/shared/utils/math-helper';
 import {ChartData, ChartPoint} from '../../models/orderbook.model';
 import {BaseChartDirective} from 'ng2-charts';
-import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {ThemeService} from '../../../../shared/services/theme.service';
-import {OrderbookSettings} from '../../models/orderbook-settings.model';
 import {TranslatorService} from "../../../../shared/services/translator.service";
 import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
-import {AsyncPipe} from '@angular/common';
 
 @Component({
   selector: 'ats-orderbook-chart',
   templateUrl: './orderbook-chart.component.html',
   styleUrls: ['./orderbook-chart.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    BaseChartDirective,
-    AsyncPipe
+    BaseChartDirective
   ]
 })
 export class OrderbookChartComponent implements OnInit {
-  private readonly widgetSettings = inject(WidgetSettingsService);
-  private readonly themeService = inject(ThemeService);
-  private readonly translatorService = inject(TranslatorService);
-  private readonly destroyRef = inject(DestroyRef);
-
   readonly chartData = input.required<ChartData>();
-  readonly guid = input.required<string>();
-  readonly chart = viewChild(BaseChartDirective);
 
-  shouldShowChart$?: Observable<boolean>;
-  chartData$ = new BehaviorSubject<ChartDataset[]>([]);
   public chartOptions: ChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -75,7 +62,18 @@ export class OrderbookChartComponent implements OnInit {
     },
   };
 
+  protected readonly datasets = model<ChartDataset[]>([]);
+
+  private readonly chart = viewChild(BaseChartDirective);
+
+  private readonly themeService = inject(ThemeService);
+
+  private readonly translatorService = inject(TranslatorService);
+
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly chartDataChanges$ = toObservable(this.chartData);
+
   private readonly initialData: ChartDataset[] = [
     {
       fill: {
@@ -100,10 +98,6 @@ export class OrderbookChartComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.shouldShowChart$ = this.widgetSettings.getSettings<OrderbookSettings>(this.guid()).pipe(
-      map((s) => s.showChart)
-    );
-
     this.themeService.getThemeSettings().pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(theme => {
@@ -144,7 +138,7 @@ export class OrderbookChartComponent implements OnInit {
 
     this.initialData[0].data = bids;
     this.initialData[1].data = asks;
-    this.chartData$.next(this.initialData);
+    this.datasets.set(this.initialData);
 
     const x = this.chartOptions.scales?.x;
     if (x) {

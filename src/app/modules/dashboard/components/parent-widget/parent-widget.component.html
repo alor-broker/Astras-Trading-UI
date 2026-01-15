@@ -141,5 +141,8 @@
         [isBlockWidget]="isBlockWidget()"
          />
     }
+    @case ('mobile-order') {
+      <ats-mobile-order-widget [widgetInstance]="targetWidgetInstance"/>
+    }
   }
 </div>

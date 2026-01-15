@@ -1,0 +1,56 @@
+<div class="h-100 overflow-hidden d-flex flex-column">
+  <div class="pb-10">
+    <ats-instrument-quotes [targetInstrument]="settings()"></ats-instrument-quotes>
+  </div>
+
+  <div class="flex-fill position-relative overflow-hidden">
+    <div class="d-flex flex-column flex-gap-15 h-100 pb-25 show-scroll">
+      <div style="height: 300px">
+        <ats-light-chart [selectedTimeframe]="defaultTimeframe()" [settings]="chartSettings()"></ats-light-chart>
+      </div>
+
+      <div>
+        <ats-order-book
+          (rowSelected)="openLimitForm($event)"
+          [settings]="orderbookSettings()"
+        />
+      </div>
+    </div>
+
+    <ats-pull-up-panel
+      [(isExpanded)]="orderFormsVisible"
+      [body]="orderPanelBody"
+      [dragThresholdPx]="20"
+      [header]="orderPanelHeader"
+      [triggerMode]="'drag'"
+    />
+
+    <ng-template #orderPanelHeader>
+      <div class="text-center fs-5 lh-1 heading-color">
+        <nz-icon nzTheme="outline" nzType="ellipsis"/>
+      </div>
+      <ng-container *transloco="let t; scope: 'order-commands/buy-sell-buttons'">
+        <div class="order-panel-title">
+          <span class="left">
+            <strong>{{ t('orderCommandsBuySellButtons.buyBtnText') }}</strong>
+          </span>
+          <span class="delim">|</span>
+          <span class="right">
+            <strong>{{ t('orderCommandsBuySellButtons.sellBtnText') }}</strong>
+          </span>
+        </div>
+      </ng-container>
+    </ng-template>
+
+    <ng-template #orderPanelBody>
+      <div class="order-panel-body p-10">
+        <ats-submit-order-form
+          [(formType)]="orderFormType"
+          [price]="orderFormsPrice()"
+          [targetInstrument]="settings()"
+        />
+      </div>
+    </ng-template>
+  </div>
+</div>
+

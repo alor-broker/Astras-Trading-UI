@@ -217,6 +217,9 @@
         "widgetTypeId": "order-submit"
       },
       {
+        "widgetTypeId": "mobile-order"
+      },
+      {
         "widgetTypeId": "blotter"
       },
       {

@@ -224,7 +224,10 @@ export class ClientOrderCommandService implements OrderCommandService {
         }
       },
       marketOrder: {
-        isSupported: true
+        isSupported: true,
+        orderConfig: {
+          unsupportedFields: {}
+        }
       },
       stopOrder: {
         isSupported: true

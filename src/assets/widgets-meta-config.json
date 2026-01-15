@@ -451,7 +451,8 @@
         "default": "Order",
         "translations": {
           "ru": "Заявка",
-          "en": "Order"
+          "en": "Order",
+          "hy": "Հայտի ձևակերպում"
         }
       },
       "galleryOrder": 12
@@ -921,6 +922,40 @@
     },
     "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
   },
+  {
+    "typeId": "mobile-order",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "",
+        "componentName": "MobileOrderWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Order",
+      "translations": {
+        "ru": "Заявка",
+        "en": "Order"
+      }
+    },
+    "hasInstrumentBind": true,
+    "category": "positionsTradesOrders",
+    "mobileMeta": {
+      "galleryIcon": "plus-circle",
+      "ribbonIcon": "plus-circle",
+      "enabled": true,
+      "widgetName": {
+        "default": "Order",
+        "translations": {
+          "ru": "Заявка",
+          "en": "Order",
+          "hy": "Հայտի ձևակերպում"
+        }
+      },
+      "galleryOrder": 25
+    }
+  },
+
   {
     "typeId": "admin-clients",
     "definition": {

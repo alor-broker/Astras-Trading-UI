@@ -1,15 +1,15 @@
-@if (settings$ | async; as settings) {
+@if (extendedSettings$ | async; as settings) {
   <div (nzResizeObserve)="containerSizeChanged($event)"
     class="container"
     nzResizeObserver
     >
-    <ats-timeframes-panel (changeTimeframe)="changeTimeframe($event)"
+    <ats-timeframes-panel (changeTimeframe)="selectedTimeframe.set($event)"
       [availableTimeframes]="(availableTimeFrames$ | async) ?? []"
-      [selectedTimeframe]="settings.timeFrame"
-      [displayMode]="settings.timeFrameDisplayMode ?? timeFrameDisplayModes.Buttons"
+      [selectedTimeframe]="selectedTimeframe()"
+      [displayMode]="settings.chart.timeFrameDisplayMode ?? timeFrameDisplayModes.Buttons"
      />
     <div (mousedown)="$event.stopPropagation()" class="main-chart">
-      <div [id]="guid()" class="chart-container"></div>
+      <div [id]="chartContainerId" class="chart-container"></div>
     </div>
   </div>
 }

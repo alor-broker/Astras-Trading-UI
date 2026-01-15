@@ -3,9 +3,14 @@
   unsupportedFields: Record<string, boolean>;
 }
 
+export interface MarketOrderConfig {
+  unsupportedFields: Record<string, boolean>;
+}
+
 export interface OrdersConfig {
   marketOrder: {
     isSupported: boolean;
+    orderConfig: MarketOrderConfig | null;
   };
   limitOrder: {
     isSupported: boolean;

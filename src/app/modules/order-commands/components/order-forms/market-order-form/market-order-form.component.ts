@@ -30,6 +30,7 @@ import {
 import {OrderEvaluationComponent} from '../../order-evaluation/order-evaluation.component';
 import {BuySellButtonsComponent} from '../../buy-sell-buttons/buy-sell-buttons.component';
 import {AsyncPipe, KeyValuePipe} from '@angular/common';
+import {MarketOrderConfig} from "../../../../../shared/models/orders/orders-config.model";
 
 @Component({
   selector: 'ats-market-order-form',
@@ -72,6 +73,8 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
   readonly initialValues = input<{
     quantity?: number;
   } | null>(null);
+
+  readonly marketOrderConfig = input.required<MarketOrderConfig>();
 
   timeInForceEnum = TimeInForce;
 

@@ -3,9 +3,9 @@ import {WidgetSettingsService} from '../../../../shared/services/widget-settings
 import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
 import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import {TimeframeValue} from '../../models/light-chart.models';
-import {Observable} from 'rxjs';
+import {Observable, shareReplay} from 'rxjs';
 import {SettingsHelper} from '../../../../shared/utils/settings-helper';
-import {LightChartSettings, TimeFrameDisplayMode} from '../../models/light-chart-settings.model';
+import {LightChartWidgetSettings, TimeFrameDisplayMode} from '../../models/light-chart-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
 import {getValueOrDefault} from "../../../../shared/utils/object-helper";
@@ -15,9 +15,10 @@ import {WidgetHeaderComponent} from '../../../../shared/components/widget-header
 import {
   WidgetHeaderInstrumentSwitchComponent
 } from '../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component';
-import {LightChartComponent} from '../../components/light-chart/light-chart.component';
+import {LightChartComponent, LightChartComponentSettings} from '../../components/light-chart/light-chart.component';
 import {LightChartSettingsComponent} from '../../components/light-chart-settings/light-chart-settings.component';
 import {AsyncPipe} from '@angular/common';
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'ats-light-chart-widget',
@@ -44,7 +45,8 @@ export class LightChartWidgetComponent implements OnInit {
 
   readonly isBlockWidget = input.required<boolean>();
 
-  settings$!: Observable<LightChartSettings>;
+  widgetSettings$!: Observable<LightChartWidgetSettings>;
+  chartSettings$!: Observable<LightChartComponentSettings>;
   showBadge$!: Observable<boolean>;
 
   get guid(): string {
@@ -56,7 +58,7 @@ export class LightChartWidgetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<LightChartSettings>(
+    WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<LightChartWidgetSettings>(
       this.widgetInstance(),
       'LightChartSettings',
       settings => ({
@@ -64,14 +66,40 @@ export class LightChartWidgetComponent implements OnInit {
         timeFrame: getValueOrDefault(settings.timeFrame, TimeframeValue.Day),
         timeFrameDisplayMode: getValueOrDefault(settings.timeFrameDisplayMode, TimeFrameDisplayMode.Buttons),
         availableTimeFrames: [TimeframeValue.M1, TimeframeValue.M15, TimeframeValue.H, TimeframeValue.Day],
-        width: 300,
-        height: 300
       }),
       this.dashboardContextService,
       this.widgetSettingsService
     );
 
-    this.settings$ = this.widgetSettingsService.getSettings<LightChartSettings>(this.guid);
+    this.widgetSettings$ = this.widgetSettingsService.getSettings<LightChartWidgetSettings>(this.guid).pipe(
+      shareReplay(1)
+    );
+
+    this.chartSettings$ = this.widgetSettings$.pipe(
+      map(s => {
+        return {
+          targetInstrument: {
+            symbol: s.symbol,
+            exchange: s.exchange,
+            instrumentGroup: s.instrumentGroup
+          },
+          chart: {
+            availableTimeFrames: s.availableTimeFrames,
+            timeFrameDisplayMode: s.timeFrameDisplayMode,
+          }
+        } satisfies LightChartComponentSettings;
+      })
+    );
+
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
+  }
+
+  protected updateSelectedTimeFrame(timeFrame: TimeframeValue): void {
+    this.widgetSettingsService.updateSettings<LightChartWidgetSettings>(
+      this.guid,
+      {
+        timeFrame
+      }
+    );
   }
 }

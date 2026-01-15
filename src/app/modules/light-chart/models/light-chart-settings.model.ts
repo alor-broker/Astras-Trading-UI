@@ -8,10 +8,8 @@ export enum TimeFrameDisplayMode {
   Hide = 'hide'
 }
 
-export interface LightChartSettings extends WidgetSettings, InstrumentKey {
+export interface LightChartWidgetSettings extends WidgetSettings, InstrumentKey {
   timeFrame: TimeframeValue;
-  width: number;
-  height: number;
   timeFrameDisplayMode?: TimeFrameDisplayMode;
   availableTimeFrames?: TimeframeValue[];
 }
