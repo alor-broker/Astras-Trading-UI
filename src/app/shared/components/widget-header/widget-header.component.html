@@ -63,7 +63,7 @@
     @let isLinkToActive = linkToActive();
     @if (isLinkToActive !== null) {
       <button
-        (mousedown)="changeLinkToActive($event, !linkToActive)"
+        (mousedown)="changeLinkToActive($event, !isLinkToActive)"
         class="link-to-active-btn"
         nz-button
         nzSize="small"

@@ -99,37 +99,39 @@
             >
             @if (showPositionActions(td.settings)) {
               <td>
-                @if (canClosePosition(pos)) {
-                  <a
-                    [title]="t('blotterPositions.closePositionTooltip')"
-                    (click)="$event.preventDefault(); $event.stopPropagation()"
-                    nz-popconfirm
-                    [nzCancelText]="t('no')"
-                    [nzOkText]="t('yes')"
-                    [nzPopconfirmTitle]="t('blotterPositions.confirmClose')"
-                    nzOkDanger="true"
-                    [nzAutofocus]="'cancel'"
-                    (nzOnConfirm)="closePosition(pos)"
+                <div class="d-flex flex-row flex-no-wrap flex-gap-5">
+                  @if (canClosePosition(pos)) {
+                    <a
+                      (click)="$event.preventDefault(); $event.stopPropagation()"
+                      (nzOnConfirm)="closePosition(pos)"
+                      [nzAutofocus]="'cancel'"
+                      [nzCancelText]="t('no')"
+                      [nzOkText]="t('yes')"
+                      [nzPopconfirmTitle]="t('blotterPositions.confirmClose')"
+                      [title]="t('blotterPositions.closePositionTooltip')"
+                      nz-popconfirm
+                      nzOkDanger="true"
                     >
-                    <i nz-icon nzTheme="outline" nzType="close-circle"></i>
-                  </a>
-                }
-                &nbsp;
-                @if (canReversePosition(pos)) {
-                  <a
-                    [title]="t('blotterPositions.reversePositionTooltip')"
-                    (click)="$event.preventDefault(); $event.stopPropagation()"
-                    nz-popconfirm
-                    [nzCancelText]="t('no')"
-                    [nzOkText]="t('yes')"
-                    [nzPopconfirmTitle]="t('blotterPositions.confirmReverse')"
-                    nzOkDanger="true"
-                    [nzAutofocus]="'cancel'"
-                    (nzOnConfirm)="reversePosition(pos)"
+                      <i nz-icon nzTheme="outline" nzType="close-circle"></i>
+                    </a>
+                  }
+
+                  @if (canReversePosition(pos)) {
+                    <a
+                      (click)="$event.preventDefault(); $event.stopPropagation()"
+                      (nzOnConfirm)="reversePosition(pos)"
+                      [nzAutofocus]="'cancel'"
+                      [nzCancelText]="t('no')"
+                      [nzOkText]="t('yes')"
+                      [nzPopconfirmTitle]="t('blotterPositions.confirmReverse')"
+                      [title]="t('blotterPositions.reversePositionTooltip')"
+                      nz-popconfirm
+                      nzOkDanger="true"
                     >
-                    <i nz-icon nzTheme="outline" nzType="retweet"></i>
-                  </a>
-                }
+                      <i nz-icon nzTheme="outline" nzType="retweet"></i>
+                    </a>
+                  }
+                </div>
               </td>
             }
             @for (column of td.tableConfig.columns; track column) {
