@@ -1,25 +1,23 @@
+import {Component, DestroyRef, input, OnInit,} from '@angular/core';
+import {asyncScheduler, BehaviorSubject, combineLatest, Observable, shareReplay, subscribeOn, take} from "rxjs";
+import {BlotterSettings} from "../../models/blotter-settings.model";
+import {BaseColumnSettings, FilterType} from "../../../../shared/models/settings/table-settings.model";
+import {ExportHelper} from "../../utils/export-helper";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {BaseTableComponent} from "../../../../shared/components/base-table/base-table.component";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {CdkDragDrop} from "@angular/cdk/drag-drop";
+import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {map} from "rxjs/operators";
+import {NzContextMenuService} from "ng-zorro-antd/dropdown";
 import {
-  Component,
-  DestroyRef, Input,
-  OnInit,
-} from '@angular/core';
-import {take, combineLatest, Observable, shareReplay, BehaviorSubject, subscribeOn, asyncScheduler} from "rxjs";
-import { BlotterSettings } from "../../models/blotter-settings.model";
-import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
-import { ExportHelper } from "../../utils/export-helper";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { BaseTableComponent } from "../../../../shared/components/base-table/base-table.component";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import { ContentSize } from "../../../../shared/models/dashboard/dashboard-item.model";
-import { map } from "rxjs/operators";
-import { NzContextMenuService } from "ng-zorro-antd/dropdown";
-import { AddToWatchlistMenuComponent } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+  AddToWatchlistMenuComponent
+} from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
 import {NzSafeAny} from "ng-zorro-antd/core/types";
-import { NzTableSortOrder } from "ng-zorro-antd/table";
+import {NzTableSortOrder} from "ng-zorro-antd/table";
 
 export interface SortState {
   columnId: string;
@@ -33,23 +31,18 @@ export interface NzTableFilterListItem {
 }
 
 @Component({
-    template: '',
-    standalone: false
+  template: ''
 })
 export abstract class BlotterBaseTableComponent<T extends { id: string }, F extends object>
-extends BaseTableComponent<T, F>
-implements OnInit {
-  @Input({ required: true }) guid!: string;
+  extends BaseTableComponent<T, F>
+  implements OnInit {
+  readonly guid = input.required<string>();
 
   filterTypes = FilterType;
   settings$!: Observable<BlotterSettings>;
-  protected isFilterDisabled = (): boolean => Object.keys(this.filters$.getValue()).length === 0;
   protected columns!: BaseColumnSettings<T>[];
   protected footerSize$ = new BehaviorSubject<ContentSize | null>(null);
-
   protected fileSuffix!: string;
-
-  abstract get restoreFiltersAndSortOnLoad(): boolean;
 
   protected constructor(
     protected readonly settingsService: WidgetSettingsService,
@@ -61,8 +54,18 @@ implements OnInit {
     super(settingsService, destroyRef);
   }
 
+  abstract get restoreFiltersAndSortOnLoad(): boolean;
+
+  private get filterStateStorageKey(): string {
+    return `${this.settingsTableName}_filters`;
+  }
+
+  private get sortStateStorageKey(): string {
+    return `${this.settingsTableName}_sort`;
+  }
+
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid)
+    this.settings$ = this.settingsService.getSettings<BlotterSettings>(this.guid())
       .pipe(
         shareReplay(1),
         takeUntilDestroyed(this.destroyRef)
@@ -88,22 +91,48 @@ implements OnInit {
 
     this.rowToInstrumentKey(selectedRow)
       .subscribe(instrument => {
-        if(instrument == null || menu.menuRef == null) {
+        const menuRef = menu.menuRef();
+        if (instrument == null || menuRef == null) {
           $event.preventDefault();
           return;
         }
 
-        menu.itemToAdd = instrument;
-        this.nzContextMenuService.create($event, menu.menuRef);
+        menu.itemToAdd.set(instrument);
+        this.nzContextMenuService.create($event, menuRef);
       });
   }
 
+  getSortState(): Observable<SortState | null> {
+    return this.widgetLocalStateService.getStateRecord<SortState>(this.guid(), this.sortStateStorageKey);
+  }
+
+  footerSizeChanged(entries: ResizeObserverEntry[]): void {
+    entries.forEach(x => {
+      this.footerSize$.next({
+        width: Math.floor(x.contentRect.width),
+        height: Math.floor(x.contentRect.height)
+      });
+    });
+  }
+
+  formatDate(date: Date): string {
+    if (date.toDateString() == new Date().toDateString()) {
+      return date.toLocaleTimeString();
+    } else return date.toLocaleDateString();
+  }
+
+  canExport(data: readonly T[] | undefined | null): boolean {
+    return !!data && data.length > 0;
+  }
+
+  protected isFilterDisabled = (): boolean => Object.keys(this.filters$.getValue()).length === 0;
+
   protected getSort(columnId: string, sortState: SortState | null): NzTableSortOrder {
-    if(sortState == null) {
+    if (sortState == null) {
       return null;
     }
 
-    if(sortState.columnId !== columnId) {
+    if (sortState.columnId !== columnId) {
       return null;
     }
 
@@ -113,7 +142,7 @@ implements OnInit {
   protected saveFilterState(filter: F): void {
     setTimeout(() => {
       this.widgetLocalStateService.setStateRecord<F>(
-        this.guid,
+        this.guid(),
         this.filterStateStorageKey,
         filter,
         this.restoreFiltersAndSortOnLoad
@@ -126,14 +155,14 @@ implements OnInit {
       take(1),
       subscribeOn(asyncScheduler)
     ).subscribe(sortState => {
-      if(sortState != null && direction == null) {
-        if(sortState.columnId != columnId) {
+      if (sortState != null && direction == null) {
+        if (sortState.columnId != columnId) {
           return;
         }
       }
 
       this.widgetLocalStateService.setStateRecord<SortState>(
-        this.guid,
+        this.guid(),
         this.sortStateStorageKey,
         {
           columnId,
@@ -144,12 +173,8 @@ implements OnInit {
     });
   }
 
-  getSortState(): Observable<SortState | null> {
-    return this.widgetLocalStateService.getStateRecord<SortState>(this.guid, this.sortStateStorageKey);
-  }
-
   protected getFiltersState(): Observable<F | null> {
-    return this.widgetLocalStateService.getStateRecord<F>(this.guid, this.filterStateStorageKey);
+    return this.widgetLocalStateService.getStateRecord<F>(this.guid(), this.filterStateStorageKey);
   }
 
   protected abstract rowToInstrumentKey(row: T): Observable<InstrumentKey | null>;
@@ -169,15 +194,6 @@ implements OnInit {
       );
   }
 
-  footerSizeChanged(entries: ResizeObserverEntry[]): void {
-    entries.forEach(x => {
-      this.footerSize$.next({
-        width: Math.floor(x.contentRect.width),
-        height: Math.floor(x.contentRect.height)
-      });
-    });
-  }
-
   protected filterChange(updates: Partial<F>): void {
     this.filters$.pipe(
       take(1)
@@ -187,7 +203,7 @@ implements OnInit {
         ...updates
       };
 
-      if(JSON.stringify(currentFilters) === JSON.stringify(newValue)) {
+      if (JSON.stringify(currentFilters) === JSON.stringify(newValue)) {
         return;
       }
 
@@ -197,14 +213,7 @@ implements OnInit {
   }
 
   protected defaultFilterChange(key: string, value: string[]): void {
-    this.filterChange(<F>{ [key]: value });
-  }
-
-  formatDate(date: Date): string {
-    if (date.toDateString() == new Date().toDateString()) {
-      return date.toLocaleTimeString();
-    }
-    else return date.toLocaleDateString();
+    this.filterChange(<F>{[key]: value});
   }
 
   protected isFilterApplied(column: BaseColumnSettings<T>): boolean {
@@ -212,10 +221,6 @@ implements OnInit {
     return column.id in filter
       && filter[column.id] != null
       && filter[column.id]!.length > 0;
-  }
-
-  canExport(data: readonly T[] | undefined | null): boolean {
-    return !!data && data.length > 0;
   }
 
   protected exportToFile(data?: readonly T[]): void {
@@ -277,27 +282,19 @@ implements OnInit {
     columnId: string,
     filterState: F | null,
     item: NzTableFilterListItem): boolean {
-    if(filterState == null) {
+    if (filterState == null) {
       return false;
     }
 
     const filterValue = filterState[columnId as keyof F] as unknown;
-    if(Array.isArray(filterValue)) {
+    if (Array.isArray(filterValue)) {
       return filterValue.some(f => f === item.value);
     }
 
-    if(typeof filterValue === 'string') {
+    if (typeof filterValue === 'string') {
       return filterValue === item.value;
     }
 
     return false;
-  }
-
-  private get filterStateStorageKey(): string {
-   return `${this.settingsTableName}_filters`;
-  }
-
-  private get sortStateStorageKey(): string {
-    return `${this.settingsTableName}_sort`;
   }
 }

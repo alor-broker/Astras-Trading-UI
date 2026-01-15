@@ -1,62 +1,77 @@
-import {
-  Component,
-  DestroyRef,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import { BaseOrderFormComponent } from "../base-order-form.component";
-import {
-  BehaviorSubject,
-  combineLatest,
-  distinctUntilChanged,
-  Observable,
-  shareReplay,
-  switchMap,
-  take
-} from "rxjs";
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
-import { CommonParametersService } from "../../../services/common-parameters.service";
-import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
-import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
-import { EvaluationBaseProperties } from "../../../../../shared/models/evaluation-base-properties.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import {
-  debounceTime,
-  filter,
-  map,
-  startWith
-} from "rxjs/operators";
-import { QuotesService } from "../../../../../shared/services/quotes.service";
-import { Side } from "../../../../../shared/models/enums/side.model";
-import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
-import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
-import { SubmitGroupResult } from "../../../../../shared/models/orders/orders-group.model";
-import {
-  NewMarketOrder,
-  OrderCommandResult
-} from "../../../../../shared/models/orders/new-order.model";
-import { toInstrumentKey } from "../../../../../shared/utils/instruments";
+import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
+import {BaseOrderFormComponent} from "../base-order-form.component";
+import {BehaviorSubject, combineLatest, distinctUntilChanged, Observable, shareReplay, switchMap, take} from "rxjs";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {CommonParametersService} from "../../../services/common-parameters.service";
+import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
+import {inputNumberValidation} from "../../../../../shared/utils/validation-options";
+import {EvaluationBaseProperties} from "../../../../../shared/models/evaluation-base-properties.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {debounceTime, filter, map, startWith} from "rxjs/operators";
+import {QuotesService} from "../../../../../shared/services/quotes.service";
+import {Side} from "../../../../../shared/models/enums/side.model";
+import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
+import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
+import {SubmitGroupResult} from "../../../../../shared/models/orders/orders-group.model";
+import {NewMarketOrder, OrderCommandResult} from "../../../../../shared/models/orders/new-order.model";
+import {toInstrumentKey} from "../../../../../shared/utils/instruments";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
-import { TimeInForce } from "../../../../../shared/models/orders/order.model";
+import {TimeInForce} from "../../../../../shared/models/orders/order.model";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {InputNumberComponent} from '../../../../../shared/components/input-number/input-number.component';
+import {ShortNumberComponent} from '../../../../../shared/components/short-number/short-number.component';
+import {NzCollapseComponent, NzCollapsePanelComponent} from 'ng-zorro-antd/collapse';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {
+  InstrumentBoardSelectComponent
+} from '../../../../../shared/components/instrument-board-select/instrument-board-select.component';
+import {OrderEvaluationComponent} from '../../order-evaluation/order-evaluation.component';
+import {BuySellButtonsComponent} from '../../buy-sell-buttons/buy-sell-buttons.component';
+import {AsyncPipe, KeyValuePipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-market-order-form',
-    templateUrl: './market-order-form.component.html',
-    styleUrls: ['./market-order-form.component.less'],
-    standalone: false
+  selector: 'ats-market-order-form',
+  templateUrl: './market-order-form.component.html',
+  styleUrls: ['./market-order-form.component.less'],
+  imports: [
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    InputNumberComponent,
+    ShortNumberComponent,
+    NzCollapseComponent,
+    NzCollapsePanelComponent,
+    NzSelectComponent,
+    NzOptionComponent,
+    InstrumentBoardSelectComponent,
+    OrderEvaluationComponent,
+    BuySellButtonsComponent,
+    AsyncPipe,
+    KeyValuePipe
+  ]
 })
 export class MarketOrderFormComponent extends BaseOrderFormComponent implements OnInit, OnDestroy {
+  private readonly formBuilder = inject(FormBuilder);
+  protected commonParametersService: CommonParametersService;
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly quotesService = inject(QuotesService);
+  private readonly orderCommandService = inject(ConfirmableOrderCommandsService);
+  protected readonly destroyRef: DestroyRef;
+
   readonly evaluationRequest$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   readonly sides = Side;
 
-  @Input()
-  initialValues: {
+  readonly initialValues = input<{
     quantity?: number;
-  } | null = null;
+  } | null>(null);
 
   timeInForceEnum = TimeInForce;
 
@@ -75,14 +90,14 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
     timeInForce: this.formBuilder.control<TimeInForce | null>(null),
   });
 
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    protected commonParametersService: CommonParametersService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly quotesService: QuotesService,
-    private readonly orderCommandService: ConfirmableOrderCommandsService,
-    protected readonly destroyRef: DestroyRef) {
+  constructor() {
+    const commonParametersService = inject(CommonParametersService);
+    const destroyRef = inject(DestroyRef);
+
     super(commonParametersService, destroyRef);
+
+    this.commonParametersService = commonParametersService;
+    this.destroyRef = destroyRef;
   }
 
   get canSubmit(): boolean {
@@ -109,9 +124,11 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
   protected changeInstrument(newInstrument: Instrument): void {
     this.form.reset();
 
-    if (this.initialValues) {
-      if (this.initialValues.quantity != null) {
-        this.form.controls.quantity.setValue(this.initialValues.quantity);
+    const initialValues = this.initialValues();
+
+    if (initialValues != null) {
+      if (initialValues.quantity != null) {
+        this.form.controls.quantity.setValue(initialValues.quantity);
       }
     }
 
@@ -186,7 +203,7 @@ export class MarketOrderFormComponent extends BaseOrderFormComponent implements 
       formChanges$,
       positionChanges$,
       lastPrice$,
-      this.isActivated$
+      this.activatedChanges$
     ]).pipe(
       filter(([, , , isActivated]) => isActivated),
       takeUntilDestroyed(this.destroyRef),

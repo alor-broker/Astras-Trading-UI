@@ -1,15 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  ElementRef,
-  Inject,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-  DOCUMENT
-} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, OnDestroy, OnInit, DOCUMENT, input, viewChild, inject } from '@angular/core';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -102,15 +91,34 @@ interface ChartState {
         PositionDisplayExtension,
         OrdersDisplayExtension,
         TradesDisplayExtension
-    ],
-    standalone: false
+    ]
 })
 export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input({required: true})
-  guid!: string;
+  private readonly settingsService = inject(WidgetSettingsService);
+  private readonly techChartDatafeedService = inject(TechChartDatafeedService);
+  private readonly themeService = inject(ThemeService);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly syntheticInstrumentsService = inject(SyntheticInstrumentsService);
+  private readonly widgetsSharedDataService = inject(WidgetsSharedDataService);
+  private readonly ordersDialogService = inject(OrdersDialogService);
+  private readonly currentDashboardService = inject(DashboardContextService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+  private readonly marketService = inject(MarketService);
+  private readonly deviceService = inject(DeviceService);
+  private readonly chartTemplatesSettingsBrokerService = inject(ChartTemplatesSettingsBrokerService);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly tradesDisplayExtension = inject(TradesDisplayExtension);
+  private readonly positionDisplayExtension = inject(PositionDisplayExtension);
+  private readonly ordersDisplayExtension = inject(OrdersDisplayExtension);
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+  private readonly instrumentSearchService = inject(InstrumentSearchService);
+  private readonly document = inject<Document>(DOCUMENT);
+  private readonly destroyRef = inject(DestroyRef);
 
-  @ViewChild('chartContainer', { static: true })
-  chartContainer?: ElementRef<HTMLElement>;
+  readonly guid = input.required<string>();
+
+  readonly chartContainer = viewChild<ElementRef<HTMLElement>>('chartContainer');
 
   private readonly selectedPriceProviderName = 'selectedPrice';
   private chartState?: ChartState;
@@ -123,32 +131,6 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private intervalChangeSub?: Subscription;
   private symbolChangeSub?: Subscription;
   private isChartFocused = false;
-
-  constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly techChartDatafeedService: TechChartDatafeedService,
-    private readonly themeService: ThemeService,
-    private readonly instrumentsService: InstrumentsService,
-    private readonly syntheticInstrumentsService: SyntheticInstrumentsService,
-    private readonly widgetsSharedDataService: WidgetsSharedDataService,
-    private readonly ordersDialogService: OrdersDialogService,
-    private readonly currentDashboardService: DashboardContextService,
-    private readonly translatorService: TranslatorService,
-    private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly marketService: MarketService,
-    private readonly deviceService: DeviceService,
-    private readonly chartTemplatesSettingsBrokerService: ChartTemplatesSettingsBrokerService,
-    private readonly localStorageService: LocalStorageService,
-    private readonly tradesDisplayExtension: TradesDisplayExtension,
-    private readonly positionDisplayExtension: PositionDisplayExtension,
-    private readonly ordersDisplayExtension: OrdersDisplayExtension,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext,
-    private readonly instrumentSearchService: InstrumentSearchService,
-    @Inject(DOCUMENT) private readonly document: Document,
-    private readonly destroyRef: DestroyRef,
-  ) {
-  }
 
   ngOnInit(): void {
     this.initSettingsStream();
@@ -237,7 +219,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
         filter((x): x is Instrument => !!x)
       );
 
-    this.settings$ = this.settingsService.getSettings<TechChartSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<TechChartSettings>(this.guid()).pipe(
       distinctUntilChanged((previous, current) => this.isEqualTechChartSettings(previous, current)),
       mapWith(
         settings => getInstrumentInfo(settings),
@@ -291,7 +273,8 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
 
-    if (!this.chartContainer) {
+    const chartContainer = this.chartContainer();
+    if (!chartContainer) {
       return;
     }
 
@@ -317,7 +300,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
       // debug
       debug: false,
       // base options
-      container: this.chartContainer.nativeElement,
+      container: chartContainer.nativeElement,
       symbol: selectedInstrumentSymbol,
       interval: (chartLayout?.charts?.[0]?.panes?.[0]?.sources?.[0]?.state?.interval ?? '1D') as ResolutionString,
       locale: this.translatorService.getActiveLang() as LanguageCode,
@@ -408,13 +391,13 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const validKeyCodeRegExp = new RegExp('^Key[A-Z]$');
 
-    fromEvent<MouseEvent>(this.chartContainer!.nativeElement, 'mouseenter')
+    fromEvent<MouseEvent>(this.chartContainer()!.nativeElement, 'mouseenter')
       .pipe(
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(() => this.isChartFocused = true);
 
-    fromEvent<MouseEvent>(this.chartContainer!.nativeElement, 'mouseleave')
+    fromEvent<MouseEvent>(this.chartContainer()!.nativeElement, 'mouseleave')
       .pipe(
         takeUntilDestroyed(this.destroyRef)
       )
@@ -468,7 +451,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
 
         if(SyntheticInstrumentsHelper.isSyntheticInstrument(chartSymbol)) {
           this.settingsService.updateSettings<TechChartSettings>(
-            this.guid,
+            this.guid(),
             {
               linkToActive: false,
               symbol: chartSymbol
@@ -512,7 +495,7 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
   private saveChartLayout(widget: IChartingLibraryWidget): void {
     widget.save(state => {
       this.settingsService.updateSettings<TechChartSettings>(
-        this.guid,
+        this.guid(),
         {
           chartLayout: state
         }

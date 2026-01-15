@@ -3,8 +3,8 @@
     #inputElement
     nz-input
     (mousedown)="$event.stopPropagation()"
-    [placeholder]="placeholder"
-    [readOnly]="readonly"
+    [placeholder]="placeholder()"
+    [readOnly]="readonly()"
     (blur)="atsBlur.emit()"
     autocomplete="off"
     inputmode="decimal"
@@ -17,5 +17,5 @@
 </nz-input-group>
 
 <ng-template #suffixTmp>
-  <ng-container *ngTemplateOutlet="suffix"></ng-container>
+  <ng-container *ngTemplateOutlet="suffix()" />
 </ng-template>

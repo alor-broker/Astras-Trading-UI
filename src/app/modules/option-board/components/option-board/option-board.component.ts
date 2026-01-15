@@ -1,22 +1,22 @@
-import {
-  Component,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import {
-  OptionParameters,
-  OptionSide
-} from "../../models/option-board.model";
-import {
-  BehaviorSubject,
-  take
-} from "rxjs";
-import { OptionBoardDataContextFactory } from "../../utils/option-board-data-context-factory";
-import { OptionBoardDataContext } from "../../models/option-board-data-context.model";
-import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
-import { map } from "rxjs/operators";
-import { RecordContent } from "../../../../store/widgets-local-state/widgets-local-state.model";
+import { Component, OnDestroy, OnInit, input, inject } from '@angular/core';
+import {OptionParameters, OptionSide} from "../../models/option-board.model";
+import {BehaviorSubject, take} from "rxjs";
+import {OptionBoardDataContextFactory} from "../../utils/option-board-data-context-factory";
+import {OptionBoardDataContext} from "../../models/option-board-data-context.model";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import {map} from "rxjs/operators";
+import {RecordContent} from "../../../../store/widgets-local-state/widgets-local-state.model";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {LetDirective} from '@ngrx/component';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {FormsModule} from '@angular/forms';
+import {ViewSelectorComponent} from '../view-selector/view-selector.component';
+import {ViewSelectorItemComponent} from '../view-selector-item/view-selector-item.component';
+import {AllOptionsComponent} from '../all-options/all-options.component';
+import {AllOptionsListViewComponent} from '../all-options-list-view/all-options-list-view.component';
+import {SelectedOptionsComponent} from '../selected-options/selected-options.component';
+import {OptionBoardChartsLayoutComponent} from '../option-board-charts-layout/option-board-charts-layout.component';
+import {AsyncPipe} from '@angular/common';
 
 enum ComponentTabs {
   AllOptions = 'allOptions',
@@ -30,28 +30,36 @@ interface BoardViewRecord extends RecordContent {
 }
 
 @Component({
-    selector: 'ats-option-board',
-    templateUrl: './option-board.component.html',
-    styleUrls: ['./option-board.component.less'],
-    standalone: false
+  selector: 'ats-option-board',
+  templateUrl: './option-board.component.html',
+  styleUrls: ['./option-board.component.less'],
+  imports: [
+    TranslocoDirective,
+    LetDirective,
+    NzSelectComponent,
+    FormsModule,
+    NzOptionComponent,
+    ViewSelectorComponent,
+    ViewSelectorItemComponent,
+    AllOptionsComponent,
+    AllOptionsListViewComponent,
+    SelectedOptionsComponent,
+    OptionBoardChartsLayoutComponent,
+    AsyncPipe
+  ]
 })
 export class OptionBoardComponent implements OnInit, OnDestroy {
-  private readonly BoardViewStorageKey = 'board-view';
+  private readonly contextFactory = inject(OptionBoardDataContextFactory);
+  private readonly widgetLocalStateService = inject(WidgetLocalStateService);
+
   readonly ComponentTabs = ComponentTabs;
   optionSides = Object.values(OptionSide);
   parameters = Object.values(OptionParameters);
-
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
   selectedTab$ = new BehaviorSubject(ComponentTabs.AllOptions);
   dataContext!: OptionBoardDataContext;
-
-  constructor(
-    private readonly contextFactory: OptionBoardDataContextFactory,
-    private readonly widgetLocalStateService: WidgetLocalStateService
-  ) {
-  }
+  private readonly BoardViewStorageKey = 'board-view';
 
   ngOnDestroy(): void {
     this.selectedTab$.complete();
@@ -59,10 +67,10 @@ export class OptionBoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.dataContext = this.contextFactory.create(this.guid);
+    this.dataContext = this.contextFactory.create(this.guid());
 
     this.widgetLocalStateService.getStateRecord<BoardViewRecord>(
-      this.guid,
+      this.guid(),
       this.BoardViewStorageKey
     ).pipe(
       take(1),
@@ -75,9 +83,9 @@ export class OptionBoardComponent implements OnInit, OnDestroy {
   protected selectTab(tab: string): void {
     this.selectedTab$.next(tab as ComponentTabs);
 
-    if([ComponentTabs.AllOptions, ComponentTabs.OptionsByExpiration].includes(tab as ComponentTabs)) {
+    if ([ComponentTabs.AllOptions, ComponentTabs.OptionsByExpiration].includes(tab as ComponentTabs)) {
       this.widgetLocalStateService.setStateRecord<BoardViewRecord>(
-        this.guid,
+        this.guid(),
         this.BoardViewStorageKey,
         {
           boardView: tab

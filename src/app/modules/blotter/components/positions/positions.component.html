@@ -1,17 +1,15 @@
 <div *transloco="let t; scope: 'blotter/positions'" class="container">
   <ng-template #empty>
-    <nz-empty
-      [nzNotFoundContent]="isFilterDisabled() ? t('blotterPositions.emptyPositions') : t('blotterPositions.emptyPositionsWithFilters')"
+    <nz-empty [nzNotFoundContent]="isFilterDisabled() ? t('blotterPositions.emptyPositions') : t('blotterPositions.emptyPositionsWithFilters')"
       class="ant-list-empty-text"
-      nzNotFoundImage="simple">
-    </nz-empty>
+      nzNotFoundImage="simple" />
   </ng-template>
   <div
     *ngrxLet="{ positions: tableData$, contentSize: contentSize$, tableConfig: tableConfig$, settings: settings$, portfolioTotalCost: portfolioTotalCost$} as td"
     class="table-container"
     nzResizeObserver
     (nzResizeObserve)="containerSizeChanged($event)"
-  >
+    >
     <nz-table
       [nzData]="td.positions"
       [nzFooter]="footer"
@@ -25,7 +23,7 @@
       [nzVirtualForTrackBy]="trackBy"
       atsTableRowHeight
       nzTableLayout="fixed"
-    >
+      >
       <thead>
         <tr
           (nzResizeObserve)="headerSizeChanged($event)"
@@ -33,27 +31,30 @@
           (cdkDropListDropped)="changeColumnOrder($event)"
           cdkDropList
           cdkDropListOrientation="horizontal"
-        >
-          <th nzWidth="45px" *ngIf="showPositionActions(td.settings)">
-            <ng-container *ngIf="getClosablePositions(td.positions) as closablePositions">
-              <a
-                *ngIf="closablePositions.length > 0"
-                (click)="$event.preventDefault(); $event.stopPropagation()"
-                nz-popconfirm
-                [nzCancelText]="t('no')"
-                [nzOkText]="t('yes')"
-                [nzPopconfirmTitle]="t('blotterPositions.confirmCloseAll')"
-                nzOkDanger="true"
-                [nzAutofocus]="'cancel'"
-                (nzOnConfirm)="closeAllPositions(closablePositions)"
-                [title]="t('blotterPositions.closeAllTooltip')"
-              >
-                <i nz-icon nzTheme="outline" nzType="close-circle"></i>
-              </a>
-            </ng-container>
-          </th>
-          <th (atsWidthChanged)="saveColumnWidth({columnId: column.id, width: $event})"
-              *ngFor='let column of td.tableConfig.columns'
+          >
+          @if (showPositionActions(td.settings)) {
+            <th nzWidth="45px">
+              @if (getClosablePositions(td.positions); as closablePositions) {
+                @if (closablePositions.length > 0) {
+                  <a
+                    (click)="$event.preventDefault(); $event.stopPropagation()"
+                    nz-popconfirm
+                    [nzCancelText]="t('no')"
+                    [nzOkText]="t('yes')"
+                    [nzPopconfirmTitle]="t('blotterPositions.confirmCloseAll')"
+                    nzOkDanger="true"
+                    [nzAutofocus]="'cancel'"
+                    (nzOnConfirm)="closeAllPositions(closablePositions)"
+                    [title]="t('blotterPositions.closeAllTooltip')"
+                    >
+                    <i nz-icon nzTheme="outline" nzType="close-circle"></i>
+                  </a>
+                }
+              }
+            </th>
+          }
+          @for (column of td.tableConfig.columns; track column) {
+            <th (atsWidthChanged)="saveColumnWidth({columnId: column.id, width: $event})"
               [atsResizeColumn]="column.isResizable !== false"
               [minWidth]="column.minWidth ?? 50"
               [nzCustomFilter]='true'
@@ -67,26 +68,27 @@
               (nzFilterChange)="defaultFilterChange(column.id, $event)"
               cdkDrag
               cdkDragLockAxis="x"
-          >
-            @if(!(column.hideTitle ?? false)) {
-              <span
-                [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
-                [nzTooltipTitle]="column.tooltip"
-                nz-tooltip
               >
-                {{column.displayName}}
-              </span>
-
-              <nz-filter-trigger
-                *ngIf="column.filterData != null"
-                [nzVisible]="!!column.filterData.isOpenedFilter" (nzVisibleChange)="column.filterData.isOpenedFilter = $event"
-                [nzActive]="isFilterApplied(column)"
-                [nzDropdownMenu]="searchMenu"
-              >
-                <i nz-icon nzType="search"></i>
-              </nz-filter-trigger>
-            }
-          </th>
+              @if(!(column.hideTitle ?? false)) {
+                <span
+                  [nzTooltipPlacement]="['top', 'topLeft', 'topRight']"
+                  [nzTooltipTitle]="column.tooltip"
+                  nz-tooltip
+                  >
+                  {{column.displayName}}
+                </span>
+                @if (column.filterData != null) {
+                  <nz-filter-trigger
+                    [nzVisible]="!!column.filterData.isOpenedFilter" (nzVisibleChange)="column.filterData.isOpenedFilter = $event"
+                    [nzActive]="isFilterApplied(column)"
+                    [nzDropdownMenu]="searchMenu"
+                    >
+                    <i nz-icon nzType="search"></i>
+                  </nz-filter-trigger>
+                }
+              }
+            </th>
+          }
         </tr>
       </thead>
       <tbody>
@@ -94,77 +96,112 @@
           <tr
             (click)="rowClick(pos)"
             (contextmenu)="openContextMenu($event, contextMenu, pos)"
-          >
-            <td *ngIf="showPositionActions(td.settings)">
-              <a
-                *ngIf="canClosePosition(pos)"
-                [title]="t('blotterPositions.closePositionTooltip')"
-                (click)="$event.preventDefault(); $event.stopPropagation()"
-                nz-popconfirm
-                [nzCancelText]="t('no')"
-                [nzOkText]="t('yes')"
-                [nzPopconfirmTitle]="t('blotterPositions.confirmClose')"
-                nzOkDanger="true"
-                [nzAutofocus]="'cancel'"
-                (nzOnConfirm)="closePosition(pos)"
-              >
-                <i nz-icon nzTheme="outline" nzType="close-circle"></i>
-              </a>
-              &nbsp;
-              <a *ngIf="canReversePosition(pos)"
-                 [title]="t('blotterPositions.reversePositionTooltip')"
-                 (click)="$event.preventDefault(); $event.stopPropagation()"
-                 nz-popconfirm
-                 [nzCancelText]="t('no')"
-                 [nzOkText]="t('yes')"
-                 [nzPopconfirmTitle]="t('blotterPositions.confirmReverse')"
-                 nzOkDanger="true"
-                 [nzAutofocus]="'cancel'"
-                 (nzOnConfirm)="reversePosition(pos)"
-              >
-                <i nz-icon nzTheme="outline" nzType="retweet"></i>
-              </a>
-            </td>
-            <ng-container *ngFor='let column of td.tableConfig.columns'>
-              <td *ngIf='column.id === "icon"'>
-                <ats-instrument-icon [symbol]="pos.symbol" [size]="'default'"></ats-instrument-icon>
+            >
+            @if (showPositionActions(td.settings)) {
+              <td>
+                <div class="d-flex flex-row flex-no-wrap flex-gap-5">
+                  @if (canClosePosition(pos)) {
+                    <a
+                      (click)="$event.preventDefault(); $event.stopPropagation()"
+                      (nzOnConfirm)="closePosition(pos)"
+                      [nzAutofocus]="'cancel'"
+                      [nzCancelText]="t('no')"
+                      [nzOkText]="t('yes')"
+                      [nzPopconfirmTitle]="t('blotterPositions.confirmClose')"
+                      [title]="t('blotterPositions.closePositionTooltip')"
+                      nz-popconfirm
+                      nzOkDanger="true"
+                    >
+                      <i nz-icon nzTheme="outline" nzType="close-circle"></i>
+                    </a>
+                  }
+
+                  @if (canReversePosition(pos)) {
+                    <a
+                      (click)="$event.preventDefault(); $event.stopPropagation()"
+                      (nzOnConfirm)="reversePosition(pos)"
+                      [nzAutofocus]="'cancel'"
+                      [nzCancelText]="t('no')"
+                      [nzOkText]="t('yes')"
+                      [nzPopconfirmTitle]="t('blotterPositions.confirmReverse')"
+                      [title]="t('blotterPositions.reversePositionTooltip')"
+                      nz-popconfirm
+                      nzOkDanger="true"
+                    >
+                      <i nz-icon nzTheme="outline" nzType="retweet"></i>
+                    </a>
+                  }
+                </div>
               </td>
-              <td *ngIf='column.id === "symbol"' class='fw-bold'>
-                <span class="symbol-name">{{ pos.symbol }}</span>
-                <ats-instrument-badge-display [instrumentKey]="pos"></ats-instrument-badge-display>
-              </td>
-              <td *ngIf='column.id === "shortName"'>{{ pos.shortName }}</td>
-              <td *ngIf='column.id === "avgPrice"'>{{ pos.avgPrice | number : '0.0-10' }}</td>
-              <td *ngIf='column.id === "shareOfPortfolio"'>
-                {{ td.portfolioTotalCost !== 0 ?  (round(pos.volume * 100 / td.portfolioTotalCost) | number) : '-' }}
-              </td>
-              <td *ngIf='column.id === "qtyT0"'
-                  [class]='pos.qtyT0 < 0 ? "sell" : "buy"'>{{ round(pos.qtyT0) | number }}</td>
-              <td *ngIf='column.id === "qtyT1"'
-                  [class]='pos.qtyT1 < 0 ? "sell" : "buy"'>{{ round(pos.qtyT1) | number }}</td>
-              <td *ngIf='column.id === "qtyT2"'
-                  [class]='pos.qtyT2 < 0 ? "sell" : "buy"'>{{ round(pos.qtyT2) | number }}</td>
-              <td *ngIf='column.id === "qtyTFuture"'
-                  [class]='pos.qtyTFuture < 0 ? "sell" : "buy"'>{{ round(pos.qtyTFuture) | number }}</td>
-              <td *ngIf='column.id === "volume"'>{{ pos.volume | number }}</td>
-              <td *ngIf='column.id === "currentVolume"'>{{ pos.currentVolume | number }}</td>
-              <td *ngIf='column.id === "unrealisedPl"'
-                  [class]='pos.unrealisedPl < 0 ? "sell" : "buy"'>{{ round(pos.unrealisedPl) | number }}</td>
-              <td *ngIf='column.id === "dailyUnrealisedPl"'
-                  [class]='pos.dailyUnrealisedPl < 0 ? "sell" : "buy"'>{{ round(pos.dailyUnrealisedPl) | number }}</td>
-              <td
-                *ngIf='column.id === "unrealisedPlRatio"'
-                [class]='pos.unrealisedPlRatio < 0 ? "sell" : "buy"'
-              >
-                {{round(pos.unrealisedPlRatio) | number}}
-              </td>
-              <td
-                *ngIf='column.id === "dailyUnrealisedPlRatio"'
-                [class]='pos.dailyUnrealisedPlRatio < 0 ? "sell" : "buy"'
-              >
-                {{round(pos.dailyUnrealisedPlRatio) | number}}
-              </td>
-            </ng-container>
+            }
+            @for (column of td.tableConfig.columns; track column) {
+              @if (column.id === "icon") {
+                <td>
+                  <ats-instrument-icon [symbol]="pos.symbol" [size]="'default'" />
+                </td>
+              }
+              @if (column.id === "symbol") {
+                <td class='fw-bold'>
+                  <span class="symbol-name">{{ pos.symbol }}</span>
+                  <ats-instrument-badge-display [instrumentKey]="pos" />
+                </td>
+              }
+              @if (column.id === "shortName") {
+                <td>{{ pos.shortName }}</td>
+              }
+              @if (column.id === "avgPrice") {
+                <td>{{ pos.avgPrice | number : '0.0-10' }}</td>
+              }
+              @if (column.id === "shareOfPortfolio") {
+                <td>
+                  {{ td.portfolioTotalCost !== 0 ?  (round(pos.volume * 100 / td.portfolioTotalCost) | number) : '-' }}
+                </td>
+              }
+              @if (column.id === "qtyT0") {
+                <td
+                [class]='pos.qtyT0 < 0 ? "sell" : "buy"'>{{ round(pos.qtyT0) | number }}</td>
+              }
+              @if (column.id === "qtyT1") {
+                <td
+                [class]='pos.qtyT1 < 0 ? "sell" : "buy"'>{{ round(pos.qtyT1) | number }}</td>
+              }
+              @if (column.id === "qtyT2") {
+                <td
+                [class]='pos.qtyT2 < 0 ? "sell" : "buy"'>{{ round(pos.qtyT2) | number }}</td>
+              }
+              @if (column.id === "qtyTFuture") {
+                <td
+                [class]='pos.qtyTFuture < 0 ? "sell" : "buy"'>{{ round(pos.qtyTFuture) | number }}</td>
+              }
+              @if (column.id === "volume") {
+                <td>{{ pos.volume | number }}</td>
+              }
+              @if (column.id === "currentVolume") {
+                <td>{{ pos.currentVolume | number }}</td>
+              }
+              @if (column.id === "unrealisedPl") {
+                <td
+                [class]='pos.unrealisedPl < 0 ? "sell" : "buy"'>{{ round(pos.unrealisedPl) | number }}</td>
+              }
+              @if (column.id === "dailyUnrealisedPl") {
+                <td
+                [class]='pos.dailyUnrealisedPl < 0 ? "sell" : "buy"'>{{ round(pos.dailyUnrealisedPl) | number }}</td>
+              }
+              @if (column.id === "unrealisedPlRatio") {
+                <td
+                  [class]='pos.unrealisedPlRatio < 0 ? "sell" : "buy"'
+                  >
+                  {{round(pos.unrealisedPlRatio) | number}}
+                </td>
+              }
+              @if (column.id === "dailyUnrealisedPlRatio") {
+                <td
+                  [class]='pos.dailyUnrealisedPlRatio < 0 ? "sell" : "buy"'
+                  >
+                  {{round(pos.dailyUnrealisedPlRatio) | number}}
+                </td>
+              }
+            }
           </tr>
         </ng-template>
       </tbody>
@@ -173,19 +210,21 @@
           class="export-button-container"
           (nzResizeObserve)="footerSizeChanged($event)"
           nzResizeObserver
-        >
-          <button nz-button nzType="link" *ngIf="canExport(td.positions)" (click)="exportToFile(td.positions)">
-            <i nz-icon nzType="download"></i>
-            {{t('exportToFile')}}
-          </button>
+          >
+          @if (canExport(td.positions)) {
+            <button nz-button nzType="link" (click)="exportToFile(td.positions)">
+              <i nz-icon nzType="download"></i>
+              {{t('exportToFile')}}
+            </button>
+          }
         </div>
       </ng-template>
     </nz-table>
     <nz-dropdown-menu #searchMenu="nzDropdownMenu">
-      <ats-table-search-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns"></ats-table-search-filter>
+      <ats-table-search-filter (filterChange)="filterChange($event)" [columns]="td.tableConfig.columns" />
     </nz-dropdown-menu>
 
-    <ats-add-to-watchlist-menu #contextMenu></ats-add-to-watchlist-menu>
+    <ats-add-to-watchlist-menu #contextMenu />
   </div>
 
 </div>

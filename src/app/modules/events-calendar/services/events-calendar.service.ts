@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable, map } from "rxjs";
 import { CalendarEvent, CalendarEvents } from "../models/events-calendar.model";
@@ -16,14 +16,11 @@ interface AllEventsRequest {
   providedIn: 'root'
 })
 export class EventsCalendarService {
-  baseUrl = this.environmentService.apiUrl + '/instruments/v1';
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly http = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
 
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly http: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) {
-  }
+  baseUrl = this.environmentService.apiUrl + '/instruments/v1';
 
   getEvents(req: AllEventsRequest): Observable<CalendarEvents> {
     return this.http.post<CalendarEvents>(this.baseUrl + '/eventsCalendar', req)

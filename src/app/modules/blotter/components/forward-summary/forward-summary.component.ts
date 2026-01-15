@@ -1,8 +1,4 @@
-import {
-  Component,
-  Input,
-  OnInit
-} from '@angular/core';
+import { Component, OnInit, input, inject } from '@angular/core';
 import {
   distinctUntilChanged,
   Observable,
@@ -13,31 +9,36 @@ import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/setti
 import { BlotterSettings } from '../../models/blotter-settings.model';
 import {PortfolioSummaryService} from "../../../../shared/services/portfolio-summary.service";
 import {ForwardRisksView} from "../../../../shared/models/forward-risks-view.model";
+import { NzResizeObserverDirective } from 'ng-zorro-antd/cdk/resize-observer';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NzDescriptionsComponent, NzDescriptionsItemComponent } from 'ng-zorro-antd/descriptions';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-forward-summary',
     templateUrl: './forward-summary.component.html',
     styleUrls: ['./forward-summary.component.less'],
-    standalone: false
+    imports: [
+      NzResizeObserverDirective,
+      TranslocoDirective,
+      NzDescriptionsComponent,
+      NzDescriptionsItemComponent,
+      AsyncPipe
+    ]
 })
 export class ForwardSummaryComponent implements OnInit {
-  @Input()
-  shouldShowSettings!: boolean;
+  private readonly settingsService = inject(WidgetSettingsService);
+  private readonly service = inject(PortfolioSummaryService);
 
-  @Input({required: true})
-  guid!: string;
+  readonly shouldShowSettings = input<boolean>(false);
+
+  readonly guid = input.required<string>();
 
   summary$!: Observable<ForwardRisksView>;
   columns = 1;
 
-  constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly service: PortfolioSummaryService,
-  ) {
-  }
-
   ngOnInit(): void {
-    this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+    this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid()).pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getForwardRisks(settings))
     );

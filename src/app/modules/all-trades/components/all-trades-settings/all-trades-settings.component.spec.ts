@@ -4,14 +4,16 @@ import {
 } from '@angular/core/testing';
 
 import { AllTradesSettingsComponent } from './all-trades-settings.component';
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import { ReactiveFormsModule } from "@angular/forms";
-import { NzSelectModule } from "ng-zorro-antd/select";
-import { NzFormModule } from "ng-zorro-antd/form";
+import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
+import {NzFormControlComponent, NzFormItemComponent, NzFormLabelComponent} from "ng-zorro-antd/form";
 import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
 import { of } from "rxjs";
 import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {MockComponents} from "ng-mocks";
+import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
+import {NzSwitchComponent} from "ng-zorro-antd/switch";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('AllTradesSettingsComponent', () => {
   let component: AllTradesSettingsComponent;
@@ -19,39 +21,40 @@ describe('AllTradesSettingsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        AllTradesSettingsComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-widget-settings',
-          inputs: ['canSave', 'canCopy', 'showCopy']
-        })
-      ],
-      imports: [
-        NoopAnimationsModule,
+    imports: [
         ReactiveFormsModule,
-        NzSelectModule,
-        NzFormModule
-      ],
-      providers: [
+        AllTradesSettingsComponent,
+      MockComponents(
+        WidgetSettingsComponent,
+        NzFormItemComponent,
+        NzFormControlComponent,
+        NzFormLabelComponent,
+        NzSelectComponent,
+        NzOptionComponent,
+        NzSwitchComponent
+      )
+    ],
+    providers: [
         {
-          provide: WidgetSettingsService,
-          useValue: {
-            getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
-            updateSettings: jasmine.createSpy('getSettings').and.callThrough()
-          }
+            provide: WidgetSettingsService,
+            useValue: {
+                getSettings: jasmine.createSpy('getSettings').and.returnValue(of({})),
+                updateSettings: jasmine.createSpy('getSettings').and.callThrough()
+            }
         },
         {
-          provide: ManageDashboardsService,
-          useValue: {
-            copyWidget: jasmine.createSpy('copyWidget').and.callThrough(),
-          }
+            provide: ManageDashboardsService,
+            useValue: {
+                copyWidget: jasmine.createSpy('copyWidget').and.callThrough(),
+            }
         }
-      ]
-    })
+    ]
+})
       .compileComponents();
 
     fixture = TestBed.createComponent(AllTradesSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

@@ -1,61 +1,28 @@
+import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
+import {BehaviorSubject, combineLatest, defer, interval, Observable, shareReplay, switchMap, take, tap} from "rxjs";
+import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {axisBottom, axisLeft, brush, pointer, ScaleLinear, scaleLinear, select} from "d3";
+import {BaseType, Selection} from "d3-selection";
+import {BondScreenerService} from "../../services/bond-screener.service";
 import {
-  Component,
-  DestroyRef,
-  Inject,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  defer,
-  interval,
-  Observable,
-  shareReplay,
-  switchMap,
-  take,
-  tap
-} from "rxjs";
-import { ContentSize } from "../../../../shared/models/dashboard/dashboard-item.model";
-import {
-  TranslatorFn,
-  TranslatorService
-} from "../../../../shared/services/translator.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import {
-  axisBottom,
-  axisLeft,
-  brush,
-  pointer,
-  ScaleLinear,
-  scaleLinear,
-  select
-} from "d3";
-import {
-  BaseType,
-  Selection
-} from "d3-selection";
-import { BondScreenerService } from "../../services/bond-screener.service";
-import { ChartParameters } from "../yield-curve-chart-parameters/yield-curve-chart-parameters.component";
-import {
-  DurationType,
-  YieldType
-} from "../../models/bond-yield-curve.model";
-import { mapWith } from "../../../../shared/utils/observable-helper";
-import {
-  filter,
-  map,
-  startWith
-} from "rxjs/operators";
-import { MathHelper } from "../../../../shared/utils/math-helper";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { BondScreenerSettings } from "../../models/bond-screener-settings.model";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  ACTIONS_CONTEXT,
-  ActionsContext
-} from "../../../../shared/services/actions-context";
+  ChartParameters,
+  YieldCurveChartParametersComponent
+} from "../yield-curve-chart-parameters/yield-curve-chart-parameters.component";
+import {DurationType, YieldType} from "../../models/bond-yield-curve.model";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {filter, map, startWith} from "rxjs/operators";
+import {MathHelper} from "../../../../shared/utils/math-helper";
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {BondScreenerSettings} from "../../models/bond-screener-settings.model";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {ACTIONS_CONTEXT, ActionsContext} from "../../../../shared/services/actions-context";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {LetDirective} from '@ngrx/component';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {NzSpinComponent} from 'ng-zorro-antd/spin';
 
 enum LoadingStatus {
   Initial = 'initial',
@@ -90,16 +57,28 @@ interface ItemPosition {
 }
 
 @Component({
-    selector: 'ats-yield-curve-chart',
-    templateUrl: './yield-curve-chart.component.html',
-    styleUrls: ['./yield-curve-chart.component.less'],
-    standalone: false
+  selector: 'ats-yield-curve-chart',
+  templateUrl: './yield-curve-chart.component.html',
+  styleUrls: ['./yield-curve-chart.component.less'],
+  imports: [
+    TranslocoDirective,
+    YieldCurveChartParametersComponent,
+    NzResizeObserverDirective,
+    LetDirective,
+    NzEmptyComponent,
+    NzSpinComponent
+  ]
 })
 export class YieldCurveChartComponent implements OnInit, OnDestroy {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly bondScreenerService = inject(BondScreenerService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly loadingStatus$ = new BehaviorSubject<LoadingStatus>(LoadingStatus.Initial);
   readonly loadingStatuses = LoadingStatus;
-  @Input({ required: true })
-  guid!: string;
+  readonly guid = input.required<string>();
 
   readonly chartParameters$ = new BehaviorSubject<ChartParameters>({
     durationType: DurationType.MaturityDateBased,
@@ -110,22 +89,12 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
   private readonly yScaleMinReserveCoeff = 0.9;
   private readonly xScaleMaxReserveCoeff = 1.15;
   private readonly xScaleMinReserveCoeff = 0.9;
-  private readonly contentSize$ = new BehaviorSubject<ContentSize>({ width: 0, height: 0 });
+  private readonly contentSize$ = new BehaviorSubject<ContentSize>({width: 0, height: 0});
   private settings$!: Observable<BondScreenerSettings>;
   private zoomed = false;
 
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly bondScreenerService: BondScreenerService,
-    private readonly translatorService: TranslatorService,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
-
   get figureId(): string {
-    return `f_${this.guid.replace(/-/g, '')}`;
+    return `f_${this.guid().replace(/-/g, '')}`;
   }
 
   ngOnDestroy(): void {
@@ -135,7 +104,7 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<BondScreenerSettings>(this.guid)
+    this.settings$ = this.widgetSettingsService.getSettings<BondScreenerSettings>(this.guid())
       .pipe(shareReplay(1));
 
     this.loadingStatus$.next(LoadingStatus.Loading);
@@ -150,7 +119,7 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
     const bondsToDisplay$ = refreshTimer$.pipe(
       tap(() => this.loadingStatus$.next(LoadingStatus.Loading)),
       switchMap(() => this.bondScreenerService.getBondsYieldCurve()),
-      mapWith(() => this.chartParameters$, (data, parameters) => ({ data, parameters })),
+      mapWith(() => this.chartParameters$, (data, parameters) => ({data, parameters})),
       map(x => {
         if (!x.data) {
           this.loadingStatus$.next(LoadingStatus.Error);
@@ -642,7 +611,7 @@ export class YieldCurveChartComponent implements OnInit, OnDestroy {
 
   private extendDomain(value: number, coeff: number): number {
     if (value < 0) {
-      if(coeff < 1) {
+      if (coeff < 1) {
         return value * (2 - coeff);
       } else {
         return (Math.ceil(coeff) - coeff) * value;

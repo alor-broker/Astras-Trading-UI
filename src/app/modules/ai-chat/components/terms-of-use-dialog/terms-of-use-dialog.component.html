@@ -3,7 +3,7 @@
     (nzOnCancel)="handleCancel()"
     [nzMaskClosable]='false'
     [nzTitle]="t('aiChatTermsOfUseDialog.title')"
-    [nzVisible]='atsVisible'
+    [nzVisible]='atsVisible()'
     nzClassName="ai-chat-terms-of-use"
     nzClosable="true"
   >
@@ -17,7 +17,7 @@
 
         <ng-template #loading>
           <p class="text-center">
-            <nz-spin nzSimple></nz-spin>
+            <nz-spin nzSimple />
           </p>
         </ng-template>
       </div>

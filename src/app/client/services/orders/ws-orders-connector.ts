@@ -1,8 +1,4 @@
-﻿import {
-  Inject,
-  Injectable,
-  OnDestroy
-} from "@angular/core";
+﻿import { Injectable, OnDestroy, inject } from "@angular/core";
 import {
   BehaviorSubject,
   distinctUntilChanged,
@@ -24,10 +20,7 @@ import {
   map,
   takeWhile,
 } from "rxjs/operators";
-import {
-  webSocket,
-  WebSocketSubject
-} from "rxjs/webSocket";
+import { WebSocketSubject } from "rxjs/webSocket";
 import {
   RXJS_WEBSOCKET_CTOR,
   WsOptions
@@ -73,6 +66,11 @@ interface WsRequestMessage {
   providedIn: 'root'
 })
 export class WsOrdersConnector implements OnDestroy {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly apiTokenProviderService = inject(ApiTokenProviderService);
+  private readonly logger = inject(LoggerService);
+  private readonly webSocketFactory = inject(RXJS_WEBSOCKET_CTOR);
+
   private readonly isConnected$ = new BehaviorSubject<boolean>(false);
   private socketState: SocketState | null = null;
 
@@ -82,14 +80,6 @@ export class WsOrdersConnector implements OnDestroy {
   };
 
   private readonly lastRequestDelayMSec$ = new BehaviorSubject<number | null>(null);
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly apiTokenProviderService: ApiTokenProviderService,
-    private readonly logger: LoggerService,
-    @Inject(RXJS_WEBSOCKET_CTOR) private readonly webSocketFactory: typeof webSocket
-  ) {
-  }
 
   get lastOrderDelayMSec$(): Observable<number> {
     return this.lastRequestDelayMSec$.pipe(

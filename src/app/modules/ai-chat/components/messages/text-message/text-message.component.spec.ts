@@ -1,7 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TextMessageComponent } from './text-message.component';
-import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
+import {TextMessageComponent} from './text-message.component';
+import {MockComponents} from "ng-mocks";
+import {MarkdownComponent} from "ngx-markdown";
 
 describe('TextMessageComponent', () => {
   let component: TextMessageComponent;
@@ -9,17 +10,21 @@ describe('TextMessageComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         TextMessageComponent,
-        ComponentHelpers.mockComponent({ selector: 'markdown', inputs: ['data', 'inline'] })
+        MockComponents(
+          MarkdownComponent
+        )
       ]
     });
     fixture = TestBed.createComponent(TextMessageComponent);
     component = fixture.componentInstance;
-
-    component.content = {
-      text: 'text'
-    };
+    fixture.componentRef.setInput(
+      'content',
+      {
+        text: 'text'
+      }
+    );
 
     fixture.detectChanges();
   });

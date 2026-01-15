@@ -1,10 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
+import { Component, OnInit, input, output, inject } from '@angular/core';
 import {
   distinctUntilChanged,
   Observable,
@@ -16,34 +10,38 @@ import { isEqualPortfolioDependedSettings } from "../../../../shared/utils/setti
 import { BlotterSettings } from '../../models/blotter-settings.model';
 import {PortfolioSummaryService} from "../../../../shared/services/portfolio-summary.service";
 import {CommonSummaryView} from "../../../../shared/models/common-summary-view.model";
+import { NzResizeObserverDirective } from 'ng-zorro-antd/cdk/resize-observer';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NzDescriptionsComponent, NzDescriptionsItemComponent } from 'ng-zorro-antd/descriptions';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-common-summary',
     templateUrl: './common-summary.component.html',
     styleUrls: ['./common-summary.component.less'],
-    standalone: false
+    imports: [
+      NzResizeObserverDirective,
+      TranslocoDirective,
+      NzDescriptionsComponent,
+      NzDescriptionsItemComponent,
+      AsyncPipe
+    ]
 })
 export class CommonSummaryComponent implements OnInit {
-  @Input()
-  shouldShowSettings!: boolean;
+  private readonly settingsService = inject(WidgetSettingsService);
+  private readonly service = inject(PortfolioSummaryService);
 
-  @Input({required: true})
-  guid!: string;
+  readonly shouldShowSettings = input.required<boolean>();
 
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
+  readonly guid = input.required<string>();
+
+  readonly shouldShowSettingsChange = output<boolean>();
 
   summary$: Observable<CommonSummaryView> = of();
   columns = 1;
 
-  constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly service: PortfolioSummaryService,
-  ) {
-  }
-
   ngOnInit(): void {
-    this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid).pipe(
+    this.summary$ = this.settingsService.getSettings<BlotterSettings>(this.guid()).pipe(
       distinctUntilChanged((previous, current) => isEqualPortfolioDependedSettings(previous, current)),
       switchMap(settings => this.service.getCommonSummary(settings))
     );

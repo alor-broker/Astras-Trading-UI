@@ -1,4 +1,4 @@
-import {DestroyRef, Injectable} from '@angular/core';
+import { DestroyRef, Injectable, inject } from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, shareReplay, take} from "rxjs";
 import {Graph} from "../models/graph.model";
 import {RemoteStorageService} from "../../../shared/services/settings-broker/remote-storage.service";
@@ -31,18 +31,20 @@ export interface GraphStorageConfig {
   providedIn: 'root'
 })
 export class GraphStorageService {
+  private readonly remoteStorageService = inject(RemoteStorageService);
+  private readonly applicationMetaService = inject(ApplicationMetaService);
+  private readonly localStorageService = inject(LocalStorageService);
+  readonly destroyRef = inject(DestroyRef);
+
   private readonly store = new GraphsCollectionStore();
   private readonly remoteStorageGroupKey = 'ai-graphs';
   private graphs$: Observable<Graph[]> | null = null;
 
   private readonly config$ = new BehaviorSubject<GraphStorageConfig | null>(null);
 
-  constructor(
-    private readonly remoteStorageService: RemoteStorageService,
-    private readonly applicationMetaService: ApplicationMetaService,
-    private readonly localStorageService: LocalStorageService,
-    readonly destroyRef: DestroyRef
-  ) {
+  constructor() {
+    const destroyRef = this.destroyRef;
+
     destroyRef.onDestroy(() => {
       this.store.ngOnDestroy();
       this.config$.complete();

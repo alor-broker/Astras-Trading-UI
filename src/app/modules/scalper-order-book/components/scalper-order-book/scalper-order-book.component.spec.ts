@@ -1,17 +1,14 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ScalperOrderBookComponent } from './scalper-order-book.component';
-import {
-  NEVER,
-} from 'rxjs';
-import { LetDirective } from "@ngrx/component";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { ScalperOrderBookDataProvider } from "../../services/scalper-order-book-data-provider.service";
-import { MockProvider } from "ng-mocks";
+import {ScalperOrderBookComponent} from './scalper-order-book.component';
+import {NEVER,} from 'rxjs';
+import {LetDirective} from "@ngrx/component";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {ScalperOrderBookDataProvider} from "../../services/scalper-order-book-data-provider.service";
+import {MockComponents, MockProvider} from "ng-mocks";
+import {ScalperOrderBookBodyComponent} from "../scalper-order-book-body/scalper-order-book-body.component";
+import {CurrentPositionPanelComponent} from "../current-position-panel/current-position-panel.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('ScalperOrderBookComponent', () => {
   let component: ScalperOrderBookComponent;
@@ -19,30 +16,26 @@ describe('ScalperOrderBookComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports:[
+      imports: [
         TranslocoTestsModule.getModule(),
-        LetDirective
-      ],
-      declarations: [
+        LetDirective,
         ScalperOrderBookComponent,
-        ComponentHelpers.mockComponent({ selector: 'ats-working-volumes-panel' }),
-        ComponentHelpers.mockComponent({ selector: 'ats-modifiers-indicator' }),
-        ComponentHelpers.mockComponent({ selector: 'ats-scalper-order-book-body' }),
-        ComponentHelpers.mockComponent({ selector: 'ats-current-position-panel' }),
+        MockComponents(
+          ScalperOrderBookBodyComponent,
+          CurrentPositionPanelComponent,
+        )
       ],
       providers: [
-        MockProvider(
-          ScalperOrderBookDataProvider,
-          {
-            getSettingsStream: () => NEVER
-          }
-        )
+        MockProvider(ScalperOrderBookDataProvider, {
+          getSettingsStream: () => NEVER
+        })
       ]
     })
       .compileComponents();
 
     fixture = TestBed.createComponent(ScalperOrderBookComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

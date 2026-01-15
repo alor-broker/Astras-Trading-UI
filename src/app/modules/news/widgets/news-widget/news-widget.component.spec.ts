@@ -1,19 +1,20 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { NewsWidgetComponent } from './news-widget.component';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { of } from 'rxjs';
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
-import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import {NewsWidgetComponent} from './news-widget.component';
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {of} from 'rxjs';
+import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
+import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
 import {TranslatorService} from "../../../../shared/services/translator.service";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import { widgetSkeletonMock } from "../../../../shared/utils/testing/widget-skeleton-mock";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents} from "ng-mocks";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
+import {NewsComponent} from "../../components/news/news.component";
+import {NewsSettingsComponent} from "../../components/news-settings/news-settings.component";
 
 describe('NewsWidgetComponent', () => {
   let component: NewsWidgetComponent;
@@ -21,17 +22,15 @@ describe('NewsWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         NewsWidgetComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-news',
-          inputs: ['guid']
-        }),
-        ComponentHelpers.mockComponent({
-          selector: 'ats-news-settings',
-          inputs: ['guid']
-        }),
-        widgetSkeletonMock
+        TranslocoTestsModule.getModule(),
+        MockComponents(
+          WidgetSkeletonComponent,
+          WidgetHeaderComponent,
+          NewsComponent,
+          NewsSettingsComponent,
+        )
       ],
       providers: [
         {
@@ -75,12 +74,15 @@ describe('NewsWidgetComponent', () => {
     fixture = TestBed.createComponent(NewsWidgetComponent);
     component = fixture.componentInstance;
 
-    component.widgetInstance = {
-      instance: {
-        guid: 'guid'
-      } as Widget,
-      widgetMeta: {widgetName: {}} as WidgetMeta
-    };
+    fixture.componentRef.setInput(
+      'widgetInstance',
+      {
+        instance: {
+          guid: 'guid'
+        } as Widget,
+        widgetMeta: {widgetName: {}} as WidgetMeta
+      }
+    );
     fixture.detectChanges();
   });
 

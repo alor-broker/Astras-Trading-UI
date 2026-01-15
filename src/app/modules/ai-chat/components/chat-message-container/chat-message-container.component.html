@@ -1,19 +1,23 @@
+@let displayMessage = message();
 <div
   class="d-flex flex-column flex-gap-5 align-items-start"
   [ngClass]="{
-  'right': message.isMe,
-  'left': !message.isMe
+  'right': displayMessage.isMe,
+  'left': !displayMessage.isMe
   }"
->
-  <div class="avatar" *ngIf="!message.isMe">
-    <nz-avatar nzSize="large" nzIcon="user" [nzSrc]="message.avatarUri"></nz-avatar>
-  </div>
+  >
+  @if (!displayMessage.isMe) {
+    <div class="avatar">
+      <nz-avatar nzSize="large" nzIcon="user" [nzSrc]="displayMessage.avatarUri" />
+    </div>
+  }
 
   <div class="content">
-    <ng-container [ngSwitch]="message.messageType">
-      <ats-text-message *ngSwitchCase="messageTypes.Text"
-                        [content]="message.content"
-      ></ats-text-message>
-    </ng-container>
+    @switch (displayMessage.messageType) {
+      @case (messageTypes.Text) {
+        <ats-text-message [content]="displayMessage.content"
+         />
+      }
+    }
   </div>
 </div>

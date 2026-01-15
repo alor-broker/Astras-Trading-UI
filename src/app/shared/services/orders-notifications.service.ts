@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Order } from '../models/orders/order.model';
 import { OrdersInstantNotificationType } from '../models/terminal-settings/terminal-settings.model';
 import {
@@ -9,12 +9,9 @@ import {
   providedIn: 'root'
 })
 export class OrdersNotificationsService {
-  prevNotifications = new Set();
+  private readonly notification = inject(OrderInstantTranslatableNotificationsService);
 
-  constructor(
-    private readonly notification: OrderInstantTranslatableNotificationsService
-  ) {
-  }
+  prevNotifications = new Set();
 
   notificateAboutNewOrder(order: Order): void {
     const secondsPassed = (new Date().getTime() - order.transTime.getTime()) / 1000;

@@ -1,9 +1,8 @@
 import {
   Component,
-  EventEmitter,
   HostBinding,
-  Input,
-  Output
+  input,
+  output
 } from '@angular/core';
 import { TextMessageContent } from "../../models/messages-display.model";
 import {
@@ -13,6 +12,7 @@ import {
   transition,
   trigger
 } from "@angular/animations";
+import { TextMessageComponent } from '../messages/text-message/text-message.component';
 
 @Component({
     selector: 'ats-chat-suggested-message-container',
@@ -25,14 +25,12 @@ import {
             transition(':leave', [animate(200, style({ transform: 'translateX(100%)', opacity: 0 }))]),
         ]),
     ],
-    standalone: false
+    imports: [TextMessageComponent]
 })
 export class ChatSuggestedMessageContainerComponent {
-  @Input({ required: true })
-  suggestedMessage!: TextMessageContent;
+  readonly suggestedMessage = input.required<TextMessageContent>();
 
-  @Output()
-  selected = new EventEmitter<TextMessageContent>();
+  readonly selected = output<TextMessageContent>();
 
   @HostBinding('@flyInOut')
   readonly flyInOut = true;

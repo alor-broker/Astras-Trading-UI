@@ -1,14 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SideChatWidgetComponent } from './side-chat-widget.component';
-import { LocalStorageService } from "../../../../shared/services/local-storage.service";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { NzDrawerModule } from "ng-zorro-antd/drawer";
-import {
-  EMPTY,
-} from "rxjs";
-import { USER_CONTEXT } from "../../../../shared/services/auth/user-context";
+import {SideChatWidgetComponent} from './side-chat-widget.component';
+import {LocalStorageService} from "../../../../shared/services/local-storage.service";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {NzDrawerComponent} from "ng-zorro-antd/drawer";
+import {EMPTY,} from "rxjs";
+import {USER_CONTEXT} from "../../../../shared/services/auth/user-context";
+import {MockComponents} from "ng-mocks";
+import {AiChatComponent} from "../../components/ai-chat/ai-chat.component";
+import {NzTypographyComponent} from "ng-zorro-antd/typography";
+import {TermsOfUseDialogComponent} from "../../components/terms-of-use-dialog/terms-of-use-dialog.component";
 
 describe('SideChatWidgetComponent', () => {
   let component: SideChatWidgetComponent;
@@ -18,14 +19,15 @@ describe('SideChatWidgetComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         TranslocoTestsModule.getModule(),
-        NzDrawerModule
-      ],
-      declarations: [
         SideChatWidgetComponent,
-        ComponentHelpers.mockComponent({selector: 'ats-ai-chat', inputs: ['atsDisabled']}),
-        ComponentHelpers.mockComponent({selector: 'ats-terms-of-use-dialog', inputs: ['atsVisible']}),
+        MockComponents(
+          NzDrawerComponent,
+          AiChatComponent,
+          NzTypographyComponent,
+          TermsOfUseDialogComponent
+        )
       ],
-      providers:[
+      providers: [
         {
           provide: LocalStorageService,
           useValue: {

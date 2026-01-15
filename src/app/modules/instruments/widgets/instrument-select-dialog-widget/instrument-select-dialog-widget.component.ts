@@ -1,79 +1,57 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  QueryList,
-  ViewChildren
-} from '@angular/core';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators
-} from "@angular/forms";
-import { Exchange } from "../../../../../generated/graphql.types";
-import { Board } from "../../../all-instruments/model/boards.model";
-import { NzFormModule } from 'ng-zorro-antd/form';
-import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzSelectModule } from 'ng-zorro-antd/select';
-import { CommonModule } from '@angular/common';
-import { MarketService } from "../../../../shared/services/market.service";
-import {
-  combineLatest,
-  map,
-  Observable,
-  shareReplay,
-  switchMap
-} from "rxjs";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { BoardsService } from "../../../all-instruments/services/boards.service";
-import { InstrumentSelectDialogService } from "../../services/instrument-select-dialog.service";
-import {
-  NzModalComponent,
-  NzModalContentDirective
-} from "ng-zorro-antd/modal";
-import { LetDirective } from "@ngrx/component";
-import {
-  debounceTime,
-  filter,
-  startWith
-} from "rxjs/operators";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { NzIconDirective } from "ng-zorro-antd/icon";
-import {
-  SearchInstrumentStore,
-  SearchStatus
-} from "../../utils/search-instrument-store";
-import { NzSpinComponent } from "ng-zorro-antd/spin";
-import { NzEmptyComponent } from "ng-zorro-antd/empty";
-import { SearchResultsListComponent } from "../../components/search-results-list/search-results-list.component";
+import { AfterViewInit, Component, DestroyRef, ElementRef, OnDestroy, OnInit, viewChildren, inject } from '@angular/core';
+import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
+import {Exchange} from "../../../../../generated/graphql.types";
+import {Board} from "../../../all-instruments/model/boards.model";
+import {NzFormModule} from 'ng-zorro-antd/form';
+import {NzInputModule} from 'ng-zorro-antd/input';
+import {NzSelectModule} from 'ng-zorro-antd/select';
+import {MarketService} from "../../../../shared/services/market.service";
+import {combineLatest, map, Observable, shareReplay, switchMap} from "rxjs";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {BoardsService} from "../../../all-instruments/services/boards.service";
+import {InstrumentSelectDialogService} from "../../services/instrument-select-dialog.service";
+import {NzModalComponent, NzModalContentDirective} from "ng-zorro-antd/modal";
+import {LetDirective} from "@ngrx/component";
+import {debounceTime, filter, startWith} from "rxjs/operators";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {SearchInstrumentStore, SearchStatus} from "../../utils/search-instrument-store";
+import {NzSpinComponent} from "ng-zorro-antd/spin";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
+import {SearchResultsListComponent} from "../../components/search-results-list/search-results-list.component";
+import {AsyncPipe} from "@angular/common";
 
 @Component({
-    selector: 'ats-instrument-select-dialog-widget',
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        NzFormModule,
-        NzInputModule,
-        NzSelectModule,
-        TranslocoDirective,
-        NzModalComponent,
-        LetDirective,
-        NzModalContentDirective,
-        NzIconDirective,
-        NzSpinComponent,
-        NzEmptyComponent,
-        SearchResultsListComponent
-    ],
-    templateUrl: './instrument-select-dialog-widget.component.html',
-    styleUrl: './instrument-select-dialog-widget.component.less',
-    providers: [
-        SearchInstrumentStore
-    ]
+  selector: 'ats-instrument-select-dialog-widget',
+  imports: [
+    ReactiveFormsModule,
+    NzFormModule,
+    NzInputModule,
+    NzSelectModule,
+    TranslocoDirective,
+    NzModalComponent,
+    LetDirective,
+    NzModalContentDirective,
+    NzIconDirective,
+    NzSpinComponent,
+    NzEmptyComponent,
+    SearchResultsListComponent,
+    AsyncPipe
+  ],
+  templateUrl: './instrument-select-dialog-widget.component.html',
+  styleUrl: './instrument-select-dialog-widget.component.less',
+  providers: [
+    SearchInstrumentStore
+  ]
 })
 export class InstrumentSelectDialogWidgetComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly marketService = inject(MarketService);
+  private readonly boardsService = inject(BoardsService);
+  private readonly instrumentSelectDialogService = inject(InstrumentSelectDialogService);
+  private readonly searchInstrumentStore = inject(SearchInstrumentStore);
+  private readonly destroyRef = inject(DestroyRef);
+
   exchanges$!: Observable<string[]>;
   boards$!: Observable<Board[]>;
   selectParams$ = this.instrumentSelectDialogService.selectParams$;
@@ -82,8 +60,7 @@ export class InstrumentSelectDialogWidgetComponent implements OnInit, AfterViewI
 
   readonly SearchStatuses = SearchStatus;
 
-  @ViewChildren('instrumentNameControl')
-  instrumentNameControlQuery!: QueryList<ElementRef<HTMLInputElement>>;
+  readonly instrumentNameControlQuery = viewChildren<ElementRef<HTMLInputElement>>('instrumentNameControl');
 
   readonly validationsOptions = {
     instrumentName: {
@@ -104,15 +81,7 @@ export class InstrumentSelectDialogWidgetComponent implements OnInit, AfterViewI
     board: this.formBuilder.nonNullable.control<Board | null>(null),
   });
 
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly marketService: MarketService,
-    private readonly boardsService: BoardsService,
-    private readonly instrumentSelectDialogService: InstrumentSelectDialogService,
-    private readonly searchInstrumentStore: SearchInstrumentStore,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
+  private readonly instrumentNameControlQueryChanges$ = toObservable(this.instrumentNameControlQuery);
 
   ngOnDestroy(): void {
     this.searchInstrumentStore.ngOnDestroy();
@@ -120,10 +89,9 @@ export class InstrumentSelectDialogWidgetComponent implements OnInit, AfterViewI
 
   ngAfterViewInit(): void {
     this.selectParams$.pipe(
-      switchMap(() => this.instrumentNameControlQuery.changes)
+      switchMap(() => this.instrumentNameControlQueryChanges$)
     ).pipe(
-      map(x => x.first as ElementRef<HTMLElement> | undefined),
-      startWith(this.instrumentNameControlQuery.first),
+      map(x => x.length > 0 ? x[0] : undefined),
       filter((x): x is ElementRef<HTMLInputElement> => !!x),
       map(x => x.nativeElement),
       takeUntilDestroyed(this.destroyRef)

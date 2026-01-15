@@ -1,70 +1,51 @@
-import {
-  Component,
-  Inject,
-  Input,
-  OnInit
-} from '@angular/core';
-import {
-  AsyncPipe,
-  NgIf
-} from "@angular/common";
-import { SharedModule } from "../../../../shared/shared.module";
-import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
-import {
-  Observable,
-  take
-} from "rxjs";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { WidgetSettingsCreationHelper } from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
-import { InvestIdeasSettings } from "../../models/invest-ideas-settings.model";
-import { InvestIdeasCarouselComponent } from "../../components/invest-ideas-carousel/invest-ideas-carousel.component";
-import {
-  ACTIONS_CONTEXT,
-  ActionsContext
-} from "../../../../shared/services/actions-context";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { SettingsHelper } from "../../../../shared/utils/settings-helper";
-import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import { Component, input, OnInit, inject } from '@angular/core';
+import {AsyncPipe} from "@angular/common";
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {Observable, take} from "rxjs";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {WidgetSettingsCreationHelper} from "../../../../shared/utils/widget-settings/widget-settings-creation-helper";
+import {InvestIdeasSettings} from "../../models/invest-ideas-settings.model";
+import {InvestIdeasCarouselComponent} from "../../components/invest-ideas-carousel/invest-ideas-carousel.component";
+import {ACTIONS_CONTEXT, ActionsContext} from "../../../../shared/services/actions-context";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {SettingsHelper} from "../../../../shared/utils/settings-helper";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {getValueOrDefault} from "../../../../shared/utils/object-helper";
+import {WidgetSkeletonComponent} from "../../../../shared/components/widget-skeleton/widget-skeleton.component";
+import {WidgetHeaderComponent} from "../../../../shared/components/widget-header/widget-header.component";
 
 @Component({
   selector: 'ats-invest-ideas-widget',
   imports: [
     AsyncPipe,
-    NgIf,
-    SharedModule,
-    InvestIdeasCarouselComponent
+    InvestIdeasCarouselComponent,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent
   ],
   templateUrl: './invest-ideas-widget.component.html',
   styleUrl: './invest-ideas-widget.component.less'
 })
 export class InvestIdeasWidgetComponent implements OnInit {
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly widgetInstance = input.required<WidgetInstance>();
+
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<InvestIdeasSettings>;
 
   showBadge$!: Observable<boolean>;
 
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext,
-    private readonly terminalSettingsService: TerminalSettingsService
-  ) {
-  }
-
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createWidgetSettingsIfMissing<InvestIdeasSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'InvestIdeasSettings',
       settings => ({
         ...settings,

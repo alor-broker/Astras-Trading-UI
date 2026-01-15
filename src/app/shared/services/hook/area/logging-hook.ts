@@ -1,7 +1,4 @@
-﻿import {
-  Inject,
-  Injectable
-} from "@angular/core";
+﻿import { Injectable, inject } from "@angular/core";
 import {
   shareReplay,
   Subscription
@@ -23,16 +20,12 @@ import { ApplicationMetaService } from "../../../../modules/application-meta/ser
 
 @Injectable()
 export class LoggingHook implements AreaHook {
-  private readonly tearDown = new Subscription();
+  private readonly userContext = inject<UserContext>(USER_CONTEXT);
+  private readonly applicationMetaService = inject(ApplicationMetaService);
+  private readonly deviceService = inject(DeviceService);
+  private readonly localStorageService = inject(LocalStorageService);
 
-  constructor(
-    @Inject(USER_CONTEXT)
-    private readonly userContext: UserContext,
-    private readonly applicationMetaService: ApplicationMetaService,
-    private readonly deviceService: DeviceService,
-    private readonly localStorageService: LocalStorageService,
-  ) {
-  }
+  private readonly tearDown = new Subscription();
 
   onDestroy(): void {
     this.tearDown.unsubscribe();

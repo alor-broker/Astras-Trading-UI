@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NgZone,
-  OnDestroy
-} from '@angular/core';
+import { Injectable, NgZone, OnDestroy, inject } from '@angular/core';
 import {
   asyncScheduler,
   combineLatest,
@@ -52,17 +48,14 @@ class WatchlistSubscriptionState {
 
 @Injectable()
 export class WatchInstrumentsService implements OnDestroy {
-  private readonly watchlistSubscriptionMap = new Map<string, WatchlistSubscriptionState>();
+  private readonly historyService = inject(HistoryService);
+  private readonly quotesService = inject(QuotesService);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly watchlistCollectionService = inject(WatchlistCollectionService);
+  private readonly candlesService = inject(CandlesService);
+  private readonly ngZone = inject(NgZone);
 
-  constructor(
-    private readonly historyService: HistoryService,
-    private readonly quotesService: QuotesService,
-    private readonly instrumentsService: InstrumentsService,
-    private readonly watchlistCollectionService: WatchlistCollectionService,
-    private readonly candlesService: CandlesService,
-    private readonly ngZone: NgZone
-  ) {
-  }
+  private readonly watchlistSubscriptionMap = new Map<string, WatchlistSubscriptionState>();
 
   unsubscribeFromList(listId: string): void {
     const watchlistState = this.watchlistSubscriptionMap.get(listId);

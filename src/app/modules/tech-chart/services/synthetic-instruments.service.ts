@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { InstrumentsService } from "../../instruments/services/instruments.service";
 import { HistoryService } from "../../../shared/services/history.service";
 import { InstrumentKey } from "../../../shared/models/instruments/instrument-key.model";
@@ -14,10 +14,8 @@ import { SyntheticInstrumentsHelper } from "../utils/synthetic-instruments.helpe
   providedIn: 'root'
 })
 export class SyntheticInstrumentsService {
-  constructor(
-    private readonly instrumentsService: InstrumentsService,
-    private readonly historyService: HistoryService
-  ) { }
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly historyService = inject(HistoryService);
 
   getInstrument(syntheticInstruments: SyntheticInstrumentPart[]): Observable<Instrument | null> {
     const instrumentKeys: InstrumentKey[] = <InstrumentKey[]>syntheticInstruments.filter(p => !p.isSpreadOperator).map(p => p.value);

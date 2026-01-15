@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { forkJoin, Observable, switchMap } from "rxjs";
 import {InstrumentKey} from "../../../shared/models/instruments/instrument-key.model";
 import {MobileDashboardService} from "../../../modules/dashboard/services/mobile-dashboard.service";
@@ -6,7 +6,7 @@ import {DashboardContextService} from "../../../shared/services/dashboard-contex
 import {InstrumentsService} from "../../../modules/instruments/services/instruments.service";
 import {filter, map} from "rxjs/operators";
 import {defaultBadgeColor} from "../../../shared/utils/instruments";
-import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import {NzTagComponent} from "ng-zorro-antd/tag";
 import {TranslocoDirective} from "@jsverse/transloco";
 import { isInstrumentEqual } from '../../../shared/utils/settings-helper';
@@ -20,23 +20,18 @@ interface InstrumentKeyViewData extends InstrumentKey {
     templateUrl: './mobile-instruments-history.component.html',
     styleUrls: ['./mobile-instruments-history.component.less'],
     imports: [
-        NgIf,
-        AsyncPipe,
-        NzTagComponent,
-        NgForOf,
-        TranslocoDirective
-    ]
+    AsyncPipe,
+    NzTagComponent,
+    TranslocoDirective
+]
 })
 export class MobileInstrumentsHistoryComponent implements OnInit {
+  private readonly mobileDashboardService = inject(MobileDashboardService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly instrumentsService = inject(InstrumentsService);
+
   instruments$!: Observable<InstrumentKeyViewData[] | undefined>;
   selectedInstrument$!: Observable<InstrumentKey | null | undefined>;
-
-  constructor(
-    private readonly mobileDashboardService: MobileDashboardService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly instrumentsService: InstrumentsService
-  ) {
-  }
 
   ngOnInit(): void {
     this.instruments$ = this.mobileDashboardService.getInstrumentsHistory()

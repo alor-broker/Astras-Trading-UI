@@ -1,41 +1,39 @@
 <ng-container *transloco="let t; scope: 'bond-screener'">
-  <ats-widget-skeleton
-    *ngIf="settings$ | async as settings"
-    [content]="contentRef"
-    [header]="headerRef"
-    [isBlockWidget]="isBlockWidget"
-    [settings]="settingsRef"
-    [showSettings]="shouldShowSettings"
-  >
-    <ng-template #headerRef>
-      <ats-widget-header
-        (switchSettings)="onSettingsChange()"
-        [guid]="guid"
-        [hasSettings]="true"
-        [selectedBadgeColor]="settings.badgeColor"
-        [showBadgesMenu]="(showBadge$ | async) ?? false"
-        badgeShape="square"
-        [widgetMeta]="widgetInstance.widgetMeta"
-      ></ats-widget-header>
-    </ng-template>
-
-    <ng-template #contentRef>
-      <nz-tabs nzSize="small">
-        <nz-tab [nzTitle]="t('bondScreener.screenerTab')">
-          <ats-bond-screener [guid]="guid"></ats-bond-screener>
-        </nz-tab>
-        <nz-tab [nzTitle]="t('bondScreener.yieldCurveChartsTab')">
-          <ats-yield-curve-chart [guid]="guid"></ats-yield-curve-chart>
-        </nz-tab>
-      </nz-tabs>
-    </ng-template>
-    <ng-template #settingsRef>
-      <ats-bond-screener-settings
-        (settingsChange)="onSettingsChange()"
-        [guid]="guid"
-      ></ats-bond-screener-settings>
-    </ng-template>
-  </ats-widget-skeleton>
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [isBlockWidget]="isBlockWidget()"
+      [settings]="settingsRef"
+      [showSettings]="shouldShowSettings"
+      >
+      <ng-template #headerRef>
+        <ats-widget-header (switchSettings)="onSettingsChange()"
+          [guid]="guid"
+          [hasSettings]="true"
+          [selectedBadgeColor]="settings.badgeColor"
+          [showBadgesMenu]="(showBadge$ | async) ?? false"
+          badgeShape="square"
+          [widgetMeta]="widgetInstance().widgetMeta"
+         />
+      </ng-template>
+      <ng-template #contentRef>
+        <nz-tabs nzSize="small">
+          <nz-tab [nzTitle]="t('bondScreener.screenerTab')">
+            <ats-bond-screener [guid]="guid" />
+          </nz-tab>
+          <nz-tab [nzTitle]="t('bondScreener.yieldCurveChartsTab')">
+            <ats-yield-curve-chart [guid]="guid" />
+          </nz-tab>
+        </nz-tabs>
+      </ng-template>
+      <ng-template #settingsRef>
+        <ats-bond-screener-settings (settingsChange)="onSettingsChange()"
+          [guid]="guid"
+         />
+      </ng-template>
+    </ats-widget-skeleton>
+  }
 
 </ng-container>
 

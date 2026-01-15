@@ -1,21 +1,6 @@
-import {
-  Component,
-  DestroyRef,
-  ElementRef,
-  EventEmitter,
-  Inject,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  Observable,
-  of,
-  take
-} from 'rxjs';
-import { FullName } from '../../../../shared/models/user/full-name.model';
+import { Component, DestroyRef, ElementRef, OnDestroy, OnInit, input, output, inject } from '@angular/core';
+import {BehaviorSubject, Observable, of, take} from 'rxjs';
+import {FullName} from '../../../../shared/models/user/full-name.model';
 import {
   HotKeysSettings,
   InstantNotificationsSettings,
@@ -23,42 +8,78 @@ import {
   ScalperOrderBookMouseActionsMap,
   TerminalSettings
 } from '../../../../shared/models/terminal-settings/terminal-settings.model';
-import {
-  FormBuilder,
-  Validators
-} from '@angular/forms';
-import { ModalService } from "../../../../shared/services/modal.service";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { AtsValidators } from '../../../../shared/utils/form-validators';
-import { TerminalSettingsHelper } from '../../../../shared/utils/terminal-settings-helper';
-import { AccountService } from "../../../../shared/services/account.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import {
-  GeneralSettings,
-  TabNames
-} from "../../models/terminal-settings.model";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {ModalService} from "../../../../shared/services/modal.service";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {AtsValidators} from '../../../../shared/utils/form-validators';
+import {TerminalSettingsHelper} from '../../../../shared/utils/terminal-settings-helper';
+import {AccountService} from "../../../../shared/services/account.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {GeneralSettings, TabNames} from "../../models/terminal-settings.model";
 import {
   EXPORT_SETTINGS_SERVICE_TOKEN,
   ExportSettingsService
 } from "../../../../shared/services/settings/export-settings.service";
-import {
-  FileSaver,
-  FileType
-} from "../../../../shared/utils/file-export/file-saver";
+import {FileSaver, FileType} from "../../../../shared/utils/file-export/file-saver";
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzTabComponent, NzTabsComponent} from 'ng-zorro-antd/tabs';
+import {UsefulLinksComponent} from '../useful-links/useful-links.component';
+import {GeneralSettingsFormComponent} from '../general-settings-form/general-settings-form.component';
+import {PortfoliosCurrencyFormComponent} from '../portfolios-currency-form/portfolios-currency-form.component';
+import {NzDividerComponent} from 'ng-zorro-antd/divider';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {HotKeySettingsFormComponent} from '../hot-key-settings-form/hot-key-settings-form.component';
+import {ScalperMouseActionsFormComponent} from '../scalper-mouse-actions-form/scalper-mouse-actions-form.component';
+import {InstantNotificationsFormComponent} from '../instant-notifications-form/instant-notifications-form.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-terminal-settings',
-    templateUrl: './terminal-settings.component.html',
-    styleUrls: ['./terminal-settings.component.less'],
-    standalone: false
+  selector: 'ats-terminal-settings',
+  templateUrl: './terminal-settings.component.html',
+  styleUrls: ['./terminal-settings.component.less'],
+  imports: [
+    NzResizeObserverDirective,
+    TranslocoDirective,
+    NzIconDirective,
+    NzTabsComponent,
+    NzTabComponent,
+    UsefulLinksComponent,
+    GeneralSettingsFormComponent,
+    FormsModule,
+    ReactiveFormsModule,
+    PortfoliosCurrencyFormComponent,
+    NzDividerComponent,
+    NzRowDirective,
+    NzColDirective,
+    NzButtonComponent,
+    HotKeySettingsFormComponent,
+    ScalperMouseActionsFormComponent,
+    InstantNotificationsFormComponent,
+    AsyncPipe
+  ]
 })
 export class TerminalSettingsComponent implements OnInit, OnDestroy {
-  @Input()
-  hiddenSections: string[] = [];
+  private readonly accountService = inject(AccountService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly modal = inject(ModalService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly exportSettingsService = inject<ExportSettingsService>(EXPORT_SETTINGS_SERVICE_TOKEN);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly elRef = inject(ElementRef);
+  private readonly formBuilder = inject(FormBuilder);
 
-  @Output() formChange = new EventEmitter<{ value: TerminalSettings | null, isInitial: boolean }>();
-  @Output() tabChange = new EventEmitter<number>();
+  readonly hiddenSections = input<string[]>([]);
+
+  readonly formChange = output<{
+    value: TerminalSettings | null;
+    isInitial: boolean;
+}>();
+
+  readonly tabChange = output<number>();
   tabNames = TabNames;
 
   readonly settingsForm = this.formBuilder.group({
@@ -77,19 +98,6 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
 
   tabSetHeight$ = new BehaviorSubject(300);
   exportSettingsLoading$ = new BehaviorSubject<boolean>(false);
-
-  constructor(
-    private readonly accountService: AccountService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly modal: ModalService,
-    private readonly translatorService: TranslatorService,
-    @Inject(EXPORT_SETTINGS_SERVICE_TOKEN)
-    private readonly exportSettingsService: ExportSettingsService,
-    private readonly destroyRef: DestroyRef,
-    private readonly elRef: ElementRef,
-    private readonly formBuilder: FormBuilder
-  ) {
-  }
 
   ngOnInit(): void {
     this.fullName$ = this.accountService.getFullName();
@@ -178,7 +186,9 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   }
 
   private formToModel(): TerminalSettings | null {
-    const formValue = this.settingsForm.value as Partial<TerminalSettings & { generalSettings: GeneralSettings }> | undefined;
+    const formValue = this.settingsForm.value as Partial<TerminalSettings & {
+      generalSettings: GeneralSettings;
+    }> | undefined;
     if (!formValue) {
       return null;
     }

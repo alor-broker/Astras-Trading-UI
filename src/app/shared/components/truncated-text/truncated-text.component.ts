@@ -1,41 +1,36 @@
-import {
-  Component,
-  Input
-} from '@angular/core';
-import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
+import {Component, input} from '@angular/core';
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 
 @Component({
-    selector: 'ats-truncated-text',
-    imports: [
-        NzTooltipDirective
-    ],
-    template: `
-        <span
-        [class]="className"
-        [nz-tooltip]="text"
-        [nzTooltipTrigger]="shouldBeTruncated() ? 'hover' : null"
-        >
-            {{truncatedText}}
+  selector: 'ats-truncated-text',
+  imports: [
+    NzTooltipDirective
+  ],
+  template: `
+    <span
+      [class]="className()"
+      [nz-tooltip]="text()"
+      [nzTooltipTrigger]="shouldBeTruncated() ? 'hover' : null"
+    >
+            {{ truncatedText }}
         </span>
-    `
+  `
 })
 export class TruncatedTextComponent {
-  @Input()
-  text = '';
+  readonly text = input('');
+  readonly maxLength = input(0);
 
-  @Input()
-  maxLength = 0;
-
-  @Input()
-  className = '';
+  readonly className = input('');
 
   get truncatedText(): string {
+    const text = this.text();
+
     return this.shouldBeTruncated()
-      ? `${this.text.slice(0, this.maxLength)}...`
-      : this.text;
+      ? `${text.slice(0, this.maxLength())}...`
+      : text;
   }
 
   shouldBeTruncated(): boolean {
-    return this.text.length > this.maxLength;
+    return this.text().length > this.maxLength();
   }
 }

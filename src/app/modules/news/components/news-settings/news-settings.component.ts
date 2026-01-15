@@ -1,26 +1,42 @@
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {
-  Component,
-  DestroyRef,
-  OnInit
-} from '@angular/core';
-import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
-import { NewsSettings } from "../../models/news-settings.model";
-import { Observable } from 'rxjs';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
-import { NzMarks } from "ng-zorro-antd/slider";
+  WidgetSettingsBaseComponent
+} from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import {NewsSettings} from "../../models/news-settings.model";
+import {Observable} from 'rxjs';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {NzMarks, NzSliderComponent} from "ng-zorro-antd/slider";
+import {WidgetSettingsComponent} from '../../../../shared/components/widget-settings/widget-settings.component';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 
 @Component({
-    selector: 'ats-news-settings',
-    templateUrl: './news-settings.component.html',
-    styleUrls: ['./news-settings.component.less'],
-    standalone: false
+  selector: 'ats-news-settings',
+  templateUrl: './news-settings.component.html',
+  styleUrls: ['./news-settings.component.less'],
+  imports: [
+    WidgetSettingsComponent,
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormControlComponent,
+    NzFormLabelComponent,
+    NzSliderComponent
+  ]
 })
 export class NewsSettingsComponent extends WidgetSettingsBaseComponent<NewsSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly validation = {
     refreshIntervalSec: {
       min: 5,
@@ -48,13 +64,16 @@ export class NewsSettingsComponent extends WidgetSettingsBaseComponent<NewsSetti
 
   protected settings$!: Observable<NewsSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly formBuilder: FormBuilder
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {

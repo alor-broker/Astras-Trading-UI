@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {Observable, shareReplay} from "rxjs";
 import {WidgetMeta} from "../models/widget-meta.model";
 import {HttpClient, HttpContext} from "@angular/common/http";
@@ -8,10 +8,9 @@ import {HttpContextTokens} from "../constants/http.constants";
   providedIn: 'root'
 })
 export class WidgetsMetaService {
-  private meta$?: Observable<WidgetMeta[]>;
+  private readonly httpClient = inject(HttpClient);
 
-  constructor(private readonly httpClient: HttpClient) {
-  }
+  private meta$?: Observable<WidgetMeta[]>;
 
   getWidgetsMeta(): Observable<WidgetMeta[]> {
     if (!this.meta$) {

@@ -1,11 +1,4 @@
-import {
-  Component,
-  computed,
-  DestroyRef,
-  model,
-  OnDestroy,
-  ViewEncapsulation
-} from '@angular/core';
+import { Component, computed, DestroyRef, model, OnDestroy, ViewEncapsulation, inject } from '@angular/core';
 import {
   AsyncPipe,
   NgClass
@@ -56,6 +49,10 @@ interface InstrumentPrice {
   encapsulation: ViewEncapsulation.None
 })
 export class IdeaDetailsComponent implements OnDestroy {
+  private readonly historyService = inject(HistoryService);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly displayIdea = model<Idea | null>(null);
 
   readonly selectedTicker$ = new BehaviorSubject<IdeaSymbol | null>(null);
@@ -73,13 +70,6 @@ export class IdeaDetailsComponent implements OnDestroy {
       priceInfo$: this.getPriceInfo({symbol: i.ticker, exchange: i.exchange})
     }));
   });
-
-  constructor(
-    private readonly historyService: HistoryService,
-    private readonly instrumentsService: InstrumentsService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   isTickerEquals(a: IdeaSymbol | null, b: IdeaSymbol | null): boolean {
     return a?.ticker === b?.ticker

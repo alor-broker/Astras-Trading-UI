@@ -30,6 +30,14 @@ describe('CommonInfoComponent', () => {
 
     fixture = TestBed.createComponent(CommonInfoComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput(
+      'instrumentKey',
+      {
+        symbol: 'SYMB',
+        exchange: 'EXCH',
+        board: ''
+      }
+    );
     fixture.detectChanges();
   });
 

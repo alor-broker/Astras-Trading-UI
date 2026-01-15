@@ -1,19 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Inject,
-  Input,
-  LOCALE_ID,
-  OnChanges
-} from '@angular/core';
-import { DecimalPipe } from "@angular/common";
-import { ThemeService } from "../../services/theme.service";
-import {
-  shareReplay,
-  take
-} from "rxjs";
-import { map } from "rxjs/operators";
-import { color } from "d3";
+import { ChangeDetectionStrategy, Component, input, LOCALE_ID, OnChanges, inject } from '@angular/core';
+import {DecimalPipe, NgStyle} from "@angular/common";
+import {ThemeService} from "../../services/theme.service";
+import {shareReplay, take} from "rxjs";
+import {map} from "rxjs/operators";
+import {color} from "d3";
 
 interface PriceDiff {
   fixedPart: string;
@@ -22,52 +12,44 @@ interface PriceDiff {
 }
 
 @Component({
-    selector: 'ats-price-diff',
-    templateUrl: './price-diff.component.html',
-    styleUrls: ['./price-diff.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'ats-price-diff',
+  templateUrl: './price-diff.component.html',
+  styleUrls: ['./price-diff.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgStyle]
 })
 export class PriceDiffComponent implements OnChanges {
-  @Input({ required: true })
-  basePrice = 0;
+  private readonly locale = inject(LOCALE_ID);
+  private readonly themeService = inject(ThemeService);
 
-  @Input({ required: true })
-  currentPrice = 0;
+  readonly basePrice = input(0);
 
-  @Input()
-  format = '1.0-10';
+  readonly currentPrice = input.required<number>();
 
-  @Input()
-  showChangeForce = true;
+  readonly format = input('1.0-10');
+
+  readonly showChangeForce = input(true);
 
   priceDiff: PriceDiff | null = null;
   private readonly numberPipe = new DecimalPipe(this.locale);
   private readonly themeColors$ = this.themeService.getThemeSettings().pipe(
     map(x => x.themeColors),
-    shareReplay({ bufferSize: 1, refCount: true })
+    shareReplay({bufferSize: 1, refCount: true})
   );
-
-  constructor(
-    @Inject(LOCALE_ID) private readonly locale: string,
-    private readonly themeService: ThemeService
-  ) {
-
-  }
 
   ngOnChanges(): void {
     this.update();
   }
 
   private update(): void {
-    const currentPriceStr = this.priceToStr(this.currentPrice);
+    const currentPriceStr = this.priceToStr(this.currentPrice());
 
     if (currentPriceStr.length === 0) {
       this.setDisplayParts(currentPriceStr, '', 0);
       return;
     }
 
-    const basePriceStr = this.priceToStr(this.basePrice);
+    const basePriceStr = this.priceToStr(this.basePrice());
 
     const fixedPart: string[] = [];
     const changedPart: string[] = [];
@@ -89,15 +71,16 @@ export class PriceDiffComponent implements OnChanges {
       }
     }
 
-    const changePercent = this.basePrice != 0
-      ? ((this.currentPrice - this.basePrice) / this.basePrice) * 100
+    const basePrice = this.basePrice();
+    const changePercent = basePrice != 0
+      ? ((this.currentPrice() - basePrice) / basePrice) * 100
       : 0;
 
     this.setDisplayParts(fixedPart.join(''), changedPart.join(''), changePercent);
   }
 
   private priceToStr(price: number): string {
-    return this.numberPipe.transform(price, this.format, this.locale) ?? '';
+    return this.numberPipe.transform(price, this.format(), this.locale) ?? '';
   }
 
   private setDisplayParts(fixedPart: string, updatedPart: string, changePercent: number): void {
@@ -122,7 +105,7 @@ export class PriceDiffComponent implements OnChanges {
   }
 
   private getColorOpacity(changePercent: number): number {
-    if(!this.showChangeForce) {
+    if (!this.showChangeForce()) {
       return 1;
     }
 

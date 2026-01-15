@@ -1,30 +1,14 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  Observable,
-  of,
-  switchMap
-} from "rxjs";
-import { EvaluationBaseProperties } from "../../../../shared/models/evaluation-base-properties.model";
-import { EvaluationService } from "../../../../shared/services/evaluation.service";
-import { map } from "rxjs/operators";
-import { Evaluation } from "../../../../shared/models/evaluation.model";
-import {
-  AsyncPipe,
-  CurrencyPipe
-} from "@angular/common";
-import {
-  NzDescriptionsComponent,
-  NzDescriptionsItemComponent
-} from "ng-zorro-antd/descriptions";
-import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
-import { TranslocoDirective } from "@jsverse/transloco";
+import { Component, input, OnInit, output, inject } from '@angular/core';
+import {Observable, of, shareReplay, switchMap} from "rxjs";
+import {EvaluationBaseProperties} from "../../../../shared/models/evaluation-base-properties.model";
+import {EvaluationService} from "../../../../shared/services/evaluation.service";
+import {map, startWith} from "rxjs/operators";
+import {Evaluation} from "../../../../shared/models/evaluation.model";
+import {AsyncPipe, CurrencyPipe} from "@angular/common";
+import {NzDescriptionsComponent, NzDescriptionsItemComponent} from "ng-zorro-antd/descriptions";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {toObservable} from "@angular/core/rxjs-interop";
 
 type EvaluationDisplay = Evaluation & { currency: string };
 
@@ -42,19 +26,17 @@ type EvaluationDisplay = Evaluation & { currency: string };
   styleUrls: ['./order-evaluation.component.less']
 })
 export class OrderEvaluationComponent implements OnInit {
+  private readonly evaluationService = inject(EvaluationService);
+
   evaluation$!: Observable<EvaluationDisplay | null>;
 
-  @Output() quantitySelect = new EventEmitter<number>();
+  readonly quantitySelect = output<number>();
 
-  private readonly evaluationRequest$: BehaviorSubject<EvaluationBaseProperties | null> = new BehaviorSubject<EvaluationBaseProperties | null>(null);
-
-  constructor(private readonly evaluationService: EvaluationService) {
-  }
-
-  @Input({required: true})
-  set evaluationProperties(evaluationProperties: EvaluationBaseProperties | null) {
-    this.evaluationRequest$.next(evaluationProperties);
-  }
+  readonly evaluationProperties = input.required<EvaluationBaseProperties | null>();
+  private readonly evaluationPropertiesChanges$ = toObservable(this.evaluationProperties).pipe(
+    startWith(null),
+    shareReplay(1)
+  );
 
   ngOnInit(): void {
     const getEvaluationDisplay = (request: EvaluationBaseProperties): Observable<EvaluationDisplay | null> => this.evaluationService.evaluateOrder(request).pipe(
@@ -70,7 +52,7 @@ export class OrderEvaluationComponent implements OnInit {
       })
     );
 
-    this.evaluation$ = this.evaluationRequest$.pipe(
+    this.evaluation$ = this.evaluationPropertiesChanges$.pipe(
       switchMap(er => {
         if (er == null) {
           return of(null);

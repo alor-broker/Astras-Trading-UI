@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   ExportSettingsService,
   SettingsExportToFileResult
@@ -22,13 +19,10 @@ import { ManageDashboardsService } from "../manage-dashboards.service";
 
 @Injectable()
 export class ExportDesktopSettingsService implements ExportSettingsService {
-  constructor(
-    @Inject(USER_CONTEXT)
-    private readonly userContext: UserContext,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly manageDashboardsService: ManageDashboardsService) {
-  }
+  private readonly userContext = inject<UserContext>(USER_CONTEXT);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
 
   private get filename(): string {
     return `ASTRAS_DESKTOP_${Date.now()}`;

@@ -1,11 +1,4 @@
-import {
-  Component,
-  computed,
-  DestroyRef,
-  model,
-  output,
-  ViewEncapsulation
-} from '@angular/core';
+import { Component, computed, DestroyRef, model, output, ViewEncapsulation, inject } from '@angular/core';
 import { NgClass } from "@angular/common";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
 import { LetDirective } from "@ngrx/component";
@@ -42,6 +35,9 @@ interface InstrumentPrice {
   encapsulation: ViewEncapsulation.None
 })
 export class InvestIdeasDetailsDialogComponent {
+  private readonly historyService = inject(HistoryService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly displayIdea = model<Idea | null>(null);
 
   readonly ideaSymbols = computed(() => {
@@ -57,12 +53,6 @@ export class InvestIdeasDetailsDialogComponent {
   });
 
   readonly symbolSelected = output<InstrumentKey>();
-
-  constructor(
-    private readonly historyService: HistoryService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   protected close(): void {
     this.displayIdea.set(null);

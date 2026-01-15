@@ -22,15 +22,13 @@
             </button>
           }
         </div>
-        <ats-keyword-filter
-          (keywordAdded)="addIncludedKeyWord($event)"
+        <ats-keyword-filter (keywordAdded)="addIncludedKeyWord($event)"
           (keywordRemoved)="removeIncludedKeyWord($event)"
           [currentKeywords]="includedKeywords"
           [newKeywordPlaceholder]="t('newsNewsFilters.newKeywordPlaceholder')"
           [validationOptions]="validationOptions.keyword"
           tagColor="blue"
-        >
-        </ats-keyword-filter>
+         />
       </div>
 
       <div class="mt-10">
@@ -48,15 +46,13 @@
             </button>
           }
         </div>
-        <ats-keyword-filter
-          (keywordAdded)="addExcludedKeyWord($event)"
+        <ats-keyword-filter (keywordAdded)="addExcludedKeyWord($event)"
           (keywordRemoved)="removeExcludedKeyWord($event)"
           [currentKeywords]="excludedKeywords"
           [newKeywordPlaceholder]="t('newsNewsFilters.newExcludedKeywordsPlaceholder')"
           [validationOptions]="validationOptions.keyword"
           tagColor="orange"
-        >
-        </ats-keyword-filter>
+         />
       </div>
 
       <div class="mt-10">
@@ -74,15 +70,13 @@
             </button>
           }
         </div>
-        <ats-keyword-filter
-          (keywordAdded)="addSymbol($event)"
+        <ats-keyword-filter (keywordAdded)="addSymbol($event)"
           (keywordRemoved)="removeSymbol($event)"
           [currentKeywords]="symbols"
           [newKeywordPlaceholder]="t('newsNewsFilters.newSymbolPlaceholder')"
           [validationOptions]="validationOptions.symbol"
           tagColor="green"
-        >
-        </ats-keyword-filter>
+         />
       </div>
     </ng-container>
   </nz-modal>

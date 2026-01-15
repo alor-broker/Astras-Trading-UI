@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnDestroy, OnInit, inject } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -24,7 +18,7 @@ import {TranslatorService} from "../../../shared/services/translator.service";
 import {DashboardTitleHelper} from "../../../modules/dashboard/utils/dashboard-title.helper";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {CdkDrag, CdkDragDrop, CdkDropList} from "@angular/cdk/drag-drop";
-import {AsyncPipe, NgIf} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import {
   NzSegmentedComponent,
   NzSegmentedItemComponent
@@ -57,29 +51,25 @@ interface DashboardSegmentedOption {
     CdkDrag,
     NzButtonComponent,
     NzDropDownDirective,
-    NgIf,
     NzTypographyComponent,
     NzIconDirective,
     NzDropdownMenuComponent,
     SelectDashboardMenuComponent,
     NzSegmentedItemComponent
-  ],
+],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardsPanelComponent implements OnInit, OnDestroy {
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly allDashboardsValue = 'all_dashboards';
   options$!: Observable<DashboardSegmentedOption[]>;
   isDashboardSelectionMenuVisible$ = new BehaviorSubject(false);
   lastSelectedNonFavoriteDashboard$ = new BehaviorSubject<Dashboard | null>(null);
   dropdownTrigger$ = new BehaviorSubject<'click' | 'hover'>('hover');
   selectedValue$!: Observable<string>;
-
-  constructor(
-    private readonly manageDashboardsService: ManageDashboardsService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     const allDashboards$ = combineLatest({

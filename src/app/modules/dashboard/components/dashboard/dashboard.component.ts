@@ -1,19 +1,5 @@
-import {
-  Component,
-  OnInit,
-  ViewChild
-} from '@angular/core';
-import {
-  CompactType,
-  DisplayGrid,
-  Draggable,
-  GridsterComponent,
-  GridsterConfig,
-  GridsterItem,
-  GridType,
-  PushDirections,
-  Resizable,
-} from 'angular-gridster2';
+import { Component, OnInit, viewChild, inject } from '@angular/core';
+import { CompactType, DisplayGrid, Draggable, GridsterComponent, GridsterConfig, GridsterItem, GridType, PushDirections, Resizable, GridsterItemComponent } from 'angular-gridster2';
 import {
   combineLatest,
   map,
@@ -35,6 +21,8 @@ import { WidgetMeta } from "../../../../shared/models/widget-meta.model";
 import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
 import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
 import { GridType as TerminalGridType } from "../../../../shared/models/terminal-settings/terminal-settings.model";
+import { ParentWidgetComponent } from '../parent-widget/parent-widget.component';
+import { AsyncPipe } from '@angular/common';
 interface Safe extends GridsterConfig {
   draggable: Draggable;
   resizable: Resizable;
@@ -47,11 +35,20 @@ interface WidgetItem { instance: WidgetInstance, gridsterItem: GridsterItem }
     selector: 'ats-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.less'],
-    standalone: false
+    imports: [
+      GridsterComponent,
+      GridsterItemComponent,
+      ParentWidgetComponent,
+      AsyncPipe
+    ]
 })
 export class DashboardComponent implements OnInit {
-  @ViewChild(GridsterComponent)
-  gridster?: GridsterComponent;
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly widgetsMetaService = inject(WidgetsMetaService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+
+  readonly gridster = viewChild(GridsterComponent);
 
   options$!: Observable<Safe>;
   items$?: Observable<WidgetItem[]>;
@@ -61,14 +58,6 @@ export class DashboardComponent implements OnInit {
     itemDefaultWidth: 10,
     itemDefaultHeight: 18
   };
-
-  constructor(
-    private readonly manageDashboardsService: ManageDashboardsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly widgetsMetaService: WidgetsMetaService,
-    private readonly terminalSettingsService: TerminalSettingsService
-  ) {
-  }
 
   ngOnInit(): void {
     this.options$ = this.terminalSettingsService.getSettings().pipe(
@@ -226,13 +215,14 @@ export class DashboardComponent implements OnInit {
             newPosition.cols = notPositionedItem.initialSize.cols;
           }
 
-          if (widgetMeta.desktopMeta?.addOptions.initialHeightPx != null && this.gridster?.curRowHeight != null) {
+          const gridster = this.gridster();
+          if (widgetMeta.desktopMeta?.addOptions.initialHeightPx != null && gridster?.curRowHeight != null) {
             const expectedHeight = widgetMeta.desktopMeta.addOptions.initialHeightPx;
             let rowsHeight: number;
-            if(this.gridster.curRowHeight > expectedHeight) {
+            if(gridster.curRowHeight > expectedHeight) {
               rowsHeight = 1;
             } else {
-              rowsHeight = Math.ceil(expectedHeight / this.gridster.curRowHeight);
+              rowsHeight = Math.ceil(expectedHeight / gridster.curRowHeight);
             }
 
             newPosition.rows = rowsHeight;
@@ -241,7 +231,7 @@ export class DashboardComponent implements OnInit {
           const positionedItems = items.filter(x => !!x.position);
 
           if (widgetMeta.desktopMeta?.addOptions.isFullWidth ?? false) {
-            newPosition.cols = this.gridster?.columns ?? options.minCols ?? this.dashboardSize.width;
+            newPosition.cols = gridster?.columns ?? options.minCols ?? this.dashboardSize.width;
           }
 
           const topOffset = newPosition.y + newPosition.rows;
@@ -259,8 +249,8 @@ export class DashboardComponent implements OnInit {
                   });
                 });
             }
-          } else if(widgetMeta.desktopMeta?.addOptions.initialPosition === "below" && this.gridster!.grid.length > 0) {
-            newPosition.y = Math.max(...this.gridster!.grid.map(x => x.item.y + x.item.rows));
+          } else if(widgetMeta.desktopMeta?.addOptions.initialPosition === "below" && gridster!.grid.length > 0) {
+            newPosition.y = Math.max(...gridster!.grid.map(x => x.item.y + x.item.rows));
           }
         }
 

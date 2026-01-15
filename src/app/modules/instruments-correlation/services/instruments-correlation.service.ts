@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   CorrelationMatrix,
   InstrumentsCorrelationErrorCodes,
@@ -19,11 +19,8 @@ import { EnvironmentService } from "../../../shared/services/environment.service
   providedIn: 'root'
 })
 export class InstrumentsCorrelationService {
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly httpClient: HttpClient
-  ) {
-  }
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly httpClient = inject(HttpClient);
 
   getCorrelation(request: InstrumentsCorrelationRequest): Observable<InstrumentsCorrelationResponse> {
     if (request.instruments.length === 0) {

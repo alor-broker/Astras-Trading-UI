@@ -1,51 +1,54 @@
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Inject,
-  OnInit,
-  Output,
-} from '@angular/core';
-import {
-  combineLatest,
-  defer,
-  distinctUntilChanged,
-  Observable,
-  switchMap,
-  take,
-} from 'rxjs';
-import { debounceTime, map, startWith, tap } from 'rxjs/operators';
-import { OrderFilter } from '../../models/order-filter.model';
-import {
-  Order,
-  OrderType
-} from '../../../../shared/models/orders/order.model';
-import { BlotterService } from '../../services/blotter.service';
-import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  isEqualPortfolioDependedSettings
-} from "../../../../shared/utils/settings-helper";
-import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
-import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
-import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
-import { DomHelper } from "../../../../shared/utils/dom-helper";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
-import { OrdersDialogService } from "../../../../shared/services/orders/orders-dialog.service";
-import { OrderFormType } from "../../../../shared/models/orders/orders-dialog.model";
-import { TableConfig } from "../../../../shared/models/table-config.model";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { NzContextMenuService } from "ng-zorro-antd/dropdown";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import {Component, DestroyRef, inject, OnInit, output} from '@angular/core';
+import {combineLatest, defer, distinctUntilChanged, Observable, switchMap, take,} from 'rxjs';
+import {debounceTime, map, startWith, tap} from 'rxjs/operators';
+import {OrderFilter} from '../../models/order-filter.model';
+import {Order, OrderType} from '../../../../shared/models/orders/order.model';
+import {BlotterService} from '../../services/blotter.service';
+import {TimezoneConverterService} from '../../../../shared/services/timezone-converter.service';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {isEqualPortfolioDependedSettings} from "../../../../shared/utils/settings-helper";
+import {TableSettingHelper} from '../../../../shared/utils/table-setting.helper';
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {ColumnsNames, TableNames} from '../../models/blotter-settings.model';
+import {BaseColumnSettings, FilterType} from "../../../../shared/models/settings/table-settings.model";
+import {OrdersGroupService} from "../../../../shared/services/orders/orders-group.service";
+import {DomHelper} from "../../../../shared/utils/dom-helper";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {BlotterBaseTableComponent} from "../blotter-base-table/blotter-base-table.component";
+import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
+import {OrderFormType} from "../../../../shared/models/orders/orders-dialog.model";
+import {TableConfig} from "../../../../shared/models/table-config.model";
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
 } from "../../../../shared/services/orders/order-command.service";
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
-import { mapWith } from "../../../../shared/utils/observable-helper";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {LetDirective} from '@ngrx/component';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {NzTableModule} from 'ng-zorro-antd/table';
+import {TableRowHeightDirective} from '../../../../shared/directives/table-row-height.directive';
+import {CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
+import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
+import {ResizeColumnDirective} from '../../../../shared/directives/resize-column.directive';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {
+  InstrumentBadgeDisplayComponent
+} from '../../../../shared/components/instrument-badge-display/instrument-badge-display.component';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {
+  TableSearchFilterComponent
+} from '../../../../shared/components/table-search-filter/table-search-filter.component';
+import {
+  AddToWatchlistMenuComponent
+} from '../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component';
+import {DecimalPipe} from '@angular/common';
 
 interface DisplayOrder extends Order {
   residue: string;
@@ -53,15 +56,32 @@ interface DisplayOrder extends Order {
 }
 
 @Component({
-    selector: 'ats-orders',
-    templateUrl: './orders.component.html',
-    styleUrls: ['./orders.component.less'],
-    standalone: false
+  selector: 'ats-orders',
+  templateUrl: './orders.component.html',
+  styleUrls: ['./orders.component.less'],
+  imports: [
+    TranslocoDirective,
+    LetDirective,
+    NzEmptyComponent,
+    NzResizeObserverDirective,
+    TableRowHeightDirective,
+    CdkDropList,
+    NzPopconfirmDirective,
+    ResizeColumnDirective,
+    CdkDrag,
+    NzTooltipDirective,
+    NzIconDirective,
+    InstrumentBadgeDisplayComponent,
+    NzButtonComponent,
+    NzDropdownMenuComponent,
+    TableSearchFilterComponent,
+    AddToWatchlistMenuComponent,
+    DecimalPipe,
+    NzTableModule
+  ]
 })
 export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, OrderFilter> implements OnInit {
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
-
+  readonly shouldShowSettingsChange = output<boolean>();
   isModalOpened = DomHelper.isModalOpen;
   allColumns: BaseColumnSettings<DisplayOrder>[] = [
     {
@@ -97,8 +117,8 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
         filterName: 'side',
         filterType: FilterType.DefaultMultiple,
         filters: [
-          { text: 'Покупка', value: 'buy' },
-          { text: 'Продажа', value: 'sell' }
+          {text: 'Покупка', value: 'buy'},
+          {text: 'Продажа', value: 'sell'}
         ]
       },
       tooltip: 'Сторона заявки (покупка/продажа)',
@@ -145,10 +165,10 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
         filterName: 'status',
         filterType: FilterType.DefaultMultiple,
         filters: [
-          { text: 'Исполнена', value: 'filled' },
-          { text: 'Активна', value: 'working' },
-          { text: 'Отменена', value: 'canceled' },
-          { text: 'Отложена', value: 'rejected' }
+          {text: 'Исполнена', value: 'filled'},
+          {text: 'Активна', value: 'working'},
+          {text: 'Отменена', value: 'canceled'},
+          {text: 'Отложена', value: 'rejected'}
         ]
       },
       tooltip: 'Стаус заявки',
@@ -172,8 +192,8 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
         filterName: 'exchange',
         filterType: FilterType.DefaultMultiple,
         filters: [
-          { text: 'ММВБ', value: 'MOEX' },
-          { text: 'СПБ', value: 'SPBX' }
+          {text: 'ММВБ', value: 'MOEX'},
+          {text: 'СПБ', value: 'SPBX'}
         ]
       },
       tooltip: 'Наименование биржи',
@@ -188,8 +208,8 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
         filterName: 'type',
         filterType: FilterType.DefaultMultiple,
         filters: [
-          { text: 'Лимит', value: 'limit' },
-          { text: 'Рыночн.', value: 'market' }
+          {text: 'Лимит', value: 'limit'},
+          {text: 'Рыночн.', value: 'market'}
         ]
       },
       tooltip: 'Тип заявки (лимитная/рыночная)',
@@ -205,29 +225,28 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
     },
   ];
 
-  private orders: Order[] = [];
-
   settingsTableName = TableNames.OrdersTable;
   settingsColumnsName = ColumnsNames.OrdersColumns;
   fileSuffix = 'orders';
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly translatorService: TranslatorService;
+  protected readonly nzContextMenuService: NzContextMenuService;
+  protected readonly widgetLocalStateService: WidgetLocalStateService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly service = inject(BlotterService);
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+  private readonly ordersGroupService = inject(OrdersGroupService);
+  private readonly ordersDialogService = inject(OrdersDialogService);
+  private orders: Order[] = [];
 
-  get restoreFiltersAndSortOnLoad(): boolean {
-    return true;
-  }
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const translatorService = inject(TranslatorService);
+    const nzContextMenuService = inject(NzContextMenuService);
+    const widgetLocalStateService = inject(WidgetLocalStateService);
+    const destroyRef = inject(DestroyRef);
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    private readonly service: BlotterService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
-    private readonly timezoneConverterService: TimezoneConverterService,
-    protected readonly translatorService: TranslatorService,
-    protected readonly nzContextMenuService: NzContextMenuService,
-    protected readonly widgetLocalStateService: WidgetLocalStateService,
-    private readonly ordersGroupService: OrdersGroupService,
-    private readonly ordersDialogService: OrdersDialogService,
-    protected readonly destroyRef: DestroyRef
-  ) {
     super(
       settingsService,
       translatorService,
@@ -235,10 +254,93 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       widgetLocalStateService,
       destroyRef
     );
+
+    this.settingsService = settingsService;
+    this.translatorService = translatorService;
+    this.nzContextMenuService = nzContextMenuService;
+    this.widgetLocalStateService = widgetLocalStateService;
+    this.destroyRef = destroyRef;
+  }
+
+  get restoreFiltersAndSortOnLoad(): boolean {
+    return true;
   }
 
   ngOnInit(): void {
     super.ngOnInit();
+  }
+
+  rowClick(row: DisplayOrder): void {
+    this.settings$
+      .pipe(
+        take(1)
+      )
+      .subscribe(s => this.service.selectNewInstrument(
+        row.targetInstrument.symbol,
+        row.targetInstrument.exchange,
+        row.targetInstrument.instrumentGroup ?? null,
+        s.badgeColor ?? defaultBadgeColor
+      ));
+  }
+
+  cancelOrder(order: DisplayOrder): void {
+    this.orderCommandService.cancelOrders([
+      {
+        orderId: order.id,
+        orderType: order.type,
+        exchange: order.targetInstrument.exchange,
+        portfolio: order.ownedPortfolio.portfolio
+      }
+    ]).subscribe();
+  }
+
+  editOrder(order: Order, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (order.type !== OrderType.Limit) {
+      return;
+    }
+
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(s => {
+      this.ordersDialogService.openEditOrderDialog({
+        instrumentKey: order.targetInstrument,
+        portfolioKey: {
+          ...order.ownedPortfolio,
+          marketType: order.ownedPortfolio.marketType ?? s.marketType
+        },
+        orderId: order.id,
+        orderType: OrderFormType.Limit,
+        initialValues: {
+          price: order.price,
+          quantity: order.qty - (order.filledQtyBatch ?? 0)
+        }
+      });
+    });
+  }
+
+  cancelAllOrders(): void {
+    const working = this.orders.filter(o => o.status == 'working');
+    if (working.length > 0) {
+      this.orderCommandService.cancelOrders(working.map(o => ({
+        orderId: o.id,
+        orderType: o.type,
+        exchange: o.targetInstrument.exchange,
+        portfolio: o.ownedPortfolio.portfolio
+      }))).subscribe();
+    }
+  }
+
+  isMarketOrder(order: DisplayOrder): boolean {
+    return order.type === OrderType.Market;
+  }
+
+  openOrdersGroup(groupId: string, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.service.openOrderGroupModal(groupId);
   }
 
   protected initTableConfigStream(): Observable<TableConfig<DisplayOrder>> {
@@ -264,7 +366,7 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
       mapWith(() => tableState$, (source, output) => ({...source, ...output})),
       takeUntilDestroyed(this.destroyRef),
       tap(x => {
-        if(x.filters != null) {
+        if (x.filters != null) {
           this.filterChange(x.filters);
         }
       }),
@@ -331,79 +433,6 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
     );
   }
 
-  rowClick(row: DisplayOrder): void {
-    this.settings$
-      .pipe(
-        take(1)
-      )
-      .subscribe(s => this.service.selectNewInstrument(
-        row.targetInstrument.symbol,
-        row.targetInstrument.exchange,
-        row.targetInstrument.instrumentGroup ?? null,
-        s.badgeColor ?? defaultBadgeColor
-      ));
-  }
-
-  cancelOrder(order: DisplayOrder): void {
-    this.orderCommandService.cancelOrders([
-      {
-        orderId: order.id,
-        orderType: order.type,
-        exchange: order.targetInstrument.exchange,
-        portfolio: order.ownedPortfolio.portfolio
-      }
-    ]).subscribe();
-  }
-
-  editOrder(order: Order, event: MouseEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if(order.type !== OrderType.Limit) {
-      return;
-    }
-
-    this.settings$.pipe(
-      take(1)
-    ).subscribe(s => {
-      this.ordersDialogService.openEditOrderDialog({
-        instrumentKey: order.targetInstrument,
-        portfolioKey: {
-          ...order.ownedPortfolio,
-          marketType: order.ownedPortfolio.marketType ?? s.marketType
-        },
-        orderId: order.id,
-        orderType: OrderFormType.Limit,
-        initialValues: {
-          price: order.price,
-          quantity: order.qty - (order.filledQtyBatch ?? 0)
-        }
-      });
-    });
-  }
-
-  cancelAllOrders(): void {
-    const working = this.orders.filter(o => o.status == 'working');
-    if(working.length > 0) {
-      this.orderCommandService.cancelOrders(working.map(o => ({
-        orderId: o.id,
-        orderType: o.type,
-        exchange: o.targetInstrument.exchange,
-        portfolio: o.ownedPortfolio.portfolio
-      }))).subscribe();
-    }
-  }
-
-  isMarketOrder(order: DisplayOrder): boolean {
-    return order.type === OrderType.Market;
-  }
-
-  openOrdersGroup(groupId: string, event: MouseEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.service.openOrderGroupModal(groupId);
-  }
-
   protected rowToInstrumentKey(row: DisplayOrder): Observable<InstrumentKey | null> {
     return this.service.getInstrumentToSelect(
       row.targetInstrument.symbol,
@@ -415,14 +444,12 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
   private sortOrders(a: DisplayOrder, b: DisplayOrder): number {
     if (a.status == 'working' && b.status != 'working') {
       return -1;
-    }
-    else if (b.status == 'working' && a.status != 'working') {
+    } else if (b.status == 'working' && a.status != 'working') {
       return 1;
     }
     if ((a.endTime ?? 0) < (b.endTime ?? 0)) {
       return -1;
-    }
-    else if ((a.endTime ?? 0) > (b.endTime ?? 0)) {
+    } else if ((a.endTime ?? 0) > (b.endTime ?? 0)) {
       return 1;
     }
     return 0;

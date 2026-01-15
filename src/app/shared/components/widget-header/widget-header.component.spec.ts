@@ -1,17 +1,22 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
-import { WidgetHeaderComponent } from './widget-header.component';
-import { WidgetSettingsService } from '../../services/widget-settings.service';
-import { ManageDashboardsService } from '../../services/manage-dashboards.service';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {WidgetHeaderComponent} from './widget-header.component';
+import {WidgetSettingsService} from '../../services/widget-settings.service';
+import {ManageDashboardsService} from '../../services/manage-dashboards.service';
 import {TranslatorService} from "../../services/translator.service";
 import {DashboardContextService} from "../../services/dashboard-context.service";
-import { of, Subject } from "rxjs";
-import { EnvironmentService } from "../../services/environment.service";
-import { HelpService } from "../../services/help.service";
-import { TerminalSettingsService } from "../../services/terminal-settings.service";
-import { ngZorroMockComponents } from "../../utils/testing/ng-zorro-component-mocks";
+import {of, Subject} from "rxjs";
+import {EnvironmentService} from "../../services/environment.service";
+import {HelpService} from "../../services/help.service";
+import {TerminalSettingsService} from "../../services/terminal-settings.service";
+import {MockComponents, MockDirectives, MockModule} from "ng-mocks";
+import {NzBadgeComponent} from "ng-zorro-antd/badge";
+import {NzDropDownDirective, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {NzMenuDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {NzPopoverDirective} from "ng-zorro-antd/popover";
+import {TranslocoTestsModule} from "../../utils/testing/translocoTestsModule";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {JoyrideModule} from "ngx-joyride";
 
 describe('WidgetHeaderComponent', () => {
   let component: WidgetHeaderComponent;
@@ -19,9 +24,22 @@ describe('WidgetHeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         WidgetHeaderComponent,
-        ...ngZorroMockComponents
+        TranslocoTestsModule.getModule(),
+        MockModule(JoyrideModule),
+        MockComponents(
+          NzBadgeComponent,
+          NzDropdownMenuComponent,
+          NzMenuItemComponent,
+          NzButtonComponent
+        ),
+        MockDirectives(
+          NzDropDownDirective,
+          NzMenuDirective,
+          NzIconDirective,
+          NzPopoverDirective
+        )
       ],
       providers: [
         {

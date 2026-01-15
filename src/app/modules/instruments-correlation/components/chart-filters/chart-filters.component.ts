@@ -1,50 +1,48 @@
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
-import {
-  DetrendType,
-  InstrumentsCorrelationRequest
-} from "../../models/instruments-correlation.model";
-import {
-  combineLatest,
-  Observable,
-  shareReplay,
-  take
-} from "rxjs";
-import {
-  Watchlist,
-  WatchlistType
-} from "../../../instruments/models/watchlist.model";
-import { WatchListTitleHelper } from "../../../instruments/utils/watch-list-title.helper";
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
-import { WatchlistCollectionService } from "../../../instruments/services/watchlist-collection.service";
-import {
-  filter,
-  map,
-  startWith
-} from "rxjs/operators";
-import { InstrumentsCorrelationSettings } from "../../models/instruments-correlation-settings.model";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { mapWith } from "../../../../shared/utils/observable-helper";
+import { Component, DestroyRef, OnInit, input, output, inject } from '@angular/core';
+import {DetrendType, InstrumentsCorrelationRequest} from "../../models/instruments-correlation.model";
+import {combineLatest, Observable, shareReplay, take} from "rxjs";
+import {Watchlist, WatchlistType} from "../../../instruments/models/watchlist.model";
+import {WatchListTitleHelper} from "../../../instruments/utils/watch-list-title.helper";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {WatchlistCollectionService} from "../../../instruments/services/watchlist-collection.service";
+import {filter, map, startWith} from "rxjs/operators";
+import {InstrumentsCorrelationSettings} from "../../models/instruments-correlation-settings.model";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-chart-filters',
-    templateUrl: './chart-filters.component.html',
-    styleUrls: ['./chart-filters.component.less'],
-    standalone: false
+  selector: 'ats-chart-filters',
+  templateUrl: './chart-filters.component.html',
+  styleUrls: ['./chart-filters.component.less'],
+  imports: [
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormControlComponent,
+    NzSelectComponent,
+    NzTooltipDirective,
+    NzOptionComponent,
+    AsyncPipe
+  ]
 })
 export class ChartFiltersComponent implements OnInit {
-  @Input({ required: true })
-  guid!: string;
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly watchlistCollectionService = inject(WatchlistCollectionService);
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  readonly guid = input.required<string>();
 
   readonly timeframes = [
     {
@@ -65,8 +63,7 @@ export class ChartFiltersComponent implements OnInit {
     },
   ];
 
-  @Output()
-  filterChanged = new EventEmitter<InstrumentsCorrelationRequest>();
+  readonly filterChanged = output<InstrumentsCorrelationRequest>();
 
   readonly detrendTypes = Object.values(DetrendType);
 
@@ -89,22 +86,14 @@ export class ChartFiltersComponent implements OnInit {
 
   private settings$!: Observable<InstrumentsCorrelationSettings>;
 
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly watchlistCollectionService: WatchlistCollectionService,
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
-
   ngOnInit(): void {
-    this.settings$ = this.widgetSettingsService.getSettings<InstrumentsCorrelationSettings>(this.guid).pipe(
-      shareReplay({ bufferSize: 1, refCount: true })
+    this.settings$ = this.widgetSettingsService.getSettings<InstrumentsCorrelationSettings>(this.guid()).pipe(
+      shareReplay({bufferSize: 1, refCount: true})
     );
 
     this.availableLists$ = this.watchlistCollectionService.getWatchlistCollection().pipe(
       map(c => c.collection),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
 
     this.setInitialRequestValues();
@@ -170,7 +159,7 @@ export class ChartFiltersComponent implements OnInit {
 
     const formValue = this.parametersForm.value;
     this.widgetSettingsService.updateSettings<InstrumentsCorrelationSettings>(
-      this.guid,
+      this.guid(),
       {
         lastRequestParams: {
           listId: formValue.targetListId!,

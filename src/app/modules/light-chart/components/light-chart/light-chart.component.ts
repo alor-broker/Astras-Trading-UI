@@ -1,15 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewEncapsulation,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, OnDestroy, OnInit, ViewEncapsulation, input, output, inject } from '@angular/core';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -35,6 +24,9 @@ import {
 } from '../../models/light-chart-settings.model';
 import { TranslatorService } from "../../../../shared/services/translator.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { NzResizeObserverDirective } from 'ng-zorro-antd/cdk/resize-observer';
+import { TimeframesPanelComponent } from '../timeframes-panel/timeframes-panel.component';
+import { AsyncPipe } from '@angular/common';
 
 type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
 
@@ -44,34 +36,33 @@ type LightChartSettingsExtended = LightChartSettings & { minstep?: number };
     styleUrls: ['./light-chart.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
-    standalone: false
+    imports: [
+      NzResizeObserverDirective,
+      TimeframesPanelComponent,
+      AsyncPipe
+    ]
 })
 export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
+  private readonly settingsService = inject(WidgetSettingsService);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+  private readonly themeService = inject(ThemeService);
+  private readonly lightChartDatafeedFactoryService = inject(LightChartDatafeedFactoryService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly destroyRef = inject(DestroyRef);
+
   availableTimeFrames$!: Observable<TimeframeValue[]>;
   timeFrameDisplayModes = TimeFrameDisplayMode;
 
-  @Input({ required: true })
-  guid!: string;
+  readonly guid = input.required<string>();
 
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
+  readonly shouldShowSettingsChange = output<boolean>();
 
   settings$!: Observable<LightChartSettingsExtended>;
   private chart?: LightChartWrapper;
 
-  constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly instrumentsService: InstrumentsService,
-    private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly themeService: ThemeService,
-    private readonly lightChartDatafeedFactoryService: LightChartDatafeedFactoryService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
-
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<LightChartSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<LightChartSettings>(this.guid()).pipe(
       map(x => x as LightChartSettingsExtended),
       switchMap(settings => {
         return this.instrumentsService.getInstrument({
@@ -101,11 +92,11 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   changeTimeframe(timeframe: TimeframeValue): void {
-    this.settingsService.updateSettings<LightChartSettings>(this.guid, { timeFrame: timeframe });
+    this.settingsService.updateSettings<LightChartSettings>(this.guid(), { timeFrame: timeframe });
   }
 
   ngAfterViewInit(): void {
-    if (this.guid) {
+    if (this.guid()) {
       this.initChart();
     }
   }
@@ -146,7 +137,7 @@ export class LightChartComponent implements OnInit, OnDestroy, AfterViewInit {
         const timeFrame = options.widgetSettings.timeFrame as TimeframeValue;
 
         this.chart = LightChartWrapper.create({
-          containerId: this.guid,
+          containerId: this.guid(),
           instrumentKey: options.widgetSettings,
           timeFrame: timeFrame,
           instrumentDetails: {

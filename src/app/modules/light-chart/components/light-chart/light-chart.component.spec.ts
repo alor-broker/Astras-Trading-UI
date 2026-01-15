@@ -1,17 +1,19 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {of} from 'rxjs';
 
-import { LightChartComponent } from './light-chart.component';
-import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { ThemeColors, ThemeSettings, ThemeType } from '../../../../shared/models/settings/theme-settings.model';
-import { ThemeService } from '../../../../shared/services/theme.service';
-import { InstrumentsService } from '../../../instruments/services/instruments.service';
-import { Instrument } from '../../../../shared/models/instruments/instrument.model';
-import { LightChartDatafeedFactoryService } from '../../services/light-chart-datafeed-factory.service';
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import {LightChartComponent} from './light-chart.component';
+import {TimezoneConverterService} from '../../../../shared/services/timezone-converter.service';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {ThemeColors, ThemeSettings, ThemeType} from '../../../../shared/models/settings/theme-settings.model';
+import {ThemeService} from '../../../../shared/services/theme.service';
+import {InstrumentsService} from '../../../instruments/services/instruments.service';
+import {Instrument} from '../../../../shared/models/instruments/instrument.model';
+import {LightChartDatafeedFactoryService} from '../../services/light-chart-datafeed-factory.service';
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {TimeframesPanelComponent} from "../timeframes-panel/timeframes-panel.component";
+import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('LightChartComponent', () => {
   let component: LightChartComponent;
@@ -50,13 +52,14 @@ describe('LightChartComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         LightChartComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-timeframes-panel',
-          inputs: ['availableTimeframes', 'selectedTimeframe', 'displayMode']
-        }),
-        ...ngZorroMockComponents
+        MockComponents(
+          TimeframesPanelComponent
+        ),
+        MockDirectives(
+          NzResizeObserverDirective
+        )
       ],
       providers: [
         {
@@ -66,10 +69,10 @@ describe('LightChartComponent', () => {
             updateSettings: jasmine.createSpy('updateSettings').and.callThrough()
           }
         },
-        { provide: InstrumentsService, useValue: instrumentsServiceSpy },
-        { provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy },
-        { provide: ThemeService, useValue: themeServiceSpy },
-        { provide: LightChartDatafeedFactoryService, useValue: lightChartDatafeedFactoryService },
+        {provide: InstrumentsService, useValue: instrumentsServiceSpy},
+        {provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy},
+        {provide: ThemeService, useValue: themeServiceSpy},
+        {provide: LightChartDatafeedFactoryService, useValue: lightChartDatafeedFactoryService},
         {
           provide: TranslatorService,
           useValue: {
@@ -83,6 +86,7 @@ describe('LightChartComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LightChartComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

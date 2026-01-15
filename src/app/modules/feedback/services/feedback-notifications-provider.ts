@@ -3,7 +3,7 @@ import {BehaviorSubject, combineLatest, Observable, of, shareReplay, switchMap, 
 import {NotificationMeta} from '../../notifications/models/notification.model';
 import {GuidGenerator} from '../../../shared/utils/guid';
 import {ModalService} from '../../../shared/services/modal.service';
-import {Injectable} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {FeedbackService} from './feedback.service';
 import {map, startWith} from 'rxjs/operators';
 import {addMinutes} from '../../../shared/utils/datetime';
@@ -13,14 +13,14 @@ import {TimezoneConverterService} from "../../../shared/services/timezone-conver
 
 @Injectable()
 export class FeedbackNotificationsProvider implements NotificationsProvider {
+  private readonly modalService = inject(ModalService);
+  private readonly feedbackService = inject(FeedbackService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+
   private readonly readFeedbackMeta$ = new BehaviorSubject<boolean>(false);
 
-  constructor(
-    private readonly modalService: ModalService,
-    private readonly feedbackService: FeedbackService,
-    private readonly translatorService: TranslatorService,
-    private readonly timezoneConverterService: TimezoneConverterService
-  ) {
+  constructor() {
     this.feedbackService.unansweredFeedbackRemoved$
       .subscribe(() => this.readFeedbackMeta$.next(true));
   }

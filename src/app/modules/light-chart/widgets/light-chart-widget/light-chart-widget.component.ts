@@ -1,49 +1,54 @@
-import {
-  Component,
-  Input,
-  OnInit
-} from '@angular/core';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
-import { TimeframeValue } from '../../models/light-chart.models';
-import { Observable } from 'rxjs';
-import { SettingsHelper } from '../../../../shared/utils/settings-helper';
-import {
-  LightChartSettings,
-  TimeFrameDisplayMode
-} from '../../models/light-chart-settings.model';
+import { Component, input, OnInit, inject } from '@angular/core';
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
+import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
+import {TimeframeValue} from '../../models/light-chart.models';
+import {Observable} from 'rxjs';
+import {SettingsHelper} from '../../../../shared/utils/settings-helper';
+import {LightChartSettings, TimeFrameDisplayMode} from '../../models/light-chart-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import { getValueOrDefault } from "../../../../shared/utils/object-helper";
+import {getValueOrDefault} from "../../../../shared/utils/object-helper";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {WidgetSkeletonComponent} from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
+import {WidgetHeaderComponent} from '../../../../shared/components/widget-header/widget-header.component';
+import {
+  WidgetHeaderInstrumentSwitchComponent
+} from '../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component';
+import {LightChartComponent} from '../../components/light-chart/light-chart.component';
+import {LightChartSettingsComponent} from '../../components/light-chart-settings/light-chart-settings.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-light-chart-widget',
-    templateUrl: './light-chart-widget.component.html',
-    styleUrls: ['./light-chart-widget.component.less'],
-    standalone: false
+  selector: 'ats-light-chart-widget',
+  templateUrl: './light-chart-widget.component.html',
+  styleUrls: ['./light-chart-widget.component.less'],
+  imports: [
+    TranslocoDirective,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent,
+    WidgetHeaderInstrumentSwitchComponent,
+    LightChartComponent,
+    LightChartSettingsComponent,
+    AsyncPipe
+  ]
 })
 export class LightChartWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+
   shouldShowSettings = false;
 
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<LightChartSettings>;
   showBadge$!: Observable<boolean>;
 
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService
-  ) {
-  }
-
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   onSettingsChange(): void {
@@ -52,7 +57,7 @@ export class LightChartWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<LightChartSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'LightChartSettings',
       settings => ({
         ...settings,

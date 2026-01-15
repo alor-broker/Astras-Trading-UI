@@ -1,208 +1,207 @@
 <ng-container *transloco="let t; scope: 'scalper-order-book/scalper-order-book-table'">
-  <ng-container *ngIf="dataContext.extendedSettings$ | async as settings">
-    <div class="position-absolute start" *ngIf="settings.widgetSettings.showRuler">
-      <ats-table-ruler
-        [activeRow]="hoveredRow$ | async"
-        [dataContext]="dataContext"
-        [xAxisStep]="rowHeight"
-      >
-      </ats-table-ruler>
-    </div>
-    <div *ngIf="displayItems$ | async as displayItems"
-         [atsHoverItemsGroup]="true"
-         (hoveredItemChanged)="updateHoveredItem($event?.item?.atsHoverItemData ?? null)"
-         id="table-body-container"
-         class="user-select-none"
-    >
-    <div class="table-col" id="volume-panel">
-      <div (mousedown)="mouseDown($event, row)"
-           (contextmenu)="$event.preventDefault()"
-           *ngFor="let row of displayItems; trackBy: getTrackKey"
-           [style.height]="rowHeight + 'px'"
-           [style.line-height]="rowHeight + 'px'"
-           class="table-row"
-           [class.hovered]="(hoveredRow$ | async)?.price === row.price"
-           atsHoverItem
-           [atsHoverItemData]="{price: row.price}"
-      >
-        <div [ngClass]="getVolumeCellClasses(row)"
-             class="table-cell"
+  @if (dataContext().extendedSettings$ | async; as settings) {
+    @if (settings.widgetSettings.showRuler) {
+      <div class="position-absolute start">
+        <ats-table-ruler [activeRow]="hoveredRow$ | async"
+          [dataContext]="dataContext()"
+          [xAxisStep]="rowHeight()"
+           />
+      </div>
+    }
+    @if (displayItems$ | async; as displayItems) {
+      <div
+        [atsHoverItemsGroup]="true"
+        (hoveredItemChanged)="updateHoveredItem($event?.item?.atsHoverItemData() ?? null)"
+        id="table-body-container"
+        class="user-select-none"
         >
-          <span
-            *ngIf="row.isMajorLinePrice || row.isMinorLinePrice"
-            class="z-1"
+        <div class="table-col" id="volume-panel">
+          @for (row of displayItems; track $index) {
+            <div (mousedown)="mouseDown($event, row)"
+              (contextmenu)="$event.preventDefault()"
+              [style.height]="rowHeight() + 'px'"
+              [style.line-height]="rowHeight() + 'px'"
+              class="table-row"
+              [class.hovered]="(hoveredRow$ | async)?.price === row.price"
+              atsHoverItem
+              [atsHoverItemData]="{price: row.price}"
+              >
+              <div [ngClass]="getVolumeCellClasses(row)"
+                class="table-cell"
+                >
+                @if (row.isMajorLinePrice || row.isMinorLinePrice) {
+                  <span
+                    class="z-1"
             [ngClass]="{
             'grid-line': true,
             'major': row.isMajorLinePrice,
             'minor': row.isMinorLinePrice
             }"
-          >&nbsp;</span>
-          <ng-container *ngIf="(row.volume ?? 0) > 0">
-            <span class="highlighter z-1" [ngStyle]="row.getVolumeStyle()">&nbsp;</span>
-            <span class="volume px-2 z-2">
-              <ng-container *ngIf="row.rowType === rowTypes.Mixed; else defaultVolumeDisplay">
-                <span [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.askVolume ?? 0}"></span>
-                <span>&nbsp;|&nbsp;</span>
-                <span [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.bidVolume ?? 0}"></span>
-              </ng-container>
-
-              <ng-template #defaultVolumeDisplay>
-                <span class="growing-volume" *ngIf="showGrowingVolume && (row.growingVolume ?? 0) > 0">
-                  <ng-container [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.growingVolume}"></ng-container>
+                  >&nbsp;</span>
+                }
+                @if ((row.volume ?? 0) > 0) {
+                  <span class="highlighter z-1" [ngStyle]="row.getVolumeStyle()">&nbsp;</span>
+                  <span class="volume px-2 z-2">
+                    @if (row.rowType === rowTypes.Mixed) {
+                      <span [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.askVolume ?? 0}"></span>
+                      <span>&nbsp;|&nbsp;</span>
+                      <span [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.bidVolume ?? 0}"></span>
+                    } @else {
+                      @if (showGrowingVolume && (row.growingVolume ?? 0) > 0) {
+                        <span class="growing-volume">
+                          <ng-container [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.growingVolume}" />
+                        </span>
+                      }
+                      <ng-container [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.volume}" />
+                    }
+                  </span>
+                  <ng-template #volumeDisplay let-volume='volume'>
+                    @if (settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix) {
+                      <ats-short-number [value]="volume"
+                        [allowRounding]="true"
+                       />
+                    } @else {
+                      <span>{{volume}}</span>
+                    }
+                  </ng-template>
+                }
+              </div>
+            </div>
+          }
+        </div>
+        <div class="table-col" id="price-panel">
+          @for (row of displayItems; track $index) {
+            <div (mousedown)="mouseDown($event, row)"
+              (contextmenu)="$event.preventDefault()"
+              (dblclick)="$event.stopPropagation()"
+              [style.height]="rowHeight() + 'px'"
+              [style.line-height]="rowHeight() + 'px'"
+              class="table-row"
+              [class.hovered]="(hoveredRow$ | async)?.price === row.price"
+              atsHoverItem
+              [atsHoverItemData]="{price: row.price}"
+              >
+              <div
+                [ngClass]="getPriceCellClasses(row)"
+                class="table-cell"
+                >
+                @if (row.isMajorLinePrice || row.isMinorLinePrice) {
+                  <span
+                    class="z-1"
+            [ngClass]="{
+            'grid-line': true,
+            'major': row.isMajorLinePrice,
+            'minor': row.isMinorLinePrice
+            }"
+                  >&nbsp;</span>
+                }
+                @if (row.currentOrders.length > 0) {
+                  <span class="highlighter">&nbsp;</span>
+                }
+                <span
+                  class="px-2 position-relative z-2"
+                  [class.fw-bold]="row.isMajorLinePrice"
+                  >
+                  {{row.price | atsPrice: getPriceDecimalSymbolsCount(settings)}}
                 </span>
-                <ng-container [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.volume}"></ng-container>
-              </ng-template>
-            </span>
-
-            <ng-template #volumeDisplay let-volume='volume'>
-                <ats-short-number
-                  *ngIf="settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix; else defaultVolumeFormat"
-                  [value]="volume"
-                  [allowRounding]="true"
-                ></ats-short-number>
-
-                <ng-template #defaultVolumeFormat>
-                  <span>{{volume}}</span>
-                </ng-template>
-            </ng-template>
-          </ng-container>
+              </div>
+            </div>
+          }
         </div>
-      </div>
-    </div>
-    <div class="table-col" id="price-panel">
-      <div (mousedown)="mouseDown($event, row)"
-           (contextmenu)="$event.preventDefault()"
-           (dblclick)="$event.stopPropagation()"
-           *ngFor="let row of displayItems; trackBy: getTrackKey"
-           [style.height]="rowHeight + 'px'"
-           [style.line-height]="rowHeight + 'px'"
-           class="table-row"
-           [class.hovered]="(hoveredRow$ | async)?.price === row.price"
-           atsHoverItem
-           [atsHoverItemData]="{price: row.price}"
-      >
-        <div
-          [ngClass]="getPriceCellClasses(row)"
-          class="table-cell"
-        >
-          <span
-            *ngIf="row.isMajorLinePrice || row.isMinorLinePrice"
-            class="z-1"
+        <div class="table-col orders-drag-boundary" id="orders-panel" cdkDropListGroup>
+          @for (row of displayItems; track $index) {
+            <div (dblclick)="$event.stopPropagation()"
+              (contextmenu)="$event.preventDefault()"
+              [style.height]="rowHeight() + 'px'"
+              [style.line-height]="rowHeight() + 'px'"
+              class="table-row"
+              [class.hovered]="(hoveredRow$ | async)?.price === row.price"
+              atsHoverItem
+              [atsHoverItemData]="{price: row.price}"
+              >
+              <div
+                [ngClass]="getOrdersCellClasses(row)"
+                class="table-cell"
+                cdkDropList
+                [cdkDropListAutoScrollDisabled]="true"
+                (cdkDropListDropped)="updateOrderPrice($event.item.data, row)"
+                >
+                @if (row.isMajorLinePrice || row.isMinorLinePrice) {
+                  <span
+                    class="z-1"
             [ngClass]="{
             'grid-line': true,
             'major': row.isMajorLinePrice,
             'minor': row.isMinorLinePrice
             }"
-          >&nbsp;</span>
-          <span class="highlighter" *ngIf="row.currentOrders.length > 0">&nbsp;</span>
-          <span
-          class="px-2 position-relative z-2"
-          [class.fw-bold]="row.isMajorLinePrice"
-          >
-            {{row.price | atsPrice: getPriceDecimalSymbolsCount(settings)}}
-          </span>
-        </div>
-      </div>
-    </div>
-    <div class="table-col orders-drag-boundary" id="orders-panel" cdkDropListGroup>
-      <div (dblclick)="$event.stopPropagation()"
-           (contextmenu)="$event.preventDefault()"
-           *ngFor="let row of displayItems; trackBy: getTrackKey"
-           [style.height]="rowHeight + 'px'"
-           [style.line-height]="rowHeight + 'px'"
-           class="table-row"
-           [class.hovered]="(hoveredRow$ | async)?.price === row.price"
-           atsHoverItem
-           [atsHoverItemData]="{price: row.price}"
-      >
-        <div
-          [ngClass]="getOrdersCellClasses(row)"
-          class="table-cell"
-          cdkDropList
-          [cdkDropListAutoScrollDisabled]="true"
-          (cdkDropListDropped)="updateOrderPrice($event.item.data, row)"
-        >
-          <span
-            *ngIf="row.isMajorLinePrice || row.isMinorLinePrice"
-            class="z-1"
-            [ngClass]="{
-            'grid-line': true,
-            'major': row.isMajorLinePrice,
-            'minor': row.isMinorLinePrice
-            }"
-          >&nbsp;</span>
-          <ng-container
-            *ngTemplateOutlet="limitOrdersDisplay; context: {
+                  >&nbsp;</span>
+                }
+                <ng-container *ngTemplateOutlet="limitOrdersDisplay; context: {
             orders:  getFilteredOrders(row.currentOrders, orderTypes.Limit)
             }"
-          >
-          </ng-container>
-          <ng-container
-            *ngTemplateOutlet="stopOrdersDisplay; context: {
+                   />
+                <ng-container *ngTemplateOutlet="stopOrdersDisplay; context: {
             orders:  getFilteredOrders(row.currentOrders, orderTypes.StopLimit),
             orderSymbol: 'SL',
             tooltipKey: 'stopLimitOrderTooltip'
-            }">
-          </ng-container>
-          <ng-container
-            *ngTemplateOutlet="stopOrdersDisplay; context: {
+            }" />
+                <ng-container *ngTemplateOutlet="stopOrdersDisplay; context: {
             orders:  getFilteredOrders(row.currentOrders, orderTypes.StopMarket),
             orderSymbol: 'SM',
             tooltipKey: 'stopMarketOrderTooltip'
-            }">
-          </ng-container>
-
-          <ng-template #limitOrdersDisplay let-orders="orders">
-            <ng-container *ngIf="orders.volume > 0">
-              <span (click)="cancelOrders($event, orders.orders)"
-                    (mousedown)="$event.stopPropagation()"
-                    class="orders-indicator limit-order fw-bold px-1 position-relative z-2"
-                    *ngrxLet="hasDirtyOrders(orders.orders) as isDirty"
+            }" />
+                <ng-template #limitOrdersDisplay let-orders="orders">
+                  @if (orders.volume > 0) {
+                    <span (click)="cancelOrders($event, orders.orders)"
+                      (mousedown)="$event.stopPropagation()"
+                      class="orders-indicator limit-order fw-bold px-1 position-relative z-2"
+                      *ngrxLet="hasDirtyOrders(orders.orders) as isDirty"
                     [ngClass]="{
                     'bid': isAllOrdersHaveSide(orders.orders, ordersSides.Buy),
                     'ask': isAllOrdersHaveSide(orders.orders, ordersSides.Sell),
                     'multiple': orders.orders.length > 1,
                     'dirty': isDirty
                     }"
-                    [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookScalperOrderBookTable.limitOrderTooltip')"
-                    [nzTooltipMouseEnterDelay]="1"
-                    [nzTooltipPlacement]="['right', 'left']"
-                    [nzTooltipTrigger]="isDirty ? null : 'hover'"
-                    cdkDrag
-                    [cdkDragData]="orders.orders"
-                    [cdkDragDisabled]="isDirty"
-                    cdkDragBoundary=".orders-drag-boundary"
-              >{{orders.volume}}</span>
-            </ng-container>
-          </ng-template>
-
-          <ng-template #stopOrdersDisplay let-orderSymbol="orderSymbol" let-orders="orders" let-tooltipKey="tooltipKey">
-            <ng-container *ngIf="orders.volume > 0">
-              <span (click)="cancelOrders($event, orders.orders)"
-                    (mousedown)="$event.stopPropagation()"
-                    class="orders-indicator pl-2 position-relative z-2"
-                    *ngrxLet="hasDirtyOrders(orders.orders) as isDirty"
+                      [nz-tooltip]="hideTooltips() ? null : t('scalperOrderBookScalperOrderBookTable.limitOrderTooltip')"
+                      [nzTooltipMouseEnterDelay]="1"
+                      [nzTooltipPlacement]="['right', 'left']"
+                      [nzTooltipTrigger]="isDirty ? null : 'hover'"
+                      cdkDrag
+                      [cdkDragData]="orders.orders"
+                      [cdkDragDisabled]="isDirty"
+                      cdkDragBoundary=".orders-drag-boundary"
+                    >{{orders.volume}}</span>
+                  }
+                </ng-template>
+                <ng-template #stopOrdersDisplay let-orderSymbol="orderSymbol" let-orders="orders" let-tooltipKey="tooltipKey">
+                  @if (orders.volume > 0) {
+                    <span (click)="cancelOrders($event, orders.orders)"
+                      (mousedown)="$event.stopPropagation()"
+                      class="orders-indicator pl-2 position-relative z-2"
+                      *ngrxLet="hasDirtyOrders(orders.orders) as isDirty"
                     [ngClass]="{
                     'bid': isAllOrdersHaveSide(orders.orders, ordersSides.Buy),
                     'ask': isAllOrdersHaveSide(orders.orders, ordersSides.Sell),
                     'multiple': orders.orders.length > 1,
                     'dirty': isDirty
                     }"
-                    [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookScalperOrderBookTable.' + tooltipKey)"
-                    [nzTooltipMouseEnterDelay]="1"
-                    [nzTooltipPlacement]="['right', 'left']"
-                    [nzTooltipTrigger]="isDirty ? null : 'hover'"
-                    cdkDrag
-                    [cdkDragData]="orders.orders"
-                    [cdkDragDisabled]="isDirty"
-                    cdkDragBoundary=".orders-drag-boundary"
-              >{{orderSymbol}}({{orders.volume}})</span>
-            </ng-container>
-          </ng-template>
+                      [nz-tooltip]="hideTooltips() ? null : t('scalperOrderBookScalperOrderBookTable.' + tooltipKey)"
+                      [nzTooltipMouseEnterDelay]="1"
+                      [nzTooltipPlacement]="['right', 'left']"
+                      [nzTooltipTrigger]="isDirty ? null : 'hover'"
+                      cdkDrag
+                      [cdkDragData]="orders.orders"
+                      [cdkDragDisabled]="isDirty"
+                      cdkDragBoundary=".orders-drag-boundary"
+                    >{{orderSymbol}}({{orders.volume}})</span>
+                  }
+                </ng-template>
+              </div>
+            </div>
+          }
         </div>
       </div>
-    </div>
-  </div>
-  </ng-container>
+    }
+  }
 </ng-container>
 

@@ -1,33 +1,26 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {NewsComponent} from './news.component';
-import {
-  EMPTY,
-  NEVER,
-  of,
-  Subject
-} from "rxjs";
+import {EMPTY, NEVER, of, Subject} from "rxjs";
 import {ModalService} from "../../../../shared/services/modal.service";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {PositionsService} from "../../../../shared/services/positions.service";
 import {LetDirective} from "@ngrx/component";
-import {ngZorroMockComponents} from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import {ComponentHelpers} from "../../../../shared/utils/testing/component-helpers";
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
-import {
-  MockComponent,
-  MockDirective
-} from "ng-mocks";
+import {MockComponents, MockDirectives} from "ng-mocks";
 import {NewsDialogComponent} from "../news-dialog/news-dialog.component";
 import {NewsService} from "../../../../shared/services/news.service";
-import { NewsFiltersComponent } from "../news-filters/news-filters.component";
-import { NzIconDirective } from "ng-zorro-antd/icon";
-import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
-import { NzTabsComponent } from "ng-zorro-antd/tabs";
+import {NewsFiltersComponent} from "../news-filters/news-filters.component";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {NavigationStackService} from "../../../../shared/services/navigation-stack.service";
+import {NzTabComponent, NzTabsComponent} from "ng-zorro-antd/tabs";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {
+  InfiniteScrollTableComponent
+} from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('NewsComponent', () => {
   let component: NewsComponent;
@@ -35,21 +28,22 @@ describe('NewsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        NewsComponent,
-        ...ngZorroMockComponents,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-infinite-scroll-table',
-          inputs: ['data', 'isLoading', 'tableConfig', 'tableContainerHeight', 'tableContainerWidth']
-        }),
-        MockComponent(NewsDialogComponent),
-        MockComponent(NewsFiltersComponent),
-        MockDirective(NzIconDirective),
-        MockComponent(NzTabsComponent)
-      ],
       imports: [
         TranslocoTestsModule.getModule(),
-        LetDirective
+        LetDirective,
+        NewsComponent,
+        MockComponents(
+          NzButtonComponent,
+          NzTabsComponent,
+          NzTabComponent,
+          InfiniteScrollTableComponent,
+          NewsDialogComponent,
+          NewsFiltersComponent,
+        ),
+        MockDirectives(
+          NzIconDirective,
+          NzResizeObserverDirective
+        )
       ],
       providers: [
         {
@@ -96,7 +90,7 @@ describe('NewsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NewsComponent);
     component = fixture.componentInstance;
-    component.guid = 'testGuid';
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

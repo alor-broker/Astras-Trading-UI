@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, } from 'rxjs';
 import {
   filter,
@@ -18,14 +18,11 @@ import { EnvironmentService } from "./environment.service";
   providedIn: 'root'
 })
 export class QuotesService {
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly cacheService: CacheService
-  ) {
-  }
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly subscriptionsDataFeedService = inject(SubscriptionsDataFeedService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly cacheService = inject(CacheService);
 
   getQuotes(symbol: string, exchange: string, instrumentGroup?: string | null): Observable<Quote> {
     const request: QuotesRequest = {

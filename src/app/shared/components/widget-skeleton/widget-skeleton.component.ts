@@ -1,31 +1,22 @@
-import {
-  Component,
-  Input,
-  TemplateRef
-} from '@angular/core';
+import {Component, input, TemplateRef} from '@angular/core';
+import {NgClass, NgTemplateOutlet} from '@angular/common';
 
 @Component({
-    selector: 'ats-widget-skeleton',
-    templateUrl: './widget-skeleton.component.html',
-    styleUrls: ['./widget-skeleton.component.less'],
-    standalone: false
+  selector: 'ats-widget-skeleton',
+  templateUrl: './widget-skeleton.component.html',
+  styleUrls: ['./widget-skeleton.component.less'],
+  imports: [NgTemplateOutlet, NgClass]
 })
 export class WidgetSkeletonComponent {
-  @Input({required: true})
-  header!: TemplateRef<any>;
+  readonly header = input.required<TemplateRef<any>>();
 
-  @Input({required: true})
-  content!: TemplateRef<any>;
+  readonly content = input.required<TemplateRef<any>>();
 
-  @Input()
-  settings?: TemplateRef<any>;
+  readonly settings = input<TemplateRef<any> | null>();
 
-  @Input()
-  showSettings = false;
+  readonly showSettings = input(false);
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
-  @Input()
-  showContentScroll = false;
+  readonly showContentScroll = input(false);
 }

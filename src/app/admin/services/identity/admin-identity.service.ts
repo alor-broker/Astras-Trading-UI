@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   HttpClient,
   HttpContext,
@@ -27,12 +27,9 @@ import {
   providedIn: 'root'
 })
 export class AdminIdentityService {
-  private readonly baseUrl = environment.admin.identityUrl;
+  private readonly httpClient = inject(HttpClient);
 
-  constructor(
-    private readonly httpClient: HttpClient
-  ) {
-  }
+  private readonly baseUrl = environment.admin.identityUrl;
 
   login(request: LoginRequest): Observable<LoginResponse | null> {
     const requiredServices = [

@@ -1,15 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  ElementRef,
-  Inject,
-  Input,
-  LOCALE_ID,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, LOCALE_ID, OnDestroy, OnInit, input, viewChild, inject } from '@angular/core';
 import {
   ActiveElement,
   Chart,
@@ -60,7 +49,7 @@ import {
   TreemapNode,
   TreemapSettings
 } from "../../models/treemap.model";
-import { formatNumber } from "@angular/common";
+import { formatNumber, NgStyle, AsyncPipe } from "@angular/common";
 
 interface TooltipModelRaw {
   _data: {
@@ -87,12 +76,22 @@ interface TooltipData {
     selector: 'ats-treemap',
     templateUrl: './treemap.component.html',
     styleUrls: ['./treemap.component.less'],
-    standalone: false
+    imports: [NgStyle, AsyncPipe]
 })
 export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
-  @ViewChild('treemapWrapper') treemapWrapperEl?: ElementRef<HTMLDivElement>;
-  @Input({ required: true })
-  guid!: string;
+  private readonly treemapService = inject(TreemapService);
+  private readonly themeService = inject(ThemeService);
+  private readonly quotesService = inject(QuotesService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+  private readonly settingsService = inject(WidgetSettingsService);
+  private readonly marketService = inject(MarketService);
+  private readonly destroy = inject(DestroyRef);
+  private readonly locale = inject(LOCALE_ID);
+
+  readonly treemapWrapperEl = viewChild<ElementRef<HTMLDivElement>>('treemapWrapper');
+  readonly guid = input.required<string>();
 
   isCursorOnSector$ = new BehaviorSubject(false);
   // this widget works  with MOEX exchange only
@@ -109,24 +108,8 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
 
   private settings$!: Observable<TreemapSettings>;
 
-  constructor(
-    private readonly treemapService: TreemapService,
-    private readonly themeService: ThemeService,
-    private readonly quotesService: QuotesService,
-    private readonly translatorService: TranslatorService,
-    private readonly instrumentsService: InstrumentsService,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext,
-    private readonly settingsService: WidgetSettingsService,
-    private readonly marketService: MarketService,
-    private readonly destroy: DestroyRef,
-    @Inject(LOCALE_ID)
-    private readonly locale: string
-  ) {
-  }
-
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<TreemapSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<TreemapSettings>(this.guid()).pipe(
       shareReplay({bufferSize: 1, refCount: true})
     );
 
@@ -136,7 +119,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.tilesCount$.next(
-      Math.floor(this.treemapWrapperEl!.nativeElement.clientWidth * this.treemapWrapperEl!.nativeElement.clientHeight / this.averageTileSize)
+      Math.floor(this.treemapWrapperEl()!.nativeElement.clientWidth * this.treemapWrapperEl()!.nativeElement.clientHeight / this.averageTileSize)
     );
 
     const getDataStream = (limit: number): Observable<TreemapNode[]> => {
@@ -172,7 +155,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
         takeUntilDestroyed(this.destroy)
       )
       .subscribe(({ treemap, themeColors }) => {
-        const ctx = (<HTMLCanvasElement>document.getElementById(this.guid)).getContext('2d');
+        const ctx = (<HTMLCanvasElement>document.getElementById(this.guid())).getContext('2d');
 
         if (ctx == null) {
           return;

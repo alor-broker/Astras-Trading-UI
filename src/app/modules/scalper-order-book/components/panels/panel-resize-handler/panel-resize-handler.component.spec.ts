@@ -12,17 +12,17 @@ describe('PanelResizeHandlerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PanelResizeHandlerComponent],
-      providers: [
+    imports: [PanelResizeHandlerComponent],
+    providers: [
         {
-          provide: PANEL_RESIZE_CONTEXT,
-          useValue: {
-            resizeEndOutsideAngular$: new Subject(),
-            resizedOutsideAngular$: new Subject()
-          }
+            provide: PANEL_RESIZE_CONTEXT,
+            useValue: {
+                resizeEndOutsideAngular$: new Subject(),
+                resizedOutsideAngular$: new Subject()
+            }
         }
-      ]
-    })
+    ]
+})
       .compileComponents();
 
     fixture = TestBed.createComponent(PanelResizeHandlerComponent);

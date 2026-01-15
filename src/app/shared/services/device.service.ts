@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   map,
   Observable,
@@ -12,6 +12,8 @@ import { DeviceDetectorService } from "ngx-device-detector";
   providedIn: 'root'
 })
 export class DeviceService {
+  private readonly deviceDetectorService = inject(DeviceDetectorService);
+
   deviceInfo$: Observable<DeviceInfo> = of(this.deviceDetectorService).pipe(
     map(deviceDetectorService => {
       return {
@@ -21,7 +23,4 @@ export class DeviceService {
     }),
     shareReplay(1)
   );
-
-  constructor(private readonly deviceDetectorService: DeviceDetectorService) {
-  }
 }

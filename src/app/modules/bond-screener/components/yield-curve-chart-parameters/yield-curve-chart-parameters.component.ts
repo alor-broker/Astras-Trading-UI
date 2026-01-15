@@ -1,14 +1,5 @@
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  OnInit,
-  Output
-} from '@angular/core';
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
+import { Component, DestroyRef, OnInit, output, inject } from '@angular/core';
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {
   DurationType,
   YieldType
@@ -18,6 +9,12 @@ import {
   startWith
 } from "rxjs/operators";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NzFormDirective, NzFormItemComponent, NzFormControlComponent } from 'ng-zorro-antd/form';
+import { NzRowDirective, NzColDirective } from 'ng-zorro-antd/grid';
+import { NzSpaceCompactItemDirective } from 'ng-zorro-antd/space';
+import { NzSelectComponent, NzOptionComponent } from 'ng-zorro-antd/select';
+import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
 
 export interface ChartParameters {
   durationType: DurationType;
@@ -28,9 +25,12 @@ export interface ChartParameters {
     selector: 'ats-yield-curve-chart-parameters',
     templateUrl: './yield-curve-chart-parameters.component.html',
     styleUrls: ['./yield-curve-chart-parameters.component.less'],
-    standalone: false
+    imports: [TranslocoDirective, FormsModule, NzFormDirective, ReactiveFormsModule, NzRowDirective, NzFormItemComponent, NzColDirective, NzFormControlComponent, NzSpaceCompactItemDirective, NzSelectComponent, NzTooltipDirective, NzOptionComponent]
 })
 export class YieldCurveChartParametersComponent implements OnInit {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly durationTypes = Object.values(DurationType);
   readonly yieldTypes = Object.values(YieldType);
 
@@ -45,14 +45,7 @@ export class YieldCurveChartParametersComponent implements OnInit {
     )
   });
 
-  @Output()
-  parametersChanged = new EventEmitter<ChartParameters>();
-
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
+  readonly parametersChanged = output<ChartParameters>();
 
   ngOnInit(): void {
     this.parametersForm.valueChanges.pipe(

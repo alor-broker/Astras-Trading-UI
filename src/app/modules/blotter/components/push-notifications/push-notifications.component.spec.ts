@@ -1,16 +1,45 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { PushNotificationsComponent } from './push-notifications.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
+import {PushNotificationsComponent} from './push-notifications.component';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {EMPTY, Observable, Subject} from "rxjs";
-import { BlotterService } from "../../services/blotter.service";
-import { PushNotificationsService } from "../../../push-notifications/services/push-notifications.service";
-import { LetDirective } from "@ngrx/component";
-import { ErrorHandlerService } from "../../../../shared/services/handle-error/error-handler.service";
-import { NzContextMenuService } from "ng-zorro-antd/dropdown";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {BlotterService} from "../../services/blotter.service";
+import {PushNotificationsService} from "../../../push-notifications/services/push-notifications.service";
+import {LetDirective} from "@ngrx/component";
+import {ErrorHandlerService} from "../../../../shared/services/handle-error/error-handler.service";
+import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
+import {
+  NzFilterTriggerComponent,
+  NzTableCellDirective,
+  NzTableComponent,
+  NzTableVirtualScrollDirective,
+  NzTbodyComponent,
+  NzThAddOnComponent,
+  NzTheadComponent,
+  NzThMeasureDirective,
+  NzTrDirective
+} from "ng-zorro-antd/table";
+import {
+  InstrumentBadgeDisplayComponent
+} from "../../../../shared/components/instrument-badge-display/instrument-badge-display.component";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {
+  TableSearchFilterComponent
+} from "../../../../shared/components/table-search-filter/table-search-filter.component";
+import {
+  AddToWatchlistMenuComponent
+} from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
+import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {TableRowHeightDirective} from "../../../../shared/directives/table-row-height.directive";
+import {NzPopconfirmDirective} from "ng-zorro-antd/popconfirm";
+import {ResizeColumnDirective} from "../../../../shared/directives/resize-column.directive";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('PushNotificationsComponent', () => {
   let component: PushNotificationsComponent;
@@ -18,15 +47,35 @@ describe('PushNotificationsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports:[
+      imports: [
         TranslocoTestsModule.getModule(),
-        LetDirective
-      ],
-      declarations: [
+        LetDirective,
         PushNotificationsComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-add-to-watchlist-menu'
-        })
+        MockComponents(
+          NzEmptyComponent,
+          NzTableComponent,
+          NzTheadComponent,
+          NzThAddOnComponent,
+          NzFilterTriggerComponent,
+          NzTbodyComponent,
+          InstrumentBadgeDisplayComponent,
+          NzButtonComponent,
+          NzDropdownMenuComponent,
+          TableSearchFilterComponent,
+          AddToWatchlistMenuComponent
+        ),
+        MockDirectives(
+          NzResizeObserverDirective,
+          TableRowHeightDirective,
+          NzTrDirective,
+          NzTableCellDirective,
+          NzThMeasureDirective,
+          NzPopconfirmDirective,
+          ResizeColumnDirective,
+          NzTooltipDirective,
+          NzIconDirective,
+          NzTableVirtualScrollDirective,
+        )
       ],
       providers: [
         {
@@ -75,13 +124,13 @@ describe('PushNotificationsComponent', () => {
         },
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(PushNotificationsComponent);
     component = fixture.componentInstance;
-    component.guid = 'testGuid';
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

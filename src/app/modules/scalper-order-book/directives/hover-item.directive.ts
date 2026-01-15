@@ -1,12 +1,4 @@
-import {
-  DestroyRef,
-  Directive,
-  ElementRef,
-  Inject,
-  Input,
-  OnInit,
-  SkipSelf
-} from '@angular/core';
+import { DestroyRef, Directive, ElementRef, OnInit, input, inject } from '@angular/core';
 import {
   HOVER_ITEMS_GROUP,
   HoverItemsGroup
@@ -16,21 +8,13 @@ import {
 } from 'rxjs';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
-@Directive({
-    selector: '[atsHoverItem]',
-    standalone: false
-})
+@Directive({ selector: '[atsHoverItem]' })
 export class HoverItemDirective<T = any> implements OnInit {
-  @Input()
-  atsHoverItemData?: T;
+  private readonly el = inject(ElementRef);
+  private readonly group = inject<HoverItemsGroup>(HOVER_ITEMS_GROUP, { skipSelf: true });
+  private readonly destroyRef = inject(DestroyRef);
 
-  constructor(
-    private readonly el: ElementRef,
-    @Inject(HOVER_ITEMS_GROUP)
-    @SkipSelf()
-    private readonly group: HoverItemsGroup,
-    private readonly destroyRef: DestroyRef) {
-  }
+  readonly atsHoverItemData = input<T>();
 
   ngOnInit(): void {
     fromEvent(this.el.nativeElement, 'mouseenter').pipe(

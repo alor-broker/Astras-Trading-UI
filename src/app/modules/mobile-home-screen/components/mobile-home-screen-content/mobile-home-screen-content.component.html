@@ -1,14 +1,14 @@
 <ng-container *transloco="let t; scope: 'mobile-home-screen'">
   <ng-container *ngrxLet="settings$ as settings">
     <div class="d-flex flex-column">
-      <ats-ribbon [showScrollButtons]="false" [displayItems]="settings.ribbonSettings?.displayItems ?? null" layout="2row"></ats-ribbon>
+      <ats-ribbon [showScrollButtons]="false" [displayItems]="settings.ribbonSettings?.displayItems ?? null" layout="2row" />
 
       <div class="bordered mt-15">
-        <ats-portfolio-evaluation (openDetails)="openPortfolioDetails()"></ats-portfolio-evaluation>
+        <ats-portfolio-evaluation (openDetails)="openPortfolioDetails()" />
       </div>
 
       <div class="mt-10">
-        <ats-positions (instrumentSelected)="openChart($event)"></ats-positions>
+        <ats-positions (instrumentSelected)="openChart($event)" />
       </div>
 
       @if (settings.showPortfolioDynamics ?? true) {
@@ -19,7 +19,7 @@
             >
               @if (currentAgreement$ | async; as currentAgreement) {
                 <div style="height:250px">
-                  <ats-agreement-dynamics [agreement]="currentAgreement"></ats-agreement-dynamics>
+                  <ats-agreement-dynamics [agreement]="currentAgreement" />
                 </div>
               }
             </nz-collapse-panel>
@@ -33,13 +33,12 @@
       @if (settings.showNews ?? true) {
         <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.newsTitle') }}</span>
         <div class="px-5">
-          <ats-news (showMore)="openNews()"></ats-news>
+          <ats-news (showMore)="openNews()" />
         </div>
       }
 
       <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.marketTrendsTitle') }}</span>
-      <ats-market-trends
-        (instrumentSelected)="openChart($event)"
+      <ats-market-trends (instrumentSelected)="openChart($event)"
         (showMore)="openAllInstruments($event)"
         [extendedFilter]="settings.marketTrendsExtendedFilter ?? []"
         [itemsCount]="settings.marketTrendsItemsCount ?? 10"
@@ -51,11 +50,11 @@
         minCapitalization: settings.marketTrendsMinCapitalization
         }"
         [sectors]="settings.marketTrendsSectors ?? []"
-      ></ats-market-trends>
+       />
 
       @if (settings.showIdeas ?? false) {
         <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.ideasTitle') }}</span>
-        <ats-invest-ideas-compact></ats-invest-ideas-compact>
+        <ats-invest-ideas-compact />
       }
     </div>
   </ng-container>

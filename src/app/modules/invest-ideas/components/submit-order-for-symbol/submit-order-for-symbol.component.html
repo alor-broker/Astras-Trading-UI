@@ -12,20 +12,18 @@
     </span>
 
     <div class="mt-10 bordered">
-      <ats-compact-header
-        [instrument]="targetInstrument"
+      <ats-compact-header [instrument]="targetInstrument"
         [currentPortfolio]="selectedPortfolio"
         (priceSelected)="setCommonParameters({price: $event})"
         (qtySelected)="setCommonParameters({quantity: $event})"
-      ></ats-compact-header>
+       />
     </div>
 
     <div class="mt-10">
-      <ats-market-order-form
-        [instrument]="targetInstrument"
+      <ats-market-order-form [instrument]="targetInstrument"
         [portfolioKey]="selectedPortfolio"
         [activated]="true"
-      ></ats-market-order-form>
+       />
     </div>
   }
 </ng-container>

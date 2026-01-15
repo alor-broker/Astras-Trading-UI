@@ -1,7 +1,4 @@
-import {
-  Component,
-  Input
-} from '@angular/core';
+import { Component, input, inject } from '@angular/core';
 import {
   NzModalComponent,
   NzModalContentDirective
@@ -24,11 +21,9 @@ import {ExternalLinkComponent} from "../../../../shared/components/external-link
     styleUrl: './settings-load-error-dialog.component.less'
 })
 export class SettingsLoadErrorDialogComponent {
-  @Input()
-  visible = false;
+  private readonly environmentService = inject(EnvironmentService);
+
+  readonly visible = input(false);
 
   readonly supportLink = this.environmentService.externalLinks?.support;
-
-  constructor(private readonly environmentService: EnvironmentService) {
-  }
 }

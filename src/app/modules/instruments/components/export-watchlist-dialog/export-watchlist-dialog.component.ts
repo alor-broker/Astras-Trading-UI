@@ -1,28 +1,20 @@
-import {
-  Component,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  Observable,
-  shareReplay,
-  switchMap,
-  take
-} from "rxjs";
-import {
-  filter,
-  map
-} from "rxjs/operators";
-import { WatchlistCollectionService } from "../../services/watchlist-collection.service";
-import { Watchlist } from "../../models/watchlist.model";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import {
-  FileSaver,
-  FileType
-} from "../../../../shared/utils/file-export/file-saver";
-import { WatchListTitleHelper } from "../../utils/watch-list-title.helper";
+import { Component, model, OnInit, inject } from '@angular/core';
+import {Observable, shareReplay, switchMap, take} from "rxjs";
+import {filter, map} from "rxjs/operators";
+import {WatchlistCollectionService} from "../../services/watchlist-collection.service";
+import {Watchlist} from "../../models/watchlist.model";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {FileSaver, FileType} from "../../../../shared/utils/file-export/file-saver";
+import {WatchListTitleHelper} from "../../utils/watch-list-title.helper";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {LetDirective} from '@ngrx/component';
+import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from 'ng-zorro-antd/modal';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {AsyncPipe} from '@angular/common';
+import {toObservable} from "@angular/core/rxjs-interop";
 
 export interface ExportDialogParams {
   listId: string;
@@ -34,43 +26,46 @@ interface ExportResult {
 }
 
 @Component({
-    selector: 'ats-export-watchlist-dialog',
-    templateUrl: './export-watchlist-dialog.component.html',
-    styleUrls: ['./export-watchlist-dialog.component.less'],
-    standalone: false
+  selector: 'ats-export-watchlist-dialog',
+  templateUrl: './export-watchlist-dialog.component.html',
+  styleUrls: ['./export-watchlist-dialog.component.less'],
+  imports: [
+    TranslocoDirective,
+    LetDirective,
+    NzModalComponent,
+    NzModalContentDirective,
+    NzInputDirective,
+    NzModalFooterDirective,
+    NzButtonComponent,
+    NzTooltipDirective,
+    NzIconDirective,
+    AsyncPipe
+  ]
 })
-export class ExportWatchlistDialogComponent implements OnInit, OnDestroy {
+export class ExportWatchlistDialogComponent implements OnInit {
+  private readonly watchlistCollectionService = inject(WatchlistCollectionService);
+  private readonly translatorService = inject(TranslatorService);
+
   exportResult$!: Observable<ExportResult>;
-  private readonly dialogParams$ = new BehaviorSubject<ExportDialogParams | null>(null);
-  isVisible$ = this.dialogParams$.pipe(
+  readonly dialogParams = model<ExportDialogParams | null>(null);
+  private readonly dialogParamsChanges$ = toObservable(this.dialogParams).pipe(
+    shareReplay(1)
+  );
+
+  isVisible$ = this.dialogParamsChanges$.pipe(
     map(p => !!p)
   );
 
-  constructor(
-    private readonly watchlistCollectionService: WatchlistCollectionService,
-    private readonly translatorService: TranslatorService
-  ) {
-  }
-
-  @Input({ required: true })
-  set dialogParams(value: ExportDialogParams | null) {
-    this.dialogParams$.next(value);
-  }
-
-  ngOnDestroy(): void {
-    this.dialogParams$.complete();
-  }
-
   ngOnInit(): void {
-    this.exportResult$ = this.dialogParams$.pipe(
+    this.exportResult$ = this.dialogParamsChanges$.pipe(
       filter((p): p is ExportDialogParams => !!p),
       switchMap(p => this.getExportResult(p.listId)),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
   }
 
   closeDialog(): void {
-    this.dialogParams = null;
+    this.dialogParams.set(null);
   }
 
   copyToClipboard(results: string): void {
@@ -87,7 +82,7 @@ export class ExportWatchlistDialogComponent implements OnInit, OnDestroy {
     ).subscribe(translator => {
       FileSaver.save(
         {
-          name: translator([WatchListTitleHelper.getTitleTranslationKey(result.list)], { fallback: result.list.title }),
+          name: translator([WatchListTitleHelper.getTitleTranslationKey(result.list)], {fallback: result.list.title}),
           fileType: FileType.Txt
         },
         result.content!

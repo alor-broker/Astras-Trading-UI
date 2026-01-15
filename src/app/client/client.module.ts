@@ -1,10 +1,8 @@
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {ClientAreaShellComponent} from './client-area-shell/client-area-shell.component';
 import {RouterModule, Routes} from "@angular/router";
 import {SsoCallbackPageComponent} from './pages/sso-callback-page/sso-callback-page.component';
 import {ExternalLogoutPageComponent} from './pages/external-logout-page/external-logout-page.component';
-import {DashboardModule} from "../modules/dashboard/dashboard.module";
 import {USER_CONTEXT} from "../shared/services/auth/user-context";
 import {SESSION_CONTEXT} from "../shared/services/auth/session-context";
 import {AtsStoreModule} from "../store/ats-store.module";
@@ -15,6 +13,7 @@ import {ClientOrderCommandService} from "./services/orders/client-order-command.
 import {PUSH_NOTIFICATIONS_CONFIG} from "../modules/push-notifications/services/push-notifications-config";
 import {ClientDashboardComponent} from "./pages/client-dashboard/client-dashboard.component";
 import {MobileDashboardComponent} from "./pages/mobile-dashboard/mobile-dashboard.component";
+import {JoyrideModule} from "ngx-joyride";
 
 const routes: Routes = [
   {
@@ -53,15 +52,12 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    SsoCallbackPageComponent,
-    ExternalLogoutPageComponent
-  ],
   imports: [
-    CommonModule,
-    DashboardModule,
     RouterModule.forChild(routes),
     AtsStoreModule,
+    SsoCallbackPageComponent,
+    ExternalLogoutPageComponent,
+    JoyrideModule
   ],
   providers: [
     ClientAuthContextService,

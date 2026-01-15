@@ -10,7 +10,7 @@
               nz-input
               [formControl]="calculationFormulaControl"
               [placeholder]="t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaLabel')"
-            />
+              />
           </nz-input-group>
 
           <ng-template #suffixIconHelp>
@@ -32,28 +32,28 @@
           </ng-template>
         </nz-form-control>
 
-        <span
-          *ngIf="form?.errors?.calculationFormula"
-          nz-typography
-          nzType="danger"
-        >
-          {{t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaNoThirdLegError')}}
-        </span>
+        @if (form.errors?.calculationFormula) {
+          <span
+            nz-typography
+            nzType="danger"
+            >
+            {{t('arbitrageSpreadArbitrageSpreadManage.calculationFormulaNoThirdLegError')}}
+          </span>
+        }
       </nz-form-item>
 
       <h2>{{t('arbitrageSpreadArbitrageSpreadManage.firstLegTitle')}}</h2>
 
-      <ats-spread-leg formControlName="firstLeg" [portfolios]="(portfolios$ | async) ?? []"></ats-spread-leg>
+      <ats-spread-leg formControlName="firstLeg" [portfolios]="(portfolios$ | async) ?? []" />
     </div>
 
     <div class="d-flex flex-column mt-10">
       <h2>{{t('arbitrageSpreadArbitrageSpreadManage.secondLegTitle')}}</h2>
 
-      <ats-spread-leg
-        formControlName="secondLeg"
+      <ats-spread-leg formControlName="secondLeg"
         [isSideNeeded]="true"
         [portfolios]="(portfolios$ | async) ?? []"
-      ></ats-spread-leg>
+       />
     </div>
 
     <nz-form-item class="mt-10">
@@ -61,16 +61,17 @@
         {{t('arbitrageSpreadArbitrageSpreadManage.isThirdLegLabel')}}
       </nz-form-label>
       <nz-form-control>
-        <nz-switch [formControl]="isThirdLegControl"></nz-switch>
+        <nz-switch [formControl]="isThirdLegControl" />
       </nz-form-control>
     </nz-form-item>
 
-    <div class="d-flex flex-column mt-10" *ngIf="isThirdLegControl.value">
-      <ats-spread-leg
-        formControlName="thirdLeg"
-        [isSideNeeded]="true"
-        [portfolios]="(portfolios$ | async) ?? []"
-      ></ats-spread-leg>
-    </div>
+    @if (isThirdLegControl.value) {
+      <div class="d-flex flex-column mt-10">
+        <ats-spread-leg formControlName="thirdLeg"
+          [isSideNeeded]="true"
+          [portfolios]="(portfolios$ | async) ?? []"
+         />
+      </div>
+    }
   </div>
 </ng-container>

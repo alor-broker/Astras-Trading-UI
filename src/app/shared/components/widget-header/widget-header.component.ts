@@ -1,54 +1,73 @@
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef } from '@angular/core';
-import { WidgetSettingsService } from '../../services/widget-settings.service';
-import { ManageDashboardsService } from '../../services/manage-dashboards.service';
-import { instrumentsBadges } from '../../utils/instruments';
-import { WidgetMeta } from "../../models/widget-meta.model";
-import { TranslatorService } from "../../services/translator.service";
-import { WidgetsHelper } from "../../utils/widgets";
-import { DashboardContextService } from "../../services/dashboard-context.service";
-import { Observable, shareReplay } from "rxjs";
-import { InstrumentKey } from "../../models/instruments/instrument-key.model";
-import { map } from "rxjs/operators";
-import { HelpService } from "../../services/help.service";
-import { mapWith } from "../../utils/observable-helper";
-import { TerminalSettingsService } from "../../services/terminal-settings.service";
+import { Component, input, OnInit, TemplateRef, output, inject } from '@angular/core';
+import {WidgetSettingsService} from '../../services/widget-settings.service';
+import {ManageDashboardsService} from '../../services/manage-dashboards.service';
+import {instrumentsBadges} from '../../utils/instruments';
+import {WidgetMeta} from "../../models/widget-meta.model";
+import {TranslatorService} from "../../services/translator.service";
+import {WidgetsHelper} from "../../utils/widgets";
+import {DashboardContextService} from "../../services/dashboard-context.service";
+import {Observable, shareReplay} from "rxjs";
+import {InstrumentKey} from "../../models/instruments/instrument-key.model";
+import {map} from "rxjs/operators";
+import {HelpService} from "../../services/help.service";
+import {mapWith} from "../../utils/observable-helper";
+import {TerminalSettingsService} from "../../services/terminal-settings.service";
+import {NzBadgeComponent} from 'ng-zorro-antd/badge';
+import {NzDropDownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzPopoverDirective} from 'ng-zorro-antd/popover';
+import {AsyncPipe, NgTemplateOutlet} from '@angular/common';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {JoyrideModule} from 'ngx-joyride';
 
 @Component({
-    selector: 'ats-widget-header',
-    templateUrl: './widget-header.component.html',
-    styleUrls: ['./widget-header.component.less'],
-    standalone: false
+  selector: 'ats-widget-header',
+  templateUrl: './widget-header.component.html',
+  styleUrls: ['./widget-header.component.less'],
+  imports: [
+    NzBadgeComponent,
+    NzDropDownDirective,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    NzIconDirective,
+    NzPopoverDirective,
+    NgTemplateOutlet,
+    TranslocoDirective,
+    NzButtonComponent,
+    AsyncPipe,
+    JoyrideModule
+  ]
 })
 export class WidgetHeaderComponent implements OnInit {
-  @Input({required: true})
-  guid!: string;
+  private readonly settingsService = inject(WidgetSettingsService);
+  private readonly manageDashboardService = inject(ManageDashboardsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly helpService = inject(HelpService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
 
-  @Input()
-  showBadgesMenu = false;
+  readonly guid = input.required<string>();
 
-  @Input()
-  selectedBadgeColor?: string | null = null;
+  readonly showBadgesMenu = input(false);
 
-  @Input()
-  badgeShape: 'circle' | 'square' = 'circle';
+  readonly selectedBadgeColor = input<(string | null) | undefined>(null);
 
-  @Input()
-  widgetMeta?: WidgetMeta;
+  readonly badgeShape = input<'circle' | 'square'>('circle');
 
-  @Input()
-  customTitle: string | null = null;
+  readonly widgetMeta = input<WidgetMeta | null>(null);
 
-  @Input()
-  linkToActive?: boolean;
+  readonly customTitle = input<string | null>(null);
 
-  @Input()
-  hasSettings = false;
+  readonly linkToActive = input<boolean | null>(null);
 
-  @Input()
-  titleTemplate: TemplateRef<any> | null = null;
+  readonly hasSettings = input(false);
 
-  @Output()
-  switchSettings = new EventEmitter();
+  readonly titleTemplate = input<TemplateRef<any> | null>(null);
+
+  readonly switchSettings = output();
 
   titleText!: string;
 
@@ -61,14 +80,11 @@ export class WidgetHeaderComponent implements OnInit {
 
   readonly currentDashboard$ = this.dashboardContextService.selectedDashboard$;
 
-  constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly manageDashboardService: ManageDashboardsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly translatorService: TranslatorService,
-    private readonly helpService: HelpService,
-    private readonly terminalSettingsService: TerminalSettingsService
-  ) {
+  get title(): string {
+    const customTitle = this.customTitle();
+    return customTitle != null && customTitle.length > 0
+      ? customTitle as string
+      : this.titleText;
   }
 
   ngOnInit(): void {
@@ -76,9 +92,9 @@ export class WidgetHeaderComponent implements OnInit {
       .pipe(
         mapWith(
           () => this.terminalSettingsService.getSettings().pipe(map(s => s.badgesColors ?? instrumentsBadges)),
-          (currentSelection, badgesColors) => ({ currentSelection, badgesColors })
+          (currentSelection, badgesColors) => ({currentSelection, badgesColors})
         ),
-        map(({ currentSelection, badgesColors }) => {
+        map(({currentSelection, badgesColors}) => {
           const symbolGroups = Object.values(currentSelection)
             .reduce(
               (prev, cur) => {
@@ -108,25 +124,27 @@ export class WidgetHeaderComponent implements OnInit {
         shareReplay(1)
       );
 
-    this.titleText = !!this.widgetMeta
-      ? WidgetsHelper.getWidgetName(this.widgetMeta.widgetName, this.translatorService.getActiveLang())
+    const widgetMeta = this.widgetMeta();
+
+    this.titleText = widgetMeta != null
+      ? WidgetsHelper.getWidgetName(widgetMeta.widgetName, this.translatorService.getActiveLang())
       : '';
 
-    this.helpUrl$ = this.helpService.getWidgetHelp(this.widgetMeta?.typeId ?? '');
+    this.helpUrl$ = this.helpService.getWidgetHelp(widgetMeta?.typeId ?? '');
   }
 
   switchBadgeColor(badgeColor: string): void {
-    this.settingsService.updateSettings(this.guid, {badgeColor});
+    this.settingsService.updateSettings(this.guid(), {badgeColor});
   }
 
   changeLinkToActive(event: MouseEvent | TouchEvent, linkToActive: boolean): void {
     this.preventMouseEvents(event);
-    this.settingsService.updateIsLinked(this.guid, linkToActive);
+    this.settingsService.updateIsLinked(this.guid(), linkToActive);
   }
 
   removeItem(event: MouseEvent | TouchEvent): void {
     this.preventMouseEvents(event);
-    this.manageDashboardService.removeWidget(this.guid);
+    this.manageDashboardService.removeWidget(this.guid());
   }
 
   onSwitchSettings(event: MouseEvent | TouchEvent): void {
@@ -141,11 +159,5 @@ export class WidgetHeaderComponent implements OnInit {
 
   getIconTooltip(): string {
     return this.titleText;
-  }
-
-  get title(): string {
-    return this.customTitle != null && !!this.customTitle.length
-      ? this.customTitle as string
-      : this.titleText;
   }
 }

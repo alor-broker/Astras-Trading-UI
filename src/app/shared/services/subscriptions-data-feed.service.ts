@@ -1,13 +1,5 @@
-import {
-  Inject,
-  Injectable,
-  NgZone,
-  OnDestroy
-} from '@angular/core';
-import {
-  webSocket,
-  WebSocketSubject
-} from 'rxjs/webSocket';
+import { Injectable, NgZone, OnDestroy, inject } from '@angular/core';
+import { WebSocketSubject } from 'rxjs/webSocket';
 import {
   BehaviorSubject,
   filter,
@@ -74,20 +66,17 @@ interface SocketState {
   providedIn: 'root'
 })
 export class SubscriptionsDataFeedService implements OnDestroy {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly apiTokenProviderService = inject(ApiTokenProviderService);
+  private readonly logger = inject(LoggerService);
+  private readonly webSocketFactory = inject(RXJS_WEBSOCKET_CTOR);
+  private readonly ngZone = inject(NgZone);
+
   private socketState: SocketState | null = null;
 
   private readonly isConnected$ = new BehaviorSubject<boolean>(false);
 
   private readonly options = WsOptions;
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly apiTokenProviderService: ApiTokenProviderService,
-    private readonly logger: LoggerService,
-    @Inject(RXJS_WEBSOCKET_CTOR) private readonly webSocketFactory: typeof webSocket,
-    private readonly ngZone: NgZone
-  ) {
-  }
 
   public getConnectionStatus(): Observable<boolean> {
     return this.isConnected$.pipe(

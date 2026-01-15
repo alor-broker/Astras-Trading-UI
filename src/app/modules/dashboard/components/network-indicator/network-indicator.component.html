@@ -1,5 +1,5 @@
 <ng-container *transloco="let t; scope: 'dashboard/network-indicator'">
-  <ng-container *ngIf="(networkStatus$ | async) as status">
+  @if ((networkStatus$ | async); as status) {
     <div class="d-flex  justify-content-center align-items-center">
       <ng-container *ngrxLet="lastDelay$ as lastDelay">
         <span
@@ -8,7 +8,7 @@
           [nzType]="lastDelay.color"
           nz-tooltip
           [nzTooltipTitle]="t('dashboardNetworkIndicator.requestDelayDescription')"
-        >
+          >
           {{ lastDelay.delaySec | number: '1.1-2'}}
         </span>
       </ng-container>
@@ -20,14 +20,17 @@
         [nzTooltipTitle]="tooltip"
         class="icon-wrapper"
         nz-tooltip
-      >
-    <i nz-icon nzTheme="outline" nzType="wifi"></i>
-
-    <ng-template #tooltip>
-      <span *ngIf="status === statuses.Online">{{t('dashboardNetworkIndicator.onlineDescription')}}</span>
-      <span *ngIf="status === statuses.Offline">{{t('dashboardNetworkIndicator.offlineDescription')}}</span>
-    </ng-template>
-  </span>
+        >
+        <i nz-icon nzTheme="outline" nzType="wifi"></i>
+        <ng-template #tooltip>
+          @if (status === statuses.Online) {
+            <span>{{t('dashboardNetworkIndicator.onlineDescription')}}</span>
+          }
+          @if (status === statuses.Offline) {
+            <span>{{t('dashboardNetworkIndicator.offlineDescription')}}</span>
+          }
+        </ng-template>
+      </span>
     </div>
-  </ng-container>
+  }
 </ng-container>

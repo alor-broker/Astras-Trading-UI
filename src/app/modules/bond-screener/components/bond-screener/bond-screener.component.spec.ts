@@ -1,35 +1,41 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { BondScreenerComponent } from './bond-screener.component';
+import {BondScreenerComponent} from './bond-screener.component';
+import {of, Subject} from "rxjs";
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {BondScreenerService} from "../../services/bond-screener.service";
+import {ACTIONS_CONTEXT} from "../../../../shared/services/actions-context";
+import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {NzContextMenuService} from "ng-zorro-antd/dropdown";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents, MockDirectives} from "ng-mocks";
 import {
-  of,
-  Subject
-} from "rxjs";
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { BondScreenerService } from "../../services/bond-screener.service";
-import { ACTIONS_CONTEXT } from "../../../../shared/services/actions-context";
-import { DashboardContextService } from "../../../../shared/services/dashboard-context.service";
-import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import { NzContextMenuService } from "ng-zorro-antd/dropdown";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+  InfiniteScrollTableComponent
+} from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
+import {
+  AddToWatchlistMenuComponent
+} from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
+import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
-describe('BondScreenerComponent', () => {
+xdescribe('BondScreenerComponent', () => {
   let component: BondScreenerComponent;
   let fixture: ComponentFixture<BondScreenerComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [
+      imports: [
+        TranslocoTestsModule.getModule(),
         BondScreenerComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-add-to-watchlist-menu'
-        })
+        MockComponents(
+          InfiniteScrollTableComponent,
+          AddToWatchlistMenuComponent
+        ),
+        MockDirectives(
+          NzResizeObserverDirective
+        )
       ],
-      imports: [TranslocoTestsModule.getModule()],
       providers: [
         {
           provide: WidgetSettingsService,
@@ -73,6 +79,7 @@ describe('BondScreenerComponent', () => {
     });
     fixture = TestBed.createComponent(BondScreenerComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

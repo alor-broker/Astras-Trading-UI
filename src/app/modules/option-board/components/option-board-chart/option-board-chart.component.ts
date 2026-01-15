@@ -1,43 +1,28 @@
-import {
-  Component,
-  DestroyRef,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import { OptionBoardDataContext } from "../../models/option-board-data-context.model";
-import {
-  BehaviorSubject,
-  combineLatest,
-  Observable,
-  of,
-  shareReplay,
-  take,
-  tap,
-  timer,
-  withLatestFrom
-} from "rxjs";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { OptionBoardService } from "../../services/option-board.service";
-import {
-  debounceTime,
-  map
-} from "rxjs/operators";
-import { ThemeService } from "../../../../shared/services/theme.service";
-import { mapWith } from "../../../../shared/utils/observable-helper";
-import { MathHelper } from "../../../../shared/utils/math-helper";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import {
-  OptionPlot,
-  OptionPlotPoint
-} from "../../models/option-board.model";
-import { OptionBoardDataContextFactory } from "../../utils/option-board-data-context-factory";
-import { ThemeSettings } from "../../../../shared/models/settings/theme-settings.model";
-import {
-  ChartData,
-  ChartOptions,
-  ScriptableLineSegmentContext
-} from "chart.js";
+import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
+import {OptionBoardDataContext} from "../../models/option-board-data-context.model";
+import {BehaviorSubject, combineLatest, Observable, of, shareReplay, take, tap, timer, withLatestFrom} from "rxjs";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {OptionBoardService} from "../../services/option-board.service";
+import {debounceTime, map} from "rxjs/operators";
+import {ThemeService} from "../../../../shared/services/theme.service";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {MathHelper} from "../../../../shared/utils/math-helper";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {OptionPlot, OptionPlotPoint} from "../../models/option-board.model";
+import {OptionBoardDataContextFactory} from "../../utils/option-board-data-context-factory";
+import {ThemeSettings} from "../../../../shared/models/settings/theme-settings.model";
+import {ChartData, ChartOptions, ScriptableLineSegmentContext} from "chart.js";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {LetDirective} from '@ngrx/component';
+import {NzSpinComponent} from 'ng-zorro-antd/spin';
+import {NzSpaceCompactComponent} from 'ng-zorro-antd/space';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {FormsModule} from '@angular/forms';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {BaseChartDirective} from 'ng2-charts';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {AsyncPipe} from '@angular/common';
 
 interface ZoomState {
   currentRange: number;
@@ -52,12 +37,30 @@ enum ChartType {
 }
 
 @Component({
-    selector: 'ats-option-board-chart',
-    templateUrl: './option-board-chart.component.html',
-    styleUrl: './option-board-chart.component.less',
-    standalone: false
+  selector: 'ats-option-board-chart',
+  templateUrl: './option-board-chart.component.html',
+  styleUrl: './option-board-chart.component.less',
+  imports: [
+    TranslocoDirective,
+    LetDirective,
+    NzSpinComponent,
+    NzSelectComponent,
+    FormsModule,
+    NzOptionComponent,
+    NzSpaceCompactComponent,
+    NzButtonComponent,
+    NzIconDirective,
+    BaseChartDirective,
+    NzEmptyComponent,
+    AsyncPipe
+  ]
 })
 export class OptionBoardChartComponent implements OnInit, OnDestroy {
+  private readonly optionBoardService = inject(OptionBoardService);
+  private readonly themeService = inject(ThemeService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly isLoading$ = new BehaviorSubject<boolean>(false);
   readonly zoomState$ = new BehaviorSubject<ZoomState | null>(null);
   readonly selectedChartType$ = new BehaviorSubject<ChartType>(ChartType.ProfitLossByAssetPrice);
@@ -68,22 +71,13 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
     ChartType.ProfitLossByAssetPrice,
   ];
 
-  @Input({ required: true })
-  dataContext!: OptionBoardDataContext;
+  readonly dataContext = input.required<OptionBoardDataContext>();
 
   chartData$!: Observable<ChartData<'line', (number | null)[], number> | null>;
   chartOptions$!: Observable<ChartOptions<'line'>>;
 
   private readonly zoomStep = 0.1;
   private readonly defaultRange = 0.1;
-
-  constructor(
-    private readonly optionBoardService: OptionBoardService,
-    private readonly themeService: ThemeService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.isLoading$.complete();
@@ -136,7 +130,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
             padding: 0
           },
           plugins: {
-            legend: { display: false },
+            legend: {display: false},
             tooltip: {
               displayColors: false,
               callbacks: {
@@ -181,13 +175,13 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
       takeUntilDestroyed(this.destroyRef)
     );
 
-    const selectionParameters$ = this.dataContext.selectionParameters$.pipe(
+    const selectionParameters$ = this.dataContext().selectionParameters$.pipe(
       debounceTime(2000),
       shareReplay(1)
     );
 
     combineLatest([
-      this.dataContext.currentSelection$,
+      this.dataContext().currentSelection$,
       selectionParameters$,
       this.selectedChartType$
     ]).pipe(
@@ -197,7 +191,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
     });
 
     this.chartData$ = combineLatest({
-      selection: this.dataContext.currentSelection$,
+      selection: this.dataContext().currentSelection$,
       parameters: selectionParameters$,
       currentChartType: this.selectedChartType$,
       zoomState: this.zoomState$
@@ -267,7 +261,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
         {
           data: values,
           fill: {
-            target: { value: 0 },
+            target: {value: 0},
             above: theme.themeColors.buyColorBackground,
             below: theme.themeColors.sellColorBackground
           },

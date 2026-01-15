@@ -1,9 +1,4 @@
-import {
-  Component,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -14,28 +9,33 @@ import { map } from 'rxjs/operators';
 import { MathHelper } from '../../../../shared/utils/math-helper';
 import { ScalperOrderBookPositionState } from '../../models/scalper-order-book.model';
 import { ScalperOrderBookDataProvider } from '../../services/scalper-order-book-data-provider.service';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { LetDirective } from '@ngrx/component';
+import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
+import { NgClass, DecimalPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-current-position-panel',
     templateUrl: './current-position-panel.component.html',
     styleUrls: ['./current-position-panel.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      LetDirective,
+      NzTooltipDirective,
+      NgClass,
+      DecimalPipe
+    ]
 })
 export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
-  @Input({required: true})
-  guid!: string;
+  private readonly dataContextService = inject(ScalperOrderBookDataProvider);
 
-  @Input()
-  hideTooltips = false;
+  readonly guid = input.required<string>();
+
+  readonly hideTooltips = input(false);
 
   orderBookPosition$!: Observable<ScalperOrderBookPositionState>;
 
   lossOrProfitDisplayType$ = new BehaviorSubject<'points' | 'percentage'>('points');
-
-  constructor(
-    private readonly dataContextService: ScalperOrderBookDataProvider
-  ) {
-  }
 
   changeLossOrProfitDisplayType(): void {
     this.lossOrProfitDisplayType$.pipe(
@@ -54,7 +54,7 @@ export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
   }
 
   private getPositionStateStream(): Observable<ScalperOrderBookPositionState> {
-    const settings$ = this.dataContextService.getSettingsStream(this.guid);
+    const settings$ = this.dataContextService.getSettingsStream(this.guid());
 
     return combineLatest([
       settings$,

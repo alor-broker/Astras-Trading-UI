@@ -1,11 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TermsOfUseDialogComponent } from './terms-of-use-dialog.component';
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import { MockProvider } from "ng-mocks";
-import { AiChatTermsOfUseService } from "../../services/ai-chat-terms-of-use.service";
-import { EMPTY } from "rxjs";
+import {TermsOfUseDialogComponent} from './terms-of-use-dialog.component';
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents, MockDirectives, MockProvider} from "ng-mocks";
+import {AiChatTermsOfUseService} from "../../services/ai-chat-terms-of-use.service";
+import {EMPTY} from "rxjs";
+import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from "ng-zorro-antd/modal";
+import {MarkdownComponent} from "ngx-markdown";
+import {NzSpinComponent} from "ng-zorro-antd/spin";
+import {NzButtonComponent} from "ng-zorro-antd/button";
 
 describe('TermsOfUseDialogComponent', () => {
   let component: TermsOfUseDialogComponent;
@@ -13,21 +16,27 @@ describe('TermsOfUseDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TranslocoTestsModule.getModule()],
-      declarations:[
+      imports: [
+        TranslocoTestsModule.getModule(),
         TermsOfUseDialogComponent,
-        ...ngZorroMockComponents
-      ],
-      providers:[
-        MockProvider(
-          AiChatTermsOfUseService,
-          {
-            getContent: () => EMPTY
-          }
+        MockComponents(
+          NzModalComponent,
+          MarkdownComponent,
+          NzSpinComponent,
+          NzButtonComponent
+        ),
+        MockDirectives(
+          NzModalContentDirective,
+          NzModalFooterDirective
         )
+      ],
+      providers: [
+        MockProvider(AiChatTermsOfUseService, {
+          getContent: () => EMPTY
+        })
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(TermsOfUseDialogComponent);
     component = fixture.componentInstance;

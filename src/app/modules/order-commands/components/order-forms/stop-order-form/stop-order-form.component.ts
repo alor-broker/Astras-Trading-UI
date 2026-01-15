@@ -1,78 +1,95 @@
-import {
-  Component,
-  DestroyRef,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import { BaseOrderFormComponent } from "../base-order-form.component";
-import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
-import { CommonParametersService } from "../../../services/common-parameters.service";
-import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
-import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
-import { AtsValidators } from "../../../../../shared/utils/form-validators";
-import { LessMore } from "../../../../../shared/models/enums/less-more.model";
-import {
-  OrderType,
-  TimeInForce
-} from "../../../../../shared/models/orders/order.model";
-import { Side } from "../../../../../shared/models/enums/side.model";
-import {
-  combineLatest,
-  distinctUntilChanged,
-  Observable,
-  switchMap,
-  take
-} from "rxjs";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import {
-  debounceTime,
-  filter,
-  map
-} from "rxjs/operators";
-import { PriceDiffHelper } from "../../../utils/price-diff.helper";
-import { QuotesService } from "../../../../../shared/services/quotes.service";
-import { mapWith } from "../../../../../shared/utils/observable-helper";
-import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
-import {
-  addMonthsUnix,
-  getUtcNow,
-  startOfDay,
-  toUnixTime
-} from "../../../../../shared/utils/datetime";
-import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
-import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
+import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
+import {BaseOrderFormComponent} from "../base-order-form.component";
+import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {CommonParametersService} from "../../../services/common-parameters.service";
+import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
+import {inputNumberValidation} from "../../../../../shared/utils/validation-options";
+import {AtsValidators} from "../../../../../shared/utils/form-validators";
+import {LessMore} from "../../../../../shared/models/enums/less-more.model";
+import {OrderType, TimeInForce} from "../../../../../shared/models/orders/order.model";
+import {Side} from "../../../../../shared/models/enums/side.model";
+import {combineLatest, distinctUntilChanged, Observable, switchMap, take} from "rxjs";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {debounceTime, filter, map} from "rxjs/operators";
+import {PriceDiffHelper} from "../../../utils/price-diff.helper";
+import {QuotesService} from "../../../../../shared/services/quotes.service";
+import {mapWith} from "../../../../../shared/utils/observable-helper";
+import {TimezoneConverterService} from "../../../../../shared/services/timezone-converter.service";
+import {addMonthsUnix, getUtcNow, startOfDay, toUnixTime} from "../../../../../shared/utils/datetime";
+import {TimezoneConverter} from "../../../../../shared/utils/timezone-converter";
+import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
 import {
   NewLinkedOrder,
   NewStopLimitOrder,
   NewStopMarketOrder,
   OrderCommandResult
 } from "../../../../../shared/models/orders/new-order.model";
-import { toInstrumentKey } from "../../../../../shared/utils/instruments";
-import {
-  ExecutionPolicy,
-  SubmitGroupResult
-} from "../../../../../shared/models/orders/orders-group.model";
+import {toInstrumentKey} from "../../../../../shared/utils/instruments";
+import {ExecutionPolicy, SubmitGroupResult} from "../../../../../shared/models/orders/orders-group.model";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {InputNumberComponent} from '../../../../../shared/components/input-number/input-number.component';
+import {ShortNumberComponent} from '../../../../../shared/components/short-number/short-number.component';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {NzDatePickerComponent} from 'ng-zorro-antd/date-picker';
+import {NzRadioComponent, NzRadioGroupComponent} from 'ng-zorro-antd/radio';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzCollapseComponent, NzCollapsePanelComponent} from 'ng-zorro-antd/collapse';
+import {NzCheckboxComponent} from 'ng-zorro-antd/checkbox';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {BuySellButtonsComponent} from '../../buy-sell-buttons/buy-sell-buttons.component';
+import {AsyncPipe, DecimalPipe, KeyValuePipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-stop-order-form',
-    templateUrl: './stop-order-form.component.html',
-    styleUrls: ['./stop-order-form.component.less'],
-    standalone: false
+  selector: 'ats-stop-order-form',
+  templateUrl: './stop-order-form.component.html',
+  styleUrls: ['./stop-order-form.component.less'],
+  imports: [
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzColDirective,
+    NzFormItemComponent,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    InputNumberComponent,
+    ShortNumberComponent,
+    NzSelectComponent,
+    NzOptionComponent,
+    NzDatePickerComponent,
+    NzRadioGroupComponent,
+    NzRadioComponent,
+    NzTooltipDirective,
+    NzCollapseComponent,
+    NzCollapsePanelComponent,
+    NzCheckboxComponent,
+    NzTypographyComponent,
+    BuySellButtonsComponent,
+    AsyncPipe,
+    DecimalPipe,
+    KeyValuePipe
+  ]
 })
 export class StopOrderFormComponent extends BaseOrderFormComponent implements OnInit, OnDestroy {
+  private readonly formBuilder = inject(FormBuilder);
+  protected readonly commonParametersService: CommonParametersService;
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly orderCommandService = inject(ConfirmableOrderCommandsService);
+  private readonly quotesService = inject(QuotesService);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+  protected readonly destroyRef: DestroyRef;
+
   readonly sides = Side;
   canSelectNow = true;
   readonly conditionType = LessMore;
   readonly timeInForceEnum = TimeInForce;
 
-  @Input()
-  initialValues: {
+  readonly initialValues = input<{
     price?: number;
     quantity?: number;
     stopOrder?: Partial<{
@@ -83,7 +100,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
       // For example, trigger price, condition and limit order price should not be recalculated when form is called from scalper orderbook
       disableCalculations: boolean | null;
     }>;
-  } | null = null;
+  } | null>(null);
 
   form = this.formBuilder.group({
     quantity: this.formBuilder.nonNullable.control(
@@ -156,15 +173,14 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
 
   currentPriceDiffPercent$!: Observable<{ percent: number, sign: number } | null>;
 
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    protected readonly commonParametersService: CommonParametersService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly orderCommandService: ConfirmableOrderCommandsService,
-    private readonly quotesService: QuotesService,
-    private readonly timezoneConverterService: TimezoneConverterService,
-    protected readonly destroyRef: DestroyRef) {
+  constructor() {
+    const commonParametersService = inject(CommonParametersService);
+    const destroyRef = inject(DestroyRef);
+
     super(commonParametersService, destroyRef);
+
+    this.commonParametersService = commonParametersService;
+    this.destroyRef = destroyRef;
   }
 
   get canSubmit(): boolean {
@@ -193,27 +209,28 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     this.setPriceValidators(this.form.controls.linkedOrder.controls.triggerPrice, newInstrument);
     this.setPriceValidators(this.form.controls.linkedOrder.controls.price, newInstrument);
 
-    if (this.initialValues) {
-      if (this.initialValues.quantity != null) {
-        this.form.controls.quantity.setValue(this.initialValues.quantity);
+    const initialValues = this.initialValues();
+    if (initialValues) {
+      if (initialValues.quantity != null) {
+        this.form.controls.quantity.setValue(initialValues.quantity);
       }
 
-      if (this.initialValues.price != null) {
-        this.form.controls.triggerPrice.setValue(this.initialValues.price);
-        this.form.controls.price.setValue(this.initialValues.price);
+      if (initialValues.price != null) {
+        this.form.controls.triggerPrice.setValue(initialValues.price);
+        this.form.controls.price.setValue(initialValues.price);
       }
 
-      if (this.initialValues.stopOrder) {
-        if (this.initialValues.stopOrder.triggerPrice != null) {
-          this.form.controls.triggerPrice.setValue(this.initialValues.stopOrder.triggerPrice);
+      if (initialValues.stopOrder) {
+        if (initialValues.stopOrder.triggerPrice != null) {
+          this.form.controls.triggerPrice.setValue(initialValues.stopOrder.triggerPrice);
         }
 
-        if (this.initialValues.stopOrder.limit != null) {
-          this.form.controls.withLimit.setValue(this.initialValues.stopOrder.limit);
+        if (initialValues.stopOrder.limit != null) {
+          this.form.controls.withLimit.setValue(initialValues.stopOrder.limit);
         }
 
-        if (this.initialValues.stopOrder.condition != null) {
-          this.form.controls.condition.setValue(this.initialValues.stopOrder.condition);
+        if (initialValues.stopOrder.condition != null) {
+          this.form.controls.condition.setValue(initialValues.stopOrder.condition);
         }
       }
     }
@@ -450,7 +467,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
 
   private initFieldDependencies(): void {
     this.form.controls.triggerPrice.valueChanges.pipe(
-      filter(() => !(this.initialValues?.stopOrder?.disableCalculations ?? false)),
+      filter(() => !(this.initialValues()?.stopOrder?.disableCalculations ?? false)),
       distinctUntilChanged((prev, curr) => prev === curr),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(val => {
@@ -466,10 +483,10 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     });
 
     combineLatest([
-      this.isActivated$,
+      this.activatedChanges$,
       this.form.controls.price.valueChanges
     ]).pipe(
-      filter(() => !(this.initialValues?.stopOrder?.disableCalculations ?? false)),
+      filter(() => !(this.initialValues()?.stopOrder?.disableCalculations ?? false)),
       filter(([isActivated, v]) => isActivated && this.form.controls.condition.untouched && !!(v ?? 0)),
       map(([, price]) => price),
       distinctUntilChanged((prev, curr) => prev === curr),
@@ -499,4 +516,6 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
     const convertedNow = timezoneConverter.toTerminalDate(now);
     this.canSelectNow = convertedNow.toUTCString() === now.toUTCString();
   }
+
+  protected readonly input = input;
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import {
   Observable,
@@ -10,10 +10,7 @@ import { ApiTokenProviderService } from "../services/auth/api-token-provider.ser
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(
-    private readonly apiTokenProviderService: ApiTokenProviderService
-  ) {
-  }
+  private readonly apiTokenProviderService = inject(ApiTokenProviderService);
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (req.context.get(HttpContextTokens.SkipAuthorization)) {

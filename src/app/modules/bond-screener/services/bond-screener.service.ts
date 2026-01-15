@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Observable,
   take
@@ -37,10 +37,7 @@ import { BondFilterInputSchema } from "../../../../generated/graphql.schemas";
   providedIn: 'root'
 })
 export class BondScreenerService {
-  constructor(
-    private readonly graphQlService: GraphQlService
-  ) {
-  }
+  private readonly graphQlService = inject(GraphQlService);
 
   getBonds(
     columnIds: string[],

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { SubscriptionsDataFeedService } from './subscriptions-data-feed.service';
 import {
   combineLatest,
@@ -35,16 +35,13 @@ interface PortfolioRequestBase {
   providedIn: 'root'
 })
 export class PortfolioSubscriptionsService {
+  private readonly subscriptionsDataFeedService = inject(SubscriptionsDataFeedService);
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly http = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+
   private readonly subscriptions = new Map<string, Observable<any>>();
   private readonly baseUrl = this.environmentService.apiUrl + '/md/v2/Clients';
-
-  constructor(
-    private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService,
-    private readonly environmentService: EnvironmentService,
-    private readonly http: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService,
-  ) {
-  }
 
   getSummariesSubscription(portfolio: string, exchange: string): Observable<CommonSummaryModel> {
     return this.subscriptionsDataFeedService.subscribe({

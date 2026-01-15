@@ -1,44 +1,39 @@
 import {
   Component,
-  Input
+  input
 } from '@angular/core';
-import {
-  NgIf,
-  NgStyle
-} from "@angular/common";
+import { NgStyle } from "@angular/common";
 
 @Component({
     selector: 'ats-merged-badge',
     templateUrl: './merged-badge.component.html',
     styleUrls: ['./merged-badge.component.less'],
     imports: [
-        NgIf,
-        NgStyle
-    ]
+    NgStyle
+]
 })
 export class MergedBadgeComponent {
-  @Input()
-  colors: string[] = [];
+  readonly colors = input<string[]>([]);
 
-  @Input()
-  width = 10;
+  readonly width = input(10);
 
   getBackgroundStyle(): string {
-    if (this.colors.length === 1) {
-      return this.colors[0];
+    const colors = this.colors();
+    if (colors.length === 1) {
+      return colors[0];
     }
 
-    const degPerColor = Math.floor(360 / this.colors.length);
+    const degPerColor = Math.floor(360 / colors.length);
     const items = [];
     let currentAngle = 0;
-    for (let i = 0; i < this.colors.length - 1; i++) {
-      const color = this.colors[i];
+    for (let i = 0; i < colors.length - 1; i++) {
+      const color = colors[i];
       items.push(`${color} ${currentAngle}deg`);
       currentAngle += degPerColor;
       items.push(`${color} ${currentAngle}deg`);
     }
 
-    items.push(`${this.colors[this.colors.length - 1]} ${currentAngle}deg`);
+    items.push(`${colors[colors.length - 1]} ${currentAngle}deg`);
 
     return `conic-gradient(${items.join(',')})`;
   }

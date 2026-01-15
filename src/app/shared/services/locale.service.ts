@@ -1,14 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { LocalStorageService } from "./local-storage.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocaleService {
-  private readonly LastLocaleStorageKey = 'last-locale';
+  private readonly localStorageService = inject(LocalStorageService);
 
-  constructor(private readonly localStorageService: LocalStorageService) {
-  }
+  private readonly LastLocaleStorageKey = 'last-locale';
 
   get defaultLocale(): 'ru' | 'en' | 'hy' {
     return 'ru';

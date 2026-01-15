@@ -1,12 +1,12 @@
 <ng-container *transloco="let t; scope: 'orders-basket/presets'">
   <div class="d-flex flex-row flex-wrap justify-content-start flex-gap-8">
-    <ng-container *ngFor="let preset of presets ?? []">
+    @for (preset of presets(); track preset) {
       <nz-tag
         (click)="presetSelected.emit(preset)"
         nz-tooltip
         [nzTooltipTitle]="preset.title"
         [nzTooltipMouseEnterDelay]="1"
-      >
+        >
         {{sliceTagName(preset.title)}}
         <span
           class="remove-btn"
@@ -20,36 +20,37 @@
           [nzCancelText]="t('no')"
           (nzOnConfirm)="removePreset.emit(preset)"
           nzPopconfirmPlacement="bottom"
-        >
+          >
         </span>
       </nz-tag>
-    </ng-container>
-    <nz-tag
-      (click)="showInput()"
-      *ngIf="!inputVisible"
-      [class.disabled]="!canAddPreset"
-      class="editable-tag"
-      nz-tooltip
-      [nzTooltipTitle]="t('ordersBasketPresets.savePresetTooltip')"
-      [nzTooltipMouseEnterDelay]="1"
-    >
-      <span nz-icon nzType="plus"></span>
-      <span>{{t('ordersBasketPresets.savePresetTag')}}</span>
-    </nz-tag>
-    <input
-      #inputElement
-      (blur)="handleInputConfirm()"
-
-      (keydown.enter)="handleInputConfirm()"
-      *ngIf="inputVisible"
-      [(ngModel)]="inputValue"
-      id="new-preset-title-input"
-      nz-input
-      nzSize="small"
-      type="text"
-      [maxlength]="50"
-      [placeholder]="t('ordersBasketPresets.titlePlaceholder')"
-    />
+    }
+    @if (!inputVisible) {
+      <nz-tag
+        (click)="showInput()"
+        [class.disabled]="!canAddPreset()"
+        class="editable-tag"
+        nz-tooltip
+        [nzTooltipTitle]="t('ordersBasketPresets.savePresetTooltip')"
+        [nzTooltipMouseEnterDelay]="1"
+        >
+        <span nz-icon nzType="plus"></span>
+        <span>{{t('ordersBasketPresets.savePresetTag')}}</span>
+      </nz-tag>
+    }
+    @if (inputVisible) {
+      <input
+        #inputElement
+        (blur)="handleInputConfirm()"
+        (keydown.enter)="handleInputConfirm()"
+        [(ngModel)]="inputValue"
+        id="new-preset-title-input"
+        nz-input
+        nzSize="small"
+        type="text"
+        [maxlength]="50"
+        [placeholder]="t('ordersBasketPresets.titlePlaceholder')"
+        />
+    }
   </div>
 </ng-container>
 

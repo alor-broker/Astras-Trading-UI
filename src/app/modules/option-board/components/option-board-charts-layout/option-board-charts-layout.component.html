@@ -1,10 +1,9 @@
 <div class="w-100 h-100 d-flex flex-column" *transloco="let t; scope: 'option-board/option-board-chart'">
   <div class="flex-fill overflow-hidden">
-    <ats-option-board-chart [dataContext]="dataContext"></ats-option-board-chart>
+    <ats-option-board-chart [dataContext]="dataContext()" />
   </div>
-  <nz-alert
-    nzType="warning"
+  <nz-alert nzType="warning"
     nzCloseable
     [nzMessage]="t('optionBoardOptionBoardChart.betaNotice')"
-  ></nz-alert>
+   />
 </div>

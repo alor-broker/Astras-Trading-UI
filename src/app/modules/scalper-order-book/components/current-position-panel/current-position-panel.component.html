@@ -5,12 +5,12 @@
       lossOrProfitDisplayType: lossOrProfitDisplayType$
     } as vm"
     class="container lh-1"
-  >
+    >
     <div
-      [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookCurrentPositionState.avgPositionPriceTooltip')"
+      [nz-tooltip]="hideTooltips() ? null : t('scalperOrderBookCurrentPositionState.avgPositionPriceTooltip')"
       [nzTooltipMouseEnterDelay]="1"
       class="p-2"
-    >
+      >
       {{(vm.orderBookPosition.price | number: '1.0-2') ?? '--'}}
     </div>
     <div [ngClass]="{
@@ -18,10 +18,10 @@
         'positive': vm.orderBookPosition.qty > 0,
         'negative': vm.orderBookPosition.qty < 0
         }"
-         [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookCurrentPositionState.lotsQtyTooltip')"
-         [nzTooltipMouseEnterDelay]="1"
-         class="p-2"
-    >
+      [nz-tooltip]="hideTooltips() ? null : t('scalperOrderBookCurrentPositionState.lotsQtyTooltip')"
+      [nzTooltipMouseEnterDelay]="1"
+      class="p-2"
+      >
       {{vm.orderBookPosition.qty | number: '1.0-2'}}{{t('scalperOrderBookCurrentPositionState.lots')}}.
     </div>
     <div [ngClass]="{
@@ -29,18 +29,22 @@
         'positive': (vm.orderBookPosition.lossOrProfitPoints ?? 0) > 0,
         'negative': (vm.orderBookPosition.lossOrProfitPoints ?? 0) < 0
         }"
-         [nz-tooltip]="hideTooltips ? null : t('scalperOrderBookCurrentPositionState.lossOrProfitTooltip')"
-         [nzTooltipMouseEnterDelay]="1"
-         (click)="changeLossOrProfitDisplayType()"
-         class="p-2"
-    >
-      <ng-container *ngIf="vm.orderBookPosition.lossOrProfitPoints">
-        <span *ngIf="vm.lossOrProfitDisplayType === 'points'">{{vm.orderBookPosition.lossOrProfitPoints}}{{t('scalperOrderBookCurrentPositionState.positions')}}.</span>
-        <span *ngIf="vm.lossOrProfitDisplayType === 'percentage'">{{vm.orderBookPosition.lossOrProfitPercent}}%</span>
-      </ng-container>
-      <ng-container *ngIf="vm.orderBookPosition.lossOrProfitPoints == null">
+      [nz-tooltip]="hideTooltips() ? null : t('scalperOrderBookCurrentPositionState.lossOrProfitTooltip')"
+      [nzTooltipMouseEnterDelay]="1"
+      (click)="changeLossOrProfitDisplayType()"
+      class="p-2"
+      >
+      @if (vm.orderBookPosition.lossOrProfitPoints) {
+        @if (vm.lossOrProfitDisplayType === 'points') {
+          <span>{{vm.orderBookPosition.lossOrProfitPoints}}{{t('scalperOrderBookCurrentPositionState.positions')}}.</span>
+        }
+        @if (vm.lossOrProfitDisplayType === 'percentage') {
+          <span>{{vm.orderBookPosition.lossOrProfitPercent}}%</span>
+        }
+      }
+      @if (vm.orderBookPosition.lossOrProfitPoints == null) {
         <span>--</span>
-      </ng-container>
+      }
     </div>
   </div>
 </ng-container>

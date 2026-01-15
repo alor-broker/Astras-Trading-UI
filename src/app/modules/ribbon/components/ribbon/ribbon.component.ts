@@ -1,9 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  input,
-  OnInit
-} from '@angular/core';
+import { Component, DestroyRef, input, OnInit, inject } from '@angular/core';
 import {
   forkJoin,
   Observable,
@@ -18,13 +13,7 @@ import { HistoryService } from "../../../../shared/services/history.service";
 import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import { ScrollableRowComponent } from "../../../../shared/components/scrollable-row/scrollable-row.component";
-import {
-  AsyncPipe,
-  DecimalPipe,
-  NgClass,
-  NgForOf,
-  NgTemplateOutlet
-} from "@angular/common";
+import { AsyncPipe, DecimalPipe, NgClass, NgTemplateOutlet } from "@angular/common";
 import { ScrollableItemDirective } from "../../../../shared/directives/scrollable-item.directive";
 import { NzTypographyComponent } from "ng-zorro-antd/typography";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -42,24 +31,26 @@ export interface RibbonItem {
   styleUrls: ['./ribbon.component.less'],
   imports: [
     ScrollableRowComponent,
-    NgForOf,
     ScrollableItemDirective,
     NzTypographyComponent,
     AsyncPipe,
     DecimalPipe,
     NgClass,
     NgTemplateOutlet
-  ],
+],
   standalone: true
 })
 export class RibbonComponent implements OnInit {
+  private readonly historyService = inject(HistoryService);
+  private readonly destroyRef = inject(DestroyRef);
+
   indices$!: Observable<IndexDisplay[]>;
 
-  layout = input<'singleRow' | '2row'>('singleRow');
+  readonly layout = input<'singleRow' | '2row'>('singleRow');
 
-  showScrollButtons = input(true);
+  readonly showScrollButtons = input(true);
 
-  displayItems = input<RibbonItem[] | null>(null);
+  readonly displayItems = input<RibbonItem[] | null>(null);
 
   private readonly defaultIndices: RibbonItem[] = [
     {
@@ -93,12 +84,6 @@ export class RibbonComponent implements OnInit {
       exchange: 'MOEX'
     }
   ];
-
-  constructor(
-    private readonly historyService: HistoryService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.indices$ = timer(0, 60000).pipe(

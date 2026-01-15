@@ -1,17 +1,4 @@
-import {
-  DestroyRef,
-  Directive,
-  ElementRef,
-  EventEmitter,
-  Inject,
-  Input,
-  NgZone,
-  OnInit,
-  Output,
-  Renderer2,
-  SimpleChange,
-  DOCUMENT
-} from '@angular/core';
+import { DestroyRef, Directive, ElementRef, NgZone, OnInit, Renderer2, SimpleChange, DOCUMENT, input, output, inject } from '@angular/core';
 
 import {
   distinctUntilChanged,
@@ -27,38 +14,34 @@ import {
 import { NzThMeasureDirective } from 'ng-zorro-antd/table';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
-@Directive({
-    selector: 'th[atsResizeColumn]',
-    standalone: false
-})
+@Directive({ selector: 'th[atsResizeColumn]' })
 export class ResizeColumnDirective implements OnInit {
-  @Input()
-  minWidth = 0;
+  private readonly el = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
+  private readonly dir = inject(NzThMeasureDirective);
+  private readonly documentRef = inject<Document>(DOCUMENT);
+  private readonly ngZone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
 
-  @Input()
-  atsResizeColumn?: boolean = true;
+  readonly minWidth = input(0);
 
-  @Output()
-  atsWidthChanged = new EventEmitter<number>();
+  readonly atsResizeColumn = input<boolean | undefined>(true);
 
-  @Output()
-  atsWidthChanging = new EventEmitter<{ columnWidth: number, delta: number | null }>();
+  readonly atsWidthChanged = output<number>();
+
+  readonly atsWidthChanging = output<{
+    columnWidth: number;
+    delta: number | null;
+}>();
 
   private readonly column: HTMLElement;
 
-  constructor(
-    private readonly el: ElementRef,
-    private readonly renderer: Renderer2,
-    private readonly dir: NzThMeasureDirective,
-    @Inject(DOCUMENT)
-    private readonly documentRef: Document,
-    private readonly ngZone: NgZone,
-    private readonly destroyRef: DestroyRef) {
+  constructor() {
     this.column = this.el.nativeElement as HTMLElement;
   }
 
   ngOnInit(): void {
-    if (!(this.atsResizeColumn ?? false)) {
+    if (!(this.atsResizeColumn() ?? false)) {
       return;
     }
 
@@ -89,7 +72,7 @@ export class ResizeColumnDirective implements OnInit {
             }),
             map(({ clientX }) => width + clientX - right),
             map(w => Math.round(w)),
-            map(w => w > 0 && w >= this.minWidth ? w : this.minWidth),
+            map(w => w > 0 && w >= this.minWidth() ? w : this.minWidth()),
             distinctUntilChanged(),
             takeUntil(fromEvent(this.documentRef, 'mouseup')),
             finalize(() => {

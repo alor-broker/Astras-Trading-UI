@@ -1,12 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  Inject,
-  Input,
-  LOCALE_ID,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
+import { Component, DestroyRef, LOCALE_ID, OnDestroy, OnInit, input, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, shareReplay, switchMap, take, tap } from 'rxjs';
 import { TableConfig } from '../../../../shared/models/table-config.model';
 import {
@@ -46,8 +38,9 @@ import {
 } from "../../../../../generated/graphql.types";
 import { NzContextMenuService } from "ng-zorro-antd/dropdown";
 import { AddToWatchlistMenuComponent } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
-import { TableDataRow } from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
-import { formatNumber } from "@angular/common";
+import { TableDataRow, InfiniteScrollTableComponent } from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
+import { formatNumber, AsyncPipe } from "@angular/common";
+import { NzResizeObserverDirective } from 'ng-zorro-antd/cdk/resize-observer';
 
 interface BondDisplay extends Omit<Bond, 'coupons' | 'offers' | 'amortizations'> {
   id: string;
@@ -59,7 +52,12 @@ interface BondDisplay extends Omit<Bond, 'coupons' | 'offers' | 'amortizations'>
     selector: 'ats-bond-screener',
     templateUrl: './bond-screener.component.html',
     styleUrls: ['./bond-screener.component.less'],
-    standalone: false
+    imports: [
+      NzResizeObserverDirective,
+      InfiniteScrollTableComponent,
+      AddToWatchlistMenuComponent,
+      AsyncPipe
+    ]
 })
 export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
   BondDisplay,
@@ -67,7 +65,17 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
   PageInfo,
   BondSortInput
 > implements OnInit, OnDestroy {
-  @Input({required: true}) guid!: string;
+  protected readonly settingsService: WidgetSettingsService;
+  private readonly service = inject(BondScreenerService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly nzContextMenuService = inject(NzContextMenuService);
+  protected readonly destroyRef: DestroyRef;
+  private readonly locale = inject(LOCALE_ID);
+
+  readonly guid = input.required<string>();
 
   bondsList$ = new BehaviorSubject<BondDisplay[]>([]);
   settings$!: Observable<BondScreenerSettings>;
@@ -515,23 +523,18 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
 
   settingsTableName = 'bondScreenerTable';
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    private readonly service: BondScreenerService,
-    private readonly translatorService: TranslatorService,
-    @Inject(ACTIONS_CONTEXT) private readonly actionsContext: ActionsContext,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly nzContextMenuService: NzContextMenuService,
-    protected readonly destroyRef: DestroyRef,
-    @Inject(LOCALE_ID)
-    private readonly locale: string
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.destroyRef = destroyRef;
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<BondScreenerSettings>(this.guid)
+    this.settings$ = this.settingsService.getSettings<BondScreenerSettings>(this.guid())
       .pipe(shareReplay(1));
 
     super.ngOnInit();
@@ -561,10 +564,11 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     this.filters$.next(cleanedFilters);
   }
 
-  rowClick(row: BondDisplay): void {
+  rowClick(row: TableDataRow): void {
+    const targetRow = row as BondDisplay;
     const instrument = {
-      symbol: row.basicInformation!.symbol,
-      exchange: row.basicInformation!.exchange,
+      symbol: targetRow.basicInformation!.symbol,
+      exchange: targetRow.basicInformation!.exchange,
     };
 
     this.settings$.pipe(
@@ -590,13 +594,14 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     this.nzContextMenuService.close(true);
 
     const row = selectedRow as BondDisplay;
-    if(menu.menuRef != null) {
-      menu.itemToAdd = {
+    const menuRef = menu.menuRef();
+    if(menuRef != null) {
+      menu.itemToAdd.set({
         symbol: row.basicInformation!.symbol,
         exchange:  row.basicInformation!.exchange
-      };
+      });
 
-      this.nzContextMenuService.create($event, menu.menuRef);
+      this.nzContextMenuService.create($event, menuRef);
     }
   }
 

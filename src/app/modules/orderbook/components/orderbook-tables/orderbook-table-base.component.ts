@@ -1,8 +1,8 @@
 import {
   Component,
   DestroyRef,
-  Input,
-  OnInit
+  OnInit,
+  input
 } from '@angular/core';
 import { OrderBook } from "../../models/orderbook.model";
 import { OrderbookSettings } from "../../models/orderbook-settings.model";
@@ -47,11 +47,9 @@ interface ExtendedOrderbookSettings {
 })
 export abstract class OrderbookTableBaseComponent implements OnInit {
   readonly numberFormats = NumberDisplayFormat;
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
-  @Input()
-  ob: OrderBook | null = null;
+  readonly ob = input<OrderBook | null>(null);
 
   settings$!: Observable<ExtendedOrderbookSettings>;
   shouldShowYield$: Observable<boolean> = of(false);
@@ -69,7 +67,7 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<OrderbookSettings>(this.guid()).pipe(
       mapWith(
         settings => this.instrumentsService.getInstrument(settings),
         (widgetSettings, instrument) => ({ widgetSettings, instrument } as ExtendedOrderbookSettings)
@@ -140,29 +138,27 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
   }
 
   getBidStyle(value: number): Record<string, string> | null {
-    if (!this.themeSettings || !this.ob) {
+    const ob = this.ob();
+    if (!this.themeSettings || !ob) {
       return null;
     }
 
-    const size = 100 * (value / this.ob.maxVolume);
+    const size = 100 * (value / ob.maxVolume);
     return {
       background: `linear-gradient(270deg, ${this.themeSettings.themeColors.buyColorBackground} ${size}% , rgba(0,0,0,0) ${size}%)`,
     };
   }
 
   getAskStyle(value: number): Record<string, string> | null {
-    if (!this.themeSettings || !this.ob) {
+    const ob = this.ob();
+    if (!this.themeSettings || !ob) {
       return null;
     }
 
-    const size = 100 * (value / this.ob.maxVolume);
+    const size = 100 * (value / ob.maxVolume);
     return {
       background: `linear-gradient(90deg, ${this.themeSettings.themeColors.sellColorBackground} ${size}%, rgba(0,0,0,0) ${size}%)`,
     };
-  }
-
-  getTrackKey(index: number): number {
-    return index;
   }
 
   getPriceDecimalSymbolsCount(settings: ExtendedOrderbookSettings): number | null {

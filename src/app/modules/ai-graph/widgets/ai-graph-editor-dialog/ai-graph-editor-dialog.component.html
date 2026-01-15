@@ -12,10 +12,9 @@
     >
       <ng-container *nzModalContent>
         @if (vm.targetGraph != null) {
-          <ats-graph-editor
-            [initialConfig]="vm.targetGraph!.config ?? null"
+          <ats-graph-editor [initialConfig]="vm.targetGraph!.config ?? null"
             (updateConfig)="latestVersion = $event"
-          ></ats-graph-editor>
+           />
         }
       </ng-container>
     </nz-modal>

@@ -1,15 +1,15 @@
 <div
-  [ngClass]="position"
+  [ngClass]="position()"
   class="h-100 p-5 d-flex flex-column flex-gap-10 justify-content-start"
 >
   <div
     class="d-flex flex-row flex-nowrap align-items-center flex-gap-10 pb-5 header"
     [ngClass]="{
-    'flex-row': position === 'right',
-    'flex-row-reverse': position === 'left'
+    'flex-row': position() === 'right',
+    'flex-row-reverse': position() === 'left'
     }"
   >
-    @if (closable) {
+    @if (closable()) {
       <div class="close-btn cursor-pointer">
       <span
         nz-icon
@@ -23,14 +23,15 @@
 
     @if (title != null) {
       <div class="flex-fill">
-        <ng-container [ngTemplateOutlet]="title.templateRef"></ng-container>
+        <ng-container [ngTemplateOutlet]="title()?.templateRef" />
       </div>
     }
   </div>
 
   <div class="flex-fill overflow-hidden">
-    @if (content != null) {
-      <ng-container [ngTemplateOutlet]="content.templateRef"></ng-container>
+    @let menuContent = content();
+    @if (menuContent != null) {
+      <ng-container [ngTemplateOutlet]="menuContent.templateRef" />
     }
   </div>
 </div>

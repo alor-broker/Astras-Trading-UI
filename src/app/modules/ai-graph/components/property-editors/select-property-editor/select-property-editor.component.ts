@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnChanges, SimpleChanges} from '@angular/core';
+import { Component, DestroyRef, OnChanges, SimpleChanges, inject } from '@angular/core';
 import {PropertyEditorBaseComponent} from "../property-editor-base";
 import {SelectPropertyEditorConfig} from "../../../models/property-editor.model";
 import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -24,16 +24,12 @@ import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
     styleUrl: './select-property-editor.component.less'
 })
 export class SelectPropertyEditorComponent extends PropertyEditorBaseComponent<SelectPropertyEditorConfig> implements OnChanges {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   protected readonly form = this.formBuilder.group({
     property: this.formBuilder.control<string | null>(null)
   });
-
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-    super();
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes?.config.currentValue != null || changes.config.firstChange) {

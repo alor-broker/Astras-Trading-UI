@@ -1,71 +1,84 @@
-import {
-  Component, DestroyRef,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output
-} from '@angular/core';
+import { Component, DestroyRef, input, OnDestroy, OnInit, output, inject } from '@angular/core';
 import {
   ControlValueAccessor,
   FormBuilder,
   FormGroup,
+  FormsModule,
   NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
   ValidationErrors,
   Validator,
   Validators
 } from '@angular/forms';
-import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import { inputNumberValidation } from '../../../../shared/utils/validation-options';
-import {
-  BehaviorSubject,
-  combineLatest,
-  distinctUntilChanged,
-  filter,
-  Observable,
-  of,
-  shareReplay,
-  Subscription,
-  switchMap,
-} from 'rxjs';
-import { map, } from 'rxjs/operators';
-import { InstrumentsService } from '../../../instruments/services/instruments.service';
-import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
-import { Instrument } from '../../../../shared/models/instruments/instrument.model';
-import { QuotesService } from '../../../../shared/services/quotes.service';
-import { OrdersBasketItem } from '../../models/orders-basket-form.model';
-import { AtsValidators } from '../../../../shared/utils/form-validators';
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { toInstrumentKey } from "../../../../shared/utils/instruments";
+import {InstrumentKey} from '../../../../shared/models/instruments/instrument-key.model';
+import {inputNumberValidation} from '../../../../shared/utils/validation-options';
+import {combineLatest, distinctUntilChanged, filter, Observable, of, shareReplay, Subscription, switchMap,} from 'rxjs';
+import {map,} from 'rxjs/operators';
+import {InstrumentsService} from '../../../instruments/services/instruments.service';
+import {isInstrumentEqual} from '../../../../shared/utils/settings-helper';
+import {Instrument} from '../../../../shared/models/instruments/instrument.model';
+import {QuotesService} from '../../../../shared/services/quotes.service';
+import {OrdersBasketItem} from '../../models/orders-basket-form.model';
+import {AtsValidators} from '../../../../shared/utils/form-validators';
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {toInstrumentKey} from "../../../../shared/utils/instruments";
+import {AsyncPipe, NgClass} from '@angular/common';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {InstrumentSearchComponent} from '../../../../shared/components/instrument-search/instrument-search.component';
+import {InputNumberComponent} from '../../../../shared/components/input-number/input-number.component';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
 
 @Component({
-    selector: 'ats-orders-basket-item',
-    templateUrl: './orders-basket-item.component.html',
-    styleUrls: ['./orders-basket-item.component.less'],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            multi: true,
-            useExisting: OrdersBasketItemComponent
-        },
-        {
-            provide: NG_VALIDATORS,
-            multi: true,
-            useExisting: OrdersBasketItemComponent
-        },
-    ],
-    standalone: false
+  selector: 'ats-orders-basket-item',
+  templateUrl: './orders-basket-item.component.html',
+  styleUrls: ['./orders-basket-item.component.less'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: OrdersBasketItemComponent
+    },
+    {
+      provide: NG_VALIDATORS,
+      multi: true,
+      useExisting: OrdersBasketItemComponent
+    },
+  ],
+  imports: [
+    NgClass,
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    InstrumentSearchComponent,
+    InputNumberComponent,
+    NzInputDirective,
+    NzButtonComponent,
+    NzIconDirective,
+    AsyncPipe
+  ]
 })
 export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValueAccessor, Validator {
-  @Input({required: true})
-  exchange!: string;
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly quotesService = inject(QuotesService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
-  @Input()
-  enableDelete = true;
+  readonly exchange = input.required<string>();
 
-  @Output()
-  delete = new EventEmitter();
+  readonly enableDelete = input(true);
+
+  readonly delete = output();
 
   readonly validationOptions = {
     quota: {
@@ -111,36 +124,15 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     id: this.formBuilder.nonNullable.control("", Validators.required)
   });
 
-  itemsContainerWidth$ = new BehaviorSubject<number | null>(null);
   instrument$!: Observable<Instrument | null>;
   displayMode$?: Observable<'table-item' | 'compact' | 'ultra-compact'>;
   showLabels$?: Observable<boolean>;
-  itemIndex$ = new BehaviorSubject<number>(0);
+
+  readonly width = input<number | null>(null);
+  readonly itemIndex = input<number>(0);
+  protected readonly widthChanges$ = toObservable(this.width);
+  protected readonly itemIndexChanges$ = toObservable(this.itemIndex);
   private readonly onChangeSubs: Subscription[] = [];
-  private readonly totalBudget$ = new BehaviorSubject<number | null>(null);
-
-  constructor(
-    private readonly instrumentsService: InstrumentsService,
-    private readonly quotesService: QuotesService,
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
-
-  @Input()
-  set width(value: number | null) {
-    this.itemsContainerWidth$.next(value);
-  }
-
-  @Input()
-  set itemIndex(value: number) {
-    this.itemIndex$.next(value);
-  }
-
-  @Input()
-  set totalBudget(value: number | null) {
-    this.totalBudget$.next(value);
-  }
 
   validate(): ValidationErrors | null {
     if (this.form.valid) {
@@ -158,7 +150,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
   }
 
   addControlErrors(allErrors: Record<string, ValidationErrors>, controlName: string): Record<string, ValidationErrors> {
-    const errors = { ...allErrors };
+    const errors = {...allErrors};
 
     const controlErrors = (<FormGroup>this.form).controls[controlName].errors;
 
@@ -179,10 +171,6 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     for (const sub of this.onChangeSubs) {
       sub.unsubscribe();
     }
-
-    this.itemsContainerWidth$.complete();
-    this.itemIndex$.complete();
-    this.totalBudget$.complete();
   }
 
   registerOnChange(onChange: any): void {
@@ -216,7 +204,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
   };
 
   private initSizeDependedState(): void {
-    this.displayMode$ = this.itemsContainerWidth$.pipe(
+    this.displayMode$ = this.widthChanges$.pipe(
       filter(w => !!(w ?? 0)),
       map(w => {
         if (w! < 250) {
@@ -233,7 +221,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
 
     this.showLabels$ = combineLatest([
       this.displayMode$,
-      this.itemIndex$
+      this.itemIndexChanges$,
     ]).pipe(
       map(([displayMode, itemIndex]) => displayMode === 'compact' || displayMode === 'ultra-compact' || itemIndex === 0),
       shareReplay(1)
@@ -250,23 +238,23 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
 
         return of(null);
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
   }
 
   private initPriceUpdate(): void {
     this.instrument$.pipe(
       filter((x, index) => {
-        if(!x) {
-          return false;
-        }
+          if (!x) {
+            return false;
+          }
 
-        if (index === 0 && this.form.controls.price.value != null) {
-          return false;
-        }
+          if (index === 0 && this.form.controls.price.value != null) {
+            return false;
+          }
 
-        return true;
-      }
+          return true;
+        }
       ),
       switchMap(instrument => this.quotesService.getLastPrice(instrument!)),
       takeUntilDestroyed(this.destroyRef)

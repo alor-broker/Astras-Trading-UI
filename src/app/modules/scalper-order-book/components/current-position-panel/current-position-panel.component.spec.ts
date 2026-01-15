@@ -1,12 +1,12 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
-import { CurrentPositionPanelComponent } from './current-position-panel.component';
-import { ScalperOrderBookDataProvider } from '../../services/scalper-order-book-data-provider.service';
-import { Subject } from 'rxjs';
-import { LetDirective } from "@ngrx/component";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {CurrentPositionPanelComponent} from './current-position-panel.component';
+import {ScalperOrderBookDataProvider} from '../../services/scalper-order-book-data-provider.service';
+import {Subject} from 'rxjs';
+import {LetDirective} from "@ngrx/component";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockDirectives} from "ng-mocks";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('CurrentPositionPanelComponent', () => {
   let component: CurrentPositionPanelComponent;
@@ -14,11 +14,14 @@ describe('CurrentPositionPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports:[
+      imports: [
         TranslocoTestsModule.getModule(),
-        LetDirective
+        LetDirective,
+        CurrentPositionPanelComponent,
+        MockDirectives(
+          NzTooltipDirective
+        )
       ],
-      declarations: [CurrentPositionPanelComponent],
       providers: [
         {
           provide: ScalperOrderBookDataProvider,
@@ -35,6 +38,7 @@ describe('CurrentPositionPanelComponent', () => {
 
     fixture = TestBed.createComponent(CurrentPositionPanelComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

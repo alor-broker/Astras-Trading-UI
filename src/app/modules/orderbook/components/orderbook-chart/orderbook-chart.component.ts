@@ -1,49 +1,34 @@
-import {
-  Component, DestroyRef,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  map,
-  Observable,
-} from 'rxjs';
-import {
-  ChartDataset,
-  ChartOptions,
-  ComplexFillTarget,
-  ScatterControllerDatasetOptions
-} from 'chart.js';
-import { MathHelper } from 'src/app/shared/utils/math-helper';
-import {
-  ChartData,
-  ChartPoint
-} from '../../models/orderbook.model';
-import { BaseChartDirective } from 'ng2-charts';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { ThemeService } from '../../../../shared/services/theme.service';
-import { OrderbookSettings } from '../../models/orderbook-settings.model';
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Component, DestroyRef, input, OnInit, viewChild, inject } from '@angular/core';
+import {BehaviorSubject, map, Observable,} from 'rxjs';
+import {ChartDataset, ChartOptions, ComplexFillTarget, ScatterControllerDatasetOptions} from 'chart.js';
+import {MathHelper} from 'src/app/shared/utils/math-helper';
+import {ChartData, ChartPoint} from '../../models/orderbook.model';
+import {BaseChartDirective} from 'ng2-charts';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {ThemeService} from '../../../../shared/services/theme.service';
+import {OrderbookSettings} from '../../models/orderbook-settings.model';
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-orderbook-chart',
-    templateUrl: './orderbook-chart.component.html',
-    styleUrls: ['./orderbook-chart.component.less'],
-    standalone: false
+  selector: 'ats-orderbook-chart',
+  templateUrl: './orderbook-chart.component.html',
+  styleUrls: ['./orderbook-chart.component.less'],
+  imports: [
+    BaseChartDirective,
+    AsyncPipe
+  ]
 })
-export class OrderbookChartComponent implements OnInit, OnChanges {
-  @Input({required: true})
-  chartData!: ChartData;
+export class OrderbookChartComponent implements OnInit {
+  private readonly widgetSettings = inject(WidgetSettingsService);
+  private readonly themeService = inject(ThemeService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  @Input({required: true})
-  guid!: string;
-
-  @ViewChild(BaseChartDirective)
-  chart?: BaseChartDirective;
+  readonly chartData = input.required<ChartData>();
+  readonly guid = input.required<string>();
+  readonly chart = viewChild(BaseChartDirective);
 
   shouldShowChart$?: Observable<boolean>;
   chartData$ = new BehaviorSubject<ChartDataset[]>([]);
@@ -76,15 +61,12 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
             if (typeof value === 'number') {
               if (value >= 1000000) {
                 return MathHelper.round(value / 1000000, 1).toString() + 'M';
-              }
-              else if (value >= 1000) {
+              } else if (value >= 1000) {
                 return MathHelper.round(value / 1000, 1).toString() + 'k';
-              }
-              else {
+              } else {
                 return value;
               }
-            }
-            else {
+            } else {
               return value;
             }
           },
@@ -93,6 +75,7 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
     },
   };
 
+  private readonly chartDataChanges$ = toObservable(this.chartData);
   private readonly initialData: ChartDataset[] = [
     {
       fill: {
@@ -116,16 +99,8 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
     },
   ];
 
-  constructor(
-    private readonly widgetSettings: WidgetSettingsService,
-    private readonly themeService: ThemeService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
-    ) {
-  }
-
   ngOnInit(): void {
-    this.shouldShowChart$ = this.widgetSettings.getSettings<OrderbookSettings>(this.guid).pipe(
+    this.shouldShowChart$ = this.widgetSettings.getSettings<OrderbookSettings>(this.guid()).pipe(
       map((s) => s.showChart)
     );
 
@@ -155,11 +130,17 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
           return `${t(['volume'])}: ${context.parsed.y}; ${t(['price'])}: ${context.parsed.x}`;
         };
       });
+
+    this.chartDataChanges$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(chartData => {
+      this.updateChart(chartData);
+    });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    const bids = changes.chartData.currentValue.bids as ChartPoint[];
-    const asks = changes.chartData.currentValue.asks as ChartPoint[];
+  updateChart(chartData: ChartData): void {
+    const bids = chartData.bids as ChartPoint[];
+    const asks = chartData.asks as ChartPoint[];
 
     this.initialData[0].data = bids;
     this.initialData[1].data = asks;
@@ -183,14 +164,14 @@ export class OrderbookChartComponent implements OnInit, OnChanges {
         maxPrice = maxBid + (maxBid - minPrice);
       }
 
-      if(maxPrice != null) {
+      if (maxPrice != null) {
         x.max = maxPrice;
       }
 
-      if(minPrice != null) {
+      if (minPrice != null) {
         x.min = minPrice;
       }
     }
-    this.chart?.render();
+    this.chart()?.render();
   }
 }

@@ -25,6 +25,14 @@ describe('BondInfoComponent', () => {
 
     fixture = TestBed.createComponent(BondInfoComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput(
+      'instrumentKey',
+      {
+        symbol: 'SYMB',
+        exchange: 'EXCH',
+        board: ''
+      }
+    );
     fixture.detectChanges();
   });
 

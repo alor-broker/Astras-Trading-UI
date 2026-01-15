@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { Observable } from "rxjs";
 import {SESSION_CONTEXT, SessionContext} from "../../../shared/services/auth/session-context";
 import {Store} from "@ngrx/store";
@@ -21,21 +21,22 @@ import {NzHeaderComponent} from "ng-zorro-antd/layout";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {RouterLink} from "@angular/router";
 import {NzIconDirective} from "ng-zorro-antd/icon";
-import {AsyncPipe, KeyValuePipe, NgForOf, NgIf, NgTemplateOutlet} from "@angular/common";
+import { AsyncPipe, KeyValuePipe, NgTemplateOutlet } from "@angular/common";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzDropDownDirective, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
 import {JoyrideModule} from "ngx-joyride";
 import {NzPopoverDirective} from "ng-zorro-antd/popover";
 import {NzMenuDirective, NzMenuDividerDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
 import {NzInputDirective} from "ng-zorro-antd/input";
-import {DashboardModule} from "../../../modules/dashboard/dashboard.module";
-import {NotificationsModule} from "../../../modules/notifications/notifications.module";
 import {NzDrawerComponent, NzDrawerContentDirective} from "ng-zorro-antd/drawer";
 import {InstrumentSearchComponent} from "../../../shared/components/instrument-search/instrument-search.component";
 import {
   NetworkIndicatorComponent
 } from "../../../modules/dashboard/components/network-indicator/network-indicator.component";
 import {ExternalLinkComponent} from "../../../shared/components/external-link/external-link.component";
+import {
+  NotificationButtonComponent
+} from "../../../modules/notifications/components/notification-button/notification-button.component";
 import { LangSwitchWidgetComponent } from "../../../modules/terminal-settings/widgets/lang-switch-widget/lang-switch-widget.component";
 
 @Component({
@@ -47,7 +48,6 @@ import { LangSwitchWidgetComponent } from "../../../modules/terminal-settings/wi
     TranslocoDirective,
     RouterLink,
     NzIconDirective,
-    NgIf,
     AsyncPipe,
     NzButtonComponent,
     NzDropDownDirective,
@@ -57,11 +57,8 @@ import { LangSwitchWidgetComponent } from "../../../modules/terminal-settings/wi
     NzMenuDirective,
     NzInputDirective,
     KeyValuePipe,
-    NgForOf,
     NzMenuItemComponent,
     ReactiveFormsModule,
-    DashboardModule,
-    NotificationsModule,
     NzDrawerComponent,
     NzDrawerContentDirective,
     NzMenuDividerDirective,
@@ -69,10 +66,18 @@ import { LangSwitchWidgetComponent } from "../../../modules/terminal-settings/wi
     InstrumentSearchComponent,
     NetworkIndicatorComponent,
     ExternalLinkComponent,
-    LangSwitchWidgetComponent
+      NotificationButtonComponent,
+      LangSwitchWidgetComponent
   ]
 })
 export class MobileNavbarComponent implements OnInit {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly store = inject(Store);
+  private readonly sessionContext = inject<SessionContext>(SESSION_CONTEXT);
+  private readonly modal = inject(ModalService);
+  private readonly helpService = inject(HelpService);
+
   isSideMenuVisible = false;
   readonly externalLinks = this.environmentService.externalLinks;
   helpLink$!: Observable<string | null>;
@@ -81,17 +86,6 @@ export class MobileNavbarComponent implements OnInit {
   selectedDashboard$!: Observable<Dashboard>;
   portfolioSearchControl = new FormControl('');
   instrumentSearchControl = new FormControl('');
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly store: Store,
-    @Inject(SESSION_CONTEXT)
-    private readonly sessionContext: SessionContext,
-    private readonly modal: ModalService,
-    private readonly helpService: HelpService
-  ) {
-  }
 
   ngOnInit(): void {
     this.selectedDashboard$ = this.dashboardContextService.selectedDashboard$;

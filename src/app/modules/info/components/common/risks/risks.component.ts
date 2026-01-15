@@ -1,85 +1,49 @@
-import {
-  Component,
-  DestroyRef,
-  Inject,
-  Input,
-  LOCALE_ID,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  defer,
-  filter,
-  Observable,
-  tap,
-  timer
-} from "rxjs";
-import { RisksInfo } from "../../../models/risks.model";
-import { DashboardContextService } from "../../../../../shared/services/dashboard-context.service";
-import {
-  map,
-  switchMap
-} from "rxjs/operators";
-import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
-import { TargetInstrumentKey } from "../../instrument-info-base/instrument-info-base.component";
-import { RisksService } from "../../../services/risks.service";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { LetDirective } from "@ngrx/component";
-import { NzTypographyComponent } from "ng-zorro-antd/typography";
-import {
-  Descriptor,
-  DescriptorsGroup
-} from "../../../models/instrument-descriptors.model";
-import { NzSpinComponent } from "ng-zorro-antd/spin";
-import { DescriptorsListComponent } from "../../descriptors-list/descriptors-list.component";
-import {
-  TranslatorFn,
-  TranslatorService
-} from "../../../../../shared/services/translator.service";
-import { mapWith } from "../../../../../shared/utils/observable-helper";
-import { formatNumber } from "@angular/common";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { REFRESH_TIMEOUT_MS } from "../../../constants/info.constants";
+import { Component, DestroyRef, input, LOCALE_ID, OnDestroy, OnInit, inject } from '@angular/core';
+import {BehaviorSubject, combineLatest, defer, filter, Observable, tap, timer} from "rxjs";
+import {RisksInfo} from "../../../models/risks.model";
+import {DashboardContextService} from "../../../../../shared/services/dashboard-context.service";
+import {map, switchMap} from "rxjs/operators";
+import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
+import {TargetInstrumentKey} from "../../instrument-info-base/instrument-info-base.component";
+import {RisksService} from "../../../services/risks.service";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {LetDirective} from "@ngrx/component";
+import {NzTypographyComponent} from "ng-zorro-antd/typography";
+import {Descriptor, DescriptorsGroup} from "../../../models/instrument-descriptors.model";
+import {NzSpinComponent} from "ng-zorro-antd/spin";
+import {DescriptorsListComponent} from "../../descriptors-list/descriptors-list.component";
+import {TranslatorFn, TranslatorService} from "../../../../../shared/services/translator.service";
+import {mapWith} from "../../../../../shared/utils/observable-helper";
+import {formatNumber} from "@angular/common";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {REFRESH_TIMEOUT_MS} from "../../../constants/info.constants";
 
 @Component({
-    selector: 'ats-risks',
-    templateUrl: './risks.component.html',
-    styleUrls: ['./risks.component.less'],
-    imports: [
-        TranslocoDirective,
-        LetDirective,
-        NzTypographyComponent,
-        NzSpinComponent,
-        DescriptorsListComponent
-    ]
+  selector: 'ats-risks',
+  templateUrl: './risks.component.html',
+  styleUrls: ['./risks.component.less'],
+  imports: [
+    TranslocoDirective,
+    LetDirective,
+    NzTypographyComponent,
+    NzSpinComponent,
+    DescriptorsListComponent
+  ]
 })
 export class RisksComponent implements OnInit, OnDestroy {
+  private readonly risksService = inject(RisksService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly locale = inject(LOCALE_ID);
+  private readonly destroyRef = inject(DestroyRef);
+
   currentPortfolio$!: Observable<PortfolioKey>;
   isLoading$ = new BehaviorSubject<boolean>(true);
   descriptors$!: Observable<DescriptorsGroup | null>;
-  private readonly targetInstrumentKey$ = new BehaviorSubject<TargetInstrumentKey | null>(null);
-  private readonly isActivated$ = new BehaviorSubject<boolean>(false);
-
-  constructor(
-    private readonly risksService: RisksService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly translatorService: TranslatorService,
-    @Inject(LOCALE_ID) private readonly locale: string,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
-
-  @Input({required: true})
-  set instrumentKey(value: TargetInstrumentKey) {
-    this.targetInstrumentKey$.next(value);
-  };
-
-  @Input()
-  set activated(value: boolean) {
-    this.isActivated$.next(value);
-  }
+  readonly instrumentKey = input.required<TargetInstrumentKey>();
+  readonly activated = input<boolean>(false);
+  private readonly instrumentKeyChanges$ = toObservable(this.instrumentKey);
+  private readonly activatedChanges$ = toObservable(this.activated);
 
   ngOnInit(): void {
     this.currentPortfolio$ = this.dashboardContextService.selectedPortfolio$;
@@ -91,7 +55,7 @@ export class RisksComponent implements OnInit, OnDestroy {
     });
 
     const risks$ = combineLatest({
-      instrumentKey: this.targetInstrumentKey$,
+      instrumentKey: this.instrumentKeyChanges$,
       selectedPortfolio: this.currentPortfolio$,
       translator: this.translatorService.getTranslator('')
     }).pipe(
@@ -118,15 +82,13 @@ export class RisksComponent implements OnInit, OnDestroy {
       tap(() => this.isLoading$.next(false))
     );
 
-    this.descriptors$ = this.isActivated$.pipe(
+    this.descriptors$ = this.activatedChanges$.pipe(
       filter(isActivated => isActivated),
       switchMap(() => risks$),
     );
   }
 
   ngOnDestroy(): void {
-    this.targetInstrumentKey$.complete();
-    this.isActivated$.complete();
     this.isLoading$.complete();
   }
 

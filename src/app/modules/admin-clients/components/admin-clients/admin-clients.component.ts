@@ -3,24 +3,17 @@ import {
   Component,
   DestroyRef,
   ElementRef,
-  Inject,
-  Input,
+  inject,
+  input,
   LOCALE_ID,
   OnDestroy,
   OnInit,
   signal
 } from '@angular/core';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { AdminClientsService } from "../../services/clients/admin-clients.service";
-import {
-  Client,
-  ClientsSearchFilter,
-  SpectraExtension
-} from "../../services/clients/admin-clients-service.models";
-import {
-  BaseTableComponent,
-  Sort
-} from "../../../../shared/components/base-table/base-table.component";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {AdminClientsService} from "../../services/clients/admin-clients.service";
+import {Client, ClientsSearchFilter, SpectraExtension} from "../../services/clients/admin-clients-service.models";
+import {BaseTableComponent, Sort} from "../../../../shared/components/base-table/base-table.component";
 import {
   asyncScheduler,
   BehaviorSubject,
@@ -35,53 +28,34 @@ import {
   tap,
   timer
 } from "rxjs";
-import { TableConfig } from "../../../../shared/models/table-config.model";
+import {TableConfig} from "../../../../shared/models/table-config.model";
+import {AdminClientsSettings, AdminClientsTableColumns,} from "../../models/admin-clients-settings.model";
+import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
+import {distinct, map} from "rxjs/operators";
+import {TableSettingHelper} from "../../../../shared/utils/table-setting.helper";
+import {BaseColumnId, BaseColumnSettings, FilterType} from "../../../../shared/models/settings/table-settings.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
+import {NzTableModule} from "ng-zorro-antd/table";
+import {LetDirective} from "@ngrx/component";
+import {CdkDrag, CdkDragDrop, CdkDropList} from "@angular/cdk/drag-drop";
+import {formatNumber} from "@angular/common";
+import {TableRowHeightDirective} from "../../../../shared/directives/table-row-height.directive";
 import {
-  AdminClientsSettings,
-  AdminClientsTableColumns,
-} from "../../models/admin-clients-settings.model";
-import {
-  TranslatorFn,
-  TranslatorService
-} from "../../../../shared/services/translator.service";
-import {
-  distinct,
-  map
-} from "rxjs/operators";
-import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import {
-  BaseColumnId,
-  BaseColumnSettings,
-  FilterType
-} from "../../../../shared/models/settings/table-settings.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { NzResizeObserverDirective } from "ng-zorro-antd/cdk/resize-observer";
-import {
-  NzTableCellDirective,
-  NzTableComponent,
-  NzThMeasureDirective,
-  NzTrDirective
-} from "ng-zorro-antd/table";
-import { LetDirective } from "@ngrx/component";
-import {
-  CdkDrag,
-  CdkDragDrop,
-  CdkDropList
-} from "@angular/cdk/drag-drop";
-import { SharedModule } from "../../../../shared/shared.module";
-import { formatNumber } from "@angular/common";
-import { TableRowHeightDirective } from "../../../../shared/directives/table-row-height.directive";
-import { TableSearchFilterComponent } from "../../../../shared/components/table-search-filter/table-search-filter.component";
-import { mapWith } from "../../../../shared/utils/observable-helper";
-import { Market } from "../../../../../generated/graphql.types";
-import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import {
-  NzContextMenuService,
-  NzDropdownMenuComponent
-} from "ng-zorro-antd/dropdown";
-import { AdminDashboardsHelper } from "../../utils/admin-dashboards.helper";
-import { getMarketTypeByPortfolio } from "../../../../shared/utils/portfolios";
+  TableSearchFilterComponent
+} from "../../../../shared/components/table-search-filter/table-search-filter.component";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {Market} from "../../../../../generated/graphql.types";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {AdminDashboardsHelper} from "../../utils/admin-dashboards.helper";
+import {getMarketTypeByPortfolio} from "../../../../shared/utils/portfolios";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {ResizeColumnDirective} from "../../../../shared/directives/resize-column.directive";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {NzMenuDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
 
 type ClientDisplay = Omit<Client, 'spectraExtension'> & Partial<SpectraExtension>;
 
@@ -111,38 +85,45 @@ interface ColumnBase {
   standalone: true,
   imports: [
     NzResizeObserverDirective,
-    NzTableComponent,
     LetDirective,
     CdkDropList,
-    NzTrDirective,
-    NzTableCellDirective,
-    NzThMeasureDirective,
-    SharedModule,
     CdkDrag,
     TableRowHeightDirective,
-    TableSearchFilterComponent
+    TableSearchFilterComponent,
+    TranslocoDirective,
+    ResizeColumnDirective,
+    NzTooltipDirective,
+    NzDropdownMenuComponent,
+    NzIconDirective,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    NzTableModule
   ],
   templateUrl: './admin-clients.component.html',
   styleUrl: './admin-clients.component.less',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, ClientsSearchFilter> implements OnInit, OnDestroy {
-  @Input({required: true})
-  guid!: string;
-
+  readonly guid = input.required<string>();
   allColumns: BaseColumnSettings<ClientDisplay>[] = [];
-
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly destroyRef: DestroyRef;
+  protected readonly widgetLocalStateService = inject(WidgetLocalStateService);
   protected readonly allPageSizes = [10, 25, 50, 100, 200, 500];
-
   protected readonly page$ = new BehaviorSubject<{ page: number, pageSize: number }>({
     page: 1,
     pageSize: this.allPageSizes[0]
   });
 
   protected readonly isLoading = signal(false);
-
   protected readonly totalRecords = signal(0);
-
+  protected settingsTableName = 'table';
+  protected settingsColumnsName = '';
+  protected readonly FilterType = FilterType;
+  protected readonly filterTypes = FilterType;
+  protected selectedItem: ClientDisplay | null = null;
+  private readonly adminClientsService = inject(AdminClientsService);
+  private readonly translatorService = inject(TranslatorService);
   protected readonly valuesTranslator$ = combineLatest({
     commonTranslator: this.translatorService.getTranslator(''),
     adminClientsTranslator: this.translatorService.getTranslator('admin-clients/admin-clients')
@@ -150,16 +131,10 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
     shareReplay(1)
   );
 
-  protected settingsTableName = 'table';
-
-  protected settingsColumnsName = '';
-
-  protected readonly FilterType = FilterType;
-
-  protected readonly filterTypes = FilterType;
-
-  protected selectedItem: ClientDisplay | null = null;
-
+  private readonly locale = inject(LOCALE_ID);
+  private readonly hostElement = inject(ElementRef);
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
+  private readonly nzContextMenuService = inject(NzContextMenuService);
   private readonly columnFillers: { columnId: string, filler: ColumnConfigFiller<ClientDisplay> }[] = [
     {
       columnId: "login",
@@ -504,28 +479,23 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
 
   private tableState$!: Observable<TableState | null>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly adminClientsService: AdminClientsService,
-    private readonly translatorService: TranslatorService,
-    @Inject(LOCALE_ID)
-    private readonly locale: string,
-    private readonly hostElement: ElementRef,
-    private readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly widgetLocalStateService: WidgetLocalStateService,
-    private readonly nzContextMenuService: NzContextMenuService,
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.destroyRef = destroyRef;
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<AdminClientsSettings>(this.guid).pipe(
+    this.settings$ = this.settingsService.getSettings<AdminClientsSettings>(this.guid()).pipe(
       shareReplay({bufferSize: 1, refCount: true})
     );
 
     this.tableState$ = this.widgetLocalStateService.getStateRecord<TableState>(
-      this.guid,
+      this.guid(),
       this.tableStateStorageKey
     );
 
@@ -823,7 +793,7 @@ export class AdminClientsComponent extends BaseTableComponent<ClientDisplay, Cli
       subscribeOn(asyncScheduler)
     ).subscribe(currentState => {
       this.widgetLocalStateService.setStateRecord<TableState>(
-        this.guid,
+        this.guid(),
         this.tableStateStorageKey,
         {
           ...currentState,

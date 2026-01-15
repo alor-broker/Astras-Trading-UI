@@ -1,146 +1,138 @@
 <ng-container *transloco="let t;">
-  <ats-widget-skeleton
-    *ngIf="settings$ | async as settings"
-    [content]="contentRef"
-    [header]="headerRef"
-    [isBlockWidget]="isBlockWidget"
-    [settings]="settingsRef"
-    [showContentScroll]="true"
-    [showSettings]="shouldShowSettings"
-  >
-
-    <ng-template #headerRef>
-      <ats-widget-header
-        (switchSettings)="onSettingsChange()"
-        [guid]="guid"
-        [hasSettings]="true"
-        [linkToActive]="settings.linkToActive"
-        [selectedBadgeColor]="settings.badgeColor"
-        [showBadgesMenu]="(showBadge$ | async) ?? false"
-        [titleTemplate]="titleTemplate"
-        [widgetMeta]="widgetInstance.widgetMeta"
-      ></ats-widget-header>
-
-      <ng-template #titleTemplate>
-        <ats-widget-header-instrument-switch
-          [widgetGuid]="widgetInstance.instance.guid"></ats-widget-header-instrument-switch>
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [isBlockWidget]="isBlockWidget()"
+      [settings]="settingsRef"
+      [showContentScroll]="true"
+      [showSettings]="shouldShowSettings"
+      >
+      <ng-template #headerRef>
+        <ats-widget-header (switchSettings)="onSettingsChange()"
+          [guid]="guid"
+          [hasSettings]="true"
+          [linkToActive]="settings.linkToActive ?? null"
+          [selectedBadgeColor]="settings.badgeColor"
+          [showBadgesMenu]="(showBadge$ | async) ?? false"
+          [titleTemplate]="titleTemplate"
+          [widgetMeta]="widgetInstance().widgetMeta"
+         />
+        <ng-template #titleTemplate>
+          <ats-widget-header-instrument-switch [widgetGuid]="widgetInstance().instance.guid" />
+        </ng-template>
       </ng-template>
-    </ng-template>
-
-    <ng-template #contentRef>
-      <ng-container *transloco="let toc; scope: 'order-commands'">
-        <ng-container *ngIf="currentPortfolio$ | async as currentPortfolio">
-          <ng-container *ngIf="currentInstrument$ | async as currentInstrument">
-            <div>
-              <ats-compact-header
-                (priceSelected)="setCommonParameters({price: $event})"
-                (qtySelected)="setCommonParameters({quantity: $event})"
-                [currentPortfolio]="currentPortfolio"
-                [instrument]="currentInstrument"
-              >
-              </ats-compact-header>
-            </div>
-            <div>
-              <nz-tabs nzSize="small" nzTabPosition="top" #orderTabs>
-                <ng-container *ngIf="ordersConfig">
-                  <nz-tab
-                    *ngIf="ordersConfig.limitOrder.isSupported"
-                    #limitOrderTab
-                    [nzTitle]="toc('orderCommands.limitOrderTabTitle')"
-                  >
-                  <div *ngIf="settings.showVolumePanel && (settings.workingVolumes ?? []).length > 0" class="mb-3">
-                    <ats-working-volumes
-                      (itemSelected)="setCommonParameters({price: $event.price, quantity: $event.volume})"
-                      [instrumentKey]="currentInstrument"
-                      [workingVolumes]="settings.workingVolumes"
-                    ></ats-working-volumes>
-                  </div>
-                    <div>
-                      <ats-limit-order-form
-                        [activated]="limitOrderTab.isActive"
-                        [instrument]="currentInstrument"
-                        [portfolioKey]="currentPortfolio"
-                        [limitOrderConfig]="ordersConfig.limitOrder.orderConfig!"
-                      ></ats-limit-order-form>
-                    </div>
-                    <div
-                      *ngIf="settings.enableLimitOrdersFastEditing && (settings.limitOrderPriceMoveSteps ?? []).length > 0" class="mt-8">
-                      <ats-limit-order-price-change
-                        [instrument]="currentInstrument"
-                        [portfolioKey]="currentPortfolio"
-                        [steps]="settings.limitOrderPriceMoveSteps"
-                      ></ats-limit-order-price-change>
-                    </div>
-
-                  </nz-tab>
-
-                  <nz-tab
-                    *ngIf="ordersConfig.marketOrder.isSupported"
-                    #marketOrderTab
-                    [nzTitle]="toc('orderCommands.marketOrderTabTitle')"
-                  >
-                    <div *ngIf="settings.showVolumePanel && (settings.workingVolumes ?? []).length > 0" class="mb-3">
-                      <ats-working-volumes
-                        (itemSelected)="setCommonParameters({price: $event.price, quantity: $event.volume})"
-                        [instrumentKey]="currentInstrument"
-                        [workingVolumes]="settings.workingVolumes"
-                      ></ats-working-volumes>
-                    </div>
-                    <ats-market-order-form
-                      [activated]="marketOrderTab.isActive"
-                      [instrument]="currentInstrument"
-                      [portfolioKey]="currentPortfolio"
-                    ></ats-market-order-form>
-                  </nz-tab>
-
-                  <nz-tab
-                    *ngIf="ordersConfig.stopOrder.isSupported"
-                    #stopOrderTab
-                    [nzTitle]="toc('orderCommands.stopOrderTabTitle')"
-                  >
-                    <div *ngIf="settings.showVolumePanel && (settings.workingVolumes ?? []).length > 0" class="mb-3">
-                      <ats-working-volumes
-                        (itemSelected)="setCommonParameters({price: $event.price, quantity: $event.volume})"
-                        [instrumentKey]="currentInstrument"
-                        [workingVolumes]="settings.workingVolumes"
-                      ></ats-working-volumes>
-                    </div>
-                    <ats-stop-order-form
-                      [instrument]="currentInstrument"
-                      [portfolioKey]="currentPortfolio"
-                      [activated]="stopOrderTab.isActive"
-                    ></ats-stop-order-form>
-                  </nz-tab>
-
-                  <nz-tab
-                    #notificationsTab
-                    [nzTitle]="titleTemplate"
-                    *ngIf="pushNotificationsConfig.priceChangeNotifications.isSupported"
-                  >
-                    <ng-template #titleTemplate>
-                  <span>
-                    <span nz-icon nzTheme="outline" nzType="bell"></span>
-                    <span class="pl-2">{{toc('orderCommands.notificationsTabTitle')}}</span>
-                  </span>
-                    </ng-template>
-                    <ats-setup-instrument-notifications
-                      [active]="notificationsTab.isActive"
-                      [instrumentKey]="currentInstrument"
-                    >
-                    </ats-setup-instrument-notifications>
-                  </nz-tab>
-                </ng-container>
-              </nz-tabs>
-            </div>
-          </ng-container>
+      <ng-template #contentRef>
+        <ng-container *transloco="let toc; scope: 'order-commands'">
+          @if (currentPortfolio$ | async; as currentPortfolio) {
+            @if (currentInstrument$ | async; as currentInstrument) {
+              <div>
+                <ats-compact-header (priceSelected)="setCommonParameters({price: $event})"
+                  (qtySelected)="setCommonParameters({quantity: $event})"
+                  [currentPortfolio]="currentPortfolio"
+                  [instrument]="currentInstrument"
+                   />
+              </div>
+              <div>
+                <nz-tabs nzSize="small" nzTabPosition="top" #orderTabs>
+                  @if (ordersConfig) {
+                    @if (ordersConfig.limitOrder.isSupported) {
+                      <nz-tab
+                        #limitOrderTab
+                        [nzTitle]="toc('orderCommands.limitOrderTabTitle')"
+                        >
+                        @if (settings.showVolumePanel && settings.workingVolumes.length > 0) {
+                          <div class="mb-3">
+                            <ats-working-volumes (itemSelected)="setCommonParameters({price: $event.price, quantity: $event.volume})"
+                              [instrumentKey]="currentInstrument"
+                              [workingVolumes]="settings.workingVolumes"
+                             />
+                          </div>
+                        }
+                        <div>
+                          <ats-limit-order-form [activated]="limitOrderTab.isActive"
+                            [instrument]="currentInstrument"
+                            [portfolioKey]="currentPortfolio"
+                            [limitOrderConfig]="ordersConfig.limitOrder.orderConfig!"
+                           />
+                        </div>
+                        @if (settings.enableLimitOrdersFastEditing && settings.limitOrderPriceMoveSteps.length > 0) {
+                          <div
+                            class="mt-8">
+                            <ats-limit-order-price-change [instrument]="currentInstrument"
+                              [currentPortfolio]="currentPortfolio"
+                              [steps]="settings.limitOrderPriceMoveSteps"
+                             />
+                          </div>
+                        }
+                      </nz-tab>
+                    }
+                    @if (ordersConfig.marketOrder.isSupported) {
+                      <nz-tab
+                        #marketOrderTab
+                        [nzTitle]="toc('orderCommands.marketOrderTabTitle')"
+                        >
+                        @if (settings.showVolumePanel && settings.workingVolumes.length > 0) {
+                          <div class="mb-3">
+                            <ats-working-volumes (itemSelected)="setCommonParameters({price: $event.price, quantity: $event.volume})"
+                              [instrumentKey]="currentInstrument"
+                              [workingVolumes]="settings.workingVolumes"
+                             />
+                          </div>
+                        }
+                        <ats-market-order-form [activated]="marketOrderTab.isActive"
+                          [instrument]="currentInstrument"
+                          [portfolioKey]="currentPortfolio"
+                         />
+                      </nz-tab>
+                    }
+                    @if (ordersConfig.stopOrder.isSupported) {
+                      <nz-tab
+                        #stopOrderTab
+                        [nzTitle]="toc('orderCommands.stopOrderTabTitle')"
+                        >
+                        @if (settings.showVolumePanel && settings.workingVolumes.length > 0) {
+                          <div class="mb-3">
+                            <ats-working-volumes (itemSelected)="setCommonParameters({price: $event.price, quantity: $event.volume})"
+                              [instrumentKey]="currentInstrument"
+                              [workingVolumes]="settings.workingVolumes"
+                             />
+                          </div>
+                        }
+                        <ats-stop-order-form [instrument]="currentInstrument"
+                          [portfolioKey]="currentPortfolio"
+                          [activated]="stopOrderTab.isActive"
+                         />
+                      </nz-tab>
+                    }
+                    @if (pushNotificationsConfig.priceChangeNotifications.isSupported) {
+                      <nz-tab
+                        #notificationsTab
+                        [nzTitle]="tabTitle"
+                        >
+                        <ng-template #tabTitle>
+                          <span>
+                            <span nz-icon nzTheme="outline" nzType="bell"></span>
+                            <span class="pl-2">{{toc('orderCommands.notificationsTabTitle')}}</span>
+                          </span>
+                        </ng-template>
+                        <ats-setup-instrument-notifications [active]="notificationsTab.isActive"
+                          [instrumentKey]="currentInstrument"
+                           />
+                      </nz-tab>
+                    }
+                  }
+                </nz-tabs>
+              </div>
+            }
+          }
         </ng-container>
-      </ng-container>
-    </ng-template>
-
-    <ng-template #settingsRef>
-      <ats-order-submit-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-order-submit-settings>
-    </ng-template>
-  </ats-widget-skeleton>
+      </ng-template>
+      <ng-template #settingsRef>
+        <ats-order-submit-settings (settingsChange)="onSettingsChange()" [guid]="guid" />
+      </ng-template>
+    </ats-widget-skeleton>
+  }
 
 </ng-container>
 

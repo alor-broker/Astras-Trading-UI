@@ -1,8 +1,8 @@
 import {
   Component,
-  Input,
   TemplateRef,
-  ViewChild
+  input,
+  viewChild
 } from '@angular/core';
 
 @Component({
@@ -10,17 +10,14 @@ import {
     imports: [],
     template: `
     <ng-template>
-      <ng-content></ng-content>
+      <ng-content />
     </ng-template>`,
     preserveWhitespaces: false
 })
 export class ViewSelectorItemComponent {
-  @ViewChild(TemplateRef, {static: true})
-  content!: TemplateRef<void>;
+  readonly content = viewChild.required(TemplateRef);
 
-  @Input()
-  value = '';
+  readonly value = input('');
 
-  @Input()
-  disabled = false;
+  readonly disabled = input(false);
 }

@@ -1,58 +1,67 @@
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  OnInit,
-  Output
-} from '@angular/core';
-import {
-  combineLatest,
-  defer,
-  distinctUntilChanged,
-  Observable,
-  switchMap,
-  take,
-  tap
-} from 'rxjs';
-import {
-  debounceTime,
-  map,
-  mergeMap,
-  startWith
-} from 'rxjs/operators';
-import { BlotterService } from '../../services/blotter.service';
-import { TimezoneConverterService } from '../../../../shared/services/timezone-converter.service';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  isEqualPortfolioDependedSettings
-} from "../../../../shared/utils/settings-helper";
-import { TableSettingHelper } from '../../../../shared/utils/table-setting.helper';
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { ColumnsNames, TableNames } from '../../models/blotter-settings.model';
-import { BaseColumnSettings, FilterType } from "../../../../shared/models/settings/table-settings.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { BlotterBaseTableComponent } from "../blotter-base-table/blotter-base-table.component";
-import {
-  DisplayTrade,
-  TradeFilter
-} from '../../models/trade.model';
-import { TableConfig } from "../../../../shared/models/table-config.model";
-import { defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { NzContextMenuService } from "ng-zorro-antd/dropdown";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
+import {Component, DestroyRef, inject, OnInit, output} from '@angular/core';
+import {combineLatest, defer, distinctUntilChanged, Observable, switchMap, take, tap} from 'rxjs';
+import {debounceTime, map, mergeMap, startWith} from 'rxjs/operators';
+import {BlotterService} from '../../services/blotter.service';
+import {TimezoneConverterService} from '../../../../shared/services/timezone-converter.service';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {isEqualPortfolioDependedSettings} from "../../../../shared/utils/settings-helper";
+import {TableSettingHelper} from '../../../../shared/utils/table-setting.helper';
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {ColumnsNames, TableNames} from '../../models/blotter-settings.model';
+import {BaseColumnSettings, FilterType} from "../../../../shared/models/settings/table-settings.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {BlotterBaseTableComponent} from "../blotter-base-table/blotter-base-table.component";
+import {DisplayTrade, TradeFilter} from '../../models/trade.model';
+import {TableConfig} from "../../../../shared/models/table-config.model";
+import {defaultBadgeColor} from "../../../../shared/utils/instruments";
+import {NzContextMenuService, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
-import { mapWith } from "../../../../shared/utils/observable-helper";
+import {mapWith} from "../../../../shared/utils/observable-helper";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {LetDirective} from '@ngrx/component';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {NzTableModule} from 'ng-zorro-antd/table';
+import {TableRowHeightDirective} from '../../../../shared/directives/table-row-height.directive';
+import {CdkDrag, CdkDropList} from '@angular/cdk/drag-drop';
+import {ResizeColumnDirective} from '../../../../shared/directives/resize-column.directive';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {
+  TableSearchFilterComponent
+} from '../../../../shared/components/table-search-filter/table-search-filter.component';
+import {
+  AddToWatchlistMenuComponent
+} from '../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component';
+import {DecimalPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-trades',
-    templateUrl: './trades.component.html',
-    styleUrls: ['./trades.component.less'],
-    standalone: false
+  selector: 'ats-trades',
+  templateUrl: './trades.component.html',
+  styleUrls: ['./trades.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzEmptyComponent,
+    LetDirective,
+    NzResizeObserverDirective,
+    TableRowHeightDirective,
+    CdkDropList,
+    ResizeColumnDirective,
+    CdkDrag,
+    NzTooltipDirective,
+    NzIconDirective,
+    NzButtonComponent,
+    NzDropdownMenuComponent,
+    TableSearchFilterComponent,
+    AddToWatchlistMenuComponent,
+    DecimalPipe,
+    NzTableModule
+  ]
 })
 export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, TradeFilter> implements OnInit {
-  @Output()
-  shouldShowSettingsChange = new EventEmitter<boolean>();
-
+  readonly shouldShowSettingsChange = output<boolean>();
   allColumns: BaseColumnSettings<DisplayTrade>[] = [
     {
       id: 'id',
@@ -111,8 +120,8 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
         filterName: 'side',
         filterType: FilterType.DefaultMultiple,
         filters: [
-          { text: 'Покупка', value: 'buy' },
-          { text: 'Продажа', value: 'sell' }
+          {text: 'Покупка', value: 'buy'},
+          {text: 'Продажа', value: 'sell'}
         ]
       },
       tooltip: 'Сторона сделки (покупка/продажа)',
@@ -155,20 +164,21 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
   settingsTableName = TableNames.TradesTable;
   settingsColumnsName = ColumnsNames.TradesColumns;
   fileSuffix = 'trades';
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly service = inject(BlotterService);
+  protected readonly translatorService: TranslatorService;
+  protected readonly nzContextMenuService: NzContextMenuService;
+  protected readonly widgetLocalStateService: WidgetLocalStateService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
 
-  get restoreFiltersAndSortOnLoad(): boolean {
-    return true;
-  }
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const translatorService = inject(TranslatorService);
+    const nzContextMenuService = inject(NzContextMenuService);
+    const widgetLocalStateService = inject(WidgetLocalStateService);
+    const destroyRef = inject(DestroyRef);
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly service: BlotterService,
-    private readonly timezoneConverterService: TimezoneConverterService,
-    protected readonly translatorService: TranslatorService,
-    protected readonly nzContextMenuService: NzContextMenuService,
-    protected readonly widgetLocalStateService: WidgetLocalStateService,
-    protected readonly destroyRef: DestroyRef
-  ) {
     super(
       settingsService,
       translatorService,
@@ -176,10 +186,33 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
       widgetLocalStateService,
       destroyRef
     );
+
+    this.settingsService = settingsService;
+    this.translatorService = translatorService;
+    this.nzContextMenuService = nzContextMenuService;
+    this.widgetLocalStateService = widgetLocalStateService;
+    this.destroyRef = destroyRef;
+  }
+
+  get restoreFiltersAndSortOnLoad(): boolean {
+    return true;
   }
 
   ngOnInit(): void {
     super.ngOnInit();
+  }
+
+  rowClick(row: DisplayTrade): void {
+    this.settings$
+      .pipe(
+        take(1)
+      )
+      .subscribe(s => this.service.selectNewInstrument(
+        row.targetInstrument.symbol,
+        row.targetInstrument.exchange,
+        row.targetInstrument.instrumentGroup ?? null,
+        s.badgeColor ?? defaultBadgeColor
+      ));
   }
 
   protected initTableConfigStream(): Observable<TableConfig<DisplayTrade>> {
@@ -204,7 +237,7 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
       mapWith(() => tableState$, (source, output) => ({...source, ...output})),
       takeUntilDestroyed(this.destroyRef),
       tap(x => {
-        if(x.filters != null) {
+        if (x.filters != null) {
           this.filterChange(x.filters);
         }
       }),
@@ -217,8 +250,8 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
             .filter(c => !!c.columnSettings)
             .map((column, index) => ({
               ...column.column,
-              displayName: x.translator(['columns', column.column.id, 'name'], { fallback: column.column.displayName }),
-              tooltip: x.translator(['columns', column.column.id, 'tooltip'], { fallback: column.column.tooltip }),
+              displayName: x.translator(['columns', column.column.id, 'name'], {fallback: column.column.displayName}),
+              tooltip: x.translator(['columns', column.column.id, 'tooltip'], {fallback: column.column.tooltip}),
               filterData: column.column.filterData
                 ? {
                   ...column.column.filterData,
@@ -262,19 +295,6 @@ export class TradesComponent extends BlotterBaseTableComponent<DisplayTrade, Tra
         map(f => trades.filter(t => this.justifyFilter(t, f)))
       ))
     );
-  }
-
-  rowClick(row: DisplayTrade): void {
-    this.settings$
-      .pipe(
-        take(1)
-      )
-      .subscribe(s => this.service.selectNewInstrument(
-        row.targetInstrument.symbol,
-        row.targetInstrument.exchange,
-        row.targetInstrument.instrumentGroup ?? null,
-        s.badgeColor ?? defaultBadgeColor
-      ));
   }
 
   protected rowToInstrumentKey(row: DisplayTrade): Observable<InstrumentKey | null> {

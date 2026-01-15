@@ -1,48 +1,84 @@
-import {
-  Component,
-  DestroyRef,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import { BaseEditOrderFormComponent } from "../base-edit-order-form.component";
-import { FormBuilder, Validators } from "@angular/forms";
-import { CommonParametersService } from "../../../services/common-parameters.service";
-import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
-import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
-import { Order, TimeInForce } from "../../../../../shared/models/orders/order.model";
-import { debounceTime, filter, map, startWith, switchMap } from "rxjs/operators";
-import { OrderDetailsService } from "../../../../../shared/services/orders/order-details.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { BehaviorSubject, combineLatest, distinctUntilChanged, Observable, shareReplay, take } from "rxjs";
-import { InstrumentsService } from "../../../../instruments/services/instruments.service";
-import { AtsValidators } from "../../../../../shared/utils/form-validators";
-import { EvaluationBaseProperties } from "../../../../../shared/models/evaluation-base-properties.model";
-import { PriceDiffHelper } from "../../../utils/price-diff.helper";
-import { LimitOrderEdit } from "../../../../../shared/models/orders/edit-order.model";
-import { toInstrumentKey } from "../../../../../shared/utils/instruments";
+import { Component, DestroyRef, OnDestroy, OnInit, input, inject } from '@angular/core';
+import {BaseEditOrderFormComponent} from "../base-edit-order-form.component";
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {CommonParametersService} from "../../../services/common-parameters.service";
+import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
+import {inputNumberValidation} from "../../../../../shared/utils/validation-options";
+import {Order, TimeInForce} from "../../../../../shared/models/orders/order.model";
+import {debounceTime, filter, map, startWith, switchMap} from "rxjs/operators";
+import {OrderDetailsService} from "../../../../../shared/services/orders/order-details.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {BehaviorSubject, combineLatest, distinctUntilChanged, Observable, shareReplay, take} from "rxjs";
+import {InstrumentsService} from "../../../../instruments/services/instruments.service";
+import {AtsValidators} from "../../../../../shared/utils/form-validators";
+import {EvaluationBaseProperties} from "../../../../../shared/models/evaluation-base-properties.model";
+import {PriceDiffHelper} from "../../../utils/price-diff.helper";
+import {LimitOrderEdit} from "../../../../../shared/models/orders/edit-order.model";
+import {toInstrumentKey} from "../../../../../shared/utils/instruments";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {InputNumberComponent} from '../../../../../shared/components/input-number/input-number.component';
+import {ShortNumberComponent} from '../../../../../shared/components/short-number/short-number.component';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzCollapseComponent, NzCollapsePanelComponent} from 'ng-zorro-antd/collapse';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {NzCheckboxComponent} from 'ng-zorro-antd/checkbox';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {OrderEvaluationComponent} from '../../order-evaluation/order-evaluation.component';
+import {AsyncPipe, DecimalPipe, KeyValuePipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-edit-limit-order-form',
-    templateUrl: './edit-limit-order-form.component.html',
-    styleUrls: ['./edit-limit-order-form.component.less'],
-    standalone: false
+  selector: 'ats-edit-limit-order-form',
+  templateUrl: './edit-limit-order-form.component.html',
+  styleUrls: ['./edit-limit-order-form.component.less'],
+  imports: [
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzColDirective,
+    NzFormItemComponent,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    InputNumberComponent,
+    ShortNumberComponent,
+    NzTooltipDirective,
+    NzCollapseComponent,
+    NzCollapsePanelComponent,
+    NzSelectComponent,
+    NzOptionComponent,
+    NzCheckboxComponent,
+    NzTypographyComponent,
+    OrderEvaluationComponent,
+    AsyncPipe,
+    DecimalPipe,
+    KeyValuePipe
+  ]
 })
 export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent implements OnInit, OnDestroy {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly orderDetailsService = inject(OrderDetailsService);
+  protected readonly instrumentService: InstrumentsService;
+  private readonly commonParametersService = inject(CommonParametersService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly orderCommandService = inject(ConfirmableOrderCommandsService);
+  protected readonly destroyRef: DestroyRef;
+
   timeInForceEnum = TimeInForce;
   currentOrder$!: Observable<Order>;
   readonly evaluationRequest$ = new BehaviorSubject<EvaluationBaseProperties | null>(null);
   currentPriceDiffPercent$!: Observable<{ percent: number, sign: number } | null>;
 
-  @Input()
-  initialValues: {
+  readonly initialValues = input<{
     price?: number;
     quantity?: number;
     hasPriceChanged?: boolean;
-  } | null = null;
+} | null>(null);
 
-  form = this.formBuilder.group({
+  readonly form = this.formBuilder.group({
     quantity: this.formBuilder.nonNullable.control(
       1,
       {
@@ -76,21 +112,20 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
     )
   });
 
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly orderDetailsService: OrderDetailsService,
-    protected readonly instrumentService: InstrumentsService,
-    private readonly commonParametersService: CommonParametersService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly orderCommandService: ConfirmableOrderCommandsService,
-    protected readonly destroyRef: DestroyRef) {
+  constructor() {
+    const instrumentService = inject(InstrumentsService);
+    const destroyRef = inject(DestroyRef);
+
     super(instrumentService, destroyRef);
+
+    this.instrumentService = instrumentService;
+    this.destroyRef = destroyRef;
   }
 
   ngOnInit(): void {
     this.currentOrder$ = combineLatest({
-      orderId: this.orderId$,
-      portfolioKey: this.portfolioKey$
+      orderId: this.orderIdChanges$,
+      portfolioKey: this.portfolioKeyChanges$
     }).pipe(
       filter(x => x.orderId != null && x.portfolioKey != null),
       switchMap(x => this.orderDetailsService.getLimitOrderDetails(x.orderId!, x.portfolioKey!)),
@@ -108,7 +143,6 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
   }
 
   ngOnDestroy(): void {
-    super.ngOnDestroy();
     this.evaluationRequest$.complete();
   }
 
@@ -135,8 +169,9 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
         AtsValidators.priceStepMultiplicity(x.currentInstrument.minstep)
       ]);
 
-      this.form.controls.price.setValue(this.initialValues?.price ?? x.currentOrder.price);
-      this.form.controls.quantity.setValue(this.initialValues?.quantity ?? (x.currentOrder.qty - (x.currentOrder.filledQtyBatch ?? 0)));
+      const initialValues = this.initialValues();
+      this.form.controls.price.setValue(initialValues?.price ?? x.currentOrder.price);
+      this.form.controls.quantity.setValue(initialValues?.quantity ?? (x.currentOrder.qty - (x.currentOrder.filledQtyBatch ?? 0)));
 
       this.form.controls.timeInForce.setValue(x.currentOrder.timeInForce ?? null);
 
@@ -278,7 +313,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
   private prepareUpdateStream(): Observable<boolean> {
     return combineLatest({
       currentOrder: this.currentOrder$,
-      portfolioKey: this.portfolioKey$
+      portfolioKey: this.portfolioKeyChanges$
     }).pipe(
       filter(x => !!(x.currentOrder as Order | null) && !!x.portfolioKey),
       filter(() => this.form.valid),
@@ -288,7 +323,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
         const updatedOrder = {
           orderId: x.currentOrder.id,
           instrument: x.currentOrder.targetInstrument,
-          side:  x.currentOrder.side,
+          side: x.currentOrder.side,
           price: Number(formValue.price),
           quantity: Number(formValue.quantity)
         } as LimitOrderEdit;

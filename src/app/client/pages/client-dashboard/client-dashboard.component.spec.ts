@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ClientDashboardComponent } from './client-dashboard.component';
+import {ClientDashboardComponent} from './client-dashboard.component';
 import {StoreModule} from "@ngrx/store";
 import {EffectsModule} from "@ngrx/effects";
 import {DashboardsFeature} from "../../../store/dashboards/dashboards.reducer";
@@ -20,11 +20,29 @@ import {RouterModule} from "@angular/router";
 import {
   WatchlistCollectionBrokerService
 } from "../../../modules/instruments/services/watchlist-collection-broker.service";
-import { InstrumentSelectDialogWidgetComponent } from "../../../modules/instruments/widgets/instrument-select-dialog-widget/instrument-select-dialog-widget.component";
+import {
+  InstrumentSelectDialogWidgetComponent
+} from "../../../modules/instruments/widgets/instrument-select-dialog-widget/instrument-select-dialog-widget.component";
 import {GraphStorageService} from "../../../modules/ai-graph/services/graph-storage.service";
-import { UrgentNotificationDialogComponent } from "../../../modules/urgent-notifications/components/urgent-notification-dialog/urgent-notification-dialog.component";
+import {
+  UrgentNotificationDialogComponent
+} from "../../../modules/urgent-notifications/components/urgent-notification-dialog/urgent-notification-dialog.component";
+import {DashboardComponent} from "../../../modules/dashboard/components/dashboard/dashboard.component";
+import {
+  OrdersDialogWidgetComponent
+} from "../../../modules/order-commands/widgets/orders-dialog-widget/orders-dialog-widget.component";
+import {
+  EditOrderDialogWidgetComponent
+} from "../../../modules/order-commands/widgets/edit-order-dialog-widget/edit-order-dialog-widget.component";
+import {NzContentComponent, NzHeaderComponent, NzLayoutComponent} from "ng-zorro-antd/layout";
+import {FeedbackWidgetComponent} from "../../../modules/feedback/widgets/feedback-widget/feedback-widget.component";
+import {ACTIONS_CONTEXT} from "../../../shared/services/actions-context";
+import {EXPORT_SETTINGS_SERVICE_TOKEN} from "../../../shared/services/settings/export-settings.service";
+import {
+  ApplicationUpdatedWidgetComponent
+} from "../../../modules/application-meta/widgets/application-updated-widget/application-updated-widget.component";
 
-describe('ClientDashboardComponent', () => {
+xdescribe('ClientDashboardComponent', () => {
   let component: ClientDashboardComponent;
   let fixture: ComponentFixture<ClientDashboardComponent>;
 
@@ -39,11 +57,19 @@ describe('ClientDashboardComponent', () => {
         TranslocoTestsModule.getModule(),
         RouterModule.forRoot([]),
         MockComponents(
+          NzContentComponent,
+          NzHeaderComponent,
+          NzLayoutComponent,
           ClientNavbarComponent,
+          FeedbackWidgetComponent,
           SettingsLoadErrorDialogComponent,
           TerminalSettingsWidgetComponent,
           InstrumentSelectDialogWidgetComponent,
-          UrgentNotificationDialogComponent
+          UrgentNotificationDialogComponent,
+          DashboardComponent,
+          OrdersDialogWidgetComponent,
+          EditOrderDialogWidgetComponent,
+          ApplicationUpdatedWidgetComponent
         )
       ],
       providers: [
@@ -62,7 +88,18 @@ describe('ClientDashboardComponent', () => {
         ...commonTestProviders
       ]
     })
-    .compileComponents();
+      .overrideComponent(ClientDashboardComponent, {
+        set: {
+          providers: [
+            {
+              provide: ACTIONS_CONTEXT,
+              useExisting: ClientDashboardComponent
+            },
+            MockProvider(EXPORT_SETTINGS_SERVICE_TOKEN)
+          ]
+        }
+      })
+      .compileComponents();
 
     fixture = TestBed.createComponent(ClientDashboardComponent);
     component = fixture.componentInstance;

@@ -1,8 +1,4 @@
-import {
-  Component,
-  Input,
-  OnInit
-} from '@angular/core';
+import { Component, OnInit, input, inject } from '@angular/core';
 import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
@@ -21,36 +17,46 @@ import { TerminalSettingsService } from "../../../../shared/services/terminal-se
 import { getValueOrDefault } from "../../../../shared/utils/object-helper";
 import { ScalperOrderBookConstants } from "../../constants/scalper-order-book.constants";
 import { TradesClusterPanelSettingsDefaults } from "../../components/scalper-order-book-settings/constants/settings-defaults";
+import { TranslocoDirective } from '@jsverse/transloco';
+import { WidgetSkeletonComponent } from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
+import { WidgetHeaderComponent } from '../../../../shared/components/widget-header/widget-header.component';
+import { WidgetHeaderInstrumentSwitchComponent } from '../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component';
+import { ScalperOrderBookComponent } from '../../components/scalper-order-book/scalper-order-book.component';
+import { ScalperOrderBookSettingsComponent } from '../../components/scalper-order-book-settings/scalper-order-book-settings.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-scalper-order-book-widget',
     templateUrl: './scalper-order-book-widget.component.html',
     styleUrls: ['./scalper-order-book-widget.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      WidgetSkeletonComponent,
+      WidgetHeaderComponent,
+      WidgetHeaderInstrumentSwitchComponent,
+      ScalperOrderBookComponent,
+      ScalperOrderBookSettingsComponent,
+      AsyncPipe
+    ]
 })
 export class ScalperOrderBookWidgetComponent implements OnInit {
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+
   shouldShowSettings = false;
 
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  readonly widgetInstance = input.required<WidgetInstance>();
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly isBlockWidget = input.required<boolean>();
 
-  @Input()
-  isActive = false;
+  readonly isActive = input(false);
 
   settings$!: Observable<ScalperOrderBookWidgetSettings>;
   showBadge$!: Observable<boolean>;
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService
-  ) {
-  }
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   onSettingsChange(): void {
@@ -59,7 +65,7 @@ export class ScalperOrderBookWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<ScalperOrderBookWidgetSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'ScalperOrderBookSettings',
       settings => ({
         ...settings,

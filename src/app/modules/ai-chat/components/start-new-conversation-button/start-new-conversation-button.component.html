@@ -1,7 +1,7 @@
 <ng-container *transloco="let t; scope: 'ai-chat/start-new-conversation-button'">
   <a
     (click)="clicked.emit()"
-    [disabled]="atsDisabled"
+    [disabled]="atsDisabled()"
     [nz-tooltip]="t('aiChatStartNewConversationButton.tooltip')"
     [nzTooltipMouseEnterDelay]="1"
     nz-button

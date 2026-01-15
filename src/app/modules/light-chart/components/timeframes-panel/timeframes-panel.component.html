@@ -3,23 +3,23 @@
   *ngrxLet="actualDisplayMode$ as actualDisplayMode"
   class="w-100 position-absolute"
   nzResizeObserver
->
+  >
   <ng-container *transloco="let t; scope: 'light-chart'">
     <ng-container>
-      <ng-container *ngIf="actualDisplayMode === timeFrameDisplayModes.Buttons">
+      @if (actualDisplayMode === timeFrameDisplayModes.Buttons) {
         <div #buttonsContainer class="position-absolute z-3 d-flex flex-nowrap flex-row flex-gap-1">
-          <ng-container *ngFor="let timeframe of availableTimeframes">
+          @for (timeframe of availableTimeframes(); track timeframe) {
             <button
               (click)="changeTimeframe.emit(timeframe)"
-              [nzType]="selectedTimeframe === timeframe ? 'primary': 'default'"
+              [nzType]="selectedTimeframe() === timeframe ? 'primary': 'default'"
               nz-button
-            >
+              >
               {{t('lightChart.timeframes.' + timeframe)}}
             </button>
-          </ng-container>
+          }
         </div>
-      </ng-container>
-      <ng-container *ngIf="actualDisplayMode === timeFrameDisplayModes.Menu">
+      }
+      @if (actualDisplayMode === timeFrameDisplayModes.Menu) {
         <button
           [nzDropdownMenu]="timeFramesMenu"
           [nzType]="'primary'"
@@ -27,20 +27,20 @@
           nz-button
           nz-dropdown
           nzShape="round">
-          {{t('lightChart.timeframes.' + selectedTimeframe)}}
+          {{t('lightChart.timeframes.' + selectedTimeframe())}}
         </button>
         <nz-dropdown-menu #timeFramesMenu="nzDropdownMenu">
           <ul nz-menu nzSelectable>
-            <ng-container *ngFor="let timeframe of availableTimeframes">
+            @for (timeframe of availableTimeframes(); track timeframe) {
               <li (click)="changeTimeframe.emit(timeframe)"
-                  [nzSelected]="timeframe === selectedTimeframe"
-                  nz-menu-item>
+                [nzSelected]="timeframe === selectedTimeframe()"
+                nz-menu-item>
                 {{t('lightChart.timeframes.' + timeframe)}}
               </li>
-            </ng-container>
+            }
           </ul>
         </nz-dropdown-menu>
-      </ng-container>
+      }
     </ng-container>
   </ng-container>
 </div>

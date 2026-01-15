@@ -1,17 +1,5 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  ElementRef,
-  Inject,
-  InjectionToken,
-  Input,
-  OnDestroy,
-  OnInit,
-  SkipSelf,
-  ViewChild
-} from '@angular/core';
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { AfterViewInit, Component, DestroyRef, ElementRef, InjectionToken, OnDestroy, OnInit, input, viewChild, inject } from '@angular/core';
+import {CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {
   BehaviorSubject,
   combineLatest,
@@ -24,45 +12,54 @@ import {
   take,
   withLatestFrom,
 } from 'rxjs';
-import { PriceRowsStore } from '../../utils/price-rows-store';
-import {
-  map,
-  switchMap
-} from 'rxjs/operators';
-import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
-import { ListRange } from '@angular/cdk/collections';
-import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
-import { ScalperOrderBookDataProvider } from '../../services/scalper-order-book-data-provider.service';
-import {
-  PriceRow,
-  ScalperOrderBookRowType
-} from '../../models/scalper-order-book.model';
-import { ScalperOrderBookTableHelper } from '../../utils/scalper-order-book-table.helper';
-import { ScalperOrderBookWidgetSettings } from '../../models/scalper-order-book-settings.model';
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {PriceRowsStore} from '../../utils/price-rows-store';
+import {map, switchMap} from 'rxjs/operators';
+import {ContentSize} from '../../../../shared/models/dashboard/dashboard-item.model';
+import {ListRange} from '@angular/cdk/collections';
+import {ScalperOrderBookDataContext} from '../../models/scalper-order-book-data-context.model';
+import {ScalperOrderBookDataProvider} from '../../services/scalper-order-book-data-provider.service';
+import {PriceRow, ScalperOrderBookRowType} from '../../models/scalper-order-book.model';
+import {ScalperOrderBookTableHelper} from '../../utils/scalper-order-book-table.helper';
+import {ScalperOrderBookWidgetSettings} from '../../models/scalper-order-book-settings.model';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {
   SCALPER_ORDERBOOK_SHARED_CONTEXT,
   ScalperOrderBookSharedContext
 } from "../scalper-order-book/scalper-order-book.component";
-import {
-  CdkDragEnd,
-  Point
-} from "@angular/cdk/drag-drop";
-import { WidgetLocalStateService } from "../../../../shared/services/widget-local-state.service";
-import { Side } from "../../../../shared/models/enums/side.model";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
-import { toInstrumentKey } from "../../../../shared/utils/instruments";
+import {CdkDrag, CdkDragEnd, Point} from "@angular/cdk/drag-drop";
+import {WidgetLocalStateService} from "../../../../shared/services/widget-local-state.service";
+import {Side} from "../../../../shared/models/enums/side.model";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {isInstrumentEqual} from "../../../../shared/utils/settings-helper";
+import {toInstrumentKey} from "../../../../shared/utils/instruments";
 import {
   ActiveOrderBookHotKeysTypes,
   AllOrderBooksHotKeysTypes
 } from "../../../../shared/models/terminal-settings/terminal-settings.model";
-import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
-import { ScalperOrderBookSettingsWriteService } from "../../services/scalper-order-book-settings-write.service";
-import { QuotesService } from "../../../../shared/services/quotes.service";
-import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
-import { AllTradesService } from "../../../../shared/services/all-trades.service";
-import { DataContextBuilder } from "../../utils/data-context-builder";
+import {ScalperHotKeyCommandService} from "../../services/scalper-hot-key-command.service";
+import {ScalperOrderBookSettingsWriteService} from "../../services/scalper-order-book-settings-write.service";
+import {QuotesService} from "../../../../shared/services/quotes.service";
+import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
+import {AllTradesService} from "../../../../shared/services/all-trades.service";
+import {DataContextBuilder} from "../../utils/data-context-builder";
+import {TopPanelComponent} from '../top-panel/top-panel.component';
+import {LetDirective} from '@ngrx/component';
+import {NzSpinComponent} from 'ng-zorro-antd/spin';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {PanelsContainerComponent} from '../panels/panels-container/panels-container.component';
+import {PanelComponent} from '../panels/panel/panel.component';
+import {TradeClustersPanelComponent} from '../trade-clusters-panel/trade-clusters-panel.component';
+import {TradesPanelComponent} from '../trades-panel/trades-panel.component';
+import {ScalperOrderBookTableComponent} from '../scalper-order-book-table/scalper-order-book-table.component';
+import {
+  LimitOrdersVolumeIndicatorComponent
+} from '../limit-orders-volume-indicator/limit-orders-volume-indicator.component';
+import {OrdersIndicatorComponent} from '../orders-indicator/orders-indicator.component';
+import {TopFloatingPanelComponent} from '../top-floating-panel/top-floating-panel.component';
+import {BottomFloatingPanelComponent} from '../bottom-floating-panel/bottom-floating-panel.component';
+import {PossibleActionsPanelComponent} from '../possible-actions-panel/possible-actions-panel.component';
+import {NzEmptyComponent} from 'ng-zorro-antd/empty';
+import {AsyncPipe} from '@angular/common';
 
 export interface ScalperOrderBookBodyRef {
   getElement(): ElementRef<HTMLElement>;
@@ -82,21 +79,54 @@ interface ScaleState {
 }
 
 @Component({
-    selector: 'ats-scalper-order-book-body',
-    templateUrl: './scalper-order-book-body.component.html',
-    styleUrls: ['./scalper-order-book-body.component.less'],
-    providers: [
-        PriceRowsStore,
-        { provide: SCALPER_ORDERBOOK_BODY_REF, useExisting: ScalperOrderBookBodyComponent },
-        { provide: RULER_CONTEX, useExisting: ScalperOrderBookBodyComponent }
-    ],
-    standalone: false
+  selector: 'ats-scalper-order-book-body',
+  templateUrl: './scalper-order-book-body.component.html',
+  styleUrls: ['./scalper-order-book-body.component.less'],
+  providers: [
+    PriceRowsStore,
+    {provide: SCALPER_ORDERBOOK_BODY_REF, useExisting: ScalperOrderBookBodyComponent},
+    {provide: RULER_CONTEX, useExisting: ScalperOrderBookBodyComponent}
+  ],
+  imports: [
+    TopPanelComponent,
+    LetDirective,
+    NzSpinComponent,
+    CdkVirtualScrollViewport,
+    CdkFixedSizeVirtualScroll,
+    NzResizeObserverDirective,
+    CdkVirtualForOf,
+    PanelsContainerComponent,
+    PanelComponent,
+    TradeClustersPanelComponent,
+    TradesPanelComponent,
+    ScalperOrderBookTableComponent,
+    LimitOrdersVolumeIndicatorComponent,
+    OrdersIndicatorComponent,
+    CdkDrag,
+    TopFloatingPanelComponent,
+    BottomFloatingPanelComponent,
+    PossibleActionsPanelComponent,
+    NzEmptyComponent,
+    AsyncPipe
+  ]
 })
 export class ScalperOrderBookBodyComponent implements OnInit,
   AfterViewInit,
   OnDestroy,
   ScalperOrderBookBodyRef,
   RulerContext {
+  private readonly scalperOrderBookSharedContext = inject<ScalperOrderBookSharedContext>(SCALPER_ORDERBOOK_SHARED_CONTEXT, { skipSelf: true });
+  private readonly scalperOrderBookDataProvider = inject(ScalperOrderBookDataProvider);
+  private readonly settingsWriteService = inject(ScalperOrderBookSettingsWriteService);
+  private readonly priceRowsStore = inject(PriceRowsStore);
+  private readonly quotesService = inject(QuotesService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly allTradesService = inject(AllTradesService);
+  private readonly hotkeysService = inject(ScalperHotKeyCommandService);
+  private readonly widgetLocalStateService = inject(WidgetLocalStateService);
+  private readonly ref = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly maxScaleFactor = 10;
   readonly sides = Side;
   readonly panelIds = {
@@ -107,20 +137,15 @@ export class ScalperOrderBookBodyComponent implements OnInit,
 
   rowHeight$!: Observable<number>;
 
-  @ViewChild(CdkVirtualScrollViewport)
-  scrollContainer!: CdkVirtualScrollViewport;
+  readonly scrollContainer = viewChild.required(CdkVirtualScrollViewport);
 
-  @ViewChild('topFloatingPanelContainer', {static: false})
-  topFloatingPanelContainer?: ElementRef<HTMLDivElement>;
+  readonly topFloatingPanelContainer = viewChild<ElementRef<HTMLDivElement>>('topFloatingPanelContainer');
 
-  @ViewChild('bottomFloatingPanelContainer', {static: false})
-  bottomFloatingPanelContainer?: ElementRef<HTMLDivElement>;
+  readonly bottomFloatingPanelContainer = viewChild<ElementRef<HTMLDivElement>>('bottomFloatingPanelContainer');
 
-  @Input({required: true})
-  guid!: string;
+  readonly guid = input.required<string>();
 
-  @Input()
-  isActive = false;
+  readonly isActive = input(false);
 
   readonly isLoading$ = new BehaviorSubject(false);
   dataContext!: ScalperOrderBookDataContext;
@@ -136,22 +161,6 @@ export class ScalperOrderBookBodyComponent implements OnInit,
   private readonly hoveredPriceRow$ = new BehaviorSubject<{ price: number } | null>(null);
   private lastContainerHeight = 0;
   private widgetSettings$!: Observable<ScalperOrderBookWidgetSettings>;
-
-  constructor(
-    @Inject(SCALPER_ORDERBOOK_SHARED_CONTEXT)
-    @SkipSelf()
-    private readonly scalperOrderBookSharedContext: ScalperOrderBookSharedContext,
-    private readonly scalperOrderBookDataProvider: ScalperOrderBookDataProvider,
-    private readonly settingsWriteService: ScalperOrderBookSettingsWriteService,
-    private readonly priceRowsStore: PriceRowsStore,
-    private readonly quotesService: QuotesService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly allTradesService: AllTradesService,
-    private readonly hotkeysService: ScalperHotKeyCommandService,
-    private readonly widgetLocalStateService: WidgetLocalStateService,
-    private readonly ref: ElementRef<HTMLElement>,
-    private readonly destroyRef: DestroyRef) {
-  }
 
   get hoveredRow$(): Observable<{ price: number } | null> {
     return this.hoveredPriceRow$.asObservable();
@@ -189,17 +198,17 @@ export class ScalperOrderBookBodyComponent implements OnInit,
 
     this.topFloatingPanelPosition$ = this.initFloatingPanelPosition(
       this.topFloatingPanelPositionStateKey,
-      () => this.topFloatingPanelContainer?.nativeElement.getBoundingClientRect() ?? null
+      () => this.topFloatingPanelContainer()?.nativeElement.getBoundingClientRect() ?? null
     );
 
     this.bottomFloatingPanelPosition$ = this.initFloatingPanelPosition(
       this.bottomFloatingPanelPositionStateKey,
-      () => this.bottomFloatingPanelContainer?.nativeElement.getBoundingClientRect() ?? null
+      () => this.bottomFloatingPanelContainer()?.nativeElement.getBoundingClientRect() ?? null
     );
   }
 
   ngAfterViewInit(): void {
-    this.scrollContainer.renderedRangeStream.pipe(
+    this.scrollContainer().renderedRangeStream.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => this.renderItemsRange$.next({
         start: x.start,
@@ -240,7 +249,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
   saveFloatingPanelPosition(event: CdkDragEnd, stateKey: string): void {
     const position = event.source.getFreeDragPosition();
     this.widgetLocalStateService.setStateRecord<Point>(
-      this.guid,
+      this.guid(),
       stateKey,
       position
     );
@@ -272,7 +281,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
         })
       ),
       switchMap(s => s.enabled ? interval(s.interval * 1000) : NEVER),
-      filter(() => !this.isActive),
+      filter(() => !this.isActive()),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
       this.alignTable();
@@ -287,8 +296,8 @@ export class ScalperOrderBookBodyComponent implements OnInit,
       this.rowHeight$
     ]).pipe(
       map(([orderBookBody, currentOrders, , rowHeight]) => {
-        const topOffset = this.scrollContainer.measureScrollOffset('top');
-        const bottomOffset = topOffset + this.scrollContainer.getViewportSize();
+        const topOffset = this.scrollContainer().measureScrollOffset('top');
+        const bottomOffset = topOffset + this.scrollContainer().getViewportSize();
 
         const topVisibleIndex = Math.ceil(topOffset / rowHeight);
         const bottomVisibleIndex = Math.round(bottomOffset / rowHeight) - 1;
@@ -356,7 +365,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
     const setScaleFactor = (scaleFactor: number, instrumentKey: InstrumentKey): void => {
       this.scalperOrderBookSharedContext.setScaleFactor(scaleFactor);
       this.widgetLocalStateService.setStateRecord<ScaleState>(
-        this.guid,
+        this.guid(),
         getStorageKey(instrumentKey),
         {
           scaleFactor
@@ -394,7 +403,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
     ).subscribe(settings => {
       const storageKey = getStorageKey(settings);
 
-      this.widgetLocalStateService.getStateRecord<ScaleState>(this.guid, storageKey).pipe(
+      this.widgetLocalStateService.getStateRecord<ScaleState>(this.guid(), storageKey).pipe(
         take(1)
       ).subscribe(savedValue => {
         if (savedValue != null) {
@@ -408,7 +417,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
 
   private initContext(): void {
     this.dataContext = DataContextBuilder.buildContext({
-        widgetGuid: this.guid,
+        widgetGuid: this.guid(),
         bodyStreams: {
           contentSize$: this.contentSize$,
           rowHeight$: this.rowHeight$,
@@ -429,7 +438,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
         changeNotifications: {
           priceRowsRegenerationStarted: () => this.isLoading$.next(true),
           priceRowsRegenerationCompleted: () => {
-            this.scrollContainer.checkViewportSize();
+            this.scrollContainer().checkViewportSize();
             this.alignTable();
             this.isLoading$.next(false);
           }
@@ -457,7 +466,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
   }
 
   private getContainerHeight(): number {
-    return this.scrollContainer.measureViewportSize('vertical');
+    return this.scrollContainer().measureViewportSize('vertical');
   }
 
   private alignTable(): void {
@@ -496,7 +505,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
             const visibleItemsCount = viewPortSize / x.rowHeight;
             const centerCorrection = Math.floor(visibleItemsCount / 2) - 1;
 
-            this.scrollContainer.scrollToIndex(targetIndex! - centerCorrection);
+            this.scrollContainer().scrollToIndex(targetIndex! - centerCorrection);
           }
         });
       });
@@ -505,7 +514,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
 
   private initTableScrolling(): void {
     combineLatest({
-      index: this.scrollContainer.scrolledIndexChange,
+      index: this.scrollContainer().scrolledIndexChange,
       rowHeight: this.rowHeight$
     }).pipe(
       withLatestFrom(this.isLoading$),
@@ -517,14 +526,14 @@ export class ScalperOrderBookBodyComponent implements OnInit,
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
       const bufferItemsCount = 10;
-      const topScrollOffset = this.scrollContainer.measureScrollOffset('top');
-      const bottomScrollOffset = this.scrollContainer.measureScrollOffset('bottom');
+      const topScrollOffset = this.scrollContainer().measureScrollOffset('top');
+      const bottomScrollOffset = this.scrollContainer().measureScrollOffset('bottom');
 
       if ((topScrollOffset / x.rowHeight) < bufferItemsCount) {
         this.isLoading$.next(true);
         this.priceRowsStore.extendTop(bufferItemsCount, (addedItemsCount: number) => {
           ScalperOrderBookTableHelper.scrollTableToIndex(
-            this.scrollContainer,
+            this.scrollContainer(),
             x.rowHeight,
             x.index + addedItemsCount,
             false,
@@ -546,7 +555,7 @@ export class ScalperOrderBookBodyComponent implements OnInit,
   }
 
   private initFloatingPanelPosition(stateKey: string, geContainerBounds: () => DOMRect | null): Observable<Point> {
-    const savedPosition$ = this.widgetLocalStateService.getStateRecord<Point>(this.guid, stateKey).pipe(
+    const savedPosition$ = this.widgetLocalStateService.getStateRecord<Point>(this.guid(), stateKey).pipe(
       map(p => p ?? {x: 0, y: 0})
     );
 

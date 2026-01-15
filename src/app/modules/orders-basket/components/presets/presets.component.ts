@@ -1,42 +1,45 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild
-} from '@angular/core';
-import { DataPreset } from "../../models/orders-basket-settings.model";
+import {Component, ElementRef, input, output, viewChild} from '@angular/core';
+import {DataPreset} from "../../models/orders-basket-settings.model";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzTagComponent} from 'ng-zorro-antd/tag';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
+import {NzInputDirective} from 'ng-zorro-antd/input';
+import {FormsModule} from '@angular/forms';
 
 @Component({
-    selector: 'ats-presets',
-    templateUrl: './presets.component.html',
-    styleUrls: ['./presets.component.less'],
-    standalone: false
+  selector: 'ats-presets',
+  templateUrl: './presets.component.html',
+  styleUrls: ['./presets.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzTagComponent,
+    NzTooltipDirective,
+    NzIconDirective,
+    NzPopconfirmDirective,
+    NzInputDirective,
+    FormsModule
+  ]
 })
 export class PresetsComponent {
-  @ViewChild('inputElement', { static: false })
-  inputElement?: ElementRef<HTMLInputElement>;
+  readonly inputElement = viewChild<ElementRef<HTMLInputElement>>('inputElement');
 
-  @Input({ required: true })
-  guid!: string;
+  readonly guid = input.required<string>();
 
-  @Input({ required: true })
-  presets: DataPreset[] = [];
+  readonly presets = input.required<DataPreset[]>();
 
-  @Input()
-  canAddPreset = false;
+  readonly canAddPreset = input(false);
 
   inputVisible = false;
   inputValue = '';
-  @Output()
-  presetSelected = new EventEmitter<DataPreset>();
+  readonly presetSelected = output<DataPreset>();
 
-  @Output()
-  addPreset = new EventEmitter<{ title: string }>();
+  readonly addPreset = output<{
+    title: string;
+}>();
 
-  @Output()
-  removePreset = new EventEmitter<DataPreset>();
+  readonly removePreset = output<DataPreset>();
 
   sliceTagName(tag: string): string {
     return tag.length > 20
@@ -45,18 +48,18 @@ export class PresetsComponent {
   }
 
   showInput(): void {
-    if(!this.canAddPreset) {
+    if (!this.canAddPreset()) {
       return;
     }
 
     this.inputVisible = true;
     setTimeout(() => {
-      this.inputElement?.nativeElement.focus();
+      this.inputElement()?.nativeElement.focus();
     }, 10);
   }
 
   handleInputConfirm(): void {
-    if(this.inputValue.length > 0) {
+    if (this.inputValue.length > 0) {
       this.addPreset.emit({
         title: this.inputValue
       });

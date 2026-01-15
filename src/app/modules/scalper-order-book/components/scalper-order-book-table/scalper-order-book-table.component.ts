@@ -1,47 +1,40 @@
-import {
-  Component,
-  DestroyRef,
-  Inject,
-  Input,
-  OnInit,
-  SkipSelf
-} from '@angular/core';
-import {
-  BodyRow,
-  CurrentOrderDisplay,
-  ScalperOrderBookRowType,
-} from '../../models/scalper-order-book.model';
-import {
-  combineLatest,
-  Observable,
-} from 'rxjs';
+import { Component, DestroyRef, input, OnInit, inject } from '@angular/core';
+import {BodyRow, CurrentOrderDisplay, ScalperOrderBookRowType,} from '../../models/scalper-order-book.model';
+import {combineLatest, Observable,} from 'rxjs';
 import {
   ScalperOrderBookDataContext,
   ScalperOrderBookExtendedSettings
 } from '../../models/scalper-order-book-data-context.model';
-import { map } from 'rxjs/operators';
-import { mapWith } from '../../../../shared/utils/observable-helper';
-import { Side } from '../../../../shared/models/enums/side.model';
-import { ThemeService } from '../../../../shared/services/theme.service';
-import { ThemeSettings } from '../../../../shared/models/settings/theme-settings.model';
-import { ScalperCommandProcessorService } from '../../services/scalper-command-processor.service';
+import {map} from 'rxjs/operators';
+import {mapWith} from '../../../../shared/utils/observable-helper';
+import {Side} from '../../../../shared/models/enums/side.model';
+import {ThemeService} from '../../../../shared/services/theme.service';
+import {ThemeSettings} from '../../../../shared/models/settings/theme-settings.model';
+import {ScalperCommandProcessorService} from '../../services/scalper-command-processor.service';
 import {
   ScalperOrderBookWidgetSettings,
   VolumeHighlightMode,
   VolumeHighlightOption
 } from '../../models/scalper-order-book-settings.model';
-import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { MathHelper } from "../../../../shared/utils/math-helper";
-import { color } from "d3";
-import { OrderType } from "../../../../shared/models/orders/order.model";
-import { CancelOrdersCommand } from "../../commands/cancel-orders-command";
-import { ScalperHotKeyCommandService } from "../../services/scalper-hot-key-command.service";
-import {
-  RULER_CONTEX,
-  RulerContext,
-} from "../scalper-order-book-body/scalper-order-book-body.component";
-import { ActiveOrderBookHotKeysTypes } from "../../../../shared/models/terminal-settings/terminal-settings.model";
+import {NumberDisplayFormat} from '../../../../shared/models/enums/number-display-format';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {MathHelper} from "../../../../shared/utils/math-helper";
+import {color} from "d3";
+import {OrderType} from "../../../../shared/models/orders/order.model";
+import {CancelOrdersCommand} from "../../commands/cancel-orders-command";
+import {ScalperHotKeyCommandService} from "../../services/scalper-hot-key-command.service";
+import {RULER_CONTEX, RulerContext,} from "../scalper-order-book-body/scalper-order-book-body.component";
+import {ActiveOrderBookHotKeysTypes} from "../../../../shared/models/terminal-settings/terminal-settings.model";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {TableRulerComponent} from '../table-ruler/table-ruler.component';
+import {HoverItemsGroupDirective} from '../../directives/hover-items-group.directive';
+import {HoverItemDirective} from '../../directives/hover-item.directive';
+import {AsyncPipe, NgClass, NgStyle, NgTemplateOutlet} from '@angular/common';
+import {ShortNumberComponent} from '../../../../shared/components/short-number/short-number.component';
+import {CdkDrag, CdkDropList, CdkDropListGroup} from '@angular/cdk/drag-drop';
+import {LetDirective} from '@ngrx/component';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {AtsPricePipe} from '../../../../shared/pipes/ats-price.pipe';
 
 interface VolumeHighlightArguments {
   rowType: ScalperOrderBookRowType;
@@ -58,45 +51,53 @@ interface DisplayRow extends BodyRow {
 }
 
 @Component({
-    selector: 'ats-scalper-order-book-table',
-    templateUrl: './scalper-order-book-table.component.html',
-    styleUrls: ['./scalper-order-book-table.component.less'],
-    standalone: false
+  selector: 'ats-scalper-order-book-table',
+  templateUrl: './scalper-order-book-table.component.html',
+  styleUrls: ['./scalper-order-book-table.component.less'],
+  imports: [
+    TranslocoDirective,
+    TableRulerComponent,
+    HoverItemsGroupDirective,
+    HoverItemDirective,
+    NgClass,
+    NgStyle,
+    NgTemplateOutlet,
+    ShortNumberComponent,
+    CdkDropListGroup,
+    CdkDropList,
+    LetDirective,
+    CdkDrag,
+    NzTooltipDirective,
+    AsyncPipe,
+    AtsPricePipe
+  ]
 })
 export class ScalperOrderBookTableComponent implements OnInit {
+  private readonly cancelOrdersCommand = inject(CancelOrdersCommand);
+  private readonly themeService = inject(ThemeService);
+  private readonly commandProcessorService = inject(ScalperCommandProcessorService);
+  private readonly hotkeysService = inject(ScalperHotKeyCommandService);
+  private readonly rulerContext = inject<RulerContext>(RULER_CONTEX, { skipSelf: true });
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly numberFormats = NumberDisplayFormat;
   readonly rowTypes = ScalperOrderBookRowType;
   readonly orderTypes = OrderType;
 
   ordersSides = Side;
-  @Input({required: true})
-  rowHeight!: number;
+  readonly rowHeight = input.required<number>();
 
   displayItems$!: Observable<DisplayRow[]>;
-  @Input({required: true})
-  dataContext!: ScalperOrderBookDataContext;
 
-  @Input()
-  hideTooltips = false;
+  readonly dataContext = input.required<ScalperOrderBookDataContext>();
 
-  @Input()
-  isActive = false;
+  readonly hideTooltips = input(false);
+
+  readonly isActive = input(false);
 
   showGrowingVolume = false;
 
   readonly hoveredRow$ = this.rulerContext.hoveredRow$;
-
-  constructor(
-    private readonly cancelOrdersCommand: CancelOrdersCommand,
-    private readonly themeService: ThemeService,
-    private readonly commandProcessorService: ScalperCommandProcessorService,
-    private readonly hotkeysService: ScalperHotKeyCommandService,
-    @Inject(RULER_CONTEX)
-    @SkipSelf()
-    private readonly rulerContext: RulerContext,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   getPriceCellClasses(row: BodyRow): any {
     return {
@@ -123,10 +124,6 @@ export class ScalperOrderBookTableComponent implements OnInit {
       'mixed-item': row.rowType === ScalperOrderBookRowType.Mixed,
       'best-row': row.isBest
     };
-  }
-
-  getTrackKey(index: number): number {
-    return index;
   }
 
   ngOnInit(): void {
@@ -165,10 +162,10 @@ export class ScalperOrderBookTableComponent implements OnInit {
   }
 
   mouseDown(e: MouseEvent, row: DisplayRow): void {
-    if(e.button === 0) {
-      this.commandProcessorService.processLeftMouseClick(e, row, this.dataContext);
-    } else if(e.button === 2) {
-      this.commandProcessorService.processRightMouseClick(e, row, this.dataContext);
+    if (e.button === 0) {
+      this.commandProcessorService.processLeftMouseClick(e, row, this.dataContext());
+    } else if (e.button === 2) {
+      this.commandProcessorService.processRightMouseClick(e, row, this.dataContext());
     }
 
     e.preventDefault();
@@ -177,7 +174,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
   }
 
   updateOrderPrice(orders: CurrentOrderDisplay[], row: DisplayRow): void {
-    this.commandProcessorService.updateOrdersPrice(orders, row, this.dataContext);
+    this.commandProcessorService.updateOrdersPrice(orders, row, this.dataContext());
   }
 
   updateHoveredItem(hoveredItem: { price: number } | null): void {
@@ -200,10 +197,10 @@ export class ScalperOrderBookTableComponent implements OnInit {
 
   private initDisplayItems(): void {
     this.displayItems$ = combineLatest([
-      this.dataContext.extendedSettings$,
-      this.dataContext.orderBookBody$,
-      this.dataContext.displayRange$,
-      this.dataContext.currentOrders$,
+      this.dataContext().extendedSettings$,
+      this.dataContext().orderBookBody$,
+      this.dataContext().displayRange$,
+      this.dataContext().currentOrders$,
       this.themeService.getThemeSettings()
     ]).pipe(
       map(([settings, body, displayRange, currentOrders, themeSettings]) => {
@@ -269,15 +266,15 @@ export class ScalperOrderBookTableComponent implements OnInit {
   }
 
   private subscribeToHotkeys(): void {
-    this.dataContext.extendedSettings$.pipe(
+    this.dataContext().extendedSettings$.pipe(
       mapWith(
         () => this.hotkeysService.commands$,
-        (settings, command) => ({ settings, command })
+        (settings, command) => ({settings, command})
       ),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(({ settings, command }) => {
-      if(command.type === ActiveOrderBookHotKeysTypes.toggleGrowingVolumeDisplay) {
-        if(this.isActive) {
+    ).subscribe(({settings, command}) => {
+      if (command.type === ActiveOrderBookHotKeysTypes.toggleGrowingVolumeDisplay) {
+        if (this.isActive()) {
           setTimeout(() => this.showGrowingVolume = !this.showGrowingVolume);
         }
 
@@ -288,7 +285,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
         return;
       }
 
-      this.commandProcessorService.processHotkeyPress(command, this.isActive, this.dataContext);
+      this.commandProcessorService.processHotkeyPress(command, this.isActive(), this.dataContext());
     });
   }
 
@@ -315,9 +312,9 @@ export class ScalperOrderBookTableComponent implements OnInit {
       const size = 100 * (Math.max(args.askVolume, args.bidVolume) / args.maxVolume);
       let backgroundColor = color(themeSettings.themeColors.mixColor);
 
-      if(args.rowType === ScalperOrderBookRowType.Bid) {
+      if (args.rowType === ScalperOrderBookRowType.Bid) {
         backgroundColor = color(themeSettings.themeColors.buyColor);
-      } else if(args.rowType === ScalperOrderBookRowType.Ask) {
+      } else if (args.rowType === ScalperOrderBookRowType.Ask) {
         backgroundColor = color(themeSettings.themeColors.sellColor);
       }
 
@@ -337,7 +334,7 @@ export class ScalperOrderBookTableComponent implements OnInit {
 
       let size = 0;
       const volume = Math.max(args.askVolume, args.bidVolume);
-      const volumeHighlightOption = this.getVolumeHighlightOption(settings,volume);
+      const volumeHighlightOption = this.getVolumeHighlightOption(settings, volume);
       if (!volumeHighlightOption) {
         return null;
       }

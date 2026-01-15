@@ -6,18 +6,18 @@
   [nzMaskClosable]='false'
   (nzOnCancel)="handleCancel()"
   nzDraggable
->
+  >
   <ng-template #header>
     <div class="header">
       {{
       (spreadInfo$ | async)
-        ? t('arbitrageSpreadArbitrageSpreadModalWidget.editTitle')
-        : t('arbitrageSpreadArbitrageSpreadModalWidget.newTitle')
+      ? t('arbitrageSpreadArbitrageSpreadModalWidget.editTitle')
+      : t('arbitrageSpreadArbitrageSpreadModalWidget.newTitle')
       }}
     </div>
   </ng-template>
   <ng-container *nzModalContent>
-    <ats-arbitrage-spread-manage [spread]="spreadInfo$ | async" (formChange)="formChange($event)"></ats-arbitrage-spread-manage>
+    <ats-arbitrage-spread-manage [spread]="spreadInfo$ | async" (formChange)="formChange($event)" />
   </ng-container>
   <ng-container *nzModalFooter>
     <button
@@ -25,9 +25,12 @@
       nz-button
       nzType="primary"
       [disabled]="!formData?.isValid"
-    >
-      <ng-container *ngIf="spreadInfo$ | async; else newExt">{{t('saveBtnText')}}</ng-container>
-      <ng-template #newExt>{{t('addBtnText')}}</ng-template>
+      >
+      @if (spreadInfo$ | async) {
+        {{t('saveBtnText')}}
+      } @else {
+        {{t('addBtnText')}}
+      }
     </button>
     <button nz-button nzType="default" (click)="handleCancel()">{{t('cancelBtnText')}}</button>
   </ng-container>

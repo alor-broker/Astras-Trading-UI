@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Apollo,
   gql
@@ -38,11 +38,8 @@ export enum FetchPolicy {
   providedIn: 'root'
 })
 export class GraphQlService {
-  constructor(
-    private readonly apollo: Apollo,
-    private readonly errorHandlerService: ErrorHandlerService
-  ) {
-  }
+  private readonly apollo = inject(Apollo);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
 
   queryForSchema<TResp>(
     responseSchema: ZodObject<ZodPropertiesOf<TResp>>,

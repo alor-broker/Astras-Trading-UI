@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { RemoteStorageService } from "./remote-storage.service";
 import {
   BehaviorSubject,
@@ -28,16 +28,13 @@ export interface ReadDashboardSettingsResult {
   providedIn: 'root'
 })
 export class DashboardSettingsBrokerService {
+  private readonly remoteStorageService = inject(RemoteStorageService);
+  private readonly applicationMetaService = inject(ApplicationMetaService);
+  private readonly dashboardSettingsMigrationManager = inject(DashboardSettingsDesktopMigrationManager);
+
   private readonly saveRequestDelay = 1000;
   private readonly saveQuery$ = new Subject<Dashboard[]>();
   private saveStream$?: Observable<boolean>;
-
-  constructor(
-    private readonly remoteStorageService: RemoteStorageService,
-    private readonly applicationMetaService: ApplicationMetaService,
-    private readonly dashboardSettingsMigrationManager: DashboardSettingsDesktopMigrationManager
-  ) {
-  }
 
   private get settingsKey(): string {
     return 'dashboards-collection';

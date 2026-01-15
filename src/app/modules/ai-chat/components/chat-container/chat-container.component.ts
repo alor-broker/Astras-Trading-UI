@@ -1,41 +1,28 @@
-import {
-  AfterViewInit,
-  Component,
-  ContentChildren,
-  DestroyRef,
-  ElementRef,
-  QueryList,
-  ViewChild
-} from '@angular/core';
-import { ChatMessageContainerComponent } from "../chat-message-container/chat-message-container.component";
-import {
-  startWith
-} from "rxjs/operators";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { AfterViewInit, Component, contentChildren, DestroyRef, ElementRef, viewChild, inject } from '@angular/core';
+import {ChatMessageContainerComponent} from "../chat-message-container/chat-message-container.component";
+import {startWith} from "rxjs/operators";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 
 @Component({
-    selector: 'ats-chat-container',
-    templateUrl: './chat-container.component.html',
-    styleUrls: ['./chat-container.component.less'],
-    standalone: false
+  selector: 'ats-chat-container',
+  templateUrl: './chat-container.component.html',
+  styleUrls: ['./chat-container.component.less']
 })
 export class ChatContainerComponent implements AfterViewInit {
-  @ViewChild('messagesContainer')
-  messagesContainer!: ElementRef<HTMLDivElement>;
+  private readonly DestroyRef = inject(DestroyRef);
 
-  @ContentChildren(ChatMessageContainerComponent)
-  messages!: QueryList<ChatMessageContainerComponent>;
+  readonly messagesContainer = viewChild.required<ElementRef<HTMLDivElement>>('messagesContainer');
 
-  constructor(private readonly DestroyRef: DestroyRef) {
-  }
+  readonly messages = contentChildren(ChatMessageContainerComponent);
+  private readonly messagesChanges$ = toObservable(this.messages);
 
   ngAfterViewInit(): void {
-    this.messages.changes.pipe(
+    this.messagesChanges$.pipe(
       startWith(0),
       takeUntilDestroyed(this.DestroyRef)
     ).subscribe(() => {
       setTimeout(() => {
-        this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+        this.messagesContainer().nativeElement.scrollTop = this.messagesContainer().nativeElement.scrollHeight;
       });
     });
   }

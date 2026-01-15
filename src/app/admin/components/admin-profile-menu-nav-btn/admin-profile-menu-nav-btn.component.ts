@@ -1,8 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Inject
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {EnvironmentService} from "../../../shared/services/environment.service";
 import {HelpService} from "../../../shared/services/help.service";
 import {SESSION_CONTEXT, SessionContext} from "../../../shared/services/auth/session-context";
@@ -31,16 +27,12 @@ import {AsyncPipe, NgTemplateOutlet} from "@angular/common";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminProfileMenuNavBtnComponent {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly helpService = inject(HelpService);
+  private readonly sessionContext = inject<SessionContext>(SESSION_CONTEXT);
+
   readonly externalLinks = this.environmentService.externalLinks;
   readonly helpLink$ = this.helpService.getSectionHelp('main');
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly helpService: HelpService,
-    @Inject(SESSION_CONTEXT)
-    private readonly sessionContext: SessionContext
-  ) {
-  }
 
   openThirdPartyLink(link: string): void {
     window.open(link, "_blank", 'noopener,noreferrer');

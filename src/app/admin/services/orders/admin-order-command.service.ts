@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { OrderCommandService } from "../../../shared/services/orders/order-command.service";
 import {
   forkJoin,
@@ -38,15 +38,12 @@ export interface OrderCommandResponse {
 
 @Injectable()
 export class AdminOrderCommandService implements OrderCommandService {
-  private readonly baseApiUrl = this.environmentService.apiUrl + '/commandapi/api/v2/admin/orders';
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly instantNotificationsService = inject(OrderInstantTranslatableNotificationsService);
 
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly instantNotificationsService: OrderInstantTranslatableNotificationsService,
-  ) {
-  }
+  private readonly baseApiUrl = this.environmentService.apiUrl + '/commandapi/api/v2/admin/orders';
 
   cancelOrders(cancelRequests: {
     orderId: string;

@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  OnInit
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {Observable, shareReplay} from "rxjs";
 import {PortfolioExtended} from "../../../shared/models/user/portfolio-extended.model";
 import {PortfoliosFeature} from "../../../store/portfolios/portfolios.reducer";
@@ -11,11 +6,11 @@ import {filter, map} from "rxjs/operators";
 import {EntityStatus} from "../../../shared/models/enums/entity-status";
 import {groupPortfoliosByAgreement} from "../../../shared/utils/portfolios";
 import {Store} from "@ngrx/store";
-import { KeyValuePipe, NgForOf, NgIf} from "@angular/common";
+import {KeyValuePipe} from "@angular/common";
 import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {JoyrideModule} from "ngx-joyride";
 import {NzButtonComponent} from "ng-zorro-antd/button";
-import {NzDropdownButtonDirective, NzDropDownDirective, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {NzDropDownDirective, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzInputDirective} from "ng-zorro-antd/input";
 import {NzMenuDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
@@ -33,48 +28,40 @@ import {NzTypographyComponent} from "ng-zorro-antd/typography";
 import {ExternalLinkComponent} from "../../../shared/components/external-link/external-link.component";
 
 @Component({
-    selector: 'ats-select-portfolio-menu-nav-btn',
-    imports: [
-        FormsModule,
-        JoyrideModule,
-        KeyValuePipe,
-        NgForOf,
-        NgIf,
-        NzButtonComponent,
-        NzDropDownDirective,
-        NzDropdownButtonDirective,
-        NzDropdownMenuComponent,
-        NzIconDirective,
-        NzInputDirective,
-        NzMenuDirective,
-        NzMenuItemComponent,
-        NzPopoverDirective,
-        TranslocoDirective,
-        LetDirective,
-        EmptyPortfoliosWarningModalComponent,
-        ReactiveFormsModule,
-        NzTypographyComponent,
-        ExternalLinkComponent
-    ],
-    templateUrl: './select-portfolio-menu-nav-btn.component.html',
-    styleUrl: './select-portfolio-menu-nav-btn.component.less',
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'ats-select-portfolio-menu-nav-btn',
+  imports: [
+    FormsModule,
+    JoyrideModule,
+    KeyValuePipe,
+    NzButtonComponent,
+    NzDropDownDirective,
+    NzDropdownMenuComponent,
+    NzIconDirective,
+    NzInputDirective,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    NzPopoverDirective,
+    TranslocoDirective,
+    LetDirective,
+    EmptyPortfoliosWarningModalComponent,
+    ReactiveFormsModule,
+    NzTypographyComponent,
+    ExternalLinkComponent
+  ],
+  templateUrl: './select-portfolio-menu-nav-btn.component.html',
+  styleUrl: './select-portfolio-menu-nav-btn.component.less',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SelectPortfolioMenuNavBtnComponent implements OnInit {
-  readonly externalLinks = this.environmentService.externalLinks;
   portfolios$!: Observable<Map<string, PortfolioExtended[]>>;
   selectedPortfolio$!: Observable<PortfolioExtended | null>;
-
   showEmptyPortfoliosWarning = false;
   readonly searchControl = new FormControl('');
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly store: Store,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
+  private readonly environmentService = inject(EnvironmentService);
+  readonly externalLinks = this.environmentService.externalLinks;
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly store = inject(Store);
+  private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     this.selectedPortfolio$ = this.dashboardContextService.selectedDashboard$.pipe(

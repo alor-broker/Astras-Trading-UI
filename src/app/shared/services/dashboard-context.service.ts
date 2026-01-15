@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   distinctUntilChanged,
   filter,
@@ -25,11 +25,8 @@ import { MobileDashboardCurrentSelectionActions } from "../../store/mobile-dashb
   providedIn: 'root'
 })
 export class DashboardContextService {
-  constructor(
-    private readonly store: Store,
-    private readonly deviceService: DeviceService,
-  ) {
-  }
+  private readonly store = inject(Store);
+  private readonly deviceService = inject(DeviceService);
 
   get selectedPortfolio$(): Observable<PortfolioKey> {
     return this.selectedPortfolioOrNull$.pipe(

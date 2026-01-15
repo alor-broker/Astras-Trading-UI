@@ -1,10 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  input,
-  OnInit,
-  output
-} from '@angular/core';
+import { Component, DestroyRef, input, OnInit, output, inject } from '@angular/core';
 import { TranslocoDirective } from "@jsverse/transloco";
 import {
   FetchPolicy,
@@ -97,17 +91,20 @@ export interface MarketFilters {
   styleUrl: './market-trends.component.less'
 })
 export class MarketTrendsComponent implements OnInit {
-  itemsCount = input(10);
+  private readonly graphQlService = inject(GraphQlService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  showMoreButton = input(true);
+  readonly itemsCount = input(10);
 
-  sectors = input<MarketSector[]>([]);
+  readonly showMoreButton = input(true);
 
-  extendedFilter = input<ExtendedFilter[]>([]);
+  readonly sectors = input<MarketSector[]>([]);
 
-  fixedHeader = input(false);
+  readonly extendedFilter = input<ExtendedFilter[]>([]);
 
-  marketFilters = input<MarketFilters | null>(null);
+  readonly fixedHeader = input(false);
+
+  readonly marketFilters = input<MarketFilters | null>(null);
 
   displayItems$!: Observable<MarketTrendsInstrumentsConnectionType | null>;
 
@@ -126,12 +123,6 @@ export class MarketTrendsComponent implements OnInit {
   readonly showMore = output<DisplayParams>();
 
   private readonly REFRESH_TIMEOUT_MS = 30_000;
-
-  constructor(
-    private readonly graphQlService: GraphQlService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     const refreshTimer$ = defer(() => {

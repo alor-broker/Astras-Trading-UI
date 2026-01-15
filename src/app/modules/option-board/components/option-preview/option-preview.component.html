@@ -1,51 +1,45 @@
+@let targetOption = option();
+
 <ng-container *transloco="let t; scope: 'option-board'">
   <div class="d-flex flex-column flex-gap-5">
     <div class="d-flex flex-row flex-nowrap justify-content-evenly flex-gap-5">
       <ng-container *ngTemplateOutlet="parameterDisplay; context: {
       parameterName: optionParameter.Bid,
-      optionParameter: option.bid
-      }">
-      </ng-container>
+      optionParameter: targetOption.bid
+      }" />
       <ng-container *ngTemplateOutlet="parameterDisplay; context: {
       parameterName: optionParameter.Price,
-      optionParameter: option.calculations.price
-      }">
-      </ng-container>
+      optionParameter: targetOption.calculations.price
+      }" />
       <ng-container *ngTemplateOutlet="parameterDisplay; context: {
       parameterName: optionParameter.Ask,
-      optionParameter: option.ask
-      }">
-      </ng-container>
+      optionParameter: targetOption.ask
+      }" />
     </div>
     <hr class="w-100">
     <div class="d-flex flex-row flex-nowrap justify-content-evenly flex-gap-5">
       <ng-container *ngTemplateOutlet="parameterDisplay; context: {
       parameterName: optionParameter.Delta,
-      optionParameter: formatNumberParameter(option.calculations.delta)
-      }">
-      </ng-container>
+      optionParameter: formatNumberParameter(targetOption.calculations.delta)
+      }" />
       <ng-container *ngTemplateOutlet="parameterDisplay; context: {
       parameterName: optionParameter.Vega,
-      optionParameter: formatNumberParameter(option.calculations.vega)
-      }">
-      </ng-container>
+      optionParameter: formatNumberParameter(targetOption.calculations.vega)
+      }" />
     </div>
     <div class="d-flex flex-row flex-nowrap justify-content-evenly flex-gap-5">
       <ng-container *ngTemplateOutlet="parameterDisplay; context: {
       parameterName: optionParameter.Theta,
-      optionParameter: formatNumberParameter(option.calculations.theta)
-      }">
-      </ng-container>
+      optionParameter: formatNumberParameter(targetOption.calculations.theta)
+      }" />
       <ng-container *ngTemplateOutlet="parameterDisplay; context: {
       parameterName: optionParameter.Rho,
-      optionParameter: formatNumberParameter(option.calculations.rho)
-      }">
-      </ng-container>
+      optionParameter: formatNumberParameter(targetOption.calculations.rho)
+      }" />
       <ng-container *ngTemplateOutlet="parameterDisplay; context: {
       parameterName: optionParameter.Gamma,
-      optionParameter: formatNumberParameter(option.calculations.gamma)
-      }">
-      </ng-container>
+      optionParameter: formatNumberParameter(targetOption.calculations.gamma)
+      }" />
     </div>
   </div>
 

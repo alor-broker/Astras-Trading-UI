@@ -1,7 +1,4 @@
-import {
-  Component,
-  OnInit
-} from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ScalperCommandProcessorService } from '../../services/scalper-command-processor.service';
 import {
   combineLatest,
@@ -10,21 +7,23 @@ import {
 import { map } from 'rxjs/operators';
 import { ScalperOrderBookMouseAction } from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import { TranslatorService } from '../../../../shared/services/translator.service';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-possible-actions-panel',
     templateUrl: './possible-actions-panel.component.html',
     styleUrls: ['./possible-actions-panel.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      AsyncPipe
+    ]
 })
 export class PossibleActionsPanelComponent implements OnInit {
-  currentActions$!: Observable<string[] | null>;
+  private readonly commandProcessorService = inject(ScalperCommandProcessorService);
+  private readonly translatorService = inject(TranslatorService);
 
-  constructor(
-    private readonly commandProcessorService: ScalperCommandProcessorService,
-    private readonly translatorService: TranslatorService
-  ) {
-  }
+  currentActions$!: Observable<string[] | null>;
 
   ngOnInit(): void {
     this.currentActions$ = combineLatest([

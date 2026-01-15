@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   filter,
   Observable
@@ -14,8 +14,8 @@ import {WidgetSettingsStreams} from "../../store/widget-settings/widget-settings
   providedIn: 'root'
 })
 export class WidgetSettingsService {
-  constructor(private readonly store: Store, private readonly logger: LoggerService) {
-  }
+  private readonly store = inject(Store);
+  private readonly logger = inject(LoggerService);
 
   getSettings<T extends WidgetSettings>(guid: string): Observable<T> {
     return this.getSettingsOrNull(guid).pipe(

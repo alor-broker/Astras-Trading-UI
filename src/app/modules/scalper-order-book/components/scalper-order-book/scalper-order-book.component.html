@@ -1,13 +1,13 @@
 <ng-container *ngrxLet="{ gridSettings: gridSettings$ } as vm">
-  <div [class.active]="isActive" class="container">
+  <div [class.active]="isActive()" class="container">
     <div
       class="order-book-body"
       [ngStyle]="{'font-size': vm.gridSettings.fontSize + 'px' }"
     >
-      <ats-scalper-order-book-body [guid]="guid" [isActive]="isActive"></ats-scalper-order-book-body>
+      <ats-scalper-order-book-body [guid]="guid()" [isActive]="isActive()" />
     </div>
     <div>
-      <ats-current-position-panel [guid]="guid" [hideTooltips]="(hideTooltips$ | async) ?? false"></ats-current-position-panel>
+      <ats-current-position-panel [guid]="guid()" [hideTooltips]="(hideTooltips$ | async) ?? false" />
     </div>
   </div>
 </ng-container>

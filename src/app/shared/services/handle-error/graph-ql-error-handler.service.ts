@@ -1,4 +1,4 @@
-import { DestroyRef, Injectable } from '@angular/core';
+import { DestroyRef, Injectable, inject } from '@angular/core';
 import { ApplicationErrorHandler } from "./error-handler";
 import { NzNotificationService } from "ng-zorro-antd/notification";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -9,13 +9,11 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Injectable()
 export class GraphQlErrorHandlerService implements ApplicationErrorHandler {
-  errorTranslator?: Observable<TranslatorFn>;
+  private readonly notification = inject(NzNotificationService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  constructor(
-    private readonly notification: NzNotificationService,
-    private readonly translatorService: TranslatorService,
-    private readonly destroyRef: DestroyRef
-  ) { }
+  errorTranslator?: Observable<TranslatorFn>;
 
   handleError(error: Error | HttpErrorResponse | GraphQLError): void {
     if (!(error instanceof GraphQLError)) {

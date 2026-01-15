@@ -1,9 +1,5 @@
 import { DashboardContextService } from '../../../shared/services/dashboard-context.service';
-import {
-  ChangeDetectionStrategy,
-  Component
-} from '@angular/core';
-import { DashboardModule } from '../../../modules/dashboard/dashboard.module';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { WidgetsGalleryNavBtnComponent } from "../../../modules/dashboard/components/widgets-gallery-nav-btn/widgets-gallery-nav-btn.component";
 import { map, shareReplay, startWith } from 'rxjs';
@@ -20,7 +16,6 @@ import { AdminDashboardsPanelComponent } from "../admin-dashboards-panel/admin-d
 @Component({
   selector: 'ats-admin-navbar',
   imports: [
-    DashboardModule,
     AsyncPipe,
     WidgetsGalleryNavBtnComponent,
     OpenOrdersDialogNavBtnComponent,
@@ -34,13 +29,11 @@ import { AdminDashboardsPanelComponent } from "../admin-dashboards-panel/admin-d
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminNavbarComponent {
+  private readonly dashboardContextService = inject(DashboardContextService);
+
   readonly isPortfolioSelected$ = this.dashboardContextService.selectedPortfolioOrNull$.pipe(
     map(p => p != null),
     startWith(false),
     shareReplay(1)
   );
-
-  constructor(
-    private readonly dashboardContextService: DashboardContextService
-  ) {}
 }

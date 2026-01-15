@@ -15,11 +15,11 @@ import {OrderFormState} from "../../../models/order-form.model";
 import {Side} from "../../../../../shared/models/enums/side.model";
 import {TranslocoTestsModule} from "../../../../../shared/utils/testing/translocoTestsModule";
 import {TestData} from "../../../../../shared/utils/testing/test-data";
-import {ComponentHelpers} from "../../../../../shared/utils/testing/component-helpers";
 import {commonTestProviders} from "../../../../../shared/utils/testing/common-test-providers";
-import {FormsTesting} from "../../../../../shared/utils/testing/forms-testing";
-import {InputNumberComponent} from "../../../../../shared/components/input-number/input-number.component";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
+import {OrderEvaluationComponent} from "../../order-evaluation/order-evaluation.component";
+import {provideAnimations} from "@angular/platform-browser/animations";
+import {MockComponent} from "ng-mocks";
 
 describe('EditLimitOrderFormComponent', () => {
   let component: EditLimitOrderFormComponent;
@@ -82,17 +82,10 @@ describe('EditLimitOrderFormComponent', () => {
             'order-commands/order-forms/ru': orderCommandsOrderFormsRu,
           }
         }),
-        ...FormsTesting.getTestingModules(),
-        InputNumberComponent
-      ],
-      declarations: [
-        EditLimitOrderFormComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-order-evaluation',
-          inputs: ['evaluationProperties']
-        })
+        EditLimitOrderFormComponent
       ],
       providers: [
+        provideAnimations(),
         {
           provide: CommonParametersService,
           useValue: {
@@ -121,13 +114,16 @@ describe('EditLimitOrderFormComponent', () => {
         ...commonTestProviders
       ]
     })
+      .overrideComponent(EditLimitOrderFormComponent, {
+        remove: {imports: [OrderEvaluationComponent]},
+        add: {imports: [MockComponent(OrderEvaluationComponent)]}
+      })
       .compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(EditLimitOrderFormComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   afterEach(() => {
@@ -135,6 +131,9 @@ describe('EditLimitOrderFormComponent', () => {
   });
 
   it('should create', () => {
+    fixture.componentRef.setInput('orderId', '111');
+    fixture.componentRef.setInput('portfolioKey', getDefaultPortfolio());
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
@@ -143,16 +142,29 @@ describe('EditLimitOrderFormComponent', () => {
     const instrument = getDefaultInstrument();
 
     orderDetailsServiceSpy.getLimitOrderDetails.and.returnValue(new BehaviorSubject({
-        targetInstrument: instrument,
+        targetInstrument: {
+          symbol: instrument.symbol,
+          exchange: instrument.exchange,
+          instrumentGroup: instrument.instrumentGroup
+        },
         ownedPortfolio: portfolio,
         price: 1,
         qty: 1
       } as unknown as Order)
     );
 
-    component.orderId = '111';
-    component.portfolioKey = portfolio;
+    fixture.componentRef.setInput(
+      'orderId',
+      '111'
+    );
+
+    fixture.componentRef.setInput(
+      'portfolioKey',
+      portfolio
+    );
+
     fixture.detectChanges();
+    tick();
 
     const cases: { control: string, setValue: () => any, expectedError?: string }[] = [
       {
@@ -188,8 +200,8 @@ describe('EditLimitOrderFormComponent', () => {
       (component.form!.controls as any)[testCase.control]!.updateValueAndValidity({onlySelf: false});
 
       fixture.detectChanges();
-
       tick();
+
       const errorElement = getValidationErrorElement(control);
 
       expect(errorElement).not.toBeNull();
@@ -212,8 +224,15 @@ describe('EditLimitOrderFormComponent', () => {
         } as unknown as Order)
       );
 
-      component.orderId = '111';
-      component.portfolioKey = portfolio;
+      fixture.componentRef.setInput(
+        'orderId',
+        '111'
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
 
       fixture.detectChanges();
 
@@ -241,8 +260,16 @@ describe('EditLimitOrderFormComponent', () => {
 
       orderDetailsServiceSpy.getLimitOrderDetails.and.returnValue(new BehaviorSubject(order));
 
-      component.orderId = '111';
-      component.portfolioKey = portfolio;
+      fixture.componentRef.setInput(
+        'orderId',
+        '111'
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
+
       fixture.detectChanges();
       tick();
 
@@ -274,8 +301,16 @@ describe('EditLimitOrderFormComponent', () => {
       orderDetailsServiceSpy.getLimitOrderDetails.and.returnValue(new BehaviorSubject(order));
       instrumentsServiceSpy.getInstrument.and.returnValue(new BehaviorSubject(instrument));
 
-      component.orderId = order.id;
-      component.portfolioKey = portfolio;
+      fixture.componentRef.setInput(
+        'orderId',
+        order.id
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
+
       fixture.detectChanges();
       tick();
 

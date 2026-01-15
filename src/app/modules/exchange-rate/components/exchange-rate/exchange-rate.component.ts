@@ -1,10 +1,4 @@
-import {
-  Component,
-  Inject,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {
   CurrencyPair,
   ExchangeRateService
@@ -37,6 +31,11 @@ import {
   ACTIONS_CONTEXT,
   ActionsContext
 } from "../../../../shared/services/actions-context";
+import { NzResizeObserverDirective } from 'ng-zorro-antd/cdk/resize-observer';
+import { NzTableComponent, NzTheadComponent, NzTrDirective, NzTableCellDirective, NzThMeasureDirective, NzCellFixedDirective, NzTbodyComponent } from 'ng-zorro-antd/table';
+import { TableRowHeightDirective } from '../../../../shared/directives/table-row-height.directive';
+import { PriceDiffComponent } from '../../../../shared/components/price-diff/price-diff.component';
+import { AsyncPipe } from '@angular/common';
 
 interface CurrencyMatrix {
   currencies: string[];
@@ -47,26 +46,33 @@ interface CurrencyMatrix {
     selector: 'ats-exchange-rate',
     templateUrl: './exchange-rate.component.html',
     styleUrls: ['./exchange-rate.component.less'],
-    standalone: false
+    imports: [
+      NzResizeObserverDirective,
+      NzTableComponent,
+      TableRowHeightDirective,
+      NzTheadComponent,
+      NzTrDirective,
+      NzTableCellDirective,
+      NzThMeasureDirective,
+      NzCellFixedDirective,
+      NzTbodyComponent,
+      PriceDiffComponent,
+      AsyncPipe
+    ]
 })
 export class ExchangeRateComponent implements OnInit, OnDestroy {
-  @Input({ required: true })
-  guid!: string;
+  private readonly settingsService = inject(WidgetSettingsService);
+  private readonly exchangeRateService = inject(ExchangeRateService);
+  private readonly quotesService = inject(QuotesService);
+  private readonly marketService = inject(MarketService);
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+
+  readonly guid = input.required<string>();
 
   readonly tableScroll$ = new BehaviorSubject<ContentSize | null>({ width: 50, height: 50 });
 
   currencyMatrix$!: Observable<CurrencyMatrix>;
   round = MathHelper.round;
-
-  constructor(
-    private readonly settingsService: WidgetSettingsService,
-    private readonly exchangeRateService: ExchangeRateService,
-    private readonly quotesService: QuotesService,
-    private readonly marketService: MarketService,
-    @Inject(ACTIONS_CONTEXT)
-    private readonly actionsContext: ActionsContext
-  ) {
-  }
 
   ngOnInit(): void {
     this.currencyMatrix$ = this.exchangeRateService.getCurrencyPairs().pipe(
@@ -94,7 +100,7 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
     this.marketService.getMarketSettings().pipe(
       take(1)
     ).subscribe(marketSettings => {
-      this.settingsService.getSettings<ExchangeRateSettings>(this.guid).pipe(
+      this.settingsService.getSettings<ExchangeRateSettings>(this.guid()).pipe(
         take(1)
       ).subscribe(s => {
         this.actionsContext.selectInstrument({

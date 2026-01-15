@@ -1,66 +1,54 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import { Component, input, OnInit, output, inject } from '@angular/core';
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
-import {BehaviorSubject, combineLatest, Observable, switchMap} from "rxjs";
+import {combineLatest, Observable, shareReplay, switchMap} from "rxjs";
 import {QuotesService} from "../../../../shared/services/quotes.service";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
 import {filter, map, startWith} from "rxjs/operators";
-import { TranslocoDirective } from "@jsverse/transloco";
-import {
-  AsyncPipe,
-  NgIf
-} from "@angular/common";
-import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
-import { SharedModule } from "../../../../shared/shared.module";
-import { Instrument } from "../../../../shared/models/instruments/instrument.model";
-import { MathHelper } from "../../../../shared/utils/math-helper";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {AsyncPipe} from "@angular/common";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {Instrument} from "../../../../shared/models/instruments/instrument.model";
+import {MathHelper} from "../../../../shared/utils/math-helper";
+import {AtsPricePipe} from "../../../../shared/pipes/ats-price.pipe";
+import {toObservable} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'ats-compact-header',
   templateUrl: './compact-header.component.html',
   imports: [
     TranslocoDirective,
-    NgIf,
     AsyncPipe,
     NzTooltipDirective,
-    SharedModule
+    AtsPricePipe
   ],
   styleUrls: ['./compact-header.component.less']
 })
-export class CompactHeaderComponent implements OnInit, OnDestroy {
-  @Output()
-  priceSelected = new EventEmitter<number>();
+export class CompactHeaderComponent implements OnInit {
+  private readonly quotesService = inject(QuotesService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
 
-  @Output()
-  qtySelected = new EventEmitter<number>();
+  readonly priceSelected = output<number>();
+
+  readonly qtySelected = output<number>();
 
   priceData$!: Observable<{ bid: number, ask: number }>;
   positionInfo$!: Observable<{ abs: number, quantity: number } | null>;
+  readonly instrument = input.required<Instrument>();
+  readonly currentPortfolio = input.required<PortfolioKey>();
+  protected readonly instrumentChanges$ = toObservable(this.instrument)
+    .pipe(
+      startWith(null),
+      shareReplay(1)
+    );
 
-  readonly instrument$ = new BehaviorSubject<Instrument | null>(null);
-  readonly portfolioKey$ = new BehaviorSubject<PortfolioKey | null>(null);
-
-  constructor(
-    private readonly quotesService: QuotesService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService) {
-  }
-
-  @Input({required: true})
-  set instrument(value: Instrument) {
-    this.instrument$.next(value);
-  }
-
-  @Input({required: true})
-  set currentPortfolio(value: PortfolioKey) {
-    this.portfolioKey$.next(value);
-  }
-
-  ngOnDestroy(): void {
-    this.instrument$.complete();
-    this.portfolioKey$.complete();
-  }
+  protected readonly currentPortfolioChanges$ = toObservable(this.currentPortfolio)
+    .pipe(
+      startWith(null),
+      shareReplay(1)
+    );
 
   ngOnInit(): void {
-    this.priceData$ = this.instrument$.pipe(
+    this.priceData$ = this.instrumentChanges$.pipe(
       filter((i): i is Instrument => !!i),
       switchMap(i => this.quotesService.getQuotes(i.symbol, i.exchange, i.instrumentGroup)),
       map(x => ({
@@ -71,8 +59,8 @@ export class CompactHeaderComponent implements OnInit, OnDestroy {
 
     this.positionInfo$ = combineLatest(
       [
-        this.instrument$,
-        this.portfolioKey$
+        this.instrumentChanges$,
+        this.currentPortfolioChanges$
       ]
     ).pipe(
       filter(([instrument, portfolio]) => !!instrument && !!portfolio),

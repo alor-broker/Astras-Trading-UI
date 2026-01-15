@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { InstrumentKey } from '../../../shared/models/instruments/instrument-key.model';
 import { GuidGenerator } from '../../../shared/utils/guid';
 import {
@@ -32,18 +32,15 @@ import { EnvironmentService } from "../../../shared/services/environment.service
   providedIn: 'root'
 })
 export class WatchlistCollectionService {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly http = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly watchlistCollectionBrokerService = inject(WatchlistCollectionBrokerService);
+  private readonly instrumentsService = inject(InstrumentsService);
+
   public static DefaultListName = 'Список по умолчанию';
   private readonly url = this.environmentService.apiUrl + '/astras/watchlist';
   private collection$: Observable<WatchlistCollection> | null = null;
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly http: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly watchlistCollectionBrokerService: WatchlistCollectionBrokerService,
-    private readonly instrumentsService: InstrumentsService
-  ) {
-  }
 
   public getWatchlistCollection(): Observable<WatchlistCollection> {
     return this.getCollection().pipe(

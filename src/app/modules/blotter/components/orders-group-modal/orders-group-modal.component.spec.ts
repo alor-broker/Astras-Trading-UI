@@ -1,14 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { OrdersGroupModalComponent } from './orders-group-modal.component';
-import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
-import {
-  EMPTY
-} from "rxjs";
-import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import {OrdersGroupModalComponent} from './orders-group-modal.component';
+import {OrdersGroupService} from "../../../../shared/services/orders/orders-group.service";
+import {EMPTY} from "rxjs";
+import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzTreeComponent} from "ng-zorro-antd/tree";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('OrdersGroupModalComponent', () => {
   let component: OrdersGroupModalComponent;
@@ -16,11 +17,16 @@ describe('OrdersGroupModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
+        TranslocoTestsModule.getModule(),
         OrdersGroupModalComponent,
-        ...ngZorroMockComponents
+        MockComponents(
+          NzTreeComponent,
+        ),
+        MockDirectives(
+          NzTooltipDirective
+        )
       ],
-      imports: [TranslocoTestsModule.getModule()],
       providers: [
         {
           provide: OrdersGroupService,
@@ -43,10 +49,12 @@ describe('OrdersGroupModalComponent', () => {
         },
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(OrdersGroupModalComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
+    fixture.componentRef.setInput('groupId', '1');
     fixture.detectChanges();
   });
 

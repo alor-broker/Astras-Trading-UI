@@ -45,7 +45,7 @@
                     >
                       <div
                         class="d-flex flex-row justify-content-start flex-nowrap align-items-center flex-gap-5 overflow-hidden">
-                        <ats-instrument-icon [symbol]="symbol.ticker" size="large"></ats-instrument-icon>
+                        <ats-instrument-icon [symbol]="symbol.ticker" size="large" />
                         <div class="d-flex flex-column overflow-hidden">
                           <span nz-typography nzEllipsis
                                 class="heading-color">{{ symbol.shortName ?? symbol.ticker }}</span>
@@ -63,13 +63,13 @@
     </div>
 
   } @else {
-    <nz-empty nzNotFoundImage="simple"></nz-empty>
+    <nz-empty nzNotFoundImage="simple" />
   }
 </div>
 
 <ng-template #loading>
-  <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }"></nz-skeleton>
+  <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }" />
 </ng-template>
 
-<ats-invest-ideas-details-dialog [(displayIdea)]="selectedIdea" (symbolSelected)="selectSymbol($event)"></ats-invest-ideas-details-dialog>
+<ats-invest-ideas-details-dialog [(displayIdea)]="selectedIdea" (symbolSelected)="selectSymbol($event)" />
 

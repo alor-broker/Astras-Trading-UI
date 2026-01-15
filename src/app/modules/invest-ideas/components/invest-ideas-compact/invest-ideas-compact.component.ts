@@ -1,10 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  model,
-  OnInit,
-  signal
-} from '@angular/core';
+import { Component, DestroyRef, model, OnInit, signal, inject } from '@angular/core';
 import { LetDirective } from "@ngrx/component";
 import {
   NzCarouselComponent,
@@ -53,20 +47,18 @@ interface IdeaDisplay extends Idea {
   styleUrl: './invest-ideas-compact.component.less'
 })
 export class InvestIdeasCompactComponent implements OnInit {
+  private readonly investIdeasService = inject(InvestIdeasService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly instrumentsService = inject(InstrumentsService);
+  private readonly destroyRef = inject(DestroyRef);
+
   ideas$!: Observable<IdeaDisplay[]>;
 
-  protected selectedIdea = model<Idea | null>(null);
+  protected readonly selectedIdea = model<Idea | null>(null);
 
-  protected isLoading = signal<boolean>(false);
+  protected readonly isLoading = signal<boolean>(false);
 
   private readonly refreshInterval = 600_000;
-
-  constructor(
-    private readonly investIdeasService: InvestIdeasService,
-    private readonly translatorService: TranslatorService,
-    private readonly instrumentsService: InstrumentsService,
-    private readonly destroyRef: DestroyRef) {
-  }
 
   ngOnInit(): void {
     fromEvent(window, 'popstate').pipe(

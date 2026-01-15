@@ -4,17 +4,17 @@
           #inputElement
           (keydown.enter)="sendMessage()"
           (ngModelChange)="onTextChange($event)"
-          [disabled]="atsDisabled"
-          [ngModel]="text"
-          [placeholder]="messagePlaceholder"
+          [disabled]="atsDisabled()"
+          [ngModel]="text()"
+          [placeholder]="messagePlaceholder()"
           nz-input
           rows="1"
-          [maxlength]="messageMaxLength"
+          [maxlength]="messageMaxLength()"
     ></textarea>
   </div>
   <button
     (click)="sendMessage()"
-    [disabled]="atsDisabled || inputElement.value.length === 0"
+    [disabled]="atsDisabled() || inputElement.value.length === 0"
     nz-button
     nzSearch
     nzSize="large"

@@ -1,8 +1,4 @@
-import {
-  Inject,
-  Injectable,
-  LOCALE_ID
-} from '@angular/core';
+import { Injectable, LOCALE_ID, inject } from '@angular/core';
 import { PortfolioKey } from "../models/portfolio-key.model";
 import {
   combineLatest,
@@ -28,15 +24,11 @@ import { Risks } from "../../modules/blotter/models/risks.model";
   providedIn: 'root'
 })
 export class PortfolioSummaryService {
-  constructor(
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly marketService: MarketService,
-    private readonly quotes: QuotesService,
-    @Inject(LOCALE_ID)
-    private readonly locale: string
-  ) {
-  }
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly marketService = inject(MarketService);
+  private readonly quotes = inject(QuotesService);
+  private readonly locale = inject(LOCALE_ID);
 
   getCommonSummary(portfolioKey: PortfolioKey): Observable<CommonSummaryView> {
     return combineLatest([

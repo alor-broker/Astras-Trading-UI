@@ -3,13 +3,7 @@ import {ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick} from '
 import {LimitOrderFormComponent} from './limit-order-form.component';
 import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
 import {CommonParametersService} from "../../../services/common-parameters.service";
-import {
-  BehaviorSubject,
-  EMPTY,
-  of,
-  Subject,
-  take
-} from "rxjs";
+import {BehaviorSubject, EMPTY, of, Subject, take} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
 import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
 import orderCommandsOrderFormsRu from "../../../../../../assets/i18n/order-commands/order-forms/ru.json";
@@ -20,19 +14,18 @@ import {InstrumentsService} from "../../../../instruments/services/instruments.s
 import {NewLimitOrder} from "../../../../../shared/models/orders/new-order.model";
 import {toInstrumentKey} from "../../../../../shared/utils/instruments";
 import {EvaluationService} from "../../../../../shared/services/evaluation.service";
-import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
-import { TimezoneDisplayOption } from "../../../../../shared/models/enums/timezone-display-option";
-import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
-import { MarketService } from "../../../../../shared/services/market.service";
-import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
-import { TestData } from "../../../../../shared/utils/testing/test-data";
-import { InstrumentBoardSelectMockComponent } from "../../../../../shared/utils/testing/instrument-board-select-mock-component";
-import { ComponentHelpers } from "../../../../../shared/utils/testing/component-helpers";
-import { commonTestProviders } from "../../../../../shared/utils/testing/common-test-providers";
-import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
-import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
-import { BuySellButtonsComponent } from "../../buy-sell-buttons/buy-sell-buttons.component";
+import {TimezoneConverter} from "../../../../../shared/utils/timezone-converter";
+import {TimezoneDisplayOption} from "../../../../../shared/models/enums/timezone-display-option";
+import {TimezoneConverterService} from "../../../../../shared/services/timezone-converter.service";
+import {MarketService} from "../../../../../shared/services/market.service";
+import {TranslocoTestsModule} from "../../../../../shared/utils/testing/translocoTestsModule";
+import {TestData} from "../../../../../shared/utils/testing/test-data";
+import {commonTestProviders} from "../../../../../shared/utils/testing/common-test-providers";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
+import {provideAnimations} from "@angular/platform-browser/animations";
+import {
+  InstrumentBoardSelectMockComponent
+} from "../../../../../shared/utils/testing/instrument-board-select-mock-component";
 
 describe('LimitOrderFormComponent', () => {
   let component: LimitOrderFormComponent;
@@ -86,24 +79,16 @@ describe('LimitOrderFormComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
+        LimitOrderFormComponent,
         TranslocoTestsModule.getModule({
           langs: {
             'order-commands/order-forms/ru': orderCommandsOrderFormsRu,
           }
         }),
-        ...FormsTesting.getTestingModules(),
-        InstrumentBoardSelectMockComponent,
-        InputNumberComponent,
-        BuySellButtonsComponent
-      ],
-      declarations: [
-        LimitOrderFormComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-order-evaluation',
-          inputs: ['evaluationProperties']
-        }),
+        InstrumentBoardSelectMockComponent
       ],
       providers: [
+        provideAnimations(),
         {
           provide: CommonParametersService,
           useValue: {
@@ -146,28 +131,56 @@ describe('LimitOrderFormComponent', () => {
         ...commonTestProviders
       ]
     })
+
       .compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LimitOrderFormComponent);
     component = fixture.componentInstance;
-    component.limitOrderConfig = {
-      isBracketsSupported: true,
-      unsupportedFields: {}
-    };
-
-    fixture.detectChanges();
+    fixture.componentRef.setInput(
+      'limitOrderConfig',
+      {
+        isBracketsSupported: true,
+        unsupportedFields: {}
+      }
+    );
   });
 
   it('should create', () => {
+    fixture.componentRef.setInput(
+      'instrument',
+      getDefaultInstrument()
+    );
+
+    fixture.componentRef.setInput(
+      'portfolioKey',
+      getDefaultPortfolio()
+    );
+
+    fixture.componentRef.setInput(
+      'activated',
+      true
+    );
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('should show form errors', fakeAsync(() => {
-    component.instrument = getDefaultInstrument();
-    component.portfolioKey = getDefaultPortfolio();
-    component.activated = true;
+    fixture.componentRef.setInput(
+      'instrument',
+      getDefaultInstrument()
+    );
+
+    fixture.componentRef.setInput(
+      'portfolioKey',
+      getDefaultPortfolio()
+    );
+
+    fixture.componentRef.setInput(
+      'activated',
+      true
+    );
     fixture.detectChanges();
 
     const cases: { control: string, setValue: () => any, expectedError?: string }[] = [
@@ -217,9 +230,20 @@ describe('LimitOrderFormComponent', () => {
   }));
 
   it('should disable submission', () => {
-      component.instrument = getDefaultInstrument();
-      component.portfolioKey = getDefaultPortfolio();
-      component.activated = true;
+      fixture.componentRef.setInput(
+        'instrument',
+        getDefaultInstrument()
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        getDefaultPortfolio()
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
       fixture.detectChanges();
 
       component.form.controls.price.setValue(null);
@@ -241,32 +265,57 @@ describe('LimitOrderFormComponent', () => {
         }
       };
 
-      component.initialValues = initialValues;
-      component.instrument = getDefaultInstrument();
-      component.portfolioKey = getDefaultPortfolio();
-      component.activated = true;
+      fixture.componentRef.setInput(
+        'initialValues',
+        initialValues
+      );
+      fixture.componentRef.setInput(
+        'instrument',
+        getDefaultInstrument()
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        getDefaultPortfolio()
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
       fixture.detectChanges();
 
       tick();
-    const expectedValue = {
-      price: initialValues.price,
-      quantity: initialValues.quantity,
-      topOrderPrice: initialValues.bracket.topOrderPrice,
-      topOrderSide: initialValues.bracket.topOrderSide,
-      bottomOrderPrice: initialValues.bracket.bottomOrderPrice,
-      bottomOrderSide: initialValues.bracket.bottomOrderSide
-    };
+      const expectedValue = {
+        price: initialValues.price,
+        quantity: initialValues.quantity,
+        topOrderPrice: initialValues.bracket.topOrderPrice,
+        topOrderSide: initialValues.bracket.topOrderSide,
+        bottomOrderPrice: initialValues.bracket.bottomOrderPrice,
+        bottomOrderSide: initialValues.bracket.bottomOrderSide
+      };
 
-    expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
+      expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
     }
   ));
 
   it('should update evaluation', fakeAsync(() => {
       const instrument = getDefaultInstrument();
       const portfolio = getDefaultPortfolio();
-      component.instrument = instrument;
-      component.portfolioKey = portfolio;
-      component.activated = true;
+      fixture.componentRef.setInput(
+        'instrument',
+        instrument
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
       fixture.detectChanges();
 
       tick(1000);
@@ -303,9 +352,22 @@ describe('LimitOrderFormComponent', () => {
   it('should pass correct order to service', fakeAsync(() => {
       const instrument = getDefaultInstrument();
       const portfolio = getDefaultPortfolio();
-      component.instrument = instrument;
-      component.portfolioKey = portfolio;
-      component.activated = true;
+
+      fixture.componentRef.setInput(
+        'instrument',
+        instrument
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
+
+      fixture.componentRef.setInput(
+        'activated',
+        true
+      );
+
       fixture.detectChanges();
 
       const expectedOrder: NewLimitOrder = {

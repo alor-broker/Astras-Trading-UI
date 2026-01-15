@@ -26,6 +26,14 @@ describe('DerivativeInfoComponent', () => {
 
     fixture = TestBed.createComponent(DerivativeInfoComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput(
+      'instrumentKey',
+      {
+        symbol: 'SYMB',
+        exchange: 'EXCH',
+        board: ''
+      }
+    );
     fixture.detectChanges();
   });
 

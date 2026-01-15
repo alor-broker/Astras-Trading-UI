@@ -1,13 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  ElementRef,
-  Inject,
-  NgZone,
-  OnInit,
-  SkipSelf,
-  DOCUMENT
-} from '@angular/core';
+import { Component, DestroyRef, ElementRef, NgZone, OnInit, DOCUMENT, inject } from '@angular/core';
 import {
   fromEvent,
   switchMap,
@@ -27,21 +18,14 @@ import {
 @Component({
     selector: 'ats-panel-resize-handler',
     templateUrl: './panel-resize-handler.component.html',
-    styleUrls: ['./panel-resize-handler.component.less'],
-    standalone: false
+    styleUrls: ['./panel-resize-handler.component.less']
 })
 export class PanelResizeHandlerComponent implements OnInit {
-  constructor(
-    private readonly host: ElementRef<HTMLElement>,
-    @Inject(PANEL_RESIZE_CONTEXT)
-    @SkipSelf()
-    private readonly panelResizeContext: PanelResizeContext,
-    private readonly ngZone: NgZone,
-    @Inject(DOCUMENT)
-    private readonly documentRef: Document,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly panelResizeContext = inject<PanelResizeContext>(PANEL_RESIZE_CONTEXT, { skipSelf: true });
+  private readonly ngZone = inject(NgZone);
+  private readonly documentRef = inject<Document>(DOCUMENT);
+  private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     fromEvent<MouseEvent>(this.host.nativeElement, 'click').pipe(

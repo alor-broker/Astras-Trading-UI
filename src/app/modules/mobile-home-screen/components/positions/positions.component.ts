@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  output
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, output, inject } from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -66,6 +61,9 @@ type SortFn = (a: Position, b: Position) => number;
   styleUrl: './positions.component.less'
 })
 export class PositionsComponent implements OnInit, OnDestroy {
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+
   displayPositions$!: Observable<DisplayPositions>;
 
   readonly instrumentSelected = output<InstrumentKey>();
@@ -79,12 +77,6 @@ export class PositionsComponent implements OnInit, OnDestroy {
     sortBy: SortBy.Ticker,
     sortDesc: false
   });
-
-  constructor(
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.itemsDisplayParams$.complete();

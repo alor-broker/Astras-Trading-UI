@@ -6,7 +6,7 @@
         <span nz-typography
               nzType="secondary">{{ t('infoRisks.missingRiskInfoForPortfolio', {portfolio: vm.currentPortfolio.portfolio}) }}</span>
       } @else {
-        <ats-descriptors-list [descriptors]="[vm.descriptors]"></ats-descriptors-list>
+        <ats-descriptors-list [descriptors]="[vm.descriptors]" />
       }
     </nz-spin>
   </ng-container>

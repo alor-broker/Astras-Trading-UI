@@ -1,14 +1,5 @@
-import {
-  Component,
-  DestroyRef,
-  Inject,
-  Input,
-  LOCALE_ID,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
-import { AllInstrumentsService } from "../../services/all-instruments.service";
+import { Component, DestroyRef, input, LOCALE_ID, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
+import {AllInstrumentsService} from "../../services/all-instruments.service";
 import {
   BehaviorSubject,
   combineLatest,
@@ -21,34 +12,31 @@ import {
   tap,
   withLatestFrom
 } from "rxjs";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { mapWith } from '../../../../shared/utils/observable-helper';
-import {
-  filter,
-  map
-} from 'rxjs/operators';
-import { TerminalSettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { defaultBadgeColor } from '../../../../shared/utils/instruments';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { InstrumentGroups } from '../../../../shared/models/dashboard/dashboard.model';
-import { AllInstrumentsSettings } from '../../model/all-instruments-settings.model';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {mapWith} from '../../../../shared/utils/observable-helper';
+import {filter, map} from 'rxjs/operators';
+import {TerminalSettings} from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {defaultBadgeColor} from '../../../../shared/utils/instruments';
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
+import {InstrumentGroups} from '../../../../shared/models/dashboard/dashboard.model';
+import {AllInstrumentsSettings} from '../../model/all-instruments-settings.model';
 import {
   BaseColumnSettings,
   DefaultTableFilters,
   FilterType,
   InputFieldType
 } from "../../../../shared/models/settings/table-settings.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import { ACTIONS_CONTEXT, ActionsContext } from 'src/app/shared/services/actions-context';
-import { TableSettingHelper } from "../../../../shared/utils/table-setting.helper";
-import { TableConfig } from "../../../../shared/models/table-config.model";
-import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {ACTIONS_CONTEXT, ActionsContext} from 'src/app/shared/services/actions-context';
+import {TableSettingHelper} from "../../../../shared/utils/table-setting.helper";
+import {TableConfig} from "../../../../shared/models/table-config.model";
+import {CdkDragDrop} from "@angular/cdk/drag-drop";
 import {
   LazyLoadingBaseTableComponent
 } from "../../../../shared/components/lazy-loading-base-table/lazy-loading-base-table.component";
-import { BoardsService } from "../../services/boards.service";
+import {BoardsService} from "../../services/boards.service";
 import {
   Instrument,
   InstrumentModelSortInput,
@@ -56,35 +44,48 @@ import {
   PageInfo,
   SortEnumType
 } from "../../../../../generated/graphql.types";
-import { ContentSize } from "../../../../shared/models/dashboard/dashboard-item.model";
+import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {
   CsvFormatter,
   csvFormatterConfigDefaults,
   ExportColumnMeta
 } from "../../../../shared/utils/file-export/csv-formatter";
+import {FileSaver, FileType} from "../../../../shared/utils/file-export/file-saver";
+import {NzModalService} from "ng-zorro-antd/modal";
 import {
-  FileSaver,
-  FileType
-} from "../../../../shared/utils/file-export/file-saver";
-import { NzModalService } from "ng-zorro-antd/modal";
-import { AddToWatchlistMenuComponent } from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
+  AddToWatchlistMenuComponent
+} from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
 import {
   InfiniteScrollTableComponent,
   TableDataRow
 } from "../../../../shared/components/infinite-scroll-table/infinite-scroll-table.component";
-import { NzContextMenuService } from "ng-zorro-antd/dropdown";
-import { formatNumber } from "@angular/common";
-import { NavigationStackService } from "../../../../shared/services/navigation-stack.service";
+import {NzContextMenuService} from "ng-zorro-antd/dropdown";
+import {AsyncPipe, formatNumber} from "@angular/common";
+import {NavigationStackService} from "../../../../shared/services/navigation-stack.service";
+import {LetDirective} from '@ngrx/component';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
 
 interface AllInstrumentsNodeDisplay extends Instrument {
   id: string;
 }
 
 @Component({
-    selector: 'ats-all-instruments',
-    templateUrl: './all-instruments.component.html',
-    styleUrls: ['./all-instruments.component.less'],
-    standalone: false
+  selector: 'ats-all-instruments',
+  templateUrl: './all-instruments.component.html',
+  styleUrls: ['./all-instruments.component.less'],
+  imports: [
+    LetDirective,
+    NzResizeObserverDirective,
+    InfiniteScrollTableComponent,
+    TranslocoDirective,
+    NzButtonComponent,
+    NzIconDirective,
+    AddToWatchlistMenuComponent,
+    AsyncPipe
+  ]
 })
 export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
   AllInstrumentsNodeDisplay,
@@ -92,11 +93,23 @@ export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
   PageInfo,
   InstrumentModelSortInput
 >
-implements OnInit, OnDestroy {
-  @ViewChild('table')
-  table?: InfiniteScrollTableComponent;
+  implements OnInit, OnDestroy {
+  protected readonly settingsService: WidgetSettingsService;
+  private readonly service = inject(AllInstrumentsService);
+  private readonly boardsService = inject(BoardsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  protected readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+  private readonly nzContextMenuService = inject(NzContextMenuService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly modalService = inject(NzModalService);
+  protected readonly destroyRef: DestroyRef;
+  private readonly locale = inject(LOCALE_ID);
+  private readonly navigationStackService = inject(NavigationStackService);
 
-  @Input({ required: true }) guid!: string;
+  readonly table = viewChild<InfiniteScrollTableComponent>('table');
+
+  readonly guid = input.required<string>();
 
   public allColumns: BaseColumnSettings<AllInstrumentsNodeDisplay>[] = [
     {
@@ -216,8 +229,8 @@ implements OnInit, OnDestroy {
         isOpenedFilter: false,
         filterType: FilterType.DefaultMultiple,
         filters: [
-          { value: 'MOEX', text: 'MOEX' },
-          { value: 'SPBX', text: 'SPBX' },
+          {value: 'MOEX', text: 'MOEX'},
+          {value: 'SPBX', text: 'SPBX'},
         ]
       },
     },
@@ -248,10 +261,10 @@ implements OnInit, OnDestroy {
         isOpenedFilter: false,
         filterType: FilterType.DefaultMultiple,
         filters: [
-          { value: 'CURR', text: 'CURR' },
-          { value: 'FOND', text: 'FOND' },
-          { value: 'FORTS', text: 'FORTS' },
-          { value: 'SPBX', text: 'SPBX' },
+          {value: 'CURR', text: 'CURR'},
+          {value: 'FOND', text: 'FOND'},
+          {value: 'FORTS', text: 'FORTS'},
+          {value: 'SPBX', text: 'SPBX'},
         ]
       },
     },
@@ -348,36 +361,26 @@ implements OnInit, OnDestroy {
     }
   ];
 
+  exportBtnSize$ = new BehaviorSubject<ContentSize | null>(null);
+  protected settingsTableName = 'allInstrumentsTable';
+  protected settingsColumnsName = 'allInstrumentsColumns';
   private readonly instrumentsList$ = new BehaviorSubject<AllInstrumentsNodeDisplay[]>([]);
   private settings$!: Observable<AllInstrumentsSettings>;
   private readonly maxLoadingChunkSize = 1000;
-
   private updatesSub?: Subscription;
-  protected settingsTableName = 'allInstrumentsTable';
-  protected settingsColumnsName = 'allInstrumentsColumns';
 
-  exportBtnSize$ = new BehaviorSubject<ContentSize | null>(null);
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const destroyRef = inject(DestroyRef);
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    private readonly service: AllInstrumentsService,
-    private readonly boardsService: BoardsService,
-    private readonly dashboardContextService: DashboardContextService,
-    @Inject(ACTIONS_CONTEXT)
-    protected readonly actionsContext: ActionsContext,
-    private readonly nzContextMenuService: NzContextMenuService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly translatorService: TranslatorService,
-    private readonly modalService: NzModalService,
-    protected readonly destroyRef: DestroyRef,
-    @Inject(LOCALE_ID) private readonly locale: string,
-    private readonly navigationStackService: NavigationStackService,
-  ) {
     super(settingsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.destroyRef = destroyRef;
   }
 
   ngOnInit(): void {
-    this.settings$ = this.settingsService.getSettings<AllInstrumentsSettings>(this.guid)
+    this.settings$ = this.settingsService.getSettings<AllInstrumentsSettings>(this.guid())
       .pipe(
         tap(() => this.resetLoadedData()),
         shareReplay(1),
@@ -390,11 +393,11 @@ implements OnInit, OnDestroy {
       filter(state => state.widgetTarget.typeId === 'all-instruments'),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(state => {
-      if(state.widgetTarget.parameters?.sort?.parameter != null) {
+      if (state.widgetTarget.parameters?.sort?.parameter != null) {
         const targetColumn = this.allColumns.find(c => c.id === state.widgetTarget.parameters?.sort?.parameter);
-        if(targetColumn != null) {
+        if (targetColumn != null) {
           const order = state.widgetTarget.parameters?.sort.order === SortEnumType.Desc ? 'descend' : 'ascend';
-          this.table?.sortChange(order, targetColumn);
+          this.table()?.sortChange(order, targetColumn);
         }
       }
     });
@@ -404,14 +407,94 @@ implements OnInit, OnDestroy {
     this.nzContextMenuService.close(true);
 
     const row = selectedRow as AllInstrumentsNodeDisplay;
-    if(menu.menuRef != null) {
-      menu.itemToAdd = {
-        symbol: row.basicInformation!.symbol,
-        exchange:  row.basicInformation!.exchange
-      };
+    const menuRef = menu.menuRef();
+    if (menuRef != null) {
+      menu.itemToAdd.set(
+        {
+          symbol: row.basicInformation!.symbol,
+          exchange: row.basicInformation!.exchange
+        }
+      );
 
-      this.nzContextMenuService.create($event, menu.menuRef);
+      this.nzContextMenuService.create($event, menuRef);
     }
+  }
+
+  initTableDataStream(): Observable<AllInstrumentsNodeDisplay[]> {
+    this.initInstruments();
+
+    return this.instrumentsList$.pipe(
+      mapWith(
+        () => this.dashboardContextService.instrumentsSelection$,
+        (instruments, output) => ({instruments, badges: output})
+      ),
+      mapWith(
+        () => this.terminalSettingsService.getSettings(),
+        (source, output) => ({...source, terminalSettings: output})
+      ),
+      map(s => this.mapInstrumentsToBadges(s.instruments, s.badges, s.terminalSettings))
+    );
+  }
+
+  scrolled(): void {
+    this.scrolled$.next(null);
+  }
+
+  applyFilter(filters: DefaultTableFilters): void {
+    const cleanedFilters = Object.keys(filters)
+      .filter(key =>
+        filters[key] != null &&
+        (
+          (typeof filters[key] === 'number') ||
+          (typeof filters[key] === 'boolean') ||
+          (filters[key] as string | string[]).length > 0
+        )
+      )
+      .reduce((acc, curr) => {
+        acc[curr] = filters[curr];
+        return acc;
+      }, {} as DefaultTableFilters);
+
+    this.resetLoadedData();
+
+    this.filters$.next(cleanedFilters);
+  }
+
+  rowClick(row: TableDataRow): void {
+    const node = row as AllInstrumentsNodeDisplay;
+    this.settings$.pipe(
+      take(1)
+    ).subscribe(s => {
+      this.actionsContext.selectInstrument({
+        symbol: node.basicInformation!.symbol!,
+        exchange: node.basicInformation!.exchange!,
+        instrumentGroup: node.boardInformation?.board
+      }, s.badgeColor ?? defaultBadgeColor);
+    });
+  }
+
+  ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.updatesSub?.unsubscribe();
+    this.instrumentsList$.complete();
+    this.exportBtnSize$.complete();
+  }
+
+  changeColumnOrder(event: CdkDragDrop<any>): void {
+    super.changeColumnOrder<AllInstrumentsSettings>(event, this.settings$);
+  }
+
+  saveColumnWidth(event: { columnId: string, width: number }): void {
+    super.saveColumnWidth<AllInstrumentsSettings>(event, this.settings$);
+  }
+
+  exportBtnSizeChange(entries: ResizeObserverEntry[]): void {
+    entries.forEach(x => {
+      this.exportBtnSize$.next({
+        width: Math.floor(x.contentRect.width),
+        height: Math.floor(x.contentRect.height)
+      });
+    });
   }
 
   protected initContentSize(): void {
@@ -436,26 +519,29 @@ implements OnInit, OnDestroy {
           const boardColumn: BaseColumnSettings<AllInstrumentsNodeDisplay> | undefined = this.allColumns.find(c => c.id === 'board');
 
           if (boardColumn != null) {
-            boardColumn.filterData!.filters = boards?.map(b => ({ text: `${b.code} (${b.description})`, value: b.code })) ?? [];
+            boardColumn.filterData!.filters = boards?.map(b => ({
+              text: `${b.code} (${b.description})`,
+              value: b.code
+            })) ?? [];
           }
         }),
         switchMap(() => this.settings$),
         mapWith(
           () => this.translatorService.getTranslator('all-instruments/all-instruments'),
-          (settings, translate) => ({ settings, translate })
+          (settings, translate) => ({settings, translate})
         ),
-        map(({ settings, translate }) => {
+        map(({settings, translate}) => {
           const tableSettings = TableSettingHelper.toTableDisplaySettings(settings.allInstrumentsTable, settings.allInstrumentsColumns);
 
           return {
             columns: this.allColumns
-              .map(column => ({ column, settings: tableSettings?.columns.find(c => c.columnId === column.id) }))
+              .map(column => ({column, settings: tableSettings?.columns.find(c => c.columnId === column.id)}))
               .filter(col => col.settings != null)
               .map((col, index) => ({
                   ...col.column,
                   displayName: translate(
                     ['columns', col.column.id, 'name'],
-                    { fallback: col.column.displayName }
+                    {fallback: col.column.displayName}
                   ),
                   tooltip: translate(
                     ['columns', col.column.id, 'tooltip'],
@@ -472,73 +558,6 @@ implements OnInit, OnDestroy {
       );
   }
 
-  initTableDataStream(): Observable<AllInstrumentsNodeDisplay[]> {
-    this.initInstruments();
-
-    return this.instrumentsList$.pipe(
-      mapWith(
-        () => this.dashboardContextService.instrumentsSelection$,
-        (instruments, output) => ({ instruments, badges: output })
-      ),
-      mapWith(
-        () => this.terminalSettingsService.getSettings(),
-        (source, output) => ({ ...source, terminalSettings: output })
-      ),
-      map(s => this.mapInstrumentsToBadges(s.instruments, s.badges, s.terminalSettings))
-    );
-  }
-
-  scrolled(): void {
-      this.scrolled$.next(null);
-  }
-
-  applyFilter(filters: DefaultTableFilters): void {
-    const cleanedFilters = Object.keys(filters)
-      .filter(key =>
-        filters[key] != null &&
-        (
-          (typeof filters[key] === 'number') ||
-          (typeof filters[key] === 'boolean') ||
-          (filters[key] as string | string[]).length > 0
-        )
-      )
-      .reduce((acc, curr) => {
-        acc[curr] = filters[curr];
-        return acc;
-      }, {} as DefaultTableFilters);
-
-    this.resetLoadedData();
-
-    this.filters$.next(cleanedFilters);
-  }
-
-  rowClick(row: AllInstrumentsNodeDisplay): void {
-      this.settings$.pipe(
-        take(1)
-      ).subscribe(s => {
-        this.actionsContext.selectInstrument({
-          symbol: row.basicInformation!.symbol!,
-          exchange: row.basicInformation!.exchange!,
-          instrumentGroup: row.boardInformation?.board
-        }, s.badgeColor ?? defaultBadgeColor);
-      });
-  }
-
-  ngOnDestroy(): void {
-    super.ngOnDestroy();
-    this.updatesSub?.unsubscribe();
-    this.instrumentsList$.complete();
-    this.exportBtnSize$.complete();
-  }
-
-  changeColumnOrder(event: CdkDragDrop<any>): void {
-    super.changeColumnOrder<AllInstrumentsSettings>(event, this.settings$);
-  }
-
-  saveColumnWidth(event: { columnId: string, width: number }): void {
-    super.saveColumnWidth<AllInstrumentsSettings>(event, this.settings$);
-  }
-
   protected exportToFile(): void {
     combineLatest({
       filters: this.filters$,
@@ -548,7 +567,7 @@ implements OnInit, OnDestroy {
     })
       .pipe(
         mapWith(
-          ({ filters, sort, tableConfig }) => {
+          ({filters, sort, tableConfig}) => {
             const columnIds = tableConfig.columns.map(c => c.sourceField ?? c.id);
 
             return this.service.getInstruments(
@@ -560,11 +579,11 @@ implements OnInit, OnDestroy {
               }
             );
           },
-          ({ tableConfig, t }, res) => ({ tableConfig, t, res })
+          ({tableConfig, t}, res) => ({tableConfig, t, res})
         ),
         take(1)
       )
-      .subscribe(({ t, tableConfig, res }) => {
+      .subscribe(({t, tableConfig, res}) => {
         if (res?.edges == null) {
           return;
         }
@@ -605,15 +624,6 @@ implements OnInit, OnDestroy {
       });
   }
 
-  exportBtnSizeChange(entries: ResizeObserverEntry[]): void {
-    entries.forEach(x => {
-      this.exportBtnSize$.next({
-        width: Math.floor(x.contentRect.width),
-        height: Math.floor(x.contentRect.height)
-      });
-    });
-  }
-
   private initInstruments(): void {
     combineLatest([
       this.tableConfig$,
@@ -640,34 +650,34 @@ implements OnInit, OnDestroy {
         tap(() => this.isLoading$.next(false)),
         takeUntilDestroyed(this.destroyRef)
       ).subscribe(res => {
-        if (res == null) {
-          return;
-        }
+      if (res == null) {
+        return;
+      }
 
-        const newInstruments = res.edges?.map((ie: InstrumentsEdge) => ({
-          ...ie.node,
-          id: ie.cursor
-        } as AllInstrumentsNodeDisplay)) ?? [];
+      const newInstruments = res.edges?.map((ie: InstrumentsEdge) => ({
+        ...ie.node,
+        id: ie.cursor
+      } as AllInstrumentsNodeDisplay)) ?? [];
 
-        if (this.pagination == null) {
-          this.instrumentsList$.next(newInstruments);
+      if (this.pagination == null) {
+        this.instrumentsList$.next(newInstruments);
+        this.pagination = res.pageInfo ?? null;
+        this.subscribeToUpdates();
+        return;
+      }
+
+      this.instrumentsList$.pipe(take(1))
+        .subscribe(instruments => {
+          this.instrumentsList$.next([...instruments, ...newInstruments]);
           this.pagination = res.pageInfo ?? null;
           this.subscribeToUpdates();
-          return;
-        }
-
-        this.instrumentsList$.pipe(take(1))
-          .subscribe(instruments => {
-            this.instrumentsList$.next([...instruments, ...newInstruments]);
-            this.pagination = res.pageInfo ?? null;
-            this.subscribeToUpdates();
-          });
+        });
     });
   }
 
   private mapInstrumentsToBadges(instruments: AllInstrumentsNodeDisplay[], badges: InstrumentGroups, terminalSettings: TerminalSettings): AllInstrumentsNodeDisplay[] {
     const defaultBadges: InstrumentGroups = badges[defaultBadgeColor] != null
-    ? { [defaultBadgeColor]: badges[defaultBadgeColor] }
+      ? {[defaultBadgeColor]: badges[defaultBadgeColor]}
       : {};
 
     const availableBadges = (terminalSettings.badgesBind ?? false)
@@ -696,9 +706,9 @@ implements OnInit, OnDestroy {
           this.filters$,
           this.sort$
         ),
-        filter(([, isLoading,, instrumentsList]) => !isLoading && instrumentsList.length > 0),
-        map(([,, tableConfig, instrumentsList, filters, sort]) => ({ tableConfig, instrumentsList, filters, sort })),
-        switchMap(({ tableConfig, instrumentsList, filters, sort }) => {
+        filter(([, isLoading, , instrumentsList]) => !isLoading && instrumentsList.length > 0),
+        map(([, , tableConfig, instrumentsList, filters, sort]) => ({tableConfig, instrumentsList, filters, sort})),
+        switchMap(({tableConfig, instrumentsList, filters, sort}) => {
           const columnIds = tableConfig.columns.map(c => c.sourceField ?? c.id);
 
           return this.service.getInstruments(
@@ -734,9 +744,9 @@ implements OnInit, OnDestroy {
 
     const sortObj = fields.reduceRight((acc, curr, index) => {
       if (index === fields.length - 1) {
-        return { [curr]: sort === 'descend' ? SortEnumType.Desc : SortEnumType.Asc };
+        return {[curr]: sort === 'descend' ? SortEnumType.Desc : SortEnumType.Asc};
       }
-      return { [curr]: acc };
+      return {[curr]: acc};
     }, {} as InstrumentModelSortInput);
 
     this.sort$.next(sortObj);

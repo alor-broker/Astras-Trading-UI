@@ -1,26 +1,25 @@
 <ng-container>
-  <ats-widget-skeleton
-    *ngIf="settings$ | async as settings"
-    [content]="contentRef"
-    [header]="headerRef"
-    [isBlockWidget]="isBlockWidget"
-  >
-    <ng-template #headerRef>
-      <ats-widget-header
-        [guid]="guid"
-        [hasSettings]="false"
-        [linkToActive]="settings.linkToActive"
-        [showBadgesMenu]="(showBadge$ | async) ?? false"
-        [selectedBadgeColor]="settings.badgeColor"
-        [badgeShape]="'square'"
-        [widgetMeta]="widgetInstance.widgetMeta"
-      ></ats-widget-header>
-    </ng-template>
-
-    <ng-template #contentRef>
-      <ats-invest-ideas-carousel (instrumentSelected)="selectInstrument($event)"></ats-invest-ideas-carousel>
-    </ng-template>
-  </ats-widget-skeleton>
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [isBlockWidget]="isBlockWidget()"
+      >
+      <ng-template #headerRef>
+        <ats-widget-header [guid]="guid"
+          [hasSettings]="false"
+          [linkToActive]="settings.linkToActive ?? null"
+          [showBadgesMenu]="(showBadge$ | async) ?? false"
+          [selectedBadgeColor]="settings.badgeColor"
+          [badgeShape]="'square'"
+          [widgetMeta]="widgetInstance().widgetMeta"
+         />
+      </ng-template>
+      <ng-template #contentRef>
+        <ats-invest-ideas-carousel (instrumentSelected)="selectInstrument($event)" />
+      </ng-template>
+    </ats-widget-skeleton>
+  }
 
 </ng-container>
 

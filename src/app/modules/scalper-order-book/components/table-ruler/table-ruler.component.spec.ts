@@ -1,15 +1,9 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TableRulerComponent } from './table-ruler.component';
-import {
-  BehaviorSubject,
-  Subject
-} from 'rxjs';
-import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
-import { SCALPER_ORDERBOOK_BODY_REF } from '../scalper-order-book-body/scalper-order-book-body.component';
+import {TableRulerComponent} from './table-ruler.component';
+import {BehaviorSubject, Subject} from 'rxjs';
+import {ScalperOrderBookDataContext} from '../../models/scalper-order-book-data-context.model';
+import {SCALPER_ORDERBOOK_BODY_REF} from '../scalper-order-book-body/scalper-order-book-body.component';
 
 describe('TableRulerComponent', () => {
   let component: TableRulerComponent;
@@ -17,7 +11,7 @@ describe('TableRulerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TableRulerComponent],
+      imports: [TableRulerComponent],
       providers: [
         {
           provide: SCALPER_ORDERBOOK_BODY_REF,
@@ -35,22 +29,28 @@ describe('TableRulerComponent', () => {
 
     fixture = TestBed.createComponent(TableRulerComponent);
     component = fixture.componentInstance;
-    component.dataContext = {
-      extendedSettings$: new Subject(),
-      orderBook$: new Subject(),
-      position$: new Subject(),
-      currentOrders$: new Subject(),
-      currentPortfolio$: new Subject(),
-      trades$: new Subject(),
-      ownTrades$: new Subject(),
-      orderBookBody$: new Subject(),
-      displayRange$: new Subject(),
-      workingVolume$: new Subject(),
-      scaleFactor$: new BehaviorSubject(1),
-      addLocalOrder: () => {},
-      removeLocalOrder: () => {},
-      destroy: () => {}
-    } as ScalperOrderBookDataContext;
+    fixture.componentRef.setInput(
+      'dataContext',
+      {
+        extendedSettings$: new Subject(),
+        orderBook$: new Subject(),
+        position$: new Subject(),
+        currentOrders$: new Subject(),
+        currentPortfolio$: new Subject(),
+        trades$: new Subject(),
+        ownTrades$: new Subject(),
+        orderBookBody$: new Subject(),
+        displayRange$: new Subject(),
+        workingVolume$: new Subject(),
+        scaleFactor$: new BehaviorSubject(1),
+        addLocalOrder: () => {
+        },
+        removeLocalOrder: () => {
+        },
+        destroy: () => {
+        }
+      } as ScalperOrderBookDataContext
+    );
 
     fixture.detectChanges();
   });

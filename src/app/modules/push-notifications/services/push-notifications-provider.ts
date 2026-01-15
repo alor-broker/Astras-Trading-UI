@@ -1,4 +1,4 @@
-﻿import {DestroyRef, Injectable } from '@angular/core';
+﻿import { DestroyRef, Injectable, inject } from '@angular/core';
 import { NotificationsProvider } from '../../notifications/services/notifications-provider';
 import { combineLatest, Observable, shareReplay } from 'rxjs';
 import { NotificationMeta } from '../../notifications/models/notification.model';
@@ -21,19 +21,16 @@ interface SavedPushNotification {
 
 @Injectable()
 export class PushNotificationsProvider implements NotificationsProvider {
+  private readonly pushNotificationsService = inject(PushNotificationsService);
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly pushNotificationsStorageKey = 'push-notifications';
 
   private notifications$?: Observable<NotificationMeta[]>;
-
-  constructor(
-    private readonly pushNotificationsService: PushNotificationsService,
-    private readonly userPortfoliosService: UserPortfoliosService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly localStorageService: LocalStorageService,
-    private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   getNotifications(): Observable<NotificationMeta[]> {
     if (!this.notifications$) {

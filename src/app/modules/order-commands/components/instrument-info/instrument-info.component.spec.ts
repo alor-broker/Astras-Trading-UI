@@ -1,12 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { InstrumentInfoComponent } from './instrument-info.component';
+import {InstrumentInfoComponent} from './instrument-info.component';
 import {QuotesService} from "../../../../shared/services/quotes.service";
 import {Subject} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { MockComponents } from "ng-mocks";
-import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {InstrumentIconComponent} from "../../../../shared/components/instrument-icon/instrument-icon.component";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {NzDescriptionsComponent, NzDescriptionsItemComponent} from "ng-zorro-antd/descriptions";
 
 describe('InstrumentInfoComponent', () => {
   let component: InstrumentInfoComponent;
@@ -15,13 +17,18 @@ describe('InstrumentInfoComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        TranslocoTestsModule.getModule()
-      ],
-      declarations: [
+        TranslocoTestsModule.getModule(),
         InstrumentInfoComponent,
-        ...MockComponents(InstrumentIconComponent)
+        MockComponents(
+          InstrumentIconComponent,
+          NzDescriptionsComponent,
+          NzDescriptionsItemComponent
+        ),
+        MockDirectives(
+          NzTooltipDirective
+        )
       ],
-      providers:[
+      providers: [
         {
           provide: QuotesService,
           useValue: {

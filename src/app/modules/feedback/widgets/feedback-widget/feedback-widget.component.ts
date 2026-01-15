@@ -1,34 +1,49 @@
-import {
-  Component,
-  DestroyRef,
-  OnInit
-} from '@angular/core';
-import {
-  Observable,
-  of,
-  shareReplay
-} from 'rxjs';
-import { ModalService } from '../../../../shared/services/modal.service';
-import {
-  FormBuilder,
-  Validators
-} from '@angular/forms';
-import { FeedbackService } from '../../services/feedback.service';
-import {
-  filter,
-  finalize
-} from 'rxjs/operators';
-import { NewFeedback } from '../../models/feedback.model';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import {Observable, of, shareReplay} from 'rxjs';
+import {ModalService} from '../../../../shared/services/modal.service';
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FeedbackService} from '../../services/feedback.service';
+import {filter, finalize} from 'rxjs/operators';
+import {NewFeedback} from '../../models/feedback.model';
+import {NzNotificationService} from 'ng-zorro-antd/notification';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzModalComponent, NzModalContentDirective} from 'ng-zorro-antd/modal';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzRateComponent} from 'ng-zorro-antd/rate';
+import {NzInputDirective, NzTextareaCountComponent} from 'ng-zorro-antd/input';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-feedback-widget',
-    templateUrl: './feedback-widget.component.html',
-    styleUrls: ['./feedback-widget.component.less'],
-    standalone: false
+  selector: 'ats-feedback-widget',
+  templateUrl: './feedback-widget.component.html',
+  styleUrls: ['./feedback-widget.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzModalComponent,
+    NzModalContentDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    NzRateComponent,
+    NzTextareaCountComponent,
+    NzInputDirective,
+    AsyncPipe
+  ]
 })
 export class FeedbackWidgetComponent implements OnInit {
+  private readonly modalService = inject(ModalService);
+  private readonly feedbackService = inject(FeedbackService);
+  private readonly notificationService = inject(NzNotificationService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   isVisible$: Observable<boolean> = of(false);
   readonly commentMaxLength = 5000;
   readonly maxStarsCount = 5;
@@ -40,15 +55,6 @@ export class FeedbackWidgetComponent implements OnInit {
   });
 
   voteParams$!: Observable<NewFeedback>;
-
-  constructor(
-    private readonly modalService: ModalService,
-    private readonly feedbackService: FeedbackService,
-    private readonly notificationService: NzNotificationService,
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.isVisible$ = this.modalService.shouldShowVoteModal$;

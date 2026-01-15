@@ -6,7 +6,7 @@
       [nzOkText]="t('saveBtnText')"
       [nzTitle]="t('instrumentsImportWatchlistDialog.dialogTitle')"
       [nzVisible]="isVisible$ | async"
-    >
+      >
 
       <ng-container *nzModalContent>
         <div class="d-flex flex-row w-100 justify-content-between">
@@ -17,7 +17,7 @@
               [placeholder]="t('instrumentsImportWatchlistDialog.inputStringPlaceholder')"
               nz-input
               rows="3"
-            >
+              >
             </textarea>
           </div>
           <div class="ml-10 d-flex flex-column flex-gap-5">
@@ -26,12 +26,12 @@
               [nzShowUploadList]="false"
               nzAccept=".txt"
               nzFileType="text/plain"
-            >
+              >
               <button
                 nz-button
                 [nz-tooltip]="t('instrumentsImportWatchlistDialog.uploadFileBtnTooltip')"
                 [nzTooltipPlacement]="'right'"
-              >
+                >
                 <span nz-icon nzType="download"></span>
               </button>
             </nz-upload>
@@ -42,53 +42,55 @@
               [nzTooltipPlacement]="'right'"
               nz-button
               nzType="primary"
-            >
+              >
               <span nz-icon nzTheme="outline" nzType="down"></span>
             </button>
           </div>
         </div>
 
         <div class="mt-10">
-          <ng-container *ngIf="parsedResults$">
+          @if (parsedResults$) {
             <ng-container *ngrxLet="parsedResults$ as parsedResults; suspenseTpl: loading">
-              <nz-table
-                *ngIf="parsedResults"
-                nzBordered
-                nzSize="small"
-                nzTemplateMode
-              >
-                <thead>
-                <tr>
-                  <th>{{t('instrumentsImportWatchlistDialog.tickerColLabel')}}</th>
-                  <th>{{t('instrumentsImportWatchlistDialog.parseStatusColLabel')}}</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr *ngFor="let result of parsedResults">
-                  <td>{{!!result.instrumentKey ? (result.instrumentKey.exchange + ':' + result.instrumentKey.symbol + ':' + result.instrumentKey.instrumentGroup) : result.input}}</td>
-                  <td>
-                    <ng-container *ngIf="!!result.instrumentKey;else notFound">
-                      <span nz-typography nzType="success">
-                        <span nz-icon nzTheme="outline" nzType="check-circle"></span>
-                      </span>
-                    </ng-container>
-                    <ng-template #notFound>
-                      <span nz-typography nzType="danger">
-                        <span nz-icon nzTheme="outline" nzType="exclamation-circle"></span>
-                        <span class="ml-5">{{t('instrumentsImportWatchlistDialog.parseStatus.notFound')}}</span>
-                      </span>
-                    </ng-template>
-                  </td>
-                </tr>
-                </tbody>
-              </nz-table>
+              @if (parsedResults) {
+                <nz-table
+                  nzBordered
+                  nzSize="small"
+                  nzTemplateMode
+                  >
+                  <thead>
+                    <tr>
+                      <th>{{t('instrumentsImportWatchlistDialog.tickerColLabel')}}</th>
+                      <th>{{t('instrumentsImportWatchlistDialog.parseStatusColLabel')}}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (result of parsedResults; track result) {
+                      <tr>
+                        <td>{{!!result.instrumentKey ? (result.instrumentKey.exchange + ':' + result.instrumentKey.symbol + ':' + result.instrumentKey.instrumentGroup) : result.input}}</td>
+                        <td>
+                          @if (!!result.instrumentKey) {
+                            <span nz-typography nzType="success">
+                              <span nz-icon nzTheme="outline" nzType="check-circle"></span>
+                            </span>
+                          } @else {
+                            <span nz-typography nzType="danger">
+                              <span nz-icon nzTheme="outline" nzType="exclamation-circle"></span>
+                              <span class="ml-5">{{t('instrumentsImportWatchlistDialog.parseStatus.notFound')}}</span>
+                            </span>
+                          }
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </nz-table>
+              }
             </ng-container>
             <ng-template #loading>
               <p class="text-center">
-                <nz-spin nzSimple></nz-spin>
+                <nz-spin nzSimple />
               </p>
             </ng-template>
-          </ng-container>
+          }
         </div>
       </ng-container>
       <ng-container *nzModalFooter>
@@ -97,13 +99,13 @@
           [disabled]="!parsedResults$ || getItemsToImport(parsedResults$ | async).length === 0"
           nz-button
           nzType="primary"
-        >
+          >
           {{t('saveBtnText')}}
         </button>
         <button
           (click)="closeDialog()"
           nz-button
-        >
+          >
           {{t('cancelBtnText')}}
         </button>
       </ng-container>

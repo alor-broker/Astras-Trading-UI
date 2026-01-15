@@ -1,7 +1,4 @@
-import {
-  DestroyRef,
-  Injectable
-} from '@angular/core';
+import { DestroyRef, Injectable, inject } from '@angular/core';
 import { LocalStorageService } from "../../../shared/services/local-storage.service";
 import {
   Actions,
@@ -45,18 +42,15 @@ import { GuidGenerator } from "../../../shared/utils/guid";
   providedIn: 'root'
 })
 export class MobileSettingsBrokerService {
-  constructor(
-    private readonly store: Store,
-    private readonly actions$: Actions,
-    private readonly localStorageService: LocalStorageService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly dashboardSettingsMobileMigrationManager: DashboardSettingsMobileMigrationManager,
-    private readonly widgetSettingsMobileMigrationManager: WidgetSettingsMobileMigrationManager,
-    private readonly terminalSettingsMobileMigrationManager: TerminalSettingsMobileMigrationManager,
-    private readonly globalLoadingIndicatorService: GlobalLoadingIndicatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
+  private readonly store = inject(Store);
+  private readonly actions$ = inject(Actions);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly dashboardSettingsMobileMigrationManager = inject(DashboardSettingsMobileMigrationManager);
+  private readonly widgetSettingsMobileMigrationManager = inject(WidgetSettingsMobileMigrationManager);
+  private readonly terminalSettingsMobileMigrationManager = inject(TerminalSettingsMobileMigrationManager);
+  private readonly globalLoadingIndicatorService = inject(GlobalLoadingIndicatorService);
+  private readonly destroyRef = inject(DestroyRef);
 
   initSettingsBrokers(): void {
     this.initTerminalSettingsBroker();

@@ -2,7 +2,7 @@
   BaseExtension,
   ChartContext
 } from "./base.extension";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { IPositionLineAdapter } from "../../../../assets/charting_library";
 import {
   combineLatest,
@@ -52,15 +52,11 @@ class PositionState {
 
 @Injectable()
 export class PositionDisplayExtension extends BaseExtension {
-  private positionState: PositionState | null = null;
+  private readonly currentDashboardService = inject(DashboardContextService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly translatorService = inject(TranslatorService);
 
-  constructor(
-    private readonly currentDashboardService: DashboardContextService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly translatorService: TranslatorService
-  ) {
-    super();
-  }
+  private positionState: PositionState | null = null;
 
   apply(context: ChartContext): void {
     this.positionState?.destroy();

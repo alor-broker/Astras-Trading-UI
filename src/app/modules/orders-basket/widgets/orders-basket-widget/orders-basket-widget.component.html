@@ -1,31 +1,29 @@
 <ng-container *transloco="let t;">
-  <ats-widget-skeleton
-    *ngIf="settings$ | async as settings"
-    [content]="contentRef"
-    [header]="headerRef"
-    [showContentScroll]="true"
-    [isBlockWidget]="isBlockWidget"
-    [settings]="settingsRef"
-    [showSettings]="shouldShowSettings"
-  >
-    <ng-template #headerRef>
-      <ats-widget-header
-        [guid]="guid"
-        [hasSettings]="true"
-        [showBadgesMenu]="false"
-        [customTitle]="title$ | async"
-        [widgetMeta]="widgetInstance.widgetMeta"
-        (switchSettings)="onSettingsChange()"
-      ></ats-widget-header>
-    </ng-template>
-
-    <ng-template #contentRef>
-      <ats-orders-basket [guid]="guid"></ats-orders-basket>
-    </ng-template>
-
-    <ng-template #settingsRef>
-      <ats-orders-basket-settings (settingsChange)="onSettingsChange()" [guid]="guid"></ats-orders-basket-settings>
-    </ng-template>
-  </ats-widget-skeleton>
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [showContentScroll]="true"
+      [isBlockWidget]="isBlockWidget()"
+      [settings]="settingsRef"
+      [showSettings]="shouldShowSettings"
+      >
+      <ng-template #headerRef>
+        <ats-widget-header [guid]="guid"
+          [hasSettings]="true"
+          [showBadgesMenu]="false"
+          [customTitle]="title$ | async"
+          [widgetMeta]="widgetInstance().widgetMeta"
+          (switchSettings)="onSettingsChange()"
+         />
+      </ng-template>
+      <ng-template #contentRef>
+        <ats-orders-basket [guid]="guid" />
+      </ng-template>
+      <ng-template #settingsRef>
+        <ats-orders-basket-settings (settingsChange)="onSettingsChange()" [guid]="guid" />
+      </ng-template>
+    </ats-widget-skeleton>
+  }
 
 </ng-container>

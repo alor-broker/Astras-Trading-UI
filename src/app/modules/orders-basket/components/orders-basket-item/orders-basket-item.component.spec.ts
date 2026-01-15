@@ -1,15 +1,17 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
-import { OrdersBasketItemComponent } from './orders-basket-item.component';
-import { InstrumentsService } from '../../../instruments/services/instruments.service';
-import { of } from 'rxjs';
-import { QuotesService } from '../../../../shared/services/quotes.service';
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
-import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
-import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
-import { InputNumberComponent } from "../../../../shared/components/input-number/input-number.component";
-import { InstrumentSearchComponent } from "../../../../shared/components/instrument-search/instrument-search.component";
+import {OrdersBasketItemComponent} from './orders-basket-item.component';
+import {InstrumentsService} from '../../../instruments/services/instruments.service';
+import {of} from 'rxjs';
+import {QuotesService} from '../../../../shared/services/quotes.service';
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {commonTestProviders} from "../../../../shared/utils/testing/common-test-providers";
+import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
+import {InputNumberComponent} from "../../../../shared/components/input-number/input-number.component";
+import {InstrumentSearchComponent} from "../../../../shared/components/instrument-search/instrument-search.component";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzIconDirective} from "ng-zorro-antd/icon";
 
 describe('OrdersBasketItemComponent', () => {
   let component: OrdersBasketItemComponent;
@@ -21,14 +23,17 @@ describe('OrdersBasketItemComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        TranslocoTestsModule.getModule(),
-        ...FormsTesting.getTestingModules(),
-        InputNumberComponent,
-        InstrumentSearchComponent
-      ],
-      declarations: [
         OrdersBasketItemComponent,
-        ...ngZorroMockComponents
+        TranslocoTestsModule.getModule(),
+        ...FormsTesting.getMocks(),
+        MockComponents(
+          InstrumentSearchComponent,
+          InputNumberComponent,
+          NzButtonComponent
+        ),
+        MockDirectives(
+          NzIconDirective
+        )
       ],
       providers: [
         {
@@ -42,10 +47,11 @@ describe('OrdersBasketItemComponent', () => {
         ...commonTestProviders
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(OrdersBasketItemComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('exchange', 'exch');
     fixture.detectChanges();
   });
 

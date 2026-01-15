@@ -1,13 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { PortfolioSummaryWidgetComponent } from './portfolio-summary-widget.component';
+import {PortfolioSummaryWidgetComponent} from './portfolio-summary-widget.component';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {Subject} from "rxjs";
 import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {Widget} from "../../../../shared/models/dashboard/widget.model";
 import {WidgetMeta} from "../../../../shared/models/widget-meta.model";
-import { ComponentHelpers } from "../../../../shared/utils/testing/component-helpers";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {PortfolioSummaryComponent} from "../../components/portfolio-summary/portfolio-summary.component";
 
 describe('PortfolioSummaryWidgetComponent', () => {
   let component: PortfolioSummaryWidgetComponent;
@@ -15,12 +18,15 @@ describe('PortfolioSummaryWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         PortfolioSummaryWidgetComponent,
-        ComponentHelpers.mockComponent({
-          selector: 'ats-portfolio-summary',
-          inputs: ['guid']
-        })
+        MockComponents(
+          NzButtonComponent,
+          PortfolioSummaryComponent,
+        ),
+        MockDirectives(
+          NzIconDirective
+        )
       ],
       providers: [
         {
@@ -46,16 +52,19 @@ describe('PortfolioSummaryWidgetComponent', () => {
         }
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(PortfolioSummaryWidgetComponent);
     component = fixture.componentInstance;
-    component.widgetInstance = {
-      instance: {
-        guid: 'guid'
-      } as Widget,
-      widgetMeta: {} as WidgetMeta
-    };
+    fixture.componentRef.setInput(
+      'widgetInstance',
+      {
+        instance: {
+          guid: 'guid'
+        } as Widget,
+        widgetMeta: {widgetName: {}} as WidgetMeta
+      }
+    );
 
     fixture.detectChanges();
   });

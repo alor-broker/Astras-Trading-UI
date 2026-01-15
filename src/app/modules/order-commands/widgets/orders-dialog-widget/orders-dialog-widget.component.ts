@@ -1,17 +1,13 @@
-import {
-  Component,
-  Inject,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
 import {
   asyncScheduler,
   BehaviorSubject,
   distinctUntilChanged,
   filter,
-  Observable, observeOn,
-  shareReplay, subscribeOn,
+  Observable,
+  observeOn,
+  shareReplay,
+  subscribeOn,
   switchMap,
   take,
   tap
@@ -21,14 +17,11 @@ import {isPortfoliosEqual} from "../../../../shared/utils/portfolios";
 import {DashboardContextService} from "../../../../shared/services/dashboard-context.service";
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
-import {
-  NzTabComponent,
-  NzTabsComponent
-} from "ng-zorro-antd/tabs";
+import {NzTabComponent, NzTabsComponent} from "ng-zorro-antd/tabs";
 import {CommonParameters, CommonParametersService} from "../../services/common-parameters.service";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import {OrderDialogParams, OrderFormType} from "../../../../shared/models/orders/orders-dialog.model";
-import { HelpService } from "../../../../shared/services/help.service";
+import {HelpService} from "../../../../shared/services/help.service";
 import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
@@ -38,18 +31,56 @@ import {
   PushNotificationsConfig
 } from "../../../push-notifications/services/push-notifications-config";
 import {ConfirmableOrderCommandsService} from "../../services/confirmable-order-commands.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzModalComponent, NzModalContentDirective} from 'ng-zorro-antd/modal';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {InstrumentInfoComponent} from '../../components/instrument-info/instrument-info.component';
+import {LimitOrderFormComponent} from '../../components/order-forms/limit-order-form/limit-order-form.component';
+import {MarketOrderFormComponent} from '../../components/order-forms/market-order-form/market-order-form.component';
+import {StopOrderFormComponent} from '../../components/order-forms/stop-order-form/stop-order-form.component';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {
+  SetupInstrumentNotificationsComponent
+} from '../../../push-notifications/components/setup-instrument-notifications/setup-instrument-notifications.component';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-orders-dialog-widget',
-    templateUrl: './orders-dialog-widget.component.html',
-    styleUrls: ['./orders-dialog-widget.component.less'],
-    providers: [
-        CommonParametersService,
-        ConfirmableOrderCommandsService
-    ],
-    standalone: false
+  selector: 'ats-orders-dialog-widget',
+  templateUrl: './orders-dialog-widget.component.html',
+  styleUrls: ['./orders-dialog-widget.component.less'],
+  providers: [
+    CommonParametersService,
+    ConfirmableOrderCommandsService
+  ],
+  imports: [
+    TranslocoDirective,
+    NzModalComponent,
+    NzModalContentDirective,
+    NzResizeObserverDirective,
+    InstrumentInfoComponent,
+    NzTabsComponent,
+    NzTabComponent,
+    LimitOrderFormComponent,
+    MarketOrderFormComponent,
+    StopOrderFormComponent,
+    NzIconDirective,
+    SetupInstrumentNotificationsComponent,
+    NzTypographyComponent,
+    NzButtonComponent,
+    AsyncPipe
+  ]
 })
 export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
+  private readonly ordersDialogService = inject(OrdersDialogService);
+  private readonly currentDashboardService = inject(DashboardContextService);
+  private readonly instrumentService = inject(InstrumentsService);
+  private readonly commonParametersService = inject(CommonParametersService);
+  private readonly helpService = inject(HelpService);
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  readonly pushNotificationsConfig = inject<PushNotificationsConfig>(PUSH_NOTIFICATIONS_CONFIG);
+
   helpUrl$!: Observable<string | null>;
   dialogParams$!: Observable<OrderDialogParams | null>;
 
@@ -59,32 +90,15 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
   commonParameters$ = this.commonParametersService.parameters$;
   tabSetHeight$ = new BehaviorSubject(300);
 
-  @ViewChild('orderTabs', {static: false})
-  orderTabs?: NzTabsComponent;
+  readonly orderTabs = viewChild<NzTabsComponent>('orderTabs');
 
-  @ViewChild('limitOrderTab', {static: false})
-  limitOrderTab?: NzTabComponent;
+  readonly limitOrderTab = viewChild<NzTabComponent>('limitOrderTab');
 
-  @ViewChild('marketOrderTab', {static: false})
-  marketOrderTab?: NzTabComponent;
+  readonly marketOrderTab = viewChild<NzTabComponent>('marketOrderTab');
 
-  @ViewChild('stopOrderTab', {static: false})
-  stopOrderTab?: NzTabComponent;
+  readonly stopOrderTab = viewChild<NzTabComponent>('stopOrderTab');
 
   readonly ordersConfig = this.orderCommandService.getOrdersConfig();
-
-  constructor(
-    private readonly ordersDialogService: OrdersDialogService,
-    private readonly currentDashboardService: DashboardContextService,
-    private readonly instrumentService: InstrumentsService,
-    private readonly commonParametersService: CommonParametersService,
-    private readonly helpService: HelpService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
-    @Inject(PUSH_NOTIFICATIONS_CONFIG)
-    readonly pushNotificationsConfig: PushNotificationsConfig
-  ) {
-  }
 
   ngOnInit(): void {
     this.dialogParams$ = this.ordersDialogService.newOrderDialogParameters$.pipe(
@@ -128,13 +142,13 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
 
       switch (params.initialValues.orderType) {
         case OrderFormType.Limit:
-          this.activateCommandTab(this.limitOrderTab);
+          this.activateCommandTab(this.limitOrderTab());
           break;
         case OrderFormType.Market:
-          this.activateCommandTab(this.marketOrderTab);
+          this.activateCommandTab(this.marketOrderTab());
           break;
         case OrderFormType.Stop:
-          this.activateCommandTab(this.stopOrderTab);
+          this.activateCommandTab(this.stopOrderTab());
           break;
         default:
           throw new Error(`Unknown order type ${params.initialValues.orderType}`);
@@ -166,6 +180,6 @@ export class OrdersDialogWidgetComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.orderTabs?.setSelectedIndex(targetTab.position);
+    this.orderTabs()?.setSelectedIndex(targetTab.position);
   }
 }

@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnChanges, SimpleChanges} from '@angular/core';
+import { Component, DestroyRef, OnChanges, SimpleChanges, inject } from '@angular/core';
 import {PropertyEditorBaseComponent} from "../property-editor-base";
 import {PortfolioPropertyEditorConfig} from "../../../models/property-editor.model";
 import {
@@ -15,7 +15,7 @@ import {Portfolio} from "../../../graph/slot-types";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from "ng-zorro-antd/form";
 import {TranslocoDirective} from "@jsverse/transloco";
-import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import {NzOptionComponent, NzOptionGroupComponent, NzSelectComponent} from "ng-zorro-antd/select";
 import {UserPortfoliosService} from "../../../../../shared/services/user-portfolios.service";
 import { StringHelper } from "../../../../../shared/utils/string-helper";
@@ -24,36 +24,31 @@ import { MarketType } from "../../../../../shared/models/portfolio-key.model";
 @Component({
     selector: 'ats-portfolio-property-editor',
     imports: [
-        NzFormControlComponent,
-        NzFormDirective,
-        NzFormItemComponent,
-        NzFormLabelComponent,
-        ReactiveFormsModule,
-        TranslocoDirective,
-        AsyncPipe,
-        NgForOf,
-        NgIf,
-        NzOptionComponent,
-        NzOptionGroupComponent,
-        NzSelectComponent
-    ],
+    NzFormControlComponent,
+    NzFormDirective,
+    NzFormItemComponent,
+    NzFormLabelComponent,
+    ReactiveFormsModule,
+    TranslocoDirective,
+    AsyncPipe,
+    NzOptionComponent,
+    NzOptionGroupComponent,
+    NzSelectComponent
+],
     templateUrl: './portfolio-property-editor.component.html',
     styleUrl: './portfolio-property-editor.component.less'
 })
 export class PortfolioPropertyEditorComponent extends PropertyEditorBaseComponent<PortfolioPropertyEditorConfig> implements OnChanges {
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly separator = ':';
   protected availablePortfolios$!: Observable<Map<string, PortfolioExtended[]>>;
 
   protected readonly form = this.formBuilder.group({
     property: this.formBuilder.control<string | null>(null)
   });
-
-  constructor(
-    private readonly userPortfoliosService: UserPortfoliosService,
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef) {
-    super();
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.availablePortfolios$ ??= this.userPortfoliosService.getPortfolios().pipe(

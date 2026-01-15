@@ -1,49 +1,30 @@
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick
-} from '@angular/core/testing';
-import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
-import { CommonParametersService } from "../../../services/common-parameters.service";
-import {
-  BehaviorSubject,
-  of,
-  Subject,
-  Subscription,
-  take
-} from "rxjs";
-import { PortfolioSubscriptionsService } from "../../../../../shared/services/portfolio-subscriptions.service";
-import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
+import {CommonParametersService} from "../../../services/common-parameters.service";
+import {BehaviorSubject, of, Subject, Subscription, take} from "rxjs";
+import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
+import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
 import orderCommandsOrderFormsRu from "../../../../../../assets/i18n/order-commands/order-forms/ru.json";
-import { filter } from "rxjs/operators";
-import { OrderDetailsService } from "../../../../../shared/services/orders/order-details.service";
-import {
-  OrderType,
-  StopOrder
-} from "../../../../../shared/models/orders/order.model";
-import { InstrumentsService } from "../../../../instruments/services/instruments.service";
-import { StopMarketOrderEdit } from "../../../../../shared/models/orders/edit-order.model";
-import { OrderFormState } from "../../../models/order-form.model";
-import { EditStopOrderFormComponent } from "./edit-stop-order-form.component";
-import { LessMore } from "../../../../../shared/models/enums/less-more.model";
-import { Side } from "../../../../../shared/models/enums/side.model";
-import {
-  NZ_I18N,
-  ru_RU
-} from "ng-zorro-antd/i18n";
-import { TimezoneConverterService } from "../../../../../shared/services/timezone-converter.service";
-import { TimezoneConverter } from "../../../../../shared/utils/timezone-converter";
-import { TimezoneDisplayOption } from "../../../../../shared/models/enums/timezone-display-option";
-import { registerLocaleData } from "@angular/common";
+import {filter} from "rxjs/operators";
+import {OrderDetailsService} from "../../../../../shared/services/orders/order-details.service";
+import {OrderType, StopOrder} from "../../../../../shared/models/orders/order.model";
+import {InstrumentsService} from "../../../../instruments/services/instruments.service";
+import {StopMarketOrderEdit} from "../../../../../shared/models/orders/edit-order.model";
+import {OrderFormState} from "../../../models/order-form.model";
+import {EditStopOrderFormComponent} from "./edit-stop-order-form.component";
+import {LessMore} from "../../../../../shared/models/enums/less-more.model";
+import {Side} from "../../../../../shared/models/enums/side.model";
+import {NZ_I18N, ru_RU} from "ng-zorro-antd/i18n";
+import {TimezoneConverterService} from "../../../../../shared/services/timezone-converter.service";
+import {TimezoneConverter} from "../../../../../shared/utils/timezone-converter";
+import {TimezoneDisplayOption} from "../../../../../shared/models/enums/timezone-display-option";
+import {registerLocaleData} from "@angular/common";
 import localeRu from '@angular/common/locales/ru';
-import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
-import { TestData } from "../../../../../shared/utils/testing/test-data";
-import { commonTestProviders } from "../../../../../shared/utils/testing/common-test-providers";
-import { FormsTesting } from "../../../../../shared/utils/testing/forms-testing";
-import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
-import { NzDatePickerModule } from "ng-zorro-antd/date-picker";
+import {TranslocoTestsModule} from "../../../../../shared/utils/testing/translocoTestsModule";
+import {TestData} from "../../../../../shared/utils/testing/test-data";
+import {commonTestProviders} from "../../../../../shared/utils/testing/common-test-providers";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
+import {provideAnimations} from "@angular/platform-browser/animations";
 
 describe('EditStopOrderFormComponent', () => {
   let component: EditStopOrderFormComponent;
@@ -116,14 +97,10 @@ describe('EditStopOrderFormComponent', () => {
             'order-commands/order-forms/ru': orderCommandsOrderFormsRu,
           }
         }),
-        ...FormsTesting.getTestingModules(),
-        NzDatePickerModule,
-        InputNumberComponent
-      ],
-      declarations: [
-        EditStopOrderFormComponent,
+        EditStopOrderFormComponent
       ],
       providers: [
+        provideAnimations(),
         {provide: NZ_I18N, useValue: ru_RU},
         {provide: TimezoneConverterService, useValue: timezoneConverterServiceSpy},
         {
@@ -160,7 +137,6 @@ describe('EditStopOrderFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(EditStopOrderFormComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   afterEach(() => {
@@ -168,6 +144,9 @@ describe('EditStopOrderFormComponent', () => {
   });
 
   it('should create', () => {
+    fixture.componentRef.setInput('orderId', '111');
+    fixture.componentRef.setInput('portfolioKey', getDefaultPortfolio());
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
@@ -189,8 +168,16 @@ describe('EditStopOrderFormComponent', () => {
 
     orderDetailsServiceSpy.getStopOrderDetails.and.returnValue(new BehaviorSubject(order));
 
-    component.orderId = order.id;
-    component.portfolioKey = portfolio;
+    fixture.componentRef.setInput(
+      'orderId',
+      order.id
+    );
+
+    fixture.componentRef.setInput(
+      'portfolioKey',
+      portfolio
+    );
+
     fixture.detectChanges();
 
     const cases: { control: string, setValue: () => any, expectedError?: string }[] = [
@@ -245,7 +232,7 @@ describe('EditStopOrderFormComponent', () => {
   }));
 
   it('should disable submission', () => {
-    const portfolio = getDefaultPortfolio();
+      const portfolio = getDefaultPortfolio();
       const order = {
         id: '111',
         targetInstrument: {
@@ -262,8 +249,15 @@ describe('EditStopOrderFormComponent', () => {
 
       orderDetailsServiceSpy.getStopOrderDetails.and.returnValue(new BehaviorSubject(order));
 
-      component.orderId = order.id;
-      component.portfolioKey = portfolio;
+      fixture.componentRef.setInput(
+        'orderId',
+        order.id
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
 
       fixture.detectChanges();
 
@@ -279,7 +273,7 @@ describe('EditStopOrderFormComponent', () => {
   );
 
   it('should set initial values', fakeAsync(() => {
-    const portfolioKey = getDefaultPortfolio();
+      const portfolioKey = getDefaultPortfolio();
       const order = {
         id: '111',
         targetInstrument: {
@@ -296,8 +290,16 @@ describe('EditStopOrderFormComponent', () => {
 
       orderDetailsServiceSpy.getStopOrderDetails.and.returnValue(of(order));
 
-      component.orderId = order.id;
-      component.portfolioKey = portfolioKey;
+      fixture.componentRef.setInput(
+        'orderId',
+        order.id
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolioKey
+      );
+
       fixture.detectChanges();
       tick();
 
@@ -309,7 +311,7 @@ describe('EditStopOrderFormComponent', () => {
       };
 
       expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
-      }
+    }
   ));
 
   it('should pass correct order to service (market)', fakeAsync(() => {
@@ -338,8 +340,15 @@ describe('EditStopOrderFormComponent', () => {
         exchange: order.targetInstrument.exchange
       }));
 
-      component.orderId = order.id;
-      component.portfolioKey = portfolio;
+      fixture.componentRef.setInput(
+        'orderId',
+        order.id
+      );
+
+      fixture.componentRef.setInput(
+        'portfolioKey',
+        portfolio
+      );
 
       tick();
       fixture.detectChanges();

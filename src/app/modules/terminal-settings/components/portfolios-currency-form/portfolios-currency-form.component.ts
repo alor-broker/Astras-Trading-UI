@@ -1,64 +1,64 @@
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {
-  Component,
-  DestroyRef,
-  OnInit
-} from '@angular/core';
-import { ControlValueAccessorBaseComponent } from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
-import { PortfolioCurrencySettings } from '../../../../shared/models/terminal-settings/terminal-settings.model';
-import {
-  FormBuilder,
-  NG_VALUE_ACCESSOR,
-  Validators
-} from '@angular/forms';
-import {
-  combineLatest,
-  forkJoin,
-  Observable,
-  of,
-  switchMap,
-  take
-} from 'rxjs';
-import { map } from 'rxjs/operators';
-import { MarketService } from '../../../../shared/services/market.service';
-import {
-  CurrencyPair,
-  ExchangeRateService
-} from '../../../../shared/services/exchange-rate.service';
-import { UserPortfoliosService } from "../../../../shared/services/user-portfolios.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+  ControlValueAccessorBaseComponent
+} from '../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component';
+import {PortfolioCurrencySettings} from '../../../../shared/models/terminal-settings/terminal-settings.model';
+import {FormBuilder, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validators} from '@angular/forms';
+import {combineLatest, forkJoin, Observable, of, switchMap, take} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {MarketService} from '../../../../shared/services/market.service';
+import {CurrencyPair, ExchangeRateService} from '../../../../shared/services/exchange-rate.service';
+import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-portfolios-currency-form',
-    templateUrl: './portfolios-currency-form.component.html',
-    styleUrls: ['./portfolios-currency-form.component.less'],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            multi: true,
-            useExisting: PortfoliosCurrencyFormComponent
-        }
-    ],
-    standalone: false
+  selector: 'ats-portfolios-currency-form',
+  templateUrl: './portfolios-currency-form.component.html',
+  styleUrls: ['./portfolios-currency-form.component.less'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: PortfoliosCurrencyFormComponent
+    }
+  ],
+  imports: [
+    TranslocoDirective,
+    NzTypographyComponent,
+    FormsModule,
+    NzFormDirective,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzColDirective,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    NzSelectComponent,
+    ReactiveFormsModule,
+    NzOptionComponent,
+    AsyncPipe
+  ]
 })
 export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseComponent<PortfolioCurrencySettings[]> implements OnInit {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly marketService = inject(MarketService);
+  private readonly exchangeRateService = inject(ExchangeRateService);
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly form = this.formBuilder.array([
     this.formBuilder.group({
-      portfolio: this.formBuilder.nonNullable.control({ portfolio: '', exchange: '' }),
+      portfolio: this.formBuilder.nonNullable.control({portfolio: '', exchange: ''}),
       currency: this.formBuilder.nonNullable.control(''),
     })
   ]);
 
   currencies$!: Observable<CurrencyPair[]>;
-
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly marketService: MarketService,
-    private readonly exchangeRateService: ExchangeRateService,
-    private readonly userPortfoliosService: UserPortfoliosService,
-    private readonly destroyRef: DestroyRef
-  ) {
-    super();
-  }
 
   writeValue(value: PortfolioCurrencySettings[] | null): void {
     this.setFormValue(value);
@@ -134,7 +134,7 @@ export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseCom
               this.marketService.getExchangeSettingsIfExists(portfolio.exchange)
                 .pipe(
                   map(p => {
-                    if(p == null) {
+                    if (p == null) {
                       return null;
                     }
 
@@ -142,7 +142,7 @@ export class PortfoliosCurrencyFormComponent extends ControlValueAccessorBaseCom
                       pc => pc.portfolio.portfolio === portfolio.portfolio && pc.portfolio.exchange === portfolio.exchange
                     );
 
-                    return existingSettings ?? { portfolio, currency: p.defaultPortfolioCurrencyInstrument };
+                    return existingSettings ?? {portfolio, currency: p.defaultPortfolioCurrencyInstrument};
                   })
                 )
             )

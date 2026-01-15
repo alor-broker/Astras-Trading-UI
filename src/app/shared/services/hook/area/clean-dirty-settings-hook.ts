@@ -1,8 +1,5 @@
 ﻿import { AreaHook } from "./area-hook-token";
-import {
-  Inject,
-  Injectable
-} from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { ManageDashboardsService } from "../../manage-dashboards.service";
 import { WidgetSettingsService } from "../../widget-settings.service";
 import { LocalStorageService } from "../../local-storage.service";
@@ -30,17 +27,13 @@ import { mapWith } from "../../../utils/observable-helper";
 
 @Injectable()
 export class CleanDirtySettingsHook implements AreaHook {
-  private subscription: Subscription | null = null;
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly userContext = inject<UserContext>(USER_CONTEXT);
+  private readonly loggerService = inject(LoggerService);
 
-  constructor(
-    private readonly manageDashboardsService: ManageDashboardsService,
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly localStorageService: LocalStorageService,
-    @Inject(USER_CONTEXT)
-    private readonly userContext: UserContext,
-    private readonly loggerService: LoggerService
-  ) {
-  }
+  private subscription: Subscription | null = null;
 
   onDestroy(): void {
     this.subscription?.unsubscribe();

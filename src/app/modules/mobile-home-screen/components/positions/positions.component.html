@@ -11,20 +11,18 @@
             <tr class="item" (click)="instrumentSelected.emit(item.targetInstrument)">
               <td class="text-start">
                 <div class="d-flex flex-row flex-nowrap flex-gap-5 align-items-center">
-                  <ats-instrument-icon [symbol]="item.targetInstrument.symbol" size="large"></ats-instrument-icon>
+                  <ats-instrument-icon [symbol]="item.targetInstrument.symbol" size="large" />
                   <div class="d-flex flex-column">
                     <span>
-                      <ats-truncated-text
-                        [maxLength]="50"
+                      <ats-truncated-text [maxLength]="50"
                         [text]="item.shortName"
                         className="heading-color text-nowrap fs-6"
-                      ></ats-truncated-text>
+                       />
                     </span>
                     <span>
-                        <ats-truncated-text
-                          [maxLength]="20"
+                        <ats-truncated-text [maxLength]="20"
                           [text]="item.targetInstrument.symbol"
-                          className="fs-10"></ats-truncated-text>
+                          className="fs-10" />
                     </span>
                   </div>
                 </div>
@@ -65,14 +63,12 @@
         </button>
       }
     } @else {
-      <nz-empty
-        nzNotFoundImage="simple"
-        [nzNotFoundContent]="t('mobileHomeScreenPositions.noItemsToDisplayMessage')">
-      </nz-empty>
+      <nz-empty nzNotFoundImage="simple"
+        [nzNotFoundContent]="t('mobileHomeScreenPositions.noItemsToDisplayMessage')" />
     }
   </ng-container>
 
   <ng-template #loading>
-    <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }"></nz-skeleton>
+    <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 5, width: '100%' }" />
   </ng-template>
 </ng-container>

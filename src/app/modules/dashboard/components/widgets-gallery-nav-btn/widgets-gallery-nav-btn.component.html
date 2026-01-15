@@ -4,7 +4,7 @@
     nz-button
     nzType="text"
     (click)="galleryVisible = true"
-    [disabled]="atsDisabled || isDashboardLocked"
+    [disabled]="atsDisabled() || isDashboardLocked"
     [nz-tooltip]="isDashboardLocked ? tDesktop('dashboardNavbarDesktop.dashboardLockedTooltip') : ''"
   >
     <i nz-icon nzType="appstore-add" nzTheme="outline" [nzRotate]="-90"></i>
@@ -12,9 +12,8 @@
   </button>
 </ng-container>
 
-<ats-widgets-gallery
-  [gallery]="widgetsGallery$ | async"
+<ats-widgets-gallery [gallery]="widgetsGallery$ | async"
   [(atsVisible)]="galleryVisible"
   (selected)="addWidget($event)"
   (resetDashboard)="resetDashboard()"
-></ats-widgets-gallery>
+ />

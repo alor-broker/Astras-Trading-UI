@@ -1,14 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { CalendarViewComponent } from './calendar-view.component';
-import { EventsCalendarService } from "../../services/events-calendar.service";
-import {
-  of,
-  Subject
-} from "rxjs";
-import { MarketService } from "../../../../shared/services/market.service";
-import { LetDirective } from "@ngrx/component";
-import { ngZorroMockComponents } from "../../../../shared/utils/testing/ng-zorro-component-mocks";
+import {CalendarViewComponent} from './calendar-view.component';
+import {EventsCalendarService} from "../../services/events-calendar.service";
+import {of, Subject} from "rxjs";
+import {MarketService} from "../../../../shared/services/market.service";
+import {LetDirective} from "@ngrx/component";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzCalendarComponent, NzDateFullCellDirective} from "ng-zorro-antd/calendar";
+import {NzDescriptionsComponent, NzDescriptionsItemComponent} from "ng-zorro-antd/descriptions";
+import {NzPopoverDirective} from "ng-zorro-antd/popover";
 
 describe('CalendarViewComponent', () => {
   let component: CalendarViewComponent;
@@ -16,10 +16,18 @@ describe('CalendarViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LetDirective],
-      declarations: [
+      imports: [
+        LetDirective,
         CalendarViewComponent,
-        ...ngZorroMockComponents
+        MockComponents(
+          NzCalendarComponent,
+          NzDescriptionsComponent,
+          NzDescriptionsItemComponent
+        ),
+        MockDirectives(
+          NzDateFullCellDirective,
+          NzPopoverDirective
+        )
       ],
       providers: [
         {

@@ -1,4 +1,4 @@
-import {Injectable, OnDestroy} from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import {Observable, of, shareReplay, switchMap, take} from 'rxjs';
 import {Role, User} from 'src/app/shared/models/user/user.model';
 import {catchError, filter, map} from "rxjs/operators";
@@ -38,6 +38,12 @@ interface IdentityState {
 
 @Injectable()
 export class ClientAuthContextService implements UserContext, SessionContext, OnDestroy {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly localStorage = inject(LocalStorageService);
+  private readonly apiTokenProviderService = inject(ApiTokenProviderService);
+  private readonly window = inject(Window);
+
   private readonly state = new ComponentStore<AuthContext>({
     status: AuthStateStatus.Initial,
     state: null
@@ -52,12 +58,7 @@ export class ClientAuthContextService implements UserContext, SessionContext, On
       shareReplay(1)
     );
 
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly httpClient: HttpClient,
-    private readonly localStorage: LocalStorageService,
-    private readonly apiTokenProviderService: ApiTokenProviderService,
-    private readonly window: Window) {
+  constructor() {
     this.initForceLogout();
   }
 

@@ -1,45 +1,21 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  ElementRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  distinctUntilChanged,
-  filter,
-  Observable,
-} from 'rxjs';
-import { ContentSize } from '../../../../shared/models/dashboard/dashboard-item.model';
-import {
-  color,
-  ScaleLinear,
-  scaleLinear
-} from 'd3';
-import { ThemeService } from '../../../../shared/services/theme.service';
-import {
-  ThemeColors,
-  ThemeSettings
-} from '../../../../shared/models/settings/theme-settings.model';
-import { map } from 'rxjs/operators';
-import { AllTradesItem } from '../../../../shared/models/all-trades.model';
-import { ScalperOrderBookDataContext } from '../../models/scalper-order-book-data-context.model';
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { CustomIteratorWrapper } from "../../../../shared/utils/array-iterators";
-import { BodyRow } from "../../models/scalper-order-book.model";
-import { TradesPanelSettings } from "../../models/scalper-order-book-settings.model";
-import {
-  AggregatedTrade,
-  AggregatedTradesIterator
-} from "../../utils/aggregated-trades-iterator";
-import { Side } from "../../../../shared/models/enums/side.model";
-import { Trade } from "../../../../shared/models/trades/trade.model";
-import { Position } from "../../../../shared/models/positions/position.model";
+import { AfterViewInit, Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
+import {BehaviorSubject, combineLatest, distinctUntilChanged, filter, Observable,} from 'rxjs';
+import {ContentSize} from '../../../../shared/models/dashboard/dashboard-item.model';
+import {color, ScaleLinear, scaleLinear} from 'd3';
+import {ThemeService} from '../../../../shared/services/theme.service';
+import {ThemeColors, ThemeSettings} from '../../../../shared/models/settings/theme-settings.model';
+import {map} from 'rxjs/operators';
+import {AllTradesItem} from '../../../../shared/models/all-trades.model';
+import {ScalperOrderBookDataContext} from '../../models/scalper-order-book-data-context.model';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {CustomIteratorWrapper} from "../../../../shared/utils/array-iterators";
+import {BodyRow} from "../../models/scalper-order-book.model";
+import {TradesPanelSettings} from "../../models/scalper-order-book-settings.model";
+import {AggregatedTrade, AggregatedTradesIterator} from "../../utils/aggregated-trades-iterator";
+import {Side} from "../../../../shared/models/enums/side.model";
+import {Trade} from "../../../../shared/models/trades/trade.model";
+import {Position} from "../../../../shared/models/positions/position.model";
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
 
 interface LayerDrawer {
   zIndex: number;
@@ -69,20 +45,20 @@ interface TradeDisplay {
 }
 
 @Component({
-    selector: 'ats-trades-panel',
-    templateUrl: './trades-panel.component.html',
-    styleUrls: ['./trades-panel.component.less'],
-    standalone: false
+  selector: 'ats-trades-panel',
+  templateUrl: './trades-panel.component.html',
+  styleUrls: ['./trades-panel.component.less'],
+  imports: [NzResizeObserverDirective]
 })
 export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('canvas')
-  canvas?: ElementRef<HTMLCanvasElement>;
+  private readonly themeService = inject(ThemeService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  @Input({required: true})
-  xAxisStep!: number;
+  readonly canvas = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
 
-  @Input({required: true})
-  dataContext!: ScalperOrderBookDataContext;
+  readonly xAxisStep = input.required<number>();
+
+  readonly dataContext = input.required<ScalperOrderBookDataContext>();
 
   private readonly zIndexes = {
     gridLines: 0,
@@ -108,13 +84,8 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly contentSize$ = new BehaviorSubject<ContentSize>({width: 0, height: 0});
   private displayPriceItems$!: Observable<BodyRow[]>;
 
-  constructor(
-    private readonly themeService: ThemeService,
-    private readonly destroyRef: DestroyRef) {
-  }
-
   ngAfterViewInit(): void {
-    const panelSettings$ = this.dataContext.extendedSettings$.pipe(
+    const panelSettings$ = this.dataContext().extendedSettings$.pipe(
       map(s => s.widgetSettings.tradesPanelSettings),
       map(s => s ?? ({
         minTradeVolumeFilter: 0,
@@ -128,7 +99,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     );
 
-    const sortedTrades$ = this.dataContext.trades$.pipe(
+    const sortedTrades$ = this.dataContext().trades$.pipe(
       map((trades) => {
         // order may be disturbed. https://github.com/alor-broker/Astras-Trading-UI/issues/1833
         return trades.sort((a, b) => a.timestamp - b.timestamp);
@@ -139,19 +110,19 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       size: this.contentSize$,
       priceItems: this.displayPriceItems$,
       allTrades: sortedTrades$,
-      ownTrades: this.dataContext.ownTrades$,
-      position: this.dataContext.position$,
+      ownTrades: this.dataContext().ownTrades$,
+      position: this.dataContext().position$,
       panelSettings: panelSettings$,
       themeSettings: this.themeService.getThemeSettings()
     }).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
-      const canvas = this.canvas?.nativeElement!;
+      const canvas = this.canvas()?.nativeElement!;
       const context = canvas.getContext('2d')!;
 
       context.clearRect(0, 0, canvas.width, canvas.height);
       canvas.width = x.size!.width;
-      canvas.height = x.priceItems.length * this.xAxisStep;
+      canvas.height = x.priceItems.length * this.xAxisStep();
 
       this.draw(
         canvas,
@@ -180,8 +151,8 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.displayPriceItems$ = combineLatest([
-      this.dataContext.orderBookBody$,
-      this.dataContext.displayRange$
+      this.dataContext().orderBookBody$,
+      this.dataContext().displayRange$
     ]).pipe(
       filter(([, displayRange]) => !!displayRange),
       map(([body, displayRange]) => {
@@ -441,7 +412,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const prevLeftX = prevItemMeta?.xLeft ?? xScale(xScale.domain()[1]);
     const yTop = yScale(rowMaxIndex);
-    const yBottom = yScale(rowMinIndex) + this.xAxisStep;
+    const yBottom = yScale(rowMinIndex) + this.xAxisStep();
 
     const itemText = item.volume.toString();
     context.textBaseline = 'middle';
@@ -450,7 +421,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     const textWidth = Math.ceil(textMetrics.width);
     const textMargins = this.margins.tradePoint.text.left + this.margins.tradePoint.text.right;
 
-    const itemWidth = Math.max(textWidth + textMargins, textMetrics.fontBoundingBoxAscent + textMetrics.fontBoundingBoxDescent, this.xAxisStep);
+    const itemWidth = Math.max(textWidth + textMargins, textMetrics.fontBoundingBoxAscent + textMetrics.fontBoundingBoxDescent, this.xAxisStep());
     let xRight = prevItemMeta != null
       ? Math.floor(prevItemMeta.xLeft + (prevItemMeta.xRight - prevItemMeta.xLeft) / 2)
       : xScale(xScale.domain()[1]);
@@ -515,16 +486,16 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const prevLeftX = prevItemMeta?.xLeft ?? (xScale(xScale.domain()[1]) - 1);
     const yTop = yScale(rowMaxIndex);
-    const yBottom = yScale(rowMinIndex) + this.xAxisStep;
+    const yBottom = yScale(rowMinIndex) + this.xAxisStep();
 
-    const itemWidth = Math.max(4, Math.round(this.xAxisStep / 2));
+    const itemWidth = Math.max(4, Math.round(this.xAxisStep() / 2));
     const xLeft = Math.floor(prevLeftX - itemWidth);
     const itemHeight = rowMinIndex === rowMaxIndex
       ? itemWidth
       : Math.floor(yBottom - yTop);
 
     const itemTopY = rowMinIndex === rowMaxIndex
-      ? Math.ceil(yTop + (this.xAxisStep / 2) - (itemHeight / 2))
+      ? Math.ceil(yTop + (this.xAxisStep() / 2) - (itemHeight / 2))
       : yTop;
 
     const draw = (): void => {
@@ -591,12 +562,12 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     themeColors: ThemeColors
   ): { meta: DrewItemMeta, drawer: LayerDrawer } {
     const prevLeftX = prevItemMeta?.xLeft ?? xScale(xScale.domain()[1]);
-    const xRight = Math.floor(prevLeftX - this.xAxisStep);
+    const xRight = Math.floor(prevLeftX - this.xAxisStep());
 
     const yTop = yScale(rowIndex);
-    const yBottom = yTop + this.xAxisStep;
+    const yBottom = yTop + this.xAxisStep();
 
-    const xRadius = Math.ceil(this.xAxisStep / 2);
+    const xRadius = Math.ceil(this.xAxisStep() / 2);
     const xCenter = Math.floor(xRight - xRadius);
     const yCenter = Math.floor(yTop + ((yBottom - yTop) / 2));
     const yRadius = Math.max(xRadius, Math.ceil((yBottom - yTop) / 2));
@@ -615,7 +586,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         draw
       },
       meta: {
-        xLeft: Math.floor(xRight - this.xAxisStep),
+        xLeft: Math.floor(xRight - this.xAxisStep()),
         xRight,
         yTop,
         yBottom,
@@ -631,7 +602,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     context: CanvasRenderingContext2D,
     themeColors: ThemeColors): LayerDrawer {
     const draw = (): void => {
-      const yRowOffset = Math.ceil(this.xAxisStep / 2);
+      const yRowOffset = Math.ceil(this.xAxisStep() / 2);
 
       for (let i = 0; i < priceItems.length; i++) {
         const priceRow = priceItems[i];
@@ -693,10 +664,10 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       const textMetrics = context.measureText(itemText);
       const textWidth = Math.ceil(textMetrics.width);
       const textMargins = this.margins.tradePoint.text.left + this.margins.tradePoint.text.right;
-      const itemWidth = Math.max(textWidth + textMargins, textMetrics.fontBoundingBoxAscent + textMetrics.fontBoundingBoxDescent, this.xAxisStep);
+      const itemWidth = Math.max(textWidth + textMargins, textMetrics.fontBoundingBoxAscent + textMetrics.fontBoundingBoxDescent, this.xAxisStep());
       const xRight = right ?? (xScale(xScale.domain()[1]) - 1);
       const xLeft = Math.floor(xRight - itemWidth);
-      const itemHeight = Math.floor(this.xAxisStep);
+      const itemHeight = Math.floor(this.xAxisStep());
 
       this.resetContext(context);
       context.beginPath();

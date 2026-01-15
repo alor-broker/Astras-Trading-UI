@@ -1,10 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  Inject,
-  LOCALE_ID,
-  OnInit
-} from '@angular/core';
+import { Component, DestroyRef, LOCALE_ID, OnInit, inject } from '@angular/core';
 import { InstrumentInfoBaseComponent } from "../../instrument-info-base/instrument-info-base.component";
 import {
   combineLatest,
@@ -82,19 +76,14 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<InstrumentResponse>> = object({
     styleUrl: './common-info.component.less'
 })
 export class CommonInfoComponent extends InstrumentInfoBaseComponent implements OnInit {
+  private readonly graphQlService = inject(GraphQlService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly locale = inject(LOCALE_ID);
+  private readonly destroyRef = inject(DestroyRef);
+
   info$!: Observable<Instrument | null>;
 
   commonDescriptors$!: Observable<DescriptorsGroup[] | null>;
-
-  constructor(
-    private readonly graphQlService: GraphQlService,
-    private readonly translatorService: TranslatorService,
-    @Inject(LOCALE_ID)
-    private readonly locale: string,
-    private readonly destroyRef: DestroyRef
-  ) {
-    super();
-  }
 
   ngOnInit(): void {
     this.initDataStream();
@@ -108,7 +97,7 @@ export class CommonInfoComponent extends InstrumentInfoBaseComponent implements 
       );
     });
 
-    this.info$ = this.targetInstrumentKey$.pipe(
+    this.info$ = this.instrumentKeyChanges$.pipe(
       filter(i => i != null),
       mapWith(() => refreshTimer$, (source,) => source),
       tap(() => this.setLoading(true)),

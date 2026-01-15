@@ -1,4 +1,4 @@
-import { AfterViewInit, DestroyRef, Directive, ElementRef } from '@angular/core';
+import { AfterViewInit, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { TerminalSettingsService } from "../services/terminal-settings.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { map } from "rxjs/operators";
@@ -10,13 +10,13 @@ import { distinctUntilChanged } from "rxjs";
   standalone: true
 })
 export class TableRowHeightDirective implements AfterViewInit {
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly el = inject(ElementRef);
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly targetElement: HTMLElement;
 
-  constructor(
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly el: ElementRef,
-    private readonly destroyRef: DestroyRef
-  ) {
+  constructor() {
     this.targetElement = this.el.nativeElement as HTMLElement;
   }
 

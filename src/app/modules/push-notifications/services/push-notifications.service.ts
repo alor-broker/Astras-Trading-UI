@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  OnDestroy
-} from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {
   forkJoin,
@@ -61,6 +58,12 @@ interface MessagingState {
   providedIn: 'root'
 })
 export class PushNotificationsService implements OnDestroy {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly loggerService = inject(LoggerService);
+
   private readonly messaging = firebase.messaging(firebase.initializeApp(environment.firebase));
 
   private readonly baseUrl = this.environmentService.apiUrl + '/commandapi/observatory/subscriptions';
@@ -74,15 +77,6 @@ export class PushNotificationsService implements OnDestroy {
   private messages$?: Observable<MessagePayload>;
 
   private messagingState$: Observable<MessagingState> | null = null;
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService,
-    private readonly translatorService: TranslatorService,
-    private readonly loggerService: LoggerService
-  ) {
-  }
 
   subscribeToOrdersExecute(portfolios: {
     portfolio: string;

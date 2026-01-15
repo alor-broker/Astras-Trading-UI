@@ -1,55 +1,45 @@
-﻿import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
-import { Instrument } from "../../../../shared/models/instruments/instrument.model";
-import {
-  BehaviorSubject,
-  combineLatest,
-  Observable,
-  take
-} from "rxjs";
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  Output
-} from "@angular/core";
-import { Side } from "../../../../shared/models/enums/side.model";
-import {
-  filter,
-  finalize,
-  map,
-  switchMap
-} from "rxjs/operators";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import {
-  AbstractControl,
-  FormControl,
-  Validators
-} from "@angular/forms";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { toInstrumentKey } from "../../../../shared/utils/instruments";
-import { SubmitGroupResult } from "../../../../shared/models/orders/orders-group.model";
-import { OrderCommandResult } from "../../../../shared/models/orders/new-order.model";
-import { inputNumberValidation } from "../../../../shared/utils/validation-options";
-import { AtsValidators } from "../../../../shared/utils/form-validators";
-import {
-  CommonParameters,
-  CommonParametersService
-} from "../../services/common-parameters.service";
+﻿import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
+import {Instrument} from "../../../../shared/models/instruments/instrument.model";
+import {BehaviorSubject, combineLatest, Observable, shareReplay, take} from "rxjs";
+import {Component, DestroyRef, input, OnDestroy, output} from "@angular/core";
+import {Side} from "../../../../shared/models/enums/side.model";
+import {filter, finalize, map, startWith, switchMap} from "rxjs/operators";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {AbstractControl, FormControl, Validators} from "@angular/forms";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {toInstrumentKey} from "../../../../shared/utils/instruments";
+import {SubmitGroupResult} from "../../../../shared/models/orders/orders-group.model";
+import {OrderCommandResult} from "../../../../shared/models/orders/new-order.model";
+import {inputNumberValidation} from "../../../../shared/utils/validation-options";
+import {AtsValidators} from "../../../../shared/utils/form-validators";
+import {CommonParameters, CommonParametersService} from "../../services/common-parameters.service";
 
 @Component({
-    template: '',
-    standalone: false
+  template: '',
+  standalone: false
 })
 export abstract class BaseOrderFormComponent implements OnDestroy {
-  readonly formInstrument$ = new BehaviorSubject<Instrument | null>(null);
-  readonly portfolioKey$ = new BehaviorSubject<PortfolioKey | null>(null);
   readonly requestProcessing$ = new BehaviorSubject<{ orderSide?: Side }>({});
-  readonly isActivated$ = new BehaviorSubject<boolean>(false);
 
-  @Output()
-  submitted = new EventEmitter();
+  readonly submitted = output();
+
+  readonly portfolioKey = input.required<PortfolioKey>();
+  readonly instrument = input.required<Instrument>();
+  readonly activated = input.required<boolean>();
+  protected readonly portfolioKeyChanges$ = toObservable(this.portfolioKey).pipe(
+    startWith(null),
+    shareReplay(1)
+  );
+
+  protected readonly instrumentChanges$ = toObservable(this.instrument).pipe(
+    startWith(null),
+    shareReplay(1)
+  );
+
+  protected readonly activatedChanges$ = toObservable(this.activated).pipe(
+    startWith(false),
+    shareReplay(1)
+  );
 
   protected constructor(
     protected commonParametersService: CommonParametersService,
@@ -57,35 +47,17 @@ export abstract class BaseOrderFormComponent implements OnDestroy {
   ) {
   }
 
-  @Input({ required: true })
-  set portfolioKey(value: PortfolioKey) {
-    this.portfolioKey$.next(value);
-  }
-
-  @Input({ required: true })
-  set instrument(value: Instrument) {
-    this.formInstrument$.next(value);
-  }
-
-  @Input({ required: true })
-  set activated(value: boolean) {
-    this.isActivated$.next(value);
-  }
-
   abstract get canSubmit(): boolean;
 
   ngOnDestroy(): void {
-    this.formInstrument$.complete();
-    this.portfolioKey$.complete();
     this.requestProcessing$.complete();
-    this.isActivated$.complete();
   }
 
   submitOrder(side: Side): void {
     if (!this.canSubmit) {
       return;
     }
-    this.requestProcessing$.next({ orderSide: side });
+    this.requestProcessing$.next({orderSide: side});
 
     this.getInstrumentWithPortfolio().pipe(
       take(1),
@@ -105,11 +77,11 @@ export abstract class BaseOrderFormComponent implements OnDestroy {
 
   protected getInstrumentWithPortfolio(): Observable<{ instrument: Instrument, portfolioKey: PortfolioKey }> {
     return combineLatest({
-      instrument: this.formInstrument$,
-      portfolioKey: this.portfolioKey$
+      instrument: this.instrumentChanges$,
+      portfolioKey: this.portfolioKeyChanges$
     }).pipe(
       filter(x => !!x.instrument && !!x.portfolioKey),
-      map(x => ({ instrument: x.instrument!, portfolioKey: x.portfolioKey! }))
+      map(x => ({instrument: x.instrument!, portfolioKey: x.portfolioKey!}))
     );
   }
 
@@ -122,11 +94,11 @@ export abstract class BaseOrderFormComponent implements OnDestroy {
   protected abstract changeInstrument(instrument: Instrument): void;
 
   protected enableControl(target: AbstractControl): void {
-    target.enable({ emitEvent: false });
+    target.enable({emitEvent: false});
   }
 
   protected disableControl(target: AbstractControl): void {
-    target.disable({ emitEvent: false });
+    target.disable({emitEvent: false});
   }
 
   protected getOrderInstrument(formValue: { instrumentGroup?: string }, instrument: Instrument): InstrumentKey {
@@ -147,7 +119,7 @@ export abstract class BaseOrderFormComponent implements OnDestroy {
   }
 
   protected setCommonParameters(params: Partial<CommonParameters>): void {
-    this.isActivated$.pipe(
+    this.activatedChanges$.pipe(
       take(1)
     ).subscribe(isActivated => {
       if (isActivated) {

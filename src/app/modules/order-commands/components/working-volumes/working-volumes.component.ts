@@ -1,40 +1,49 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import { Component, input, OnInit, output, inject } from '@angular/core';
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
-import {BehaviorSubject, filter, Observable, shareReplay, switchMap} from "rxjs";
-import { OrderbookData, OrderbookDataRow, OrderbookRequest } from "../../../orderbook/models/orderbook-data.model";
+import {filter, Observable, shareReplay, switchMap} from "rxjs";
+import {OrderbookData, OrderbookDataRow, OrderbookRequest} from "../../../orderbook/models/orderbook-data.model";
 import {OrderBookDataFeedHelper} from "../../../orderbook/utils/order-book-data-feed.helper";
 import {map, startWith} from "rxjs/operators";
 import {SubscriptionsDataFeedService} from "../../../../shared/services/subscriptions-data-feed.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {AsyncPipe} from '@angular/common';
+import {toObservable} from "@angular/core/rxjs-interop";
 
 @Component({
-    selector: 'ats-working-volumes',
-    templateUrl: './working-volumes.component.html',
-    styleUrls: ['./working-volumes.component.less'],
-    standalone: false
+  selector: 'ats-working-volumes',
+  templateUrl: './working-volumes.component.html',
+  styleUrls: ['./working-volumes.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzTooltipDirective,
+    AsyncPipe
+  ]
 })
 export class WorkingVolumesComponent implements OnInit {
-  readonly instrumentKey$ = new BehaviorSubject<InstrumentKey | null>(null);
+  private readonly subscriptionsDataFeedService = inject(SubscriptionsDataFeedService);
+
   currentAskBid$!: Observable<{
     ask: { volume: number, price: number } | null;
     bid: { volume: number, price: number } | null;
   } | null>;
 
-  @Input()
-  workingVolumes: number[] = [];
+  readonly workingVolumes = input<number[]>([]);
 
-  @Output()
-  itemSelected = new EventEmitter<{ volume: number, price?: number }>();
+  readonly itemSelected = output<{
+    volume: number;
+    price?: number;
+}>();
 
-  constructor(private readonly subscriptionsDataFeedService: SubscriptionsDataFeedService) {
-  }
+  readonly instrumentKey = input<InstrumentKey>();
 
-  @Input()
-  set instrumentKey(value: InstrumentKey) {
-    this.instrumentKey$.next(value);
-  }
+  private readonly instrumentKeyChanges$ = toObservable(this.instrumentKey).pipe(
+    startWith(null),
+    shareReplay(1)
+  );
 
   get sortedVolumes(): number[] {
-    return [...this.workingVolumes].sort((a, b) => a - b);
+    return [...this.workingVolumes()].sort((a, b) => a - b);
   }
 
   emitItemSelected(volume: number, price?: number): void {
@@ -45,7 +54,7 @@ export class WorkingVolumesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.currentAskBid$ = this.instrumentKey$.pipe(
+    this.currentAskBid$ = this.instrumentKeyChanges$.pipe(
       filter((i): i is InstrumentKey => !!i),
       switchMap(settings => this.subscriptionsDataFeedService.subscribe<OrderbookRequest, OrderbookData>(
         OrderBookDataFeedHelper.getRealtimeDateRequest(

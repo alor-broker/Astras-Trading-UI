@@ -1,39 +1,58 @@
+import { Component, input, OnInit, signal, inject } from '@angular/core';
+import {Observable, shareReplay, switchMap} from 'rxjs';
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
+import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
+import {SettingsHelper} from '../../../../shared/utils/settings-helper';
+import {InfoSettings} from '../../models/info-settings.model';
+import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
+import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
+import {InstrumentsService} from "../../../instruments/services/instruments.service";
+import {map} from "rxjs/operators";
+import {InstrumentSummary} from "../../models/instrument-summary.model";
+import {InstrumentType} from "../../../../shared/models/enums/instrument-type.model";
+import {getTypeByCfi} from "../../../../shared/utils/instruments";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {WidgetSkeletonComponent} from '../../../../shared/components/widget-skeleton/widget-skeleton.component';
+import {WidgetHeaderComponent} from '../../../../shared/components/widget-header/widget-header.component';
 import {
-  Component,
-  Input,
-  OnInit,
-  signal
-} from '@angular/core';
-import {
-  Observable,
-  shareReplay,
-  switchMap
-} from 'rxjs';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { WidgetSettingsCreationHelper } from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
-import { SettingsHelper } from '../../../../shared/utils/settings-helper';
-import { InfoSettings } from '../../models/info-settings.model';
-import { WidgetInstance } from "../../../../shared/models/dashboard/dashboard-item.model";
-import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
-import { InstrumentsService } from "../../../instruments/services/instruments.service";
-import { map } from "rxjs/operators";
-import { InstrumentSummary } from "../../models/instrument-summary.model";
-import { InstrumentType } from "../../../../shared/models/enums/instrument-type.model";
-import { getTypeByCfi } from "../../../../shared/utils/instruments";
+  WidgetHeaderInstrumentSwitchComponent
+} from '../../../../shared/components/widget-header-instrument-switch/widget-header-instrument-switch.component';
+import {NzSpinComponent} from 'ng-zorro-antd/spin';
+import {InfoHeaderComponent} from '../../components/common/info-header/info-header.component';
+import {StockInfoComponent} from '../../components/stocks/stock-info/stock-info.component';
+import {BondInfoComponent} from '../../components/bonds/bond-info/bond-info.component';
+import {DerivativeInfoComponent} from '../../components/derivatives/derivative-info/derivative-info.component';
+import {CommonInfoComponent} from '../../components/common/common-info/common-info.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-info-widget',
-    templateUrl: './info-widget.component.html',
-    styleUrls: ['./info-widget.component.less'],
-    standalone: false
+  selector: 'ats-info-widget',
+  templateUrl: './info-widget.component.html',
+  styleUrls: ['./info-widget.component.less'],
+  imports: [
+    TranslocoDirective,
+    WidgetSkeletonComponent,
+    WidgetHeaderComponent,
+    WidgetHeaderInstrumentSwitchComponent,
+    NzSpinComponent,
+    InfoHeaderComponent,
+    StockInfoComponent,
+    BondInfoComponent,
+    DerivativeInfoComponent,
+    CommonInfoComponent,
+    AsyncPipe
+  ]
 })
 export class InfoWidgetComponent implements OnInit {
-  @Input({required: true})
-  widgetInstance!: WidgetInstance;
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly instrumentService = inject(InstrumentsService);
 
-  @Input({required: true})
-  isBlockWidget!: boolean;
+  readonly widgetInstance = input.required<WidgetInstance>();
+
+  readonly isBlockWidget = input.required<boolean>();
 
   settings$!: Observable<InfoSettings>;
   showBadge$!: Observable<boolean>;
@@ -41,23 +60,15 @@ export class InfoWidgetComponent implements OnInit {
 
   InstrumentTypes = InstrumentType;
 
-  isLoading = signal(false);
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly dashboardContextService: DashboardContextService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly instrumentService: InstrumentsService
-  ) {
-  }
+  readonly isLoading = signal(false);
 
   get guid(): string {
-    return this.widgetInstance.instance.guid;
+    return this.widgetInstance().instance.guid;
   }
 
   ngOnInit(): void {
     WidgetSettingsCreationHelper.createInstrumentLinkedWidgetSettingsIfMissing<InfoSettings>(
-      this.widgetInstance,
+      this.widgetInstance(),
       'InfoSettings',
       settings => ({
         ...settings,

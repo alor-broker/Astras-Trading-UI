@@ -1,51 +1,45 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  ElementRef,
-  Input,
-  QueryList,
-  ViewChildren
-} from '@angular/core';
-import { Observable, switchMap, combineLatest, map, filter, startWith } from "rxjs";
-import { OrdersGroupService } from "../../../../shared/services/orders/orders-group.service";
-import { PortfolioSubscriptionsService } from "../../../../shared/services/portfolio-subscriptions.service";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { BlotterSettings } from "../../models/blotter-settings.model";
-import { mapWith } from "../../../../shared/utils/observable-helper";
+import { AfterViewInit, Component, DestroyRef, ElementRef, input, viewChildren, inject } from '@angular/core';
+import {combineLatest, filter, map, Observable, switchMap} from "rxjs";
+import {OrdersGroupService} from "../../../../shared/services/orders/orders-group.service";
+import {PortfolioSubscriptionsService} from "../../../../shared/services/portfolio-subscriptions.service";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {BlotterSettings} from "../../models/blotter-settings.model";
+import {mapWith} from "../../../../shared/utils/observable-helper";
 import {Order, StopOrder} from "../../../../shared/models/orders/order.model";
-import { OrdersGroupTreeNode } from "../../../../shared/models/orders/orders-group.model";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import { getConditionSign, getConditionTypeByString } from "../../../../shared/utils/order-conditions-helper";
+import {OrdersGroupTreeNode} from "../../../../shared/models/orders/orders-group.model";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {getConditionSign, getConditionTypeByString} from "../../../../shared/utils/order-conditions-helper";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzTreeComponent} from 'ng-zorro-antd/tree';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-orders-group-modal',
-    templateUrl: './orders-group-modal.component.html',
-    styleUrls: ['./orders-group-modal.component.less'],
-    standalone: false
+  selector: 'ats-orders-group-modal',
+  templateUrl: './orders-group-modal.component.html',
+  styleUrls: ['./orders-group-modal.component.less'],
+  imports: [
+    TranslocoDirective,
+    NzTreeComponent,
+    NzTooltipDirective,
+    AsyncPipe
+  ]
 })
 export class OrdersGroupModalComponent implements AfterViewInit {
-  @Input({required: true})
-  guid!: string;
+  private readonly service = inject(OrdersGroupService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  @Input()
-  groupId?: string;
+  readonly guid = input.required<string>();
+  readonly groupId = input.required<string>();
 
-  @ViewChildren('ordersGroupTree', {read: ElementRef})
-  ordersGroupTree!: QueryList<ElementRef>;
-
+  readonly ordersGroupTree = viewChildren<ElementRef<HTMLElement>>('ordersGroupTree');
   groups$?: Observable<OrdersGroupTreeNode[]>;
-
-  constructor(
-    private readonly service: OrdersGroupService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly widgetSettingsService: WidgetSettingsService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
+  private readonly ordersGroupTreeChanges$ = toObservable(this.ordersGroupTree);
 
   ngAfterViewInit(): void {
-    const allOrders$ = this.widgetSettingsService.getSettings<BlotterSettings>(this.guid)
+    const allOrders$ = this.widgetSettingsService.getSettings<BlotterSettings>(this.guid())
       .pipe(
         switchMap((s) => combineLatest([
           this.portfolioSubscriptionsService.getOrdersSubscription(s.portfolio, s.exchange),
@@ -99,7 +93,7 @@ export class OrdersGroupModalComponent implements AfterViewInit {
 
                 },
                 key: group.id,
-                expanded: this.groupId != null && (group.id === this.groupId),
+                expanded: this.groupId() != null && (group.id === this.groupId()),
                 selectable: false,
                 status: group.status,
                 children: groupOrders
@@ -117,9 +111,8 @@ export class OrdersGroupModalComponent implements AfterViewInit {
         })
       );
 
-    this.ordersGroupTree.changes.pipe(
-      map(q => q.first as ElementRef<HTMLElement> | undefined),
-      startWith(this.ordersGroupTree.first),
+    this.ordersGroupTreeChanges$.pipe(
+      map(x => x.length > 0 ? x[0] : undefined),
       filter((el): el is ElementRef<HTMLElement> => !!el),
       takeUntilDestroyed(this.destroyRef)
     )

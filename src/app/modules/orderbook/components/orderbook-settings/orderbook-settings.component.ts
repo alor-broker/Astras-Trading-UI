@@ -1,39 +1,69 @@
+import { Component, DestroyRef, OnInit, output, inject } from '@angular/core';
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {Observable, take} from "rxjs";
+import {isInstrumentEqual} from '../../../../shared/utils/settings-helper';
+import {InstrumentKey} from '../../../../shared/models/instruments/instrument-key.model';
+import {ColumnsOrder, OrderbookSettings} from '../../models/orderbook-settings.model';
+import {DeviceService} from "../../../../shared/services/device.service";
+import {NumberDisplayFormat} from '../../../../shared/models/enums/number-display-format';
 import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
+  WidgetSettingsBaseComponent
+} from "../../../../shared/components/widget-settings/widget-settings-base.component";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {NzMarks, NzSliderComponent} from "ng-zorro-antd/slider";
+import {WidgetSettingsComponent} from '../../../../shared/components/widget-settings/widget-settings.component';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzCollapseComponent, NzCollapsePanelComponent} from 'ng-zorro-antd/collapse';
+import {InstrumentSearchComponent} from '../../../../shared/components/instrument-search/instrument-search.component';
+import {NzInputDirective} from 'ng-zorro-antd/input';
 import {
-  FormBuilder,
-  Validators
-} from '@angular/forms';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import {
-  Observable,
-  take
-} from "rxjs";
-import { isInstrumentEqual } from '../../../../shared/utils/settings-helper';
-import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import {
-  ColumnsOrder,
-  OrderbookSettings
-} from '../../models/orderbook-settings.model';
-import { DeviceService } from "../../../../shared/services/device.service";
-import { NumberDisplayFormat } from '../../../../shared/models/enums/number-display-format';
-import { WidgetSettingsBaseComponent } from "../../../../shared/components/widget-settings/widget-settings-base.component";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { NzMarks } from "ng-zorro-antd/slider";
+  InstrumentBoardSelectComponent
+} from '../../../../shared/components/instrument-board-select/instrument-board-select.component';
+import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {NzSwitchComponent} from 'ng-zorro-antd/switch';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzPopoverDirective} from 'ng-zorro-antd/popover';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-orderbook-settings',
-    templateUrl: './orderbook-settings.component.html',
-    styleUrls: ['./orderbook-settings.component.less'],
-    standalone: false
+  selector: 'ats-orderbook-settings',
+  templateUrl: './orderbook-settings.component.html',
+  styleUrls: ['./orderbook-settings.component.less'],
+  imports: [
+    WidgetSettingsComponent,
+    TranslocoDirective,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzCollapseComponent,
+    NzCollapsePanelComponent,
+    NzColDirective,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    InstrumentSearchComponent,
+    NzInputDirective,
+    InstrumentBoardSelectComponent,
+    NzSliderComponent,
+    NzSelectComponent,
+    NzOptionComponent,
+    NzSwitchComponent,
+    NzIconDirective,
+    NzPopoverDirective,
+    AsyncPipe
+  ]
 })
 export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<OrderbookSettings> implements OnInit {
+  protected readonly settingsService: WidgetSettingsService;
+  protected readonly manageDashboardsService: ManageDashboardsService;
+  protected readonly destroyRef: DestroyRef;
+  private readonly deviceService = inject(DeviceService);
+  private readonly formBuilder = inject(FormBuilder);
+
   readonly validationOptions = {
     depth: {
       min: 1,
@@ -45,11 +75,7 @@ export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<Orde
 
   readonly availableNumberFormats = Object.values(NumberDisplayFormat);
 
-  @Input({ required: true })
-  guid!: string;
-
-  @Output()
-  settingsChange = new EventEmitter<void>();
+  readonly settingsChange = output<void>();
 
   readonly form = this.formBuilder.group({
     instrument: this.formBuilder.nonNullable.control<InstrumentKey | null>(null, Validators.required),
@@ -76,14 +102,16 @@ export class OrderbookSettingsComponent extends WidgetSettingsBaseComponent<Orde
 
   protected settings$!: Observable<OrderbookSettings>;
 
-  constructor(
-    protected readonly settingsService: WidgetSettingsService,
-    protected readonly manageDashboardsService: ManageDashboardsService,
-    protected readonly destroyRef: DestroyRef,
-    private readonly deviceService: DeviceService,
-    private readonly formBuilder: FormBuilder,
-  ) {
+  constructor() {
+    const settingsService = inject(WidgetSettingsService);
+    const manageDashboardsService = inject(ManageDashboardsService);
+    const destroyRef = inject(DestroyRef);
+
     super(settingsService, manageDashboardsService, destroyRef);
+
+    this.settingsService = settingsService;
+    this.manageDashboardsService = manageDashboardsService;
+    this.destroyRef = destroyRef;
   }
 
   get showCopy(): boolean {

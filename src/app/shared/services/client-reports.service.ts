@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { EnvironmentService } from "./environment.service";
 import { Observable } from "rxjs";
@@ -76,15 +76,11 @@ interface AvailableReportsResponse {
   providedIn: 'root'
 })
 export class ClientReportsService {
+  private readonly environmentService = inject(EnvironmentService);
+  private readonly httpClient = inject(HttpClient);
+  private readonly errorHandlerService = inject(ErrorHandlerService);
+
   private readonly baseUrl = this.environmentService.clientDataUrl + '/client/v1.0';
-
-  constructor(
-    private readonly environmentService: EnvironmentService,
-    private readonly httpClient: HttpClient,
-    private readonly errorHandlerService: ErrorHandlerService,
-  ) {
-
-  }
 
   getAvailableReports(
     agreement: string,

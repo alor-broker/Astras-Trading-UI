@@ -1,16 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ArbitrageSpreadManageComponent } from './arbitrage-spread-manage.component';
+import {ArbitrageSpreadManageComponent} from './arbitrage-spread-manage.component';
 import {UserPortfoliosService} from "../../../../shared/services/user-portfolios.service";
 import {Subject} from "rxjs";
-import { SpreadLegComponent } from "../spread-leg/spread-leg.component";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
-import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
-import { NzTooltipModule } from "ng-zorro-antd/tooltip";
-import { NzEmptyModule } from "ng-zorro-antd/empty";
-import { InstrumentSearchMockComponent } from "../../../../shared/utils/testing/instrument-search-mock-component";
-import { InputNumberComponent } from "../../../../shared/components/input-number/input-number.component";
+import {SpreadLegComponent} from "../spread-leg/spread-leg.component";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {commonTestProviders} from "../../../../shared/utils/testing/common-test-providers";
+import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {NzTypographyComponent} from "ng-zorro-antd/typography";
 
 describe('ArbitrageSpreadManageComponent', () => {
   let component: ArbitrageSpreadManageComponent;
@@ -18,29 +17,30 @@ describe('ArbitrageSpreadManageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        ArbitrageSpreadManageComponent,
-        SpreadLegComponent
-      ],
       imports: [
         TranslocoTestsModule.getModule(),
-        ...FormsTesting.getTestingModules(),
-        InstrumentSearchMockComponent,
-        InputNumberComponent,
-        NzTooltipModule,
-        NzEmptyModule
+        ...FormsTesting.getMocks(),
+        MockComponents(
+          NzTypographyComponent,
+          SpreadLegComponent
+        ),
+        MockDirectives(
+          NzTooltipDirective
+        ),
+        ArbitrageSpreadManageComponent
       ],
-      providers: [
-        {
-          provide: UserPortfoliosService,
-          useValue: {
-            getPortfolios: jasmine.createSpy('getPortfolios').and.returnValue(new Subject())
-          }
-        },
-        ...commonTestProviders
-      ]
+      providers:
+        [
+          {
+            provide: UserPortfoliosService,
+            useValue: {
+              getPortfolios: jasmine.createSpy('getPortfolios').and.returnValue(new Subject())
+            }
+          },
+          ...commonTestProviders
+        ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(ArbitrageSpreadManageComponent);
     component = fixture.componentInstance;

@@ -1,11 +1,11 @@
-import {Component, Inject, Input, OnDestroy, OnInit, Optional, SkipSelf} from '@angular/core';
+import { Component, input, OnInit, inject } from '@angular/core';
 import {TradesCluster} from '../../models/trades-clusters.model';
-import {BehaviorSubject, combineLatest, filter, Observable, of} from 'rxjs';
+import {combineLatest, filter, Observable, of, shareReplay} from 'rxjs';
 import {
   ScalperOrderBookDataContext,
   ScalperOrderBookExtendedSettings
 } from '../../models/scalper-order-book-data-context.model';
-import {map} from 'rxjs/operators';
+import {map, startWith} from 'rxjs/operators';
 import {NumberDisplayFormat} from '../../../../shared/models/enums/number-display-format';
 import {RULER_CONTEX, RulerContext} from "../scalper-order-book-body/scalper-order-book-body.component";
 import {TradesClusterHighlightMode, TradesClusterPanelSettings} from "../../models/scalper-order-book-settings.model";
@@ -13,6 +13,10 @@ import {ThemeService} from "../../../../shared/services/theme.service";
 import {ThemeColors} from "../../../../shared/models/settings/theme-settings.model";
 import {color} from "d3";
 import {MathHelper} from "../../../../shared/utils/math-helper";
+import {LetDirective} from '@ngrx/component';
+import {NgClass, NgStyle} from '@angular/common';
+import {ShortNumberComponent} from '../../../../shared/components/short-number/short-number.component';
+import {toObservable} from "@angular/core/rxjs-interop";
 
 interface DisplayItem {
   volume: number | null;
@@ -25,54 +29,48 @@ interface DisplayItem {
 }
 
 @Component({
-    selector: 'ats-trades-cluster',
-    templateUrl: './trades-cluster.component.html',
-    styleUrls: ['./trades-cluster.component.less'],
-    standalone: false
+  selector: 'ats-trades-cluster',
+  templateUrl: './trades-cluster.component.html',
+  styleUrls: ['./trades-cluster.component.less'],
+  imports: [
+    LetDirective,
+    NgClass,
+    NgStyle,
+    ShortNumberComponent
+  ]
 })
-export class TradesClusterComponent implements OnInit, OnDestroy {
+export class TradesClusterComponent implements OnInit {
+  private readonly themeService = inject(ThemeService);
+  private readonly rulerContext = inject<RulerContext>(RULER_CONTEX, { skipSelf: true, optional: true });
+
   readonly numberFormats = NumberDisplayFormat;
 
-  @Input({ required: true })
-  xAxisStep!: number;
+  readonly xAxisStep = input.required<number>();
 
-  @Input({ required: true })
-  dataContext!: ScalperOrderBookDataContext;
+  readonly dataContext = input.required<ScalperOrderBookDataContext>();
 
   displayItems$!: Observable<(DisplayItem)[]>;
   settings$!: Observable<ScalperOrderBookExtendedSettings>;
-  private readonly currentCluster$ = new BehaviorSubject<TradesCluster | null>(null);
   hoveredPriceRow$: Observable<{ price: number } | null> = this.rulerContext?.hoveredRow$ ?? of(null);
 
   readonly themeColors$ = this.themeService.getThemeSettings().pipe(
     map(t => t.themeColors)
   );
 
-  constructor(
-    private readonly themeService: ThemeService,
-    @Inject(RULER_CONTEX)
-    @SkipSelf()
-    @Optional()
-    private readonly rulerContext?: RulerContext,
-    ) {
-  }
+  readonly cluster = input<TradesCluster>();
 
-  @Input()
-  set cluster(value: TradesCluster) {
-    this.currentCluster$.next(value);
-  }
-
-  ngOnDestroy(): void {
-    this.currentCluster$.complete();
-  }
+  private readonly clusterChanges$ = toObservable(this.cluster).pipe(
+    startWith(null),
+    shareReplay(1)
+  );
 
   ngOnInit(): void {
-    this.settings$ = this.dataContext.extendedSettings$;
+    this.settings$ = this.dataContext().extendedSettings$;
 
     this.displayItems$ = combineLatest([
-      this.dataContext.orderBookBody$,
-      this.dataContext.displayRange$,
-      this.currentCluster$
+      this.dataContext().orderBookBody$,
+      this.dataContext().displayRange$,
+      this.clusterChanges$
     ]).pipe(
       filter(([, displayRange]) => !!displayRange),
       map(([body, displayRange, currentCluster]) => {
@@ -104,7 +102,7 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
               buyQty: agg.buyQty + curr.buyQty,
               sellQty: agg.sellQty + curr.sellQty,
             }),
-            { buyQty: 0, sellQty: 0 }
+            {buyQty: 0, sellQty: 0}
           );
 
           const totalBuyQty = Math.round(itemVolume.buyQty);
@@ -140,7 +138,7 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
     item: DisplayItem,
     settings: TradesClusterPanelSettings | null,
     themeColors: ThemeColors): any | null {
-    if(settings == null) {
+    if (settings == null) {
       return null;
     }
 
@@ -160,7 +158,7 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
     item: DisplayItem,
     themeColors: ThemeColors
   ): any | null {
-    if(
+    if (
       item.volume == null
       || item.volume === 0
     ) {
@@ -169,26 +167,26 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
 
     let itemsColor: string | null = null;
     let percent = 0;
-    if(item.buyQty > item.sellQty) {
+    if (item.buyQty > item.sellQty) {
       itemsColor = themeColors.buyColor;
       percent = item.buyQty / item.volume;
-    } else if(item.sellQty > item.buyQty) {
+    } else if (item.sellQty > item.buyQty) {
       itemsColor = themeColors.sellColor;
       percent = item.sellQty / item.volume;
     }
 
-    if(itemsColor == null) {
+    if (itemsColor == null) {
       return null;
     }
 
     percent = Math.min(1, MathHelper.round(percent, 2));
 
     const d3Color = color(itemsColor);
-    if(d3Color == null) {
+    if (d3Color == null) {
       return null;
     }
 
-    if(percent > 0.75) {
+    if (percent > 0.75) {
       d3Color.opacity = 0.8;
     } else {
       d3Color.opacity = percent - 0.25;
@@ -205,7 +203,7 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
     targetVolume: number | null,
     themeColors: ThemeColors
   ): any | null {
-    if(
+    if (
       item.volume == null
       || item.volume === 0
       || targetVolume == null
@@ -215,16 +213,16 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
 
     let itemColor = themeColors.mixColor;
 
-    if(item.buyQty > item.sellQty) {
+    if (item.buyQty > item.sellQty) {
       itemColor = themeColors.buyColor;
     }
 
-    if(item.buyQty < item.sellQty) {
+    if (item.buyQty < item.sellQty) {
       itemColor = themeColors.sellColor;
     }
 
     const d3Color = color(itemColor);
-    if(d3Color == null) {
+    if (d3Color == null) {
       return null;
     }
 
@@ -245,7 +243,7 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
     item: DisplayItem,
     themeColors: ThemeColors
   ): any | null {
-    if(
+    if (
       item.volume == null
       || item.volume === 0
     ) {
@@ -255,7 +253,7 @@ export class TradesClusterComponent implements OnInit, OnDestroy {
     const d3BuyColor = color(themeColors.buyColor);
     const d3SellColor = color(themeColors.sellColor);
 
-    if(d3BuyColor == null || d3SellColor == null) {
+    if (d3BuyColor == null || d3SellColor == null) {
       return null;
     }
 

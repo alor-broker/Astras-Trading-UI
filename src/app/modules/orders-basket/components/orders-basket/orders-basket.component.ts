@@ -1,19 +1,14 @@
-import {
-  Component,
-  DestroyRef,
-  Inject,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
   FormControl,
+  FormsModule,
+  ReactiveFormsModule,
   ValidationErrors,
   Validators
 } from '@angular/forms';
-import { WidgetSettingsService } from '../../../../shared/services/widget-settings.service';
+import {WidgetSettingsService} from '../../../../shared/services/widget-settings.service';
 import {
   BehaviorSubject,
   distinctUntilChanged,
@@ -27,46 +22,66 @@ import {
   take,
   tap
 } from 'rxjs';
-import { inputNumberValidation } from '../../../../shared/utils/validation-options';
-import {
-  OrdersBasket,
-  OrdersBasketItem
-} from '../../models/orders-basket-form.model';
-import {
-  debounceTime,
-  filter,
-  finalize,
-  map
-} from 'rxjs/operators';
-import { InstrumentKey } from '../../../../shared/models/instruments/instrument-key.model';
-import { Side } from '../../../../shared/models/enums/side.model';
-import { MathHelper } from '../../../../shared/utils/math-helper';
-import { EvaluationService } from '../../../../shared/services/evaluation.service';
-import { GuidGenerator } from '../../../../shared/utils/guid';
-import { mapWith } from '../../../../shared/utils/observable-helper';
-import {
-  DataPreset,
-  OrdersBasketSettings
-} from '../../models/orders-basket-settings.model';
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import {
-  NewLimitOrder,
-  OrderCommandResult
-} from "../../../../shared/models/orders/new-order.model";
+import {inputNumberValidation} from '../../../../shared/utils/validation-options';
+import {OrdersBasket, OrdersBasketItem} from '../../models/orders-basket-form.model';
+import {debounceTime, filter, finalize, map} from 'rxjs/operators';
+import {InstrumentKey} from '../../../../shared/models/instruments/instrument-key.model';
+import {Side} from '../../../../shared/models/enums/side.model';
+import {MathHelper} from '../../../../shared/utils/math-helper';
+import {EvaluationService} from '../../../../shared/services/evaluation.service';
+import {GuidGenerator} from '../../../../shared/utils/guid';
+import {mapWith} from '../../../../shared/utils/observable-helper';
+import {DataPreset, OrdersBasketSettings} from '../../models/orders-basket-settings.model';
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {NewLimitOrder, OrderCommandResult} from "../../../../shared/models/orders/new-order.model";
 import {
   ORDER_COMMAND_SERVICE_TOKEN,
   OrderCommandService
 } from "../../../../shared/services/orders/order-command.service";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {PresetsComponent} from '../presets/presets.component';
+import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from 'ng-zorro-antd/form';
+import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
+import {OrdersBasketItemComponent} from '../orders-basket-item/orders-basket-item.component';
+import {NzTypographyComponent} from 'ng-zorro-antd/typography';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
+import {InputNumberComponent} from '../../../../shared/components/input-number/input-number.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
-    selector: 'ats-orders-basket',
-    templateUrl: './orders-basket.component.html',
-    styleUrls: ['./orders-basket.component.less'],
-    standalone: false
+  selector: 'ats-orders-basket',
+  templateUrl: './orders-basket.component.html',
+  styleUrls: ['./orders-basket.component.less'],
+  imports: [
+    TranslocoDirective,
+    PresetsComponent,
+    FormsModule,
+    NzFormDirective,
+    ReactiveFormsModule,
+    NzResizeObserverDirective,
+    OrdersBasketItemComponent,
+    NzTypographyComponent,
+    NzButtonComponent,
+    NzIconDirective,
+    NzColDirective,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzFormLabelComponent,
+    NzFormControlComponent,
+    InputNumberComponent,
+    AsyncPipe
+  ]
 })
 export class OrdersBasketComponent implements OnInit, OnDestroy {
-  @Input({ required: true })
-  guid!: string;
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+  private readonly orderCommandService = inject<OrderCommandService>(ORDER_COMMAND_SERVICE_TOKEN);
+  private readonly evaluationService = inject(EvaluationService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
+  readonly guid = input.required<string>();
 
   readonly form = this.formBuilder.group({
     budget: this.formBuilder.control<number | null>(
@@ -79,7 +94,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     ),
     items: this.formBuilder.array(
       [
-        this.createItemDraftControl({ quota: 50 })
+        this.createItemDraftControl({quota: 50})
       ],
       [
         Validators.required,
@@ -100,16 +115,6 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   itemsContainerWidth$ = new Subject<number>();
 
   private readonly savedBaskets = new Map<string, OrdersBasket>();
-
-  constructor(
-    private readonly widgetSettingsService: WidgetSettingsService,
-    @Inject(ORDER_COMMAND_SERVICE_TOKEN)
-    private readonly orderCommandService: OrderCommandService,
-    private readonly evaluationService: EvaluationService,
-    private readonly formBuilder: FormBuilder,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnDestroy(): void {
     this.formSubscriptions?.unsubscribe();
@@ -211,7 +216,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       };
 
       this.widgetSettingsService.updateSettings<OrdersBasketSettings>(
-        this.guid,
+        this.guid(),
         {
           presets: [
             ...s.presets ?? [],
@@ -227,7 +232,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       take(1)
     ).subscribe(s => {
       this.widgetSettingsService.updateSettings<OrdersBasketSettings>(
-        this.guid,
+        this.guid(),
         {
           presets: (s.presets ?? []).filter(p => p.id !== presetId)
         }
@@ -240,7 +245,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
   }
 
   private getWidgetSettings(): Observable<OrdersBasketSettings> {
-    return this.widgetSettingsService.getSettings<OrdersBasketSettings>(this.guid);
+    return this.widgetSettingsService.getSettings<OrdersBasketSettings>(this.guid());
   }
 
   private isEqualSettings(settings1?: OrdersBasketSettings, settings2?: OrdersBasketSettings): boolean {
@@ -285,7 +290,7 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
     items.clear();
 
     savedBasket.items.forEach(savedItem => {
-      const item = { ...savedItem } as Partial<OrdersBasketItem>;
+      const item = {...savedItem} as Partial<OrdersBasketItem>;
       delete item.quantity;
 
       items.push(this.createItemDraftControl(item));
@@ -301,8 +306,8 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
 
     this.form.reset();
     this.form.controls.items.clear();
-    this.form.controls.items.push(this.createItemDraftControl({ quota: 50 }));
-    this.form.controls.items.push(this.createItemDraftControl({ quota: 50 }));
+    this.form.controls.items.push(this.createItemDraftControl({quota: 50}));
+    this.form.controls.items.push(this.createItemDraftControl({quota: 50}));
 
     this.formSubscriptions = this.form.statusChanges.subscribe(status => {
       // submit button disabled status for some reason lagging behind by 1 status when updating budget
@@ -349,14 +354,14 @@ export class OrdersBasketComponent implements OnInit, OnDestroy {
       }),
       mapWith(
         items => this.evaluationService.evaluateBatch(settings.portfolio, items.itemsToEvaluate.map(x => x.evaluationParams!)),
-        (items, evaluation) => ({ items, evaluation: evaluation ?? [] })
+        (items, evaluation) => ({items, evaluation: evaluation ?? []})
       )
-    ).subscribe(({ items, evaluation }) => {
+    ).subscribe(({items, evaluation}) => {
       const setQuantity = (id: string, quantity: number): void => {
         const itemsControl = this.form.controls.items;
         const targetControl = itemsControl.controls.find(c => c.value != null && c.value.id === id);
         if (targetControl && targetControl.value!.quantity !== quantity) {
-          targetControl.patchValue({ quantity: quantity });
+          targetControl.patchValue({quantity: quantity});
         }
       };
 

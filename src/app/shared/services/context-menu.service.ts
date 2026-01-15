@@ -5,7 +5,7 @@ import {
   ScrollStrategy
 } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { fromEvent, Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { NzDropdownMenuComponent } from 'ng-zorro-antd/dropdown';
@@ -31,10 +31,11 @@ export const ContextMenuServiceDefaultConfig: ContextMenuServiceConfig = {
   providedIn: 'root'
 })
 export class ContextMenuService {
+  private readonly ngZone = inject(NgZone);
+  private readonly overlay = inject(Overlay);
+
   private overlayRef: OverlayRef | null = null;
   private closeSubscription = Subscription.EMPTY;
-
-  constructor(private readonly ngZone: NgZone, private readonly overlay: Overlay) {}
 
   create(
     $event: MouseEvent | { x: number, y: number },

@@ -16,6 +16,7 @@ import { NavigationStackService } from "../../../../shared/services/navigation-s
 import { UserPortfoliosService } from "../../../../shared/services/user-portfolios.service";
 import { AgreementDynamicsComponent } from "../../../portfolio-charts/components/agreement-dynamics/agreement-dynamics.component";
 import { MarketTrendsComponent } from "../../../market-trends/components/market-trends/market-trends.component";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('MobileHomeScreenContentComponent', () => {
   let component: MobileHomeScreenContentComponent;
@@ -57,7 +58,7 @@ describe('MobileHomeScreenContentComponent', () => {
 
     fixture = TestBed.createComponent(MobileHomeScreenContentComponent);
     component = fixture.componentInstance;
-    component.guid = 'test-guid';
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

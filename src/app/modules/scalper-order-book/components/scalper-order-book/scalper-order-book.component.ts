@@ -1,10 +1,4 @@
-import {
-  Component,
-  InjectionToken,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
+import { Component, InjectionToken, OnDestroy, OnInit, input, inject } from '@angular/core';
 import {
   BehaviorSubject,
   distinctUntilChanged,
@@ -13,6 +7,21 @@ import {
 } from 'rxjs';
 import { map } from "rxjs/operators";
 import { ScalperOrderBookDataProvider } from "../../services/scalper-order-book-data-provider.service";
+import { LetDirective } from '@ngrx/component';
+import { NgStyle, AsyncPipe } from '@angular/common';
+import { ScalperOrderBookBodyComponent } from '../scalper-order-book-body/scalper-order-book-body.component';
+import { CurrentPositionPanelComponent } from '../current-position-panel/current-position-panel.component';
+import {ScalperCommandProcessorService} from "../../services/scalper-command-processor.service";
+import {CancelOrdersCommand} from "../../commands/cancel-orders-command";
+import {ClosePositionByMarketCommand} from "../../commands/close-position-by-market-command";
+import {SubmitMarketOrderCommand} from "../../commands/submit-market-order-command";
+import {ReversePositionByMarketCommand} from "../../commands/reverse-position-by-market-command";
+import {SubmitStopLimitOrderCommand} from "../../commands/submit-stop-limit-order-command";
+import {SetStopLossCommand} from "../../commands/set-stop-loss-command";
+import {SubmitLimitOrderCommand} from "../../commands/submit-limit-order-command";
+import {SubmitBestPriceOrderCommand} from "../../commands/submit-best-price-order-command";
+import {GetBestOfferCommand} from "../../commands/get-best-offer-command";
+import {UpdateOrdersCommand} from "../../commands/update-orders-command";
 
 export interface ScalperOrderBookSharedContext {
   readonly workingVolume$: Observable<number | null>;
@@ -34,16 +43,33 @@ export const SCALPER_ORDERBOOK_SHARED_CONTEXT = new InjectionToken<ScalperOrderB
         {
             provide: SCALPER_ORDERBOOK_SHARED_CONTEXT,
             useExisting: ScalperOrderBookComponent
-        }
+        },
+      CancelOrdersCommand,
+      ClosePositionByMarketCommand,
+      SubmitMarketOrderCommand,
+      ReversePositionByMarketCommand,
+      SubmitStopLimitOrderCommand,
+      SetStopLossCommand,
+      SubmitLimitOrderCommand,
+      SubmitBestPriceOrderCommand,
+      GetBestOfferCommand,
+      UpdateOrdersCommand,
+      ScalperCommandProcessorService
     ],
-    standalone: false
+    imports: [
+      LetDirective,
+      NgStyle,
+      ScalperOrderBookBodyComponent,
+      CurrentPositionPanelComponent,
+      AsyncPipe
+    ]
 })
 export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext, OnInit, OnDestroy {
-  @Input({required: true})
-  guid!: string;
+  private readonly dataContextService = inject(ScalperOrderBookDataProvider);
 
-  @Input()
-  isActive = false;
+  readonly guid = input.required<string>();
+
+  readonly isActive = input(false);
 
   workingVolume$ = new BehaviorSubject<number>(1);
   scaleFactor$ = new BehaviorSubject<number>(1);
@@ -52,15 +78,12 @@ export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext,
 
   hideTooltips$!: Observable<boolean>;
 
-  constructor(private readonly dataContextService: ScalperOrderBookDataProvider) {
-  }
-
   setScaleFactor(value: number): void {
     this.scaleFactor$.next(value);
   }
 
   ngOnInit(): void {
-    const settings$ = this.dataContextService.getSettingsStream(this.guid).pipe(
+    const settings$ = this.dataContextService.getSettingsStream(this.guid()).pipe(
       map(s => s.widgetSettings),
       shareReplay({bufferSize: 1, refCount: true})
     );

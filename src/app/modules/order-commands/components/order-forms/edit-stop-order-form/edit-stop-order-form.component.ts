@@ -1,14 +1,6 @@
-import {
-  Component,
-  DestroyRef,
-  Input,
-  OnInit
-} from '@angular/core';
+import { Component, DestroyRef, OnInit, input, inject } from '@angular/core';
 import { BaseEditOrderFormComponent } from "../base-edit-order-form.component";
-import {
-  FormBuilder,
-  Validators
-} from "@angular/forms";
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { OrderDetailsService } from "../../../../../shared/services/orders/order-details.service";
 import { InstrumentsService } from "../../../../instruments/services/instruments.service";
 import { CommonParametersService } from "../../../services/common-parameters.service";
@@ -48,14 +40,61 @@ import {
 import { getConditionTypeByString } from "../../../../../shared/utils/order-conditions-helper";
 import { Instrument } from "../../../../../shared/models/instruments/instrument.model";
 import {ConfirmableOrderCommandsService} from "../../../services/confirmable-order-commands.service";
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NzFormDirective, NzFormItemComponent, NzFormLabelComponent, NzFormControlComponent } from 'ng-zorro-antd/form';
+import { NzRowDirective, NzColDirective } from 'ng-zorro-antd/grid';
+import { InputNumberComponent } from '../../../../../shared/components/input-number/input-number.component';
+import { ShortNumberComponent } from '../../../../../shared/components/short-number/short-number.component';
+import { NzSelectComponent, NzOptionComponent } from 'ng-zorro-antd/select';
+import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
+import { NzRadioGroupComponent, NzRadioComponent } from 'ng-zorro-antd/radio';
+import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
+import { NzCollapseComponent, NzCollapsePanelComponent } from 'ng-zorro-antd/collapse';
+import { NzCheckboxComponent } from 'ng-zorro-antd/checkbox';
+import { NzTypographyComponent } from 'ng-zorro-antd/typography';
+import { AsyncPipe, DecimalPipe, KeyValuePipe } from '@angular/common';
 
 @Component({
     selector: 'ats-edit-stop-order-form',
     templateUrl: './edit-stop-order-form.component.html',
     styleUrls: ['./edit-stop-order-form.component.less'],
-    standalone: false
+    imports: [
+      TranslocoDirective,
+      FormsModule,
+      NzFormDirective,
+      ReactiveFormsModule,
+      NzRowDirective,
+      NzColDirective,
+      NzFormItemComponent,
+      NzFormLabelComponent,
+      NzFormControlComponent,
+      InputNumberComponent,
+      ShortNumberComponent,
+      NzSelectComponent,
+      NzOptionComponent,
+      NzDatePickerComponent,
+      NzRadioGroupComponent,
+      NzRadioComponent,
+      NzTooltipDirective,
+      NzCollapseComponent,
+      NzCollapsePanelComponent,
+      NzCheckboxComponent,
+      NzTypographyComponent,
+      AsyncPipe,
+      DecimalPipe,
+      KeyValuePipe
+    ]
 })
 export class EditStopOrderFormComponent extends BaseEditOrderFormComponent implements OnInit {
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly orderDetailsService = inject(OrderDetailsService);
+  protected readonly instrumentService: InstrumentsService;
+  private readonly commonParametersService = inject(CommonParametersService);
+  private readonly portfolioSubscriptionsService = inject(PortfolioSubscriptionsService);
+  private readonly timezoneConverterService = inject(TimezoneConverterService);
+  private readonly orderCommandService = inject(ConfirmableOrderCommandsService);
+  protected readonly destroyRef: DestroyRef;
+
   currentOrder$!: Observable<StopOrder>;
   canSelectNow = true;
   readonly conditionType = LessMore;
@@ -63,15 +102,14 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
 
   currentPriceDiffPercent$!: Observable<{ percent: number, sign: number } | null>;
 
-  @Input()
-  initialValues: {
+  readonly initialValues = input<{
     triggerPrice?: number;
     price?: number;
     quantity?: number;
     hasPriceChanged?: boolean;
-  } | null = null;
+} | null>(null);
 
-  form = this.formBuilder.group({
+  readonly form = this.formBuilder.group({
     quantity: this.formBuilder.nonNullable.control(
       1,
       {
@@ -110,22 +148,20 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
     )
   });
 
-  constructor(
-    private readonly formBuilder: FormBuilder,
-    private readonly orderDetailsService: OrderDetailsService,
-    protected readonly instrumentService: InstrumentsService,
-    private readonly commonParametersService: CommonParametersService,
-    private readonly portfolioSubscriptionsService: PortfolioSubscriptionsService,
-    private readonly timezoneConverterService: TimezoneConverterService,
-    private readonly orderCommandService: ConfirmableOrderCommandsService,
-    protected readonly destroyRef: DestroyRef) {
+  constructor() {
+    const instrumentService = inject(InstrumentsService);
+    const destroyRef = inject(DestroyRef);
+
     super(instrumentService, destroyRef);
+
+    this.instrumentService = instrumentService;
+    this.destroyRef = destroyRef;
   }
 
   ngOnInit(): void {
     this.currentOrder$ = combineLatest({
-      orderId: this.orderId$,
-      portfolioKey: this.portfolioKey$
+      orderId: this.orderIdChanges$,
+      portfolioKey: this.portfolioKeyChanges$
     }).pipe(
       filter(x => x.orderId != null && !!x.orderId.length && !!x.portfolioKey),
       switchMap(x => this.orderDetailsService.getStopOrderDetails(x.orderId!, x.portfolioKey!)),
@@ -158,10 +194,11 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
       this.setPriceValidators(this.form.controls.triggerPrice, x.currentInstrument);
       this.setPriceValidators(this.form.controls.price, x.currentInstrument);
 
-      this.form.controls.quantity.setValue(this.initialValues?.quantity ?? x.currentOrder.qtyBatch);
-      this.form.controls.triggerPrice.setValue(this.initialValues?.triggerPrice ?? this.initialValues?.price ?? x.currentOrder.triggerPrice);
+      const initialValues = this.initialValues();
+      this.form.controls.quantity.setValue(initialValues?.quantity ?? x.currentOrder.qtyBatch);
+      this.form.controls.triggerPrice.setValue(initialValues?.triggerPrice ?? initialValues?.price ?? x.currentOrder.triggerPrice);
       this.form.controls.condition.setValue(getConditionTypeByString(x.currentOrder.conditionType) ?? LessMore.More);
-      this.form.controls.price.setValue(this.initialValues?.price ?? x.currentOrder.price);
+      this.form.controls.price.setValue(initialValues?.price ?? x.currentOrder.price);
 
       this.form.controls.withLimit.setValue(x.currentOrder.type === OrderType.StopLimit);
 
@@ -294,7 +331,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
   private prepareUpdateStream(): Observable<boolean> {
     return combineLatest({
       currentOrder: this.currentOrder$,
-      portfolioKey: this.portfolioKey$,
+      portfolioKey: this.portfolioKeyChanges$,
       tc: this.timezoneConverterService.getConverter()
     }).pipe(
       filter(x => !!x.portfolioKey),

@@ -1,4 +1,4 @@
-import {Component, DestroyRef, OnInit} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {NzSwitchModule} from "ng-zorro-antd/switch";
 import {NzIconModule} from "ng-zorro-antd/icon";
@@ -21,17 +21,14 @@ import {GuidGenerator} from "../../../../shared/utils/guid";
     styleUrl: './theme-switch-widget.component.less'
 })
 export class ThemeSwitchWidgetComponent implements OnInit {
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly globalLoadingIndicatorService = inject(GlobalLoadingIndicatorService);
+  private readonly destroyRef = inject(DestroyRef);
+
   isLoading = false;
   isDarkThemeApplied = true;
 
   private terminalSettings$!: Observable<TerminalSettings>;
-
-  constructor(
-    private readonly terminalSettingsService: TerminalSettingsService,
-    private readonly globalLoadingIndicatorService: GlobalLoadingIndicatorService,
-    private readonly destroyRef: DestroyRef
-  ) {
-  }
 
   ngOnInit(): void {
     this.terminalSettings$ = this.terminalSettingsService.getSettings();

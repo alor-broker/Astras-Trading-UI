@@ -1,9 +1,4 @@
-import {
-  Component,
-  model,
-  OnInit,
-  output
-} from '@angular/core';
+import { Component, model, OnInit, output, inject } from '@angular/core';
 import {
   forkJoin,
   Observable,
@@ -49,20 +44,17 @@ import { InvestIdeasDetailsDialogComponent } from "../invest-ideas-details-dialo
   styleUrl: './invest-ideas-carousel.component.less'
 })
 export class InvestIdeasCarouselComponent implements OnInit {
+  private readonly investIdeasService = inject(InvestIdeasService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly instrumentsService = inject(InstrumentsService);
+
   ideas$!: Observable<Idea[]>;
 
   instrumentSelected = output<InstrumentKey>();
 
-  protected selectedIdea = model<Idea | null>(null);
+  protected readonly selectedIdea = model<Idea | null>(null);
 
   private readonly refreshInterval = 600_000;
-
-  constructor(
-    private readonly investIdeasService: InvestIdeasService,
-    private readonly translatorService: TranslatorService,
-    private readonly instrumentsService: InstrumentsService
-  ) {
-  }
 
   ngOnInit(): void {
     this.ideas$ = timer(0, this.refreshInterval).pipe(

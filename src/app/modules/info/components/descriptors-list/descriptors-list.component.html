@@ -1,7 +1,7 @@
 <ng-container *transloco="let t; scope: 'info/descriptors-list'">
   <table>
     <tbody>
-      @for (group of descriptors; track $index) {
+      @for (group of descriptors(); track $index) {
         @if (group.items.length > 0) {
           @if (group.title != null && group.title.length > 0) {
             <tr class="group-title-row">

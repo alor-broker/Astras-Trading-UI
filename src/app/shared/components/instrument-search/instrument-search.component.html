@@ -2,26 +2,28 @@
   *transloco="let t; scope: 'shared/instrument-search'"
   (mousedown)='$event.stopPropagation()'
   class="search-field"
->
+  >
   <nz-input-group [nzSuffix]="suffixIcon">
     <input #searchInput
-           (blur)="checkInstrumentSelection()"
-           (mousedown)="$event.stopPropagation()"
-           (input)="filterChanged(searchInput.value)"
-           [nzAutocomplete]="auto"
-           class='whole ant-input'
-           nz-input
-           [formControl]="searchControl"
-           [placeholder]="t('sharedInstrumentSearch.searchPlaceholder')"
-    />
+      (blur)="checkInstrumentSelection()"
+      (mousedown)="$event.stopPropagation()"
+      (input)="filterChanged(searchInput.value)"
+      [nzAutocomplete]="auto"
+      class='whole ant-input'
+      nz-input
+      [formControl]="searchControl"
+      [placeholder]="t('sharedInstrumentSearch.searchPlaceholder')"
+      />
   </nz-input-group>
   <ng-template #suffixIcon>
-    <span [nzTooltipTitle]="searchHelp" *ngIf="showHelpTooltip" nz-icon nz-tooltip nzType="question-circle" class="search-tooltip-icon"></span>
+    @if (showHelpTooltip()) {
+      <span [nzTooltipTitle]="searchHelp" nz-icon nz-tooltip nzType="question-circle" class="search-tooltip-icon"></span>
+    }
   </ng-template>
   <ng-template #searchHelp>
     <span>{{t('sharedInstrumentSearch.helpParagraph1')}}</span>
     <br/>
-    <ng-container *ngIf="!isExchangeSpecified">
+    @if (!isExchangeSpecified) {
       <span>{{t('sharedInstrumentSearch.helpParagraph2')}}</span>
       <br/>
       <span nz-typography><code>[Exchange]:[Ticker]:[Board]</code></span>
@@ -33,32 +35,35 @@
       <span nz-typography><code>[Exchange]:[Ticker]</code></span>
       <br/>
       <span nz-typography>{{t('sharedInstrumentSearch.forExample')}} MOEX:SBER</span>
-    </ng-container>
-    <ng-container *ngIf="isExchangeSpecified">
+    }
+    @if (isExchangeSpecified) {
       <span>{{t('sharedInstrumentSearch.helpParagraph2')}}</span>
       <br/>
       <span nz-typography><code>[Ticker]:[Board]</code></span>
       <br/>
       <span nz-typography>{{t('sharedInstrumentSearch.forExample')}} SBER:SMAL</span>
-    </ng-container>
+    }
   </ng-template>
   <nz-autocomplete
     #auto
-    [nzWidth]="optionsBoxWidth"
+    [nzWidth]="optionsBoxWidth()"
     [nzOverlayClassName]="(isMobile$ | async) ? 'autocomplete-overlay' : ''"
-  >
-    <nz-auto-option
-      *ngFor="let option of filteredInstruments$ | async"
-      [nzLabel]="option.symbol"
-      [nzValue]="option.symbol"
-      (selectionChange)="onSelect($event, option)"
     >
-      <span class='search-row'>
-        <nz-tag>{{ option.symbol }}</nz-tag>
-        <span class='row-center'>{{ option.shortName }}&nbsp;</span>
-        <nz-tag *ngIf='option.instrumentGroup'>{{ option.instrumentGroup }}</nz-tag>
-        <nz-tag>{{ option.exchange }}</nz-tag>
-      </span>
-    </nz-auto-option>
+    @for (option of filteredInstruments$ | async; track option) {
+      <nz-auto-option
+        [nzLabel]="option.symbol"
+        [nzValue]="option.symbol"
+        (selectionChange)="onSelect($event, option)"
+        >
+        <span class='search-row'>
+          <nz-tag>{{ option.symbol }}</nz-tag>
+          <span class='row-center'>{{ option.shortName }}&nbsp;</span>
+          @if (option.instrumentGroup) {
+            <nz-tag>{{ option.instrumentGroup }}</nz-tag>
+          }
+          <nz-tag>{{ option.exchange }}</nz-tag>
+        </span>
+      </nz-auto-option>
+    }
   </nz-autocomplete>
 </div>

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import { Component, OnInit, output, inject } from '@angular/core';
 import {combineLatest, Observable, take} from "rxjs";
 import {LetDirective} from "@ngrx/component";
 import {NzSpinComponent} from "ng-zorro-antd/spin";
@@ -58,6 +58,11 @@ import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
     styleUrl: './graphs-list.component.less'
 })
 export class GraphsListComponent implements OnInit {
+  private readonly graphStorageService = inject(GraphStorageService);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly graphTemplatesStorageService = inject(GraphTemplatesStorageService);
+
   readonly validationOptions = {
     graphTitle: {
       max: 50
@@ -78,16 +83,7 @@ export class GraphsListComponent implements OnInit {
     }
   );
 
-  @Output()
-  editGraph = new EventEmitter<string>();
-
-  constructor(
-    private readonly graphStorageService: GraphStorageService,
-    private readonly formBuilder: FormBuilder,
-    private readonly translatorService: TranslatorService,
-    private readonly graphTemplatesStorageService: GraphTemplatesStorageService
-  ) {
-  }
+  readonly editGraph = output<string>();
 
   ngOnInit(): void {
     this.graphs$ = this.graphStorageService.getAllGraphs();

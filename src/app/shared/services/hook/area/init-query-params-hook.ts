@@ -1,4 +1,4 @@
-﻿import { Injectable } from "@angular/core";
+﻿import { Injectable, inject } from "@angular/core";
 import {
   ActivatedRoute,
   Params
@@ -22,14 +22,11 @@ interface RouterQueryParams extends Params {
 
 @Injectable()
 export class InitQueryParamsHook implements AreaHook {
-  destroy$ = new Subject<boolean>();
+  private readonly route = inject(ActivatedRoute);
+  private readonly currentDashboardService = inject(DashboardContextService);
+  private readonly instrumentsService = inject(InstrumentsService);
 
-  constructor(
-    private readonly route: ActivatedRoute,
-    private readonly currentDashboardService: DashboardContextService,
-    private readonly instrumentsService: InstrumentsService
-  ) {
-  }
+  destroy$ = new Subject<boolean>();
 
   onDestroy(): void {
     this.destroy$.next(true);

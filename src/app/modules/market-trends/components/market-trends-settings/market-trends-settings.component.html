@@ -11,14 +11,12 @@
         <nz-form-control>
           <nz-form-label nzFor="itemsCount" nzRequired>{{ t('marketTrendsSettings.itemsCountLabel') }}
           </nz-form-label>
-          <nz-slider
-            [nzMarks]="marks"
+          <nz-slider [nzMarks]="marks"
             [nzMax]="validation.itemsCount.max"
             [nzMin]="validation.itemsCount.min"
             [nzStep]="1"
             formControlName="itemsCount"
-          >
-          </nz-slider>
+           />
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
@@ -34,15 +32,13 @@
             nzMode="multiple"
           >
             @let availableSectors = (settings$ | async)?.availableSectors ?? allSectors;
-            <nz-option
-              *ngFor="let item of availableSectors"
-              [nzLabel]="t('marketSectors.' + item, {fallback: item})"
-              [nzValue]="item"
-            >
-            </nz-option>
+            @for(item of availableSectors; track item) {
+              <nz-option [nzLabel]="t('marketSectors.' + item, {fallback: item})"
+                [nzValue]="item"
+               />
+            }
+
           </nz-select>
-          <ng-template #tagPlaceHolder let-selectedList>{{ t('maxTagPlaceholder', {count: selectedList.length}) }}
-          </ng-template>
         </nz-form-control>
       </nz-form-item>
 
@@ -61,19 +57,20 @@
               formControlName="extendedFilter"
             >
               <ng-container *transloco="let tMarketTrends; scope: 'market-trends/market-trends'">
-                <nz-option
-                  *ngFor="let item of availableExtendedFilters"
-                  [nzLabel]="tMarketTrends('marketTrendsMarketTrends.extendedFilter.' + item, {fallback: item})"
-                  [nzValue]="item"
-                >
-                </nz-option>
+                @for(item of availableExtendedFilters; track item) {
+                  <nz-option [nzLabel]="tMarketTrends('marketTrendsMarketTrends.extendedFilter.' + item, {fallback: item})"
+                    [nzValue]="item"
+                   />
+                }
+
               </ng-container>
             </nz-select>
-            <ng-template #tagPlaceHolder let-selectedList>{{ t('maxTagPlaceholder', {count: selectedList.length}) }}
-            </ng-template>
           </nz-form-control>
         </nz-form-item>
       }
     </form>
+
+    <ng-template #tagPlaceHolder let-selectedList>{{ t('maxTagPlaceholder', {count: selectedList.length}) }}
+    </ng-template>
   </ng-container>
 </ats-widget-settings>

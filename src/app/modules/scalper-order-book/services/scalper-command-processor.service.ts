@@ -1,6 +1,4 @@
-import {
-  Injectable,
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ScalperOrderBookDataContext } from '../models/scalper-order-book-data-context.model';
 import { Side } from '../../../shared/models/enums/side.model';
 import {
@@ -61,24 +59,20 @@ import { BracketOptions } from "../commands/bracket-command";
 
 @Injectable()
 export class ScalperCommandProcessorService {
-  private mouseActionsMap$: Observable<ScalperOrderBookMouseActionsMap> | null = null;
+  private readonly hotkeysService = inject(ScalperHotKeyCommandService);
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+  private readonly cancelOrdersCommand = inject(CancelOrdersCommand);
+  private readonly closePositionByMarketCommand = inject(ClosePositionByMarketCommand);
+  private readonly submitMarketOrderCommand = inject(SubmitMarketOrderCommand);
+  private readonly reversePositionByMarketCommand = inject(ReversePositionByMarketCommand);
+  private readonly submitStopLimitOrderCommand = inject(SubmitStopLimitOrderCommand);
+  private readonly setStopLossCommand = inject(SetStopLossCommand);
+  private readonly submitLimitOrderCommand = inject(SubmitLimitOrderCommand);
+  private readonly submitBestPriceOrderCommand = inject(SubmitBestPriceOrderCommand);
+  private readonly getBestOfferCommand = inject(GetBestOfferCommand);
+  private readonly updateOrdersCommand = inject(UpdateOrdersCommand);
 
-  constructor(
-    private readonly hotkeysService: ScalperHotKeyCommandService,
-    private readonly terminalSettingsService: TerminalSettingsService,
-    // commands
-    private readonly cancelOrdersCommand: CancelOrdersCommand,
-    private readonly closePositionByMarketCommand: ClosePositionByMarketCommand,
-    private readonly submitMarketOrderCommand: SubmitMarketOrderCommand,
-    private readonly reversePositionByMarketCommand: ReversePositionByMarketCommand,
-    private readonly submitStopLimitOrderCommand: SubmitStopLimitOrderCommand,
-    private readonly setStopLossCommand: SetStopLossCommand,
-    private readonly submitLimitOrderCommand: SubmitLimitOrderCommand,
-    private readonly submitBestPriceOrderCommand: SubmitBestPriceOrderCommand,
-    private readonly getBestOfferCommand: GetBestOfferCommand,
-    private readonly updateOrdersCommand: UpdateOrdersCommand
-  ) {
-  }
+  private mouseActionsMap$: Observable<ScalperOrderBookMouseActionsMap> | null = null;
 
   processLeftMouseClick(e: MouseEvent, row: BodyRow, dataContext: ScalperOrderBookDataContext): void {
     this.processClick('left', e, row, dataContext);

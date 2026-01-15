@@ -1,23 +1,21 @@
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { BlotterSettingsComponent } from './blotter-settings.component';
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { of } from "rxjs";
-import { ManageDashboardsService } from "../../../../shared/services/manage-dashboards.service";
-import { StoreModule } from "@ngrx/store";
-import { EffectsModule } from "@ngrx/effects";
-import { PortfoliosFeature } from "../../../../store/portfolios/portfolios.reducer";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
-import { commonTestProviders } from "../../../../shared/utils/testing/common-test-providers";
-import { FormsTesting } from "../../../../shared/utils/testing/forms-testing";
-import { WidgetSettingsComponent } from "../../../../shared/components/widget-settings/widget-settings.component";
-import { NzTooltipModule } from "ng-zorro-antd/tooltip";
-import { RemoveSelectTitlesDirective } from "../../../../shared/directives/remove-select-titles.directive";
+import {BlotterSettingsComponent} from './blotter-settings.component';
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {of} from "rxjs";
+import {ManageDashboardsService} from "../../../../shared/services/manage-dashboards.service";
+import {StoreModule} from "@ngrx/store";
+import {EffectsModule} from "@ngrx/effects";
+import {PortfoliosFeature} from "../../../../store/portfolios/portfolios.reducer";
+import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
+import {commonTestProviders} from "../../../../shared/utils/testing/common-test-providers";
+import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
+import {WidgetSettingsComponent} from "../../../../shared/components/widget-settings/widget-settings.component";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
+import {RemoveSelectTitlesDirective} from "../../../../shared/directives/remove-select-titles.directive";
 import {PUSH_NOTIFICATIONS_CONFIG} from "../../../push-notifications/services/push-notifications-config";
-import { NzDividerComponent } from "ng-zorro-antd/divider";
+import {MockComponents, MockDirectives} from "ng-mocks";
+import {GuidGenerator} from "../../../../shared/utils/guid";
 
 describe('BlotterSettingsComponent', () => {
   let component: BlotterSettingsComponent;
@@ -34,19 +32,20 @@ describe('BlotterSettingsComponent', () => {
   beforeAll(() => TestBed.resetTestingModule());
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        BlotterSettingsComponent,
-        RemoveSelectTitlesDirective
-      ],
       imports: [
         StoreModule.forRoot({}),
         EffectsModule.forRoot(),
         StoreModule.forFeature(PortfoliosFeature),
         TranslocoTestsModule.getModule(),
-        ...FormsTesting.getTestingModules(),
-        WidgetSettingsComponent,
-        NzTooltipModule,
-        NzDividerComponent
+        ...FormsTesting.getMocks(),
+        MockComponents(
+          WidgetSettingsComponent,
+        ),
+        MockDirectives(
+          NzTooltipDirective,
+          RemoveSelectTitlesDirective
+        ),
+        BlotterSettingsComponent,
       ],
       providers: [
         {
@@ -82,6 +81,7 @@ describe('BlotterSettingsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BlotterSettingsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('guid', GuidGenerator.newGuid());
     fixture.detectChanges();
   });
 

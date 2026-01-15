@@ -1,28 +1,59 @@
-import { Component } from '@angular/core';
-import { additionalInstrumentsBadges, instrumentsBadges, defaultBadgeColor } from "../../../../shared/utils/instruments";
-import { CdkDrag, CdkDragEnter, CdkDragStart } from "@angular/cdk/drag-drop";
+import { Component, inject } from '@angular/core';
+import {additionalInstrumentsBadges, defaultBadgeColor, instrumentsBadges} from "../../../../shared/utils/instruments";
 import {
-  FormBuilder,
-  NG_VALUE_ACCESSOR,
-} from "@angular/forms";
+  CdkDrag,
+  CdkDragEnter,
+  CdkDragPlaceholder,
+  CdkDragStart,
+  CdkDropList,
+  CdkDropListGroup
+} from "@angular/cdk/drag-drop";
+import {FormBuilder, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule} from "@angular/forms";
 import {
   ControlValueAccessorBaseComponent
 } from "../../../../shared/components/control-value-accessor-base/control-value-accessor-base.component";
+import {TranslocoDirective} from '@jsverse/transloco';
+import {NzButtonComponent} from 'ng-zorro-antd/button';
+import {NzWaveDirective} from 'ng-zorro-antd/core/wave';
+import {NzRowDirective} from 'ng-zorro-antd/grid';
+import {NzFormItemComponent} from 'ng-zorro-antd/form';
+import {NzCollapseComponent, NzCollapsePanelComponent} from 'ng-zorro-antd/collapse';
+import {NzColorBlockComponent, NzColorPickerComponent} from 'ng-zorro-antd/color-picker';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
 
 @Component({
-    selector: 'ats-badges-settings',
-    templateUrl: './badges-settings.component.html',
-    styleUrl: './badges-settings.component.less',
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            multi: true,
-            useExisting: BadgesSettingsComponent
-        }
-    ],
-    standalone: false
+  selector: 'ats-badges-settings',
+  templateUrl: './badges-settings.component.html',
+  styleUrl: './badges-settings.component.less',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: BadgesSettingsComponent
+    }
+  ],
+  imports: [
+    TranslocoDirective,
+    NzButtonComponent,
+    NzWaveDirective,
+    NzRowDirective,
+    NzFormItemComponent,
+    NzCollapseComponent,
+    NzCollapsePanelComponent,
+    CdkDropListGroup,
+    CdkDropList,
+    CdkDrag,
+    NzColorBlockComponent,
+    NzIconDirective,
+    CdkDragPlaceholder,
+    NzColorPickerComponent,
+    FormsModule,
+    ReactiveFormsModule
+  ]
 })
 export class BadgesSettingsComponent extends ControlValueAccessorBaseComponent<string[]> {
+  private readonly formBuilder = inject(FormBuilder);
+
   newBadgeColorControl = this.formBuilder.nonNullable.control('');
 
   defaultBadgeColor = defaultBadgeColor;
@@ -30,18 +61,6 @@ export class BadgesSettingsComponent extends ControlValueAccessorBaseComponent<s
   draggedBadge: string | null = null;
 
   badgesColors: string[] = [];
-
-  constructor(private readonly formBuilder: FormBuilder) {
-    super();
-  }
-
-  protected needMarkTouched(): boolean {
-    return false;
-  }
-
-  protected emitValue(): void {
-    super.emitValue(this.badgesColors);
-  }
 
   writeValue(colors: string[] | null): void {
     const colorsArray = colors ?? [];
@@ -110,5 +129,13 @@ export class BadgesSettingsComponent extends ControlValueAccessorBaseComponent<s
 
   badgeDragStarts(e: CdkDragStart<CdkDrag>): void {
     this.draggedBadge = e.source.dropContainer.data as string;
+  }
+
+  protected needMarkTouched(): boolean {
+    return false;
+  }
+
+  protected emitValue(): void {
+    super.emitValue(this.badgesColors);
   }
 }
