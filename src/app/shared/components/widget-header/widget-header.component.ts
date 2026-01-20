@@ -157,6 +157,11 @@ export class WidgetHeaderComponent implements OnInit {
     event.stopPropagation();
   }
 
+  openHelp(event: MouseEvent | TouchEvent, helpUrl: string): void {
+    this.preventMouseEvents(event);
+    window.open(helpUrl, '_blank');
+  }
+
   getIconTooltip(): string {
     return this.titleText;
   }

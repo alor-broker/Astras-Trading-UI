@@ -2,7 +2,10 @@ import { ChangeDetectorRef, Component, DestroyRef, ElementRef, forwardRef, input
 import {FormsModule, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {ControlValueAccessorBaseComponent} from "../control-value-accessor-base/control-value-accessor-base.component";
 import {MathHelper} from "../../utils/math-helper";
-import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
+import {
+  NzInputDirective,
+  NzInputWrapperComponent
+} from "ng-zorro-antd/input";
 import {NgTemplateOutlet} from "@angular/common";
 import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {filter} from "rxjs";
@@ -19,10 +22,10 @@ import {filter} from "rxjs";
     }
   ],
   imports: [
-    NzInputGroupComponent,
     NzInputDirective,
     FormsModule,
-    NgTemplateOutlet
+    NgTemplateOutlet,
+    NzInputWrapperComponent
   ]
 })
 export class InputNumberComponent extends ControlValueAccessorBaseComponent<number> {

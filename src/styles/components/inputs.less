@@ -1,0 +1,35 @@
+﻿@import 'theme-mixin';
+
+.themeMixin({
+  .ant-input-affix-wrapper {
+    &-focused {
+      background-color: @component-background;
+    }
+  }
+
+  .ant-input {
+    &-focused {
+      background-color: @component-background;
+    }
+  }
+
+  .ant-select-focused {
+    .ant-select-selector {
+      background-color: @component-background;
+    }
+  }
+
+  .ant-picker {
+    &-focused {
+      background-color: @component-background;
+    }
+  }
+});
+
+.ant-input-affix-wrapper,
+.ant-input,
+.ant-select-selector,
+.ant-picker
+{
+  box-shadow: none !important;
+}

@@ -1,4 +1,4 @@
-<nz-input-group [nzSuffix]="suffixTmp" nzCompact>
+<nz-input-wrapper nzAllowClear>
   <input
     #inputElement
     nz-input
@@ -14,8 +14,11 @@
     (keydown.enter)="atsEnter.emit()"
     (wheel)="processWheel($event)"
   />
-</nz-input-group>
 
-<ng-template #suffixTmp>
-  <ng-container *ngTemplateOutlet="suffix()" />
-</ng-template>
+  @let suffixRef = suffix();
+  @if(suffixRef != null) {
+    <span nzInputSuffix>
+      <ng-container *ngTemplateOutlet="suffixRef" />
+    </span>
+  }
+</nz-input-wrapper>
