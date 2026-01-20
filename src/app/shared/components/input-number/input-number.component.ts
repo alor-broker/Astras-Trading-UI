@@ -4,6 +4,7 @@ import {ControlValueAccessorBaseComponent} from "../control-value-accessor-base/
 import {MathHelper} from "../../utils/math-helper";
 import {
   NzInputDirective,
+  NzInputSuffixDirective,
   NzInputWrapperComponent
 } from "ng-zorro-antd/input";
 import {NgTemplateOutlet} from "@angular/common";
@@ -25,7 +26,8 @@ import {filter} from "rxjs";
     NzInputDirective,
     FormsModule,
     NgTemplateOutlet,
-    NzInputWrapperComponent
+    NzInputWrapperComponent,
+    NzInputSuffixDirective
   ]
 })
 export class InputNumberComponent extends ControlValueAccessorBaseComponent<number> {
@@ -40,6 +42,7 @@ export class InputNumberComponent extends ControlValueAccessorBaseComponent<numb
   readonly focused = input(false);
   readonly allowDecimal = input(true);
   readonly initialValue = input<number>();
+  readonly allowClear = input(true);
 
   readonly atsBlur = output();
 
