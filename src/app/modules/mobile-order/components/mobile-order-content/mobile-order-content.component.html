@@ -1,6 +1,9 @@
-<div class="h-100 overflow-hidden d-flex flex-column">
+<div class="position-relative h-100 overflow-hidden d-flex flex-column">
   <div class="pb-10">
-    <ats-instrument-quotes [targetInstrument]="settings()"></ats-instrument-quotes>
+    <ats-instrument-quotes
+      [targetInstrument]="settings()"
+      (priceSelected)="openLimitForm($event, Side.Buy)"
+    />
   </div>
 
   <div class="flex-fill position-relative overflow-hidden">
@@ -11,7 +14,7 @@
 
       <div>
         <ats-order-book
-          (rowSelected)="openLimitForm($event)"
+          (rowSelected)="openLimitForm($event.price, $event.side)"
           [settings]="orderbookSettings()"
         />
       </div>
@@ -27,30 +30,27 @@
 
     <ng-template #orderPanelHeader>
       <div class="text-center fs-5 lh-1 heading-color">
-        <nz-icon nzTheme="outline" nzType="ellipsis"/>
+        <nz-icon nzTheme="outline" nzType="ellipsis" class="text-center fs-5 lh-1 heading-color"/>
       </div>
-      <ng-container *transloco="let t; scope: 'order-commands/buy-sell-buttons'">
-        <div class="order-panel-title">
-          <span class="left">
-            <strong>{{ t('orderCommandsBuySellButtons.buyBtnText') }}</strong>
-          </span>
-          <span class="delim">|</span>
-          <span class="right">
-            <strong>{{ t('orderCommandsBuySellButtons.sellBtnText') }}</strong>
-          </span>
-        </div>
-      </ng-container>
     </ng-template>
 
     <ng-template #orderPanelBody>
       <div class="order-panel-body p-10">
         <ats-submit-order-form
           [(formType)]="orderFormType"
+          [(side)]="orderFormSide"
           [price]="orderFormsPrice()"
           [targetInstrument]="settings()"
+          (submitted)="orderFormsVisible.set(false)"
         />
       </div>
     </ng-template>
+  </div>
+
+  <div class="footer">
+    <ats-buy-sell-buttons
+      (btnClick)="openMarketForm($event)"
+    />
   </div>
 </div>
 

@@ -26,7 +26,7 @@
         @if (orderbookSettings | async; as orderbookSettings) {
           <ats-order-book
             [settings]="orderbookSettings"
-            (rowSelected)="createOrder($event)"
+            (rowSelected)="createOrder($event.price)"
           />
         }
       </ng-template>

@@ -1,4 +1,10 @@
-import {ChangeDetectionStrategy, Component, inject, input} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+  output
+} from '@angular/core';
 import {QuotesService} from "../../../../shared/services/quotes.service";
 import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
 import {toObservable} from "@angular/core/rxjs-interop";
@@ -27,6 +33,8 @@ import {Instrument} from "../../../../shared/models/instruments/instrument.model
 })
 export class InstrumentQuotesComponent {
   readonly targetInstrument = input.required<InstrumentKey>();
+
+  readonly priceSelected = output<number>();
 
   private readonly quotesService = inject(QuotesService);
 

@@ -10,6 +10,7 @@ import {MathHelper} from "../../../../shared/utils/math-helper";
 import {OrdersDialogService} from "../../../../shared/services/orders/orders-dialog.service";
 import {OrderFormType} from "../../../../shared/models/orders/orders-dialog.model";
 import {OrderType} from "../../../../shared/models/orders/order.model";
+import { Side } from "../../../../shared/models/enums/side.model";
 
 @Component({
   template: ''
@@ -31,7 +32,9 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
     priceStep: 1,
   });
 
-  readonly rowSelected = output<number>();
+  readonly rowSelected = output<{price: number, side: Side}>();
+
+  protected readonly Side = Side;
 
   private themeSettings?: ThemeSettings;
 
@@ -49,9 +52,9 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
     ).subscribe(s => this.themeSettings = s);
   }
 
-  newLimitOrder(event: MouseEvent, price: number): void {
+  newLimitOrder(event: MouseEvent, price: number, side: Side): void {
     event.stopPropagation();
-    this.rowSelected.emit(price);
+    this.rowSelected.emit({price, side});
   }
 
   updateOrderPrice(order: CurrentOrder, price: number): void {

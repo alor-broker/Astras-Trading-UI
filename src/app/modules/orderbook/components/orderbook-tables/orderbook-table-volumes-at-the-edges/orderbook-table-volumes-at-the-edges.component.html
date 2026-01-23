@@ -11,13 +11,13 @@
     <th [nzWidth]="'20px'" nzAlign="right">Vol</th>
   </tr>
   </thead>
-  <tbody (click)="newLimitOrder($event, 0)" cdkDropListGroup>
+  <tbody (click)="newLimitOrder($event, 0, Side.Buy)" cdkDropListGroup>
     @for (row of basicTable.data; track $index) {
       <tr>
         @if (row.bid || (row.bid === 0)) {
           <td
             (cdkDropListDropped)="updateOrderPrice($event.item.data, row.bid)"
-            (click)="newLimitOrder($event, row.bid)"
+            (click)="newLimitOrder($event, row.bid, Side.Buy)"
             [ngStyle]="{background: 'unset'}"
             cdkDropList
           >
@@ -49,14 +49,14 @@
 
           @if (showYield()) {
             <td
-              (click)="newLimitOrder($event, row.bid)"
+              (click)="newLimitOrder($event, row.bid, Side.Buy)"
               [ngStyle]="getBidStyle(row.bidVolume ?? 0)"
               nzAlign="right">
               {{ row.yieldBid }}
             </td>
           } @else {
             <td
-              (click)="newLimitOrder($event, row.bid)"
+              (click)="newLimitOrder($event, row.bid, Side.Buy)"
               [ngStyle]="getBidStyle(row.bidVolume ?? 0)"
               nzAlign="right">
               {{ row.bid | atsPrice: getPriceDecimalSymbolsCount() }}
@@ -68,19 +68,19 @@
         @if (row.ask || (row.ask === 0)) {
           @if (showYield()) {
             <td
-              (click)="newLimitOrder($event, row.ask)"
+              (click)="newLimitOrder($event, row.ask, Side.Sell)"
               [ngStyle]="getAskStyle(row.askVolume ?? 0)">
               {{ row.yieldAsk }}
             </td>
           } @else {
             <td
-              (click)="newLimitOrder($event, row.ask)"
+              (click)="newLimitOrder($event, row.ask, Side.Sell)"
               [ngStyle]="getAskStyle(row.askVolume ?? 0)">
               {{ row.ask | atsPrice: getPriceDecimalSymbolsCount() }}
             </td>
           }
           <td (cdkDropListDropped)="updateOrderPrice($event.item.data, row.ask)"
-              (click)="newLimitOrder($event, row.ask)"
+              (click)="newLimitOrder($event, row.ask, Side.Sell)"
               [ngStyle]="{background: 'unset'}"
               cdkDropList
               class='row-cell--ask-volume'

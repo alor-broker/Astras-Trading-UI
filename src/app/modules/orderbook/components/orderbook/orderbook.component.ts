@@ -21,6 +21,7 @@ import {Instrument} from "../../../../shared/models/instruments/instrument.model
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {getTypeByCfi} from "../../../../shared/utils/instruments";
 import {InstrumentType} from "../../../../shared/models/enums/instrument-type.model";
+import { Side } from "../../../../shared/models/enums/side.model";
 
 export interface OrderbookComponentSettings {
   targetInstrument: InstrumentKey;
@@ -82,7 +83,7 @@ export class OrderBookComponent implements OnInit {
     height: '100%',
   });
 
-  readonly rowSelected = output<number>();
+  readonly rowSelected = output<{price: number, side: Side}>();
 
   protected targetInstrument$!: Observable<InstrumentExtended>;
 
