@@ -7,8 +7,8 @@
   </div>
 
   <div class="flex-fill position-relative overflow-hidden">
-    <div class="d-flex flex-column flex-gap-15 h-100 pb-25 show-scroll">
-      <div style="height: 300px">
+    <div class="d-flex flex-column flex-gap-15 h-100 show-scroll" style="padding-bottom: 75px" #contentRoot>
+      <div style="height: 300px; min-height: 300px">
         <ats-light-chart [selectedTimeframe]="defaultTimeframe()" [settings]="chartSettings()"></ats-light-chart>
       </div>
 
@@ -17,6 +17,10 @@
           (rowSelected)="openLimitForm($event.price, $event.side)"
           [settings]="orderbookSettings()"
         />
+      </div>
+
+      <div>
+        <ats-instrument-info [targetInstrument]="settings()"/>
       </div>
     </div>
 

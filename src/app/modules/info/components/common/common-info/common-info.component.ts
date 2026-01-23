@@ -48,6 +48,8 @@ import { RisksComponent } from "../risks/risks.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { REFRESH_TIMEOUT_MS } from "../../../constants/info.constants";
+import { SectionsListComponent } from "../../sections-list/sections-list.component";
+import { SectionComponent } from "../../section/section.component";
 
 type InstrumentResponse = Modify<
   Query,
@@ -70,7 +72,9 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<InstrumentResponse>> = object({
     NzTabComponent,
     DescriptorsListComponent,
     RisksComponent,
-    NzTabsComponent
+    NzTabsComponent,
+    SectionsListComponent,
+    SectionComponent
   ],
     templateUrl: './common-info.component.html',
     styleUrl: './common-info.component.less'

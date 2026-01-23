@@ -3,8 +3,10 @@ import {
   Component,
   computed,
   effect,
+  ElementRef,
   input,
-  model
+  model,
+  viewChild
 } from '@angular/core';
 import { MobileOrderSettings } from "../../models/mobile-order-settings.model";
 import {
@@ -27,6 +29,7 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
 import { SubmitOrderFormComponent } from "../submit-order-form/submit-order-form.component";
 import { Side } from "../../../../shared/models/enums/side.model";
 import { BuySellButtonsComponent } from "../../../order-commands/components/buy-sell-buttons/buy-sell-buttons.component";
+import { InstrumentInfoComponent } from "../instrument-info/instrument-info.component";
 
 @Component({
   selector: 'ats-mobile-order-content',
@@ -37,7 +40,8 @@ import { BuySellButtonsComponent } from "../../../order-commands/components/buy-
     PullUpPanelComponent,
     NzIconDirective,
     SubmitOrderFormComponent,
-    BuySellButtonsComponent
+    BuySellButtonsComponent,
+    InstrumentInfoComponent
   ],
   templateUrl: './mobile-order-content.component.html',
   styleUrl: './mobile-order-content.component.less',
@@ -46,6 +50,8 @@ import { BuySellButtonsComponent } from "../../../order-commands/components/buy-
 })
 export class MobileOrderContentComponent {
   readonly settings = input.required<MobileOrderSettings>();
+
+  protected readonly contentRoot = viewChild<ElementRef<HTMLElement>>('contentRoot');
 
   protected readonly chartSettings = computed(() => {
     const settings = this.settings();
@@ -105,11 +111,15 @@ export class MobileOrderContentComponent {
 
   protected readonly orderFormsPrice = model<number>(0);
 
+  protected readonly Side = Side;
+
   constructor() {
     effect(() => {
       this.settings();
       this.orderFormType.set('market');
       this.orderFormSide.set(Side.Buy);
+
+      this.contentRoot()?.nativeElement.scrollTo(0, 0);
     });
   }
 
@@ -125,6 +135,4 @@ export class MobileOrderContentComponent {
     this.orderFormSide.set(side);
     this.orderFormsVisible.set(true);
   }
-
-  protected readonly Side = Side;
 }
