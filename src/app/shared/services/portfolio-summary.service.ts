@@ -110,7 +110,7 @@ export class PortfolioSummaryService {
       correctedMargin: formatCurrency(summary.correctedMargin / exchangeRate, this.locale, currencyFormat),
       riskBeforeForcePositionClosing: formatCurrency(summary.riskBeforeForcePositionClosing / exchangeRate, this.locale, currencyFormat),
       commission: formatCurrency(summary.commission / exchangeRate, this.locale, currencyFormat),
-      fortsMoneyDebt:  formatCurrency((summary.fortsMoneyDebt ?? 0) / exchangeRate, this.locale, currencyFormat),
+      derivativesDebt:  formatCurrency((summary.derivativesDebt ?? 0) / exchangeRate, this.locale, currencyFormat),
     });
   }
 
@@ -138,7 +138,7 @@ export class PortfolioSummaryService {
       riskStatus: risks.riskStatus,
       clientType: risks.clientType,
       portfolioEvaluation: formatCurrency((forwardRisks.moneyAmount + forwardRisks.varMargin - forwardRisks.fee) / exchangeRate , this.locale, currencyFormat),
-      fortsMoneyDebt:  formatCurrency((forwardRisks.fortsMoneyDebt ?? 0) / exchangeRate, this.locale, currencyFormat),
+      derivativesDebt:  formatCurrency((forwardRisks.derivativesDebt ?? 0) / exchangeRate, this.locale, currencyFormat),
     };
   }
 }

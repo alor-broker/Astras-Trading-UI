@@ -23,5 +23,5 @@ export interface CommonSummaryModel {
   /** Комиссия **/
   commission: number;
 
-  fortsMoneyDebt?: number | null;
+  derivativesDebt?: number | null;
 }

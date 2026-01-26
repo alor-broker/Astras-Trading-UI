@@ -26,5 +26,5 @@ export interface ForwardRisks {
   /** Опер риск **/
   posRisk: number;
 
-  fortsMoneyDebt?: number | null;
+  derivativesDebt?: number | null;
 }

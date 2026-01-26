@@ -20,5 +20,5 @@ export interface CommonSummaryView {
     /** Комиссия **/
     commission: string;
 
-    fortsMoneyDebt: string;
+    derivativesDebt: string;
 }

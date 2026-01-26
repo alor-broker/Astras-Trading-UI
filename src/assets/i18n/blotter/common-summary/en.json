@@ -9,5 +9,5 @@
   "riskBeforeForcePositionClosingTitle": "RCR2 (before closing)",
   "commissionTitle": "Commission",
   "buyingPowerTitle": "Buying power",
-  "fortsMoneyDebtTitle": "Deposit required"
+  "derivativesDebtTitle": "Deposit required"
 }

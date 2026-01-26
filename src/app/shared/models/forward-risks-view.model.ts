@@ -44,5 +44,5 @@ export interface ForwardRisksView {
   /** оценка ликвидного портфеля **/
   portfolioEvaluation: string;
 
-  fortsMoneyDebt: string;
+  derivativesDebt: string;
 }
