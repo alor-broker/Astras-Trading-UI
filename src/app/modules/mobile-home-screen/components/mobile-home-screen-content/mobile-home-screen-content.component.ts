@@ -78,11 +78,11 @@ export class MobileHomeScreenContentComponent implements OnInit {
     });
   }
 
-  openChart(instrumentKey: InstrumentKey): void {
+  openOrder(instrumentKey: InstrumentKey): void {
     this.dashboardContextService.selectDashboardInstrument(instrumentKey, defaultBadgeColor);
     this.navigationStackService.pushState({
       widgetTarget: {
-        typeId: 'light-chart'
+        typeId: 'mobile-order'
       }
     });
   }

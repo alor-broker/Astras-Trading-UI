@@ -935,14 +935,15 @@
       "default": "Order",
       "translations": {
         "ru": "Заявка",
-        "en": "Order"
+        "en": "Order",
+        "hy": "Հայտի ձևակերպում"
       }
     },
     "hasInstrumentBind": true,
     "category": "positionsTradesOrders",
     "mobileMeta": {
-      "galleryIcon": "plus-circle",
-      "ribbonIcon": "plus-circle",
+      "galleryIcon": "shopping-cart",
+      "ribbonIcon": "shopping-cart",
       "enabled": true,
       "widgetName": {
         "default": "Order",

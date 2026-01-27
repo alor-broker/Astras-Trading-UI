@@ -217,9 +217,6 @@
         "widgetTypeId": "order-submit"
       },
       {
-        "widgetTypeId": "mobile-order"
-      },
-      {
         "widgetTypeId": "blotter"
       },
       {
@@ -246,6 +243,9 @@
           ],
           "marketTrendsExtendedFilter": []
         }
+      },
+      {
+        "widgetTypeId": "mobile-order"
       },
       {
         "widgetTypeId": "order-book",

@@ -69,7 +69,7 @@ export class MobileDashboardContentComponent implements OnInit {
     this.newOrderWidgetId,
     'blotter',
     this.homeWidgetId,
-    'light-chart',
+    'mobile-order',
     'all-instruments'
   ];
 

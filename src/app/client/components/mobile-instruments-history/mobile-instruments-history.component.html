@@ -1,23 +1,28 @@
 @if (selectedInstrument$ | async; as selectedInstrument) {
-  <div class="d-flex p-10 history-wrapper">
+  <div class="p-10 history-wrapper">
     @if (instruments$ | async; as instruments) {
-      @if (instruments.length) {
-        @for (instrument of instruments; track instrument) {
-          <nz-tag
-            nzMode="checkable"
-            [nzChecked]="isInstrumentEqual(selectedInstrument, instrument)"
-            (click)="selectInstrument(instrument)"
+      @if (instruments.length > 0) {
+        <ats-scrollable-row [showScrollButtons]="false">
+          @for (instrument of instruments; track instrument) {
+            <nz-tag
+              (click)="selectInstrument(instrument)"
+              [nzChecked]="isInstrumentEqual(selectedInstrument, instrument)"
+              atsScrollableItem
+              nzMode="checkable"
             >
-            {{instrument.symbol}} @if (instrument.instrumentGroup && instrument.showInstrumentGroup) {
-            <span>({{instrument.instrumentGroup}})</span>
+              {{ instrument.symbol }} @if (instrument.instrumentGroup && instrument.showInstrumentGroup) {
+              <span>({{ instrument.instrumentGroup }})</span>
+            }
+            </nz-tag>
           }
-        </nz-tag>
+        </ats-scrollable-row>
+      } @else {
+        <span
+          *transloco="let t; scope: 'dashboard/navbar/mobile'">{{ t('dashboardNavbarMobile.emptyHistoryLabel') }}</span>
       }
     } @else {
-      <span *transloco="let t; scope: 'dashboard/navbar/mobile'">{{t('dashboardNavbarMobile.emptyHistoryLabel')}}</span>
+      <span
+        *transloco="let t; scope: 'dashboard/navbar/mobile'">{{ t('dashboardNavbarMobile.emptyHistoryLabel') }}</span>
     }
-  } @else {
-    <span *transloco="let t; scope: 'dashboard/navbar/mobile'">{{t('dashboardNavbarMobile.emptyHistoryLabel')}}</span>
-  }
-</div>
+  </div>
 }
