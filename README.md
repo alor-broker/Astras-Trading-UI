@@ -234,6 +234,9 @@ There are two Capacitor configurations available:
     *   Runs the built app from the device storage.
     *   No dependency on the development server.
 
+3.  **iOS Development (`capacitor.config.ios.dev.ts`)**:
+    *   Same as Development, but points to `http://localhost:4200` for iOS Simulator.
+
 To switch configurations, copy the desired file to `capacitor.config.ts`:
 
 ```bash
@@ -315,7 +318,7 @@ The configuration process is the same as for Android. See the [Configuration](#c
 
 1.  Set up the dev config:
     ```bash
-    cp capacitor.config.dev.ts capacitor.config.ts
+    cp capacitor.config.ios.dev.ts capacitor.config.ts
     ```
 2.  Start the Angular dev server:
     ```bash
