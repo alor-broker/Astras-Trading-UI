@@ -294,3 +294,54 @@ From Android Studio, you can run the app in Debug mode by clicking the **Debug**
 
 *   **Auth Redirect Issues**: If you get `ERR_CONNECTION_REFUSED` on `localhost:4200` after login, it means the SSO is redirecting to the local dev URL. Use the **Development Mode (Live Reload)** to fix this, or ensure the SSO accepts `http://localhost` (standalone).
 *   **Icons**: If icons are missing, try uninstalling the app to clear the cache.
+
+# 📱 Mobile Development (iOS)
+
+This project uses [Ionic Capacitor](https://capacitorjs.com/) to run the Angular app on iOS.
+
+## Prerequisites
+1.  **macOS** computer.
+2.  **Xcode** installed.
+3.  **CocoaPods** installed (`sudo gem install cocoapods`).
+4.  **Node.js** and **pnpm** installed.
+
+**Note:** iOS development requires a macOS environment. You cannot build or run the iOS app directly on Windows.
+
+## Configuration
+
+The configuration process is the same as for Android. See the [Configuration](#configuration) section above.
+
+## Running in Development Mode (Live Reload)
+
+1.  Set up the dev config:
+    ```bash
+    cp capacitor.config.dev.ts capacitor.config.ts
+    ```
+2.  Start the Angular dev server:
+    ```bash
+    ng serve --host 0.0.0.0 --disable-host-check
+    ```
+3.  Run the iOS app:
+    ```bash
+    pnpm exec cap run ios
+    ```
+
+## Building the Standalone App
+
+1.  Set up the prod config:
+    ```bash
+    cp capacitor.config.prod.ts capacitor.config.ts
+    ```
+2.  Build the Angular app (Production):
+    ```bash
+    ng build --configuration production
+    ```
+3.  Sync Capacitor:
+    ```bash
+    pnpm exec cap sync ios
+    ```
+4.  Open in Xcode:
+    ```bash
+    pnpm exec cap open ios
+    ```
+5.  In Xcode, select your target device and click the **Run** button (Play icon).
