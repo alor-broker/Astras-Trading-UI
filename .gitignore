@@ -55,3 +55,20 @@ Thumbs.db
 /.nx/cache/project-graph.json
 .aider*
 /scripts/generate-translations.js
+
+# Capacitor
+capacitor.plugins.json
+
+# Android
+android/app/build/
+android/.gradle/
+android/local.properties
+android/*.iml
+android/.idea/
+android/app/*.iml
+android/captures/
+
+# iOS
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/Podfile.lock
+ios/DerivedData/

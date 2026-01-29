@@ -210,3 +210,87 @@
 
 ### Тестирование
 Самый минимум, который должен быть в каждом компоненте и сервисе -  это тест на успешное создание компонента. Он создается ng generate по умолчанию, но необходимо поддерживать, добавлять моки и стабы для input и используемых сервисов. В **shared/utils/testing** есть инструменты для создания моков компонентов, рандомных данных, а также моки основных компонентов ng-zorro и модулей. Для ключевых сервисов покрытие тестами должно быть выше. Ну ладно, будет. В планах это есть, точно =)
+
+# 📱 Mobile Development (Android)
+
+This project uses [Ionic Capacitor](https://capacitorjs.com/) to run the Angular app on Android.
+
+## Prerequisites
+1.  **Node.js** and **pnpm** installed.
+2.  **Android Studio** installed with Android SDK.
+3.  **Java 11+** (JDK 17 recommended).
+
+## Configuration
+
+There are two Capacitor configurations available:
+
+1.  **Development (`capacitor.config.dev.ts`)**:
+    *   Enables **Live Reload**.
+    *   Points to `http://10.0.2.2:4200` (Emulator's access to host localhost).
+    *   Allows debugging in the emulator while changing code.
+
+2.  **Production (`capacitor.config.prod.ts`)**:
+    *   Standalone configuration.
+    *   Runs the built app from the device storage.
+    *   No dependency on the development server.
+
+To switch configurations, copy the desired file to `capacitor.config.ts`:
+
+```bash
+# For Development
+copy capacitor.config.dev.ts capacitor.config.ts
+
+# For Production
+copy capacitor.config.prod.ts capacitor.config.ts
+```
+
+## Running in Development Mode (Live Reload)
+
+1.  Set up the dev config:
+    ```bash
+    copy capacitor.config.dev.ts capacitor.config.ts
+    ```
+2.  Start the Angular dev server (accessible from emulator):
+    ```bash
+    ng serve --host 0.0.0.0 --disable-host-check
+    ```
+3.  Run the Android app:
+    ```bash
+    pnpm exec cap run android
+    ```
+    *Note: Ensure your Android Emulator is running or a device is connected.*
+
+## Building the Standalone APK
+
+1.  Set up the prod config:
+    ```bash
+    copy capacitor.config.prod.ts capacitor.config.ts
+    ```
+2.  Build the Angular app (Production):
+    ```bash
+    ng build --configuration production
+    ```
+    *Note: If you need to use the development environment (e.g., for dev SSO), use `--configuration development`.*
+3.  Sync Capacitor:
+    ```bash
+    pnpm exec cap sync
+    ```
+4.  Build the APK:
+    ```bash
+    cd android
+    .\gradlew assembleDebug
+    ```
+    The APK will be located at: `android/app/build/outputs/apk/debug/app-debug.apk`
+
+## Debugging in Android Studio
+
+To open the project in Android Studio:
+```bash
+pnpm exec cap open android
+```
+From Android Studio, you can run the app in Debug mode by clicking the **Debug** icon (bug symbol) instead of Run. This allows you to inspect native logs and breakpoints.
+
+## Troubleshooting
+
+*   **Auth Redirect Issues**: If you get `ERR_CONNECTION_REFUSED` on `localhost:4200` after login, it means the SSO is redirecting to the local dev URL. Use the **Development Mode (Live Reload)** to fix this, or ensure the SSO accepts `http://localhost` (standalone).
+*   **Icons**: If icons are missing, try uninstalling the app to clear the cache.
