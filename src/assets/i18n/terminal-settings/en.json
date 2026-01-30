@@ -5,6 +5,7 @@
   "generalSettingsTabTitle": "General",
   "hotkeysTabTitle": "Hotkeys",
   "notificationsTabTitle": "Notifications",
+  "mobileDashboardLayoutTabTitle": "Layout",
 
   "defaultCurrencyHeader": "Default currency for portfolios",
   "scalperMouseActionsHeader": "Mouse Actions",

@@ -1,7 +1,7 @@
 ﻿import {MobileMigrationManagerBase} from "../mobile-migration-manager-base";
 import {LocalStorageService} from "../../../shared/services/local-storage.service";
 import {inject, Injectable} from "@angular/core";
-import {AddHomeScreenMobileDashboardSettings} from "./migrations/add-home-screen-mobile-dashboard.migration";
+import { AddMobileOrderWidgetMigration } from "./migrations/add-mobile-order-widget.migration";
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,7 @@ export class DashboardSettingsMobileMigrationManager extends MobileMigrationMana
   protected readonly localStorageService: LocalStorageService;
 
   protected migrations = [
-    inject(AddHomeScreenMobileDashboardSettings)
+    inject(AddMobileOrderWidgetMigration)
   ];
 
   constructor() {

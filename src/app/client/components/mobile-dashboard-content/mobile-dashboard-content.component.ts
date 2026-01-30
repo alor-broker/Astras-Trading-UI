@@ -1,6 +1,11 @@
-import { Component, DestroyRef, OnInit, inject } from "@angular/core";
 import {
-  BehaviorSubject,
+  Component,
+  DestroyRef,
+  inject,
+  model,
+  OnInit
+} from "@angular/core";
+import {
   combineLatest,
   distinctUntilChanged,
   fromEvent,
@@ -8,35 +13,48 @@ import {
   shareReplay,
   switchMap,
   take,
-  tap
+  tap,
+  withLatestFrom
 } from "rxjs";
-import {WidgetInstance} from "../../../shared/models/dashboard/dashboard-item.model";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {WidgetCategory} from "../../../shared/models/widget-meta.model";
-import {WidgetsHelper} from "../../../shared/utils/widgets";
+import { WidgetInstance } from "../../../shared/models/dashboard/dashboard-item.model";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { WidgetCategory } from "../../../shared/models/widget-meta.model";
+import { WidgetsHelper } from "../../../shared/utils/widgets";
 import {
   GalleryDisplay,
   WidgetDisplay,
   WidgetGroup,
   WidgetsGalleryComponent
 } from "../../../modules/dashboard/components/widgets-gallery/widgets-gallery.component";
-import {DashboardContextService} from "../../../shared/services/dashboard-context.service";
-import {WidgetsMetaService} from "../../../shared/services/widgets-meta.service";
-import {TranslatorService} from "../../../shared/services/translator.service";
-import {MobileActionsContextService} from "../../../modules/dashboard/services/mobile-actions-context.service";
-import {MobileDashboardService} from "../../../modules/dashboard/services/mobile-dashboard.service";
-import {WidgetsSharedDataService} from "../../../shared/services/widgets-shared-data.service";
-import {map} from "rxjs/operators";
-import {arraysEqual} from "ng-zorro-antd/core/util";
-import {LetDirective} from "@ngrx/component";
-import {NzIconDirective} from "ng-zorro-antd/icon";
-import {WidgetSettingsService} from "../../../shared/services/widget-settings.service";
-import {WidgetSettings} from "../../../shared/models/widget-settings.model";
-import {isInstrumentDependent} from "../../../shared/utils/settings-helper";
-import {NavigationStackService} from "../../../shared/services/navigation-stack.service";
-import {NzButtonComponent} from "ng-zorro-antd/button";
-import {TranslocoDirective} from "@jsverse/transloco";
-import {ParentWidgetComponent} from "../../../modules/dashboard/components/parent-widget/parent-widget.component";
+import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
+import { WidgetsMetaService } from "../../../shared/services/widgets-meta.service";
+import { TranslatorService } from "../../../shared/services/translator.service";
+import { MobileActionsContextService } from "../../../modules/dashboard/services/mobile-actions-context.service";
+import { MobileDashboardService } from "../../../modules/dashboard/services/mobile-dashboard.service";
+import { WidgetsSharedDataService } from "../../../shared/services/widgets-shared-data.service";
+import { map } from "rxjs/operators";
+import { arraysEqual } from "ng-zorro-antd/core/util";
+import { LetDirective } from "@ngrx/component";
+import { NzIconDirective } from "ng-zorro-antd/icon";
+import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
+import { WidgetSettings } from "../../../shared/models/widget-settings.model";
+import { isInstrumentDependent } from "../../../shared/utils/settings-helper";
+import { NavigationStackService } from "../../../shared/services/navigation-stack.service";
+import { NzButtonComponent } from "ng-zorro-antd/button";
+import { TranslocoDirective } from "@jsverse/transloco";
+import { ParentWidgetComponent } from "../../../modules/dashboard/components/parent-widget/parent-widget.component";
+import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
+import { ManageDashboardsService } from "../../../shared/services/manage-dashboards.service";
+import { MobileLayoutHelper } from "../../../shared/utils/mobile-layout.helper";
+import { ArrayHelper } from "../../../shared/utils/array-helper";
+
+interface QuickAccessPanelWidget extends WidgetInstance {
+  isSelectedByDefault: boolean;
+}
+
+interface SelectedWidget extends WidgetInstance {
+  isDefaultPanelWidget: boolean;
+}
 
 @Component({
   selector: 'ats-mobile-dashboard-content',
@@ -52,31 +70,42 @@ import {ParentWidgetComponent} from "../../../modules/dashboard/components/paren
   ]
 })
 export class MobileDashboardContentComponent implements OnInit {
-  private readonly dashboardContextService = inject(DashboardContextService);
-  private readonly widgetsMetaService = inject(WidgetsMetaService);
-  private readonly translatorService = inject(TranslatorService);
-  private readonly mobileActionsContextService = inject(MobileActionsContextService);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly mobileDashboardService = inject(MobileDashboardService);
-  private readonly widgetsSharedDataService = inject(WidgetsSharedDataService);
-  private readonly widgetSettingsService = inject(WidgetSettingsService);
-  private readonly navigationStackService = inject(NavigationStackService);
-
-  readonly newOrderWidgetId = 'order-submit';
-  readonly homeWidgetId = 'mobile-home-screen';
   galleryVisible = false;
-  defaultWidgetNames = [
-    this.newOrderWidgetId,
-    'blotter',
-    this.homeWidgetId,
-    'mobile-order',
-    'all-instruments'
-  ];
 
   widgets$!: Observable<WidgetInstance[]>;
-  defaultWidgets$!: Observable<WidgetInstance[]>;
-  selectedWidget$ = new BehaviorSubject<WidgetInstance | null>(null);
+
+  quickAccessPanelWidgets$!: Observable<QuickAccessPanelWidget[]>;
+
+  readonly selectedWidget = model<SelectedWidget | null>(null);
+
   widgetsGallery$!: Observable<GalleryDisplay>;
+
+  private readonly dashboardContextService = inject(DashboardContextService);
+
+  private readonly widgetsMetaService = inject(WidgetsMetaService);
+
+  private readonly translatorService = inject(TranslatorService);
+
+  private readonly mobileActionsContextService = inject(MobileActionsContextService);
+
+  private readonly destroyRef = inject(DestroyRef);
+
+  private readonly mobileDashboardService = inject(MobileDashboardService);
+
+  private readonly widgetsSharedDataService = inject(WidgetsSharedDataService);
+
+  private readonly widgetSettingsService = inject(WidgetSettingsService);
+
+  private readonly navigationStackService = inject(NavigationStackService);
+
+  private readonly terminalSettingsService = inject(TerminalSettingsService);
+
+  private readonly manageDashboardsService = inject(ManageDashboardsService);
+
+  readonly getQuickAccessPanelLayout$ = MobileLayoutHelper.getQuickAccessPanelWidgets(this.terminalSettingsService, this.manageDashboardsService)
+    .pipe(
+      shareReplay(1)
+    );
 
   ngOnInit(): void {
     const currentDashboardWidgets$ = this.dashboardContextService.selectedDashboard$.pipe(
@@ -97,24 +126,46 @@ export class MobileDashboardContentComponent implements OnInit {
       shareReplay(1)
     );
 
-    this.defaultWidgets$ = this.widgets$.pipe(
-      map(widgets => widgets.filter(w => this.defaultWidgetNames.includes(w.instance.widgetType))),
+    this.quickAccessPanelWidgets$ = combineLatest({
+      allWidgets: this.widgets$,
+      layout: this.getQuickAccessPanelLayout$
+    }).pipe(
+      map(x => {
+        return x.layout.map(i => {
+          const mapped = x.allWidgets.find(w => w.widgetMeta.typeId === i.widgetType);
+          if (mapped == null) {
+            return null;
+          }
+
+          return {
+            ...mapped,
+            isSelectedByDefault: i.selectedByDefault ?? false
+          } satisfies QuickAccessPanelWidget;
+        })
+          .filter(i => i != null);
+      }),
       shareReplay(1)
     );
 
     // set default widget selection
-    this.widgets$
+    this.quickAccessPanelWidgets$
       .pipe(take(1))
       .subscribe(widgets => {
-        const homeWidget = widgets.find(w => w.instance.widgetType === this.homeWidgetId) ?? null;
+        let defaultSelection = widgets.find(w => w.isSelectedByDefault) ?? null;
+        defaultSelection ??= widgets.find(w => w.widgetMeta.typeId === 'mobile-order') ?? null;
+        defaultSelection ??= ArrayHelper.firstOrNull(widgets);
 
-        if (homeWidget != null) {
-          this.selectedWidget$.next(homeWidget);
+        if (defaultSelection != null) {
+          this.selectedWidget.set({
+            ...defaultSelection,
+            isDefaultPanelWidget: true
+          });
+
           this.navigationStackService.pushState({
             isFinal: true,
             widgetTarget: {
-              typeId: homeWidget.instance.widgetType,
-              instanceId: homeWidget.instance.guid
+              typeId: defaultSelection.instance.widgetType,
+              instanceId: defaultSelection.instance.guid
             }
           });
         }
@@ -125,7 +176,7 @@ export class MobileDashboardContentComponent implements OnInit {
     ).subscribe(event => {
       switch (event.eventType) {
         case "instrumentSelected":
-          this.selectWidget(this.newOrderWidgetId);
+          this.openOrderWidget();
           break;
       }
     });
@@ -134,7 +185,7 @@ export class MobileDashboardContentComponent implements OnInit {
       takeUntilDestroyed(this.destroyRef)
     )
       .subscribe(() => {
-        this.selectWidget(this.newOrderWidgetId);
+        this.openOrderWidget();
       });
 
     this.initWidgetsGallery();
@@ -168,10 +219,17 @@ export class MobileDashboardContentComponent implements OnInit {
               map(() => selectedWidget)
             );
           }
-        })
+        }),
+        withLatestFrom(this.getQuickAccessPanelLayout$)
       )
-      .subscribe(newWidget => {
-        this.selectedWidget$.next(newWidget);
+      .subscribe(([newWidget, defaultPanelWidgets]) => {
+        const isDefaultPanelWidget = defaultPanelWidgets.find(i => i.widgetType === newWidget.instance.widgetType) != null;
+
+        this.selectedWidget.set({
+          ...newWidget,
+          isDefaultPanelWidget
+        });
+
         if (!skipNavigationStackUpdate) {
           this.navigationStackService.currentState$.pipe(
             take(1)
@@ -189,6 +247,38 @@ export class MobileDashboardContentComponent implements OnInit {
       });
   }
 
+  protected openOrderWidget(skipNavigationStackUpdate = true): void {
+    combineLatest({
+      allWidgets: this.widgets$,
+      layout: this.getQuickAccessPanelLayout$,
+    }).pipe(
+      take(1)
+    ).subscribe(x => {
+      const orderWidgets = x.allWidgets.filter(w => w.widgetMeta.mobileMeta?.isOrderWidget ?? false);
+      if (orderWidgets.length === 0) {
+        return;
+      }
+
+      if (orderWidgets.length === 1) {
+        this.selectWidget(orderWidgets[0].instance.widgetType, skipNavigationStackUpdate);
+        return;
+      }
+
+      const preferredWidget = x.layout.find(i => i.isPreferredOrderWidget ?? false);
+      if (preferredWidget == null) {
+        this.selectWidget(orderWidgets[0].instance.widgetType, skipNavigationStackUpdate);
+        return;
+      }
+
+      const target = x.allWidgets.find(w => w.instance.widgetType === preferredWidget.widgetType);
+      if (target != null) {
+        this.selectWidget(target.instance.widgetType, skipNavigationStackUpdate);
+      }
+
+      this.selectWidget(orderWidgets[0].instance.widgetType, skipNavigationStackUpdate);
+    });
+  }
+
   private initWidgetsGallery(): void {
     const orderedCategories = [
       WidgetCategory.All,
@@ -198,61 +288,63 @@ export class MobileDashboardContentComponent implements OnInit {
       WidgetCategory.Details
     ];
 
-    this.widgetsGallery$ = combineLatest([
-      this.widgetsMetaService.getWidgetsMeta(),
-      this.translatorService.getLangChanges(),
-    ])
-      .pipe(
-        map(([meta, lang]) => {
-            const groups = new Map<WidgetCategory, WidgetDisplay[]>();
+    this.widgetsGallery$ = combineLatest(
+      {
+        layout: this.getQuickAccessPanelLayout$,
+        meta: this.widgetsMetaService.getWidgetsMeta(),
+        lang: this.translatorService.getLangChanges()
+      }
+    ).pipe(
+      map(x => {
+          const groups = new Map<WidgetCategory, WidgetDisplay[]>();
 
-            const widgets = meta
-              .filter(x => !!x.mobileMeta && x.mobileMeta.enabled && !this.defaultWidgetNames.includes(x.typeId))
-              .sort((a, b) => {
-                  return (a.mobileMeta!.galleryOrder ?? 0) - (b.mobileMeta!.galleryOrder ?? 0);
-                }
-              );
-
-            widgets.forEach(widgetMeta => {
-              if (!groups.has(widgetMeta.category)) {
-                groups.set(widgetMeta.category, []);
+          const widgets = x.meta
+            .filter(w => !!w.mobileMeta && w.mobileMeta.enabled && x.layout.find(i => i.widgetType === w.typeId) == null)
+            .sort((a, b) => {
+                return (a.mobileMeta!.galleryOrder ?? 0) - (b.mobileMeta!.galleryOrder ?? 0);
               }
+            );
 
-              const groupWidgets = groups.get(widgetMeta.category)!;
+          widgets.forEach(widgetMeta => {
+            if (!groups.has(widgetMeta.category)) {
+              groups.set(widgetMeta.category, []);
+            }
 
-              groupWidgets.push(({
-                typeId: widgetMeta.typeId,
-                name: WidgetsHelper.getWidgetName(widgetMeta.widgetName, lang),
-                icon: widgetMeta.mobileMeta?.galleryIcon ?? 'appstore'
-              }));
-            });
+            const groupWidgets = groups.get(widgetMeta.category)!;
 
-            return Array.from(groups.entries())
-              .sort((a, b) => {
-                const aIndex = orderedCategories.indexOf(a[0]);
-                const bIndex = orderedCategories.indexOf(b[0]);
+            groupWidgets.push(({
+              typeId: widgetMeta.typeId,
+              name: WidgetsHelper.getWidgetName(widgetMeta.mobileMeta?.widgetName ?? widgetMeta.widgetName, x.lang),
+              icon: widgetMeta.mobileMeta?.galleryIcon ?? 'appstore'
+            }));
+          });
 
-                return aIndex - bIndex;
-              })
-              .map(value => ({
-                category: value[0],
-                widgets: value[1]
-              } as WidgetGroup));
-          }
-        ),
-        map(groups => {
-          const menu: GalleryDisplay = {
-            allCategory: groups.find(g => g.category === WidgetCategory.All) ?? {
-              category: WidgetCategory.All,
-              widgets: []
-            },
-            groups: groups.filter(g => g.category !== WidgetCategory.All)
-          };
+          return Array.from(groups.entries())
+            .sort((a, b) => {
+              const aIndex = orderedCategories.indexOf(a[0]);
+              const bIndex = orderedCategories.indexOf(b[0]);
 
-          return menu;
-        }),
-        shareReplay(1)
-      );
+              return aIndex - bIndex;
+            })
+            .map(value => ({
+              category: value[0],
+              widgets: value[1]
+            } as WidgetGroup));
+        }
+      ),
+      map(groups => {
+        const menu: GalleryDisplay = {
+          allCategory: groups.find(g => g.category === WidgetCategory.All) ?? {
+            category: WidgetCategory.All,
+            widgets: []
+          },
+          groups: groups.filter(g => g.category !== WidgetCategory.All)
+        };
+
+        return menu;
+      }),
+      shareReplay(1)
+    );
   }
 
   private initNavigationProcessing(): void {
@@ -269,13 +361,10 @@ export class MobileDashboardContentComponent implements OnInit {
     this.navigationStackService.currentState$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(currentState => {
-      this.selectedWidget$.pipe(
-        take(1)
-      ).subscribe(selectedWidget => {
-        if (selectedWidget != null && selectedWidget.instance.widgetType != currentState.widgetTarget.typeId) {
-          this.selectWidget(currentState.widgetTarget.typeId, true);
-        }
-      });
+      const selectedWidget = this.selectedWidget();
+      if (selectedWidget != null && selectedWidget.instance.widgetType != currentState.widgetTarget.typeId) {
+        this.selectWidget(currentState.widgetTarget.typeId, true);
+      }
     });
 
     fromEvent(window, 'popstate').pipe(

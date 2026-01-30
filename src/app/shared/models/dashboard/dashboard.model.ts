@@ -1,6 +1,9 @@
 // increase version if model has incompatible changes
 
-import {DashboardItemPosition, Widget} from './widget.model';
+import {
+  DashboardItemPosition,
+  Widget
+} from './widget.model';
 import { PortfolioKey } from '../portfolio-key.model';
 import { InstrumentKey } from '../instruments/instrument-key.model';
 
@@ -59,10 +62,13 @@ export interface DefaultDesktopDashboardConfig extends DashboardTemplateConfig {
   widgets: DefaultDesktopDashboardItem[];
 }
 
-export interface DefaultAdminDashboardConfig extends DashboardTemplateConfig {
-  widgets: DefaultDesktopDashboardItem[];
+export interface QuickAccessPanelItem {
+  widgetType: string;
+  selectedByDefault?: boolean;
+  isPreferredOrderWidget?: boolean;
 }
 
 export interface DefaultMobileDashboardConfig extends DashboardTemplateConfig {
   widgets: DefaultDashboardItem[];
+  quickAccessPanelItems: QuickAccessPanelItem[];
 }

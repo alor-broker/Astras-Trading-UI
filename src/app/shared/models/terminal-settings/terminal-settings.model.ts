@@ -142,6 +142,16 @@ export interface InstantNotificationsSettings {
 
 export type TerminalLanguage = 'en' | 'ru' | 'hy';
 
+export interface QuickAccessPanelWidget {
+  widgetType: string;
+  selectedByDefault?: boolean;
+  isPreferredOrderWidget?: boolean;
+}
+
+export interface MobileDashboardLayout {
+  quickAccessPanelWidgets: QuickAccessPanelWidget[];
+}
+
 export interface TerminalSettings {
   timezoneDisplayOption?: TimezoneDisplayOption;
   isLogoutOnUserIdle?: boolean;
@@ -156,4 +166,5 @@ export interface TerminalSettings {
   instantNotificationsSettings?: InstantNotificationsSettings;
   badgesColors?: string[];
   showCurrentTime?: boolean;
+  mobileDashboardLayout?: MobileDashboardLayout;
 }

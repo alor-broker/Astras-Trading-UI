@@ -10,12 +10,12 @@ import {GuidGenerator} from "../../../../shared/utils/guid";
 @Injectable({
   providedIn: "root"
 })
-export class AddHomeScreenMobileDashboardSettings extends MigrationBase {
-  readonly targetWidgetType = 'mobile-home-screen';
+export class AddMobileOrderWidgetMigration extends MigrationBase {
+  readonly targetWidgetType = 'mobile-order';
 
   get applyOptions(): ApplyOptions {
-    // Jan 28, 2025
-    const expirationDate = new Date(Date.UTC(2025, 0, 27));
+    // Jan 1, 2026
+    const expirationDate = new Date(Date.UTC(2026, 0, 30));
     expirationDate.setMonth(expirationDate.getMonth() + 3);
 
     return {
@@ -25,7 +25,7 @@ export class AddHomeScreenMobileDashboardSettings extends MigrationBase {
   }
 
   get migrationId(): string {
-    return "add_home_screen_mobile_dashboard_settings";
+    return "add_mobile_order_mobile_dashboard_settings";
   }
 
   getPatches(current: unknown): Observable<jsonpatch.OpPatch[]> {
@@ -39,11 +39,6 @@ export class AddHomeScreenMobileDashboardSettings extends MigrationBase {
       return of([]);
     }
 
-    const neighborIndex = dashboard.items.findIndex(i => i.widgetType === 'blotter');
-    if (neighborIndex < 0) {
-      return of([]);
-    }
-
     const missingConfig: Widget = {
       guid: GuidGenerator.newGuid(),
       widgetType: this.targetWidgetType
@@ -51,7 +46,7 @@ export class AddHomeScreenMobileDashboardSettings extends MigrationBase {
 
     const patch: AddPatch = {
       op: "add",
-      path: `/items/${neighborIndex + 1}`,
+      path: `/items/-`,
       value: missingConfig
     };
 

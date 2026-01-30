@@ -298,6 +298,22 @@
       {
         "widgetTypeId": "option-board"
       }
+    ],
+    "quickAccessPanelItems": [
+      {
+        "widgetType": "mobile-order",
+        "isPreferredOrderWidget": true
+      },
+      {
+        "widgetType": "blotter"
+      },
+      {
+        "widgetType": "mobile-home-screen",
+        "selectedByDefault": true
+      },
+      {
+        "widgetType": "all-instruments"
+      }
     ]
   },
   {

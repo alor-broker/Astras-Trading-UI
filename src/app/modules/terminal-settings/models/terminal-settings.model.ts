@@ -10,7 +10,8 @@ export enum TabNames {
   main,
   hotKeys,
 
-  notifications
+  notifications,
+  mobileDashboardLayout
 }
 
 export interface GeneralSettings {
