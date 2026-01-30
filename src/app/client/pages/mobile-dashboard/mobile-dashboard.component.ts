@@ -74,8 +74,8 @@ export class MobileDashboardComponent implements OnInit {
 
     this.screenHeight = fromEvent(window, 'resize')
       .pipe(
-        map(() => window.innerHeight),
-        startWith(window.innerHeight)
+        map(() => (window.screen.height / window.devicePixelRatio)),
+        startWith(window.screen.height / window.devicePixelRatio)
       );
   }
 }
