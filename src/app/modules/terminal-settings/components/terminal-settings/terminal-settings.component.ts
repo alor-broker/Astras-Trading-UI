@@ -130,7 +130,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     hotKeysSettings: this.formBuilder.control<HotKeysSettings | null>(null, Validators.required),
     instantNotificationsSettings: this.formBuilder.control<InstantNotificationsSettings | null>(null, Validators.required),
     scalperOrderBookMouseActions: this.formBuilder.control<ScalperOrderBookMouseActionsMap | null>(null, Validators.required),
-    mobileDashboardLayout: this.formBuilder.control<MobileDashboardLayout | null>(null, Validators.required),
+    mobileDashboardLayout: this.formBuilder.control<MobileDashboardLayout | null>(null),
   });
 
   fullName$: Observable<FullName> = of({

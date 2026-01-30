@@ -140,7 +140,6 @@
       "ribbonIcon": "sliders",
       "enabled": true,
       "galleryOrder": 4,
-      "showOrderButtons": true,
       "selectableForQuickAccessPanel": true
     },
     "hideOnDashboardType": ["admin-main"]
@@ -944,7 +943,7 @@
     "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
   },
   {
-    "typeId": "mobile-order",
+    "typeId": "trade-screen",
     "definition": {
       "adapter": "application",
       "config": {
@@ -953,11 +952,11 @@
       }
     },
     "widgetName": {
-      "default": "Order",
+      "default": "Trade",
       "translations": {
-        "ru": "Заявка",
-        "en": "Order",
-        "hy": "Հայտի ձևակերպում"
+        "ru": "Торговля",
+        "en": "Trade",
+        "hy": "Առևտուր"
       }
     },
     "hasInstrumentBind": true,
@@ -966,14 +965,6 @@
       "galleryIcon": "shopping-cart",
       "ribbonIcon": "shopping-cart",
       "enabled": true,
-      "widgetName": {
-        "default": "Order",
-        "translations": {
-          "ru": "Заявка",
-          "en": "Order",
-          "hy": "Հայտի ձևակերպում"
-        }
-      },
       "galleryOrder": 25,
       "selectableForQuickAccessPanel": true,
       "isOrderWidget": true

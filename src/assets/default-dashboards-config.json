@@ -245,7 +245,7 @@
         }
       },
       {
-        "widgetTypeId": "mobile-order"
+        "widgetTypeId": "trade-screen"
       },
       {
         "widgetTypeId": "order-book",
@@ -301,7 +301,7 @@
     ],
     "quickAccessPanelItems": [
       {
-        "widgetType": "mobile-order",
+        "widgetType": "trade-screen",
         "isPreferredOrderWidget": true
       },
       {
@@ -310,6 +310,9 @@
       {
         "widgetType": "mobile-home-screen",
         "selectedByDefault": true
+      },
+      {
+        "widgetType": "tech-chart"
       },
       {
         "widgetType": "all-instruments"

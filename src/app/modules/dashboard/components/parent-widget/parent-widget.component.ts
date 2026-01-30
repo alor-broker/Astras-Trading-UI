@@ -65,7 +65,7 @@ import {
 import {AsyncPipe} from '@angular/common';
 import {
   MobileOrderWidgetComponent
-} from "../../../mobile-order/widgets/mobile-order-widget/mobile-order-widget.component";
+} from "../../../trade-screen/widgets/trade-screen-widget/trade-screen-widget.component";
 
 @Component({
   selector: 'ats-parent-widget',

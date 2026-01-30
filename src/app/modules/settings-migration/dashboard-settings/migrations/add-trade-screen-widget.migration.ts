@@ -1,17 +1,23 @@
-﻿import {Injectable} from "@angular/core";
-import {MigrationBase} from "../../migration-base";
-import {ApplyOptions, ApplyStrategyType} from "../../models/migration.model";
-import {Observable, of} from "rxjs";
-import jsonpatch, {AddPatch} from "json-patch";
-import {Dashboard} from "../../../../shared/models/dashboard/dashboard.model";
-import {Widget} from "../../../../shared/models/dashboard/widget.model";
-import {GuidGenerator} from "../../../../shared/utils/guid";
+﻿import { Injectable } from "@angular/core";
+import { MigrationBase } from "../../migration-base";
+import {
+  ApplyOptions,
+  ApplyStrategyType
+} from "../../models/migration.model";
+import {
+  Observable,
+  of
+} from "rxjs";
+import jsonpatch, { AddPatch } from "json-patch";
+import { Dashboard } from "../../../../shared/models/dashboard/dashboard.model";
+import { Widget } from "../../../../shared/models/dashboard/widget.model";
+import { GuidGenerator } from "../../../../shared/utils/guid";
 
 @Injectable({
   providedIn: "root"
 })
-export class AddMobileOrderWidgetMigration extends MigrationBase {
-  readonly targetWidgetType = 'mobile-order';
+export class AddTradeScreenWidgetMigration extends MigrationBase {
+  readonly targetWidgetType = 'trade-screen';
 
   get applyOptions(): ApplyOptions {
     // Jan 1, 2026
@@ -25,7 +31,7 @@ export class AddMobileOrderWidgetMigration extends MigrationBase {
   }
 
   get migrationId(): string {
-    return "add_mobile_order_mobile_dashboard_settings";
+    return "add_trade-screen_mobile_dashboard_settings";
   }
 
   getPatches(current: unknown): Observable<jsonpatch.OpPatch[]> {

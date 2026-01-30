@@ -152,7 +152,7 @@ export class MobileDashboardContentComponent implements OnInit {
       .pipe(take(1))
       .subscribe(widgets => {
         let defaultSelection = widgets.find(w => w.isSelectedByDefault) ?? null;
-        defaultSelection ??= widgets.find(w => w.widgetMeta.typeId === 'mobile-order') ?? null;
+        defaultSelection ??= widgets.find(w => w.widgetMeta.typeId === 'trade-screen') ?? null;
         defaultSelection ??= ArrayHelper.firstOrNull(widgets);
 
         if (defaultSelection != null) {

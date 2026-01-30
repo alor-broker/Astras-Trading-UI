@@ -82,7 +82,7 @@ export class MobileHomeScreenContentComponent implements OnInit {
     this.dashboardContextService.selectDashboardInstrument(instrumentKey, defaultBadgeColor);
     this.navigationStackService.pushState({
       widgetTarget: {
-        typeId: 'mobile-order'
+        typeId: 'trade-screen'
       }
     });
   }

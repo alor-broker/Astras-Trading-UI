@@ -8,7 +8,6 @@ import {
   model,
   viewChild
 } from '@angular/core';
-import { MobileOrderSettings } from "../../models/mobile-order-settings.model";
 import {
   LightChartComponent,
   LightChartComponentSettings
@@ -30,9 +29,10 @@ import { SubmitOrderFormComponent } from "../submit-order-form/submit-order-form
 import { Side } from "../../../../shared/models/enums/side.model";
 import { BuySellButtonsComponent } from "../../../order-commands/components/buy-sell-buttons/buy-sell-buttons.component";
 import { InstrumentInfoComponent } from "../instrument-info/instrument-info.component";
+import { TradeScreenSettings } from "../../models/trade-screen-settings.model";
 
 @Component({
-  selector: 'ats-mobile-order-content',
+  selector: 'ats-trade-screen-content',
   imports: [
     LightChartComponent,
     OrderBookComponent,
@@ -43,13 +43,13 @@ import { InstrumentInfoComponent } from "../instrument-info/instrument-info.comp
     BuySellButtonsComponent,
     InstrumentInfoComponent
   ],
-  templateUrl: './mobile-order-content.component.html',
-  styleUrl: './mobile-order-content.component.less',
+  templateUrl: './trade-screen-content.component.html',
+  styleUrl: './trade-screen-content.component.less',
   providers: [OrderbookService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MobileOrderContentComponent {
-  readonly settings = input.required<MobileOrderSettings>();
+export class TradeScreenContentComponent {
+  readonly settings = input.required<TradeScreenSettings>();
 
   protected readonly contentRoot = viewChild<ElementRef<HTMLElement>>('contentRoot');
 
