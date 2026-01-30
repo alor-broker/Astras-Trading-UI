@@ -1,17 +1,20 @@
 <div class="d-flex flex-column w-100 h-100">
   <ng-container
     *ngrxLet="{
-      defaultWidgets: defaultWidgets$,
-      selectedWidget: selectedWidget$,
+      quickAccessPanelWidgets: quickAccessPanelWidgets$,
       widgetsGallery: widgetsGallery$
     } as vm"
     >
+
+    @let currentWidget = selectedWidget();
+
+
     <div class="d-flex flex-column w-100 h-100 overflow-hidden">
       <div class="flex-fill overflow-auto">
-        @for (widget of vm.defaultWidgets; track widget) {
+        @for (widget of vm.quickAccessPanelWidgets; track widget) {
           <div
             class="h-100"
-            [class.d-none]="vm.selectedWidget?.instance?.widgetType !== widget.instance.widgetType"
+            [class.d-none]="currentWidget?.instance?.widgetType !== widget.instance.widgetType"
             >
             <ats-parent-widget [widgetInstance]="widget"
               [isBlockWidget]="false"
@@ -19,24 +22,24 @@
           </div>
         }
 
-        @if (!defaultWidgetNames.includes(vm.selectedWidget?.instance?.widgetType ?? '')) {
+        @if (!(currentWidget?.isDefaultPanelWidget ?? false)) {
           <div
             class="h-100"
             >
-            <ats-parent-widget [widgetInstance]="vm.selectedWidget!"
+            <ats-parent-widget [widgetInstance]="currentWidget!"
               [isBlockWidget]="false"
              />
           </div>
         }
       </div>
 
-      @if(vm.selectedWidget?.widgetMeta?.mobileMeta?.showOrderButtons ?? false) {
+      @if(currentWidget?.widgetMeta?.mobileMeta?.showOrderButtons ?? false) {
         <div class="mb-15 d-flex justify-content-center">
           <button
             class='buy-button w-50'
             nz-button  nzSize="large"
             *transloco="let t; scope: 'mobile-dashboard-content'"
-            (click)="selectWidget(newOrderWidgetId, false)"
+            (click)="openOrderWidget(false)"
             >
             {{t('mobileDashboardContent.orderBtnTitle', {fallback: 'buy'})}}
           </button>
@@ -45,18 +48,20 @@
     </div>
 
     <div class="widgets-menu">
-      <div
-        class="menu-item "
-        [class.active-widget]="!defaultWidgetNames.includes(vm.selectedWidget?.instance?.widgetType ?? '')"
-        (click)="galleryVisible = true"
+      @if(vm.widgetsGallery.allCategory.widgets.length > 0 || vm.widgetsGallery.groups.length > 0) {
+        <div
+          class="menu-item "
+          [class.active-widget]="!(currentWidget?.isDefaultPanelWidget ?? false)"
+          (click)="galleryVisible = true"
         >
-        <i nz-icon nzType="ellipsis" nzTheme="outline"></i>
-      </div>
+          <i nz-icon nzType="ellipsis" nzTheme="outline"></i>
+        </div>
+      }
 
-      @for (widget of vm.defaultWidgets; track widget) {
+      @for (widget of vm.quickAccessPanelWidgets; track widget) {
         <div
           class="menu-item"
-          [class.active-widget]="widget.instance.widgetType === vm.selectedWidget?.instance?.widgetType"
+          [class.active-widget]="widget.instance.widgetType === currentWidget?.instance?.widgetType"
           (click)="selectWidget(widget.instance.widgetType)"
           >
           <i nz-icon [nzType]="widget.widgetMeta.mobileMeta!.ribbonIcon" class="widget-icon" nzTheme="outline"></i>
@@ -67,7 +72,7 @@
     <ats-widgets-gallery [gallery]="vm.widgetsGallery"
       [showResetBtn]="false"
       [closable]="true"
-      [activeWidget]="vm.selectedWidget?.instance?.widgetType ?? null"
+      [activeWidget]="currentWidget?.instance?.widgetType ?? null"
       [(atsVisible)]="galleryVisible"
       (selected)="selectWidget($event)"
      />

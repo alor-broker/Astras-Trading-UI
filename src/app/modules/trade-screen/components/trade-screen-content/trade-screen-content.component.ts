@@ -1,0 +1,138 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  input,
+  model,
+  viewChild
+} from '@angular/core';
+import {
+  LightChartComponent,
+  LightChartComponentSettings
+} from "../../../light-chart/components/light-chart/light-chart.component";
+import { TimeFrameDisplayMode } from "../../../light-chart/models/light-chart-settings.model";
+import { TimeframeValue } from "../../../light-chart/models/light-chart.models";
+import { ArrayHelper } from "../../../../shared/utils/array-helper";
+import {
+  OrderBookComponent,
+  OrderbookComponentSettings
+} from "../../../orderbook/components/orderbook/orderbook.component";
+import { NumberDisplayFormat } from "../../../../shared/models/enums/number-display-format";
+import { ColumnsOrder } from "../../../orderbook/models/orderbook-settings.model";
+import { OrderbookService } from "../../../orderbook/services/orderbook.service";
+import { InstrumentQuotesComponent } from "../instrument-quotes/instrument-quotes.component";
+import { PullUpPanelComponent } from "../../../../shared/components/pull-up-panel/pull-up-panel.component";
+import { NzIconDirective } from "ng-zorro-antd/icon";
+import { SubmitOrderFormComponent } from "../submit-order-form/submit-order-form.component";
+import { Side } from "../../../../shared/models/enums/side.model";
+import { BuySellButtonsComponent } from "../../../order-commands/components/buy-sell-buttons/buy-sell-buttons.component";
+import { InstrumentInfoComponent } from "../instrument-info/instrument-info.component";
+import { TradeScreenSettings } from "../../models/trade-screen-settings.model";
+
+@Component({
+  selector: 'ats-trade-screen-content',
+  imports: [
+    LightChartComponent,
+    OrderBookComponent,
+    InstrumentQuotesComponent,
+    PullUpPanelComponent,
+    NzIconDirective,
+    SubmitOrderFormComponent,
+    BuySellButtonsComponent,
+    InstrumentInfoComponent
+  ],
+  templateUrl: './trade-screen-content.component.html',
+  styleUrl: './trade-screen-content.component.less',
+  providers: [OrderbookService],
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class TradeScreenContentComponent {
+  readonly settings = input.required<TradeScreenSettings>();
+
+  protected readonly contentRoot = viewChild<ElementRef<HTMLElement>>('contentRoot');
+
+  protected readonly chartSettings = computed(() => {
+    const settings = this.settings();
+    return {
+      targetInstrument: {
+        symbol: settings.symbol,
+        exchange: settings.exchange,
+        instrumentGroup: settings.instrumentGroup,
+      },
+      chart: {
+        availableTimeFrames: settings.chart.availableTimeFrames,
+        timeFrameDisplayMode: TimeFrameDisplayMode.Buttons,
+      }
+    } satisfies LightChartComponentSettings;
+  });
+
+  protected readonly orderbookSettings = computed(() => {
+    const settings = this.settings();
+    return {
+      targetInstrument: {
+        symbol: settings.symbol,
+        exchange: settings.exchange,
+        instrumentGroup: settings.instrumentGroup,
+      },
+      display: {
+        depth: settings.orderbook.depth,
+        showPriceWithZeroPadding: true,
+        showYieldForBonds: true,
+        showTable: true,
+        showChart: false,
+        showVolume: false,
+        showSpread: false,
+        columnsOrder: ColumnsOrder.VolumesAtTheEdges,
+        volumeDisplayFormat: NumberDisplayFormat.LetterSuffix,
+      }
+    } satisfies OrderbookComponentSettings;
+  });
+
+  protected readonly defaultTimeframe = computed(() => {
+    const settings = this.settings();
+    if (settings.chart.availableTimeFrames != null) {
+      if (settings.chart.availableTimeFrames.includes(TimeframeValue.Day)) {
+        return TimeframeValue.Day;
+      }
+
+      return ArrayHelper.lastOrNull(settings.chart.availableTimeFrames) ?? TimeframeValue.Day;
+    }
+
+    return TimeframeValue.Day;
+  });
+
+  protected readonly orderFormSide = model<Side>(Side.Buy);
+
+  protected readonly orderFormType = model<'limit' | 'market'>('market');
+
+  protected readonly orderFormsVisible = model<boolean>(false);
+
+  protected readonly orderFormsPrice = model<number>(0);
+
+  protected readonly Side = Side;
+
+  constructor() {
+    effect(() => {
+      this.settings();
+      this.orderFormType.set('market');
+      this.orderFormSide.set(Side.Buy);
+
+      this.contentRoot()?.nativeElement.scrollTo(0, 0);
+    });
+  }
+
+  protected openLimitForm(price: number, side: Side): void {
+    this.orderFormType.set('limit');
+    this.orderFormSide.set(side);
+    this.orderFormsPrice.set(price);
+    this.orderFormsVisible.set(true);
+  }
+
+  protected openMarketForm(side: Side): void {
+    this.orderFormType.set('market');
+    this.orderFormSide.set(side);
+    this.orderFormsVisible.set(true);
+  }
+}

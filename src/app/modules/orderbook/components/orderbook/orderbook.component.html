@@ -1,46 +1,68 @@
-@if (settings$ | async; as settings) {
+@let displaySettings = settings().display;
+@if (targetInstrument$ | async; as targetInstrument) {
+
   @if ((ob$ | async); as ob) {
     <div class="show-scroll">
-      <ats-orderbook-chart [guid]='guid()' [chartData]="ob.chartData" />
-      @if (settings.showVolume) {
+      @if (displaySettings.showChart) {
+        <ats-orderbook-chart [chartData]="ob.chartData"/>
+      }
+
+      @if (displaySettings.showVolume) {
         <div class="volumes">
-          <span class="bid-volume">{{ob.bidVolumes}}</span>
-          <span class="ask-volume">{{ob.askVolumes}}</span>
+          <span class="bid-volume">{{ ob.bidVolumes }}</span>
+          <span class="ask-volume">{{ ob.askVolumes }}</span>
         </div>
       }
-      @if (spreadDiffData$ | async; as spreadDiffData) {
-        <div class="spread-size-row">
-          <div *transloco="let t; scope: 'orderbook/orderbook'">
-            {{t('orderbookOrderbook.spreadSize')}}:
-          </div>
-          <div class="value-wrapper">
+      @if(displaySettings.showSpread ?? true) {
+        @if (spreadDiffData$ | async; as spreadDiffData) {
+          <div class="spread-size-row">
+            <div *transloco="let t; scope: 'orderbook/orderbook'">
+              {{ t('orderbookOrderbook.spreadSize') }}:
+            </div>
+            <div class="value-wrapper">
             <span
               [ngStyle]="{opacity: 1 - spreadDiffData.colorRatio}"
               class="value"
-              >
-              {{spreadDiffData.diff | number: '1.1-2'}} ({{spreadDiffData.diffPercents | number: '1.1-3'}}%)
+            >
+              {{ spreadDiffData.diff | number: '1.1-2' }} ({{ spreadDiffData.diffPercents | number: '1.1-3' }}%)
             </span>
-            <span
-              [ngStyle]="{opacity: spreadDiffData.colorRatio}"
-              class="value red"
+              <span
+                [ngStyle]="{opacity: spreadDiffData.colorRatio}"
+                class="value red"
               >
-              {{spreadDiffData.diff}} ({{spreadDiffData.diffPercents}}%)
+              {{ spreadDiffData.diff }} ({{ spreadDiffData.diffPercents }}%)
             </span>
+            </div>
+            <div></div>
           </div>
-          <div></div>
-        </div>
+        }
       }
-      @if (settings.showTable) {
-        @if ((settings.columnsOrder ?? columnsOrderEnum.VolumesAtTheEdges); as columnsOrder) {
+
+      @if (displaySettings.showTable) {
+        @if ((displaySettings.columnsOrder ?? columnsOrderEnum.VolumesAtTheEdges); as columnsOrder) {
           @if (columnsOrder === columnsOrderEnum.VolumesAtTheEdges) {
-            <ats-orderbook-table-volumes-at-the-edges [guid]="guid()"
+            <ats-orderbook-table-volumes-at-the-edges
+              (rowSelected)="rowSelected.emit($event)"
               [ob]="ob"
-             />
+              [priceDisplayFormat]="{
+              showPriceWithZeroPadding: displaySettings.showPriceWithZeroPadding ?? false,
+              priceStep: targetInstrument.minstep
+              }"
+              [showYield]="targetInstrument.isBond && displaySettings.showYieldForBonds"
+              [volumeDisplayFormat]="displaySettings.volumeDisplayFormat ?? NumberDisplayFormat.Default"
+            />
           }
           @if (columnsOrder === columnsOrderEnum.VolumesAtTheMiddle) {
-            <ats-orderbook-table-volumes-at-the-middle [guid]="guid()"
+            <ats-orderbook-table-volumes-at-the-middle
+              (rowSelected)="rowSelected.emit($event)"
               [ob]="ob"
-             />
+              [priceDisplayFormat]="{
+              showPriceWithZeroPadding: displaySettings.showPriceWithZeroPadding ?? false,
+              priceStep: targetInstrument.minstep
+              }"
+              [showYield]="targetInstrument.isBond && displaySettings.showYieldForBonds"
+              [volumeDisplayFormat]="displaySettings.volumeDisplayFormat ?? NumberDisplayFormat.Default"
+            />
           }
         }
       }

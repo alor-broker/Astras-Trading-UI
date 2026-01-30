@@ -1,4 +1,14 @@
-import { Component, DestroyRef, OnChanges, OnDestroy, OnInit, input, output, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  output
+} from '@angular/core';
 import {TimeFrameDisplayMode} from "../../models/light-chart-settings.model";
 import {TimeframeValue} from "../../models/light-chart.models";
 import {BehaviorSubject, take} from "rxjs";
@@ -9,19 +19,19 @@ import {LetDirective} from '@ngrx/component';
 import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
-import {NzDropdownButtonDirective, NzDropDownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {NzDropDownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
 import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
 
 @Component({
   selector: 'ats-timeframes-panel',
   templateUrl: './timeframes-panel.component.html',
   styleUrls: ['./timeframes-panel.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     LetDirective,
     NzResizeObserverDirective,
     TranslocoDirective,
     NzButtonComponent,
-    NzDropdownButtonDirective,
     NzDropDownDirective,
     NzDropdownMenuComponent,
     NzMenuDirective,
@@ -29,18 +39,13 @@ import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
   ]
 })
 export class TimeframesPanelComponent implements OnDestroy, OnInit, OnChanges {
-  private readonly destroyRef = inject(DestroyRef);
-
   readonly availableTimeframes = input.required<TimeframeValue[]>();
-
   readonly selectedTimeframe = input.required<TimeframeValue | undefined>();
-
   readonly displayMode = input<TimeFrameDisplayMode>(TimeFrameDisplayMode.Buttons);
-
   readonly changeTimeframe = output<TimeframeValue>();
-
   readonly actualDisplayMode$ = new BehaviorSubject(this.displayMode());
   timeFrameDisplayModes = TimeFrameDisplayMode;
+  private readonly destroyRef = inject(DestroyRef);
   private readonly contentSize$ = new BehaviorSubject<ContentSize>({height: 0, width: 0});
 
   containerSizeChanged(entries: ResizeObserverEntry[]): void {

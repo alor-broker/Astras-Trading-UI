@@ -7,7 +7,7 @@
   <ng-container *transloco="let t; scope: 'light-chart'">
     <ng-container>
       @if (actualDisplayMode === timeFrameDisplayModes.Buttons) {
-        <div #buttonsContainer class="position-absolute z-3 d-flex flex-nowrap flex-row flex-gap-1">
+        <div class="position-absolute z-3 d-flex flex-nowrap flex-row flex-gap-1">
           @for (timeframe of availableTimeframes(); track timeframe) {
             <button
               (click)="changeTimeframe.emit(timeframe)"

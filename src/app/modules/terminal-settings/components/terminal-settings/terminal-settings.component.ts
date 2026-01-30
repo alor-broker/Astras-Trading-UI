@@ -1,41 +1,74 @@
-import { Component, DestroyRef, ElementRef, OnDestroy, OnInit, input, output, inject } from '@angular/core';
-import {BehaviorSubject, Observable, of, take} from 'rxjs';
-import {FullName} from '../../../../shared/models/user/full-name.model';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  input,
+  output,
+  inject
+} from '@angular/core';
+import {
+  BehaviorSubject,
+  Observable,
+  of,
+  take
+} from 'rxjs';
+import { FullName } from '../../../../shared/models/user/full-name.model';
 import {
   HotKeysSettings,
   InstantNotificationsSettings,
+  MobileDashboardLayout,
   PortfolioCurrencySettings,
   ScalperOrderBookMouseActionsMap,
   TerminalSettings
 } from '../../../../shared/models/terminal-settings/terminal-settings.model';
-import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {ModalService} from "../../../../shared/services/modal.service";
-import {TranslatorService} from "../../../../shared/services/translator.service";
-import {AtsValidators} from '../../../../shared/utils/form-validators';
-import {TerminalSettingsHelper} from '../../../../shared/utils/terminal-settings-helper';
-import {AccountService} from "../../../../shared/services/account.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {TerminalSettingsService} from "../../../../shared/services/terminal-settings.service";
-import {GeneralSettings, TabNames} from "../../models/terminal-settings.model";
+import {
+  FormBuilder,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+import { ModalService } from "../../../../shared/services/modal.service";
+import { TranslatorService } from "../../../../shared/services/translator.service";
+import { AtsValidators } from '../../../../shared/utils/form-validators';
+import { TerminalSettingsHelper } from '../../../../shared/utils/terminal-settings-helper';
+import { AccountService } from "../../../../shared/services/account.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { TerminalSettingsService } from "../../../../shared/services/terminal-settings.service";
+import {
+  GeneralSettings,
+  TabNames
+} from "../../models/terminal-settings.model";
 import {
   EXPORT_SETTINGS_SERVICE_TOKEN,
   ExportSettingsService
 } from "../../../../shared/services/settings/export-settings.service";
-import {FileSaver, FileType} from "../../../../shared/utils/file-export/file-saver";
-import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
-import {TranslocoDirective} from '@jsverse/transloco';
-import {NzIconDirective} from 'ng-zorro-antd/icon';
-import {NzTabComponent, NzTabsComponent} from 'ng-zorro-antd/tabs';
-import {UsefulLinksComponent} from '../useful-links/useful-links.component';
-import {GeneralSettingsFormComponent} from '../general-settings-form/general-settings-form.component';
-import {PortfoliosCurrencyFormComponent} from '../portfolios-currency-form/portfolios-currency-form.component';
-import {NzDividerComponent} from 'ng-zorro-antd/divider';
-import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
-import {NzButtonComponent} from 'ng-zorro-antd/button';
-import {HotKeySettingsFormComponent} from '../hot-key-settings-form/hot-key-settings-form.component';
-import {ScalperMouseActionsFormComponent} from '../scalper-mouse-actions-form/scalper-mouse-actions-form.component';
-import {InstantNotificationsFormComponent} from '../instant-notifications-form/instant-notifications-form.component';
-import {AsyncPipe} from '@angular/common';
+import {
+  FileSaver,
+  FileType
+} from "../../../../shared/utils/file-export/file-saver";
+import { NzResizeObserverDirective } from 'ng-zorro-antd/cdk/resize-observer';
+import { TranslocoDirective } from '@jsverse/transloco';
+import { NzIconDirective } from 'ng-zorro-antd/icon';
+import {
+  NzTabComponent,
+  NzTabsComponent
+} from 'ng-zorro-antd/tabs';
+import { UsefulLinksComponent } from '../useful-links/useful-links.component';
+import { GeneralSettingsFormComponent } from '../general-settings-form/general-settings-form.component';
+import { PortfoliosCurrencyFormComponent } from '../portfolios-currency-form/portfolios-currency-form.component';
+import { NzDividerComponent } from 'ng-zorro-antd/divider';
+import {
+  NzColDirective,
+  NzRowDirective
+} from 'ng-zorro-antd/grid';
+import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { HotKeySettingsFormComponent } from '../hot-key-settings-form/hot-key-settings-form.component';
+import { ScalperMouseActionsFormComponent } from '../scalper-mouse-actions-form/scalper-mouse-actions-form.component';
+import { InstantNotificationsFormComponent } from '../instant-notifications-form/instant-notifications-form.component';
+import { AsyncPipe } from '@angular/common';
+import { MobileDashboardLayoutFormComponent } from "../mobile-dashboard-layout-form/mobile-dashboard-layout-form.component";
 
 @Component({
   selector: 'ats-terminal-settings',
@@ -59,17 +92,25 @@ import {AsyncPipe} from '@angular/common';
     HotKeySettingsFormComponent,
     ScalperMouseActionsFormComponent,
     InstantNotificationsFormComponent,
-    AsyncPipe
+    AsyncPipe,
+    MobileDashboardLayoutFormComponent
   ]
 })
 export class TerminalSettingsComponent implements OnInit, OnDestroy {
   private readonly accountService = inject(AccountService);
+
   private readonly terminalSettingsService = inject(TerminalSettingsService);
+
   private readonly modal = inject(ModalService);
+
   private readonly translatorService = inject(TranslatorService);
+
   private readonly exportSettingsService = inject<ExportSettingsService>(EXPORT_SETTINGS_SERVICE_TOKEN);
+
   private readonly destroyRef = inject(DestroyRef);
+
   private readonly elRef = inject(ElementRef);
+
   private readonly formBuilder = inject(FormBuilder);
 
   readonly hiddenSections = input<string[]>([]);
@@ -77,9 +118,10 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   readonly formChange = output<{
     value: TerminalSettings | null;
     isInitial: boolean;
-}>();
+  }>();
 
   readonly tabChange = output<number>();
+
   tabNames = TabNames;
 
   readonly settingsForm = this.formBuilder.group({
@@ -88,6 +130,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     hotKeysSettings: this.formBuilder.control<HotKeysSettings | null>(null, Validators.required),
     instantNotificationsSettings: this.formBuilder.control<InstantNotificationsSettings | null>(null, Validators.required),
     scalperOrderBookMouseActions: this.formBuilder.control<ScalperOrderBookMouseActionsMap | null>(null, Validators.required),
+    mobileDashboardLayout: this.formBuilder.control<MobileDashboardLayout | null>(null),
   });
 
   fullName$: Observable<FullName> = of({
@@ -97,6 +140,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
   });
 
   tabSetHeight$ = new BehaviorSubject(300);
+
   exportSettingsLoading$ = new BehaviorSubject<boolean>(false);
 
   ngOnInit(): void {
@@ -225,5 +269,7 @@ export class TerminalSettingsComponent implements OnInit, OnDestroy {
     this.settingsForm.controls.instantNotificationsSettings.setValue(settings.instantNotificationsSettings ?? null);
 
     this.settingsForm.controls.scalperOrderBookMouseActions.setValue(settings.scalperOrderBookMouseActions ?? TerminalSettingsHelper.getScalperOrderBookMouseActionsScheme1());
+
+    this.settingsForm.controls.mobileDashboardLayout.setValue(settings.mobileDashboardLayout ?? null);
   }
 }

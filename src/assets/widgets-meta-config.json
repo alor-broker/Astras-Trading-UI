@@ -66,7 +66,8 @@
       "galleryIcon": "ats-orderbook",
       "ribbonIcon": "ats-orderbook",
       "enabled": true,
-      "galleryOrder": 2
+      "galleryOrder": 2,
+      "selectableForQuickAccessPanel": true
     },
     "hideOnDashboardType": ["admin-main"]
   },
@@ -139,7 +140,7 @@
       "ribbonIcon": "sliders",
       "enabled": true,
       "galleryOrder": 4,
-      "showOrderButtons": true
+      "selectableForQuickAccessPanel": true
     },
     "hideOnDashboardType": ["admin-main"]
   },
@@ -178,7 +179,8 @@
       "galleryIcon": "fund",
       "ribbonIcon": "fund",
       "enabled": true,
-      "galleryOrder": 5
+      "galleryOrder": 5,
+      "selectableForQuickAccessPanel": true
     },
     "hideOnDashboardType": ["admin-main"]
   },
@@ -216,7 +218,8 @@
       "galleryIcon": "ats-portfolio",
       "ribbonIcon": "ats-portfolio",
       "enabled": true,
-      "galleryOrder": 6
+      "galleryOrder": 6,
+      "selectableForQuickAccessPanel": true
     },
     "hideOnDashboardType": ["admin-main"]
   },
@@ -255,7 +258,8 @@
       "galleryIcon": "ats-instrument-info",
       "ribbonIcon": "ats-instrument-info",
       "enabled": true,
-      "galleryOrder": 7
+      "galleryOrder": 7,
+      "selectableForQuickAccessPanel": true
     },
     "hideOnDashboardType": ["admin-main"]
   },
@@ -293,7 +297,8 @@
       "galleryIcon": "read",
       "ribbonIcon": "read",
       "enabled": true,
-      "galleryOrder": 8
+      "galleryOrder": 8,
+      "selectableForQuickAccessPanel": true
     },
     "hideOnDashboardType": ["admin-main"]
   },
@@ -332,7 +337,8 @@
       "galleryIcon": "ats-trade",
       "ribbonIcon": "ats-trade",
       "enabled": true,
-      "galleryOrder": 9
+      "galleryOrder": 9,
+      "selectableForQuickAccessPanel": true
     },
     "hideOnDashboardType": ["admin-main"]
   },
@@ -370,7 +376,8 @@
       "galleryIcon": "ats-exchange-rate",
       "ribbonIcon": "ats-exchange-rate",
       "enabled": true,
-      "galleryOrder": 10
+      "galleryOrder": 10,
+      "selectableForQuickAccessPanel": true
     },
     "hideOnDashboardType": ["admin-main"]
   },
@@ -408,7 +415,8 @@
       "galleryIcon": "ats-instruments-search",
       "ribbonIcon": "ats-instruments-search",
       "enabled": true,
-      "galleryOrder": 11
+      "galleryOrder": 11,
+      "selectableForQuickAccessPanel": true
     },
     "hideOnDashboardType": ["admin-main"]
   },
@@ -451,10 +459,13 @@
         "default": "Order",
         "translations": {
           "ru": "Заявка",
-          "en": "Order"
+          "en": "Order",
+          "hy": "Հայտի ձևակերպում"
         }
       },
-      "galleryOrder": 12
+      "galleryOrder": 12,
+      "selectableForQuickAccessPanel": true,
+      "isOrderWidget": true
     },
     "hideOnDashboardType": ["admin-main"]
   },
@@ -492,7 +503,8 @@
       "galleryIcon": "calculator",
       "ribbonIcon": "calculator",
       "enabled": true,
-      "galleryOrder": 13
+      "galleryOrder": 13,
+      "selectableForQuickAccessPanel": true
     },
     "hideOnDashboardType": ["admin-main"]
   },
@@ -530,7 +542,8 @@
       "galleryIcon": "layout",
       "ribbonIcon": "layout",
       "enabled": true,
-      "galleryOrder": 14
+      "galleryOrder": 14,
+      "selectableForQuickAccessPanel": true
     },
     "hideOnDashboardType": ["admin-main"]
   },
@@ -599,7 +612,8 @@
       "galleryIcon": "calendar",
       "ribbonIcon": "calendar",
       "enabled": true,
-      "galleryOrder": 16
+      "galleryOrder": 16,
+      "selectableForQuickAccessPanel": true
     },
     "hideOnDashboardType": ["admin-main"]
   },
@@ -637,7 +651,8 @@
       "galleryIcon": "table",
       "ribbonIcon": "table",
       "enabled": true,
-      "galleryOrder": 17
+      "galleryOrder": 17,
+      "selectableForQuickAccessPanel": true
     },
     "hideOnDashboardType": ["admin-main"]
   },
@@ -778,14 +793,20 @@
       }
     },
     "widgetName": {
-      "default": ""
+      "default": "Home Screen",
+      "translations": {
+        "ru": "Домашний экран",
+        "en": "Home Screen",
+        "hy": "Գլխավոր էջ"
+      }
     },
     "category": "positionsTradesOrders",
     "mobileMeta": {
       "galleryIcon": "home",
       "ribbonIcon": "home",
       "enabled": true,
-      "galleryOrder": 0
+      "galleryOrder": 0,
+      "selectableForQuickAccessPanel": true
     }
   },
   {
@@ -921,6 +942,35 @@
     },
     "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
   },
+  {
+    "typeId": "trade-screen",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "",
+        "componentName": "MobileOrderWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Trade",
+      "translations": {
+        "ru": "Торговля",
+        "en": "Trade",
+        "hy": "Առևտուր"
+      }
+    },
+    "hasInstrumentBind": true,
+    "category": "positionsTradesOrders",
+    "mobileMeta": {
+      "galleryIcon": "shopping-cart",
+      "ribbonIcon": "shopping-cart",
+      "enabled": true,
+      "galleryOrder": 25,
+      "selectableForQuickAccessPanel": true,
+      "isOrderWidget": true
+    }
+  },
+
   {
     "typeId": "admin-clients",
     "definition": {

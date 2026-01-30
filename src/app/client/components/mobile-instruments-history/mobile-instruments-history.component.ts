@@ -10,6 +10,8 @@ import { AsyncPipe } from "@angular/common";
 import {NzTagComponent} from "ng-zorro-antd/tag";
 import {TranslocoDirective} from "@jsverse/transloco";
 import { isInstrumentEqual } from '../../../shared/utils/settings-helper';
+import { ScrollableRowComponent } from "../../../shared/components/scrollable-row/scrollable-row.component";
+import { ScrollableItemDirective } from "../../../shared/directives/scrollable-item.directive";
 
 interface InstrumentKeyViewData extends InstrumentKey {
   showInstrumentGroup: boolean;
@@ -19,11 +21,13 @@ interface InstrumentKeyViewData extends InstrumentKey {
     selector: 'ats-mobile-instruments-history',
     templateUrl: './mobile-instruments-history.component.html',
     styleUrls: ['./mobile-instruments-history.component.less'],
-    imports: [
+  imports: [
     AsyncPipe,
     NzTagComponent,
-    TranslocoDirective
-]
+    TranslocoDirective,
+    ScrollableRowComponent,
+    ScrollableItemDirective
+  ]
 })
 export class MobileInstrumentsHistoryComponent implements OnInit {
   private readonly mobileDashboardService = inject(MobileDashboardService);

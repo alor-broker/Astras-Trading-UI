@@ -75,6 +75,8 @@ export interface WidgetMeta {
     galleryOrder: number;
     galleryIcon: string;
     showOrderButtons?: boolean;
+    selectableForQuickAccessPanel?: boolean;
+    isOrderWidget?: boolean;
   };
 
   /**

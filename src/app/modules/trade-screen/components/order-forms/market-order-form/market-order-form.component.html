@@ -1,0 +1,91 @@
+<ng-container *transloco="let t; scope: 'order-commands/order-forms'">
+  @let orderSide = side();
+  @let target = orderTarget();
+  @let orderEvaluation = orderEvaluation$ | async;
+
+  <div>
+    <form [formGroup]="form" nz-form nzLayout="vertical">
+      <nz-form-item>
+        <nz-form-label nzFor="quantity" nzRequired>{{ t('orderCommandsOrderForms.quantityLabel') }}</nz-form-label>
+        <nz-form-control [nzErrorTip]="quantityError">
+          <ats-input-number
+            [allowDecimal]="false"
+            [allowNegative]="false"
+            [step]="1"
+            formControlName="quantity"
+          />
+          <span>1 {{ t('orderCommandsOrderForms.lot') }} = <ats-short-number [value]="target.instrument.lotSize"/>
+            {{ t('orderCommandsOrderForms.pcs') }}</span>
+        </nz-form-control>
+        <ng-template #quantityError>
+          @if (form.controls.quantity.errors?.required) {
+            <span>{{ t('orderCommandsOrderForms.emptyQuantityError') }}</span>
+          }
+          @if (form.controls.quantity.errors?.min) {
+            <span>{{ t('validationErrors.tooLittle') }}</span>
+          }
+          @if (form.controls.quantity.errors?.max) {
+            <span>{{ t('validationErrors.tooMuch') }}</span>
+          }
+        </ng-template>
+      </nz-form-item>
+    </form>
+  </div>
+
+  @if (orderEvaluation != null) {
+    <ng-container *transloco="let t; scope: 'trade-screen/order-forms'">
+      <div class="d-flex flex-row flex-gap-10">
+      <span class="evaluation-hint">
+        <span>{{ t('mobileOrderOrderForms.availableLotsHint', {fallback: 'Доступно'}) }}:</span>
+        <span
+          class="pl-5 heading-color">{{ orderSide === Sides.Buy ? orderEvaluation.notMarginQuantityToBuy : orderEvaluation.notMarginQuantityToSell }}</span>
+      </span>
+
+        @let marginQuantity = orderSide === Sides.Buy ? orderEvaluation.quantityToBuy : orderEvaluation.quantityToSell;
+        @if (marginQuantity > 0) {
+          <span class="evaluation-hint">
+            <span>{{ t('mobileOrderOrderForms.marginLotsHint', {fallback: 'В маржу'}) }}:</span>
+            <span class="pl-5 heading-color">{{ orderSide === Sides.Buy ? orderEvaluation.quantityToBuy : orderEvaluation.quantityToSell }}</span>
+          </span>
+        }
+      </div>
+    </ng-container>
+  }
+
+  <div class="mt-20">
+    <button
+      *transloco="let t; scope: 'order-commands/buy-sell-buttons'"
+      [disabled]="form.invalid"
+      [ngClass]="{
+      'buy-button': orderSide === Sides.Buy,
+      'sell-button': orderSide === Sides.Sell,
+      }"
+      nz-button
+      nzBlock
+      nzSize="large"
+      [nzLoading]="submitting()"
+      (click)="submitOrder()"
+    >
+      @if (orderSide === Sides.Buy) {
+        {{ t('orderCommandsBuySellButtons.buyBtnText') }}
+      } @else {
+        {{ t('orderCommandsBuySellButtons.sellBtnText') }}
+      }
+
+      @if (orderEvaluation != null) {
+        <span
+          class="pl-5">&#8776;{{ orderEvaluation.orderEvaluation  | currency: orderEvaluation.currency:'symbol-narrow' }}</span>
+      }
+    </button>
+  </div>
+
+  @if (orderEvaluation != null) {
+    <ng-container *transloco="let t; scope: 'order-commands/order-evaluation'">
+      <div class="text-center mt-10 fs-9">
+        <span>{{ t('orderCommandsOrderEvaluation.evaluationCommission', {fallback: 'Комиссия'}) }}</span>
+        <span
+          class="pl-5">&#8776;{{ orderEvaluation.commission | currency: orderEvaluation.currency:'symbol-narrow' }}</span>
+      </div>
+    </ng-container>
+  }
+</ng-container>

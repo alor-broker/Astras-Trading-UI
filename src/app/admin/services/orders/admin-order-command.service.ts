@@ -172,7 +172,10 @@ export class AdminOrderCommandService implements OrderCommandService {
         }
       },
       marketOrder: {
-        isSupported: false
+        isSupported: false,
+        orderConfig: {
+          unsupportedFields: {}
+        }
       },
       stopOrder: {
         isSupported: false

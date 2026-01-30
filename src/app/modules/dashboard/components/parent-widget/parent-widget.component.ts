@@ -63,6 +63,9 @@ import {
   AdminClientsWidgetComponent
 } from '../../../admin-clients/widgets/admin-clients-widget/admin-clients-widget.component';
 import {AsyncPipe} from '@angular/common';
+import {
+  MobileOrderWidgetComponent
+} from "../../../trade-screen/widgets/trade-screen-widget/trade-screen-widget.component";
 
 @Component({
   selector: 'ats-parent-widget',
@@ -97,7 +100,8 @@ import {AsyncPipe} from '@angular/common';
     PortfolioChartsWidgetComponent,
     MarketTrendsWidgetComponent,
     AdminClientsWidgetComponent,
-    AsyncPipe
+    AsyncPipe,
+    MobileOrderWidgetComponent
   ]
 })
 export class ParentWidgetComponent implements OnDestroy {

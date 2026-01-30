@@ -1,0 +1,63 @@
+@if (instrumentInfo$ | async; as instrumentInfo) {
+  @let priceDecimalSymbolsCount = getPriceDecimalSymbolsCount(instrumentInfo);
+
+  @if (quote$ | async; as quote) {
+    <ats-scrollable-row [showScrollButtons]="false">
+      <div atsScrollableItem (click)="priceSelected.emit(quote.last_price)">
+        <div class="d-flex flex-column">
+          <span>Last</span>
+          <span class="heading-color">
+            <strong>{{ quote.last_price | atsPrice: priceDecimalSymbolsCount }}</strong>
+          </span>
+        </div>
+      </div>
+
+      <div atsScrollableItem (click)="priceSelected.emit(quote.bid)">
+        <div class="d-flex flex-column">
+          <span>Bid</span>
+          <span class="positive-color">
+            <strong>{{ quote.bid | atsPrice: priceDecimalSymbolsCount }}</strong>
+          </span>
+        </div>
+      </div>
+      <div atsScrollableItem (click)="priceSelected.emit(quote.ask)">
+        <div class="d-flex flex-column">
+          <span>Ask</span>
+          <span class="negative-color">
+            <strong>{{ quote.ask | atsPrice: priceDecimalSymbolsCount }}</strong>
+          </span>
+        </div>
+      </div>
+      <div atsScrollableItem (click)="priceSelected.emit(quote.open_price)">
+        <div class="d-flex flex-column">
+          <span>Open</span>
+          <span
+            [ngClass]="{
+              'positive-color': quote.change ?? 0 > 0,
+              'negative-color': quote.change ?? 0 < 0
+              }"
+          >
+            <strong>{{ quote.open_price | atsPrice: priceDecimalSymbolsCount }}</strong>
+          </span>
+        </div>
+      </div>
+      <div atsScrollableItem (click)="priceSelected.emit(quote.high_price)">
+        <div class="d-flex flex-column">
+          <span>High</span>
+          <span class="heading-color">
+            <strong>{{ quote.high_price | atsPrice: priceDecimalSymbolsCount }}</strong>
+          </span>
+        </div>
+      </div>
+      <div atsScrollableItem (click)="priceSelected.emit(quote.low_price)">
+        <div class="d-flex flex-column">
+          <span>Low</span>
+          <span class="heading-color">
+            <strong>{{ quote.low_price | atsPrice: priceDecimalSymbolsCount }}</strong>
+          </span>
+        </div>
+      </div>
+    </ats-scrollable-row>
+  }
+}
+

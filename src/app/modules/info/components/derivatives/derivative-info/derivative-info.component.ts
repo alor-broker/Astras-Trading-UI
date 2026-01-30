@@ -56,6 +56,8 @@ import {
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { REFRESH_TIMEOUT_MS } from "../../../constants/info.constants";
+import { SectionsListComponent } from "../../sections-list/sections-list.component";
+import { SectionComponent } from "../../section/section.component";
 
 type DerivativeResponse = Modify<
   Query,
@@ -77,7 +79,9 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<DerivativeResponse>> = object({
     NzEmptyComponent,
     NzTabComponent,
     TranslocoDirective,
-    NzTabsComponent
+    NzTabsComponent,
+    SectionsListComponent,
+    SectionComponent
   ],
     templateUrl: './derivative-info.component.html',
     styleUrl: './derivative-info.component.less'

@@ -94,19 +94,14 @@
 
     @if (helpUrl$ | async; as helpUrl) {
       <button
-        (mousedown)="preventMouseEvents($event)"
+        (mousedown)="openHelp($event, helpUrl)"
         nz-button
         nzSize="small"
       >
-        <a
-          [href]="helpUrl"
-          target="_blank"
-        >
-          <i [nzTheme]="'outline'" [text]="t('joyride.step7.text')" [title]="t('joyride.step7.title')"
-             joyrideStep="step7"
-             nz-icon
-             nzType="question-circle"></i>
-        </a>
+        <i [nzTheme]="'outline'" [text]="t('joyride.step7.text')" [title]="t('joyride.step7.title')"
+           joyrideStep="step7"
+           nz-icon
+           nzType="question-circle"></i>
       </button>
     }
 

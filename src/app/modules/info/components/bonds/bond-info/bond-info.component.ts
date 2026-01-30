@@ -57,6 +57,8 @@ import { CalendarComponent } from "../calendar/calendar.component";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { REFRESH_TIMEOUT_MS } from "../../../constants/info.constants";
+import { SectionsListComponent } from "../../sections-list/sections-list.component";
+import { SectionComponent } from "../../section/section.component";
 
 type BondResponse = Modify<
   Query,
@@ -85,7 +87,9 @@ interface BondDescriptors {
     RisksComponent,
     DescriptorsListComponent,
     CalendarComponent,
-    NzTabsComponent
+    NzTabsComponent,
+    SectionsListComponent,
+    SectionComponent
   ],
   templateUrl: './bond-info.component.html',
   styleUrl: './bond-info.component.less'
