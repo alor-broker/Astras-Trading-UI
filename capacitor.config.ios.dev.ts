@@ -4,15 +4,12 @@ const config: CapacitorConfig = {
   appId: 'ru.alor.astras',
   appName: 'Astras',
   webDir: 'dist/astras',
-  ios: {
-    contentInset: 'automatic',
+  plugins: {
+    StatusBar: {
+      style: 'dark',
+      backgroundColor: '#34363d',
+    },
   },
-  // plugins: {
-  //   StatusBar: {
-  //     style: 'dark',
-  //     backgroundColor: '#34363d',
-  //   },
-  // },
   server: {
     url: 'http://localhost:4200',
     cleartext: true,

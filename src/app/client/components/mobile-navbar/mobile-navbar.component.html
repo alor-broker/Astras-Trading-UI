@@ -1,6 +1,7 @@
-<nz-header *transloco="let t; scope: 'dashboard/navbar/common'" class="d-flex flex-column">
-  <div class="header-row d-flex align-items-center">
-    <div class="logo" #logoContainer>
+<nz-header class="d-flex flex-column">
+  <ng-container *transloco="let t; scope: 'dashboard/navbar/common'">
+    <div class="header-row d-flex align-items-center">
+      <div class="logo" #logoContainer>
       <a [routerLink]="['.']" [style.font-size]="logoContainer.clientWidth + 'px'">
         <i [nzType]="showNewYearIcon() ? 'ats-new-year-logo' : 'ats-logo'" nz-icon></i>
       </a>
@@ -199,7 +200,8 @@
     </nz-drawer>
   </div>
 
-  <div>
-    <ats-instrument-search [formControl]="instrumentSearchControl" (instrumentSelected)="changeInstrument($event)" />
-  </div>
+    <div>
+      <ats-instrument-search [formControl]="instrumentSearchControl" (instrumentSelected)="changeInstrument($event)" />
+    </div>
+  </ng-container>
 </nz-header>
