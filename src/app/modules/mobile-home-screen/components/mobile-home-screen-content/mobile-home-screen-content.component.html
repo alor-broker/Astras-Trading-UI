@@ -8,7 +8,7 @@
       </div>
 
       <div class="mt-10">
-        <ats-positions (instrumentSelected)="openChart($event)" />
+        <ats-positions (instrumentSelected)="openOrder($event)" />
       </div>
 
       @if (settings.showPortfolioDynamics ?? true) {
@@ -38,7 +38,7 @@
       }
 
       <span class="section-header pl-10 mt-20">{{ t('mobileHomeScreen.marketTrendsTitle') }}</span>
-      <ats-market-trends (instrumentSelected)="openChart($event)"
+      <ats-market-trends (instrumentSelected)="openOrder($event)"
         (showMore)="openAllInstruments($event)"
         [extendedFilter]="settings.marketTrendsExtendedFilter ?? []"
         [itemsCount]="settings.marketTrendsItemsCount ?? 10"

@@ -123,6 +123,12 @@ describe('MarketOrderFormComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MarketOrderFormComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput(
+      'marketOrderConfig',
+      {
+        unsupportedFields: {}
+      }
+    );
   });
 
   it('should create', () => {

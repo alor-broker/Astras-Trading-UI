@@ -1,0 +1,60 @@
+<div class="position-relative h-100 overflow-hidden d-flex flex-column">
+  <div class="pb-10">
+    <ats-instrument-quotes
+      [targetInstrument]="settings()"
+      (priceSelected)="openLimitForm($event, Side.Buy)"
+    />
+  </div>
+
+  <div class="flex-fill position-relative overflow-hidden">
+    <div class="d-flex flex-column flex-gap-15 h-100 show-scroll" style="padding-bottom: 75px" #contentRoot>
+      <div style="height: 300px; min-height: 300px">
+        <ats-light-chart [selectedTimeframe]="defaultTimeframe()" [settings]="chartSettings()"></ats-light-chart>
+      </div>
+
+      <div>
+        <ats-order-book
+          (rowSelected)="openLimitForm($event.price, $event.side)"
+          [settings]="orderbookSettings()"
+        />
+      </div>
+
+      <div>
+        <ats-instrument-info [targetInstrument]="settings()"/>
+      </div>
+    </div>
+
+    <ats-pull-up-panel
+      [(isExpanded)]="orderFormsVisible"
+      [body]="orderPanelBody"
+      [dragThresholdPx]="20"
+      [header]="orderPanelHeader"
+      [triggerMode]="'drag'"
+    />
+
+    <ng-template #orderPanelHeader>
+      <div class="text-center fs-5 lh-1 heading-color">
+        <nz-icon nzTheme="outline" nzType="ellipsis" class="text-center fs-5 lh-1 heading-color"/>
+      </div>
+    </ng-template>
+
+    <ng-template #orderPanelBody>
+      <div class="order-panel-body p-10">
+        <ats-submit-order-form
+          [(formType)]="orderFormType"
+          [(side)]="orderFormSide"
+          [price]="orderFormsPrice()"
+          [targetInstrument]="settings()"
+          (submitted)="orderFormsVisible.set(false)"
+        />
+      </div>
+    </ng-template>
+  </div>
+
+  <div class="footer">
+    <ats-buy-sell-buttons
+      (btnClick)="openMarketForm($event)"
+    />
+  </div>
+</div>
+

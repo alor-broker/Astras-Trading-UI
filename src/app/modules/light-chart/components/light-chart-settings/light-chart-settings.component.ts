@@ -4,7 +4,7 @@ import {WidgetSettingsService} from "../../../../shared/services/widget-settings
 import {Observable, take} from "rxjs";
 import {isInstrumentEqual} from '../../../../shared/utils/settings-helper';
 import {InstrumentKey} from '../../../../shared/models/instruments/instrument-key.model';
-import {LightChartSettings, TimeFrameDisplayMode} from '../../models/light-chart-settings.model';
+import {LightChartWidgetSettings, TimeFrameDisplayMode} from '../../models/light-chart-settings.model';
 import {DeviceService} from "../../../../shared/services/device.service";
 import {
   WidgetSettingsBaseComponent
@@ -51,7 +51,7 @@ import {AsyncPipe} from '@angular/common';
     AsyncPipe
   ]
 })
-export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<LightChartSettings> implements OnInit {
+export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<LightChartWidgetSettings> implements OnInit {
   protected readonly settingsService: WidgetSettingsService;
   protected readonly manageDashboardsService: ManageDashboardsService;
   protected readonly destroyRef: DestroyRef;
@@ -69,7 +69,7 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
   readonly allTimeFrames = Object.values(TimeframeValue);
   timeFrameDisplayModes = TimeFrameDisplayMode;
   deviceInfo$!: Observable<any>;
-  protected settings$!: Observable<LightChartSettings>;
+  protected settings$!: Observable<LightChartWidgetSettings>;
 
   constructor() {
     const settingsService = inject(WidgetSettingsService);
@@ -111,13 +111,13 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
     }
   }
 
-  protected getUpdatedSettings(initialSettings: LightChartSettings): Partial<LightChartSettings> {
-    const formValue = this.form.value as Partial<LightChartSettings & { instrument: InstrumentKey }>;
+  protected getUpdatedSettings(initialSettings: LightChartWidgetSettings): Partial<LightChartWidgetSettings> {
+    const formValue = this.form.value as Partial<LightChartWidgetSettings & { instrument: InstrumentKey }>;
     const newSettings = {
       ...formValue,
       symbol: formValue.instrument?.symbol,
       exchange: formValue.instrument?.exchange
-    } as LightChartSettings & { instrument?: InstrumentKey };
+    } as LightChartWidgetSettings & { instrument?: InstrumentKey };
 
     newSettings.availableTimeFrames = this.sortTimeFrames(newSettings.availableTimeFrames ?? []);
 
@@ -128,7 +128,7 @@ export class LightChartSettingsComponent extends WidgetSettingsBaseComponent<Lig
     return newSettings;
   }
 
-  protected setCurrentFormValues(settings: LightChartSettings): void {
+  protected setCurrentFormValues(settings: LightChartWidgetSettings): void {
     this.form.reset();
 
     this.form.controls.instrument.setValue({

@@ -1,13 +1,9 @@
-@if (shouldShowChart$ | async) {
-  <div class='chart'>
-    @if (chartData$ | async; as cd) {
-      <canvas
-        baseChart
-        type="scatter"
-        [datasets]="cd"
-        [legend]="false"
-        [options]="chartOptions">
-      </canvas>
-    }
-  </div>
-}
+<div class='chart'>
+  <canvas
+    [datasets]="datasets()"
+    [legend]="false"
+    [options]="chartOptions"
+    baseChart
+    type="scatter">
+  </canvas>
+</div>

@@ -24,36 +24,38 @@
             }
           </ng-template>
         </nz-form-item>
-        <nz-collapse [nzBordered]="false" class="compact" nzGhost>
-          <nz-collapse-panel [nzHeader]="t('orderCommandsOrderForms.advanced')">
-            <nz-form-item class="compact">
-              <nz-form-label nzFor="timeInForce">{{ t('orderCommandsOrderForms.timeInForceLabel') }}</nz-form-label>
-              <nz-form-control>
-                <nz-select [nzPlaceHolder]="t('orderCommandsOrderForms.timeInForcePlaceholder')"
-                           formControlName="timeInForce"
-                           nzAllowClear>
-                  @for (timeInForce of timeInForceEnum | keyvalue; track timeInForce) {
-                    <nz-option [nzLabel]="t('orderCommandsOrderForms.timeInForceOptions.' + timeInForce.key)"
-                      [nzValue]="timeInForce.value"
-                     />
-                  }
-                </nz-select>
-              </nz-form-control>
-            </nz-form-item>
-            <nz-form-item>
-              <nz-form-label nzFor="instrumentGroup">{{ t('orderCommandsOrderForms.instrumentGroupLabel') }}
-              </nz-form-label>
-              <nz-form-control [nzErrorTip]="t('orderCommandsOrderForms.instrumentGroupError')">
-                <ats-instrument-board-select [instrument]="formInstrument"
-                  [placeholder]="t('orderCommandsOrderForms.instrumentGroupPlaceholder')"
-                  formControlName="instrumentGroup" />
-              </nz-form-control>
-            </nz-form-item>
-          </nz-collapse-panel>
-        </nz-collapse>
+        @if (!marketOrderConfig().unsupportedFields.advanced) {
+          <nz-collapse [nzBordered]="false" class="compact" nzGhost>
+            <nz-collapse-panel [nzHeader]="t('orderCommandsOrderForms.advanced')">
+              <nz-form-item class="compact">
+                <nz-form-label nzFor="timeInForce">{{ t('orderCommandsOrderForms.timeInForceLabel') }}</nz-form-label>
+                <nz-form-control>
+                  <nz-select [nzPlaceHolder]="t('orderCommandsOrderForms.timeInForcePlaceholder')"
+                             formControlName="timeInForce"
+                             nzAllowClear>
+                    @for (timeInForce of timeInForceEnum | keyvalue; track timeInForce) {
+                      <nz-option [nzLabel]="t('orderCommandsOrderForms.timeInForceOptions.' + timeInForce.key)"
+                                 [nzValue]="timeInForce.value"
+                      />
+                    }
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzFor="instrumentGroup">{{ t('orderCommandsOrderForms.instrumentGroupLabel') }}
+                </nz-form-label>
+                <nz-form-control [nzErrorTip]="t('orderCommandsOrderForms.instrumentGroupError')">
+                  <ats-instrument-board-select [instrument]="formInstrument"
+                                               [placeholder]="t('orderCommandsOrderForms.instrumentGroupPlaceholder')"
+                                               formControlName="instrumentGroup" />
+                </nz-form-control>
+              </nz-form-item>
+            </nz-collapse-panel>
+          </nz-collapse>
+        }
       </form>
     </div>
-    <div>
+    <div class="mt-8">
       <ats-order-evaluation (quantitySelect)="setQuantity($event)"
         [evaluationProperties]="evaluationRequest$ | async"
        />

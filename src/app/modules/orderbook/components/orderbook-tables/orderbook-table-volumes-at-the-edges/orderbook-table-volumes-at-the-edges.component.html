@@ -1,123 +1,120 @@
-@if (settings$ | async; as settings) {
-  <nz-table #basicTable [nzData]="ob()?.rows ?? []" nzSize="small" [nzFrontPagination]="false" id="order-book-table">
-    <thead>
+<nz-table #basicTable [nzData]="ob()?.rows ?? []" [nzFrontPagination]="false" id="order-book-table" nzSize="small">
+  <thead>
+  <tr>
+    <th [nzWidth]="'20px'">Vol</th>
+    <th nzAlign="right">
+      Bid
+    </th>
+    <th>
+      Ask
+    </th>
+    <th [nzWidth]="'20px'" nzAlign="right">Vol</th>
+  </tr>
+  </thead>
+  <tbody (click)="newLimitOrder($event, 0, Side.Buy)" cdkDropListGroup>
+    @for (row of basicTable.data; track $index) {
       <tr>
-        <th [nzWidth]="'20px'">Vol</th>
-        <th nzAlign="right">
-          Bid
-        </th>
-        <th>
-          Ask
-        </th>
-        <th [nzWidth]="'20px'" nzAlign="right">Vol</th>
-      </tr>
-    </thead>
-    <tbody (click)="newLimitOrder($event, 0)" cdkDropListGroup>
-      @for (row of basicTable.data; track $index) {
-        <tr>
-          @if (row.bid || (row.bid === 0)) {
-            <td
-              [ngStyle]="{background: 'unset'}"
-              (click)="newLimitOrder($event, row.bid)"
-              cdkDropList
-              (cdkDropListDropped)="updateOrderPrice($event.item.data, row.bid)"
-              >
-              @if (row.bidOrders && row.bidOrderVolume) {
-                <button
-                  nzSize="small"
-                  nz-button
-                  nzType="primary"
-                  cdkDrag
-                  cdkDragPreviewClass="order-book-order"
-                  [cdkDragDisabled]="row.bidOrders!.length !== 1"
-                  [cdkDragData]="row.bidOrders![0]"
-                  (click)="cancelOrder($event, row.bidOrders)">
-                  @if (row.bidOrderVolume) {
-                    <i nz-icon nzType="close-square" nzTheme="outline"></i>
-                  }
-                  {{row.bidOrderVolume}}
-                </button>
-              }
-              <span class="cell-value">
-                @if (settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix) {
-                  <ats-short-number [value]="row.bidVolume"
-                  [allowRounding]="true"  />
+        @if (row.bid || (row.bid === 0)) {
+          <td
+            (cdkDropListDropped)="updateOrderPrice($event.item.data, row.bid)"
+            (click)="newLimitOrder($event, row.bid, Side.Buy)"
+            [ngStyle]="{background: 'unset'}"
+            cdkDropList
+          >
+            @if (row.bidOrders && row.bidOrderVolume) {
+              <button
+                (click)="cancelOrder($event, row.bidOrders)"
+                [cdkDragData]="row.bidOrders![0]"
+                [cdkDragDisabled]="row.bidOrders!.length !== 1"
+                cdkDrag
+                cdkDragPreviewClass="order-book-order"
+                nz-button
+                nzSize="small"
+                nzType="primary">
+                @if (row.bidOrderVolume) {
+                  <i nz-icon nzTheme="outline" nzType="close-square"></i>
+                }
+                {{ row.bidOrderVolume }}
+              </button>
+            }
+            <span class="cell-value">
+                @if (volumeDisplayFormat() === numberFormats.LetterSuffix) {
+                  <ats-short-number [allowRounding]="true"
+                                    [value]="row.bidVolume"/>
                 } @else {
-                  <span>{{row.bidVolume}}</span>
+                  <span>{{ row.bidVolume }}</span>
                 }
               </span>
+          </td>
+
+          @if (showYield()) {
+            <td
+              (click)="newLimitOrder($event, row.bid, Side.Buy)"
+              [ngStyle]="getBidStyle(row.bidVolume ?? 0)"
+              nzAlign="right">
+              {{ row.yieldBid }}
             </td>
-            @if ((shouldShowYield$ | async) === false) {
-              <td
-                (click)="newLimitOrder($event, row.bid)"
-                nzAlign="right"
-                [ngStyle]="getBidStyle(row.bidVolume ?? 0)">
-                {{row.bid | atsPrice: getPriceDecimalSymbolsCount(settings)}}
-              </td>
-            }
-            @if ((shouldShowYield$ | async) === true) {
-              <td
-                (click)="newLimitOrder($event, row.bid)"
-                nzAlign="right"
-                [ngStyle]="getBidStyle(row.bidVolume ?? 0)">
-                {{row.yieldBid}}
-              </td>
-            }
           } @else {
-            <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
+            <td
+              (click)="newLimitOrder($event, row.bid, Side.Buy)"
+              [ngStyle]="getBidStyle(row.bidVolume ?? 0)"
+              nzAlign="right">
+              {{ row.bid | atsPrice: getPriceDecimalSymbolsCount() }}
+            </td>
           }
-          @if (row.ask || (row.ask === 0)) {
-            @if ((shouldShowYield$ | async) === false) {
-              <td
-                (click)="newLimitOrder($event, row.ask)"
-                [ngStyle]="getAskStyle(row.askVolume ?? 0)">
-                {{row.ask | atsPrice: getPriceDecimalSymbolsCount(settings)}}
-              </td>
-            }
-            @if ((shouldShowYield$ | async) === true) {
-              <td
-                (click)="newLimitOrder($event, row.ask)"
-                [ngStyle]="getAskStyle(row.askVolume ?? 0)">
-                {{row.yieldAsk}}
-              </td>
-            }
-            <td [ngStyle]="{background: 'unset'}"
+        } @else {
+          <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
+        }
+        @if (row.ask || (row.ask === 0)) {
+          @if (showYield()) {
+            <td
+              (click)="newLimitOrder($event, row.ask, Side.Sell)"
+              [ngStyle]="getAskStyle(row.askVolume ?? 0)">
+              {{ row.yieldAsk }}
+            </td>
+          } @else {
+            <td
+              (click)="newLimitOrder($event, row.ask, Side.Sell)"
+              [ngStyle]="getAskStyle(row.askVolume ?? 0)">
+              {{ row.ask | atsPrice: getPriceDecimalSymbolsCount() }}
+            </td>
+          }
+          <td (cdkDropListDropped)="updateOrderPrice($event.item.data, row.ask)"
+              (click)="newLimitOrder($event, row.ask, Side.Sell)"
+              [ngStyle]="{background: 'unset'}"
+              cdkDropList
               class='row-cell--ask-volume'
               nzAlign="right"
-              (click)="newLimitOrder($event, row.ask)"
-              cdkDropList
-              (cdkDropListDropped)="updateOrderPrice($event.item.data, row.ask)"
-              >
+          >
               <span class="cell-value">
-                @if (settings.widgetSettings.volumeDisplayFormat === numberFormats.LetterSuffix) {
-                  <ats-short-number [value]="row.askVolume"
-                  [allowRounding]="true"  />
+                @if (volumeDisplayFormat() === numberFormats.LetterSuffix) {
+                  <ats-short-number [allowRounding]="true"
+                                    [value]="row.askVolume"/>
                 } @else {
-                  <span>{{row.askVolume}}</span>
+                  <span>{{ row.askVolume }}</span>
                 }
               </span>
-              @if (row.askOrders && row.askOrderVolume) {
-                <button
-                  nzSize="small"
-                  nz-button
-                  nzType="primary"
-                  cdkDrag
-                  cdkDragPreviewClass="order-book-order"
-                  [cdkDragDisabled]="row.askOrders!.length !== 1"
-                  [cdkDragData]="row.askOrders![0]"
-                  (click)="cancelOrder($event, row.askOrders)">
-                  {{row.askOrderVolume}}
-                  @if (row.askOrderVolume) {
-                    <i nz-icon nzType="close-square" nzTheme="outline"></i>
-                  }
-                </button>
-              }
-            </td>
-          } @else {
-            <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
-          }
-        </tr>
-      }
-    </tbody>
-  </nz-table>
-}
+            @if (row.askOrders && row.askOrderVolume) {
+              <button
+                (click)="cancelOrder($event, row.askOrders)"
+                [cdkDragData]="row.askOrders![0]"
+                [cdkDragDisabled]="row.askOrders!.length !== 1"
+                cdkDrag
+                cdkDragPreviewClass="order-book-order"
+                nz-button
+                nzSize="small"
+                nzType="primary">
+                {{ row.askOrderVolume }}
+                @if (row.askOrderVolume) {
+                  <i nz-icon nzTheme="outline" nzType="close-square"></i>
+                }
+              </button>
+            }
+          </td>
+        } @else {
+          <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
+        }
+      </tr>
+    }
+  </tbody>
+</nz-table>

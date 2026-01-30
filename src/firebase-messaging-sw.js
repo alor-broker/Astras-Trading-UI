@@ -1,5 +1,5 @@
-importScripts('https://www.gstatic.com/firebasejs/12.6.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/12.6.0/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/12.8.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/12.8.0/firebase-messaging-compat.js');
 
 firebase.initializeApp({
   apiKey: "AIzaSyCI0yjnNuT8VWJG4ow38-iY231ZoTGxV-o",

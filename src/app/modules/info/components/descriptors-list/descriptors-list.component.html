@@ -1,5 +1,6 @@
 <ng-container *transloco="let t; scope: 'info/descriptors-list'">
-  <table>
+  <div class="descriptors-list">
+    <table>
     <tbody>
       @for (group of descriptors(); track $index) {
         @if (group.items.length > 0) {
@@ -33,4 +34,5 @@
       }
     </tbody>
   </table>
+  </div>
 </ng-container>

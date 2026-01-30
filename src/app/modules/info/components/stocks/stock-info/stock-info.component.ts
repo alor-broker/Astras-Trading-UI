@@ -55,6 +55,8 @@ import {
   NzCollapseComponent,
   NzCollapsePanelComponent
 } from "ng-zorro-antd/collapse";
+import { SectionsListComponent } from "../../sections-list/sections-list.component";
+import { SectionComponent } from "../../section/section.component";
 
 type StockResponse = Modify<
   Query,
@@ -82,7 +84,9 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<StockResponse>> = object({
     DividendsChartComponent,
     NzCollapseComponent,
     NzCollapsePanelComponent,
-    NzTabsComponent
+    NzTabsComponent,
+    SectionsListComponent,
+    SectionComponent
   ],
     templateUrl: './stock-info.component.html',
     styleUrl: './stock-info.component.less'
@@ -95,7 +99,7 @@ export class StockInfoComponent extends InstrumentInfoBaseComponent implements O
 
   info$!: Observable<Stock | null>;
 
-  descriptors!: Observable<DescriptorsGroup[] | null>;
+  descriptors$!: Observable<DescriptorsGroup[] | null>;
 
   ngOnInit(): void {
     this.initDataStream();
@@ -132,7 +136,7 @@ export class StockInfoComponent extends InstrumentInfoBaseComponent implements O
   }
 
   private initDescriptors(): void {
-    this.descriptors = combineLatest({
+    this.descriptors$ = combineLatest({
       info: this.info$,
       translator: this.translatorService.getTranslator('info/descriptors-list')
     }).pipe(

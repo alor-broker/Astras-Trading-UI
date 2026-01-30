@@ -1,5 +1,5 @@
 <ng-container *transloco="let t;">
-  @if (settings$ | async; as settings) {
+  @if (widgetSettings$ | async; as widgetSettings) {
     <ats-widget-skeleton
       [content]="contentRef"
       [header]="headerRef"
@@ -12,8 +12,8 @@
         <ats-widget-header (switchSettings)="onSettingsChange()"
           [guid]="guid"
           [hasSettings]="true"
-          [linkToActive]="settings.linkToActive ?? null"
-          [selectedBadgeColor]="settings.badgeColor"
+          [linkToActive]="widgetSettings.linkToActive ?? null"
+          [selectedBadgeColor]="widgetSettings.badgeColor"
           [showBadgesMenu]="(showBadge$ | async) ?? false"
           [titleTemplate]="titleTemplate"
           [widgetMeta]="widgetInstance().widgetMeta"
@@ -23,7 +23,13 @@
         </ng-template>
       </ng-template>
       <ng-template #contentRef>
-        <ats-light-chart [guid]="guid" />
+        @if(chartSettings$ | async; as chartSettings) {
+          <ats-light-chart
+            [settings]="chartSettings"
+            [selectedTimeframe]="widgetSettings.timeFrame"
+            (selectedTimeframeChange)="updateSelectedTimeFrame($event)"
+          />
+        }
       </ng-template>
       <ng-template #settingsRef>
         <ats-light-chart-settings (settingsChange)="onSettingsChange()" [guid]="guid" />

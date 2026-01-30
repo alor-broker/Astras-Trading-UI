@@ -60,6 +60,14 @@
               <ats-instant-notifications-form [formControl]="instantNotificationsSettings" />
             </nz-tab>
           }
+          @if (!hiddenSections().includes('mobileDashboardLayout') &&
+          settingsForm.controls.mobileDashboardLayout; as mobileDashboardLayout) {
+            <nz-tab
+              (nzSelect)="tabChange.emit(tabNames.mobileDashboardLayout)"
+              [nzTitle]="t('terminalSettings.mobileDashboardLayoutTabTitle')">
+              <ats-mobile-dashboard-layout-form [formControl]="mobileDashboardLayout" />
+            </nz-tab>
+          }
         </nz-tabs>
       </div>
     </ng-container>

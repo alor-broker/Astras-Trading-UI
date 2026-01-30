@@ -141,5 +141,8 @@
         [isBlockWidget]="isBlockWidget()"
          />
     }
+    @case ('trade-screen') {
+      <ats-trade-screen-widget [widgetInstance]="targetWidgetInstance"/>
+    }
   }
 </div>

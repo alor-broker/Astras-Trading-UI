@@ -1,0 +1,29 @@
+<ng-container *transloco="let t;">
+  @if (settings$ | async; as settings) {
+    <ats-widget-skeleton
+      [content]="contentRef"
+      [header]="headerRef"
+      [isBlockWidget]="false"
+      [showContentScroll]="false"
+      [showSettings]="false"
+    >
+      <ng-template #headerRef>
+        <ats-widget-header
+          [guid]="guid"
+          [hasSettings]="false"
+          [linkToActive]="settings.linkToActive ?? null"
+          [titleTemplate]="titleTemplate"
+          [widgetMeta]="widgetInstance().widgetMeta"
+        />
+        <ng-template #titleTemplate>
+          <ats-widget-header-instrument-switch [widgetGuid]="guid"/>
+        </ng-template>
+      </ng-template>
+      <ng-template #contentRef>
+        @if(settings != null) {
+          <ats-trade-screen-content [settings]="settings"/>
+        }
+      </ng-template>
+    </ats-widget-skeleton>
+  }
+</ng-container>

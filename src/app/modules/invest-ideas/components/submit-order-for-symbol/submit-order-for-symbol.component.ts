@@ -12,6 +12,7 @@ import {
   MarketOrderFormComponent
 } from "../../../order-commands/components/order-forms/market-order-form/market-order-form.component";
 import {toObservable} from "@angular/core/rxjs-interop";
+import {MarketOrderConfig} from "../../../../shared/models/orders/orders-config.model";
 
 @Component({
   selector: 'ats-submit-order-for-symbol',
@@ -42,6 +43,10 @@ export class SubmitOrderForSymbolComponent {
     filter(i => i != null),
     shareReplay(1)
   );
+
+  protected readonly marketOrderConfig: MarketOrderConfig = {
+    unsupportedFields: {}
+  };
 
   setCommonParameters(params: Partial<CommonParameters>): void {
     this.commonParametersService.setParameters(params);

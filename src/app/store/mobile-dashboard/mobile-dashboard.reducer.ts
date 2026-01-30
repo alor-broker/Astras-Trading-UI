@@ -118,7 +118,7 @@ const reducer = createReducer(
     const isInstrumentInHistory = !!(state.instrumentsHistory as InstrumentKey[] | undefined ?? []).find(i =>
       i.symbol === props.selection.instrumentKey.symbol && i.instrumentGroup === props.selection.instrumentKey.instrumentGroup);
 
-    const maxHistoryLength = 3;
+    const maxHistoryLength = 5;
 
     const instrumentsHistory = isInstrumentInHistory
       ? state.instrumentsHistory

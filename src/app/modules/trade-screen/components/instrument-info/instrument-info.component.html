@@ -1,0 +1,32 @@
+@if (instrumentSummary$ | async; as instrumentSummary) {
+  <nz-spin [nzSpinning]="isLoading()">
+    @switch (instrumentSummary.typeByCfi) {
+      @case (InstrumentTypes.Stock) {
+        <ats-stock-info (loadingChange)="isLoading.set($event)"
+                        [instrumentKey]="instrumentSummary"
+                        displayMode="vertical"
+        />
+      }
+      @case (InstrumentTypes.Bond) {
+        <ats-bond-info (loadingChange)="isLoading.set($event)"
+                       [instrumentKey]="instrumentSummary"
+                       displayMode="vertical"/>
+      }
+      @case (InstrumentTypes.Futures) {
+        <ats-derivative-info (loadingChange)="isLoading.set($event)"
+                             [instrumentKey]="instrumentSummary"
+                             displayMode="vertical"/>
+      }
+      @case (InstrumentTypes.Options) {
+        <ats-derivative-info (loadingChange)="isLoading.set($event)"
+                             [instrumentKey]="instrumentSummary"
+                             displayMode="vertical"/>
+      }
+      @default {
+        <ats-common-info (loadingChange)="isLoading.set($event)"
+                         [instrumentKey]="instrumentSummary"
+                         displayMode="vertical"/>
+      }
+    }
+  </nz-spin>
+}

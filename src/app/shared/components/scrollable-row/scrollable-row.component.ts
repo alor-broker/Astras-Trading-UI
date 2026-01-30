@@ -27,7 +27,7 @@ import { SwipeDirective } from "../../directives/swipe.directive";
   styleUrls: ['./scrollable-row.component.less']
 })
 export class ScrollableRowComponent implements OnDestroy {
-  readonly items = contentChildren(ScrollableItemDirective);
+  readonly items = contentChildren(ScrollableItemDirective, {descendants: true});
 
   readonly showScrollButtons = input(true);
 
