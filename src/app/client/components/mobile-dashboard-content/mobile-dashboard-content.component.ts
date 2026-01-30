@@ -121,7 +121,7 @@ export class MobileDashboardContentComponent implements OnInit {
           instance: x,
           widgetMeta: meta.find(m => m.typeId === x.widgetType)
         } as WidgetInstance))
-          .filter(x => (x.widgetMeta.mobileMeta?.enabled ?? false))
+          .filter(x => (x.widgetMeta != null && (x.widgetMeta.mobileMeta?.enabled ?? false)))
       ),
       shareReplay(1)
     );
