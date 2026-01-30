@@ -1,15 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import {MobileActionsContextService} from "../../../modules/dashboard/services/mobile-actions-context.service";
 import {ACTIONS_CONTEXT} from "../../../shared/services/actions-context";
-import {fromEvent, Observable} from "rxjs";
 import {MobileSettingsBrokerService} from "../../../modules/dashboard/services/mobile-settings-broker.service";
 import {Store} from "@ngrx/store";
 import {PortfoliosInternalActions} from "../../../store/portfolios/portfolios.actions";
 import {WidgetsLocalStateInternalActions} from "../../../store/widgets-local-state/widgets-local-state.actions";
 import {LocalStorageCommonConstants} from "../../../shared/constants/local-storage.constants";
-import {map, startWith} from "rxjs/operators";
 import {NzLayoutComponent} from "ng-zorro-antd/layout";
-import {AsyncPipe} from "@angular/common";
 import {MobileNavbarComponent} from "../../components/mobile-navbar/mobile-navbar.component";
 import {
   MobileInstrumentsHistoryComponent
@@ -37,7 +34,6 @@ import {
   selector: 'ats-mobile-dashboard',
   imports: [
     NzLayoutComponent,
-    AsyncPipe,
     FeedbackWidgetComponent,
     MobileNavbarComponent,
     MobileInstrumentsHistoryComponent,
@@ -65,17 +61,9 @@ export class MobileDashboardComponent implements OnInit {
   private readonly mobileSettingsBrokerService = inject(MobileSettingsBrokerService);
   private readonly store = inject(Store);
 
-  screenHeight!: Observable<number>;
-
   ngOnInit(): void {
     this.mobileSettingsBrokerService.initSettingsBrokers();
     this.store.dispatch(PortfoliosInternalActions.init());
     this.store.dispatch(WidgetsLocalStateInternalActions.init({storageKey: LocalStorageCommonConstants.WidgetsLocalStateStorageKey}));
-
-    this.screenHeight = fromEvent(window, 'resize')
-      .pipe(
-        map(() => (window.screen.height / window.devicePixelRatio)),
-        startWith(window.screen.height / window.devicePixelRatio)
-      );
   }
 }
