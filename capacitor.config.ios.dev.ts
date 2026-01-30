@@ -4,9 +4,6 @@ const config: CapacitorConfig = {
   appId: 'ru.alor.astras',
   appName: 'Astras',
   webDir: 'dist/astras',
-  ios: {
-    contentInset: 'always'
-  },
   server: {
     url: 'http://localhost:4200',
     cleartext: true,
