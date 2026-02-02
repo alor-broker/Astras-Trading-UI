@@ -1,0 +1,45 @@
+.input-container {
+  padding: 16px;
+
+  .option-card {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid #e8e8e8; // var(--border-color)
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .icon {
+      font-size: 24px;
+      margin-right: 16px;
+    }
+
+    .details {
+      h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      p {
+        margin: 0;
+        color: #888; // var(--text-secondary-color)
+        font-size: 12px;
+      }
+    }
+  }
+
+  .amount-step,
+  .confirm-step {
+    button[nzType="text"] {
+      padding-left: 0;
+      margin-bottom: 16px;
+    }
+  }
+}

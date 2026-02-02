@@ -1,0 +1,69 @@
+<div class="input-container" *transloco="let t; scope: 'money-operations'">
+  <ng-container *ngIf="step$ | async as step">
+
+    <!-- Selection Step -->
+    <div *ngIf="step === 'selection'" class="selection-step">
+      <div class="option-card" (click)="selectSubtype('card')">
+        <div class="icon">💳</div>
+        <div class="details">
+          <h3>{{t('moneyOperations.cardTitle')}}</h3>
+          <p>{{t('moneyOperations.cardLimits')}}</p>
+        </div>
+      </div>
+
+      <div class="option-card" (click)="selectSubtype('sbp')">
+        <div class="icon">💠</div>
+        <div class="details">
+          <h3>{{t('moneyOperations.sbpTitle')}}</h3>
+          <p>{{t('moneyOperations.sbpLimits')}}</p>
+        </div>
+      </div>
+
+      <div class="option-card" (click)="selectSubtype('transfer')">
+        <div class="icon">🏦</div>
+        <div class="details">
+          <h3>{{t('moneyOperations.detailsTitle')}}</h3>
+          <p>{{t('moneyOperations.detailsLimits')}}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Amount Step -->
+    <div *ngIf="step === 'amount'" class="amount-step">
+      <button nz-button nzType="text" (click)="back()">
+        < {{t('moneyOperations.back')}}</button>
+
+          <form [formGroup]="form" (ngSubmit)="submitPrepare()">
+            <nz-form-item>
+              <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>{{t('moneyOperations.amountLabel')}}</nz-form-label>
+              <nz-form-control [nzSm]="14" [nzXs]="24" [nzErrorTip]="t('moneyOperations.amountError')">
+                <input nz-input formControlName="amount" type="number"
+                  [placeholder]="t('moneyOperations.amountPlaceholder')" />
+                <div class="commission-info">
+                  {{ subtype === 'card' ? t('moneyOperations.cardCommission') : t('moneyOperations.sbpCommission') }}
+                </div>
+              </nz-form-control>
+            </nz-form-item>
+
+            <button nz-button nzType="primary" [nzLoading]="isLoading"
+              [disabled]="!form.valid">{{t('moneyOperations.continue')}}</button>
+          </form>
+    </div>
+
+    <!-- Confirm Step -->
+    <div *ngIf="step === 'confirm'" class="confirm-step">
+      <button nz-button nzType="text" (click)="back()">
+        < {{t('moneyOperations.back')}}</button>
+
+          <h3>{{t('moneyOperations.confirmTitle')}}</h3>
+          <div class="summary">
+            <p>{{t('moneyOperations.amountLabel')}}: {{form.get('amount')?.value}} RUB</p>
+            <p>{{t('moneyOperations.commissionLabel')}}: ...</p>
+          </div>
+
+          <button nz-button nzType="primary" [nzLoading]="isLoading"
+            (click)="submitCreate()">{{t('moneyOperations.pay')}}</button>
+    </div>
+
+  </ng-container>
+</div>

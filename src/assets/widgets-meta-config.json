@@ -29,7 +29,9 @@
       "galleryOrder": 1,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "order-book",
@@ -69,7 +71,9 @@
       "galleryOrder": 2,
       "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "scalper-order-book",
@@ -102,7 +106,9 @@
       "galleryOrder": 3,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "light-chart",
@@ -142,7 +148,9 @@
       "galleryOrder": 4,
       "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "tech-chart",
@@ -182,7 +190,9 @@
       "galleryOrder": 5,
       "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "blotter",
@@ -221,7 +231,9 @@
       "galleryOrder": 6,
       "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "instrument-info",
@@ -261,7 +273,9 @@
       "galleryOrder": 7,
       "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "news",
@@ -300,7 +314,9 @@
       "galleryOrder": 8,
       "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "all-trades",
@@ -340,7 +356,9 @@
       "galleryOrder": 9,
       "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "exchange-rate",
@@ -379,7 +397,9 @@
       "galleryOrder": 10,
       "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "all-instruments",
@@ -418,7 +438,9 @@
       "galleryOrder": 11,
       "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "order-submit",
@@ -467,7 +489,9 @@
       "selectableForQuickAccessPanel": true,
       "isOrderWidget": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "orders-basket",
@@ -506,7 +530,9 @@
       "galleryOrder": 13,
       "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "treemap",
@@ -545,7 +571,9 @@
       "galleryOrder": 14,
       "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "ribbon",
@@ -576,7 +604,9 @@
       "galleryOrder": 15,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "events-calendar",
@@ -615,7 +645,9 @@
       "galleryOrder": 16,
       "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "option-board",
@@ -654,7 +686,9 @@
       "galleryOrder": 17,
       "selectableForQuickAccessPanel": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "arbitrage-spread",
@@ -686,7 +720,10 @@
       "galleryOrder": 18,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
   },
   {
     "typeId": "portfolio-summary",
@@ -717,7 +754,9 @@
       "galleryOrder": 19,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "instruments-correlation",
@@ -749,7 +788,10 @@
       "galleryOrder": 20,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main","admin-selected-portfolio"]
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
   },
   {
     "typeId": "bond-screener",
@@ -781,7 +823,10 @@
       "galleryOrder": 21,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main","admin-selected-portfolio"]
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
   },
   {
     "typeId": "mobile-home-screen",
@@ -800,14 +845,70 @@
         "hy": "Գլխավոր էջ"
       }
     },
-    "category": "positionsTradesOrders",
+    "category": "info",
+    "desktopMeta": {
+      "headerIcon": "home",
+      "galleryIcon": "home",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 22,
+      "enabled": true
+    },
     "mobileMeta": {
       "galleryIcon": "home",
       "ribbonIcon": "home",
       "enabled": true,
-      "galleryOrder": 0,
+      "galleryOrder": 22,
       "selectableForQuickAccessPanel": true
-    }
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
+    "typeId": "money-operations",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "MoneyOperationsModule",
+        "componentName": "MoneyOperationsWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Money Operations",
+      "translations": {
+        "ru": "Операции с деньгами",
+        "en": "Money Operations",
+        "hy": "Դրամական գործառնություններ"
+      }
+    },
+    "category": "details",
+    "desktopMeta": {
+      "headerIcon": "bank",
+      "galleryIcon": "bank",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 23,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "bank",
+      "ribbonIcon": "bank",
+      "enabled": true,
+      "galleryOrder": 23,
+      "selectableForQuickAccessPanel": false
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "ai-graphs",
@@ -840,7 +941,10 @@
       "galleryOrder": 50,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
   },
   {
     "typeId": "invest-ideas",
@@ -873,7 +977,10 @@
       "galleryOrder": 22,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
   },
   {
     "typeId": "portfolio-charts",
@@ -905,7 +1012,9 @@
       "galleryOrder": 23,
       "enabled": true
     },
-    "hideOnDashboardType": ["admin-main"]
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
   },
   {
     "typeId": "market-trends",
@@ -940,7 +1049,10 @@
     "baseSettings": {
       "availableExtendedFilters": []
     },
-    "hideOnDashboardType": ["admin-main", "admin-selected-portfolio"]
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
   },
   {
     "typeId": "trade-screen",
@@ -970,7 +1082,6 @@
       "isOrderWidget": true
     }
   },
-
   {
     "typeId": "admin-clients",
     "definition": {
@@ -1001,6 +1112,10 @@
       "galleryOrder": 100,
       "enabled": true
     },
-    "hideOnDashboardType": ["desktop", "mobile", "admin-selected-portfolio"]
+    "hideOnDashboardType": [
+      "desktop",
+      "mobile",
+      "admin-selected-portfolio"
+    ]
   }
 ]

@@ -1,0 +1,16 @@
+<div class="container" *transloco="let t; scope: 'money-operations'">
+  <nz-tabset [(nzSelectedIndex)]="activeTab">
+    <nz-tab [nzTitle]="t('moneyOperations.depositTitle')">
+      <ats-money-input></ats-money-input>
+    </nz-tab>
+    <nz-tab [nzTitle]="t('moneyOperations.withdrawTitle')">
+      <ats-money-withdrawal></ats-money-withdrawal>
+    </nz-tab>
+    <nz-tab [nzTitle]="t('moneyOperations.transferTitle')">
+      <!-- TODO: Implement Transfer Component -->
+      <div class="p-10">
+        {{t('moneyOperations.transferPlaceholder')}}
+      </div>
+    </nz-tab>
+  </nz-tabset>
+</div>
