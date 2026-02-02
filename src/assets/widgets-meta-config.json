@@ -911,6 +911,47 @@
     ]
   },
   {
+    "typeId": "operations-history",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "OperationsHistoryModule",
+        "componentName": "OperationsHistoryWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Operations History",
+      "translations": {
+        "ru": "История операций",
+        "en": "Operations History",
+        "hy": "Operations History"
+      }
+    },
+    "category": "details",
+    "desktopMeta": {
+      "headerIcon": "history",
+      "galleryIcon": "history",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 10
+      },
+      "galleryOrder": 24,
+      "enabled": true
+    },
+    "mobileMeta": {
+      "galleryIcon": "history",
+      "ribbonIcon": "history",
+      "enabled": true,
+      "galleryOrder": 24,
+      "selectableForQuickAccessPanel": false
+    },
+    "hideOnDashboardType": [
+      "admin-main"
+    ]
+  },
+  {
     "typeId": "ai-graphs",
     "definition": {
       "adapter": "application",

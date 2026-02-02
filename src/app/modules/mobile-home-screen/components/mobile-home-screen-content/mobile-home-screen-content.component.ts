@@ -42,6 +42,7 @@ import {
     TranslocoDirective,
     NewsComponent,
     InvestIdeasCompactComponent,
+    InvestIdeasCompactComponent,
     AgreementDynamicsComponent,
     AsyncPipe
   ],
@@ -102,6 +103,14 @@ export class MobileHomeScreenContentComponent implements OnInit {
     this.navigationStackService.pushState({
       widgetTarget: {
         typeId: 'money-operations'
+      }
+    });
+  }
+
+  openHistory(): void {
+    this.navigationStackService.pushState({
+      widgetTarget: {
+        typeId: 'operations-history'
       }
     });
   }

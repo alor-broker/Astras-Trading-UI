@@ -69,6 +69,7 @@ import {
 import {
   MoneyOperationsWidgetComponent
 } from "../../../money-operations/widgets/money-operations-widget/money-operations-widget.component";
+import { OperationsHistoryWidgetComponent } from '../../../operations-history/widgets/operations-history-widget/operations-history-widget.component';
 
 @Component({
   selector: 'ats-parent-widget',
@@ -105,7 +106,8 @@ import {
     AdminClientsWidgetComponent,
     AsyncPipe,
     MobileOrderWidgetComponent,
-    MoneyOperationsWidgetComponent
+    MoneyOperationsWidgetComponent,
+    OperationsHistoryWidgetComponent
   ]
 })
 export class ParentWidgetComponent implements OnDestroy {

@@ -1,0 +1,42 @@
+<div class="history-container" *transloco="let t; scope: 'operations-history'">
+  <h2 class="title" *ngIf="!preview">{{t('operationsHistory.title')}}</h2>
+
+  <nz-list [nzLoading]="isLoading$ | async">
+    <ng-container *ngFor="let item of history$ | async">
+      <div class="history-card">
+        <div class="card-left">
+          <div class="icon-circle">
+            <span nz-icon [nzType]="getIcon(item.type)" nzTheme="outline"></span>
+          </div>
+        </div>
+        <div class="card-center">
+          <div class="item-title">{{ t('operationsHistory.type.' + item.type) || item.type }}</div>
+          <div class="item-meta">
+            {{ item.date | date:'dd.MM.yyyy HH:mm' }}
+            <span class="meta-separator" *ngIf="item.data?.amount">•</span>
+            <span class="item-amount" [style.color]="getColor(item.type)" *ngIf="item.data?.amount">
+              {{ item.type === 'money_withdrawal' ? '-' : '+' }}{{ item.data.amount }} {{ item.data.currency }}
+            </span>
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="status-badge" [class]="item.status">
+            {{ t('operationsHistory.status.' + item.status) || item.status }}
+          </span>
+        </div>
+      </div>
+    </ng-container>
+    <nz-list-empty *ngIf="(history$ | async)?.length === 0"></nz-list-empty>
+  </nz-list>
+
+  <div class="load-more" *ngIf="(history$ | async)?.length">
+    <button *ngIf="!preview && hasMore" nz-button nzType="default" [nzLoading]="isLoading$ | async"
+      (click)="loadMore()">
+      {{t('operationsHistory.loadMore')}}
+    </button>
+
+    <button *ngIf="preview" nz-button nzType="link" (click)="showMore.emit()">
+      {{t('operationsHistory.loadMore')}}
+    </button>
+  </div>
+</div>

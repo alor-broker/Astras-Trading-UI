@@ -13,6 +13,12 @@
           {{ t('mobileHomeScreen.moneyOperationsTitle') }}
         </button>
       </div>
+      <div class="mt-10 px-10">
+        <button nz-button nzType="default" nzBlock (click)="openHistory()">
+          <span nz-icon nzType="history" nzTheme="outline"></span>
+          {{ t('mobileHomeScreen.historyTitle') }}
+        </button>
+      </div>
 
       <div class="mt-10">
         <ats-positions (instrumentSelected)="openOrder($event)" />

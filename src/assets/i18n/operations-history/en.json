@@ -1,0 +1,15 @@
+{
+  "title": "Operations History",
+  "loadMore": "Load more",
+  "empty": "History is empty",
+  "type": {
+    "money_input": "Deposit",
+    "money_withdrawal": "Withdrawal",
+    "trade": "Trade"
+  },
+  "status": {
+    "executed": "Executed",
+    "canceled": "Canceled",
+    "process": "Processing"
+  }
+}
