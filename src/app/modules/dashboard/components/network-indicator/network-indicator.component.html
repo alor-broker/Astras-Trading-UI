@@ -1,17 +1,19 @@
 <ng-container *transloco="let t; scope: 'dashboard/network-indicator'">
   @if ((networkStatus$ | async); as status) {
     <div class="d-flex  justify-content-center align-items-center">
-      <ng-container *ngrxLet="lastDelay$ as lastDelay">
+      @if(status === statuses.Online) {
+        <ng-container *ngrxLet="lastDelay$ as lastDelay">
         <span
-          class="pr-3 user-select-none"
+          class="pr-3 user-select-none text-nowrap"
           nz-typography
           [nzType]="lastDelay.color"
           nz-tooltip
           [nzTooltipTitle]="t('dashboardNetworkIndicator.requestDelayDescription')"
-          >
+        >
           {{ lastDelay.delaySec | number: '1.1-2'}}
         </span>
-      </ng-container>
+        </ng-container>
+      }
       <span
         [ngClass]="{
       'online': status === statuses.Online,

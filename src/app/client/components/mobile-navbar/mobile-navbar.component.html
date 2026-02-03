@@ -6,23 +6,19 @@
       </a>
     </div>
     @if (portfolios$ | async; as portfolios) {
-      <div class="menu-item">
+      <div class="portfolio">
         @if (selectedPortfolio$ | async; as selectedPortfolio) {
           <button
             class="dropdown-btn"
             nz-button
             nz-dropdown
-            nzSize="small"
             nzType="text"
             [nzDropdownMenu]="portfoliosDropdown"
-            joyrideStep="step1"
-            [title]="t('joyride.step1.title')"
-            [text]="t('joyride.step1.text')"
             >
             <span>
               {{selectedPortfolio.market}} {{selectedPortfolio.portfolio}}
-              <i nz-icon nzType="down" nzTheme="outline" class="arrow-icon"></i>
             </span>
+            <nz-icon nzType="down" nzTheme="outline" class="arrow-icon"/>
           </button>
         } @else {
           <button
@@ -66,6 +62,7 @@
                   <li
                     nz-menu-item
                     (click)="changePortfolio(model)"
+                    class="porfolio-menu-item"
                     >
                     {{model.market}} {{model.portfolio}}
                   </li>
@@ -81,7 +78,7 @@
       <div class="d-flex align-items-center">
         <ats-network-indicator />
       </div>
-      <div class="d-flex align-items-center">
+      <div class="d-flex align-items-center mr-3">
         <ats-notification-button />
       </div>
       <div class="d-flex align-items-center">
@@ -111,14 +108,16 @@
         <div class="menu-content">
           <ul nz-menu [nzMode]="'inline'" [nzInlineIndent]="0" class="actions-menu">
             <li nz-menu-item (click)="openTerminalSettings()" class='menu-item'>
-              <span><i nz-icon nzType="user" nzTheme="outline"></i> <span>&nbsp;{{t('dashboardNavbarCommon.profile')}}</span></span>
+              <span class="content">
+                <i nz-icon nzType="user" nzTheme="outline"></i> <span>&nbsp;{{t('dashboardNavbarCommon.profile')}}</span>
+              </span>
             </li>
 
             @if(!isNullOrEmpty(externalLinks?.reports)) {
               <li nz-menu-divider></li>
               <li nz-menu-item class='menu-item external-link'
                 (click)="openThirdPartyLink(externalLinks?.reports!)">
-                <span>
+                <span class="content">
                   <i nz-icon nzType="audit" nzTheme="outline"></i>
                   <ng-container [ngTemplateOutlet]="externalLink"
                   [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.reports')}" />
@@ -130,7 +129,7 @@
               <li nz-menu-divider></li>
               <li nz-menu-item class='menu-item external-link'
                 (click)="openThirdPartyLink(externalLinks?.releases!)">
-                <span>
+                <span class="content">
                   <i nz-icon nzType="history" nzTheme="outline"></i>
                   <ng-container [ngTemplateOutlet]="externalLink"
                   [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.releases')}" />
@@ -141,7 +140,7 @@
             @if(!isNullOrEmpty(externalLinks?.support)) {
               <li nz-menu-divider></li>
               <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink(externalLinks?.support!)">
-                <span>
+                <span class="content">
                   <i nz-icon nzType="customer-service" nzTheme="outline"></i>
                   <ng-container [ngTemplateOutlet]="externalLink"
                   [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.support')}" />
@@ -152,7 +151,7 @@
             @if(!isNullOrEmpty(externalLinks?.issuesList)) {
               <li nz-menu-divider></li>
               <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink(externalLinks?.issuesList!)">
-                <span>
+                <span class="content">
                   <i nz-icon nzType="bulb" nzTheme="outline"></i>
                   <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.issuesList')}" />
                 </span>
@@ -162,7 +161,7 @@
             @if(!isNullOrEmpty(externalLinks?.videoTutorial)) {
               <li nz-menu-divider></li>
               <li nz-menu-item class='menu-item external-link' (click)="openThirdPartyLink(externalLinks?.videoTutorial!)">
-                <span>
+                <span class="content">
                   <i nz-icon nzType="play-circle" nzTheme="outline"></i>
                   <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.videoTutorial')}" />
                 </span>
@@ -176,7 +175,7 @@
                 class='menu-item external-link'
                 (click)="openThirdPartyLink(helpLink)"
                 >
-                <span>
+                <span class="content">
                   <i nz-icon nzType="question-circle" nzTheme="outline"></i>
                   <ng-container [ngTemplateOutlet]="externalLink" [ngTemplateOutletContext]="{name: t('dashboardNavbarCommon.help')}" />
                 </span>
@@ -184,7 +183,8 @@
             }
             <li nz-menu-divider></li>
             <li nz-menu-item (click)="logout()" class='menu-item'>
-              <span><i nz-icon nzType="logout" nzTheme="outline"></i> <span>&nbsp;{{t('dashboardNavbarCommon.exit')}}</span></span>
+              <span class="content">
+                <i nz-icon nzType="logout" nzTheme="outline"></i> <span>&nbsp;{{t('dashboardNavbarCommon.exit')}}</span></span>
             </li>
           </ul>
 
