@@ -1,4 +1,5 @@
 @import "theme-mixin";
+@import "buy-sell-button-mixin";
 
 .themeMixin({
   :host {
@@ -6,6 +7,20 @@
     height: 100%;
     color: @text-color;
     background-color: @component-background;
+
+    table.history-table {
+      tr {
+        &.item:not(:last-child) {
+          td {
+            border-bottom: 1px solid @border-color-split;
+          }
+        }
+
+        &.item:hover {
+          background-color: @table-row-hover-bg;
+        }
+      }
+    }
   }
 
   .history-container {
@@ -40,16 +55,6 @@
 
       tbody {
         tr.item {
-          &:not(:last-child) {
-            td {
-              border-bottom: 1px solid @border-color-split;
-            }
-          }
-
-          &:hover {
-            background-color: @table-row-hover-bg;
-          }
-
           td {
             padding: 8px 5px;
             vertical-align: middle;
@@ -65,11 +70,7 @@
         text-align: right;
       }
 
-      .operation-cell {
-        display: flex;
-        align-items: center;
-
-        .icon-circle {
+      .icon-circle {
           width: 32px;
           height: 32px;
           border-radius: 50%;
@@ -80,61 +81,24 @@
           margin-right: 10px;
           color: @text-color;
           flex-shrink: 0;
-        }
-
-        .operation-info {
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
-
-          .operation-type {
-            font-size: 14px;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: @text-color;
-          }
-
-          .operation-date {
-            font-size: 11px;
-            color: @text-color-secondary;
-          }
-        }
       }
 
-      .amount-cell {
+      .item-amount {
         font-weight: 500;
-
         .currency {
-          font-size: 0.85em;
-          color: @text-color-secondary;
+            font-size: 0.85em;
+            color: @text-color-secondary;
+        }
+
+        &.money_input {
+          color: @buy-color;
+        }
+
+        &.money_withdrawal {
+          color: @sell-color;
         }
       }
 
-      .status-cell {
-        .status-badge {
-          padding: 2px 6px;
-          border-radius: 4px;
-          font-size: 11px;
-          white-space: nowrap;
-
-          &.executed {
-            background-color: fade(@success-color, 15%);
-            color: @success-color;
-          }
-
-          &.canceled, &.refused {
-            background-color: fade(@error-color, 15%);
-            color: @error-color;
-          }
-
-          &.process, &.executing {
-            background-color: fade(@warning-color, 15%);
-            color: @warning-color;
-          }
-        }
-      }
     }
 
     .load-more {

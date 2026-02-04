@@ -6,18 +6,40 @@ export interface HistoryRequestParams {
   status?: string;
 }
 
+export interface HistoryItemData {
+  order?: string;
+  amount?: number;
+  accountFrom?: string;
+  accountTo?: string;
+  subportfolioFrom?: string;
+  subportfolioTo?: string;
+  currency?: string;
+  currencyExchange?: string;
+  accountNumber?: string;
+  orderType?: string;
+  issuer?: string;
+  price?: string | number;
+  extCurrency?: string | null;
+}
+
 export interface HistoryItem {
-  id: string; // or number, based on V1 response, assuming ID is present
+  id: string;
   type: string;
   date: string;
   status: string;
-  title?: string; // Derived or backend provided
-  data?: any; // Operation specific data
+  statusName?: string;
+  icon?: string;
+  title?: string;
+  subType?: string;
+  data?: HistoryItemData;
+  documents?: any[];
+  files?: any[];
+  refuseReason?: string | null;
+  cancelling?: boolean;
   agreementId?: string;
-  // Add other fields as discovered from API response
 }
 
 export interface HistoryResponse {
   list: HistoryItem[];
-  total?: number; // If API provides it
+  total?: number;
 }

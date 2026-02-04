@@ -11,5 +11,10 @@
     "executed": "Executed",
     "canceled": "Canceled",
     "process": "Processing"
+  },
+  "columns": {
+    "operation": "Operation",
+    "amount": "Amount",
+    "status": "Status"
   }
 }

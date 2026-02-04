@@ -4,6 +4,7 @@ import { NzListModule } from 'ng-zorro-antd/list';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
+import { NzTagModule } from 'ng-zorro-antd/tag';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { OperationsHistoryService } from '../../../../shared/services/operations-history.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
@@ -22,6 +23,7 @@ import { isPortfoliosEqual } from '../../../../shared/utils/portfolios';
     NzButtonModule,
     NzIconModule,
     NzSkeletonModule,
+    NzTagModule,
     TranslocoDirective
   ],
   templateUrl: './operations-history.component.html',
@@ -88,7 +90,8 @@ export class OperationsHistoryComponent implements OnInit {
     this.loadHistory(true);
   }
 
-  getIcon(type: string): string {
+  getIcon(item: HistoryItem): string {
+    const type = item.subType || item.type;
     switch (type) {
       case 'money_input': return 'plus-circle';
       case 'money_withdrawal': return 'minus-circle';
@@ -97,11 +100,21 @@ export class OperationsHistoryComponent implements OnInit {
     }
   }
 
-  getColor(type: string): string {
-    switch (type) {
-      case 'money_input': return '#4caf50'; // Green
-      case 'money_withdrawal': return '#f44336'; // Red
-      default: return 'inherit';
+  getStatusColor(status: string): string {
+    switch (status) {
+      case 'executed':
+      case 'resolved':
+        return 'success';
+      case 'canceled':
+      case 'refused':
+        return 'error';
+      case 'process':
+      case 'executing':
+        return 'processing';
+      case 'overdue':
+        return 'warning';
+      default:
+        return 'default';
     }
   }
 }

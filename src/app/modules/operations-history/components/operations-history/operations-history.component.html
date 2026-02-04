@@ -1,42 +1,64 @@
 <div class="history-container" *transloco="let t; scope: 'operations-history'">
   <h2 class="title" *ngIf="!preview">{{t('operationsHistory.title')}}</h2>
 
-  <nz-list [nzLoading]="isLoading$ | async">
-    <ng-container *ngFor="let item of history$ | async">
-      <div class="history-card">
-        <div class="card-left">
-          <div class="icon-circle">
-            <span nz-icon [nzType]="getIcon(item.type)" nzTheme="outline"></span>
-          </div>
-        </div>
-        <div class="card-center">
-          <div class="item-title">{{ t('operationsHistory.type.' + item.type) || item.type }}</div>
-          <div class="item-meta">
-            {{ item.date | date:'dd.MM.yyyy HH:mm' }}
-            <span class="meta-separator" *ngIf="item.data?.amount">•</span>
-            <span class="item-amount" [style.color]="getColor(item.type)" *ngIf="item.data?.amount">
-              {{ item.type === 'money_withdrawal' ? '-' : '+' }}{{ item.data.amount }} {{ item.data.currency }}
-            </span>
-          </div>
-        </div>
-        <div class="card-right">
-          <span class="status-badge" [class]="item.status">
-            {{ t('operationsHistory.status.' + item.status) || item.status }}
-          </span>
-        </div>
-      </div>
+  <ng-container *ngIf="(history$ | async) as history">
+    <ng-container *ngIf="history.length > 0; else emptyOrLoading">
+      <table class="history-table">
+        <thead>
+          <tr class="heading-color">
+            <th class="text-start" style="width: 60%">{{ t('operationsHistory.columns.operation') }}</th>
+            <th class="text-end">{{ t('operationsHistory.columns.amount') }} / {{ t('operationsHistory.columns.status') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="item" *ngFor="let item of history">
+            <td class="text-start">
+              <div class="d-flex flex-row flex-nowrap flex-gap-5 align-items-center">
+                <div class="icon-circle">
+                  <span nz-icon [nzType]="getIcon(item)" nzTheme="outline"></span>
+                </div>
+                <div class="d-flex flex-column overflow-hidden">
+                  <span class="heading-color fs-6" nz-typography>
+                    {{ item.title || t('operationsHistory.type.' + item.type) || item.type }}
+                  </span>
+                  <span class="fs-10" nz-typography nzEllipsis *ngIf="item.data?.accountTo || item.data?.accountNumber">
+                    {{ item.data?.accountTo || item.data?.accountNumber }}
+                  </span>
+                  <span class="fs-10" nz-typography nzEllipsis>
+                    {{ item.date | date:'dd.MM.yyyy HH:mm' }}
+                  </span>
+                </div>
+              </div>
+            </td>
+            <td class="text-end">
+              <div class="d-flex flex-column align-items-end">
+                <span class="item-amount" [class]="item.subType || item.type" *ngIf="item.data?.amount">
+                  {{ (item.subType === 'money_withdrawal' || item.type === 'money_withdrawal') ? '-' : '+' }}{{ item.data?.amount }} <span class="currency">{{ item.data?.currency }}</span>
+                </span>
+                <nz-tag [nzColor]="getStatusColor(item.status)" class="mt-5">
+                  {{ t('operationsHistory.status.' + item.status) || item.status }}
+                </nz-tag>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </ng-container>
-    <nz-list-empty *ngIf="(history$ | async)?.length === 0"></nz-list-empty>
-  </nz-list>
 
-  <div class="load-more" *ngIf="(history$ | async)?.length">
-    <button *ngIf="!preview && hasMore" nz-button nzType="default" [nzLoading]="isLoading$ | async"
-      (click)="loadMore()">
-      {{t('operationsHistory.loadMore')}}
-    </button>
+    <ng-template #emptyOrLoading>
+      <nz-list-empty *ngIf="!(isLoading$ | async)"></nz-list-empty>
+      <nz-skeleton *ngIf="isLoading$ | async" [nzActive]="true" [nzParagraph]="{ rows: 5 }"></nz-skeleton>
+    </ng-template>
 
-    <button *ngIf="preview" nz-button nzType="link" (click)="showMore.emit()">
-      {{t('operationsHistory.loadMore')}}
-    </button>
-  </div>
+    <div class="load-more" *ngIf="history.length">
+      <button *ngIf="!preview && hasMore" nz-button nzType="default" [nzLoading]="isLoading$ | async"
+        (click)="loadMore()">
+        {{t('operationsHistory.loadMore')}}
+      </button>
+
+      <button *ngIf="preview" nz-button nzType="link" (click)="showMore.emit()">
+        {{t('operationsHistory.loadMore')}}
+      </button>
+    </div>
+  </ng-container>
 </div>

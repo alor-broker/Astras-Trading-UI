@@ -11,5 +11,10 @@
     "executed": "Исполнено",
     "canceled": "Отменено",
     "process": "В обработке"
+  },
+  "columns": {
+    "operation": "Операция",
+    "amount": "Сумма",
+    "status": "Статус"
   }
 }
