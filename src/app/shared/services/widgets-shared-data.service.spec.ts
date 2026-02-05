@@ -4,6 +4,7 @@ import {
   tick
 } from '@angular/core/testing';
 import { WidgetsSharedDataService } from "./widgets-shared-data.service";
+import {skip, take} from "rxjs";
 
 describe('WidgetsSharedDataService', () => {
   let service: WidgetsSharedDataService;
@@ -21,7 +22,11 @@ describe('WidgetsSharedDataService', () => {
     const dataProviderName = 'anyName';
     const expectedValue = 'anyValue';
 
-    service.getDataProvideValues(dataProviderName).subscribe(val => expect(val).toBe(expectedValue));
+    service.getDataProvideValues(dataProviderName)
+      .pipe(
+        skip(1),
+        take(1)
+      ).subscribe(val => expect(val).toBe(expectedValue));
 
     service.setDataProviderValue(dataProviderName, expectedValue);
     tick();
