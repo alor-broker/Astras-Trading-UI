@@ -6,14 +6,16 @@ import {
   BehaviorSubject,
   interval,
   Observable,
-  shareReplay
+  Subject
 } from "rxjs";
 import {
-  distinct,
   filter,
-  map
+  map,
+  switchMap,
+  take,
+  takeUntil,
+  tap
 } from "rxjs/operators";
-import { mapWith } from "../../utils/observable-helper";
 
 export interface TokenState {
   token: string;
@@ -26,38 +28,57 @@ export interface TokenState {
 })
 export class ApiTokenProviderService implements OnDestroy {
   private readonly state$ = new BehaviorSubject<TokenState | null>(null);
-  private token$: Observable<string> | null = null;
+  private readonly destroy$ = new Subject<void>();
+  private refreshInProgress = false;
+
+  constructor() {
+    // Background auto-refresh: periodically check token expiration while app is active
+    this.state$.pipe(
+      filter(s => s != null),
+      switchMap(state => interval(1000).pipe(map(() => state))),
+      takeUntil(this.destroy$)
+    ).subscribe(state => {
+      if (!this.isTokenNotExpired(state!) && !this.refreshInProgress) {
+        this.triggerRefresh(state!);
+      }
+    });
+  }
 
   ngOnDestroy(): void {
     this.state$.complete();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   getToken(): Observable<string> {
-    this.token$ ??= this.state$.pipe(
-        filter(s => s != null),
-        mapWith(() => interval(1000), (state,) => state),
-        map(state => {
-          if (this.isTokenNotExpired(state)) {
-            return state.token;
-          }
-
-          state.refreshCallback();
-          return null;
-        }),
-        filter(t => t != null),
-        distinct(),
-        shareReplay(1)
-      );
-
-    return this.token$;
+    return this.state$.pipe(
+      filter(s => s != null),
+      tap(state => {
+        // Check expiration on every call and trigger refresh if needed
+        if (!this.isTokenNotExpired(state!) && !this.refreshInProgress) {
+          this.triggerRefresh(state!);
+        }
+      }),
+      // Wait for a valid (non-expired) token
+      filter(state => this.isTokenNotExpired(state!)),
+      map(state => state!.token),
+      take(1)
+    );
   }
 
   updateTokenState(state: TokenState): void {
+    this.refreshInProgress = false;
     this.state$.next(state);
   }
 
   clearToken(): void {
+    this.refreshInProgress = false;
     this.state$.next(null);
+  }
+
+  private triggerRefresh(state: TokenState): void {
+    this.refreshInProgress = true;
+    state.refreshCallback();
   }
 
   private isTokenNotExpired(state: TokenState): boolean {
