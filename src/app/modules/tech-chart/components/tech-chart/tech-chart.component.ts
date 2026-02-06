@@ -525,30 +525,35 @@ export class TechChartComponent implements OnInit, OnDestroy, AfterViewInit {
     }).pipe(
       take(1)
     ).subscribe(x => {
-      const relatedWidgets = x.currentDashboard.items
-        .filter(i => i.widgetType === 'order-submit')
-        .map(i => i.guid);
-
-      const relatedSettings = x.allSettings.filter(s => relatedWidgets.includes(s.guid) && s.badgeColor === x.settings.widgetSettings.badgeColor);
-
       const roundedPrice = MathHelper.roundByMinStepMultiplicity(price, x.settings.instrument.minstep);
+      if(this.ordersDialogService.dialogOptions.isNewOrderDialogSupported) {
+        const relatedWidgets = x.currentDashboard.items
+          .filter(i => i.widgetType === 'order-submit')
+          .map(i => i.guid);
 
-      if (relatedSettings.length === 0 || x.settings.widgetSettings.badgeColor == null || !x.settings.widgetSettings.badgeColor.length) {
-        this.ordersDialogService.openNewOrderDialog({
-          instrumentKey: toInstrumentKey(x.settings.widgetSettings as InstrumentKey),
-          initialValues: {
-            orderType: OrderFormType.Limit,
-            price: roundedPrice,
-            quantity: 1
-          }
-        });
+        const relatedSettings = x.allSettings.filter(s => relatedWidgets.includes(s.guid) && s.badgeColor === x.settings.widgetSettings.badgeColor);
+        if (
+            relatedSettings.length === 0
+            || x.settings.widgetSettings.badgeColor == null
+            || !x.settings.widgetSettings.badgeColor.length
+        ) {
+          this.ordersDialogService.openNewOrderDialog({
+            instrumentKey: toInstrumentKey(x.settings.widgetSettings as InstrumentKey),
+            initialValues: {
+              orderType: OrderFormType.Limit,
+              price: roundedPrice,
+              quantity: 1
+            }
+          });
+
+          return;
+        }
       }
-      else {
-        this.widgetsSharedDataService.setDataProviderValue<SelectedPriceData>(this.selectedPriceProviderName, {
-          price: roundedPrice,
-          badgeColor: x.settings.widgetSettings.badgeColor!
-        });
-      }
+
+      this.widgetsSharedDataService.setDataProviderValue<SelectedPriceData>(this.selectedPriceProviderName, {
+        price: roundedPrice,
+        badgeColor: x.settings.widgetSettings.badgeColor!
+      });
     });
   }
 
