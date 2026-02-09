@@ -11,7 +11,7 @@ import {EffectsModule} from "@ngrx/effects";
 import {MarkdownModule} from "ngx-markdown";
 import {JoyrideModule} from "ngx-joyride";
 import {TranslocoRootModule} from "./transloco-root.module";
-import {ServiceWorkerModule} from "@angular/service-worker";
+import {provideServiceWorker} from "@angular/service-worker";
 import {NzModalModule} from "ng-zorro-antd/modal";
 import {extModules, extProvides} from "./build-specifics/ext-modules";
 import {provideRouter, withComponentInputBinding} from "@angular/router";
@@ -40,6 +40,7 @@ import {HttpLink} from "apollo-angular/http";
 import {environment} from "../environments/environment";
 import {InMemoryCache} from "@apollo/client";
 import {provideAnimations} from "@angular/platform-browser/animations";
+import {Capacitor} from "@capacitor/core";
 
 // DO NOT REMOVE. This import is required for chart.js
 import "chartjs-adapter-date-fns";
@@ -52,7 +53,10 @@ const coreProviders = [
     withComponentInputBinding()
   ),
   provideHttpClient(withInterceptorsFromDi()),
-  provideAnimations()
+  provideAnimations(),
+  provideServiceWorker('ngsw-worker.js', {
+    enabled: !Capacitor.isNativePlatform(),
+  })
 ];
 
 // backward compatibility providers
@@ -62,15 +66,6 @@ const moduleProviders = importProvidersFrom(
   MarkdownModule.forRoot(),
   JoyrideModule.forRoot(),
   TranslocoRootModule,
-  ServiceWorkerModule.register(
-    'ngsw-worker.js',
-    {
-      enabled: true,
-      // Register the ServiceWorker as soon as the application is stable
-      // or after 15 seconds (whichever comes first).
-      // registrationStrategy: 'registerWhenStable:15000'
-    },
-  ),
   NzModalModule,
   ...extModules,
 );
