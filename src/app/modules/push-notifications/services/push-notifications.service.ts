@@ -66,24 +66,15 @@ export class PushNotificationsService implements OnDestroy {
   private readonly translatorService = inject(TranslatorService);
   private readonly loggerService = inject(LoggerService);
 
-  private _messaging: firebase.messaging.Messaging | null = null;
+  private webMessaging: firebase.messaging.Messaging | null = null;
 
-  private get messaging(): firebase.messaging.Messaging | null{
-    if (!this._messaging) {
-      try {
-        const app = firebase.apps.length
-          // use initialized application from native platform (android/ios)
-          ? firebase.app()
-          // initialize firebase for web
-          : firebase.initializeApp(environment.firebase);
-
-        this._messaging = firebase.messaging(app);
-      }
-      catch (err) {
-        this.loggerService.error(`Firebase initialization error`, err as Error);
-      }
+  private getWebMessaging(): firebase.messaging.Messaging {
+    if(this.webMessaging == null) {
+      const app = firebase.initializeApp(environment.firebase);
+      this.webMessaging = firebase.messaging(app);
     }
-    return this._messaging;
+
+    return this.webMessaging;
   }
 
   private readonly baseUrl = this.environmentService.apiUrl + '/commandapi/observatory/subscriptions';
@@ -173,13 +164,8 @@ export class PushNotificationsService implements OnDestroy {
                 listenerPromise.then(listener => listener.remove());
               };
             } else {
-              if(this.messaging == null) {
-                subscriber.complete();
-                return (): void => {};
-              } else {
-                const unsubscribe = this.messaging.onMessage(value => subscriber.next(value));
-                return (): void => unsubscribe();
-              }
+              const unsubscribe = this.getWebMessaging().onMessage(value => subscriber.next(value));
+              return (): void => unsubscribe();
             }
           });
         }
@@ -271,7 +257,7 @@ export class PushNotificationsService implements OnDestroy {
           }),
           shareReplay(1)
         );
-      } else if (window.Notification == null || !isSupported() || this.messaging == null) {
+      } else if (window.Notification == null || !isSupported()) {
         this.messagingState$ = of({
           permission: 'not-supported' as MessagingStatus,
           swToken: null
@@ -307,7 +293,7 @@ export class PushNotificationsService implements OnDestroy {
               });
             }
 
-            return from(this.messaging!.getToken()).pipe(
+            return from(this.getWebMessaging().getToken()).pipe(
               catchError(e => {
                 this.loggerService.warn(this.formatLogMessage(`Unable to get FCM token. Details: ${e}`));
                 return of(null);
