@@ -17,6 +17,11 @@ const config: CapacitorConfig = {
       'astras-dev.alor.ru',
       'astras.alor.ru'
     ]
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
   }
 };
 
