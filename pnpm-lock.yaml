@@ -41,6 +41,9 @@ importers:
       '@apollo/client':
         specifier: ^4.0.0
         version: 4.1.4(graphql-ws@6.0.7(crossws@0.3.5)(graphql@16.12.0)(ws@8.19.0))(graphql@16.12.0)(rxjs@7.8.2)
+      '@capacitor-firebase/messaging':
+        specifier: ^8.0.1
+        version: 8.0.1(@capacitor/core@8.0.2)(firebase@12.8.0)
       '@capacitor/core':
         specifier: ^8.0.2
         version: 8.0.2
@@ -683,6 +686,15 @@ packages:
 
   '@braintree/sanitize-url@7.1.2':
     resolution: {integrity: sha512-jigsZK+sMF/cuiB7sERuo9V7N9jx+dhmHHnQyDSVdpZwVutaBu7WvNYqMDLSgFgfB30n452TP3vjDAvFC973mA==}
+
+  '@capacitor-firebase/messaging@8.0.1':
+    resolution: {integrity: sha512-Jla5/yg0o/8gAaTl3Z33XDAyC9xwqRZctt3sSh1KBIzYwV3fZVP/ty/5HGn84qqoO2aBBBL28erL+tkgZZPt2Q==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+      firebase: ^12.6.0
+    peerDependenciesMeta:
+      firebase:
+        optional: true
 
   '@capacitor/android@8.0.2':
     resolution: {integrity: sha512-0D7j0YvzjnfCMKLvFkAbx8b3Vwx+QfHFG5NzoXpI9sAl3zWiLsfa+NX4x92Fy+k4MGjLSMAfLThCqILYGDDsgw==}
@@ -7279,6 +7291,12 @@ snapshots:
 
   '@braintree/sanitize-url@7.1.2':
     optional: true
+
+  '@capacitor-firebase/messaging@8.0.1(@capacitor/core@8.0.2)(firebase@12.8.0)':
+    dependencies:
+      '@capacitor/core': 8.0.2
+    optionalDependencies:
+      firebase: 12.8.0
 
   '@capacitor/android@8.0.2(@capacitor/core@8.0.2)':
     dependencies:
