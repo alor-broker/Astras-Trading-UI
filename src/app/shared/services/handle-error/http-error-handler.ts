@@ -8,7 +8,8 @@ export class HttpErrorHandler implements ApplicationErrorHandler {
   private readonly notification = inject(NzNotificationService);
 
   private readonly apiAccessibilityErrorStatusCodes: number[] = [
-    404
+    404,
+    0  // this is native platform status. It means that application is inactive
   ];
 
   handleError(error: Error | HttpErrorResponse): void {

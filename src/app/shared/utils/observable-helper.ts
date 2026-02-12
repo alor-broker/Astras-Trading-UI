@@ -27,9 +27,13 @@ import { ApplicationErrorHandler } from "../services/handle-error/error-handler"
 export function catchHttpError<T>(valueToReturn: T | ((err: HttpErrorResponse) => T), errorHandler?: ApplicationErrorHandler): MonoTypeOperatorFunction<T> {
   return pipe(
     catchError(err => {
+
       if (err instanceof HttpErrorResponse) {
         if (!!errorHandler) {
-          errorHandler.handleError(err);
+          // status = 0 is native platform status. It means that application is inactive
+          if(err.status != 0) {
+            errorHandler.handleError(err);
+          }
         }
 
         if(valueToReturn instanceof Function) {

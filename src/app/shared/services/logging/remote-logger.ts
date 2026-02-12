@@ -1,8 +1,8 @@
 import { LoggerBase } from './logger-base';
 import { Injectable, inject } from '@angular/core';
 import { GuidGenerator } from '../../utils/guid';
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import {of, Subject} from 'rxjs';
+import {catchError, debounceTime} from 'rxjs/operators';
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { LocalStorageService } from '../local-storage.service';
 import {
@@ -135,7 +135,10 @@ export class RemoteLogger extends LoggerBase {
             },
             context: new HttpContext().set(HttpContextTokens.SkipAuthorization, true)
           }
-        ).subscribe();
+        ).pipe(
+          catchError(() => of(null))
+        )
+          .subscribe();
       } while (true);
     } catch (e) {
       console.error(e);
