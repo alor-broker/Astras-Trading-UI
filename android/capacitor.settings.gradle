@@ -4,3 +4,6 @@ project(':capacitor-android').projectDir = new File('../node_modules/.pnpm/@capa
 
 include ':capacitor-firebase-messaging'
 project(':capacitor-firebase-messaging').projectDir = new File('../node_modules/.pnpm/@capacitor-firebase+messagi_6755c166e4bdfe9a6fdf581f36400110/node_modules/@capacitor-firebase/messaging/android')
+
+include ':capacitor-network'
+project(':capacitor-network').projectDir = new File('../node_modules/.pnpm/@capacitor+network@8.0.1_@capacitor+core@8.0.2/node_modules/@capacitor/network/android')

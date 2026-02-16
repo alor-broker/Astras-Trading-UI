@@ -4,6 +4,7 @@ import { LocalStorageService } from "./local-storage.service";
 
 export enum LogLevel {
   trace = 'trace',
+  debug = 'debug',
   info = 'info',
   warn = 'warn',
   error = 'error'
