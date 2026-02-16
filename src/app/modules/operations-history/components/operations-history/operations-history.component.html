@@ -49,8 +49,63 @@
     </div>
   </form>
 
-  <ng-container *ngIf="history$ | async">
-    <nz-list-empty *ngIf="!(isLoading$ | async)"></nz-list-empty>
-    <nz-skeleton *ngIf="isLoading$ | async" [nzActive]="true" [nzParagraph]="{ rows: 5 }"></nz-skeleton>
-  </ng-container>
+  <nz-list
+    *ngIf="history$ | async as history"
+    [nzDataSource]="history"
+    [nzItemLayout]="'vertical'"
+    [nzLoading]="isLoading$ | async"
+    [nzLoadMore]="!preview && hasMore ? loadMoreTpl : null"
+    [nzBordered]="false"
+    class="history-list">
+    <nz-list-item *ngFor="let item of history" class="history-item">
+      <nz-list-item-meta
+        [nzAvatar]="itemIcon"
+        [nzTitle]="itemTitle"
+        [nzDescription]="itemDescription">
+        <ng-template #itemIcon>
+          <div class="item-icon" [ngClass]="getStatusColor(item.status)">
+            <span nz-icon [nzType]="getIcon(item)" nzTheme="outline"></span>
+          </div>
+        </ng-template>
+        <ng-template #itemTitle>
+          <span class="item-title-text">{{ getItemTitle(item, t) }}</span>
+        </ng-template>
+        <ng-template #itemDescription>
+          <div class="item-description">
+            <div class="item-info-row">
+              <nz-tag *ngIf="getStatusLabel(item, t)" [nzColor]="getStatusColor(item.status)" class="item-status-tag">
+                {{ getStatusLabel(item, t) }}
+              </nz-tag>
+              <span class="item-date">{{ item.date | date:'dd.MM.yyyy HH:mm' }}</span>
+            </div>
+            <span class="item-amount"
+                  *ngIf="getAbsoluteAmount(item) !== null"
+                  [class.negative]="isNegativeAmount(item)"
+                  [class.positive]="!isNegativeAmount(item)">
+              {{ getAbsoluteAmount(item) | number:'1.2-2' }} {{ getCurrency(item) }}
+            </span>
+            <span class="item-counterparty" *ngIf="getCounterparty(item)">
+              {{ getCounterparty(item) }}
+            </span>
+          </div>
+        </ng-template>
+      </nz-list-item-meta>
+    </nz-list-item>
+    <nz-list-empty *ngIf="history.length === 0 && !(isLoading$ | async)">
+      <div class="empty-text">{{ t('operationsHistory.empty') }}</div>
+    </nz-list-empty>
+  </nz-list>
+
+  <ng-template #loadMoreTpl>
+    <div class="load-more">
+      <button
+        nz-button
+        nzType="default"
+        nzBlock
+        [disabled]="isLoading$ | async"
+        (click)="loadMore()">
+        {{ t('operationsHistory.loadMore') }}
+      </button>
+    </div>
+  </ng-template>
 </div>

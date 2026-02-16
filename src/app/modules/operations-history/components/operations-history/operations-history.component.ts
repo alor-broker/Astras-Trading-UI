@@ -193,7 +193,7 @@ export class OperationsHistoryComponent implements OnInit {
   }
 
   isNegativeAmount(item: HistoryItem): boolean {
-    const amount = item.data?.amount;
+    const amount = this.getNumericAmount(item);
     if (amount != null) {
       return amount < 0;
     }
@@ -202,8 +202,36 @@ export class OperationsHistoryComponent implements OnInit {
   }
 
   getAbsoluteAmount(item: HistoryItem): number | null {
-    const amount = item.data?.amount;
+    const amount = this.getNumericAmount(item);
     return amount == null ? null : Math.abs(amount);
+  }
+
+  private getNumericAmount(item: HistoryItem): number | null {
+    // Check top-level sum field first (from moneymove API response)
+    const sum = (item as any).sum;
+    if (typeof sum === 'number') {
+      return sum;
+    }
+
+    // Check data.amount (from operation API response)
+    // It can be a number or a string like "в размере свободного остатка"
+    const dataAmount = item.data?.amount;
+    if (typeof dataAmount === 'number') {
+      return dataAmount;
+    }
+
+    return null;
+  }
+
+  getCurrency(item: HistoryItem): string | null {
+    // Check top-level currency field first (from moneymove API response)
+    const currency = (item as any).currency;
+    if (currency) {
+      return currency;
+    }
+
+    // Check data.currency (from operation API response)
+    return item.data?.currency ?? null;
   }
 
   getCounterparty(item: HistoryItem): string {

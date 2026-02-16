@@ -1,4 +1,5 @@
 @import "theme-mixin";
+@import "buy-sell-button-mixin";
 
 .themeMixin({
   :host {
@@ -29,59 +30,129 @@
     gap: 12px;
     padding-bottom: 4px;
     border-bottom: 1px solid @border-color-split;
+  }
 
-    .filters-row {
-      display: grid;
-      column-gap: 12px;
-      row-gap: 8px;
-      width: 100%;
+  .history-list {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+
+    ::ng-deep .ant-list-items {
+      padding: 0;
     }
 
-    .row-main {
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: start;
-    }
+    ::ng-deep .ant-list-item {
+      padding: 8px 0;
+      border-bottom: 1px solid @border-color-split;
 
-    .row-dates {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      align-items: start;
-    }
-
-    .filter-control {
-      min-width: 0;
-      max-width: none;
-      width: 100%;
-    }
-
-    // nz-select renders an inner .ant-select with display:inline-flex.
-    // Force it to stretch to fill the grid cell.
-    nz-select {
-      display: block;
-      width: 100%;
-
-      .ant-select {
-        width: 100%;
+      &:last-child {
+        border-bottom: none;
       }
     }
+  }
 
-    // nz-date-picker renders an inner .ant-picker with display:inline-flex.
-    // Force it to stretch to fill the grid cell.
-    nz-date-picker {
-      display: block;
-      width: 100%;
-
-      .ant-picker {
-        width: 100%;
-      }
+  .history-item {
+    ::ng-deep .ant-list-item-meta-title {
+      margin-bottom: 8px;
     }
 
-    .date-filter {
-      min-width: 0;
+    ::ng-deep .ant-list-item-meta-description {
+      font-size: @font-size-base;
+    }
+  }
+
+  .item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 18px;
+
+    &.success {
+      color: @success-color;
+      background: fade(@success-color, 10%);
     }
 
-    .reset-button {
-      min-width: 0;
+    &.error {
+      color: @error-color;
+      background: fade(@error-color, 10%);
     }
+
+    &.warning {
+      color: @warning-color;
+      background: fade(@warning-color, 10%);
+    }
+
+    &.processing {
+      color: @processing-color;
+      background: fade(@processing-color, 10%);
+    }
+
+    &.default {
+      color: @text-color-secondary;
+      background: fade(@text-color, 5%);
+    }
+  }
+
+  .item-title-text {
+    font-weight: 500;
+    color: @heading-color;
+  }
+
+  .item-description {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: @font-size-base;
+  }
+
+  .item-info-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .item-date {
+    color: @text-color-secondary;
+    margin-left: 8px;
+  }
+
+  .item-status-tag {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .item-amount {
+    font-weight: 500;
+    font-size: @font-size-lg;
+
+    &.negative {
+      color: @sell-color;
+    }
+
+    &.positive {
+      color: @buy-color;
+    }
+  }
+
+  .item-counterparty {
+    color: @text-color-secondary;
+    font-size: @font-size-base;
+  }
+
+  .empty-text {
+    padding: 24px 0;
+    text-align: center;
+    color: @text-color-secondary;
+  }
+
+  .load-more {
+    padding: 12px 0;
+    text-align: center;
   }
 
   @media (max-width: 768px) {
@@ -92,6 +163,16 @@
 
     .title {
       font-size: 40px;
+    }
+
+    .item-icon {
+      width: 32px;
+      height: 32px;
+      font-size: 16px;
+    }
+
+    .item-amount {
+      font-size: @font-size-base;
     }
   }
 });
