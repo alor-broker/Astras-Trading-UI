@@ -15,8 +15,7 @@ import {
 import {
   BehaviorSubject,
   Observable,
-  switchMap,
-  timer
+  switchMap
 } from "rxjs";
 import { ArrayHelper } from "../../../../shared/utils/array-helper";
 import { HistoryService } from "../../../../shared/services/history.service";
@@ -88,8 +87,8 @@ export class IdeaDetailsComponent implements OnDestroy {
   }
 
   private getPriceInfo(instrumentKey: InstrumentKey): Observable<InstrumentPrice | null> {
-    return createRefresh(30_000, this.applicationStatusService.isActive$).
-    pipe(
+    return createRefresh(30_000, this.applicationStatusService.isActive$)
+    .pipe(
       switchMap(() => this.historyService.getLastTwoCandles(instrumentKey)),
       map(r => {
         if (r == null || (r.cur == null && r.prev == null)) {

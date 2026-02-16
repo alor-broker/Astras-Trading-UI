@@ -9,7 +9,7 @@ export class HttpErrorHandler implements ApplicationErrorHandler {
 
   private readonly apiAccessibilityErrorStatusCodes: number[] = [
     404,
-    0  // this is native platform status. It means that application is inactive
+    0 // this is native platform status. It means that application is inactive
   ];
 
   handleError(error: Error | HttpErrorResponse): void {

@@ -40,7 +40,7 @@ export class ApplicationStatusService implements OnDestroy {
   }
 
   private initListener(): void {
-    const handler = () => {
+    const handler = (): void => {
       const isActive = !document.hidden;
       console.log('isActive', isActive);
       this.isActiveSubject.next(isActive);

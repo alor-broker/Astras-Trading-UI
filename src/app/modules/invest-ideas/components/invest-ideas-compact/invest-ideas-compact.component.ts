@@ -10,8 +10,7 @@ import { NzTypographyComponent } from "ng-zorro-antd/typography";
 import {
   fromEvent,
   Observable,
-  switchMap,
-  timer
+  switchMap
 } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";

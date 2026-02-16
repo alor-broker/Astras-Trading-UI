@@ -121,7 +121,7 @@ export class RibbonComponent implements OnInit {
           );
         });
 
-        return forkJoin(indices)
+        return forkJoin(indices);
       }),
       takeUntilDestroyed(this.destroyRef)
     );

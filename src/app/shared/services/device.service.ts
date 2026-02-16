@@ -13,7 +13,7 @@ export class DeviceService {
   deviceInfo$: Observable<DeviceInfo> = of(this.deviceDetectorService).pipe(
     map(deviceDetectorService => {
       const isMobile = deviceDetectorService.isMobile() || deviceDetectorService.isTablet() || Capacitor.isNativePlatform();
-      let  deviceType = isMobile ? DeviceType.Mobile : DeviceType.Desktop;
+      let deviceType = isMobile ? DeviceType.Mobile : DeviceType.Desktop;
       if(Capacitor.isNativePlatform()) {
         deviceType = DeviceType.MobileNative;
       }

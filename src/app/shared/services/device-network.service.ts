@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { fromEvent, merge, Observable, of, from, firstValueFrom } from "rxjs";
-import { map, switchMap, distinctUntilChanged, shareReplay, tap } from "rxjs/operators";
+import { switchMap, distinctUntilChanged, shareReplay, tap } from "rxjs/operators";
 import { Network } from '@capacitor/network';
 import { Capacitor } from '@capacitor/core';
 import { EnvironmentService } from './environment.service';
@@ -22,7 +22,7 @@ export class DeviceNetworkService {
   private createIsOnlineStream(): Observable<boolean> {
     if (Capacitor.isNativePlatform()) {
       return new Observable<boolean>(observer => {
-        const handleStatusChange = (status: { connected: boolean }) => {
+        const handleStatusChange = (status: { connected: boolean }): void => {
           const isConnected = status.connected;
           observer.next(isConnected);
 
@@ -74,8 +74,7 @@ export class DeviceNetworkService {
       // If status is greater than 0, it means we received a response (even if it's an error like 404 or 500).
       // This confirms that the server is reachable.
       // Status 0 usually indicates a network error or CORS issue.
-      return e.status && e.status > 0;
-
+      return e.status != null && e.status > 0;
     }
   }
 }

@@ -1,8 +1,5 @@
 import {
-  combineLatest,
-  defer,
   EMPTY,
-  filter,
   MonoTypeOperatorFunction,
   Observable,
   of,
@@ -17,9 +14,6 @@ import {
 } from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ApplicationErrorHandler} from "../services/handle-error/error-handler";
-import {DestroyRef} from "@angular/core";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {T} from "@angular/cdk/keycodes";
 
 /**
  *
@@ -35,7 +29,6 @@ import {T} from "@angular/cdk/keycodes";
 export function catchHttpError<T>(valueToReturn: T | ((err: HttpErrorResponse) => T), errorHandler?: ApplicationErrorHandler): MonoTypeOperatorFunction<T> {
   return pipe(
     catchError(err => {
-
       if (err instanceof HttpErrorResponse) {
         if (!!errorHandler) {
           // status = 0 is native platform status. It means that application is inactive
