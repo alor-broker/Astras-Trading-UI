@@ -2,8 +2,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { OperationsHistoryComponent } from './operations-history.component';
 import { OperationsHistoryService } from '../../../../shared/services/operations-history.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { UserPortfoliosService } from '../../../../shared/services/user-portfolios.service';
 import { of } from 'rxjs';
-import { provideTransloco } from '@jsverse/transloco';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MockProvider } from 'ng-mocks';
+import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('OperationsHistoryComponent', () => {
   let component: OperationsHistoryComponent;
@@ -11,26 +15,20 @@ describe('OperationsHistoryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OperationsHistoryComponent],
+      imports: [
+        OperationsHistoryComponent,
+        NoopAnimationsModule,
+        TranslocoTestsModule.getModule()
+      ],
       providers: [
-        {
-          provide: OperationsHistoryService,
-          useValue: {
-            getHistory: jasmine.createSpy('getHistory').and.returnValue(of({ items: [], total: 0 }))
-          }
-        },
-        {
-          provide: DashboardContextService,
-          useValue: {
-            selectedPortfolio$: of(null)
-          }
-        },
-        provideTransloco({
-          config: {
-            availableLangs: ['en', 'ru'],
-            defaultLang: 'en',
-          },
-          loader: {} as any
+        MockProvider(OperationsHistoryService, {
+          getHistory: () => of([])
+        }),
+        MockProvider(DashboardContextService, {
+          selectedPortfolio$: of({ portfolio: 'test', exchange: 'test' } as PortfolioKey)
+        }),
+        MockProvider(UserPortfoliosService, {
+          getPortfolios: () => of([])
         })
       ]
     }).compileComponents();

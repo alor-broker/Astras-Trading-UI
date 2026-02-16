@@ -1,7 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MoneyOperationsWidgetComponent } from './money-operations-widget.component';
 import { WidgetInstance } from '../../../../shared/models/dashboard/dashboard-item.model';
-import { provideTransloco } from '@jsverse/transloco';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MockComponent } from 'ng-mocks';
+import { MoneyOperationsComponent } from '../../components/money-operations/money-operations.component';
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('MoneyOperationsWidgetComponent', () => {
   let component: MoneyOperationsWidgetComponent;
@@ -9,17 +12,20 @@ describe('MoneyOperationsWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MoneyOperationsWidgetComponent],
-      providers: [
-        provideTransloco({
-          config: {
-            availableLangs: ['en', 'ru'],
-            defaultLang: 'en',
-          },
-          loader: {} as any
-        })
+      imports: [
+        MoneyOperationsWidgetComponent,
+        NoopAnimationsModule,
+        TranslocoTestsModule.getModule()
       ]
-    }).compileComponents();
+    })
+    .overrideComponent(MoneyOperationsWidgetComponent, {
+      set: {
+        imports: [
+          MockComponent(MoneyOperationsComponent)
+        ]
+      }
+    })
+    .compileComponents();
 
     fixture = TestBed.createComponent(MoneyOperationsWidgetComponent);
     component = fixture.componentInstance;

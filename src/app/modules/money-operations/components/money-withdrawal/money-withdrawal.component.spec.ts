@@ -3,7 +3,11 @@ import { MoneyWithdrawalComponent } from './money-withdrawal.component';
 import { MoneyOperationsService } from '../../../../shared/services/money-operations.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { of } from 'rxjs';
-import { TranslocoDirective, provideTransloco } from '@jsverse/transloco';
+import { ReactiveFormsModule } from '@angular/forms';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MockProvider } from 'ng-mocks';
+import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('MoneyWithdrawalComponent', () => {
   let component: MoneyWithdrawalComponent;
@@ -11,24 +15,16 @@ describe('MoneyWithdrawalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MoneyWithdrawalComponent, TranslocoDirective],
+      imports: [
+        MoneyWithdrawalComponent,
+        ReactiveFormsModule,
+        NoopAnimationsModule,
+        TranslocoTestsModule.getModule()
+      ],
       providers: [
-        {
-          provide: MoneyOperationsService,
-          useValue: {}
-        },
-        {
-          provide: DashboardContextService,
-          useValue: {
-            selectedPortfolio$: of(null)
-          }
-        },
-        provideTransloco({
-          config: {
-            availableLangs: ['en', 'ru'],
-            defaultLang: 'en',
-          },
-          loader: {} as any
+        MockProvider(MoneyOperationsService),
+        MockProvider(DashboardContextService, {
+          selectedPortfolio$: of({ portfolio: 'test', exchange: 'test' } as PortfolioKey)
         })
       ]
     }).compileComponents();

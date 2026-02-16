@@ -1,7 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { OperationsHistoryWidgetComponent } from './operations-history-widget.component';
 import { WidgetInstance } from '../../../../shared/models/dashboard/dashboard-item.model';
-import { provideTransloco } from '@jsverse/transloco';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MockComponent, MockProvider } from 'ng-mocks';
+import { OperationsHistoryComponent } from '../../components/operations-history/operations-history.component';
+import { OperationsHistoryService } from '../../../../shared/services/operations-history.service';
+import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { UserPortfoliosService } from '../../../../shared/services/user-portfolios.service';
+import { of } from 'rxjs';
+import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
+import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
 
 describe('OperationsHistoryWidgetComponent', () => {
   let component: OperationsHistoryWidgetComponent;
@@ -9,17 +17,31 @@ describe('OperationsHistoryWidgetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OperationsHistoryWidgetComponent],
+      imports: [
+        OperationsHistoryWidgetComponent,
+        NoopAnimationsModule,
+        TranslocoTestsModule.getModule()
+      ],
       providers: [
-        provideTransloco({
-          config: {
-            availableLangs: ['en', 'ru'],
-            defaultLang: 'en',
-          },
-          loader: {} as any
+        MockProvider(OperationsHistoryService, {
+          getHistory: () => of([])
+        }),
+        MockProvider(DashboardContextService, {
+          selectedPortfolio$: of({ portfolio: 'test', exchange: 'test' } as PortfolioKey)
+        }),
+        MockProvider(UserPortfoliosService, {
+          getPortfolios: () => of([])
         })
       ]
-    }).compileComponents();
+    })
+    .overrideComponent(OperationsHistoryWidgetComponent, {
+      set: {
+        imports: [
+          MockComponent(OperationsHistoryComponent)
+        ]
+      }
+    })
+    .compileComponents();
 
     fixture = TestBed.createComponent(OperationsHistoryWidgetComponent);
     component = fixture.componentInstance;
