@@ -1,3 +1,23 @@
-.withdrawal-container {
-  padding: 16px;
-}
+@import 'theme-mixin';
+
+.themeMixin({
+  :host {
+    display: block;
+
+    .withdrawal-container {
+      padding: 4px 0 0;
+    }
+
+    .withdrawal-form {
+      padding: 12px;
+      border: 1px solid @border-color-base;
+      border-radius: 10px;
+      background: @component-background;
+    }
+
+    ::ng-deep .ant-form-item-label > label {
+      color: @heading-color;
+      font-weight: 500;
+    }
+  }
+});

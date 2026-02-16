@@ -15,6 +15,7 @@ import { catchError, filter, switchMap, take, map } from 'rxjs/operators';
 import { BehaviorSubject, of, combineLatest } from 'rxjs';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { isPortfoliosEqual } from '../../../../shared/utils/portfolios';
+import { NzIconDirective } from 'ng-zorro-antd/icon';
 
 @Component({
   selector: 'ats-money-input',
@@ -29,7 +30,8 @@ import { isPortfoliosEqual } from '../../../../shared/utils/portfolios';
     NzSelectModule,
     NzRadioModule,
     NzCardModule,
-    TranslocoDirective
+    TranslocoDirective,
+    NzIconDirective
   ],
   templateUrl: './money-input.component.html',
   styleUrls: ['./money-input.component.less']

@@ -28,6 +28,8 @@ import {
   DisplayParams,
   MarketTrendsComponent
 } from "../../../market-trends/components/market-trends/market-trends.component";
+import { NzButtonComponent } from "ng-zorro-antd/button";
+import { NzIconDirective } from "ng-zorro-antd/icon";
 
 @Component({
   selector: 'ats-mobile-home-screen-content',
@@ -44,7 +46,9 @@ import {
     InvestIdeasCompactComponent,
     InvestIdeasCompactComponent,
     AgreementDynamicsComponent,
-    AsyncPipe
+    AsyncPipe,
+    NzButtonComponent,
+    NzIconDirective
   ],
   templateUrl: './mobile-home-screen-content.component.html',
   styleUrl: './mobile-home-screen-content.component.less'

@@ -8,15 +8,15 @@
         <ats-portfolio-evaluation (openDetails)="openPortfolioDetails()" />
       </div>
 
-      <div class="d-flex flex-row justify-content-around mt-15 px-10">
-        <div class="d-flex flex-column align-items-center cursor-pointer" (click)="openMoneyOperations()">
-          <span nz-icon nzType="swap" nzTheme="outline" class="primary-color fs-2"></span>
-          <span class="mt-5 text-center">{{ t('mobileHomeScreen.moneyOperationsTitle') }}</span>
-        </div>
-        <div class="d-flex flex-column align-items-center cursor-pointer" (click)="openHistory()">
-          <span nz-icon nzType="history" nzTheme="outline" class="primary-color fs-2"></span>
-          <span class="mt-5 text-center">{{ t('mobileHomeScreen.historyTitle') }}</span>
-        </div>
+      <div class="home-actions mt-15 px-10">
+        <button nz-button nzType="default" class="home-action-button" (click)="openMoneyOperations()">
+          <span nz-icon nzType="swap" nzTheme="outline" class="home-action-icon"></span>
+          <span class="home-action-label">{{ t('mobileHomeScreen.moneyOperationsTitle') }}</span>
+        </button>
+        <button nz-button nzType="default" class="home-action-button" (click)="openHistory()">
+          <span nz-icon nzType="history" nzTheme="outline" class="home-action-icon"></span>
+          <span class="home-action-label">{{ t('mobileHomeScreen.historyTitle') }}</span>
+        </button>
       </div>
 
       <div class="mt-10">

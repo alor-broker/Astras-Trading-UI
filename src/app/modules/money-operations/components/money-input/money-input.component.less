@@ -1,45 +1,107 @@
-.input-container {
-  padding: 16px;
+@import 'theme-mixin';
 
-  .option-card {
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    margin-bottom: 12px;
-    border: 1px solid #e8e8e8; // var(--border-color)
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
+.themeMixin({
+  :host {
+    display: block;
 
-    &:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    .input-container {
+      padding: 4px 0 0;
+    }
+
+    .selection-step {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-card.ant-btn {
+      height: auto;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      border-color: @border-color-base;
+      background: @component-background;
+      color: @heading-color;
+      text-align: left;
+
+      &:hover,
+      &:focus {
+        border-color: fade(@primary-color, 45%);
+        background: mix(@component-background, @primary-color, 94%);
+      }
     }
 
     .icon {
-      font-size: 24px;
-      margin-right: 16px;
+      color: @primary-color;
+      font-size: 18px;
+      line-height: 1;
     }
 
     .details {
       h3 {
         margin: 0;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 500;
+        color: @heading-color;
       }
 
       p {
-        margin: 0;
-        color: #888; // var(--text-secondary-color)
+        margin: 2px 0 0;
+        color: @text-color-secondary;
         font-size: 12px;
+        white-space: normal;
+        line-height: 1.35;
       }
     }
-  }
 
-  .amount-step,
-  .confirm-step {
-    button[nzType="text"] {
+    .amount-step,
+    .confirm-step {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .step-back.ant-btn-text {
+      align-self: flex-start;
       padding-left: 0;
-      margin-bottom: 16px;
+      color: @text-color;
+    }
+
+    .step-form {
+      padding: 12px;
+      border: 1px solid @border-color-base;
+      border-radius: 10px;
+      background: @component-background;
+    }
+
+    .commission-info {
+      margin-top: 6px;
+      font-size: 12px;
+      color: @text-color-secondary;
+    }
+
+    .summary-card {
+      padding: 12px;
+      border: 1px solid @border-color-base;
+      border-radius: 10px;
+      background: @component-background;
+
+      h3 {
+        margin: 0 0 10px;
+        color: @heading-color;
+      }
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: @text-color;
+      padding: 4px 0;
     }
   }
-}
+});
