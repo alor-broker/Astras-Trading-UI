@@ -1,5 +1,4 @@
 @import "theme-mixin";
-@import "buy-sell-button-mixin";
 
 .themeMixin({
   :host {
@@ -85,115 +84,14 @@
     }
   }
 
-  .history-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-
-    thead {
-      th {
-        padding: 8px 4px;
-        font-size: 12px;
-        font-weight: 400;
-        color: @text-color-secondary;
-        text-align: left;
-        border-bottom: 1px solid @border-color-split;
-      }
+  @media (max-width: 768px) {
+    .history-container {
+      padding: 8px 6px 12px;
+      gap: 10px;
     }
 
-    .operation-column {
-      width: 62%;
+    .title {
+      font-size: 40px;
     }
-
-    .status-column {
-      text-align: right;
-    }
-
-    tbody {
-      .item {
-        td {
-          padding: 10px 4px;
-          vertical-align: middle;
-          border-bottom: 1px solid @border-color-split;
-        }
-
-        &:hover {
-          background-color: @table-row-hover-bg;
-        }
-      }
-    }
-  }
-
-  .operation-cell {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-  }
-
-  .icon-circle {
-    flex-shrink: 0;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 14px;
-    background-color: fade(@text-color, 8%);
-    color: @text-color;
-  }
-
-  .item-details {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    gap: 2px;
-  }
-
-  .item-title {
-    color: @heading-color;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .item-meta {
-    color: @text-color-secondary;
-    font-size: 12px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .status-cell {
-    text-align: right;
-  }
-
-  .status-content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
-  }
-
-  .item-amount {
-    font-weight: 500;
-    color: @buy-color;
-  }
-
-  .item-amount.negative {
-    color: @sell-color;
-  }
-
-  .currency {
-    color: @text-color-secondary;
-    font-size: 12px;
-  }
-
-  .load-more {
-    display: flex;
-    justify-content: center;
-    padding: 8px 0 4px;
   }
 });
