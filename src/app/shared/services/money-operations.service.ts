@@ -28,7 +28,7 @@ export class MoneyOperationsService {
       command,
       {
         headers: {
-          'X-ALOR-Originator': 'mobileapp'
+          'X-ALOR-Originator': 'astras'
         }
       }
     ).pipe(
@@ -47,7 +47,7 @@ export class MoneyOperationsService {
       formData,
       {
         headers: {
-          'X-ALOR-Originator': 'mobileapp'
+          'X-ALOR-Originator': 'astras'
         }
       }
     ).pipe(
