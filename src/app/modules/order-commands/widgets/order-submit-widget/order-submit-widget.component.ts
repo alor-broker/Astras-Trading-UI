@@ -169,13 +169,20 @@ export class OrderSubmitWidgetComponent implements OnInit, AfterViewInit {
       shareReplay(1)
     );
 
-    this.widgetsSharedDataService.getDataProvideValues<SelectedPriceData>('selectedPrice').pipe(
-      withLatestFrom(this.settings$),
-      filter(([priceData, settings]) => priceData.badgeColor === settings.badgeColor),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(([priceData,]) => this.setCommonParameters({
-      price: priceData.price
-    }));
+    this.currentInstrument$.pipe(
+      take(1)
+    ).subscribe(() => {
+      this.widgetsSharedDataService.getDataProvideValues<SelectedPriceData>('selectedPrice').pipe(
+        withLatestFrom(this.settings$),
+        filter(([priceData,]) => priceData != null),
+        filter(([priceData, settings]) => priceData!.badgeColor === settings.badgeColor),
+        takeUntilDestroyed(this.destroyRef)
+      ).subscribe(([priceData,]) => {
+        this.setCommonParameters({
+          price: priceData!.price
+        });
+      });
+    });
   }
 
   setCommonParameters(params: Partial<CommonParameters>): void {

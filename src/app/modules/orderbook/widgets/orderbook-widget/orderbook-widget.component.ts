@@ -126,12 +126,7 @@ export class OrderbookWidgetComponent implements OnInit {
     this.widgetSettings.pipe(
       take(1)
     ).subscribe(settings => {
-      if (settings.useOrderWidget ?? false) {
-        this.widgetsSharedDataService.setDataProviderValue<SelectedPriceData>('selectedPrice', {
-          price,
-          badgeColor: settings.badgeColor ?? defaultBadgeColor
-        });
-      } else {
+      if(this.ordersDialogService.dialogOptions.isNewOrderDialogSupported && !(settings.useOrderWidget ?? false)) {
         this.ordersDialogService.openNewOrderDialog({
           instrumentKey: toInstrumentKey(settings),
           initialValues: {
@@ -140,7 +135,14 @@ export class OrderbookWidgetComponent implements OnInit {
             quantity: 1
           }
         });
+
+        return;
       }
+
+      this.widgetsSharedDataService.setDataProviderValue<SelectedPriceData>('selectedPrice', {
+        price,
+        badgeColor: settings.badgeColor ?? defaultBadgeColor
+      });
     });
   }
 }

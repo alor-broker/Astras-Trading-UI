@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {MobileActionsContextService} from "../../../modules/dashboard/services/mobile-actions-context.service";
 import {ACTIONS_CONTEXT} from "../../../shared/services/actions-context";
 import {fromEvent, Observable} from "rxjs";
@@ -32,6 +32,7 @@ import {
 import {
   ApplicationUpdatedWidgetComponent
 } from "../../../modules/application-meta/widgets/application-updated-widget/application-updated-widget.component";
+import {OrdersDialogService} from "../../../shared/services/orders/orders-dialog.service";
 
 @Component({
   selector: 'ats-mobile-dashboard',
@@ -62,10 +63,13 @@ import {
   ]
 })
 export class MobileDashboardComponent implements OnInit {
-  private readonly mobileSettingsBrokerService = inject(MobileSettingsBrokerService);
-  private readonly store = inject(Store);
-
   screenHeight!: Observable<number>;
+
+  private readonly mobileSettingsBrokerService = inject(MobileSettingsBrokerService);
+
+  private readonly ordersDialogService = inject(OrdersDialogService);
+
+  private readonly store = inject(Store);
 
   ngOnInit(): void {
     this.mobileSettingsBrokerService.initSettingsBrokers();
@@ -77,5 +81,9 @@ export class MobileDashboardComponent implements OnInit {
         map(() => (window.screen.height / window.devicePixelRatio)),
         startWith(window.screen.height / window.devicePixelRatio)
       );
+
+    this.ordersDialogService.setDialogOptions({
+      isNewOrderDialogSupported: false
+    });
   }
 }

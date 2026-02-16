@@ -1,6 +1,6 @@
 ﻿import {PortfolioKey} from "../../../../shared/models/portfolio-key.model";
 import {Instrument} from "../../../../shared/models/instruments/instrument.model";
-import {BehaviorSubject, combineLatest, Observable, shareReplay, take} from "rxjs";
+import {asyncScheduler, BehaviorSubject, combineLatest, Observable, shareReplay, subscribeOn, take} from "rxjs";
 import {Component, DestroyRef, input, OnDestroy, output} from "@angular/core";
 import {Side} from "../../../../shared/models/enums/side.model";
 import {filter, finalize, map, startWith, switchMap} from "rxjs/operators";
@@ -129,6 +129,8 @@ export abstract class BaseOrderFormComponent implements OnDestroy {
   }
 
   protected getCommonParameters(): Observable<Partial<CommonParameters>> {
-    return this.commonParametersService.parameters$;
+    return this.commonParametersService.parameters$.pipe(
+      subscribeOn(asyncScheduler)
+    );
   }
 }

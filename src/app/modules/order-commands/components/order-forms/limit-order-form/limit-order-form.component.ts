@@ -320,7 +320,7 @@ export class LimitOrderFormComponent extends BaseOrderFormComponent implements O
 
   private initCommonParametersUpdate(): void {
     this.getCommonParameters().pipe(
-      takeUntilDestroyed(this.destroyRef)
+      takeUntilDestroyed(this.destroyRef),
     ).subscribe(p => {
       if (p.price != null && this.form.controls.price.value !== p.price) {
         this.form.controls.price.setValue(p.price);

@@ -1,13 +1,7 @@
-import {
-  Component,
-  DestroyRef,
-  inject,
-  model,
-  OnInit
-} from "@angular/core";
+import {Component, DestroyRef, inject, model, OnInit} from "@angular/core";
 import {
   combineLatest,
-  distinctUntilChanged,
+  distinctUntilChanged, filter,
   fromEvent,
   Observable,
   shareReplay,
@@ -16,37 +10,37 @@ import {
   tap,
   withLatestFrom
 } from "rxjs";
-import { WidgetInstance } from "../../../shared/models/dashboard/dashboard-item.model";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { WidgetCategory } from "../../../shared/models/widget-meta.model";
-import { WidgetsHelper } from "../../../shared/utils/widgets";
+import {WidgetInstance} from "../../../shared/models/dashboard/dashboard-item.model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {WidgetCategory} from "../../../shared/models/widget-meta.model";
+import {WidgetsHelper} from "../../../shared/utils/widgets";
 import {
   GalleryDisplay,
   WidgetDisplay,
   WidgetGroup,
   WidgetsGalleryComponent
 } from "../../../modules/dashboard/components/widgets-gallery/widgets-gallery.component";
-import { DashboardContextService } from "../../../shared/services/dashboard-context.service";
-import { WidgetsMetaService } from "../../../shared/services/widgets-meta.service";
-import { TranslatorService } from "../../../shared/services/translator.service";
-import { MobileActionsContextService } from "../../../modules/dashboard/services/mobile-actions-context.service";
-import { MobileDashboardService } from "../../../modules/dashboard/services/mobile-dashboard.service";
-import { WidgetsSharedDataService } from "../../../shared/services/widgets-shared-data.service";
-import { map } from "rxjs/operators";
-import { arraysEqual } from "ng-zorro-antd/core/util";
-import { LetDirective } from "@ngrx/component";
-import { NzIconDirective } from "ng-zorro-antd/icon";
-import { WidgetSettingsService } from "../../../shared/services/widget-settings.service";
-import { WidgetSettings } from "../../../shared/models/widget-settings.model";
-import { isInstrumentDependent } from "../../../shared/utils/settings-helper";
-import { NavigationStackService } from "../../../shared/services/navigation-stack.service";
-import { NzButtonComponent } from "ng-zorro-antd/button";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { ParentWidgetComponent } from "../../../modules/dashboard/components/parent-widget/parent-widget.component";
-import { TerminalSettingsService } from "../../../shared/services/terminal-settings.service";
-import { ManageDashboardsService } from "../../../shared/services/manage-dashboards.service";
-import { MobileLayoutHelper } from "../../../shared/utils/mobile-layout.helper";
-import { ArrayHelper } from "../../../shared/utils/array-helper";
+import {DashboardContextService} from "../../../shared/services/dashboard-context.service";
+import {WidgetsMetaService} from "../../../shared/services/widgets-meta.service";
+import {TranslatorService} from "../../../shared/services/translator.service";
+import {MobileActionsContextService} from "../../../modules/dashboard/services/mobile-actions-context.service";
+import {MobileDashboardService} from "../../../modules/dashboard/services/mobile-dashboard.service";
+import {WidgetsSharedDataService} from "../../../shared/services/widgets-shared-data.service";
+import {map} from "rxjs/operators";
+import {arraysEqual} from "ng-zorro-antd/core/util";
+import {LetDirective} from "@ngrx/component";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {WidgetSettingsService} from "../../../shared/services/widget-settings.service";
+import {WidgetSettings} from "../../../shared/models/widget-settings.model";
+import {isInstrumentDependent} from "../../../shared/utils/settings-helper";
+import {NavigationStackService} from "../../../shared/services/navigation-stack.service";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {ParentWidgetComponent} from "../../../modules/dashboard/components/parent-widget/parent-widget.component";
+import {TerminalSettingsService} from "../../../shared/services/terminal-settings.service";
+import {ManageDashboardsService} from "../../../shared/services/manage-dashboards.service";
+import {MobileLayoutHelper} from "../../../shared/utils/mobile-layout.helper";
+import {ArrayHelper} from "../../../shared/utils/array-helper";
 
 interface QuickAccessPanelWidget extends WidgetInstance {
   isSelectedByDefault: boolean;
@@ -176,16 +170,17 @@ export class MobileDashboardContentComponent implements OnInit {
     ).subscribe(event => {
       switch (event.eventType) {
         case "instrumentSelected":
-          this.openOrderWidget();
+          this.openPreferredOrderWidget();
           break;
       }
     });
 
     this.widgetsSharedDataService.getDataProvideValues('selectedPrice').pipe(
+      filter(x => x != null),
       takeUntilDestroyed(this.destroyRef)
     )
       .subscribe(() => {
-        this.openOrderWidget();
+        this.openExtendedOrderWidget();
       });
 
     this.initWidgetsGallery();
@@ -247,7 +242,7 @@ export class MobileDashboardContentComponent implements OnInit {
       });
   }
 
-  protected openOrderWidget(skipNavigationStackUpdate = true): void {
+  protected openPreferredOrderWidget(skipNavigationStackUpdate = true): void {
     combineLatest({
       allWidgets: this.widgets$,
       layout: this.getQuickAccessPanelLayout$,
@@ -273,9 +268,29 @@ export class MobileDashboardContentComponent implements OnInit {
       const target = x.allWidgets.find(w => w.instance.widgetType === preferredWidget.widgetType);
       if (target != null) {
         this.selectWidget(target.instance.widgetType, skipNavigationStackUpdate);
+        return;
       }
 
       this.selectWidget(orderWidgets[0].instance.widgetType, skipNavigationStackUpdate);
+    });
+  }
+
+  protected openExtendedOrderWidget(): void {
+    this.widgets$.pipe(
+      take(1)
+    ).subscribe(allWidgets => {
+      const extendedOrderWidget = allWidgets.find(w => w.widgetMeta.typeId === 'order-submit');
+      if (extendedOrderWidget != null) {
+        this.selectWidget(extendedOrderWidget.widgetMeta.typeId, true);
+        return;
+      }
+
+      const orderWidgets = allWidgets.filter(w => w.widgetMeta.mobileMeta?.isOrderWidget ?? false);
+      if (orderWidgets.length === 0) {
+        return;
+      }
+
+      this.selectWidget(orderWidgets[0].instance.widgetType, true);
     });
   }
 
