@@ -25,18 +25,18 @@
       padding: 8px 10px;
       border-radius: 10px;
       border-color: @border-color-base;
-      background: @component-background;
+      background: transparent;
       color: @heading-color;
 
       &:hover,
       &:focus {
         color: @heading-color;
         border-color: fade(@primary-color, 45%);
-        background: mix(@component-background, @primary-color, 94%);
+        background: fade(@primary-color, 6%);
       }
 
       &:active {
-        background: mix(@component-background, @primary-color, 90%);
+        background: fade(@primary-color, 10%);
       }
     }
 

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WidgetInstance } from '../../../../shared/models/dashboard/dashboard-item.model';
 import { OperationsHistoryComponent } from '../../components/operations-history/operations-history.component';
@@ -13,12 +13,7 @@ import { OperationsHistoryComponent } from '../../components/operations-history/
   templateUrl: './operations-history-widget.component.html',
   styleUrls: ['./operations-history-widget.component.less']
 })
-export class OperationsHistoryWidgetComponent implements OnInit {
+export class OperationsHistoryWidgetComponent {
   @Input() widgetInstance!: WidgetInstance;
   @Input() isBlockWidget!: boolean;
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
 }

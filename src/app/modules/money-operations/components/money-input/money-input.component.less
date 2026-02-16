@@ -24,14 +24,14 @@
       padding: 12px;
       border-radius: 10px;
       border-color: @border-color-base;
-      background: @component-background;
+      background: transparent;
       color: @heading-color;
       text-align: left;
 
       &:hover,
       &:focus {
         border-color: fade(@primary-color, 45%);
-        background: mix(@component-background, @primary-color, 94%);
+        background: fade(@primary-color, 6%);
       }
     }
 

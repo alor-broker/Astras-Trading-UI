@@ -34,13 +34,19 @@ export class OperationsHistoryService {
     if (params.status) {
       httpParams = httpParams.set('status', params.status);
     }
+    if (params.search) {
+      httpParams = httpParams.set('search', params.search);
+    }
+    if (params.searchType) {
+      httpParams = httpParams.set('searchType', params.searchType);
+    }
+    if (params.loadDocuments != null) {
+      httpParams = httpParams.set('loadDocuments', params.loadDocuments.toString());
+    }
 
     return this.httpClient.get<HistoryItem[]>(
-      `${this.baseUrl}/${agreementId}/operations`,
+      `${this.baseUrl}/${agreementId}/${params.endpoint ?? 'all'}`,
       {
-        headers: {
-          'X-ALOR-Originator': 'mobileapp'
-        },
         params: httpParams
       }
     ).pipe(

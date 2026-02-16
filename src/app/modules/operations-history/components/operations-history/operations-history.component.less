@@ -6,105 +6,194 @@
     display: block;
     height: 100%;
     color: @text-color;
-    background-color: @component-background;
+  }
 
-    table.history-table {
-      tr {
-        &.item:not(:last-child) {
-          td {
-            border-bottom: 1px solid @border-color-split;
-          }
+  .history-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+    padding: 12px 8px;
+    overflow-y: auto;
+  }
+
+  .title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: @heading-color;
+  }
+
+  .filters {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid @border-color-split;
+
+    .filters-row {
+      display: grid;
+      column-gap: 12px;
+      row-gap: 8px;
+      width: 100%;
+    }
+
+    .row-main {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+    }
+
+    .row-dates {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .filter-control {
+      min-width: 0;
+      max-width: none;
+      width: 100%;
+    }
+
+    // nz-select renders an inner .ant-select with display:inline-flex.
+    // Force it to stretch to fill the grid cell.
+    nz-select {
+      display: block;
+      width: 100%;
+
+      .ant-select {
+        width: 100%;
+      }
+    }
+
+    // nz-date-picker renders an inner .ant-picker with display:inline-flex.
+    // Force it to stretch to fill the grid cell.
+    nz-date-picker {
+      display: block;
+      width: 100%;
+
+      .ant-picker {
+        width: 100%;
+      }
+    }
+
+    .date-filter {
+      min-width: 0;
+    }
+
+    .reset-button {
+      min-width: 0;
+    }
+  }
+
+  .history-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+
+    thead {
+      th {
+        padding: 8px 4px;
+        font-size: 12px;
+        font-weight: 400;
+        color: @text-color-secondary;
+        text-align: left;
+        border-bottom: 1px solid @border-color-split;
+      }
+    }
+
+    .operation-column {
+      width: 62%;
+    }
+
+    .status-column {
+      text-align: right;
+    }
+
+    tbody {
+      .item {
+        td {
+          padding: 10px 4px;
+          vertical-align: middle;
+          border-bottom: 1px solid @border-color-split;
         }
 
-        &.item:hover {
+        &:hover {
           background-color: @table-row-hover-bg;
         }
       }
     }
   }
 
-  .history-container {
-    padding: 16px;
-    height: 100%;
-    overflow-y: auto;
-    background-color: @component-background;
+  .operation-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
 
-    .title {
-      margin-bottom: 20px;
-      font-size: 18px;
-      font-weight: 600;
-      color: @heading-color;
-    }
+  .icon-circle {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    background-color: fade(@text-color, 8%);
+    color: @text-color;
+  }
 
-    table.history-table {
-      width: 100%;
-      table-layout: fixed;
-      border-collapse: collapse;
+  .item-details {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 2px;
+  }
 
-      thead {
-        tr {
-          th {
-            padding: 8px 5px;
-            color: @text-color-secondary;
-            font-weight: normal;
-            font-size: 12px;
-            border-bottom: 1px solid @border-color-split;
-          }
-        }
-      }
+  .item-title {
+    color: @heading-color;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-      tbody {
-        tr.item {
-          td {
-            padding: 8px 5px;
-            vertical-align: middle;
-          }
-        }
-      }
+  .item-meta {
+    color: @text-color-secondary;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-      .text-start {
-        text-align: left;
-      }
+  .status-cell {
+    text-align: right;
+  }
 
-      .text-end {
-        text-align: right;
-      }
+  .status-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
 
-      .icon-circle {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          background-color: fade(@text-color, 5%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-right: 10px;
-          color: @text-color;
-          flex-shrink: 0;
-      }
+  .item-amount {
+    font-weight: 500;
+    color: @buy-color;
+  }
 
-      .item-amount {
-        font-weight: 500;
-        .currency {
-            font-size: 0.85em;
-            color: @text-color-secondary;
-        }
+  .item-amount.negative {
+    color: @sell-color;
+  }
 
-        &.money_input {
-          color: @buy-color;
-        }
+  .currency {
+    color: @text-color-secondary;
+    font-size: 12px;
+  }
 
-        &.money_withdrawal {
-          color: @sell-color;
-        }
-      }
-
-    }
-
-    .load-more {
-      text-align: center;
-      margin-top: 20px;
-      margin-bottom: 20px;
-    }
+  .load-more {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0 4px;
   }
 });

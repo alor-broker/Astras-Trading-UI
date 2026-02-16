@@ -21,6 +21,24 @@
               background: @mobile-body-background-gradient-middle;
             }
           }
+
+          // Make ng-zorro controls transparent on mobile
+          // so the gradient background shows through
+          .ant-btn-default {
+            background: transparent;
+          }
+
+          .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+            background-color: transparent;
+          }
+
+          .ant-picker {
+            background: transparent;
+          }
+
+          .ant-input {
+            background-color: transparent;
+          }
         }
       }
     }
@@ -33,6 +51,7 @@ nz-layout {
 
 :host ::ng-deep {
   ats-widget-header {
+
     .title-icon,
     .close-btn,
     .link-to-active-btn {
@@ -40,7 +59,9 @@ nz-layout {
     }
 
     .buttons-group {
-      .ant-btn, .anticon {
+
+      .ant-btn,
+      .anticon {
         font-size: 16px;
       }
     }
@@ -109,5 +130,3 @@ nz-layout {
     }
   }
 }
-
-

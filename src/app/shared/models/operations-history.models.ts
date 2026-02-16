@@ -4,7 +4,15 @@ export interface HistoryRequestParams {
   dateFrom?: string;
   dateTo?: string;
   status?: string;
+  search?: string;
+  searchType?: HistorySearchType;
+  loadDocuments?: boolean;
+  endpoint?: HistoryEndpoint;
 }
+
+export type HistorySearchType = 'deal' | 'moneymove' | 'operation';
+
+export type HistoryEndpoint = 'all' | 'operations';
 
 export interface HistoryItemData {
   order?: string;

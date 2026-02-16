@@ -2,15 +2,62 @@
   "title": "История операций",
   "loadMore": "Загрузить еще",
   "empty": "История пуста",
+  "filters": {
+    "typePlaceholder": "Тип операции",
+    "dateFromPlaceholder": "Дата от",
+    "dateToPlaceholder": "Дата до",
+    "reset": "Сбросить"
+  },
+  "filterGroups": {
+    "moneymove": "Движение денежных средств",
+    "operation": "Операции с ЭП"
+  },
+  "filterOptions": {
+    "input": "Зачисление",
+    "withdraw": "Вывод",
+    "transfer": "Перевод",
+    "dividends": "Дивиденды",
+    "coupons": "Купоны",
+    "taxes": "Налоги",
+    "commissions": "Комиссии",
+    "moneymove_others": "Прочие",
+    "money_withdrawal": "Вывод денежных средств",
+    "money_input": "Пополнение счета",
+    "services": "Услуги",
+    "securities": "С ценными бумагами",
+    "orders": "Заявки",
+    "security": "Безопасность",
+    "operation_others": "Прочие"
+  },
   "type": {
-    "money_input": "Пополнение",
-    "money_withdrawal": "Вывод",
-    "trade": "Сделка"
+    "money_input": "Пополнение счета",
+    "money_withdrawal": "Вывод денежных средств",
+    "money_between_accounts": "Перевод между счетами",
+    "money_between_subportfolios": "Перевод между субпортфелями",
+    "money_between_agreements": "Перевод между договорами",
+    "trade": "Сделка",
+    "input": "Зачисление",
+    "withdraw": "Вывод",
+    "transfer": "Перевод",
+    "dividends": "Дивиденды",
+    "coupons": "Купоны",
+    "taxes": "Налоги",
+    "commissions": "Комиссии",
+    "services": "Услуги",
+    "securities": "С ценными бумагами",
+    "orders": "Заявки",
+    "security": "Безопасность",
+    "others": "Прочие"
   },
   "status": {
     "executed": "Исполнено",
+    "resolved": "Исполнено",
+    "sent": "Деньги отправлены",
     "canceled": "Отменено",
-    "process": "В обработке"
+    "refused": "Отклонено",
+    "process": "В обработке",
+    "executing": "На исполнении",
+    "overdue": "Просрочено"
   },
   "columns": {
     "operation": "Операция",
