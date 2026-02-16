@@ -12,6 +12,6 @@ import { MoneyOperationsComponent } from '../../components/money-operations/mone
   styleUrls: ['./money-operations-widget.component.less']
 })
 export class MoneyOperationsWidgetComponent {
-  widgetInstance = input.required<WidgetInstance>();
-  isBlockWidget = input.required<boolean>();
+  readonly widgetInstance = input.required<WidgetInstance>();
+  readonly isBlockWidget = input.required<boolean>();
 }

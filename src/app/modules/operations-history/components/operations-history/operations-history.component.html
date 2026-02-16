@@ -1,7 +1,7 @@
 <div class="history-container" *transloco="let t; scope: 'operations-history'">
-  <h2 class="title" *ngIf="!preview">{{ t('operationsHistory.title') }}</h2>
+  <h2 class="title" *ngIf="!preview()">{{ t('operationsHistory.title') }}</h2>
 
-  <form class="filters" [formGroup]="filterForm" *ngIf="!preview">
+  <form class="filters" [formGroup]="filterForm" *ngIf="!preview()">
     <div class="filters-row row-main">
       <nz-select
         formControlName="search"
@@ -50,14 +50,13 @@
   </form>
 
   <nz-list
-    *ngIf="history$ | async as history"
-    [nzDataSource]="history"
+    [nzDataSource]="history()"
     [nzItemLayout]="'vertical'"
-    [nzLoading]="isLoading$ | async"
-    [nzLoadMore]="!preview && hasMore ? loadMoreTpl : null"
+    [nzLoading]="isLoading()"
+    [nzLoadMore]="!preview() && hasMore ? loadMoreTpl : null"
     [nzBordered]="false"
     class="history-list">
-    <nz-list-item *ngFor="let item of history" class="history-item">
+    <nz-list-item *ngFor="let item of history()" class="history-item">
       <nz-list-item-meta
         [nzAvatar]="itemIcon"
         [nzTitle]="itemTitle"
@@ -91,7 +90,7 @@
         </ng-template>
       </nz-list-item-meta>
     </nz-list-item>
-    <nz-list-empty *ngIf="history.length === 0 && !(isLoading$ | async)">
+    <nz-list-empty *ngIf="history().length === 0 && !isLoading()">
       <div class="empty-text">{{ t('operationsHistory.empty') }}</div>
     </nz-list-empty>
   </nz-list>
@@ -102,7 +101,7 @@
         nz-button
         nzType="default"
         nzBlock
-        [disabled]="isLoading$ | async"
+        [disabled]="isLoading()"
         (click)="loadMore()">
         {{ t('operationsHistory.loadMore') }}
       </button>

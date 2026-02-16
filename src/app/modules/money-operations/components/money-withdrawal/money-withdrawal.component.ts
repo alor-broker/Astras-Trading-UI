@@ -9,6 +9,7 @@ import { DashboardContextService } from '../../../../shared/services/dashboard-c
 import { OperationTypes } from '../../../../shared/models/money-operations.models';
 import { catchError, take } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
 import { TranslocoDirective } from '@jsverse/transloco';
 
 @Component({
@@ -39,14 +40,14 @@ export class MoneyWithdrawalComponent implements OnInit {
     this.initForm();
     this.dashboardContextService.selectedPortfolio$.pipe(
       take(1)
-    ).subscribe(p => {
-      if (p) {
-        this.selectedAgreement = (p as any).agreement;
+    ).subscribe((p: PortfolioKey | null) => {
+      if (p != null) {
+        this.selectedAgreement = (p as { agreement?: string }).agreement ?? null;
       }
     });
   }
 
-  private initForm() {
+  private initForm(): void {
     this.form = this.fb.group({
       recipient: [null, [Validators.required]],
       bik: [null, [Validators.required, Validators.pattern(/^\d{9}$/)]],
@@ -56,11 +57,22 @@ export class MoneyWithdrawalComponent implements OnInit {
     });
   }
 
-  submit() {
-    if (!this.form.valid || !this.selectedAgreement) return;
+  submit(): void {
+    const isFormValid = this.form.valid;
+    const hasAgreement = (this.selectedAgreement ?? '').length > 0;
+
+    if (!isFormValid || !hasAgreement) {
+      return;
+    }
 
     this.isLoading = true;
-    const val = this.form.value;
+    const val = this.form.value as {
+      amount: string;
+      recipient: string;
+      bik: string;
+      accNumber: string;
+      purpose: string;
+    };
 
     const data = JSON.stringify({
       amount: Number(val.amount),
@@ -73,7 +85,7 @@ export class MoneyWithdrawalComponent implements OnInit {
 
     this.service.create({
       operationType: OperationTypes.Withdraw,
-      agreementNumber: this.selectedAgreement,
+      agreementNumber: this.selectedAgreement!,
       data: data
     }).pipe(
       catchError(() => {

@@ -10,12 +10,13 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { MoneyOperationsService } from '../../../../shared/services/money-operations.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { UserPortfoliosService } from '../../../../shared/services/user-portfolios.service';
-import { OperationSubtypes, OperationTypes, Limits } from '../../../../shared/models/money-operations.models';
-import { catchError, filter, switchMap, take, map } from 'rxjs/operators';
+import { OperationSubtypes, OperationTypes, Limits, OperationSubtype } from '../../../../shared/models/money-operations.models';
+import { catchError, switchMap, take, map } from 'rxjs/operators';
 import { BehaviorSubject, of, combineLatest } from 'rxjs';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { isPortfoliosEqual } from '../../../../shared/utils/portfolios';
 import { NzIconDirective } from 'ng-zorro-antd/icon';
+import { PortfolioExtended } from "../../../../shared/models/user/portfolio-extended.model";
 
 @Component({
   selector: 'ats-money-input',
@@ -43,17 +44,17 @@ export class MoneyInputComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   form!: FormGroup;
-  selectedPortfolio: any = null; // Storing full portfolio object
+  selectedPortfolio: PortfolioExtended | null = null; // Storing full portfolio object
   selectedAgreement: string | null = null;
   isLoading = false;
 
   // State
   step$ = new BehaviorSubject<'selection' | 'amount' | 'confirm'>('selection');
-  operationSubtype: string = OperationSubtypes.Card;
+  operationSubtype: OperationSubtype = OperationSubtypes.Card;
 
   limits = Limits;
 
-  get subtype() { return this.operationSubtype; }
+  get subtype(): OperationSubtype { return this.operationSubtype; }
 
   ngOnInit(): void {
     this.initForm();
@@ -75,20 +76,20 @@ export class MoneyInputComponent implements OnInit {
     });
   }
 
-  private initForm() {
+  private initForm(): void {
     this.form = this.fb.group({
       amount: [null, [Validators.required, Validators.min(1)]],
       // Dynamic validators could be added based on subtype
     });
   }
 
-  selectSubtype(subtype: string) {
+  selectSubtype(subtype: OperationSubtype): void {
     this.operationSubtype = subtype;
     this.step$.next('amount');
     this.updateValidators();
   }
 
-  updateValidators() {
+  updateValidators(): void {
     const amountControl = this.form.get('amount');
     if (!amountControl) return;
 
@@ -100,19 +101,19 @@ export class MoneyInputComponent implements OnInit {
     amountControl.updateValueAndValidity();
   }
 
-  submitPrepare() {
-    if (!this.form.valid || !this.selectedAgreement) return;
+  submitPrepare(): void {
+    if (!this.form.valid || (this.selectedAgreement ?? '').length === 0) return;
 
     this.isLoading = true;
-    const amount = this.form.get('amount')?.value;
+    const amount = this.form.get('amount')?.value as number | undefined;
 
     this.service.prepare({
       operationType: OperationTypes.Deposit,
-      agreementNumber: this.selectedAgreement,
+      agreementNumber: this.selectedAgreement!,
       data: {
         amount: Number(amount),
         currency: 'RUB', // Hardcoded as per spec
-        subtype: this.operationSubtype as any
+        subtype: this.operationSubtype
       }
     }).pipe(
       catchError(() => {
@@ -123,7 +124,8 @@ export class MoneyInputComponent implements OnInit {
       this.isLoading = false;
       if (response) {
         // Handle validations if any
-        if (response.validations?.some(v => !v.isSuccess)) {
+        const hasErrors = response.validations?.some(v => !v.isSuccess) ?? false;
+        if (hasErrors) {
           // Show error
           return;
         }
@@ -132,14 +134,14 @@ export class MoneyInputComponent implements OnInit {
     });
   }
 
-  submitCreate() {
-    if (!this.selectedAgreement || !this.selectedPortfolio) return;
+  submitCreate(): void {
+    if ((this.selectedAgreement ?? '').length === 0 || this.selectedPortfolio == null) return;
     this.isLoading = true;
-    const amount = this.form.get('amount')?.value;
+    const amount = this.form.get('amount')?.value as number | undefined;
 
     this.service.create({
       operationType: OperationTypes.Deposit,
-      agreementNumber: this.selectedAgreement,
+      agreementNumber: this.selectedAgreement!,
       data: JSON.stringify({
         account: this.selectedPortfolio.portfolio, // Mapping portfolio ID from portfolio object
         exchange: this.selectedPortfolio.exchange, // Mapping exchange from portfolio object
@@ -168,7 +170,7 @@ export class MoneyInputComponent implements OnInit {
     });
   }
 
-  back() {
+  back(): void {
     const current = this.step$.value;
     if (current === 'confirm') this.step$.next('amount');
     else if (current === 'amount') this.step$.next('selection');

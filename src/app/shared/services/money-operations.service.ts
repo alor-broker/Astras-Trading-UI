@@ -7,7 +7,6 @@ import { catchHttpError } from '../utils/observable-helper';
 import {
   CreateOperationCommand,
   CreateOperationResponse,
-  OperationType,
   PrepareOperationCommand,
   PrepareOperationResponse
 } from '../models/money-operations.models';
@@ -56,25 +55,25 @@ export class MoneyOperationsService {
     );
   }
 
-  getPaymentConfig(operationId: string, type: string = 'money_input'): Observable<any | null> {
-    return this.httpClient.get<any>(
+  getPaymentConfig(operationId: string): Observable<Record<string, string> | null> {
+    return this.httpClient.get<Record<string, string>>(
       `${this.baseUrl}/${operationId}/actions/get-money-input`
     ).pipe(
       map(config => {
-        if (config) {
+        if (config != null) {
           delete config['MNT_RETURN_URL'];
           delete config['MNT_SUCCESS_URL'];
           delete config['MNT_FAIL_URL'];
         }
         return config;
       }),
-      catchHttpError<any | null>(null, this.errorHandlerService)
+      catchHttpError<Record<string, string> | null>(null, this.errorHandlerService)
     );
   }
 
-  getMonetaUrl(params: any): string {
+  getMonetaUrl(params: Record<string, string>): string {
     const isProd = this.environmentService.production;
-    // Using hardcoded URL based on spec/const.js logic. 
+    // Using hardcoded URL based on spec/const.js logic.
     // Spec said: Concatenate https://www.payanyway.ru/assistant.htm (Prod) with the query string parameters
     const baseUrl = isProd
       ? 'https://www.payanyway.ru/assistant.htm'

@@ -1,8 +1,8 @@
-import { Component, DestroyRef, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Component, DestroyRef, computed, inject, input, output, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { BehaviorSubject, combineLatest, of } from 'rxjs';
+import { combineLatest, of } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
@@ -31,6 +31,71 @@ interface FilterOption {
   group: FilterGroup;
 }
 
+// Enums for type-safe constants
+enum HistoryIcon {
+  PlusCircle = 'plus-circle',
+  MinusCircle = 'minus-circle',
+  Swap = 'swap',
+  Wallet = 'wallet',
+  Profile = 'profile',
+  SafetyCertificate = 'safety-certificate',
+  History = 'history'
+}
+
+enum HistoryStatusColor {
+  Success = 'success',
+  Error = 'error',
+  Processing = 'processing',
+  Warning = 'warning',
+  Default = 'default'
+}
+
+enum HistoryTypeCode {
+  Input = 'input',
+  MoneyInput = 'money_input',
+  Withdraw = 'withdraw',
+  MoneyWithdrawal = 'money_withdrawal',
+  Taxes = 'taxes',
+  Commissions = 'commissions',
+  Transfer = 'transfer',
+  MoneyBetweenAccounts = 'money_between_accounts',
+  MoneyBetweenSubportfolios = 'money_between_subportfolios',
+  MoneyBetweenAgreements = 'money_between_agreements',
+  Dividends = 'dividends',
+  Coupons = 'coupons',
+  Orders = 'orders',
+  Security = 'security'
+}
+
+enum HistoryStatus {
+  Executed = 'executed',
+  Resolved = 'resolved',
+  Sent = 'sent',
+  Canceled = 'canceled',
+  Refused = 'refused',
+  Process = 'process',
+  Executing = 'executing',
+  Overdue = 'overdue'
+}
+
+const STATUS_COLORS: Record<HistoryStatus, HistoryStatusColor> = {
+  [HistoryStatus.Executed]: HistoryStatusColor.Success,
+  [HistoryStatus.Resolved]: HistoryStatusColor.Success,
+  [HistoryStatus.Sent]: HistoryStatusColor.Success,
+  [HistoryStatus.Canceled]: HistoryStatusColor.Error,
+  [HistoryStatus.Refused]: HistoryStatusColor.Error,
+  [HistoryStatus.Process]: HistoryStatusColor.Processing,
+  [HistoryStatus.Executing]: HistoryStatusColor.Processing,
+  [HistoryStatus.Overdue]: HistoryStatusColor.Warning
+};
+
+const NEGATIVE_AMOUNT_TYPES = new Set<string>([
+  HistoryTypeCode.MoneyWithdrawal,
+  HistoryTypeCode.Withdraw,
+  HistoryTypeCode.Taxes,
+  HistoryTypeCode.Commissions
+]);
+
 @Component({
   selector: 'ats-operations-history',
   standalone: true,
@@ -55,12 +120,12 @@ export class OperationsHistoryComponent implements OnInit {
   private readonly userPortfoliosService = inject(UserPortfoliosService);
   private readonly destroyRef = inject(DestroyRef);
 
-  @Input() preview = false;
-  @Input() limit = 20;
-  @Output() showMore = new EventEmitter<void>();
+  readonly preview = input<boolean>(false);
+  readonly limit = input<number>(20);
+  readonly showMore = output<void>();
 
-  readonly history$ = new BehaviorSubject<HistoryItem[]>([]);
-  readonly isLoading$ = new BehaviorSubject<boolean>(true);
+  readonly history = signal<HistoryItem[]>([]);
+  readonly isLoading = signal<boolean>(true);
 
   readonly filterForm = new FormGroup({
     search: new FormControl<string | null>(null),
@@ -69,20 +134,20 @@ export class OperationsHistoryComponent implements OnInit {
   });
 
   readonly filterOptions: FilterOption[] = [
-    { value: 'input', searchType: 'moneymove', group: 'moneymove' },
-    { value: 'withdraw', searchType: 'moneymove', group: 'moneymove' },
-    { value: 'transfer', searchType: 'moneymove', group: 'moneymove' },
-    { value: 'dividends', searchType: 'moneymove', group: 'moneymove' },
-    { value: 'coupons', searchType: 'moneymove', group: 'moneymove' },
-    { value: 'taxes', searchType: 'moneymove', group: 'moneymove' },
-    { value: 'commissions', searchType: 'moneymove', group: 'moneymove' },
+    { value: HistoryTypeCode.Input, searchType: 'moneymove', group: 'moneymove' },
+    { value: HistoryTypeCode.Withdraw, searchType: 'moneymove', group: 'moneymove' },
+    { value: HistoryTypeCode.Transfer, searchType: 'moneymove', group: 'moneymove' },
+    { value: HistoryTypeCode.Dividends, searchType: 'moneymove', group: 'moneymove' },
+    { value: HistoryTypeCode.Coupons, searchType: 'moneymove', group: 'moneymove' },
+    { value: HistoryTypeCode.Taxes, searchType: 'moneymove', group: 'moneymove' },
+    { value: HistoryTypeCode.Commissions, searchType: 'moneymove', group: 'moneymove' },
     { value: 'moneymove/others', searchType: 'moneymove', group: 'moneymove' },
-    { value: 'money_withdrawal', searchType: 'operation', group: 'operation' },
-    { value: 'money_input', searchType: 'operation', group: 'operation' },
+    { value: HistoryTypeCode.MoneyWithdrawal, searchType: 'operation', group: 'operation' },
+    { value: HistoryTypeCode.MoneyInput, searchType: 'operation', group: 'operation' },
     { value: 'services', searchType: 'operation', group: 'operation' },
     { value: 'securities', searchType: 'operation', group: 'operation' },
-    { value: 'orders', searchType: 'operation', group: 'operation' },
-    { value: 'security', searchType: 'operation', group: 'operation' },
+    { value: HistoryTypeCode.Orders, searchType: 'operation', group: 'operation' },
+    { value: HistoryTypeCode.Security, searchType: 'operation', group: 'operation' },
     { value: 'operation/others', searchType: 'operation', group: 'operation' }
   ];
 
@@ -96,11 +161,11 @@ export class OperationsHistoryComponent implements OnInit {
   }
 
   loadMore(): void {
-    if (this.isLoading$.getValue() || !this.hasMore || !this.agreementId) {
+    if (this.isLoading() || !this.hasMore || this.agreementId == null) {
       return;
     }
 
-    this.offset += this.limit;
+    this.offset += this.limit();
     this.loadHistory(true);
   }
 
@@ -112,10 +177,10 @@ export class OperationsHistoryComponent implements OnInit {
     });
   }
 
-  hasActiveFilters(): boolean {
+  readonly hasActiveFilters = computed(() => {
     const { search, dateFrom, dateTo } = this.filterForm.getRawValue();
-    return !!search || !!dateFrom || !!dateTo;
-  }
+    return search != null || dateFrom != null || dateTo != null;
+  });
 
   getFilterGroupOptions(group: FilterGroup): FilterOption[] {
     return this.filterOptions.filter(o => o.group === group);
@@ -126,11 +191,11 @@ export class OperationsHistoryComponent implements OnInit {
   }
 
   getTypeCode(item: HistoryItem): string {
-    return item.subType || item.type;
+    return item.subType ?? item.type;
   }
 
   getItemTitle(item: HistoryItem, translate: (key: string) => string): string {
-    if (item.title) {
+    if (item.title != null) {
       return item.title;
     }
 
@@ -139,7 +204,7 @@ export class OperationsHistoryComponent implements OnInit {
   }
 
   getStatusLabel(item: HistoryItem, translate: (key: string) => string): string {
-    if (item.statusName) {
+    if (item.statusName != null) {
       return item.statusName;
     }
 
@@ -147,49 +212,12 @@ export class OperationsHistoryComponent implements OnInit {
   }
 
   getIcon(item: HistoryItem): string {
-    switch (this.getTypeCode(item)) {
-      case 'input':
-      case 'money_input':
-        return 'plus-circle';
-      case 'withdraw':
-      case 'money_withdrawal':
-      case 'taxes':
-      case 'commissions':
-        return 'minus-circle';
-      case 'transfer':
-      case 'money_between_accounts':
-      case 'money_between_subportfolios':
-      case 'money_between_agreements':
-        return 'swap';
-      case 'dividends':
-      case 'coupons':
-        return 'wallet';
-      case 'orders':
-        return 'profile';
-      case 'security':
-        return 'safety-certificate';
-      default:
-        return 'history';
-    }
+    const typeCode = this.getTypeCode(item);
+    return HistoryIcon[typeCode as keyof typeof HistoryIcon] ?? HistoryIcon.History;
   }
 
   getStatusColor(status: string): string {
-    switch (status) {
-      case 'executed':
-      case 'resolved':
-      case 'sent':
-        return 'success';
-      case 'canceled':
-      case 'refused':
-        return 'error';
-      case 'process':
-      case 'executing':
-        return 'processing';
-      case 'overdue':
-        return 'warning';
-      default:
-        return 'default';
-    }
+    return STATUS_COLORS[status as HistoryStatus] ?? HistoryStatusColor.Default;
   }
 
   isNegativeAmount(item: HistoryItem): boolean {
@@ -198,7 +226,7 @@ export class OperationsHistoryComponent implements OnInit {
       return amount < 0;
     }
 
-    return ['money_withdrawal', 'withdraw', 'taxes', 'commissions'].includes(this.getTypeCode(item));
+    return NEGATIVE_AMOUNT_TYPES.has(this.getTypeCode(item));
   }
 
   getAbsoluteAmount(item: HistoryItem): number | null {
@@ -206,9 +234,9 @@ export class OperationsHistoryComponent implements OnInit {
     return amount == null ? null : Math.abs(amount);
   }
 
-  private getNumericAmount(item: HistoryItem): number | null {
+  private getNumericAmount(item: HistoryItem & { sum?: number }): number | null {
     // Check top-level sum field first (from moneymove API response)
-    const sum = (item as any).sum;
+    const sum = item.sum;
     if (typeof sum === 'number') {
       return sum;
     }
@@ -223,10 +251,10 @@ export class OperationsHistoryComponent implements OnInit {
     return null;
   }
 
-  getCurrency(item: HistoryItem): string | null {
+  getCurrency(item: HistoryItem & { currency?: string }): string | null {
     // Check top-level currency field first (from moneymove API response)
-    const currency = (item as any).currency;
-    if (currency) {
+    const currency = item.currency;
+    if (currency != null) {
       return currency;
     }
 
@@ -235,17 +263,17 @@ export class OperationsHistoryComponent implements OnInit {
   }
 
   getCounterparty(item: HistoryItem): string {
-    return item.data?.accountTo || item.data?.accountNumber || item.data?.accountFrom || '';
+    return item.data?.accountTo ?? item.data?.accountNumber ?? item.data?.accountFrom ?? '';
   }
 
   disabledFromDate = (current: Date): boolean => {
     const dateTo = this.filterForm.controls.dateTo.value;
-    return this.isFutureDate(current) || (!!dateTo && current > dateTo);
+    return this.isFutureDate(current) || (dateTo != null && current > dateTo);
   };
 
   disabledToDate = (current: Date): boolean => {
     const dateFrom = this.filterForm.controls.dateFrom.value;
-    return this.isFutureDate(current) || (!!dateFrom && current < dateFrom);
+    return this.isFutureDate(current) || (dateFrom != null && current < dateFrom);
   };
 
   private bindAgreement(): void {
@@ -258,9 +286,9 @@ export class OperationsHistoryComponent implements OnInit {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(agreementId => {
       this.agreementId = agreementId;
-      if (!agreementId) {
-        this.isLoading$.next(false);
-        this.history$.next([]);
+      if (agreementId == null) {
+        this.isLoading.set(false);
+        this.history.set([]);
         this.hasMore = false;
         return;
       }
@@ -279,7 +307,7 @@ export class OperationsHistoryComponent implements OnInit {
   }
 
   private reloadHistory(): void {
-    if (!this.agreementId) {
+    if (this.agreementId == null) {
       return;
     }
 
@@ -289,11 +317,11 @@ export class OperationsHistoryComponent implements OnInit {
   }
 
   private loadHistory(concat = false): void {
-    if (!this.agreementId) {
+    if (this.agreementId == null) {
       return;
     }
 
-    this.isLoading$.next(true);
+    this.isLoading.set(true);
 
     this.service.getHistory(
       this.agreementId,
@@ -301,15 +329,15 @@ export class OperationsHistoryComponent implements OnInit {
     ).pipe(
       catchError(() => of([]))
     ).subscribe(items => {
-      this.isLoading$.next(false);
+      this.isLoading.set(false);
       const loadedItems = items ?? [];
 
-      if (loadedItems.length < this.limit) {
+      if (loadedItems.length < this.limit()) {
         this.hasMore = false;
       }
 
-      const currentItems = concat ? this.history$.getValue() : [];
-      this.history$.next([...currentItems, ...loadedItems]);
+      const currentItems = concat ? this.history() : [];
+      this.history.set([...currentItems, ...loadedItems]);
     });
   }
 
@@ -320,17 +348,17 @@ export class OperationsHistoryComponent implements OnInit {
     return {
       endpoint: 'all',
       offset,
-      limit: this.limit,
+      limit: this.limit(),
       search: resolvedFilter.search,
       searchType: resolvedFilter.searchType,
       loadDocuments: true,
-      dateFrom: dateFrom ? getISOStringDate(dateFrom) : undefined,
-      dateTo: dateTo ? getISOStringDate(dateTo) : undefined
+      dateFrom: dateFrom != null ? getISOStringDate(dateFrom) : undefined,
+      dateTo: dateTo != null ? getISOStringDate(dateTo) : undefined
     };
   }
 
-  private resolveSearchFilter(value: string | null): { search?: string; searchType?: HistorySearchType } {
-    if (!value) {
+  private resolveSearchFilter(value: string | null): { search?: string, searchType?: HistorySearchType } {
+    if (value == null) {
       return {};
     }
 

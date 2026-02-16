@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WidgetInstance } from '../../../../shared/models/dashboard/dashboard-item.model';
 import { OperationsHistoryComponent } from '../../components/operations-history/operations-history.component';
@@ -14,6 +14,6 @@ import { OperationsHistoryComponent } from '../../components/operations-history/
   styleUrls: ['./operations-history-widget.component.less']
 })
 export class OperationsHistoryWidgetComponent {
-  @Input() widgetInstance!: WidgetInstance;
-  @Input() isBlockWidget!: boolean;
+  readonly widgetInstance = input.required<WidgetInstance>();
+  readonly isBlockWidget = input.required<boolean>();
 }

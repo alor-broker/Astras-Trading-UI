@@ -26,11 +26,11 @@ export interface HistoryItemData {
   accountNumber?: string;
   orderType?: string;
   issuer?: string;
-  price?: string | number;
+  price?: number;
   extCurrency?: string | null;
 }
 
-export interface HistoryItem {
+export interface HistoryItemBase {
   id: string;
   type: string;
   date: string;
@@ -40,12 +40,24 @@ export interface HistoryItem {
   title?: string;
   subType?: string;
   data?: HistoryItemData;
-  documents?: any[];
-  files?: any[];
+  documents?: unknown[];
+  files?: unknown[];
   refuseReason?: string | null;
   cancelling?: boolean;
   agreementId?: string;
 }
+
+export interface MoneyMoveHistoryItem extends HistoryItemBase {
+  type: 'moneymove';
+  sum?: number;
+  currency?: string;
+}
+
+export interface OperationHistoryItem extends HistoryItemBase {
+  type: 'operation';
+}
+
+export type HistoryItem = MoneyMoveHistoryItem | OperationHistoryItem;
 
 export interface HistoryResponse {
   list: HistoryItem[];
