@@ -1,6 +1,24 @@
-import { Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
-import {BehaviorSubject, combineLatest, filter, Observable, switchMap, timer} from "rxjs";
-import {ChartData, ChartOptions} from "chart.js";
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  input,
+  OnDestroy,
+  OnInit,
+  viewChild
+} from '@angular/core';
+import {
+  BehaviorSubject,
+  combineLatest,
+  filter,
+  Observable,
+  switchMap
+} from "rxjs";
+import {
+  ChartData,
+  ChartOptions
+} from "chart.js";
 import {PortfolioDynamics} from "../../../../shared/models/user/portfolio-dynamics.model";
 import {LetDirective} from "@ngrx/component";
 import {TranslocoDirective} from "@jsverse/transloco";
@@ -11,16 +29,34 @@ import {NzSpinComponent} from "ng-zorro-antd/spin";
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
 import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
-import {debounceTime, map, tap} from "rxjs/operators";
+import {
+  debounceTime,
+  map,
+  tap
+} from "rxjs/operators";
 import {AccountService} from "../../../../shared/services/account.service";
 import {ThemeService} from "../../../../shared/services/theme.service";
 import {TranslatorService} from "../../../../shared/services/translator.service";
-import {add, format} from "date-fns";
+import {
+  add,
+  format
+} from "date-fns";
 import {ThemeColors} from "../../../../shared/models/settings/theme-settings.model";
 import {color} from "d3";
-import {enUS, ru} from "date-fns/locale";
-import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
-import {NgClass, PercentPipe} from "@angular/common";
+import {
+  enUS,
+  ru
+} from "date-fns/locale";
+import {
+  takeUntilDestroyed,
+  toObservable
+} from "@angular/core/rxjs-interop";
+import {
+  NgClass,
+  PercentPipe
+} from "@angular/common";
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
+import {withRefresh} from "../../../../shared/utils/observable-helper";
 
 enum TimeRange {
   W1 = "W1",
@@ -58,20 +94,30 @@ interface ChartConfig {
   styleUrl: './agreement-dynamics.component.less'
 })
 export class AgreementDynamicsComponent implements OnInit, OnDestroy {
-  private readonly accountService = inject(AccountService);
-  private readonly themeService = inject(ThemeService);
-  private readonly translatorService = inject(TranslatorService);
-  private readonly destroyRef = inject(DestroyRef);
-
   readonly utilsCanvas = viewChild.required<ElementRef<HTMLCanvasElement>>('utilsCanvas');
 
   chartConfig$!: Observable<ChartConfig | null>;
 
   readonly selectedTimeRange$ = new BehaviorSubject<TimeRange>(TimeRange.W1);
+
   readonly availableTimeRanges = Object.values(TimeRange);
+
   isLoading = false;
+
   readonly agreement = input<string>();
+
+  private readonly accountService = inject(AccountService);
+
+  private readonly themeService = inject(ThemeService);
+
+  private readonly translatorService = inject(TranslatorService);
+
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly refreshIntervalSec = 60;
+
   private readonly containerSize$ = new BehaviorSubject<ContentSize>({
     height: 0,
     width: 0,
@@ -85,16 +131,11 @@ export class AgreementDynamicsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isLoading = true;
-
-    const refresh$ = timer(0, this.refreshIntervalSec * 1000).pipe(
-      takeUntilDestroyed(this.destroyRef)
-    );
-
     const chartData$ = combineLatest({
-      refresh$: refresh$,
       currentAgreement: this.agreementChanges$.pipe(filter(a => a != null)),
       selectedTimeRange: this.selectedTimeRange$,
     }).pipe(
+      withRefresh(this.refreshIntervalSec * 1000, this.applicationStatusService.isActive$),
       tap(() => this.isLoading = true),
       switchMap(x => {
         const datesRange = this.getDatesRange(x.selectedTimeRange);
@@ -109,7 +150,8 @@ export class AgreementDynamicsComponent implements OnInit, OnDestroy {
             data: d
           }))
         );
-      })
+      }),
+      takeUntilDestroyed(this.destroyRef)
     );
 
     const sizeChange$ = this.containerSize$.pipe(

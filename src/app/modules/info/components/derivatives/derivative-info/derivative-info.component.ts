@@ -1,21 +1,25 @@
-import { Component, DestroyRef, LOCALE_ID, OnInit, inject } from '@angular/core';
-import { DescriptorsListComponent } from "../../descriptors-list/descriptors-list.component";
-import { LetDirective } from "@ngrx/component";
-import { NzEmptyComponent } from "ng-zorro-antd/empty";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  LOCALE_ID,
+  OnInit
+} from '@angular/core';
+import {DescriptorsListComponent} from "../../descriptors-list/descriptors-list.component";
+import {LetDirective} from "@ngrx/component";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
 import {
   NzTabComponent,
   NzTabsComponent
 } from "ng-zorro-antd/tabs";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { InstrumentInfoBaseComponent } from "../../instrument-info-base/instrument-info-base.component";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {InstrumentInfoBaseComponent} from "../../instrument-info-base/instrument-info-base.component";
 import {
   combineLatest,
-  defer,
   Observable,
   shareReplay,
   switchMap,
-  tap,
-  timer
+  tap
 } from "rxjs";
 import {
   Derivative,
@@ -29,12 +33,12 @@ import {
   FetchPolicy,
   GraphQlService
 } from "../../../../../shared/services/graph-ql.service";
-import { TranslatorService } from "../../../../../shared/services/translator.service";
+import {TranslatorService} from "../../../../../shared/services/translator.service";
 import {
   filter,
   map
 } from "rxjs/operators";
-import { DescriptorFiller } from "../../../utils/descriptor-filler";
+import {DescriptorFiller} from "../../../utils/descriptor-filler";
 import {
   Modify,
   ZodPropertiesOf
@@ -43,21 +47,22 @@ import {
   object,
   ZodObject
 } from "zod/v3";
-import { DerivativeSchema, } from "../../../../../../generated/graphql.schemas";
+import {DerivativeSchema,} from "../../../../../../generated/graphql.schemas";
 import {
   getFutureType,
   getTypeByCfi
 } from "../../../../../shared/utils/instruments";
-import { InstrumentType } from "../../../../../shared/models/enums/instrument-type.model";
+import {InstrumentType} from "../../../../../shared/models/enums/instrument-type.model";
 import {
   CurrencyPipe,
   formatNumber
 } from "@angular/common";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { mapWith } from "../../../../../shared/utils/observable-helper";
-import { REFRESH_TIMEOUT_MS } from "../../../constants/info.constants";
-import { SectionsListComponent } from "../../sections-list/sections-list.component";
-import { SectionComponent } from "../../section/section.component";
+import {withRefresh} from "../../../../../shared/utils/observable-helper";
+import {REFRESH_TIMEOUT_MS} from "../../../constants/info.constants";
+import {SectionsListComponent} from "../../sections-list/sections-list.component";
+import {SectionComponent} from "../../section/section.component";
+import {ApplicationStatusService} from "../../../../../shared/services/application-status.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 type DerivativeResponse = Modify<
   Query,
@@ -72,7 +77,7 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<DerivativeResponse>> = object({
 });
 
 @Component({
-    selector: 'ats-derivative-info',
+  selector: 'ats-derivative-info',
   imports: [
     DescriptorsListComponent,
     LetDirective,
@@ -83,18 +88,23 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<DerivativeResponse>> = object({
     SectionsListComponent,
     SectionComponent
   ],
-    templateUrl: './derivative-info.component.html',
-    styleUrl: './derivative-info.component.less'
+  templateUrl: './derivative-info.component.html',
+  styleUrl: './derivative-info.component.less'
 })
 export class DerivativeInfoComponent extends InstrumentInfoBaseComponent implements OnInit {
-  private readonly graphQlService = inject(GraphQlService);
-  private readonly translatorService = inject(TranslatorService);
-  private readonly locale = inject(LOCALE_ID);
-  private readonly destroyRef = inject(DestroyRef);
-
   info$!: Observable<Derivative | null>;
 
   descriptors$!: Observable<DescriptorsGroup[] | null>;
+
+  private readonly graphQlService = inject(GraphQlService);
+
+  private readonly translatorService = inject(TranslatorService);
+
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+
+  private readonly locale = inject(LOCALE_ID);
+
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly currencyPipe = new CurrencyPipe(this.locale);
 
@@ -104,15 +114,9 @@ export class DerivativeInfoComponent extends InstrumentInfoBaseComponent impleme
   }
 
   private initDataStream(): void {
-    const refreshTimer$ = defer(() => {
-      return timer(0, 3 * REFRESH_TIMEOUT_MS).pipe(
-        takeUntilDestroyed(this.destroyRef)
-      );
-    });
-
     this.info$ = this.instrumentKeyChanges$.pipe(
       filter(i => i != null),
-      mapWith(() => refreshTimer$, (source,) => source),
+      withRefresh(3 * REFRESH_TIMEOUT_MS, this.applicationStatusService.isActive$),
       tap(() => this.setLoading(true)),
       switchMap(i => {
         return this.graphQlService.queryForSchema<DerivativeResponse>(
@@ -128,6 +132,7 @@ export class DerivativeInfoComponent extends InstrumentInfoBaseComponent impleme
         );
       }),
       tap(() => this.setLoading(false)),
+      takeUntilDestroyed(this.destroyRef),
       shareReplay(1)
     );
   }
@@ -183,9 +188,9 @@ export class DerivativeInfoComponent extends InstrumentInfoBaseComponent impleme
     ];
 
     const instrumentType = getTypeByCfi(derivative.financialAttributes.cfiCode);
-    if(instrumentType === InstrumentType.Futures) {
+    if (instrumentType === InstrumentType.Futures) {
       const futureType = getFutureType(derivative.financialAttributes.cfiCode);
-      if(futureType != null) {
+      if (futureType != null) {
         descriptors.push({
           id: 'futureType',
           valueTranslationKey: 'futureTypeOptions.' + futureType,
@@ -199,35 +204,35 @@ export class DerivativeInfoComponent extends InstrumentInfoBaseComponent impleme
       ?? derivative.currencyInformation.nominal
       ?? 'RUB';
 
-    if(derivative.theorPrice != null && derivative.theorPrice !== 0) {
+    if (derivative.theorPrice != null && derivative.theorPrice !== 0) {
       descriptors.push({
         id: 'theorPrice',
         formattedValue: this.formatCurrency(derivative.theorPrice, currencyCode, '0.0-6')
       });
     }
 
-    if(derivative.theorPriceLimit != null && derivative.theorPriceLimit !== 0) {
+    if (derivative.theorPriceLimit != null && derivative.theorPriceLimit !== 0) {
       descriptors.push({
         id: 'theorPriceLimit',
         formattedValue: this.formatCurrency(derivative.theorPriceLimit, currencyCode, '0.0-6')
       });
     }
 
-    if(derivative.marginBuy != null && derivative.marginBuy !== 0) {
+    if (derivative.marginBuy != null && derivative.marginBuy !== 0) {
       descriptors.push({
         id: 'marginBuy',
         formattedValue: formatNumber(derivative.marginBuy, this.locale, '0.1-2')
       });
     }
 
-    if(derivative.marginSell != null && derivative.marginSell !== 0) {
+    if (derivative.marginSell != null && derivative.marginSell !== 0) {
       descriptors.push({
         id: 'marginSell',
         formattedValue: formatNumber(derivative.marginSell, this.locale, '0.1-2')
       });
     }
 
-    if(derivative.volatility != null && derivative.volatility !== 0) {
+    if (derivative.volatility != null && derivative.volatility !== 0) {
       descriptors.push({
         id: 'volatility',
         formattedValue: formatNumber(derivative.volatility, this.locale, '0.1-2')

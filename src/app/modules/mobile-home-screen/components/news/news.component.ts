@@ -8,9 +8,10 @@ import {
   Observable,
   switchMap,
   tap,
-  timer
 } from "rxjs";
-import { mapWith } from "../../../../shared/utils/observable-helper";
+import {
+  withRefresh
+} from "../../../../shared/utils/observable-helper";
 import { PositionsService } from "../../../../shared/services/positions.service";
 import { map } from "rxjs/operators";
 import { NzEmptyComponent } from "ng-zorro-antd/empty";
@@ -20,6 +21,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { isToday } from "date-fns";
 import { NzButtonComponent } from "ng-zorro-antd/button";
 import { TranslocoDirective } from "@jsverse/transloco";
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
 
 @Component({
   selector: 'ats-news',
@@ -37,6 +39,7 @@ export class NewsComponent implements OnInit {
   private readonly dashboardContextService = inject(DashboardContextService);
   private readonly newsService = inject(NewsService);
   private readonly positionsService = inject(PositionsService);
+  private readonly applicationStatusService = inject(ApplicationStatusService);
   protected readonly destroyRef = inject(DestroyRef);
 
   items$!: Observable<NewsListItem[]>;
@@ -51,10 +54,7 @@ export class NewsComponent implements OnInit {
 
   ngOnInit(): void {
     this.items$ = this.dashboardContextService.selectedPortfolio$.pipe(
-      mapWith(
-        () => timer(0, this.refreshIntervalSec * 1000),
-        source => source
-      ),
+      withRefresh(this.refreshIntervalSec * 1000, this.applicationStatusService.isActive$),
       tap(() => this.isLoading = true),
       switchMap(p => this.positionsService.getAllByPortfolio(p.portfolio, p.exchange)),
       switchMap(pos => {

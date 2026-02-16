@@ -1,17 +1,25 @@
 import {
+  combineLatest,
+  defer,
+  EMPTY,
+  filter,
   MonoTypeOperatorFunction,
   Observable,
   of,
   OperatorFunction,
   pipe,
+  timer,
 } from 'rxjs';
 import {
   catchError,
   map,
   switchMap
 } from 'rxjs/operators';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ApplicationErrorHandler } from "../services/handle-error/error-handler";
+import {HttpErrorResponse} from '@angular/common/http';
+import {ApplicationErrorHandler} from "../services/handle-error/error-handler";
+import {DestroyRef} from "@angular/core";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {T} from "@angular/cdk/keycodes";
 
 /**
  *
@@ -31,12 +39,12 @@ export function catchHttpError<T>(valueToReturn: T | ((err: HttpErrorResponse) =
       if (err instanceof HttpErrorResponse) {
         if (!!errorHandler) {
           // status = 0 is native platform status. It means that application is inactive
-          if(err.status != 0) {
+          if (err.status != 0) {
             errorHandler.handleError(err);
           }
         }
 
-        if(valueToReturn instanceof Function) {
+        if (valueToReturn instanceof Function) {
           return of(valueToReturn(err));
         }
 
@@ -60,5 +68,49 @@ export function mapWith<T1, T2, R>(project: (value: T1) => Observable<T2>, resul
         map((b) => resultSelector(a, b))
       )
     )
+  );
+}
+
+/**
+ * Repeats the source observable sequence with a given delay, but only when the application is active.
+ * @param refreshPeriodMs - The delay in milliseconds between repetitions.
+ * @param isAppActive$ - An observable that indicates whether the application is active. Optional, defaults to true.
+ * @param startDue - The time to wait before starting the refresh.
+ */
+export function withRefresh<T>(
+  refreshPeriodMs: number,
+  isAppActive$?: Observable<boolean>,
+  startDue = 0
+): MonoTypeOperatorFunction<T> {
+  return (source$: Observable<T>) => {
+    const isActive$ = isAppActive$ ?? of(true);
+
+    return isActive$.pipe(
+      switchMap(isActive => {
+        if (!isActive) {
+          return EMPTY;
+        }
+
+        return timer(startDue, refreshPeriodMs).pipe(
+          switchMap(() => source$)
+        );
+      })
+    );
+  };
+}
+
+/**
+ * Creates an observable that emits a value periodically, but only when the application is active.
+ * @param refreshPeriodMs - The delay in milliseconds between emissions.
+ * @param isAppActive$ - An observable that indicates whether the application is active. Optional.
+ * @param startDue - The time to wait before starting the refresh.
+ */
+export function createRefresh(
+  refreshPeriodMs: number,
+  isAppActive$?: Observable<boolean>,
+  startDue = 0
+): Observable<number> {
+  return of(0).pipe(
+    withRefresh(refreshPeriodMs, isAppActive$, startDue)
   );
 }

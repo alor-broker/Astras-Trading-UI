@@ -1,20 +1,29 @@
-import { Component, computed, DestroyRef, model, output, ViewEncapsulation, inject } from '@angular/core';
-import { NgClass } from "@angular/common";
-import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
-import { LetDirective } from "@ngrx/component";
-import { NzModalComponent } from "ng-zorro-antd/modal";
-import { NzTypographyComponent } from "ng-zorro-antd/typography";
-import { Idea } from "../../services/invest-ideas-service-typings";
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  model,
+  output,
+  ViewEncapsulation
+} from '@angular/core';
+import {NgClass} from "@angular/common";
+import {InstrumentIconComponent} from "../../../../shared/components/instrument-icon/instrument-icon.component";
+import {LetDirective} from "@ngrx/component";
+import {NzModalComponent} from "ng-zorro-antd/modal";
+import {NzTypographyComponent} from "ng-zorro-antd/typography";
+import {Idea} from "../../services/invest-ideas-service-typings";
 import {
   Observable,
-  switchMap,
-  timer
+  switchMap
 } from "rxjs";
-import { HistoryService } from "../../../../shared/services/history.service";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { map } from "rxjs/operators";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { MathHelper } from "../../../../shared/utils/math-helper";
+import {HistoryService} from "../../../../shared/services/history.service";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {map} from "rxjs/operators";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {MathHelper} from "../../../../shared/utils/math-helper";
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
+import {createRefresh} from "../../../../shared/utils/observable-helper";
 
 interface InstrumentPrice {
   lastPrice: number;
@@ -35,9 +44,6 @@ interface InstrumentPrice {
   encapsulation: ViewEncapsulation.None
 })
 export class InvestIdeasDetailsDialogComponent {
-  private readonly historyService = inject(HistoryService);
-  private readonly destroyRef = inject(DestroyRef);
-
   readonly displayIdea = model<Idea | null>(null);
 
   readonly ideaSymbols = computed(() => {
@@ -54,12 +60,18 @@ export class InvestIdeasDetailsDialogComponent {
 
   readonly symbolSelected = output<InstrumentKey>();
 
+  private readonly historyService = inject(HistoryService);
+
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+
+  private readonly destroyRef = inject(DestroyRef);
+
   protected close(): void {
     this.displayIdea.set(null);
   }
 
   private getPriceInfo(instrumentKey: InstrumentKey): Observable<InstrumentPrice | null> {
-    return timer(0, 30_000).pipe(
+    return createRefresh(30_000, this.applicationStatusService.isActive$).pipe(
       switchMap(() => this.historyService.getLastTwoCandles(instrumentKey)),
       map(r => {
         if (r == null || (r.cur == null && r.prev == null)) {

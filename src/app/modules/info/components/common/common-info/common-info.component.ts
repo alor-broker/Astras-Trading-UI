@@ -1,13 +1,17 @@
-import { Component, DestroyRef, LOCALE_ID, OnInit, inject } from '@angular/core';
-import { InstrumentInfoBaseComponent } from "../../instrument-info-base/instrument-info-base.component";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  LOCALE_ID,
+  OnInit
+} from '@angular/core';
+import {InstrumentInfoBaseComponent} from "../../instrument-info-base/instrument-info-base.component";
 import {
   combineLatest,
-  defer,
   Observable,
   shareReplay,
   switchMap,
-  tap,
-  timer
+  tap
 } from "rxjs";
 import {
   Instrument,
@@ -21,12 +25,12 @@ import {
   FetchPolicy,
   GraphQlService
 } from "../../../../../shared/services/graph-ql.service";
-import { TranslatorService } from "../../../../../shared/services/translator.service";
+import {TranslatorService} from "../../../../../shared/services/translator.service";
 import {
   filter,
   map
 } from "rxjs/operators";
-import { DescriptorFiller } from "../../../utils/descriptor-filler";
+import {DescriptorFiller} from "../../../utils/descriptor-filler";
 import {
   Modify,
   ZodPropertiesOf
@@ -35,21 +39,22 @@ import {
   object,
   ZodObject
 } from "zod/v3";
-import { InstrumentSchema, } from "../../../../../../generated/graphql.schemas";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { LetDirective } from "@ngrx/component";
-import { NzEmptyComponent } from "ng-zorro-antd/empty";
+import {InstrumentSchema,} from "../../../../../../generated/graphql.schemas";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {LetDirective} from "@ngrx/component";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
 import {
   NzTabComponent,
   NzTabsComponent
 } from "ng-zorro-antd/tabs";
-import { DescriptorsListComponent } from "../../descriptors-list/descriptors-list.component";
-import { RisksComponent } from "../risks/risks.component";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { mapWith } from "../../../../../shared/utils/observable-helper";
-import { REFRESH_TIMEOUT_MS } from "../../../constants/info.constants";
-import { SectionsListComponent } from "../../sections-list/sections-list.component";
-import { SectionComponent } from "../../section/section.component";
+import {DescriptorsListComponent} from "../../descriptors-list/descriptors-list.component";
+import {RisksComponent} from "../risks/risks.component";
+import {withRefresh} from "../../../../../shared/utils/observable-helper";
+import {REFRESH_TIMEOUT_MS} from "../../../constants/info.constants";
+import {SectionsListComponent} from "../../sections-list/sections-list.component";
+import {SectionComponent} from "../../section/section.component";
+import {ApplicationStatusService} from "../../../../../shared/services/application-status.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 type InstrumentResponse = Modify<
   Query,
@@ -64,7 +69,7 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<InstrumentResponse>> = object({
 });
 
 @Component({
-    selector: 'ats-common-info',
+  selector: 'ats-common-info',
   imports: [
     TranslocoDirective,
     LetDirective,
@@ -76,18 +81,23 @@ const ResponseSchema: ZodObject<ZodPropertiesOf<InstrumentResponse>> = object({
     SectionsListComponent,
     SectionComponent
   ],
-    templateUrl: './common-info.component.html',
-    styleUrl: './common-info.component.less'
+  templateUrl: './common-info.component.html',
+  styleUrl: './common-info.component.less'
 })
 export class CommonInfoComponent extends InstrumentInfoBaseComponent implements OnInit {
-  private readonly graphQlService = inject(GraphQlService);
-  private readonly translatorService = inject(TranslatorService);
-  private readonly locale = inject(LOCALE_ID);
-  private readonly destroyRef = inject(DestroyRef);
-
   info$!: Observable<Instrument | null>;
 
   commonDescriptors$!: Observable<DescriptorsGroup[] | null>;
+
+  private readonly graphQlService = inject(GraphQlService);
+
+  private readonly translatorService = inject(TranslatorService);
+
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+
+  private readonly locale = inject(LOCALE_ID);
+
+  private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     this.initDataStream();
@@ -95,15 +105,9 @@ export class CommonInfoComponent extends InstrumentInfoBaseComponent implements 
   }
 
   private initDataStream(): void {
-    const refreshTimer$ = defer(() => {
-      return timer(0, 3 * REFRESH_TIMEOUT_MS).pipe(
-        takeUntilDestroyed(this.destroyRef)
-      );
-    });
-
     this.info$ = this.instrumentKeyChanges$.pipe(
       filter(i => i != null),
-      mapWith(() => refreshTimer$, (source,) => source),
+      withRefresh(3 * REFRESH_TIMEOUT_MS, this.applicationStatusService.isActive$),
       tap(() => this.setLoading(true)),
       switchMap(i => {
         return this.graphQlService.queryForSchema<InstrumentResponse>(
@@ -119,6 +123,7 @@ export class CommonInfoComponent extends InstrumentInfoBaseComponent implements 
         );
       }),
       tap(() => this.setLoading(false)),
+      takeUntilDestroyed(this.destroyRef),
       shareReplay(1)
     );
   }

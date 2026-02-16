@@ -1,4 +1,15 @@
-import { AfterViewInit, Component, DestroyRef, ElementRef, LOCALE_ID, OnDestroy, OnInit, input, viewChild, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  input,
+  LOCALE_ID,
+  OnDestroy,
+  OnInit,
+  viewChild
+} from '@angular/core';
 import {
   ActiveElement,
   Chart,
@@ -8,7 +19,7 @@ import {
   TreemapController,
   TreemapElement
 } from "chartjs-chart-treemap";
-import { TreemapService } from "../../services/treemap.service";
+import {TreemapService} from "../../services/treemap.service";
 import {
   debounceTime,
   filter,
@@ -16,7 +27,7 @@ import {
   startWith,
   switchMap
 } from "rxjs/operators";
-import { ThemeService } from "../../../../shared/services/theme.service";
+import {ThemeService} from "../../../../shared/services/theme.service";
 import {
   BehaviorSubject,
   combineLatest,
@@ -25,22 +36,21 @@ import {
   of,
   shareReplay,
   take,
-  timer,
   zip
 } from "rxjs";
-import { QuotesService } from "../../../../shared/services/quotes.service";
-import { TranslatorService } from "../../../../shared/services/translator.service";
-import { InstrumentsService } from "../../../instruments/services/instruments.service";
+import {QuotesService} from "../../../../shared/services/quotes.service";
+import {TranslatorService} from "../../../../shared/services/translator.service";
+import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {
   formatCurrency,
   getCurrencyFormat,
   getCurrencySign
 } from "../../../../shared/utils/formatters";
-import { WidgetSettingsService } from "../../../../shared/services/widget-settings.service";
-import { getNumberAbbreviation } from "../../../../shared/utils/number-abbreviation";
-import { color } from "d3";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { MarketService } from "../../../../shared/services/market.service";
+import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
+import {getNumberAbbreviation} from "../../../../shared/utils/number-abbreviation";
+import {color} from "d3";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {MarketService} from "../../../../shared/services/market.service";
 import {
   ACTIONS_CONTEXT,
   ActionsContext
@@ -49,7 +59,13 @@ import {
   TreemapNode,
   TreemapSettings
 } from "../../models/treemap.model";
-import { formatNumber, NgStyle, AsyncPipe } from "@angular/common";
+import {
+  AsyncPipe,
+  formatNumber,
+  NgStyle
+} from "@angular/common";
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
+import {createRefresh} from "../../../../shared/utils/observable-helper";
 
 interface TooltipModelRaw {
   _data: {
@@ -73,38 +89,58 @@ interface TooltipData {
 }
 
 @Component({
-    selector: 'ats-treemap',
-    templateUrl: './treemap.component.html',
-    styleUrls: ['./treemap.component.less'],
-    imports: [NgStyle, AsyncPipe]
+  selector: 'ats-treemap',
+  templateUrl: './treemap.component.html',
+  styleUrls: ['./treemap.component.less'],
+  imports: [NgStyle, AsyncPipe]
 })
 export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
-  private readonly treemapService = inject(TreemapService);
-  private readonly themeService = inject(ThemeService);
-  private readonly quotesService = inject(QuotesService);
-  private readonly translatorService = inject(TranslatorService);
-  private readonly instrumentsService = inject(InstrumentsService);
-  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
-  private readonly settingsService = inject(WidgetSettingsService);
-  private readonly marketService = inject(MarketService);
-  private readonly destroy = inject(DestroyRef);
-  private readonly locale = inject(LOCALE_ID);
-
   readonly treemapWrapperEl = viewChild<ElementRef<HTMLDivElement>>('treemapWrapper');
+
   readonly guid = input.required<string>();
 
   isCursorOnSector$ = new BehaviorSubject(false);
+
+  tooltipData$?: Observable<TooltipData | null>;
+
+  isTooltipVisible$ = new BehaviorSubject(true);
+
+  private readonly treemapService = inject(TreemapService);
+
+  private readonly themeService = inject(ThemeService);
+
+  private readonly quotesService = inject(QuotesService);
+
+  private readonly translatorService = inject(TranslatorService);
+
+  private readonly instrumentsService = inject(InstrumentsService);
+
+  private readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+
+  private readonly settingsService = inject(WidgetSettingsService);
+
+  private readonly marketService = inject(MarketService);
+
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+
+  private readonly destroy = inject(DestroyRef);
+
+  private readonly locale = inject(LOCALE_ID);
+
   // this widget works  with MOEX exchange only
   private readonly defaultExchange = 'MOEX';
+
   private chart?: Chart;
+
   private readonly selectedSector$ = new BehaviorSubject('');
+
   private readonly tilesCount$ = new BehaviorSubject(0);
+
   private readonly maxDayChange = 5;
+
   private readonly averageTileSize = 4000;
 
   private readonly newTooltip$ = new BehaviorSubject<TooltipModelRaw[] | null>(null);
-  tooltipData$?: Observable<TooltipData | null>;
-  isTooltipVisible$ = new BehaviorSubject(true);
 
   private settings$!: Observable<TreemapSettings>;
 
@@ -124,8 +160,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
 
     const getDataStream = (limit: number): Observable<TreemapNode[]> => {
       return this.settings$.pipe(
-        map(s => s.refreshIntervalSec ?? 60),
-        switchMap(refreshIntervalSec => timer(0, refreshIntervalSec * 1000)),
+        switchMap(s => createRefresh((s.refreshIntervalSec ?? 60) * 1000, this.applicationStatusService.isActive$)),
         switchMap(() => this.treemapService.getTreemap(limit))
       );
     };
@@ -154,7 +189,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
         })),
         takeUntilDestroyed(this.destroy)
       )
-      .subscribe(({ treemap, themeColors }) => {
+      .subscribe(({treemap, themeColors}) => {
         const ctx = (<HTMLCanvasElement>document.getElementById(this.guid())).getContext('2d');
 
         if (ctx == null) {
@@ -177,14 +212,14 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                 captions: {
                   display: true,
                   color: themeColors.chartLabelsColor,
-                  font: { weight: '500' }
+                  font: {weight: '500'}
                 },
                 labels: {
                   display: true,
                   formatter: (t: any) => [t.raw._data.symbol, `${formatNumber(t.raw._data.children[0]?.dayChange, this.locale, '1.1-2')}%`] as string[],
                   overflow: 'fit',
                   color: themeColors.textColor,
-                  font: [{ weight: '500' }, { weight: '400' }]
+                  font: [{weight: '500'}, {weight: '400'}]
                 },
                 backgroundColor: (t: any) => {
                   if (t.raw?._data.label === t.raw?._data.sector) {
@@ -194,7 +229,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                       ? color(themeColors.buyColor)
                       : color(themeColors.sellColor);
 
-                    if(!!c) {
+                    if (!!c) {
                       c.opacity = t.raw._data.children[0]?.dayChangeAbs / this.maxDayChange;
                     }
 
@@ -206,7 +241,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
             ],
           },
           options: {
-            onResize: (chart: Chart, { width, height }: { width: number, height: number }): void => {
+            onResize: (chart: Chart, {width, height}: { width: number, height: number }): void => {
               this.tilesCount$.next(Math.floor(width * height / this.averageTileSize));
             },
             onHover: (event: ChartEvent, elements: ActiveElement[]): void => {
@@ -220,7 +255,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
               },
               tooltip: {
                 position: 'nearest',
-                external: ({ tooltip }: { tooltip: any }): void => {
+                external: ({tooltip}: { tooltip: any }): void => {
                   // Hide if no tooltip
                   if (tooltip.opacity === 0) {
                     this.isTooltipVisible$.next(false);
@@ -266,70 +301,70 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
     this.newTooltip$.complete();
   }
 
-  private initTooltipDataStream(): void {
-    this.tooltipData$ ??= this.newTooltip$
-        .pipe(
-          takeUntilDestroyed(this.destroy),
-          filter((tr): tr is TooltipModelRaw[] => tr != null && tr.length > 0),
-          debounceTime(50),
-          switchMap((tooltipRaws: TooltipModelRaw[]) => {
-            if (this.chart == null) {
-              return of(null);
-            }
-
-            const position = {
-              top: this.chart.tooltip!.caretY,
-              left: this.chart.tooltip!.caretX
-            };
-
-            if (tooltipRaws.length === 1) {
-              return of({
-                body: [],
-                title: tooltipRaws[0]._data.label,
-                position
-              });
-            }
-
-            const treemapNode = tooltipRaws[1]._data.children[0];
-
-            return zip(
-              this.quotesService.getLastQuoteInfo(treemapNode.symbol, this.defaultExchange),
-              this.translatorService.getTranslator('treemap'),
-              this.translatorService.getTranslator('shared/short-number'),
-              this.instrumentsService.getInstrument({exchange: this.defaultExchange, symbol: treemapNode.symbol}),
-              this.marketService.getMarketSettings()
-            )
-              .pipe(
-                map(([quote, tTreemap, tShortNumber, instrument, marketSettings]) => {
-                  const marketCapBase = getNumberAbbreviation(treemapNode.marketCap, true);
-                  const curencyFormat = getCurrencyFormat(instrument!.currency, marketSettings.currencies);
-                  return {
-                    title: treemapNode.symbol,
-                    body: [
-                      `${tTreemap(['company'])}: ${quote?.description}`,
-                      `${tTreemap(['dayChange'])}: ${formatNumber(treemapNode.dayChange, this.locale, '1.1-2')}%`,
-                      `${tTreemap(['marketCap'])}: ${formatNumber(marketCapBase!.value, this.locale, '1.1-2')} ${tShortNumber([
-                        marketCapBase!.suffixName!,
-                        'long'
-                      ])} ${getCurrencySign(curencyFormat)}`,
-                      `${tTreemap(['lastPrice'])}: ${formatCurrency(quote!.last_price, this.locale, curencyFormat)}`
-                    ],
-                    position
-                  };
-                })
-              );
-          })
-        );
-  }
-
   getMinValue(...args: number[]): number {
     return Math.min(...args);
   }
 
+  private initTooltipDataStream(): void {
+    this.tooltipData$ ??= this.newTooltip$
+      .pipe(
+        takeUntilDestroyed(this.destroy),
+        filter((tr): tr is TooltipModelRaw[] => tr != null && tr.length > 0),
+        debounceTime(50),
+        switchMap((tooltipRaws: TooltipModelRaw[]) => {
+          if (this.chart == null) {
+            return of(null);
+          }
+
+          const position = {
+            top: this.chart.tooltip!.caretY,
+            left: this.chart.tooltip!.caretX
+          };
+
+          if (tooltipRaws.length === 1) {
+            return of({
+              body: [],
+              title: tooltipRaws[0]._data.label,
+              position
+            });
+          }
+
+          const treemapNode = tooltipRaws[1]._data.children[0];
+
+          return zip(
+            this.quotesService.getLastQuoteInfo(treemapNode.symbol, this.defaultExchange),
+            this.translatorService.getTranslator('treemap'),
+            this.translatorService.getTranslator('shared/short-number'),
+            this.instrumentsService.getInstrument({exchange: this.defaultExchange, symbol: treemapNode.symbol}),
+            this.marketService.getMarketSettings()
+          )
+            .pipe(
+              map(([quote, tTreemap, tShortNumber, instrument, marketSettings]) => {
+                const marketCapBase = getNumberAbbreviation(treemapNode.marketCap, true);
+                const curencyFormat = getCurrencyFormat(instrument!.currency, marketSettings.currencies);
+                return {
+                  title: treemapNode.symbol,
+                  body: [
+                    `${tTreemap(['company'])}: ${quote?.description}`,
+                    `${tTreemap(['dayChange'])}: ${formatNumber(treemapNode.dayChange, this.locale, '1.1-2')}%`,
+                    `${tTreemap(['marketCap'])}: ${formatNumber(marketCapBase!.value, this.locale, '1.1-2')} ${tShortNumber([
+                      marketCapBase!.suffixName!,
+                      'long'
+                    ])} ${getCurrencySign(curencyFormat)}`,
+                    `${tTreemap(['lastPrice'])}: ${formatCurrency(quote!.last_price, this.locale, curencyFormat)}`
+                  ],
+                  position
+                };
+              })
+            );
+        })
+      );
+  }
+
   private selectInstrument(symbol: string): void {
     this.settings$.pipe(
-        take(1),
-      )
+      take(1),
+    )
       .subscribe(s => {
         this.actionsContext.selectInstrument({
             exchange: this.defaultExchange,
