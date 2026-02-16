@@ -72,10 +72,7 @@
     }
 
     .step-form {
-      padding: 12px;
-      border: 1px solid @border-color-base;
-      border-radius: 10px;
-      background: @component-background;
+      padding: 0;
     }
 
     .commission-info {
@@ -85,13 +82,10 @@
     }
 
     .summary-card {
-      padding: 12px;
-      border: 1px solid @border-color-base;
-      border-radius: 10px;
-      background: @component-background;
+      padding: 0;
 
       h3 {
-        margin: 0 0 10px;
+        margin: 0 0 8px;
         color: @heading-color;
       }
     }
@@ -102,6 +96,19 @@
       gap: 10px;
       color: @text-color;
       padding: 4px 0;
+    }
+
+    ::ng-deep .step-form .ant-form-item {
+      margin-bottom: 10px;
+    }
+
+    :host ::ng-deep nz-form-label {
+      label {
+        display: inherit;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
   }
 });
