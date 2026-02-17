@@ -55,5 +55,3 @@ Thumbs.db
 /.nx/cache/project-graph.json
 .aider*
 /scripts/generate-translations.js
-ios
-android
