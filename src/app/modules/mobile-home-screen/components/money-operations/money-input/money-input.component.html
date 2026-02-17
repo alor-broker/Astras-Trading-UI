@@ -1,75 +1,82 @@
 <div class="input-container" *transloco="let t; scope: 'money-operations'">
-  <ng-container *ngIf="step$ | async as step">
-    <div *ngIf="step === 'selection'" class="selection-step">
-      <button nz-button nzType="default" class="option-card" (click)="selectSubtype('card')">
-        <span nz-icon nzType="credit-card" nzTheme="outline" class="icon"></span>
-        <div class="details">
-          <h3>{{ t('moneyOperations.cardTitle') }}</h3>
-          <p>{{ t('moneyOperations.cardLimits') }}</p>
-        </div>
-      </button>
-
-      <button nz-button nzType="default" class="option-card" (click)="selectSubtype('sbp')">
-        <span nz-icon nzType="swap" nzTheme="outline" class="icon"></span>
-        <div class="details">
-          <h3>{{ t('moneyOperations.sbpTitle') }}</h3>
-          <p>{{ t('moneyOperations.sbpLimits') }}</p>
-        </div>
-      </button>
-
-      <button nz-button nzType="default" class="option-card" (click)="selectSubtype('transfer')">
-        <span nz-icon nzType="bank" nzTheme="outline" class="icon"></span>
-        <div class="details">
-          <h3>{{ t('moneyOperations.detailsTitle') }}</h3>
-          <p>{{ t('moneyOperations.detailsLimits') }}</p>
-        </div>
-      </button>
-    </div>
-
-    <div *ngIf="step === 'amount'" class="amount-step">
-      <button nz-button nzType="text" class="step-back" (click)="back()">
-        <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
-        {{ t('moneyOperations.back') }}
-      </button>
-
-      <form nz-form nzLayout="vertical" [formGroup]="form" (ngSubmit)="submitPrepare()" class="step-form">
-        <nz-form-item>
-          <nz-form-label nzRequired>{{ t('moneyOperations.amountLabel') }}</nz-form-label>
-          <nz-form-control [nzErrorTip]="t('moneyOperations.amountError')">
-            <input nz-input formControlName="amount" type="number" [placeholder]="t('moneyOperations.amountPlaceholder')" />
-            <div class="commission-info">
-              {{ subtype === 'card' ? t('moneyOperations.cardCommission') : t('moneyOperations.sbpCommission') }}
-            </div>
-          </nz-form-control>
-        </nz-form-item>
-
-        <button nz-button nzType="primary" nzBlock [nzLoading]="isLoading" [disabled]="!form.valid">
-          {{ t('moneyOperations.continue') }}
-        </button>
-      </form>
-    </div>
-
-    <div *ngIf="step === 'confirm'" class="confirm-step">
-      <button nz-button nzType="text" class="step-back" (click)="back()">
-        <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
-        {{ t('moneyOperations.back') }}
-      </button>
-
-      <div class="summary-card">
-        <h3>{{ t('moneyOperations.confirmTitle') }}</h3>
-        <div class="summary-row">
-          <span>{{ t('moneyOperations.amountLabel') }}</span>
-          <span>{{ form.get('amount')?.value }} RUB</span>
-        </div>
-        <div class="summary-row">
-          <span>{{ t('moneyOperations.commissionLabel') }}</span>
-          <span>...</span>
-        </div>
+  @switch (step()) {
+  @case (steps.Selection) {
+  <div class="selection-step">
+    <button nz-button nzType="default" class="option-card" (click)="selectSubtype('card')">
+      <span nz-icon nzType="credit-card" nzTheme="outline" class="icon"></span>
+      <div class="details">
+        <h3>{{ t('moneyOperations.cardTitle') }}</h3>
+        <p>{{ t('moneyOperations.cardLimits') }}</p>
       </div>
+    </button>
 
-      <button nz-button nzType="primary" nzBlock [nzLoading]="isLoading" (click)="submitCreate()">
-        {{ t('moneyOperations.pay') }}
+    <button nz-button nzType="default" class="option-card" (click)="selectSubtype('sbp')">
+      <span nz-icon nzType="swap" nzTheme="outline" class="icon"></span>
+      <div class="details">
+        <h3>{{ t('moneyOperations.sbpTitle') }}</h3>
+        <p>{{ t('moneyOperations.sbpLimits') }}</p>
+      </div>
+    </button>
+
+    <button nz-button nzType="default" class="option-card" (click)="selectSubtype('transfer')">
+      <span nz-icon nzType="bank" nzTheme="outline" class="icon"></span>
+      <div class="details">
+        <h3>{{ t('moneyOperations.detailsTitle') }}</h3>
+        <p>{{ t('moneyOperations.detailsLimits') }}</p>
+      </div>
+    </button>
+  </div>
+  }
+
+  @case (steps.Amount) {
+  <div class="amount-step">
+    <button nz-button nzType="text" class="step-back" (click)="back()">
+      <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
+      {{ t('moneyOperations.back') }}
+    </button>
+
+    <form nz-form nzLayout="vertical" [formGroup]="form" (ngSubmit)="submitPrepare()" class="step-form">
+      <nz-form-item>
+        <nz-form-label nzRequired>{{ t('moneyOperations.amountLabel') }}</nz-form-label>
+        <nz-form-control [nzErrorTip]="t('moneyOperations.amountError')">
+          <input nz-input formControlName="amount" type="number"
+            [placeholder]="t('moneyOperations.amountPlaceholder')" />
+          <div class="commission-info">
+            {{ subtype === 'card' ? t('moneyOperations.cardCommission') : t('moneyOperations.sbpCommission') }}
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+
+      <button nz-button nzType="primary" nzBlock [nzLoading]="isLoading()" [disabled]="!form.valid">
+        {{ t('moneyOperations.continue') }}
       </button>
+    </form>
+  </div>
+  }
+
+  @case (steps.Confirm) {
+  <div class="confirm-step">
+    <button nz-button nzType="text" class="step-back" (click)="back()">
+      <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
+      {{ t('moneyOperations.back') }}
+    </button>
+
+    <div class="summary-card">
+      <h3>{{ t('moneyOperations.confirmTitle') }}</h3>
+      <div class="summary-row">
+        <span>{{ t('moneyOperations.amountLabel') }}</span>
+        <span>{{ form.controls.amount.value }} RUB</span>
+      </div>
+      <div class="summary-row">
+        <span>{{ t('moneyOperations.commissionLabel') }}</span>
+        <span>...</span>
+      </div>
     </div>
-  </ng-container>
+
+    <button nz-button nzType="primary" nzBlock [nzLoading]="isLoading()" (click)="submitCreate()">
+      {{ t('moneyOperations.pay') }}
+    </button>
+  </div>
+  }
+  }
 </div>

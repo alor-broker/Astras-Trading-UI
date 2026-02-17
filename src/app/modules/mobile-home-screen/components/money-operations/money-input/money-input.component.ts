@@ -1,6 +1,6 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzFormModule } from 'ng-zorro-antd/form';
@@ -11,12 +11,18 @@ import { MoneyOperationsService } from '../../../../../shared/services/money-ope
 import { DashboardContextService } from '../../../../../shared/services/dashboard-context.service';
 import { UserPortfoliosService } from '../../../../../shared/services/user-portfolios.service';
 import { OperationSubtypes, OperationTypes, Limits, OperationSubtype } from '../../../../../shared/models/money-operations.models';
-import { catchError, switchMap, take, map } from 'rxjs/operators';
-import { BehaviorSubject, of, combineLatest } from 'rxjs';
+import { catchError, map, take, finalize, switchMap } from 'rxjs/operators';
+import { combineLatest, of } from 'rxjs';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { isPortfoliosEqual } from '../../../../../shared/utils/portfolios';
 import { NzIconDirective } from 'ng-zorro-antd/icon';
-import { PortfolioExtended } from "../../../../../shared/models/user/portfolio-extended.model";
+import { toSignal } from '@angular/core/rxjs-interop';
+
+export enum MoneyInputStep {
+  Selection = 'selection',
+  Amount = 'amount',
+  Confirm = 'confirm'
+}
 
 @Component({
   selector: 'ats-money-input',
@@ -37,29 +43,28 @@ import { PortfolioExtended } from "../../../../../shared/models/user/portfolio-e
   templateUrl: './money-input.component.html',
   styleUrls: ['./money-input.component.less']
 })
-export class MoneyInputComponent implements OnInit {
-  private readonly service = inject(MoneyOperationsService);
+export class MoneyInputComponent {
+  private readonly moneyService = inject(MoneyOperationsService);
   private readonly dashboardContextService = inject(DashboardContextService);
   private readonly userPortfoliosService = inject(UserPortfoliosService);
   private readonly fb = inject(FormBuilder);
 
-  form!: FormGroup;
-  selectedPortfolio: PortfolioExtended | null = null; // Storing full portfolio object
-  selectedAgreement: string | null = null;
-  isLoading = false;
+  readonly limits = Limits;
+  readonly steps = MoneyInputStep;
 
-  // State
-  step$ = new BehaviorSubject<'selection' | 'amount' | 'confirm'>('selection');
-  operationSubtype: OperationSubtype = OperationSubtypes.Card;
+  readonly form = this.fb.group({
+    amount: [null as number | null, [
+      Validators.required,
+      Validators.min(this.limits.Card.Min),
+      Validators.max(this.limits.Card.Max)
+    ]]
+  });
 
-  limits = Limits;
+  readonly step = signal<MoneyInputStep>(MoneyInputStep.Selection);
+  readonly isLoading = signal(false);
+  readonly operationSubtype = signal<OperationSubtype>(OperationSubtypes.Card);
 
-  get subtype(): OperationSubtype { return this.operationSubtype; }
-
-  ngOnInit(): void {
-    this.initForm();
-
-    // Combine selected portfolio key with all portfolios to find the full portfolio object containing the agreement
+  readonly selectedPortfolio = toSignal(
     combineLatest([
       this.dashboardContextService.selectedPortfolio$,
       this.userPortfoliosService.getPortfolios()
@@ -71,111 +76,117 @@ export class MoneyInputComponent implements OnInit {
         }
         return allPortfolios.find(p => isPortfoliosEqual(p, selectedKey)) ?? null;
       })
-    ).subscribe(p => {
-      if (p) {
-        this.selectedPortfolio = p;
-        this.selectedAgreement = p.agreement;
-      }
+    ),
+    { initialValue: null }
+  );
+
+  readonly selectedAgreement = computed(() => this.selectedPortfolio()?.agreement ?? null);
+
+  constructor() {
+    effect(() => {
+      this.updateValidators();
     });
   }
 
-  private initForm(): void {
-    this.form = this.fb.group({
-      amount: [null, [Validators.required, Validators.min(1)]],
-      // Dynamic validators could be added based on subtype
-    });
+  get subtype(): OperationSubtype {
+    return this.operationSubtype();
   }
 
   selectSubtype(subtype: OperationSubtype): void {
-    this.operationSubtype = subtype;
-    this.step$.next('amount');
-    this.updateValidators();
+    this.operationSubtype.set(subtype);
+    this.step.set(MoneyInputStep.Amount);
   }
 
   updateValidators(): void {
-    const amountControl = this.form.get('amount');
-    if (!amountControl) return;
+    const amountControl = this.form.controls.amount;
+    const subtype = this.operationSubtype();
 
-    if (this.operationSubtype === OperationSubtypes.Card) {
-      amountControl.setValidators([Validators.required, Validators.min(this.limits.Card.Min), Validators.max(this.limits.Card.Max)]);
-    } else if (this.operationSubtype === OperationSubtypes.Sbp) {
-      amountControl.setValidators([Validators.required, Validators.min(this.limits.Sbp.Min), Validators.max(this.limits.Sbp.Max)]);
+    if (subtype === OperationSubtypes.Card) {
+      amountControl.setValidators([
+        Validators.required,
+        Validators.min(this.limits.Card.Min),
+        Validators.max(this.limits.Card.Max)
+      ]);
+    } else if (subtype === OperationSubtypes.Sbp) {
+      amountControl.setValidators([
+        Validators.required,
+        Validators.min(this.limits.Sbp.Min),
+        Validators.max(this.limits.Sbp.Max)
+      ]);
     }
     amountControl.updateValueAndValidity();
   }
 
   submitPrepare(): void {
-    if (!this.form.valid || (this.selectedAgreement ?? '').length === 0) return;
+    if (!this.form.valid || this.selectedAgreement() == null) return;
 
-    this.isLoading = true;
-    const amount = this.form.get('amount')?.value as number | undefined;
+    this.isLoading.set(true);
+    const amount = this.form.controls.amount.value;
 
-    this.service.prepare({
+    this.moneyService.validateOperation({
       operationType: OperationTypes.Deposit,
-      agreementNumber: this.selectedAgreement!,
+      agreementNumber: this.selectedAgreement()!,
       data: {
         amount: Number(amount),
-        currency: 'RUB', // Hardcoded as per spec
-        subtype: this.operationSubtype
+        currency: 'RUB',
+        subtype: this.operationSubtype()
       }
     }).pipe(
-      catchError(() => {
-        this.isLoading = false;
-        return of(null);
-      })
+      take(1),
+      catchError(() => of(null)),
+      finalize(() => this.isLoading.set(false))
     ).subscribe(response => {
-      this.isLoading = false;
       if (response != null) {
-        // Handle validations if any
         const hasErrors = response.validations?.some(v => !v.isSuccess) ?? false;
         if (hasErrors) {
-          // Show error
           return;
         }
-        this.step$.next('confirm');
+        this.step.set(MoneyInputStep.Confirm);
       }
     });
   }
 
   submitCreate(): void {
-    if ((this.selectedAgreement ?? '').length === 0 || this.selectedPortfolio == null) return;
-    this.isLoading = true;
-    const amount = this.form.get('amount')?.value as number | undefined;
+    if (this.selectedAgreement() == null || this.selectedPortfolio() == null) return;
 
-    this.service.create({
+    this.isLoading.set(true);
+    const amount = this.form.controls.amount.value;
+    const portfolio = this.selectedPortfolio()!;
+
+    this.moneyService.submitOperation({
       operationType: OperationTypes.Deposit,
-      agreementNumber: this.selectedAgreement!,
-      data: JSON.stringify({
-        account: this.selectedPortfolio.portfolio, // Mapping portfolio ID from portfolio object
-        exchange: this.selectedPortfolio.exchange, // Mapping exchange from portfolio object
+      agreementNumber: this.selectedAgreement()!,
+      data: {
+        account: portfolio.portfolio,
+        exchange: portfolio.exchange,
         amount: Number(amount),
         currency: 'RUB',
-        paymentMethod: this.operationSubtype
-      })
+        paymentMethod: this.operationSubtype()
+      }
     }).pipe(
+      take(1),
       switchMap(res => {
         if (res != null && res.success) {
-          return this.service.getPaymentConfig(res.operationId);
+          return this.moneyService.getTopUpPaymentDetails(res.operationId);
         }
         return of(null);
       }),
-      catchError(() => {
-        this.isLoading = false;
-        return of(null);
-      })
+      catchError(() => of(null)),
+      finalize(() => this.isLoading.set(false))
     ).subscribe(config => {
-      this.isLoading = false;
       if (config != null) {
-        const url = this.service.getMonetaUrl(config);
-        // Redirect or open in new window
+        const url = this.moneyService.generatePaymentSystemUrl(config);
         window.location.href = url;
       }
     });
   }
 
   back(): void {
-    const current = this.step$.value;
-    if (current === 'confirm') this.step$.next('amount');
-    else if (current === 'amount') this.step$.next('selection');
+    const current = this.step();
+    if (current === MoneyInputStep.Confirm) {
+      this.step.set(MoneyInputStep.Amount);
+    } else if (current === MoneyInputStep.Amount) {
+      this.step.set(MoneyInputStep.Selection);
+    }
   }
 }

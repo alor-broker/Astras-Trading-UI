@@ -22,7 +22,7 @@ export class MoneyOperationsService {
 
   private readonly baseUrl = `${this.environmentService.clientDataUrl}/client/v2.0/operations`;
 
-  prepare(command: PrepareOperationCommand): Observable<PrepareOperationResponse | null> {
+  validateOperation(command: PrepareOperationCommand): Observable<PrepareOperationResponse | null> {
     return this.httpClient.post<PrepareOperationResponse>(
       `${this.baseUrl}/prepare`,
       command,
@@ -36,11 +36,11 @@ export class MoneyOperationsService {
     );
   }
 
-  create(command: CreateOperationCommand): Observable<CreateOperationResponse | null> {
+  submitOperation(command: CreateOperationCommand): Observable<CreateOperationResponse | null> {
     const formData = new FormData();
     formData.append('operationType', command.operationType);
     formData.append('agreementNumber', command.agreementNumber);
-    formData.append('data', command.data);
+    formData.append('data', JSON.stringify(command.data));
 
     return this.httpClient.post<CreateOperationResponse>(
       `${this.baseUrl}/create`,
@@ -55,7 +55,7 @@ export class MoneyOperationsService {
     );
   }
 
-  getPaymentConfig(operationId: string): Observable<Record<string, string> | null> {
+  getTopUpPaymentDetails(operationId: string): Observable<Record<string, string> | null> {
     return this.httpClient.get<Record<string, string>>(
       `${this.baseUrl}/${operationId}/actions/get-money-input`
     ).pipe(
@@ -71,7 +71,7 @@ export class MoneyOperationsService {
     );
   }
 
-  getMonetaUrl(params: Record<string, string>): string {
+  generatePaymentSystemUrl(params: Record<string, string>): string {
     const isProd = this.environmentService.production;
     // Using hardcoded URL based on spec/const.js logic.
     // Spec said: Concatenate https://www.payanyway.ru/assistant.htm (Prod) with the query string parameters

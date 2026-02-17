@@ -25,7 +25,7 @@ export interface ValidationResult {
 export interface CreateOperationCommand {
   operationType: OperationType;
   agreementNumber: string;
-  data: string; // JSON stringified
+  data: OperationData;
 }
 
 export interface CreateOperationResponse {

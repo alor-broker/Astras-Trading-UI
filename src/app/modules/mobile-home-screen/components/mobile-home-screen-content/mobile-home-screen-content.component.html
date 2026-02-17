@@ -8,12 +8,12 @@
         <ats-portfolio-evaluation (openDetails)="openPortfolioDetails()" />
       </div>
 
-      <div class="home-actions mt-15 px-10">
-        <button nz-button nzType="default" class="home-action-button" (click)="openMoneyOperations()">
+      <div class="d-flex flex-row flex-gap-10 mt-15 px-10">
+        <button nz-button nzType="default" class="home-action-button flex-equal" (click)="openMoneyOperations()">
           <span nz-icon nzType="swap" nzTheme="outline" class="home-action-icon"></span>
           <span class="home-action-label">{{ t('mobileHomeScreen.moneyOperationsTitle') }}</span>
         </button>
-        <button nz-button nzType="default" class="home-action-button" (click)="openHistory()">
+        <button nz-button nzType="default" class="home-action-button flex-equal" (click)="openHistory()">
           <span nz-icon nzType="history" nzTheme="outline" class="home-action-icon"></span>
           <span class="home-action-label">{{ t('mobileHomeScreen.historyTitle') }}</span>
         </button>

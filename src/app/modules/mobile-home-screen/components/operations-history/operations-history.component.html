@@ -1,33 +1,26 @@
 <div class="history-container" *transloco="let t; scope: 'operations-history'">
-  <h2 class="title" *ngIf="!preview()">{{ t('operationsHistory.title') }}</h2>
+  @if (!preview()) {
+  <h2 class="title">{{ t('operationsHistory.title') }}</h2>
+  }
 
-  <form class="filters" [formGroup]="filterForm" *ngIf="!preview()">
+  @if (!preview()) {
+  <form class="filters" [formGroup]="filterForm">
     <div class="filters-row row-main">
-      <nz-select
-        formControlName="search"
-        nzAllowClear
-        [nzPlaceHolder]="t('operationsHistory.filters.typePlaceholder')"
+      <nz-select formControlName="search" nzAllowClear [nzPlaceHolder]="t('operationsHistory.filters.typePlaceholder')"
         class="filter-control type-filter">
         <nz-option-group [nzLabel]="t('operationsHistory.filterGroups.moneymove')">
-          <nz-option
-            *ngFor="let option of getFilterGroupOptions('moneymove')"
-            [nzLabel]="t(getOptionLabelKey(option.value))"
-            [nzValue]="option.value" />
+          @for (option of getFilterGroupOptions('moneymove'); track option.value) {
+          <nz-option [nzLabel]="t(getOptionLabelKey(option.value))" [nzValue]="option.value" />
+          }
         </nz-option-group>
         <nz-option-group [nzLabel]="t('operationsHistory.filterGroups.operation')">
-          <nz-option
-            *ngFor="let option of getFilterGroupOptions('operation')"
-            [nzLabel]="t(getOptionLabelKey(option.value))"
-            [nzValue]="option.value" />
+          @for (option of getFilterGroupOptions('operation'); track option.value) {
+          <nz-option [nzLabel]="t(getOptionLabelKey(option.value))" [nzValue]="option.value" />
+          }
         </nz-option-group>
       </nz-select>
 
-      <button
-        nz-button
-        nzType="default"
-        class="reset-button"
-        type="button"
-        [disabled]="!hasActiveFilters()"
+      <button nz-button nzType="default" class="reset-button" type="button" [disabled]="!hasActiveFilters()"
         (click)="resetFilters()">
         <span nz-icon nzType="close-circle"></span>
         {{ t('operationsHistory.filters.reset') }}
@@ -35,32 +28,20 @@
     </div>
 
     <div class="filters-row row-dates">
-      <nz-date-picker
-        formControlName="dateFrom"
-        [nzDisabledDate]="disabledFromDate"
-        [nzPlaceHolder]="t('operationsHistory.filters.dateFromPlaceholder')"
-        class="filter-control date-filter" />
+      <nz-date-picker formControlName="dateFrom" [nzDisabledDate]="disabledFromDate"
+        [nzPlaceHolder]="t('operationsHistory.filters.dateFromPlaceholder')" class="filter-control date-filter" />
 
-      <nz-date-picker
-        formControlName="dateTo"
-        [nzDisabledDate]="disabledToDate"
-        [nzPlaceHolder]="t('operationsHistory.filters.dateToPlaceholder')"
-        class="filter-control date-filter" />
+      <nz-date-picker formControlName="dateTo" [nzDisabledDate]="disabledToDate"
+        [nzPlaceHolder]="t('operationsHistory.filters.dateToPlaceholder')" class="filter-control date-filter" />
     </div>
   </form>
+  }
 
-  <nz-list
-    [nzDataSource]="history()"
-    [nzItemLayout]="'vertical'"
-    [nzLoading]="isLoading()"
-    [nzLoadMore]="!preview() && hasMore ? loadMoreTpl : null"
-    [nzBordered]="false"
-    class="history-list">
-    <nz-list-item *ngFor="let item of history()" class="history-item">
-      <nz-list-item-meta
-        [nzAvatar]="itemIcon"
-        [nzTitle]="itemTitle"
-        [nzDescription]="itemDescription">
+  <nz-list [nzDataSource]="history()" [nzItemLayout]="'vertical'" [nzLoading]="isLoading()"
+    [nzLoadMore]="!preview() && hasMore ? loadMoreTpl : null" [nzBordered]="false" class="history-list">
+    @for (item of history(); track $index) {
+    <nz-list-item class="history-item">
+      <nz-list-item-meta [nzAvatar]="itemIcon" [nzTitle]="itemTitle" [nzDescription]="itemDescription">
         <ng-template #itemIcon>
           <div class="item-icon" [ngClass]="getStatusColor(item.status)">
             <span nz-icon [nzType]="getIcon(item)" nzTheme="outline"></span>
@@ -72,37 +53,39 @@
         <ng-template #itemDescription>
           <div class="item-description">
             <div class="item-info-row">
-              <nz-tag *ngIf="getStatusLabel(item, t)" [nzColor]="getStatusColor(item.status)" class="item-status-tag">
+              @if (getStatusLabel(item, t)) {
+              <nz-tag [nzColor]="getStatusColor(item.status)" class="item-status-tag">
                 {{ getStatusLabel(item, t) }}
               </nz-tag>
+              }
               <span class="item-date">{{ item.date | date:'dd.MM.yyyy HH:mm' }}</span>
             </div>
-            <span class="item-amount"
-                  *ngIf="getAbsoluteAmount(item) !== null"
-                  [class.negative]="isNegativeAmount(item)"
-                  [class.positive]="!isNegativeAmount(item)">
+            @if (getAbsoluteAmount(item) !== null) {
+            <span class="item-amount" [class.negative]="isNegativeAmount(item)"
+              [class.positive]="!isNegativeAmount(item)">
               {{ getAbsoluteAmount(item) | number:'1.2-2' }} {{ getCurrency(item) }}
             </span>
-            <span class="item-counterparty" *ngIf="getCounterparty(item)">
+            }
+            @if (getCounterparty(item)) {
+            <span class="item-counterparty">
               {{ getCounterparty(item) }}
             </span>
+            }
           </div>
         </ng-template>
       </nz-list-item-meta>
     </nz-list-item>
-    <nz-list-empty *ngIf="history().length === 0 && !isLoading()">
+    }
+    @if (history().length === 0 && !isLoading()) {
+    <nz-list-empty>
       <div class="empty-text">{{ t('operationsHistory.empty') }}</div>
     </nz-list-empty>
+    }
   </nz-list>
 
   <ng-template #loadMoreTpl>
     <div class="load-more">
-      <button
-        nz-button
-        nzType="default"
-        nzBlock
-        [disabled]="isLoading()"
-        (click)="loadMore()">
+      <button nz-button nzType="default" nzBlock [disabled]="isLoading()" (click)="loadMore()">
         {{ t('operationsHistory.loadMore') }}
       </button>
     </div>
