@@ -845,111 +845,14 @@
         "hy": "Գլխավոր էջ"
       }
     },
-    "category": "info",
-    "desktopMeta": {
-      "headerIcon": "home",
-      "galleryIcon": "home",
-      "addOptions": {
-        "initialPosition": "auto",
-        "isFullWidth": false,
-        "initialHeight": 18,
-        "initialWidth": 10
-      },
-      "galleryOrder": 22,
-      "enabled": true
-    },
+    "category": "positionsTradesOrders",
     "mobileMeta": {
       "galleryIcon": "home",
       "ribbonIcon": "home",
       "enabled": true,
-      "galleryOrder": 22,
+      "galleryOrder": 0,
       "selectableForQuickAccessPanel": true
-    },
-    "hideOnDashboardType": [
-      "admin-main"
-    ]
-  },
-  {
-    "typeId": "money-operations",
-    "definition": {
-      "adapter": "application",
-      "config": {
-        "module": "MoneyOperationsModule",
-        "componentName": "MoneyOperationsWidgetComponent"
-      }
-    },
-    "widgetName": {
-      "default": "Money Operations",
-      "translations": {
-        "ru": "Операции с деньгами",
-        "en": "Money Operations",
-        "hy": "Դրամական գործառնություններ"
-      }
-    },
-    "category": "details",
-    "desktopMeta": {
-      "headerIcon": "bank",
-      "galleryIcon": "bank",
-      "addOptions": {
-        "initialPosition": "auto",
-        "isFullWidth": false,
-        "initialHeight": 18,
-        "initialWidth": 10
-      },
-      "galleryOrder": 23,
-      "enabled": true
-    },
-    "mobileMeta": {
-      "galleryIcon": "bank",
-      "ribbonIcon": "bank",
-      "enabled": true,
-      "galleryOrder": 23,
-      "selectableForQuickAccessPanel": false
-    },
-    "hideOnDashboardType": [
-      "admin-main"
-    ]
-  },
-  {
-    "typeId": "operations-history",
-    "definition": {
-      "adapter": "application",
-      "config": {
-        "module": "OperationsHistoryModule",
-        "componentName": "OperationsHistoryWidgetComponent"
-      }
-    },
-    "widgetName": {
-      "default": "Operations History",
-      "translations": {
-        "ru": "История операций",
-        "en": "Operations History",
-        "hy": "Operations History"
-      }
-    },
-    "category": "details",
-    "desktopMeta": {
-      "headerIcon": "history",
-      "galleryIcon": "history",
-      "addOptions": {
-        "initialPosition": "auto",
-        "isFullWidth": false,
-        "initialHeight": 18,
-        "initialWidth": 10
-      },
-      "galleryOrder": 24,
-      "enabled": true
-    },
-    "mobileMeta": {
-      "galleryIcon": "history",
-      "ribbonIcon": "history",
-      "enabled": true,
-      "galleryOrder": 24,
-      "selectableForQuickAccessPanel": false
-    },
-    "hideOnDashboardType": [
-      "admin-main"
-    ]
+    }
   },
   {
     "typeId": "ai-graphs",

@@ -7,16 +7,16 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzCardModule } from 'ng-zorro-antd/card';
-import { MoneyOperationsService } from '../../../../shared/services/money-operations.service';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { UserPortfoliosService } from '../../../../shared/services/user-portfolios.service';
-import { OperationSubtypes, OperationTypes, Limits, OperationSubtype } from '../../../../shared/models/money-operations.models';
+import { MoneyOperationsService } from '../../../../../shared/services/money-operations.service';
+import { DashboardContextService } from '../../../../../shared/services/dashboard-context.service';
+import { UserPortfoliosService } from '../../../../../shared/services/user-portfolios.service';
+import { OperationSubtypes, OperationTypes, Limits, OperationSubtype } from '../../../../../shared/models/money-operations.models';
 import { catchError, switchMap, take, map } from 'rxjs/operators';
 import { BehaviorSubject, of, combineLatest } from 'rxjs';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { isPortfoliosEqual } from '../../../../shared/utils/portfolios';
+import { isPortfoliosEqual } from '../../../../../shared/utils/portfolios';
 import { NzIconDirective } from 'ng-zorro-antd/icon';
-import { PortfolioExtended } from "../../../../shared/models/user/portfolio-extended.model";
+import { PortfolioExtended } from "../../../../../shared/models/user/portfolio-extended.model";
 
 @Component({
   selector: 'ats-money-input',
@@ -66,7 +66,10 @@ export class MoneyInputComponent implements OnInit {
     ]).pipe(
       take(1),
       map(([selectedKey, allPortfolios]) => {
-        return allPortfolios.find(p => isPortfoliosEqual(p, selectedKey));
+        if (selectedKey == null || allPortfolios == null) {
+          return null;
+        }
+        return allPortfolios.find(p => isPortfoliosEqual(p, selectedKey)) ?? null;
       })
     ).subscribe(p => {
       if (p) {
@@ -122,7 +125,7 @@ export class MoneyInputComponent implements OnInit {
       })
     ).subscribe(response => {
       this.isLoading = false;
-      if (response) {
+      if (response != null) {
         // Handle validations if any
         const hasErrors = response.validations?.some(v => !v.isSuccess) ?? false;
         if (hasErrors) {
@@ -151,7 +154,7 @@ export class MoneyInputComponent implements OnInit {
       })
     }).pipe(
       switchMap(res => {
-        if (res && res.success) {
+        if (res != null && res.success) {
           return this.service.getPaymentConfig(res.operationId);
         }
         return of(null);
@@ -162,7 +165,7 @@ export class MoneyInputComponent implements OnInit {
       })
     ).subscribe(config => {
       this.isLoading = false;
-      if (config) {
+      if (config != null) {
         const url = this.service.getMonetaUrl(config);
         // Redirect or open in new window
         window.location.href = url;

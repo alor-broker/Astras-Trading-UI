@@ -5,7 +5,7 @@ import { MockComponent } from 'ng-mocks';
 import { MoneyInputComponent } from '../money-input/money-input.component';
 import { MoneyWithdrawalComponent } from '../money-withdrawal/money-withdrawal.component';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
 
 describe('MoneyOperationsComponent', () => {
   let component: MoneyOperationsComponent;
@@ -19,16 +19,16 @@ describe('MoneyOperationsComponent', () => {
         TranslocoTestsModule.getModule()
       ]
     })
-    .overrideComponent(MoneyOperationsComponent, {
-      set: {
-        imports: [
-          NzTabsModule,
-          MockComponent(MoneyInputComponent),
-          MockComponent(MoneyWithdrawalComponent)
-        ]
-      }
-    })
-    .compileComponents();
+      .overrideComponent(MoneyOperationsComponent, {
+        set: {
+          imports: [
+            NzTabsModule,
+            MockComponent(MoneyInputComponent),
+            MockComponent(MoneyWithdrawalComponent)
+          ]
+        }
+      })
+      .compileComponents();
 
     fixture = TestBed.createComponent(MoneyOperationsComponent);
     component = fixture.componentInstance;

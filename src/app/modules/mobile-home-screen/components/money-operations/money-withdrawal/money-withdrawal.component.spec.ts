@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MoneyWithdrawalComponent } from './money-withdrawal.component';
-import { MoneyOperationsService } from '../../../../shared/services/money-operations.service';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
+import { MoneyOperationsService } from '../../../../../shared/services/money-operations.service';
+import { DashboardContextService } from '../../../../../shared/services/dashboard-context.service';
 import { of } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MockProvider } from 'ng-mocks';
-import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
-import { TranslocoTestsModule } from "../../../../shared/utils/testing/translocoTestsModule";
+import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
+import { TranslocoTestsModule } from "../../../../../shared/utils/testing/translocoTestsModule";
 
 describe('MoneyWithdrawalComponent', () => {
   let component: MoneyWithdrawalComponent;

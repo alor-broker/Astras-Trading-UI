@@ -66,10 +66,6 @@ import { AsyncPipe } from '@angular/common';
 import {
   MobileOrderWidgetComponent
 } from "../../../trade-screen/widgets/trade-screen-widget/trade-screen-widget.component";
-import {
-  MoneyOperationsWidgetComponent
-} from "../../../money-operations/widgets/money-operations-widget/money-operations-widget.component";
-import { OperationsHistoryWidgetComponent } from '../../../operations-history/widgets/operations-history-widget/operations-history-widget.component';
 
 @Component({
   selector: 'ats-parent-widget',
@@ -105,9 +101,7 @@ import { OperationsHistoryWidgetComponent } from '../../../operations-history/wi
     MarketTrendsWidgetComponent,
     AdminClientsWidgetComponent,
     AsyncPipe,
-    MobileOrderWidgetComponent,
-    MoneyOperationsWidgetComponent,
-    OperationsHistoryWidgetComponent
+    MobileOrderWidgetComponent
   ]
 })
 export class ParentWidgetComponent implements OnDestroy {

@@ -30,6 +30,9 @@ import {
 } from "../../../market-trends/components/market-trends/market-trends.component";
 import { NzButtonComponent } from "ng-zorro-antd/button";
 import { NzIconDirective } from "ng-zorro-antd/icon";
+import { MoneyOperationsComponent } from "../money-operations/money-operations/money-operations.component";
+import { OperationsHistoryComponent } from "../operations-history/operations-history.component";
+import { NzModalModule } from "ng-zorro-antd/modal";
 
 @Component({
   selector: 'ats-mobile-home-screen-content',
@@ -44,11 +47,13 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
     TranslocoDirective,
     NewsComponent,
     InvestIdeasCompactComponent,
-    InvestIdeasCompactComponent,
     AgreementDynamicsComponent,
     AsyncPipe,
     NzButtonComponent,
-    NzIconDirective
+    NzIconDirective,
+    MoneyOperationsComponent,
+    OperationsHistoryComponent,
+    NzModalModule
   ],
   templateUrl: './mobile-home-screen-content.component.html',
   styleUrl: './mobile-home-screen-content.component.less'
@@ -64,6 +69,8 @@ export class MobileHomeScreenContentComponent implements OnInit {
   readonly Market = Market;
 
   currentAgreement$: Observable<string> | null = null;
+  showMoneyOperations = false;
+  showHistory = false;
 
   protected settings$!: Observable<MobileHomeScreenSettings>;
 
@@ -104,19 +111,19 @@ export class MobileHomeScreenContentComponent implements OnInit {
   }
 
   openMoneyOperations(): void {
-    this.navigationStackService.pushState({
-      widgetTarget: {
-        typeId: 'money-operations'
-      }
-    });
+    this.showMoneyOperations = true;
+  }
+
+  closeMoneyOperations(): void {
+    this.showMoneyOperations = false;
   }
 
   openHistory(): void {
-    this.navigationStackService.pushState({
-      widgetTarget: {
-        typeId: 'operations-history'
-      }
-    });
+    this.showHistory = true;
+  }
+
+  closeHistory(): void {
+    this.showHistory = false;
   }
 
   openAllInstruments(displayParams: DisplayParams): void {

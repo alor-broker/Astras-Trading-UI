@@ -4,12 +4,12 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, Validators, FormGroup } 
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzFormModule } from 'ng-zorro-antd/form';
-import { MoneyOperationsService } from '../../../../shared/services/money-operations.service';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { OperationTypes } from '../../../../shared/models/money-operations.models';
+import { MoneyOperationsService } from '../../../../../shared/services/money-operations.service';
+import { DashboardContextService } from '../../../../../shared/services/dashboard-context.service';
+import { OperationTypes } from '../../../../../shared/models/money-operations.models';
 import { catchError, take } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { PortfolioKey } from "../../../../shared/models/portfolio-key.model";
+import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
 import { TranslocoDirective } from '@jsverse/transloco';
 
 @Component({
@@ -94,7 +94,7 @@ export class MoneyWithdrawalComponent implements OnInit {
       })
     ).subscribe(res => {
       this.isLoading = false;
-      if (res && res.success) {
+      if (res != null && res.success) {
         // Show success message or navigate
       }
     });
