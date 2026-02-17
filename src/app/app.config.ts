@@ -24,7 +24,6 @@ import {LOGGER} from "./shared/services/logging/logger-base";
 import {ConsoleLogger} from "./shared/services/logging/console-logger";
 import {RemoteLogger} from "./shared/services/logging/remote-logger";
 import {ERROR_HANDLER} from "./shared/services/handle-error/error-handler";
-import {HttpErrorHandler} from "./shared/services/handle-error/http-error-handler";
 import {LogErrorHandler} from "./shared/services/handle-error/log-error-handler";
 import {GraphQlErrorHandlerService} from "./shared/services/handle-error/graph-ql-error-handler.service";
 import {NOTIFICATIONS_PROVIDER} from "./modules/notifications/services/notifications-provider";
@@ -112,11 +111,6 @@ const appProviders = [
   {
     provide: LOGGER,
     useClass: RemoteLogger,
-    multi: true
-  },
-  {
-    provide: ERROR_HANDLER,
-    useClass: HttpErrorHandler,
     multi: true
   },
   {

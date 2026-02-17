@@ -264,7 +264,6 @@ export class WsOrdersConnector implements OnDestroy {
   private sendMessageWithAuthorization<T extends WsRequestMessage>(request: T, socketState: SocketState): Observable<WsResponseMessage> {
     socketState.authorizationCheck$ ??= this.getCurrentAccessToken().pipe(
         distinctUntilChanged(),
-        filter(x => !!x),
         switchMap(t => this.sendBaseMessage(
             {
               guid: GuidGenerator.newGuid(),
