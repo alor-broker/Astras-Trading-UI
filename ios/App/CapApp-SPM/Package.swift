@@ -11,9 +11,9 @@ let package = Package(
             targets: ["CapApp-SPM"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.1.0"),
-        .package(name: "CapacitorFirebaseMessaging", path: "..\..\..\node_modules\.pnpm\@capacitor-firebase+messagi_07472c66970fea92e09c526affdb285d\node_modules\@capacitor-firebase\messaging"),
-        .package(name: "CapacitorNetwork", path: "..\..\..\node_modules\.pnpm\@capacitor+network@8.0.1_@capacitor+core@8.1.0\node_modules\@capacitor\network")
+        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.0.2"),
+        .package(name: "CapacitorFirebaseMessaging", path: "../../../node_modules/.pnpm/@capacitor-firebase+messaging@8.0.1_@capacitor+core@8.0.2_firebase@12.8.0/node_modules/@capacitor-firebase/messaging"),
+        .package(name: "CapacitorNetwork", path: "../../../node_modules/.pnpm/@capacitor+network@8.0.1_@capacitor+core@8.0.2/node_modules/@capacitor/network")
     ],
     targets: [
         .target(
