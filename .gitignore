@@ -72,3 +72,6 @@ android/captures/
 ios/App/App.xcworkspace/xcuserdata/
 ios/App/Podfile.lock
 ios/DerivedData/
+
+resources/ios/**/*
+resources/android/**/*
