@@ -12,6 +12,7 @@ import { ModalService } from '../../../shared/services/modal.service';
 import { mapWith } from '../../../shared/utils/observable-helper';
 import { TranslatorService } from "../../../shared/services/translator.service";
 import { EnvironmentService } from "../../../shared/services/environment.service";
+import {Capacitor} from "@capacitor/core";
 
 @Injectable()
 export class ApplicationReleaseNotificationProvider implements NotificationsProvider {
@@ -21,6 +22,10 @@ export class ApplicationReleaseNotificationProvider implements NotificationsProv
   private readonly environmentService = inject(EnvironmentService);
 
   getNotifications(): Observable<NotificationMeta[]> {
+    if(Capacitor.isNativePlatform()) {
+      return of([]);
+    }
+
     if(this.environmentService.features.releases ?? true) {
       return this.applicationMetaService.savedVersion$.pipe(
         mapWith(() => this.applicationMetaService.getCurrentVersion(), (savedVersion, currentVersion) => ({
