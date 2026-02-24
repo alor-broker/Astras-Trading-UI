@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -80,8 +80,6 @@ export class MoneyInputComponent {
     { initialValue: null }
   );
 
-  readonly selectedAgreement = computed(() => this.selectedPortfolio()?.agreement ?? null);
-
   constructor() {
     effect(() => {
       this.updateValidators();
@@ -118,14 +116,15 @@ export class MoneyInputComponent {
   }
 
   submitPrepare(): void {
-    if (!this.form.valid || this.selectedAgreement() == null) return;
+    const agreement = this.selectedPortfolio()?.agreement ?? null;
+    if (!this.form.valid || agreement == null) return;
 
     this.isLoading.set(true);
     const amount = this.form.controls.amount.value;
 
     this.moneyService.validateOperation({
       operationType: OperationTypes.Deposit,
-      agreementNumber: this.selectedAgreement()!,
+      agreementNumber: agreement,
       data: {
         amount: Number(amount),
         currency: 'RUB',
@@ -147,15 +146,16 @@ export class MoneyInputComponent {
   }
 
   submitCreate(): void {
-    if (this.selectedAgreement() == null || this.selectedPortfolio() == null) return;
+    const portfolio = this.selectedPortfolio();
+    const agreement = portfolio?.agreement ?? null;
+    if (agreement == null || portfolio == null) return;
 
     this.isLoading.set(true);
     const amount = this.form.controls.amount.value;
-    const portfolio = this.selectedPortfolio()!;
 
     this.moneyService.submitOperation({
       operationType: OperationTypes.Deposit,
-      agreementNumber: this.selectedAgreement()!,
+      agreementNumber: agreement,
       data: {
         account: portfolio.portfolio,
         exchange: portfolio.exchange,
