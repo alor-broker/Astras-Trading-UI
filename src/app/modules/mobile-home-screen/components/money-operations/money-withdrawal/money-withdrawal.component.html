@@ -1,5 +1,5 @@
 <div class="withdrawal-container" *transloco="let t; scope: 'money-operations'">
-  @if (showSavedRequisites() && savedRequisites().length > 0) {
+  @if (savedRequisites().length > 0) {
     <div class="saved-requisites">
       <div class="saved-requisites__title">{{ t('moneyOperations.savedRequisitesTitle') }}</div>
       @for (req of savedRequisites(); track req.id; let i = $index) {
@@ -10,13 +10,6 @@
             (click)="applyRequisites(req)"
           >
             {{ i + 1 }}. {{ req.bic }} {{ req.bankName }}, {{ t('moneyOperations.accountShort') }} {{ req.settlementAccount }}
-          </button>
-          <button
-            type="button"
-            class="saved-requisites__close"
-            (click)="hideSavedRequisites()"
-          >
-            X
           </button>
         </div>
       }

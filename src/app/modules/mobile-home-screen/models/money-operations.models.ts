@@ -1,14 +1,55 @@
 export interface PrepareOperationCommand {
   operationType: OperationType;
   agreementNumber: string;
-  data: OperationData;
+  data: PrepareOperationData;
 }
 
-export interface OperationData {
-  amount?: number;
+export interface DepositPrepareOperationData {
+  amount: number;
   currency: string;
-  subtype?: OperationSubtype;
-  [key: string]: any;
+  subtype: OperationSubtype;
+}
+
+export interface DepositCreateOperationData {
+  account: string;
+  exchange: string;
+  amount: number;
+  currency: string;
+  paymentMethod: OperationSubtype;
+}
+
+export interface WithdrawCreateOperationData {
+  recipient: string;
+  account: string;
+  currency: string;
+  subportfolioFrom: string;
+  amount: number;
+  bic: string;
+  bankName: string;
+  loroAccount: string;
+  settlementAccount: string;
+}
+
+export interface TransferOperationData {
+  amount: number;
+  currency: string;
+}
+
+export type PrepareOperationData = DepositPrepareOperationData | TransferOperationData;
+export type CreateOperationData = DepositCreateOperationData | WithdrawCreateOperationData | TransferOperationData;
+export type OperationData = PrepareOperationData | CreateOperationData;
+
+export interface WithdrawalSubmitParams {
+  agreementNumber: string;
+  portfolio: string;
+  exchange: string;
+  recipient: string;
+  bic: string;
+  bankName: string;
+  loroAccount: string;
+  settlementAccount: string;
+  amount: number;
+  currency?: string;
 }
 
 export interface PrepareOperationResponse {
@@ -25,7 +66,7 @@ export interface ValidationResult {
 export interface CreateOperationCommand {
   operationType: OperationType;
   agreementNumber: string;
-  data: OperationData;
+  data: CreateOperationData;
 }
 
 export interface CreateOperationResponse {

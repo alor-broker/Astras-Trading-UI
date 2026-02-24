@@ -10,7 +10,10 @@ import {
   CreateOperationCommand,
   CreateOperationResponse,
   PrepareOperationCommand,
-  PrepareOperationResponse
+  PrepareOperationResponse,
+  WithdrawalSubmitParams,
+  WithdrawCreateOperationData,
+  OperationTypes
 } from '../models/money-operations.models';
 import { map } from 'rxjs/operators';
 
@@ -25,15 +28,16 @@ export class MoneyOperationsService {
   private readonly baseUrl = `${this.environmentService.clientDataUrl}/client/v2.0/operations`;
   private readonly agreementsV2BaseUrl = `${this.environmentService.clientDataUrl}/client/v2.0/agreements`;
   private readonly agreementsBaseUrl = `${this.environmentService.clientDataUrl}/client/v1.0/agreements`;
+  private readonly originatorHeaders = {
+    'X-ALOR-Originator': 'astras'
+  };
 
   validateOperation(command: PrepareOperationCommand): Observable<PrepareOperationResponse | null> {
     return this.httpClient.post<PrepareOperationResponse>(
       `${this.baseUrl}/prepare`,
       command,
       {
-        headers: {
-          'X-ALOR-Originator': 'astras'
-        }
+        headers: this.originatorHeaders
       }
     ).pipe(
       catchHttpError<PrepareOperationResponse | null>(null, this.errorHandlerService)
@@ -50,9 +54,7 @@ export class MoneyOperationsService {
       `${this.baseUrl}/create`,
       formData,
       {
-        headers: {
-          'X-ALOR-Originator': 'astras'
-        }
+        headers: this.originatorHeaders
       }
     ).pipe(
       catchHttpError<CreateOperationResponse | null>(null, this.errorHandlerService)
@@ -79,9 +81,7 @@ export class MoneyOperationsService {
     return this.httpClient.get<BankInfoResponse>(
       `${this.agreementsBaseUrl}/bank/${bic}`,
       {
-        headers: {
-          'X-ALOR-Originator': 'astras'
-        }
+        headers: this.originatorHeaders
       }
     ).pipe(
       catchHttpError<BankInfoResponse | null>(null, this.errorHandlerService)
@@ -97,9 +97,7 @@ export class MoneyOperationsService {
     return this.httpClient.get<BankRequisitesResponse>(
       `${this.agreementsV2BaseUrl}/${agreementNumber}/bank-requisites`,
       {
-        headers: {
-          'X-ALOR-Originator': 'astras'
-        },
+        headers: this.originatorHeaders,
         params: {
           currency,
           offset,
@@ -107,8 +105,34 @@ export class MoneyOperationsService {
         }
       }
     ).pipe(
+      map(response => ({
+        ...response,
+        list: [...response.list].sort((a, b) => b.id - a.id)
+      })),
       catchHttpError<BankRequisitesResponse | null>(null, this.errorHandlerService)
     );
+  }
+
+  submitWithdrawalOperation(params: WithdrawalSubmitParams): Observable<CreateOperationResponse | null> {
+    const data: WithdrawCreateOperationData = {
+      recipient: params.recipient,
+      account: params.portfolio,
+      currency: params.currency ?? 'RUB',
+      subportfolioFrom: params.exchange,
+      amount: params.amount,
+      bic: params.bic,
+      bankName: params.bankName,
+      loroAccount: params.loroAccount,
+      settlementAccount: params.settlementAccount
+    };
+
+    const command: CreateOperationCommand = {
+      operationType: OperationTypes.Withdraw,
+      agreementNumber: params.agreementNumber,
+      data
+    };
+
+    return this.submitOperation(command);
   }
 
   generatePaymentSystemUrl(params: Record<string, string>): string {
