@@ -4,9 +4,9 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, Validators, FormGroup } 
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzFormModule } from 'ng-zorro-antd/form';
-import { MoneyOperationsService } from '../../../../../shared/services/money-operations.service';
+import { MoneyOperationsService } from '../../../services/money-operations.service';
 import { DashboardContextService } from '../../../../../shared/services/dashboard-context.service';
-import { OperationTypes } from '../../../../../shared/models/money-operations.models';
+import { OperationTypes } from '../../../models/money-operations.models';
 import { catchError, takeUntil } from 'rxjs/operators';
 import { of, Subject } from 'rxjs';
 import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";

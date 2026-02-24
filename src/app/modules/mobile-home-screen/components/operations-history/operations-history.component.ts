@@ -12,14 +12,14 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { OperationsHistoryService } from '../../../../shared/services/operations-history.service';
+import { OperationsHistoryService } from '../../services/operations-history.service';
 import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
 import { UserPortfoliosService } from '../../../../shared/services/user-portfolios.service';
 import {
   HistoryItem,
   HistoryRequestParams,
   HistorySearchType
-} from '../../../../shared/models/operations-history.models';
+} from '../../models/operations-history.models';
 import { isPortfoliosEqual } from '../../../../shared/utils/portfolios';
 import { getISOStringDate } from '../../../../shared/utils/datetime';
 

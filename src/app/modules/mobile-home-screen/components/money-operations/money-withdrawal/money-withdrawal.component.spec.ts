@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MoneyWithdrawalComponent } from './money-withdrawal.component';
-import { MoneyOperationsService } from '../../../../../shared/services/money-operations.service';
+import { MoneyOperationsService } from '../../../services/money-operations.service';
 import { DashboardContextService } from '../../../../../shared/services/dashboard-context.service';
 import { of } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';

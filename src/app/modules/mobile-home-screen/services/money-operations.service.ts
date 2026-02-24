@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { EnvironmentService } from './environment.service';
-import { ErrorHandlerService } from './handle-error/error-handler.service';
-import { catchHttpError } from '../utils/observable-helper';
+import { EnvironmentService } from '../../../shared/services/environment.service';
+import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
+import { catchHttpError } from '../../../shared/utils/observable-helper';
 import {
   CreateOperationCommand,
   CreateOperationResponse,
