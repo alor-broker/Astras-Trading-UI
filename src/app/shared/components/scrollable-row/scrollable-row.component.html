@@ -4,7 +4,13 @@
   (swipeLeft)="move(null, 'right')"
   (swipeRight)="move(null, 'left')"
 >
-  <div (nzResizeObserve)="checkScroll()" cdkScrollable class="items" nzResizeObserver>
+  <div
+    (nzResizeObserve)="checkScroll()"
+    cdkScrollable
+    class="items"
+    nzResizeObserver
+    [style]="{'column-gap': `${spaceBetween()}px`}"
+  >
     <ng-content />
   </div>
 

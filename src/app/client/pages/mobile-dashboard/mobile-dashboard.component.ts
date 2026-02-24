@@ -33,6 +33,7 @@ import {
   ApplicationUpdatedWidgetComponent
 } from "../../../modules/application-meta/widgets/application-updated-widget/application-updated-widget.component";
 import {OrdersDialogService} from "../../../shared/services/orders/orders-dialog.service";
+import {NzConfigService} from "ng-zorro-antd/core/config";
 
 @Component({
   selector: 'ats-mobile-dashboard',
@@ -69,9 +70,18 @@ export class MobileDashboardComponent implements OnInit {
 
   private readonly ordersDialogService = inject(OrdersDialogService);
 
+  private nzConfigService = inject(NzConfigService);
+
   private readonly store = inject(Store);
 
   ngOnInit(): void {
+    this.nzConfigService.set(
+      'select',
+      {
+        nzOptionHeightPx: 35
+      }
+    );
+
     this.mobileSettingsBrokerService.initSettingsBrokers();
     this.store.dispatch(PortfoliosInternalActions.init());
     this.store.dispatch(WidgetsLocalStateInternalActions.init({storageKey: LocalStorageCommonConstants.WidgetsLocalStateStorageKey}));

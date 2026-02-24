@@ -21,6 +21,19 @@
   }
 });
 
+.themeMixin({
+  &.mobile {
+    :host {
+      .buttons-group {
+        gap: 8px;
+        .anticon {
+          font-size: @font-size-base + 6;
+        }
+      }
+    }
+  }
+});
+
 .icon-display {
   transform: scale(0.7)
 }

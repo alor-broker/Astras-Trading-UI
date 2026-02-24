@@ -18,6 +18,7 @@
 @import 'interactions-utils';
 @import 'display-utils';
 @import 'opacity-utils';
+@import 'mobile';
 
 :root {
   --safe-area-top: env(safe-area-inset-top);
@@ -56,9 +57,11 @@ html.mobile {
   .ant-modal-wrap {
     padding-top: var(--safe-area-top) !important;
   }
+
   .ant-message {
     top: calc(24px + var(--safe-area-top)) !important;
   }
+
   .ant-notification-topRight,
   .ant-notification-topLeft {
     top: calc(24px + var(--safe-area-top)) !important;

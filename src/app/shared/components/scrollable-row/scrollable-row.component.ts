@@ -31,6 +31,8 @@ export class ScrollableRowComponent implements OnDestroy {
 
   readonly showScrollButtons = input(true);
 
+  readonly spaceBetween = input(15);
+
   hasScroll$ = new BehaviorSubject(false);
 
   readonly scrollContainer = viewChild(CdkScrollable);

@@ -2,7 +2,7 @@
   <div class="p-10 history-wrapper">
     @if (instruments$ | async; as instruments) {
       @if (instruments.length > 0) {
-        <ats-scrollable-row [showScrollButtons]="false">
+        <ats-scrollable-row [showScrollButtons]="false" [spaceBetween]="0">
           @for (instrument of instruments; track instrument) {
             <nz-tag
               (click)="selectInstrument(instrument)"
