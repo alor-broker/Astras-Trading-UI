@@ -5,6 +5,8 @@ import { EnvironmentService } from '../../../shared/services/environment.service
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
 import {
+  BankInfoResponse,
+  BankRequisitesResponse,
   CreateOperationCommand,
   CreateOperationResponse,
   PrepareOperationCommand,
@@ -21,6 +23,8 @@ export class MoneyOperationsService {
   private readonly errorHandlerService = inject(ErrorHandlerService);
 
   private readonly baseUrl = `${this.environmentService.clientDataUrl}/client/v2.0/operations`;
+  private readonly agreementsV2BaseUrl = `${this.environmentService.clientDataUrl}/client/v2.0/agreements`;
+  private readonly agreementsBaseUrl = `${this.environmentService.clientDataUrl}/client/v1.0/agreements`;
 
   validateOperation(command: PrepareOperationCommand): Observable<PrepareOperationResponse | null> {
     return this.httpClient.post<PrepareOperationResponse>(
@@ -68,6 +72,42 @@ export class MoneyOperationsService {
         return config;
       }),
       catchHttpError<Record<string, string> | null>(null, this.errorHandlerService)
+    );
+  }
+
+  getBankInfoByBic(bic: string): Observable<BankInfoResponse | null> {
+    return this.httpClient.get<BankInfoResponse>(
+      `${this.agreementsBaseUrl}/bank/${bic}`,
+      {
+        headers: {
+          'X-ALOR-Originator': 'astras'
+        }
+      }
+    ).pipe(
+      catchHttpError<BankInfoResponse | null>(null, this.errorHandlerService)
+    );
+  }
+
+  getAgreementBankRequisites(
+    agreementNumber: string,
+    currency = 'RUB',
+    offset = 0,
+    limit = 7
+  ): Observable<BankRequisitesResponse | null> {
+    return this.httpClient.get<BankRequisitesResponse>(
+      `${this.agreementsV2BaseUrl}/${agreementNumber}/bank-requisites`,
+      {
+        headers: {
+          'X-ALOR-Originator': 'astras'
+        },
+        params: {
+          currency,
+          offset,
+          limit
+        }
+      }
+    ).pipe(
+      catchHttpError<BankRequisitesResponse | null>(null, this.errorHandlerService)
     );
   }
 

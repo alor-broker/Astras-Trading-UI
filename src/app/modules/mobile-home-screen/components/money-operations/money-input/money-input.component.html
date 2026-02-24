@@ -37,7 +37,7 @@
 
     <form nz-form nzLayout="vertical" [formGroup]="form" (ngSubmit)="submitPrepare()" class="step-form">
       <nz-form-item>
-        <nz-form-label nzRequired>{{ t('moneyOperations.amountLabel') }}</nz-form-label>
+        <nz-form-label nzRequired>{{ t('moneyOperations.depositAmountLabel') }}</nz-form-label>
         <nz-form-control [nzErrorTip]="t('moneyOperations.amountError')">
           <input nz-input formControlName="amount" type="number"
             [placeholder]="t('moneyOperations.amountPlaceholder')" />
@@ -64,7 +64,7 @@
     <div class="summary-card">
       <h3>{{ t('moneyOperations.confirmTitle') }}</h3>
       <div class="summary-row">
-        <span>{{ t('moneyOperations.amountLabel') }}</span>
+        <span>{{ t('moneyOperations.depositAmountLabel') }}</span>
         <span>{{ form.controls.amount.value }} RUB</span>
       </div>
       <div class="summary-row">

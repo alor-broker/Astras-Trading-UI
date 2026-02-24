@@ -32,6 +32,46 @@ export interface CreateOperationResponse {
   operationId: string;
   success: boolean;
   message?: string;
+  validations?: ValidationResult[];
+  formErrors?: Record<string, string>;
+  errorMessage?: string | null;
+}
+
+export interface BankInfoResponse {
+  id: number;
+  bank: string;
+  zip: string;
+  tnp: string;
+  nnp: string;
+  bankAddress: string;
+  ks: string;
+  bik: string;
+  dateDel: string;
+}
+
+export interface BankRequisiteItem {
+  id: number;
+  clientId: number;
+  rating: number;
+  deleted: boolean;
+  currency: string;
+  recipient: string;
+  bic: string;
+  bankName: string;
+  loroAccount: string;
+  settlementAccount: string;
+  cardNumber: string | null;
+  bankTaxNumber: string | null;
+  personalAccount: string | null;
+  swift: string | null;
+  correspondingSWIFT: string | null;
+  correspondingBankName: string | null;
+  alias: string | null;
+}
+
+export interface BankRequisitesResponse {
+  list: BankRequisiteItem[];
+  total: number;
 }
 
 export type OperationType = 'money_input' | 'money_withdrawal' | 'money_between_accounts' | 'money_between_subportfolios' | 'money_between_agreements';

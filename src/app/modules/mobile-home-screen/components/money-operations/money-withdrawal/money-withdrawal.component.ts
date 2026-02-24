@@ -1,16 +1,20 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { MoneyOperationsService } from '../../../services/money-operations.service';
 import { DashboardContextService } from '../../../../../shared/services/dashboard-context.service';
-import { OperationTypes } from '../../../models/money-operations.models';
-import { catchError, takeUntil } from 'rxjs/operators';
-import { of, Subject } from 'rxjs';
-import { PortfolioKey } from "../../../../../shared/models/portfolio-key.model";
+import { UserPortfoliosService } from '../../../../../shared/services/user-portfolios.service';
+import { BankRequisiteItem, OperationTypes } from '../../../models/money-operations.models';
+import { catchError, debounceTime, distinctUntilChanged, filter, finalize, map, switchMap, take } from 'rxjs/operators';
+import { combineLatest, of } from 'rxjs';
 import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslatorService } from '../../../../../shared/services/translator.service';
+import { isPortfoliosEqual } from '../../../../../shared/utils/portfolios';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 
 @Component({
   selector: 'ats-money-withdrawal',
@@ -27,83 +31,154 @@ import { TranslocoDirective } from '@jsverse/transloco';
   templateUrl: './money-withdrawal.component.html',
   styleUrls: ['./money-withdrawal.component.less']
 })
-export class MoneyWithdrawalComponent implements OnInit, OnDestroy {
+export class MoneyWithdrawalComponent {
   private readonly service = inject(MoneyOperationsService);
   private readonly dashboardContextService = inject(DashboardContextService);
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
+  private readonly translatorService = inject(TranslatorService);
+  private readonly notificationService = inject(NzNotificationService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
 
-  form!: FormGroup;
-  selectedAgreement: string | null = null;
-  isLoading = false;
+  readonly form = this.fb.group({
+    recipient: this.fb.control<string | null>(null, [Validators.required]),
+    bic: this.fb.control<string | null>(null, [Validators.required, Validators.pattern(/^\d{9}$/)]),
+    bankName: this.fb.control<string | null>(null, [Validators.required]),
+    loroAccount: this.fb.control<string | null>(null, [Validators.required, Validators.pattern(/^\d{20}$/)]),
+    settlementAccount: this.fb.control<string | null>(null, [Validators.required, Validators.pattern(/^\d{20}$/)]),
+    amount: this.fb.control<number | null>(null, [Validators.required, Validators.min(1)])
+  });
 
-  private readonly destroy$ = new Subject<void>();
+  readonly isLoading = signal(false);
+  readonly showSavedRequisites = signal(true);
+  readonly savedRequisites = signal<BankRequisiteItem[]>([]);
 
-  ngOnInit(): void {
-    this.initForm();
-    this.dashboardContextService.selectedPortfolio$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe((p: PortfolioKey | null) => {
-      if (p != null) {
-        this.selectedAgreement = (p as { agreement?: string }).agreement ?? null;
+  readonly selectedPortfolio = toSignal(
+    combineLatest([
+      this.dashboardContextService.selectedPortfolio$,
+      this.userPortfoliosService.getPortfolios()
+    ]).pipe(
+      map(([selectedKey, allPortfolios]) => {
+        if (selectedKey == null || allPortfolios == null) {
+          return null;
+        }
+        return allPortfolios.find(p => isPortfoliosEqual(p, selectedKey)) ?? null;
+      })
+    ),
+    { initialValue: null }
+  );
+
+  constructor() {
+    toObservable(this.selectedPortfolio).pipe(
+      map(portfolio => portfolio?.agreement ?? null),
+      filter((agreement): agreement is string => agreement != null && agreement.length > 0),
+      distinctUntilChanged(),
+      switchMap(agreement => this.service.getAgreementBankRequisites(agreement)),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(response => {
+      this.savedRequisites.set(response?.list ?? []);
+      this.showSavedRequisites.set(true);
+    });
+
+    this.form.controls.bic.valueChanges.pipe(
+      map(v => (v ?? '').toString().trim()),
+      debounceTime(300),
+      distinctUntilChanged(),
+      filter(v => /^\d{9}$/.test(v)),
+      switchMap(bic => this.service.getBankInfoByBic(bic)),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(bankInfo => {
+      if (bankInfo == null) {
+        return;
       }
+
+      this.form.patchValue({
+        bankName: bankInfo.bank,
+        loroAccount: bankInfo.ks
+      });
     });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  applyRequisites(requisites: BankRequisiteItem): void {
+    const current = this.form.getRawValue();
+    const currentRecipient = current.recipient?.trim();
+    const currentBic = current.bic?.trim();
+    const currentBankName = current.bankName?.trim();
+    const currentLoroAccount = current.loroAccount?.trim();
+    const currentSettlementAccount = current.settlementAccount?.trim();
+
+    this.form.patchValue({
+      recipient: currentRecipient != null && currentRecipient.length > 0 ? current.recipient : requisites.recipient,
+      bic: currentBic != null && currentBic.length > 0 ? current.bic : requisites.bic,
+      bankName: currentBankName != null && currentBankName.length > 0 ? current.bankName : requisites.bankName,
+      loroAccount: currentLoroAccount != null && currentLoroAccount.length > 0 ? current.loroAccount : requisites.loroAccount,
+      settlementAccount: currentSettlementAccount != null && currentSettlementAccount.length > 0 ? current.settlementAccount : requisites.settlementAccount
+    });
   }
 
-  private initForm(): void {
-    this.form = this.fb.group({
-      recipient: [null, [Validators.required]],
-      bik: [null, [Validators.required, Validators.pattern(/^\d{9}$/)]],
-      accNumber: [null, [Validators.required, Validators.pattern(/^\d{20}$/)]],
-      purpose: [null, [Validators.required]],
-      amount: [null, [Validators.required, Validators.min(1)]]
-    });
+  hideSavedRequisites(): void {
+    this.showSavedRequisites.set(false);
   }
 
   submit(): void {
-    const isFormValid = this.form.valid;
-    const hasAgreement = (this.selectedAgreement ?? '').length > 0;
-
-    if (!isFormValid || !hasAgreement) {
+    const portfolio = this.selectedPortfolio();
+    const agreement = portfolio?.agreement ?? null;
+    if (!this.form.valid || agreement == null || portfolio == null) {
       return;
     }
 
-    this.isLoading = true;
-    const val = this.form.value as {
-      amount: string;
-      recipient: string;
-      bik: string;
-      accNumber: string;
-      purpose: string;
-    };
+    this.isLoading.set(true);
+    const val = this.form.getRawValue();
 
     const data = {
-      amount: Number(val.amount),
+      recipient: val.recipient ?? '',
+      account: portfolio.portfolio,
       currency: 'RUB',
-      recipient: val.recipient,
-      bik: val.bik,
-      accNumber: val.accNumber,
-      purpose: val.purpose
+      subportfolioFrom: portfolio.exchange,
+      amount: Number(val.amount ?? 0),
+      bic: val.bic ?? '',
+      bankName: val.bankName ?? '',
+      loroAccount: val.loroAccount ?? '',
+      settlementAccount: val.settlementAccount ?? ''
     };
 
     this.service.submitOperation({
       operationType: OperationTypes.Withdraw,
-      agreementNumber: this.selectedAgreement!,
+      agreementNumber: agreement,
       data: data
     }).pipe(
-      catchError(() => {
-        this.isLoading = false;
-        return of(null);
-      })
+      take(1),
+      catchError(() => of(null)),
+      finalize(() => this.isLoading.set(false))
     ).subscribe(res => {
-      this.isLoading = false;
-      if (res != null && res.success) {
-        // Show success message or navigate
-      }
+      this.translatorService.getTranslator('money-operations').pipe(
+        take(1)
+      ).subscribe(t => {
+        if (res != null && res.success) {
+          this.notificationService.success(
+            t(['withdrawSubmitSuccessTitle']),
+            t(['withdrawSubmitSuccessMessage'])
+          );
+          this.form.reset();
+          return;
+        }
+
+        if (res != null) {
+          const validationMessage = res.validations
+            ?.filter(v => !v.isSuccess)
+            .map(v => v.message)
+            .join('\n');
+          const errorText = validationMessage
+            ?? res.errorMessage
+            ?? res.message
+            ?? t(['withdrawSubmitErrorMessage']);
+
+          this.notificationService.error(
+            t(['withdrawSubmitErrorTitle']),
+            errorText
+          );
+        }
+      });
     });
   }
 }
