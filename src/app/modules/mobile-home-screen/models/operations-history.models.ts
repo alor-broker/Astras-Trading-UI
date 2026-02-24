@@ -1,4 +1,4 @@
-export interface HistoryRequestParams {
+export interface HistoryFilterParams {
   limit?: number;
   offset?: number;
   dateFrom?: string;
@@ -6,13 +6,9 @@ export interface HistoryRequestParams {
   status?: string;
   search?: string;
   searchType?: HistorySearchType;
-  loadDocuments?: boolean;
-  endpoint?: HistoryEndpoint;
 }
 
 export type HistorySearchType = 'deal' | 'moneymove' | 'operation';
-
-export type HistoryEndpoint = 'all' | 'operations';
 
 export interface HistoryItemData {
   order?: string;

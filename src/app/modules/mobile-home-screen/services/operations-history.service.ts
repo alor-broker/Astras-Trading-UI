@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { EnvironmentService } from '../../../shared/services/environment.service';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
-import { HistoryItem, HistoryRequestParams } from '../models/operations-history.models';
+import { HistoryItem, HistoryFilterParams } from '../models/operations-history.models';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +16,10 @@ export class OperationsHistoryService {
 
   private readonly baseUrl = `${this.environmentService.clientDataUrl}/client/v1.0/history`;
 
-  getHistory(agreementId: string, params: HistoryRequestParams = {}): Observable<HistoryItem[] | null> {
+  getHistory(agreementId: string, params: HistoryFilterParams = {}): Observable<HistoryItem[] | null> {
     const queryParams: Record<string, string> = {
-      limit: params.limit?.toString() ?? '30'
+      limit: params.limit?.toString() ?? '30',
+      loadDocuments: 'true'
     };
 
     if (params.offset != null) {
@@ -39,12 +40,9 @@ export class OperationsHistoryService {
     if (params.searchType != null) {
       queryParams.searchType = params.searchType;
     }
-    if (params.loadDocuments != null) {
-      queryParams.loadDocuments = params.loadDocuments.toString();
-    }
 
     return this.httpClient.get<HistoryItem[]>(
-      `${this.baseUrl}/${agreementId}/${params.endpoint ?? 'all'}`,
+      `${this.baseUrl}/${agreementId}/all`,
       { params: queryParams }
     ).pipe(
       catchHttpError<HistoryItem[] | null>(null, this.errorHandlerService)

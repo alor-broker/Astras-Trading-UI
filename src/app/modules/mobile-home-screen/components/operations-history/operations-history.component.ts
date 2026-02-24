@@ -17,7 +17,7 @@ import { DashboardContextService } from '../../../../shared/services/dashboard-c
 import { UserPortfoliosService } from '../../../../shared/services/user-portfolios.service';
 import {
   HistoryItem,
-  HistoryRequestParams,
+  HistoryFilterParams,
   HistorySearchType
 } from '../../models/operations-history.models';
 import { isPortfoliosEqual } from '../../../../shared/utils/portfolios';
@@ -341,17 +341,15 @@ export class OperationsHistoryComponent implements OnInit {
     });
   }
 
-  private createRequestParams(offset: number): HistoryRequestParams {
+  private createRequestParams(offset: number): HistoryFilterParams {
     const { search, dateFrom, dateTo } = this.filterForm.getRawValue();
     const resolvedFilter = this.resolveSearchFilter(search);
 
     return {
-      endpoint: 'all',
       offset,
       limit: this.limit(),
       search: resolvedFilter.search,
       searchType: resolvedFilter.searchType,
-      loadDocuments: true,
       dateFrom: dateFrom != null ? getISOStringDate(dateFrom) : undefined,
       dateTo: dateTo != null ? getISOStringDate(dateTo) : undefined
     };
