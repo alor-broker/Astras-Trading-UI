@@ -1,0 +1,34 @@
+@import 'theme-mixin';
+
+.themeMixin({
+  :host {
+    display: block;
+    height: 100%;
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      color: @heading-color;
+      border-radius: 10px;
+    }
+
+    ::ng-deep .ant-tabs-nav {
+      margin: 0 0 12px 0;
+      padding: 0 12px;
+    }
+
+    ::ng-deep .ant-tabs-tab-btn {
+      color: @text-color;
+      font-weight: 500;
+    }
+
+    ::ng-deep .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+      color: @primary-color;
+    }
+
+    ::ng-deep .ant-tabs-content-holder {
+      padding: 0 12px 12px;
+    }
+  }
+});
