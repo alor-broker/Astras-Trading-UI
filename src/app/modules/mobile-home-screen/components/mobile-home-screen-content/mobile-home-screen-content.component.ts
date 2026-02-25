@@ -33,6 +33,7 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
 import { MoneyOperationsComponent } from "../money-operations/money-operations/money-operations.component";
 import { OperationsHistoryComponent } from "../operations-history/operations-history.component";
 import { NzModalModule } from "ng-zorro-antd/modal";
+import { EnvironmentService } from "../../../../shared/services/environment.service";
 
 @Component({
   selector: 'ats-mobile-home-screen-content',
@@ -63,10 +64,12 @@ export class MobileHomeScreenContentComponent implements OnInit {
   private readonly dashboardContextService = inject(DashboardContextService);
   private readonly navigationStackService = inject(NavigationStackService);
   private readonly userPortfoliosService = inject(UserPortfoliosService);
+  private readonly environmentService = inject(EnvironmentService);
 
   readonly guid = input.required<string>();
 
   readonly Market = Market;
+  readonly isMoneyOperationsEnabled = this.environmentService.features.mobileMoneyOperations;
 
   currentAgreement$: Observable<string> | null = null;
   showMoneyOperations = false;

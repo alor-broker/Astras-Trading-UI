@@ -48,7 +48,8 @@ export const environment = {
   features: {
     aiChat: true,
     lowClientRiskCheck: true,
-    releases: true
+    releases: true,
+    mobileMoneyOperations: false
   },
   internationalization: {
     ru: {

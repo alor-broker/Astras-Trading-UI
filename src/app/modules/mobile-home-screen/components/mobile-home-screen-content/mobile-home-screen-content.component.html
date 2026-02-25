@@ -8,6 +8,7 @@
         <ats-portfolio-evaluation (openDetails)="openPortfolioDetails()" />
       </div>
 
+      @if (isMoneyOperationsEnabled) {
       <div class="d-flex flex-row flex-gap-10 mt-15 px-10">
         <button nz-button nzType="default" class="home-action-button flex-equal" (click)="openMoneyOperations()">
           <span nz-icon nzType="swap" nzTheme="outline" class="home-action-icon"></span>
@@ -18,6 +19,7 @@
           <span class="home-action-label">{{ t('mobileHomeScreen.historyTitle') }}</span>
         </button>
       </div>
+      }
 
       <div class="mt-10">
         <ats-positions (instrumentSelected)="openOrder($event)" />
