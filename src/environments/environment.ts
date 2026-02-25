@@ -49,7 +49,7 @@ export const environment = {
     aiChat: true,
     lowClientRiskCheck: true,
     releases: true,
-    mobileMoneyOperations: false
+    mobileMoneyOperations: true
   },
   internationalization: {
     ru: {

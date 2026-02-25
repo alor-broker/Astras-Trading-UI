@@ -8,13 +8,11 @@ import { MoneyOperationsService } from '../../../services/money-operations.servi
 import { DashboardContextService } from '../../../../../shared/services/dashboard-context.service';
 import { UserPortfoliosService } from '../../../../../shared/services/user-portfolios.service';
 import { BankRequisiteItem } from '../../../models/money-operations.models';
-import { catchError, debounceTime, distinctUntilChanged, filter, finalize, map, switchMap, take } from 'rxjs/operators';
-import { combineLatest, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, switchMap } from 'rxjs/operators';
+import { combineLatest } from 'rxjs';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { TranslatorService } from '../../../../../shared/services/translator.service';
 import { isPortfoliosEqual } from '../../../../../shared/utils/portfolios';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 
 @Component({
   selector: 'ats-money-withdrawal',
@@ -34,8 +32,6 @@ export class MoneyWithdrawalComponent {
   private readonly service = inject(MoneyOperationsService);
   private readonly dashboardContextService = inject(DashboardContextService);
   private readonly userPortfoliosService = inject(UserPortfoliosService);
-  private readonly translatorService = inject(TranslatorService);
-  private readonly notificationService = inject(NzNotificationService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(NonNullableFormBuilder);
 
@@ -50,10 +46,6 @@ export class MoneyWithdrawalComponent {
 
   readonly isLoading = signal(false);
   readonly savedRequisites = signal<BankRequisiteItem[]>([]);
-  readonly moneyOperationsTranslator = toSignal(
-    this.translatorService.getTranslator('money-operations'),
-    { initialValue: null }
-  );
 
   readonly selectedPortfolio = toSignal(
     combineLatest([
@@ -127,7 +119,7 @@ export class MoneyWithdrawalComponent {
     this.isLoading.set(true);
     const val = this.form.getRawValue();
 
-    this.service.submitWithdrawalOperation({
+    this.service.submitWithdrawalWithNotification({
       agreementNumber: agreement,
       portfolio: portfolio.portfolio,
       exchange: portfolio.exchange,
@@ -139,36 +131,10 @@ export class MoneyWithdrawalComponent {
       amount: val.amount,
       currency: 'RUB'
     }).pipe(
-      take(1),
-      catchError(() => of(null)),
       finalize(() => this.isLoading.set(false))
-    ).subscribe(res => {
-      const t = this.moneyOperationsTranslator();
-      const getText = (key: string, fallback: string): string => t?.([key]) ?? fallback;
-
-      if (res != null && res.success) {
-        this.notificationService.success(
-          getText('withdrawSubmitSuccessTitle', 'Request submitted'),
-          getText('withdrawSubmitSuccessMessage', 'Your withdrawal request has been sent for processing.')
-        );
+    ).subscribe(result => {
+      if (result.success) {
         this.form.reset();
-        return;
-      }
-
-      if (res != null) {
-        const validationMessage = res.validations
-          ?.filter(v => !v.isSuccess)
-          .map(v => v.message)
-          .join('\n');
-        const errorText = validationMessage
-          ?? res.errorMessage
-          ?? res.message
-          ?? getText('withdrawSubmitErrorMessage', 'Could not submit your withdrawal request. Please try again.');
-
-        this.notificationService.error(
-          getText('withdrawSubmitErrorTitle', 'Failed to submit request'),
-          errorText
-        );
       }
     });
   }

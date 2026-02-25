@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { EnvironmentService } from '../../../shared/services/environment.service';
 import { ErrorHandlerService } from '../../../shared/services/handle-error/error-handler.service';
 import { catchHttpError } from '../../../shared/utils/observable-helper';
@@ -15,7 +15,12 @@ import {
   WithdrawCreateOperationData,
   OperationTypes
 } from '../models/money-operations.models';
-import { map } from 'rxjs/operators';
+import { catchError, map, take } from 'rxjs/operators';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { TranslocoService } from '@jsverse/transloco';
+export interface WithdrawalResult {
+  success: boolean;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +29,8 @@ export class MoneyOperationsService {
   private readonly environmentService = inject(EnvironmentService);
   private readonly httpClient = inject(HttpClient);
   private readonly errorHandlerService = inject(ErrorHandlerService);
+  private readonly notificationService = inject(NzNotificationService);
+  private readonly translocoService = inject(TranslocoService);
 
   private readonly baseUrl = `${this.environmentService.clientDataUrl}/client/v2.0/operations`;
   private readonly agreementsV2BaseUrl = `${this.environmentService.clientDataUrl}/client/v2.0/agreements`;
@@ -135,10 +142,19 @@ export class MoneyOperationsService {
     return this.submitOperation(command);
   }
 
+  submitWithdrawalWithNotification(params: WithdrawalSubmitParams): Observable<WithdrawalResult> {
+    return this.submitWithdrawalOperation(params).pipe(
+      take(1),
+      catchError(() => of(null)),
+      map(res => {
+        this.handleWithdrawalResponse(res);
+        return { success: res?.success === true };
+      })
+    );
+  }
+
   generatePaymentSystemUrl(params: Record<string, string>): string {
     const isProd = this.environmentService.production;
-    // Using hardcoded URL based on spec/const.js logic.
-    // Spec said: Concatenate https://www.payanyway.ru/assistant.htm (Prod) with the query string parameters
     const baseUrl = isProd
       ? 'https://www.payanyway.ru/assistant.htm'
       : 'https://demo.moneta.ru/assistant.htm';
@@ -148,5 +164,37 @@ export class MoneyOperationsService {
       .join('&');
 
     return `${baseUrl}?${queryString}`;
+  }
+
+  private handleWithdrawalResponse(res: CreateOperationResponse | null): void {
+    const getText = (key: string, fallback: string): string => {
+      const scopePath = 'moneyOperations.';
+      const translated = this.translocoService.translate(`${scopePath}${key}`);
+      return translated !== `${scopePath}${key}` ? translated : fallback;
+    };
+
+    if (res != null && res.success) {
+      this.notificationService.success(
+        getText('withdrawSubmitSuccessTitle', 'Request submitted'),
+        getText('withdrawSubmitSuccessMessage', 'Your withdrawal request has been sent for processing.')
+      );
+      return;
+    }
+
+    if (res != null) {
+      const validationMessage = res.validations
+        ?.filter(v => !v.isSuccess)
+        .map(v => v.message)
+        .join('\n');
+      const errorText = validationMessage
+        ?? res.errorMessage
+        ?? res.message
+        ?? getText('withdrawSubmitErrorMessage', 'Could not submit your withdrawal request. Please try again.');
+
+      this.notificationService.error(
+        getText('withdrawSubmitErrorTitle', 'Failed to submit request'),
+        errorText
+      );
+    }
   }
 }
