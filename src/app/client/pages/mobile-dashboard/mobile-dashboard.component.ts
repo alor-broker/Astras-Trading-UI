@@ -70,7 +70,7 @@ export class MobileDashboardComponent implements OnInit {
 
   private readonly ordersDialogService = inject(OrdersDialogService);
 
-  private nzConfigService = inject(NzConfigService);
+  private readonly nzConfigService = inject(NzConfigService);
 
   private readonly store = inject(Store);
 

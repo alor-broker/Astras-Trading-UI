@@ -12,7 +12,9 @@
     "codegen-hyperion": "graphql-codegen --config hyperion-codegen.ts",
     "codegen-news": "graphql-codegen --config news-codegen.ts",
     "prepare": "husky",
-    "lint": "ng lint --max-warnings 0"
+    "lint": "pnpm lint:ts && pnpm lint:html",
+    "lint:ts": "eslint --config eslint.config.mjs \"src/**/*.ts\" --max-warnings 0",
+    "lint:html": "eslint --config eslint.config.mjs \"src/**/*.html\" --max-warnings 0"
   },
   "private": true,
   "dependencies": {
