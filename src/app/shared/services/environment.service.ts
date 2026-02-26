@@ -48,6 +48,10 @@ export interface ExternalLinksConfig {
 export class EnvironmentService {
   private readonly localStorageService = inject(LocalStorageService);
 
+  get production(): boolean {
+    return environment.production;
+  }
+
   get apiUrl(): string {
     return this.getDebugStringRecord('apiUrl') ?? environment.apiUrl;
   }

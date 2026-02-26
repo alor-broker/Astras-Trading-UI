@@ -1,0 +1,67 @@
+{
+  "title": "Operations History",
+  "loadMore": "Load more",
+  "empty": "History is empty",
+  "filters": {
+    "typePlaceholder": "Operation type",
+    "dateFromPlaceholder": "From date",
+    "dateToPlaceholder": "To date",
+    "reset": "Reset"
+  },
+  "filterGroups": {
+    "moneymove": "Cash movements",
+    "operation": "E-sign operations"
+  },
+  "filterOptions": {
+    "input": "Deposit",
+    "withdraw": "Withdrawal",
+    "transfer": "Transfer",
+    "dividends": "Dividends",
+    "coupons": "Coupons",
+    "taxes": "Taxes",
+    "commissions": "Commissions",
+    "moneymove_others": "Other",
+    "money_withdrawal": "Cash withdrawal",
+    "money_input": "Account top-up",
+    "services": "Services",
+    "securities": "Securities",
+    "orders": "Orders",
+    "security": "Security",
+    "operation_others": "Other"
+  },
+  "type": {
+    "money_input": "Account top-up",
+    "money_withdrawal": "Cash withdrawal",
+    "money_between_accounts": "Transfer between accounts",
+    "money_between_subportfolios": "Transfer between subportfolios",
+    "money_between_agreements": "Transfer between agreements",
+    "trade": "Trade",
+    "input": "Deposit",
+    "withdraw": "Withdrawal",
+    "transfer": "Transfer",
+    "dividends": "Dividends",
+    "coupons": "Coupons",
+    "taxes": "Taxes",
+    "commissions": "Commissions",
+    "services": "Services",
+    "securities": "Securities",
+    "orders": "Orders",
+    "security": "Security",
+    "others": "Other"
+  },
+  "status": {
+    "executed": "Executed",
+    "resolved": "Completed",
+    "sent": "Sent",
+    "canceled": "Canceled",
+    "refused": "Rejected",
+    "process": "Processing",
+    "executing": "In progress",
+    "overdue": "Overdue"
+  },
+  "columns": {
+    "operation": "Operation",
+    "amount": "Amount",
+    "status": "Status"
+  }
+}
