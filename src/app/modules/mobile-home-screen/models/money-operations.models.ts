@@ -117,7 +117,7 @@ export interface BankRequisitesResponse {
 
 export type OperationType = 'money_input' | 'money_withdrawal' | 'money_between_accounts' | 'money_between_subportfolios' | 'money_between_agreements';
 
-export type OperationSubtype = 'card' | 'sbp' | 'transfer';
+export type OperationSubtype = 'card' | 'sbp';
 
 export const OperationTypes = {
   Deposit: 'money_input' as OperationType,
@@ -136,17 +136,4 @@ export const OperationSubtypes = {
 
 export const Currencies = {
   Rub: 'RUB'
-};
-
-export const Limits = {
-  Card: {
-    Min: 50,
-    Max: 500_000,
-    Commission: 0.023
-  },
-  Sbp: {
-    Min: 1,
-    Max: 999_999,
-    Commission: 0.004
-  }
 };

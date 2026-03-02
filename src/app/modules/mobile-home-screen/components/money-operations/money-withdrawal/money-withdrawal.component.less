@@ -2,46 +2,25 @@
 
 .themeMixin({
   :host {
-    display: block;
-
-    .withdrawal-container {
-      padding: 4px 0 0;
-    }
-
-    .saved-requisites {
-      margin-bottom: 12px;
-    }
-
-    .saved-requisites__title {
-      color: @heading-color;
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .saved-requisites__row {
-      margin-bottom: 8px;
-    }
-
-    .saved-requisites__item {
-      background: transparent;
-      border: 0;
-      color: @primary-color;
-      cursor: pointer;
-      padding: 0;
-      text-align: left;
-      font-size: 15px;
-      line-height: 1.4;
-      word-break: break-word;
-    }
-
-    .withdrawal-form {
-      padding: 0;
-    }
-
     ::ng-deep .ant-form-item-label > label {
       color: @heading-color;
-      font-weight: 500;
+      font-weight: @font-weight-bold;
     }
   }
 });
+
+:host {
+  display: block;
+}
+
+.saved-requisites-item {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  font-size: 15px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+

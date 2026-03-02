@@ -1,27 +1,51 @@
-import { Component, DestroyRef, computed, inject, input, output, signal, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { combineLatest, of } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
-import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
-import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzListModule } from 'ng-zorro-antd/list';
-import { NzSelectModule } from 'ng-zorro-antd/select';
-import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
-import { NzTagModule } from 'ng-zorro-antd/tag';
-import { TranslocoDirective } from '@jsverse/transloco';
-import { OperationsHistoryService } from '../../services/operations-history.service';
-import { DashboardContextService } from '../../../../shared/services/dashboard-context.service';
-import { UserPortfoliosService } from '../../../../shared/services/user-portfolios.service';
 import {
-  HistoryItem,
+  Component,
+  DestroyRef,
+  inject,
+  input,
+  OnInit,
+  output,
+  signal
+} from '@angular/core';
+import {
+  DatePipe,
+  DecimalPipe,
+  NgClass
+} from '@angular/common';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule
+} from '@angular/forms';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {
+  combineLatest,
+  of
+} from 'rxjs';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map
+} from 'rxjs/operators';
+import {NzButtonModule} from 'ng-zorro-antd/button';
+import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
+import {NzIconModule} from 'ng-zorro-antd/icon';
+import {NzListModule} from 'ng-zorro-antd/list';
+import {NzSelectModule} from 'ng-zorro-antd/select';
+import {NzSkeletonModule} from 'ng-zorro-antd/skeleton';
+import {NzTagModule} from 'ng-zorro-antd/tag';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {OperationsHistoryService} from '../../services/operations-history.service';
+import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
+import {UserPortfoliosService} from '../../../../shared/services/user-portfolios.service';
+import {
   HistoryFilterParams,
+  HistoryItem,
   HistorySearchType
 } from '../../models/operations-history.models';
-import { isPortfoliosEqual } from '../../../../shared/utils/portfolios';
-import { getISOStringDate } from '../../../../shared/utils/datetime';
+import {isPortfoliosEqual} from '../../../../shared/utils/portfolios';
+import {getISOStringDate} from '../../../../shared/utils/datetime';
 
 type FilterGroup = 'moneymove' | 'operation';
 
@@ -98,9 +122,7 @@ const NEGATIVE_AMOUNT_TYPES = new Set<string>([
 
 @Component({
   selector: 'ats-operations-history',
-  standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     NzListModule,
     NzButtonModule,
@@ -109,22 +131,21 @@ const NEGATIVE_AMOUNT_TYPES = new Set<string>([
     NzTagModule,
     NzDatePickerModule,
     NzSelectModule,
-    TranslocoDirective
+    TranslocoDirective,
+    DecimalPipe,
+    DatePipe,
+    NgClass
   ],
   templateUrl: './operations-history.component.html',
   styleUrls: ['./operations-history.component.less']
 })
 export class OperationsHistoryComponent implements OnInit {
-  private readonly service = inject(OperationsHistoryService);
-  private readonly dashboardContextService = inject(DashboardContextService);
-  private readonly userPortfoliosService = inject(UserPortfoliosService);
-  private readonly destroyRef = inject(DestroyRef);
-
-  readonly preview = input<boolean>(false);
   readonly limit = input<number>(20);
+
   readonly showMore = output<void>();
 
   readonly history = signal<HistoryItem[]>([]);
+
   readonly isLoading = signal<boolean>(true);
 
   readonly filterForm = new FormGroup({
@@ -134,26 +155,36 @@ export class OperationsHistoryComponent implements OnInit {
   });
 
   readonly filterOptions: FilterOption[] = [
-    { value: HistoryTypeCode.Input, searchType: 'moneymove', group: 'moneymove' },
-    { value: HistoryTypeCode.Withdraw, searchType: 'moneymove', group: 'moneymove' },
-    { value: HistoryTypeCode.Transfer, searchType: 'moneymove', group: 'moneymove' },
-    { value: HistoryTypeCode.Dividends, searchType: 'moneymove', group: 'moneymove' },
-    { value: HistoryTypeCode.Coupons, searchType: 'moneymove', group: 'moneymove' },
-    { value: HistoryTypeCode.Taxes, searchType: 'moneymove', group: 'moneymove' },
-    { value: HistoryTypeCode.Commissions, searchType: 'moneymove', group: 'moneymove' },
-    { value: 'moneymove/others', searchType: 'moneymove', group: 'moneymove' },
-    { value: HistoryTypeCode.MoneyWithdrawal, searchType: 'operation', group: 'operation' },
-    { value: HistoryTypeCode.MoneyInput, searchType: 'operation', group: 'operation' },
-    { value: 'services', searchType: 'operation', group: 'operation' },
-    { value: 'securities', searchType: 'operation', group: 'operation' },
-    { value: HistoryTypeCode.Orders, searchType: 'operation', group: 'operation' },
-    { value: HistoryTypeCode.Security, searchType: 'operation', group: 'operation' },
-    { value: 'operation/others', searchType: 'operation', group: 'operation' }
+    {value: HistoryTypeCode.Input, searchType: 'moneymove', group: 'moneymove'},
+    {value: HistoryTypeCode.Withdraw, searchType: 'moneymove', group: 'moneymove'},
+    {value: HistoryTypeCode.Transfer, searchType: 'moneymove', group: 'moneymove'},
+    {value: HistoryTypeCode.Dividends, searchType: 'moneymove', group: 'moneymove'},
+    {value: HistoryTypeCode.Coupons, searchType: 'moneymove', group: 'moneymove'},
+    {value: HistoryTypeCode.Taxes, searchType: 'moneymove', group: 'moneymove'},
+    {value: HistoryTypeCode.Commissions, searchType: 'moneymove', group: 'moneymove'},
+    {value: 'moneymove/others', searchType: 'moneymove', group: 'moneymove'},
+    {value: HistoryTypeCode.MoneyWithdrawal, searchType: 'operation', group: 'operation'},
+    {value: HistoryTypeCode.MoneyInput, searchType: 'operation', group: 'operation'},
+    {value: 'services', searchType: 'operation', group: 'operation'},
+    {value: 'securities', searchType: 'operation', group: 'operation'},
+    {value: HistoryTypeCode.Orders, searchType: 'operation', group: 'operation'},
+    {value: HistoryTypeCode.Security, searchType: 'operation', group: 'operation'},
+    {value: 'operation/others', searchType: 'operation', group: 'operation'}
   ];
 
   agreementId: string | null = null;
+
   offset = 0;
+
   hasMore = true;
+
+  private readonly service = inject(OperationsHistoryService);
+
+  private readonly dashboardContextService = inject(DashboardContextService);
+
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
+
+  private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     this.bindAgreement();
@@ -168,19 +199,6 @@ export class OperationsHistoryComponent implements OnInit {
     this.offset += this.limit();
     this.loadHistory(true);
   }
-
-  resetFilters(): void {
-    this.filterForm.reset({
-      search: null,
-      dateFrom: null,
-      dateTo: null
-    });
-  }
-
-  readonly hasActiveFilters = computed(() => {
-    const { search, dateFrom, dateTo } = this.filterForm.getRawValue();
-    return search != null || dateFrom != null || dateTo != null;
-  });
 
   getFilterGroupOptions(group: FilterGroup): FilterOption[] {
     return this.filterOptions.filter(o => o.group === group);
@@ -234,23 +252,6 @@ export class OperationsHistoryComponent implements OnInit {
     return amount == null ? null : Math.abs(amount);
   }
 
-  private getNumericAmount(item: HistoryItem & { sum?: number }): number | null {
-    // Check top-level sum field first (from moneymove API response)
-    const sum = item.sum;
-    if (typeof sum === 'number') {
-      return sum;
-    }
-
-    // Check data.amount (from operation API response)
-    // It can be a number or a string like "в размере свободного остатка"
-    const dataAmount = item.data?.amount;
-    if (typeof dataAmount === 'number') {
-      return dataAmount;
-    }
-
-    return null;
-  }
-
   getCurrency(item: HistoryItem & { currency?: string }): string | null {
     // Check top-level currency field first (from moneymove API response)
     const currency = item.currency;
@@ -275,6 +276,23 @@ export class OperationsHistoryComponent implements OnInit {
     const dateFrom = this.filterForm.controls.dateFrom.value;
     return this.isFutureDate(current) || (dateFrom != null && current < dateFrom);
   };
+
+  private getNumericAmount(item: HistoryItem & { sum?: number }): number | null {
+    // Check top-level sum field first (from moneymove API response)
+    const sum = item.sum;
+    if (typeof sum === 'number') {
+      return sum;
+    }
+
+    // Check data.amount (from operation API response)
+    // It can be a number or a string like "в размере свободного остатка"
+    const dataAmount = item.data?.amount;
+    if (typeof dataAmount === 'number') {
+      return dataAmount;
+    }
+
+    return null;
+  }
 
   private bindAgreement(): void {
     combineLatest([
@@ -342,7 +360,7 @@ export class OperationsHistoryComponent implements OnInit {
   }
 
   private createRequestParams(offset: number): HistoryFilterParams {
-    const { search, dateFrom, dateTo } = this.filterForm.getRawValue();
+    const {search, dateFrom, dateTo} = this.filterForm.getRawValue();
     const resolvedFilter = this.resolveSearchFilter(search);
 
     return {
