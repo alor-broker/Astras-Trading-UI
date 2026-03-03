@@ -170,7 +170,7 @@ describe('MarketOrderFormComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show form errors', async () => {
+  it('should show form errors', fakeAsync(() => {
     fixture.componentRef.setInput(
       'instrument',
       getDefaultInstrument()
@@ -212,18 +212,17 @@ describe('MarketOrderFormComponent', () => {
       (component.form!.controls as any)[testCase.control]!.updateValueAndValidity({onlySelf: false});
 
       fixture.detectChanges();
+      tick();
 
-      await fixture.whenStable().then(() => {
-        const errorElement = getValidationErrorElement(control);
+      const errorElement = getValidationErrorElement(control);
 
-        expect(errorElement).not.toBeNull();
+      expect(errorElement).not.toBeNull();
 
-        if ((testCase.expectedError ?? '')) {
-          expect(errorElement?.textContent).toEqual(testCase.expectedError);
-        }
-      });
+      if ((testCase.expectedError ?? '')) {
+        expect(errorElement?.textContent).toEqual(testCase.expectedError);
+      }
     }
-  });
+  }));
 
   it('should disable submission', () => {
       fixture.componentRef.setInput(
@@ -249,7 +248,7 @@ describe('MarketOrderFormComponent', () => {
     }
   );
 
-  it('should set initial values', async () => {
+  it('should set initial values', fakeAsync(() => {
       const initialValues = {
         quantity: 2
       };
@@ -276,15 +275,15 @@ describe('MarketOrderFormComponent', () => {
 
       fixture.detectChanges();
 
-      await fixture.whenStable().then(() => {
-        const expectedValue = {
-          quantity: initialValues.quantity
-        };
+      tick();
 
-        expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
-      });
+      const expectedValue = {
+        quantity: initialValues.quantity
+      };
+
+      expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
     }
-  );
+  ));
 
   it('should update evaluation', fakeAsync(() => {
       const instrument = getDefaultInstrument();
