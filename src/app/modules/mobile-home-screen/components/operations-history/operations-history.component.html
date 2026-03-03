@@ -1,93 +1,106 @@
-<div class="history-container" *transloco="let t; scope: 'operations-history'">
-  @if (!preview()) {
-  <h2 class="title">{{ t('operationsHistory.title') }}</h2>
-  }
+<div *transloco="let t; scope: 'operations-history'" class="d-flex flex-column flex-gap-12 py-12 px-8 overflow-y-auto">
+  <form [formGroup]="filterForm">
+    <div class="d-flex flex-column flex-gap-20">
 
-  @if (!preview()) {
-  <form class="filters" [formGroup]="filterForm">
-    <div class="filters-row row-main">
-      <nz-select formControlName="search" nzAllowClear [nzPlaceHolder]="t('operationsHistory.filters.typePlaceholder')"
-        class="filter-control type-filter">
-        <nz-option-group [nzLabel]="t('operationsHistory.filterGroups.moneymove')">
-          @for (option of getFilterGroupOptions('moneymove'); track option.value) {
-          <nz-option [nzLabel]="t(getOptionLabelKey(option.value))" [nzValue]="option.value" />
-          }
-        </nz-option-group>
-        <nz-option-group [nzLabel]="t('operationsHistory.filterGroups.operation')">
-          @for (option of getFilterGroupOptions('operation'); track option.value) {
-          <nz-option [nzLabel]="t(getOptionLabelKey(option.value))" [nzValue]="option.value" />
-          }
-        </nz-option-group>
-      </nz-select>
+      <div class="d-flex flex-row">
+        <nz-select
+          [nzAutoFocus]="false"
+          [nzPlaceHolder]="t('operationsHistory.filters.typePlaceholder')"
+          class="w-100"
+          formControlName="search"
+          nzAllowClear
+        >
+          <nz-option-group [nzLabel]="t('operationsHistory.filterGroups.moneymove')">
+            @for (option of getFilterGroupOptions('moneymove'); track option.value) {
+              <nz-option [nzLabel]="t(getOptionLabelKey(option.value))" [nzValue]="option.value"/>
+            }
+          </nz-option-group>
+          <nz-option-group [nzLabel]="t('operationsHistory.filterGroups.operation')">
+            @for (option of getFilterGroupOptions('operation'); track option.value) {
+              <nz-option [nzLabel]="t(getOptionLabelKey(option.value))" [nzValue]="option.value"/>
+            }
+          </nz-option-group>
+        </nz-select>
+      </div>
 
-      <button nz-button nzType="default" class="reset-button" type="button" [disabled]="!hasActiveFilters()"
-        (click)="resetFilters()">
-        <span nz-icon nzType="close-circle"></span>
-        {{ t('operationsHistory.filters.reset') }}
-      </button>
-    </div>
+      <div class="d-flex flex-row justify-content-between flex-gap-10">
+        <nz-date-picker
+          [nzDisabledDate]="disabledFromDate"
+          [nzPlaceHolder]="t('operationsHistory.filters.dateFromPlaceholder')"
+          class="flex-fill"
+          formControlName="dateFrom"
+          nzAllowClear="true"
+        />
 
-    <div class="filters-row row-dates">
-      <nz-date-picker formControlName="dateFrom" [nzDisabledDate]="disabledFromDate"
-        [nzPlaceHolder]="t('operationsHistory.filters.dateFromPlaceholder')" class="filter-control date-filter" />
+        <nz-date-picker
+          [nzDisabledDate]="disabledToDate"
+          [nzPlaceHolder]="t('operationsHistory.filters.dateToPlaceholder')"
+          class="flex-fill"
+          formControlName="dateTo"
+          nzAllowClear="true"
+        />
+      </div>
 
-      <nz-date-picker formControlName="dateTo" [nzDisabledDate]="disabledToDate"
-        [nzPlaceHolder]="t('operationsHistory.filters.dateToPlaceholder')" class="filter-control date-filter" />
     </div>
   </form>
-  }
 
-  <nz-list [nzDataSource]="history()" [nzItemLayout]="'vertical'" [nzLoading]="isLoading()"
-    [nzLoadMore]="!preview() && hasMore ? loadMoreTpl : null" [nzBordered]="false" class="history-list">
+  <nz-list
+    [nzBordered]="false"
+    [nzDataSource]="history()"
+    [nzItemLayout]="'vertical'"
+    [nzLoadMore]="hasMore ? loadMoreTpl : null"
+    [nzLoading]="isLoading()"
+    class="history-list">
     @for (item of history(); track $index) {
-    <nz-list-item class="history-item">
-      <nz-list-item-meta [nzAvatar]="itemIcon" [nzTitle]="itemTitle" [nzDescription]="itemDescription">
-        <ng-template #itemIcon>
-          <div class="item-icon" [ngClass]="getStatusColor(item.status)">
-            <span nz-icon [nzType]="getIcon(item)" nzTheme="outline"></span>
-          </div>
-        </ng-template>
-        <ng-template #itemTitle>
-          <span class="item-title-text">{{ getItemTitle(item, t) }}</span>
-        </ng-template>
-        <ng-template #itemDescription>
-          <div class="item-description">
-            <div class="item-info-row">
-              @if (getStatusLabel(item, t)) {
-              <nz-tag [nzColor]="getStatusColor(item.status)" class="item-status-tag">
-                {{ getStatusLabel(item, t) }}
-              </nz-tag>
-              }
-              <span class="item-date">{{ item.date | date:'dd.MM.yyyy HH:mm' }}</span>
+      <nz-list-item class="history-item">
+        <nz-list-item-meta [nzAvatar]="itemIcon" [nzDescription]="itemDescription" [nzTitle]="itemTitle">
+          <ng-template #itemIcon>
+            <div [ngClass]="getStatusColor(item.status)" class="item-icon">
+              <span [nzType]="getIcon(item)" nz-icon nzTheme="outline"></span>
             </div>
-            @if (getAbsoluteAmount(item) !== null) {
-            <span class="item-amount" [class.negative]="isNegativeAmount(item)"
-              [class.positive]="!isNegativeAmount(item)">
-              {{ getAbsoluteAmount(item) | number:'1.2-2' }} {{ getCurrency(item) }}
-            </span>
-            }
-            @if (getCounterparty(item)) {
-            <span class="item-counterparty">
+          </ng-template>
+          <ng-template #itemTitle>
+            <span class="fw-bold heading-color">{{ getItemTitle(item, t) }}</span>
+          </ng-template>
+          <ng-template #itemDescription>
+            <div class="d-flex flex-column flex-gap-6">
+              <div class="d-flex flex-row align-items-center justify-content-start flex-gap-8 w-100">
+
+                @if (getStatusLabel(item, t)) {
+                  <nz-tag [nzColor]="getStatusColor(item.status)" class="my-0">
+                    {{ getStatusLabel(item, t) }}
+                  </nz-tag>
+                }
+
+                <span>{{ item.date | date:'dd.MM.yyyy HH:mm' }}</span>
+
+              </div>
+              @if (getAbsoluteAmount(item) !== null) {
+                <span
+                  class="fs-7"
+                  [ngClass]="{
+                  'negative-color': isNegativeAmount(item),
+                  'positive-color': !isNegativeAmount(item)
+                  }"
+                >
+                  {{ getAbsoluteAmount(item) | number:'1.2-2' }} {{ getCurrency(item) }}
+                </span>
+              }
+              @if (getCounterparty(item)) {
+                <span class="item-counterparty">
               {{ getCounterparty(item) }}
             </span>
-            }
-          </div>
-        </ng-template>
-      </nz-list-item-meta>
-    </nz-list-item>
-    }
-    @if (history().length === 0 && !isLoading()) {
-    <nz-list-empty>
-      <div class="empty-text">{{ t('operationsHistory.empty') }}</div>
-    </nz-list-empty>
+              }
+            </div>
+          </ng-template>
+        </nz-list-item-meta>
+      </nz-list-item>
     }
   </nz-list>
 
   <ng-template #loadMoreTpl>
-    <div class="load-more">
-      <button nz-button nzType="default" nzBlock [disabled]="isLoading()" (click)="loadMore()">
-        {{ t('operationsHistory.loadMore') }}
-      </button>
-    </div>
+    <button (click)="loadMore()" [disabled]="isLoading()" nz-button nzBlock>
+      {{ t('operationsHistory.loadMore') }}
+    </button>
   </ng-template>
 </div>

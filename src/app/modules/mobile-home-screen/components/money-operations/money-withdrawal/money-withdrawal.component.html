@@ -1,12 +1,12 @@
-<div class="withdrawal-container" *transloco="let t; scope: 'money-operations'">
+<div class="pt-4" *transloco="let t; scope: 'money-operations'">
   @if (savedRequisites().length > 0) {
-    <div class="saved-requisites">
-      <div class="saved-requisites__title">{{ t('moneyOperations.savedRequisitesTitle') }}</div>
+    <div class="mb-12">
+      <h3 class="saved-requisites__title mb-8">{{ t('moneyOperations.savedRequisitesTitle') }}</h3>
       @for (req of savedRequisites(); track req.id; let i = $index) {
-        <div class="saved-requisites__row">
+        <div class="mb-8">
           <button
             type="button"
-            class="saved-requisites__item"
+            class="saved-requisites-item primary-color"
             (click)="applyRequisites(req)"
           >
             {{ i + 1 }}. {{ req.bic }} {{ req.bankName }}, {{ t('moneyOperations.accountShort') }} {{ req.settlementAccount }}
@@ -16,7 +16,7 @@
     </div>
   }
 
-  <form nz-form nzLayout="vertical" [formGroup]="form" (ngSubmit)="submit()" class="withdrawal-form">
+  <form nz-form nzLayout="vertical" [formGroup]="form" (ngSubmit)="submit()" class="p-0">
     <nz-form-item>
       <nz-form-label nzRequired>{{t('moneyOperations.recipientLabel')}}</nz-form-label>
       <nz-form-control [nzErrorTip]="t('moneyOperations.requiredError')">
@@ -55,7 +55,13 @@
     <nz-form-item>
       <nz-form-label nzRequired>{{t('moneyOperations.withdrawAmountLabel')}}</nz-form-label>
       <nz-form-control [nzErrorTip]="t('moneyOperations.amountError')">
-        <input nz-input formControlName="amount" type="number" [placeholder]="t('moneyOperations.amountPlaceholder')" />
+        <ats-input-number
+          [allowDecimal]="true"
+          [allowNegative]="false"
+          [placeholder]="'100'"
+          [step]="0.01"
+          formControlName="amount"
+        ></ats-input-number>
       </nz-form-control>
     </nz-form-item>
 

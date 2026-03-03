@@ -26,6 +26,9 @@ export class ConsoleLogger extends LoggerBase {
       case LogLevel.trace:
         console.trace(message);
         break;
+      case LogLevel.debug:
+        console.debug(message);
+        break;
       case LogLevel.info:
         console.info(message);
         break;

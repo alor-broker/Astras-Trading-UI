@@ -1,18 +1,23 @@
-import { Component, DestroyRef, input, OnInit, output, inject } from '@angular/core';
-import { TranslocoDirective } from "@jsverse/transloco";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  input,
+  OnInit,
+  output
+} from '@angular/core';
+import {TranslocoDirective} from "@jsverse/transloco";
 import {
   FetchPolicy,
   GraphQlService
 } from "../../../../shared/services/graph-ql.service";
 import {
   BehaviorSubject,
-  defer,
   Observable,
   shareReplay,
   switchMap,
   take,
-  tap,
-  timer
+  tap
 } from "rxjs";
 import {
   InstrumentInfoType,
@@ -29,19 +34,19 @@ import {
   SortEnumType,
   TradingDetailsFilterInput
 } from "../../../../../generated/graphql.types";
-import { map } from "rxjs/operators";
+import {map} from "rxjs/operators";
 import {
   DecimalPipe,
   NgClass,
   PercentPipe
 } from "@angular/common";
-import { LetDirective } from "@ngrx/component";
-import { NzButtonComponent } from "ng-zorro-antd/button";
-import { NzEmptyComponent } from "ng-zorro-antd/empty";
-import { NzSkeletonComponent } from "ng-zorro-antd/skeleton";
-import { NzIconDirective } from "ng-zorro-antd/icon";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
+import {LetDirective} from "@ngrx/component";
+import {NzButtonComponent} from "ng-zorro-antd/button";
+import {NzEmptyComponent} from "ng-zorro-antd/empty";
+import {NzSkeletonComponent} from "ng-zorro-antd/skeleton";
+import {NzIconDirective} from "ng-zorro-antd/icon";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {InstrumentIconComponent} from "../../../../shared/components/instrument-icon/instrument-icon.component";
 import {
   NzTabComponent,
   NzTabsComponent,
@@ -50,10 +55,10 @@ import {
   ExtendedFilter,
   MarketSector
 } from "../../../../shared/models/market-typings.model";
-import { NzTypographyComponent } from "ng-zorro-antd/typography";
-import { REFRESH_TIMEOUT_MS } from "../../../info/constants/info.constants";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { mapWith } from "../../../../shared/utils/observable-helper";
+import {NzTypographyComponent} from "ng-zorro-antd/typography";
+import {withRefresh} from "../../../../shared/utils/observable-helper";
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 export interface DisplayParams {
   growOrder: SortEnumType;
@@ -91,9 +96,6 @@ export interface MarketFilters {
   styleUrl: './market-trends.component.less'
 })
 export class MarketTrendsComponent implements OnInit {
-  private readonly graphQlService = inject(GraphQlService);
-  private readonly destroyRef = inject(DestroyRef);
-
   readonly itemsCount = input(10);
 
   readonly showMoreButton = input(true);
@@ -122,18 +124,19 @@ export class MarketTrendsComponent implements OnInit {
 
   readonly showMore = output<DisplayParams>();
 
+  private readonly graphQlService = inject(GraphQlService);
+
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly REFRESH_TIMEOUT_MS = 30_000;
 
   ngOnInit(): void {
-    const refreshTimer$ = defer(() => {
-      return timer(0, REFRESH_TIMEOUT_MS).pipe(
-        takeUntilDestroyed(this.destroyRef)
-      );
-    });
-
     this.displayItems$ = this.itemsDisplayParams$.pipe(
-      mapWith(() => refreshTimer$, (source,) => source),
+      withRefresh(this.REFRESH_TIMEOUT_MS, this.applicationStatusService.isActive$),
       switchMap(params => this.loadMarketTrends(params)),
+      takeUntilDestroyed(this.destroyRef),
       shareReplay()
     );
   }

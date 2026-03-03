@@ -12,23 +12,25 @@ import {
   ReactiveFormsModule,
   Validators
 } from "@angular/forms";
-import { inputNumberValidation } from "../../../../../shared/utils/validation-options";
-import { TranslocoDirective } from "@jsverse/transloco";
-import { NzFormModule } from "ng-zorro-antd/form";
-import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
-import { ShortNumberComponent } from "../../../../../shared/components/short-number/short-number.component";
-import { NzButtonComponent } from "ng-zorro-antd/button";
+import {inputNumberValidation} from "../../../../../shared/utils/validation-options";
+import {TranslocoDirective} from "@jsverse/transloco";
+import {NzFormModule} from "ng-zorro-antd/form";
+import {InputNumberComponent} from "../../../../../shared/components/input-number/input-number.component";
+import {ShortNumberComponent} from "../../../../../shared/components/short-number/short-number.component";
+import {NzButtonComponent} from "ng-zorro-antd/button";
 import {
   AsyncPipe,
   CurrencyPipe,
   NgClass
 } from "@angular/common";
-import { QuotesService } from "../../../../../shared/services/quotes.service";
-import { EvaluationService } from "../../../../../shared/services/evaluation.service";
+import {QuotesService} from "../../../../../shared/services/quotes.service";
+import {EvaluationService} from "../../../../../shared/services/evaluation.service";
 import {
+  combineLatest,
   defer,
   distinctUntilChanged,
   Observable,
+  of,
   shareReplay,
   switchMap,
   take
@@ -40,9 +42,9 @@ import {
   map,
   startWith
 } from "rxjs/operators";
-import { mapWith } from "../../../../../shared/utils/observable-helper";
-import { ConfirmableOrderCommandsService } from "../../../../order-commands/services/confirmable-order-commands.service";
-import { NewMarketOrder } from "../../../../../shared/models/orders/new-order.model";
+import {ConfirmableOrderCommandsService} from "../../../../order-commands/services/confirmable-order-commands.service";
+import {NewMarketOrder} from "../../../../../shared/models/orders/new-order.model";
+import {ApplicationStatusService} from "../../../../../shared/services/application-status.service";
 
 @Component({
   selector: 'ats-market-order-form',
@@ -94,6 +96,8 @@ export class MarketOrderFormComponent extends OrderFormBase {
 
   private readonly orderCommandService = inject(ConfirmableOrderCommandsService);
 
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+
   constructor() {
     super();
     effect(() => {
@@ -140,28 +144,22 @@ export class MarketOrderFormComponent extends OrderFormBase {
       return this.quotesService.getQuotes(instrument.symbol, instrument.exchange, instrument.instrumentGroup).pipe(
         map(q => q.last_price),
         distinctUntilChanged((prev, curr) => prev === curr),
-        debounceTime(500),
         shareReplay({bufferSize: 1, refCount: true})
       );
     });
   };
 
   protected readonly orderEvaluation$ = this.orderTargetChanges$.pipe(
-    mapWith(
-      t => this.getLastPrice(t.instrument),
-      (source, output) => ({
-        orderTarget: source,
-        instrumentLastPrice: output
-      })
-    ),
-    mapWith(
-      () => this.quantity$,
-      (source, output) => ({
-        ...source,
-        quantity: output
-      })
-    ),
-    filter(x => x.instrumentLastPrice != null),
+    switchMap(t => {
+      return combineLatest({
+        orderTarget: of(t),
+        quantity: this.quantity$,
+        instrumentLastPrice: this.getLastPrice(t.instrument),
+        isApplicationActive: this.applicationStatusService.isActive$
+      });
+    }),
+    filter(x => x.instrumentLastPrice != null && x.isApplicationActive),
+    debounceTime(500),
     switchMap(x => {
       return this.evaluationService.evaluateOrder({
         portfolio: x.orderTarget.targetPortfolio.portfolio,

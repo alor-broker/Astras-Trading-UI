@@ -10,8 +10,7 @@ import { NzTypographyComponent } from "ng-zorro-antd/typography";
 import {
   fromEvent,
   Observable,
-  switchMap,
-  timer
+  switchMap
 } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
@@ -24,6 +23,8 @@ import { IdeaDetailsComponent } from "../idea-details/idea-details.component";
 import { AsyncPipe } from "@angular/common";
 import { map } from "rxjs/operators";
 import { TranslocoDirective } from "@jsverse/transloco";
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
+import {createRefresh} from "../../../../shared/utils/observable-helper";
 
 interface IdeaDisplay extends Idea {
   instruments: Observable<Instrument | null>[];
@@ -50,6 +51,7 @@ export class InvestIdeasCompactComponent implements OnInit {
   private readonly investIdeasService = inject(InvestIdeasService);
   private readonly translatorService = inject(TranslatorService);
   private readonly instrumentsService = inject(InstrumentsService);
+  private readonly applicationStatusService = inject(ApplicationStatusService);
   private readonly destroyRef = inject(DestroyRef);
 
   ideas$!: Observable<IdeaDisplay[]>;
@@ -67,7 +69,7 @@ export class InvestIdeasCompactComponent implements OnInit {
       this.selectedIdea.set(null);
     });
 
-    this.ideas$ = timer(0, this.refreshInterval).pipe(
+    this.ideas$ = createRefresh(this.refreshInterval, this.applicationStatusService.isActive$).pipe(
       switchMap(() => this.investIdeasService.getIdeas(
         {
           pageNum: 1,

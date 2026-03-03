@@ -3,7 +3,6 @@ import {AllInstrumentsService} from "../../services/all-instruments.service";
 import {
   BehaviorSubject,
   combineLatest,
-  interval,
   Observable,
   shareReplay,
   Subscription,
@@ -13,7 +12,10 @@ import {
   withLatestFrom
 } from "rxjs";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
-import {mapWith} from '../../../../shared/utils/observable-helper';
+import {
+  createRefresh,
+  mapWith
+} from '../../../../shared/utils/observable-helper';
 import {filter, map} from 'rxjs/operators';
 import {TerminalSettings} from '../../../../shared/models/terminal-settings/terminal-settings.model';
 import {TranslatorService} from "../../../../shared/services/translator.service";
@@ -67,6 +69,7 @@ import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
 
 interface AllInstrumentsNodeDisplay extends Instrument {
   id: string;
@@ -106,6 +109,7 @@ export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
   protected readonly destroyRef: DestroyRef;
   private readonly locale = inject(LOCALE_ID);
   private readonly navigationStackService = inject(NavigationStackService);
+  private readonly applicationStatusService = inject(ApplicationStatusService);
 
   readonly table = viewChild<InfiniteScrollTableComponent>('table');
 
@@ -697,8 +701,11 @@ export class AllInstrumentsComponent extends LazyLoadingBaseTableComponent<
   private subscribeToUpdates(): void {
     this.updatesSub?.unsubscribe();
 
-    this.updatesSub = interval(10_000)
-      .pipe(
+    this.updatesSub = createRefresh(
+      10_000,
+      this.applicationStatusService.isActive$,
+      10_000
+    ).pipe(
         withLatestFrom(
           this.isLoading$,
           this.tableConfig$,

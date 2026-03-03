@@ -18,6 +18,12 @@ export class LoggerService {
     this.logMessage(LogLevel.trace, message);
   }
 
+  public debug(...messages: string[]): void {
+    for (const message of messages) {
+      this.logMessage(LogLevel.debug, message);
+    }
+  }
+
   public warn(...details: string[]): void {
     this.logMessage(LogLevel.warn, details.join('_'));
   }

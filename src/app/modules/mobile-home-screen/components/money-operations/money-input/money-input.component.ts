@@ -1,22 +1,45 @@
-import { Component, effect, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzFormModule } from 'ng-zorro-antd/form';
-import { NzSelectModule } from 'ng-zorro-antd/select';
-import { NzRadioModule } from 'ng-zorro-antd/radio';
-import { NzCardModule } from 'ng-zorro-antd/card';
-import { MoneyOperationsService } from '../../../services/money-operations.service';
-import { DashboardContextService } from '../../../../../shared/services/dashboard-context.service';
-import { UserPortfoliosService } from '../../../../../shared/services/user-portfolios.service';
-import { OperationSubtypes, OperationTypes, Limits, OperationSubtype } from '../../../models/money-operations.models';
-import { catchError, map, take, finalize, switchMap } from 'rxjs/operators';
-import { combineLatest, of } from 'rxjs';
-import { TranslocoDirective } from '@jsverse/transloco';
-import { isPortfoliosEqual } from '../../../../../shared/utils/portfolios';
-import { NzIconDirective } from 'ng-zorro-antd/icon';
-import { toSignal } from '@angular/core/rxjs-interop';
+import {
+  Component,
+  inject,
+  signal
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+import {NzButtonModule} from 'ng-zorro-antd/button';
+import {NzInputModule} from 'ng-zorro-antd/input';
+import {NzFormModule} from 'ng-zorro-antd/form';
+import {NzSelectModule} from 'ng-zorro-antd/select';
+import {NzRadioModule} from 'ng-zorro-antd/radio';
+import {NzCardModule} from 'ng-zorro-antd/card';
+import {MoneyOperationsService} from '../../../services/money-operations.service';
+import {DashboardContextService} from '../../../../../shared/services/dashboard-context.service';
+import {UserPortfoliosService} from '../../../../../shared/services/user-portfolios.service';
+import {
+  OperationSubtype,
+  OperationSubtypes,
+  OperationTypes
+} from '../../../models/money-operations.models';
+import {
+  catchError,
+  finalize,
+  map,
+  switchMap,
+  take
+} from 'rxjs/operators';
+import {
+  combineLatest,
+  of
+} from 'rxjs';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {isPortfoliosEqual} from '../../../../../shared/utils/portfolios';
+import {NzIconDirective} from 'ng-zorro-antd/icon';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {inputNumberValidation} from "../../../../../shared/utils/validation-options";
+import {InputNumberComponent} from "../../../../../shared/components/input-number/input-number.component";
 
 export enum MoneyInputStep {
   Selection = 'selection',
@@ -26,9 +49,7 @@ export enum MoneyInputStep {
 
 @Component({
   selector: 'ats-money-input',
-  standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     NzButtonModule,
@@ -38,31 +59,26 @@ export enum MoneyInputStep {
     NzRadioModule,
     NzCardModule,
     TranslocoDirective,
-    NzIconDirective
+    NzIconDirective,
+    InputNumberComponent
   ],
   templateUrl: './money-input.component.html',
   styleUrls: ['./money-input.component.less']
 })
 export class MoneyInputComponent {
-  private readonly moneyService = inject(MoneyOperationsService);
-  private readonly dashboardContextService = inject(DashboardContextService);
-  private readonly userPortfoliosService = inject(UserPortfoliosService);
-  private readonly fb = inject(FormBuilder);
-
-  readonly limits = Limits;
   readonly steps = MoneyInputStep;
 
-  readonly form = this.fb.group({
-    amount: [null as number | null, [
-      Validators.required,
-      Validators.min(this.limits.Card.Min),
-      Validators.max(this.limits.Card.Max)
-    ]]
-  });
-
   readonly step = signal<MoneyInputStep>(MoneyInputStep.Selection);
+
   readonly isLoading = signal(false);
+
   readonly operationSubtype = signal<OperationSubtype>(OperationSubtypes.Card);
+
+  private readonly moneyService = inject(MoneyOperationsService);
+
+  private readonly dashboardContextService = inject(DashboardContextService);
+
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
 
   readonly selectedPortfolio = toSignal(
     combineLatest([
@@ -77,42 +93,27 @@ export class MoneyInputComponent {
         return allPortfolios.find(p => isPortfoliosEqual(p, selectedKey)) ?? null;
       })
     ),
-    { initialValue: null }
+    {initialValue: null}
   );
 
-  constructor() {
-    effect(() => {
-      this.updateValidators();
-    });
-  }
+  private readonly fb = inject(FormBuilder);
 
-  get subtype(): OperationSubtype {
-    return this.operationSubtype();
-  }
+  readonly form = this.fb.group({
+    amount: this.fb.nonNullable.control(
+      1,
+      {
+        validators: [
+          Validators.required,
+          Validators.min(0.1),
+          Validators.max(inputNumberValidation.max)
+        ]
+      }
+    )
+  });
 
   selectSubtype(subtype: OperationSubtype): void {
     this.operationSubtype.set(subtype);
     this.step.set(MoneyInputStep.Amount);
-  }
-
-  updateValidators(): void {
-    const amountControl = this.form.controls.amount;
-    const subtype = this.operationSubtype();
-
-    if (subtype === OperationSubtypes.Card) {
-      amountControl.setValidators([
-        Validators.required,
-        Validators.min(this.limits.Card.Min),
-        Validators.max(this.limits.Card.Max)
-      ]);
-    } else if (subtype === OperationSubtypes.Sbp) {
-      amountControl.setValidators([
-        Validators.required,
-        Validators.min(this.limits.Sbp.Min),
-        Validators.max(this.limits.Sbp.Max)
-      ]);
-    }
-    amountControl.updateValueAndValidity();
   }
 
   submitPrepare(): void {

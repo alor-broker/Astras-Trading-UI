@@ -241,7 +241,7 @@ export class ClientAuthContextService implements UserContext, SessionContext, On
   private redirectToSso(withSsoExitScreen: boolean): void {
     this.window.location.assign(
       this.environmentService.ssoUrl
-      + `?url=http://${window.location.host}/auth/callback&scope=Astras`
+      + `?url=${window.location.origin}/auth/sso&scope=Astras`
       + (withSsoExitScreen ? '&exit=1' : '')
     );
   }

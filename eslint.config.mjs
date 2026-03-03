@@ -7,7 +7,9 @@ export default defineConfig([
   globalIgnores([
     ".angular/**/*",
     "dist/**/*",
-    "**/charting_library/**/*"
+    "**/charting_library/**/*",
+    "android/**/*",
+    "ios/**/*",
   ]),
   {
     files: ["**/*.ts"],

@@ -6,7 +6,6 @@ import { TranslocoDirective } from '@jsverse/transloco';
 
 @Component({
   selector: 'ats-money-operations',
-  standalone: true,
   imports: [
     NzTabsModule,
     MoneyInputComponent,

@@ -1,51 +1,64 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, NonNullableFormBuilder, Validators } from '@angular/forms';
-import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzFormModule } from 'ng-zorro-antd/form';
-import { MoneyOperationsService } from '../../../services/money-operations.service';
-import { DashboardContextService } from '../../../../../shared/services/dashboard-context.service';
-import { UserPortfoliosService } from '../../../../../shared/services/user-portfolios.service';
-import { BankRequisiteItem } from '../../../models/money-operations.models';
-import { debounceTime, distinctUntilChanged, filter, finalize, map, switchMap } from 'rxjs/operators';
-import { combineLatest } from 'rxjs';
-import { TranslocoDirective } from '@jsverse/transloco';
-import { isPortfoliosEqual } from '../../../../../shared/utils/portfolios';
-import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  signal
+} from '@angular/core';
+import {
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+import {NzButtonModule} from 'ng-zorro-antd/button';
+import {NzInputModule} from 'ng-zorro-antd/input';
+import {NzFormModule} from 'ng-zorro-antd/form';
+import {MoneyOperationsService} from '../../../services/money-operations.service';
+import {DashboardContextService} from '../../../../../shared/services/dashboard-context.service';
+import {UserPortfoliosService} from '../../../../../shared/services/user-portfolios.service';
+import {BankRequisiteItem} from '../../../models/money-operations.models';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  finalize,
+  map,
+  switchMap
+} from 'rxjs/operators';
+import {combineLatest} from 'rxjs';
+import {TranslocoDirective} from '@jsverse/transloco';
+import {isPortfoliosEqual} from '../../../../../shared/utils/portfolios';
+import {
+  takeUntilDestroyed,
+  toObservable,
+  toSignal
+} from '@angular/core/rxjs-interop';
+import {InputNumberComponent} from "../../../../../shared/components/input-number/input-number.component";
+import {inputNumberValidation} from "../../../../../shared/utils/validation-options";
 
 @Component({
   selector: 'ats-money-withdrawal',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     NzButtonModule,
     NzInputModule,
     NzFormModule,
-    TranslocoDirective
+    TranslocoDirective,
+    InputNumberComponent
   ],
   templateUrl: './money-withdrawal.component.html',
   styleUrls: ['./money-withdrawal.component.less']
 })
 export class MoneyWithdrawalComponent {
-  private readonly service = inject(MoneyOperationsService);
-  private readonly dashboardContextService = inject(DashboardContextService);
-  private readonly userPortfoliosService = inject(UserPortfoliosService);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly fb = inject(NonNullableFormBuilder);
-
-  readonly form = this.fb.group({
-    recipient: this.fb.control('', [Validators.required]),
-    bic: this.fb.control('', [Validators.required, Validators.pattern(/^\d{9}$/)]),
-    bankName: this.fb.control('', [Validators.required]),
-    loroAccount: this.fb.control('', [Validators.required, Validators.pattern(/^\d{20}$/)]),
-    settlementAccount: this.fb.control('', [Validators.required, Validators.pattern(/^\d{20}$/)]),
-    amount: this.fb.control(0, [Validators.required, Validators.min(1)])
-  });
-
   readonly isLoading = signal(false);
+
   readonly savedRequisites = signal<BankRequisiteItem[]>([]);
+
+  private readonly service = inject(MoneyOperationsService);
+
+  private readonly dashboardContextService = inject(DashboardContextService);
+
+  private readonly userPortfoliosService = inject(UserPortfoliosService);
 
   readonly selectedPortfolio = toSignal(
     combineLatest([
@@ -59,8 +72,27 @@ export class MoneyWithdrawalComponent {
         return allPortfolios.find(p => isPortfoliosEqual(p, selectedKey)) ?? null;
       })
     ),
-    { initialValue: null }
+    {initialValue: null}
   );
+
+  private readonly destroyRef = inject(DestroyRef);
+
+  private readonly fb = inject(NonNullableFormBuilder);
+
+  readonly form = this.fb.group({
+    recipient: this.fb.control('', [Validators.required]),
+    bic: this.fb.control('', [Validators.required, Validators.pattern(/^\d{9}$/)]),
+    bankName: this.fb.control('', [Validators.required]),
+    loroAccount: this.fb.control('', [Validators.required, Validators.pattern(/^\d{20}$/)]),
+    settlementAccount: this.fb.control('', [Validators.required, Validators.pattern(/^\d{20}$/)]),
+    amount: this.fb.control(
+      1,
+      [
+        Validators.required,
+        Validators.min(1),
+        Validators.max(inputNumberValidation.max)
+      ])
+  });
 
   constructor() {
     toObservable(this.selectedPortfolio).pipe(

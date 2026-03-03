@@ -4,7 +4,8 @@
     "analytics": false,
     "schematicCollections": [
       "angular-eslint"
-    ]
+    ],
+    "packageManager": "pnpm"
   },
   "version": 1,
   "newProjectRoot": "projects",

@@ -1,28 +1,61 @@
-import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import {OptionBoardDataContext} from "../../models/option-board-data-context.model";
-import {BehaviorSubject, combineLatest, Observable, of, shareReplay, take, tap, timer, withLatestFrom} from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  of,
+  shareReplay,
+  take,
+  tap,
+  withLatestFrom
+} from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {OptionBoardService} from "../../services/option-board.service";
-import {debounceTime, map} from "rxjs/operators";
+import {
+  debounceTime,
+  map
+} from "rxjs/operators";
 import {ThemeService} from "../../../../shared/services/theme.service";
-import {mapWith} from "../../../../shared/utils/observable-helper";
+import {
+  mapWith,
+  withRefresh
+} from "../../../../shared/utils/observable-helper";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {TranslatorService} from "../../../../shared/services/translator.service";
-import {OptionPlot, OptionPlotPoint} from "../../models/option-board.model";
+import {
+  OptionPlot,
+  OptionPlotPoint
+} from "../../models/option-board.model";
 import {OptionBoardDataContextFactory} from "../../utils/option-board-data-context-factory";
 import {ThemeSettings} from "../../../../shared/models/settings/theme-settings.model";
-import {ChartData, ChartOptions, ScriptableLineSegmentContext} from "chart.js";
+import {
+  ChartData,
+  ChartOptions,
+  ScriptableLineSegmentContext
+} from "chart.js";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {LetDirective} from '@ngrx/component';
 import {NzSpinComponent} from 'ng-zorro-antd/spin';
 import {NzSpaceCompactComponent} from 'ng-zorro-antd/space';
-import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
+import {
+  NzOptionComponent,
+  NzSelectComponent
+} from 'ng-zorro-antd/select';
 import {FormsModule} from '@angular/forms';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {BaseChartDirective} from 'ng2-charts';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {AsyncPipe} from '@angular/common';
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
 
 interface ZoomState {
   currentRange: number;
@@ -56,14 +89,12 @@ enum ChartType {
   ]
 })
 export class OptionBoardChartComponent implements OnInit, OnDestroy {
-  private readonly optionBoardService = inject(OptionBoardService);
-  private readonly themeService = inject(ThemeService);
-  private readonly translatorService = inject(TranslatorService);
-  private readonly destroyRef = inject(DestroyRef);
-
   readonly isLoading$ = new BehaviorSubject<boolean>(false);
+
   readonly zoomState$ = new BehaviorSubject<ZoomState | null>(null);
+
   readonly selectedChartType$ = new BehaviorSubject<ChartType>(ChartType.ProfitLossByAssetPrice);
+
   readonly chartTypes = [
     ChartType.PriceByAssetPrice,
     ChartType.PriceByVolatility,
@@ -74,9 +105,21 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
   readonly dataContext = input.required<OptionBoardDataContext>();
 
   chartData$!: Observable<ChartData<'line', (number | null)[], number> | null>;
+
   chartOptions$!: Observable<ChartOptions<'line'>>;
 
+  private readonly optionBoardService = inject(OptionBoardService);
+
+  private readonly themeService = inject(ThemeService);
+
+  private readonly translatorService = inject(TranslatorService);
+
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly zoomStep = 0.1;
+
   private readonly defaultRange = 0.1;
 
   ngOnDestroy(): void {
@@ -169,12 +212,6 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
   }
 
   private initDataStream(): void {
-    const refreshTimer$ = timer(0, 60000).pipe(
-      // for some reasons timer pipe is not completed in detailsDisplay$ when component destroyed (https://github.com/alor-broker/Astras-Trading-UI/issues/1176)
-      // so we need to add takeUntil condition for this stream separately
-      takeUntilDestroyed(this.destroyRef)
-    );
-
     const selectionParameters$ = this.dataContext().selectionParameters$.pipe(
       debounceTime(2000),
       shareReplay(1)
@@ -196,7 +233,7 @@ export class OptionBoardChartComponent implements OnInit, OnDestroy {
       currentChartType: this.selectedChartType$,
       zoomState: this.zoomState$
     }).pipe(
-      mapWith(() => refreshTimer$, source => source),
+      withRefresh(60000, this.applicationStatusService.isActive$),
       mapWith(x => {
           if (x.selection.selectedOptions.length === 0) {
             return of(null);

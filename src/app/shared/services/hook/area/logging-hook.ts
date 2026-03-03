@@ -57,7 +57,7 @@ export class LoggingHook implements AreaHook {
       this.deviceService.deviceInfo$.subscribe(deviceInfo => {
         this.localStorageService.setItem(
           LocalStorageLoggingConstants.DeviceStorageKey,
-          deviceInfo.isMobile ? 'MOBILE' : 'DESKTOP'
+          deviceInfo.deviceType
         );
 
         this.localStorageService.setItem(
