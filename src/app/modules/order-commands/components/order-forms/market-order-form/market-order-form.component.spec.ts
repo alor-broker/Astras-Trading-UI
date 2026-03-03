@@ -1,7 +1,12 @@
 import {ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
 import {CommonParametersService} from "../../../services/common-parameters.service";
-import {BehaviorSubject, Subject, take} from "rxjs";
+import {
+  BehaviorSubject,
+  EMPTY,
+  Subject,
+  take
+} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
 import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
 import orderCommandsOrderFormsRu from "../../../../../../assets/i18n/order-commands/order-forms/ru.json";
@@ -23,6 +28,8 @@ import {
 } from "../../../../../shared/utils/testing/instrument-board-select-mock-component";
 import {OrderEvaluationComponent} from "../../order-evaluation/order-evaluation.component";
 import {MockComponent} from "ng-mocks";
+import {GraphQlService} from "../../../../../shared/services/graph-ql.service";
+import {TerminalSettingsService} from "../../../../../shared/services/terminal-settings.service";
 
 describe('MarketOrderFormComponent', () => {
   let component: MarketOrderFormComponent;
@@ -109,6 +116,18 @@ describe('MarketOrderFormComponent', () => {
           provide: InstrumentsService,
           useValue: {
             getInstrumentBoards: jasmine.createSpy('getInstrumentBoards').and.returnValue(new Subject())
+          }
+        },
+        {
+          provide: GraphQlService,
+          useValue: {
+            queryForSchema: jasmine.createSpy('queryForSchema').and.returnValue(EMPTY)
+          }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(EMPTY)
           }
         },
         ...commonTestProviders

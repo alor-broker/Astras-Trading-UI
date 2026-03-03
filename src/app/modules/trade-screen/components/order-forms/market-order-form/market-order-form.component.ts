@@ -43,6 +43,7 @@ import {
 import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { ConfirmableOrderCommandsService } from "../../../../order-commands/services/confirmable-order-commands.service";
 import { NewMarketOrder } from "../../../../../shared/models/orders/new-order.model";
+import {NearestTradingSessionComponent} from "../../../../order-commands/components/nearest-trading-session/nearest-trading-session.component";
 
 @Component({
   selector: 'ats-market-order-form',
@@ -55,7 +56,8 @@ import { NewMarketOrder } from "../../../../../shared/models/orders/new-order.mo
     NzButtonComponent,
     NgClass,
     AsyncPipe,
-    CurrencyPipe
+    CurrencyPipe,
+    NearestTradingSessionComponent
   ],
   templateUrl: './market-order-form.component.html',
   styleUrl: './market-order-form.component.less',

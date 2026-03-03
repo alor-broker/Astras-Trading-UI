@@ -1,0 +1,6 @@
+<ng-container *transloco="let t; scope: 'order-commands/nearest-trading-session'">
+  @let tradingSessionInfo = tradingSessionInfo$ | async;
+  @if (tradingSessionInfo != null && !tradingSessionInfo.isTrading) {
+    <span>{{t('orderCommandsNearestTradingSession.sessionStartText')}} {{ tradingSessionInfo.nearestStart | date: 'HH:mm dd MMM' }}</span>
+  }
+</ng-container>

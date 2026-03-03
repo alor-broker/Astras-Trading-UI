@@ -26,6 +26,8 @@ import {provideAnimations} from "@angular/platform-browser/animations";
 import {
   InstrumentBoardSelectMockComponent
 } from "../../../../../shared/utils/testing/instrument-board-select-mock-component";
+import {GraphQlService} from "../../../../../shared/services/graph-ql.service";
+import {TerminalSettingsService} from "../../../../../shared/services/terminal-settings.service";
 
 describe('LimitOrderFormComponent', () => {
   let component: LimitOrderFormComponent;
@@ -85,7 +87,7 @@ describe('LimitOrderFormComponent', () => {
             'order-commands/order-forms/ru': orderCommandsOrderFormsRu,
           }
         }),
-        InstrumentBoardSelectMockComponent
+        InstrumentBoardSelectMockComponent,
       ],
       providers: [
         provideAnimations(),
@@ -126,6 +128,18 @@ describe('LimitOrderFormComponent', () => {
           provide: MarketService,
           useValue: {
             getMarketSettings: jasmine.createSpy('getMarketSettings').and.returnValue(EMPTY)
+          }
+        },
+        {
+          provide: GraphQlService,
+          useValue: {
+            queryForSchema: jasmine.createSpy('queryForSchema').and.returnValue(EMPTY)
+          }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(EMPTY)
           }
         },
         ...commonTestProviders

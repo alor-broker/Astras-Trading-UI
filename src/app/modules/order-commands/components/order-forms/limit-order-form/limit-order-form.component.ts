@@ -57,6 +57,7 @@ import {NzCheckboxComponent} from 'ng-zorro-antd/checkbox';
 import {OrderEvaluationComponent} from '../../order-evaluation/order-evaluation.component';
 import {BuySellButtonsComponent} from '../../buy-sell-buttons/buy-sell-buttons.component';
 import {AsyncPipe, DecimalPipe, KeyValuePipe} from '@angular/common';
+import {NearestTradingSessionComponent} from "../../nearest-trading-session/nearest-trading-session.component";
 
 @Component({
   selector: 'ats-limit-order-form',
@@ -87,7 +88,8 @@ import {AsyncPipe, DecimalPipe, KeyValuePipe} from '@angular/common';
     BuySellButtonsComponent,
     AsyncPipe,
     DecimalPipe,
-    KeyValuePipe
+    KeyValuePipe,
+    NearestTradingSessionComponent
   ]
 })
 export class LimitOrderFormComponent extends BaseOrderFormComponent implements OnInit, OnDestroy {

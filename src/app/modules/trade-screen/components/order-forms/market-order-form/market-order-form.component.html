@@ -77,6 +77,10 @@
           class="pl-5">&#8776;{{ orderEvaluation.orderEvaluation  | currency: orderEvaluation.currency:'symbol-narrow' }}</span>
       }
     </button>
+    <ats-nearest-trading-session
+      [instrumentKey]="target.instrument"
+      [forceRefresh]="submitting()"
+      class="warning-color"/>
   </div>
 
   @if (orderEvaluation != null) {

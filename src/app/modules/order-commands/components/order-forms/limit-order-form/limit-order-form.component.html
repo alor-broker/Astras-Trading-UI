@@ -283,6 +283,10 @@
           [sellBtnDisabled]="!canSubmit || !!requestProcessing.orderSide"
           [sellBtnLoading]="requestProcessing.orderSide === sides.Sell"
          />
+        <ats-nearest-trading-session
+          [instrumentKey]="formInstrument"
+          [forceRefresh]="requestProcessing.orderSide != null"
+          class="warning-color"/>
       }
     </div>
   }
