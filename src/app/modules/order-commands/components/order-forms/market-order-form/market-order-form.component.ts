@@ -31,6 +31,7 @@ import {OrderEvaluationComponent} from '../../order-evaluation/order-evaluation.
 import {BuySellButtonsComponent} from '../../buy-sell-buttons/buy-sell-buttons.component';
 import {AsyncPipe, KeyValuePipe} from '@angular/common';
 import {MarketOrderConfig} from "../../../../../shared/models/orders/orders-config.model";
+import {NearestTradingSessionComponent} from "../../nearest-trading-session/nearest-trading-session.component";
 
 @Component({
   selector: 'ats-market-order-form',
@@ -56,7 +57,8 @@ import {MarketOrderConfig} from "../../../../../shared/models/orders/orders-conf
     OrderEvaluationComponent,
     BuySellButtonsComponent,
     AsyncPipe,
-    KeyValuePipe
+    KeyValuePipe,
+    NearestTradingSessionComponent
   ]
 })
 export class MarketOrderFormComponent extends BaseOrderFormComponent implements OnInit, OnDestroy {

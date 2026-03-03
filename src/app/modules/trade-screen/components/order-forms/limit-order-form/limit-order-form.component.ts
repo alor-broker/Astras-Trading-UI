@@ -48,6 +48,7 @@ import { ShortNumberComponent } from "../../../../../shared/components/short-num
 import { TranslocoDirective } from "@jsverse/transloco";
 import { NewLimitOrder } from "../../../../../shared/models/orders/new-order.model";
 import { ConfirmableOrderCommandsService } from "../../../../order-commands/services/confirmable-order-commands.service";
+import {NearestTradingSessionComponent} from "../../../../order-commands/components/nearest-trading-session/nearest-trading-session.component";
 
 @Component({
   selector: 'ats-limit-order-form',
@@ -65,7 +66,8 @@ import { ConfirmableOrderCommandsService } from "../../../../order-commands/serv
     ReactiveFormsModule,
     ShortNumberComponent,
     TranslocoDirective,
-    NgClass
+    NgClass,
+    NearestTradingSessionComponent
   ],
   templateUrl: './limit-order-form.component.html',
   styleUrl: './limit-order-form.component.less',

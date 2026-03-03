@@ -1,7 +1,12 @@
 import {ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Instrument} from "../../../../../shared/models/instruments/instrument.model";
 import {CommonParametersService} from "../../../services/common-parameters.service";
-import {BehaviorSubject, Subject, take} from "rxjs";
+import {
+  BehaviorSubject,
+  EMPTY,
+  Subject,
+  take
+} from "rxjs";
 import {PortfolioSubscriptionsService} from "../../../../../shared/services/portfolio-subscriptions.service";
 import {PortfolioKey} from "../../../../../shared/models/portfolio-key.model";
 import orderCommandsOrderFormsRu from "../../../../../../assets/i18n/order-commands/order-forms/ru.json";
@@ -23,6 +28,8 @@ import {
 } from "../../../../../shared/utils/testing/instrument-board-select-mock-component";
 import {OrderEvaluationComponent} from "../../order-evaluation/order-evaluation.component";
 import {MockComponent} from "ng-mocks";
+import {GraphQlService} from "../../../../../shared/services/graph-ql.service";
+import {TerminalSettingsService} from "../../../../../shared/services/terminal-settings.service";
 
 describe('MarketOrderFormComponent', () => {
   let component: MarketOrderFormComponent;
@@ -111,6 +118,18 @@ describe('MarketOrderFormComponent', () => {
             getInstrumentBoards: jasmine.createSpy('getInstrumentBoards').and.returnValue(new Subject())
           }
         },
+        {
+          provide: GraphQlService,
+          useValue: {
+            queryForSchema: jasmine.createSpy('queryForSchema').and.returnValue(EMPTY)
+          }
+        },
+        {
+          provide: TerminalSettingsService,
+          useValue: {
+            getSettings: jasmine.createSpy('getSettings').and.returnValue(EMPTY)
+          }
+        },
         ...commonTestProviders
       ]
     }).overrideComponent(MarketOrderFormComponent, {
@@ -151,7 +170,7 @@ describe('MarketOrderFormComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show form errors', async () => {
+  it('should show form errors', fakeAsync(() => {
     fixture.componentRef.setInput(
       'instrument',
       getDefaultInstrument()
@@ -193,18 +212,17 @@ describe('MarketOrderFormComponent', () => {
       (component.form!.controls as any)[testCase.control]!.updateValueAndValidity({onlySelf: false});
 
       fixture.detectChanges();
+      tick();
 
-      await fixture.whenStable().then(() => {
-        const errorElement = getValidationErrorElement(control);
+      const errorElement = getValidationErrorElement(control);
 
-        expect(errorElement).not.toBeNull();
+      expect(errorElement).not.toBeNull();
 
-        if ((testCase.expectedError ?? '')) {
-          expect(errorElement?.textContent).toEqual(testCase.expectedError);
-        }
-      });
+      if ((testCase.expectedError ?? '')) {
+        expect(errorElement?.textContent).toEqual(testCase.expectedError);
+      }
     }
-  });
+  }));
 
   it('should disable submission', () => {
       fixture.componentRef.setInput(
@@ -230,7 +248,7 @@ describe('MarketOrderFormComponent', () => {
     }
   );
 
-  it('should set initial values', async () => {
+  it('should set initial values', fakeAsync(() => {
       const initialValues = {
         quantity: 2
       };
@@ -257,15 +275,15 @@ describe('MarketOrderFormComponent', () => {
 
       fixture.detectChanges();
 
-      await fixture.whenStable().then(() => {
-        const expectedValue = {
-          quantity: initialValues.quantity
-        };
+      tick();
 
-        expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
-      });
+      const expectedValue = {
+        quantity: initialValues.quantity
+      };
+
+      expect(component.form.value).toEqual(jasmine.objectContaining(expectedValue));
     }
-  );
+  ));
 
   it('should update evaluation', fakeAsync(() => {
       const instrument = getDefaultInstrument();

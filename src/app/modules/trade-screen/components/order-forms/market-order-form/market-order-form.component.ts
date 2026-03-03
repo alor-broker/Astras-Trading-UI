@@ -44,7 +44,8 @@ import {
 } from "rxjs/operators";
 import {ConfirmableOrderCommandsService} from "../../../../order-commands/services/confirmable-order-commands.service";
 import {NewMarketOrder} from "../../../../../shared/models/orders/new-order.model";
-import {ApplicationStatusService} from "../../../../../shared/services/application-status.service";
+import { ApplicationStatusService } from "../../../../../shared/services/application-status.service";
+import { NearestTradingSessionComponent } from "../../../../order-commands/components/nearest-trading-session/nearest-trading-session.component";
 
 @Component({
   selector: 'ats-market-order-form',
@@ -57,7 +58,8 @@ import {ApplicationStatusService} from "../../../../../shared/services/applicati
     NzButtonComponent,
     NgClass,
     AsyncPipe,
-    CurrencyPipe
+    CurrencyPipe,
+    NearestTradingSessionComponent
   ],
   templateUrl: './market-order-form.component.html',
   styleUrl: './market-order-form.component.less',
