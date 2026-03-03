@@ -1,5 +1,13 @@
-import { Component, DestroyRef, input, inject } from '@angular/core';
-import {OptionBoardDataContext, OptionsSelection} from "../../models/option-board-data-context.model";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  input
+} from '@angular/core';
+import {
+  OptionBoardDataContext,
+  OptionsSelection
+} from "../../models/option-board-data-context.model";
 import {OptionBoardService} from "../../services/option-board.service";
 import {
   BehaviorSubject,
@@ -11,25 +19,30 @@ import {
   switchMap,
   take,
   tap,
-  timer,
 } from "rxjs";
-import {OptionKey, OptionSide} from "../../models/option-board.model";
-import {debounceTime, map} from "rxjs/operators";
+import {
+  OptionKey,
+  OptionSide
+} from "../../models/option-board.model";
+import {
+  debounceTime,
+  map
+} from "rxjs/operators";
 import {BaseColumnSettings} from "../../../../shared/models/settings/table-settings.model";
-import {TranslatorFn, TranslatorService} from "../../../../shared/services/translator.service";
-import {mapWith} from "../../../../shared/utils/observable-helper";
+import {
+  TranslatorFn,
+  TranslatorService
+} from "../../../../shared/services/translator.service";
+import {withRefresh} from "../../../../shared/utils/observable-helper";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {defaultBadgeColor} from "../../../../shared/utils/instruments";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {ActionsContext} from 'src/app/shared/services/actions-context';
 import {ACTIONS_CONTEXT} from "../../../../shared/services/actions-context";
 import {BaseTableComponent} from "../../../../shared/components/base-table/base-table.component";
 import {TableConfig} from "../../../../shared/models/table-config.model";
 import {OptionBoardDataContextFactory} from "../../utils/option-board-data-context-factory";
-import {
-  AddToWatchlistMenuComponent
-} from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
+import {AddToWatchlistMenuComponent} from "../../../instruments/widgets/add-to-watchlist-menu/add-to-watchlist-menu.component";
 import {NzContextMenuService} from "ng-zorro-antd/dropdown";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
@@ -50,9 +63,17 @@ import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {InputNumberComponent} from '../../../../shared/components/input-number/input-number.component';
-import {NzDescriptionsComponent, NzDescriptionsItemComponent} from 'ng-zorro-antd/descriptions';
+import {
+  NzDescriptionsComponent,
+  NzDescriptionsItemComponent
+} from 'ng-zorro-antd/descriptions';
 import {NzPopoverDirective} from 'ng-zorro-antd/popover';
-import {AsyncPipe, DecimalPipe, TitleCasePipe} from '@angular/common';
+import {
+  AsyncPipe,
+  DecimalPipe,
+  TitleCasePipe
+} from '@angular/common';
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
 
 interface OptionTranscription {
   ticker: string;
@@ -119,17 +140,19 @@ interface DetailsDisplay extends OptionKey {
   ]
 })
 export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay> {
-  private readonly optionBoardService = inject(OptionBoardService);
-  private readonly translatorService = inject(TranslatorService);
-  protected readonly widgetSettingsService: WidgetSettingsService;
-  protected readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
-  protected readonly nzContextMenuService = inject(NzContextMenuService);
-  protected readonly destroyRef: DestroyRef;
-
   readonly dataContext = input.required<OptionBoardDataContext>();
 
   readonly minOptionTableWidth = 400;
+
   isLoading$ = new BehaviorSubject<boolean>(false);
+
+  protected readonly widgetSettingsService: WidgetSettingsService;
+
+  protected readonly actionsContext = inject<ActionsContext>(ACTIONS_CONTEXT);
+
+  protected readonly nzContextMenuService = inject(NzContextMenuService);
+
+  protected readonly destroyRef: DestroyRef;
 
   protected allColumns: BaseColumnSettings<DetailsDisplay>[] = [
     {
@@ -209,6 +232,12 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
       width: 75
     },
   ];
+
+  private readonly optionBoardService = inject(OptionBoardService);
+
+  private readonly translatorService = inject(TranslatorService);
+
+  private readonly applicationStatusService = inject(ApplicationStatusService);
 
   constructor() {
     const widgetSettingsService = inject(WidgetSettingsService);
@@ -293,12 +322,6 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
   }
 
   protected initTableDataStream(): Observable<DetailsDisplay[]> {
-    const refreshTimer$ = timer(0, 60000).pipe(
-      // for some reasons timer pipe is not completed in detailsDisplay$ when component destroyed (https://github.com/alor-broker/Astras-Trading-UI/issues/1176)
-      // so we need to add takeUntil condition for this stream separately
-      takeUntilDestroyed(this.destroyRef)
-    );
-
     const selectionParameters$ = this.dataContext().selectionParameters$.pipe(
       debounceTime(2000)
     );
@@ -307,7 +330,7 @@ export class SelectedOptionsComponent extends BaseTableComponent<DetailsDisplay>
       currentSelection: this.dataContext().currentSelection$,
       selectionParameters: selectionParameters$
     }).pipe(
-      mapWith(() => refreshTimer$, source => source),
+      withRefresh(60000, this.applicationStatusService.isActive$),
       tap(() => this.isLoading$.next(true)),
       switchMap(x => {
         if ((x.currentSelection as OptionsSelection | null)?.selectedOptions.length === 0) {

@@ -11,7 +11,7 @@ import {EffectsModule} from "@ngrx/effects";
 import {MarkdownModule} from "ngx-markdown";
 import {JoyrideModule} from "ngx-joyride";
 import {TranslocoRootModule} from "./transloco-root.module";
-import {ServiceWorkerModule} from "@angular/service-worker";
+import {provideServiceWorker} from "@angular/service-worker";
 import {NzModalModule} from "ng-zorro-antd/modal";
 import {extModules, extProvides} from "./build-specifics/ext-modules";
 import {provideRouter, withComponentInputBinding} from "@angular/router";
@@ -24,7 +24,6 @@ import {LOGGER} from "./shared/services/logging/logger-base";
 import {ConsoleLogger} from "./shared/services/logging/console-logger";
 import {RemoteLogger} from "./shared/services/logging/remote-logger";
 import {ERROR_HANDLER} from "./shared/services/handle-error/error-handler";
-import {HttpErrorHandler} from "./shared/services/handle-error/http-error-handler";
 import {LogErrorHandler} from "./shared/services/handle-error/log-error-handler";
 import {GraphQlErrorHandlerService} from "./shared/services/handle-error/graph-ql-error-handler.service";
 import {NOTIFICATIONS_PROVIDER} from "./modules/notifications/services/notifications-provider";
@@ -40,6 +39,7 @@ import {HttpLink} from "apollo-angular/http";
 import {environment} from "../environments/environment";
 import {InMemoryCache} from "@apollo/client";
 import {provideAnimations} from "@angular/platform-browser/animations";
+import {Capacitor} from "@capacitor/core";
 
 // DO NOT REMOVE. This import is required for chart.js
 import "chartjs-adapter-date-fns";
@@ -52,7 +52,10 @@ const coreProviders = [
     withComponentInputBinding()
   ),
   provideHttpClient(withInterceptorsFromDi()),
-  provideAnimations()
+  provideAnimations(),
+  provideServiceWorker('ngsw-worker.js', {
+    enabled: !Capacitor.isNativePlatform(),
+  })
 ];
 
 // backward compatibility providers
@@ -62,15 +65,6 @@ const moduleProviders = importProvidersFrom(
   MarkdownModule.forRoot(),
   JoyrideModule.forRoot(),
   TranslocoRootModule,
-  ServiceWorkerModule.register(
-    'ngsw-worker.js',
-    {
-      enabled: true,
-      // Register the ServiceWorker as soon as the application is stable
-      // or after 15 seconds (whichever comes first).
-      // registrationStrategy: 'registerWhenStable:15000'
-    },
-  ),
   NzModalModule,
   ...extModules,
 );
@@ -117,11 +111,6 @@ const appProviders = [
   {
     provide: LOGGER,
     useClass: RemoteLogger,
-    multi: true
-  },
-  {
-    provide: ERROR_HANDLER,
-    useClass: HttpErrorHandler,
     multi: true
   },
   {

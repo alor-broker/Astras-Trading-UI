@@ -6,7 +6,11 @@
   <nz-dropdown-menu #menu="nzDropdownMenu">
     <ul nz-menu>
       @for (language of availableLanguages; track language.key) {
-        <li nz-menu-item (click)="changeLanguage(language.key)">{{language.title}} ({{language.key.toUpperCase()}})</li>
+        <li nz-menu-item (click)="changeLanguage(language.key)">
+          <span class="text-nowrap">
+            {{language.title}} ({{language.key.toUpperCase()}})
+          </span>
+        </li>
       }
     </ul>
   </nz-dropdown-menu>

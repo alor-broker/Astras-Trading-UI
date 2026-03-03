@@ -1,22 +1,35 @@
-import { Component, DestroyRef, input, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  input,
+  OnInit
+} from '@angular/core';
 import {
   forkJoin,
   Observable,
-  timer
+  of
 } from 'rxjs';
-import { IndexDisplay } from '../../models/ribbon-display.model';
+import {IndexDisplay} from '../../models/ribbon-display.model';
 import {
   map,
   switchMap
 } from "rxjs/operators";
-import { HistoryService } from "../../../../shared/services/history.service";
-import { InstrumentKey } from "../../../../shared/models/instruments/instrument-key.model";
-import { MathHelper } from "../../../../shared/utils/math-helper";
-import { ScrollableRowComponent } from "../../../../shared/components/scrollable-row/scrollable-row.component";
-import { AsyncPipe, DecimalPipe, NgClass, NgTemplateOutlet } from "@angular/common";
-import { ScrollableItemDirective } from "../../../../shared/directives/scrollable-item.directive";
-import { NzTypographyComponent } from "ng-zorro-antd/typography";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import {HistoryService} from "../../../../shared/services/history.service";
+import {InstrumentKey} from "../../../../shared/models/instruments/instrument-key.model";
+import {MathHelper} from "../../../../shared/utils/math-helper";
+import {ScrollableRowComponent} from "../../../../shared/components/scrollable-row/scrollable-row.component";
+import {
+  AsyncPipe,
+  DecimalPipe,
+  NgClass,
+  NgTemplateOutlet
+} from "@angular/common";
+import {ScrollableItemDirective} from "../../../../shared/directives/scrollable-item.directive";
+import {NzTypographyComponent} from "ng-zorro-antd/typography";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {withRefresh} from "../../../../shared/utils/observable-helper";
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
 
 export interface RibbonItem {
   displayName?: string;
@@ -37,13 +50,10 @@ export interface RibbonItem {
     DecimalPipe,
     NgClass,
     NgTemplateOutlet
-],
+  ],
   standalone: true
 })
 export class RibbonComponent implements OnInit {
-  private readonly historyService = inject(HistoryService);
-  private readonly destroyRef = inject(DestroyRef);
-
   indices$!: Observable<IndexDisplay[]>;
 
   readonly layout = input<'singleRow' | '2row'>('singleRow');
@@ -51,6 +61,12 @@ export class RibbonComponent implements OnInit {
   readonly showScrollButtons = input(true);
 
   readonly displayItems = input<RibbonItem[] | null>(null);
+
+  private readonly historyService = inject(HistoryService);
+
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly defaultIndices: RibbonItem[] = [
     {
@@ -86,10 +102,11 @@ export class RibbonComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.indices$ = timer(0, 60000).pipe(
+    const displayItems = this.displayItems() ?? this.defaultIndices;
+    this.indices$ = of(null).pipe(
+      withRefresh(60000, this.applicationStatusService.isActive$),
       switchMap(() => {
-        const displayItems = this.displayItems() ?? this.defaultIndices;
-        const indices$ = displayItems.map(i => {
+        const indices = displayItems.map(i => {
           return this.getQuoteInfo(
             {
               symbol: (i.isFutures ?? false) ? this.getNextFuturesContract(i.symbol) : i.symbol,
@@ -104,7 +121,7 @@ export class RibbonComponent implements OnInit {
           );
         });
 
-        return forkJoin(indices$);
+        return forkJoin(indices);
       }),
       takeUntilDestroyed(this.destroyRef)
     );

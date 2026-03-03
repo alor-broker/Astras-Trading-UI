@@ -1,26 +1,71 @@
-import { AfterViewInit, Component, DestroyRef, ElementRef, input, OnDestroy, OnInit, viewChildren, inject } from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, shareReplay, switchMap, take, tap, timer} from "rxjs";
-import {OptionBoardDataContext, OptionsSelection} from "../../models/option-board-data-context.model";
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  input,
+  OnDestroy,
+  OnInit,
+  viewChildren
+} from '@angular/core';
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  shareReplay,
+  switchMap,
+  take,
+  tap
+} from "rxjs";
+import {
+  OptionBoardDataContext,
+  OptionsSelection
+} from "../../models/option-board-data-context.model";
 import {OptionBoardService} from "../../services/option-board.service";
-import {InstrumentOptions, Option, OptionParameters, UnderlyingAsset} from "../../models/option-board.model";
-import {filter, map} from "rxjs/operators";
+import {
+  InstrumentOptions,
+  Option,
+  OptionParameters,
+  UnderlyingAsset
+} from "../../models/option-board.model";
+import {
+  filter,
+  map
+} from "rxjs/operators";
 import {TranslatorService} from "../../../../shared/services/translator.service";
 import {dateDiffInDays} from "../../../../shared/utils/datetime";
-import {mapWith} from "../../../../shared/utils/observable-helper";
+import {
+  mapWith,
+  withRefresh
+} from "../../../../shared/utils/observable-helper";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
-import {CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport} from "@angular/cdk/scrolling";
-import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {
+  CdkFixedSizeVirtualScroll,
+  CdkVirtualForOf,
+  CdkVirtualScrollViewport
+} from "@angular/cdk/scrolling";
+import {
+  takeUntilDestroyed,
+  toObservable
+} from "@angular/core/rxjs-interop";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzSpinComponent} from 'ng-zorro-antd/spin';
 import {NzEmptyComponent} from 'ng-zorro-antd/empty';
 import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
-import {AsyncPipe, DatePipe, DecimalPipe, NgStyle} from '@angular/common';
+import {
+  AsyncPipe,
+  DatePipe,
+  DecimalPipe,
+  NgStyle
+} from '@angular/common';
 import {NzPopoverDirective} from 'ng-zorro-antd/popover';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {OptionPreviewComponent} from '../option-preview/option-preview.component';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
 
 interface OptionDisplay extends Option {
   displayValue: string;
@@ -68,30 +113,45 @@ interface LayoutSizes {
   ]
 })
 export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
-  private readonly optionBoardService = inject(OptionBoardService);
-  private readonly translatorService = inject(TranslatorService);
-  private readonly destroyRef = inject(DestroyRef);
-
   readonly rowHeight = 30;
+
   readonly isLoading$ = new BehaviorSubject(false);
 
   readonly dataContext = input.required<OptionBoardDataContext>();
 
   readonly bodyScrollContainerQuery = viewChildren<CdkVirtualScrollViewport>(CdkVirtualScrollViewport);
+
   readonly headerContainerQuery = viewChildren<ElementRef<HTMLElement>>('header');
+
   activeLang$!: Observable<string>;
+
   optionsMatrix$!: Observable<OptionsMatrix>;
+
   currentPriceYPosition$!: Observable<number | null>;
+
   readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
+
+  private readonly optionBoardService = inject(OptionBoardService);
+
+  private readonly translatorService = inject(TranslatorService);
+
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly bodyScrollContainerQueryChanges$ = toObservable(this.bodyScrollContainerQuery);
+
   private readonly headerContainerQueryChanges$ = toObservable(this.headerContainerQuery);
+
   private bodyScroll$!: Observable<CdkVirtualScrollViewport>;
+
   private readonly defaultLayoutSizes: LayoutSizes = {
     priceColumnWidth: 50,
     optionCellWidth: 50
   };
 
   readonly layoutSizes$ = new BehaviorSubject<LayoutSizes>(this.defaultLayoutSizes);
+
   private readonly optionDisplayParameterMap = new Map<OptionParameters, (option: Option) => string>([
     [OptionParameters.Price, (option: Option): string => option.calculations.price.toString()],
     [OptionParameters.Delta, (option: Option): string => MathHelper.round(option.calculations.delta, 2).toString()],
@@ -156,12 +216,6 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
   private initMatrixStream(): void {
     const afterRefreshActions: ((matrix: OptionsMatrix) => void)[] = [];
 
-    const refreshTimer$ = timer(0, 60000).pipe(
-      // for some reasons timer pipe is not completed in optionsMatrix$ when component destroyed (https://github.com/alor-broker/Astras-Trading-UI/issues/1176)
-      // so we need to add takeUntil condition for this stream separately
-      takeUntilDestroyed(this.destroyRef)
-    );
-
     this.optionsMatrix$ = combineLatest([
       this.dataContext().settings$,
       this.dataContext().selectedSide$
@@ -169,7 +223,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
       tap(() => {
         afterRefreshActions.push((x) => this.scrollToPrice(x));
       }),
-      mapWith(() => refreshTimer$, source => source),
+      withRefresh(60000, this.applicationStatusService.isActive$),
       tap(() => this.isLoading$.next(true)),
       switchMap(([settings, optionSide]) =>
         this.optionBoardService.getInstrumentOptions(settings.symbol, settings.exchange, optionSide)

@@ -15,8 +15,7 @@ import {
 import {
   BehaviorSubject,
   Observable,
-  switchMap,
-  timer
+  switchMap
 } from "rxjs";
 import { ArrayHelper } from "../../../../shared/utils/array-helper";
 import { HistoryService } from "../../../../shared/services/history.service";
@@ -26,6 +25,8 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MathHelper } from "../../../../shared/utils/math-helper";
 import { InstrumentsService } from "../../../instruments/services/instruments.service";
 import { SubmitOrderForSymbolComponent } from "../submit-order-for-symbol/submit-order-for-symbol.component";
+import {createRefresh} from "../../../../shared/utils/observable-helper";
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
 
 interface InstrumentPrice {
   lastPrice: number;
@@ -51,6 +52,7 @@ interface InstrumentPrice {
 export class IdeaDetailsComponent implements OnDestroy {
   private readonly historyService = inject(HistoryService);
   private readonly instrumentsService = inject(InstrumentsService);
+  private readonly applicationStatusService = inject(ApplicationStatusService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly displayIdea = model<Idea | null>(null);
@@ -85,7 +87,8 @@ export class IdeaDetailsComponent implements OnDestroy {
   }
 
   private getPriceInfo(instrumentKey: InstrumentKey): Observable<InstrumentPrice | null> {
-    return timer(0, 30_000).pipe(
+    return createRefresh(30_000, this.applicationStatusService.isActive$)
+    .pipe(
       switchMap(() => this.historyService.getLastTwoCandles(instrumentKey)),
       map(r => {
         if (r == null || (r.cur == null && r.prev == null)) {

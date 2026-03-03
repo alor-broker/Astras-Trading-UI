@@ -1,4 +1,11 @@
-import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import {OptionBoardDataContext} from "../../models/option-board-data-context.model";
 import {OptionBoardService} from "../../services/option-board.service";
 import {TranslatorService} from "../../../../shared/services/translator.service";
@@ -22,20 +29,40 @@ import {
   shareReplay,
   switchMap,
   take,
-  tap,
-  timer
+  tap
 } from "rxjs";
-import {filter, map, startWith} from "rxjs/operators";
+import {
+  filter,
+  finalize,
+  map,
+  startWith
+} from "rxjs/operators";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {NzSpinComponent} from "ng-zorro-antd/spin";
-import {AsyncPipe, DatePipe, DecimalPipe, NgTemplateOutlet} from "@angular/common";
+import {
+  AsyncPipe,
+  DatePipe,
+  DecimalPipe,
+  NgTemplateOutlet
+} from "@angular/common";
 import {NzResizeObserverDirective} from "ng-zorro-antd/cdk/resize-observer";
 import {ContentSize} from "../../../../shared/models/dashboard/dashboard-item.model";
 import {LetDirective} from "@ngrx/component";
 import {NzEmptyComponent} from "ng-zorro-antd/empty";
-import {NzOptionComponent, NzSelectComponent} from "ng-zorro-antd/select";
-import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {NzCollapseComponent, NzCollapsePanelComponent} from "ng-zorro-antd/collapse";
+import {
+  NzOptionComponent,
+  NzSelectComponent
+} from "ng-zorro-antd/select";
+import {
+  FormBuilder,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators
+} from "@angular/forms";
+import {
+  NzCollapseComponent,
+  NzCollapsePanelComponent
+} from "ng-zorro-antd/collapse";
 import {dateDiffInDays} from "../../../../shared/utils/datetime";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {QuotesService} from "../../../../shared/services/quotes.service";
@@ -43,10 +70,16 @@ import {InputNumberComponent} from "../../../../shared/components/input-number/i
 import {inputNumberValidation} from "../../../../shared/utils/validation-options";
 import {compareAsc} from 'date-fns';
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {mapWith} from "../../../../shared/utils/observable-helper";
-import {NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent} from "ng-zorro-antd/form";
+import {withRefresh} from "../../../../shared/utils/observable-helper";
+import {
+  NzFormControlComponent,
+  NzFormDirective,
+  NzFormItemComponent,
+  NzFormLabelComponent
+} from "ng-zorro-antd/form";
 import {PriceDiffComponent} from "../../../../shared/components/price-diff/price-diff.component";
 import {NzIconDirective} from "ng-zorro-antd/icon";
+import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
 
 interface CellLayout {
   displayParameter: OptionParameters;
@@ -129,13 +162,6 @@ interface DisplaySettings extends RecordContent {
   styleUrl: './all-options-list-view.component.less'
 })
 export class AllOptionsListViewComponent implements OnInit, OnDestroy {
-  private readonly optionBoardService = inject(OptionBoardService);
-  private readonly translatorService = inject(TranslatorService);
-  private readonly widgetLocalStateService = inject(WidgetLocalStateService);
-  private readonly quotesService = inject(QuotesService);
-  private readonly formBuilder = inject(FormBuilder);
-  private readonly destroyRef = inject(DestroyRef);
-
   readonly dataContext = input.required<OptionBoardDataContext>();
 
   readonly guid = input.required<string>();
@@ -146,8 +172,6 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
       max: inputNumberValidation.max
     }
   };
-
-  protected activeLang$ = this.translatorService.getLangChanges();
 
   protected rowLayout$!: Observable<OptionsRowLayout>;
 
@@ -170,6 +194,28 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
 
   protected currentPrice$!: Observable<number | null>;
 
+  protected selectedOptionKeys$!: Observable<Set<string>>;
+
+  protected readonly availableValuesForStrikesCount = [4, 8, 12, 16, 20, 24];
+
+  protected expirations$!: Observable<ExpirationDisplay[] | null>;
+
+  protected readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
+
+  private readonly optionBoardService = inject(OptionBoardService);
+
+  private readonly translatorService = inject(TranslatorService);
+
+  protected activeLang$ = this.translatorService.getLangChanges();
+
+  private readonly widgetLocalStateService = inject(WidgetLocalStateService);
+
+  private readonly quotesService = inject(QuotesService);
+
+  private readonly applicationStatusService = inject(ApplicationStatusService);
+
+  private readonly formBuilder = inject(FormBuilder);
+
   protected settingsForm = this.formBuilder.nonNullable.group({
     strikesCount: this.formBuilder.nonNullable.control(
       4,
@@ -184,13 +230,7 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
     )
   });
 
-  protected selectedOptionKeys$!: Observable<Set<string>>;
-
-  protected readonly availableValuesForStrikesCount = [4, 8, 12, 16, 20, 24];
-
-  protected expirations$!: Observable<ExpirationDisplay[] | null>;
-
-  protected readonly contentSize$ = new BehaviorSubject<ContentSize | null>(null);
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly StorageKeys = {
     rowLayout: 'row-layout',
@@ -338,17 +378,13 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
 
   private getOptionsForExpiration(expiration: OptionExpiration): Observable<OptionsViewModel | null> {
     return defer(() => {
-      const refreshTimer$ = timer(0, 60000).pipe(
-        takeUntilDestroyed(this.destroyRef)
-      );
-
       const strikesCount$ = this.settingsForm.controls.strikesCount.valueChanges.pipe(
         startWith(this.settingsForm.controls.strikesCount.value),
         filter(() => this.settingsForm.controls.strikesCount.valid),
       );
 
       return strikesCount$.pipe(
-        mapWith(() => refreshTimer$, (source,) => source),
+        withRefresh(60000, this.applicationStatusService.isActive$),
         tap(() => this.isLoading$.next(true)),
         switchMap(strikesCount => this.optionBoardService.getOptionsByExpirationDate(
           expiration.symbol,
@@ -363,7 +399,8 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
 
           return this.prepareOptionsViewModel(o);
         }),
-        tap(() => this.isLoading$.next(false))
+        tap(() => this.isLoading$.next(false)),
+        finalize(() => this.isLoading$.next(false))
       );
     });
   }

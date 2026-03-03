@@ -82,8 +82,15 @@
   <span *transloco="let t; scope: 'mobile-home-screen'">{{ t('mobileHomeScreen.moneyOperationsTitle') }}</span>
 </ng-template>
 
-<nz-modal [(nzVisible)]="showHistory" nzClassName="full-screen" [nzFooter]="null" [nzClosable]="false"
-  [nzTitle]="historyTitle" (nzOnCancel)="closeHistory()">
+<nz-modal
+  [(nzVisible)]="showHistory"
+  nzClassName="full-screen"
+  [nzFooter]="null"
+  [nzClosable]="false"
+  [nzTitle]="historyTitle"
+  (nzOnCancel)="closeHistory()"
+  [nzAutofocus]="null"
+>
   <ng-container *nzModalContent>
     <ats-operations-history />
   </ng-container>

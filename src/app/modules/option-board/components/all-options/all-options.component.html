@@ -25,7 +25,7 @@
                       month: date | date: 'MMM' : '': activeLang
                       })}}
                     </div>
-                    <div class="text-center">{{date | date: 'YYYY'}}</div>
+                    <div class="text-center">{{date | date: 'yyyy'}}</div>
                     <div class="text-center text-color">
                       <i>{{getDaysToExpirations(date) + ' ' + t('optionBoard.abbreviations.days')}}</i>
                     </div>
@@ -94,7 +94,7 @@
                                   strikePrice: priceIndex,
                                   day: dateIndex | date: 'dd',
                                   month: dateIndex | date: 'MMM' : '': activeLang,
-                                  year: dateIndex | date: 'YYYY'
+                                  year: dateIndex | date: 'yyyy'
                                   })
                                   }}
                                 </span>
