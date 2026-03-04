@@ -63,6 +63,11 @@ describe('PortfolioChartsWidgetComponent', () => {
         widgetMeta: {widgetName: {}} as WidgetMeta
       }
     );
+
+    fixture.componentRef.setInput(
+      'isBlockWidget',
+      false
+    );
     fixture.detectChanges();
   });
 
