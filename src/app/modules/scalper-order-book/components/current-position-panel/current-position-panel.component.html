@@ -11,7 +11,7 @@
       [nzTooltipMouseEnterDelay]="1"
       class="p-2"
       >
-      {{(vm.orderBookPosition.price | number: '1.0-2') ?? '--'}}
+      {{(vm.orderBookPosition.price | number: '1.0-10') ?? '--'}}
     </div>
     <div [ngClass]="{
         'qty': true,
