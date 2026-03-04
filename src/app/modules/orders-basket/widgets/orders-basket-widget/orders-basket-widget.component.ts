@@ -3,7 +3,10 @@ import {WidgetSettingsService} from '../../../../shared/services/widget-settings
 import {DashboardContextService} from '../../../../shared/services/dashboard-context.service';
 import {WidgetSettingsCreationHelper} from '../../../../shared/utils/widget-settings/widget-settings-creation-helper';
 import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {
+  map,
+  startWith
+} from 'rxjs/operators';
 import {SettingsHelper} from '../../../../shared/utils/settings-helper';
 import {OrdersBasketSettings} from '../../models/orders-basket-settings.model';
 import {WidgetInstance} from "../../../../shared/models/dashboard/dashboard-item.model";
@@ -64,7 +67,8 @@ export class OrdersBasketWidgetComponent implements OnInit {
     this.settings$ = this.widgetSettingsService.getSettings<OrdersBasketSettings>(this.guid);
 
     this.title$ = this.settings$.pipe(
-      map(s => `${s.portfolio} (${s.exchange})`)
+      map(s => `${s.portfolio} (${s.exchange})`),
+      startWith('')
     );
 
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
