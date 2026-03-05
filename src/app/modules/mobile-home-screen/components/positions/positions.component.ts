@@ -16,7 +16,6 @@ import { LetDirective } from "@ngrx/component";
 import { TruncatedTextComponent } from "../../../../shared/components/truncated-text/truncated-text.component";
 import {
   DecimalPipe,
-  NgClass,
   PercentPipe
 } from "@angular/common";
 import { TranslocoDirective } from "@jsverse/transloco";
@@ -50,13 +49,12 @@ type SortFn = (a: Position, b: Position) => number;
     TruncatedTextComponent,
     DecimalPipe,
     PercentPipe,
-    NgClass,
     TranslocoDirective,
     NzButtonComponent,
     NzEmptyComponent,
     NzSkeletonComponent,
     InstrumentIconComponent
-  ],
+],
   templateUrl: './positions.component.html',
   styleUrl: './positions.component.less'
 })

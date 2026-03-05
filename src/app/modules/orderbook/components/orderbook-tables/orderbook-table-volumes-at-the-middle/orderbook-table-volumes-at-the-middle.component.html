@@ -14,20 +14,20 @@
           @if (showYield()) {
             <td
               (click)="newLimitOrder($event, row.bid, Side.Buy)"
-              [ngStyle]="{background: 'unset'}">
+              [style.background]="'unset'">
               {{ row.yieldBid }}
             </td>
           } @else {
             <td
               (click)="newLimitOrder($event, row.bid, Side.Buy)"
-              [ngStyle]="{background: 'unset'}">
+              [style.background]="'unset'">
               {{ row.bid | atsPrice: getPriceDecimalSymbolsCount() }}
             </td>
           }
           <td
             (cdkDropListDropped)="updateOrderPrice($event.item.data, row.bid)"
             (click)="newLimitOrder($event, row.bid, Side.Buy)"
-            [ngStyle]="getBidStyle(row.bidVolume ?? 0)"
+            [style]="getBidStyle(row.bidVolume ?? 0)"
             cdkDropList
             nzAlign="right"
           >
@@ -57,12 +57,12 @@
               </span>
           </td>
         } @else {
-          <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
+          <td [style.background]="'unset'" colspan="2"></td>
         }
         @if (row.ask || (row.ask === 0)) {
           <td (cdkDropListDropped)="updateOrderPrice($event.item.data, row.ask)"
               (click)="newLimitOrder($event, row.ask, Side.Sell)"
-              [ngStyle]="getAskStyle(row.askVolume ?? 0)"
+              [style]="getAskStyle(row.askVolume ?? 0)"
               cdkDropList
               class='row-cell--ask-volume'
           >
@@ -94,20 +94,20 @@
           @if (showYield()) {
             <td
               (click)="newLimitOrder($event, row.ask, Side.Sell)"
-              [ngStyle]="{background: 'unset'}"
+              [style.background]="'unset'"
               nzAlign="right">
               {{ row.yieldAsk }}
             </td>
           } @else {
             <td
               (click)="newLimitOrder($event, row.ask, Side.Sell)"
-              [ngStyle]="{background: 'unset'}"
+              [style.background]="'unset'"
               nzAlign="right">
               {{ row.ask | atsPrice: getPriceDecimalSymbolsCount() }}
             </td>
           }
         } @else {
-          <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
+          <td [style.background]="'unset'" colspan="2"></td>
         }
       </tr>
     }

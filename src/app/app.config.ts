@@ -4,7 +4,8 @@
   importProvidersFrom,
   inject,
   LOCALE_ID,
-  provideBrowserGlobalErrorListeners
+  provideBrowserGlobalErrorListeners,
+  provideZoneChangeDetection
 } from "@angular/core";
 import {StoreModule} from "@ngrx/store";
 import {EffectsModule} from "@ngrx/effects";
@@ -46,6 +47,7 @@ import "chartjs-adapter-date-fns";
 
 // angular providers
 const coreProviders = [
+  provideZoneChangeDetection(),
   provideBrowserGlobalErrorListeners(),
   provideRouter(
     routes,

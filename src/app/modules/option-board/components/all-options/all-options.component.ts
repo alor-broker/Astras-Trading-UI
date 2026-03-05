@@ -57,8 +57,7 @@ import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
 import {
   AsyncPipe,
   DatePipe,
-  DecimalPipe,
-  NgStyle
+  DecimalPipe
 } from '@angular/common';
 import {NzPopoverDirective} from 'ng-zorro-antd/popover';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
@@ -98,7 +97,6 @@ interface LayoutSizes {
     NzSpinComponent,
     NzEmptyComponent,
     NzResizeObserverDirective,
-    NgStyle,
     CdkVirtualScrollViewport,
     CdkFixedSizeVirtualScroll,
     CdkVirtualForOf,
@@ -110,7 +108,7 @@ interface LayoutSizes {
     AsyncPipe,
     DecimalPipe,
     DatePipe
-  ]
+]
 })
 export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly rowHeight = 30;

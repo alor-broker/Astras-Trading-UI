@@ -32,7 +32,7 @@
                 <div class="d-flex d-flex flex-column">
                   <span class="heading-color">{{ item.currentVolume | number }}</span>
                   <span
-                    [ngClass]="{
+                    [class]="{
                     'positive-color': item.dailyUnrealisedPl >= 0,
                     'negative-color': item.dailyUnrealisedPl < 0
                     }"

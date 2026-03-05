@@ -20,7 +20,7 @@
                   {{ t('infoDescriptorsList.descriptorTitles.' + (descriptor.translationKey ?? descriptor.id)) }}</span>
               </td>
               <td class="descriptor-content">
-                <span [ngStyle]="descriptor.customStyles">
+                <span [style]="descriptor.customStyles">
                   @if (descriptor.valueTranslationKey != null) {
                     {{ t('infoDescriptorsList.' + descriptor.valueTranslationKey) }}
                   } @else {

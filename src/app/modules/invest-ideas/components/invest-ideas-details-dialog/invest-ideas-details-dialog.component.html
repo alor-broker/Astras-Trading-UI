@@ -37,7 +37,7 @@
               @if (priceInfo != null) {
                 <span class="heading-color">{{ priceInfo.lastPrice }}</span>
                 <span
-                  [ngClass]="{
+                  [class]="{
                   'positive-color': priceInfo.dayChangePercent >= 0,
                   'negative-color': priceInfo.dayChangePercent < 0
                   }"

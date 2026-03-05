@@ -13,9 +13,8 @@
         [nzErrorTip]="searchError"
         [nzWarningTip]="searchWarning"
         >
-        <nz-input-group [nzAddOnAfter]="spreadOperators" [nzSuffix]="loadingIndicator">
+        <nz-input-wrapper>
           <input #searchInput
-            [nzBorderless]="false"
             (mousedown)="$event.stopPropagation()"
             (keyup)="filterChanged()"
             [nzAutocomplete]="autoComplete"
@@ -46,13 +45,13 @@
             }
           </nz-autocomplete>
 
-          <ng-template #loadingIndicator>
-            <ats-loading-indicator [isLoading]="autocompleteLoading$ | async"
-              className="autocomplete-loader"
-             />
-          </ng-template>
+          <ats-loading-indicator
+            nzInputSuffix
+            [isLoading]="autocompleteLoading$ | async"
+            className="autocomplete-loader"
+          />
 
-          <ng-template #spreadOperators>
+          <span nzInputAddonAfter>
             <button class="spread-operator-btn" nz-button (click)="addSpreadOperator('+')">
               +
             </button>
@@ -65,8 +64,8 @@
             <button class="spread-operator-btn" nz-button (click)="addSpreadOperator('/')">
               /
             </button>
-          </ng-template>
-        </nz-input-group>
+          </span>
+        </nz-input-wrapper>
       </nz-form-control>
     </nz-form-item>
 

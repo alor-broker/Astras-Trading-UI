@@ -43,7 +43,7 @@ import {
 } from "@angular/common";
 import { NzButtonComponent } from "ng-zorro-antd/button";
 import {
-  NzDropDownDirective,
+  NzDropdownDirective,
   NzDropdownMenuComponent
 } from "ng-zorro-antd/dropdown";
 import { NzPopoverDirective } from "ng-zorro-antd/popover";
@@ -74,7 +74,6 @@ import { LangSwitchWidgetComponent } from "../../../modules/terminal-settings/wi
     NzIconDirective,
     AsyncPipe,
     NzButtonComponent,
-    NzDropDownDirective,
     NzPopoverDirective,
     NzDropdownMenuComponent,
     NzMenuDirective,
@@ -90,7 +89,8 @@ import { LangSwitchWidgetComponent } from "../../../modules/terminal-settings/wi
     NetworkIndicatorComponent,
     ExternalLinkComponent,
     NotificationButtonComponent,
-    LangSwitchWidgetComponent
+    LangSwitchWidgetComponent,
+    NzDropdownDirective
   ]
 })
 export class MobileNavbarComponent implements OnInit {

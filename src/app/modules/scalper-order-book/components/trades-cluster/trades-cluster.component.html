@@ -7,7 +7,7 @@
   } as vm">
     @for (item of vm.displayItems; track $index) {
       <div
-        [ngClass]="{
+        [class]="{
           'volume-cell': true,
           'max-volume': item?.isMaxVolume,
           'hovered': isRulerHovered(item, vm.hoveredPriceRow)
@@ -20,7 +20,7 @@
         @if (item.isMajorLinePrice || item.isMinorLinePrice) {
           <span
             class="z-1"
-            [ngClass]="{
+            [class]="{
             'grid-line': true,
             'major': item.isMajorLinePrice,
             'minor': item.isMinorLinePrice
@@ -28,7 +28,7 @@
           >&nbsp;</span>
         }
         <span class="position-relative z-5 w-100 d-inline-block">
-          <span class="highlighter  z-2" [ngStyle]="getClusterItemHighlightStyle(item, vm.settings.widgetSettings.tradesClusterPanelSettings ?? null, vm.themeColors)">&nbsp;</span>
+          <span class="highlighter  z-2" [style]="getClusterItemHighlightStyle(item, vm.settings.widgetSettings.tradesClusterPanelSettings ?? null, vm.themeColors)">&nbsp;</span>
           <span class="position-relative z-3 px-2">
             @if (vm.settings.widgetSettings.tradesClusterPanelSettings?.volumeDisplayFormat === numberFormats.LetterSuffix) {
               <ats-short-number [value]="item?.volume"

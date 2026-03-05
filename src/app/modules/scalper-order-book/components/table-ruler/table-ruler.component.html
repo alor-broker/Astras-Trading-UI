@@ -4,7 +4,7 @@
       @if (displayMarker$ | async; as displayMarker) {
         <div
           [ngClass]="markerPosition"
-          [ngStyle]="{
+          [style]="{
           'height': xAxisStep() + 'px',
           'line-height': xAxisStep() + 'px',
           'top': displayMarker.index * xAxisStep() + 'px'

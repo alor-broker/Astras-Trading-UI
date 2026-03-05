@@ -10,7 +10,10 @@ import {KeyValuePipe} from "@angular/common";
 import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {JoyrideModule} from "ngx-joyride";
 import {NzButtonComponent} from "ng-zorro-antd/button";
-import {NzDropDownDirective, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {
+  NzDropdownDirective,
+  NzDropdownMenuComponent
+} from "ng-zorro-antd/dropdown";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {NzInputDirective} from "ng-zorro-antd/input";
 import {NzMenuDirective, NzMenuItemComponent} from "ng-zorro-antd/menu";
@@ -34,7 +37,6 @@ import {ExternalLinkComponent} from "../../../shared/components/external-link/ex
     JoyrideModule,
     KeyValuePipe,
     NzButtonComponent,
-    NzDropDownDirective,
     NzDropdownMenuComponent,
     NzIconDirective,
     NzInputDirective,
@@ -46,7 +48,8 @@ import {ExternalLinkComponent} from "../../../shared/components/external-link/ex
     EmptyPortfoliosWarningModalComponent,
     ReactiveFormsModule,
     NzTypographyComponent,
-    ExternalLinkComponent
+    ExternalLinkComponent,
+    NzDropdownDirective
   ],
   templateUrl: './select-portfolio-menu-nav-btn.component.html',
   styleUrl: './select-portfolio-menu-nav-btn.component.less',

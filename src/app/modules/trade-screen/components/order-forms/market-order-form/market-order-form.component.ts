@@ -20,8 +20,7 @@ import {ShortNumberComponent} from "../../../../../shared/components/short-numbe
 import {NzButtonComponent} from "ng-zorro-antd/button";
 import {
   AsyncPipe,
-  CurrencyPipe,
-  NgClass
+  CurrencyPipe
 } from "@angular/common";
 import {QuotesService} from "../../../../../shared/services/quotes.service";
 import {EvaluationService} from "../../../../../shared/services/evaluation.service";
@@ -56,11 +55,10 @@ import { NearestTradingSessionComponent } from "../../../../order-commands/compo
     InputNumberComponent,
     ShortNumberComponent,
     NzButtonComponent,
-    NgClass,
     AsyncPipe,
     CurrencyPipe,
     NearestTradingSessionComponent
-  ],
+],
   templateUrl: './market-order-form.component.html',
   styleUrl: './market-order-form.component.less',
 })

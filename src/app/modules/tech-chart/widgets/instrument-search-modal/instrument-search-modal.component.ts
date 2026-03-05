@@ -26,7 +26,10 @@ import {TranslocoDirective} from '@jsverse/transloco';
 import {NzModalComponent, NzModalContentDirective, NzModalFooterDirective} from 'ng-zorro-antd/modal';
 import {NzColDirective, NzRowDirective} from 'ng-zorro-antd/grid';
 import {NzFormControlComponent, NzFormItemComponent} from 'ng-zorro-antd/form';
-import {NzInputDirective, NzInputGroupComponent, NzInputGroupWhitSuffixOrPrefixDirective} from 'ng-zorro-antd/input';
+import {
+  NzInputDirective,
+  NzInputModule
+} from 'ng-zorro-antd/input';
 import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {LoadingIndicatorComponent} from '../../../../shared/components/loading-indicator/loading-indicator.component';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
@@ -37,6 +40,7 @@ import {AsyncPipe} from '@angular/common';
   templateUrl: './instrument-search-modal.component.html',
   styleUrl: './instrument-search-modal.component.less',
   imports: [
+    NzInputModule,
     TranslocoDirective,
     NzModalComponent,
     NzModalContentDirective,
@@ -44,8 +48,6 @@ import {AsyncPipe} from '@angular/common';
     NzFormItemComponent,
     NzColDirective,
     NzFormControlComponent,
-    NzInputGroupComponent,
-    NzInputGroupWhitSuffixOrPrefixDirective,
     NzInputDirective,
     NzAutocompleteTriggerDirective,
     FormsModule,

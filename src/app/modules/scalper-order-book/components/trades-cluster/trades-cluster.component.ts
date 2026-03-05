@@ -14,7 +14,7 @@ import {ThemeColors} from "../../../../shared/models/settings/theme-settings.mod
 import {color} from "d3";
 import {MathHelper} from "../../../../shared/utils/math-helper";
 import {LetDirective} from '@ngrx/component';
-import {NgClass, NgStyle} from '@angular/common';
+
 import {ShortNumberComponent} from '../../../../shared/components/short-number/short-number.component';
 import {toObservable} from "@angular/core/rxjs-interop";
 
@@ -34,10 +34,8 @@ interface DisplayItem {
   styleUrls: ['./trades-cluster.component.less'],
   imports: [
     LetDirective,
-    NgClass,
-    NgStyle,
     ShortNumberComponent
-  ]
+]
 })
 export class TradesClusterComponent implements OnInit {
   private readonly themeService = inject(ThemeService);

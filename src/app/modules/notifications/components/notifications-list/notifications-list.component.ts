@@ -6,7 +6,7 @@ import {map} from "rxjs/operators";
 import {isToday} from "date-fns";
 import {NzTableCellDirective, NzTableComponent, NzTbodyComponent, NzTrDirective} from 'ng-zorro-antd/table';
 import {TableRowHeightDirective} from '../../../../shared/directives/table-row-height.directive';
-import {AsyncPipe, DatePipe, NgClass} from '@angular/common';
+import {AsyncPipe, DatePipe} from '@angular/common';
 import {NzBadgeComponent} from 'ng-zorro-antd/badge';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 
@@ -20,12 +20,11 @@ import {NzTypographyComponent} from 'ng-zorro-antd/typography';
     NzTbodyComponent,
     NzTrDirective,
     NzTableCellDirective,
-    NgClass,
     NzBadgeComponent,
     NzTypographyComponent,
     AsyncPipe,
     DatePipe
-  ]
+]
 })
 export class NotificationsListComponent implements OnInit {
   private readonly notificationsService = inject(NotificationsService);

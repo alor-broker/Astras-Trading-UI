@@ -49,7 +49,7 @@
             nzWidth='15px'
           >
             <span
-              [ngClass]="{
+              [class]="{
               'btn': true,
               'active': vm.sort == null || vm.sort.orderBy === 'favorites',
               'disabled': vm.currentList.length <= 1 && vm.currentList[0].type === listTypes.HistoryList
@@ -138,7 +138,7 @@
                     @if (watchlist.type !== listTypes.HistoryList) {
                       <span
                         (click)="updateFavorites(watchlist.id, inst); $event.preventDefault(); $event.stopPropagation();"
-                        [ngClass]="{
+                        [class]="{
                           'btn': true,
                           'active': (inst.favoriteOrder ?? -1) >= 0
                           }"
@@ -175,10 +175,10 @@
                       </td>
                     }
                     @case ('priceChange') {
-                      <td [ngClass]="inst.priceChange < 0 ? 'sellCell' : 'buyCell'">{{ inst.priceChange | number: '0.0-6' }}</td>
+                      <td [class]="inst.priceChange < 0 ? 'sellCell' : 'buyCell'">{{ inst.priceChange | number: '0.0-6' }}</td>
                     }
                     @case ('priceChangeRatio') {
-                      <td [ngClass]="inst.priceChangeRatio < 0 ? 'sellCell' : 'buyCell'">
+                      <td [class]="inst.priceChangeRatio < 0 ? 'sellCell' : 'buyCell'">
                         {{ inst.priceChangeRatio | number: '0.0-3' }}
                       </td>
                     }

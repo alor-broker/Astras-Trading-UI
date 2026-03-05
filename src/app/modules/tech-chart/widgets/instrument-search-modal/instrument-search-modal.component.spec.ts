@@ -6,9 +6,11 @@ import {InstrumentsService} from "../../../instruments/services/instruments.serv
 import {TranslocoTestsModule} from "../../../../shared/utils/testing/translocoTestsModule";
 import {commonTestProviders} from "../../../../shared/utils/testing/common-test-providers";
 import {FormsTesting} from "../../../../shared/utils/testing/forms-testing";
-import {NzModalFooterDirective} from "ng-zorro-antd/modal";
+import {
+  NzModalFooterDirective,
+  NzModalModule
+} from "ng-zorro-antd/modal";
 import {MockComponents, MockDirectives} from "ng-mocks";
-import {NzInputGroupWhitSuffixOrPrefixDirective} from "ng-zorro-antd/input";
 import {
   NzAutocompleteComponent,
   NzAutocompleteOptionComponent,
@@ -42,6 +44,7 @@ describe('InstrumentSearchModalComponent', () => {
       imports: [
         TranslocoTestsModule.getModule(),
         ...FormsTesting.getMocks(),
+        NzModalModule,
         InstrumentSearchModalComponent,
         MockComponents(
           NzAutocompleteComponent,
@@ -53,7 +56,6 @@ describe('InstrumentSearchModalComponent', () => {
         MockDirectives(
           NzAutocompleteTriggerDirective,
           NzModalFooterDirective,
-          NzInputGroupWhitSuffixOrPrefixDirective
         )
       ],
       providers: [

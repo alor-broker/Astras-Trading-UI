@@ -26,7 +26,7 @@
       <tbody>
         @for (coupon of couponsTable.data; track $index) {
           <tr
-            [ngClass]="{
+            [class]="{
             closest: coupon.isClosest,
             expired: isInPast(coupon.date)
             }"
@@ -70,7 +70,7 @@
 
         @for (amort of amortizationsTable.data; track $index) {
           <tr
-            [ngClass]="{
+            [class]="{
             closest: amort.isClosest,
             expired: isInPast(amort.date)
             }"
@@ -106,7 +106,7 @@
       <tbody>
         @for (offer of offersTable.data; track $index) {
           <tr
-            [ngClass]="{
+            [class]="{
             closest: offer.isClosest,
             expired: isInPast(offer.date)
             }"

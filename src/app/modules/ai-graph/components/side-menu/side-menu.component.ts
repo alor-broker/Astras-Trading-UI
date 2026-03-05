@@ -1,7 +1,7 @@
 import {Component, contentChild, HostBinding, input, model} from '@angular/core';
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {NzIconDirective} from "ng-zorro-antd/icon";
-import {NgClass, NgTemplateOutlet} from "@angular/common";
+import {NgTemplateOutlet} from "@angular/common";
 import {SideMenuTitleDirective} from "../../directives/side-menu-title.directive";
 import {SideMenuContentDirective} from "../../directives/side-menu-content.directive";
 
@@ -14,9 +14,8 @@ export interface MenuWidth {
   selector: 'ats-side-menu',
   imports: [
     NzIconDirective,
-    NgClass,
     NgTemplateOutlet
-  ],
+],
   templateUrl: './side-menu.component.html',
   styleUrl: './side-menu.component.less',
   animations: [

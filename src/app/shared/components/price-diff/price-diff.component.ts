@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, LOCALE_ID, OnChanges, inject } from '@angular/core';
-import {DecimalPipe, NgStyle} from "@angular/common";
+import {DecimalPipe} from "@angular/common";
 import {ThemeService} from "../../services/theme.service";
 import {shareReplay, take} from "rxjs";
 import {map} from "rxjs/operators";
@@ -16,7 +16,7 @@ interface PriceDiff {
   templateUrl: './price-diff.component.html',
   styleUrls: ['./price-diff.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgStyle]
+  
 })
 export class PriceDiffComponent implements OnChanges {
   private readonly locale = inject(LOCALE_ID);

@@ -24,7 +24,7 @@ import { InstrumentKey } from "../../../../shared/models/instruments/instrument-
 import { InstrumentBadgeDisplayComponent } from "../../../../shared/components/instrument-badge-display/instrument-badge-display.component";
 import { LetDirective } from "@ngrx/component";
 import {
-  NzDropDownDirective,
+  NzDropdownDirective,
   NzDropdownMenuComponent
 } from "ng-zorro-antd/dropdown";
 import {
@@ -36,24 +36,24 @@ import { TranslocoDirective } from "@jsverse/transloco";
 
 @Component({
     selector: 'ats-search-results-list',
-    imports: [
-        NzRowDirective,
-        NzColDirective,
-        CdkVirtualScrollViewport,
-        CdkVirtualForOf,
-        CdkFixedSizeVirtualScroll,
-        TruncatedTextComponent,
-        NzButtonComponent,
-        NzIconDirective,
-        InstrumentBadgeDisplayComponent,
-        LetDirective,
-        NzDropDownDirective,
-        NzDropdownMenuComponent,
-        NzMenuDirective,
-        NzMenuItemComponent,
-        NzTooltipDirective,
-        TranslocoDirective
-    ],
+  imports: [
+    NzRowDirective,
+    NzColDirective,
+    CdkVirtualScrollViewport,
+    CdkVirtualForOf,
+    CdkFixedSizeVirtualScroll,
+    TruncatedTextComponent,
+    NzButtonComponent,
+    NzIconDirective,
+    InstrumentBadgeDisplayComponent,
+    LetDirective,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    NzTooltipDirective,
+    TranslocoDirective,
+    NzDropdownDirective
+  ],
     templateUrl: './search-results-list.component.html',
     styleUrl: './search-results-list.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush

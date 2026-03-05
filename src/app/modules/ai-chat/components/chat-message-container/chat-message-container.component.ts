@@ -1,7 +1,7 @@
 import {Component, HostBinding, input} from '@angular/core';
 import {Message, MessageType} from "../../models/messages-display.model";
 import {animate, state, style, transition, trigger} from "@angular/animations";
-import {NgClass} from '@angular/common';
+
 import {NzAvatarComponent} from 'ng-zorro-antd/avatar';
 import {TextMessageComponent} from '../messages/text-message/text-message.component';
 
@@ -16,10 +16,9 @@ import {TextMessageComponent} from '../messages/text-message/text-message.compon
     ]),
   ],
   imports: [
-    NgClass,
     NzAvatarComponent,
     TextMessageComponent
-  ]
+]
 })
 export class ChatMessageContainerComponent {
   readonly message = input.required<Message<any>>();

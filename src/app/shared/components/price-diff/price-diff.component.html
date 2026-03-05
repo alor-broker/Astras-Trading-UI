@@ -1,5 +1,5 @@
 @if (priceDiff) {
   <span>
-    {{ priceDiff.fixedPart }}<span [ngStyle]="{ color:priceDiff.changeColor }" class="changed">{{ priceDiff.updatedPart }}</span>
+    {{ priceDiff.fixedPart }}<span [style.color]="priceDiff.changeColor" class="changed">{{ priceDiff.updatedPart }}</span>
   </span>
 }
