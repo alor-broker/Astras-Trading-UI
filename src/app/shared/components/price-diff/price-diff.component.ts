@@ -15,8 +15,7 @@ interface PriceDiff {
   selector: 'ats-price-diff',
   templateUrl: './price-diff.component.html',
   styleUrls: ['./price-diff.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PriceDiffComponent implements OnChanges {
   private readonly locale = inject(LOCALE_ID);

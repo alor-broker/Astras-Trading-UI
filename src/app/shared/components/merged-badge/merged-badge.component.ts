@@ -3,12 +3,11 @@ import {
   input
 } from '@angular/core';
 
-
 @Component({
     selector: 'ats-merged-badge',
     templateUrl: './merged-badge.component.html',
     styleUrls: ['./merged-badge.component.less'],
-    
+
 })
 export class MergedBadgeComponent {
   readonly colors = input<string[]>([]);
