@@ -12,7 +12,7 @@ import {
 } from "ng-zorro-antd/radio";
 import { FormsModule } from "@angular/forms";
 import {
-  NzDropDownDirective,
+  NzDropdownDirective,
   NzDropdownMenuComponent
 } from "ng-zorro-antd/dropdown";
 import {
@@ -24,18 +24,18 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
 
 @Component({
     selector: 'ats-view-selector',
-    imports: [
-        NzRadioGroupComponent,
-        FormsModule,
-        NzRadioComponent,
-        NgTemplateOutlet,
-        NzDropdownMenuComponent,
-        NzMenuDirective,
-        NzMenuItemComponent,
-        NzButtonComponent,
-        NzDropDownDirective,
-        NzIconDirective
-    ],
+  imports: [
+    NzRadioGroupComponent,
+    FormsModule,
+    NzRadioComponent,
+    NgTemplateOutlet,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    NzButtonComponent,
+    NzIconDirective,
+    NzDropdownDirective
+  ],
     templateUrl: './view-selector.component.html',
     styleUrl: './view-selector.component.less'
 })

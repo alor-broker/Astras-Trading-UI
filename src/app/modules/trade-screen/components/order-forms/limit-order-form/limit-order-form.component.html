@@ -80,7 +80,7 @@
     <button
       *transloco="let t; scope: 'order-commands/buy-sell-buttons'"
       [disabled]="form.invalid"
-      [ngClass]="{
+      [class]="{
       'buy-button': orderSide === Sides.Buy,
       'sell-button': orderSide === Sides.Sell,
       }"

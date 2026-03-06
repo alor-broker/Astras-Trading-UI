@@ -7,7 +7,7 @@ import {
   output,
   ViewEncapsulation
 } from '@angular/core';
-import {NgClass} from "@angular/common";
+
 import {InstrumentIconComponent} from "../../../../shared/components/instrument-icon/instrument-icon.component";
 import {LetDirective} from "@ngrx/component";
 import {NzModalComponent} from "ng-zorro-antd/modal";
@@ -36,9 +36,8 @@ interface InstrumentPrice {
     InstrumentIconComponent,
     LetDirective,
     NzModalComponent,
-    NzTypographyComponent,
-    NgClass
-  ],
+    NzTypographyComponent
+],
   templateUrl: './invest-ideas-details-dialog.component.html',
   styleUrl: './invest-ideas-details-dialog.component.less',
   encapsulation: ViewEncapsulation.None

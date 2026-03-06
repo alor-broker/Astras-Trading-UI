@@ -29,8 +29,7 @@ import { mapWith } from "../../../../../shared/utils/observable-helper";
 import { AtsValidators } from "../../../../../shared/utils/form-validators";
 import {
   AsyncPipe,
-  CurrencyPipe,
-  NgClass
+  CurrencyPipe
 } from "@angular/common";
 import { InputNumberComponent } from "../../../../../shared/components/input-number/input-number.component";
 import { NzButtonComponent } from "ng-zorro-antd/button";
@@ -66,9 +65,8 @@ import {NearestTradingSessionComponent} from "../../../../order-commands/compone
     ReactiveFormsModule,
     ShortNumberComponent,
     TranslocoDirective,
-    NgClass,
     NearestTradingSessionComponent
-  ],
+],
   templateUrl: './limit-order-form.component.html',
   styleUrl: './limit-order-form.component.less',
 })

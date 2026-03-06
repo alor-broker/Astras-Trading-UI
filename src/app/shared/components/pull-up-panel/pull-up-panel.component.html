@@ -2,9 +2,9 @@
      (click)="onHeaderClick()"
      (mousedown)="onHeaderPointerDown($event)"
      (touchstart)="onHeaderPointerDown($event)">
-  <ng-container *ngTemplateOutlet="header()"></ng-container>
+  <ng-container *ngTemplateOutlet="header()" />
 </div>
 
 <div class="panel-body">
-  <ng-container *ngTemplateOutlet="body()"></ng-container>
+  <ng-container *ngTemplateOutlet="body()" />
 </div>

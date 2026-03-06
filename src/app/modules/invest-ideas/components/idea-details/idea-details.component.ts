@@ -1,7 +1,6 @@
 import { Component, computed, DestroyRef, model, OnDestroy, ViewEncapsulation, inject } from '@angular/core';
 import {
-  AsyncPipe,
-  NgClass
+  AsyncPipe
 } from "@angular/common";
 import { InstrumentIconComponent } from "../../../../shared/components/instrument-icon/instrument-icon.component";
 import { LetDirective } from "@ngrx/component";
@@ -42,9 +41,8 @@ interface InstrumentPrice {
     NzIconDirective,
     NzModalComponent,
     NzTypographyComponent,
-    NgClass,
     SubmitOrderForSymbolComponent
-  ],
+],
   templateUrl: './idea-details.component.html',
   styleUrl: './idea-details.component.less',
   encapsulation: ViewEncapsulation.None

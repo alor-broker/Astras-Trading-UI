@@ -4,7 +4,7 @@ import {NzTableModule} from "ng-zorro-antd/table";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {NzEmptyComponent} from "ng-zorro-antd/empty";
 import {NzTypographyComponent} from "ng-zorro-antd/typography";
-import {CurrencyPipe, NgClass, PercentPipe} from "@angular/common";
+import {CurrencyPipe, PercentPipe} from "@angular/common";
 import {TableRowHeightDirective} from "../../../../../shared/directives/table-row-height.directive";
 import {isBefore} from "date-fns";
 
@@ -19,9 +19,8 @@ import {isBefore} from "date-fns";
     NzTypographyComponent,
     CurrencyPipe,
     TableRowHeightDirective,
-    NgClass,
     PercentPipe
-  ]
+]
 })
 export class CalendarComponent {
   readonly bond = input.required<Bond>();

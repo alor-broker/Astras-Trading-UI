@@ -11,7 +11,10 @@ import {map} from "rxjs/operators";
 import {ACTIONS_CONTEXT, ActionsContext} from "../../services/actions-context";
 import {NzPopoverDirective} from 'ng-zorro-antd/popover';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
-import {NzDropdownButtonDirective, NzDropDownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {
+  NzDropdownDirective,
+  NzDropdownMenuComponent
+} from 'ng-zorro-antd/dropdown';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
@@ -25,15 +28,14 @@ import {toObservable} from "@angular/core/rxjs-interop";
   imports: [
     NzPopoverDirective,
     NzButtonComponent,
-    NzDropdownButtonDirective,
-    NzDropDownDirective,
     NzIconDirective,
     NzDropdownMenuComponent,
     NzMenuDirective,
     NzMenuItemComponent,
     NzTypographyComponent,
     InstrumentSearchComponent,
-    AsyncPipe
+    AsyncPipe,
+    NzDropdownDirective
   ]
 })
 export class WidgetHeaderInstrumentSwitchComponent implements OnInit {

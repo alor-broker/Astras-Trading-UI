@@ -1,10 +1,10 @@
 <div class="d-flex flex-column h-100 heading-color rounded-10" *transloco="let t; scope: 'money-operations'">
-  <nz-tabset [(nzSelectedIndex)]="activeTab">
+  <nz-tabs [(nzSelectedIndex)]="activeTab">
     <nz-tab [nzTitle]="t('moneyOperations.depositTitle')">
-      <ats-money-input></ats-money-input>
+      <ats-money-input />
     </nz-tab>
     <nz-tab [nzTitle]="t('moneyOperations.withdrawTitle')">
-      <ats-money-withdrawal></ats-money-withdrawal>
+      <ats-money-withdrawal />
     </nz-tab>
-  </nz-tabset>
+  </nz-tabs>
 </div>

@@ -104,7 +104,7 @@ export class SearchInstrumentStore extends ComponentStore<SearchInstrumentState>
           status: SearchStatus.Success,
           results: r.instruments.nodes.map(i => ({
             symbol: i.basicInformation.symbol,
-            shortName: i.basicInformation.shortName,
+            shortName: i.basicInformation.shortName ?? '',
             exchange: i.basicInformation.exchange,
             board: i.boardInformation.board,
             market: i.basicInformation.market,

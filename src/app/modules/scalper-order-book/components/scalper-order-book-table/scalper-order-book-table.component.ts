@@ -29,7 +29,7 @@ import {TranslocoDirective} from '@jsverse/transloco';
 import {TableRulerComponent} from '../table-ruler/table-ruler.component';
 import {HoverItemsGroupDirective} from '../../directives/hover-items-group.directive';
 import {HoverItemDirective} from '../../directives/hover-item.directive';
-import {AsyncPipe, NgClass, NgStyle, NgTemplateOutlet} from '@angular/common';
+import {AsyncPipe, NgTemplateOutlet} from '@angular/common';
 import {ShortNumberComponent} from '../../../../shared/components/short-number/short-number.component';
 import {CdkDrag, CdkDropList, CdkDropListGroup} from '@angular/cdk/drag-drop';
 import {LetDirective} from '@ngrx/component';
@@ -59,8 +59,6 @@ interface DisplayRow extends BodyRow {
     TableRulerComponent,
     HoverItemsGroupDirective,
     HoverItemDirective,
-    NgClass,
-    NgStyle,
     NgTemplateOutlet,
     ShortNumberComponent,
     CdkDropListGroup,
@@ -70,7 +68,7 @@ interface DisplayRow extends BodyRow {
     NzTooltipDirective,
     AsyncPipe,
     AtsPricePipe
-  ]
+]
 })
 export class ScalperOrderBookTableComponent implements OnInit {
   private readonly cancelOrdersCommand = inject(CancelOrdersCommand);

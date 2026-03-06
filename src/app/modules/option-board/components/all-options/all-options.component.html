@@ -11,11 +11,11 @@
           <div (nzResizeObserve)="updateContainerSize($event)" class="h-100 w-100 d-flex flex-column" nzResizeObserver>
             @if (contentSize$ | async; as contentSize) {
               <div #header class="d-flex flex-row heading-color header">
-                <div [ngStyle]="{ width: layoutSizes.priceColumnWidth + 'px'}"
+                <div [style.width]="layoutSizes.priceColumnWidth + 'px'"
                   class="flex-shrink-0 strike-price-cell">
                 </div>
                 @for (date of optionsMatrix.dateIndex; track date) {
-                  <div [ngStyle]="{ width: layoutSizes.optionCellWidth + 'px'}"
+                  <div [style.width]="layoutSizes.optionCellWidth + 'px'"
                     class="d-flex flex-column flex-shrink-0">
                     <div class="text-center text-nowrap">
                       {{t(
@@ -42,7 +42,7 @@
                 <ng-container
                   *cdkVirtualFor="let priceIndex of optionsMatrix.priceIndex; trackBy: getPriceTrackKey; let i = index;">
                   <div class="d-flex flex-row flex-nowrap">
-                    <div [ngStyle]="{ width: layoutSizes.priceColumnWidth + 'px', height: rowHeight + 'px'}"
+                    <div [style]="{ width: layoutSizes.priceColumnWidth + 'px', height: rowHeight + 'px'}"
                       class="heading-color flex-shrink-0 d-flex align-items-center justify-content-center strike-price-cell"
                       >
                       <span>{{priceIndex}}</span>
@@ -50,7 +50,7 @@
                     @if (dataContext().currentSelection$ | async; as optionsSelection) {
                       @for (dateIndex of optionsMatrix.dateIndex; track getDateTrackKey(j, dateIndex); let j = $index) {
                         <div
-                          [ngStyle]="{ width: layoutSizes.optionCellWidth + 'px', height: rowHeight + 'px'}"
+                          [style]="{ width: layoutSizes.optionCellWidth + 'px', height: rowHeight + 'px'}"
                           class="flex-shrink-0">
                           @if (optionsMatrix.options[i][j]; as option) {
                             <div
@@ -107,8 +107,8 @@
                   </div>
                 </ng-container>
                 @if (currentPriceYPosition$ | async; as currentPriceYPosition) {
-                  <div [ngStyle]="{top: currentPriceYPosition + 'px'}" class="current-price-line-item w-100">
-                    <div [ngStyle]="{ width: layoutSizes.priceColumnWidth + 'px'}"
+                  <div [style.top]="currentPriceYPosition + 'px'" class="current-price-line-item w-100">
+                    <div [style.width]="layoutSizes.priceColumnWidth + 'px'"
                          [nzTooltipTitle]="t(
                       'optionBoard.currentPriceTooltip',
                       {
@@ -120,7 +120,7 @@
                     >
                   </div>
                 </div>
-                <div [ngStyle]="{top: currentPriceYPosition + 'px'}" class="current-price-line-item w-100">
+                <div [style.top]="currentPriceYPosition + 'px'" class="current-price-line-item w-100">
                   <div class="line w-100">
                   </div>
                 </div>

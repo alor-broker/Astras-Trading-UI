@@ -7,7 +7,7 @@ import {MathHelper} from "../../../../shared/utils/math-helper";
 import {ColumnsOrder} from '../../models/orderbook-settings.model';
 import {OrderbookChartComponent} from '../orderbook-chart/orderbook-chart.component';
 import {TranslocoDirective} from '@jsverse/transloco';
-import {AsyncPipe, DecimalPipe, NgStyle} from '@angular/common';
+import {AsyncPipe, DecimalPipe} from '@angular/common';
 import {
   OrderbookTableVolumesAtTheEdgesComponent
 } from '../orderbook-tables/orderbook-table-volumes-at-the-edges/orderbook-table-volumes-at-the-edges.component';
@@ -60,12 +60,11 @@ type InstrumentExtended = Instrument & { isBond: boolean };
   imports: [
     OrderbookChartComponent,
     TranslocoDirective,
-    NgStyle,
     OrderbookTableVolumesAtTheEdgesComponent,
     OrderbookTableVolumesAtTheMiddleComponent,
     AsyncPipe,
     DecimalPipe
-  ]
+]
 })
 export class OrderBookComponent implements OnInit {
   readonly settings = input.required<OrderbookComponentSettings>();

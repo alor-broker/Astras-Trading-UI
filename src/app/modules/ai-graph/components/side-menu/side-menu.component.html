@@ -1,10 +1,10 @@
 <div
-  [ngClass]="position()"
+  [class]="position()"
   class="h-100 p-5 d-flex flex-column flex-gap-10 justify-content-start"
 >
   <div
     class="d-flex flex-row flex-nowrap align-items-center flex-gap-10 pb-5 header"
-    [ngClass]="{
+    [class]="{
     'flex-row': position() === 'right',
     'flex-row-reverse': position() === 'left'
     }"

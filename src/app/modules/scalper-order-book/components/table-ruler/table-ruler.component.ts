@@ -13,7 +13,7 @@ import {
 } from '../scalper-order-book-body/scalper-order-book-body.component';
 import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
 import {OrderbookDataRow} from "../../../orderbook/models/orderbook-data.model";
-import {AsyncPipe, NgClass, NgStyle} from '@angular/common';
+import {AsyncPipe, NgClass} from '@angular/common';
 
 interface MarkerDisplay {
   index: number;
@@ -27,9 +27,8 @@ interface MarkerDisplay {
   styleUrls: ['./table-ruler.component.less'],
   imports: [
     NgClass,
-    NgStyle,
     AsyncPipe
-  ]
+]
 })
 export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly bodyRef = inject<ScalperOrderBookBodyRef>(SCALPER_ORDERBOOK_BODY_REF, { skipSelf: true });

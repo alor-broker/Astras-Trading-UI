@@ -26,13 +26,13 @@
               atsHoverItem
               [atsHoverItemData]="{price: row.price}"
               >
-              <div [ngClass]="getVolumeCellClasses(row)"
+              <div [class]="getVolumeCellClasses(row)"
                 class="table-cell"
                 >
                 @if (row.isMajorLinePrice || row.isMinorLinePrice) {
                   <span
                     class="z-1"
-            [ngClass]="{
+            [class]="{
             'grid-line': true,
             'major': row.isMajorLinePrice,
             'minor': row.isMinorLinePrice
@@ -40,7 +40,7 @@
                   >&nbsp;</span>
                 }
                 @if ((row.volume ?? 0) > 0) {
-                  <span class="highlighter z-1" [ngStyle]="row.getVolumeStyle()">&nbsp;</span>
+                  <span class="highlighter z-1" [style]="row.getVolumeStyle()">&nbsp;</span>
                   <span class="volume px-2 z-2">
                     @if (row.rowType === rowTypes.Mixed) {
                       <span [ngTemplateOutlet]="volumeDisplay" [ngTemplateOutletContext]="{volume: row.askVolume ?? 0}"></span>
@@ -82,13 +82,13 @@
               [atsHoverItemData]="{price: row.price}"
               >
               <div
-                [ngClass]="getPriceCellClasses(row)"
+                [class]="getPriceCellClasses(row)"
                 class="table-cell"
                 >
                 @if (row.isMajorLinePrice || row.isMinorLinePrice) {
                   <span
                     class="z-1"
-            [ngClass]="{
+            [class]="{
             'grid-line': true,
             'major': row.isMajorLinePrice,
             'minor': row.isMinorLinePrice
@@ -120,7 +120,7 @@
               [atsHoverItemData]="{price: row.price}"
               >
               <div
-                [ngClass]="getOrdersCellClasses(row)"
+                [class]="getOrdersCellClasses(row)"
                 class="table-cell"
                 cdkDropList
                 [cdkDropListAutoScrollDisabled]="true"
@@ -129,7 +129,7 @@
                 @if (row.isMajorLinePrice || row.isMinorLinePrice) {
                   <span
                     class="z-1"
-            [ngClass]="{
+            [class]="{
             'grid-line': true,
             'major': row.isMajorLinePrice,
             'minor': row.isMinorLinePrice
@@ -156,7 +156,7 @@
                       (mousedown)="$event.stopPropagation()"
                       class="orders-indicator limit-order fw-bold px-1 position-relative z-2"
                       *ngrxLet="hasDirtyOrders(orders.orders) as isDirty"
-                    [ngClass]="{
+                    [class]="{
                     'bid': isAllOrdersHaveSide(orders.orders, ordersSides.Buy),
                     'ask': isAllOrdersHaveSide(orders.orders, ordersSides.Sell),
                     'multiple': orders.orders.length > 1,
@@ -179,7 +179,7 @@
                       (mousedown)="$event.stopPropagation()"
                       class="orders-indicator pl-2 position-relative z-2"
                       *ngrxLet="hasDirtyOrders(orders.orders) as isDirty"
-                    [ngClass]="{
+                    [class]="{
                     'bid': isAllOrdersHaveSide(orders.orders, ordersSides.Buy),
                     'ask': isAllOrdersHaveSide(orders.orders, ordersSides.Sell),
                     'multiple': orders.orders.length > 1,

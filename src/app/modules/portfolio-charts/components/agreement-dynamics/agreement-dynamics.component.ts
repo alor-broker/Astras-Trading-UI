@@ -52,7 +52,6 @@ import {
   toObservable
 } from "@angular/core/rxjs-interop";
 import {
-  NgClass,
   PercentPipe
 } from "@angular/common";
 import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
@@ -87,9 +86,8 @@ interface ChartConfig {
     NzSpinComponent,
     NzButtonComponent,
     NzResizeObserverDirective,
-    NgClass,
     PercentPipe
-  ],
+],
   templateUrl: './agreement-dynamics.component.html',
   styleUrl: './agreement-dynamics.component.less'
 })

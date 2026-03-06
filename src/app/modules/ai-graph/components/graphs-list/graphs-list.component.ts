@@ -6,7 +6,10 @@ import {
   NzButtonComponent,
 } from "ng-zorro-antd/button";
 import {NzIconDirective} from "ng-zorro-antd/icon";
-import {NzInputDirective, NzInputGroupComponent} from "ng-zorro-antd/input";
+import {
+  NzInputDirective,
+  NzInputModule,
+} from "ng-zorro-antd/input";
 import {TranslocoDirective} from "@jsverse/transloco";
 import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NzFormControlComponent, NzFormDirective} from "ng-zorro-antd/form";
@@ -22,7 +25,7 @@ import {NzEmptyComponent} from "ng-zorro-antd/empty";
 import { GraphTemplatesStorageService } from "../../services/graph-templates-storage.service";
 import { GraphTemplate } from "../../models/graph-template.model";
 import {
-  NzDropDownDirective,
+  NzDropdownDirective,
   NzDropdownMenuComponent
 } from "ng-zorro-antd/dropdown";
 import { NzSpaceCompactComponent } from "ng-zorro-antd/space";
@@ -35,11 +38,11 @@ import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
 @Component({
     selector: 'ats-graphs-list',
   imports: [
+    NzInputModule,
     LetDirective,
     NzSpinComponent,
     NzButtonComponent,
     NzIconDirective,
-    NzInputGroupComponent,
     NzInputDirective,
     TranslocoDirective,
     ReactiveFormsModule,
@@ -47,12 +50,12 @@ import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
     NzFormDirective,
     NzPopconfirmDirective,
     NzEmptyComponent,
-    NzDropDownDirective,
     NzSpaceCompactComponent,
     NzDropdownMenuComponent,
     NzMenuDirective,
     NzMenuItemComponent,
-    NzTooltipDirective
+    NzTooltipDirective,
+    NzDropdownDirective
   ],
     templateUrl: './graphs-list.component.html',
     styleUrl: './graphs-list.component.less'

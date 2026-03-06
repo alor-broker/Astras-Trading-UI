@@ -1,5 +1,16 @@
 import { Component, OnInit, viewChild, inject } from '@angular/core';
-import { CompactType, DisplayGrid, Draggable, GridsterComponent, GridsterConfig, GridsterItem, GridType, PushDirections, Resizable, GridsterItemComponent } from 'angular-gridster2';
+import {
+  CompactType,
+  DisplayGrid,
+  Draggable,
+  Gridster,
+  GridsterConfig,
+  GridsterItem,
+  GridsterItemConfig,
+  GridType,
+  PushDirections,
+  Resizable
+} from 'angular-gridster2';
 import {
   combineLatest,
   map,
@@ -29,15 +40,15 @@ interface Safe extends GridsterConfig {
   pushDirections: PushDirections;
 }
 
-interface WidgetItem { instance: WidgetInstance, gridsterItem: GridsterItem }
+interface WidgetItem { instance: WidgetInstance, gridsterItem: GridsterItemConfig }
 
 @Component({
     selector: 'ats-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.less'],
     imports: [
-      GridsterComponent,
-      GridsterItemComponent,
+      Gridster,
+      GridsterItem,
       ParentWidgetComponent,
       AsyncPipe
     ]
@@ -48,7 +59,7 @@ export class DashboardComponent implements OnInit {
   private readonly widgetsMetaService = inject(WidgetsMetaService);
   private readonly terminalSettingsService = inject(TerminalSettingsService);
 
-  readonly gridster = viewChild(GridsterComponent);
+  readonly gridster = viewChild(Gridster);
 
   options$!: Observable<Safe>;
   items$?: Observable<WidgetItem[]>;
@@ -250,7 +261,10 @@ export class DashboardComponent implements OnInit {
                 });
             }
           } else if(widgetMeta.desktopMeta?.addOptions.initialPosition === "below" && gridster!.grid.length > 0) {
-            newPosition.y = Math.max(...gridster!.grid.map(x => x.item.y + x.item.rows));
+            newPosition.y = Math.max(...gridster!.grid.map(x => {
+              const itemConfig = x.item();
+              return itemConfig.y + itemConfig.rows;
+            }));
           }
         }
 

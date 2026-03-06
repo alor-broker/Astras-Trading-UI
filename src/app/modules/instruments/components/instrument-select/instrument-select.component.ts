@@ -24,7 +24,10 @@ import {NzInputDirective} from 'ng-zorro-antd/input';
 import {FormsModule} from '@angular/forms';
 import {NzTagComponent} from 'ng-zorro-antd/tag';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
-import {NzDropdownButtonDirective, NzDropDownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {
+  NzDropdownDirective,
+  NzDropdownMenuComponent
+} from 'ng-zorro-antd/dropdown';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
@@ -45,15 +48,14 @@ import {AsyncPipe} from '@angular/common';
     NzAutocompleteOptionComponent,
     NzTagComponent,
     NzButtonComponent,
-    NzDropdownButtonDirective,
-    NzDropDownDirective,
     NzTooltipDirective,
     NzIconDirective,
     NzDropdownMenuComponent,
     NzMenuDirective,
     NzMenuItemComponent,
     WatchlistTableComponent,
-    AsyncPipe
+    AsyncPipe,
+    NzDropdownDirective
   ]
 })
 export class InstrumentSelectComponent implements OnInit {

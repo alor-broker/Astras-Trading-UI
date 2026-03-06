@@ -19,7 +19,10 @@ import {LetDirective} from '@ngrx/component';
 import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
-import {NzDropDownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {
+  NzDropdownDirective,
+  NzDropdownMenuComponent
+} from 'ng-zorro-antd/dropdown';
 import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
 
 @Component({
@@ -32,10 +35,10 @@ import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
     NzResizeObserverDirective,
     TranslocoDirective,
     NzButtonComponent,
-    NzDropDownDirective,
     NzDropdownMenuComponent,
     NzMenuDirective,
-    NzMenuItemComponent
+    NzMenuItemComponent,
+    NzDropdownDirective
   ]
 })
 export class TimeframesPanelComponent implements OnDestroy, OnInit, OnChanges {

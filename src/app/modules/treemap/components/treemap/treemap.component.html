@@ -4,7 +4,7 @@
       #treemapTooltip
       class="treemap-tooltip"
       [class.visible]="isTooltipVisible$ | async"
-      [ngStyle]="{
+      [style]="{
         top: getMinValue(treemapWrapper.clientHeight - treemapTooltip.clientHeight, tooltipData.position.top) + 'px',
         left: getMinValue(treemapWrapper.clientWidth - treemapTooltip.clientWidth, tooltipData.position.left) + 'px',
       }"

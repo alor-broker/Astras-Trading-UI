@@ -37,7 +37,6 @@ import {
 import {map} from "rxjs/operators";
 import {
   DecimalPipe,
-  NgClass,
   PercentPipe
 } from "@angular/common";
 import {LetDirective} from "@ngrx/component";
@@ -81,7 +80,6 @@ export interface MarketFilters {
     TranslocoDirective,
     LetDirective,
     NzButtonComponent,
-    NgClass,
     PercentPipe,
     NzEmptyComponent,
     NzSkeletonComponent,
@@ -91,7 +89,7 @@ export interface MarketFilters {
     NzTabComponent,
     NzTypographyComponent,
     NzTabsComponent
-  ],
+],
   templateUrl: './market-trends.component.html',
   styleUrl: './market-trends.component.less'
 })

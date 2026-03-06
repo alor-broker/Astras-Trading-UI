@@ -13,7 +13,7 @@ import { environment } from "../../../../../environments/environment";
 import { AsyncPipe } from "@angular/common";
 import { NzButtonComponent } from "ng-zorro-antd/button";
 import {
-  NzDropDownDirective,
+  NzDropdownDirective,
   NzDropdownMenuComponent
 } from "ng-zorro-antd/dropdown";
 import {
@@ -27,10 +27,10 @@ import { GuidGenerator } from "../../../../shared/utils/guid";
   imports: [
     AsyncPipe,
     NzButtonComponent,
-    NzDropDownDirective,
     NzDropdownMenuComponent,
     NzMenuDirective,
-    NzMenuItemComponent
+    NzMenuItemComponent,
+    NzDropdownDirective
   ],
   templateUrl: './lang-switch-widget.component.html',
   styleUrl: './lang-switch-widget.component.less',

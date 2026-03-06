@@ -2,15 +2,12 @@ import {
   Component,
   input
 } from '@angular/core';
-import { NgStyle } from "@angular/common";
 
 @Component({
     selector: 'ats-merged-badge',
     templateUrl: './merged-badge.component.html',
     styleUrls: ['./merged-badge.component.less'],
-    imports: [
-    NgStyle
-]
+
 })
 export class MergedBadgeComponent {
   readonly colors = input<string[]>([]);

@@ -7,8 +7,7 @@ import {
   switchMap
 } from "rxjs/operators";
 import {
-  AsyncPipe,
-  NgClass
+  AsyncPipe
 } from "@angular/common";
 import {
   combineLatest,
@@ -22,9 +21,8 @@ import { NzIconDirective } from "ng-zorro-antd/icon";
   imports: [
     TranslocoDirective,
     AsyncPipe,
-    NgClass,
     NzIconDirective
-  ],
+],
   templateUrl: './portfolio-evaluation.component.html',
   styleUrl: './portfolio-evaluation.component.less'
 })

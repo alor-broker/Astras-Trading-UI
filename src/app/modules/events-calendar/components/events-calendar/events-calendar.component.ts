@@ -12,7 +12,10 @@ import {Exchange} from "../../../../../generated/graphql.types";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzTabComponent, NzTabsComponent} from 'ng-zorro-antd/tabs';
 import {NzButtonComponent} from 'ng-zorro-antd/button';
-import {NzDropdownButtonDirective, NzDropDownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {
+  NzDropdownDirective,
+  NzDropdownMenuComponent
+} from 'ng-zorro-antd/dropdown';
 import {CalendarViewComponent} from '../calendar-view/calendar-view.component';
 import {ListViewComponent} from '../list-view/list-view.component';
 import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
@@ -27,14 +30,13 @@ import {AsyncPipe} from '@angular/common';
     NzTabsComponent,
     NzTabComponent,
     NzButtonComponent,
-    NzDropdownButtonDirective,
-    NzDropDownDirective,
     CalendarViewComponent,
     ListViewComponent,
     NzDropdownMenuComponent,
     NzMenuDirective,
     NzMenuItemComponent,
-    AsyncPipe
+    AsyncPipe,
+    NzDropdownDirective
   ]
 })
 export class EventsCalendarComponent implements OnInit, OnDestroy {

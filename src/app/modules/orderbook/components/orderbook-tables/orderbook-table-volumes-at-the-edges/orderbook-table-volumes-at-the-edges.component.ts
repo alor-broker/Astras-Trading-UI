@@ -10,7 +10,7 @@ import {
   NzTrDirective
 } from 'ng-zorro-antd/table';
 import {CdkDrag, CdkDropList, CdkDropListGroup} from '@angular/cdk/drag-drop';
-import {NgStyle} from '@angular/common';
+
 import {NzButtonComponent} from 'ng-zorro-antd/button';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {ShortNumberComponent} from '../../../../../shared/components/short-number/short-number.component';
@@ -31,13 +31,12 @@ import {AtsPricePipe} from '../../../../../shared/pipes/ats-price.pipe';
     NzTbodyComponent,
     CdkDropListGroup,
     CdkDropList,
-    NgStyle,
     NzButtonComponent,
     CdkDrag,
     NzIconDirective,
     ShortNumberComponent,
     AtsPricePipe
-  ]
+]
 })
 export class OrderbookTableVolumesAtTheEdgesComponent extends OrderbookTableBaseComponent {
 

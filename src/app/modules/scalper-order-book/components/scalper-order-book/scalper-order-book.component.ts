@@ -8,7 +8,7 @@ import {
 import { map } from "rxjs/operators";
 import { ScalperOrderBookDataProvider } from "../../services/scalper-order-book-data-provider.service";
 import { LetDirective } from '@ngrx/component';
-import { NgStyle, AsyncPipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { ScalperOrderBookBodyComponent } from '../scalper-order-book-body/scalper-order-book-body.component';
 import { CurrentPositionPanelComponent } from '../current-position-panel/current-position-panel.component';
 import {ScalperCommandProcessorService} from "../../services/scalper-command-processor.service";
@@ -57,12 +57,11 @@ export const SCALPER_ORDERBOOK_SHARED_CONTEXT = new InjectionToken<ScalperOrderB
       ScalperCommandProcessorService
     ],
     imports: [
-      LetDirective,
-      NgStyle,
-      ScalperOrderBookBodyComponent,
-      CurrentPositionPanelComponent,
-      AsyncPipe
-    ]
+    LetDirective,
+    ScalperOrderBookBodyComponent,
+    CurrentPositionPanelComponent,
+    AsyncPipe
+]
 })
 export class ScalperOrderBookComponent implements ScalperOrderBookSharedContext, OnInit, OnDestroy {
   private readonly dataContextService = inject(ScalperOrderBookDataProvider);

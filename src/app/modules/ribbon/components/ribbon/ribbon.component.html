@@ -6,7 +6,7 @@
         <div class="row">
           <span nz-typography><strong>{{ index.name }}</strong></span>
           <span>{{ index.value | number: '1.0-2' }}</span>
-          <span [ngClass]="{
+          <span [class]="{
           'change': true,
           'positive': index.changePercent > 0,
           'negative': index.changePercent < 0
@@ -21,7 +21,7 @@
           <span nz-typography><strong>{{ index.name }}</strong></span>
           <div class="row">
             <span>{{ index.value | number: '1.0-2' }}</span>
-            <span [ngClass]="{
+            <span [class]="{
           'change': true,
           'positive': index.changePercent > 0,
           'negative': index.changePercent < 0

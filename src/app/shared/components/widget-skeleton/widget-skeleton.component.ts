@@ -1,11 +1,11 @@
 import {Component, input, TemplateRef} from '@angular/core';
-import {NgClass, NgTemplateOutlet} from '@angular/common';
+import {NgTemplateOutlet} from '@angular/common';
 
 @Component({
   selector: 'ats-widget-skeleton',
   templateUrl: './widget-skeleton.component.html',
   styleUrls: ['./widget-skeleton.component.less'],
-  imports: [NgTemplateOutlet, NgClass]
+  imports: [NgTemplateOutlet]
 })
 export class WidgetSkeletonComponent {
   readonly header = input.required<TemplateRef<any>>();

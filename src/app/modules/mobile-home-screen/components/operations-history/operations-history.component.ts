@@ -9,8 +9,7 @@ import {
 } from '@angular/core';
 import {
   DatePipe,
-  DecimalPipe,
-  NgClass
+  DecimalPipe
 } from '@angular/common';
 import {
   FormControl,
@@ -133,9 +132,8 @@ const NEGATIVE_AMOUNT_TYPES = new Set<string>([
     NzSelectModule,
     TranslocoDirective,
     DecimalPipe,
-    DatePipe,
-    NgClass
-  ],
+    DatePipe
+],
   templateUrl: './operations-history.component.html',
   styleUrls: ['./operations-history.component.less']
 })

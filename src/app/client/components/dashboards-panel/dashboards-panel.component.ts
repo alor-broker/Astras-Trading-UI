@@ -26,7 +26,10 @@ import {
 import {FormsModule} from "@angular/forms";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {NzButtonComponent} from "ng-zorro-antd/button";
-import {NzDropDownDirective, NzDropdownMenuComponent} from "ng-zorro-antd/dropdown";
+import {
+  NzDropdownDirective,
+  NzDropdownMenuComponent
+} from "ng-zorro-antd/dropdown";
 import {NzTypographyComponent} from "ng-zorro-antd/typography";
 import {NzIconDirective} from "ng-zorro-antd/icon";
 import {SelectDashboardMenuComponent} from "../select-dashboard-menu/select-dashboard-menu.component";
@@ -50,13 +53,13 @@ interface DashboardSegmentedOption {
     NzTooltipDirective,
     CdkDrag,
     NzButtonComponent,
-    NzDropDownDirective,
     NzTypographyComponent,
     NzIconDirective,
     NzDropdownMenuComponent,
     SelectDashboardMenuComponent,
-    NzSegmentedItemComponent
-],
+    NzSegmentedItemComponent,
+    NzDropdownDirective
+  ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardsPanelComponent implements OnInit, OnDestroy {
