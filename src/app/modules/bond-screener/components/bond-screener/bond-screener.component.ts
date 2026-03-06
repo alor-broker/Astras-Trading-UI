@@ -128,7 +128,7 @@ export class BondScreenerComponent extends LazyLoadingBaseTableComponent<
     {
       id: 'complexProductCategory',
       displayName: 'Категория для торговли',
-      transformFn: (d: BondDisplay): string => d.basicInformation.complexProductCategory,
+      transformFn: (d: BondDisplay): string => d.basicInformation.complexProductCategory ?? '',
       sortChangeFn: (dir): void => this.sortChange(['basicInformation', 'complexProductCategory'], dir),
       width: 110,
       filterData: {

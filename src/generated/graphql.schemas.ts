@@ -99,16 +99,16 @@ export function AmortizationSortInputSchema(): z.ZodObject<Properties<Amortizati
 export function BasicInformationSchema(): z.ZodObject<Properties<BasicInformation>> {
   return z.object({
     __typename: z.literal('BasicInformation').optional(),
-    complexProductCategory: z.string(),
-    description: z.string(),
+    complexProductCategory: z.string().nullish(),
+    description: z.string().nullish(),
     exchange: ExchangeSchema,
-    fullDescription: z.string(),
+    fullDescription: z.string().nullish(),
     fullName: z.string().nullish(),
     gicsSector: z.string().nullish(),
     market: MarketSchema,
     readableType: z.string().nullish(),
     sector: z.string().nullish(),
-    shortName: z.string(),
+    shortName: z.string().nullish(),
     symbol: z.string(),
     type: z.string().nullish()
   })
