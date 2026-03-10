@@ -77,7 +77,7 @@ export class UpdateBadgesDesktopDashboardMigration extends MigrationBase {
           };
 
           const patch = this.getPatchForItem(item, index, defaultInstrument);
-          if (!!patch) {
+          if (patch) {
             patches.push(patch);
           }
         }

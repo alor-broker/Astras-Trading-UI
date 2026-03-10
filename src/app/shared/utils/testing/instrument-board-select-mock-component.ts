@@ -19,8 +19,8 @@ import {
   }]
 })
 export class InstrumentBoardSelectMockComponent implements ControlValueAccessor {
-  readonly instrument = input<any>();
-  readonly placeholder = input<any>();
+  readonly instrument = input<{ symbol: string, exchange: string } | null>();
+  readonly placeholder = input<string>();
 
   registerOnChange(): void {
     return;

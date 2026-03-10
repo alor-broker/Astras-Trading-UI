@@ -10,7 +10,7 @@ import { InstrumentKey } from "../../../shared/models/instruments/instrument-key
 
 const DEFAULT_EXCHANGE = 'MOEX';
 
-export const SYNTHETIC_INSTRUMENT_REGEX = /[^\[]+(?=])|[\^+*\/()-]|[\w:.]+(?:-\d+\.\d+)?[\w:.]*/g;
+export const SYNTHETIC_INSTRUMENT_REGEX = /[^[]+(?=])|[\^+*/()-]|[\w:.]+(?:-\d+\.\d+)?[\w:.]*/g;
 
 export class SyntheticInstrumentsHelper {
   static getRegularOrSyntheticInstrumentKey(searchString: string): RegularOrSyntheticInstrumentKey {

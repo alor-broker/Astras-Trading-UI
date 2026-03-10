@@ -228,7 +228,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                       ? color(themeColors.buyColor)
                       : color(themeColors.sellColor);
 
-                    if (!!c) {
+                    if (c) {
                       c.opacity = t.raw._data.children[0]?.dayChangeAbs / this.maxDayChange;
                     }
 

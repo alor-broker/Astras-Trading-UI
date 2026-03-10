@@ -273,6 +273,7 @@ export class AllOptionsListViewComponent implements OnInit, OnDestroy {
       const target = (side === OptionSide.Call
         ? layout.callSideLayout
         : layout.putSideLayout)
+        // eslint-disable-next-line no-unexpected-multiline
         [parameterIndex];
 
       if (target != null) {

@@ -76,8 +76,7 @@ class OrdersState {
     orders.forEach(value => {
       try {
         value.remove();
-      } catch {
-      }
+      } catch { /* empty */ }
     });
 
     orders.clear();
@@ -173,8 +172,7 @@ export class OrdersDisplayExtension extends BaseExtension {
     const removeItem = (itemKey: string): void => {
       try {
         state.get(itemKey)?.remove();
-      } catch {
-      }
+      } catch { /* empty */ }
 
       state.delete(itemKey);
     };

@@ -45,10 +45,15 @@ export abstract class BlotterBaseTableComponent<T extends { id: string }, F exte
   protected fileSuffix!: string;
 
   protected constructor(
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected readonly settingsService: WidgetSettingsService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected readonly translatorService: TranslatorService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected readonly nzContextMenuService: NzContextMenuService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected readonly widgetLocalStateService: WidgetLocalStateService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected readonly destroyRef: DestroyRef
   ) {
     super(settingsService, destroyRef);

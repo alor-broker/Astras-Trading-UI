@@ -13,7 +13,6 @@ export interface TargetInstrumentKey {
 
 @Component({
   template: '',
-  standalone: false
 })
 export abstract class InstrumentInfoBaseComponent {
   readonly loadingChange = output<boolean>();

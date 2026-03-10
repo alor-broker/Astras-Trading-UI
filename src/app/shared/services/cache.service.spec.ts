@@ -18,7 +18,7 @@ describe('CacheService', () => {
   beforeEach(() => {
     try {
       jasmine.clock().install();
-    } catch {}
+    } catch { /* empty */ }
   });
 
   afterEach(() => {

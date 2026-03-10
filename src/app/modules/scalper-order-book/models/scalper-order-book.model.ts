@@ -21,8 +21,7 @@ export interface CurrentOrderDisplay {
   isDirty: boolean;
 }
 
-export interface LocalOrder extends Omit<CurrentOrderDisplay, 'meta'> {
-}
+export type LocalOrder = Omit<CurrentOrderDisplay, 'meta'>;
 
 export interface PriceRow {
   price: number;

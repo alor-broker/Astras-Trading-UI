@@ -50,7 +50,7 @@ export class WidgetSettingsBridgeEffects {
           .map(s => ({
               guid: s.guid,
               groupKey:  s.badgeColor ?? defaultBadgeColor,
-              instrumentKey: (<any>s) as InstrumentKey
+              instrumentKey: s as unknown as InstrumentKey
             }))
           .filter(s => !InstrumentEqualityComparer.equals(d.instrumentsSelection![s.groupKey]!, s.instrumentKey));
         return {
@@ -82,7 +82,7 @@ export class WidgetSettingsBridgeEffects {
         const dashboardWidgetGuids = d.items.map(x => x.guid);
         const settingsToUpdate = settings
           .filter(s => dashboardWidgetGuids.includes(s.guid))
-          .filter(s => !PortfolioKeyEqualityComparer.equals(d.selectedPortfolio, (<any>s) as PortfolioKey));
+          .filter(s => !PortfolioKeyEqualityComparer.equals(d.selectedPortfolio, s as unknown as PortfolioKey));
 
         return {
           settingsToUpdate,

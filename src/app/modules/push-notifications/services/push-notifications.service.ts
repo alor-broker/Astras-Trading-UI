@@ -112,7 +112,7 @@ export class PushNotificationsService implements OnDestroy {
         }),
         catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
         tap(r => {
-          if (!!r) {
+          if (r) {
             this.subscriptionsUpdatedSub.next(PushSubscriptionType.OrderExecute);
           }
         })
@@ -133,7 +133,7 @@ export class PushNotificationsService implements OnDestroy {
         catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
         take(1),
         tap(r => {
-          if (!!r) {
+          if (r) {
             this.subscriptionsUpdatedSub.next(PushSubscriptionType.PriceSpark);
           }
         })
@@ -202,7 +202,7 @@ export class PushNotificationsService implements OnDestroy {
         catchHttpError<BaseCommandResponse | null>(null, this.errorHandlerService),
         take(1),
         tap(r => {
-          if (!!r) {
+          if (r) {
             this.subscriptionsUpdatedSub.next(null);
           }
         })

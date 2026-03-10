@@ -373,7 +373,7 @@ export class StopOrderFormComponent extends BaseOrderFormComponent implements On
       quantity: Number(formValue.quantity),
       triggerPrice: Number(formValue.triggerPrice),
       condition: formValue.condition!,
-      stopEndUnixTime: !!formValue.stopEndUnixTime
+      stopEndUnixTime: formValue.stopEndUnixTime
         ? timezoneConverter.terminalToUtc0Date(formValue.stopEndUnixTime as Date)
         : undefined,
       side: side,

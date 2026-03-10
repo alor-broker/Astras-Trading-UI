@@ -425,7 +425,7 @@ export class OrdersComponent extends BlotterBaseTableComponent<DisplayOrder, Ord
           ...o,
           residue: `${o.filled}/${o.qty}`,
           transTime: converter.toTerminalDate(o.transTime),
-          endTime: !!o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime,
+          endTime: o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime,
           groupId: groups.find(g => !!g.orders.find(go => go.orderId === o.id))?.id
         }))
         .filter(o => this.justifyFilter(o, f))

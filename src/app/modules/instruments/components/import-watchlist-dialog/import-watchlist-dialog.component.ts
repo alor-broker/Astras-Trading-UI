@@ -137,7 +137,7 @@ export class ImportWatchlistDialogComponent implements OnInit {
           take(1),
           map(i => ({
             input: rawTicker,
-            instrumentKey: !!i ? toInstrumentKey(i) : null
+            instrumentKey: i ? toInstrumentKey(i) : null
           } as ParsedItem))
         );
       })
@@ -171,10 +171,10 @@ export class ImportWatchlistDialogComponent implements OnInit {
 
       this.dialogParamsChanges$.pipe(
         take(1),
-        filter(x => !!x)
+        filter(x => x != null)
       ).subscribe(dialogParams => {
         this.watchlistCollectionService.addItemsToList(
-          dialogParams?.listId!,
+          dialogParams.listId,
           itemsToImport.map(x => x.instrumentKey!),
           false);
         this.closeDialog();

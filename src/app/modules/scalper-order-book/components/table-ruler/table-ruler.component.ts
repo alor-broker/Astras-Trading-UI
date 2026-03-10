@@ -79,7 +79,7 @@ export class TableRulerComponent implements OnInit, AfterViewInit, OnDestroy {
   private initMarkerData(): void {
     this.settings$ = this.dataContext().extendedSettings$.pipe(
       map(x => {
-        if (!!x.widgetSettings.rulerSettings) {
+        if (x.widgetSettings.rulerSettings) {
           return x;
         }
 

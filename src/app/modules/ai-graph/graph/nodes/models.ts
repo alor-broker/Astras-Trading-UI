@@ -16,8 +16,7 @@ export enum OutputFormat {
   Markdown = 'markdown',
 }
 
-export interface ValidationOptions {
-}
+export type ValidationOptions = object;
 
 export interface StringValueValidationOptions extends ValidationOptions {
   minLength: number;

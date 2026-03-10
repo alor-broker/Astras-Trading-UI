@@ -71,13 +71,13 @@ export class WorkingVolumesComponent implements OnInit {
           const bestBid = orderbook.b[0] as OrderbookDataRow | undefined;
 
           return {
-            ask: !!bestAsk
+            ask: bestAsk
               ? {
                 price: bestAsk.p,
                 volume: bestAsk.v
               }
               : null,
-            bid: !!bestBid
+            bid: bestBid
               ? {
                 price: bestBid.p,
                 volume: bestBid.v

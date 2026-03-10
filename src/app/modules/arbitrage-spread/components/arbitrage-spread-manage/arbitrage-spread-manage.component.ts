@@ -26,7 +26,7 @@ interface SpreadFormGroup {
   thirdLeg: FormControl;
 }
 
-const CALCULATION_FORMULA_PATTERN = /^(?:L[1-3]|\d+(.\d+)?)(?:[\-+*\/](?:L[1-3]|\d+(.\d+)?))*$/;
+const CALCULATION_FORMULA_PATTERN = /^(?:L[1-3]|\d+(.\d+)?)(?:[-+*/](?:L[1-3]|\d+(.\d+)?))*$/;
 
 const calculationFormulaValidator: ValidatorFn = (form) => {
   if (

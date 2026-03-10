@@ -117,7 +117,10 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     }).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(x => {
-      const canvas = this.canvas()?.nativeElement!;
+      const canvas = this.canvas()?.nativeElement;
+      if(canvas == null) {
+        return;
+      }
       const context = canvas.getContext('2d')!;
 
       context.clearRect(0, 0, canvas.width, canvas.height);
@@ -224,7 +227,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
       itemsDraws.push(currentItem.drawer);
 
-      if (!!prevItem) {
+      if (prevItem) {
         layers.push(this.drawItemsConnection(
           currentItem.meta,
           prevItem,
@@ -684,7 +687,7 @@ export class TradesPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         : themeColors.sellColorAccent
       );
 
-      if (!!backgroundColor) {
+      if (backgroundColor) {
         backgroundColor.opacity = 0.65;
       }
 

@@ -92,8 +92,7 @@ class TradesState {
     this.drawnTrades.forEach(t => {
       try {
         t.remove();
-      } catch {
-      }
+      } catch { /* empty */ }
     });
 
     this.drawnTrades.clear();

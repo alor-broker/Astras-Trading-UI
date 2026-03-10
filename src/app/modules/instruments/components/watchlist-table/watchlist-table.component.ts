@@ -263,11 +263,15 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
   }
 
   addWidget(type: string): void {
+    if(this.selectedItem == null) {
+      return;
+    }
+
     this.dashboardService.addWidget(
       type,
       {
         linkToActive: false,
-        ...toInstrumentKey(this.selectedItem?.instrument.instrument!)
+        ...toInstrumentKey(this.selectedItem.instrument.instrument!)
       }
     );
   }
@@ -574,7 +578,9 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
 
   private getSortFn(propName: string): SortFn {
     return (a: any, b: any) => {
-      return getPropertyFromPath(a, propName) > getPropertyFromPath(b, propName) ? 1 : -1;
+      const aValue = getPropertyFromPath(a, propName) as string | number;
+      const bValue = getPropertyFromPath(b, propName) as string | number;
+      return aValue > bValue ? 1 : -1;
     };
   };
 

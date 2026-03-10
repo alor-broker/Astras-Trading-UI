@@ -424,7 +424,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     const mapper = this.optionDisplayParameterMap.get(displayParameter);
-    if (!!mapper) {
+    if (mapper) {
       optionDisplay.displayValue = mapper(optionDisplay);
     }
 
@@ -455,7 +455,7 @@ export class AllOptionsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         setTimeout(() => {
-          if (!!(strikeIndex ?? 0)) {
+          if (strikeIndex ?? 0) {
             const viewPortSize = bodyScroll.measureViewportSize('vertical');
             const visibleItemsCount = viewPortSize / this.rowHeight;
             const centerCorrection = Math.floor(visibleItemsCount / 2) - 1;

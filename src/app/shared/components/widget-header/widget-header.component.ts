@@ -112,7 +112,7 @@ export class WidgetHeaderComponent implements OnInit {
 
               return {
                 color: b,
-                assignedInstrument: !!assignedInstrument
+                assignedInstrument: assignedInstrument
                   ? {
                     ...currentSelection[b]!,
                     instrumentGroup: symbolGroups[assignedInstrument.symbol]! > 1

@@ -2,11 +2,7 @@
 import { Observable } from 'rxjs';
 import { NotificationMeta } from '../models/notification.model';
 
-export interface NotificationHandler {
-
-}
-
-export interface NotificationsProvider extends NotificationHandler {
+export interface NotificationsProvider {
   getNotifications(): Observable<NotificationMeta[]>;
 }
 

@@ -726,8 +726,7 @@ export class DataContextBuilder {
       try {
         const meta = JSON.parse(comment) as { meta: OrderMeta };
         return meta.meta;
-      } catch {
-      }
+      } catch { /* empty */ }
     }
 
     return undefined;

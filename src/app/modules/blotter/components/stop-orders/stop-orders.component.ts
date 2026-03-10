@@ -444,7 +444,7 @@ export class StopOrdersComponent extends BlotterBaseTableComponent<DisplayOrder,
           ...o,
           residue: `${o.filledQtyBatch ?? 0}/${o.qty}`,
           transTime: converter.toTerminalDate(o.transTime),
-          endTime: !!o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime,
+          endTime: o.endTime ? converter.toTerminalDate(o.endTime) : o.endTime,
           groupId: groups.find(g => !!g.orders.find(go => go.orderId === o.id))?.id
         }))
         .filter(o => this.justifyFilter(o, f))

@@ -2,8 +2,7 @@
   Text = 'text'
 }
 
-export interface MessageContent {
-}
+export type MessageContent = object;
 
 export interface Message<T extends MessageContent> {
   avatarUri?: string;

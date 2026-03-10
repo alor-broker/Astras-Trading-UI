@@ -5,6 +5,4 @@ export interface WidgetStateRecord {
   restorable: boolean;
 }
 
-export interface RecordContent {
-
-}
+export type RecordContent = object;

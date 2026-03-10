@@ -12,9 +12,7 @@
     "codegen-hyperion": "graphql-codegen --config hyperion-codegen.ts",
     "codegen-news": "graphql-codegen --config news-codegen.ts",
     "prepare": "husky",
-    "lint": "pnpm lint:ts && pnpm lint:html",
-    "lint:ts": "eslint --config eslint.config.mjs \"src/**/*.ts\" --max-warnings 0",
-    "lint:html": "eslint --config eslint.config.mjs \"src/**/*.html\" --max-warnings 0"
+    "lint": "ng lint --max-warnings 0"
   },
   "private": true,
   "dependencies": {
@@ -67,7 +65,7 @@
     "zone.js": "^0.15.0"
   },
   "devDependencies": {
-    "@angular-eslint/builder": "^21.2.0",
+    "@angular-eslint/builder": "^21.0.0",
     "@angular/build": "^21.0.0",
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
@@ -75,13 +73,13 @@
     "@capacitor/android": "^8.0.2",
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.0.2",
-    "@eslint/config-inspector": "^1.3.0",
-    "@eslint/js": "^9.0.0",
+    "@eslint/config-inspector": "^1.5.0",
+    "@eslint/js": "^10.0.1",
     "@graphql-codegen/add": "^6.0.0",
     "@graphql-codegen/cli": "^6.0.1",
     "@graphql-codegen/typescript": "^5.0.2",
     "@ngrx/schematics": "^21.0.0",
-    "@stylistic/eslint-plugin": "^5.5.0",
+    "@stylistic/eslint-plugin": "^5.10.0",
     "@types/d3": "^7.4.3",
     "@types/d3-axis": "3.0.6",
     "@types/d3-scale": "4.0.9",
@@ -91,9 +89,9 @@
     "@types/jasmine": "^6.0.0",
     "@types/json-patch": "^0.0.33",
     "@types/node": "^25.0.0",
-    "angular-eslint": "21.2.0",
+    "angular-eslint": "^21.3.0",
     "browserslist": "^4.27.0",
-    "eslint": "^9.0.0",
+    "eslint": "^10.0.2",
     "glob": "^13.0.0",
     "graphql-codegen-typescript-validation-schema": "^0.18.1",
     "husky": "^9.1.7",

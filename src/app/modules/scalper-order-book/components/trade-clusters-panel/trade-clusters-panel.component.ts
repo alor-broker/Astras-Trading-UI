@@ -195,7 +195,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
       map(x => {
         const settings = x.widgetSettings;
 
-        if (!!settings.tradesClusterPanelSettings) {
+        if (settings.tradesClusterPanelSettings) {
           return settings;
         }
 

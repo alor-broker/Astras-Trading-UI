@@ -17,8 +17,7 @@ export interface WidgetSettingsFormComponent {
 }
 
 @Component({
-  template: '',
-  standalone: false
+  template: ''
 })
 export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> implements WidgetSettingsFormComponent, OnInit {
   readonly settingsChange = output();
@@ -28,8 +27,11 @@ export abstract class WidgetSettingsBaseComponent<T extends WidgetSettings> impl
   protected abstract settings$: Observable<T>;
 
   protected constructor(
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected readonly settingsService: WidgetSettingsService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected readonly manageDashboardsService: ManageDashboardsService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected readonly destroyRef: DestroyRef
   ) {
   }

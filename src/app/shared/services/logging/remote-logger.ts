@@ -139,6 +139,7 @@ export class RemoteLogger extends LoggerBase {
           catchError(() => of(null))
         )
           .subscribe();
+        // eslint-disable-next-line no-constant-condition
       } while (true);
     } catch (e) {
       console.error(e);

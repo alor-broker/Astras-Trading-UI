@@ -232,7 +232,7 @@ export class OrdersBasketItemComponent implements OnInit, OnDestroy, ControlValu
     this.instrument$ = this.form.controls.instrumentKey.valueChanges.pipe(
       distinctUntilChanged((previous, current) => isInstrumentEqual(previous, current)),
       switchMap(instrument => {
-        if (!!instrument) {
+        if (instrument) {
           return this.instrumentsService.getInstrument(instrument);
         }
 

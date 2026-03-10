@@ -93,7 +93,7 @@ export class ResizeColumnDirective implements OnInit {
 
             this.atsWidthChanging.emit({
               columnWidth: w,
-              delta: !!(prev ?? '')
+              delta: prev ?? ''
                 ? (w - Number((prev as string).replace('px', '')))
                 : null
             });
