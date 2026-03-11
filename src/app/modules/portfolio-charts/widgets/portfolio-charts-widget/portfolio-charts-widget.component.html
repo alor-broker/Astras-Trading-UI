@@ -1,33 +1,30 @@
 <ng-container *transloco="let t; scope: 'portfolio-charts'">
-  @if (settings$ | async; as settings) {
-    <ats-widget-skeleton
-      [content]="contentRef"
-      [header]="headerRef"
-      [showContentScroll]="false"
-      [isBlockWidget]="isBlockWidget()"
-      [settings]="settingsRef"
-      [showSettings]="false"
-      >
-      <ng-template #headerRef>
-        <ats-widget-header [guid]="guid"
-          [hasSettings]="false"
-          [showBadgesMenu]="false"
-          [customTitle]="title$ | async"
-          [widgetMeta]="widgetInstance().widgetMeta"
-         />
-      </ng-template>
-      <ng-template #contentRef>
-        @if(currentAgreement$ | async; as currentAgreement) {
-          <div class="d-flex flex-column h-100">
-            <span class="fs-5">{{t('portfolioCharts.charts.agreementDynamics.title')}}</span>
-            <div class="flex-fill overflow-hidden">
-              <ats-agreement-dynamics [agreement]="currentAgreement" />
-            </div>
+  <ats-widget-skeleton
+    [content]="contentRef"
+    [header]="headerRef"
+    [showContentScroll]="false"
+    [isBlockWidget]="isBlockWidget()"
+    [settings]="settingsRef"
+    [showSettings]="false"
+  >
+    <ng-template #headerRef>
+      <ats-widget-header [guid]="guid"
+                         [hasSettings]="false"
+                         [showBadgesMenu]="false"
+                         [customTitle]="title$ | async"
+                         [widgetMeta]="widgetInstance().widgetMeta"
+      />
+    </ng-template>
+    <ng-template #contentRef>
+      @if(currentAgreement$ | async; as currentAgreement) {
+        <div class="d-flex flex-column h-100">
+          <span class="fs-5">{{t('portfolioCharts.charts.agreementDynamics.title')}}</span>
+          <div class="flex-fill overflow-hidden">
+            <ats-agreement-dynamics [agreement]="currentAgreement" />
           </div>
-        }
-      </ng-template>
-      <ng-template #settingsRef />
-    </ats-widget-skeleton>
-  }
-
+        </div>
+      }
+    </ng-template>
+    <ng-template #settingsRef />
+  </ats-widget-skeleton>
 </ng-container>

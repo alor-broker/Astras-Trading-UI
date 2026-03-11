@@ -164,6 +164,7 @@ export class WatchlistTableComponent extends BaseTableComponent<DisplayWatchlist
   openedLists$!: Observable<string[]>;
   sortFns: Record<string, SortFn> = {
     symbol: this.getSortFn('instrument.symbol'),
+    shortName: this.getSortFn('instrument.shortName'),
     price: this.getSortFn('price'),
     priceChange: this.getSortFn('priceChange'),
     priceChangeRatio: this.getSortFn('priceChangeRatio'),

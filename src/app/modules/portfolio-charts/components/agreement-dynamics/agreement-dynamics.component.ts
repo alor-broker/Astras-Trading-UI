@@ -238,6 +238,14 @@ export class AgreementDynamicsComponent implements OnInit, OnDestroy {
       scales: {
         x: {
           type: "time",
+          time: {
+            minUnit: 'day',
+            displayFormats: {
+              day: 'dd.MMM',
+              month: 'MM.yyyy',
+              year: 'yyyy'
+            }
+          },
           adapters: {
             date: {
               locale: this.getDateLocale(lang)

@@ -66,6 +66,11 @@ describe('PortfolioSummaryWidgetComponent', () => {
       }
     );
 
+    fixture.componentRef.setInput(
+      'isBlockWidget',
+      false
+    );
+
     fixture.detectChanges();
   });
 
