@@ -1,6 +1,9 @@
 import { Component, DestroyRef, input, OnDestroy, OnInit, inject } from '@angular/core';
 import {BehaviorSubject, filter, Observable, of, shareReplay,} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {
+  map,
+  startWith
+} from 'rxjs/operators';
 import {BlotterService} from '../../services/blotter.service';
 import {WidgetSettingsService} from "../../../../shared/services/widget-settings.service";
 import {MarketType} from "../../../../shared/models/portfolio-key.model";
@@ -163,7 +166,8 @@ export class BlotterWidgetComponent implements OnInit, OnDestroy {
     this.settings$ = this.widgetSettingsService.getSettings<BlotterSettings>(this.guid);
 
     this.title$ = this.settings$.pipe(
-      map(s => `${s.portfolio} (${s.exchange})`)
+      map(s => `${s.portfolio} (${s.exchange})`),
+      startWith('')
     );
 
     this.showBadge$ = SettingsHelper.showBadge(this.guid, this.widgetSettingsService, this.terminalSettingsService);
