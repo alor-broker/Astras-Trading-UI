@@ -58,9 +58,7 @@ export interface InstrumentOptions {
   options: Option[];
 }
 
-export interface OptionDetails extends Option {
-
-}
+export type OptionDetails = Option;
 
 export interface OptionPlotPoint {
   label: number;

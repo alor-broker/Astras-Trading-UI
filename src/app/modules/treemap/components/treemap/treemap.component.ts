@@ -61,8 +61,7 @@ import {
 } from "../../models/treemap.model";
 import {
   AsyncPipe,
-  formatNumber,
-  NgStyle
+  formatNumber
 } from "@angular/common";
 import {ApplicationStatusService} from "../../../../shared/services/application-status.service";
 import {createRefresh} from "../../../../shared/utils/observable-helper";
@@ -92,7 +91,7 @@ interface TooltipData {
   selector: 'ats-treemap',
   templateUrl: './treemap.component.html',
   styleUrls: ['./treemap.component.less'],
-  imports: [NgStyle, AsyncPipe]
+  imports: [AsyncPipe]
 })
 export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
   readonly treemapWrapperEl = viewChild<ElementRef<HTMLDivElement>>('treemapWrapper');
@@ -229,7 +228,7 @@ export class TreemapComponent implements AfterViewInit, OnInit, OnDestroy {
                       ? color(themeColors.buyColor)
                       : color(themeColors.sellColor);
 
-                    if (!!c) {
+                    if (c) {
                       c.opacity = t.raw._data.children[0]?.dayChangeAbs / this.maxDayChange;
                     }
 

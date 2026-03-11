@@ -13,7 +13,10 @@ import {HelpService} from "../../services/help.service";
 import {mapWith} from "../../utils/observable-helper";
 import {TerminalSettingsService} from "../../services/terminal-settings.service";
 import {NzBadgeComponent} from 'ng-zorro-antd/badge';
-import {NzDropDownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {
+  NzDropdownDirective,
+  NzDropdownMenuComponent
+} from 'ng-zorro-antd/dropdown';
 import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzPopoverDirective} from 'ng-zorro-antd/popover';
@@ -28,7 +31,6 @@ import {JoyrideModule} from 'ngx-joyride';
   styleUrls: ['./widget-header.component.less'],
   imports: [
     NzBadgeComponent,
-    NzDropDownDirective,
     NzDropdownMenuComponent,
     NzMenuDirective,
     NzMenuItemComponent,
@@ -38,7 +40,8 @@ import {JoyrideModule} from 'ngx-joyride';
     TranslocoDirective,
     NzButtonComponent,
     AsyncPipe,
-    JoyrideModule
+    JoyrideModule,
+    NzDropdownDirective
   ]
 })
 export class WidgetHeaderComponent implements OnInit {
@@ -109,7 +112,7 @@ export class WidgetHeaderComponent implements OnInit {
 
               return {
                 color: b,
-                assignedInstrument: !!assignedInstrument
+                assignedInstrument: assignedInstrument
                   ? {
                     ...currentSelection[b]!,
                     instrumentGroup: symbolGroups[assignedInstrument.symbol]! > 1

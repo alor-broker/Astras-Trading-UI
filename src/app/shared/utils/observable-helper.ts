@@ -30,7 +30,7 @@ export function catchHttpError<T>(valueToReturn: T | ((err: HttpErrorResponse) =
   return pipe(
     catchError(err => {
       if (err instanceof HttpErrorResponse) {
-        if (!!errorHandler) {
+        if (errorHandler) {
           // status = 0 is native platform status. It means that application is inactive
           if (err.status != 0) {
             errorHandler.handleError(err);

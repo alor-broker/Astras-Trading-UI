@@ -3,7 +3,7 @@
     @if (vm.settings.showInstrumentPriceDayChange) {
       <div *ngrxLet="priceDayChangePercent$ as priceDayChangePercent" class="lh-1">
         <span
-          [ngClass]="{
+          [class]="{
           'positive-color': priceDayChangePercent > 0,
           'negative-color': priceDayChangePercent < 0
           }"

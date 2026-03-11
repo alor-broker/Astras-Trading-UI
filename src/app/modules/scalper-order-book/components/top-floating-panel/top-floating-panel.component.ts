@@ -17,20 +17,19 @@ import { isInstrumentEqual } from "../../../../shared/utils/settings-helper";
 import { TranslocoDirective } from '@jsverse/transloco';
 import { LetDirective } from '@ngrx/component';
 import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
-import { NgClass, AsyncPipe, DecimalPipe } from '@angular/common';
+import { AsyncPipe, DecimalPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-top-floating-panel',
     templateUrl: './top-floating-panel.component.html',
     styleUrls: ['./top-floating-panel.component.less'],
     imports: [
-      TranslocoDirective,
-      LetDirective,
-      NzTooltipDirective,
-      NgClass,
-      AsyncPipe,
-      DecimalPipe
-    ]
+    TranslocoDirective,
+    LetDirective,
+    NzTooltipDirective,
+    AsyncPipe,
+    DecimalPipe
+]
 })
 export class TopFloatingPanelComponent implements OnInit {
   private readonly dataContextService = inject(ScalperOrderBookDataProvider);

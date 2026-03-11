@@ -2,7 +2,7 @@
   <div [class.active]="isActive()" class="container">
     <div
       class="order-book-body"
-      [ngStyle]="{'font-size': vm.gridSettings.fontSize + 'px' }"
+      [style.font-size]="vm.gridSettings.fontSize + 'px'"
     >
       <ats-scalper-order-book-body [guid]="guid()" [isActive]="isActive()" />
     </div>

@@ -204,7 +204,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
 
       this.form.controls.timeInForce.setValue(x.currentOrder.timeInForce ?? null);
 
-      if (!!x.currentOrder.iceberg) {
+      if (x.currentOrder.iceberg) {
         this.form.controls.isIceberg.setValue(true);
         if (x.currentOrder.iceberg.creationFixedQuantity ?? 0) {
           this.form.controls.icebergFixed.setValue(x.currentOrder.iceberg.creationFixedQuantity!);
@@ -346,7 +346,7 @@ export class EditStopOrderFormComponent extends BaseEditOrderFormComponent imple
           quantity: Number(formValue.quantity),
           triggerPrice: Number(formValue.triggerPrice),
           condition: formValue.condition,
-          stopEndUnixTime: !!formValue.stopEndUnixTime
+          stopEndUnixTime: formValue.stopEndUnixTime
             ? x.tc.terminalToUtc0Date(formValue.stopEndUnixTime as Date)
             : undefined,
           side: x.currentOrder.side

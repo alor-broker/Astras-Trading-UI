@@ -2,10 +2,10 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "cli": {
     "analytics": false,
+    "packageManager": "pnpm",
     "schematicCollections": [
       "angular-eslint"
-    ],
-    "packageManager": "pnpm"
+    ]
   },
   "version": 1,
   "newProjectRoot": "projects",

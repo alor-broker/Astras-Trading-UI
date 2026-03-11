@@ -285,7 +285,7 @@ export class WsOrdersConnector implements OnDestroy {
   }
 
   private getSocketState(): SocketState {
-    if (!!this.socketState) {
+    if (this.socketState) {
       return this.socketState;
     }
 
@@ -310,7 +310,7 @@ export class WsOrdersConnector implements OnDestroy {
   }
 
   private initReconnectOnDisconnection(state: SocketState): void {
-    if (!!state.offlineSub) {
+    if (state.offlineSub) {
       return;
     }
 

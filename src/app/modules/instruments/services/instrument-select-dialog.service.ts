@@ -4,9 +4,7 @@ import {
 } from '@angular/core';
 import { BehaviorSubject } from "rxjs";
 
-export interface InstrumentSelectDialogParams {
-
-}
+export type InstrumentSelectDialogParams = object;
 
 @Injectable({
   providedIn: 'root'

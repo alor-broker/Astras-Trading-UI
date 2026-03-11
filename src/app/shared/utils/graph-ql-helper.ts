@@ -232,7 +232,7 @@ export class GraphQlHelper {
         return { contains:  filterValue as string };
       case FilterType.Number:
         return { [conditionKey]: Number(filterValue as number) };
-      case FilterType.Date:
+      case FilterType.Date: {
         const [day, month, year] = (filterValue as string).split('.').map(d => +d);
         const filterDate = new Date(year, month - 1, day);
 
@@ -242,7 +242,8 @@ export class GraphQlHelper {
 
         const parsedDate = filterDate.toISOString();
 
-        return { [conditionKey]: parsedDate };
+        return {[conditionKey]: parsedDate};
+      }
       case FilterType.Boolean:
         return { eq: filterValue as boolean };
     }

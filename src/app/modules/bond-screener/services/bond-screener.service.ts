@@ -120,6 +120,10 @@ export class BondScreenerService {
 
         return r.bonds.nodes.map(n => ({
           ...n,
+          basicInformation: {
+            ...n.basicInformation,
+            shortName: n.basicInformation.shortName ?? '',
+          },
           maturityDate: new Date(n.maturityDate)
         }));
       })

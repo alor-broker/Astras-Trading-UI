@@ -13,7 +13,7 @@
       >
       {{(vm.orderBookPosition.price | number: '1.0-10') ?? '--'}}
     </div>
-    <div [ngClass]="{
+    <div [class]="{
         'qty': true,
         'positive': vm.orderBookPosition.qty > 0,
         'negative': vm.orderBookPosition.qty < 0
@@ -24,7 +24,7 @@
       >
       {{vm.orderBookPosition.qty | number: '1.0-2'}}{{t('scalperOrderBookCurrentPositionState.lots')}}.
     </div>
-    <div [ngClass]="{
+    <div [class]="{
         'loss-or-profit': true,
         'positive': (vm.orderBookPosition.lossOrProfitPoints ?? 0) > 0,
         'negative': (vm.orderBookPosition.lossOrProfitPoints ?? 0) < 0

@@ -39,9 +39,13 @@ export abstract class OrderbookTableBaseComponent implements OnInit {
   private themeSettings?: ThemeSettings;
 
   constructor(
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     private readonly ordersDialogService: OrdersDialogService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     private readonly service: OrderbookService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     private readonly themeService: ThemeService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     private readonly destroyRef: DestroyRef
   ) {
   }

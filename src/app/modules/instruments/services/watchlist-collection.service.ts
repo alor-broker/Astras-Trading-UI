@@ -115,7 +115,7 @@ export class WatchlistCollectionService {
           // get instrumentGroup if missing
           return this.instrumentsService.getInstrument(i).pipe(
             take(1),
-            map(i => !!i ? toInstrumentKey(i) : null)
+            map(i => i ? toInstrumentKey(i) : null)
           );
         })
       ).pipe(

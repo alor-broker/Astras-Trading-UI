@@ -185,7 +185,7 @@ export class LightChartWrapper {
     const sub = new Subject<LogicalRange>();
 
     this.chart?.timeScale().subscribeVisibleLogicalRangeChange(logicalRange => {
-      if (!!logicalRange) {
+      if (logicalRange) {
         sub.next(logicalRange);
       }
     });
@@ -278,7 +278,7 @@ export class LightChartWrapper {
   }
 
   private toDisplayCandle(candle: Candle): CandleDisplay {
-    const candleDate = !!this.config.timeConvertor
+    const candleDate = this.config.timeConvertor
       ? this.config.timeConvertor.toDisplayTime(candle.time)
       : candle.time * 1000;
 

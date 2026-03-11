@@ -343,7 +343,7 @@ export class PortfolioSubscriptionsService {
     const subscriptionKey = this.getSubscriptionKey(request);
 
     const existedSubscription$ = this.subscriptions.get(subscriptionKey);
-    if (!!existedSubscription$) {
+    if (existedSubscription$) {
       return existedSubscription$ as Observable<R>;
     }
 

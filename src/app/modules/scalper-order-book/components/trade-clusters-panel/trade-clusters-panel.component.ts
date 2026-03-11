@@ -33,7 +33,7 @@ import {ScalperOrderBookSettingsWriteService} from "../../services/scalper-order
 import {TradesClusterPanelSettingsDefaults} from "../scalper-order-book-settings/constants/settings-defaults";
 import {TranslocoDirective} from '@jsverse/transloco';
 import {NzResizeObserverDirective} from 'ng-zorro-antd/cdk/resize-observer';
-import {AsyncPipe, NgClass} from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 import {TradesClusterComponent} from '../trades-cluster/trades-cluster.component';
 import {NzMenuDirective, NzMenuGroupComponent, NzMenuItemComponent} from 'ng-zorro-antd/menu';
 import {NzIconDirective} from 'ng-zorro-antd/icon';
@@ -45,7 +45,6 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
   imports: [
     TranslocoDirective,
     NzResizeObserverDirective,
-    NgClass,
     TradesClusterComponent,
     NzDropdownMenuComponent,
     NzMenuDirective,
@@ -54,7 +53,7 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
     NzMenuItemComponent,
     AsyncPipe,
     CdkScrollable
-  ]
+]
 })
 export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly settingsWriteService = inject(ScalperOrderBookSettingsWriteService);
@@ -196,7 +195,7 @@ export class TradeClustersPanelComponent implements OnInit, OnDestroy, AfterView
       map(x => {
         const settings = x.widgetSettings;
 
-        if (!!settings.tradesClusterPanelSettings) {
+        if (settings.tradesClusterPanelSettings) {
           return settings;
         }
 

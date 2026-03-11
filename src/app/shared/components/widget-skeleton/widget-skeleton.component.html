@@ -5,7 +5,7 @@
   <div class="blocked-widget-overlay"></div>
 }
 @if (!showSettings()) {
-  <div (mousedown)="$event.stopPropagation()" [ngClass]="{'show-scroll': showContentScroll(), 'hide-scroll': !showContentScroll()}"
+  <div (mousedown)="$event.stopPropagation()" [class]="{'show-scroll': showContentScroll(), 'hide-scroll': !showContentScroll()}"
     class="widget-content">
     <ng-container *ngTemplateOutlet="content()" />
   </div>

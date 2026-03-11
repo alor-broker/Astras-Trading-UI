@@ -37,7 +37,10 @@ import {NzIconDirective} from 'ng-zorro-antd/icon';
 import {NzOptionComponent, NzSelectComponent} from 'ng-zorro-antd/select';
 import {NzTypographyComponent} from 'ng-zorro-antd/typography';
 import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
-import {NzDropdownButtonDirective, NzDropDownDirective, NzDropdownMenuComponent} from 'ng-zorro-antd/dropdown';
+import {
+  NzDropdownDirective,
+  NzDropdownMenuComponent
+} from 'ng-zorro-antd/dropdown';
 import {NzMenuDirective, NzMenuItemComponent} from 'ng-zorro-antd/menu';
 import {AsyncPipe} from '@angular/common';
 
@@ -66,15 +69,14 @@ import {AsyncPipe} from '@angular/common';
     NzOptionComponent,
     NzTypographyComponent,
     NzPopconfirmDirective,
-    NzDropdownButtonDirective,
-    NzDropDownDirective,
     NzDropdownMenuComponent,
     NzMenuDirective,
     NzMenuItemComponent,
     NzListEmptyComponent,
     ExportWatchlistDialogComponent,
     ImportWatchlistDialogComponent,
-    AsyncPipe
+    AsyncPipe,
+    NzDropdownDirective
   ]
 })
 export class WatchlistCollectionEditComponent implements OnInit {

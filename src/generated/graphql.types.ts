@@ -120,13 +120,13 @@ export enum ApplyPolicy {
 
 export interface BasicInformation {
   /** Требуемая категория для осуществления торговли инструментом */
-  complexProductCategory: Scalars['String']['output'];
+  complexProductCategory?: Maybe<Scalars['String']['output']>;
   /** Краткое описание инструмента */
-  description: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
   /** Биржа */
   exchange: Exchange;
   /** Полное описание инструмента */
-  fullDescription: Scalars['String']['output'];
+  fullDescription?: Maybe<Scalars['String']['output']>;
   /** Полное имя эмитента */
   fullName?: Maybe<Scalars['String']['output']>;
   /** Сектор деятельности эмитента по стандарту GICS */
@@ -138,7 +138,7 @@ export interface BasicInformation {
   /** Сектор деятельности эмитента */
   sector?: Maybe<Scalars['String']['output']>;
   /** Краткое наименование инструмента */
-  shortName: Scalars['String']['output'];
+  shortName?: Maybe<Scalars['String']['output']>;
   /** Тикер (Код финансового инструмента) */
   symbol: Scalars['String']['output'];
   /** Тип финансового инструмента */

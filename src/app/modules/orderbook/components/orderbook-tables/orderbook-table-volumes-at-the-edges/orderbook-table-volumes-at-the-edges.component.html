@@ -18,7 +18,7 @@
           <td
             (cdkDropListDropped)="updateOrderPrice($event.item.data, row.bid)"
             (click)="newLimitOrder($event, row.bid, Side.Buy)"
-            [ngStyle]="{background: 'unset'}"
+            [style.background]="'unset'"
             cdkDropList
           >
             @if (row.bidOrders && row.bidOrderVolume) {
@@ -50,38 +50,38 @@
           @if (showYield()) {
             <td
               (click)="newLimitOrder($event, row.bid, Side.Buy)"
-              [ngStyle]="getBidStyle(row.bidVolume ?? 0)"
+              [style]="getBidStyle(row.bidVolume ?? 0)"
               nzAlign="right">
               {{ row.yieldBid }}
             </td>
           } @else {
             <td
               (click)="newLimitOrder($event, row.bid, Side.Buy)"
-              [ngStyle]="getBidStyle(row.bidVolume ?? 0)"
+              [style]="getBidStyle(row.bidVolume ?? 0)"
               nzAlign="right">
               {{ row.bid | atsPrice: getPriceDecimalSymbolsCount() }}
             </td>
           }
         } @else {
-          <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
+          <td [style.background]="'unset'" colspan="2"></td>
         }
         @if (row.ask || (row.ask === 0)) {
           @if (showYield()) {
             <td
               (click)="newLimitOrder($event, row.ask, Side.Sell)"
-              [ngStyle]="getAskStyle(row.askVolume ?? 0)">
+              [style]="getAskStyle(row.askVolume ?? 0)">
               {{ row.yieldAsk }}
             </td>
           } @else {
             <td
               (click)="newLimitOrder($event, row.ask, Side.Sell)"
-              [ngStyle]="getAskStyle(row.askVolume ?? 0)">
+              [style]="getAskStyle(row.askVolume ?? 0)">
               {{ row.ask | atsPrice: getPriceDecimalSymbolsCount() }}
             </td>
           }
           <td (cdkDropListDropped)="updateOrderPrice($event.item.data, row.ask)"
               (click)="newLimitOrder($event, row.ask, Side.Sell)"
-              [ngStyle]="{background: 'unset'}"
+              [style.background]="'unset'"
               cdkDropList
               class='row-cell--ask-volume'
               nzAlign="right"
@@ -112,7 +112,7 @@
             }
           </td>
         } @else {
-          <td [ngStyle]="{background: 'unset'}" colspan="2"></td>
+          <td [style.background]="'unset'" colspan="2"></td>
         }
       </tr>
     }

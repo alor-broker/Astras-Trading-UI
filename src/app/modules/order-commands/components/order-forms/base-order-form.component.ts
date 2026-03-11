@@ -15,8 +15,7 @@ import {AtsValidators} from "../../../../shared/utils/form-validators";
 import {CommonParameters, CommonParametersService} from "../../services/common-parameters.service";
 
 @Component({
-  template: '',
-  standalone: false
+  template: ''
 })
 export abstract class BaseOrderFormComponent implements OnDestroy {
   readonly requestProcessing$ = new BehaviorSubject<{ orderSide?: Side }>({});
@@ -42,7 +41,9 @@ export abstract class BaseOrderFormComponent implements OnDestroy {
   );
 
   protected constructor(
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected commonParametersService: CommonParametersService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected readonly destroyRef: DestroyRef
   ) {
   }

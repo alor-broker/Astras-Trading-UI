@@ -12,8 +12,7 @@ import {Order} from "../../../../shared/models/orders/order.model";
 import {toObservable} from "@angular/core/rxjs-interop";
 
 @Component({
-  template: '',
-  standalone: false
+  template: ''
 })
 export abstract class BaseEditOrderFormComponent {
   formInstrument$!: Observable<Instrument>;
@@ -35,7 +34,9 @@ export abstract class BaseEditOrderFormComponent {
   );
 
   protected constructor(
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected readonly instrumentService: InstrumentsService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
     protected readonly destroyRef: DestroyRef
   ) {
   }

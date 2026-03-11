@@ -55,7 +55,7 @@
       <nz-list-item class="history-item">
         <nz-list-item-meta [nzAvatar]="itemIcon" [nzDescription]="itemDescription" [nzTitle]="itemTitle">
           <ng-template #itemIcon>
-            <div [ngClass]="getStatusColor(item.status)" class="item-icon">
+            <div [class]="getStatusColor(item.status)" class="item-icon">
               <span [nzType]="getIcon(item)" nz-icon nzTheme="outline"></span>
             </div>
           </ng-template>
@@ -78,7 +78,7 @@
               @if (getAbsoluteAmount(item) !== null) {
                 <span
                   class="fs-7"
-                  [ngClass]="{
+                  [class]="{
                   'negative-color': isNegativeAmount(item),
                   'positive-color': !isNegativeAmount(item)
                   }"

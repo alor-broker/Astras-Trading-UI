@@ -41,6 +41,7 @@ export class OptionBoardDataContextFactory {
     const optionsSelection$ = new BehaviorSubject<OptionsSelection[]>([]);
     const currentSelection$ = this.getCurrentSelection(settings$, optionsSelection$);
 
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const factory = this;
 
     return {
@@ -113,7 +114,7 @@ export class OptionBoardDataContextFactory {
       };
 
       const currentOptionSelection = currentSelectionForInstrument.selectedOptions.find(x => x.symbol === option.symbol);
-      if (!!currentOptionSelection) {
+      if (currentOptionSelection) {
         currentSelectionForInstrument.selectedOptions = [
           ...currentSelectionForInstrument.selectedOptions.filter(x => x.symbol !== option.symbol)
         ];

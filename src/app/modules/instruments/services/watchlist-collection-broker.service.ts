@@ -100,7 +100,7 @@ export class WatchlistCollectionBrokerService {
               });
             } else {
               const localData = this.localStorageService.getItem<WatchlistCollection>(this.watchlistCollectionStorageKey);
-              if (!!localData) {
+              if (localData) {
                 const items = localData.collection.map(r => this.updateObsoleteWatchlist(r));
 
                 this.store.patchState({

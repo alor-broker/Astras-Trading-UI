@@ -100,7 +100,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
       const subscriptionId = getSubscriptionId(request);
 
       const existingSubscription = socketState.subscriptionsMap.get(subscriptionId);
-      if (!!existingSubscription) {
+      if (existingSubscription) {
         return existingSubscription.sharedStream$ as Observable<R>;
       }
 
@@ -266,7 +266,7 @@ export class SubscriptionsDataFeedService implements OnDestroy {
   }
 
   private initReconnectOnDisconnection(state: SocketState): void {
-    if (!!state.offlineSub) {
+    if (state.offlineSub) {
       return;
     }
 

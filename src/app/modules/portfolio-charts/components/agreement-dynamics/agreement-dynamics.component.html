@@ -13,7 +13,7 @@
         <div class="fs-4">
           @if (vm.chartConfig?.rawData != null) {
             <span
-              [ngClass]="{
+              [class]="{
           'positive-color': vm.chartConfig!.rawData!.profitablityPct >= 0,
           'negative-color': vm.chartConfig!.rawData!.profitablityPct < 0
           }"

@@ -1,9 +1,11 @@
-import tseslint from "typescript-eslint";
-import {defineConfig, globalIgnores} from "eslint/config";
-import angular from "angular-eslint";
-import stylistic from "@stylistic/eslint-plugin";
+// @ts-check
+const eslint = require("@eslint/js");
+const { defineConfig, globalIgnores } = require("eslint/config");
+const tseslint = require("typescript-eslint");
+const angular = require("angular-eslint");
+const stylistic = require("@stylistic/eslint-plugin");
 
-export default defineConfig([
+module.exports = defineConfig([
   globalIgnores([
     ".angular/**/*",
     "dist/**/*",
@@ -11,17 +13,21 @@ export default defineConfig([
     "android/**/*",
     "ios/**/*",
   ]),
+  tseslint.configs.disableTypeChecked,
   {
     files: ["**/*.ts"],
     languageOptions: {
       parserOptions: {
-        project: true
+        projectService: true
       }
     },
     extends: [
-      ...tseslint.configs.stylistic,
-      ...angular.configs.tsRecommended,
-      stylistic.configs['recommended'],
+      eslint.configs.recommended,
+      tseslint.configs.recommended,
+      tseslint.configs.stylistic,
+      angular.configs.tsRecommended,
+      stylistic.configs.customize(),
+
     ],
     processor: angular.processInlineTemplates,
     rules: {
@@ -41,7 +47,6 @@ export default defineConfig([
           style: "kebab-case",
         },
       ],
-      "@angular-eslint/prefer-inject": "off",
       "@angular-eslint/prefer-signals": [
         "error",
         {
@@ -51,24 +56,8 @@ export default defineConfig([
           "useTypeChecking": true
         }
       ],
-      "@stylistic/semi": ["error", "always"],
-      "@stylistic/comma-dangle": "off",
-      "@stylistic/quotes": "off",
-      "@stylistic/indent": "off",
-      "@object-curly-spacing": "off",
-      "@stylistic/arrow-parens": "off",
-      "@stylistic/object-curly-spacing": "off",
-      "@stylistic/comma-spacing": "off",
-      "@stylistic/brace-style": "off",
-      "@stylistic/keyword-spacing": "off",
-      "@stylistic/key-spacing": "off",
-      "@typescript-eslint/class-literal-property-style": "off",
-      "@stylistic/operator-linebreak": "off",
-      "@stylistic/quote-props": "off",
-
 
       "@typescript-eslint/consistent-type-assertions": "off",
-      "no-empty-function": "off",
       "@typescript-eslint/no-empty-function": [
         "error",
         {
@@ -77,8 +66,6 @@ export default defineConfig([
           ]
         }
       ],
-
-      "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
@@ -88,22 +75,8 @@ export default defineConfig([
       "@typescript-eslint/array-type": "error",
       "@typescript-eslint/no-unsafe-function-type": "error",
       "@typescript-eslint/no-wrapper-object-types": "error",
-      "default-param-last": "off",
       "@typescript-eslint/default-param-last": "error",
       "@typescript-eslint/explicit-function-return-type": "error",
-      "@stylistic/member-delimiter-style": [
-        "error",
-        {
-          "multiline": {
-            "delimiter": "semi",
-            "requireLast": true
-          },
-          "singleline": {
-            "delimiter": "comma",
-            "requireLast": false
-          }
-        }
-      ],
       "@typescript-eslint/naming-convention": [
         "error",
         {
@@ -170,11 +143,9 @@ export default defineConfig([
       "@typescript-eslint/no-unsafe-assignment": "error",
       "@typescript-eslint/no-unsafe-enum-comparison": "error",
       "@typescript-eslint/no-unsafe-return": "error",
-      "no-unused-expressions": "off",
+      "@typescript-eslint/class-literal-property-style": "off",
       "@typescript-eslint/no-unused-expressions": "error",
-      "no-use-before-define": "off",
       "@typescript-eslint/no-use-before-define": "error",
-      "no-useless-constructor": "off",
       "@typescript-eslint/no-useless-constructor": "error",
       "@typescript-eslint/prefer-nullish-coalescing": "error",
       "@typescript-eslint/prefer-readonly": "error",
@@ -186,23 +157,50 @@ export default defineConfig([
           "allowAny": true
         }
       ],
-      "@angular-eslint/prefer-standalone": "off",
-      "@typescript-eslint/switch-exhaustiveness-check": "off"
+      "@typescript-eslint/switch-exhaustiveness-check": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+
+      "@stylistic/semi": ["error", "always"],
+      "@stylistic/comma-dangle": "off",
+      "@stylistic/quotes": "off",
+      "@stylistic/indent": "off",
+      "@stylistic/arrow-parens": "off",
+      "@stylistic/object-curly-spacing": "off",
+      "@stylistic/comma-spacing": "off",
+      "@stylistic/brace-style": "off",
+      "@stylistic/keyword-spacing": "off",
+      "@stylistic/key-spacing": "off",
+      "@stylistic/operator-linebreak": "off",
+      "@stylistic/quote-props": "off",
+      "@stylistic/member-delimiter-style": [
+        "error",
+        {
+          "multiline": {
+            "delimiter": "semi",
+            "requireLast": true
+          },
+          "singleline": {
+            "delimiter": "comma",
+            "requireLast": false
+          }
+        }
+      ],
     },
   },
   {
     files: ["**/*.spec.ts"],
     extends: [
-      ...tseslint.configs.stylistic
+      tseslint.configs.stylistic
     ],
     rules: {
-      "@typescript-eslint/no-unsafe-assignment": "off"
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-explicit-any": "off"
     },
   },
   {
     files: ["**/*.html"],
     extends: [
-      ...angular.configs.templateRecommended,
+      angular.configs.templateRecommended
     ],
     rules: {
       "@angular-eslint/template/eqeqeq": [
@@ -212,5 +210,5 @@ export default defineConfig([
         }
       ]
     },
-  },
+  }
 ]);

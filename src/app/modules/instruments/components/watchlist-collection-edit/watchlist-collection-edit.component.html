@@ -9,9 +9,9 @@
                 (mousedown)="$event.stopPropagation()"
                 formControlName="title"
                 nz-input
-                nzBorderless
                 [placeholder]="t('instrumentsSettings.watchListPlaceholder')"
-                type="text"/>
+                type="text"
+              class="pl-5"/>
             </nz-form-control>
           </nz-form-item>
         </form>
@@ -33,7 +33,6 @@
         <nz-list-item>
           <nz-select
             [nzPlaceHolder]="t('instrumentsSettings.standardListPlaceholder')"
-            nzBorderless
             nzShowSearch
             [(ngModel)]="selectedPresetWatchlist">
             @for (list of presetLists; track list) {

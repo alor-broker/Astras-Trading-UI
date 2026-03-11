@@ -11,7 +11,7 @@ import {toObservable} from "@angular/core/rxjs-interop";
 import {switchMap} from "rxjs/operators";
 import {ScrollableRowComponent} from "../../../../shared/components/scrollable-row/scrollable-row.component";
 import {ScrollableItemDirective} from "../../../../shared/directives/scrollable-item.directive";
-import {AsyncPipe, NgClass} from "@angular/common";
+import {AsyncPipe} from "@angular/common";
 import {AtsPricePipe} from "../../../../shared/pipes/ats-price.pipe";
 import {InstrumentsService} from "../../../instruments/services/instruments.service";
 import {filter} from "rxjs";
@@ -24,9 +24,8 @@ import {Instrument} from "../../../../shared/models/instruments/instrument.model
     ScrollableRowComponent,
     ScrollableItemDirective,
     AsyncPipe,
-    AtsPricePipe,
-    NgClass
-  ],
+    AtsPricePipe
+],
   templateUrl: './instrument-quotes.component.html',
   styleUrl: './instrument-quotes.component.less',
   changeDetection: ChangeDetectionStrategy.OnPush

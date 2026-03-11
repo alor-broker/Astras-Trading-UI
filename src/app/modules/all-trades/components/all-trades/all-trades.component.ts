@@ -119,7 +119,7 @@ export class AllTradesComponent extends LazyLoadingBaseTableComponent<
       minWidth: 70,
       transformFn: (data: AllTradesItem): string | null => {
         const timezone = this.timezoneConverter?.getTimezone();
-        const timezoneName = !!timezone ? `UTC${timezone.utcOffset < 0 ? '+' : '-'}${timezone.formattedOffset}` : null;
+        const timezoneName = timezone ? `UTC${timezone.utcOffset < 0 ? '+' : '-'}${timezone.formattedOffset}` : null;
         return this.datePipe.transform(
           data.timestamp,
           'HH:mm:ss',
@@ -212,7 +212,7 @@ export class AllTradesComponent extends LazyLoadingBaseTableComponent<
     this.tradesList$.complete();
   }
 
-  changeColumnOrder(event: CdkDragDrop<any>): void {
+  changeColumnOrder(event: CdkDragDrop<unknown>): void {
     if (event.previousIndex < this.fixedColumns.length || event.currentIndex < this.fixedColumns.length) {
       return;
     }

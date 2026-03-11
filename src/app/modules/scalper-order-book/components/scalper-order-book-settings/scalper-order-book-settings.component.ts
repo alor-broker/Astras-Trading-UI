@@ -534,9 +534,9 @@ export class ScalperOrderBookSettingsComponent implements WidgetSettingsFormComp
     if (formValue.showTradesPanel ?? false) {
       newSettings.tradesPanelSettings = {
         minTradeVolumeFilter: Number(formValue.tradesPanelSettings!.minTradeVolumeFilter),
-        hideFilteredTrades: formValue.tradesPanelSettings?.hideFilteredTrades!,
+        hideFilteredTrades: formValue.tradesPanelSettings?.hideFilteredTrades ?? false,
         tradesAggregationPeriodMs: Number(formValue.tradesPanelSettings!.tradesAggregationPeriodMs),
-        showOwnTrades: formValue.tradesPanelSettings?.showOwnTrades!,
+        showOwnTrades: formValue.tradesPanelSettings?.showOwnTrades ?? false,
       };
     }
 

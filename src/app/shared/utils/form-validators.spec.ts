@@ -25,7 +25,7 @@ describe('AtsValidators', () => {
 
     it('should return null if priceStep is null', () => {
       const control = new FormControl(10);
-      // @ts-ignore: Testing invalid input
+      // @ts-expect-error null is expected
       expect(validatorFn(null)(control)).toBeNull();
     });
 

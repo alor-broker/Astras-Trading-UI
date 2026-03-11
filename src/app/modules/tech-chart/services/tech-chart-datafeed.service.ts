@@ -113,7 +113,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
     } else {
       request = this.instrumentService.getInstrument(instrumentsData.instrument)
         .pipe(
-          map(i => !!i
+          map(i => i
             ? {
               ...i,
               symbol: `[${i.exchange}:${i.symbol}${(i.instrumentGroup != null && i.instrumentGroup.length > 0) ? ':' + i.instrumentGroup : ''}]`
@@ -327,7 +327,7 @@ export class TechChartDatafeedService implements IBasicDataFeed {
 
   unsubscribeBars(listenerGuid: string): void {
     const sub = this.barsSubscriptions.get(listenerGuid);
-    if (!!sub) {
+    if (sub) {
       sub.unsubscribe();
     }
   }

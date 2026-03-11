@@ -133,11 +133,11 @@ export class ChartFiltersComponent implements OnInit {
         currentListId = lastParams!.listId;
       } else {
         const historyList = x.allLists.find(l => l.type === WatchlistType.HistoryList);
-        if (!!historyList) {
+        if (historyList) {
           currentListId = historyList.id;
         } else {
           const defaultList = x.allLists.find(l => (l.isDefault ?? false) || l.type === WatchlistType.DefaultList);
-          if (!!defaultList) {
+          if (defaultList) {
             currentListId = defaultList.id;
           }
         }

@@ -45,8 +45,7 @@ class PositionState {
     try {
       this.positionLine?.remove();
       this.positionLine = null;
-    } catch {
-    }
+    } catch { /* empty */ }
   }
 }
 

@@ -28,13 +28,12 @@
           <nz-form-item>
             <nz-form-label nzRequired>{{ t('moneyOperations.depositAmountLabel') }}</nz-form-label>
             <nz-form-control [nzErrorTip]="t('moneyOperations.amountError')">
-              <ats-input-number
-                [allowDecimal]="true"
+              <ats-input-number [allowDecimal]="true"
                 [allowNegative]="false"
                 [placeholder]="'100'"
                 [step]="0.01"
                 formControlName="amount"
-              ></ats-input-number>
+               />
             </nz-form-control>
           </nz-form-item>
 

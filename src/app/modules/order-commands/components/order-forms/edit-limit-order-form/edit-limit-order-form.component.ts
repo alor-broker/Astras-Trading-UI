@@ -175,7 +175,7 @@ export class EditLimitOrderFormComponent extends BaseEditOrderFormComponent impl
 
       this.form.controls.timeInForce.setValue(x.currentOrder.timeInForce ?? null);
 
-      if (!!x.currentOrder.iceberg) {
+      if (x.currentOrder.iceberg) {
         this.form.controls.isIceberg.setValue(true);
         if (x.currentOrder.iceberg.creationFixedQuantity ?? 0) {
           this.form.controls.icebergFixed.setValue(x.currentOrder.iceberg.creationFixedQuantity!);

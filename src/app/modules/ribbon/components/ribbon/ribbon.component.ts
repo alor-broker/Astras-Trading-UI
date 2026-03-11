@@ -22,7 +22,6 @@ import {ScrollableRowComponent} from "../../../../shared/components/scrollable-r
 import {
   AsyncPipe,
   DecimalPipe,
-  NgClass,
   NgTemplateOutlet
 } from "@angular/common";
 import {ScrollableItemDirective} from "../../../../shared/directives/scrollable-item.directive";
@@ -48,9 +47,8 @@ export interface RibbonItem {
     NzTypographyComponent,
     AsyncPipe,
     DecimalPipe,
-    NgClass,
     NgTemplateOutlet
-  ],
+],
   standalone: true
 })
 export class RibbonComponent implements OnInit {

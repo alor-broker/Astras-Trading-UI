@@ -12,19 +12,18 @@ import { ScalperOrderBookDataProvider } from '../../services/scalper-order-book-
 import { TranslocoDirective } from '@jsverse/transloco';
 import { LetDirective } from '@ngrx/component';
 import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
-import { NgClass, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
     selector: 'ats-current-position-panel',
     templateUrl: './current-position-panel.component.html',
     styleUrls: ['./current-position-panel.component.less'],
     imports: [
-      TranslocoDirective,
-      LetDirective,
-      NzTooltipDirective,
-      NgClass,
-      DecimalPipe
-    ]
+    TranslocoDirective,
+    LetDirective,
+    NzTooltipDirective,
+    DecimalPipe
+]
 })
 export class CurrentPositionPanelComponent implements OnInit, OnDestroy {
   private readonly dataContextService = inject(ScalperOrderBookDataProvider);
