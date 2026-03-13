@@ -18,7 +18,6 @@
             (mousedown)="$event.stopPropagation()"
             (keyup)="filterChanged()"
             [nzAutocomplete]="autoComplete"
-            class='ant-input'
             nz-input
             [formControl]="searchControl"
             />
@@ -33,14 +32,29 @@
                 [nzValue]="option.symbol"
                 (selectionChange)="onSelect($event, option)"
                 >
-                <span class='search-row'>
-                  <nz-tag>{{ option.symbol }}</nz-tag>
-                  <span class='row-center'>{{ option.shortName }}&nbsp;</span>
-                  @if (option.instrumentGroup) {
-                    <nz-tag>{{ option.instrumentGroup }}</nz-tag>
+
+                @if(isFuturesGluing(option)) {
+                  <div>
+                    <nz-tag>{{ option.symbol }}</nz-tag>
+                    <nz-tag>{{ option.exchange }}</nz-tag>
+                    <span class="heading-color pl-5">{{t('techChartInstrumentSearchModal.futuresGluingTitle')}}</span>
+                  </div>
+                  @if(getGluingType(option); as gluingType) {
+                    <div class="pt-5">
+                      <span class="primary-color">{{t('techChartInstrumentSearchModal.futuresGluingTypesDescription.' + gluingType)}}</span>
+                    </div>
                   }
-                  <nz-tag>{{ option.exchange }}</nz-tag>
-                </span>
+                } @else {
+                  <div>
+                    <nz-tag>{{ option.symbol }}</nz-tag>
+                    <span class='pr-5'>{{ option.shortName }}&nbsp;</span>
+                    @if (option.instrumentGroup) {
+                      <nz-tag>{{ option.instrumentGroup }}</nz-tag>
+                    }
+                    <nz-tag>{{ option.exchange }}</nz-tag>
+                  </div>
+                }
+
               </nz-auto-option>
             }
           </nz-autocomplete>
