@@ -8,18 +8,135 @@
   <ng-container *transloco="let t; scope: 'anomalous-volume/settings'">
     <form nz-form [nzLayout]="'vertical'" [formGroup]="form">
       <nz-form-item>
-        <nz-form-label nzRequired nzFor="instruments">
-          Инструменты
-        </nz-form-label>
+        <nz-form-label nzFor="sourceMode">Источник инструментов</nz-form-label>
         <nz-form-control>
-          <nz-select
-            formControlName="instruments"
-            nzMode="tags"
-            [nzMaxTagCount]="10"
-            nzPlaceHolder="Введите тикеры (например: SBER, GAZP, LKOH)"
-          />
+          <nz-radio-group formControlName="sourceMode">
+            <label nz-radio [nzValue]="'manual'">Ручной список</label>
+            <label nz-radio [nzValue]="'dashboard-instrument'">Активный инструмент дашборда</label>
+            <label nz-radio [nzValue]="'dashboard-portfolio'">Инструменты портфеля дашборда</label>
+          </nz-radio-group>
         </nz-form-control>
       </nz-form-item>
+
+      @if (sourceMode === 'dashboard-instrument') {
+        <nz-form-item>
+          <nz-form-label>Текущий инструмент</nz-form-label>
+          <nz-form-control>
+            <nz-tag nzColor="blue">{{ (currentDashboardInstrumentLabel$ | async) ?? 'Инструмент не выбран' }}</nz-tag>
+          </nz-form-control>
+        </nz-form-item>
+      }
+
+      @if (sourceMode === 'dashboard-portfolio') {
+        <nz-form-item>
+          <nz-form-label>Текущий портфель</nz-form-label>
+          <nz-form-control>
+            <nz-tag nzColor="purple">{{ (currentDashboardPortfolioLabel$ | async) ?? 'Портфель не выбран' }}</nz-tag>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzFor="excludeZeroPositions">Фильтрация портфеля</nz-form-label>
+          <nz-form-control>
+            <label nz-checkbox formControlName="excludeZeroPositions">Исключить нулевые позиции</label>
+          </nz-form-control>
+        </nz-form-item>
+      }
+
+      @if (sourceMode === 'manual') {
+        <nz-form-item>
+          <nz-form-label nzFor="instrumentSearch">Добавить инструмент</nz-form-label>
+          <nz-form-control>
+            <ats-instrument-search
+              [formControl]="instrumentSearchControl"
+              (instrumentSelected)="addInstrumentFromSearch($event)"
+              [showHelpTooltip]="false"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label>Список инструментов</nz-form-label>
+          <nz-form-control>
+            @if (form.controls.instruments.value.length === 0) {
+              <span class="ant-form-text">Добавьте инструменты для мониторинга</span>
+            } @else {
+              <div class="d-flex flex-wrap" style="gap: 8px;">
+                @for (item of form.controls.instruments.value; track formatInstrument(item); let i = $index) {
+                  <nz-tag nzMode="closeable" (nzOnClose)="removeInstrument(i)">
+                    {{ formatInstrument(item) }}
+                  </nz-tag>
+                }
+              </div>
+            }
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label>Импорт из строки</nz-form-label>
+          <nz-form-control>
+            <button nz-button nzType="default" type="button" (click)="toggleImportPanel()">
+              {{ showImport ? 'Скрыть импорт' : 'Импорт списка' }}
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+
+        @if (showImport) {
+          <nz-form-item>
+            <nz-form-label nzFor="importRaw">Тикеры для импорта</nz-form-label>
+            <nz-form-control>
+              <textarea
+                nz-input
+                rows="4"
+                [formControl]="importRawControl"
+                placeholder="SBER, GAZP; LKOH\nMOEX:VTBR"
+              ></textarea>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-control>
+              <div class="d-flex" style="gap: 8px;">
+                <button nz-button nzType="default" type="button" (click)="validateImportTokens()">
+                  Проверить
+                </button>
+                <button
+                  nz-button
+                  nzType="primary"
+                  type="button"
+                  [disabled]="!canImportValidated"
+                  (click)="importValidatedInstruments()"
+                >
+                  Импортировать ({{ importValidKeys.length }})
+                </button>
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-spin [nzSpinning]="importValidationInProgress">
+            @if (importValidLabels.length > 0) {
+              <nz-form-item>
+                <nz-form-label>Найденные</nz-form-label>
+                <nz-form-control>
+                  <div class="d-flex flex-wrap" style="gap: 8px;">
+                    @for (label of importValidLabels; track label) {
+                      <nz-tag nzColor="green">{{ label }}</nz-tag>
+                    }
+                  </div>
+                </nz-form-control>
+              </nz-form-item>
+            }
+
+            @if (importInvalidTokens.length > 0) {
+              <nz-alert
+                nzType="warning"
+                nzShowIcon
+                [nzMessage]="'Не найдены: ' + importInvalidTokens.join(', ')"
+              />
+            }
+          </nz-spin>
+        }
+      }
 
       <nz-form-item>
         <nz-form-label nzFor="timeframe">Таймфрейм</nz-form-label>
