@@ -148,7 +148,7 @@ export class AnomalousVolumeComponent implements OnInit {
       },
       {
         id: 'moneyVolume',
-        displayName: 'Объём в деньгах',
+        displayName: 'Объем',
         minWidth: 140,
         transformFn: d => formatNumber(d.moneyVolume, this.locale, '0.0-2'),
         sortOrder: null,

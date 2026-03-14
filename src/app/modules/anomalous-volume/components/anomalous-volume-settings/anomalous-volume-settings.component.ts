@@ -44,21 +44,16 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
   protected settings$!: Observable<AnomalousVolumeSettings>;
 
   readonly availableColumns = anomalousVolumeWidgetColumns;
-  readonly timeframeOptions: { value: AnomalousVolumeTimeframe, labelKey: string }[] = [
-    { value: '1m', labelKey: 'timeframeOption1m' },
-    { value: '5m', labelKey: 'timeframeOption5m' },
-    { value: '15m', labelKey: 'timeframeOption15m' }
-  ];
+  readonly timeframeOptions: AnomalousVolumeTimeframe[] = ['1m', '5m', '15m'];
 
   readonly form = this.formBuilder.group({
-    instruments: this.formBuilder.nonNullable.control<string[]>([], Validators.required),
+    instruments: this.formBuilder.nonNullable.control<string[]>([]),
     timeframe: this.formBuilder.nonNullable.control<AnomalousVolumeTimeframe>('1m'),
     windowSize: this.formBuilder.nonNullable.control(30, [Validators.required, Validators.min(5), Validators.max(200)]),
     sigmaMultiplier: this.formBuilder.nonNullable.control(2.5, [Validators.required, Validators.min(0.1), Validators.max(10)]),
     soundAlertEnabled: this.formBuilder.nonNullable.control(true),
     anomalousVolumeColumns: this.formBuilder.nonNullable.control<string[]>(
-      anomalousVolumeWidgetColumns.map(c => c.id),
-      Validators.required
+      anomalousVolumeWidgetColumns.map(c => c.id)
     )
   });
 
@@ -152,5 +147,17 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
     }
 
     return `${value.exchange}:${value.symbol}`;
+  }
+
+  protected getTimeframeLabel(tf: AnomalousVolumeTimeframe): string {
+    switch (tf) {
+      case '1m':
+        return '1 минута';
+      case '5m':
+        return '5 минут';
+      case '15m':
+      default:
+        return '15 минут';
+    }
   }
 }
