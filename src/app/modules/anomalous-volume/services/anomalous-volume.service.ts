@@ -58,7 +58,7 @@ export class AnomalousVolumeService {
       )
     )
       .pipe(take(1), takeUntil(this.reset$))
-      .subscribe((items: { key: InstrumentKey; instrument: Instrument | null }[]) => {
+      .subscribe((items: { key: InstrumentKey, instrument: Instrument | null }[]) => {
         for (const entry of items) {
           const id = this.toInstrumentId(entry.key);
           this.runtime.set(id, {
@@ -241,4 +241,3 @@ export class AnomalousVolumeService {
     return `${key.exchange}:${key.symbol}:${key.instrumentGroup ?? '-'}`;
   }
 }
-

@@ -33,7 +33,7 @@ export class AnomalousVolumeComponent implements OnInit {
   readonly tableConfig$ = new BehaviorSubject<TableConfig<AnomalousVolumeItem>>(this.createTableConfig([]));
   readonly tableData$ = new BehaviorSubject<AnomalousVolumeItem[]>([]);
   readonly isLoading$ = new BehaviorSubject<boolean>(true);
-  readonly contentSize$ = new BehaviorSubject<{ width: number; height: number }>({ width: 0, height: 0 });
+  readonly contentSize$ = new BehaviorSubject<{ width: number, height: number }>({ width: 0, height: 0 });
 
   ngOnInit(): void {
     this.anomalousVolumeService.watch(this.settings())
@@ -49,8 +49,13 @@ export class AnomalousVolumeComponent implements OnInit {
       });
   }
 
-  containerSizeChanged(event: { width: number; height: number }): void {
-    this.contentSize$.next({ width: event.width, height: event.height });
+  containerSizeChanged(entries: ResizeObserverEntry[]): void {
+    entries.forEach(x => {
+      this.contentSize$.next({
+        width: Math.floor(x.contentRect.width),
+        height: Math.floor(x.contentRect.height)
+      });
+    });
   }
 
   private processSound(items: AnomalousVolumeItem[]): void {
@@ -68,13 +73,19 @@ export class AnomalousVolumeComponent implements OnInit {
   }
 
   private playBeep(): void {
-    const targetWindow = window as any;
-    const Ctx = targetWindow.AudioContext ?? targetWindow.webkitAudioContext;
-    if (Ctx == null) {
+    type AudioContextConstructor = new () => AudioContext;
+    type WindowWithWebkitAudioContext = Window & {
+      AudioContext?: AudioContextConstructor;
+      webkitAudioContext?: AudioContextConstructor;
+    };
+
+    const targetWindow = window as WindowWithWebkitAudioContext;
+    const audioContextConstructor = targetWindow.AudioContext ?? targetWindow.webkitAudioContext;
+    if (audioContextConstructor == null) {
       return;
     }
 
-    const ctx = new Ctx();
+    const ctx = new audioContextConstructor();
     const oscillator = ctx.createOscillator();
     const gain = ctx.createGain();
 
@@ -168,4 +179,3 @@ export class AnomalousVolumeComponent implements OnInit {
     };
   }
 }
-

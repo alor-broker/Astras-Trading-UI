@@ -150,4 +150,3 @@ export class AnomalousVolumeSettingsComponent extends WidgetSettingsBaseComponen
     return `${value.exchange}:${value.symbol}`;
   }
 }
-

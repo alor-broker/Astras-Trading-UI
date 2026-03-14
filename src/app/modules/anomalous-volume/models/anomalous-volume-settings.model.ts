@@ -27,4 +27,3 @@ export const anomalousVolumeWidgetColumns: BaseColumnId[] = [
   { id: 'date', displayName: 'Дата', isDefault: true },
   { id: 'time', displayName: 'Время выявления', isDefault: true }
 ];
-

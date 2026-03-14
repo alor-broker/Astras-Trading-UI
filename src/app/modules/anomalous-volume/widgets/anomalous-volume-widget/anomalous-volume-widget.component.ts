@@ -68,4 +68,3 @@ export class AnomalousVolumeWidgetComponent implements OnInit {
     this.shouldShowSettings = !this.shouldShowSettings;
   }
 }
-

@@ -15,4 +15,3 @@ export interface AnomalousVolumeItem {
   detectedAt: number;
   sigmaScore: number;
 }
-
