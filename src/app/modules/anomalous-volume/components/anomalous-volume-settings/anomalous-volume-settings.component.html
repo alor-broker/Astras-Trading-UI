@@ -1,0 +1,74 @@
+<ats-widget-settings
+  [canSave]="canSave"
+  [canCopy]="canCopy"
+  [showCopy]="showCopy"
+  (saveClick)="updateSettings()"
+  (copyClick)="createWidgetCopy()"
+>
+  <ng-container *transloco="let t; scope: 'anomalous-volume/settings'">
+    <form nz-form [nzLayout]="'vertical'" [formGroup]="form">
+      <nz-form-item>
+        <nz-form-label nzRequired nzFor="instruments">
+          {{ t('instrumentsLabel') }}
+        </nz-form-label>
+        <nz-form-control>
+          <nz-select
+            formControlName="instruments"
+            nzMode="tags"
+            [nzMaxTagCount]="10"
+            [nzPlaceHolder]="t('instrumentsPlaceholder')"
+          />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzFor="timeframe">{{ t('timeframeLabel') }}</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName="timeframe">
+            @for (tf of timeframeOptions; track tf) {
+              <nz-option [nzValue]="tf" [nzLabel]="tf" />
+            }
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzFor="windowSize">{{ t('windowSizeLabel') }}</nz-form-label>
+        <nz-form-control>
+          <ats-input-number formControlName="windowSize" [step]="1" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzFor="sigmaMultiplier">{{ t('sigmaLabel') }}</nz-form-label>
+        <nz-form-control>
+          <ats-input-number formControlName="sigmaMultiplier" [step]="0.1" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzFor="anomalousVolumeColumns">{{ t('columnsLabel') }}</nz-form-label>
+        <nz-form-control>
+          <nz-select
+            formControlName="anomalousVolumeColumns"
+            nzMode="multiple"
+            [nzMaxTagCount]="10"
+            [nzPlaceHolder]="t('columnsPlaceholder')"
+          >
+            @for (column of availableColumns; track column.id) {
+              <nz-option [nzValue]="column.id" [nzLabel]="column.displayName ?? column.id" />
+            }
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item class="one-row">
+        <nz-form-label nzFor="soundAlertEnabled">{{ t('soundAlertLabel') }}</nz-form-label>
+        <nz-form-control>
+          <nz-switch formControlName="soundAlertEnabled" />
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</ats-widget-settings>
+

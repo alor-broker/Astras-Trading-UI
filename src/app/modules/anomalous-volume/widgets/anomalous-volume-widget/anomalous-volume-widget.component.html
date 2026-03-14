@@ -1,0 +1,31 @@
+@if (settings$ | async; as settings) {
+  <ats-widget-skeleton
+    [content]="contentRef"
+    [header]="headerRef"
+    [settings]="settingsRef"
+    [showContentScroll]="false"
+    [showSettings]="shouldShowSettings"
+    [isBlockWidget]="isBlockWidget()"
+  >
+    <ng-template #headerRef>
+      <ats-widget-header
+        (switchSettings)="onSettingsChange()"
+        [guid]="guid"
+        [hasSettings]="true"
+        [widgetMeta]="widgetInstance().widgetMeta"
+      />
+    </ng-template>
+
+    <ng-template #contentRef>
+      <ats-anomalous-volume [settings]="settings" />
+    </ng-template>
+
+    <ng-template #settingsRef>
+      <ats-anomalous-volume-settings
+        [guid]="guid"
+        (settingsChange)="onSettingsChange()"
+      />
+    </ng-template>
+  </ats-widget-skeleton>
+}
+
