@@ -1027,6 +1027,41 @@
     }
   },
   {
+    "typeId": "anomalous-volume",
+    "definition": {
+      "adapter": "application",
+      "config": {
+        "module": "",
+        "componentName": "AnomalousVolumeWidgetComponent"
+      }
+    },
+    "widgetName": {
+      "default": "Anomalous Volume",
+      "translations": {
+        "ru": "Аномальные объёмы",
+        "en": "Anomalous Volume",
+        "hy": "Անոմալ ծավալներ"
+      }
+    },
+    "category": "details",
+    "desktopMeta": {
+      "headerIcon": "alert",
+      "galleryIcon": "alert",
+      "addOptions": {
+        "initialPosition": "auto",
+        "isFullWidth": false,
+        "initialHeight": 18,
+        "initialWidth": 12
+      },
+      "galleryOrder": 26,
+      "enabled": true
+    },
+    "hideOnDashboardType": [
+      "admin-main",
+      "admin-selected-portfolio"
+    ]
+  },
+  {
     "typeId": "admin-clients",
     "definition": {
       "adapter": "application",

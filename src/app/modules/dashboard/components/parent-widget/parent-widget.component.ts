@@ -62,6 +62,9 @@ import {
 import {
   AdminClientsWidgetComponent
 } from '../../../admin-clients/widgets/admin-clients-widget/admin-clients-widget.component';
+import {
+  AnomalousVolumeWidgetComponent
+} from '../../../anomalous-volume/widgets/anomalous-volume-widget/anomalous-volume-widget.component';
 import { AsyncPipe } from '@angular/common';
 import {
   MobileOrderWidgetComponent
@@ -100,6 +103,7 @@ import {
     PortfolioChartsWidgetComponent,
     MarketTrendsWidgetComponent,
     AdminClientsWidgetComponent,
+    AnomalousVolumeWidgetComponent,
     AsyncPipe,
     MobileOrderWidgetComponent
   ]
